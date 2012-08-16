@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Veda-Bootstrap</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link href="less/bootstrap.less" rel="stylesheet/less" type="text/css">
+        <link href="less/responsive.less" rel="stylesheet/less" type="text/css">
+        <style type="text/css">
+            body {
+                padding-top: 80px;
+                padding-bottom: 40px;
+            }
+            .sidebar-nav {
+                padding: 9px 0;
+            }
+        </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <script src="js/less-1.3.0.min.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container-fluid">
+                    <a class="brand" href="#"><img src="img/logo-veda.png" alt="Veda logo" /></a>
+                    <div class="btn-group pull-right">
+                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="icon-user"></i> Хвостикова А.А.
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Мои настройки</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Выход</a></li>
+                        </ul>
+                    </div>
+                    <ul class="nav">
+                        <li class="dropdown active">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Задачи <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Входящие</a></li>
+                                <li><a href="#">Исходящие</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Выполненные</a></li>
+                                <li><a href="#">На контроле</a></li>
+                                <li><a href="#">Уведомления</a></li>
+                                <li><a href="#">Отозванные</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Документы <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Создать</a></li>
+                                <li><a href="#">Найти</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Избранное</a></li>
+                                <li><a href="#">Черновики</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#contacts">Контакты</a></li>
+                        <li><a href="#reports">Отчеты</a></li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#settings">
+                                Настройки <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Шаблоны документов</a></li>
+                                <li><a href="#">Справочники</a></li>
+                                <li><a href="#">Отчеты</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="nav pull-right">
+                        <li><a href="#help">Помощь</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span12">
+                    <h1 class="pull-left withtabs">Найти документ</h1>
+                    <div class="tabbable">
+                        <ul class="nav nav-tabs">
+                            <li><a data-toggle="tab" href="#search-results-pane">Результаты</a></li>
+                            <li class="active"><a data-toggle="tab" href="#query-pane">Параметры запроса</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="query-pane" class="tab-pane active">
+                                <!--p>Форма с параметрами запроса</p-->
+                                <form class="form-horizontal" action="#" method="post" enctype="multipart/form-data" onsubmit="return false">
+                                    <fieldset>
+                                        <div class="form-actions">
+                                            <input class="btn btn-primary" type="submit" value="Поиск" />
+                                            <input class="btn" type="button" value="Сохранить запрос" />
+                                            <input class="btn" type="reset" value="Очистить форму" />
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="all_fields">
+                                                <b>По всем полям</b>
+                                            </label>
+                                            <div class="controls">
+                                                <input type="text" id="all_fields" name="all_fields" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="template">
+                                                <b>Шаблон</b>
+                                            </label>
+                                            <div class="controls">
+                                                <select name="type" id="template" name="template" class="span6">
+                                                    <option value="Приказ">Любой</option>
+                                                    <option value="Приказ">Приказ</option>
+                                                    <option value="Служебная записка">Служебная записка</option>
+                                                    <option value="Входящий документ">Входящий документ</option>
+                                                    <option value="Контракт на закупку">Контракт на закупку</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="author">
+                                                Автор
+                                            </label>
+                                            <div class="controls">
+                                                <input type="text" id="author" name="author" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="test__group_checkboxes">
+                                                Test group checkboxes
+                                            </label>
+                                            <div class="controls">
+                                                <label class="checkbox inline" for="test_checkbox_1">
+                                                    <input type="checkbox" id="test_checkbox_1" name="test_checkbox_1" />
+                                                    1
+                                                </label>
+                                                <label class="checkbox inline" for="test_checkbox_2">
+                                                    <input type="checkbox" id="test_checkbox_2" name="test_checkbox_2" />
+                                                    2
+                                                </label>
+                                                <label class="checkbox inline" for="test_checkbox_3">
+                                                    <input type="checkbox" id="test_checkbox_3" name="test_checkbox_3" />
+                                                    3
+                                                </label>
+                                                <label class="checkbox inline" for="test_checkbox_4">
+                                                    <input type="checkbox" id="test_checkbox_4" name="test_checkbox_4" />
+                                                    4
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="test_radio_1">
+                                                Test radio 1
+                                            </label>
+                                            <div class="controls">
+                                                <input type="radio" id="test_radio_1" name="test_radio_group" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="test_radio_2">
+                                                Test radio 2
+                                            </label>
+                                            <div class="controls">
+                                                <input type="radio" id="test_radio_2" name="test_radio_group" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="select_multi">
+                                                Select multiple
+                                            </label>
+                                            <div class="controls">
+                                                <select id="select_multi" name="select_multi" multiple="multiple" size="10" class="span6">
+                                                    <optgroup label="Group 1">
+                                                        <option value="1">Some text goes here</option>
+                                                        <option value="2">Another choice could be here</option>
+                                                        <option value="3">Yet another item to be chosen</option>
+                                                    </optgroup>
+                                                    <optgroup label="Group 2">
+                                                        <option value="4">Some text goes here</option>
+                                                        <option value="5">Another choice could be here</option>
+                                                        <option value="6">Yet another item to be chosen</option>
+                                                    </optgroup>
+                                                    <optgroup label="Group 3">
+                                                        <option value="7">Some text goes here</option>
+                                                        <option value="8">Another choice could be here</option>
+                                                        <option value="9">Yet another item to be chosen</option>
+                                                    </optgroup>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="textarea">
+                                                Textarea
+                                            </label>
+                                            <div class="controls">
+                                                <textarea id="textarea" name="textarea" rows="5" placeholder="This is an example of HTML5 placeholder text." class="span6"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="url">
+                                                URL + Autofocus
+                                            </label>
+                                            <div class="controls">
+                                                <input type="url" id="url" name="url" value="http://" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="email">
+                                                Email
+                                            </label>
+                                            <div class="controls">
+                                                <input type="email" id="email" name="email" placeholder="name@example.com" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="password">
+                                                Password
+                                            </label>
+                                            <div class="controls">
+                                                <input type="password" id="password" name="password" placeholder="Alphanumeric123!" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="select_dd">
+                                                Select drop-down
+                                            </label>
+                                            <div class="controls">
+                                                <select id="select_dd" name="select_dd" class="span6">
+                                                    <optgroup label="Group 1">
+                                                        <option value="1">Some text goes here</option>
+                                                        <option value="2">Another choice could be here</option>
+                                                        <option value="3">Yet another item to be chosen</option>
+                                                    </optgroup>
+                                                    <optgroup label="Group 2">
+                                                        <option value="4">Some text goes here</option>
+                                                        <option value="5">Another choice could be here</option>
+                                                        <option value="6">Yet another item to be chosen</option>
+                                                    </optgroup>
+                                                    <optgroup label="Group 3">
+                                                        <option value="7">Some text goes here</option>
+                                                        <option value="8">Another choice could be here</option>
+                                                        <option value="9">Yet another item to be chosen</option>
+                                                    </optgroup>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="datetime-local">
+                                                Datetime local
+                                            </label>
+                                            <div class="controls">
+                                                <input type="datetime-local" id="datetime-local" name="datetime-local" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="number">
+                                                Number
+                                            </label>
+                                            <div class="controls">
+                                                <input type="number" id="number" name="number" min="0" max="999" step="1" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="tel">
+                                                Tel (phone)
+                                            </label>
+                                            <div class="controls">                                            
+                                                <input type="tel" id="tel" name="tel" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="datetime">
+                                                Datetime
+                                            </label>
+                                            <div class="controls">
+                                                <input type="datetime" id="datetime" name="datetime" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="date">
+                                                Date
+                                            </label>
+                                            <div class="controls">
+                                                <input type="date" id="date" name="date" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">                                           
+                                            <label class="control-label" for="month">
+                                                Month
+                                            </label>
+                                            <div class="controls">
+                                                <input type="month" id="month" name="month" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="search">
+                                                Search
+                                            </label>
+                                            <div class="controls">
+                                                <input type="search" id="search" name="search" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="file">
+                                                File upload
+                                            </label>
+                                            <div class="controls">
+                                                <input type="file" id="file" name="file" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="form-actions">
+                                            <input class="btn btn-primary" type="submit" value="Поиск" />
+                                            <input class="btn" type="button" value="Сохранить запрос" />
+                                            <input class="btn" type="reset" value="Очистить форму" />
+                                        </div>
+                                    </fieldset>
+                                </form>                
+                            </div>
+                            <div id="search-results-pane" class="tab-pane">
+                                <p>Список / таблица найденных документов</p>
+                            </div>
+                        </div>
+                    </div><!--/tabbable-->
+                </div><!--/span-->
+            </div><!--/row-->
+            <hr />
+            <footer>
+                <p>
+                    <a href="http://www.semantic-machines.com" title="Официальный сайт компании">&copy; "Смысловые машины", ООО.</a> 
+                    Выпущено под лицензией 
+                    <a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html"> GPLv3.</a> 
+                </p>
+            </footer>
+
+        </div><!--/.fluid-container-->
+
+        <!-- Le javascript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="js/jquery.js"></script>
+        <script src="js/bootstrap-transition.js"></script>
+        <script src="js/bootstrap-alert.js"></script>
+        <script src="js/bootstrap-modal.js"></script>
+        <script src="js/bootstrap-dropdown.js"></script>
+        <script src="js/bootstrap-scrollspy.js"></script>
+        <script src="js/bootstrap-tab.js"></script>
+        <script src="js/bootstrap-tooltip.js"></script>
+        <script src="js/bootstrap-popover.js"></script>
+        <script src="js/bootstrap-button.js"></script>
+        <script src="js/bootstrap-collapse.js"></script>
+        <script src="js/bootstrap-carousel.js"></script>
+        <script src="js/bootstrap-typeahead.js"></script>
+
+    </body>
+</html>
