@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Compass Grid Demo Page</title>
+
+	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=ISO-8859-1" />
+	<link rel="stylesheet" type="text/css" href="compassdatagrid.css" />
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/jquery/jquery.livequery.js"></script>
+	<script type="text/javascript" src="jquery.compassdatagrid.min.js"></script>
+	<script type="text/javascript">
+	     $(document).ready(function() {
+	          $("table.browseTable").compassDatagrid({
+					pager: true,
+					pagerAfter:true,
+					sort: true,
+					toggle: true,
+					ajax: true,
+					striping: true,
+					resizable: false,
+	               	images: 'images/',
+	               	url: 'pageData.php',
+					perPage: "10"
+	          });
+	     });
+	</script>
+	
+	<style type="text/css">
+		* { margin: 0px; padding: 0px; }
+		body { margin: 50px; background-color: #fff; font-size: 12px; line-height: 1.5; font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Verdana, sans-serif; color: #444;  }
+		.leftCodeOption { float: left; width: 350px; }
+		.rightCodeOption { float: left; width: 400px; }
+		.optionCode { margin: 10px 0px; border-bottom: 1px solid #e6e6e6; padding-bottom: 10px;  }
+		div.code { font-family: monospace; font-size: 14.2px; color: #000; border: solid 1px #d3e0eb; background-color: #edf7ff; padding: 0.1in; margin: 0.2in 0px; }
+		p.clear { height: 1px !important; line-height: 1px !important; padding: 0px !important; margin: 0px !important; clear: both !important; }
+		
+		h1, h2, h3, h4, h5, h6 { color: #222; }
+		strong { color: #f37036; }
+		a { color: #0072cf; text-decoration: none; }
+		a:hover { /*color: #222;*/ text-decoration: underline; }
+		
+		
+	</style>
+
+</head>
+
+<body>
+	
+	<h2>Compass Grid Demo</h2>
+	<p><strong>Note</strong>: You'll need PHP working for this demo to work.</p><br />
+	<strong>Also Note</strong>: The data for this table is hard-coded for illustrative purposes. This was done intentionally since the server-side code works much better dynamically with a database or other storage mechanism.
+	<br />**Sorting/pagination will not work in the demo.
+	
+	<br /><br />
+	
+	
+	<table class="browseTable"><tbody><tr><td></td></tr></tbody></table><div id="ctResizer"></div>
+	
+	<br /><br />
+	
+	<h2>Usage</h2>
+	<p>In the head of your page...</p>
+	<div class="code">
+	<pre>
+&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;compassdatagrid.css&quot; /&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;jquery.compassdatagrid.min.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+	$(document).ready(function() {
+		$(&quot;.browseTable&quot;).compassDatagrid({
+			images: 'images/',
+			url: 'pageData.php'
+		});
+	});
+&lt;/script&gt;
+	</pre>
+	</div>
+	
+	<br /><p>In the body...</p>
+	
+	<div class="code">
+	<pre>&lt;table class=&quot;browseTable&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+		
+&lt;!-- If you are using the Resizer --&gt;
+&lt;div id=&quot;ctResizer&quot;&gt;&lt;/div&gt;</pre>
+	</div>
+	
+	<br /><br />
+	
+	<h2>Options</h2>
+	
+		Take a look at the uncompressed source code for all the options. We'll cover the main ones here.
+		
+		<div class="optionCode">
+			<p class="leftCodeOption">
+				<strong>url</strong><br />
+				<em>string</em><br />
+				<em>Default</em>: [empty]<br />
+			</p>
+			<p class="rightCodeOption">
+				Required. The URL to your server-side script that will handle the logic.
+			</p>
+			<p class="clear"></p>
+		</div>
+		
+		<div class="optionCode">
+			<p class="leftCodeOption">
+				<strong>images</strong><br />
+				<em>string</em><br />
+				<em>Default</em>: images<br />
+			</p>
+			<p class="rightCodeOption">
+				Required. The relative path to the Compass Grid images folder.
+			</p>
+			<p class="clear"></p>
+		</div>
+		
+		<div class="optionCode">
+			<p class="leftCodeOption">
+				<strong>hover</strong><br />
+				<em>true/false</em><br />
+				<em>Default</em>: true<br />
+			</p>
+			<p class="rightCodeOption">
+				When set to true, hovering over table cells will activate the .hover css class for css styling. The CSS 
+					classname for hover can be changed by changing the <strong>hoverClass</strong> option.
+			</p>
+			<p class="clear"></p>
+		</div>
+		
+		<div class="optionCode">
+			<p class="leftCodeOption">
+				<strong>selectable</strong><br />
+				<em>true/false</em><br />
+				<em>Default</em>: true<br />
+			</p>
+			<p class="rightCodeOption">
+				When set to true, clicking on a cell "selects" it. We combine this in Compass with a checkbox for each row. The CSS 
+					classname for this can be changed by changing the <strong>selectableClass</strong> option.
+			</p>
+			<p class="clear"></p>
+		</div>
+		
+		<div class="optionCode">
+			<p class="leftCodeOption">
+				<strong>sort</strong><br />
+				<em>true/false</em><br />
+				<em>Default</em>: true<br />
+			</p>
+			<p class="rightCodeOption">
+				Allows users to sort columns (although logic for this must be incorporated into server-side script).
+			</p>
+			<p class="clear"></p>
+		</div>
+		
+		<div class="optionCode">
+			<p class="leftCodeOption">
+				<strong>striping</strong><br />
+				<em>true/false</em><br />
+				<em>Default</em>: true<br />
+			</p>
+			<p class="rightCodeOption">
+				Striping will alternate classes for table rows (default classes .odd and .even). CSS classes can be changed 
+					by altering <strong>oddClass</strong> and <strong>evenClass</strong> options.
+			</p>
+			<p class="clear"></p>
+		</div>
+		
+		<div class="optionCode">
+			<p class="leftCodeOption">
+				<strong>resizable</strong><br />
+				<em>true/false</em><br />
+				<em>Default</em>: true<br />
+			</p>
+			<p class="rightCodeOption">
+				Setting to true allows users to resize columns. This is currently a little buggy, so use at your own risk.
+					Request jQuery UI / Resizable to work.
+			</p>
+			<p class="clear"></p>
+		</div>
+		
+		<div class="optionCode">
+			<p class="leftCodeOption">
+				<strong>toggle</strong><br />
+				<em>true/false</em><br />
+				<em>Default</em>: true<br />
+			</p>
+			<p class="rightCodeOption">
+				Setting to true allows users to toggle columns on or off. A "Show/Hide Columns" box is added automatically.
+			</p>
+			<p class="clear"></p>
+		</div>
+		
+		<div class="optionCode">
+			<p class="leftCodeOption">
+				<strong>pager</strong><br />
+				<em>true/false</em><br />
+				<em>Default</em>: true<br />
+			</p>
+			<p class="rightCodeOption">
+				Whether you're using pagination or not.
+			</p>
+			<p class="clear"></p>
+		</div>
+		
+		<div class="optionCode">
+			<p class="leftCodeOption">
+				<strong>pagerBefore</strong><br />
+				<em>true/false</em><br />
+				<em>Default</em>: true<br />
+			</p>
+			<p class="rightCodeOption">
+				Set to true to show the "pager bar" above (before) the table.
+			</p>
+			<p class="clear"></p>
+		</div>
+		
+		<div class="optionCode">
+			<p class="leftCodeOption">
+				<strong>pagerAfter</strong><br />
+				<em>true/false</em><br />
+				<em>Default</em>: true<br />
+			</p>
+			<p class="rightCodeOption">
+				Set to true to show the "pager bar" after the table.
+			</p>
+			<p class="clear"></p>
+		</div>
+		
+		<div class="optionCode">
+			<p class="leftCodeOption">
+				<strong>paramsStart</strong><br />
+				<em>string</em><br />
+				<em>Default</em>: ?<br />
+			</p>
+			<p class="rightCodeOption">
+				A starting character for passing your server-side script information. Compass Grid defaults to ?foo=bar&amp;this=that
+			</p>
+			<p class="clear"></p>
+		</div>
+		
+		<div class="optionCode">
+			<p class="leftCodeOption">
+				<strong>paramsSeparator</strong><br />
+				<em>string</em><br />
+				<em>Default</em>: &amp;<br />
+			</p>
+			<p class="rightCodeOption">
+				A character for separating your server-side key/value pairs. Compass Grid defaults to ?foo=bar&amp;this=that
+			</p>
+			<p class="clear"></p>
+		</div>
+		
+		<div class="optionCode">
+			<p class="leftCodeOption">
+				<strong>paramsSeparator</strong><br />
+				<em>string</em><br />
+				<em>Default</em>: =<br />
+			</p>
+			<p class="rightCodeOption">
+				A character placed between a key and a value in the url. Compass Grid defaults to ?foo=bar&amp;this=that
+			</p>
+			<p class="clear"></p>
+		</div>
+
+	
+	<br /><br />
+	
+	
+	<h2>Server-Side Code</h2>
+
+	<p>Your server side code should check for various data being sent by the plugin. A sample request might look like this:<br /><br />
+		
+		pageData.php/?page=3&amp;sortField=title&amp;sortOrder=asc&amp;show10;<br /><br />
+		
+		Here's what this means:<br /><br />
+		
+		<strong>Page</strong>: The page the user is requesting<br /><br />
+		
+		<strong>sortField</strong>: The table column that the user is sorting by. The value here will be the id for the column that you specified
+			in your server-side code.<br /><br />
+			
+		<strong>sortOrder</strong>: The order the user wants to sort. Either <em>asc</em> or <em>desc</em>.<br /><br />
+		
+		<strong>show</strong>: The number of results to return to the user (i.e 10 at a time)<br /><br /><br />
+		
+	</p>
+	
+	<h3>Note</h3>
+	<p>These checks were left out of the sample php file, so you'll need to work them into your code.</p>
+	
+	<br /><br />
+	
+	<h2>License</h2>
+	<p>Dual licensed under the MIT and GPL licenses:</p>
+	    &nbsp; &nbsp; &nbsp; &nbsp; http://www.opensource.org/licenses/mit-license.php<br />
+	 	&nbsp; &nbsp; &nbsp; &nbsp; http://www.gnu.org/licenses/gpl.html
+	
+	
+	<br /><br /><br /><br />
+	
+	<strong style="color: #444;">This code is used in</strong> <a href="http://www.compasswebpublisher.com">Compass CMS - Hosted Web Content Management System</a><br /><br />
+	<a href="http://www.compasswebpublisher.com/jquery/compass-datagrid">Plugin Homepage</a>
+	
+
+</body>
+
+</html>
