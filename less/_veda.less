@@ -1,5 +1,4 @@
 @import "bootstrap.less";
-@import "responsive.less";
 
 body {
     padding-top: 80px;
@@ -15,7 +14,6 @@ body {
   .control-label {
     width: 200px; //140px
   }
-  // Move over all input controls and content
   .controls {
     margin-left: 220px; //160px;
     *margin-left: 0;
@@ -35,7 +33,6 @@ hr {
     margin-top: 0px;
 }
 
-
 // TYPOGRAPHY
 
 @sansFontFamily:        "Droid Sans", Helvetica, Arial, sans-serif;
@@ -44,6 +41,7 @@ hr {
 
 h1.withtabs {
 	line-height: @baseLineHeight * 1.5;
+	margin-right: 1em;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -81,3 +79,5 @@ h5 {
 h6 {
   font-size: 10px;
 }
+
+@import "responsive.less";

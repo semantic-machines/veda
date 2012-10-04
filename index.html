@@ -82,8 +82,8 @@
                     <h1 class="pull-left withtabs">Найти документ</h1>
                     <div class="tabbable">
                         <ul class="nav nav-tabs">
-                            <li class="pull-right"><a data-toggle="tab" href="#search-results-pane">Результаты</a></li>
-                            <li class="active pull-right"><a data-toggle="tab" href="#query-pane">Параметры запроса</a></li>
+                            <li class="active"><a data-toggle="tab" href="#query-pane">Параметры запроса</a></li>
+                            <li class=""><a data-toggle="tab" href="#search-results-pane">Результаты</a></li>
                         </ul>
                         <div class="tab-content">
                             <div id="query-pane" class="tab-pane active">
@@ -91,7 +91,7 @@
                                 <form class="form-horizontal" action="#" method="post" enctype="multipart/form-data" onsubmit="return false">
                                     <fieldset>
                                         <div class="form-actions">
-                                            <input class="btn btn-primary" type="submit" value="Поиск" />
+                                            <input class="btn btn-primary" type="submit" value="Найти" />
                                             <input class="btn" type="button" value="Сохранить запрос" />
                                             <input class="btn" type="reset" value="Очистить форму" />
                                         </div>
@@ -109,7 +109,7 @@
                                             </label>
                                             <div class="controls">
                                                 <select name="type" id="template" name="template" class="span6">
-                                                    <option value="Приказ">Любой</option>
+                                                    <option value="Любой">Любой</option>
                                                     <option value="Приказ">Приказ</option>
                                                     <option value="Служебная записка">Служебная записка</option>
                                                     <option value="Входящий документ">Входящий документ</option>
@@ -130,26 +130,17 @@
                                                 Дата создания
                                             </label>
                                             <div class="controls">
-                                                    <div style="float: left">c &nbsp;</div>
-                                                    <input type="text" id="created-date-from" name="created-date-from" class="pull-left input-small" />
-                                                    <div style="float: left">&nbsp;по &nbsp;</div>
-                                                    <input type="text" id="created-date-to" name="created-date-to" class="pull-left input-small" />
-                                                    <div style="float: left">&nbsp;период&nbsp;</div>
-                                                    <select name="type" id="created-date-period" name="created-date-period" class="pull-left input-medium">
-                                                        <option value="Сегодня">Сегодня</option>
-                                                        <option value="Вчера">Вчера</option>
-                                                        <option value="Текущая неделя">Текущая неделя</option>
-                                                        <option value="Текущий месяц">Текущий месяц</option>
-                                                        <option value="Текущий квартал">Текущий квартал</option>
-                                                    </select>
+                                                <input type="text" id="created-date" name="created-date" class="span6" />
                                             </div>
                                         </div>
-                                        <div class="control-group">
+                                        <div class="control-group row-fluid">
                                             <label class="control-label" for="last-change-author">
                                                 Автор последнего изменения
                                             </label>
                                             <div class="controls">
                                                 <input type="text" id="last-change-author" name="last-change-author" class="span6" />
+                                                <!--button class="btn" type="button"><i class="icon-search"></i> Найти</button>
+                                                <button class="btn" type="button"><i class="icon-remove"></i> Очистить</button-->
                                             </div>
                                         </div>
                                         <div class="control-group">
@@ -157,18 +148,7 @@
                                                 Дата последнего изменения
                                             </label>
                                             <div class="controls">
-                                                    <div style="float: left">c &nbsp;</div>
-                                                    <input type="text" id="last-change-date-from" name="last-change-date-from" class="pull-left input-small" />
-                                                    <div style="float: left">&nbsp;по &nbsp;</div>
-                                                    <input type="text" id="last-change-date-to" name="last-change-date-to" class="pull-left input-small" />
-                                                    <div style="float: left">&nbsp;период&nbsp;</div>
-                                                    <select name="type" id="last-change-period" name="last-change-period" class="pull-left input-medium">
-                                                        <option value="Сегодня">Сегодня</option>
-                                                        <option value="Вчера">Вчера</option>
-                                                        <option value="Текущая неделя">Текущая неделя</option>
-                                                        <option value="Текущий месяц">Текущий месяц</option>
-                                                        <option value="Текущий квартал">Текущий квартал</option>
-                                                    </select>
+                                                <input type="text" id="last-change-date" name="last-change-date-from" class="span6" />
                                             </div>
                                         </div>
                                         <div class="control-group">
@@ -238,7 +218,7 @@
 
 
                                         <div class="form-actions">
-                                            <input class="btn btn-primary" type="submit" value="Поиск" />
+                                            <input class="btn btn-primary" type="submit" value="Найти" />
                                             <input class="btn" type="button" value="Сохранить запрос" />
                                             <input class="btn" type="reset" value="Очистить форму" />
                                         </div>
