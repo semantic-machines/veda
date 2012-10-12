@@ -76,8 +76,8 @@
             </div>
         </div>
 
-        <div class="container-fluid">
-            <div class="row-fluid">
+        <div class="container">
+            <div class="row">
                 <div class="span12">
                     <h1 class="pull-left withtabs">Найти документ</h1>
                     <div class="tabbable">
@@ -122,41 +122,72 @@
                                                 Автор
                                             </label>
                                             <div class="controls">
-                                                <input type="text" id="author" name="author" class="span6" />
+                                                <div class="input-append">
+                                                    <input class="span6" id="author" type="text">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="control-group">
-                                            <label class="control-label" for="creation-date">
+                                            <label class="control-label" for="creation-date-begin">
                                                 Дата создания
                                             </label>
-                                            <div class="controls">
-                                                <input type="text" id="created-date" name="created-date" class="span6" />
-                                            </div>
+                                            <div class="controls controls-row">
+                                                <input type="text" id="created-date-begin" name="created-date" class="span2" placeholder="c" />
+                                                <input type="text" id="created-date-end" name="created-date" class="span2" placeholder="по" />
+                                                <select name="create-date-predefined-periods" id="create-date-predefined-periods" class="span2" placeholder="Выбрать">
+                                                    <option value="Любой">Сегодня</option>
+                                                    <option value="Приказ">Вчера</option>
+                                                    <option value="Служебная записка">Текущая неделя</option>
+                                                    <option value="Входящий документ">Прошлая неделя</option>
+                                                    <option value="Контракт на закупку">Текущий месяц</option>
+                                                    <option value="Контракт на закупку">Прошлый месяц</option>
+                                                    <option value="Контракт на закупку">Текущий квартал</option>
+                                                    <option value="Контракт на закупку">Прошлый квартал</option>
+                                                </select>
+                                           </div>
                                         </div>
-                                        <div class="control-group row-fluid">
+                                        <div class="control-group">
                                             <label class="control-label" for="last-change-author">
                                                 Автор последнего изменения
                                             </label>
                                             <div class="controls">
-                                                <input type="text" id="last-change-author" name="last-change-author" class="span6" />
-                                                <!--button class="btn" type="button"><i class="icon-search"></i> Найти</button>
-                                                <button class="btn" type="button"><i class="icon-remove"></i> Очистить</button-->
+                                                <div class="input-append">
+                                                    <input class="span6" id="last-change-author" type="text">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                </div>
                                             </div>
                                         </div>
+
+
                                         <div class="control-group">
-                                            <label class="control-label" for="last-change-date">
+                                            <label class="control-label" for="last-change-date-begin">
                                                 Дата последнего изменения
                                             </label>
-                                            <div class="controls">
-                                                <input type="text" id="last-change-date" name="last-change-date-from" class="span6" />
-                                            </div>
+                                            <div class="controls controls-row">
+                                                <input type="text" id="last-change-date-begin" name="last-change-date-date-begin" class="span2" placeholder="c" />
+                                                <input type="text" id="last-change-date-end" name="last-change-date-end" class="span2" placeholder="по" />
+                                                <select name="last-change-date-predefined-periods" id="last-change-date-predefined-periods" class="span2" placeholder="Выбрать">
+                                                    <option value="Любой">Сегодня</option>
+                                                    <option value="Приказ">Вчера</option>
+                                                    <option value="Служебная записка">Текущая неделя</option>
+                                                    <option value="Входящий документ">Прошлая неделя</option>
+                                                    <option value="Контракт на закупку">Текущий месяц</option>
+                                                    <option value="Контракт на закупку">Прошлый месяц</option>
+                                                    <option value="Контракт на закупку">Текущий квартал</option>
+                                                    <option value="Контракт на закупку">Прошлый квартал</option>
+                                                </select>
+                                           </div>
                                         </div>
                                         <div class="control-group">
                                             <label class="control-label" for="from">
                                                 От кого
                                             </label>
                                             <div class="controls">
-                                                <input type="text" id="from" name="from" class="span6" />
+                                                <div class="input-append">
+                                                    <input class="span6" id="from" type="text">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="control-group">
@@ -164,7 +195,10 @@
                                                 Кому
                                             </label>
                                             <div class="controls">
-                                                <input type="text" id="to" name="to" class="span6" />
+                                                <div class="input-append">
+                                                    <input class="span6" id="to" type="text">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="control-group">
@@ -172,8 +206,25 @@
                                                 В копию
                                             </label>
                                             <div class="controls">
-                                                <input type="text" id="cc" name="cc" class="span6" />
+                                                <div class="input-prepend input-append">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Показать"><i class="icon-info-sign"></i></button>
+                                                    <input class="span6" id="cc" type="text" placeholder="Карпов Р.К., специалист, группа разработки прикладного ПО, тел. 23-66">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Добавить поле"><i class="icon-plus"></i></button>
+                                                </div>
                                             </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="cc">
+                                            </label>
+                                            <div class="controls">
+                                                <div class="input-prepend input-append">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Показать"><i class="icon-info-sign"></i></button>
+                                                    <input class="span6" id="cc" type="text" placeholder="Бычин А.В., специалист, группа разработки прикладного ПО, тел. 23-66">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Добавить поле"><i class="icon-plus"></i></button>
+                                                </div>
+                                            </div>                                            
                                         </div>
                                         <div class="control-group">
                                             <label class="control-label" for="theme">
@@ -195,8 +246,17 @@
                                             <label class="control-label" for="attachments">
                                                 Вложения
                                             </label>
-                                            <div class="controls">
-                                                <input type="text" id="attachments" name="attachments" class="span6" />
+                                           <div class="controls">
+                                                <input id="file" type="file" style="display:none">
+                                                <div class="input-append">
+                                                    <input id="attachment" class="span6" type="text">
+                                                    <a class="btn" onclick="$('input[id=file]').click();">Выбрать</a>
+                                                </div>
+                                                <script type="text/javascript">
+                                                    $('input[id=file]').change(function() {
+                                                        $('#attachment').val($(this).val());
+                                                    });
+                                                </script>
                                             </div>
                                         </div>
                                         <div class="control-group">
@@ -204,7 +264,12 @@
                                                 Связанные документы
                                             </label>
                                             <div class="controls">
-                                                <input type="text" id="linked" name="linked" class="span6" />
+                                                <div class="input-append">
+                                                    <input class="span6" id="linked" type="text">
+                                                    <button class="btn" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                    <button class="btn" data-placement="top" rel="tooltip" data-original-title="Создать"><i class="icon-file"></i></button>
+                                                    <button class="btn" data-placement="top" rel="tooltip" data-original-title="Удалить"><i class="icon-trash"></i></button>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="control-group">
@@ -215,8 +280,6 @@
                                                 <input type="text" id="additional-info" name="additional-info" class="span6" />
                                             </div>
                                         </div>
-
-
                                         <div class="form-actions">
                                             <input class="btn btn-primary" type="submit" value="Найти" />
                                             <input class="btn" type="button" value="Сохранить запрос" />
@@ -259,6 +322,8 @@
         <script src="js/bootstrap-collapse.js"></script>
         <script src="js/bootstrap-carousel.js"></script>
         <script src="js/bootstrap-typeahead.js"></script>
-
+        <script type="text/javascript">
+            $("[rel=tooltip]").tooltip();
+        </script>
     </body>
 </html>
