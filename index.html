@@ -266,9 +266,9 @@
                                             <div class="controls">
                                                 <div class="input-append">
                                                     <input class="span6" id="linked" type="text">
-                                                    <button class="btn" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
-                                                    <button class="btn" data-placement="top" rel="tooltip" data-original-title="Создать"><i class="icon-file"></i></button>
-                                                    <button class="btn" data-placement="top" rel="tooltip" data-original-title="Удалить"><i class="icon-trash"></i></button>
+                                                    <button class="btn" id="b1" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                    <button class="btn" id="b2" data-placement="top" rel="tooltip" data-original-title="Создать"><i class="icon-file"></i></button>
+                                                    <button class="btn" id="b3" data-placement="top" rel="tooltip" data-original-title="Удалить"><i class="icon-trash"></i></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -324,6 +324,22 @@
         <script src="js/bootstrap-typeahead.js"></script>
         <script type="text/javascript">
             $("[rel=tooltip]").tooltip();
+        </script>
+        <script type="text/javascript">
+            function correctWidths() {
+                var s=0;
+                var ethalon = $('[class="controls"] :text').first().width();
+                
+                $('[class="controls"]:has(":button") :text').each( 
+                    function (){
+                        s=0;
+                        $(this).siblings(":button").each( function(){ s=s+$(this).outerWidth(true); });
+                        $(this).width($(this).width - s);
+                    }    
+                );
+                
+            };
+            //window.onblur = correctWidths();
         </script>
     </body>
 </html>
