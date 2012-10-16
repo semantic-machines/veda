@@ -289,7 +289,73 @@
                                 </form>                
                             </div>
                             <div id="search-results-pane" class="tab-pane">
-                                <p>Список / таблица найденных документов</p>
+                                <!--p>Список / таблица найденных документов</p-->
+                                <form class="form-horizontal" action="#" method="post" enctype="multipart/form-data" onsubmit="return false">
+                                    <fieldset>
+                                        <div class="form-actions">
+                                            <input class="btn btn-primary" type="submit" value="Найти" />
+                                            <input class="btn" type="button" value="Сохранить запрос" />
+                                            <input class="btn" type="reset" value="Очистить форму" />
+                                        </div>
+                                        <table class="table table-condensed table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>От кого</th>
+                                                    <th>Кому</th>
+                                                    <th>В копию</th>
+                                                    <th>Тема</th>
+                                                    <th>Содержание</th>
+                                                    <th>Вложения</th>
+                                                    <th>Связанные документы</th>
+                                                    <th>Доп. информация</th>
+                                                    
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>1</td>
+                                                    <td>Протасов А.А.</td>
+                                                    <td>Коробейников Д.А.</td>
+                                                    <td>Коробейников Н.В.</td>
+                                                    <td>Установка программы ABBYY Lingvo на ПК</td>
+                                                    <td>Прошу вас в связи с прроизводственной необходимостью организовать установку программы ABBYY Lingvo на ПК (SYK - 3765; SYK - 3761) пользователям: Плавюк В.С. и Сурков А.С. - специалистам отдела охраны труда УПБ.</td>
+                                                    <td>Вложение.pdf</td>
+                                                    <td>Служебная записка - Установка программы ABBYY FineReader</td>
+                                                    <td>Дополнительная информация отсутствует</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2</td>
+                                                    <td>Осипов И.В.</td>
+                                                    <td>Плехов В.В. </td>
+                                                    <td></td>
+                                                    <td>Разрешение на утиллизацию</td>
+                                                    <td>Прошу разрешить утиллизировать доски б/у (образовавшихся от упаковки) и поврежденные поддоны с территории БМТО 16.10.2012г на автомобиле КАМАЗ В832НУ 11</td>
+                                                    <td>Новое вложение.pdf</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3</td>
+                                                    <td>Коркунов Г.Ю.</td>
+                                                    <td>Некрасова Т.П.</td>
+                                                    <td>Петров И.В.</td>
+                                                    <td>Добавление системы PIMS</td>
+                                                    <td>Прошу внести дополнение в показания схемы градирни ВВС-4 согласно приложенных данных</td>
+                                                    <td>Градирня ВВС-4.pdf; Градирня.xlsx</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                 </tr>
+                                              </tbody>
+                                        </table>
+                                        <div class="form-actions">
+                                            <input class="btn btn-primary" type="submit" value="Найти" />
+                                            <input class="btn" type="button" value="Сохранить запрос" />
+                                            <input class="btn" type="reset" value="Очистить форму" />
+                                        </div>
+                                    </fieldset>
+                                </form>                
+
                             </div>
                         </div>
                     </div><!--/tabbable-->
