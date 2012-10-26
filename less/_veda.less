@@ -5,11 +5,7 @@ body {
     padding-bottom: 40px;
 }
 
-//NAVBAR
-@navbarHeight:          50px;
-
 //FORMS
-
 .form-horizontal {
   .control-label {
     width: 200px; //140px
@@ -29,15 +25,15 @@ body {
   }
 }
 
+div.modal form {
+    margin: 0px;
+  }
+
+
+//TYPOGRAFY
 hr {
     margin-top: 0px;
 }
-
-// TYPOGRAPHY
-
-@sansFontFamily:        "Droid Sans", Helvetica, Arial, sans-serif;
-@serifFontFamily:       "Droid Serif", "Times New Roman", Times, serif;
-@monoFontFamily:        "Droid Sans Mono", Menlo, Consolas, "Courier New", monospace;
 
 h1.withtabs {
 	line-height: @baseLineHeight * 1.5;
@@ -81,3 +77,15 @@ h6 {
 }
 
 @import "responsive.less";
+
+
+//NAVBAR
+@navbarHeight:          50px;
+
+//TABLES
+@tableBackgroundHover:  #e1f0ff; //#e5f5ff; // for hover
+
+// TYPOGRAPHY
+@sansFontFamily:        "Droid Sans", Helvetica, Arial, sans-serif;
+@serifFontFamily:       "Droid Serif", "Times New Roman", Times, serif;
+@monoFontFamily:        "Droid Sans Mono", Menlo, Consolas, "Courier New", monospace;
