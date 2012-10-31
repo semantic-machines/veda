@@ -1,0 +1,18 @@
+%%-*- mode: erlang -*-
+{application, veda@client,
+ [
+  {description, "veda@client"},
+  {vsn, "1"},
+  {modules, []},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  inets,
+                  crypto,
+                  mochiweb,
+                  webmachine
+                 ]},
+  {mod, { veda@client_app, []}},
+  {env, []}
+ ]}.

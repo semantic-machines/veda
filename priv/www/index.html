@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Veda</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link href="less/_veda.less" rel="stylesheet/less" type="text/css">
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <script src="js/less-1.3.0.min.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container-fluid">
+                    <a class="brand" href="#"><img src="img/logo-veda.png" alt="Veda logo" /></a>
+                    <div class="btn-group pull-right">
+                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="icon-user"></i> Хвостикова А.А.
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Мои настройки</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Выход</a></li>
+                        </ul>
+                    </div>
+                    <ul class="nav">
+                        <li class="dropdown active">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Задачи <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Входящие</a></li>
+                                <li><a href="#">Исходящие</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Выполненные</a></li>
+                                <li><a href="#">На контроле</a></li>
+                                <li><a href="#">Уведомления</a></li>
+                                <li><a href="#">Отозванные</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Документы <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Создать</a></li>
+                                <li><a href="#">Найти</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Избранное</a></li>
+                                <li><a href="#">Черновики</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#contacts">Контакты</a></li>
+                        <li><a href="#reports">Отчеты</a></li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#settings">
+                                Настройки <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Шаблоны документов</a></li>
+                                <li><a href="#">Справочники</a></li>
+                                <li><a href="#">Отчеты</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="nav pull-right">
+                        <li><a href="#help">Помощь</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="span12">
+                    <h1 class="pull-left withtabs">Найти документ</h1>
+                    <div class="tabbable">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#query-pane">Параметры запроса</a></li>
+                            <li class=""><a data-toggle="tab" href="#search-results-pane">Результаты</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="query-pane" class="tab-pane active">
+                                <!--p>Форма с параметрами запроса</p-->
+                                <form class="form-horizontal" action="#" method="post" enctype="multipart/form-data" onsubmit="return false">
+                                    <fieldset>
+                                        <div class="form-actions">
+                                            <input class="btn btn-primary" type="submit" value="Найти" />
+                                            <input class="btn" type="button" value="Сохранить запрос" data-toggle="modal" data-target="#saveSearchQuery" />
+                                            <input class="btn" type="reset" value="Очистить форму" />
+                                        </div>
+                                        
+                                        <div class="control-group">
+                                            <label class="control-label" for="savedSearchQueriesSelector">
+                                                <b>Сохраненные запросы</b>
+                                            </label>
+                                            <div class="controls">
+                                                <select id="savedSearchQueries" name="savedSearchQueries" class="span6" multiple="multiple" size="4">
+                                                    <option value="Мои приказы">Мои приказы</option>
+                                                    <option value="Мои служебные записки">Мои служебные записки</option>
+                                                    <option value="Мои входящие документы">Мои входящие документы</option>
+                                                    <option value="Мои контракты на закупку">Мои контракты на закупку</option>
+                                                </select>
+                                                <button class="btn btn-danger">Удалить запрос</button>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="all_fields">
+                                                <b>По всем полям</b>
+                                            </label>
+                                            <div class="controls">
+                                                <input type="text" id="all_fields" name="all_fields" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="template">
+                                                <b>Шаблон</b>
+                                            </label>
+                                            <div class="controls">
+                                                <select name="type" id="template" name="template" class="span6">
+                                                    <option value="Любой">Любой</option>
+                                                    <option value="Приказ">Приказ</option>
+                                                    <option value="Служебная записка">Служебная записка</option>
+                                                    <option value="Входящий документ">Входящий документ</option>
+                                                    <option value="Контракт на закупку">Контракт на закупку</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="author">
+                                                Автор
+                                            </label>
+                                            <div class="controls">
+                                                <div class="input-append">
+                                                    <input class="span6" id="author" type="text">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="creation-date-begin">
+                                                Дата создания
+                                            </label>
+                                            <div class="controls controls-row">
+                                                <input type="text" id="created-date-begin" name="created-date" class="span2" placeholder="c" />
+                                                <input type="text" id="created-date-end" name="created-date" class="span2" placeholder="по" />
+                                                <select name="create-date-predefined-periods" id="create-date-predefined-periods" class="span2" placeholder="Выбрать">
+                                                    <option value="Любой">Сегодня</option>
+                                                    <option value="Приказ">Вчера</option>
+                                                    <option value="Служебная записка">Текущая неделя</option>
+                                                    <option value="Входящий документ">Прошлая неделя</option>
+                                                    <option value="Контракт на закупку">Текущий месяц</option>
+                                                    <option value="Контракт на закупку">Прошлый месяц</option>
+                                                    <option value="Контракт на закупку">Текущий квартал</option>
+                                                    <option value="Контракт на закупку">Прошлый квартал</option>
+                                                </select>
+                                           </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="last-change-author">
+                                                Автор последнего изменения
+                                            </label>
+                                            <div class="controls">
+                                                <div class="input-append">
+                                                    <input class="span6" id="last-change-author" type="text">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="control-group">
+                                            <label class="control-label" for="last-change-date-begin">
+                                                Дата последнего изменения
+                                            </label>
+                                            <div class="controls controls-row">
+                                                <input type="text" id="last-change-date-begin" name="last-change-date-date-begin" class="span2" placeholder="c" />
+                                                <input type="text" id="last-change-date-end" name="last-change-date-end" class="span2" placeholder="по" />
+                                                <select name="last-change-date-predefined-periods" id="last-change-date-predefined-periods" class="span2" placeholder="Выбрать">
+                                                    <option value="Любой">Сегодня</option>
+                                                    <option value="Приказ">Вчера</option>
+                                                    <option value="Служебная записка">Текущая неделя</option>
+                                                    <option value="Входящий документ">Прошлая неделя</option>
+                                                    <option value="Контракт на закупку">Текущий месяц</option>
+                                                    <option value="Контракт на закупку">Прошлый месяц</option>
+                                                    <option value="Контракт на закупку">Текущий квартал</option>
+                                                    <option value="Контракт на закупку">Прошлый квартал</option>
+                                                </select>
+                                           </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="from">
+                                                От кого
+                                            </label>
+                                            <div class="controls">
+                                                <div class="input-append">
+                                                    <input class="span6" id="from" type="text">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="to">
+                                                Кому
+                                            </label>
+                                            <div class="controls">
+                                                <div class="input-append">
+                                                    <input class="span6" id="to" type="text">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="cc">
+                                                В копию
+                                            </label>
+                                            <div class="controls">
+                                                <div class="input-prepend input-append">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Показать"><i class="icon-info-sign"></i></button>
+                                                    <input class="span6" id="cc" type="text" placeholder="Карпов Р.К., специалист, группа разработки прикладного ПО, тел. 23-66">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Добавить поле"><i class="icon-plus"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="cc">
+                                            </label>
+                                            <div class="controls">
+                                                <div class="input-prepend input-append">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Показать"><i class="icon-info-sign"></i></button>
+                                                    <input class="span6" id="cc" type="text" placeholder="Бычин А.В., специалист, группа разработки прикладного ПО, тел. 23-66">
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                    <button class="btn" type="button" data-placement="top" rel="tooltip" data-original-title="Добавить поле"><i class="icon-plus"></i></button>
+                                                </div>
+                                            </div>                                            
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="theme">
+                                                Тема
+                                            </label>
+                                            <div class="controls">
+                                                <input type="text" id="theme" name="theme" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="content">
+                                                Содержание
+                                            </label>
+                                            <div class="controls">
+                                                <input type="text" id="content" name="content" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="attachments">
+                                                Вложения
+                                            </label>
+                                           <div class="controls">
+                                                <input id="file" type="file" style="display:none">
+                                                <div class="input-append">
+                                                    <input id="attachment" class="span6" type="text">
+                                                    <a class="btn" onclick="$('input[id=file]').click();">Выбрать</a>
+                                                </div>
+                                                <script type="text/javascript">
+                                                    $('input[id=file]').change(function() {
+                                                        $('#attachment').val($(this).val());
+                                                    });
+                                                </script>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="linked">
+                                                Связанные документы
+                                            </label>
+                                            <div class="controls">
+                                                <div class="input-append">
+                                                    <input class="span6" id="linked" type="text">
+                                                    <button class="btn" id="b1" data-placement="top" rel="tooltip" data-original-title="Найти"><i class="icon-search"></i></button>
+                                                    <button class="btn" id="b2" data-placement="top" rel="tooltip" data-original-title="Создать"><i class="icon-file"></i></button>
+                                                    <button class="btn" id="b3" data-placement="top" rel="tooltip" data-original-title="Удалить"><i class="icon-trash"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="additional-info">
+                                                Дополнительная инфомация
+                                            </label>
+                                            <div class="controls">
+                                                <input type="text" id="additional-info" name="additional-info" class="span6" />
+                                            </div>
+                                        </div>
+                                        <div class="form-actions">
+                                            <input class="btn btn-primary" type="submit" value="Найти" />
+                                            <input class="btn" type="button" value="Сохранить запрос" data-toggle="modal" data-target="#saveSearchQuery" />
+                                            <input class="btn" type="reset" value="Очистить форму" />
+                                        </div>
+                                    </fieldset>
+                                </form>                
+                            </div>
+                            <div id="search-results-pane" class="tab-pane">
+                                <!--p>Список / таблица найденных документов</p-->
+                                <form class="form-horizontal" action="#" method="post" enctype="multipart/form-data" onsubmit="return false">
+                                    <fieldset>
+<div class="well well-small">
+<b>Всего найдено 100</b>
+</div>
+                                        <table class="table table-condensed table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>От кого<i class="icon-arrow-up"></i></th>
+                                                    <th>Кому<i class="icon-arrow-up"></i></th>
+                                                    <th>В копию<i class="icon-arrow-up"></i></th>
+                                                    <th>Тема<i class="icon-arrow-up"></i></th>
+                                                    <th>Содержание<i class="icon-arrow-up"></i></th>
+                                                    <th>Вложения</th>
+                                                    <th>Связанные документы</th>
+                                                    <th>Доп. информация</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>1</td>
+                                                    <td>Протасов А.А.</td>
+                                                    <td>Коробейников Д.А.</td>
+                                                    <td>Коробейников Н.В.</td>
+                                                    <td><a href="#">Установка программы ABBYY Lingvo на ПК</a></td>
+                                                    <td>Прошу вас в связи с прроизводственной необходимостью организовать установку программы ABBYY Lingvo на ПК (SYK - 3765; SYK - 3761) пользователям: Плавюк В.С. и Сурков А.С. - специалистам отдела охраны труда УПБ.</td>
+                                                    <td><a href="#"><i class="icon-file"></i>Вложение.pdf</a></td>
+                                                    <td><a href="#">Служебная записка - Установка программы ABBYY FineReader</a></td>
+                                                    <td>Дополнительная информация отсутствует</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2</td>
+                                                    <td>Осипов И.В.</td>
+                                                    <td>Плехов В.В. </td>
+                                                    <td></td>
+                                                    <td><a href="#">Разрешение на утиллизацию</a></td>
+                                                    <td>Прошу разрешить утиллизировать доски б/у (образовавшихся от упаковки) и поврежденные поддоны с территории БМТО 16.10.2012г на автомобиле КАМАЗ В832НУ 11</td>
+                                                    <td><a href="#"><i class="icon-file"></i>Новое вложение.pdf</a></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3</td>
+                                                    <td>Коркунов Г.Ю.</td>
+                                                    <td>Некрасова Т.П.</td>
+                                                    <td>Петров И.В.</td>
+                                                    <td><a href="#">Добавление системы PIMS</a></td>
+                                                    <td>Прошу внести дополнение в показания схемы градирни ВВС-4 согласно приложенных данных</td>
+                                                    <td><a href="#"><i class="icon-file"></i>Градирня ВВС-4.pdf</a><br /><i class="icon-file"></i><a href="#">Градирня.xlsx</a></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                 </tr>
+                                              </tbody>
+                                        </table>
+                                        <div class="form-actions">
+                                            <input class="btn btn-primary" type="submit" value="Найти" />
+                                            <input class="btn" type="button" value="Сохранить запрос" data-toggle="modal" data-target="#saveSearchQuery" />
+                                            <input class="btn" type="reset" value="Очистить форму" />
+                                        </div>
+                                    </fieldset>
+                                </form>                
+
+                            </div>
+                        </div>
+                    </div><!--/tabbable-->
+                </div><!--/span-->
+            </div><!--/row-->
+            <hr />
+            <footer>
+                <p>
+                    <a href="http://www.semantic-machines.com" title="Официальный сайт компании">&copy; "Смысловые машины", ООО.</a> 
+                    Выпущено под лицензией 
+                    <a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html"> GPLv3.</a> 
+                </p>
+            </footer>
+
+        </div><!--/.fluid-container-->
+
+
+        <div class="modal hide " id="saveSearchQuery" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <form>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="myModalLabel">Сохранить запрос</h3>
+                </div>
+                <div class="modal-body">
+                    <span class="help-block">Выберите существующий запрос или введите имя нового запроса</span>
+                    <label>Сохраненные запросы</label>
+                    <select id="savedSearchQueries" name="savedSearchQueries" multiple="multiple" size="5" class="span4">
+                        <option value="Мои приказы">Мои приказы</option>
+                        <option value="Мои служебные записки">Мои служебные записки</option>
+                        <option value="Мои входящие документы">Мои входящие документы</option>
+                        <option value="Мои контракты на закупку">Мои контракты на закупку</option>
+                    </select>
+                    <br />
+                    <button class="btn btn-danger">Удалить запрос</button>
+                    <br />
+                    <br />
+                    <label>Имя нового запроса</label>
+                    <input type="text" name="newSearchQueryName" placeholder="Введите имя нового запроса..." class="span4">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="submit">Сохранить запрос</button>
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Отмена</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Le javascript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="js/jquery.js"></script>
+        <script src="js/bootstrap-transition.js"></script>
+        <script src="js/bootstrap-alert.js"></script>
+        <script src="js/bootstrap-modal.js"></script>
+        <script src="js/bootstrap-dropdown.js"></script>
+        <script src="js/bootstrap-scrollspy.js"></script>
+        <script src="js/bootstrap-tab.js"></script>
+        <script src="js/bootstrap-tooltip.js"></script>
+        <script src="js/bootstrap-popover.js"></script>
+        <script src="js/bootstrap-button.js"></script>
+        <script src="js/bootstrap-collapse.js"></script>
+        <script src="js/bootstrap-carousel.js"></script>
+        <script src="js/bootstrap-typeahead.js"></script>
+        <script type="text/javascript">
+            $("[rel=tooltip]").tooltip();
+        </script>
+        <script type="text/javascript">
+            function correctWidths() {
+                var s=0;
+                var ethalon = $('[class="controls"] :text').first().width();
+                
+                $('[class="controls"]:has(":button") :text').each( 
+                    function (){
+                        s=0;
+                        $(this).siblings(":button").each( function(){ s=s+$(this).outerWidth(true); });
+                        $(this).width($(this).width - s);
+                    }    
+                );
+                
+            };
+            //window.onblur = correctWidths();
+        </script>
+        
+        
+    </body>
+</html>
