@@ -1,21 +1,18 @@
-Project Skeleton for the veda system.
+Veda system project.
 
-You should find in this directory:
+I. Project dependencies
+	1. OTP/Erlang R15
+	2. Mochiweb (pulled automatically by rebar)
+	3. Webmachine (pulled automatically by rebar)
+	4. ErlyDTL (pulled automatically by rebar)
+	5. HAProxy
 
-README : this file
-Makefile : simple make commands
-rebar : the Rebar build tool for Erlang applications
-rebar.config : configuration for Rebar
-
-You probably want to do one of a couple of things at this point:
-
+II. Building & running:
 0. Build the veda system:
    $ make
-   - or -
-   $ ./rebar compile
 
-1. Start up the skeleton application:
-   $ make webstart
+1. Start up the veda@client & veda@core applications:
+   $ make start
 
-2. Change the basic application:
-   edit app/*/src/veda@*.erl
+2. Start up the haproxy application for load balancing:
+   $ make proxystart

@@ -21,7 +21,7 @@ docs:
 app:
 	@./rebar compile skip_deps=true
 
-webstart: app
+start: app
 	@exec erl -pa $(PWD)/apps/*/ebin -pa $(PWD)/deps/*/ebin -boot start_sasl -s reloader -s veda@client -s veda@core
 
 proxystart:
