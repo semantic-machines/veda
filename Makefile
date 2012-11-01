@@ -24,5 +24,5 @@ app:
 start: app
 	@exec erl -pa $(PWD)/apps/*/ebin -pa $(PWD)/deps/*/ebin -boot start_sasl -s reloader -s veda@client -s veda@core
 
-proxystart:
+startproxy:
 	@sudo haproxy -f haproxy.cfg

@@ -15,4 +15,4 @@ II. Building & running:
    $ make start
 
 2. Start up the haproxy application for load balancing:
-   $ make proxystart
+   $ make startproxy
