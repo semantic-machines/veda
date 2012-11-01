@@ -1,0 +1,7 @@
+Dependencies:
+
+1. OTP/Erlang R15
+2. Mochiweb (pulled automatically via rebar)
+3. Webmachine (pulled automatically via rebar)
+4. HAProxy
+

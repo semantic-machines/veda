@@ -1,5 +1,5 @@
 ERL ?= erl
-APP := veda
+APP := veda@client
 
 .PHONY: deps
 
@@ -17,12 +17,3 @@ distclean: clean
 
 docs:
 	@erl -noshell -run edoc_run application '$(APP)' '"."' '[]'
-
-app:
-	@./rebar compile skip_deps=true
-
-webstart: app
-	@exec erl -pa $(PWD)/apps/*/ebin -pa $(PWD)/deps/*/ebin -boot start_sasl -s reloader -s veda@client
-
-proxystart:
-	@sudo haproxy -f haproxy.cfg
