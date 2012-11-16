@@ -1,6 +1,9 @@
+%% @Roman Karpov <roman.karpov@gmail.com>.
+%% @copyright Semantic Machines, LLC.
 
 -module(veda@core_sup).
-
+-include("veda@core.hrl").
+-author('Roman Karpov <roman.karpov@gmail.com>').
 -behaviour(supervisor).
 
 %% API

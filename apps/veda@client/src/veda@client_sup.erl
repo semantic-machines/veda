@@ -1,12 +1,12 @@
-%% @author author <author@example.com>
-%% @copyright YYYY author.
-
+%% @Roman Karpov <roman.karpov@gmail.com>.
+%% @copyright Semantic Machines, LLC.
 %% @doc Supervisor for the veda@client application.
 
--module(veda@client_sup).
--author('author <author@example.com>').
 
+-module(veda@client_sup).
+-author('Roman Karpov <roman.karpov@gmail.com>').
 -behaviour(supervisor).
+-include("veda@client.hrl").
 
 %% External exports
 -export([start_link/0, upgrade/0]).

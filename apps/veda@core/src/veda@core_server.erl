@@ -1,4 +1,9 @@
+%% @Roman Karpov <roman.karpov@gmail.com>.
+%% @copyright Semantic Machines, LLC.
+
 -module(veda@core_server).
+-include("veda@core.hrl").
+-author('Roman Karpov <roman.karpov@gmail.com>').
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
 
@@ -27,7 +32,7 @@ start_link() ->
 %% ------------------------------------------------------------------
 
 init(Args) ->
-    {ok, Args}.
+	{ok, Args}.
 
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.

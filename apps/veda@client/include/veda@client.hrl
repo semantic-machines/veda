@@ -1,0 +1,5 @@
+-ifdef(debug).
+    -define(TRACE(Name, Value), io:format("~nTRACE = ~p:~p, "++ Name ++" = ~p~n" ,[?MODULE, ?LINE, Value])).
+-else.
+    -define(TRACE(Name, Value), "").
+-endif.

@@ -1,13 +1,12 @@
-%% @author author <author@example.com>
-%% @copyright YYYY author.
-
-%% @doc Callbacks for the veda@client application.
+%% @Roman Karpov <roman.karpov@gmail.com>.
+%% @copyright Semantic Machines, LLC.
+%% @doc veda@client app code
 
 -module(veda@client_app).
--author('author <author@example.com>').
-
+-author('Roman Karpov <roman.karpov@gmail.com>').
 -behaviour(application).
 -export([start/2,stop/1]).
+-include("veda@client.hrl").
 
 
 %% @spec start(_Type, _StartArgs) -> ServerRet

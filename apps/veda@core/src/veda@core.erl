@@ -1,11 +1,12 @@
-%% @author author <author@example.com>
-%% @copyright YYYY author.
+%% @Roman Karpov <roman.karpov@gmail.com>.
+%% @copyright Semantic Machines, LLC.
 
 %% @doc veda@core startup code
 
 -module(veda@core).
--author('author <author@example.com>').
 -export([start/0, start_link/0, stop/0]).
+-include("veda@core.hrl").
+-author('Roman Karpov <roman.karpov@gmail.com>').
 
 ensure_started(App) ->
     case application:start(App) of

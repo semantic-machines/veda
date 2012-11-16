@@ -3,7 +3,7 @@
 %% @author Justin Sheehy <justin@basho.com>
 %% @copyright 2008-2009 Basho Technologies, Inc.
 
--module(veda@static_resource).
+-module(veda@client_static_resource).
 -export([init/1]).
 -export([allowed_methods/2,
          resource_exists/2,

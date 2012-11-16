@@ -1,4 +1,5 @@
--module(veda@json).
+-module(veda@core_json).
+-include("veda@core.hrl").
 -export([from_json/1, from_json/2, to_json/1, to_json/2]).
 
 to_json(PropList) ->
