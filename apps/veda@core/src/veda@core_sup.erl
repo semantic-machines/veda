@@ -30,4 +30,3 @@ init([]) ->
 	Server = ?CHILD(veda@core_server, worker),
 	Processes = [Server],
     {ok, { {one_for_one, 5, 10}, Processes} }.
-

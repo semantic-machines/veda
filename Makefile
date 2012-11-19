@@ -22,7 +22,7 @@ app:
 	@./rebar compile skip_deps=true
 
 start: app
-	@exec erl -pa $(PWD)/apps/*/ebin -pa $(PWD)/deps/*/ebin -boot start_sasl -s reloader -s veda@client -s veda@core
+	@exec erl -pa $(PWD)/apps/*/ebin -pa $(PWD)/deps/*/ebin -boot start_sasl -s reloader -s veda@client -s veda@core -sname rmn
 
 startproxy:
-	@sudo haproxy -f haproxy.cfg
+	@sudo haproxy -f dev.haproxy.cfg
