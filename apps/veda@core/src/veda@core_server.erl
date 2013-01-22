@@ -12,7 +12,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/0, get_auth_ticket/1]).
+-export([start_link/0]).%, get_auth_ticket/1]).
 
 
 %% ------------------------------------------------------------------
@@ -36,12 +36,12 @@ start_link() ->
     ok = erlzmq:send(Pacahon, AuthRequest, []),
     {ok, AuthResponse} = erlzmq:recv(Pacahon), % Получить и записать в файл ответ на запрос аутентификации
     file:write_file(filename:join([priv_dir(App), "_auth_response.json"]), AuthResponse),
-    
-    %{match, [AuthTicket]} = re:run(AuthResponse, <<"auth:.{8}-.{4}-.{4}-.{4}-.{12}">>, [{capture,first,binary}]), % Извлечь подстроку вида "auth:619eeb00-e79f-49d1-91dc-4028b309069b"
+  
+	%{match, [AuthTicket]} = re:run(AuthResponse, <<"auth:.{8}-.{4}-.{4}-.{4}-.{12}">>, [{capture,first,binary}]), % Извлечь подстроку вида "auth:619eeb00-e79f-49d1-91dc-4028b309069b"
     DecodedResponse = mochijson2:decode(AuthResponse),
     MsgResult = proplists:get_value(<<"msg:result">>, DecodedResponse#struct.lst),
     AuthTicket = proplists:get_value(<<"auth:ticket">>, MsgResult#struct.lst),
-    
+  
     io:format("Auth ticket: ~p~n", [AuthTicket]),
     ok = erlzmq:close(Pacahon),
     ok = erlzmq:term(Context),

@@ -1,0 +1,12 @@
+{ 
+	"@" : "msg:M123456_22",
+	"a" : "msg:Message", 
+	"msg:sender" : "external_tester", 
+	"msg:reciever" : "pacahon", 
+	"msg:command" : "get_ticket", 
+	"msg:args" : 
+		{ 
+			"auth:login" : "user", 
+			"auth:credential" : "9cXsvbvu8="
+		} 
+} 
