@@ -6,8 +6,9 @@ I. Project dependencies
 	3. Webmachine (pulled automatically by rebar)
 	4. ErlyDTL (pulled automatically by rebar)
 	5. erlzmq (pulled automatically by rebar)
-	6. ZeroMQ (manually as erlzmq dependency)
+	6. ZeroMQ (pulled automatically by rebar)
 	7. HAProxy (manually if load balancing is required)
+	8. curl to build erlzmq
 
 II. Building & running:
 0. Build the veda system:

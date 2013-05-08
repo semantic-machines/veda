@@ -1,5 +1,5 @@
 {
-"@" : "msg:M_8CFC6BCBFCBB036",
+"@" : "msg:M_8D01A00EDB16C31",
 "a": "msg:Message",
 "msg:sender": "pacahon",
 "msg:reciever": "external_tester",
@@ -7,7 +7,7 @@
 "msg:status": "ok",
 "msg:result": 
 	{
-	 	 "auth:ticket": "auth:6e30eb3c-86c6-40ed-8214-09b740fffe40"
+	 	 "auth:ticket": "auth:27305740-1884-4b86-a867-8211a40051fb"
 	},
 "msg:reason": "login и password совпадают"
 } 
