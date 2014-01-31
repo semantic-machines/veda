@@ -1,0 +1,95 @@
+# baseURI: http://semantic-machines.com/veda/mondi-schema
+# imports: http://semantic-machines.com/veda/veda-schema
+
+# c14n-version: 3
+@prefix mondi: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix veda: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+<http://semantic-machines.com/veda/mondi-schema>
+  rdf:type owl:Ontology ;
+  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
+  owl:versionInfo "1.0" ;
+.
+mondi:AdministrativeDocument
+  rdf:type owl:Class ;
+  rdfs:label "Administrative document"@en ;
+  rdfs:label "Распорядительный документ"@ru ;
+  rdfs:subClassOf veda:Document ;
+  rdfs:subClassOf veda:Versioned ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:onClass mondi:AdministrativeDocumentType ;
+      owl:onProperty mondi:nomenclatureType ;
+      owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    ] ;
+.
+mondi:AdministrativeDocumentType
+  rdf:type owl:Class ;
+  rdfs:label "Document type"@en ;
+  rdfs:label "Вид документа"@ru ;
+  rdfs:subClassOf mondi:DocumentType ;
+.
+mondi:DocumentType
+  rdf:type owl:Class ;
+  rdfs:label "Document type"@en ;
+  rdfs:label "Вид документа"@ru ;
+  rdfs:subClassOf veda:Dictionary ;
+.
+mondi:RegistrationRecord
+  rdf:type owl:Class ;
+  rdfs:label "Registration record"@en ;
+  rdfs:label "Регистрационная запись"@ru ;
+  rdfs:subClassOf veda:Document ;
+.
+mondi:attachment
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain [
+      rdf:type owl:Class ;
+      owl:unionOf (
+          mondi:AdministrativeDocument
+          mondi:RegistrationRecord
+        ) ;
+    ] ;
+.
+mondi:content
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mondi:AdministrativeDocument ;
+  rdfs:label "content"@en ;
+  rdfs:label "содержание"@ru ;
+  rdfs:range xsd:string ;
+.
+mondi:nomenclatureType
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain [
+      rdf:type owl:Class ;
+      owl:unionOf (
+          mondi:AdministrativeDocument
+          mondi:RegistrationRecord
+        ) ;
+    ] ;
+  rdfs:label "document kind"@en ;
+  rdfs:label "вид документа"@ru ;
+  rdfs:range mondi:DocumentType ;
+.
+mondi:registrationDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mondi:RegistrationRecord ;
+  rdfs:label "Дата регистрации"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+mondi:registrationNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mondi:RegistrationRecord ;
+  rdfs:label "Регистрационный номер"@ru ;
+  rdfs:range xsd:string ;
+.
+mondi:signer
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mondi:AdministrativeDocument ;
+  rdfs:label "signer"@en ;
+  rdfs:label "подписант"@ru ;
+  rdfs:range veda:Person ;
+.
