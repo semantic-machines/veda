@@ -1,14 +1,6 @@
 Veda system project.
 
 I. Project dependencies
-	1. OTP/Erlang R15B02
-	2. Mochiweb (pulled automatically by rebar)
-	3. Webmachine (pulled automatically by rebar)
-	4. ErlyDTL (pulled automatically by rebar)
-	5. erlzmq (pulled automatically by rebar)
-	6. ZeroMQ (pulled automatically by rebar)
-	7. HAProxy (manually if load balancing is required)
-	8. curl to build erlzmq
 
 II. Building & running:
 0. Build the veda system:
