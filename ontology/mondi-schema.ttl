@@ -6,6 +6,7 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 <http://semantic-machines.com/veda/mondi-schema>
   rdf:type owl:Ontology ;
@@ -16,8 +17,8 @@ mondi-schema:AdministrativeDocument
   rdf:type owl:Class ;
   rdfs:label "Administrative document"@en ;
   rdfs:label "Распорядительный документ"@ru ;
-  rdfs:subClassOf <http://semantic-machines.com/veda/veda-schema/Document> ;
-  rdfs:subClassOf <http://semantic-machines.com/veda/veda-schema/Versioned> ;
+  rdfs:subClassOf veda-schema:Document ;
+  rdfs:subClassOf veda-schema:Versioned ;
   rdfs:subClassOf [
       rdf:type owl:Restriction ;
       owl:onClass mondi-schema:AdministrativeDocumentType ;
@@ -35,13 +36,13 @@ mondi-schema:DocumentType
   rdf:type owl:Class ;
   rdfs:label "Document type"@en ;
   rdfs:label "Вид документа"@ru ;
-  rdfs:subClassOf <http://semantic-machines.com/veda/veda-schema/Dictionary> ;
+  rdfs:subClassOf veda-schema:Dictionary ;
 .
 mondi-schema:RegistrationRecord
   rdf:type owl:Class ;
   rdfs:label "Registration record"@en ;
   rdfs:label "Регистрационная запись"@ru ;
-  rdfs:subClassOf <http://semantic-machines.com/veda/veda-schema/Document> ;
+  rdfs:subClassOf veda-schema:Document ;
 .
 mondi-schema:attachment
   rdf:type owl:ObjectProperty ;
@@ -92,5 +93,5 @@ mondi-schema:signer
   rdfs:domain mondi-schema:AdministrativeDocument ;
   rdfs:label "signer"@en ;
   rdfs:label "подписант"@ru ;
-  rdfs:range <http://semantic-machines.com/veda/veda-schema/Appointment> ;
+  rdfs:range veda-schema:Appointment ;
 .
