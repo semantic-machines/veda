@@ -7,7 +7,7 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix veda: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 <http://semantic-machines.com/veda/veda-schema>
   rdf:type owl:Ontology ;
@@ -16,66 +16,66 @@
   owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "1.0" ;
 .
-veda:Absence
+veda-schema:Absence
   rdf:type owl:Class ;
   rdfs:label "Absence"@en ;
   rdfs:label "Отсутствие"@ru ;
-  rdfs:subClassOf veda:HRRecord ;
-  owl:disjointWith veda:Appointment ;
+  rdfs:subClassOf veda-schema:HRRecord ;
+  owl:disjointWith veda-schema:Appointment ;
 .
-veda:Account
+veda-schema:Account
   rdf:type owl:Class ;
   rdfs:label "Account"@en ;
   rdfs:label "Учетная запись"@ru ;
 .
-veda:Appointment
+veda-schema:Appointment
   rdf:type owl:Class ;
   rdfs:label "Presence"@en ;
   rdfs:label "Присутствие"@ru ;
-  rdfs:subClassOf veda:HRRecord ;
-  owl:disjointWith veda:Absence ;
+  rdfs:subClassOf veda-schema:HRRecord ;
+  owl:disjointWith veda-schema:Absence ;
 .
-veda:AuthorizationStatement
+veda-schema:AuthorizationStatement
   rdf:type owl:Class ;
   rdfs:label "Authorization record"@en ;
   rdfs:label "Запись авторизации"@ru ;
-  rdfs:subClassOf veda:Document ;
+  rdfs:subClassOf veda-schema:Document ;
 .
-veda:Delegation
+veda-schema:Delegation
   rdf:type owl:Class ;
   rdfs:label "Delegation record"@en ;
   rdfs:label "Запись о делегировании"@ru ;
-  rdfs:subClassOf veda:AuthorizationStatement ;
+  rdfs:subClassOf veda-schema:AuthorizationStatement ;
 .
-veda:Department
+veda-schema:Department
   rdf:type owl:Class ;
   rdfs:comment "Department"@en ;
   rdfs:comment "Структурное подразделение организации"@ru ;
   rdfs:label "Department"@en ;
   rdfs:label "Подразделение"@ru ;
-  rdfs:subClassOf veda:OrganizationUnit ;
-  owl:disjointWith veda:Organization ;
-  owl:disjointWith veda:Position ;
+  rdfs:subClassOf veda-schema:OrganizationUnit ;
+  owl:disjointWith veda-schema:Organization ;
+  owl:disjointWith veda-schema:Position ;
 .
-veda:Dictionary
+veda-schema:Dictionary
   rdf:type owl:Class ;
   rdfs:comment "Dictionary"@en ;
   rdfs:comment "Словарь"@ru ;
-  rdfs:isDefinedBy veda: ;
+  rdfs:isDefinedBy veda-schema: ;
   rdfs:label "Dictionary"@en ;
   rdfs:label "Словарь"@ru ;
-  rdfs:subClassOf veda:Document ;
+  rdfs:subClassOf veda-schema:Document ;
 .
-veda:Document
+veda-schema:Document
   rdf:type owl:Class ;
   rdfs:comment "A document"@en ;
   rdfs:comment "Документ"@ru ;
-  rdfs:isDefinedBy veda: ;
+  rdfs:isDefinedBy veda-schema: ;
   rdfs:label "Document"@en ;
   rdfs:label "Документ"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
-veda:Group
+veda-schema:Group
   rdf:type owl:Class ;
   rdfs:comment "Group of resources"@en ;
   rdfs:comment "Группа ресурсов"@ru ;
@@ -83,321 +83,321 @@ veda:Group
   rdfs:label "Группа"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
-veda:HRRecord
+veda-schema:HRRecord
   rdf:type owl:Class ;
   rdfs:label "HR record"@ru ;
   rdfs:label "Кадровая запись"@en ;
-  rdfs:subClassOf veda:Document ;
+  rdfs:subClassOf veda-schema:Document ;
 .
-veda:Mandate
+veda-schema:Mandate
   rdf:type owl:Class ;
   rdfs:label "Mandate"@en ;
   rdfs:label "Мандат"@ru ;
-  rdfs:subClassOf veda:AuthorizationStatement ;
+  rdfs:subClassOf veda-schema:AuthorizationStatement ;
 .
-veda:Organization
+veda-schema:Organization
   rdf:type owl:Class ;
   rdfs:comment "An organization"@en ;
   rdfs:comment "Организация, юридическое лицо"@ru ;
-  rdfs:isDefinedBy veda: ;
+  rdfs:isDefinedBy veda-schema: ;
   rdfs:label "Organization"@en ;
   rdfs:label "Организация"@ru ;
-  rdfs:subClassOf veda:OrganizationUnit ;
-  owl:disjointWith veda:Department ;
-  owl:disjointWith veda:Position ;
+  rdfs:subClassOf veda-schema:OrganizationUnit ;
+  owl:disjointWith veda-schema:Department ;
+  owl:disjointWith veda-schema:Position ;
 .
-veda:OrganizationUnit
+veda-schema:OrganizationUnit
   rdf:type owl:Class ;
   rdfs:comment "An organization unit (organization, department, business unit etc.)"@en ;
   rdfs:comment "Организационная единица (организация, подразделение, штатная должность)"@ru ;
   rdfs:label "Organization unit"@en ;
   rdfs:label "Организационная единица"@ru ;
 .
-veda:Permission
+veda-schema:Permission
   rdf:type owl:Class ;
   rdfs:comment "Permissions record defines access rigths for individuals of one class to individuals of another class."@en ;
   rdfs:comment "Запись о выдаче прав описывает права индивидов одного класса по отношению к индивидам другого класса."@ru ;
   rdfs:label "Permissions record"@en ;
   rdfs:label "Запись о выдаче прав"@ru ;
-  rdfs:subClassOf veda:AuthorizationStatement ;
+  rdfs:subClassOf veda-schema:AuthorizationStatement ;
 .
-veda:Person
+veda-schema:Person
   rdf:type owl:Class ;
   rdfs:comment "A person." ;
-  rdfs:isDefinedBy veda: ;
+  rdfs:isDefinedBy veda-schema: ;
   rdfs:label "Person" ;
-  rdfs:subClassOf veda:Versioned ;
+  rdfs:subClassOf veda-schema:Versioned ;
   rdfs:subClassOf owl:Thing ;
 .
-veda:Position
+veda-schema:Position
   rdf:type owl:Class ;
   rdfs:label "Position"@en ;
   rdfs:label "Должность"@ru ;
-  rdfs:subClassOf veda:OrganizationUnit ;
-  owl:disjointWith veda:Department ;
-  owl:disjointWith veda:Organization ;
+  rdfs:subClassOf veda-schema:OrganizationUnit ;
+  owl:disjointWith veda-schema:Department ;
+  owl:disjointWith veda-schema:Organization ;
 .
-veda:Versioned
+veda-schema:Versioned
   rdf:type owl:Class ;
   rdfs:label "Versioned thing"@en ;
   rdfs:label "Версионная сущность"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
-veda:accountOwner
+veda-schema:accountOwner
   rdf:type owl:ObjectProperty ;
-  rdfs:domain veda:Account ;
+  rdfs:domain veda-schema:Account ;
   rdfs:label "account owner"@en ;
   rdfs:label "владелец учетной записи"@ru ;
   rdfs:range [
       rdf:type owl:Class ;
       owl:unionOf (
-          veda:Person
-          veda:OrganizationUnit
+          veda-schema:Person
+          veda-schema:OrganizationUnit
         ) ;
     ] ;
 .
-veda:actualVersion
+veda-schema:actualVersion
   rdf:type owl:ObjectProperty ;
-  rdfs:domain veda:Versioned ;
+  rdfs:domain veda-schema:Versioned ;
   rdfs:label "actual version"@en ;
   rdfs:label "актуальная версия"@ru ;
-  rdfs:range veda:Versioned ;
+  rdfs:range veda-schema:Versioned ;
 .
-veda:author
+veda-schema:author
   rdf:type owl:ObjectProperty ;
-  rdfs:domain veda:Document ;
-  rdfs:isDefinedBy veda: ;
+  rdfs:domain veda-schema:Document ;
+  rdfs:isDefinedBy veda-schema: ;
   rdfs:label "author"@en ;
   rdfs:label "автор"@ru ;
-  rdfs:range veda:Appointment ;
+  rdfs:range veda-schema:Appointment ;
 .
-veda:birthday
+veda-schema:birthday
   rdf:type owl:DatatypeProperty ;
   rdf:type owl:FunctionalProperty ;
   rdfs:comment "The birthday of this Person."@en ;
   rdfs:comment "День рождения этой персоны"@ru ;
-  rdfs:domain veda:Person ;
-  rdfs:isDefinedBy veda: ;
+  rdfs:domain veda-schema:Person ;
+  rdfs:isDefinedBy veda-schema: ;
   rdfs:label "birthday"@en ;
   rdfs:label "день рождения"@ru ;
   rdfs:range xsd:date ;
 .
-veda:childUnit
+veda-schema:childUnit
   rdf:type owl:ObjectProperty ;
-  rdfs:domain veda:OrganizationUnit ;
+  rdfs:domain veda-schema:OrganizationUnit ;
   rdfs:label "child unit"@en ;
   rdfs:label "дочерняя единица"@ru ;
-  rdfs:range veda:OrganizationUnit ;
-  owl:inverseOf veda:parentUnit ;
+  rdfs:range veda-schema:OrganizationUnit ;
+  owl:inverseOf veda-schema:parentUnit ;
 .
-veda:created
+veda-schema:created
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain veda:Document ;
+  rdfs:domain veda-schema:Document ;
   rdfs:label "Creation date"@en ;
   rdfs:label "Дата создания"@ru ;
   rdfs:range xsd:dateTime ;
 .
-veda:delegateFrom
+veda-schema:delegateFrom
   rdf:type owl:ObjectProperty ;
-  rdfs:domain veda:Delegation ;
+  rdfs:domain veda-schema:Delegation ;
   rdfs:label "who delegates"@en ;
   rdfs:label "кто делегирует"@ru ;
-  rdfs:range veda:OrganizationUnit ;
+  rdfs:range veda-schema:OrganizationUnit ;
 .
-veda:delegateTo
+veda-schema:delegateTo
   rdf:type owl:ObjectProperty ;
-  rdfs:domain veda:Delegation ;
+  rdfs:domain veda-schema:Delegation ;
   rdfs:label "to whom delegates"@en ;
   rdfs:label "кому делегирует"@ru ;
-  rdfs:range veda:Person ;
+  rdfs:range veda-schema:Person ;
 .
-veda:employee
+veda-schema:employee
   rdf:type owl:ObjectProperty ;
-  rdfs:domain veda:HRRecord ;
+  rdfs:domain veda-schema:HRRecord ;
   rdfs:label "employee"@en ;
   rdfs:label "работник"@ru ;
-  rdfs:range veda:Person ;
+  rdfs:range veda-schema:Person ;
 .
-veda:endTime
+veda-schema:endTime
   rdf:type owl:DatatypeProperty ;
   rdfs:domain [
       rdf:type owl:Class ;
       owl:unionOf (
-          veda:HRRecord
-          veda:Delegation
-          veda:Permission
+          veda-schema:HRRecord
+          veda-schema:Delegation
+          veda-schema:Permission
         ) ;
     ] ;
   rdfs:label "end time"@en ;
   rdfs:label "время окончания"@ru ;
   rdfs:range xsd:dateTime ;
 .
-veda:firstName
+veda-schema:firstName
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "The first name of a person."@en ;
   rdfs:comment "Имя персоны."@ru ;
-  rdfs:domain veda:Person ;
-  rdfs:isDefinedBy veda: ;
+  rdfs:domain veda-schema:Person ;
+  rdfs:isDefinedBy veda-schema: ;
   rdfs:label "firstName"@en ;
   rdfs:label "имя"@ru ;
   rdfs:range rdfs:Literal ;
 .
-veda:hasAccount
+veda-schema:hasAccount
   rdf:type owl:ObjectProperty ;
   rdfs:domain [
       rdf:type owl:Class ;
       owl:unionOf (
-          veda:Person
-          veda:OrganizationUnit
+          veda-schema:Person
+          veda-schema:OrganizationUnit
         ) ;
     ] ;
   rdfs:label "account"@en ;
   rdfs:label "учетная запись"@ru ;
-  rdfs:range veda:Account ;
-  owl:inverseOf veda:accountOwner ;
+  rdfs:range veda-schema:Account ;
+  owl:inverseOf veda-schema:accountOwner ;
 .
-veda:lastName
+veda-schema:lastName
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "The last name of a person."@en ;
   rdfs:comment "Фамилия персоны"@ru ;
-  rdfs:domain veda:Person ;
-  rdfs:isDefinedBy veda: ;
+  rdfs:domain veda-schema:Person ;
+  rdfs:isDefinedBy veda-schema: ;
   rdfs:label "lastName"@en ;
   rdfs:label "фамилия"@en ;
   rdfs:range rdfs:Literal ;
 .
-veda:mailbox
+veda-schema:mailbox
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "Mailbox"@en ;
   rdfs:comment "Адрес электронной почты"@ru ;
-  rdfs:domain veda:Account ;
-  rdfs:isDefinedBy veda: ;
+  rdfs:domain veda-schema:Account ;
+  rdfs:isDefinedBy veda-schema: ;
   rdfs:label "mailbox"@en ;
   rdfs:label "адрес эл. почты"@ru ;
   rdfs:range xsd:string ;
 .
-veda:memberOf
+veda-schema:memberOf
   rdf:type owl:ObjectProperty ;
   rdfs:domain [
       rdf:type owl:Class ;
       owl:unionOf (
-          veda:OrganizationUnit
-          veda:Person
-          veda:Document
+          veda-schema:OrganizationUnit
+          veda-schema:Person
+          veda-schema:Document
         ) ;
     ] ;
   rdfs:label "member of group"@en ;
   rdfs:label "член группы"@ru ;
-  rdfs:range veda:Group ;
+  rdfs:range veda-schema:Group ;
 .
-veda:middleName
+veda-schema:middleName
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain veda:Person ;
+  rdfs:domain veda-schema:Person ;
   rdfs:label "middle name"@en ;
   rdfs:label "отчество"@ru ;
   rdfs:range xsd:string ;
 .
-veda:nextVersion
+veda-schema:nextVersion
   rdf:type owl:ObjectProperty ;
-  rdfs:domain veda:Versioned ;
+  rdfs:domain veda-schema:Versioned ;
   rdfs:label "next version"@en ;
   rdfs:label "следующая версия"@ru ;
-  rdfs:range veda:Versioned ;
+  rdfs:range veda-schema:Versioned ;
 .
-veda:occupation
+veda-schema:occupation
   rdf:type owl:ObjectProperty ;
-  rdfs:domain veda:Appointment ;
+  rdfs:domain veda-schema:Appointment ;
   rdfs:label "occupation"@en ;
   rdfs:label "занимает должность"@ru ;
-  rdfs:range veda:OrganizationUnit ;
+  rdfs:range veda-schema:OrganizationUnit ;
 .
-veda:official
+veda-schema:official
   rdf:type rdf:Property ;
-  rdfs:domain veda:Appointment ;
+  rdfs:domain veda-schema:Appointment ;
   rdfs:label "official"@en ;
   rdfs:label "официально"@ru ;
   rdfs:range xsd:boolean ;
 .
-veda:parentUnit
+veda-schema:parentUnit
   rdf:type owl:ObjectProperty ;
-  rdfs:domain veda:OrganizationUnit ;
+  rdfs:domain veda-schema:OrganizationUnit ;
   rdfs:label "parent unit"@en ;
   rdfs:label "родительская единица"@ru ;
-  rdfs:range veda:OrganizationUnit ;
-  owl:inverseOf veda:childUnit ;
+  rdfs:range veda-schema:OrganizationUnit ;
+  owl:inverseOf veda-schema:childUnit ;
 .
-veda:password
+veda-schema:password
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain veda:Account ;
+  rdfs:domain veda-schema:Account ;
   rdfs:label "password"@en ;
   rdfs:label "пароль"@ru ;
   rdfs:range xsd:string ;
 .
-veda:permission
+veda-schema:permission
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "A string defining permissions: [+|-]C[+|-]R[+|-]U[+|-]D."@en ;
   rdfs:comment "Строка определяющая уровень прав: [+|-]C[+|-]R[+|-]U[+|-]D."@ru ;
-  rdfs:domain veda:Permission ;
+  rdfs:domain veda-schema:Permission ;
   rdfs:label "permissions"@en ;
   rdfs:label "права"@ru ;
   rdfs:range xsd:string ;
 .
-veda:permissionObject
+veda-schema:permissionObject
   rdf:type owl:ObjectProperty ;
   rdfs:comment "A resource to which rights are granted."@en ;
   rdfs:comment "Ресурс, на который выдаются права."@ru ;
-  rdfs:domain veda:Permission ;
+  rdfs:domain veda-schema:Permission ;
   rdfs:label "permission resource"@en ;
   rdfs:label "ресурс полномочий"@ru ;
-  rdfs:range veda:Group ;
+  rdfs:range veda-schema:Group ;
 .
-veda:permissionSubject
+veda-schema:permissionSubject
   rdf:type owl:ObjectProperty ;
   rdfs:comment "Agent whom rights are granted."@en ;
   rdfs:comment "Агент, которому предоставляются права."@ru ;
-  rdfs:domain veda:Permission ;
+  rdfs:domain veda-schema:Permission ;
   rdfs:label "permission agent"@en ;
   rdfs:label "агент полномочий"@ru ;
-  rdfs:range veda:Group ;
+  rdfs:range veda-schema:Group ;
 .
-veda:previousVersion
+veda-schema:previousVersion
   rdf:type owl:ObjectProperty ;
-  rdfs:domain veda:Versioned ;
+  rdfs:domain veda-schema:Versioned ;
   rdfs:label "previous version"@en ;
   rdfs:label "предыдущая версия"@ru ;
-  rdfs:range veda:Versioned ;
+  rdfs:range veda-schema:Versioned ;
 .
-veda:published
+veda-schema:published
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain veda:Document ;
+  rdfs:domain veda-schema:Document ;
   rdfs:label "date published"@en ;
   rdfs:label "дата публикации"@ru ;
   rdfs:range xsd:dateTime ;
 .
-veda:script
+veda-schema:script
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain veda:Mandate ;
+  rdfs:domain veda-schema:Mandate ;
   rdfs:label "script"@en ;
   rdfs:label "скрипт"@ru ;
   rdfs:range xsd:string ;
 .
-veda:startTime
+veda-schema:startTime
   rdf:type owl:DatatypeProperty ;
   rdfs:domain [
       rdf:type owl:Class ;
       owl:unionOf (
-          veda:HRRecord
-          veda:Delegation
-          veda:Permission
+          veda-schema:HRRecord
+          veda-schema:Delegation
+          veda-schema:Permission
         ) ;
     ] ;
   rdfs:label "start time"@en ;
   rdfs:label "время начала"@ru ;
   rdfs:range xsd:dateTime ;
 .
-veda:userName
+veda-schema:userName
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain veda:Account ;
+  rdfs:domain veda-schema:Account ;
   rdfs:label "user name"@en ;
   rdfs:label "имя пользователя"@ru ;
   rdfs:range xsd:string ;
