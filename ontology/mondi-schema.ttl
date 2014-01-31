@@ -91,5 +91,5 @@ mondi:signer
   rdfs:domain mondi:AdministrativeDocument ;
   rdfs:label "signer"@en ;
   rdfs:label "подписант"@ru ;
-  rdfs:range veda:Person ;
+  rdfs:range veda:Appointment ;
 .

@@ -19,9 +19,9 @@
   mondi:content "To comply the federal law №135-FL issued 12.10.2012 I order..."@en ;
   mondi:content "Во исполнение федерального закона №135-ФЗ от 12.10.2012 приказываю..."@ru ;
   mondi:nomenclatureType :RegulatoryOrder2013 ;
-  mondi:signer :ValeriyBushenev ;
+  mondi:signer :ValeriyBushenev-Programmer1 ;
   veda:actualVersion :AdministrativeDocument_1 ;
-  veda:author :Appointment_2 ;
+  veda:author :RomanKarpov-Analyst1 ;
   veda:created "2014-01-30T15:42:27"^^xsd:dateTime ;
   veda:memberOf :AllResourcesGroup ;
   veda:previousVersion :AdministrativeDocument_1_1 ;
@@ -34,9 +34,9 @@
   mondi:content "To comply the federal law №153-FL issued 12.10.2012 I order..."@en ;
   mondi:content "Во исполнение федерального закона №153-ФЗ от 12.10.2012 приказываю..."@ru ;
   mondi:nomenclatureType :RegulatoryOrder2013 ;
-  mondi:signer :ValeriyBushenev ;
+  mondi:signer :ValeriyBushenev-Programmer1 ;
   veda:actualVersion :AdministrativeDocument_1 ;
-  veda:author :Appointment_2 ;
+  veda:author :RomanKarpov-Analyst1 ;
   veda:created "2014-01-30T15:42:27"^^xsd:dateTime ;
   veda:memberOf :AllResourcesGroup ;
   veda:nextVersion :AdministrativeDocument_1 ;
@@ -79,70 +79,22 @@
   rdfs:label "Andrey Bychin"@en ;
   rdfs:label "Андрей Бычин"@ru ;
 .
-:ApplicationDevelopmentGroup
-  rdf:type veda:Department ;
-  veda:childUnit :Analyst1 ;
-  veda:childUnit :Programmer1 ;
-  veda:memberOf :AllResourcesGroup ;
-  veda:parentUnit :CCIP ;
-  rdfs:label "Application development group"@en ;
-  rdfs:label "Группа прикладного програмирования"@ru ;
-.
-:Appointment_1
+:AndreyBychin-Analyst2
   rdf:type veda:Appointment ;
-  veda:author :Appointment_2 ;
-  veda:created "2014-01-30T15:12:15"^^xsd:dateTime ;
-  veda:employee :ValeriyBushenev ;
-  veda:memberOf :AllResourcesGroup ;
-  veda:occupation :Programmer1 ;
-  veda:official "true"^^xsd:boolean ;
-  veda:published "2014-01-30T15:12:15"^^xsd:dateTime ;
-  veda:startTime "2014-01-30T15:12:15"^^xsd:dateTime ;
-  rdfs:label "Appointment_1"@en ;
-  rdfs:label "Назначение_1"@ru ;
-.
-:Appointment_2
-  rdf:type veda:Appointment ;
-  veda:author :Appointment_2 ;
-  veda:created "2014-01-30T15:22:33"^^xsd:dateTime ;
-  veda:employee :RomanKarpov ;
-  veda:memberOf :AllResourcesGroup ;
-  veda:occupation :Analyst1 ;
-  veda:official "true"^^xsd:boolean ;
-  veda:published "2014-01-30T15:22:33"^^xsd:dateTime ;
-  veda:startTime "2014-01-30T15:22:33"^^xsd:dateTime ;
-  rdfs:label "Appointment_2"@en ;
-  rdfs:label "Назначение_2"@ru ;
-.
-:Appointment_3
-  rdf:type veda:Appointment ;
-  veda:author :Appointment_2 ;
-  veda:created "2014-01-30T15:30:21"^^xsd:dateTime ;
-  veda:employee :ValeriyBushenev ;
-  veda:memberOf :AllResourcesGroup ;
-  veda:occupation :TechnicalDirector ;
-  veda:official "true"^^xsd:boolean ;
-  veda:published "2014-01-30T15:30:21"^^xsd:dateTime ;
-  veda:startTime "2014-01-30T15:30:21"^^xsd:dateTime ;
-  rdfs:label "Appointment_3"@en ;
-  rdfs:label "Назначение_3"@ru ;
-.
-:Appointment_4
-  rdf:type veda:Appointment ;
-  veda:author :Appointment_2 ;
+  veda:author :RomanKarpov-Analyst1 ;
   veda:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda:employee :RomanKarpov ;
+  veda:employee :AndreyBychin ;
   veda:memberOf :AllResourcesGroup ;
-  veda:occupation :CommercialDirector ;
+  veda:occupation :Analyst2 ;
   veda:official "true"^^xsd:boolean ;
   veda:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   veda:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Appointment_4"@en ;
-  rdfs:label "Назначение_4"@ru ;
+  rdfs:label "Appointment_6"@en ;
+  rdfs:label "Назначение_6"@ru ;
 .
-:Appointment_5
+:AndreyBychin-ExecutiveDirector
   rdf:type veda:Appointment ;
-  veda:author :Appointment_2 ;
+  veda:author :RomanKarpov-Analyst1 ;
   veda:created "2014-01-30T15:35:11"^^xsd:dateTime ;
   veda:employee :AndreyBychin ;
   veda:memberOf :AllResourcesGroup ;
@@ -153,18 +105,14 @@
   rdfs:label "Appointment_5"@en ;
   rdfs:label "Назначение_5"@ru ;
 .
-:Appointment_6
-  rdf:type veda:Appointment ;
-  veda:author :Appointment_2 ;
-  veda:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda:employee :AndreyBychin ;
+:ApplicationDevelopmentGroup
+  rdf:type veda:Department ;
+  veda:childUnit :Analyst1 ;
+  veda:childUnit :Programmer1 ;
   veda:memberOf :AllResourcesGroup ;
-  veda:occupation :Analyst2 ;
-  veda:official "true"^^xsd:boolean ;
-  veda:published "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Appointment_6"@en ;
-  rdfs:label "Назначение_6"@ru ;
+  veda:parentUnit :CCIP ;
+  rdfs:label "Application development group"@en ;
+  rdfs:label "Группа прикладного програмирования"@ru ;
 .
 :BushenevV
   rdf:type veda:Account ;
@@ -220,7 +168,7 @@
 .
 :Mandate_1
   rdf:type veda:Mandate ;
-  veda:author :Appointment_2 ;
+  veda:author :RomanKarpov-Analyst1 ;
   veda:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   veda:memberOf :AllResourcesGroup ;
   veda:published "2014-01-31T15:28:18"^^xsd:dateTime ;
@@ -242,7 +190,7 @@
 .
 :Permission_1
   rdf:type veda:Permission ;
-  veda:author :Appointment_2 ;
+  veda:author :RomanKarpov-Analyst1 ;
   veda:created "2014-01-30T16:45:33"^^xsd:dateTime ;
   veda:memberOf :AllResourcesGroup ;
   veda:permission "+C+R+U+D"^^xsd:string ;
@@ -255,7 +203,7 @@
 .
 :Permission_2
   rdf:type veda:Permission ;
-  veda:author :Appointment_2 ;
+  veda:author :RomanKarpov-Analyst1 ;
   veda:created "2014-01-30T16:45:33"^^xsd:dateTime ;
   veda:memberOf :Group_1 ;
   veda:permission "+C"^^xsd:string ;
@@ -275,7 +223,7 @@
 .
 :RegulatoryDisposal2013
   rdf:type mondi:AdministrativeDocumentType ;
-  veda:author :Appointment_2 ;
+  veda:author :RomanKarpov-Analyst1 ;
   veda:created "2014-01-30T15:35:11"^^xsd:dateTime ;
   veda:memberOf :AllResourcesGroup ;
   veda:published "2014-01-30T15:35:11"^^xsd:dateTime ;
@@ -284,7 +232,7 @@
 .
 :RegulatoryDisposal2014
   rdf:type mondi:AdministrativeDocumentType ;
-  veda:author :Appointment_2 ;
+  veda:author :RomanKarpov-Analyst1 ;
   veda:created "2014-01-30T15:35:11"^^xsd:dateTime ;
   veda:memberOf :AllResourcesGroup ;
   veda:published "2014-01-30T15:35:11"^^xsd:dateTime ;
@@ -293,7 +241,7 @@
 .
 :RegulatoryOrder2013
   rdf:type mondi:AdministrativeDocumentType ;
-  veda:author :Appointment_2 ;
+  veda:author :RomanKarpov-Analyst1 ;
   veda:created "2014-01-30T15:35:11"^^xsd:dateTime ;
   veda:memberOf :AllResourcesGroup ;
   veda:published "2014-01-30T15:35:11"^^xsd:dateTime ;
@@ -302,7 +250,7 @@
 .
 :RegulatoryOrder2014
   rdf:type mondi:AdministrativeDocumentType ;
-  veda:author :Appointment_2 ;
+  veda:author :RomanKarpov-Analyst1 ;
   veda:created "2014-01-30T15:35:11"^^xsd:dateTime ;
   veda:memberOf :AllResourcesGroup ;
   veda:published "2014-01-30T15:35:11"^^xsd:dateTime ;
@@ -324,6 +272,32 @@
   veda:middleName "Константинович"@ru ;
   rdfs:label "Roman Karpov"@en ;
   rdfs:label "Роман Карпов"@ru ;
+.
+:RomanKarpov-Analyst1
+  rdf:type veda:Appointment ;
+  veda:author :RomanKarpov-Analyst1 ;
+  veda:created "2014-01-30T15:22:33"^^xsd:dateTime ;
+  veda:employee :RomanKarpov ;
+  veda:memberOf :AllResourcesGroup ;
+  veda:occupation :Analyst1 ;
+  veda:official "true"^^xsd:boolean ;
+  veda:published "2014-01-30T15:22:33"^^xsd:dateTime ;
+  veda:startTime "2014-01-30T15:22:33"^^xsd:dateTime ;
+  rdfs:label "Appointment_2"@en ;
+  rdfs:label "Назначение_2"@ru ;
+.
+:RomanKarpov-CommercialDirector
+  rdf:type veda:Appointment ;
+  veda:author :RomanKarpov-Analyst1 ;
+  veda:created "2014-01-30T15:35:11"^^xsd:dateTime ;
+  veda:employee :RomanKarpov ;
+  veda:memberOf :AllResourcesGroup ;
+  veda:occupation :CommercialDirector ;
+  veda:official "true"^^xsd:boolean ;
+  veda:published "2014-01-30T15:35:11"^^xsd:dateTime ;
+  veda:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
+  rdfs:label "Appointment_4"@en ;
+  rdfs:label "Назначение_4"@ru ;
 .
 :SemanticMachines
   rdf:type veda:Organization ;
@@ -362,6 +336,32 @@
   veda:middleName "Александрович"@ru ;
   rdfs:label "Valeriy Bushenev"@en ;
   rdfs:label "Валерий Бушенев"@ru ;
+.
+:ValeriyBushenev-Programmer1
+  rdf:type veda:Appointment ;
+  veda:author :RomanKarpov-Analyst1 ;
+  veda:created "2014-01-30T15:12:15"^^xsd:dateTime ;
+  veda:employee :ValeriyBushenev ;
+  veda:memberOf :AllResourcesGroup ;
+  veda:occupation :Programmer1 ;
+  veda:official "true"^^xsd:boolean ;
+  veda:published "2014-01-30T15:12:15"^^xsd:dateTime ;
+  veda:startTime "2014-01-30T15:12:15"^^xsd:dateTime ;
+  rdfs:label "Appointment_1"@en ;
+  rdfs:label "Назначение_1"@ru ;
+.
+:ValeriyBushenev-TechnicalDirector
+  rdf:type veda:Appointment ;
+  veda:author :RomanKarpov-Analyst1 ;
+  veda:created "2014-01-30T15:30:21"^^xsd:dateTime ;
+  veda:employee :ValeriyBushenev ;
+  veda:memberOf :AllResourcesGroup ;
+  veda:occupation :TechnicalDirector ;
+  veda:official "true"^^xsd:boolean ;
+  veda:published "2014-01-30T15:30:21"^^xsd:dateTime ;
+  veda:startTime "2014-01-30T15:30:21"^^xsd:dateTime ;
+  rdfs:label "Appointment_3"@en ;
+  rdfs:label "Назначение_3"@ru ;
 .
 veda:parentUnit
   owl:inverseOf veda:childUnit ;
