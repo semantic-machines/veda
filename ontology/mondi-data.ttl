@@ -218,6 +218,21 @@
   veda:userName "KarpovR"^^xsd:string ;
   rdfs:label "KarpovR"@en ;
 .
+:Mandate_1
+  rdf:type veda:Mandate ;
+  veda:author :Appointment_2 ;
+  veda:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  veda:memberOf :AllResourcesGroup ;
+  veda:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  veda:script """{
+\"whom\" : \"92e57b6d-83e3-485f-8885-0bade363f759\",
+\"right\" : \"ru\",
+\"condition\" : \"(mo/doc#tmplid == `f001dc9a4033458787f5542472774d68`) && ([department_from].head == $user)\"
+}"""^^xsd:string ;
+  rdfs:comment "Всему Монди на редактирование Оценок по процессу ИСМ, если в Процессе в поле head стоит текущий пользователь"@ru ;
+  rdfs:label "Mandate_1"@en ;
+  rdfs:label "Мандат_1"@ru ;
+.
 :MondiSyktyvkar
   rdf:type veda:Organization ;
   veda:childUnit :CCIP ;
