@@ -52,6 +52,8 @@ mondi-schema:attachment
           mondi-schema:RegistrationRecord
         ) ;
     ] ;
+  rdfs:label "attachment"@en ;
+  rdfs:label "вложение"@ru ;
 .
 mondi-schema:content
   rdf:type owl:DatatypeProperty ;
@@ -69,7 +71,7 @@ mondi-schema:nomenclatureType
           mondi-schema:RegistrationRecord
         ) ;
     ] ;
-  rdfs:label "document kind"@en ;
+  rdfs:label "document type"@en ;
   rdfs:label "вид документа"@ru ;
   rdfs:range mondi-schema:DocumentType ;
 .

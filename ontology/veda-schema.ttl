@@ -30,14 +30,14 @@ veda-schema:Account
 .
 veda-schema:Appointment
   rdf:type owl:Class ;
-  rdfs:label "Presence"@en ;
-  rdfs:label "Присутствие"@ru ;
+  rdfs:label "Appointment"@en ;
+  rdfs:label "Назначение"@ru ;
   rdfs:subClassOf veda-schema:HRRecord ;
   owl:disjointWith veda-schema:Absence ;
 .
 veda-schema:AuthorizationStatement
   rdf:type owl:Class ;
-  rdfs:label "Authorization record"@en ;
+  rdfs:label "Authorization statement"@en ;
   rdfs:label "Запись авторизации"@ru ;
   rdfs:subClassOf veda-schema:Document ;
 .
@@ -85,8 +85,8 @@ veda-schema:Group
 .
 veda-schema:HRRecord
   rdf:type owl:Class ;
-  rdfs:label "HR record"@ru ;
-  rdfs:label "Кадровая запись"@en ;
+  rdfs:label "HR record"@en ;
+  rdfs:label "Кадровая запись"@ru ;
   rdfs:subClassOf veda-schema:Document ;
 .
 veda-schema:Mandate
@@ -125,7 +125,8 @@ veda-schema:Person
   rdf:type owl:Class ;
   rdfs:comment "A person." ;
   rdfs:isDefinedBy veda-schema: ;
-  rdfs:label "Person" ;
+  rdfs:label "Person"@en ;
+  rdfs:label "Персона"@ru ;
   rdfs:subClassOf veda-schema:Versioned ;
   rdfs:subClassOf owl:Thing ;
 .
@@ -197,19 +198,19 @@ veda-schema:created
   rdfs:label "Дата создания"@ru ;
   rdfs:range xsd:dateTime ;
 .
-veda-schema:delegateFrom
+veda-schema:delegateTo
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain veda-schema:Delegation ;
+  rdfs:label "delegate to"@en ;
+  rdfs:label "кому делегирует"@ru ;
+  rdfs:range veda-schema:Person ;
+.
+veda-schema:delegates
   rdf:type owl:ObjectProperty ;
   rdfs:domain veda-schema:Delegation ;
   rdfs:label "who delegates"@en ;
   rdfs:label "кто делегирует"@ru ;
   rdfs:range veda-schema:OrganizationUnit ;
-.
-veda-schema:delegateTo
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain veda-schema:Delegation ;
-  rdfs:label "to whom delegates"@en ;
-  rdfs:label "кому делегирует"@ru ;
-  rdfs:range veda-schema:Person ;
 .
 veda-schema:employee
   rdf:type owl:ObjectProperty ;
@@ -344,8 +345,8 @@ veda-schema:permission
 .
 veda-schema:permissionObject
   rdf:type owl:ObjectProperty ;
-  rdfs:comment "A resource to which rights are granted."@en ;
-  rdfs:comment "Ресурс, на который выдаются права."@ru ;
+  rdfs:comment "An object to which rights are granted."@en ;
+  rdfs:comment "Объект, на который выдаются права."@ru ;
   rdfs:domain veda-schema:Permission ;
   rdfs:label "permission resource"@en ;
   rdfs:label "ресурс полномочий"@ru ;
@@ -353,11 +354,11 @@ veda-schema:permissionObject
 .
 veda-schema:permissionSubject
   rdf:type owl:ObjectProperty ;
-  rdfs:comment "Agent whom rights are granted."@en ;
-  rdfs:comment "Агент, которому предоставляются права."@ru ;
+  rdfs:comment "Subject whom rights are granted."@en ;
+  rdfs:comment "Субъект, которому предоставляются права."@ru ;
   rdfs:domain veda-schema:Permission ;
-  rdfs:label "permission agent"@en ;
-  rdfs:label "агент полномочий"@ru ;
+  rdfs:label "permission subject"@en ;
+  rdfs:label "субъект полномочий"@ru ;
   rdfs:range veda-schema:Group ;
 .
 veda-schema:previousVersion
