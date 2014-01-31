@@ -3,11 +3,9 @@ Veda system project.
 I. Project dependencies
 
 II. Building & running:
+
 0. Build the veda system:
    $ make
 
-1. Start up the veda@client & veda@core applications:
+1. Start up the veda system:
    $ make start
-
-2. Start up the haproxy application for load balancing:
-   $ make startproxy
