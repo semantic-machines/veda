@@ -188,6 +188,7 @@ veda:childUnit
   rdfs:label "child unit"@en ;
   rdfs:label "дочерняя единица"@ru ;
   rdfs:range veda:OrganizationUnit ;
+  owl:inverseOf veda:parentUnit ;
 .
 veda:created
   rdf:type owl:DatatypeProperty ;
@@ -323,6 +324,7 @@ veda:parentUnit
   rdfs:label "parent unit"@en ;
   rdfs:label "родительская единица"@ru ;
   rdfs:range veda:OrganizationUnit ;
+  owl:inverseOf veda:childUnit ;
 .
 veda:password
   rdf:type owl:DatatypeProperty ;
