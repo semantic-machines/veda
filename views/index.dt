@@ -1,0 +1,7 @@
+extends generic
+
+block content
+	.hero-unit
+		h1 Welcome to Veda!
+		p Veda is a large scale document-oriented enterprise reflection system
+			a.btn.btn-primary.btn-large(href="/documents") Go!

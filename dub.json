@@ -1,0 +1,10 @@
+{
+	"name": "veda",
+	"description": "A simple vibe.d server application.",
+	"copyright": "Copyright © 2014, karpovr",
+	"authors": ["karpovr"],
+	"dependencies": {
+		"vibe-d": ">=0.7.17"
+	},
+	"versions": ["VibeDefaultMain"]
+}
