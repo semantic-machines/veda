@@ -26,4 +26,5 @@ shared static this()
 
 	// initialize storage
 	auto vs = new VedaStorage ();
+	vs.init();
 }
