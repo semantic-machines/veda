@@ -1,3 +1,6 @@
 .settings
 .project
 .dub
+*.log
+data
+pacahon-properties.json

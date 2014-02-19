@@ -1,21 +1,15 @@
-.navbar.navbar-inverse.navbar-fixed-top
-	.navbar-inner
-		.container-fluid
-			a.brand(href="/")
-				img(src="/img/logo-veda.png", alt="Veda logo")
-			ul.nav
-				li.dropdown.active
-					a.dropdown-toggle(data-toggle="dropdown", href="#")
-						| Menu 
-						b.caret
-					ul.dropdown-menu
-						li
-							a(href="/templates", title="Templates") Templates
-						li
-							a(href="/documents", title="Documents") Documents
-						li
-							a(href="/search", title="Search documents") Search documents
-						li
-							a(href="/generic", title="Generic request") Generic request
-						li
-							a(href="/direct", title="Direct request") Direct request
+nav.navbar.navbar-inverse.navbar-fixed-top.brand-info(role="navigation")
+	.container-fluid
+		a.navbar-brand(href="/")
+			img(src="/img/logo-veda.png", alt="Veda logo")
+		ul.nav.navbar-nav
+			li
+				a(href="/templates", title="Templates") Templates
+			li
+				a(href="/documents", title="Documents") Documents
+			li
+				a(href="/search", title="Search documents") Search documents
+			li
+				a(href="/generic", title="Generic request") Generic request
+			li
+				a(href="/direct", title="Direct request") Direct request

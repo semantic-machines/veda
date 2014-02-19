@@ -1,7 +1,8 @@
 extends generic
 
 block content
-	.hero-unit
+	.jumbotron
 		h1 Welcome to Veda!
-		p Veda is a large scale document-oriented enterprise reflection system
-			a.btn.btn-primary.btn-large(href="/documents") Go!
+		p Veda is a large scale document-oriented enterprise management system
+		p 
+			a.btn.btn-primary.btn-lg(href="/documents") Go!

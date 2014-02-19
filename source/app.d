@@ -1,4 +1,6 @@
-import vibe.d, std.conv;
+import std.conv;
+import vibe.d;
+import veda.storage;
 
 void showError(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
 {
@@ -21,4 +23,7 @@ shared static this()
 
 	listenHTTP(settings, router);
 	logInfo("Please open http://127.0.0.1:8080/ in your browser.");
+
+	// initialize storage
+	auto vs = new VedaStorage ();
 }

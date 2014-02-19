@@ -4,7 +4,8 @@
 	"copyright": "Copyright © 2014, karpovr",
 	"authors": ["karpovr"],
 	"dependencies": {
-		"vibe-d": ">=0.7.17"
+		"vibe-d": ">=0.7.17",
+		"pacahon": "~master"
 	},
 	"versions": ["VibeDefaultMain"]
 }

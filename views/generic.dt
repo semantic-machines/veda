@@ -1,9 +1,8 @@
 !!! 5
 html(lang="en")
 	include includes/header
-	body
+	body(style="padding-top: 70px;")
 		include includes/menu
 		.container-fluid
 			block content
 		include includes/footer
-		include includes/javascript

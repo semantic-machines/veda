@@ -5,3 +5,9 @@ div.container-fluid
 			a(href="http://www.semantic-machines.com", title="Официальный сайт компании") &copy; "Смысловые машины", ООО.
 			| Выпущено под лицензией 
 			a(alt="GNU General Public License version 3 official text", href="http://www.gnu.org/licenses/gpl.html") GPLv3.
+
+// Javascript placed at the end of the document so the pages load faster
+script(src="/js/jquery.js")
+script(src="/js/bootstrap.min.js")
+script(type="text/javascript") 
+	$("[rel=tooltip]").tooltip();
