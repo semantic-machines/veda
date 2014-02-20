@@ -1,10 +1,7 @@
 module veda.storage;
 
 import std.stdio, std.datetime, std.conv;
-import vibe.core.concurrency;
-import vibe.core.core;
-import vibe.core.log;
-import vibe.core.task;
+import vibe.core.concurrency, vibe.core.core, vibe.core.log, vibe.core.task;
 
 import pacahon.server;
 import pacahon.context;
@@ -44,18 +41,19 @@ class VedaStorage
 
     void init()
     {
-        writeln("start veda storage listener");
+        writeln("START VEDA STORAGE FIBER LISTENER");
 
         io_task = runTask({
                               while (true)
                               {
-                                  writeln("recvieve 1");
                                   receive(
                                           (Command cmd, Function fn, string args, Tid tid) {
-                                              writeln("Tid=", cast(void *)tid);
-                                              logInfo("Received string message: %s", args);
+//                                              writeln("Tid=", cast(void *)tid);
                                               if (tid !is null)
+					      {	
+						if (cmd == Command.Get && fn == Function.AllClasses)	
                                                   send(tid, owl_classes);
+					      }	
                                           },
                                           (int msg, Tid tid) {
                                               logInfo("Received int message: %s", msg);
@@ -63,24 +61,20 @@ class VedaStorage
                               }
                           });
 
-        get_all_classes();
     }
 }
 
 public static immutable(Class)[] get_all_classes()
 {
     immutable(Class)[] classes;
-    Tid                my_task = Task.getThis();
-    writeln("@@@@my tid=", cast(void *)my_task);
+
+    Tid my_task = Task.getThis();
+
     if (my_task !is null)
     {
-        send(io_task, Command.Get, Function.AllClasses, "all", my_task);
+        send(io_task, Command.Get, Function.AllClasses, null, my_task);
         classes = receiveOnly!(immutable(Class)[]);
     }
 
-//	foreach (cl ; owl_classes)
-//	{
-//		writeln ("*** CL.label=", cl.label);
-//	}
     return classes;
 }
