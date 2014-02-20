@@ -2,4 +2,26 @@ extends generic
 
 block content
 	h1 Classes:
-	| #{classes}
+	ol 
+		- foreach (class1; classes)
+			li 
+				h4 
+					strong #{class1.id}
+				- foreach (label; class1.label)
+					| #{label.data} (#{label.lang})
+				h5 
+					strong Properties:
+				ul
+					- foreach (property; class1.properties)
+						li
+							h5 #{property.id}
+							- foreach (property_label; property.label)
+								| #{property_label.data} (#{property_label.lang})
+				h5 
+					strong Inherited properties:
+				ul
+					- foreach (inherited_property; class1.inherited_properties)
+						li
+							h5 #{inherited_property.id}
+							- foreach (inherited_property_label; inherited_property.label)
+								| #{inherited_property_label.data} (#{inherited_property_label.lang})

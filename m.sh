@@ -2,3 +2,4 @@
 rm *.log
 rm veda
 dub build --build=release
+./veda

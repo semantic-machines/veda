@@ -48,7 +48,7 @@ class VedaStorage
                               {
                                   receive(
                                           (Command cmd, Function fn, string args, Tid tid) {
-                                              writeln("Tid=", cast(void *)tid);
+                                              // writeln("Tid=", cast(void *)tid);
 //                                              if (tid !is null)
 					      {	
 //						if (cmd == Command.Get && fn == Function.AllClasses)	
