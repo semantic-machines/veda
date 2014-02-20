@@ -22,11 +22,12 @@ enum Function
     AllClasses = 1
 }
 
+Task io_task;
+
 class VedaStorage 
 {
     immutable(Class)[] owl_classes;
     Context context;
-    Task io_task;
 
     this ()
     {
@@ -63,14 +64,14 @@ class VedaStorage
 
     }
 
-    immutable(Class)[] get_all_classes ()
+    public static immutable(Class)[] get_all_classes ()
     {
-	send (io_task, Command.Get, Function.AllClasses, null, Task.getThis);
+	send (io_task, Command.Get, Function.AllClasses, "", Task.getThis);
 
-	foreach (cl ; owl_classes)
-	{
-		writeln ("*** CL.label=", cl.label);	    
-	}
+//	foreach (cl ; owl_classes)
+//	{
+//		writeln ("*** CL.label=", cl.label);	    
+//	}
 
 	return (immutable(Class)[]).init;
     }
