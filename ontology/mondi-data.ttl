@@ -23,7 +23,6 @@ mondi-data:AdministrativeDocument_1
   veda-schema:actualVersion mondi-data:AdministrativeDocument_1 ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T15:42:27"^^xsd:dateTime ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:previousVersion mondi-data:AdministrativeDocument_1_1 ;
   veda-schema:published "2014-01-30T12:13:11"^^xsd:dateTime ;
   rdfs:label "AdministrativeDocument_1"@en ;
@@ -38,7 +37,6 @@ mondi-data:AdministrativeDocument_1_1
   veda-schema:actualVersion mondi-data:AdministrativeDocument_1 ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T15:42:27"^^xsd:dateTime ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:nextVersion mondi-data:AdministrativeDocument_1 ;
   veda-schema:published "2014-01-30T12:13:11"^^xsd:dateTime ;
   rdfs:label "AdministrativeDocument_1"@en ;
@@ -51,14 +49,12 @@ mondi-data:AllResourcesGroup
 .
 mondi-data:Analyst1
   rdf:type veda-schema:Position ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:parentUnit mondi-data:ApplicationDevelopmentGroup ;
   rdfs:label "Analyst"@en ;
   rdfs:label "Аналитик"@ru ;
 .
 mondi-data:Analyst2
   rdf:type veda-schema:Position ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:parentUnit mondi-data:ApplicationDevelopmentGroup ;
   rdfs:label "Analyst"@en ;
   rdfs:label "Аналитик"@ru ;
@@ -72,8 +68,6 @@ mondi-data:AndreyBychin
   veda-schema:hasAccount mondi-data:BychinA ;
   veda-schema:lastName "Bychin"@en ;
   veda-schema:lastName "Бычин"@ru ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
-  veda-schema:memberOf mondi-data:Group_1 ;
   veda-schema:middleName "Vladimirovitch"@en ;
   veda-schema:middleName "Владимирович"@ru ;
   rdfs:label "Andrey Bychin"@en ;
@@ -84,7 +78,6 @@ mondi-data:AndreyBychin-Analyst2
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T15:35:11"^^xsd:dateTime ;
   veda-schema:employee mondi-data:AndreyBychin ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:occupation mondi-data:Analyst2 ;
   veda-schema:official "true"^^xsd:boolean ;
   veda-schema:published "2014-01-30T15:35:11"^^xsd:dateTime ;
@@ -97,7 +90,6 @@ mondi-data:AndreyBychin-ExecutiveDirector
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T15:35:11"^^xsd:dateTime ;
   veda-schema:employee mondi-data:AndreyBychin ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:occupation mondi-data:ExecutiveDirector ;
   veda-schema:official "true"^^xsd:boolean ;
   veda-schema:published "2014-01-30T15:35:11"^^xsd:dateTime ;
@@ -109,7 +101,6 @@ mondi-data:ApplicationDevelopmentGroup
   rdf:type veda-schema:Department ;
   veda-schema:childUnit mondi-data:Analyst1 ;
   veda-schema:childUnit mondi-data:Programmer1 ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:parentUnit mondi-data:CCIP ;
   rdfs:label "Application development group"@en ;
   rdfs:label "Группа прикладного програмирования"@ru ;
@@ -133,28 +124,24 @@ mondi-data:BychinA
 mondi-data:CCIP
   rdf:type veda-schema:Department ;
   veda-schema:childUnit mondi-data:ApplicationDevelopmentGroup ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:parentUnit mondi-data:MondiSyktyvkar ;
   rdfs:label "Competence center information process"@en ;
   rdfs:label "Управление информационных технологий"@ru ;
 .
 mondi-data:CommercialDirector
   rdf:type veda-schema:Position ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:parentUnit mondi-data:SemanticMachines ;
   rdfs:label "Commercial director"@en ;
   rdfs:label "Технический директор"@ru ;
 .
 mondi-data:ExecutiveDirector
   rdf:type veda-schema:Position ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:parentUnit mondi-data:SemanticMachines ;
   rdfs:label "Executive director"@en ;
   rdfs:label "Исполнительный директор"@ru ;
 .
 mondi-data:Group_1
   rdf:type veda-schema:Group ;
-  veda-schema:hasMember mondi-data:AndreyBychin ;
   rdfs:label "Test group 1"@ru ;
   rdfs:label "Тестовая группа 1"@ru ;
 .
@@ -170,7 +157,6 @@ mondi-data:Mandate_1
   rdf:type veda-schema:Mandate ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-31T15:28:18"^^xsd:dateTime ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   veda-schema:script """{
 \"whom\" : \"92e57b6d-83e3-485f-8885-0bade363f759\",
@@ -184,7 +170,6 @@ mondi-data:Mandate_1
 mondi-data:MondiSyktyvkar
   rdf:type veda-schema:Organization ;
   veda-schema:childUnit mondi-data:CCIP ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   rdfs:label "Mondi Syktyvkar, OJSC"@en ;
   rdfs:label "ОАО Монди СЛПК"@ru ;
 .
@@ -192,7 +177,6 @@ mondi-data:Permission_1
   rdf:type veda-schema:Permission ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:permission "+C+R+U+D"^^xsd:string ;
   veda-schema:permissionObject mondi-data:AllResourcesGroup ;
   veda-schema:permissionSubject mondi-data:SuperAdmin ;
@@ -205,7 +189,6 @@ mondi-data:Permission_2
   rdf:type veda-schema:Permission ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
-  veda-schema:memberOf mondi-data:Group_1 ;
   veda-schema:permission "+C"^^xsd:string ;
   veda-schema:permissionObject mondi-data:AllResourcesGroup ;
   veda-schema:permissionSubject mondi-data:Group_1 ;
@@ -216,7 +199,6 @@ mondi-data:Permission_2
 .
 mondi-data:Programmer1
   rdf:type veda-schema:Position ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:parentUnit mondi-data:ApplicationDevelopmentGroup ;
   rdfs:label "Programmer"@en ;
   rdfs:label "Программист"@ru ;
@@ -225,7 +207,6 @@ mondi-data:RegulatoryDisposal2013
   rdf:type mondi-schema:AdministrativeDocumentType ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Regulatory disposal. 2013"@en ;
   rdfs:label "Распоряжение по основной деятельности. 2013"@ru ;
@@ -234,7 +215,6 @@ mondi-data:RegulatoryDisposal2014
   rdf:type mondi-schema:AdministrativeDocumentType ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Regulatory disposal. 2014"@en ;
   rdfs:label "Распоряжение по основной деятельности. 2014"@ru ;
@@ -243,7 +223,6 @@ mondi-data:RegulatoryOrder2013
   rdf:type mondi-schema:AdministrativeDocumentType ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Regulatory order. 2013"@en ;
   rdfs:label "Приказ по основной деятельности. 2013"@ru ;
@@ -252,7 +231,6 @@ mondi-data:RegulatoryOrder2014
   rdf:type mondi-schema:AdministrativeDocumentType ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Regulatory order. 2014"@en ;
   rdfs:label "Приказ по основной деятельности. 2014"@ru ;
@@ -266,8 +244,6 @@ mondi-data:RomanKarpov
   veda-schema:hasAccount mondi-data:KarpovR ;
   veda-schema:lastName "Karpov"@en ;
   veda-schema:lastName "Карпов"@ru ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
-  veda-schema:memberOf mondi-data:SuperAdmin ;
   veda-schema:middleName "Konstantinovitch"@en ;
   veda-schema:middleName "Константинович"@ru ;
   rdfs:label "Roman Karpov"@en ;
@@ -278,7 +254,6 @@ mondi-data:RomanKarpov-Analyst1
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T15:22:33"^^xsd:dateTime ;
   veda-schema:employee mondi-data:RomanKarpov ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:occupation mondi-data:Analyst1 ;
   veda-schema:official "true"^^xsd:boolean ;
   veda-schema:published "2014-01-30T15:22:33"^^xsd:dateTime ;
@@ -291,7 +266,6 @@ mondi-data:RomanKarpov-CommercialDirector
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T15:35:11"^^xsd:dateTime ;
   veda-schema:employee mondi-data:RomanKarpov ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:occupation mondi-data:CommercialDirector ;
   veda-schema:official "true"^^xsd:boolean ;
   veda-schema:published "2014-01-30T15:35:11"^^xsd:dateTime ;
@@ -303,20 +277,16 @@ mondi-data:SemanticMachines
   rdf:type veda-schema:Organization ;
   veda-schema:childUnit mondi-data:CommercialDirector ;
   veda-schema:childUnit mondi-data:TechnicalDirector ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   rdfs:label "Semantic machines, LLC"@en ;
   rdfs:label "ООО Смысловые машины"@ru ;
 .
 mondi-data:SuperAdmin
   rdf:type veda-schema:Group ;
-  veda-schema:hasMember mondi-data:RomanKarpov ;
-  veda-schema:hasMember mondi-data:ValeriyBushenev ;
   rdfs:label "Super admin"@en ;
   rdfs:label "Супер админ"@ru ;
 .
 mondi-data:TechnicalDirector
   rdf:type veda-schema:Position ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:parentUnit mondi-data:SemanticMachines ;
   rdfs:label "Technical director"@en ;
   rdfs:label "Технический директор"@ru ;
@@ -330,8 +300,6 @@ mondi-data:ValeriyBushenev
   veda-schema:hasAccount mondi-data:BushenevV ;
   veda-schema:lastName "Bushenev"@en ;
   veda-schema:lastName "Бушенев"@ru ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
-  veda-schema:memberOf mondi-data:SuperAdmin ;
   veda-schema:middleName "Alexandrovitch"@en ;
   veda-schema:middleName "Александрович"@ru ;
   rdfs:label "Valeriy Bushenev"@en ;
@@ -342,7 +310,6 @@ mondi-data:ValeriyBushenev-Programmer1
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T15:12:15"^^xsd:dateTime ;
   veda-schema:employee mondi-data:ValeriyBushenev ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:occupation mondi-data:Programmer1 ;
   veda-schema:official "true"^^xsd:boolean ;
   veda-schema:published "2014-01-30T15:12:15"^^xsd:dateTime ;
@@ -355,7 +322,6 @@ mondi-data:ValeriyBushenev-TechnicalDirector
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T15:30:21"^^xsd:dateTime ;
   veda-schema:employee mondi-data:ValeriyBushenev ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
   veda-schema:occupation mondi-data:TechnicalDirector ;
   veda-schema:official "true"^^xsd:boolean ;
   veda-schema:published "2014-01-30T15:30:21"^^xsd:dateTime ;

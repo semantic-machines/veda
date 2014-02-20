@@ -26,26 +26,24 @@ Task io_task;
 
 class VedaStorage 
 {
-    immutable(Class)[] owl_classes;
+    immutable(Class[]) owl_classes;
     Context context;
 
-    this ()
-    {
-    }    
+	this ()
+	{
+		init_core ();
+		core.thread.Thread.sleep(dur!("msecs")(50));
+		context = new ThreadContext(props_file_path, "vibe.app");    
+
+		foreach (cl ; context.owl_classes)
+		{
+				immutable Class iic = cl.idup;
+				owl_classes ~= iic;
+		}
+	}
 
     void init ()
     {	
-	init_core ();
-	core.thread.Thread.sleep(dur!("msecs")(50));
-	context = new ThreadContext(props_file_path, "vibe.app");    
-
-	writeln ("*** INIT");	    
-	foreach (cl ; context.owl_classes)
-	{
-		immutable Class iic = cl.idup;
-		owl_classes ~= iic;
-	}
-
 	writeln ("start veda storage listener");
 
     	io_task = runTask({
@@ -69,7 +67,7 @@ class VedaStorage
 
 }
 
-    public static immutable(Class)[] get_all_classes ()
+    public static immutable(Class[]) get_all_classes ()
     {
 	Tid my_task = Task.getThis();
 	writeln ("@@@@my tid=", cast(void*)my_task);
@@ -82,5 +80,5 @@ class VedaStorage
 //	{
 //		writeln ("*** CL.label=", cl.label);	    
 //	}
-	return (immutable(Class)[]).init;
+	return (immutable Class[]).init;
     }

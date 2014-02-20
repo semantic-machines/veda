@@ -1,0 +1,5 @@
+extends generic
+
+block content
+	h1 Classes:
+	| #{classes}

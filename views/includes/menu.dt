@@ -4,7 +4,7 @@ nav.navbar.navbar-inverse.navbar-fixed-top.brand-info(role="navigation")
 			img(src="/img/logo-veda.png", alt="Veda logo")
 		ul.nav.navbar-nav
 			li
-				a(href="/templates", title="Templates") Templates
+				a(href="/classes", title="Classes") Classes
 			li
 				a(href="/documents", title="Documents") Documents
 			li

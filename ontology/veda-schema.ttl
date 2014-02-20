@@ -95,6 +95,12 @@ veda-schema:Mandate
   rdfs:label "Мандат"@ru ;
   rdfs:subClassOf veda-schema:AuthorizationStatement ;
 .
+veda-schema:Membership
+  rdf:type owl:Class ;
+  rdfs:label "Membership"@en ;
+  rdfs:label "Принадлежность"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
 veda-schema:Organization
   rdf:type owl:Class ;
   rdfs:comment "An organization"@en ;
@@ -279,14 +285,7 @@ veda-schema:mailbox
 .
 veda-schema:memberOf
   rdf:type owl:ObjectProperty ;
-  rdfs:domain [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          veda-schema:OrganizationUnit
-          veda-schema:Person
-          veda-schema:Document
-        ) ;
-    ] ;
+  rdfs:domain veda-schema:Membership ;
   rdfs:label "member of group"@en ;
   rdfs:label "член группы"@ru ;
   rdfs:range veda-schema:Group ;
@@ -374,6 +373,13 @@ veda-schema:published
   rdfs:label "date published"@en ;
   rdfs:label "дата публикации"@ru ;
   rdfs:range xsd:dateTime ;
+.
+veda-schema:resource
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain veda-schema:Membership ;
+  rdfs:label "resource"@en ;
+  rdfs:label "ресурс"@ru ;
+  rdfs:range rdfs:Resource ;
 .
 veda-schema:script
   rdf:type owl:DatatypeProperty ;

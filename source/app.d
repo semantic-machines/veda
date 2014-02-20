@@ -1,6 +1,7 @@
 import std.conv;
 import vibe.d;
 import veda.storage;
+import onto.owl;
 
 void showError(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
 {
@@ -8,6 +9,22 @@ void showError(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInf
 	res.renderCompat!("error.dt",
 		HTTPServerRequest, "req",
 		HTTPServerErrorInfo, "error")(req, error);
+}
+
+class Test
+{
+	int a;
+    this ()
+    { a=5;
+    }    
+}
+
+void showClasses(HTTPServerRequest req, HTTPServerResponse res)
+{
+	immutable(Class[]) classes = get_all_classes();
+	res.renderCompat!("classes.dt",
+		HTTPServerRequest, "req",
+		immutable (Class[]), "classes")(req, classes);
 }
 
 shared static this()
@@ -19,6 +36,7 @@ shared static this()
 
 	auto router = new URLRouter;
 	router.get("/", staticTemplate!"index.dt");
+	router.get("/classes", &showClasses);
 	router.get("*", serveStaticFiles("public"));
 
 	listenHTTP(settings, router);
