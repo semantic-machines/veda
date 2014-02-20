@@ -4,12 +4,23 @@ import std.stdio, std.datetime, std.conv;
 import vibe.core.concurrency;
 import vibe.core.core;
 import vibe.core.log;
+import vibe.core.task;
 
 import pacahon.server;
 import pacahon.context;
 import pacahon.thread_context;
 import onto.owl;
 import util.lmultidigraph;
+
+enum Command
+{
+    Get = 1
+}
+
+enum Function
+{
+    AllClasses = 1
+}
 
 class VedaStorage 
 {
@@ -32,19 +43,16 @@ class VedaStorage
 	{
 		immutable Class iic = cl.idup;
 		owl_classes ~= iic;
-		writeln ("*** CL.label=", iic.label);	    
 	}
 
-
-	writeln ("start io_task");
+	writeln ("start veda storage listener");
 
     	io_task = runTask({
                 while (true) {
 			writeln ("recvieve 1");
-                        logDebug("receive1");
                         receive(
-                                (string msg, Tid tid) {
-                                        logInfo("Received string message: %s", msg);
+                                (Command cmd, Function fn, string args, Tid tid) {
+                                        logInfo("Received string message: %s", args);
 					send (tid, owl_classes);    
                                 },
                                 (int msg, Tid tid) {
@@ -53,5 +61,17 @@ class VedaStorage
                 }
         });
 
+    }
+
+    immutable(Class)[] get_all_classes ()
+    {
+	send (io_task, Command.Get, Function.AllClasses, null, Task.getThis);
+
+	foreach (cl ; owl_classes)
+	{
+		writeln ("*** CL.label=", cl.label);	    
+	}
+
+	return (immutable(Class)[]).init;
     }
 }
