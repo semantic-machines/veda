@@ -11,20 +11,12 @@ void showError(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInf
 		HTTPServerErrorInfo, "error")(req, error);
 }
 
-class Test
-{
-	int a;
-    this ()
-    { a=5;
-    }    
-}
-
 void showClasses(HTTPServerRequest req, HTTPServerResponse res)
 {
-	immutable(Class[]) classes = get_all_classes();
+	immutable (Class)[] classes = get_all_classes();
 	res.renderCompat!("classes.dt",
 		HTTPServerRequest, "req",
-		immutable (Class[]), "classes")(req, classes);
+		immutable (Class)[], "classes")(req, classes);
 }
 
 shared static this()

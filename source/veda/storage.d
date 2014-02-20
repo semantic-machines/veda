@@ -24,61 +24,63 @@ enum Function
 
 Task io_task;
 
-class VedaStorage 
+class VedaStorage
 {
-    immutable(Class[]) owl_classes;
-    Context context;
+    immutable(Class)[] owl_classes;
+    Context            context;
 
-	this ()
-	{
-		init_core ();
-		core.thread.Thread.sleep(dur!("msecs")(50));
-		context = new ThreadContext(props_file_path, "vibe.app");    
+    this()
+    {
+        init_core();
+        core.thread.Thread.sleep(dur!("msecs")(50));
+        context = new ThreadContext(props_file_path, "vibe.app");
 
-		foreach (cl ; context.owl_classes)
-		{
-				immutable Class iic = cl.idup;
-				owl_classes ~= iic;
-		}
-	}
-
-    void init ()
-    {	
-	writeln ("start veda storage listener");
-
-    	io_task = runTask({
-                while (true) {
-			writeln ("recvieve 1");
-                        receive(
-                                (Command cmd, Function fn, string args, Tid tid) {
-					writeln ("Tid=", cast(void*)tid);    
-                                        logInfo("Received string message: %s", args);
-					if (tid !is null)
-					    send (tid, owl_classes);    
-                                },
-                                (int msg, Tid tid) {
-                                        logInfo("Received int message: %s", msg);
-                                });
-                }
-        });
-
-	get_all_classes ();
+        foreach (cl; context.owl_classes)
+        {
+            immutable Class iic = cl.idup;
+            owl_classes ~= iic;
+        }
     }
 
+    void init()
+    {
+        writeln("start veda storage listener");
+
+        io_task = runTask({
+                              while (true)
+                              {
+                                  writeln("recvieve 1");
+                                  receive(
+                                          (Command cmd, Function fn, string args, Tid tid) {
+                                              writeln("Tid=", cast(void *)tid);
+                                              logInfo("Received string message: %s", args);
+                                              if (tid !is null)
+                                                  send(tid, owl_classes);
+                                          },
+                                          (int msg, Tid tid) {
+                                              logInfo("Received int message: %s", msg);
+                                          });
+                              }
+                          });
+
+        get_all_classes();
+    }
 }
 
-    public static immutable(Class[]) get_all_classes ()
+public static immutable(Class)[] get_all_classes()
+{
+    immutable(Class)[] classes;
+    Tid                my_task = Task.getThis();
+    writeln("@@@@my tid=", cast(void *)my_task);
+    if (my_task !is null)
     {
-	Tid my_task = Task.getThis();
-	writeln ("@@@@my tid=", cast(void*)my_task);
-	if (my_task !is null)
-	{
-	    send (io_task, Command.Get, Function.AllClasses, "all", my_task);
-	}
+        send(io_task, Command.Get, Function.AllClasses, "all", my_task);
+        classes = receiveOnly!(immutable(Class)[]);
+    }
 
 //	foreach (cl ; owl_classes)
 //	{
-//		writeln ("*** CL.label=", cl.label);	    
+//		writeln ("*** CL.label=", cl.label);
 //	}
-	return (immutable Class[]).init;
-    }
+    return classes;
+}
