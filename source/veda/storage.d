@@ -53,8 +53,10 @@ class VedaStorage
 			writeln ("recvieve 1");
                         receive(
                                 (Command cmd, Function fn, string args, Tid tid) {
+					writeln ("Tid=", cast(void*)tid);    
                                         logInfo("Received string message: %s", args);
-					send (tid, owl_classes);    
+					if (tid !is null)
+					    send (tid, owl_classes);    
                                 },
                                 (int msg, Tid tid) {
                                         logInfo("Received int message: %s", msg);
@@ -62,17 +64,23 @@ class VedaStorage
                 }
         });
 
+	get_all_classes ();
     }
+
+}
 
     public static immutable(Class)[] get_all_classes ()
     {
-	send (io_task, Command.Get, Function.AllClasses, "", Task.getThis);
+	Tid my_task = Task.getThis();
+	writeln ("@@@@my tid=", cast(void*)my_task);
+	if (my_task !is null)
+	{
+	    send (io_task, Command.Get, Function.AllClasses, "all", my_task);
+	}
 
 //	foreach (cl ; owl_classes)
 //	{
 //		writeln ("*** CL.label=", cl.label);	    
 //	}
-
 	return (immutable(Class)[]).init;
     }
-}
