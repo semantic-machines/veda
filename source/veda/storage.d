@@ -48,10 +48,10 @@ class VedaStorage
                               {
                                   receive(
                                           (Command cmd, Function fn, string args, Tid tid) {
-//                                              writeln("Tid=", cast(void *)tid);
-                                              if (tid !is null)
+                                              writeln("Tid=", cast(void *)tid);
+//                                              if (tid !is null)
 					      {	
-						if (cmd == Command.Get && fn == Function.AllClasses)	
+//						if (cmd == Command.Get && fn == Function.AllClasses)	
                                                   send(tid, owl_classes);
 					      }	
                                           },
@@ -72,7 +72,7 @@ public static immutable(Class)[] get_all_classes()
 
     if (my_task !is null)
     {
-        send(io_task, Command.Get, Function.AllClasses, null, my_task);
+        send(io_task, Command.Get, Function.AllClasses, "", my_task);
         classes = receiveOnly!(immutable(Class)[]);
     }
 
