@@ -9,6 +9,12 @@ block content
 					strong #{class1.id}
 				- foreach (label; class1.label)
 					| #{label.data} (#{label.lang})
+				h5
+					strong Subclass of:
+				ul
+					- foreach (subClass; class1.subClassOf)
+						li
+							| #{subClass.id}
 				h5 
 					strong Properties:
 				ul
