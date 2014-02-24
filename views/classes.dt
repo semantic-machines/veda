@@ -5,29 +5,25 @@ block content
 	ol 
 		- foreach (class1; classes)
 			li 
-				h4 
-					strong #{class1.id}
+				h4 #{class1.uri}
 				- foreach (label; class1.label)
 					| #{label.data} (#{label.lang})
-				h5
-					strong Subclass of:
+				h5 Subclass of:
 				ul
 					- foreach (subClass; class1.subClassOf)
 						li
-							| #{subClass.id}
-				h5 
-					strong Properties:
+							| #{subClass.uri}
+				h5 Properties:
 				ul
 					- foreach (property; class1.properties)
 						li
-							h5 #{property.id}
+							| #{property.uri}
 							- foreach (property_label; property.label)
 								| #{property_label.data} (#{property_label.lang})
-				h5 
-					strong Inherited properties:
+				h5 Inherited properties:
 				ul
 					- foreach (inherited_property; class1.inherited_properties)
 						li
-							h5 #{inherited_property.id}
+							| #{inherited_property.uri}
 							- foreach (inherited_property_label; inherited_property.label)
 								| #{inherited_property_label.data} (#{inherited_property_label.lang})
