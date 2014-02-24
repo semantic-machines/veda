@@ -7,6 +7,7 @@ import pacahon.server;
 import pacahon.context;
 import pacahon.thread_context;
 import onto.owl;
+import onto.individual;
 import util.lmultidigraph;
 
 enum Command
@@ -16,7 +17,8 @@ enum Command
 
 enum Function
 {
-    AllClasses = 1
+    AllClasses = 1,
+    Individual
 }
 
 Task io_task;
@@ -25,6 +27,7 @@ class VedaStorage
 {
     immutable(Class)[] owl_classes;
     Context            context;
+    Individual_IO      individual_io;
 
     this()
     {
@@ -37,11 +40,15 @@ class VedaStorage
             immutable Class iic = cl.idup;
             owl_classes ~= iic;
         }
+
+        individual_io = new Individual_IO(context);
     }
 
     void init()
     {
         writeln("START VEDA STORAGE FIBER LISTENER");
+
+        immutable(Individual)[] individuals;
 
         io_task = runTask({
                               while (true)
@@ -49,26 +56,47 @@ class VedaStorage
                                   receive(
                                           (Command cmd, Function fn, string args, Tid tid) {
                                               // writeln("Tid=", cast(void *)tid);
-//                                              if (tid !is null)
-					      {	
-//						if (cmd == Command.Get && fn == Function.AllClasses)	
-                                                  send(tid, owl_classes);
-					      }	
+                                              if (tid !is null)
+                                              {
+                                                  if (cmd == Command.Get && fn == Function.AllClasses)
+                                                  {
+                                                      send(tid, owl_classes);
+                                                  }
+                                                  else if (cmd == Command.Get && fn == Function.Individual)
+                                                  {
+                                                      Ticket ticket;
+                                                      individuals ~= individual_io.getIndividual(args, ticket).idup;
+                                                      send(tid, individuals);
+                                                  }
+                                              }
                                           },
                                           (int msg, Tid tid) {
                                               logInfo("Received int message: %s", msg);
                                           });
                               }
                           });
-
     }
+}
+
+public static immutable(Individual[]) get_individual(string uid)
+{
+    Tid                     my_task = Task.getThis();
+
+    immutable(Individual)[] individual;
+    if (my_task !is null)
+    {
+        send(io_task, Command.Get, Function.Individual, uid, my_task);
+        individual = receiveOnly!(immutable(Individual)[]);
+    }
+
+    return individual;
 }
 
 public static immutable(Class)[] get_all_classes()
 {
-    immutable(Class)[] classes;
+    Tid                my_task = Task.getThis();
 
-    Tid my_task = Task.getThis();
+    immutable(Class)[] classes;
 
     if (my_task !is null)
     {
