@@ -42,6 +42,8 @@ void getIndividual(HTTPServerRequest req, HTTPServerResponse res)
 
 shared static this()
 {
+	// initialize storage I
+	auto vs = new VedaStorage ();
 	auto settings = new HTTPServerSettings;
 	settings.port = 8080;
 //	settings.bindAddresses = ["::1", "127.0.0.1", "172.17.35.148"];
@@ -56,7 +58,6 @@ shared static this()
 	listenHTTP(settings, router);
 	logInfo("Please open http://127.0.0.1:8080/ in your browser.");
 
-	// initialize storage
-	auto vs = new VedaStorage ();
+	// initialize storage II
 	vs.init();
 }

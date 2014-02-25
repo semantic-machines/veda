@@ -32,13 +32,14 @@ class VedaStorage
     this()
     {
         init_core();
-        core.thread.Thread.sleep(dur!("msecs")(50));
+//        core.thread.Thread.sleep(dur!("msecs")(0));
         context = new ThreadContext(props_file_path, "vibe.app");
 
         foreach (cl; context.owl_classes)
         {
             immutable Class iic = cl.idup;
             owl_classes ~= iic;
+            writeln(iic);
         }
 
         individual_io = new Individual_IO(context);
