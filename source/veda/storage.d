@@ -78,20 +78,20 @@ class VedaStorage
     }
 }
 
-public static immutable(Individual) get_individual(string uid)
+public static Individual get_individual(string uri)
 {
     Tid                     my_task = Task.getThis();
 
     immutable(Individual)[] individual;
     if (my_task !is null)
     {
-        send(io_task, Command.Get, Function.Individual, uid, my_task);
+        send(io_task, Command.Get, Function.Individual, uri, my_task);
         individual = receiveOnly!(immutable(Individual)[]);
         if (individual.length > 0)
-            return individual[ 0 ];
+            return cast(Individual)individual[ 0 ];
     }
 
-    return immutable(Individual).init;
+    return Individual.init;
 }
 
 public static immutable(Class)[] get_all_classes()
