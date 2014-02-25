@@ -29,10 +29,17 @@ void getClasses(HTTPServerRequest req, HTTPServerResponse res)
 		string[][string], "subClasses")(req, classes, subClasses);
 }
 
-void getIndividuals(HTTPServerRequest req, HTTPServerResponse res)
+void getClass(HTTPServerRequest req, HTTPServerResponse res)
+{
+	getIndividual(req, res);
+}
+
+void getIndividual(HTTPServerRequest req, HTTPServerResponse res)
 {
 	string uri = req.params["uri"];
-	Individual individual = get_individual("mondi-data:SemanticMachines");
+	logInfo(uri);
+	Individual individual = get_individual(uri);
+	logInfo(text(individual));
 	res.renderCompat!("individuals.dt",
 		HTTPServerRequest, "req",
 		Individual, "individual")(req, individual);
@@ -51,8 +58,8 @@ shared static this()
 	router.get("/", staticTemplate!"index.dt");
 	router.get("/classes", &getClasses);
 	router.get("/classes/", &getClasses);
-	router.get("/classes/:uri", &getClasses);
-	router.get("/individuals/:uri", &getIndividuals);
+	router.get("/classes/:uri", &getClass);
+	router.get("/individuals/:uri", &getIndividual);
 	router.get("*", serveStaticFiles("public"));
 
 	listenHTTP(settings, router);
