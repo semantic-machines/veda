@@ -27,6 +27,7 @@ veda-schema:Account
   rdf:type owl:Class ;
   rdfs:label "Account"@en ;
   rdfs:label "Учетная запись"@ru ;
+  rdfs:subClassOf owl:Thing ;
 .
 veda-schema:Appointment
   rdf:type owl:Class ;
@@ -118,6 +119,7 @@ veda-schema:OrganizationUnit
   rdfs:comment "Организационная единица (организация, подразделение, штатная должность)"@ru ;
   rdfs:label "Organization unit"@en ;
   rdfs:label "Организационная единица"@ru ;
+  rdfs:subClassOf owl:Thing ;
 .
 veda-schema:Permission
   rdf:type owl:Class ;

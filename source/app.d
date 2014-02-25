@@ -14,6 +14,17 @@ void showError(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInf
 void showClasses(HTTPServerRequest req, HTTPServerResponse res)
 {
 	immutable (Class)[] classes = get_all_classes();
+	string[][string] subclasses;
+	string[][string] superclasses;
+	foreach(_class; classes) {
+		auto superClasses = _class.subClassOf;
+		foreach(superClass; superClasses) {
+			superclasses[_class.uri] ~= superClass.uri;
+			subclasses[superClass.uri] ~= _class.uri;
+		}
+	}
+	logInfo("sublasses: " ~ text(subclasses) ~ "\n");
+	logInfo("superclasses: " ~ text(superclasses) ~ "\n");
 	res.renderCompat!("classes.dt",
 		HTTPServerRequest, "req",
 		immutable (Class)[], "classes")(req, classes);
