@@ -16,26 +16,24 @@ void showError(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInf
 void getClasses(HTTPServerRequest req, HTTPServerResponse res)
 {
 	immutable (Class)[string] classes = get_all_classes();
-	string[][string] subclasses;
-	string[][string] superclasses;
+	string[][string] subClasses;
 	foreach(_class; classes.values) {
-		auto superClasses = _class.subClassOf;
-		foreach(superClass; superClasses) {
-			superclasses[_class.uri] ~= superClass.uri;
-			subclasses[superClass.uri] ~= _class.uri;
+		auto _superClasses = _class.subClassOf;
+		foreach(_superClass; _superClasses) {
+			subClasses[_superClass.uri] ~= _class.uri;
 		}
 	}
-	logInfo("sublasses: " ~ text(subclasses) ~ "\n");
-	logInfo("superclasses: " ~ text(superclasses) ~ "\n");
 	res.renderCompat!("classes.dt",
 		HTTPServerRequest, "req",
-		immutable (Class)[string], "classes")(req, classes);
+		immutable (Class)[string], "classes",
+		string[][string], "subClasses")(req, classes, subClasses);
 }
 
-void getIndividual(HTTPServerRequest req, HTTPServerResponse res)
+void getIndividuals(HTTPServerRequest req, HTTPServerResponse res)
 {
+	string uri = req.params["uri"];
 	Individual individual = get_individual("mondi-data:SemanticMachines");
-	res.renderCompat!("individual.dt",
+	res.renderCompat!("individuals.dt",
 		HTTPServerRequest, "req",
 		Individual, "individual")(req, individual);
 }
@@ -52,7 +50,9 @@ shared static this()
 	auto router = new URLRouter;
 	router.get("/", staticTemplate!"index.dt");
 	router.get("/classes", &getClasses);
-	router.get("/individual", &getIndividual);
+	router.get("/classes/", &getClasses);
+	router.get("/classes/:uri", &getClasses);
+	router.get("/individuals/:uri", &getIndividuals);
 	router.get("*", serveStaticFiles("public"));
 
 	listenHTTP(settings, router);

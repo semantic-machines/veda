@@ -4,12 +4,8 @@ nav.navbar.navbar-inverse.navbar-fixed-top.brand-info(role="navigation")
 			img(src="/img/logo-veda.png", alt="Veda logo")
 		ul.nav.navbar-nav
 			li
-				a(href="/classes", title="Classes") Classes
+				a(href="/classes/", title="Classes") Classes
 			li
-				a(href="/individual", title="Documents") Individual
+				a(href="/individuals/", title="Individuals") Individuals
 			li
-				a(href="/search", title="Search documents") Search documents
-			li
-				a(href="/generic", title="Generic request") Generic request
-			li
-				a(href="/direct", title="Direct request") Direct request
+				a(href="/search/", title="Search") Search documents

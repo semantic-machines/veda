@@ -1,0 +1,29 @@
+extends generic
+
+block content
+	h1 Classes:
+	ol 
+		- foreach (_class; classes.values)
+			li 
+				h4 #{_class.uri}
+				- foreach (label; _class.label)
+					| #{label.data} (#{label.lang})
+				h5 Subclass of:
+				ul
+					- foreach (subClass; _class.subClassOf)
+						li
+							| #{subClass.uri}
+				h5 Properties:
+				ul
+					- foreach (property; _class.properties)
+						li
+							| #{property.uri}
+							- foreach (property_label; property.label)
+								| #{property_label.data} (#{property_label.lang})
+				h5 Inherited properties:
+				ul
+					- foreach (inherited_property; _class.inherited_properties)
+						li
+							| #{inherited_property.uri}
+							- foreach (inherited_property_label; inherited_property.label)
+								| #{inherited_property_label.data} (#{inherited_property_label.lang})
