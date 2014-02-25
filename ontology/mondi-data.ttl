@@ -174,7 +174,7 @@ mondi-data:MondiSyktyvkar
   rdfs:label "ОАО Монди СЛПК"@ru ;
 .
 mondi-data:Permission_1
-  rdf:type veda-schema:Permission ;
+  rdf:type veda-schema:PermissionStatement ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
   veda-schema:permission "+C+R+U+D"^^xsd:string ;
@@ -186,7 +186,7 @@ mondi-data:Permission_1
   rdfs:label "Запись о выдаче прав_1"@ru ;
 .
 mondi-data:Permission_2
-  rdf:type veda-schema:Permission ;
+  rdf:type veda-schema:PermissionStatement ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
   veda-schema:permission "+C"^^xsd:string ;

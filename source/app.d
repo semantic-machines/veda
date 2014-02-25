@@ -2,6 +2,8 @@ import std.conv;
 import vibe.d;
 import veda.storage;
 import onto.owl;
+import onto.individual;
+
 
 void showError(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
 {
@@ -14,9 +16,28 @@ void showError(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInf
 void showClasses(HTTPServerRequest req, HTTPServerResponse res)
 {
 	immutable (Class)[] classes = get_all_classes();
+	string[][string] subclasses;
+	string[][string] superclasses;
+	foreach(_class; classes) {
+		auto superClasses = _class.subClassOf;
+		foreach(superClass; superClasses) {
+			superclasses[_class.uri] ~= superClass.uri;
+			subclasses[superClass.uri] ~= _class.uri;
+		}
+	}
+	logInfo("sublasses: " ~ text(subclasses) ~ "\n");
+	logInfo("superclasses: " ~ text(superclasses) ~ "\n");
 	res.renderCompat!("classes.dt",
 		HTTPServerRequest, "req",
 		immutable (Class)[], "classes")(req, classes);
+}
+
+void showIndividual(HTTPServerRequest req, HTTPServerResponse res)
+{
+	immutable (Individual[]) individual = get_individual("mondi-data:SemanticMachines");
+	res.renderCompat!("individual.dt",
+		HTTPServerRequest, "req",
+		immutable (Individual[]), "individual")(req, individual);
 }
 
 shared static this()
@@ -29,6 +50,7 @@ shared static this()
 	auto router = new URLRouter;
 	router.get("/", staticTemplate!"index.dt");
 	router.get("/classes", &showClasses);
+	router.get("/individual", &showIndividual);
 	router.get("*", serveStaticFiles("public"));
 
 	listenHTTP(settings, router);
