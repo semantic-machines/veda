@@ -49,8 +49,6 @@ class VedaStorage
     {
         writeln("START VEDA STORAGE FIBER LISTENER");
 
-        immutable(Individual)[] individuals;
-
         io_task = runTask({
                               while (true)
                               {
@@ -65,6 +63,7 @@ class VedaStorage
                                                   }
                                                   else if (cmd == Command.Get && fn == Function.Individual)
                                                   {
+                                                      immutable(Individual)[] individuals;
                                                       Ticket ticket;
                                                       individuals ~= individual_io.getIndividual(args, ticket).idup;
                                                       send(tid, individuals);
@@ -95,11 +94,11 @@ public static Individual get_individual(string uri)
     return Individual.init;
 }
 
-public static immutable (Class)[string] get_all_classes()
+public static immutable(Class)[ string ] get_all_classes()
 {
-    Tid                my_task = Task.getThis();
+    Tid my_task = Task.getThis();
 
-    immutable (Class)[string] res;
+    immutable(Class)[ string ] res;
 
     immutable(Class)[] classes;
 
@@ -107,10 +106,10 @@ public static immutable (Class)[string] get_all_classes()
     {
         send(io_task, Command.Get, Function.AllClasses, "", my_task);
         classes = receiveOnly!(immutable(Class)[]);
-	foreach (clasz; classes)
-	    res[clasz.uri] = clasz;
+        foreach (clasz; classes)
+            res[ clasz.uri ] = clasz;
 
-        res.rehash ();
+        res.rehash();
     }
 
     return res;
