@@ -26,6 +26,7 @@ Task io_task;
 class VedaStorage
 {
     immutable(Class)[] owl_classes;
+    immutable(Individual)[ string ] onto_individuals;
     Context            context;
     Individual_IO      individual_io;
 
@@ -33,23 +34,24 @@ class VedaStorage
     {
         init_core();
 //        core.thread.Thread.sleep(dur!("msecs")(0));
-        context = new ThreadContext(props_file_path, "vibe.app");
+        context          = new ThreadContext(props_file_path, "vibe.app");
+        individual_io    = new Individual_IO(context);
+        onto_individuals = context.get_onto_as_map_individuals();
 
         foreach (cl; context.owl_classes)
         {
             immutable Class iic = cl.idup;
             owl_classes ~= iic;
-            writeln(iic);
         }
-
-        individual_io = new Individual_IO(context);
     }
 
     void init()
     {
         writeln("START VEDA STORAGE FIBER LISTENER");
 
+
         io_task = runTask({
+                              immutable(Individual) _empty_Individual = (immutable(Individual)).init;
                               while (true)
                               {
                                   receive(
@@ -65,7 +67,14 @@ class VedaStorage
                                                   {
                                                       immutable(Individual)[] individuals;
                                                       Ticket ticket;
-                                                      individuals ~= individual_io.getIndividual(args, ticket).idup;
+
+                                                      immutable(Individual) individual = onto_individuals.get(args, _empty_Individual);
+
+                                                      if (individual != _empty_Individual)
+                                                          individuals ~= individual;
+                                                      else
+                                                          individuals ~= individual_io.getIndividual(args, ticket).idup;
+
                                                       send(tid, individuals);
                                                   }
                                               }
