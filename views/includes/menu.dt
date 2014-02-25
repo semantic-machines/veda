@@ -6,7 +6,7 @@ nav.navbar.navbar-inverse.navbar-fixed-top.brand-info(role="navigation")
 			li
 				a(href="/classes", title="Classes") Classes
 			li
-				a(href="/documents", title="Documents") Documents
+				a(href="/individual", title="Documents") Individual
 			li
 				a(href="/search", title="Search documents") Search documents
 			li

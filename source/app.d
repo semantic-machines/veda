@@ -2,6 +2,8 @@ import std.conv;
 import vibe.d;
 import veda.storage;
 import onto.owl;
+import onto.individual;
+
 
 void showError(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
 {
@@ -30,6 +32,14 @@ void showClasses(HTTPServerRequest req, HTTPServerResponse res)
 		immutable (Class)[], "classes")(req, classes);
 }
 
+void showIndividual(HTTPServerRequest req, HTTPServerResponse res)
+{
+	immutable (Individual[]) individual = get_individual("mondi-data:SemanticMachines");
+	res.renderCompat!("individual.dt",
+		HTTPServerRequest, "req",
+		immutable (Individual[]), "individual")(req, individual);
+}
+
 shared static this()
 {
 	auto settings = new HTTPServerSettings;
@@ -40,6 +50,7 @@ shared static this()
 	auto router = new URLRouter;
 	router.get("/", staticTemplate!"index.dt");
 	router.get("/classes", &showClasses);
+	router.get("/individual", &showIndividual);
 	router.get("*", serveStaticFiles("public"));
 
 	listenHTTP(settings, router);
