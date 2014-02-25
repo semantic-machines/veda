@@ -94,9 +94,11 @@ public static Individual get_individual(string uri)
     return Individual.init;
 }
 
-public static immutable(Class)[] get_all_classes()
+public static immutable (Class)[string] get_all_classes()
 {
     Tid                my_task = Task.getThis();
+
+    immutable (Class)[string] res;
 
     immutable(Class)[] classes;
 
@@ -104,7 +106,11 @@ public static immutable(Class)[] get_all_classes()
     {
         send(io_task, Command.Get, Function.AllClasses, "", my_task);
         classes = receiveOnly!(immutable(Class)[]);
+	foreach (clasz; classes)
+	    res[clasz.uri] = clasz;
+
+        res.rehash ();
     }
 
-    return classes;
+    return res;
 }
