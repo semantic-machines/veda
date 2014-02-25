@@ -3,26 +3,26 @@ extends generic
 block content
 	h1 Classes:
 	ol 
-		- foreach (class1; classes)
+		- foreach (_class; classes.values)
 			li 
-				h4 #{class1.uri}
-				- foreach (label; class1.label)
+				h4 #{_class.uri}
+				- foreach (label; _class.label)
 					| #{label.data} (#{label.lang})
 				h5 Subclass of:
 				ul
-					- foreach (subClass; class1.subClassOf)
+					- foreach (subClass; _class.subClassOf)
 						li
 							| #{subClass.uri}
 				h5 Properties:
 				ul
-					- foreach (property; class1.properties)
+					- foreach (property; _class.properties)
 						li
 							| #{property.uri}
 							- foreach (property_label; property.label)
 								| #{property_label.data} (#{property_label.lang})
 				h5 Inherited properties:
 				ul
-					- foreach (inherited_property; class1.inherited_properties)
+					- foreach (inherited_property; _class.inherited_properties)
 						li
 							| #{inherited_property.uri}
 							- foreach (inherited_property_label; inherited_property.label)

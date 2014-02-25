@@ -1,5 +1,4 @@
 extends generic
-
 block content
 	h1 Individual:
-	| #{individual}
+	p #{individual}
