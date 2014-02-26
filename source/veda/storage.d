@@ -61,6 +61,26 @@ class VedaStorage
                               while (true)
                               {
                                   receive(
+                                          (Command cmd, Function fn, string arg1, byte arg2, Tid tid) {
+                                              // writeln("Tid=", cast(void *)tid);
+                                              if (tid !is null)
+                                              {
+                                                  if (cmd == Command.Get && fn == Function.Individual)
+                                                  {
+                                                      immutable(Individual)[] individuals;
+                                                      Ticket ticket;
+
+                                                      immutable(Individual) individual = onto_individuals.get(arg1, _empty_iIndividual);
+
+                                                      if (individual != _empty_iIndividual)
+                                                          individuals ~= individual;
+                                                      else
+                                                          individuals ~= individual_io.getIndividual(arg1, ticket, arg2).idup;
+
+                                                      send(tid, individuals);
+                                                  }
+                                              }
+                                          },
                                           (Command cmd, Function fn, string args, Tid tid) {
                                               // writeln("Tid=", cast(void *)tid);
                                               if (tid !is null)
@@ -80,20 +100,6 @@ class VedaStorage
                                                           classes ~= classz;
 
                                                       send(tid, classes);
-                                                  }
-                                                  else if (cmd == Command.Get && fn == Function.Individual)
-                                                  {
-                                                      immutable(Individual)[] individuals;
-                                                      Ticket ticket;
-
-                                                      immutable(Individual) individual = onto_individuals.get(args, _empty_iIndividual);
-
-                                                      if (individual != _empty_iIndividual)
-                                                          individuals ~= individual;
-                                                      else
-                                                          individuals ~= individual_io.getIndividual(args, ticket).idup;
-
-                                                      send(tid, individuals);
                                                   }
                                               }
                                           },
@@ -149,14 +155,14 @@ class VedaStorage
 
 //////////////////////////////////////////////////// Client API /////////////////////////////////////////////////////////////////
 
-public static Individual get_individual(string uri)
+public static Individual get_individual(string uri, byte level = 0)
 {
     Tid                     my_task = Task.getThis();
 
     immutable(Individual)[] individual;
     if (my_task !is null)
     {
-        send(io_task, Command.Get, Function.Individual, uri, my_task);
+        send(io_task, Command.Get, Function.Individual, uri, level, my_task);
         individual = receiveOnly!(immutable(Individual)[]);
         if (individual.length > 0)
             return cast(Individual)individual[ 0 ];
