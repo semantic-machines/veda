@@ -19,18 +19,19 @@ enum Command
 enum Function
 {
     AllClasses           = 1,
-    Individual           = 2,
-    PropertyOfIndividual = 3
+    Class                = 2,
+    Individual           = 3,
+    PropertyOfIndividual = 4
 }
 
 Task io_task;
 
 class VedaStorage
 {
-    immutable(Class)[] owl_classes;
+    immutable(Class)[ string ] owl_classes;
     immutable(Individual)[ string ] onto_individuals;
-    Context            context;
-    Individual_IO      individual_io;
+    Context       context;
+    Individual_IO individual_io;
 
     this()
     {
@@ -43,7 +44,7 @@ class VedaStorage
         foreach (cl; context.owl_classes)
         {
             immutable Class iic = cl.idup;
-            owl_classes ~= iic;
+            owl_classes[ iic.uri ] = iic;
         }
     }
 
@@ -53,8 +54,10 @@ class VedaStorage
 
 
         io_task = runTask({
-                              immutable(Individual) _empty_Individual = (immutable(Individual)).init;
+                              immutable(Individual) _empty_iIndividual = (immutable(Individual)).init;
+                              immutable(Class) _empty_iClass = (immutable(Class)).init;
                               Resources _empty_Resources = Resources.init;
+
                               while (true)
                               {
                                   receive(
@@ -64,16 +67,28 @@ class VedaStorage
                                               {
                                                   if (cmd == Command.Get && fn == Function.AllClasses)
                                                   {
-                                                      send(tid, owl_classes);
+                                                      send(tid, owl_classes.values);
+                                                  }
+                                                  else if (cmd == Command.Get && fn == Function.Class)
+                                                  {
+                                                      immutable(Class)[] classes;
+                                                      Ticket ticket;
+
+                                                      immutable(Class) classz = owl_classes.get(args, _empty_iClass);
+
+                                                      if (classz != _empty_iClass)
+                                                          classes ~= classz;
+
+                                                      send(tid, classes);
                                                   }
                                                   else if (cmd == Command.Get && fn == Function.Individual)
                                                   {
                                                       immutable(Individual)[] individuals;
                                                       Ticket ticket;
 
-                                                      immutable(Individual) individual = onto_individuals.get(args, _empty_Individual);
+                                                      immutable(Individual) individual = onto_individuals.get(args, _empty_iIndividual);
 
-                                                      if (individual != _empty_Individual)
+                                                      if (individual != _empty_iIndividual)
                                                           individuals ~= individual;
                                                       else
                                                           individuals ~= individual_io.getIndividual(args, ticket).idup;
@@ -90,8 +105,8 @@ class VedaStorage
                                                       Ticket ticket;
 
                                                       string res1;
-                                                      immutable(Individual) individual = onto_individuals.get(arg1, _empty_Individual);
-                                                      if (individual == _empty_Individual)
+                                                      immutable(Individual) individual = onto_individuals.get(arg1, _empty_iIndividual);
+                                                      if (individual == _empty_iIndividual)
                                                       {
                                                           immutable(Individual) individual1 =
                                                               individual_io.getIndividual(arg1, ticket).idup;
@@ -132,6 +147,7 @@ class VedaStorage
     }
 }
 
+//////////////////////////////////////////////////// Client API /////////////////////////////////////////////////////////////////
 
 public static Individual get_individual(string uri)
 {
@@ -183,4 +199,22 @@ public static immutable(Class)[ string ] get_all_classes()
     }
 
     return res;
+}
+
+public static Class get_class(string uri)
+{
+    Tid                my_task = Task.getThis();
+
+    immutable(Class)[] classes;
+
+    if (my_task !is null)
+    {
+        send(io_task, Command.Get, Function.Class, uri, my_task);
+        classes = receiveOnly!(immutable(Class)[]);
+    }
+
+    if (classes.length > 0)
+        return cast(Class)classes[ 0 ];
+
+    return Class.init;
 }
