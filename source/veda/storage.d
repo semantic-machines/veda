@@ -149,7 +149,7 @@ public static Individual get_individual(string uri)
     return Individual.init;
 }
 
-public static string get_first_prpoperty_of_individual(string uri, string property_uri, LANG lang)
+public static string get_single_property_value_of_individual(string uri, string property_uri, LANG lang)
 {
     Tid    my_task = Task.getThis();
 
