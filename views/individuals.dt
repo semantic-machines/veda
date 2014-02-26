@@ -1,4 +1,29 @@
 extends generic
 block content
-	h1 Individual:
-	p #{individual}
+	- import veda.storage, onto.resource;
+	- void i18n(LANG lang, Resource[] resources)
+		- foreach(resource; resources)
+			- if (resource.type == ResourceType.String)
+				- if (resource.lang == lang)
+					p #{resource.data}
+				- else
+					p.text-muted #{resource.data}
+			- else if (resource.type == ResourceType.Uri)
+				p
+					a(href="/individuals/#{resource.uri}") 
+						-i18n(LANG.RU, get_individual(resource.uri).resources.get("rdfs:label", Resource[].init));
+			- else
+				p #{resource.data}
+	h1 
+		-i18n(LANG.RU, individual.resources.get("rdfs:label", Resource[].init));
+	dl.dl-horizontal
+		- foreach(property_uri, property_value; individual.resources)
+			dt
+				- i18n(LANG.RU, get_individual(property_uri).resources.get("rdfs:label", Resource[].init));
+			dd
+				- i18n(LANG.RU, property_value);
+			hr
+			
+			
+			
+			//- li #{i18n(LANG.NONE, get_individual(property_uri).resources.get("rdfs:label", Resource[].init))}: #{i18n(LANG.RU, property_value)}

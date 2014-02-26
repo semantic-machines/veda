@@ -132,7 +132,7 @@ mondi-data:CommercialDirector
   rdf:type veda-schema:Position ;
   veda-schema:parentUnit mondi-data:SemanticMachines ;
   rdfs:label "Commercial director"@en ;
-  rdfs:label "Технический директор"@ru ;
+  rdfs:label "Коммерческий директор"@ru ;
 .
 mondi-data:ExecutiveDirector
   rdf:type veda-schema:Position ;
