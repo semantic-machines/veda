@@ -8,6 +8,7 @@ import pacahon.context;
 import pacahon.thread_context;
 import onto.owl;
 import onto.individual;
+import onto.resource;
 import util.lmultidigraph;
 
 enum Command
@@ -17,8 +18,9 @@ enum Command
 
 enum Function
 {
-    AllClasses = 1,
-    Individual
+    AllClasses           = 1,
+    Individual           = 2,
+    PropertyOfIndividual = 3
 }
 
 Task io_task;
@@ -52,6 +54,7 @@ class VedaStorage
 
         io_task = runTask({
                               immutable(Individual) _empty_Individual = (immutable(Individual)).init;
+                              Resources _empty_Resources = Resources.init;
                               while (true)
                               {
                                   receive(
@@ -79,6 +82,48 @@ class VedaStorage
                                                   }
                                               }
                                           },
+                                          (Command cmd, Function fn, string arg1, string arg2, LANG lang, Tid tid) {
+                                              if (tid !is null)
+                                              {
+                                                  if (cmd == Command.Get && fn == Function.PropertyOfIndividual)
+                                                  {
+                                                      Ticket ticket;
+
+                                                      string res1;
+                                                      immutable(Individual) individual = onto_individuals.get(arg1, _empty_Individual);
+                                                      if (individual == _empty_Individual)
+                                                      {
+                                                          immutable(Individual) individual1 =
+                                                              individual_io.getIndividual(arg1, ticket).idup;
+                                                          immutable Resources res = individual1.resources.get(arg2, Resources.init);
+
+                                                          foreach (rr; res)
+                                                          {
+                                                              if (rr.lang == lang)
+                                                              {
+                                                                  res1 = rr.data;
+                                                                  break;
+                                                              }
+                                                          }
+                                                      }
+                                                      else
+                                                      {
+                                                          immutable Resources res = individual.resources.get(arg2, Resources.init);
+
+                                                          foreach (rr; res)
+                                                          {
+                                                              if (rr.lang == lang)
+                                                              {
+                                                                  res1 = rr.data;
+                                                                  break;
+                                                              }
+                                                          }
+                                                      }
+
+                                                      send(tid, res1);
+                                                  }
+                                              }
+                                          },
                                           (int msg, Tid tid) {
                                               logInfo("Received int message: %s", msg);
                                           });
@@ -86,6 +131,7 @@ class VedaStorage
                           });
     }
 }
+
 
 public static Individual get_individual(string uri)
 {
@@ -101,6 +147,21 @@ public static Individual get_individual(string uri)
     }
 
     return Individual.init;
+}
+
+public static string get_first_prpoperty_of_individual(string uri, string property_uri, LANG lang)
+{
+    Tid    my_task = Task.getThis();
+
+    string res;
+
+    if (my_task !is null)
+    {
+        send(io_task, Command.Get, Function.PropertyOfIndividual, uri, property_uri, lang, my_task);
+        res = receiveOnly!(string);
+    }
+
+    return res;
 }
 
 public static immutable(Class)[ string ] get_all_classes()
