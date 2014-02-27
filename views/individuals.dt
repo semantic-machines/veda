@@ -1,34 +1,54 @@
 extends generic
 block content
 	- import veda.storage, onto.resource;
-	- void i18n(LANG lang, Resource[] resources)
-		- boolean preferred_lang_found = false;
-		- foreach(resource; resources)
-			- if (resource.type == ResourceType.String)
-				- if (resource.lang == lang)
-					p #{resource.data}
-				//-
-					- else
-						p.text-muted #{resource.data}
-			- else if (resource.type == ResourceType.Uri)
-				p
-					- if (resource.origin == ResourceOrigin.local)
-						a(href="/individuals/#{resource.uri}")
-							-i18n(LANG.RU, get_individual(resource.uri).resources.get("rdfs:label", Resource[].init));
-					- else
-						a(href="#{resource.uri}") #{resource.uri}
-			- else
-				p #{resource.data}
+	- Resource[] empty_resource(string uri)
+		- Resource[] res;
+		- Resource resource;
+		- resource.data = uri;
+		- res ~= resource;
+		- return res;
+	- auto preferred_lang = LANG.RU;
+	- auto show_alternative_lang = true;
 	h1 
-		-i18n(LANG.RU, individual.resources.get("rdfs:label", Resource[].init));
-	dl.dl-horizontal
-		- foreach(property_uri, property_value; individual.resources)
-			dt
-				- i18n(LANG.RU, get_individual(property_uri).resources.get("rdfs:label", Resource[].init));
-			dd
-				- i18n(LANG.RU, property_value);
-			hr
+		- foreach (label; individual.resources.get("rdfs:label", empty_resource(individual.uri)))
+			- if (label.lang == preferred_lang)
+				span #{label.data}
+			- else if (show_alternative_lang)
+				span.text-muted #{label.data}
 			
-			
-			
-			//- li #{i18n(LANG.NONE, get_individual(property_uri).resources.get("rdfs:label", Resource[].init))}: #{i18n(LANG.RU, property_value)}
+	- foreach(property_uri, property_values; individual.resources)
+		.row
+			.col-md-3.text-right
+				- foreach(label; get_individual(property_uri).resources.get("rdfs:label", empty_resource(property_uri)))
+					- if (label.lang == preferred_lang)
+						span #{label.data}
+					- else if (show_alternative_lang)
+						span.text-muted #{label.data}
+			.col-md-9
+				- foreach(property_value; property_values)
+					- if (property_value.type == ResourceType.Uri)
+						
+						- if (property_value.origin == ResourceOrigin.local)
+							div
+								a(href="/individuals/#{property_value.data}")
+									- foreach(label; get_individual(property_value.data).resources.get("rdfs:label", empty_resource(property_value.data)))
+										- if (label.lang == preferred_lang)
+											span #{label.data}
+										- else if (show_alternative_lang)
+											span.text-muted #{label.data}
+									i.glyphicon.glyphicon-share-alt
+						
+						- else if (property_value.origin == ResourceOrigin.external)
+							div
+								a(href="#{property_value.data}") #{property_value.data}
+					
+					- else if (property_value.type == ResourceType.String)
+						
+						- if (property_value.lang == preferred_lang)
+							span #{property_value.data}
+						- else if (show_alternative_lang)
+							span.text-muted #{property_value.data}
+					
+					- else 
+						span #{property_value.data}
+		hr(style="padding:0px; margin:3px")
