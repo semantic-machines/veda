@@ -13,6 +13,8 @@
   rdf:type owl:Ontology ;
   owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
   owl:versionInfo "1.0" ;
+  rdfs:label "Mondi individuals ontology"@en ;
+  rdfs:label "Онтология индивидов Монди"@ru ;
 .
 mondi-data:AdministrativeDocument_1
   rdf:type mondi-schema:AdministrativeDocument ;

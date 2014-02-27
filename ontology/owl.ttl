@@ -518,6 +518,7 @@ owl:withRestrictions a rdf:Property ;
 
 <http://www.w3.org/2002/07/owl> a owl:Ontology ;
     dc:title "The OWL 2 Schema vocabulary (OWL 2)" ;
+    rdfs:label "The OWL 2 Schema vocabulary (OWL 2)" ;
     rdfs:comment """
   This ontology partially describes the built-in classes and
   properties that together form the basis of the RDF/XML syntax of OWL 2.

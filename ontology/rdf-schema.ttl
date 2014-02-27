@@ -107,5 +107,6 @@ rdfs:seeAlso a rdf:Property ;
 
 rdfs: a owl:Ontology ;
     dc:title "The RDF Schema vocabulary (RDFS)" ;
+    rdfs:label "The RDF Schema vocabulary (RDFS)" ;
     rdfs:seeAlso <http://www.w3.org/2000/01/rdf-schema-more> .
 

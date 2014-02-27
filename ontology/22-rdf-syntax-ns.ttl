@@ -110,5 +110,6 @@ rdf:value a rdf:Property ;
 rdf: a owl:Ontology ;
     dc:description "This is the RDF Schema for the RDF vocabulary defined in the RDF namespace." ;
     dc:title "The RDF Vocabulary (RDF)" ;
+    rdfs:label "The RDF Vocabulary (RDF)" ;
     rdfs:seeAlso <http://www.w3.org/2000/01/rdf-schema-more> .
 

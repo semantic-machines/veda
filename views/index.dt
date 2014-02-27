@@ -5,4 +5,4 @@ block content
 		h1 Welcome to Veda!
 		p Veda is a large scale document-oriented enterprise management system
 		p 
-			a.btn.btn-primary.btn-lg(href="/documents") Go!
+			a.btn.btn-primary.btn-lg(href="/classes") Go!

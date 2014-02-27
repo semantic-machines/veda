@@ -12,6 +12,8 @@
   rdf:type owl:Ontology ;
   owl:imports <http://semantic-machines.com/veda/veda-schema> ;
   owl:versionInfo "1.0" ;
+  rdfs:label "Mondi ontology"@en ;
+  rdfs:label "Онтология Монди"@ru ;
 .
 mondi-schema:AdministrativeDocument
   rdf:type owl:Class ;

@@ -2,16 +2,21 @@ extends generic
 block content
 	- import veda.storage, onto.resource;
 	- void i18n(LANG lang, Resource[] resources)
+		- boolean preferred_lang_found = false;
 		- foreach(resource; resources)
 			- if (resource.type == ResourceType.String)
 				- if (resource.lang == lang)
 					p #{resource.data}
-				- else
-					p.text-muted #{resource.data}
+				//-
+					- else
+						p.text-muted #{resource.data}
 			- else if (resource.type == ResourceType.Uri)
 				p
-					a(href="/individuals/#{resource.uri}") 
-						-i18n(LANG.RU, get_individual(resource.uri).resources.get("rdfs:label", Resource[].init));
+					- if (resource.origin == ResourceOrigin.local)
+						a(href="/individuals/#{resource.uri}")
+							-i18n(LANG.RU, get_individual(resource.uri).resources.get("rdfs:label", Resource[].init));
+					- else
+						a(href="#{resource.uri}") #{resource.uri}
 			- else
 				p #{resource.data}
 	h1 
