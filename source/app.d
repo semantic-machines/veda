@@ -3,6 +3,7 @@ import vibe.d;
 import veda.storage;
 import onto.owl;
 import onto.individual;
+import std.datetime;
 
 
 void show_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
@@ -38,10 +39,37 @@ void get_individual(HTTPServerRequest req, HTTPServerResponse res)
 	string uri = req.params["uri"];
 	logInfo(uri);
 	Individual individual = veda.storage.get_individual(uri);
-	logInfo(text(individual));
-	res.renderCompat!("individuals.dt",
+//	logInfo(text(individual));
+	res.renderCompat!("individual.dt",
 		HTTPServerRequest, "req",
 		Individual, "individual")(req, individual);
+}
+
+void get_search(HTTPServerRequest req, HTTPServerResponse res)
+{
+	StopWatch sw;
+	sw.start();
+	string q = req.query.get("q", "");
+	if (q != "") {
+		logInfo(q);
+		Individual[] individuals = get_individuals_via_query(q, 0);
+		sw.stop();
+		long t = cast(long) sw.peek().msecs;
+		logInfo("query time:"~text(t)~" msecs");
+		sw.reset();
+		sw.start();
+	//	logInfo(text(individuals));
+		res.renderCompat!("individuals.dt",
+			HTTPServerRequest, "req",
+			Individual[], "individuals")(req, individuals);
+		
+	} else {
+		res.renderCompat!("search.dt",
+			HTTPServerRequest, "req")(req);
+	}
+	sw.stop();
+	long t = cast(long) sw.peek().msecs;
+	logInfo("render time:" ~text(t)~" msecs");
 }
 
 shared static this()
@@ -58,6 +86,8 @@ shared static this()
 	router.get("/classes/", &get_classes);
 	router.get("/classes/:uri", &get_class);
 	router.get("/individuals/:uri", &get_individual);
+	router.get("/search", &get_search);
+	router.get("/search/", &get_search);
 	router.get("*", serveStaticFiles("public"));
 
 	listenHTTP(settings, router);

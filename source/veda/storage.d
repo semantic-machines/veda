@@ -164,7 +164,7 @@ class VedaStorage
 }
 
 //////////////////////////////////////////////////// Client API /////////////////////////////////////////////////////////////////
-public static immutable(Individual)[] get_individuals_via_query(string query, byte level = 0)
+public static Individual[] get_individuals_via_query(string query, byte level = 0)
 {
     Tid                     my_task = Task.getThis();
 
@@ -175,7 +175,7 @@ public static immutable(Individual)[] get_individuals_via_query(string query, by
         individuals = receiveOnly!(immutable(Individual)[]);
     }
 
-    return individuals;
+    return cast(Individual[])individuals;
 }
 
 public static Individual get_individual(string uri, byte level = 0)

@@ -8,4 +8,4 @@ nav.navbar.navbar-inverse.navbar-fixed-top.brand-info(role="navigation")
 			li
 				a(href="/individuals/", title="Individuals") Individuals
 			li
-				a(href="/search/", title="Search") Search documents
+				a(href="/search/", title="Search") Search
