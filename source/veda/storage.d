@@ -80,13 +80,15 @@ class VedaStorage
 
                                                       send(tid, individuals);
                                                   }
-						  else if (cmd == Command.Get && fn == Function.IndividualsToQuery)
-						  {
-                                                      immutable(Individual)[] individuals;
+                                                  else if (cmd == Command.Get && fn == Function.IndividualsToQuery)
+                                                  {
                                                       Ticket ticket;
-						    
+
+                                                      immutable(Individual)[] individuals =
+                                                          individual_io.getIndividualsViaQuery(arg1, ticket, arg2);
+
                                                       send(tid, individuals);
-						  }    
+                                                  }
                                               }
                                           },
                                           (Command cmd, Function fn, string args, Tid tid) {
@@ -162,7 +164,7 @@ class VedaStorage
 }
 
 //////////////////////////////////////////////////// Client API /////////////////////////////////////////////////////////////////
-public static immutable(Individual)[] get_individuals_to_query(string query, byte level = 0)
+public static immutable(Individual)[] get_individuals_via_query(string query, byte level = 0)
 {
     Tid                     my_task = Task.getThis();
 
