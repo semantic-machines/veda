@@ -21,7 +21,8 @@ enum Function
     AllClasses           = 1,
     Class                = 2,
     Individual           = 3,
-    PropertyOfIndividual = 4
+    PropertyOfIndividual = 4,
+    IndividualsToQuery   = 5
 }
 
 Task io_task;
@@ -79,6 +80,13 @@ class VedaStorage
 
                                                       send(tid, individuals);
                                                   }
+						  else if (cmd == Command.Get && fn == Function.IndividualsToQuery)
+						  {
+                                                      immutable(Individual)[] individuals;
+                                                      Ticket ticket;
+						    
+                                                      send(tid, individuals);
+						  }    
                                               }
                                           },
                                           (Command cmd, Function fn, string args, Tid tid) {
@@ -154,6 +162,19 @@ class VedaStorage
 }
 
 //////////////////////////////////////////////////// Client API /////////////////////////////////////////////////////////////////
+public static immutable(Individual)[] get_individuals_to_query(string query, byte level = 0)
+{
+    Tid                     my_task = Task.getThis();
+
+    immutable(Individual)[] individuals;
+    if (my_task !is null)
+    {
+        send(io_task, Command.Get, Function.IndividualsToQuery, query, level, my_task);
+        individuals = receiveOnly!(immutable(Individual)[]);
+    }
+
+    return individuals;
+}
 
 public static Individual get_individual(string uri, byte level = 0)
 {
