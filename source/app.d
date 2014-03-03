@@ -39,7 +39,6 @@ void get_individual(HTTPServerRequest req, HTTPServerResponse res)
 	string uri = req.params["uri"];
 	logInfo(uri);
 	Individual individual = veda.storage.get_individual(uri);
-//	logInfo(text(individual));
 	res.renderCompat!("individual.dt",
 		HTTPServerRequest, "req",
 		Individual, "individual")(req, individual);
@@ -47,19 +46,23 @@ void get_individual(HTTPServerRequest req, HTTPServerResponse res)
 
 void get_search(HTTPServerRequest req, HTTPServerResponse res)
 {
+	//start timer
 	StopWatch sw;
 	sw.start();
+	
 	string q = req.query.get("q", "");
 	if (q != "") {
 		logInfo(q);
 		Individual[] individuals = get_individuals_via_query(q, 0);
+		
+		//stop & log timer & start again
 		sw.stop();
 		long t = cast(long) sw.peek().msecs;
-		logInfo("query time:"~text(t)~" msecs");
+		logInfo("query execution time:"~text(t)~" msecs");
 		sw.reset();
 		sw.start();
-	//	logInfo(text(individuals));
-		res.renderCompat!("individuals.dt",
+		
+		res.renderCompat!("search_results.dt",
 			HTTPServerRequest, "req",
 			Individual[], "individuals")(req, individuals);
 		
@@ -67,9 +70,11 @@ void get_search(HTTPServerRequest req, HTTPServerResponse res)
 		res.renderCompat!("search.dt",
 			HTTPServerRequest, "req")(req);
 	}
+
+	//stop & log timer
 	sw.stop();
 	long t = cast(long) sw.peek().msecs;
-	logInfo("render time:" ~text(t)~" msecs");
+	logInfo("page rendering time:" ~text(t)~" msecs");
 }
 
 shared static this()

@@ -16,16 +16,22 @@ block content
 				span #{label.data}
 			- else if (show_alternative_lang)
 				span.text-muted #{label.data}
-			
+	.row
+		.col-xs-4.col-sm-4.col-md-3.col-lg-3.text-right URI
+		.col-xs-8.col-sm-8.col-md-9.col-lg-9 
+			a(href="/individuals/#{individual.uri}") 
+				span #{individual.uri}
+				i.glyphicon.glyphicon-share-alt
+	hr(style="padding:0px; margin:3px")
 	- foreach(property_uri, property_values; individual.resources)
 		.row
-			.col-md-3.text-right
+			.col-xs-4.col-sm-4.col-md-3.col-lg-3.text-right
 				- foreach(label; get_individual(property_uri).resources.get("rdfs:label", empty_resource(property_uri)))
 					- if (label.lang == preferred_lang)
 						span #{label.data}
 					- else if (show_alternative_lang)
 						span.text-muted #{label.data}
-			.col-md-9
+			.col-xs-8.col-sm-8.col-md-9.col-lg-9
 				- foreach(property_value; property_values)
 					- if (property_value.type == ResourceType.Uri)
 						

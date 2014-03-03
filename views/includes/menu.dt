@@ -1,4 +1,4 @@
-nav.navbar.navbar-inverse.navbar-fixed-top.brand-info(role="navigation")
+nav.navbar.navbar-inverse(role="navigation")
 	.container-fluid
 		a.navbar-brand(href="/")
 			img(src="/img/logo-veda.png", alt="Veda logo")

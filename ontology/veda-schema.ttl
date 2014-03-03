@@ -205,7 +205,7 @@ veda-schema:created
   rdf:type owl:DatatypeProperty ;
   rdfs:domain veda-schema:Document ;
   rdfs:label "Creation date"@en ;
-  rdfs:label "Дата создания"@ru ;
+  rdfs:label "дата создания"@ru ;
   rdfs:range xsd:dateTime ;
 .
 veda-schema:delegateTo
@@ -274,7 +274,7 @@ veda-schema:lastName
   rdfs:domain veda-schema:Person ;
   rdfs:isDefinedBy veda-schema: ;
   rdfs:label "lastName"@en ;
-  rdfs:label "фамилия"@en ;
+  rdfs:label "фамилия"@ru ;
   rdfs:range rdfs:Literal ;
 .
 veda-schema:mailbox
