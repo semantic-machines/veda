@@ -29,8 +29,8 @@ Task io_task;
 
 class VedaStorage
 {
-    immutable(Class)[ string ] owl_classes;
-    immutable(Individual)[ string ] onto_individuals;
+//    immutable(Class)[ string ] owl_classes;
+//    immutable(Individual)[ string ] onto_individuals;
     Context       context;
     Individual_IO individual_io;
 
@@ -38,15 +38,15 @@ class VedaStorage
     {
         init_core();
 //        core.thread.Thread.sleep(dur!("msecs")(0));
-        context          = new ThreadContext(props_file_path, "vibe.app");
-        individual_io    = new Individual_IO(context);
-        onto_individuals = context.get_onto_as_map_individuals();
+        context       = new ThreadContext(props_file_path, "vibe.app");
+        individual_io = new Individual_IO(context);
+//        onto_individuals = context.get_onto_as_map_individuals();
 
-        foreach (cl; context.owl_classes)
-        {
-            immutable Class iic = cl.idup;
-            owl_classes[ iic.uri ] = iic;
-        }
+//        foreach (cl; context.owl_classes)
+//        {
+//            immutable Class iic = cl.idup;
+//            owl_classes[ iic.uri ] = iic;
+//        }
     }
 
     void init()
@@ -68,6 +68,8 @@ class VedaStorage
                                               {
                                                   if (cmd == Command.Get && fn == Function.Individual)
                                                   {
+                                                      immutable(Individual)[ string ] onto_individuals =
+                                                          context.get_onto_as_map_individuals();
                                                       immutable(Individual)[] individuals;
                                                       Ticket ticket;
 
@@ -97,14 +99,14 @@ class VedaStorage
                                               {
                                                   if (cmd == Command.Get && fn == Function.AllClasses)
                                                   {
-                                                      send(tid, owl_classes.values);
+                                                      send(tid, context.get_owl_classes().values);
                                                   }
                                                   else if (cmd == Command.Get && fn == Function.Class)
                                                   {
                                                       immutable(Class)[] classes;
                                                       Ticket ticket;
 
-                                                      immutable(Class) classz = owl_classes.get(args, _empty_iClass);
+                                                      immutable(Class) classz = context.get_owl_classes().get(args, _empty_iClass);
 
                                                       if (classz != _empty_iClass)
                                                           classes ~= classz;
@@ -121,6 +123,8 @@ class VedaStorage
                                                       Ticket ticket;
 
                                                       string res1;
+                                                      immutable(Individual)[ string ] onto_individuals =
+                                                          context.get_onto_as_map_individuals();
                                                       immutable(Individual) individual = onto_individuals.get(arg1, _empty_iIndividual);
                                                       if (individual == _empty_iIndividual)
                                                       {
