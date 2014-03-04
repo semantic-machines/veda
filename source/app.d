@@ -120,6 +120,7 @@ shared static this()
 
 	auto router = new URLRouter;
 //	router.any("*", performBasicAuth("veda system", toDelegate(&check_credentials)));
+	router.get("*", serveStaticFiles("public"));
 	router.any("*", &login);
 	router.get("/", staticTemplate!"index.dt");
 	router.any("/classes", &get_classes);
@@ -128,7 +129,6 @@ shared static this()
 	router.any("/individuals/:uri", &get_individual);
 	router.any("/search", &get_search);
 	router.any("/search/", &get_search);
-	router.get("*", serveStaticFiles("public"));
 	listenHTTP(settings, router);
 	logInfo("Please open http://127.0.0.1:8080/ in your browser.");
 	
