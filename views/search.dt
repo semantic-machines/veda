@@ -3,7 +3,7 @@ block content
 	.container-fluid
 		h1 Поиск
 			span.text-muted / Search
-		form.form-inline(method="get", role="form")
+		form.form-inline(method="post", role="form")
 			.row
 				.form-group.col-xs-6.col-sm-9.col-md-10.col-lg-10
 					label.sr-only(for="q") Запрос / Query:

@@ -9,8 +9,13 @@ block content
 		- return res;
 	- auto preferred_lang = LANG.RU;
 	- auto show_alternative_lang = true;
-	h1 Результаты поиска 
-		span.text-muted / Search results
+	- if (individuals.length == 0)
+		h1 Ничего не найдено
+			span.text-muted / Nothing found
+	- else
+		h1 Результаты поиска
+			span.text-muted / Search results
+			span (#{individuals.length})
 	ol
 		- foreach(individual; individuals)
 			li

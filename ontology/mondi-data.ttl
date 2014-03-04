@@ -144,7 +144,7 @@ mondi-data:ExecutiveDirector
 .
 mondi-data:Group_1
   rdf:type veda-schema:Group ;
-  rdfs:label "Test group 1"@ru ;
+  rdfs:label "Test group 1"@en ;
   rdfs:label "Тестовая группа 1"@ru ;
 .
 mondi-data:KarpovR

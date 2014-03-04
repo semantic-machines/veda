@@ -1,0 +1,20 @@
+!!! 5
+html(lang="en")
+	include includes/header
+	body(style="padding: 10% 0px 30px;")
+		.container-fluid
+			.row
+				.col-xs-12.col-sm-6.col-sm-offset-3.col-md-6.col-md-offset-3.col-lg-6.col-lg-offset-3
+					h1 Представьтесь
+						span.text-muted / Login
+					form(method="post", role="form")
+						- foreach(key_form_field, value_form_field; req.form)
+							input(type="hidden", name="#{key_form_field}", value="#{value_form_field}")
+						.form-group
+							label(for="user") Пользователь / User
+							input#user.form-control(type="text", placeholder="Введите имя пользователя / Enter user name", name="user")
+						.form-group
+							label(for="password") Пароль / Password
+							input#password.form-control(type="password", placeholder="Введите пароль / Enter password", name="password")
+						button.btn.btn-primary(type="submit") Войти / Enter
+		include includes/footer

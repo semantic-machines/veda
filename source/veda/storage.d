@@ -1,6 +1,6 @@
 module veda.storage;
 
-import std.stdio, std.datetime, std.conv;
+import std.stdio, std.datetime, std.conv, std.string;
 import vibe.core.concurrency, vibe.core.core, vibe.core.log, vibe.core.task;
 
 import pacahon.server;
@@ -168,6 +168,19 @@ class VedaStorage
 }
 
 //////////////////////////////////////////////////// Client API /////////////////////////////////////////////////////////////////
+
+public static string get_ticket(string user, string password) {
+	Individual[] candidate_users = get_individuals_via_query("'veda-schema:userName' == '" ~ user.toLower ~ "'", 0);
+	foreach (_user; candidate_users) {
+		if (_user.resources["veda-schema:password"][0].data == password) return "good-ticket";
+	}
+	return null;
+}
+
+public static bool is_ticket_valid(string ticket) {
+	return ticket == "good-ticket";
+}
+
 public static Individual[] get_individuals_via_query(string query, byte level = 0)
 {
     Tid                     my_task = Task.getThis();

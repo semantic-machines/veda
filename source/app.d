@@ -6,15 +6,13 @@ import onto.individual;
 import std.datetime;
 
 
-void show_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
-{
+void show_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) {
 	res.renderCompat!("error.dt",
 		HTTPServerRequest, "req",
 		HTTPServerErrorInfo, "error")(req, error);
 }
 
-void get_classes(HTTPServerRequest req, HTTPServerResponse res)
-{
+void get_classes(HTTPServerRequest req, HTTPServerResponse res) {
 	immutable (Class)[string] classes = get_all_classes();
 	string[][string] subClasses;
 	foreach(_class; classes.values) {
@@ -29,13 +27,11 @@ void get_classes(HTTPServerRequest req, HTTPServerResponse res)
 		string[][string], "subClasses")(req, classes, subClasses);
 }
 
-void get_class(HTTPServerRequest req, HTTPServerResponse res)
-{
+void get_class(HTTPServerRequest req, HTTPServerResponse res) {
 	get_individual(req, res);
 }
 
-void get_individual(HTTPServerRequest req, HTTPServerResponse res)
-{
+void get_individual(HTTPServerRequest req, HTTPServerResponse res) {
 	string uri = req.params["uri"];
 	logInfo(uri);
 	Individual individual = veda.storage.get_individual(uri);
@@ -44,13 +40,38 @@ void get_individual(HTTPServerRequest req, HTTPServerResponse res)
 		Individual, "individual")(req, individual);
 }
 
-void get_search(HTTPServerRequest req, HTTPServerResponse res)
-{
+void get_login(HTTPServerRequest req, HTTPServerResponse res) {
+	string ticket = req.cookies.get("ticket", "");
+	if (!is_ticket_valid(ticket)) {
+		res.renderCompat!("login.dt",
+			HTTPServerRequest, "req")(req);
+	}
+}
+
+void login(HTTPServerRequest req, HTTPServerResponse res) {
+	string ticket = req.cookies.get("ticket", "");
+	if (is_ticket_valid(ticket)) {
+		return;
+	} else {
+		string user = req.form.get("user", "");
+		string password = req.form.get("password","");
+		ticket = get_ticket(user, password);
+		if (ticket !is null) {
+			res.setCookie("ticket", ticket, "/");
+		} else {
+			res.setCookie("ticket", null, "/");
+			res.renderCompat!("login.dt",
+				HTTPServerRequest, "req")(req);
+		}
+	}
+}
+
+void get_search(HTTPServerRequest req, HTTPServerResponse res) {
 	//start timer
 	StopWatch sw;
 	sw.start();
 	
-	string q = req.query.get("q", "");
+	string q = req.form.get("q","");//req.query.get("q", "");
 	if (q != "") {
 		logInfo(q);
 		Individual[] individuals = get_individuals_via_query(q, 0);
@@ -74,7 +95,19 @@ void get_search(HTTPServerRequest req, HTTPServerResponse res)
 	//stop & log timer
 	sw.stop();
 	long t = cast(long) sw.peek().msecs;
-	logInfo("page rendering time:" ~text(t)~" msecs");
+	logInfo("page rendering time:"~text(t)~" msecs");
+}
+
+string get_ticket(string user, string password) {
+	return veda.storage.get_ticket(user, password);
+}
+
+bool is_ticket_valid(string ticket) {
+	return veda.storage.is_ticket_valid(ticket);
+}
+
+bool check_credentials(string user, string password) {
+	return user == "admin" && password == "admin";
 }
 
 shared static this()
@@ -86,15 +119,16 @@ shared static this()
 	settings.errorPageHandler = toDelegate(&show_error);
 
 	auto router = new URLRouter;
+//	router.any("*", performBasicAuth("veda system", toDelegate(&check_credentials)));
+	router.any("*", &login);
 	router.get("/", staticTemplate!"index.dt");
-	router.get("/classes", &get_classes);
-	router.get("/classes/", &get_classes);
-	router.get("/classes/:uri", &get_class);
-	router.get("/individuals/:uri", &get_individual);
-	router.get("/search", &get_search);
-	router.get("/search/", &get_search);
+	router.any("/classes", &get_classes);
+	router.any("/classes/", &get_classes);
+	router.any("/classes/:uri", &get_class);
+	router.any("/individuals/:uri", &get_individual);
+	router.any("/search", &get_search);
+	router.any("/search/", &get_search);
 	router.get("*", serveStaticFiles("public"));
-
 	listenHTTP(settings, router);
 	logInfo("Please open http://127.0.0.1:8080/ in your browser.");
 	

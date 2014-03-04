@@ -5,7 +5,8 @@ nav.navbar.navbar-inverse(role="navigation")
 		ul.nav.navbar-nav
 			li
 				a(href="/classes/", title="Classes") Classes
-			li
+			//
+				li
 				a(href="/individuals/", title="Individuals") Individuals
 			li
 				a(href="/search/", title="Search") Search
