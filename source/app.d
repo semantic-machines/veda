@@ -53,8 +53,15 @@ void login(HTTPServerRequest req, HTTPServerResponse res) {
 	if (is_ticket_valid(ticket)) {
 		return;
 	} else {
-		string user = req.form.get("user", "");
-		string password = req.form.get("password","");
+		string user;
+		string password;
+		if (req.method == HTTPMethod.POST) {
+			user = req.form.get("user", "");
+			password = req.form.get("password","");
+		} else if (req.method == HTTPMethod.GET) {
+			user = req.query.get("user", "");
+			password = req.query.get("password","");
+		}
 		ticket = get_ticket(user, password);
 		if (ticket !is null) {
 			res.setCookie("ticket", ticket, "/");
@@ -71,7 +78,7 @@ void get_search(HTTPServerRequest req, HTTPServerResponse res) {
 	StopWatch sw;
 	sw.start();
 	
-	string q = req.form.get("q","");//req.query.get("q", "");
+	string q = req.query.get("q", "");
 	if (q != "") {
 		logInfo(q);
 		Individual[] individuals = get_individuals_via_query(q, 0);
@@ -122,13 +129,13 @@ shared static this()
 //	router.any("*", performBasicAuth("veda system", toDelegate(&check_credentials)));
 	router.get("*", serveStaticFiles("public"));
 	router.any("*", &login);
-	router.any("/", staticTemplate!"index.dt");
-	router.any("/classes", &get_classes);
-	router.any("/classes/", &get_classes);
-	router.any("/classes/:uri", &get_class);
-	router.any("/individuals/:uri", &get_individual);
-	router.any("/search", &get_search);
-	router.any("/search/", &get_search);
+	router.get("/", staticTemplate!"index.dt");
+	router.get("/classes", &get_classes);
+	router.get("/classes/", &get_classes);
+	router.get("/classes/:uri", &get_class);
+	router.get("/individuals/:uri", &get_individual);
+	router.get("/search", &get_search);
+	router.get("/search/", &get_search);
 	listenHTTP(settings, router);
 	logInfo("Please open http://127.0.0.1:8080/ in your browser.");
 	

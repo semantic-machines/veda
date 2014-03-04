@@ -7,7 +7,7 @@ html(lang="en")
 				.col-xs-12.col-sm-6.col-sm-offset-3.col-md-6.col-md-offset-3.col-lg-6.col-lg-offset-3
 					h1 Представьтесь
 						span.text-muted / Login
-					form(method="post", role="form")
+					form(method="#{req.method}", role="form")
 						- foreach(key_form_field, value_form_field; req.form)
 							input(type="hidden", name="#{key_form_field}", value="#{value_form_field}")
 						.form-group
