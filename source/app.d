@@ -122,7 +122,7 @@ shared static this()
 //	router.any("*", performBasicAuth("veda system", toDelegate(&check_credentials)));
 	router.get("*", serveStaticFiles("public"));
 	router.any("*", &login);
-	router.get("/", staticTemplate!"index.dt");
+	router.any("/", staticTemplate!"index.dt");
 	router.any("/classes", &get_classes);
 	router.any("/classes/", &get_classes);
 	router.any("/classes/:uri", &get_class);
