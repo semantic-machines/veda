@@ -111,7 +111,7 @@ mondi-data:BushenevV
   rdf:type veda-schema:Account ;
   veda-schema:accountOwner mondi-data:ValeriyBushenev ;
   veda-schema:mailbox "valeriy.bushenev@mondigroup.com"^^xsd:string ;
-  veda-schema:password "123"^^xsd:string ;
+  veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   veda-schema:userName "BushenevV"^^xsd:string ;
   rdfs:label "BushenevV"@en ;
 .
@@ -119,7 +119,7 @@ mondi-data:BychinA
   rdf:type veda-schema:Account ;
   veda-schema:accountOwner mondi-data:AndreyBychin ;
   veda-schema:mailbox "andrey.bychin@mondigroup.com"^^xsd:string ;
-  veda-schema:password "123"^^xsd:string ;
+  veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   veda-schema:userName "BychinA"^^xsd:string ;
   rdfs:label "BychinA"@en ;
 .
@@ -151,7 +151,7 @@ mondi-data:KarpovR
   rdf:type veda-schema:Account ;
   veda-schema:accountOwner mondi-data:RomanKarpov ;
   veda-schema:mailbox "roman.karpov@mondigroup.com"^^xsd:string ;
-  veda-schema:password "123"^^xsd:string ;
+  veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   veda-schema:userName "KarpovR"^^xsd:string ;
   rdfs:label "KarpovR"@en ;
 .

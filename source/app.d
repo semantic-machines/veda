@@ -53,20 +53,27 @@ void login(HTTPServerRequest req, HTTPServerResponse res) {
 	if (is_ticket_valid(ticket)) {
 		return;
 	} else {
-		string user;
-		string password;
-		if (req.method == HTTPMethod.POST) {
-			user = req.form.get("user", "");
-			password = req.form.get("password","");
-		} else if (req.method == HTTPMethod.GET) {
-			user = req.query.get("user", "");
-			password = req.query.get("password","");
-		}
+		string user = req.cookies.get("user", "");
+		string password = req.cookies.get("password", "");
+		string auth_provider = req.cookies.get("auth_provider", "");
+		string remember_credentials = req.cookies.get("remember_credentials", "false");
+		logInfo("user: " ~ user ~ ", " ~ 
+				"password: " ~ password ~ ", " ~ 
+				"auth_provider: " ~ auth_provider ~ ", " ~ 
+				"remember_credentials: " ~ remember_credentials
+				);
 		ticket = get_ticket(user, password);
 		if (ticket !is null) {
 			res.setCookie("ticket", ticket, "/");
+			if (remember_credentials == "false") {
+				res.setCookie("user", null, "/");
+				res.setCookie("password", null, "/");
+				res.setCookie("auth_provider", null, "/");
+			}
 		} else {
 			res.setCookie("ticket", null, "/");
+			res.setCookie("user", null, "/");
+			res.setCookie("password", null, "/");
 			res.renderCompat!("login.dt",
 				HTTPServerRequest, "req")(req);
 		}

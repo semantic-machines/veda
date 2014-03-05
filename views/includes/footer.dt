@@ -8,5 +8,6 @@ nav.navbar.navbar-fixed-bottom(role="navigation", style="min-height:20px")
 // Javascript placed at the end of the document so the pages load faster
 script(src="/js/jquery.js")
 script(src="/js/bootstrap.min.js")
+script(src="/js/cookie.js")
 script(type="text/javascript") 
 	$("[rel=tooltip]").tooltip();
