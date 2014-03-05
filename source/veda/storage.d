@@ -9,50 +9,41 @@ import pacahon.thread_context;
 import onto.owl;
 import onto.individual;
 import onto.resource;
+import onto.lang;
 import util.lmultidigraph;
 
 enum Command
 {
-    Get = 1
+    Get,
+    Is
 }
 
 enum Function
 {
-    AllClasses           = 1,
-    Class                = 2,
-    Individual           = 3,
-    PropertyOfIndividual = 4,
-    IndividualsToQuery   = 5
+    AllClasses,
+    Class,
+    Individual,
+    PropertyOfIndividual,
+    IndividualsToQuery,
+    NewTicket,
+    TicketValid
 }
 
 Task io_task;
 
 class VedaStorage
 {
-//    immutable(Class)[ string ] owl_classes;
-//    immutable(Individual)[ string ] onto_individuals;
-    Context       context;
-    Individual_IO individual_io;
+    Context context;
 
     this()
     {
         init_core();
-//        core.thread.Thread.sleep(dur!("msecs")(0));
-        context       = new ThreadContext(props_file_path, "vibe.app");
-        individual_io = new Individual_IO(context);
-//        onto_individuals = context.get_onto_as_map_individuals();
-
-//        foreach (cl; context.owl_classes)
-//        {
-//            immutable Class iic = cl.idup;
-//            owl_classes[ iic.uri ] = iic;
-//        }
+        context = new ThreadContext(props_file_path, "vibe.app");
     }
 
     void init()
     {
         writeln("START VEDA STORAGE FIBER LISTENER");
-
 
         io_task = runTask({
                               immutable(Individual) _empty_iIndividual = (immutable(Individual)).init;
@@ -78,7 +69,7 @@ class VedaStorage
                                                       if (individual != _empty_iIndividual)
                                                           individuals ~= individual;
                                                       else
-                                                          individuals ~= individual_io.getIndividual(arg1, ticket, arg2).idup;
+                                                          individuals ~= context.get_individual(arg1, ticket, arg2).idup;
 
                                                       send(tid, individuals);
                                                   }
@@ -87,7 +78,7 @@ class VedaStorage
                                                       Ticket ticket;
 
                                                       immutable(Individual)[] individuals =
-                                                          individual_io.getIndividualsViaQuery(arg1, ticket, arg2);
+                                                          context.get_individuals_via_query(arg1, &ticket, arg2);
 
                                                       send(tid, individuals);
                                                   }
@@ -101,6 +92,11 @@ class VedaStorage
                                                   {
                                                       send(tid, context.get_owl_classes().values);
                                                   }
+                                                  else if (cmd == Command.Is && fn == Function.TicketValid)
+                                                  {
+                                                      bool res = context.is_ticket_valid(args);
+                                                      send(tid, res);
+                                                  }
                                                   else if (cmd == Command.Get && fn == Function.Class)
                                                   {
                                                       immutable(Class)[] classes;
@@ -112,6 +108,19 @@ class VedaStorage
                                                           classes ~= classz;
 
                                                       send(tid, classes);
+                                                  }
+                                              }
+                                          },
+                                          (Command cmd, Function fn, string arg1, string arg2, Tid tid) {
+                                              if (tid !is null)
+                                              {
+                                                  if (cmd == Command.Get && fn == Function.NewTicket)
+                                                  {
+                                                      immutable(Ticket)[] tickets;
+                                                      Ticket ticket = context.new_ticket(arg1, arg2);
+                                                      tickets ~= ticket;
+
+                                                      send(tid, tickets.idup);
                                                   }
                                               }
                                           },
@@ -129,7 +138,7 @@ class VedaStorage
                                                       if (individual == _empty_iIndividual)
                                                       {
                                                           immutable(Individual) individual1 =
-                                                              individual_io.getIndividual(arg1, ticket).idup;
+                                                              context.get_individual(arg1, ticket).idup;
                                                           immutable Resources res = individual1.resources.get(arg2, Resources.init);
 
                                                           foreach (rr; res)
@@ -169,16 +178,33 @@ class VedaStorage
 
 //////////////////////////////////////////////////// Client API /////////////////////////////////////////////////////////////////
 
-public static string get_ticket(string user, string password) {
-	Individual[] candidate_users = get_individuals_via_query("'veda-schema:userName' == '" ~ user.toLower ~ "'", 0);
-	foreach (_user; candidate_users) {
-		if (_user.resources["veda-schema:password"][0].data == password) return "good-ticket";
-	}
-	return null;
+public static Ticket new_ticket(string login, string password)
+{
+    Tid my_task = Task.getThis();
+
+    if (my_task !is null)
+    {
+        send(io_task, Command.Get, Function.NewTicket, login, password, my_task);
+        immutable(Ticket)[] tickets = receiveOnly!(immutable(Ticket)[]);
+        if (tickets.length > 0)
+            return tickets[ 0 ];
+    }
+
+    return Ticket.init;
 }
 
-public static bool is_ticket_valid(string ticket) {
-	return ticket == "good-ticket";
+public static bool is_ticket_valid(string ticket)
+{
+    Tid my_task = Task.getThis();
+
+    if (my_task !is null)
+    {
+        send(io_task, Command.Is, Function.TicketValid, ticket, my_task);
+        bool res = receiveOnly!(bool);
+        return res;
+    }
+
+    return false;
 }
 
 public static Individual[] get_individuals_via_query(string query, byte level = 0)
