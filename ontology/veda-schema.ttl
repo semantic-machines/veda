@@ -413,6 +413,11 @@ veda-schema:userName
   rdfs:label "имя пользователя"@ru ;
   rdfs:range xsd:string ;
 .
-rdfs:label
-  rdfs:label "наименование"@ru ;
+veda-schema:VedaAccount
+  rdf:type veda-schema:Account ;
+  veda-schema:accountOwner veda-schema:Veda ;
+  veda-schema:mailbox "veda@semantic-machines.com"^^xsd:string ;
+  veda-schema:password "6220b3e1f255f8e29b87488abab1bde126a6bbb44c62bf9b297b3d20347f8b4e"^^xsd:string ;
+  veda-schema:userName "veda"^^xsd:string ;
+  rdfs:label "VedaAccount"@en ;
 .
