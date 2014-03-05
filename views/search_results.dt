@@ -1,6 +1,6 @@
 extends generic
 block content
-	- import veda.storage, onto.resource;
+	- import veda.storage, onto.resource, onto.lang;
 	- Resource[] empty_resource(string uri)
 		- Resource[] res;
 		- Resource resource;

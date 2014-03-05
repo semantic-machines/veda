@@ -2,6 +2,7 @@ import std.conv;
 import vibe.d;
 import veda.storage;
 import onto.owl;
+import onto.lang;
 import onto.individual;
 import std.datetime;
 
@@ -113,7 +114,7 @@ void get_search(HTTPServerRequest req, HTTPServerResponse res) {
 }
 
 string get_ticket(string user, string password) {
-	return veda.storage.get_ticket(user, password);
+	return veda.storage.new_ticket(user, password).id;
 }
 
 bool is_ticket_valid(string ticket) {
