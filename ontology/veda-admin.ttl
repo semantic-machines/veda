@@ -1,0 +1,34 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix veda-admin: <http://semantic-machines.com/veda/veda-admin/> .
+
+<http://semantic-machines.com/veda/veda-admin>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология администратора системы Веда"@ru ;
+  rdfs:label "Veda system administrator ontology"@en ;
+  owl:imports rdf: ;
+  owl:imports rdfs: ;
+  owl:versionInfo "1.0" ;
+.
+veda-admin:VedaSystem
+  rdf:type veda-schema:Person ;
+  veda-schema:actualVersion veda-schema:VedaSystem ;
+  veda-schema:birthday "0000-00-01"^^xsd:date ;
+  veda-schema:firstName "Veda"@en ;
+  veda-schema:firstName "Веда"@ru ;
+  veda-schema:hasAccount veda-schema:VedaSystemAccount ;
+  veda-schema:lastName "System"@en ;
+  veda-schema:lastName "Система"@ru ;
+  rdfs:label "Veda System"@en ;
+  rdfs:label "Система Веда"@ru ;
+.
+veda-admin:VedaSystemAccount
+  rdf:type veda-schema:Account ;
+  veda-schema:accountOwner veda-schema:VedaSystem ;
+  veda-schema:mailbox "veda@semantic-machines.com"^^xsd:string ;
+  veda-schema:password "6220b3e1f255f8e29b87488abab1bde126a6bbb44c62bf9b297b3d20347f8b4e"^^xsd:string ;
+  veda-schema:login "veda"^^xsd:string ;
+  rdfs:label "Veda System Account"@en ;
+  rdfs:label "Учетная запись системы Веда"@ru ;
+.

@@ -406,18 +406,10 @@ veda-schema:startTime
   rdfs:label "время начала"@ru ;
   rdfs:range xsd:dateTime ;
 .
-veda-schema:userName
+veda-schema:login
   rdf:type owl:DatatypeProperty ;
   rdfs:domain veda-schema:Account ;
-  rdfs:label "user name"@en ;
-  rdfs:label "имя пользователя"@ru ;
+  rdfs:label "login"@en ;
+  rdfs:label "логин"@ru ;
   rdfs:range xsd:string ;
-.
-veda-schema:VedaAccount
-  rdf:type veda-schema:Account ;
-  veda-schema:accountOwner veda-schema:Veda ;
-  veda-schema:mailbox "veda@semantic-machines.com"^^xsd:string ;
-  veda-schema:password "6220b3e1f255f8e29b87488abab1bde126a6bbb44c62bf9b297b3d20347f8b4e"^^xsd:string ;
-  veda-schema:userName "veda"^^xsd:string ;
-  rdfs:label "VedaAccount"@en ;
 .

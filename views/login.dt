@@ -9,21 +9,12 @@ html(lang="en")
 						span.text-muted / Login
 					form(role="form" id="credentials")
 						.form-group
-							label(for="user") Пользователь / User
-							input#user.form-control(required="required", type="text", placeholder="Введите имя пользователя / Enter user name", name="user")
+							- string login = "login";
+							label(for="login") Логин / Login
+							input#login.form-control(required="required", type="text", placeholder="Введите логин / Enter login", name="login", value="#{req.cookies[login]}")
 						.form-group
 							label(for="password") Пароль / Password
-							input#password.form-control(required="required", type="password", placeholder="Введите пароль / Enter password", name="password")
-						.form-group
-							label(for="auth_provider") Провайдер аутентификации / Authentiction provider
-							select#auth_provider.form-control(required="required", name="auth_provider")
-								option(selected="selected") veda
-						.form-group
-							label.checkbox-inline
-								- if (req.cookies.get("remember_credentials","") == "true")
-									input#remember_credentials(type="checkbox", name="remember_credentials", checked) Запомнить / Remember
-								- else 
-									input#remember_credentials(type="checkbox", name="remember_credentials") Запомнить / Remember
+							input#password.form-control(required="required", type="password", placeholder="Введите пароль / Enter password", name="password", autofocus="autofocus")
 
 					form(method="#{req.method}", role="form", id="data")
 						- if (req.method == HTTPMethod.GET)
@@ -43,15 +34,7 @@ html(lang="en")
 					}
 				});
 				$( '#data' ).submit(function(event) {
-					setCookie('remember_credentials', $('#remember_credentials').prop('checked'), {path:'/', expires:3600*24*365});
-					if ($('#remember_credentials').prop('checked')) {
-						setCookie('user', $('#user').val(), {path:'/', expires:3600*24*365}); 
-						setCookie('password', Sha256.hash($('#password').val()), {path:'/', expires:3600*24*365});
-						setCookie('auth_provider', $('#auth_provider').val(), {path:'/', expires:3600*24*365});
-					} else {
-						setCookie('user', $('#user').val(), {path:'/', expires:5}); 
-						setCookie('password', Sha256.hash($('#password').val()), {path:'/', expires:5});
-						setCookie('auth_provider', $('#auth_provider').val(), {path:'/', expires:5});
-					}
+					setCookie('login', $('#login').val(), {path:'/', expires:3600*24*365}); 
+					setCookie('password', Sha256.hash($('#password').val()), {path:'/', expires:5});
 				});
 			});

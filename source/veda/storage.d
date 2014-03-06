@@ -117,7 +117,7 @@ class VedaStorage
                                                   if (cmd == Command.Get && fn == Function.NewTicket)
                                                   {
                                                       immutable(Ticket)[] tickets;
-                                                      Ticket ticket = context.new_ticket(arg1, arg2);
+                                                      Ticket ticket = context.authenticate(arg1, arg2);
                                                       tickets ~= ticket;
 
                                                       send(tid, tickets.idup);
@@ -178,7 +178,7 @@ class VedaStorage
 
 //////////////////////////////////////////////////// Client API /////////////////////////////////////////////////////////////////
 
-public static Ticket new_ticket(string login, string password)
+public static Ticket authenticate(string login, string password)
 {
     Tid my_task = Task.getThis();
 

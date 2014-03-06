@@ -4,7 +4,9 @@ import veda.storage;
 import onto.owl;
 import onto.lang;
 import onto.individual;
+import pacahon.context;
 import std.datetime;
+
 
 
 void show_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) {
@@ -49,31 +51,36 @@ void get_login(HTTPServerRequest req, HTTPServerResponse res) {
 	}
 }
 
+string to_rfc822(SysTime time) {
+	//Example: Tue, 15-Jan-2013 21:47:38 GMT
+	string[] weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+	string  Www = weekdays[time.dayOfWeek], 
+			dd  = text(time.day), 
+			Mmm = text(time.month), 
+			yyyy= text(time.year), 
+			hh  = text(time.hour), 
+			mm  = text(time.minute), 
+			ss  = text(time.second), 
+			tz  = time.timezone.stdName;
+	return Www~", "~dd~"-"~Mmm~"-"~yyyy~" "~hh~":"~mm~":"~ss~" "~tz;
+}
+
 void login(HTTPServerRequest req, HTTPServerResponse res) {
-	string ticket = req.cookies.get("ticket", "");
-	if (is_ticket_valid(ticket)) {
+	string ticket_string = req.cookies.get("ticket", "");
+	if (is_ticket_valid(ticket_string)) {
 		return;
 	} else {
-		string user = req.cookies.get("user", "");
+		string login = req.cookies.get("login", "");
 		string password = req.cookies.get("password", "");
-		string auth_provider = req.cookies.get("auth_provider", "");
-		string remember_credentials = req.cookies.get("remember_credentials", "false");
-		logInfo("user: " ~ user ~ ", " ~ 
-				"password: " ~ password ~ ", " ~ 
-				"auth_provider: " ~ auth_provider ~ ", " ~ 
-				"remember_credentials: " ~ remember_credentials
-				);
-		ticket = get_ticket(user, password);
-		if (ticket !is null) {
-			res.setCookie("ticket", ticket, "/");
-			if (remember_credentials == "false") {
-				res.setCookie("user", null, "/");
-				res.setCookie("password", null, "/");
-				res.setCookie("auth_provider", null, "/");
-			}
+		Ticket ticket = authenticate(login, password);
+		if (ticket != Ticket.init) {
+			Cookie ticket_cookie = res.setCookie("ticket", ticket.id, "/");
+			ticket_cookie.expires = to_rfc822(SysTime(ticket.end_time, TimeZone.getTimeZone("UTC")));
+			//res.setCookie("login", null, "/");
+			res.setCookie("password", null, "/");
 		} else {
 			res.setCookie("ticket", null, "/");
-			res.setCookie("user", null, "/");
+			//res.setCookie("login", null, "/");
 			res.setCookie("password", null, "/");
 			res.renderCompat!("login.dt",
 				HTTPServerRequest, "req")(req);
@@ -113,16 +120,8 @@ void get_search(HTTPServerRequest req, HTTPServerResponse res) {
 	logInfo("page rendering time:"~text(t)~" msecs");
 }
 
-string get_ticket(string user, string password) {
-	return veda.storage.new_ticket(user, password).id;
-}
-
-bool is_ticket_valid(string ticket) {
-	return veda.storage.is_ticket_valid(ticket);
-}
-
-bool check_credentials(string user, string password) {
-	return user == "admin" && password == "admin";
+bool check_credentials(string login, string password) {
+	return login == "admin" && password == "admin";
 }
 
 shared static this()

@@ -1,0 +1,57 @@
+!!! 5
+html(lang="en")
+	include includes/header
+	body(style="padding: 10% 0px 30px;")
+		.container-fluid
+			.row
+				.col-xs-12.col-sm-6.col-sm-offset-3.col-md-6.col-md-offset-3.col-lg-6.col-lg-offset-3
+					h1 Представьтесь
+						span.text-muted / Login
+					form(role="form" id="credentials")
+						.form-group
+							label(for="login") Логин / Login
+							input#login.form-control(required="required", type="text", placeholder="Введите логин / Enter login", name="login")
+						.form-group
+							label(for="password") Пароль / Password
+							input#password.form-control(required="required", type="password", placeholder="Введите пароль / Enter password", name="password")
+						.form-group
+							label(for="auth_provider") Провайдер аутентификации / Authentiction provider
+							select#auth_provider.form-control(required="required", name="auth_provider")
+								option(selected="selected") veda
+						.form-group
+							label.checkbox-inline
+								- if (req.cookies.get("remember_credentials","") == "true")
+									input#remember_credentials(type="checkbox", name="remember_credentials", checked) Запомнить / Remember
+								- else 
+									input#remember_credentials(type="checkbox", name="remember_credentials") Запомнить / Remember
+
+					form(method="#{req.method}", role="form", id="data")
+						- if (req.method == HTTPMethod.GET)
+							- foreach(key_query_field, value_query_field; req.query)
+								input(type="hidden", name="#{key_query_field}", value="#{value_query_field}")
+						- else
+							- foreach(key_form_field, value_form_field; req.form)
+								input(type="hidden", name="#{key_form_field}", value="#{value_form_field}")
+						button.btn.btn-primary(type="submit") Войти / Enter
+		include includes/footer
+		script(src="/js/sha256.js")
+		script(type="text/javascript")
+			$(function() {
+				$( ':input' ).keyup(function (e) {
+					if (e.which == 13) {
+						$('#data').trigger('submit');
+					}
+				});
+				$( '#data' ).submit(function(event) {
+					setCookie('remember_credentials', $('#remember_credentials').prop('checked'), {path:'/', expires:3600*24*365});
+					if ($('#remember_credentials').prop('checked')) {
+						setCookie('login', $('#login').val(), {path:'/', expires:3600*24*365}); 
+						setCookie('password', Sha256.hash($('#password').val()), {path:'/', expires:3600*24*365});
+						setCookie('auth_provider', $('#auth_provider').val(), {path:'/', expires:3600*24*365});
+					} else {
+						setCookie('login', $('#login').val(), {path:'/', expires:5}); 
+						setCookie('password', Sha256.hash($('#password').val()), {path:'/', expires:5});
+						setCookie('auth_provider', $('#auth_provider').val(), {path:'/', expires:5});
+					}
+				});
+			});
