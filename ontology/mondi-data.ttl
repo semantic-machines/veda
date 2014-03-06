@@ -295,6 +295,7 @@ mondi-data:TechnicalDirector
 .
 mondi-data:ValeriyBushenev
   rdf:type veda-schema:Person ;
+  rdf:type veda-schema:Deleted ;
   veda-schema:actualVersion mondi-data:ValeriyBushenev ;
   veda-schema:birthday "1973-05-09"^^xsd:date ;
   veda-schema:firstName "Valeriy"@en ;

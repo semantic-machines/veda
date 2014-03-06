@@ -18,6 +18,12 @@
   owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "1.0" ;
 .
+veda-schema:Deleted
+  rdf:type owl:Class ;
+  rdfs:label "Deleted"@en ;
+  rdfs:label "Удален"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
 veda-schema:Absence
   rdf:type owl:Class ;
   rdfs:label "Absence"@en ;
