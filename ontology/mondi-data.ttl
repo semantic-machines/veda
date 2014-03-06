@@ -11,10 +11,10 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 <http://semantic-machines.com/veda/mondi-data>
   rdf:type owl:Ontology ;
-  owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
-  owl:versionInfo "1.0" ;
   rdfs:label "Mondi individuals ontology"@en ;
   rdfs:label "Онтология индивидов Монди"@ru ;
+  owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
+  owl:versionInfo "1.0" ;
 .
 mondi-data:AdministrativeDocument_1
   rdf:type mondi-schema:AdministrativeDocument ;
@@ -110,17 +110,17 @@ mondi-data:ApplicationDevelopmentGroup
 mondi-data:BushenevV
   rdf:type veda-schema:Account ;
   veda-schema:accountOwner mondi-data:ValeriyBushenev ;
+  veda-schema:login "BushenevV"^^xsd:string ;
   veda-schema:mailbox "valeriy.bushenev@mondigroup.com"^^xsd:string ;
   veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  veda-schema:login "BushenevV"^^xsd:string ;
   rdfs:label "BushenevV"@en ;
 .
 mondi-data:BychinA
   rdf:type veda-schema:Account ;
   veda-schema:accountOwner mondi-data:AndreyBychin ;
+  veda-schema:login "BychinA"^^xsd:string ;
   veda-schema:mailbox "andrey.bychin@mondigroup.com"^^xsd:string ;
   veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  veda-schema:login "BychinA"^^xsd:string ;
   rdfs:label "BychinA"@en ;
 .
 mondi-data:CCIP
@@ -150,9 +150,9 @@ mondi-data:Group_1
 mondi-data:KarpovR
   rdf:type veda-schema:Account ;
   veda-schema:accountOwner mondi-data:RomanKarpov ;
+  veda-schema:login "KarpovR"^^xsd:string ;
   veda-schema:mailbox "roman.karpov@mondigroup.com"^^xsd:string ;
   veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  veda-schema:login "KarpovR"^^xsd:string ;
   rdfs:label "KarpovR"@en ;
 .
 mondi-data:Mandate_1
@@ -178,8 +178,11 @@ mondi-data:MondiSyktyvkar
 mondi-data:Permission_1
   rdf:type veda-schema:PermissionStatement ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
+  veda-schema:canCreate "true"^^xsd:boolean ;
+  veda-schema:canDelete "true"^^xsd:boolean ;
+  veda-schema:canRead "true"^^xsd:boolean ;
+  veda-schema:canUpdate "true"^^xsd:boolean ;
   veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
-  veda-schema:permission "+C+R+U+D"^^xsd:string ;
   veda-schema:permissionObject mondi-data:AllResourcesGroup ;
   veda-schema:permissionSubject mondi-data:SuperAdmin ;
   veda-schema:published "2014-01-30T16:45:33"^^xsd:dateTime ;
@@ -190,8 +193,8 @@ mondi-data:Permission_1
 mondi-data:Permission_2
   rdf:type veda-schema:PermissionStatement ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
+  veda-schema:canRead "true"^^xsd:boolean ;
   veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
-  veda-schema:permission "+C"^^xsd:string ;
   veda-schema:permissionObject mondi-data:AllResourcesGroup ;
   veda-schema:permissionSubject mondi-data:Group_1 ;
   veda-schema:published "2014-01-30T16:45:33"^^xsd:dateTime ;

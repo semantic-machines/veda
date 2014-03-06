@@ -11,8 +11,8 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 <http://semantic-machines.com/veda/veda-schema>
   rdf:type owl:Ontology ;
-  rdfs:label "Онтология системы Veda"@ru ;
   rdfs:label "Veda system ontology"@en ;
+  rdfs:label "Онтология системы Veda"@ru ;
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
@@ -193,6 +193,34 @@ veda-schema:birthday
   rdfs:label "день рождения"@ru ;
   rdfs:range xsd:date ;
 .
+veda-schema:canCreate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-schema:PermissionStatement ;
+  rdfs:label "can create"@en ;
+  rdfs:label "можно создавать"@ru ;
+  rdfs:range xsd:boolean ;
+.
+veda-schema:canDelete
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-schema:PermissionStatement ;
+  rdfs:label "can delete"@en ;
+  rdfs:label "можно удалять"@ru ;
+  rdfs:range xsd:boolean ;
+.
+veda-schema:canRead
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-schema:PermissionStatement ;
+  rdfs:label "can read"@en ;
+  rdfs:label "можно читать"@ru ;
+  rdfs:range xsd:boolean ;
+.
+veda-schema:canUpdate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-schema:PermissionStatement ;
+  rdfs:label "can update"@en ;
+  rdfs:label "можно изменять"@ru ;
+  rdfs:range xsd:boolean ;
+.
 veda-schema:childUnit
   rdf:type owl:ObjectProperty ;
   rdfs:domain veda-schema:OrganizationUnit ;
@@ -284,6 +312,13 @@ veda-schema:lastName
   rdfs:label "фамилия"@ru ;
   rdfs:range rdfs:Literal ;
 .
+veda-schema:login
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-schema:Account ;
+  rdfs:label "login"@en ;
+  rdfs:label "логин"@ru ;
+  rdfs:range xsd:string ;
+.
 veda-schema:mailbox
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "Mailbox"@en ;
@@ -342,15 +377,6 @@ veda-schema:password
   rdfs:domain veda-schema:Account ;
   rdfs:label "password"@en ;
   rdfs:label "пароль"@ru ;
-  rdfs:range xsd:string ;
-.
-veda-schema:permission
-  rdf:type owl:DatatypeProperty ;
-  rdfs:comment "A string defining permissions: [+|-]C[+|-]R[+|-]U[+|-]D."@en ;
-  rdfs:comment "Строка определяющая уровень прав: [+|-]C[+|-]R[+|-]U[+|-]D."@ru ;
-  rdfs:domain veda-schema:PermissionStatement ;
-  rdfs:label "permissions"@en ;
-  rdfs:label "права"@ru ;
   rdfs:range xsd:string ;
 .
 veda-schema:permissionObject
@@ -412,11 +438,4 @@ veda-schema:startTime
   rdfs:label "start time"@en ;
   rdfs:label "время начала"@ru ;
   rdfs:range xsd:dateTime ;
-.
-veda-schema:login
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain veda-schema:Account ;
-  rdfs:label "login"@en ;
-  rdfs:label "логин"@ru ;
-  rdfs:range xsd:string ;
 .

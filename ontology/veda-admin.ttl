@@ -1,5 +1,13 @@
+# baseURI: http://semantic-machines.com/veda/veda-admin
+# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+# imports: http://www.w3.org/2000/01/rdf-schema#
+# imports: http://www.w3.org/2002/07/owl
+
+# c14n-version: 3
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix veda-admin: <http://semantic-machines.com/veda/veda-admin/> .
 
@@ -9,6 +17,7 @@
   rdfs:label "Veda system administrator ontology"@en ;
   owl:imports rdf: ;
   owl:imports rdfs: ;
+  owl:imports owl: ;
   owl:versionInfo "1.0" ;
 .
 veda-admin:VedaSystem
