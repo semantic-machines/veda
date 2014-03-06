@@ -9,9 +9,9 @@ html(lang="en")
 						span.text-muted / Login
 					form(role="form" id="credentials")
 						.form-group
-							- string login = "login";
+							- string login = "login", empty = "";
 							label(for="login") Логин / Login
-							input#login.form-control(required="required", type="text", placeholder="Введите логин / Enter login", name="login", value="#{req.cookies[login]}")
+							input#login.form-control(required="required", type="text", placeholder="Введите логин / Enter login", name="login", value="#{req.cookies.get(login,empty)}")
 						.form-group
 							label(for="password") Пароль / Password
 							input#password.form-control(required="required", type="password", placeholder="Введите пароль / Enter password", name="password", autofocus="autofocus")
