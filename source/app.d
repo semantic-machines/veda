@@ -43,12 +43,10 @@ void get_individual(HTTPServerRequest req, HTTPServerResponse res) {
 		Individual, "individual")(req, individual);
 }
 
-void get_login(HTTPServerRequest req, HTTPServerResponse res) {
-	string ticket = req.cookies.get("ticket", "");
-	if (!is_ticket_valid(ticket)) {
-		res.renderCompat!("login.dt",
-			HTTPServerRequest, "req")(req);
-	}
+void logout(HTTPServerRequest req, HTTPServerResponse res) {
+	res.setCookie("ticket", null, "/");
+	res.setCookie("password", null, "/");
+	res.redirect("/");
 }
 
 string to_rfc822(SysTime time) {
@@ -76,11 +74,9 @@ void login(HTTPServerRequest req, HTTPServerResponse res) {
 		if (ticket != Ticket.init) {
 			Cookie ticket_cookie = res.setCookie("ticket", ticket.id, "/");
 			ticket_cookie.expires = to_rfc822(SysTime(ticket.end_time, TimeZone.getTimeZone("UTC")));
-			//res.setCookie("login", null, "/");
 			res.setCookie("password", null, "/");
 		} else {
 			res.setCookie("ticket", null, "/");
-			//res.setCookie("login", null, "/");
 			res.setCookie("password", null, "/");
 			res.renderCompat!("login.dt",
 				HTTPServerRequest, "req")(req);
@@ -135,6 +131,7 @@ shared static this()
 	auto router = new URLRouter;
 //	router.any("*", performBasicAuth("veda system", toDelegate(&check_credentials)));
 	router.get("*", serveStaticFiles("public"));
+	router.get("/logout", &logout);
 	router.any("*", &login);
 	router.get("/", staticTemplate!"index.dt");
 	router.get("/classes", &get_classes);

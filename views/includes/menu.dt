@@ -1,8 +1,10 @@
 nav.navbar.navbar-inverse(role="navigation")
 	.container-fluid
-		a.navbar-brand(href="/")
+		//-
+			a.navbar-brand(href="/")
 			img(src="/img/logo-veda.png", alt="Veda logo")
-		ul.nav.navbar-nav
+		a.btn.btn-info.navbar-btn.navbar-left(href="/") VEDA
+		ul.nav.navbar-nav.navbar-left
 			li
 				a(href="/classes/", title="Classes") Classes
 			//
@@ -10,3 +12,24 @@ nav.navbar.navbar-inverse(role="navigation")
 				a(href="/individuals/", title="Individuals") Individuals
 			li
 				a(href="/search/", title="Search") Search
+
+		a.btn.btn-xs.btn-danger.navbar-btn.navbar-right(href="/logout")
+			i.glyphicon.glyphicon-log-out
+
+		p.navbar-text.navbar-right
+			| Signed in as 
+			a.navbar-link(href="#") Roman Karpov
+
+		.navbar-right.btn-group(data-toggle="buttons")
+			label#ru-label.btn.btn-xs.btn-info.navbar-btn.active
+				input#ru(type="radio")
+				| Ru
+			label#en-label.btn.btn-xs.btn-info.navbar-btn
+				input#ru(type="radio")
+				| En
+			
+//-
+	script(type="text/javascript")
+	$(function() {
+		$("#ru-label").button("toggle");
+	});
