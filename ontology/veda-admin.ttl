@@ -1,4 +1,5 @@
 # baseURI: http://semantic-machines.com/veda/veda-admin
+# imports: http://semantic-machines.com/veda/veda-schema
 # imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
 # imports: http://www.w3.org/2000/01/rdf-schema#
 # imports: http://www.w3.org/2002/07/owl
@@ -7,23 +8,23 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix veda-admin: <http://semantic-machines.com/veda/veda-admin/> .
-
+@prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 <http://semantic-machines.com/veda/veda-admin>
   rdf:type owl:Ontology ;
-  rdfs:label "Онтология администратора системы Веда"@ru ;
   rdfs:label "Veda system administrator ontology"@en ;
+  rdfs:label "Онтология администратора системы Веда"@ru ;
+  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
   owl:imports rdf: ;
   owl:imports rdfs: ;
-  owl:imports owl: ;
+  owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "1.0" ;
 .
 veda-admin:VedaSystem
   rdf:type veda-schema:Person ;
   veda-schema:actualVersion veda-schema:VedaSystem ;
-  veda-schema:birthday "0000-00-01"^^xsd:date ;
+  veda-schema:birthday "2014-03-05"^^xsd:date ;
   veda-schema:firstName "Veda"@en ;
   veda-schema:firstName "Веда"@ru ;
   veda-schema:hasAccount veda-schema:VedaSystemAccount ;
@@ -35,9 +36,9 @@ veda-admin:VedaSystem
 veda-admin:VedaSystemAccount
   rdf:type veda-schema:Account ;
   veda-schema:accountOwner veda-schema:VedaSystem ;
+  veda-schema:login "veda"^^xsd:string ;
   veda-schema:mailbox "veda@semantic-machines.com"^^xsd:string ;
   veda-schema:password "6220b3e1f255f8e29b87488abab1bde126a6bbb44c62bf9b297b3d20347f8b4e"^^xsd:string ;
-  veda-schema:login "veda"^^xsd:string ;
   rdfs:label "Veda System Account"@en ;
   rdfs:label "Учетная запись системы Веда"@ru ;
 .

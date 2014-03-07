@@ -35,11 +35,12 @@ block content
 				- foreach(property_uri, property_values; individual.resources)
 					.row
 						.col-xs-4.col-sm-4.col-md-3.col-lg-3.text-right
-							- foreach(label; get_individual(property_uri).resources.get("rdfs:label", empty_resource(property_uri)))
-								- if (label.lang == preferred_lang)
-									span #{label.data}
-								- else if (show_alternative_lang)
-									span.text-muted #{label.data}
+							a(href="/individuals/#{property_uri}")
+								- foreach(label; get_individual(property_uri).resources.get("rdfs:label", empty_resource(property_uri)))
+									- if (label.lang == preferred_lang)
+										span #{label.data}
+									- else if (show_alternative_lang)
+										span.text-muted #{label.data}
 						.col-xs-8.col-sm-8.col-md-9.col-lg-9
 							- foreach(property_value; property_values)
 								- if (property_value.type == ResourceType.Uri)
