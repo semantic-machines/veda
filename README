@@ -1,11 +1,7 @@
 Veda system project.
 
 I. Project dependencies
+  See dub.json for dependencies list
 
-II. Building & running:
-
-0. Build the veda system:
-   $ make
-
-1. Start up the veda system:
-   $ make start
+II. Building & running veda:
+  cd /path/to/veda && ./m.sh
