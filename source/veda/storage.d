@@ -75,10 +75,17 @@ class VedaStorage
                                                   }
                                                   else if (cmd == Command.Get && fn == Function.IndividualsToQuery)
                                                   {
+//        StopWatch sw;
+//        sw.start();
+
                                                       Ticket ticket;
 
                                                       immutable(Individual)[] individuals =
                                                           context.get_individuals_via_query(arg1, &ticket, arg2);
+
+//                sw.stop();
+//                long t = cast(long) sw.peek().msecs;
+//                logInfo("@L2 query execution time:"~text(t)~" msecs");
 
                                                       send(tid, individuals);
                                                   }
