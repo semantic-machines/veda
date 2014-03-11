@@ -19,14 +19,14 @@ block content
 	.row
 		.col-xs-4.col-sm-4.col-md-3.col-lg-3.text-right URI
 		.col-xs-8.col-sm-8.col-md-9.col-lg-9 
-			a(href="/individuals/#{individual.uri}") 
+			a(href="/individuals/#{individual.uri}")
 				span #{individual.uri}
 				i.glyphicon.glyphicon-share-alt
 	hr(style="padding:0px; margin:3px")
 	- foreach(property_uri, property_values; individual.resources)
 		.row
 			.col-xs-4.col-sm-4.col-md-3.col-lg-3.text-right
-				a(href="/individuals/#{property_uri}")
+				a(href="/individuals/#{property_uri}", rel="popover", uri="#{property_uri}")
 					- foreach(label; get_individual(property_uri).resources.get("rdfs:label", empty_resource(property_uri)))
 						- if (label.lang == preferred_lang)
 							span #{label.data}
@@ -39,7 +39,7 @@ block content
 						
 						- if (property_value.origin == ResourceOrigin.local)
 							div
-								a(href="/individuals/#{property_value.data}")
+								a(href="/individuals/#{property_value.data}", rel="popover", uri="#{property_value.data}")
 									- foreach(label; get_individual(property_value.data).resources.get("rdfs:label", empty_resource(property_value.data)))
 										- if (label.lang == preferred_lang)
 											span #{label.data}
@@ -49,7 +49,7 @@ block content
 						
 						- else if (property_value.origin == ResourceOrigin.external)
 							div
-								a(href="#{property_value.data}") #{property_value.data}
+								a(href="#{property_value.data}", rel="popover", uri="#{property_value.data}") #{property_value.data}
 					
 					- else if (property_value.type == ResourceType.String)
 						

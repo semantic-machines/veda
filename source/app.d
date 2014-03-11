@@ -43,6 +43,15 @@ void get_individual(HTTPServerRequest req, HTTPServerResponse res) {
 		Individual, "individual")(req, individual);
 }
 
+void get_popover(HTTPServerRequest req, HTTPServerResponse res) {
+	string uri = req.params["uri"];
+	logInfo(uri);
+	Individual individual = veda.storage.get_individual(uri);
+	res.renderCompat!("popover.dt",
+		HTTPServerRequest, "req",
+		Individual, "individual")(req, individual);
+}
+
 void logout(HTTPServerRequest req, HTTPServerResponse res) {
 	res.setCookie("ticket", null, "/");
 	res.setCookie("password", null, "/");
@@ -138,6 +147,7 @@ shared static this()
 	router.get("/classes/", &get_classes);
 	router.get("/classes/:uri", &get_class);
 	router.get("/individuals/:uri", &get_individual);
+	router.get("/popover/:uri", &get_popover);
 	router.get("/search", &get_search);
 	router.get("/search/", &get_search);
 	listenHTTP(settings, router);

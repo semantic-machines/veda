@@ -8,5 +8,22 @@ nav.navbar.navbar-fixed-bottom(role="navigation", style="min-height:20px")
 // Javascript placed at the end of the document so the pages load faster
 script(src="/js/bootstrap.min.js")
 script(src="/js/cookie.js")
-script(type="text/javascript") 
-	$("[rel=tooltip]").tooltip();
+script(type="text/javascript")
+	$( function () {
+		$("[rel=popover]")
+			.mouseenter( function () {
+				var e = $( this );
+				$.get("/popover/" + e.attr("uri"), function( d ) {
+					e.popover({
+						content: d,
+						html: true,
+						placement: "auto bottom",
+						container: "body"
+					}).popover("show");
+				});
+				e.mouseleave ( function () {
+					e.off("mouseleave");
+					e.popover("destroy");
+				});
+			});
+	});
