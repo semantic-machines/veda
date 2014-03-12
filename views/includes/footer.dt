@@ -8,18 +8,17 @@ nav.navbar.navbar-fixed-bottom(role="navigation", style="min-height:20px")
 // Javascript placed at the end of the document so the pages load faster
 script(src="/js/bootstrap.min.js")
 script(src="/js/cookie.js")
-script(src="/js/base64.js")
+script(src="/js/veda.js")
 
 script(type="text/javascript")
 	$( function () {
 		$("[data-toggle=popover]")
 			.mouseenter( function () {
 				var popover_element = $( this );
-				uri = Base64.encode(popover_element.data("uri"));
-				uri = uri.substring(0, uri.length-2);
-				if ($("#"+uri).length) {
+				uri = popover_element.data("uri");
+				if ($("#"+escape4$(uri)).length) {
 					popover_element.popover({
-						content: $("#"+uri).text(),
+						content: $("#"+escape4$(uri)).text(),
 						html: true,
 						placement: "auto bottom",
 						container: "body"
