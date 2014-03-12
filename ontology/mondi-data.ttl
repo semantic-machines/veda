@@ -169,6 +169,27 @@ mondi-data:Mandate_1
   rdfs:label "Mandate_1"@en ;
   rdfs:label "Мандат_1"@ru ;
 .
+mondi-data:Membership_1
+  rdf:type veda-schema:Membership ;
+  veda-schema:memberOf mondi-data:SuperAdmin ;
+  veda-schema:resource mondi-data:AndreyBychin-ExecutiveDirector ;
+  rdfs:label "Membership_1"@en ;
+  rdfs:label "Членство_1"@ru ;
+.
+mondi-data:Membership_2
+  rdf:type veda-schema:Membership ;
+  veda-schema:memberOf mondi-data:SuperAdmin ;
+  veda-schema:resource mondi-data:RomanKarpov-CommercialDirector ;
+  rdfs:label "Membership_2"@en ;
+  rdfs:label "Членство_2"@ru ;
+.
+mondi-data:Membership_3
+  rdf:type veda-schema:Membership ;
+  veda-schema:memberOf mondi-data:Group_1 ;
+  veda-schema:resource mondi-data:RomanKarpov-CommercialDirector ;
+  rdfs:label "Membership_3"@en ;
+  rdfs:label "Членство_3"@ru ;
+.
 mondi-data:MondiSyktyvkar
   rdf:type veda-schema:Organization ;
   veda-schema:childUnit mondi-data:CCIP ;

@@ -26,12 +26,15 @@ block content
 	- foreach(property_uri, property_values; individual.resources)
 		.row
 			.col-xs-4.col-sm-4.col-md-3.col-lg-3.text-right
-				a(href="/individuals/#{property_uri}", rel="popover", uri="#{property_uri}")
-					- foreach(label; get_individual(property_uri).resources.get("rdfs:label", empty_resource(property_uri)))
-						- if (label.lang == preferred_lang)
-							span #{label.data}
-						- else if (show_alternative_lang)
-							span.text-muted #{label.data}
+				- string property_label_preferred_lang, property_label_other_lang;
+				- foreach(label_resource; get_individual(property_uri).resources.get("rdfs:label", empty_resource(property_uri)))
+					- if (label_resource.lang == preferred_lang)
+						- property_label_preferred_lang ~= label_resource.data ~ " ";
+					- else if (show_alternative_lang)
+						- property_label_other_lang ~= label_resource.data ~ " ";
+				a(href="/individuals/#{property_uri}", data-toggle="popover", data-uri="#{property_uri}", data-title="#{property_label_preferred_lang ~ property_label_other_lang}")
+					span #{property_label_preferred_lang}
+					span.text-muted #{property_label_other_lang}
 						
 			.col-xs-8.col-sm-8.col-md-9.col-lg-9
 				- foreach(property_value; property_values)
@@ -39,17 +42,20 @@ block content
 						
 						- if (property_value.origin == ResourceOrigin.local)
 							div
-								a(href="/individuals/#{property_value.data}", rel="popover", uri="#{property_value.data}")
-									- foreach(label; get_individual(property_value.data).resources.get("rdfs:label", empty_resource(property_value.data)))
-										- if (label.lang == preferred_lang)
-											span #{label.data}
-										- else if (show_alternative_lang)
-											span.text-muted #{label.data}
+								- string value_label_preferred_lang, value_label_other_lang;
+								- foreach(label_resource; get_individual(property_value.data).resources.get("rdfs:label", empty_resource(property_value.data)))
+									- if (label_resource.lang == preferred_lang)
+										- value_label_preferred_lang ~= label_resource.data ~ " ";
+									- else if (show_alternative_lang)
+										- value_label_other_lang ~= label_resource.data ~ " ";
+								a(href="/individuals/#{property_value.data}", data-toggle="popover", data-uri="#{property_value.data}", data-title="#{value_label_preferred_lang ~ value_label_other_lang}")
+									span #{value_label_preferred_lang}
+									span.text-muted #{value_label_other_lang}
 									i.glyphicon.glyphicon-share-alt
 						
 						- else if (property_value.origin == ResourceOrigin.external)
 							div
-								a(href="#{property_value.data}", rel="popover", uri="#{property_value.data}") #{property_value.data}
+								a(href="#{property_value.data}") #{property_value.data}
 					
 					- else if (property_value.type == ResourceType.String)
 						

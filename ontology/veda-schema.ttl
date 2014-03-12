@@ -386,7 +386,7 @@ veda-schema:permissionObject
   rdfs:domain veda-schema:PermissionStatement ;
   rdfs:label "permission resource"@en ;
   rdfs:label "ресурс полномочий"@ru ;
-  rdfs:range veda-schema:Group ;
+  rdfs:range rdfs:Resource ;
 .
 veda-schema:permissionSubject
   rdf:type owl:ObjectProperty ;
@@ -395,7 +395,7 @@ veda-schema:permissionSubject
   rdfs:domain veda-schema:PermissionStatement ;
   rdfs:label "permission subject"@en ;
   rdfs:label "субъект полномочий"@ru ;
-  rdfs:range veda-schema:Group ;
+  rdfs:range rdfs:Resource ;
 .
 veda-schema:previousVersion
   rdf:type owl:ObjectProperty ;

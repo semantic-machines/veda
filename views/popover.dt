@@ -6,7 +6,7 @@
 	- res ~= resource;
 	- return res;
 - auto preferred_lang = LANG.RU;
-- auto show_alternative_lang = false;
+- auto show_alternative_lang = true;
 
 div
 	//-
@@ -25,7 +25,7 @@ div
 					- else if (show_alternative_lang)
 						span.text-muted #{label.data}
 						
-			dd(style="white-space:nowrap;")
+			dd
 				- foreach(property_value; property_values)
 					- if (property_value.type == ResourceType.Uri)
 						
