@@ -7,6 +7,85 @@ block content
 			.row
 				.form-group.col-xs-6.col-sm-9.col-md-10.col-lg-10
 					label.sr-only(for="q") Запрос / Query:
-					input#q.form-control(type="text", style="width:100%", placeholder="Введите запрос / Enter query", autofocus="autofocus", name="q")
+					input#q.form-control(type="text", style="width:100%", placeholder="Введите запрос / Enter query", autofocus="autofocus", name="q", value="#{req.query.get("q", "")}")
 				.col-xs-6.col-sm-3.col-md-2.col-lg-2
 					button.btn.btn-primary(type="submit") Искать / Search
+		hr
+		
+		- import veda.storage, onto.resource, onto.lang;
+		- Resource[] empty_resource(string uri)
+			- Resource[] res;
+			- Resource resource;
+			- resource.data = uri;
+			- res ~= resource;
+			- return res;
+		- auto preferred_lang = LANG.RU;
+		- auto show_alternative_lang = true;
+		- if (req.query.get("q", "") == "")
+		- else if (req.query.get("q", "") != "" && individuals.length == 0)
+			h1 Ничего не найдено
+				span.text-muted / Nothing found
+		- else
+			h1 Результаты поиска
+				span.text-muted / Search results
+				span (#{individuals.length})
+		ol
+			- foreach(individual; individuals)
+				li
+					h2
+						- foreach (label; individual.resources.get("rdfs:label", empty_resource(individual.uri)))
+							- if (label.lang == preferred_lang)
+								span #{label.data}
+							- else if (show_alternative_lang)
+								span.text-muted #{label.data}
+					.row
+						.col-xs-4.col-sm-4.col-md-3.col-lg-3.text-right URI
+						.col-xs-8.col-sm-8.col-md-9.col-lg-9 
+							a(href="/individuals/#{individual.uri}")
+								span #{individual.uri}
+								i.glyphicon.glyphicon-share-alt
+					hr(style="padding:0px; margin:3px")
+					- foreach(property_uri, property_values; individual.resources)
+						.row
+							.col-xs-4.col-sm-4.col-md-3.col-lg-3.text-right
+								- string property_label_preferred_lang, property_label_other_lang;
+								- foreach(label_resource; get_individual(property_uri).resources.get("rdfs:label", empty_resource(property_uri)))
+									- if (label_resource.lang == preferred_lang)
+										- property_label_preferred_lang ~= label_resource.data ~ " ";
+									- else if (show_alternative_lang)
+										- property_label_other_lang ~= label_resource.data ~ " ";
+								a(href="/individuals/#{property_uri}", data-toggle="popover", data-uri="#{property_uri}", data-title="#{property_label_preferred_lang ~ property_label_other_lang}")
+									span #{property_label_preferred_lang}
+									span.text-muted #{property_label_other_lang}
+										
+							.col-xs-8.col-sm-8.col-md-9.col-lg-9
+								- foreach(property_value; property_values)
+									- if (property_value.type == ResourceType.Uri)
+										
+										- if (property_value.origin == ResourceOrigin.local)
+											div
+												- string value_label_preferred_lang, value_label_other_lang;
+												- foreach(label_resource; get_individual(property_value.data).resources.get("rdfs:label", empty_resource(property_value.data)))
+													- if (label_resource.lang == preferred_lang)
+														- value_label_preferred_lang ~= label_resource.data ~ " ";
+													- else if (show_alternative_lang)
+														- value_label_other_lang ~= label_resource.data ~ " ";
+												a(href="/individuals/#{property_value.data}", data-toggle="popover", data-uri="#{property_value.data}", data-title="#{value_label_preferred_lang ~ value_label_other_lang}")
+													span #{value_label_preferred_lang}
+													span.text-muted #{value_label_other_lang}
+													i.glyphicon.glyphicon-share-alt
+										
+										- else if (property_value.origin == ResourceOrigin.external)
+											div
+												a(href="#{property_value.data}") #{property_value.data}
+									
+									- else if (property_value.type == ResourceType.String)
+										
+										- if (property_value.lang == preferred_lang)
+											span #{property_value.data}
+										- else if (show_alternative_lang)
+											span.text-muted #{property_value.data}
+									
+									- else 
+										span #{property_value.data}
+						hr(style="padding:0px; margin:3px")

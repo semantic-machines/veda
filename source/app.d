@@ -110,13 +110,15 @@ void get_search(HTTPServerRequest req, HTTPServerResponse res) {
 		sw.reset();
 		sw.start();
 		
-		res.renderCompat!("search_results.dt",
+		res.renderCompat!("search.dt",
 			HTTPServerRequest, "req",
 			Individual[], "individuals")(req, individuals);
 		
 	} else {
+		Individual[] individuals;
 		res.renderCompat!("search.dt",
-			HTTPServerRequest, "req")(req);
+			HTTPServerRequest, "req",
+			Individual[], "individuals")(req, individuals);
 	}
 
 	//stop & log timer
