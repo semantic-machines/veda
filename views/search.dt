@@ -10,7 +10,6 @@ block content
 					input#q.form-control(type="text", style="width:100%", placeholder="Введите запрос / Enter query", autofocus="autofocus", name="q", value="#{req.query.get("q", "")}")
 				.col-xs-6.col-sm-3.col-md-2.col-lg-2
 					button.btn.btn-primary(type="submit") Искать / Search
-		hr
 		
 		- import veda.storage, onto.resource, onto.lang;
 		- Resource[] empty_resource(string uri)
@@ -44,7 +43,7 @@ block content
 							a(href="/individuals/#{individual.uri}")
 								span #{individual.uri}
 								i.glyphicon.glyphicon-share-alt
-					hr(style="padding:0px; margin:3px")
+					//-hr(style="padding:0px; margin:3px")
 					- foreach(property_uri, property_values; individual.resources)
 						.row
 							.col-xs-4.col-sm-4.col-md-3.col-lg-3.text-right
@@ -88,4 +87,5 @@ block content
 									
 									- else 
 										span #{property_value.data}
-						hr(style="padding:0px; margin:3px")
+						//-hr(style="padding:0px; margin:3px")
+					hr

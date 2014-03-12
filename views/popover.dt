@@ -8,45 +8,37 @@
 - auto preferred_lang = LANG.RU;
 - auto show_alternative_lang = true;
 
-div
-	//-
-		p
-		- foreach (label; individual.resources.get("rdfs:label", empty_resource(individual.uri)))
-			- if (label.lang == preferred_lang)
-				span #{label.data}
-			- else if (show_alternative_lang)
-				span.text-muted #{label.data}
-	dl.dl-horizontal
-		- foreach(property_uri, property_values; individual.resources)
-			dt
-				- foreach(label; get_individual(property_uri).resources.get("rdfs:label", empty_resource(property_uri)))
-					- if (label.lang == preferred_lang)
-						span #{label.data}
-					- else if (show_alternative_lang)
-						span.text-muted #{label.data}
-						
-			dd
-				- foreach(property_value; property_values)
-					- if (property_value.type == ResourceType.Uri)
-						
-						- if (property_value.origin == ResourceOrigin.local)
-							div
-								- foreach(label; get_individual(property_value.data).resources.get("rdfs:label", empty_resource(property_value.data)))
-									- if (label.lang == preferred_lang)
-										span #{label.data}
-									- else if (show_alternative_lang)
-										span.text-muted #{label.data}
-						
-						- else if (property_value.origin == ResourceOrigin.external)
-							div
-								| #{property_value.data}
+dl.dl-horizontal
+	- foreach(property_uri, property_values; individual.resources)
+		dt
+			- foreach(label; get_individual(property_uri).resources.get("rdfs:label", empty_resource(property_uri)))
+				- if (label.lang == preferred_lang)
+					span #{label.data}
+				- else if (show_alternative_lang)
+					span.text-muted #{label.data}
 					
-					- else if (property_value.type == ResourceType.String)
-						
-						- if (property_value.lang == preferred_lang)
-							span #{property_value.data}
-						- else if (show_alternative_lang)
-							span.text-muted #{property_value.data}
+		dd
+			- foreach(property_value; property_values)
+				- if (property_value.type == ResourceType.Uri)
 					
-					- else 
+					- if (property_value.origin == ResourceOrigin.local)
+						div
+							- foreach(label; get_individual(property_value.data).resources.get("rdfs:label", empty_resource(property_value.data)))
+								- if (label.lang == preferred_lang)
+									span #{label.data}
+								- else if (show_alternative_lang)
+									span.text-muted #{label.data}
+					
+					- else if (property_value.origin == ResourceOrigin.external)
+						div
+							| #{property_value.data}
+				
+				- else if (property_value.type == ResourceType.String)
+					
+					- if (property_value.lang == preferred_lang)
 						span #{property_value.data}
+					- else if (show_alternative_lang)
+						span.text-muted #{property_value.data}
+				
+				- else 
+					span #{property_value.data}
