@@ -214,6 +214,13 @@ mondi-data:Membership_6
   rdfs:label "Membership_6"@en ;
   rdfs:label "Членство_6"@ru ;
 .
+mondi-data:Membership_7
+  rdf:type veda-schema:Membership ;
+  veda-schema:memberOf mondi-data:ResGroup_1 ;
+  veda-schema:resource mondi-data:Mandate_1 ;
+  rdfs:label "Membership_7"@en ;
+  rdfs:label "Членство_7"@ru ;
+.
 mondi-data:MondiSyktyvkar
   rdf:type veda-schema:Organization ;
   veda-schema:childUnit mondi-data:CCIP ;
