@@ -53,7 +53,7 @@ class VedaStorage
                               while (true)
                               {
                                   receive(
-                                          (Command cmd, Function fn, string arg1, byte arg2, Tid tid) {
+                                          (Command cmd, Function fn, string arg1, byte arg2, string ticket, Tid tid) {
                                               // writeln("Tid=", cast(void *)tid);
                                               if (tid !is null)
                                               {
@@ -62,7 +62,6 @@ class VedaStorage
                                                       immutable(Individual)[ string ] onto_individuals =
                                                           context.get_onto_as_map_individuals();
                                                       immutable(Individual)[] individuals;
-                                                      Ticket ticket;
 
                                                       immutable(Individual) individual = onto_individuals.get(arg1, _empty_iIndividual);
 
@@ -77,11 +76,8 @@ class VedaStorage
                                                   {
 //        StopWatch sw;
 //        sw.start();
-
-                                                      Ticket ticket;
-
                                                       immutable(Individual)[] individuals =
-                                                          context.get_individuals_via_query(arg1, &ticket, arg2);
+                                                          context.get_individuals_via_query(arg1, ticket, arg2);
 
 //                sw.stop();
 //                long t = cast(long) sw.peek().msecs;
@@ -131,13 +127,11 @@ class VedaStorage
                                                   }
                                               }
                                           },
-                                          (Command cmd, Function fn, string arg1, string arg2, LANG lang, Tid tid) {
+                                          (Command cmd, Function fn, string arg1, string arg2, string ticket, LANG lang, Tid tid) {
                                               if (tid !is null)
                                               {
                                                   if (cmd == Command.Get && fn == Function.PropertyOfIndividual)
                                                   {
-                                                      Ticket ticket;
-
                                                       string res1;
                                                       immutable(Individual)[ string ] onto_individuals =
                                                           context.get_onto_as_map_individuals();
@@ -214,28 +208,28 @@ public static bool is_ticket_valid(string ticket)
     return false;
 }
 
-public static Individual[] get_individuals_via_query(string query, byte level = 0)
+public static Individual[] get_individuals_via_query(string query, string ticket, byte level = 0)
 {
     Tid                     my_task = Task.getThis();
 
     immutable(Individual)[] individuals;
     if (my_task !is null)
     {
-        send(io_task, Command.Get, Function.IndividualsToQuery, query, level, my_task);
+        send(io_task, Command.Get, Function.IndividualsToQuery, query, level, ticket, my_task);
         individuals = receiveOnly!(immutable(Individual)[]);
     }
 
     return cast(Individual[])individuals;
 }
 
-public static Individual get_individual(string uri, byte level = 0)
+public static Individual get_individual(string uri, string ticket, byte level = 0)
 {
     Tid                     my_task = Task.getThis();
 
     immutable(Individual)[] individual;
     if (my_task !is null)
     {
-        send(io_task, Command.Get, Function.Individual, uri, level, my_task);
+        send(io_task, Command.Get, Function.Individual, uri, level, ticket, my_task);
         individual = receiveOnly!(immutable(Individual)[]);
         if (individual.length > 0)
             return cast(Individual)individual[ 0 ];
