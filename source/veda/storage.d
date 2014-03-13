@@ -12,10 +12,17 @@ import onto.resource;
 import onto.lang;
 import util.lmultidigraph;
 
+/*
+ * TODO: Проблема, не удается передавать структуру типа Individual между волокнами, хотя например Tid, хорошо передается
+ *	 приходится передавать так  - immutable(Individual)[].
+ *	 Вероятно это связанно с ассоциативными массивами внутри Individual.
+ */
+
 enum Command
 {
     Get,
-    Is
+    Is,
+    Put
 }
 
 enum Function
@@ -127,6 +134,18 @@ class VedaStorage
                                                   }
                                               }
                                           },
+                                          (Command cmd, Function fn, string ticket, string uri, immutable(Individual)[] individual, Tid tid)
+                                          {
+                                              if (tid !is null)
+                                              {
+                                                  if (cmd == Command.Put && fn == Function.Individual)
+                                                  {
+                                                      ResultCode res = context.put_individual(uri, cast(Individual)individual[ 0 ], ticket);
+
+                                                      send(tid, res);
+                                                  }
+                                              }
+                                          },
                                           (Command cmd, Function fn, string arg1, string arg2, string ticket, LANG lang, Tid tid) {
                                               if (tid !is null)
                                               {
@@ -224,11 +243,11 @@ public static Individual[] get_individuals_via_query(string ticket, string query
 
 public static Individual get_individual(string ticket, string uri, byte level = 0)
 {
-    Tid                     my_task = Task.getThis();
+    Tid my_task = Task.getThis();
 
-    immutable(Individual)[] individual;
     if (my_task !is null)
     {
+        immutable(Individual)[] individual;
         send(io_task, Command.Get, Function.Individual, uri, level, ticket, my_task);
         individual = receiveOnly!(immutable(Individual)[]);
         if (individual.length > 0)
@@ -236,6 +255,21 @@ public static Individual get_individual(string ticket, string uri, byte level = 
     }
 
     return Individual.init;
+}
+
+public static ResultCode put_individual(string ticket, string uri, Individual indv)
+{
+    Tid my_task = Task.getThis();
+
+    if (my_task !is null)
+    {
+        immutable(Individual)[] individual;
+        individual ~= indv.idup;
+        send(io_task, Command.Put, Function.Individual, ticket, uri, individual, my_task);
+        ResultCode res = receiveOnly!(ResultCode);
+        return res;
+    }
+    return ResultCode.Service_Unavailable;
 }
 
 public static string get_single_property_value_of_individual(string ticket, string uri, string property_uri, LANG lang)
