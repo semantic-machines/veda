@@ -35,9 +35,9 @@ veda-admin:VedaSystem
 .
 veda-admin:VedaSystemAccount
   rdf:type veda-schema:Account ;
-  veda-schema:accountOwner veda-schema:VedaSystem ;
   veda-schema:login "veda"^^xsd:string ;
   veda-schema:mailbox "veda@semantic-machines.com"^^xsd:string ;
+  veda-schema:owner veda-schema:VedaSystem ;
   veda-schema:password "6220b3e1f255f8e29b87488abab1bde126a6bbb44c62bf9b297b3d20347f8b4e"^^xsd:string ;
   rdfs:label "Veda System Account"@en ;
   rdfs:label "Учетная запись системы Веда"@ru ;

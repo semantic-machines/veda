@@ -154,19 +154,6 @@ veda-schema:Versioned
   rdfs:label "Версионная сущность"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
-veda-schema:accountOwner
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain veda-schema:Account ;
-  rdfs:label "account owner"@en ;
-  rdfs:label "владелец учетной записи"@ru ;
-  rdfs:range [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          veda-schema:Person
-          veda-schema:OrganizationUnit
-        ) ;
-    ] ;
-.
 veda-schema:actualVersion
   rdf:type owl:ObjectProperty ;
   rdfs:domain veda-schema:Versioned ;
@@ -300,7 +287,6 @@ veda-schema:hasAccount
   rdfs:label "account"@en ;
   rdfs:label "учетная запись"@ru ;
   rdfs:range veda-schema:Account ;
-  owl:inverseOf veda-schema:accountOwner ;
 .
 veda-schema:lastName
   rdf:type owl:DatatypeProperty ;
@@ -363,6 +349,25 @@ veda-schema:official
   rdfs:label "official"@en ;
   rdfs:label "официально"@ru ;
   rdfs:range xsd:boolean ;
+.
+veda-schema:owner
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain [
+      rdf:type owl:Class ;
+      owl:unionOf (
+          veda-schema:Account
+          <http://semantic-machines.com/veda/veda-ui/Preferences>
+        ) ;
+    ] ;
+  rdfs:label "owner"@en ;
+  rdfs:label "владелец"@ru ;
+  rdfs:range [
+      rdf:type owl:Class ;
+      owl:unionOf (
+          veda-schema:Person
+          veda-schema:OrganizationUnit
+        ) ;
+    ] ;
 .
 veda-schema:parentUnit
   rdf:type owl:ObjectProperty ;

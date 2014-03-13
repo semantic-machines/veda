@@ -8,8 +8,8 @@ block content
 			- foreach (_subClass; tmp)
 				li 
 					- treeNode(_subClass);
-
-	h1 Class tree:
-	ol(style="list-style:none;")
-		li
-			- treeNode("owl:Thing");
+	.container-fluid
+		h1 Class tree:
+		ol(style="list-style:none;")
+			li
+				- treeNode("owl:Thing");

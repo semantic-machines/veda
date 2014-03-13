@@ -8,6 +8,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix veda-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 <http://semantic-machines.com/veda/mondi-data>
   rdf:type owl:Ontology ;
@@ -72,6 +73,7 @@ mondi-data:AndreyBychin
   veda-schema:lastName "Бычин"@ru ;
   veda-schema:middleName "Vladimirovitch"@en ;
   veda-schema:middleName "Владимирович"@ru ;
+  veda-ui:hasPreferences mondi-data:Preferences_AndreyBychin ;
   rdfs:label "Andrey Bychin"@en ;
   rdfs:label "Андрей Бычин"@ru ;
 .
@@ -109,17 +111,17 @@ mondi-data:ApplicationDevelopmentGroup
 .
 mondi-data:BushenevV
   rdf:type veda-schema:Account ;
-  veda-schema:accountOwner mondi-data:ValeriyBushenev ;
   veda-schema:login "BushenevV"^^xsd:string ;
   veda-schema:mailbox "valeriy.bushenev@mondigroup.com"^^xsd:string ;
+  veda-schema:owner mondi-data:ValeriyBushenev ;
   veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "BushenevV"@en ;
 .
 mondi-data:BychinA
   rdf:type veda-schema:Account ;
-  veda-schema:accountOwner mondi-data:AndreyBychin ;
   veda-schema:login "BychinA"^^xsd:string ;
   veda-schema:mailbox "andrey.bychin@mondigroup.com"^^xsd:string ;
+  veda-schema:owner mondi-data:AndreyBychin ;
   veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "BychinA"@en ;
 .
@@ -149,9 +151,9 @@ mondi-data:Group_1
 .
 mondi-data:KarpovR
   rdf:type veda-schema:Account ;
-  veda-schema:accountOwner mondi-data:RomanKarpov ;
   veda-schema:login "KarpovR"^^xsd:string ;
   veda-schema:mailbox "roman.karpov@mondigroup.com"^^xsd:string ;
+  veda-schema:owner mondi-data:RomanKarpov ;
   veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "KarpovR"@en ;
 .
@@ -230,6 +232,27 @@ mondi-data:Permission_2
   rdfs:label "Permissions record_2"@en ;
   rdfs:label "Запись о выдаче прав_2"@ru ;
 .
+mondi-data:Preferences_AndreyBychin
+  rdf:type veda-ui:Preferences ;
+  veda-schema:owner mondi-data:AndreyBychin ;
+  veda-schema:preferredLanguage veda-schema:RU ;
+  rdfs:label "Preferences (Andrey Bychin)"@en ;
+  rdfs:label "Предпочтения (Андрей Бычин)"@ru ;
+.
+mondi-data:Preferences_RomanKarpov
+  rdf:type veda-ui:Preferences ;
+  veda-schema:owner mondi-data:RomanKarpov ;
+  veda-schema:preferredLanguage veda-schema:EN ;
+  rdfs:label "Preferences (Roman Karpov)"@en ;
+  rdfs:label "Предпочтения (Роман Карпов)"@ru ;
+.
+mondi-data:Preferences_ValeriyBushenev
+  rdf:type veda-ui:Preferences ;
+  veda-schema:owner mondi-data:ValeriyBushenev ;
+  veda-schema:preferredLanguage veda-schema:RU ;
+  rdfs:label "Preferences (Valeriy Bushenev)"@en ;
+  rdfs:label "Предпочтения (Валерий Бушенев)"@ru ;
+.
 mondi-data:Programmer1
   rdf:type veda-schema:Position ;
   veda-schema:parentUnit mondi-data:ApplicationDevelopmentGroup ;
@@ -279,6 +302,7 @@ mondi-data:RomanKarpov
   veda-schema:lastName "Карпов"@ru ;
   veda-schema:middleName "Konstantinovitch"@en ;
   veda-schema:middleName "Константинович"@ru ;
+  veda-ui:hasPreferences mondi-data:Preferences_RomanKarpov ;
   rdfs:label "Roman Karpov"@en ;
   rdfs:label "Роман Карпов"@ru ;
 .
@@ -335,6 +359,7 @@ mondi-data:ValeriyBushenev
   veda-schema:lastName "Бушенев"@ru ;
   veda-schema:middleName "Alexandrovitch"@en ;
   veda-schema:middleName "Александрович"@ru ;
+  veda-ui:hasPreferences mondi-data:Preferences_ValeriyBushenev ;
   rdfs:label "Valeriy Bushenev"@en ;
   rdfs:label "Валерий Бушенев"@ru ;
 .

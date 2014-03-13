@@ -5789,4 +5789,8 @@ button.close {
   padding: 0;
   margin: 5px;
 }
+body > nav.navbar {
+  margin-bottom: 0;
+  border-radius: 0;
+}
 /*# sourceMappingURL=veda.css.map */

@@ -2,7 +2,8 @@ extends generic
 
 block content
 	.jumbotron
-		h1 Welcome to Veda!
-		p Veda is a large scale document-oriented enterprise management system
-		p 
-			a.btn.btn-primary.btn-lg(href="/classes") Go!
+		.container-fluid
+			h1 Welcome to Veda!
+			p Veda is a large scale document-oriented enterprise management system
+			p 
+				a.btn.btn-primary.btn-lg(href="/classes") Go!
