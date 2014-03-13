@@ -195,7 +195,21 @@ mondi-data:Membership_3
 mondi-data:Membership_4
   rdf:type veda-schema:Membership ;
   veda-schema:memberOf mondi-data:Group_1 ;
-  veda-schema:resource mondi-data:ValeriyBushenev-Programmer1 ;
+  veda-schema:resource mondi-data:BushenevV ;
+  rdfs:label "Membership_4"@en ;
+  rdfs:label "Членство_4"@ru ;
+.
+mondi-data:Membership_5
+  rdf:type veda-schema:Membership ;
+  veda-schema:memberOf mondi-data:Group_1 ;
+  veda-schema:resource mondi-data:RomanKarpov ;
+  rdfs:label "Membership_4"@en ;
+  rdfs:label "Членство_4"@ru ;
+.
+mondi-data:Membership_6
+  rdf:type veda-schema:Membership ;
+  veda-schema:memberOf mondi-data:AllResourcesGroup ;
+  veda-schema:resource mondi-data:AdministrativeDocument_1_1 ;
   rdfs:label "Membership_4"@en ;
   rdfs:label "Членство_4"@ru ;
 .
