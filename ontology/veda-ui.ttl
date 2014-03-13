@@ -21,17 +21,17 @@
   owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "1.0" ;
 .
-veda-schema:EN
+veda-ui:EN
   rdf:type veda-ui:Language ;
   rdfs:label "English"@en ;
   rdfs:label "Английский"@ru ;
 .
-veda-schema:RU
+veda-ui:RU
   rdf:type veda-ui:Language ;
   rdfs:label "Russian"@en ;
   rdfs:label "Русский"@ru ;
 .
-veda-schema:preferredLanguage
+veda-ui:preferredLanguage
   rdf:type owl:ObjectProperty ;
   rdfs:domain veda-ui:Preferences ;
   rdfs:label "preferred language"@en ;

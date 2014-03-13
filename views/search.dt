@@ -41,7 +41,7 @@ block content
 					.row
 						.col-xs-7.col-sm-7.col-sm-offset-1.col-md-8.col-md-offset-1.col-lg-8.col-lg-offset-1
 							label.sr-only(for="q") Запрос / Query:
-							input#q.form-control(type="text", placeholder="Введите запрос / Enter query", autofocus="autofocus", name="q", value="#{req.query.get("q", "")}")
+							input#q.form-control(type="text", placeholder="Введите запрос / Enter query", name="q", value="#{req.query.get("q", "")}")
 						.col-xs-5.col-sm-4.col-md-3.col-lg-3
 							button.btn.btn-primary(type="submit") Искать / Search
 		.container-fluid

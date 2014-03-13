@@ -52,6 +52,13 @@ void get_popover(HTTPServerRequest req, HTTPServerResponse res) {
 		string, "ticket")(req, individual, ticket);
 }
 
+void get_index(HTTPServerRequest req, HTTPServerResponse res) {
+	string ticket = req.cookies.get("ticket", "");
+	res.renderCompat!("index.dt",
+		HTTPServerRequest, "req",
+		string, "ticket")(req, ticket);
+}
+
 void logout(HTTPServerRequest req, HTTPServerResponse res) {
 	res.setCookie("ticket", null, "/");
 	res.setCookie("password", null, "/");
@@ -146,7 +153,7 @@ shared static this()
 	router.get("*", serveStaticFiles("public"));
 	router.get("/logout", &logout);
 	router.any("*", &login);
-	router.get("/", staticTemplate!"index.dt");
+	router.get("/", &get_index);
 	router.get("/classes", &get_classes);
 	router.get("/classes/", &get_classes);
 	router.get("/classes/:uri", &get_class);
