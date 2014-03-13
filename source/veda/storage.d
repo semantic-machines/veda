@@ -208,7 +208,7 @@ public static bool is_ticket_valid(string ticket)
     return false;
 }
 
-public static Individual[] get_individuals_via_query(string query, string ticket, byte level = 0)
+public static Individual[] get_individuals_via_query(string ticket, string query, byte level = 0)
 {
     Tid                     my_task = Task.getThis();
 
@@ -222,7 +222,7 @@ public static Individual[] get_individuals_via_query(string query, string ticket
     return cast(Individual[])individuals;
 }
 
-public static Individual get_individual(string uri, string ticket, byte level = 0)
+public static Individual get_individual(string ticket, string uri, byte level = 0)
 {
     Tid                     my_task = Task.getThis();
 
@@ -238,7 +238,7 @@ public static Individual get_individual(string uri, string ticket, byte level = 
     return Individual.init;
 }
 
-public static string get_single_property_value_of_individual(string uri, string property_uri, LANG lang)
+public static string get_single_property_value_of_individual(string ticket, string uri, string property_uri, LANG lang)
 {
     Tid    my_task = Task.getThis();
 

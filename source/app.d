@@ -7,8 +7,6 @@ import onto.individual;
 import pacahon.context;
 import std.datetime;
 
-
-
 void show_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) {
 	res.renderCompat!("error.dt",
 		HTTPServerRequest, "req",
@@ -36,20 +34,22 @@ void get_class(HTTPServerRequest req, HTTPServerResponse res) {
 
 void get_individual(HTTPServerRequest req, HTTPServerResponse res) {
 	string uri = req.params["uri"];
-	logInfo(uri);
-	Individual individual = veda.storage.get_individual(uri);
+	string ticket = req.cookies.get("ticket", "");
+	Individual individual = veda.storage.get_individual(ticket, uri);
 	res.renderCompat!("individual.dt",
 		HTTPServerRequest, "req",
-		Individual, "individual")(req, individual);
+		Individual, "individual",
+		string, "ticket")(req, individual, ticket);
 }
 
 void get_popover(HTTPServerRequest req, HTTPServerResponse res) {
 	string uri = req.params["uri"];
-	logInfo(uri);
-	Individual individual = veda.storage.get_individual(uri);
+	string ticket = req.cookies.get("ticket", "");
+	Individual individual = veda.storage.get_individual(ticket, uri);
 	res.renderCompat!("popover.dt",
 		HTTPServerRequest, "req",
-		Individual, "individual")(req, individual);
+		Individual, "individual",
+		string, "ticket")(req, individual, ticket);
 }
 
 void logout(HTTPServerRequest req, HTTPServerResponse res) {
@@ -97,11 +97,11 @@ void get_search(HTTPServerRequest req, HTTPServerResponse res) {
 	//start timer
 	StopWatch sw;
 	sw.start();
-	
+	string ticket = req.cookies.get("ticket", "");
 	string q = req.query.get("q", "");
 	if (q != "") {
 		logInfo(q);
-		Individual[] individuals = get_individuals_via_query(q, 0);
+		Individual[] individuals = veda.storage.get_individuals_via_query(ticket, q, 0);
 		
 		//stop & log timer & start again
 		sw.stop();
@@ -112,13 +112,15 @@ void get_search(HTTPServerRequest req, HTTPServerResponse res) {
 		
 		res.renderCompat!("search.dt",
 			HTTPServerRequest, "req",
-			Individual[], "individuals")(req, individuals);
+			Individual[], "individuals",
+			string, "ticket")(req, individuals, ticket);
 		
 	} else {
 		Individual[] individuals;
 		res.renderCompat!("search.dt",
 			HTTPServerRequest, "req",
-			Individual[], "individuals")(req, individuals);
+			Individual[], "individuals",
+			string, "ticket")(req, individuals, ticket);
 	}
 
 	//stop & log timer

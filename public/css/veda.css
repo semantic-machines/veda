@@ -5785,4 +5785,8 @@ button.close {
 .popover {
   max-width: 450px;
 }
+.form-inline h1 {
+  padding: 0;
+  margin: 5px;
+}
 /*# sourceMappingURL=veda.css.map */
