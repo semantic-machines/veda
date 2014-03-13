@@ -31,10 +31,10 @@ mondi-data:AdministrativeDocument_1
   rdfs:label "AdministrativeDocument_1"@en ;
   rdfs:label "Распорядительный документ_1"@ru ;
 .
-mondi-data:AdministrativeDocument_1_1
+mondi-data:AdministrativeDocument_2
   rdf:type mondi-schema:AdministrativeDocument ;
-  mondi-schema:content "To comply the federal law №153-FL issued 12.10.2012 I order..."@en ;
-  mondi-schema:content "Во исполнение федерального закона №153-ФЗ от 12.10.2012 приказываю..."@ru ;
+  mondi-schema:content "2 To comply the federal law №153-FL issued 12.10.2012 I order..."@en ;
+  mondi-schema:content "2 Во исполнение федерального закона №153-ФЗ от 12.10.2012 приказываю..."@ru ;
   mondi-schema:nomenclatureType mondi-data:RegulatoryOrder2013 ;
   mondi-schema:signer mondi-data:ValeriyBushenev-Programmer1 ;
   veda-schema:actualVersion mondi-data:AdministrativeDocument_1 ;
@@ -42,13 +42,8 @@ mondi-data:AdministrativeDocument_1_1
   veda-schema:created "2014-01-30T15:42:27"^^xsd:dateTime ;
   veda-schema:nextVersion mondi-data:AdministrativeDocument_1 ;
   veda-schema:published "2014-01-30T12:13:11"^^xsd:dateTime ;
-  rdfs:label "AdministrativeDocument_1"@en ;
-  rdfs:label "Распорядительный документ_1"@ru ;
-.
-mondi-data:AllResourcesGroup
-  rdf:type veda-schema:Group ;
-  rdfs:label "All resources"@ru ;
-  rdfs:label "Все ресурсы"@ru ;
+  rdfs:label "AdministrativeDocument_2"@en ;
+  rdfs:label "Распорядительный документ_2"@ru ;
 .
 mondi-data:Analyst1
   rdf:type veda-schema:Position ;
@@ -144,10 +139,15 @@ mondi-data:ExecutiveDirector
   rdfs:label "Executive director"@en ;
   rdfs:label "Исполнительный директор"@ru ;
 .
-mondi-data:Group_1
+mondi-data:UserGroup_1
   rdf:type veda-schema:Group ;
-  rdfs:label "Test group 1"@en ;
-  rdfs:label "Тестовая группа 1"@ru ;
+  rdfs:label "Test user group 1"@en ;
+  rdfs:label "Тестовая пользовательская группа 1"@ru ;
+.
+mondi-data:ResGroup_1
+  rdf:type veda-schema:Group ;
+  rdfs:label "Test resource group 1"@en ;
+  rdfs:label "Тестовая группа для ресуров 1"@ru ;
 .
 mondi-data:KarpovR
   rdf:type veda-schema:Account ;
@@ -163,11 +163,12 @@ mondi-data:Mandate_1
   veda-schema:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   veda-schema:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   veda-schema:script """{
-\"whom\" : \"92e57b6d-83e3-485f-8885-0bade363f759\",
-\"right\" : \"ru\",
-\"condition\" : \"(mo/doc#tmplid == `f001dc9a4033458787f5542472774d68`) && ([department_from].head == $user)\"
+permissionObject : $document,
+permissionSubject : $user,
+right : ru,
+filter : $document[veda-schema:author]->[veda-schema:employee] == $user
 }"""^^xsd:string ;
-  rdfs:comment "Всему Монди на редактирование Оценок по процессу ИСМ, если в Процессе в поле head стоит текущий пользователь"@ru ;
+  rdfs:comment "Выдача прав авторам"@ru ;
   rdfs:label "Mandate_1"@en ;
   rdfs:label "Мандат_1"@ru ;
 .
@@ -187,29 +188,29 @@ mondi-data:Membership_2
 .
 mondi-data:Membership_3
   rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:Group_1 ;
+  veda-schema:memberOf mondi-data:UserGroup_1 ;
   veda-schema:resource mondi-data:RomanKarpov-CommercialDirector ;
   rdfs:label "Membership_3"@en ;
   rdfs:label "Членство_3"@ru ;
 .
 mondi-data:Membership_4
   rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:Group_1 ;
+  veda-schema:memberOf mondi-data:UserGroup_1 ;
   veda-schema:resource mondi-data:ValeriyBushenev ;
   rdfs:label "Membership_4"@en ;
   rdfs:label "Членство_4"@ru ;
 .
 mondi-data:Membership_5
   rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:Group_1 ;
+  veda-schema:memberOf mondi-data:SuperAdmin ;
   veda-schema:resource mondi-data:RomanKarpov ;
   rdfs:label "Membership_5"@en ;
   rdfs:label "Членство_5"@ru ;
 .
 mondi-data:Membership_6
   rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:AllResourcesGroup ;
-  veda-schema:resource mondi-data:AdministrativeDocument_1_1 ;
+  veda-schema:memberOf mondi-data:ResGroup_1 ;
+  veda-schema:resource mondi-data:AdministrativeDocument_2 ;
   rdfs:label "Membership_6"@en ;
   rdfs:label "Членство_6"@ru ;
 .
@@ -227,7 +228,7 @@ mondi-data:Permission_1
   veda-schema:canRead "true"^^xsd:boolean ;
   veda-schema:canUpdate "true"^^xsd:boolean ;
   veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
-  veda-schema:permissionObject mondi-data:AllResourcesGroup ;
+  veda-schema:permissionObject veda-schema:AllResourcesGroup ;
   veda-schema:permissionSubject mondi-data:SuperAdmin ;
   veda-schema:published "2014-01-30T16:45:33"^^xsd:dateTime ;
   veda-schema:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
@@ -239,8 +240,8 @@ mondi-data:Permission_2
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:canRead "true"^^xsd:boolean ;
   veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
-  veda-schema:permissionObject mondi-data:AllResourcesGroup ;
-  veda-schema:permissionSubject mondi-data:Group_1 ;
+  veda-schema:permissionObject mondi-data:ResGroup_1 ;
+  veda-schema:permissionSubject mondi-data:UserGroup_1 ;
   veda-schema:published "2014-01-30T16:45:33"^^xsd:dateTime ;
   veda-schema:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
   rdfs:label "Permissions record_2"@en ;

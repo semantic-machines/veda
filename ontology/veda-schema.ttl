@@ -444,3 +444,9 @@ veda-schema:startTime
   rdfs:label "время начала"@ru ;
   rdfs:range xsd:dateTime ;
 .
+
+veda-schema:AllResourcesGroup
+  rdf:type veda-schema:Group ;
+  rdfs:label "All resources"@ru ;
+  rdfs:label "Все ресурсы"@ru ;
+.
