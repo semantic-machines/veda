@@ -257,21 +257,21 @@ mondi-data:Permission_2
 mondi-data:Preferences_AndreyBychin
   rdf:type veda-ui:Preferences ;
   veda-schema:owner mondi-data:AndreyBychin ;
-  veda-schema:preferredLanguage veda-schema:RU ;
+  veda-ui:preferredLanguage veda-schema:RU ;
   rdfs:label "Preferences (Andrey Bychin)"@en ;
   rdfs:label "Предпочтения (Андрей Бычин)"@ru ;
 .
 mondi-data:Preferences_RomanKarpov
   rdf:type veda-ui:Preferences ;
   veda-schema:owner mondi-data:RomanKarpov ;
-  veda-schema:preferredLanguage veda-schema:EN ;
+  veda-ui:preferredLanguage veda-ui:EN ;
   rdfs:label "Preferences (Roman Karpov)"@en ;
   rdfs:label "Предпочтения (Роман Карпов)"@ru ;
 .
 mondi-data:Preferences_ValeriyBushenev
   rdf:type veda-ui:Preferences ;
   veda-schema:owner mondi-data:ValeriyBushenev ;
-  veda-schema:preferredLanguage veda-schema:RU ;
+  veda-ui:preferredLanguage veda-ui:RU ;
   rdfs:label "Preferences (Valeriy Bushenev)"@en ;
   rdfs:label "Предпочтения (Валерий Бушенев)"@ru ;
 .

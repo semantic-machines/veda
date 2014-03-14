@@ -136,20 +136,17 @@ void get_search(HTTPServerRequest req, HTTPServerResponse res) {
 	logInfo("page rendering time:"~text(t)~" msecs");
 }
 
-bool check_credentials(string login, string password) {
-	return login == "admin" && password == "admin";
-}
-
 shared static this()
 {
-	auto vs = new VedaStorage (); // initialize storage I
+	// initialize storage
+	auto vs = new VedaStorage ();
+	vs.init(); 
 
 	auto settings = new HTTPServerSettings;
 	settings.port = 8080; //settings.bindAddresses = ["::1", "127.0.0.1", "172.17.35.148"];
 	settings.errorPageHandler = toDelegate(&show_error);
 
 	auto router = new URLRouter;
-//	router.any("*", performBasicAuth("veda system", toDelegate(&check_credentials)));
 	router.get("*", serveStaticFiles("public"));
 	router.get("/logout", &logout);
 	router.any("*", &login);
@@ -161,8 +158,7 @@ shared static this()
 	router.get("/popover/:uri", &get_popover);
 	router.get("/search", &get_search);
 	router.get("/search/", &get_search);
+	
 	listenHTTP(settings, router);
 	logInfo("Please open http://127.0.0.1:8080/ in your browser.");
-	
-	vs.init(); // initialize storage II
 }
