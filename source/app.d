@@ -36,13 +36,22 @@ void view_class(HTTPServerRequest req, HTTPServerResponse res) {
 
 void view_individual(HTTPServerRequest req, HTTPServerResponse res) {
 	auto storage = new VedaStorageRest();
-	immutable (string) uri = req.params["uri"];
-	immutable (string) ticket = req.cookies.get("ticket", "");
+	string uri = req.params.get("uri", "");
+	string ticket = req.cookies.get("ticket", "");
 	Individual individual = storage.get_individual(ticket, uri, 0);
 	res.renderCompat!("view_individual.dt",
 		HTTPServerRequest, "req",
 		Individual, "individual",
 		string, "ticket")(req, individual, ticket);
+}
+
+void view_individual2(HTTPServerRequest req, HTTPServerResponse res) {
+	string uri = req.params.get("uri", "");
+	string ticket = req.cookies.get("ticket", "");
+	res.renderCompat!("view_individual2.dt",
+		HTTPServerRequest, "req",
+		string, "uri",
+		string, "ticket")(req, uri, ticket);
 }
 
 void view_popover(HTTPServerRequest req, HTTPServerResponse res) {
@@ -165,6 +174,7 @@ shared static this()
 	router.get("/view_classes/", &view_classes);
 	router.get("/view_class/:uri", &view_class);
 	router.get("/view_individual/:uri", &view_individual);
+	router.get("/view_individual2/:uri", &view_individual2);
 	router.get("/view_popover/:uri", &view_popover);
 	router.get("/search", &search);
 	router.get("/search/", &search);
