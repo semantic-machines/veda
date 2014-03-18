@@ -1,5 +1,5 @@
 #!/bin/sh
 rm *.log
-rm veda
+rm veda.app
 dub build --build=release
-./veda
+./veda.app

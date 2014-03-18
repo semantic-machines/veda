@@ -1,6 +1,7 @@
-module veda.storage;
+module veda.storage_rest;
 
-import veda.pacahondriver;
+import vibe.d;
+import veda.pacahon_driver;
 
 import std.stdio, std.datetime, std.conv, std.string;
 import vibe.core.concurrency, vibe.core.core, vibe.core.log, vibe.core.task;
@@ -11,21 +12,50 @@ import onto.individual;
 import onto.resource;
 import onto.lang;
 
-//////////////////////////////////////////////////// Client API /////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////// Rest API /////////////////////////////////////////////////////////////////
 
-public static Ticket authenticate(string login, string password) {
+interface VedaStorageRest_API {
+
+	@path("authenticate/:login/:password") @method(HTTPMethod.GET)
+	Ticket authenticate(string _login, string _password);
+
+	@path("is_ticket_valid/:ticket") @method(HTTPMethod.GET)
+	bool is_ticket_valid(string _ticket);
+
+	@path("query/:query/:ticket") @method(HTTPMethod.GET)
+	Individual[] query(string _ticket, string _query = "rdf", byte level = 0);
+
+	@path("individual/:uri/:ticket") @method(HTTPMethod.GET)
+	Individual get_individual(string _ticket, string _uri, byte level = 0);
+	
+	@path("individual/:uri/:ticket") @method(HTTPMethod.PUT)
+	ResultCode put_individual(string _ticket, string _uri, Individual indv);
+	
+	@path("individual/:uri/:property_uri/:lang/:ticket") @method(HTTPMethod.GET)
+	string get_property_value(string _ticket, string _uri, string _property_uri, LANG _lang);
+
+	@path("classes") @method(HTTPMethod.GET)
+	immutable(Class)[ string ] get_classes();
+
+	@path("classes/:uri") @method(HTTPMethod.GET)
+	Class get_class(string _uri);
+}
+
+class VedaStorageRest : VedaStorageRest_API {
+override:
+Ticket authenticate(string login, string password) {
     Tid my_task = Task.getThis();
     if (my_task !is null) {
         send(io_task, Command.Get, Function.NewTicket, login, password, my_task);
         immutable(Ticket)[] tickets = receiveOnly!(immutable(Ticket)[]);
         if (tickets.length > 0) {
-            return tickets[ 0 ];
-		}
+        	return tickets[ 0 ];
+        }
     }
     return Ticket.init;
 }
 
-public static bool is_ticket_valid(string ticket) {
+bool is_ticket_valid(string ticket) {
     Tid my_task = Task.getThis();
     if (my_task !is null) {
         send(io_task, Command.Is, Function.TicketValid, ticket, my_task);
@@ -35,7 +65,7 @@ public static bool is_ticket_valid(string ticket) {
     return false;
 }
 
-public static Individual[] query(string ticket, string query, byte level = 0) {
+Individual[] query(string ticket, string query, byte level = 0) {
     Tid my_task = Task.getThis();
     immutable(Individual)[] individuals;
     if (my_task !is null) {
@@ -45,32 +75,32 @@ public static Individual[] query(string ticket, string query, byte level = 0) {
     return cast(Individual[])individuals;
 }
 
-public static Individual get_individual(string ticket, string uri, byte level = 0) {
+Individual get_individual(string ticket, string uri, byte level = 0) {
     Tid my_task = Task.getThis();
     if (my_task !is null) {
         immutable(Individual)[] individual;
         send(io_task, Command.Get, Function.Individual, uri, level, ticket, my_task);
         individual = receiveOnly!(immutable(Individual)[]);
         if (individual.length > 0) {
-        	return cast(Individual)individual[ 0 ];
-        }
+            return cast(Individual)individual[ 0 ];
+		}
     }
     return Individual.init;
 }
 
-public static ResultCode put_individual(string ticket, string uri, Individual indv) {
+ResultCode put_individual(string ticket, string uri, Individual individual) {
     Tid my_task = Task.getThis();
     if (my_task !is null) {
-        immutable(Individual)[] individual;
-        individual ~= indv.idup;
-        send(io_task, Command.Put, Function.Individual, ticket, uri, individual, my_task);
+        immutable(Individual)[] ind;
+        ind ~= individual.idup;
+        send(io_task, Command.Put, Function.Individual, ticket, uri, ind, my_task);
         ResultCode res = receiveOnly!(ResultCode);
         return res;
     }
     return ResultCode.Service_Unavailable;
 }
 
-public static string get_property_value(string ticket, string uri, string property_uri, LANG lang) {
+string get_property_value(string ticket, string uri, string property_uri, LANG lang) {
     Tid my_task = Task.getThis();
     string res;
     if (my_task !is null) {
@@ -80,7 +110,7 @@ public static string get_property_value(string ticket, string uri, string proper
     return res;
 }
 
-public static immutable(Class)[ string ] get_classes() {
+immutable(Class)[ string ] get_classes() {
     Tid my_task = Task.getThis();
     immutable(Class)[ string ] res;
     immutable(Class)[] classes;
@@ -88,14 +118,14 @@ public static immutable(Class)[ string ] get_classes() {
         send(io_task, Command.Get, Function.AllClasses, "", my_task);
         classes = receiveOnly!(immutable(Class)[]);
         foreach (clasz; classes) {
-        	res[ clasz.uri ] = clasz;
+            res[ clasz.uri ] = clasz;
         }
         res.rehash();
     }
     return res;
 }
 
-public static Class get_class(string uri) {
+Class get_class(string uri) {
     Tid my_task = Task.getThis();
     immutable(Class)[] classes;
     if (my_task !is null) {
@@ -106,4 +136,6 @@ public static Class get_class(string uri) {
     	return cast(Class)classes[ 0 ];
     }
     return Class.init;
+}
+
 }

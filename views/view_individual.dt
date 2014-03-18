@@ -1,6 +1,7 @@
 extends generic
 block content
-	- import veda.storage, onto.resource, onto.lang;
+	- import veda.storage_rest, onto.resource, onto.lang;
+	- auto storage = new VedaStorageRest();
 	- Resource[] empty_resource(string uri)
 		- Resource[] res;
 		- Resource resource;
@@ -28,7 +29,7 @@ block content
 			.row
 				.col-xs-4.col-sm-4.col-md-3.col-lg-3.text-right
 					- string property_label_preferred_lang, property_label_other_lang;
-					- foreach(label_resource; veda.storage.get_individual(ticket, property_uri).resources.get("rdfs:label", empty_resource(property_uri)))
+					- foreach(label_resource; storage.get_individual(ticket, property_uri).resources.get("rdfs:label", empty_resource(property_uri)))
 						- if (label_resource.lang == preferred_lang)
 							- property_label_preferred_lang ~= label_resource.data ~ " ";
 						- else if (show_alternative_lang)
@@ -44,7 +45,7 @@ block content
 							- if (property_value.origin == ResourceOrigin.local)
 								div
 									- string value_label_preferred_lang, value_label_other_lang;
-									- foreach(label_resource; veda.storage.get_individual(ticket, property_value.data).resources.get("rdfs:label", empty_resource(property_value.data)))
+									- foreach(label_resource; storage.get_individual(ticket, property_value.data).resources.get("rdfs:label", empty_resource(property_value.data)))
 										- if (label_resource.lang == preferred_lang)
 											- value_label_preferred_lang ~= label_resource.data ~ " ";
 										- else if (show_alternative_lang)

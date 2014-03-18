@@ -1,11 +1,12 @@
 //-
-	- import veda.storage, onto.resource, onto.lang;
+	- import veda.storage_rest, onto.resource, onto.lang;
+	- auto storage = new VedaStorageRest();
 	- Resource[] empty_resource(string uri)
-	- Resource[] res;
-	- Resource resource;
-	- resource.data = uri;
-	- res ~= resource;
-	- return res;
+		- Resource[] res;
+		- Resource resource;
+		- resource.data = uri;
+		- res ~= resource;
+		- return res;
 
 nav.navbar.navbar-inverse(role="navigation")
 	.container-fluid
@@ -33,7 +34,7 @@ nav.navbar.navbar-inverse(role="navigation")
 
 		//-
 			.navbar-right.btn-group(data-toggle="buttons")
-			- foreach(language; veda.storage.query_individual(ticket, "'rdf:type'=='veda-ui:Language'", 0))
+			- foreach(language; storage.query_individual(ticket, "'rdf:type'=='veda-ui:Language'", 0))
 				label.btn.btn-xs.btn-info.navbar-btn.active
 					input#ru(type="radio")
 					| #{language.resources.get("rdfs:label", empty_resource(property_uri))}

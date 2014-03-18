@@ -1,7 +1,6 @@
 import std.conv;
 import vibe.d;
-import veda.pacahondriver;
-import veda.storage;
+import veda.pacahon_driver;
 import veda.storage_rest;
 import onto.owl;
 import onto.lang;
@@ -16,9 +15,8 @@ void view_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorIn
 }
 
 void view_classes(HTTPServerRequest req, HTTPServerResponse res) {
-	auto api = new VedaStorageRest();
-//	immutable (Class)[string] classes = veda.storage.get_classes();
-	immutable (Class)[string] classes = api.get_classes();
+	auto storage = new VedaStorageRest();
+	immutable (Class)[string] classes = storage.get_classes();
 	string[][string] subClasses;
 	foreach(_class; classes.values) {
 		auto _superClasses = _class.subClassOf;
@@ -37,11 +35,10 @@ void view_class(HTTPServerRequest req, HTTPServerResponse res) {
 }
 
 void view_individual(HTTPServerRequest req, HTTPServerResponse res) {
-	auto api = new VedaStorageRest();
+	auto storage = new VedaStorageRest();
 	immutable (string) uri = req.params["uri"];
 	immutable (string) ticket = req.cookies.get("ticket", "");
-//	Individual individual = veda.storage.get_individual(ticket, uri);
-	Individual individual = api.get_individual(ticket, uri, 0);
+	Individual individual = storage.get_individual(ticket, uri, 0);
 	res.renderCompat!("view_individual.dt",
 		HTTPServerRequest, "req",
 		Individual, "individual",
@@ -51,9 +48,8 @@ void view_individual(HTTPServerRequest req, HTTPServerResponse res) {
 void view_popover(HTTPServerRequest req, HTTPServerResponse res) {
 	string uri = req.params["uri"];
 	string ticket = req.cookies.get("ticket", "");
-//	Individual individual = veda.storage.get_individual(ticket, uri);
-	auto api = new VedaStorageRest();
-	Individual individual = api.get_individual(ticket, uri, 0);
+	auto storage = new VedaStorageRest();
+	Individual individual = storage.get_individual(ticket, uri, 0);
 	res.renderCompat!("view_popover.dt",
 		HTTPServerRequest, "req",
 		Individual, "individual",
@@ -88,14 +84,13 @@ string to_rfc822(SysTime time) {
 }
 
 void login(HTTPServerRequest req, HTTPServerResponse res) {
-	auto api = new VedaStorageRest();
+	auto storage = new VedaStorageRest();
 	string ticket_string = req.cookies.get("ticket", "");
-	//if (veda.storage.is_ticket_valid(ticket_string)) return;
-	if (api.is_ticket_valid(ticket_string)) return;
+	if (storage.is_ticket_valid(ticket_string)) return;
 	else {
 		string login = req.cookies.get("login", "");
 		string password = req.cookies.get("password", "");
-		Ticket ticket = api.authenticate(login, password);
+		Ticket ticket = storage.authenticate(login, password);
 		if (ticket != Ticket.init) {
 			Cookie ticket_cookie = res.setCookie("ticket", ticket.id, "/");
 			//ticket_cookie.expires = to_rfc822(SysTime(ticket.end_time, TimeZone.getTimeZone("UTC")));
@@ -110,7 +105,7 @@ void login(HTTPServerRequest req, HTTPServerResponse res) {
 }
 
 void search(HTTPServerRequest req, HTTPServerResponse res) {
-	auto api = new VedaStorageRest();
+	auto storage = new VedaStorageRest();
 	//start timer
 	StopWatch sw;
 	sw.start();
@@ -119,8 +114,7 @@ void search(HTTPServerRequest req, HTTPServerResponse res) {
 
 	if (query != "") {
 		logInfo(query);
-		//Individual[] individuals = veda.storage.query(ticket, query, 0);
-		Individual[] individuals = api.query(ticket, query, 0);
+		Individual[] individuals = storage.query(ticket, query, 0);
 		
 		//stop & log timer & start again
 		sw.stop();
@@ -199,17 +193,22 @@ shared static this()
 	listenHTTP(settings, router);
 	logInfo("Please open http://127.0.0.1:8080/ in your browser.");
 	
-	StopWatch sw;
-	sw.start();
-	logInfo("PERFORMANCE TEST:");
-	
-	for(int i=0;i<1000;i++) {
-		Individual[] individuals = veda.storage.query("53e5cc22-7750-48fe-a772-9b155ceb2b16", "rdf", 0);
-		//auto api = new RestInterfaceClient!VedaStorageRest_API("http://127.0.0.1:8080/");
-		//auto api = new VedaStorageRest();
-		//Individual[] individuals = api.query("53e5cc22-7750-48fe-a772-9b155ceb2b16", "rdf", 0);
-	}
-	sw.stop();
-	long t = cast(long) sw.peek().msecs;
-	logInfo("test execution time:"~text(t)~" msecs");
+/*	setTimer(dur!"seconds"(1), {
+		scope(exit)
+			exitEventLoop(true);
+		StopWatch sw;
+		sw.start();
+		logInfo("PERFORMANCE TEST:");
+		int count = 1000000;
+		for(int i=0; i<count; i++) {
+			//Individual[] individuals = veda.storage.query("53e5cc22-7750-48fe-a772-9b155ceb2b16", "rdf", 0);
+			//auto storage = new RestInterfaceClient!VedaStorageRest_API("http://127.0.0.1:8080/");
+			auto storage = new VedaStorageRest();
+			Individual[] individuals = storage.query("53e5cc22-7750-48fe-a772-9b155ceb2b16", "rdf", 0);
+		}
+		sw.stop();
+		long t = cast(long) sw.peek().msecs;
+		logInfo("test execution time:"~text(t)~" msecs");
+		logInfo("median time per query:"~text(cast(double) t/count)~" msecs");
+	});*/
 }

@@ -1,5 +1,5 @@
 {
-	"name": "veda",
+	"name": "veda.app",
 	"description": "A simple vibe.d server application.",
 	"copyright": "Copyright © 2014, karpovr",
 	"authors": ["karpovr"],

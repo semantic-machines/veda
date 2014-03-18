@@ -1,4 +1,4 @@
-module veda.pacahondriver;
+module veda.pacahon_driver;
 
 import std.stdio, std.datetime, std.conv, std.string;
 import vibe.core.concurrency, vibe.core.core, vibe.core.log, vibe.core.task;
