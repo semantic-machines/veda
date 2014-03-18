@@ -9,25 +9,25 @@ block content
 		- return res;
 	- auto preferred_lang = LANG.RU;
 	- auto show_alternative_lang = true;
-	- if (req.query.get("q", "") == "")
+	- if (req.query.get("query", "") == "")
 		.container-fluid
 			h1.text-center(style="margin-top: 20%; margin-bottom: 20px") Поиск
 				span.text-muted / Search
 			form(method="GET", role="form")
 				.row
 					.col-xs-7.col-sm-7.col-sm-offset-1.col-md-8.col-md-offset-1.col-lg-8.col-lg-offset-1
-						label.sr-only(for="q") Запрос / Query:
-						input#q.form-control(type="text", placeholder="Введите запрос / Enter query", autofocus="autofocus", name="q", value="#{req.query.get("q", "")}")
+						label.sr-only(for="query") Запрос / Query:
+						input#query.form-control(type="text", placeholder="Введите запрос / Enter query", autofocus="autofocus", name="query", value="#{req.query.get("query", "")}")
 					.col-xs-5.col-sm-4.col-md-3.col-lg-3
 						button.btn.btn-primary(type="submit") Искать / Search
-	- else if (req.query.get("q", "") != "" && individuals.length == 0)
+	- else if (req.query.get("query", "") != "" && individuals.length == 0)
 		.well
 			.container-fluid
 				form(method="GET", role="form")
 					.row
 						.col-xs-7.col-sm-7.col-sm-offset-1.col-md-8.col-md-offset-1.col-lg-8.col-lg-offset-1.has-error
-							label.sr-only(for="q") Запрос / Query:
-							input#q.form-control(type="text", placeholder="Введите запрос / Enter query", autofocus="autofocus", name="q", value="#{req.query.get("q", "")}")
+							label.sr-only(for="query") Запрос / Query:
+							input#query.form-control(type="text", placeholder="Введите запрос / Enter query", autofocus="autofocus", name="query", value="#{req.query.get("query", "")}")
 						.col-xs-5.col-sm-4.col-md-3.col-lg-3
 							button.btn.btn-primary(type="submit") Искать / Search
 		.container-fluid
@@ -40,8 +40,8 @@ block content
 				form(method="GET", role="form")
 					.row
 						.col-xs-7.col-sm-7.col-sm-offset-1.col-md-8.col-md-offset-1.col-lg-8.col-lg-offset-1
-							label.sr-only(for="q") Запрос / Query:
-							input#q.form-control(type="text", placeholder="Введите запрос / Enter query", name="q", value="#{req.query.get("q", "")}")
+							label.sr-only(for="query") Запрос / Query:
+							input#query.form-control(type="text", placeholder="Введите запрос / Enter query", name="query", value="#{req.query.get("query", "")}")
 						.col-xs-5.col-sm-4.col-md-3.col-lg-3
 							button.btn.btn-primary(type="submit") Искать / Search
 		.container-fluid

@@ -115,12 +115,12 @@ void search(HTTPServerRequest req, HTTPServerResponse res) {
 	StopWatch sw;
 	sw.start();
 	string ticket = req.cookies.get("ticket", "");
-	string q = req.query.get("q", "");
+	string query = req.query.get("query", "");
 
-	if (q != "") {
-		logInfo(q);
-		//Individual[] individuals = veda.storage.query(ticket, q, 0);
-		Individual[] individuals = api.query(ticket, q, 0);
+	if (query != "") {
+		logInfo(query);
+		//Individual[] individuals = veda.storage.query(ticket, query, 0);
+		Individual[] individuals = api.query(ticket, query, 0);
 		
 		//stop & log timer & start again
 		sw.stop();
@@ -198,4 +198,18 @@ shared static this()
 
 	listenHTTP(settings, router);
 	logInfo("Please open http://127.0.0.1:8080/ in your browser.");
+	
+	StopWatch sw;
+	sw.start();
+	logInfo("PERFORMANCE TEST:");
+	
+	for(int i=0;i<1000;i++) {
+		Individual[] individuals = veda.storage.query("53e5cc22-7750-48fe-a772-9b155ceb2b16", "rdf", 0);
+		//auto api = new RestInterfaceClient!VedaStorageRest_API("http://127.0.0.1:8080/");
+		//auto api = new VedaStorageRest();
+		//Individual[] individuals = api.query("53e5cc22-7750-48fe-a772-9b155ceb2b16", "rdf", 0);
+	}
+	sw.stop();
+	long t = cast(long) sw.peek().msecs;
+	logInfo("test execution time:"~text(t)~" msecs");
 }
