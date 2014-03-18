@@ -11,7 +11,7 @@
 dl.dl-horizontal
 	- foreach(property_uri, property_values; individual.resources)
 		dt
-			- foreach(label; get_individual(ticket, property_uri).resources.get("rdfs:label", empty_resource(property_uri)))
+			- foreach(label; veda.storage.get_individual(ticket, property_uri).resources.get("rdfs:label", empty_resource(property_uri)))
 				- if (label.lang == preferred_lang)
 					span #{label.data}
 				- else if (show_alternative_lang)
@@ -23,7 +23,7 @@ dl.dl-horizontal
 					
 					- if (property_value.origin == ResourceOrigin.local)
 						div
-							- foreach(label; get_individual(ticket, property_value.data).resources.get("rdfs:label", empty_resource(property_value.data)))
+							- foreach(label; veda.storage.get_individual(ticket, property_value.data).resources.get("rdfs:label", empty_resource(property_value.data)))
 								- if (label.lang == preferred_lang)
 									span #{label.data}
 								- else if (show_alternative_lang)

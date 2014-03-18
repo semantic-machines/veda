@@ -17,7 +17,7 @@ $( function () {
 						container: "body"
 					}).popover("show");
 				} else {
-					$.get("/popover/" + popover_element.data("uri"), function( data ) {
+					$.get("/view_popover/" + popover_element.data("uri"), function( data ) {
 						$("<div/>", {
 							id: uri,
 							text: data,

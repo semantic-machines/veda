@@ -2,7 +2,7 @@ extends generic
 
 block content
 	- void treeNode(string uri)
-		a(href="/individuals/#{uri}") #{uri}
+		a(href="/view_individual/#{uri}") #{uri}
 		ol(style="list-style:inherit;")
 			- string[] tmp = subClasses.get(uri, string[].init);
 			- foreach (_subClass; tmp)

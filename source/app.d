@@ -1,20 +1,24 @@
 import std.conv;
 import vibe.d;
+import veda.pacahondriver;
 import veda.storage;
+import veda.storage_rest;
 import onto.owl;
 import onto.lang;
 import onto.individual;
 import pacahon.context;
 import std.datetime;
 
-void show_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) {
-	res.renderCompat!("error.dt",
+void view_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) {
+	res.renderCompat!("view_error.dt",
 		HTTPServerRequest, "req",
 		HTTPServerErrorInfo, "error")(req, error);
 }
 
-void get_classes(HTTPServerRequest req, HTTPServerResponse res) {
-	immutable (Class)[string] classes = get_all_classes();
+void view_classes(HTTPServerRequest req, HTTPServerResponse res) {
+	auto api = new VedaStorageRest();
+//	immutable (Class)[string] classes = veda.storage.get_classes();
+	immutable (Class)[string] classes = api.get_classes();
 	string[][string] subClasses;
 	foreach(_class; classes.values) {
 		auto _superClasses = _class.subClassOf;
@@ -22,37 +26,41 @@ void get_classes(HTTPServerRequest req, HTTPServerResponse res) {
 			subClasses[_superClass.uri] ~= _class.uri;
 		}
 	}
-	res.renderCompat!("classes.dt",
+	res.renderCompat!("view_classes.dt",
 		HTTPServerRequest, "req",
 		immutable (Class)[string], "classes",
 		string[][string], "subClasses")(req, classes, subClasses);
 }
 
-void get_class(HTTPServerRequest req, HTTPServerResponse res) {
-	get_individual(req, res);
+void view_class(HTTPServerRequest req, HTTPServerResponse res) {
+	view_individual(req, res);
 }
 
-void get_individual(HTTPServerRequest req, HTTPServerResponse res) {
-	string uri = req.params["uri"];
-	string ticket = req.cookies.get("ticket", "");
-	Individual individual = veda.storage.get_individual(ticket, uri);
-	res.renderCompat!("individual.dt",
+void view_individual(HTTPServerRequest req, HTTPServerResponse res) {
+	auto api = new VedaStorageRest();
+	immutable (string) uri = req.params["uri"];
+	immutable (string) ticket = req.cookies.get("ticket", "");
+//	Individual individual = veda.storage.get_individual(ticket, uri);
+	Individual individual = api.get_individual(ticket, uri, 0);
+	res.renderCompat!("view_individual.dt",
 		HTTPServerRequest, "req",
 		Individual, "individual",
 		string, "ticket")(req, individual, ticket);
 }
 
-void get_popover(HTTPServerRequest req, HTTPServerResponse res) {
+void view_popover(HTTPServerRequest req, HTTPServerResponse res) {
 	string uri = req.params["uri"];
 	string ticket = req.cookies.get("ticket", "");
-	Individual individual = veda.storage.get_individual(ticket, uri);
-	res.renderCompat!("popover.dt",
+//	Individual individual = veda.storage.get_individual(ticket, uri);
+	auto api = new VedaStorageRest();
+	Individual individual = api.get_individual(ticket, uri, 0);
+	res.renderCompat!("view_popover.dt",
 		HTTPServerRequest, "req",
 		Individual, "individual",
 		string, "ticket")(req, individual, ticket);
 }
 
-void get_index(HTTPServerRequest req, HTTPServerResponse res) {
+void index(HTTPServerRequest req, HTTPServerResponse res) {
 	string ticket = req.cookies.get("ticket", "");
 	res.renderCompat!("index.dt",
 		HTTPServerRequest, "req",
@@ -80,16 +88,17 @@ string to_rfc822(SysTime time) {
 }
 
 void login(HTTPServerRequest req, HTTPServerResponse res) {
+	auto api = new VedaStorageRest();
 	string ticket_string = req.cookies.get("ticket", "");
-	if (is_ticket_valid(ticket_string)) {
-		return;
-	} else {
+	//if (veda.storage.is_ticket_valid(ticket_string)) return;
+	if (api.is_ticket_valid(ticket_string)) return;
+	else {
 		string login = req.cookies.get("login", "");
 		string password = req.cookies.get("password", "");
-		Ticket ticket = authenticate(login, password);
+		Ticket ticket = api.authenticate(login, password);
 		if (ticket != Ticket.init) {
 			Cookie ticket_cookie = res.setCookie("ticket", ticket.id, "/");
-			ticket_cookie.expires = to_rfc822(SysTime(ticket.end_time, TimeZone.getTimeZone("UTC")));
+			//ticket_cookie.expires = to_rfc822(SysTime(ticket.end_time, TimeZone.getTimeZone("UTC")));
 			res.setCookie("password", null, "/");
 		} else {
 			res.setCookie("ticket", null, "/");
@@ -100,15 +109,18 @@ void login(HTTPServerRequest req, HTTPServerResponse res) {
 	}
 }
 
-void get_search(HTTPServerRequest req, HTTPServerResponse res) {
+void search(HTTPServerRequest req, HTTPServerResponse res) {
+	auto api = new VedaStorageRest();
 	//start timer
 	StopWatch sw;
 	sw.start();
 	string ticket = req.cookies.get("ticket", "");
 	string q = req.query.get("q", "");
+
 	if (q != "") {
 		logInfo(q);
-		Individual[] individuals = veda.storage.get_individuals_via_query(ticket, q, 0);
+		//Individual[] individuals = veda.storage.query(ticket, q, 0);
+		Individual[] individuals = api.query(ticket, q, 0);
 		
 		//stop & log timer & start again
 		sw.stop();
@@ -139,26 +151,51 @@ void get_search(HTTPServerRequest req, HTTPServerResponse res) {
 shared static this()
 {
 	// initialize storage
-	auto vs = new VedaStorage ();
-	vs.init(); 
+	auto pacahon = new PacahonDriver ();
+	pacahon.init(); 
 
 	auto settings = new HTTPServerSettings;
 	settings.port = 8080; //settings.bindAddresses = ["::1", "127.0.0.1", "172.17.35.148"];
-	settings.errorPageHandler = toDelegate(&show_error);
+	settings.bindAddresses = ["127.0.0.1"];
+	settings.errorPageHandler = toDelegate(&view_error);
 
 	auto router = new URLRouter;
 	router.get("*", serveStaticFiles("public"));
 	router.get("/logout", &logout);
+
+	registerRestInterface(router, new VedaStorageRest());
+
 	router.any("*", &login);
-	router.get("/", &get_index);
-	router.get("/classes", &get_classes);
-	router.get("/classes/", &get_classes);
-	router.get("/classes/:uri", &get_class);
-	router.get("/individuals/:uri", &get_individual);
-	router.get("/popover/:uri", &get_popover);
-	router.get("/search", &get_search);
-	router.get("/search/", &get_search);
-	
+	router.get("/", &index);
+	router.get("/view_classes", &view_classes);
+	router.get("/view_classes/", &view_classes);
+	router.get("/view_class/:uri", &view_class);
+	router.get("/view_individual/:uri", &view_individual);
+	router.get("/view_popover/:uri", &view_popover);
+	router.get("/search", &search);
+	router.get("/search/", &search);
+
+
+	logInfo("============ROUTES=============");
+	auto routes = router.getAllRoutes();
+	logInfo("GET:");
+	foreach(key, value; routes[HTTPMethod.GET]) {
+		logInfo(text(key) ~ ": " ~ text(value));
+	}
+	logInfo("PUT:");
+	foreach(key, value; routes[HTTPMethod.PUT]) {
+		logInfo(text(key) ~ ": " ~ text(value));
+	}
+	logInfo("POST:");
+	foreach(key, value; routes[HTTPMethod.POST]) {
+		logInfo(text(key) ~ ": " ~ text(value));
+	}
+	logInfo("DELETE:");
+	foreach(key, value; routes[HTTPMethod.DELETE]) {
+		logInfo(text(key) ~ ": " ~ text(value));
+	}
+	logInfo("===============================");
+
 	listenHTTP(settings, router);
 	logInfo("Please open http://127.0.0.1:8080/ in your browser.");
 }
