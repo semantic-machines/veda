@@ -163,10 +163,10 @@ mondi-data:Mandate_1
   veda-schema:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   veda-schema:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   veda-schema:script """{
-permissionObject : $document,
-permissionSubject : $user,
-right : ru,
-filter : $document[veda-schema:author]->[veda-schema:employee] == $user
+"permissionObject" : "$document",
+"permissionSubject" : "$user",
+"right" : "cru",
+"condition" : "var $in_doc = cbor.decode ($rt_getProp (globalObj, 'doc_as_cbor'));"
 }"""^^xsd:string ;
   rdfs:comment "Выдача прав авторам"@ru ;
   rdfs:label "Mandate_1"@en ;
