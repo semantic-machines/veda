@@ -166,7 +166,7 @@ mondi-data:Mandate_1
 "permissionObject" : "$document",
 "permissionSubject" : "$user",
 "right" : "cru",
-"condition" : "var $in_doc = cbor.decode ($rt_getProp (globalObj, 'doc_as_cbor'));"
+"condition" : "var doc = read ('$document'); print ('DOC:' + doc['uri'] + ' ' + doc['rdfs:label'][0]);"
 }"""^^xsd:string ;
   rdfs:comment "Выдача прав авторам"@ru ;
   rdfs:label "Mandate_1"@en ;
