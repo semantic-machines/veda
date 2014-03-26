@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<title>Veda</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta name="description" content=""/>
+		<meta name="author" content=""/>
+		<link href="/css/veda.min.css" rel="stylesheet"/>
+	</head>
+	<body style="padding: 0px 0px 30px;">
+
+		<nav role="navigation" class="navbar navbar-inverse" id="navigation">
+			<div class="container-fluid">
+				<a href="/" class="btn btn-info navbar-btn navbar-left">VEDA</a>
+				<ul class="nav navbar-nav navbar-left">
+					<li>
+						<a href="/view_classes/" title="Classes">Классы / Classes</a>
+					</li>
+					<li>
+						<a href="/search/" title="Search">Поиск / Search</a>
+					</li>
+				</ul>
+				<a href="/logout" class="btn btn-xs btn-danger navbar-btn navbar-right">
+					<i class="glyphicon glyphicon-log-out"></i>
+				</a>
+				<p class="navbar-text navbar-right">
+					Signed in as 
+					<a href="#" class="navbar-link">Roman Karpov</a>
+				</p>
+				<div data-toggle="buttons" class="navbar-right btn-group">
+					<label id="ru-label" class="btn btn-xs btn-info navbar-btn active">
+						<input id="ru" type="radio"/>
+						Ru
+					</label>
+					<label id="en-label" class="btn btn-xs btn-info navbar-btn">
+						<input id="ru" type="radio"/>
+						En
+					</label>
+				</div>
+			</div>
+		</nav>
+		<br>
+		<div class="container-fluid" id="main-container"></div>
+
+		<nav style="min-height:20px" class="navbar navbar-fixed-bottom" id="copyright">
+			<footer>
+				<hr style="margin:0px"/>
+				<div style="background-color:white" class="container-fluid">
+					<a href="http://www.semantic-machines.com" title="Официальный сайт компании">&copy; "Смысловые машины", ООО.</a>
+					Лицензия / License
+					<a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
+				</div>
+			</footer>
+		</nav>
+		<!-- Javascript placed at the end of the document so the pages load faster -->
+		<script src="/js/jquery.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/cookie.js"></script>
+		<script src="/js/riot.js"></script>
+		<script src="/js/veda_backend.js"></script>
+		<script src="/js/veda_api.js"></script>
+		<script>
+			a = new Api("mondi-data:KarpovR");
+		</script>
+	</body>
+</html>

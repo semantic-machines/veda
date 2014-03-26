@@ -16,29 +16,29 @@ import onto.lang;
 
 interface VedaStorageRest_API {
 
-	@path("authenticate/:login/:password") @method(HTTPMethod.GET)
-	Ticket authenticate(string _login, string _password);
+	@path("authenticate") @method(HTTPMethod.GET)
+	Ticket authenticate(string login, string password);
 
-	@path("is_ticket_valid/:ticket") @method(HTTPMethod.GET)
-	bool is_ticket_valid(string _ticket);
+	@path("is_ticket_valid") @method(HTTPMethod.GET)
+	bool is_ticket_valid(string ticket);
 
-	@path("query/:query/:ticket") @method(HTTPMethod.GET)
-	Individual[] query(string _ticket, string _query = "rdf", byte level = 0);
+	@path("query") @method(HTTPMethod.GET)
+	Individual[] query(string ticket, string query = "rdf", byte level = 0);
 
-	@path("individual/:uri/:ticket") @method(HTTPMethod.GET)
-	Individual get_individual(string _ticket, string _uri, byte level = 0);
+	@path("individual") @method(HTTPMethod.GET)
+	Individual get_individual(string ticket, string uri, byte level = 0);
 	
-	@path("individual/:uri/:ticket") @method(HTTPMethod.PUT)
-	ResultCode put_individual(string _ticket, string _uri, Individual indv);
+	@path("individual") @method(HTTPMethod.PUT)
+	ResultCode put_individual(string ticket, string uri, Individual indv);
 	
-	@path("individual/:uri/:property_uri/:lang/:ticket") @method(HTTPMethod.GET)
-	string get_property_value(string _ticket, string _uri, string _property_uri, LANG _lang);
+	@path("individual") @method(HTTPMethod.GET)
+	string get_property_value(string ticket, string uri, string property_uri, LANG lang);
 
 	@path("classes") @method(HTTPMethod.GET)
 	immutable(Class)[ string ] get_classes();
 
-	@path("classes/:uri") @method(HTTPMethod.GET)
-	Class get_class(string _uri);
+	@path("classes") @method(HTTPMethod.GET)
+	Class get_class(string uri);
 }
 
 class VedaStorageRest : VedaStorageRest_API {

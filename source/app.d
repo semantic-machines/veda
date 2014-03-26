@@ -169,7 +169,8 @@ shared static this()
 	registerRestInterface(router, new VedaStorageRest());
 
 	router.any("*", &login);
-	router.get("/", &index);
+	//router.get("/", &index);
+	router.get("/", serveStaticFile("public/index.html"));
 	router.get("/view_classes", &view_classes);
 	router.get("/view_classes/", &view_classes);
 	router.get("/view_class/:uri", &view_class);
