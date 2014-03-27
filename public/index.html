@@ -40,8 +40,21 @@
 				</div>
 			</div>
 		</nav>
-		<br>
-		<div class="container-fluid" id="main-container"></div>
+		<!--br-->
+		<div class="container-fluid" id="console">
+			<h2>JavaScript console</h2>
+			<form role="form">
+				<div class="form-group">
+					<label for="input">Script</label>
+					<textarea rows="7" class="form-control" id="input" placeholder="Enter script" autofocus="autofocus"></textarea>
+				</div>
+				<div class="form-group">
+					<label for="output">Result</label>
+					<textarea rows="7" class="form-control" id="output"></textarea>
+				</div>
+				<button type="submit" class="btn btn-success">Run!</button>
+			</form>
+		</div>
 
 		<nav style="min-height:20px" class="navbar navbar-fixed-bottom" id="copyright">
 			<footer>
@@ -60,7 +73,7 @@
 		<script src="/js/riot.js"></script>
 		<script src="/js/veda_dictionary.js"></script>
 		<script src="/js/veda_backend.js"></script>
-		<!--script src="/js/veda_console.js"></script-->
+		<script src="/js/veda_console.js"></script>
 		<script>
 			//var a = new Api("mondi-data:KarpovR");
 		</script>
