@@ -69,7 +69,7 @@ function execute_script(script, callback) {
 		type: "GET",
 		url: "execute_script",
 		data: { "script": script },
-		//dataType: "json",
+		dataType: "json",
 		//contentType: 'application/json; charset=UTF-8'
 	})
 	.fail( function () { callback(null) } )
