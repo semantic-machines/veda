@@ -21,7 +21,8 @@ import util.lmultidigraph;
 enum Command {
     Get,
     Is,
-    Put
+    Put,
+    Execute
 }
 
 enum Function {
@@ -31,7 +32,8 @@ enum Function {
     PropertyOfIndividual,
     IndividualsToQuery,
     NewTicket,
-    TicketValid
+    TicketValid,
+    Script
 }
 
 Task io_task;
@@ -79,7 +81,9 @@ class PacahonDriver {
                                           (Command cmd, Function fn, string args, Tid tid) {
                                               // writeln("Tid=", cast(void *)tid);
                                               if (tid !is null) {
-                                                  if (cmd == Command.Get && fn == Function.AllClasses) {
+                                                  if (cmd == Command.Execute && fn == Function.Script) {
+                                                      send(tid, context.execute_script (args));
+						  }else if (cmd == Command.Get && fn == Function.AllClasses) {
                                                       send(tid, context.get_owl_classes().values);
                                                   } else if (cmd == Command.Is && fn == Function.TicketValid) {
                                                       bool res = context.is_ticket_valid(args);
