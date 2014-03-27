@@ -141,7 +141,7 @@ Class get_class(string uri) {
     return Class.init;
 }
 
-string execute_js(string js) {
+string execute_script(string script) {
 	string res;
     Tid my_task = Task.getThis();
     //
