@@ -6,6 +6,8 @@ function get_property_chain (uri, element)
 
 	for (var i = 1; i < arguments.length; i++) 
 	{
+//		if (arguments[i] in doc)
+//		{
 		field = doc[arguments[i]];
 		if (field)		
 		{
@@ -13,6 +15,7 @@ function get_property_chain (uri, element)
 			if (!doc)
 			    break;
 		}
+//		}
 			
 	}		
 
