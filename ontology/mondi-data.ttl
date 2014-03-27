@@ -166,7 +166,7 @@ mondi-data:Mandate_1
 "permissionObject" : "$document",
 "permissionSubject" : "$user",
 "right" : "cru",
-"condition" : "var doc = get_individual ('$document'); var author = doc['veda-schema:author']; if (author) { var doc1 = get_individual (author[0].data); if (doc1) {var employee = doc1['veda-schema:employee']; if (employee) { print ('DOC:[' + doc['@'] + '] AUTHOR:[' + employee[0].data + ']'); }}} doc"
+"condition" : "var ff = get_property_chain ('$document', 'veda-schema:author', 'veda-schema:employee'); if (ff['field']) { print ('DOC:[' + ff['first']['@'] + '] AUTHOR:[' + ff['field'][0].data + ']'); }"
 }"""^^xsd:string ;
   rdfs:comment "Выдача прав авторам"@ru ;
   rdfs:label "Mandate_1"@en ;
