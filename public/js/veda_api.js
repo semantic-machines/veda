@@ -1,6 +1,26 @@
-function Api () { "use strict";
+function Console () { "use strict";
+
 	var self = $.observable(this);
-	var ticket = {
+	
+	var self.uri;
+	
+	self.get = function	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*	var ticket = {
 		id: undefined,
 		end_time: undefined,
 		user_uri: undefined
@@ -14,4 +34,8 @@ function Api () { "use strict";
 			$("#main-container").append(JSON.stringify(individual));
 		});
 	});
+*/
+
+	
+
 }

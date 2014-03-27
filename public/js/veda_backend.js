@@ -63,3 +63,15 @@ function get_property_value(ticket, uri, property_uri, callback) {
 	.fail( function () { callback(null) } )
 	.done( function (data) { callback(data) } );
 }
+
+function execute_script(script, callback) {
+	$.ajax({
+		type: "GET",
+		url: "execute_script",
+		data: { "script": script },
+		//dataType: "json",
+		//contentType: 'application/json; charset=UTF-8'
+	})
+	.fail( function () { callback(null) } )
+	.done( function (data) { callback(data) } );
+}
