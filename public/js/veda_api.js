@@ -14,5 +14,4 @@ function Api () { "use strict";
 			$("#main-container").append(JSON.stringify(individual));
 		});
 	});
-	
 }
