@@ -39,6 +39,9 @@ interface VedaStorageRest_API {
 
 	@path("classes") @method(HTTPMethod.GET)
 	Class get_class(string uri);
+
+	@path("execute_js") @method(HTTPMethod.POST)
+	string execute_js(string js);
 }
 
 class VedaStorageRest : VedaStorageRest_API {
@@ -136,6 +139,13 @@ Class get_class(string uri) {
     	return cast(Class)classes[ 0 ];
     }
     return Class.init;
+}
+
+string execute_js(string js) {
+	string res;
+    Tid my_task = Task.getThis();
+    //
+    return res;
 }
 
 }
