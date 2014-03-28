@@ -25,7 +25,7 @@ html(lang="en")
 								input(type="hidden", name="#{key_form_field}", value="#{value_form_field}")
 						button.btn.btn-primary(type="submit") Войти / Enter
 		include includes/footer
-		script(src="/js/sha256.js")
+		script(src="/js/browser/sha256.js")
 		script(type="text/javascript")
 			$(function() {
 				$( ':input' ).keyup(function (e) {
