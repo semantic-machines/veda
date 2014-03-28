@@ -42,7 +42,7 @@ class PacahonDriver {
     Context context;
     this() {
         init_core();
-        context = new ThreadContext(props_file_path, "vibe.app");
+        context = new PThreadContext(props_file_path, "vibe.app");
     }
 
     void init() {
@@ -56,7 +56,7 @@ class PacahonDriver {
                                   receive(
                                           (Command cmd, Function fn, string arg1, byte arg2, string ticket, Tid tid) {
                                               // writeln("Tid=", cast(void *)tid);
-                                              if (tid !is null) {
+                                              if (tid != Tid.init) {
                                                   if (cmd == Command.Get && fn == Function.Individual) {
                                                       immutable(Individual)[ string ] onto_individuals =
                                                           context.get_onto_as_map_individuals();
@@ -80,7 +80,7 @@ class PacahonDriver {
                                           },
                                           (Command cmd, Function fn, string args, Tid tid) {
                                               // writeln("Tid=", cast(void *)tid);
-                                              if (tid !is null) {
+                                              if (tid !is Tid.init) {
                                                   if (cmd == Command.Execute && fn == Function.Script) {
                                                       send(tid, context.execute_script (args));
 						  }else if (cmd == Command.Get && fn == Function.AllClasses) {
@@ -102,7 +102,7 @@ class PacahonDriver {
                                               }
                                           },
                                           (Command cmd, Function fn, string arg1, string arg2, Tid tid) {
-                                              if (tid !is null) {
+                                              if (tid !is Tid.init) {
                                                   if (cmd == Command.Get && fn == Function.NewTicket) {
                                                       immutable(Ticket)[] tickets;
                                                       Ticket ticket = context.authenticate(arg1, arg2);
@@ -113,7 +113,7 @@ class PacahonDriver {
                                               }
                                           },
                                           (Command cmd, Function fn, string ticket, string uri, immutable(Individual)[] individual, Tid tid) {
-                                              if (tid !is null) {
+                                              if (tid !is Tid.init) {
                                                   if (cmd == Command.Put && fn == Function.Individual) {
                                                       ResultCode res = context.put_individual(uri, cast(Individual)individual[ 0 ], ticket);
 
@@ -122,7 +122,7 @@ class PacahonDriver {
                                               }
                                           },
                                           (Command cmd, Function fn, string arg1, string arg2, string ticket, LANG lang, Tid tid) {
-                                              if (tid !is null) {
+                                              if (tid !is Tid.init) {
                                                   if (cmd == Command.Get && fn == Function.PropertyOfIndividual) {
                                                       string res1;
                                                       immutable(Individual)[ string ] onto_individuals =
