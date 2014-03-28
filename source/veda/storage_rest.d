@@ -48,7 +48,7 @@ class VedaStorageRest : VedaStorageRest_API {
 override:
 Ticket authenticate(string login, string password) {
     Tid my_task = Task.getThis();
-    if (my_task !is null) {
+    if (my_task !is Tid.init) {
         send(io_task, Command.Get, Function.NewTicket, login, password, my_task);
         immutable(Ticket)[] tickets = receiveOnly!(immutable(Ticket)[]);
         if (tickets.length > 0) {
@@ -60,7 +60,7 @@ Ticket authenticate(string login, string password) {
 
 bool is_ticket_valid(string ticket) {
     Tid my_task = Task.getThis();
-    if (my_task !is null) {
+    if (my_task !is Tid.init) {
         send(io_task, Command.Is, Function.TicketValid, ticket, my_task);
         bool res = receiveOnly!(bool);
         return res;
@@ -71,7 +71,7 @@ bool is_ticket_valid(string ticket) {
 Individual[] query(string ticket, string query, byte level = 0) {
     Tid my_task = Task.getThis();
     immutable(Individual)[] individuals;
-    if (my_task !is null) {
+    if (my_task !is Tid.init) {
         send(io_task, Command.Get, Function.IndividualsToQuery, query, level, ticket, my_task);
         individuals = receiveOnly!(immutable(Individual)[]);
     }
@@ -80,7 +80,7 @@ Individual[] query(string ticket, string query, byte level = 0) {
 
 Individual get_individual(string ticket, string uri, byte level = 0) {
     Tid my_task = Task.getThis();
-    if (my_task !is null) {
+    if (my_task !is Tid.init) {
         immutable(Individual)[] individual;
         send(io_task, Command.Get, Function.Individual, uri, level, ticket, my_task);
         individual = receiveOnly!(immutable(Individual)[]);
@@ -93,7 +93,7 @@ Individual get_individual(string ticket, string uri, byte level = 0) {
 
 ResultCode put_individual(string ticket, string uri, Individual individual) {
     Tid my_task = Task.getThis();
-    if (my_task !is null) {
+    if (my_task !is Tid.init) {
         immutable(Individual)[] ind;
         ind ~= individual.idup;
         send(io_task, Command.Put, Function.Individual, ticket, uri, ind, my_task);
@@ -106,7 +106,7 @@ ResultCode put_individual(string ticket, string uri, Individual individual) {
 string get_property_value(string ticket, string uri, string property_uri, LANG lang) {
     Tid my_task = Task.getThis();
     string res;
-    if (my_task !is null) {
+    if (my_task !is Tid.init) {
         send(io_task, Command.Get, Function.PropertyOfIndividual, uri, property_uri, lang, my_task);
         res = receiveOnly!(string);
     }
@@ -117,7 +117,7 @@ immutable(Class)[ string ] get_classes() {
     Tid my_task = Task.getThis();
     immutable(Class)[ string ] res;
     immutable(Class)[] classes;
-    if (my_task !is null) {
+    if (my_task !is Tid.init) {
         send(io_task, Command.Get, Function.AllClasses, "", my_task);
         classes = receiveOnly!(immutable(Class)[]);
         foreach (clasz; classes) {
@@ -131,7 +131,7 @@ immutable(Class)[ string ] get_classes() {
 Class get_class(string uri) {
     Tid my_task = Task.getThis();
     immutable(Class)[] classes;
-    if (my_task !is null) {
+    if (my_task !is Tid.init) {
         send(io_task, Command.Get, Function.Class, uri, my_task);
         classes = receiveOnly!(immutable(Class)[]);
     }
@@ -146,7 +146,7 @@ string[2] execute_script(string script) {
 	logInfo(script);
     Tid my_task = Task.getThis();
 
-    if (my_task !is null) 
+    if (my_task !is Tid.init) 
     {
         send(io_task, Command.Execute, Function.Script, script, my_task);
 
