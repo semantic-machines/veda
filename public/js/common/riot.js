@@ -1,6 +1,6 @@
 /* Riot 0.9.8, @license MIT, (c) 2014 Moot Inc + contributors */
 
-//var exports = exports || {}, $ = exports;
+var exports = exports || {}, $ = $ || {};
 
 (function($) { "use strict";
 
