@@ -41,7 +41,7 @@ interface VedaStorageRest_API {
 	Class get_class(string uri);
 
 	@path("execute_script") @method(HTTPMethod.GET)
-	string execute_script(string script);
+	string[2] execute_script(string script);
 }
 
 class VedaStorageRest : VedaStorageRest_API {
@@ -141,15 +141,15 @@ Class get_class(string uri) {
     return Class.init;
 }
 
-string execute_script(string script) {
-	string res;
+string[2] execute_script(string script) {
+	string[2] res;
 	logInfo(script);
     Tid my_task = Task.getThis();
 
     if (my_task !is null) 
     {
         send(io_task, Command.Execute, Function.Script, script, my_task);
-        res = receiveOnly!(string);
+        res[0] = receiveOnly!(string);
     }
 
     return res;
