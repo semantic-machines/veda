@@ -40,7 +40,7 @@ interface VedaStorageRest_API {
 	@path("classes") @method(HTTPMethod.GET)
 	Class get_class(string uri);
 
-	@path("execute_script") @method(HTTPMethod.GET)
+	@path("execute_script") @method(HTTPMethod.POST)
 	string[2] execute_script(string script);
 }
 

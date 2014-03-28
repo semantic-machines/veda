@@ -1,11 +1,10 @@
-//$( function() {
-	;(function Console () { "use strict";
-		$("#console button").on("click", 
-			function(event) {
-				event.preventDefault();
-				execute_script($("#console #input").val(), function(result) {
-					$("#console #output").val(result);
-				});
+;(function() { "use strict";
+	$("#console #run").on("click", 
+		function(event) {
+			event.preventDefault();
+			execute_script($("#console #script").val(), function(result) {
+				$("#console #result").val(result[0]);
+				$("#console #output").val(result[1]);
 			});
-	})();
-//});
+		});
+})();
