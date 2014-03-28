@@ -40,29 +40,48 @@
 				</div>
 			</div>
 		</nav>
+		
 		<div class="container-fluid" id="console">
-			<h2>Server side JavaScript console</h2>
+			<h2>JavaScript console</h2>
 			<form role="form">
 				<div class="form-group">
-					<label for="input">Input</label>
-					<textarea rows="7" class="form-control" id="input" placeholder="Enter script" autofocus="autofocus"></textarea>
+					<label for="script">Script</label>
+					<textarea rows="7" class="form-control" id="script" placeholder="Enter script" autofocus="autofocus"></textarea>
+				</div>
+				<div class="form-group row">
+					<div class="col-xs-12 col-sm-6 col-md-8 col-lg-8">
+						<label for="result">Result</label>
+						<textarea rows="7" class="form-control" id="result"></textarea>
+					</div>
+					<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+						<label for="output">Output</label>
+						<textarea rows="7" class="form-control" id="output"></textarea>
+					</div>
 				</div>
 				<div class="form-group">
-					<label for="output">Output</label>
-					<textarea rows="7" class="form-control" id="output"></textarea>
+					<label class="radio-inline">
+						<input type="radio" id="clientside" id="clientside" value="clientside" checked> Run in browser
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="serverside" id="serverside" value="serverside"> Run on server
+					</label>
 				</div>
-				<button type="submit" class="btn btn-success">Run!</button>
+				<button type="submit" id="run" class="btn btn-success">Run!</button>
 			</form>
 		</div>
-		<nav style="min-height:20px" class="navbar navbar-inverse navbar-fixed-bottom" id="copyright">
+
+		<br />
+		<br />
+		<nav style="min-height:20px;" class="navbar navbar-fixed-bottom" id="copyright">
 			<footer>
-				<div class="container-fluid">
-					<a class="nav-link" href="http://www.semantic-machines.com" title="Официальный сайт компании">&copy; "Смысловые машины", ООО.</a>
+				<div class="container-fluid" style="background-color: white; border-top: 1px solid lightgray">
+					<a href="http://www.semantic-machines.com" title="Официальный сайт компании">&copy; "Смысловые машины", ООО.</a>
 					Лицензия / License
 					<a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
 				</div>
 			</footer>
 		</nav>
+
 		<!-- Javascript placed at the end of the document so the pages load faster -->
 		<script src="/js/jquery.js"></script>
 		<script src="/js/bootstrap.min.js"></script>
@@ -71,8 +90,6 @@
 		<script src="/js/veda_dictionary.js"></script>
 		<script src="/js/veda_backend.js"></script>
 		<script src="/js/veda_console.js"></script>
-		<script>
-			//var a = new Api("mondi-data:KarpovR");
-		</script>
+		<script src="/js/veda_console_api.js"></script>
 	</body>
 </html>
