@@ -165,7 +165,6 @@ shared static this()
 	auto router = new URLRouter;
 	router.get("*", serveStaticFiles("public"));
 	router.get("/logout", &logout);
-
 	registerRestInterface(router, new VedaStorageRest());
 
 	router.any("*", &login);
