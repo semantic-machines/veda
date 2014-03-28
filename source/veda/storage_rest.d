@@ -142,8 +142,7 @@ Class get_class(string uri) {
 }
 
 string[2] execute_script(string script) {
-	string[2] res;
-	logInfo(script);
+    string[2] res;
     Tid my_task = Task.getThis();
 
     if (my_task !is Tid.init) 
