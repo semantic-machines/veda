@@ -46,7 +46,8 @@ function put_individual(ticket, uri, individual, callback) {
 	$.ajax({
 		type: "PUT",
 		url: "individual",
-		data: { "ticket": ticket, "uri": uri, "individual": individual },
+		data: JSON.stringify({"ticket": ticket, "uri": uri, "individual": individual}),
+		contentType: "application/json",
 		dataType: "json"
 	})
 	.fail( function () { callback(null) } )
@@ -66,9 +67,10 @@ function get_property_value(ticket, uri, property_uri, callback) {
 
 function execute_script(script, callback) {
 	$.ajax({
-		type: "GET",
+		type: "POST",
 		url: "execute_script",
-		data: { "script": script },
+		data: JSON.stringify({"script": script}),
+		contentType: "application/json",
 		dataType: "json"
 	})
 	.fail( function () { callback(null) } )
