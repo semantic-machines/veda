@@ -2,13 +2,19 @@
 	$("#console #run").on("click", 
 		function(event) {
 			event.preventDefault();
-			if ($("#console input[name='runat']:radio:checked").val() == "browser") {
-				var result = eval($("#console #script").val());
-				$("#console #result").val(result);
+			var 
+				runat = $("#console input[name='runat']:radio:checked"),
+				result = $("#console #result"), 
+				script = $("#console #script"),
+				output = $("#console #output");
+			if (runat.val() == "browser") {
+				var res = eval(script.val());
+				result.val(res);
+				output.val("");
 			} else {
-				execute_script($("#console #script").val(), function(result) {
-					$("#console #result").val(result[0]);
-					$("#console #output").val(result[1]);
+				execute_script(script.val(), function(res) {
+					result.val(res[0]);
+					output.val(res[1]);
 				});
 			};
 		});
