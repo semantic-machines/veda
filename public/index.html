@@ -60,10 +60,10 @@
 				</div>
 				<div class="form-group">
 					<label class="radio-inline">
-						<input type="radio" id="clientside" id="clientside" value="clientside" checked> Run in browser
+						<input type="radio" name="runside" id="clientside" value="clientside"> Run in browser
 					</label>
 					<label class="radio-inline">
-						<input type="radio" name="serverside" id="serverside" value="serverside"> Run on server
+						<input type="radio" name="runside" id="serverside" value="serverside"> Run on server
 					</label>
 				</div>
 				<button type="submit" id="run" class="btn btn-success">Run!</button>
@@ -83,13 +83,20 @@
 		</nav>
 
 		<!-- Javascript placed at the end of the document so the pages load faster -->
-		<script src="/js/jquery.js"></script>
-		<script src="/js/bootstrap.min.js"></script>
-		<script src="/js/cookie.js"></script>
-		<script src="/js/riot.js"></script>
-		<script src="/js/veda_dictionary.js"></script>
-		<script src="/js/veda_backend.js"></script>
-		<script src="/js/veda_console.js"></script>
-		<script src="/js/veda_console_api.js"></script>
+		
+		<!-- Utils & UI -->
+		<script src="/js/browser/jquery.js"></script>
+		<script src="/js/browser/bootstrap.min.js"></script>
+		<script src="/js/browser/cookie.js"></script>
+
+		<!-- Veda browser & server -->
+		<script src="/js/common/riot.js"></script>
+		<script src="/js/common/veda_dictionary.js"></script>
+		<script src="/js/common/veda_console_api.js"></script>
+
+		<!-- Veda browser only -->
+		<script src="/js/browser/veda_backend.js"></script>
+		<script src="/js/browser/veda_console.js"></script>
+		
 	</body>
 </html>

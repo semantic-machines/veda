@@ -66,7 +66,7 @@ function get_property_value(ticket, uri, property_uri, callback) {
 
 function execute_script(script, callback) {
 	$.ajax({
-		type: "POST",
+		type: "GET",
 		url: "execute_script",
 		data: { "script": script },
 		dataType: "json"
