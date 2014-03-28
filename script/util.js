@@ -29,3 +29,8 @@ function get_property_chain (uri, element)
 	}
 	return res;	
 }
+
+function toJson (x)
+{
+    return JSON.stringify (x, null, 2); 
+}

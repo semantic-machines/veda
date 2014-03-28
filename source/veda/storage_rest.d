@@ -149,7 +149,8 @@ string[2] execute_script(string script) {
     if (my_task !is null) 
     {
         send(io_task, Command.Execute, Function.Script, script, my_task);
-        res[0] = receiveOnly!(string);
+
+        res = receiveOnly!(string[2]);
     }
 
     return res;
