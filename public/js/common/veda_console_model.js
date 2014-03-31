@@ -2,10 +2,7 @@
 function veda_console () { "use strict"; 
 	var self = $.observable(this);
 	self.script = self.runat = self.result = self.output = "";
-	self.busy = false;
-	self.ready = true;
-	self.start = 0;
-	self.stop = 0;
+	self.start = self.stop = 0;
 	self.run = function() {
 		self.trigger("run");
 		if (self.runat == "server") {
@@ -23,12 +20,8 @@ function veda_console () { "use strict";
 	}
 	self.on("run", function() {
 		self.start = new Date().getTime();
-		self.busy = true;
-		self.ready = false;
 	});
 	self.on("done", function() {
 		self.stop = new Date().getTime();
-		self.busy = false;
-		self.ready = true;
 	});
 };
