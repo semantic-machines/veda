@@ -1,4 +1,4 @@
-/* Riot 0.9.8, @license MIT, (c) 2014 Moot Inc + contributors */
+/* Riot 0.9.9, @license MIT, (c) 2014 Moot Inc + contributors */
 
 var exports = exports || {}, $ = $ || {};
 
@@ -36,10 +36,10 @@ $.observable = function(el) {
       fns = callbacks[name] || [];
 
     for (var i = 0, fn; (fn = fns[i]); ++i) {
-      if (!((fn.one && fn.done) || fn.busy)) {
+      if (!fn.busy) {
         fn.busy = true;
         fn.apply(el, fn.typed ? [name].concat(args) : args);
-        fn.done = true;
+        if (fn.one) { fns.splice(i, 1); i--; }
         fn.busy = false;
       }
     }
@@ -51,43 +51,30 @@ $.observable = function(el) {
 
 };
 
-// Precompiled templates (JavaScript functions)
-var FN = {};
+var FN = {}, // Precompiled templates (JavaScript functions)
+  template_escape = {"\\": "\\\\", "\n": "\\n", "\r": "\\r", "'": "\\'"},
+  render_escape = {'&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;'};
 
-var ESCAPING_MAP = {
-  "\\": "\\\\",
-  "\n": "\\n",
-  "\r": "\\r",
-  "\u2028": "\\u2028",
-  "\u2029": "\\u2029",
-  "'": "\\'"
+function escape(str) {
+  return str == undefined ? '' : (str+'').replace(/[&\"<>]/g, function(char) {
+    return render_escape[char];
+  });
+}
+
+$.render = function(tmpl, data, escape_fn) {
+  if (typeof escape_fn != 'function' && escape_fn !== false) escape_fn = escape;
+  tmpl = tmpl || '';
+
+  return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "return '" +
+
+    tmpl.replace(/[\\\n\r']/g, function(char) {
+      return template_escape[char];
+
+    }).replace(/{\s*([\w\.]+)\s*}/g, "'+(function(){try{return e?e(_.$1):_.$1}catch(e){return ''}})()+'") + "'"
+
+  ))(data, escape_fn);
+
 };
-
-var ENTITIES_MAP = {
-  '&': '&amp;',
-  '"': '&quot;',
-  '<': '&lt;',
-  '>': '&gt;'
-};
-
-// Render a template with data
-$.render = function(template, data) {
-  if(!template) return '';
-
-  FN[template] = FN[template] || new Function("_", "E",
-    "return '" + template
-      .replace(
-        /[\\\n\r\u2028\u2029']/g,
-        function(escape) { return ESCAPING_MAP[escape]; }
-      ).replace(
-        /\{\s*([\.\w]+)\s*\}/g,
-        "'+(function(){try{return(typeof(_.$1)!=='undefined'&&_.$1!==null?(_.$1+'').replace(/[&\"<>]/g,function(e){return E[e];}):'')}catch(e){return ''}})()+'"
-      )+"'"
-  );
-
-  return FN[template](data, ENTITIES_MAP);
-};
-
 
 /* Cross browser popstate */
 
@@ -124,5 +111,4 @@ $.route = function(to) {
   if (history.pushState) history.pushState(0, 0, to);
   pop(to);
 
-};
-})(typeof top == "object" ? window.$ || (window.$ = {}) : exports);
+};})(typeof top == "object" ? window.$ || (window.$ = {}) : exports);
