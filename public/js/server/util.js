@@ -1,6 +1,6 @@
-function get_property_chain (uri, element) 
+function get_property_chain (ticket, uri, element) 
 { 
-	var doc = get_individual (uri); 
+	var doc = get_individual (ticket, uri); 
 	var doc_first = doc;
 	var field;
 
@@ -11,7 +11,7 @@ function get_property_chain (uri, element)
 		field = doc[arguments[i]];
 		if (field)		
 		{
-			doc = get_individual (field[0].data); 	
+			doc = get_individual (ticket, field[0].data); 	
 			if (!doc)
 			    break;
 		}
