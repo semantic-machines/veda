@@ -34,3 +34,26 @@ function toJson (x)
 {
     return JSON.stringify (x, null, 2); 
 }
+
+function newDocument (type, fields)
+{
+    
+}
+
+function getUri (field)
+{
+    if (field && field.length > 0)
+    {
+	    return field[0].data;
+    }    
+}
+
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+               .toString(16)
+               .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+         s4() + '-' + s4() + s4() + s4();
+}
