@@ -12,10 +12,10 @@ $(function() { "use strict";
 		});
 	// listen Model events
 	console.on("run", function() {
-		$("form").children().addClass("disabled");
+		//$("form").children().addClass("disabled");
 	});
 	console.on("done", function() {
-		$("form").children().removeClass("disabled");
+		//$("form").children().removeClass("disabled");
 		$("#console #result").val(console.result); 
 		$("#console #output").val(console.output); 
 		$("#console #execution_time").html("(executed in " + (console.stop - console.start) + " msecs)");
