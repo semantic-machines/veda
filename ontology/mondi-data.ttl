@@ -157,21 +157,6 @@ mondi-data:KarpovR
   veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "KarpovR"@en ;
 .
-mondi-data:Mandate_1
-  rdf:type veda-schema:Mandate ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:created "2014-01-31T15:28:18"^^xsd:dateTime ;
-  veda-schema:published "2014-01-31T15:28:18"^^xsd:dateTime ;
-  veda-schema:script """{
-"permissionObject" : "$document",
-"permissionSubject" : "$user",
-"right" : "cru",
-"condition" : "var ff = get_property_chain ('$document', 'veda-schema:author', 'veda-schema:employee'); if (ff['field']) { print ('DOC:[' + ff['first']['@'] + '] AUTHOR:[' + ff['field'][0].data + ']'); }"
-}"""^^xsd:string ;
-  rdfs:comment "Выдача прав авторам"@ru ;
-  rdfs:label "Mandate_1"@en ;
-  rdfs:label "Мандат_1"@ru ;
-.
 mondi-data:Membership_1
   rdf:type veda-schema:Membership ;
   veda-schema:memberOf mondi-data:SuperAdmin ;
