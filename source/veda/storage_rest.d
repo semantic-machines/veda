@@ -104,6 +104,12 @@ interface VedaStorageRest_API {
 
 	@path("execute_script") @method(HTTPMethod.POST)
 	string[2] execute_script(string script);
+	
+	@path("get_classes") @method(HTTPMethod.GET)
+	immutable(Class)[ string ] get_classes();
+
+	@path("get_class") @method(HTTPMethod.GET)
+	Class get_class(string uri);
 }
 
 class VedaStorageRest : VedaStorageRest_API {
@@ -188,6 +194,34 @@ string[2] execute_script(string script) {
     }
 
     return res;
+}
+
+immutable(Class)[ string ] get_classes() {
+    Tid my_task = Task.getThis();
+    immutable(Class)[ string ] res;
+    immutable(Class)[] classes;
+    if (my_task !is Tid.init) {
+        send(io_task, Command.Get, Function.AllClasses, "", my_task);
+        classes = receiveOnly!(immutable(Class)[]);
+        foreach (clasz; classes) {
+            res[ clasz.uri ] = clasz;
+        }
+        res.rehash();
+    }
+    return res;
+}
+
+Class get_class(string uri) {
+    Tid my_task = Task.getThis();
+    immutable(Class)[] classes;
+    if (my_task !is Tid.init) {
+        send(io_task, Command.Get, Function.Class, uri, my_task);
+        classes = receiveOnly!(immutable(Class)[]);
+    }
+    if (classes.length > 0) {
+    return cast(Class)classes[ 0 ];
+    }
+    return Class.init;
 }
 
 }
