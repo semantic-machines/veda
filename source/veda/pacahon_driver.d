@@ -1,6 +1,6 @@
 module veda.pacahon_driver;
 
-import std.stdio, std.datetime, std.conv, std.string;
+import std.stdio, std.datetime, std.conv, std.string, std.variant;;
 import vibe.core.concurrency, vibe.core.core, vibe.core.log, vibe.core.task;
 
 import pacahon.server;
@@ -31,8 +31,10 @@ enum Function
     AllClasses,
     Class,
     Individual,
+    Individuals,
     PropertyOfIndividual,
     IndividualsToQuery,
+    IndividualsIdsToQuery,
     NewTicket,
     TicketValid,
     Script
@@ -58,11 +60,19 @@ class PacahonDriver {
                               while (true)
                               {
                                   receive(
-                                          (Command cmd, Function fn, string arg1, byte arg2, string ticket, Tid tid) {
+                                          (Command cmd, Function fn, string arg1, string arg2, Tid tid) {
                                               // writeln("Tid=", cast(void *)tid);
                                               if (tid != Tid.init)
                                               {
-                                                  if (cmd == Command.Get && fn == Function.Individual)
+                                                  if (cmd == Command.Get && fn == Function.NewTicket)
+                                                  {
+                                                      immutable(Ticket)[] tickets;
+                                                      Ticket ticket = context.authenticate(arg1, arg2);
+                                                      tickets ~= ticket;
+
+                                                      send(tid, tickets.idup);
+                                                  }
+                                                  else if (cmd == Command.Get && fn == Function.Individual)
                                                   {
                                                       immutable(Individual)[ string ] onto_individuals =
                                                           context.get_onto_as_map_individuals();
@@ -73,14 +83,14 @@ class PacahonDriver {
                                                       if (individual != _empty_iIndividual)
                                                           individuals ~= individual;
                                                       else
-                                                          individuals ~= context.get_individual(arg1, ticket, arg2).idup;
+                                                          individuals ~= context.get_individual(arg1, arg2).idup;
 
                                                       send(tid, individuals);
                                                   }
                                                   else if (cmd == Command.Get && fn == Function.IndividualsToQuery)
                                                   {
                                                       immutable(Individual)[] individuals =
-                                                          context.get_individuals_via_query(arg1, ticket, arg2);
+                                                          context.get_individuals_via_query(arg1, arg2);
 
                                                       send(tid, individuals);
                                                   }
@@ -114,19 +124,6 @@ class PacahonDriver {
                                                           classes ~= classz;
 
                                                       send(tid, classes);
-                                                  }
-                                              }
-                                          },
-                                          (Command cmd, Function fn, string arg1, string arg2, Tid tid) {
-                                              if (tid !is Tid.init)
-                                              {
-                                                  if (cmd == Command.Get && fn == Function.NewTicket)
-                                                  {
-                                                      immutable(Ticket)[] tickets;
-                                                      Ticket ticket = context.authenticate(arg1, arg2);
-                                                      tickets ~= ticket;
-
-                                                      send(tid, tickets.idup);
                                                   }
                                               }
                                           },
@@ -183,9 +180,8 @@ class PacahonDriver {
                                                   }
                                               }
                                           },
-                                          (int msg, Tid tid) {
-                                              logInfo("Received int message: %s", msg);
-                                          });
+                                          (Variant v) { writeln("pacahon_driver::Received some other type."); }
+                                          );
                               }
                           });
     }

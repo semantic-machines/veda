@@ -94,7 +94,7 @@ interface VedaStorageRest_API {
 	string[] query(string ticket, string query);
 
 	@path("query_") @method(HTTPMethod.GET)
-	Individuals[] query_(string ticket, string query);
+	Individuals query_(string ticket, string query);
 
 	@path("get_individuals") @method(HTTPMethod.GET)
 	Json[] get_individuals(string ticket, string[] uris);
@@ -121,6 +121,7 @@ interface VedaStorageRest_API {
 class VedaStorageRest : VedaStorageRest_API {
 override:
 Ticket authenticate(string login, string password) {
+
     Tid my_task = Task.getThis();
     if (my_task !is Tid.init) {
         send(io_task, Command.Get, Function.NewTicket, login, password, my_task);
@@ -144,44 +145,45 @@ bool is_ticket_valid(string ticket) {
 
 string[] query(string ticket, string query) {
     Tid my_task = Task.getThis();
-    immutable(Individual)[] individuals;
+    string[] individuals_ids;
     if (my_task !is Tid.init) {
-        send(io_task, Command.Get, Function.IndividualsToQuery, query, level, ticket, my_task);
-        individuals = receiveOnly!(immutable(Individual)[]);
+        send(io_task, Command.Get, Function.IndividualsIdsToQuery, query, ticket, my_task);
+        individuals_ids = receiveOnly!(string[]);
     }
-    return cast(Individual[])individuals;
+    return individuals_ids;
 }
 
 Individuals query_(string ticket, string query) {
     Tid my_task = Task.getThis();
     immutable(Individual)[] individuals;
     if (my_task !is Tid.init) {
-        send(io_task, Command.Get, Function.IndividualsToQuery, query, level, ticket, my_task);
+        send(io_task, Command.Get, Function.IndividualsToQuery, query, ticket, my_task);
         individuals = receiveOnly!(immutable(Individual)[]);
     }
     return cast(Individual[])individuals;
 }
 
 Json[] get_individuals(string ticket, string[] uris) {
-    Tid my_task = Task.getThis();
-    Individual result = Individual.init;
-    if (my_task !is Tid.init) {
-        immutable(Individual)[] individual;
-        send(io_task, Command.Get, Function.Individual, uri, level, ticket, my_task);
-        individual = receiveOnly!(immutable(Individual)[]);
-        if (individual.length > 0) {
-            result = cast(Individual)individual[ 0 ];
-		}
-    }
-    return result;
+//    Tid my_task = Task.getThis();
+//    Individual result = Individual.init;
+//    if (my_task !is Tid.init) {
+//        immutable(Individual)[] individual;
+//        send(io_task, Command.Get, Function.Individuals, uris.idup, ticket, my_task);
+//        individual = receiveOnly!(immutable(Individual)[]);
+//        if (individual.length > 0) {
+//            result = cast(Individual)individual[ 0 ];
+//		}
+//    }
+//    return result;
+    return Json[].init;
 }
 
-Individual get_individual_(string ticket, uri) {
+Individual get_individual_(string ticket, string uri) {
     Tid my_task = Task.getThis();
     Individual result = Individual.init;
     if (my_task !is Tid.init) {
         immutable(Individual)[] individual;
-        send(io_task, Command.Get, Function.Individual, uri, level, ticket, my_task);
+        send(io_task, Command.Get, Function.Individual, uri, ticket, my_task);
         individual = receiveOnly!(immutable(Individual)[]);
         if (individual.length > 0) {
             result = cast(Individual)individual[ 0 ];
@@ -191,25 +193,26 @@ Individual get_individual_(string ticket, uri) {
 }
 
 ResultCode put_individuals(string ticket, Json[] individuals_json) {
-    Tid my_task = Task.getThis();
-    if (my_task !is Tid.init) {
-        immutable(Individual)[] ind;
-        ind ~= individual.idup;
-        send(io_task, Command.Put, Function.Individual, ticket, uri, ind, my_task);
-        ResultCode res = receiveOnly!(ResultCode);
-        return res;
-    }
+//    Tid my_task = Task.getThis();
+//    if (my_task !is Tid.init) {
+//        immutable(Individual)[] ind;
+//        ind ~= individual.idup;
+//        send(io_task, Command.Put, Function.Individuals, ticket, uri, ind, my_task);
+//        ResultCode res = receiveOnly!(ResultCode);
+//        return res;
+//    }
     return ResultCode.Service_Unavailable;
 }
 
 Json[] get_property_values(string ticket, string uri, string property_uri) {
-    Tid my_task = Task.getThis();
+//    Tid my_task = Task.getThis();
     string res;
-    if (my_task !is Tid.init) {
-        send(io_task, Command.Get, Function.PropertyOfIndividual, uri, property_uri, lang, my_task);
-        res = receiveOnly!(string);
-    }
-    return res;
+//    if (my_task !is Tid.init) {
+//        send(io_task, Command.Get, Function.PropertyOfIndividual, uri, property_uri, lang, my_task);
+//        res = receiveOnly!(string);
+//    }
+//    return res;
+return Json[].init;
 }
 
 string[2] execute_script(string script) {
