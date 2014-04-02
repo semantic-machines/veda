@@ -246,6 +246,18 @@ mondi-data:Permission_2
   rdfs:label "Permissions record_2"@en ;
   rdfs:label "Запись о выдаче прав_2"@ru ;
 .
+mondi-data:Permission_3
+  rdf:type veda-schema:PermissionStatement ;
+  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
+  veda-schema:canRead "true"^^xsd:boolean ;
+  veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
+  veda-schema:permissionObject mondi-data:ResGroup_1 ;
+  veda-schema:permissionSubject mondi-data:UserGroup_1 ;
+  veda-schema:published "2014-01-30T16:45:33"^^xsd:dateTime ;
+  veda-schema:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
+  rdfs:label "Permissions record_3"@en ;
+  rdfs:label "Запись о выдаче прав_3"@ru ;
+.
 mondi-data:Preferences_AndreyBychin
   rdf:type veda-ui:Preferences ;
   veda-schema:owner mondi-data:AndreyBychin ;
