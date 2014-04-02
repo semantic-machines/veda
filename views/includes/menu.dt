@@ -34,7 +34,7 @@ nav.navbar.navbar-inverse(role="navigation")
 
 		//-
 			.navbar-right.btn-group(data-toggle="buttons")
-			- foreach(language; storage.query_individual(ticket, "'rdf:type'=='veda-ui:Language'", 0))
+			- foreach(language; storage.query_(ticket, "'rdf:type'=='veda-ui:Language'"))
 				label.btn.btn-xs.btn-info.navbar-btn.active
 					input#ru(type="radio")
 					| #{language.resources.get("rdfs:label", empty_resource(property_uri))}

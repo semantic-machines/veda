@@ -38,7 +38,7 @@ void view_individual(HTTPServerRequest req, HTTPServerResponse res) {
 	auto storage = new VedaStorageRest();
 	string uri = req.params.get("uri", "");
 	string ticket = req.cookies.get("ticket", "");
-	Individual individual = storage.get_individual(ticket, uri, 0);
+	Individual individual = storage.get_individual_(ticket, uri);
 	res.renderCompat!("view_individual.dt",
 		HTTPServerRequest, "req",
 		Individual, "individual",
@@ -58,7 +58,7 @@ void view_popover(HTTPServerRequest req, HTTPServerResponse res) {
 	string uri = req.params["uri"];
 	string ticket = req.cookies.get("ticket", "");
 	auto storage = new VedaStorageRest();
-	Individual individual = storage.get_individual(ticket, uri, 0);
+	Individual individual = storage.get_individual_(ticket, uri);
 	res.renderCompat!("view_popover.dt",
 		HTTPServerRequest, "req",
 		Individual, "individual",
@@ -123,7 +123,7 @@ void search(HTTPServerRequest req, HTTPServerResponse res) {
 
 	if (query != "") {
 		logInfo(query);
-		Individual[] individuals = storage.query(ticket, query, 0);
+		Individual[] individuals = storage.query_(ticket, query);
 		
 		//stop & log timer & start again
 		sw.stop();
@@ -211,10 +211,10 @@ shared static this()
 		logInfo("PERFORMANCE TEST:");
 		int count = 1000000;
 		for(int i=0; i<count; i++) {
-			//Individual[] individuals = veda.storage.query("53e5cc22-7750-48fe-a772-9b155ceb2b16", "rdf", 0);
+			//Individual[] individuals = veda.storage.query_("53e5cc22-7750-48fe-a772-9b155ceb2b16", "rdf");
 			//auto storage = new RestInterfaceClient!VedaStorageRest_API("http://127.0.0.1:8080/");
 			auto storage = new VedaStorageRest();
-			Individual[] individuals = storage.query("53e5cc22-7750-48fe-a772-9b155ceb2b16", "rdf", 0);
+			Individual[] individuals = storage.query_("53e5cc22-7750-48fe-a772-9b155ceb2b16", "rdf");
 		}
 		sw.stop();
 		long t = cast(long) sw.peek().msecs;
