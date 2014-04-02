@@ -12,6 +12,74 @@ import onto.individual;
 import onto.resource;
 import onto.lang;
 
+static LANG[string] Lang;
+static ResourceType[string] Resource_type;
+
+static this() {
+	Lang = [ 
+		"NONE": LANG.NONE,	"none" : LANG.NONE,
+		"RU"  : LANG.RU,	"ru"   : LANG.RU,
+		"EN"  : LANG.EN,	"en"   : LANG.EN
+	];
+
+	Resource_type = [ 
+		"Uri" 		: ResourceType.Uri,
+		"String" 	: ResourceType.String,
+		"Integer" 	: ResourceType.Integer,
+		"Datetime" 	: ResourceType.Datetime,
+		"Float" 	: ResourceType.Float,
+		"Boolean" 	: ResourceType.Boolean
+	];
+}
+
+Json individual_to_json(Individual individual) {
+	Json json = Json.emptyObject;
+	json["@"] = individual.uri;
+	foreach (property_name, property_values; individual.resources) {
+		Json resources_json = Json.emptyArray;
+		foreach (property_value; property_values) resources_json ~= resource_to_json(property_value);
+		json[property_name] = resources_json;
+	}
+	return json;
+}
+
+Individual json_to_individual(const Json individual_json) {
+	
+	Individual individual = Individual.init;
+
+	foreach (string property_name, ref const property_values; individual_json) {
+		if (property_name == "@") individual.uri = to!string(individual_json[property_name]);
+		Resource[] resources = Resource[].init;
+		foreach (property_value; property_values) resources ~= json_to_resource(property_value);
+		individual.resources[property_name] = resources;
+	}
+	return individual;
+}
+
+Json resource_to_json(Resource resource) {
+	Json resource_json = Json.emptyObject;
+	resource_json["type"] = text(resource.type);
+	if (resource.type == ResourceType.Uri || resource.type == ResourceType.Datetime ) resource_json["data"] = resource.data;
+	else if (resource.type == ResourceType.String) 
+	{ 
+		resource_json["data"] = resource.data; 
+		if (resource.lang != LANG.NONE) resource_json["lang"] = text(resource.lang);
+	}
+	else if (resource.type == ResourceType.Integer) resource_json["data"] = parse!int(resource.data);
+	else if (resource.type == ResourceType.Float) resource_json["data"] = parse!double(resource.data);
+	else if (resource.type == ResourceType.Float) resource_json["data"] = parse!bool(resource.data);
+	else resource_json["data"] = Json.undefined;
+	return resource_json;
+}
+
+Resource json_to_resource(const Json resource_json) {
+	Resource resource = Resource.init;
+	resource.type = Resource_type.get(resource_json["type"].get!string, ResourceType.String);
+	resource.lang = Lang.get(resource_json["lang"].get!string, LANG.NONE);
+	resource.data = resource_json["data"].get!string;
+	return resource;
+}
+
 //////////////////////////////////////////////////// Rest API /////////////////////////////////////////////////////////////////
 
 interface VedaStorageRest_API {
@@ -23,22 +91,16 @@ interface VedaStorageRest_API {
 	bool is_ticket_valid(string ticket);
 
 	@path("query") @method(HTTPMethod.GET)
-	Individual[] query(string ticket, string query = "rdf", byte level = 0);
+	string[] query(string ticket, string query);
 
-	@path("individual") @method(HTTPMethod.GET)
-	Individual get_individual(string ticket, string uri, byte level = 0);
+	@path("get_individuals") @method(HTTPMethod.GET)
+	Json[] get_individuals(string ticket, string[] uris);
 	
-	@path("individual") @method(HTTPMethod.PUT)
-	ResultCode put_individual(string ticket, string uri, Individual indv);
+	@path("put_individuals") @method(HTTPMethod.PUT)
+	ResultCode put_individuals_json(string ticket, Json[] individuals_json);
 	
-	@path("individual") @method(HTTPMethod.GET)
-	string get_property_value(string ticket, string uri, string property_uri, LANG lang);
-
-	@path("classes") @method(HTTPMethod.GET)
-	immutable(Class)[ string ] get_classes();
-
-	@path("classes") @method(HTTPMethod.GET)
-	Class get_class(string uri);
+	@path("get_property_values") @method(HTTPMethod.GET)
+	Json[] get_property_values(string ticket, string uri, string property_uri);
 
 	@path("execute_script") @method(HTTPMethod.POST)
 	string[2] execute_script(string script);
@@ -68,7 +130,7 @@ bool is_ticket_valid(string ticket) {
     return false;
 }
 
-Individual[] query(string ticket, string query, byte level = 0) {
+string[] query(string ticket, string query) {
     Tid my_task = Task.getThis();
     immutable(Individual)[] individuals;
     if (my_task !is Tid.init) {
@@ -78,20 +140,21 @@ Individual[] query(string ticket, string query, byte level = 0) {
     return cast(Individual[])individuals;
 }
 
-Individual get_individual(string ticket, string uri, byte level = 0) {
+Json[] get_individuals(string ticket, string[] uris) {
     Tid my_task = Task.getThis();
+    Individual result = Individual.init;
     if (my_task !is Tid.init) {
         immutable(Individual)[] individual;
         send(io_task, Command.Get, Function.Individual, uri, level, ticket, my_task);
         individual = receiveOnly!(immutable(Individual)[]);
         if (individual.length > 0) {
-            return cast(Individual)individual[ 0 ];
+            result = cast(Individual)individual[ 0 ];
 		}
     }
-    return Individual.init;
+    return result;
 }
 
-ResultCode put_individual(string ticket, string uri, Individual individual) {
+ResultCode put_individuals(string ticket, Json[] individuals_json) {
     Tid my_task = Task.getThis();
     if (my_task !is Tid.init) {
         immutable(Individual)[] ind;
@@ -103,7 +166,7 @@ ResultCode put_individual(string ticket, string uri, Individual individual) {
     return ResultCode.Service_Unavailable;
 }
 
-string get_property_value(string ticket, string uri, string property_uri, LANG lang) {
+Json[] get_property_value(string ticket, string uri, string property_uri) {
     Tid my_task = Task.getThis();
     string res;
     if (my_task !is Tid.init) {
@@ -111,34 +174,6 @@ string get_property_value(string ticket, string uri, string property_uri, LANG l
         res = receiveOnly!(string);
     }
     return res;
-}
-
-immutable(Class)[ string ] get_classes() {
-    Tid my_task = Task.getThis();
-    immutable(Class)[ string ] res;
-    immutable(Class)[] classes;
-    if (my_task !is Tid.init) {
-        send(io_task, Command.Get, Function.AllClasses, "", my_task);
-        classes = receiveOnly!(immutable(Class)[]);
-        foreach (clasz; classes) {
-            res[ clasz.uri ] = clasz;
-        }
-        res.rehash();
-    }
-    return res;
-}
-
-Class get_class(string uri) {
-    Tid my_task = Task.getThis();
-    immutable(Class)[] classes;
-    if (my_task !is Tid.init) {
-        send(io_task, Command.Get, Function.Class, uri, my_task);
-        classes = receiveOnly!(immutable(Class)[]);
-    }
-    if (classes.length > 0) {
-    	return cast(Class)classes[ 0 ];
-    }
-    return Class.init;
 }
 
 string[2] execute_script(string script) {

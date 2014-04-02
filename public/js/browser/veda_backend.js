@@ -20,33 +20,33 @@ function is_ticket_valid(ticket, callback) {
 	.done( function (data) { callback(data) } );
 }
 
-function query(ticket, query, level, callback) {
+function query(ticket, query, callback) {
 	$.ajax({
 		type: "GET",
 		url: "query",
-		data: { "ticket": ticket, "query": query, "level": level },
+		data: { "ticket": ticket, "query": query },
 		dataType: "json"
 	})
 	.fail( function () { callback(null) } )
 	.done( function (data) { callback(data) } );
 }
 
-function get_individual(ticket, uri, level, callback) {
+function get_individuals(ticket, uris, callback) {
 	$.ajax({
 		type: "GET",
-		url: "individual",
-		data: { "ticket": ticket, "uri": uri, "level": level },
+		url: "get_individuals",
+		data: { "ticket": ticket, "uris": uris },
 		dataType: "json"
 	})
 	.fail( function () { callback(null) } )
 	.done( function (data) { callback(data) } );
 }
 
-function put_individual(ticket, uri, individual, callback) {
+function put_individuals(ticket, individuals, callback) {
 	$.ajax({
 		type: "PUT",
-		url: "individual",
-		data: JSON.stringify({"ticket": ticket, "uri": uri, "individual": individual}),
+		url: "put_individuals",
+		data: JSON.stringify({"ticket": ticket, "individuals": individuals}),
 		contentType: "application/json",
 		dataType: "json"
 	})
