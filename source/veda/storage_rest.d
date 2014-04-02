@@ -103,7 +103,7 @@ interface VedaStorageRest_API {
 	Individual get_individual_(string ticket, string uri);
 	
 	@path("put_individuals") @method(HTTPMethod.PUT)
-	ResultCode put_individuals_json(string ticket, Json[] individuals_json);
+	ResultCode put_individuals(string ticket, Json[] individuals_json);
 	
 	@path("get_property_values") @method(HTTPMethod.GET)
 	Json[] get_property_values(string ticket, string uri, string property_uri);
@@ -202,7 +202,7 @@ ResultCode put_individuals(string ticket, Json[] individuals_json) {
     return ResultCode.Service_Unavailable;
 }
 
-Json[] get_property_value(string ticket, string uri, string property_uri) {
+Json[] get_property_values(string ticket, string uri, string property_uri) {
     Tid my_task = Task.getThis();
     string res;
     if (my_task !is Tid.init) {
