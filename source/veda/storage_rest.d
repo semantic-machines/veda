@@ -32,7 +32,7 @@ static this() {
 	];
 }
 
-Json individual_to_json(Individual individual) {
+Json individual_to_json(immutable(Individual) individual) {
 	Json json = Json.emptyObject;
 	json["@"] = individual.uri;
 	foreach (property_name, property_values; individual.resources) {
@@ -96,7 +96,7 @@ interface VedaStorageRest_API {
 	@path("query_") @method(HTTPMethod.GET)
 	Individuals query_(string ticket, string query);
 
-	@path("get_individuals") @method(HTTPMethod.GET)
+	@path("get_individuals") @method(HTTPMethod.POST)
 	Json[] get_individuals(string ticket, string[] uris);
 
 	@path("get_individual_") @method(HTTPMethod.GET)
@@ -164,18 +164,16 @@ Individuals query_(string ticket, string query) {
 }
 
 Json[] get_individuals(string ticket, string[] uris) {
-//    Tid my_task = Task.getThis();
-//    Individual result = Individual.init;
-//    if (my_task !is Tid.init) {
-//        immutable(Individual)[] individual;
-//        send(io_task, Command.Get, Function.Individuals, uris.idup, ticket, my_task);
-//        individual = receiveOnly!(immutable(Individual)[]);
-//        if (individual.length > 0) {
-//            result = cast(Individual)individual[ 0 ];
-//		}
-//    }
-//    return result;
-    return Json[].init;
+    Tid my_task = Task.getThis();
+    immutable(Individual)[] individuals = Individual[].init;
+    if (my_task !is Tid.init) {
+        immutable(Individual)[] individual;
+        send(io_task, Command.Get, Function.Individuals, uris.idup, ticket, my_task);
+        individuals = receiveOnly!(immutable(Individual)[]);
+    }
+    Json[] json = Json[].init;
+    foreach (individual; individuals) json ~= individual_to_json(individual);
+    return json;
 }
 
 Individual get_individual_(string ticket, string uri) {
