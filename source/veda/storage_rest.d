@@ -167,6 +167,10 @@ Individuals query_(string ticket, string query) {
 }
 
 Json[] get_individuals(string ticket, string uris[]) {
+
+//	StopWatch sw;
+//	sw.start();
+
     Tid my_task = Task.getThis();
     immutable(Individual)[] individuals = Individual[].init;
     if (my_task !is Tid.init) {
@@ -174,8 +178,19 @@ Json[] get_individuals(string ticket, string uris[]) {
         send(io_task, Command.Get, Function.Individuals, uris.idup, ticket, my_task);
         individuals = receiveOnly!(immutable(Individual)[]);
     }
+
+//	sw.stop();
+//	long t = cast(long) sw.peek().usecs;
+//	logInfo("get_individuals (pacahon) execution time:"~text(t)~" usecs");
+//	sw.start();
+
     Json[] json = Json[].init;
     foreach (individual; individuals) json ~= individual_to_json(individual);
+
+//	sw.stop();
+//	long t1 = cast(long) sw.peek().usecs;
+//	logInfo("get_individuals (transform to json) execution time:"~text(t1)~" usecs");
+    
     return json;
 }
 

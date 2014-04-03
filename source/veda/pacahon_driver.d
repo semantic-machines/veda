@@ -67,7 +67,6 @@ class PacahonDriver {
                                                   if (cmd == Command.Get && fn == Function.Individuals)
                                                   {
                                                       immutable(Individual)[] individuals;
-						      	
                                                       foreach (indv ; context.get_individuals(arg1.dup, arg2))
 							individuals ~= indv.idup;
                                                       send(tid, individuals);
