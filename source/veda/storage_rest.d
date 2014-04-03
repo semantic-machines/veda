@@ -108,6 +108,9 @@ interface VedaStorageRest_API {
 	@path("put_individuals") @method(HTTPMethod.PUT)
 	ResultCode put_individuals(string ticket, Json[] individuals_json);
 	
+	@path("put_individual") @method(HTTPMethod.PUT)
+	ResultCode put_individual(string ticket, Json individual_json);
+
 	@path("get_property_values") @method(HTTPMethod.GET)
 	Json[] get_property_values(string ticket, string uri, string property_uri);
 
@@ -207,6 +210,19 @@ Json get_individual(string ticket, string uri) {
 	immutable(Individual) result = individual[0];
     Json json = individual_to_json(result);
     return json;
+}
+
+ResultCode put_individual(string ticket, Json individual_json) {
+    Tid my_task = Task.getThis();
+    if (my_task !is Tid.init) {
+        immutable(Individual)[] ind;
+	Individual indv = json_to_individual(individual_json) ;
+        ind ~= indv.idup;
+        send(io_task, Command.Put, Function.Individual, ticket, indv.uri, ind, my_task);
+        ResultCode res = receiveOnly!(ResultCode);
+        return res;
+    }
+    return ResultCode.Service_Unavailable;
 }
 
 ResultCode put_individuals(string ticket, Json[] individuals_json) {
