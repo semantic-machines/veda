@@ -1,0 +1,17 @@
+var ticket = getCookie("ticket"); 
+var query_text = "'*' == 'rdf*' || '*' == 'owl*'";
+query(ticket, query_text, function (data) { 
+  var cnt = 0;
+  get_individuals(ticket, data, function (data) {
+    $(data).each( function (i, data) {
+        for (var key in data) { if (key == "@") continue;
+          get_individual(ticket, key, function (data) {
+             cnt += 1;
+             $("#result").append(key);
+             $("#result").append( JSON.stringify(data, null, 4) );
+             $("#output").val(cnt);
+          });
+        }
+    });
+  });
+});
