@@ -60,6 +60,21 @@ class PacahonDriver {
                               while (true)
                               {
                                   receive(
+                                          (Command cmd, Function fn, string[] arg1, string arg2, Tid tid) 
+					  						{
+                                              if (tid != Tid.init)
+                                              {
+                                                  if (cmd == Command.Get && fn == Function.Individuals)
+                                                  {
+                                                      immutable(Individual)[] individuals;
+						      	
+                                                      foreach (indv ; context.get_individuals(arg1, arg2))
+															individuals ~= indv.idup;
+                                                      send(tid, individuals);
+                                                  }
+					      						}
+					  						},
+                                              // writeln("Tid=", cast(void *)tid);
                                           (Command cmd, Function fn, string arg1, string arg2, Tid tid) {
                                               // writeln("Tid=", cast(void *)tid);
                                               if (tid != Tid.init)
