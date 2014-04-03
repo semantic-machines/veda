@@ -33,10 +33,23 @@ function query(ticket, query, callback) {
 
 function get_individuals(ticket, uris, callback) {
 	$.ajax({
+		//type: "GET",
 		type: "POST",
 		url: "get_individuals",
+		//data: { "ticket": ticket, "uris": uris },
 		data: JSON.stringify({ "ticket": ticket, "uris": uris }),
 		contentType: "application/json",
+		dataType: "json"
+	})
+	.fail( function () { callback(null) } )
+	.done( function (data) { callback(data) } );
+}
+
+function get_individual(ticket, uri, callback) {
+	$.ajax({
+		type: "GET",
+		url: "get_individual",
+		data: { "ticket": ticket, "uri": uri },
 		dataType: "json"
 	})
 	.fail( function () { callback(null) } )
