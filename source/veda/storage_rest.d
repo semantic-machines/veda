@@ -148,12 +148,12 @@ bool is_ticket_valid(string ticket) {
 
 string[] query(string ticket, string query) {
     Tid my_task = Task.getThis();
-    string[] individuals_ids;
+    immutable (string)[] individuals_ids;
     if (my_task !is Tid.init) {
         send(io_task, Command.Get, Function.IndividualsIdsToQuery, query, ticket, my_task);
-        individuals_ids = receiveOnly!(string[]);
+        individuals_ids = receiveOnly!(immutable (string)[]);
     }
-    return individuals_ids;
+    return cast(string[])individuals_ids;
 }
 
 Individuals query_(string ticket, string query) {

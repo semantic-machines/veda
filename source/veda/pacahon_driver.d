@@ -61,7 +61,7 @@ class PacahonDriver {
                               {
                                   receive(
                                           (Command cmd, Function fn, immutable (string)[] arg1, string arg2, Tid tid) 
-					  						{
+					  {
                                               if (tid != Tid.init)
                                               {
                                                   if (cmd == Command.Get && fn == Function.Individuals)
@@ -69,11 +69,11 @@ class PacahonDriver {
                                                       immutable(Individual)[] individuals;
 						      	
                                                       foreach (indv ; context.get_individuals(arg1.dup, arg2))
-															individuals ~= indv.idup;
+							individuals ~= indv.idup;
                                                       send(tid, individuals);
                                                   }
-					      						}
-					  						},
+					      }
+					  },
                                               // writeln("Tid=", cast(void *)tid);
                                           (Command cmd, Function fn, string arg1, string arg2, Tid tid) {
                                               // writeln("Tid=", cast(void *)tid);
@@ -108,6 +108,13 @@ class PacahonDriver {
                                                           context.get_individuals_via_query(arg1, arg2);
 
                                                       send(tid, individuals);
+                                                  }
+                                                  else if (cmd == Command.Get && fn == Function.IndividualsIdsToQuery)
+                                                  {
+                                                      immutable(string)[] uris =
+                                                          context.get_individuals_ids_via_query(arg1, arg2);
+
+                                                      send(tid, uris);
                                                   }
                                               }
                                           },
