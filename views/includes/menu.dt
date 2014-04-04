@@ -16,6 +16,8 @@ nav.navbar.navbar-inverse(role="navigation")
 				a(href="/view_classes/", title="Classes") Классы / Classes
 			li
 				a(href="/search/", title="Search") Поиск / Search
+			li
+				a(href="/tests", title="Search") Тесты / Tests
 
 		a.btn.btn-xs.btn-danger.navbar-btn.navbar-right(href="/logout")
 			i.glyphicon.glyphicon-log-out

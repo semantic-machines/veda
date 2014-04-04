@@ -44,11 +44,9 @@ Json individual_to_json(immutable(Individual) individual) {
 }
 
 Individual json_to_individual(const Json individual_json) {
-	
 	Individual individual = Individual.init;
-
 	foreach (string property_name, ref const property_values; individual_json) {
-		if (property_name == "@") individual.uri = to!string(individual_json[property_name]);
+		if (property_name == "@") { individual.uri = to!string(individual_json[property_name]); continue; }
 		Resource[] resources = Resource[].init;
 		foreach (property_value; property_values) resources ~= json_to_resource(property_value);
 		individual.resources[property_name] = resources;
@@ -75,7 +73,7 @@ Json resource_to_json(Resource resource) {
 Resource json_to_resource(const Json resource_json) {
 	Resource resource = Resource.init;
 	resource.type = Resource_type.get(resource_json["type"].get!string, ResourceType.String);
-	resource.lang = Lang.get(resource_json["lang"].get!string, LANG.NONE);
+	if ( resource_json["lang"].type is Json.Type.string ) resource.lang = Lang.get(resource_json["lang"].get!string, Lang["NONE"]);
 	resource.data = resource_json["data"].get!string;
 	return resource;
 }
@@ -106,10 +104,10 @@ interface VedaStorageRest_API {
 	Json get_individual(string ticket, string uri);
 	
 	@path("put_individuals") @method(HTTPMethod.PUT)
-	ResultCode put_individuals(string ticket, Json[] individuals_json);
+	int put_individuals(string ticket, Json[] individuals);
 	
 	@path("put_individual") @method(HTTPMethod.PUT)
-	ResultCode put_individual(string ticket, Json individual_json);
+	int put_individual(string ticket, Json individual);
 
 	@path("get_property_values") @method(HTTPMethod.GET)
 	Json[] get_property_values(string ticket, string uri, string property_uri);
@@ -227,20 +225,20 @@ Json get_individual(string ticket, string uri) {
     return json;
 }
 
-ResultCode put_individual(string ticket, Json individual_json) {
+int put_individual(string ticket, Json individual_json) {
     Tid my_task = Task.getThis();
     if (my_task !is Tid.init) {
         immutable(Individual)[] ind;
-	Individual indv = json_to_individual(individual_json) ;
+		Individual indv = json_to_individual(individual_json) ;
         ind ~= indv.idup;
         send(io_task, Command.Put, Function.Individual, ticket, indv.uri, ind, my_task);
         ResultCode res = receiveOnly!(ResultCode);
-        return res;
+        return res.to!int;
     }
-    return ResultCode.Service_Unavailable;
+    return ResultCode.Service_Unavailable.to!int;
 }
 
-ResultCode put_individuals(string ticket, Json[] individuals_json) {
+int put_individuals(string ticket, Json[] individuals_json) {
 //    Tid my_task = Task.getThis();
 //    if (my_task !is Tid.init) {
 //        immutable(Individual)[] ind;
@@ -249,7 +247,7 @@ ResultCode put_individuals(string ticket, Json[] individuals_json) {
 //        ResultCode res = receiveOnly!(ResultCode);
 //        return res;
 //    }
-    return ResultCode.Service_Unavailable;
+    return ResultCode.Service_Unavailable.to!int;
 }
 
 Json[] get_property_values(string ticket, string uri, string property_uri) {

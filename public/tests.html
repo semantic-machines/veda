@@ -7,6 +7,21 @@
 		<meta name="description" content=""/>
 		<meta name="author" content=""/>
 		<link href="/css/veda.min.css" rel="stylesheet"/>
+		<style> 
+			.pass:before { 
+				content: "PASS: "; 
+				color:  green; 
+				font-weight: bold; 
+			} 
+			.fail:before { 
+				content: "FAIL: "; 
+				color: red; 
+				font-weight: bold; 
+			} 
+		</style> 
+		<!-- Do not cache tests page -->
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
 	</head>
 	<body style="padding: 0px 0px 30px;">
 
@@ -19,6 +34,9 @@
 					</li>
 					<li>
 						<a href="/search/" title="Search">Поиск / Search</a>
+					</li>
+					<li>
+						<a href="/tests" title="Search">Тесты / Tests</a>
 					</li>
 				</ul>
 				<a href="/logout" class="btn btn-xs btn-danger navbar-btn navbar-right">
@@ -42,6 +60,8 @@
 		</nav>
 		
 		<div class="container-fluid" id="tests">
+			<br />
+			<ol id="output"></ol>
 		</div>
 
 		<br />
@@ -64,11 +84,51 @@
 
 		<!-- Veda browser & server -->
 		<script src="/js/common/riot.js"></script>
+		<script src="/js/common/util.js"></script>
 		<script src="/js/common/veda_console_model.js"></script>
 
 		<!-- Veda browser only -->
 		<script src="/js/browser/veda_backend.js"></script>
 		<script src="/js/browser/veda_console_presenter.js"></script>
 		
+		<script> 
+			var output = document.getElementById("output"); 
+			function assert( outcome, description ) { 
+				var li = document.createElement("li"); 
+				li.className = outcome ? "pass" : "fail"; 
+				li.appendChild( document.createTextNode( description ) ); 
+
+				output.appendChild(li); 
+			}; 
+		</script>
+
+		<!-- TESTS -->
+
+		<script>
+			(function() { var description = "Get individual 'owl:'";
+			
+				var ticket = getCookie("ticket");
+				get_individual(ticket, "owl:", function(data){
+					assert (
+						data["@"] == "owl:"
+					,description);
+				});
+
+			})();
+		</script>
+
+		<script>
+			(function() { var description = "Query '@' == 'owl:' ++ Get individual 'owl:'";
+			
+				var ticket = getCookie('ticket');
+				query(ticket, "owl:", function(data){
+					assert (
+						data.indexOf("owl:") >= 0
+					,description);
+				});
+
+			})();
+		</script>
+
 	</body>
 </html>

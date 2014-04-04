@@ -15,3 +15,25 @@ query(ticket, query_text, function (data) {
     });
   });
 });
+
+
+
+var ticket = getCookie("ticket");
+var uri = 'mondi-test:' + guid();
+var new_permission =
+           {
+              '@' : uri,
+              'rdf:type' : [{data: 'veda-schema:PermissionStatement', type : 'Uri'}],
+              'veda-schema:canDelete' : [{data: 'true', type : 'Boolean'}],
+              'veda-schema:canRead' : [{data: 'true', type : 'Boolean'}],
+              'veda-schema:canUpdate' : [{data: 'true', type : 'Boolean'}],
+              'veda-schema:permissionObject' : [{data: "3333", type : 'Uri'}],
+              'veda-schema:permissionSubject'  : [{data: "4444", type : 'Uri'}]
+          };
+put_individual(ticket, new_permission, function(data) { 
+  $("#result").html(data);
+  get_individual(ticket, uri, function(data) { 
+      $("#result").append(data);
+      $("#result").append(data==new_permission);
+  });
+});

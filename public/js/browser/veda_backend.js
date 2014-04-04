@@ -67,6 +67,17 @@ function put_individuals(ticket, individuals, callback) {
 	.done( function (data) { callback(data) } );
 }
 
+function put_individual(ticket, individual, callback) {
+	$.ajax({
+		type: "PUT",
+		url: "put_individual",
+		data: JSON.stringify({"ticket": ticket, "individual": individual}),
+		contentType: "application/json"
+	})
+	.fail( function () { callback(null) } )
+	.done( function (data) { callback(data) } );
+}
+
 function get_property_value(ticket, uri, property_uri, callback) {
 	$.ajax({
 		type: "GET",
