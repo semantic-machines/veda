@@ -130,5 +130,34 @@
 			})();
 		</script>
 
+		<script>
+			(function() { var description = "Individual store and read";
+			
+				var ticket = getCookie('ticket');
+				var new_test_doc1_uri = guid ();
+				console.log (new_test_doc1_uri);
+				var new_test_doc1 =
+				  {
+				     '@' : new_test_doc1_uri,
+				     'rdf:type' : [{data: 'veda-schema:PermissionStatement1', type : 'Uri'}],
+				     'veda-schema:canDelete' : [{data: 'true', type : 'Boolean'}],
+				     'veda-schema:canRead' : [{data: 'true', type : 'Boolean'}],
+				     'veda-schema:canUpdate' : [{data: 'true', type : 'Boolean'}],
+				     'veda-schema:permissionObject' : [{data: 'individual_1', type : 'Uri'}],
+				     'veda-schema:permissionSubject'  : [{data:  'individual_2', type : 'Uri'}]
+				     };
+
+				put_individual(ticket, new_test_doc1);
+
+				get_individual(ticket, new_test_doc1_uri, function(data){
+					assert (
+						data["@"] == new_test_doc1_uri
+					,description);
+				});
+
+
+			})();
+		</script>
+
 	</body>
 </html>
