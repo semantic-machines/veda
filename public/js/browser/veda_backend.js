@@ -11,7 +11,7 @@ function authenticate(login, password, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return $.ajax(params).responseText;
+		return JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
 		.fail( function () { callback(null) } )
@@ -26,7 +26,7 @@ function is_ticket_valid(ticket, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return $.ajax(params).responseText;
+		return JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
 		.fail( function () { callback(false) } )
@@ -41,7 +41,7 @@ function query(ticket, query, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return $.ajax(params).responseText;
+		return JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
 		.fail( function () { callback(null) } )
@@ -57,7 +57,7 @@ function get_individuals(ticket, uris, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return $.ajax(params).responseText;
+		return JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
 		.fail( function () { callback(null) } )
@@ -72,7 +72,7 @@ function get_individual(ticket, uri, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return $.ajax(params).responseText;
+		return JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
 		.fail( function () { callback(null) } )
@@ -88,7 +88,7 @@ function put_individuals(ticket, individuals, callback) {
 	}
 	if(!callback) {
 		params.async = false;
-		return $.ajax(params).responseText;
+		return JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
 		.fail( function () { callback(null) } )
@@ -104,7 +104,7 @@ function put_individual(ticket, individual, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return $.ajax(params).responseText;
+		return JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
 		.fail( function () { callback(null) } )
@@ -119,7 +119,7 @@ function get_property_value(ticket, uri, property_uri, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return $.ajax(params).responseText;
+		return JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
 		.fail( function () { callback(null) } )
@@ -135,7 +135,7 @@ function execute_script(script, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return $.ajax(params).responseText;
+		return JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
 		.fail( function () { callback(null) } )
