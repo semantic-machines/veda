@@ -135,28 +135,126 @@
 		
 				var ticket = getCookie('ticket');
 				var new_test_doc1_uri = guid ();
-				console.log (new_test_doc1_uri);
 				var new_test_doc1 =
 				  {
 				     '@' : new_test_doc1_uri,
 				     'rdf:type' : [{data: 'veda-schema:PermissionStatement1', type : 'Uri'}],
-				     'veda-schema:canDelete' : [{data: 'true', type : 'Boolean'}],
-				     'veda-schema:canRead' : [{data: 'true', type : 'Boolean'}],
-				     'veda-schema:canUpdate' : [{data: 'true', type : 'Boolean'}],
+				     'veda-schema:canDelete' : [{data: 'true', type : 'String'}],
+				     'veda-schema:canRead' : [{data: 'true', type : 'String'}],
+				     'veda-schema:canUpdate' : [{data: 'true', type : 'String'}],
 				     'veda-schema:permissionObject' : [{data: 'individual_1', type : 'Uri'}],
 				     'veda-schema:permissionSubject'  : [{data:  'individual_2', type : 'Uri'}]
 				  };
 
 				put_individual(ticket, new_test_doc1);
 
-				get_individual(ticket, new_test_doc1_uri, function(data){
-					assert (
-						data["@"] == new_test_doc1_uri
-					,description);
-				});
+				var read_individual = get_individual(ticket, new_test_doc1_uri);
 
-
+				assert (compare (new_test_doc1, read_individual), description); 	
 			})();
+		</script>
+
+		<script>
+			function test11(type, description, passed) { 
+				var ticket = getCookie('ticket');
+				
+				var permissionSubject = guid ();
+				var permissionObject = guid ();
+
+				var new_test_doc1_uri = guid ();
+				var new_test_doc1 =
+				  {
+				     '@' : new_test_doc1_uri,
+				     'rdf:type' : [{data: type, type : 'Uri'}],
+				     'veda-schema:canDelete' : [{data: 'true', type : 'String'}],
+				     'veda-schema:canRead' : [{data: 'true', type : 'String'}],
+				     'veda-schema:canUpdate' : [{data: 'true', type : 'String'}],
+				     'veda-schema:permissionObject' : [{data: permissionObject, type : 'Uri'}],
+				     'veda-schema:permissionSubject'  : [{data: permissionSubject, type : 'Uri'}]
+				  };
+
+				put_individual(ticket, new_test_doc1);
+
+				var read_individual = get_individual(ticket, new_test_doc1_uri);
+				if (compare (new_test_doc1, read_individual) == false)
+				 	assert (false, description + " : #1");				
+				
+				var new_test_doc2 = new_test_doc1;
+				new_test_doc2_uri = guid ();
+				new_test_doc2['@'] = new_test_doc2_uri;
+			     	new_test_doc2['veda-schema:canRead'] = [{data: 'false', type : 'String'}],
+				put_individual(ticket, new_test_doc2);
+
+				read_individual = get_individual(ticket, new_test_doc2_uri);
+				if (compare (new_test_doc2, read_individual) == false)
+				 	assert (false, description + " : #2");				
+					
+				var new_test_doc3 = new_test_doc2;
+				new_test_doc3_uri = guid ();
+				new_test_doc3['@'] = new_test_doc3_uri;
+			     	new_test_doc3['veda-schema:canRead'] = [{data: 'true', type : 'String'}],
+				put_individual(ticket, new_test_doc3);
+
+				read_individual = get_individual(ticket, new_test_doc3_uri);
+				assert (((read_individual['@'] == new_test_doc3_uri) == passed), description);
+			};
+
+			(function() { 
+				test11 ("veda-schema:PermissionStatement", "Individual of [veda-schema:PermissionStatement] store 3 and read 2", false);
+				test11 ("veda-schema:NoPermissionStatement", "Individual of [veda-schema:NoPermissionStatement] store 3 and read 3", true);
+			})();
+		    
+
+		</script>
+
+		<script>
+			function test12(type, description, passed) { 
+				var ticket = getCookie('ticket');
+				
+				var memberOf = guid ();
+				var resources = guid ();
+
+				var new_test_doc1_uri = guid ();
+				var new_test_doc1 =
+				  {
+				     '@' : new_test_doc1_uri,
+				     'rdf:type' : [{data: type, type : 'Uri'}],
+				     'veda-schema:memberOf' : [{data: memberOf, type : 'Uri'}],
+				     'veda-schema:resource'  : [{data: resources, type : 'Uri'}]
+				  };
+
+				put_individual(ticket, new_test_doc1);
+
+				var read_individual = get_individual(ticket, new_test_doc1_uri);
+				if (compare (new_test_doc1, read_individual) == false)
+				 	assert (false, description + " : #1");				
+				
+				var new_test_doc2 = new_test_doc1;
+				new_test_doc2_uri = guid ();
+				new_test_doc2['@'] = new_test_doc2_uri;
+			        new_test_doc2['veda-schema:memberOf'] = [{data: guid (), type : 'Uri'}],
+				put_individual(ticket, new_test_doc2);
+
+				read_individual = get_individual(ticket, new_test_doc2_uri);
+				if (compare (new_test_doc2, read_individual) == false)
+				 	assert (false, description + " : #2");				
+					
+				var new_test_doc3 = new_test_doc2;
+				new_test_doc3_uri = guid ();
+				new_test_doc3['@'] = new_test_doc3_uri;
+			        new_test_doc3['veda-schema:memberOf'] = [{data: memberOf, type : 'Uri'}],
+				put_individual(ticket, new_test_doc3);
+
+				read_individual = get_individual(ticket, new_test_doc3_uri);
+				assert (((read_individual['@'] == new_test_doc3_uri) == passed), description);
+			};
+
+			(function() { 
+				test12 ("veda-schema:Membership", "Individual of [veda-schema:Membership] store 3 and read 2", false);
+				test12 ("veda-schema:NoMembership", "Individual of [veda-schema:NoMembership] store 3 and read 3", true);
+			})();
+		    
+
 		</script>
 
 	</body>
