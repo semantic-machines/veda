@@ -9,6 +9,7 @@ function guid() {
 }
 
 function compare (a, b) {
+	if (Object.keys(a).length != Object.keys(b).length) return false;
 	var result = true;
 	for (var key in a) {
 		if (typeof a[key] === "object") result &= compare(a[key], b[key]);
