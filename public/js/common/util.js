@@ -7,3 +7,11 @@ function guid() {
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
          s4() + '-' + s4() + s4() + s4();
 }
+
+function compare (a, b) {
+	var result = true;
+	for (var key in a) {
+		result &= a[key] == b[key] ? true : false;
+	}
+	return result;
+}
