@@ -11,7 +11,8 @@ function guid() {
 function compare (a, b) {
 	var result = true;
 	for (var key in a) {
-		result &= a[key] == b[key] ? true : false;
+		if (typeof a[key] === "object") result &= compare(a[key], b[key]);
+		else result &= a[key] == b[key] ? true : false;
 	}
 	return result;
 }
