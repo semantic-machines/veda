@@ -46,7 +46,7 @@ Json individual_to_json(immutable(Individual) individual) {
 Individual json_to_individual(const Json individual_json) {
 	Individual individual = Individual.init;
 	foreach (string property_name, ref const property_values; individual_json) {
-		if (property_name == "@") { individual.uri = to!string(individual_json[property_name]); continue; }
+		if (property_name == "@") { individual.uri = individual_json[property_name].get!string; continue; }
 		Resource[] resources = Resource[].init;
 		foreach (property_value; property_values) resources ~= json_to_resource(property_value);
 		individual.resources[property_name] = resources;
