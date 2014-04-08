@@ -61,7 +61,7 @@
 		
 		<div class="container-fluid" id="tests">
 			<br />
-			<ol id="output"></ol>
+			<ul id="output"></ol>
 		</div>
 
 		<br />
@@ -135,11 +135,17 @@
 		
 				var ticket_user1 = authenticate('bushenevv', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
 				if (ticket_user1.id == "")
+				{
 				    assert (false, description + " #1");
+				    return;	
+				}	
 
 				var ticket_user2 = authenticate('BychinA', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
 				if (ticket_user2.id == "")
+				{
 				    assert (false, description + " #2");
+				    return;	
+				}	
 
 				var new_test_doc1_uri = "test3:" + guid ();
 				var new_test_doc1 =
@@ -156,7 +162,10 @@
 
 				var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);	    
 				if (compare (new_test_doc1, read_individual) == false)
+				{	
 				    assert (false, description + " #3");
+				    return;	
+				}	
 
 				read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);	    
 				assert (compare (new_test_doc1, read_individual) == false, description);
@@ -169,11 +178,17 @@
 		
 				var ticket_user1 = authenticate('bushenevv', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
 				if (ticket_user1.id == "")
+				{
 				    assert (false, description + " #1");
+				    return;	
+				}	
 
 				var ticket_user2 = authenticate('BychinA', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
 				if (ticket_user2.id == "")
+				{
 				    assert (false, description + " #2");
+				    return;	
+				}	
 
 				var new_test_doc1_uri = guid ();
 				var new_test_doc1 =
@@ -190,11 +205,17 @@
 
 				var read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);	    
 				if (compare (new_test_doc1, read_individual) == true)
+				{
 				    assert (false, description + " #3");
+				    return;	
+				}	
 
 				read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);	    
 				if (compare (new_test_doc1, read_individual) == false)
+				{
 				    assert (false, description + " #4");
+				    return;	
+				}	
 
                                 var new_permission =
                                   {
@@ -219,7 +240,10 @@
 		
 				var ticket_user1 = authenticate('bushenevv', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
 				if (ticket_user1.id == "")
+				{
 				    assert (false, description + " #1");
+				    return;	
+				}	
 
 				var admin_ticket = getCookie('ticket');
 
@@ -238,7 +262,10 @@
 				var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);	    
 
 				if (compare (new_test_doc1, read_individual) == false)
+				{
 				    assert (false, description + " #2");
+				    return;	
+				}	
 
 				read_individual = get_individual(admin_ticket, new_test_doc1_uri);	    
 				assert (compare (new_test_doc1, read_individual), description);
@@ -294,7 +321,10 @@
 
 				var read_individual = get_individual(ticket, new_test_doc1_uri);
 				if (compare (new_test_doc1, read_individual) == false)
+				{
 				 	assert (false, description + " : #1");				
+				    return;	
+				}	
 				
 				var new_test_doc2 = new_test_doc1;
 				new_test_doc2_uri = guid ();
@@ -304,7 +334,10 @@
 
 				read_individual = get_individual(ticket, new_test_doc2_uri);
 				if (compare (new_test_doc2, read_individual) == false)
+				{
 				 	assert (false, description + " : #2");				
+				    return;	
+				}	
 					
 				var new_test_doc3 = new_test_doc2;
 				new_test_doc3_uri = guid ();
@@ -344,7 +377,10 @@
 
 				var read_individual = get_individual(ticket, new_test_doc1_uri);
 				if (compare (new_test_doc1, read_individual) == false)
+				{
 				 	assert (false, description + " : #1");				
+				    return;	
+				}	
 				
 				var new_test_doc2 = new_test_doc1;
 				new_test_doc2_uri = guid ();
@@ -354,7 +390,10 @@
 
 				read_individual = get_individual(ticket, new_test_doc2_uri);
 				if (compare (new_test_doc2, read_individual) == false)
+				{
 				 	assert (false, description + " : #2");				
+				    return;	
+				}	
 					
 				var new_test_doc3 = new_test_doc2;
 				new_test_doc3_uri = guid ();
