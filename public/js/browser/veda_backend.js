@@ -95,12 +95,12 @@ function put_individuals(ticket, individuals, callback) {
 		.done( function (data) { callback(data) } );
 }
 
-function put_individual(ticket, individual, expect_completion, callback) {
+function put_individual(ticket, individual, callback) {
 	var expect_completion = expect_completion || false;
 	var params = {
 		type: "PUT",
 		url: "put_individual",
-		data: JSON.stringify({"ticket": ticket, "individual": individual, "expect_completion": expect_completion}),
+		data: JSON.stringify({"ticket": ticket, "individual": individual}),
 		contentType: "application/json"
 	};
 	if(!callback) {

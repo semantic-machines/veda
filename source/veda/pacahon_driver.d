@@ -148,13 +148,13 @@ class PacahonDriver {
                                                   }
                                               }
                                           },
-                                          (Command cmd, Function fn, string ticket, string uri, immutable(Individual)[] individual, bool expect_completion, Tid tid) 
+                                          (Command cmd, Function fn, string ticket, string uri, immutable(Individual)[] individual, Tid tid) 
 					  {
                                               if (tid !is Tid.init)
                                               {
                                                   if (cmd == Command.Put && fn == Function.Individual)
                                                   {
-                                                      ResultCode res = context.put_individual(ticket, uri, cast(Individual)individual[ 0 ], expect_completion);
+                                                      ResultCode res = context.put_individual(ticket, uri, cast(Individual)individual[ 0 ]);
 
                                                       send(tid, res);
                                                   }

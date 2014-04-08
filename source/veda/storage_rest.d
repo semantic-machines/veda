@@ -107,7 +107,7 @@ interface VedaStorageRest_API {
 	int put_individuals(string ticket, Json[] individuals);
 	
 	@path("put_individual") @method(HTTPMethod.PUT)
-	int put_individual(string ticket, Json individual, bool expect_completion);
+	int put_individual(string ticket, Json individual);
 
 	@path("get_property_values") @method(HTTPMethod.GET)
 	Json[] get_property_values(string ticket, string uri, string property_uri);
@@ -225,13 +225,13 @@ Json get_individual(string ticket, string uri) {
     return json;
 }
 
-int put_individual(string ticket, Json individual_json, bool expect_completion) {
+int put_individual(string ticket, Json individual_json) {
     Tid my_task = Task.getThis();
     if (my_task !is Tid.init) {
         immutable(Individual)[] ind;
 		Individual indv = json_to_individual(individual_json) ;
         ind ~= indv.idup;
-        send(io_task, Command.Put, Function.Individual, ticket, indv.uri, ind, expect_completion, my_task);
+        send(io_task, Command.Put, Function.Individual, ticket, indv.uri, ind, my_task);
         ResultCode res = receiveOnly!(ResultCode);
         return res.to!int;
     }
