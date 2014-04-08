@@ -158,7 +158,7 @@
 
 				put_individual(ticket_user1.id, new_test_doc1);
 
-				sleep (100);
+				sleep (200);
 
 				var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);	    
 				if (compare (new_test_doc1, read_individual) == false)
@@ -223,11 +223,7 @@
                                      'rdf:type' : [{data: 'veda-schema:PermissionStatement', type : 'Uri'}],
                                      'veda-schema:canRead' : [{data: 'true', type : 'String'}],
                                      'veda-schema:permissionObject' : [{data: new_test_doc1_uri, type : 'Uri'}],
-<<<<<<< HEAD
-                                     'veda-schema:permissionSubject'  : [{data:  ticket_user2.id, type : 'Uri'}]
-=======
                                      'veda-schema:permissionSubject'  : [{data:  ticket_user2.user_uri, type : 'Uri'}]
->>>>>>> 834f2c41cffb107eb9892241a0dcb31e398bb5f0
                                   };
                                 put_individual(ticket_user1.id, new_permission);
 
