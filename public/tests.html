@@ -283,7 +283,7 @@
 				     'veda-schema:permissionSubject'  : [{data:  'individual_2', type : 'Uri'}]
 				  };
 
-				put_individual(ticket, new_test_doc1);
+				put_individual(ticket, new_test_doc1, true);
 
 				var read_individual = get_individual(ticket, new_test_doc1_uri);
 
@@ -310,7 +310,7 @@
 				     'veda-schema:permissionSubject'  : [{data: permissionSubject, type : 'Uri'}]
 				  };
 
-				put_individual(ticket, new_test_doc1);
+				put_individual(ticket, new_test_doc1, true);
 
 				var read_individual = get_individual(ticket, new_test_doc1_uri);
 				if (compare (new_test_doc1, read_individual) == false)
@@ -323,7 +323,7 @@
 				new_test_doc2_uri = guid ();
 				new_test_doc2['@'] = new_test_doc2_uri;
 			     	new_test_doc2['veda-schema:canRead'] = [{data: 'false', type : 'String'}],
-				put_individual(ticket, new_test_doc2);
+				put_individual(ticket, new_test_doc2, true);
 
 				read_individual = get_individual(ticket, new_test_doc2_uri);
 				if (compare (new_test_doc2, read_individual) == false)
@@ -336,7 +336,7 @@
 				new_test_doc3_uri = guid ();
 				new_test_doc3['@'] = new_test_doc3_uri;
 			     	new_test_doc3['veda-schema:canRead'] = [{data: 'true', type : 'String'}],
-				put_individual(ticket, new_test_doc3);
+				put_individual(ticket, new_test_doc3, true);
 
 				read_individual = get_individual(ticket, new_test_doc3_uri);
 				assert (((read_individual['@'] == new_test_doc3_uri) == passed), description);
@@ -366,7 +366,7 @@
 				     'veda-schema:resource'  : [{data: resources, type : 'Uri'}]
 				  };
 
-				put_individual(ticket, new_test_doc1);
+				put_individual(ticket, new_test_doc1, true);
 
 				var read_individual = get_individual(ticket, new_test_doc1_uri);
 				if (compare (new_test_doc1, read_individual) == false)
@@ -379,7 +379,7 @@
 				new_test_doc2_uri = guid ();
 				new_test_doc2['@'] = new_test_doc2_uri;
 			        new_test_doc2['veda-schema:memberOf'] = [{data: guid (), type : 'Uri'}],
-				put_individual(ticket, new_test_doc2);
+				put_individual(ticket, new_test_doc2, true);
 
 				read_individual = get_individual(ticket, new_test_doc2_uri);
 				if (compare (new_test_doc2, read_individual) == false)
@@ -392,7 +392,7 @@
 				new_test_doc3_uri = guid ();
 				new_test_doc3['@'] = new_test_doc3_uri;
 			        new_test_doc3['veda-schema:memberOf'] = [{data: memberOf, type : 'Uri'}],
-				put_individual(ticket, new_test_doc3);
+				put_individual(ticket, new_test_doc3, true);
 
 				read_individual = get_individual(ticket, new_test_doc3_uri);
 				assert (((read_individual['@'] == new_test_doc3_uri) == passed), description);
