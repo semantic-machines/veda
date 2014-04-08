@@ -9,11 +9,13 @@ function guid() {
 }
 
 function compare (a, b) {
+	if (typeof a === "function") return a.toString() === b.toString();
+	else if (typeof a != "object" || typeof b != "object") return a === b;
 	if (Object.keys(a).length != Object.keys(b).length) return false;
 	var result = true;
 	for (var key in a) {
-		if (typeof a[key] === "object") result &= compare(a[key], b[key]);
-		else result &= a[key] == b[key] ? true : false;
+		result &= compare(a[key], b[key]);
+		if (!result) return false;
 	}
 	return result;
 }

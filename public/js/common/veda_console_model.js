@@ -1,5 +1,5 @@
 // veda_console Model
-function veda_console () { "use strict"; 
+function Veda_Console () { "use strict"; 
 	var self = $.observable(this);
 	self.script = self.runat = self.result = self.output = "";
 	self.start = self.stop = 0;
