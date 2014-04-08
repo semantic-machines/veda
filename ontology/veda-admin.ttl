@@ -57,7 +57,7 @@ if (ff)
     if (first_doc)
     {
 	var doc_uri = first_doc['@'];	
-    print ("doc_uri=" + doc_uri);
+//    print ("doc_uri=" + doc_uri);
     if (employee_uri)
     {
 	var new_permission = 
