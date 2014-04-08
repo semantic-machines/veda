@@ -96,6 +96,7 @@ function put_individuals(ticket, individuals, callback) {
 }
 
 function put_individual(ticket, individual, expect_completion, callback) {
+	var expect_completion = expect_completion || false;
 	var params = {
 		type: "PUT",
 		url: "put_individual",
