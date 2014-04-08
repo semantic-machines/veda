@@ -19,3 +19,8 @@ function compare (a, b) {
 	}
 	return result;
 }
+
+function sleep(usec) {
+	var endtime= new Date().getTime() + usec;
+    while (new Date().getTime() < endtime);
+}

@@ -50,21 +50,31 @@ veda-admin:Mandate_1
   veda-schema:script """
 var ticket = '';
 var ff = get_property_chain (ticket, '$document', 'veda-schema:author', 'veda-schema:employee');
-var employee_uri = getUri (ff['field']);
-if (employee_uri)
+if (ff)
 {
-var new_permission = 
-  {
-     '@' : guid (), 
-     'rdf:type' : [{data: 'veda-schema:PermissionStatement', type : 1}],
-     'veda-schema:canDelete' : [{data: 'true'}],
-     'veda-schema:canRead' : [{data: 'true'}],
-     'veda-schema:canUpdate' : [{data: 'true'}],
-     'veda-schema:permissionObject' : [{data: doc_uri, type : 1}],
-     'veda-schema:permissionSubject'  : [{data: employee_uri, type : 1}]
- };
-put_individual (ticket, new_permission);
-}"""^^xsd:string ;
+    var employee_uri = getUri (ff['field']);
+    var first_doc = ff['first'];
+    if (first_doc)
+    {
+	var doc_uri = first_doc['@'];	
+    print ("doc_uri=" + doc_uri);
+    if (employee_uri)
+    {
+	var new_permission = 
+	{
+        '@' : guid (), 
+        'rdf:type' : [{data: 'veda-schema:PermissionStatement', type : 1}],
+        'veda-schema:canDelete' : [{data: 'true'}],
+        'veda-schema:canRead' : [{data: 'true'}],
+        'veda-schema:canUpdate' : [{data: 'true'}],
+        'veda-schema:permissionObject' : [{data: doc_uri, type : 1}],
+        'veda-schema:permissionSubject'  : [{data: employee_uri, type : 1}]
+	};
+	put_individual (ticket, new_permission);
+    }
+    }
+}
+"""^^xsd:string ;
   rdfs:comment "Выдача прав авторам"@ru ;
   rdfs:label "Mandate_1"@en ;
   rdfs:label "Мандат_1"@ru ;
