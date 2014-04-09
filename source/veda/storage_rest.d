@@ -88,8 +88,8 @@ interface VedaStorageRest_API {
 	@path("is_ticket_valid") @method(HTTPMethod.GET)
 	bool is_ticket_valid(string ticket);
 
-//	@path("wait_thread") @method(HTTPMethod.GET)
-//	void wait_thread(string thread_id);
+	@path("wait_thread") @method(HTTPMethod.GET)
+	void wait_thread(int thread_id);
 
 	@path("query") @method(HTTPMethod.GET)
 	string[] query(string ticket, string query);
@@ -140,14 +140,14 @@ Ticket authenticate(string login, string password) {
     return Ticket.init;
 }
 
-//void wait_thread(string thread_id)
-//{
-//    Tid my_task = Task.getThis();
-//    if (my_task !is Tid.init) {
-//        send(io_task, Command.Wait, Function.Thread, thread_id, my_task);
-//        receiveOnly!(bool);
-//    }
-//}
+void wait_thread(int thread_id)
+{
+    Tid my_task = Task.getThis();
+    if (my_task !is Tid.init) {
+        send(io_task, Command.Wait, Function.Thread, thread_id, my_task);
+        receiveOnly!(bool);
+    }
+}
 
 bool is_ticket_valid(string ticket) {
     Tid my_task = Task.getThis();
