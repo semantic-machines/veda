@@ -1,7 +1,7 @@
 // veda_console Presenter
 $(function() { "use strict";
 	// initialize Model
-	var cons = veda.console;
+	var cons = app.console;
 	// listen browser events
 	$("#console #run").on("click", 
 		function(event) {
