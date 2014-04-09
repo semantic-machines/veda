@@ -23,7 +23,8 @@ enum Command
     Get,
     Is,
     Put,
-    Execute
+    Execute,
+    Wait
 }
 
 enum Function
@@ -37,7 +38,8 @@ enum Function
     IndividualsIdsToQuery,
     NewTicket,
     TicketValid,
-    Script
+    Script,
+    Thread
 }
 
 Task io_task;
@@ -60,6 +62,17 @@ class PacahonDriver {
                               while (true)
                               {
                                   receive(
+                                          (Command cmd, Function fn, P_MODULE thread_id, Tid tid) 
+					  {
+                                              if (tid != Tid.init)
+                                              {
+                                                  if (cmd == Command.Wait && fn == Function.Thread)
+                                                  {
+						    context.wait_thread(thread_id);	
+                                                    send(tid, true);
+						  }    
+					      }
+					  },    
                                           (Command cmd, Function fn, immutable (string)[] arg1, string arg2, Tid tid) 
 					  {
                                               if (tid != Tid.init)
