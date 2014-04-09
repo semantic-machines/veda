@@ -1,16 +1,20 @@
-// veda_document Model
-;(function (app) { "use strict";
-	var self = $.observable({});
-	self.name = "document";
-	
+// Document Model
+
+function Document() { "use strict";
+	var self = $.observable(this);
 	self.individual = {};
-	
 	self.load = function(uri) {
 		self.individual = get_individual(app.ticket, uri);
+		self.trigger("loaded");
 	};
 	self.save = function() {
 		put_individual(app.ticket, self.individual);
+		self.trigger("saved");
 	};
-	
-	app.on("ready", app.register(self));
-})(app);
+	self.on("loaded", function() { 
+		console.log("document loaded: ", self.individual);
+	});
+	self.on("saved", function() { 
+		console.log("document saved: ", self.individual);
+	});
+};

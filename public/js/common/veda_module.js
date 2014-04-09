@@ -1,13 +1,11 @@
-// Module
-function Module(module, app) {
-	var self = $.observable(this);
-	self.register = function(_module) {
-		self[_module.name] = _module;
+// Module registrator
+
+function Module(module, parent, name) {
+	module.name = name;
+	module.register = function(new_module) {
+		module[new_module.name] = new_module;
 	}
-	for (var i in module) {
-		self[i] = module[i];
-	}
-	if (module.init) self.init();
-	self.trigger("ready");
-	app.on("ready", app.register(self));
+	module.trigger("ready");
+	if (!parent) return module;
+	parent.on("ready", parent.register(module));
 };

@@ -1,8 +1,8 @@
-// Console Model
+// veda_console Model
+;(function console(app) { "use strict";
+	var self = $.observable({});
+	self.name = "console";
 
-function Console() { "use strict";
-	var self = $.observable(this);
-	self.id = "" + Math.random() * 0x10000;
 	self.script = self.runat = self.result = self.output = "";
 	self.start = self.stop = 0;
 	self.run = function() {
@@ -26,4 +26,6 @@ function Console() { "use strict";
 	self.on("done", function() {
 		self.stop = new Date().getTime();
 	});
-};
+
+	app.on("ready", app.register(self));
+})(app);
