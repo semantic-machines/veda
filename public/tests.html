@@ -155,6 +155,8 @@
 				  };
 
 				put_individual(ticket_user1.id, new_test_doc1); //
+				wait_pmodule (6);
+				wait_pmodule (2);
 
 				var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);	    
 				if (compare (new_test_doc1, read_individual) == false)
@@ -196,6 +198,8 @@
 				  };
 
 				put_individual(ticket_user1.id, new_test_doc1); //
+				wait_pmodule (6);
+				wait_pmodule (2);
 
 				var read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);	    
 				if (compare (new_test_doc1, read_individual) == true)
@@ -220,6 +224,7 @@
                                      'veda-schema:permissionSubject'  : [{data:  ticket_user2.user_uri, type : 'Uri'}]
                                   };
                                 put_individual(ticket_user1.id, new_permission); //
+				wait_pmodule (2);
 
 				var read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);	    
 				assert (compare (new_test_doc1, read_individual), description);
@@ -249,9 +254,11 @@
 				  };
 
 				put_individual(ticket_user1.id, new_test_doc1); //
+				wait_pmodule (6);
+				wait_pmodule (2);
 
 				var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);	    
-
+			    
 				if (compare (new_test_doc1, read_individual) == false)
 				{
 				    assert (false, description + " #2");

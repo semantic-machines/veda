@@ -39,7 +39,7 @@ enum Function
     NewTicket,
     TicketValid,
     Script,
-    Thread
+    PModule
 }
 
 Task io_task;
@@ -66,7 +66,7 @@ class PacahonDriver {
 					  {
                                               if (tid != Tid.init)
                                               {
-                                                  if (cmd == Command.Wait && fn == Function.Thread)
+                                                  if (cmd == Command.Wait && fn == Function.PModule)
                                                   {
 						    context.wait_thread(thread_id);	
                                                     send(tid, true);

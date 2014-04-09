@@ -60,6 +60,7 @@ if (ff)
 //    print ("doc_uri=" + doc_uri);
     if (employee_uri)
     {
+//    print ("employee_uri=" + employee_uri);
 	var new_permission = 
 	{
         '@' : guid (), 

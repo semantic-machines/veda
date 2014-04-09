@@ -33,6 +33,21 @@ function is_ticket_valid(ticket, callback) {
 		.done( function (data) { callback(data) } );
 }
 
+function wait_pmodule(pmodule_id, callback) {
+	var params = {
+		type: "GET",
+		url: "wait_pmodule",
+		data: { "pmodule_id": pmodule_id }
+	};
+	if(!callback) {
+		params.async = false;
+		return JSON.parse($.ajax(params).responseText);
+	}
+	$.ajax(params)
+		.fail( function () { callback(false) } )
+		.done( function (data) { callback(data) } );
+}
+
 function query(ticket, query, callback) {
 	var params = {
 		type: "GET",
