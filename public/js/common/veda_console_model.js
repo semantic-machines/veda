@@ -2,7 +2,6 @@
 
 function Console() { "use strict";
 	var self = $.observable(this);
-	self.id = "" + Math.random() * 0x10000;
 	self.script = self.runat = self.result = self.output = "";
 	self.start = self.stop = 0;
 	self.run = function() {

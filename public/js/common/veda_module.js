@@ -1,11 +1,13 @@
 // Module registrator
 
 function Module(module, parent, name) {
-	module.name = name;
-	module.register = function(new_module) {
-		module[new_module.name] = new_module;
+	module._name = name;
+	module._id = guid();
+	module._path = parent ? parent._path + "." + module._name : module._name;
+	module._register = function(new_module) {
+		module[new_module._name] = new_module;
 	}
 	module.trigger("ready");
 	if (!parent) return module;
-	parent.on("ready", parent.register(module));
+	parent.on("ready", parent._register(module));
 };

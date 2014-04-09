@@ -1,15 +1,18 @@
 // Document Model
 
-function Document() { "use strict";
+function Document(uri) { "use strict";
 	var self = $.observable(this);
 	self.individual = {};
 	self.load = function(uri) {
-		self.individual = get_individual(app.ticket, uri);
-		self.trigger("loaded");
+		get_individual(app.ticket, uri, function(data) {
+			self.individual = data;
+			self.trigger("loaded");
+		});
 	};
 	self.save = function() {
-		put_individual(app.ticket, self.individual);
-		self.trigger("saved");
+		put_individual(app.ticket, self.individual, function(data) {
+			self.trigger("saved");
+		});
 	};
 	self.on("loaded", function() { 
 		console.log("document loaded: ", self.individual);
@@ -17,4 +20,5 @@ function Document() { "use strict";
 	self.on("saved", function() { 
 		console.log("document saved: ", self.individual);
 	});
+	if (uri) self.load(uri);
 };
