@@ -1,6 +1,8 @@
 // Console Model
 
-function Console() { "use strict";
+"use strict";
+
+function Console() { 
 	var self = $.observable(this);
 	self.script = self.runat = self.result = self.output = "";
 	self.start = self.stop = 0;

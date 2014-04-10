@@ -1,6 +1,8 @@
 // Document Model
 
-function Document(uri) { "use strict";
+"use strict";
+
+function Document(uri) { 
 	var self = $.observable(this);
 	self.individual = {};
 	self.load = function(uri) {

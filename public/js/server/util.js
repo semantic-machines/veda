@@ -1,3 +1,5 @@
+"use strict";
+
 function get_property_chain (ticket, uri, element) 
 { 
 	var doc = get_individual (ticket, uri); 

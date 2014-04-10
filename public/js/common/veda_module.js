@@ -1,5 +1,7 @@
 // Module registrator
 
+"use strict";
+
 function Module(module, parent, name) {
 	module._id = guid();
 	module._name = name || module._id;

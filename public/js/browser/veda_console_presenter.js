@@ -1,7 +1,7 @@
 // veda_console Presenter
 $(function() { "use strict";
 	// get Model
-	var cons = app.console;
+	var cons = new Console();
 	// listen browser events
 	$("#console #run").on("click", 
 		function(event) {
@@ -16,7 +16,7 @@ $(function() { "use strict";
 		});
 	// listen Model events
 	cons.on("done", function() {
-		$("#console #result").html(cons.result);
+		$("#console #result").html(JSON.stringify(cons.result));
 		$("#console #output").val(cons.output); 
 		$("#console #execution_time").html("(executed in " + (cons.stop - cons.start) + " msecs)");
 	});

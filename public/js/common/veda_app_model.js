@@ -1,5 +1,7 @@
 // Veda application Model
 
+"use strict";
+
 function Veda() {
 	var self = $.observable(this);
 	self.user_uri = "";
@@ -19,4 +21,3 @@ function Veda() {
 		Module(new Document(self.user_uri), self, "user");
 	});
 };
-
