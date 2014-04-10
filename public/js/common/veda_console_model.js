@@ -4,7 +4,7 @@
 
 function ConsoleModel() { 
 	var self = $.observable(this);
-	self.script = self.runat = self.result = self.output = "";
+	self.script = self.result = self.output = self.runat = "";
 	self.start = self.stop = 0;
 	self.run = function() {
 		self.trigger("run");

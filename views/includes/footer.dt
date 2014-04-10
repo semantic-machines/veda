@@ -8,4 +8,4 @@ nav.navbar.navbar-fixed-bottom(role="navigation", style="min-height:20px")
 // Javascript placed at the end of the document so the pages load faster
 script(src="/js/browser/bootstrap.min.js")
 script(src="/js/browser/cookie.js")
-script(src="/js/browser/veda_util.js")
+script(src="/js/browser/util.js")

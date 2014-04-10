@@ -1,3 +1,5 @@
+// Server-side utility functions
+
 "use strict";
 
 function get_property_chain (ticket, uri, element) 

@@ -1,3 +1,5 @@
+// Common utility functions
+
 "use strict";
 
 function guid() {

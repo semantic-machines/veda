@@ -1,4 +1,5 @@
 // Document Presenter
+
 $(function() { "use strict";
 	// get Model
 	var doc = app.document;

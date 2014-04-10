@@ -97,6 +97,7 @@
 
 		<!-- Veda browser only -->
 		<script src="/js/browser/veda_backend.js"></script>
+		<script src="/js/browser/veda_app_presenter.js"></script>
 		<script src="/js/browser/veda_console_presenter.js"></script>
 
 		<!-- Veda browser & server -->
@@ -107,6 +108,11 @@
 		<script src="/js/common/veda_document_model.js"></script>
 		<script src="/js/common/veda_module.js"></script>
 		<script src="/js/common/start.js"></script>
+		<script type="text/javascript">
+			$(function(){
+				VedaPresenter(location.hash);
+			});
+		</script>
 
 	</body>
 </html>

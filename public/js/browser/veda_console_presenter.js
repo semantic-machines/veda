@@ -1,12 +1,22 @@
-// veda_console Presenter
-$(function() { "use strict";
-	// get Model
+// Console Presenter
+
+function ConsolePresenter() { "use strict";
+	// Get View
 	var template = $("#console-template").html();
-	var cons = app.console ? app.console : Module(new ConsoleModel(), app, "console");
+
+	// Get or create Model
+	var cons = app.console || Module(new ConsoleModel(), app, "console");
+
 	cons.on("show", function() {
 		$("#main").html(template);
+		$("#console #script").val(cons.script);
+		$("#console #result").html(JSON.stringify(cons.result));
+		$("#console #output").val(cons.output);
+		$("#console #execution_time").html("(executed in " + (cons.stop - cons.start) + " msecs)");
+		$("#console input[name='runat']").filter("[value='" + cons.runat + "']").attr('checked', true);
 	});
 	cons.trigger("show");
+
 	// listen browser events
 	$("#console #run").on("click", 
 		function(event) {
@@ -19,10 +29,11 @@ $(function() { "use strict";
 		function(event) {
 			$("#console #result").empty();
 		});
+
 	// listen Model events
 	cons.on("done", function() {
 		$("#console #result").html(JSON.stringify(cons.result));
 		$("#console #output").val(cons.output); 
 		$("#console #execution_time").html("(executed in " + (cons.stop - cons.start) + " msecs)");
 	});
-});
+}
