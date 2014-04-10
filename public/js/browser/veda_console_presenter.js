@@ -1,7 +1,12 @@
 // veda_console Presenter
 $(function() { "use strict";
 	// get Model
-	var cons = new Console();
+	var template = $("#console-template").html();
+	var cons = app.console ? app.console : Module(new ConsoleModel(), app, "console");
+	cons.on("show", function() {
+		$("#main").html(template);
+	});
+	cons.trigger("show");
 	// listen browser events
 	$("#console #run").on("click", 
 		function(event) {

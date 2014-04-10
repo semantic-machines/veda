@@ -2,7 +2,7 @@
 
 "use strict";
 
-function Console() { 
+function ConsoleModel() { 
 	var self = $.observable(this);
 	self.script = self.runat = self.result = self.output = "";
 	self.start = self.stop = 0;
@@ -27,4 +27,5 @@ function Console() {
 	self.on("done", function() {
 		self.stop = new Date().getTime();
 	});
+	return self;
 };

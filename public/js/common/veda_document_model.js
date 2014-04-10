@@ -2,7 +2,7 @@
 
 "use strict";
 
-function Document(uri) { 
+function DocumentModel(uri) { 
 	var self = $.observable(this);
 	self.individual = {};
 	self.load = function(uri) {
@@ -23,4 +23,5 @@ function Document(uri) {
 		console.log("document saved: ", self.individual);
 	});
 	if (uri) self.load(uri);
+	return self;
 };

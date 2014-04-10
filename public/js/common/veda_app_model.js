@@ -2,7 +2,7 @@
 
 "use strict";
 
-function Veda() {
+function VedaModel() {
 	var self = $.observable(this);
 	self.user_uri = "";
 	self.ticket = "";
@@ -18,6 +18,7 @@ function Veda() {
 		self.ticket = "";
 	};
 	self.on("login", function() { 
-		Module(new Document(self.user_uri), self, "user");
+		Module(new DocumentModel(self.user_uri), self, "user");
 	});
+	return self;
 };

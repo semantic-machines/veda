@@ -12,4 +12,5 @@ function Module(module, parent, name) {
 	module.trigger("ready");
 	if (!parent) return module;
 	parent.on("ready", parent._register(module));
+	return module;
 };

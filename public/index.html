@@ -43,35 +43,39 @@
 				</div>
 			</div>
 		</nav>
+
+		<div id="main"></div>
 		
-		<div class="container-fluid" id="console">
-			<h2>JavaScript console</h2>
-			<form role="form">
-				<div class="form-group row">
-					<div class="col-xs-12 col-sm-6 col-md-8 col-lg-8">
-						<label for="script">Script</label>
-						<textarea rows="16" class="form-control" id="script" placeholder="Enter script" autofocus="autofocus"></textarea>
+		<script type="html/template" id="console-template">
+			<div class="container-fluid" id="console">
+				<h2>JavaScript console</h2>
+				<form role="form">
+					<div class="form-group row">
+						<div class="col-xs-12 col-sm-6 col-md-8 col-lg-8">
+							<label for="script">Script</label>
+							<textarea rows="16" class="form-control" id="script" placeholder="Enter script" autofocus="autofocus"></textarea>
+						</div>
+						<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+							<label for="output">Output</label>
+							<textarea rows="16" class="form-control" id="output"></textarea>
+						</div>
 					</div>
-					<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
-						<label for="output">Output</label>
-						<textarea rows="16" class="form-control" id="output"></textarea>
+					<div class="form-group">
+						<label class="radio-inline">
+							<input type="radio" name="runat" value="browser" checked> Run in browser
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="runat" value="server"> Run on server
+						</label>
 					</div>
-				</div>
-				<div class="form-group">
-					<label class="radio-inline">
-						<input type="radio" name="runat" value="browser" checked> Run in browser
-					</label>
-					<label class="radio-inline">
-						<input type="radio" name="runat" value="server"> Run on server
-					</label>
-				</div>
-				<button type="submit" id="run" class="btn btn-success">Run!</button>
-				<button type="reset" id="reset" class="btn">Clear</button>
-			</form>
-			<hr />
-			<p><strong>Result <span class="text-muted" id="execution_time"></span></label></strong></p>
-			<pre id="result"></pre>
-		</div>
+					<button type="submit" id="run" class="btn btn-success">Run!</button>
+					<button type="reset" id="reset" class="btn">Clear</button>
+				</form>
+				<hr />
+				<p><strong>Result <span class="text-muted" id="execution_time"></span></label></strong></p>
+				<pre id="result"></pre>
+			</div>
+		</script>
 
 		<br />
 		<nav style="min-height:20px;" class="navbar navbar-fixed-bottom" id="copyright">
@@ -96,7 +100,6 @@
 		<script src="/js/browser/veda_console_presenter.js"></script>
 
 		<!-- Veda browser & server -->
-		<!--script src="/js/common/app.js"></script-->
 		<script src="/js/common/riot.js"></script>
 		<script src="/js/common/util.js"></script>
 		<script src="/js/common/veda_app_model.js"></script>
