@@ -8,11 +8,15 @@ function ConsolePresenter() { "use strict";
 	var cons = app.console || Module(new ConsoleModel(), app, "console");
 
 	cons.on("show", function() {
-		$("#main").html(template);
-		$("#console #script").val(cons.script);
-		$("#console #result").html(JSON.stringify(cons.result));
-		$("#console #output").val(cons.output);
-		$("#console #execution_time").html("(executed in " + (cons.stop - cons.start) + " msecs)");
+		var template = $("#console-template").html();
+		$("#main").html(
+			$.render(template, {
+				script: cons.script, 
+				output: cons.output,
+				result: JSON.stringify(cons.result),
+				time: "(executed in " + (cons.stop - cons.start) + " msecs)"
+			})
+		);
 		$("#console input[name='runat']").filter("[value='" + cons.runat + "']").attr('checked', true);
 	});
 	cons.trigger("show");
@@ -32,8 +36,9 @@ function ConsolePresenter() { "use strict";
 
 	// listen Model events
 	cons.on("done", function() {
+		//cons.trigger("show");
 		$("#console #result").html(JSON.stringify(cons.result));
 		$("#console #output").val(cons.output); 
-		$("#console #execution_time").html("(executed in " + (cons.stop - cons.start) + " msecs)");
+		$("#console #execution_time").html("(executed in " + (cons.stop - cons.start) + " msecs)"); 
 	});
 };
