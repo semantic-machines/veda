@@ -46,9 +46,52 @@
 
 		<div id="main"></div>
 		
+		<br />
+		<nav style="min-height:20px;" class="navbar navbar-fixed-bottom" id="copyright">
+			<footer>
+				<div class="container-fluid" style="background-color: white; border-top: 1px solid lightgray">
+					<a href="http://www.semantic-machines.com" title="Официальный сайт компании">&copy; "Смысловые машины", ООО.</a>
+					Лицензия / License
+					<a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
+				</div>
+			</footer>
+		</nav>
+
+		<!-- Javascript -->
+
+		<!-- Utils & UI -->
+		<script src="/js/browser/jquery.js"></script>
+		<script src="/js/browser/bootstrap.min.js"></script>
+		<script src="/js/browser/cookie.js"></script>
+
+		<!-- Veda browser & server -->
+		<script src="/js/common/riot.js"></script>
+		<script src="/js/common/util.js"></script>
+		<script src="/js/common/veda_app_model.js"></script>
+		<script src="/js/common/veda_console_model.js"></script>
+		<script src="/js/common/veda_document_model.js"></script>
+		<script src="/js/common/veda_module.js"></script>
+
+		<!-- Veda browser only -->
+		<script src="/js/browser/veda_backend.js"></script>
+		<script src="/js/browser/veda_app_presenter.js"></script>
+		<script src="/js/browser/veda_console_presenter.js"></script>
+		<script src="/js/browser/veda_document_presenter.js"></script>
+
+		<script type="text/javascript">
+			$(function(){
+				VedaPresenter(location.hash);
+			});
+		</script>
+
+		<!-- Templates -->
+
+		<!-- Console template -->
 		<script type="html/template" id="console-template">
 			<div class="container-fluid" id="console">
 				<h2>JavaScript console</h2>
+				<a href="#/document" class="btn btn-info" >Document</a>
+				<br><br>
 				<form role="form">
 					<div class="form-group row">
 						<div class="col-xs-12 col-sm-6 col-md-8 col-lg-8">
@@ -77,41 +120,12 @@
 			</div>
 		</script>
 
-		<br />
-		<nav style="min-height:20px;" class="navbar navbar-fixed-bottom" id="copyright">
-			<footer>
-				<div class="container-fluid" style="background-color: white; border-top: 1px solid lightgray">
-					<a href="http://www.semantic-machines.com" title="Официальный сайт компании">&copy; "Смысловые машины", ООО.</a>
-					Лицензия / License
-					<a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
-				</div>
-			</footer>
-		</nav>
-
-		<!-- Javascript placed at the end of the document so the pages load faster -->
-		
-		<!-- Utils & UI -->
-		<script src="/js/browser/jquery.js"></script>
-		<script src="/js/browser/bootstrap.min.js"></script>
-		<script src="/js/browser/cookie.js"></script>
-
-		<!-- Veda browser only -->
-		<script src="/js/browser/veda_backend.js"></script>
-		<script src="/js/browser/veda_app_presenter.js"></script>
-		<script src="/js/browser/veda_console_presenter.js"></script>
-
-		<!-- Veda browser & server -->
-		<script src="/js/common/riot.js"></script>
-		<script src="/js/common/util.js"></script>
-		<script src="/js/common/veda_app_model.js"></script>
-		<script src="/js/common/veda_console_model.js"></script>
-		<script src="/js/common/veda_document_model.js"></script>
-		<script src="/js/common/veda_module.js"></script>
-		<script src="/js/common/start.js"></script>
-		<script type="text/javascript">
-			$(function(){
-				VedaPresenter(location.hash);
-			});
+		<!-- Document template -->
+		<script type="html/template" id="document-template">
+			<div class="container-fluid" id="document">
+				<h2>Document</h2>
+				<a href="#/console" class="btn btn-info" >Console</a>
+			</div>
 		</script>
 
 	</body>

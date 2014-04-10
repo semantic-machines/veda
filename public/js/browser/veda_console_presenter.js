@@ -36,4 +36,4 @@ function ConsolePresenter() { "use strict";
 		$("#console #output").val(cons.output); 
 		$("#console #execution_time").html("(executed in " + (cons.stop - cons.start) + " msecs)");
 	});
-}
+};
