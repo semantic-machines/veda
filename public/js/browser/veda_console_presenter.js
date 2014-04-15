@@ -1,44 +1,35 @@
 // Console Presenter
 
 function ConsolePresenter() { "use strict";
+	// Get or create Model
+	var cons = app.console || RegisterModule(Model(new ConsoleModel()), app, "console");
+
 	// Get View
 	var template = $("#console-template").html();
-
-	// Get or create Model
-	var cons = app.console || Module(new ConsoleModel(), app, "console");
-
-	cons.on("show", function() {
-		var template = $("#console-template").html();
-		$("#main").html(
-			$.render(template, {
-				script: cons.script, 
-				output: cons.output,
-				result: JSON.stringify(cons.result),
-				time: "(executed in " + (cons.stop - cons.start) + " msecs)"
-			})
-		);
-		$("#console input[name='runat']").filter("[value='" + cons.runat + "']").attr('checked', true);
+	var rendered = $.render(template, cons.properties);
+	$("#main").html( rendered );
+	
+	// Bind UI changes to Model
+	$("#console [bound]").on("change", function() {
+		cons[this.id]($(this).val());
 	});
-	cons.trigger("show");
 
-	// listen browser events
-	$("#console #run").on("click", 
-		function(event) {
-			event.preventDefault();
-			cons.script = $("#console #script").val();
-			cons.runat = $("#console input[name='runat']:radio:checked").val();
-			cons.run();
-		});
-	$("#console #reset").on("click", 
-		function(event) {
-			$("#console #result").empty();
-		});
+	// Listen Model events
+	cons.on("set", function(property, value) {
+		var $el = $("#console #" + property);
+		if ($el.is("input, textarea, select")) $el.val( value );
+		else $el.html( value );
+	});
 
-	// listen Model events
-	cons.on("done", function() {
-		//cons.trigger("show");
-		$("#console #result").html(JSON.stringify(cons.result));
-		$("#console #output").val(cons.output); 
-		$("#console #execution_time").html("(executed in " + (cons.stop - cons.start) + " msecs)"); 
+	// Listen UI buttons clicks
+	$("#console #run").on("click", function(event) {
+		event.preventDefault();
+		cons.run();
+	});
+	
+	$("#console #reset").on("click", function(event) {
+		event.preventDefault();
+		cons.reset();
+		$("#console #script").focus();
 	});
 };

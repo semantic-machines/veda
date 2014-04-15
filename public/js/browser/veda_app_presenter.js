@@ -3,11 +3,12 @@
 function VedaPresenter(hash) { "use strict";
 
 	// Get or create the application Model
-	window.app = window.app || Module(new VedaModel(), window.app, "veda");
+	window.app = window.app || RegisterModule( Model( new VedaModel() ), window.app, "veda" );
 
 	// Listen to a link click and call router
-	var links = $("a");
-	links.click(function() {
+	$("body").on("click", "[href^='#/']", function(e) {
+		e.preventDefault();
+		var link = $(this);
 		return $.route($(this).attr("href"));
 	});
 

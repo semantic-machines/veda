@@ -158,8 +158,9 @@ shared static this()
 	pacahon.init(); 
 
 	auto settings = new HTTPServerSettings;
-	settings.port = 8080; //settings.bindAddresses = ["::1", "127.0.0.1", "172.17.35.148"];
-	settings.bindAddresses = ["127.0.0.1"];
+	settings.port = 8080; 
+	//settings.bindAddresses = ["::1", "127.0.0.1", "172.17.35.148"];
+	//settings.bindAddresses = ["127.0.0.1"];
 	settings.errorPageHandler = toDelegate(&view_error);
 
 	auto router = new URLRouter;

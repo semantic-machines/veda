@@ -4,28 +4,25 @@
 
 function ConsoleModel() { 
 	var self = $.observable(this);
-	self.script = self.result = self.output = self.runat = "";
-	self.start = self.stop = 0;
+	self.script = self.result = self.runat = self.time = "";
 	self.run = function() {
-		self.trigger("run");
-		if (self.runat == "server") {
-			execute_script(self.script, function(res) {
-				self.result = res[0];
-				self.output = res[1];
-				self.trigger("done");
+		var start = new Date().getTime();
+		if (self.runat() == "server") {
+			execute_script(self.script(), function(res) {
+				self.result(res[0]);
+				self.time(new Date().getTime() - start);
 			});
 		} else {
-			var res = eval(self.script);
-			self.result = res;
-			self.output = "";
-			self.trigger("done");
+			var res = eval(self.script());
+			self.result(res);
+			self.time(new Date().getTime() - start);
 		}
 	}
-	self.on("run", function() {
-		self.start = new Date().getTime();
-	});
-	self.on("done", function() {
-		self.stop = new Date().getTime();
-	});
+	self.reset = function() {
+		self.script("");
+		self.result("");
+		self.runat("");
+		self.time("");
+	}
 	return self;
 };

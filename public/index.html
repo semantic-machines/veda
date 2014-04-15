@@ -70,7 +70,8 @@
 		<script src="/js/common/veda_app_model.js"></script>
 		<script src="/js/common/veda_console_model.js"></script>
 		<script src="/js/common/veda_document_model.js"></script>
-		<script src="/js/common/veda_module.js"></script>
+		<script src="/js/common/veda_register_module.js"></script>
+		<script src="/js/common/veda_model.js"></script>
 
 		<!-- Veda browser only -->
 		<script src="/js/browser/veda_backend.js"></script>
@@ -94,29 +95,25 @@
 				<br><br>
 				<form role="form">
 					<div class="form-group row">
-						<div class="col-xs-12 col-sm-6 col-md-8 col-lg-8">
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 							<label for="script">Script</label>
-							<textarea rows="16" class="form-control" id="script" placeholder="Enter script" autofocus="autofocus">{script}</textarea>
-						</div>
-						<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
-							<label for="output">Output</label>
-							<textarea rows="16" class="form-control" id="output">{output}</textarea>
+							<textarea rows="16" class="form-control" placeholder="Enter script" autofocus="autofocus" id="script" bound>{script}</textarea>
 						</div>
 					</div>
-					<div class="form-group">
-						<label class="radio-inline">
-							<input type="radio" name="runat" value="browser" checked> Run in browser
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="runat" value="server"> Run on server
-						</label>
+					<div class="form-group row">
+						<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+							<select class="form-control" id="runat" bound>
+								<option value="browser">Browser</option>
+								<option value="server">Server</option>
+							</select>
+						</div>
+						<button type="submit" class="btn btn-success" id="run">Run!</button>
+						<button type="reset" class="btn" id="reset">Clear</button>
 					</div>
-					<button type="submit" id="run" class="btn btn-success">Run!</button>
-					<button type="reset" id="reset" class="btn">Clear</button>
 				</form>
 				<hr />
-				<p><strong>Result <span class="text-muted" id="execution_time">{time}</span></label></strong></p>
-				<pre id="result">{result}</pre>
+				<p><strong>Result <span class="text-muted">(executed in <span id="time" bound>{time}</span> msecs)</span></label></strong></p>
+				<pre id="result" bound>{result}</pre>
 			</div>
 		</script>
 
