@@ -186,19 +186,19 @@ shared static this()
 	auto routes = router.getAllRoutes();
 	logInfo("GET:");
 	foreach(key, value; routes[HTTPMethod.GET]) {
-		logInfo(text(key) ~ ": " ~ text(value));
+		logInfo(text(key) ~ ": " ~ value.pattern);
 	}
 	logInfo("PUT:");
 	foreach(key, value; routes[HTTPMethod.PUT]) {
-		logInfo(text(key) ~ ": " ~ text(value));
+		logInfo(text(key) ~ ": " ~ value.pattern);
 	}
 	logInfo("POST:");
 	foreach(key, value; routes[HTTPMethod.POST]) {
-		logInfo(text(key) ~ ": " ~ text(value));
+		logInfo(text(key) ~ ": " ~ value.pattern);
 	}
 	logInfo("DELETE:");
 	foreach(key, value; routes[HTTPMethod.DELETE]) {
-		logInfo(text(key) ~ ": " ~ text(value));
+		logInfo(text(key) ~ ": " ~ value.pattern);
 	}
 	logInfo("===============================");
 
