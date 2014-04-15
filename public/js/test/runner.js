@@ -33,7 +33,11 @@
 
 	// Route `console.log()` calls from within the Page context to the main Phantom context (i.e. current `this`)
 	page.onConsoleMessage = function(msg) {
-		console.log(msg);
+		if (msg.lastIndexOf('<?xml', 0) === 0) {
+			console.log(msg);
+		} else {
+			console.log('<!-- '+msg+' -->');
+		}
 	};
 
 	page.onInitialized = function() {
