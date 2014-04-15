@@ -36,7 +36,7 @@
 		if (msg.lastIndexOf('<?xml', 0) === 0) {
 			console.log(msg);
 		} else {
-			console.log('<!-- '+msg+' -->');
+			// mute
 		}
 	};
 
