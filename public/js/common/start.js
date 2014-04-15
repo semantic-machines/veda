@@ -3,4 +3,4 @@
 "use strict";
 
 var app = null;
-app = Module(new VedaModel(), app, "veda");
+app = RegisterModule( Model( new VedaModel() ), app, "veda" );
