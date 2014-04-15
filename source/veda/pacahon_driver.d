@@ -20,11 +20,12 @@ import util.lmultidigraph;
 
 enum Command
 {
-    Get,
-    Is,
-    Put,
-    Execute,
-    Wait
+    Get = 1,
+    Is = 2,
+    Put = 3,
+    Set = 3,
+    Execute = 4,
+    Wait = 5
 }
 
 enum Function
@@ -39,7 +40,8 @@ enum Function
     NewTicket,
     TicketValid,
     Script,
-    PModule
+    PModule,
+    Trace
 }
 
 Task io_task;
@@ -62,6 +64,17 @@ class PacahonDriver {
                               while (true)
                               {
                                   receive(
+                                          (Command cmd, Function fn, int arg1, bool arg2, Tid tid) 
+					  {
+                                              if (tid != Tid.init)
+                                              {
+                                                  if (cmd == Command.Set && fn == Function.Trace)
+                                                  {
+						    context.set_trace(arg1, arg2);	
+                                                    send(tid, true);
+						  }    
+					      }
+					  },    
                                           (Command cmd, Function fn, P_MODULE thread_id, Tid tid) 
 					  {
                                               if (tid != Tid.init)

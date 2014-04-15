@@ -91,6 +91,9 @@ interface VedaStorageRest_API {
 	@path("wait_pmodule") @method(HTTPMethod.GET)
 	void wait_pmodule(int pmodule_id);
 
+	@path("set_trace") @method(HTTPMethod.GET)
+	void set_trace(int idx, bool state);
+
 	@path("query") @method(HTTPMethod.GET)
 	string[] query(string ticket, string query);
 
@@ -145,6 +148,15 @@ void wait_pmodule(int thread_id)
     Tid my_task = Task.getThis();
     if (my_task !is Tid.init) {
         send(io_task, Command.Wait, Function.PModule, cast(P_MODULE)thread_id, my_task);
+        receiveOnly!(bool);
+    }
+}
+
+void set_trace(int idx, bool state)
+{
+    Tid my_task = Task.getThis();
+    if (my_task !is Tid.init) {
+        send(io_task, Command.Set, Function.Trace, idx, state, my_task);
         receiveOnly!(bool);
     }
 }
