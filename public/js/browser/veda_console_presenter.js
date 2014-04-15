@@ -6,7 +6,7 @@ function ConsolePresenter() { "use strict";
 
 	// Get View
 	var template = $("#console-template").html();
-	var rendered = $.render(template, cons.properties);
+	var rendered = $.render(template, cons._properties);
 	$("#main").html( rendered );
 	
 	// Bind UI changes to Model
