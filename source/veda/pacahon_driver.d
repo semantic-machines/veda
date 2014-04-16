@@ -93,9 +93,13 @@ class PacahonDriver {
                                                   if (cmd == Command.Get && fn == Function.Individuals)
                                                   {
                                                       immutable(Individual)[] individuals;
-                                                      foreach (indv ; context.get_individuals(arg1.dup, arg2))
-							individuals ~= indv.idup;
-                                                      send(tid, individuals);
+						      Ticket* ticket = context.get_ticket (arg2);
+						      if (ticket.result == ResultCode.OK)
+						      {			
+                                                        foreach (indv ; context.get_individuals(ticket, arg1.dup))
+							    individuals ~= indv.idup;
+						      }
+                                                      send(tid, individuals, ticket.result);
                                                   }
 					      }
 					  },
@@ -117,29 +121,58 @@ class PacahonDriver {
                                                       immutable(Individual)[ string ] onto_individuals =
                                                           context.get_onto_as_map_individuals();
                                                       immutable(Individual)[] individuals;
-
+						
                                                       immutable(Individual) individual = onto_individuals.get(arg1, _empty_iIndividual);
 
-                                                      if (individual != _empty_iIndividual)
-                                                          individuals ~= individual;
-                                                      else
-                                                          individuals ~= context.get_individual(arg1, arg2).idup;
+						      ResultCode rc;
 
-                                                      send(tid, individuals);
+                                                      if (individual != _empty_iIndividual)
+						      {	
+							  rc = ResultCode.OK;    
+                                                          individuals ~= individual;
+						      }	
+                                                      else
+						      {
+						          Ticket* ticket = context.get_ticket (arg2);
+							  rc = ticket.result;
+							  if (rc == ResultCode.OK)							            		
+							  {
+                                                            individuals ~= context.get_individual(ticket, arg1).idup;
+							  }    
+						      }
+
+                                                      send(tid, individuals, rc);
                                                   }
                                                   else if (cmd == Command.Get && fn == Function.IndividualsToQuery)
                                                   {
-                                                      immutable(Individual)[] individuals =
-                                                          context.get_individuals_via_query(arg1, arg2);
+					              Ticket* ticket = context.get_ticket (arg2);
 
-                                                      send(tid, individuals);
+						      if (ticket.result == ResultCode.OK)
+						      {								
+                                                       immutable(Individual)[] individuals = context.get_individuals_via_query(ticket, arg1);
+                                                       send(tid, individuals, ticket.result);
+						      }
+						      else
+						      {
+							immutable(Individual)[] individuals;
+                                                        send(tid, individuals, ticket.result);
+						      }		
                                                   }
                                                   else if (cmd == Command.Get && fn == Function.IndividualsIdsToQuery)
                                                   {
-                                                      immutable(string)[] uris =
-                                                          context.get_individuals_ids_via_query(arg1, arg2);
+					              Ticket* ticket = context.get_ticket (arg2);
 
-                                                      send(tid, uris);
+						      if (ticket.result == ResultCode.OK)
+						      {								
+                                                          immutable(string)[] uris =  context.get_individuals_ids_via_query(ticket, arg1);
+                                                          send(tid, uris, ticket.result);
+						      }
+						      else
+						      {
+							immutable(string)[] uris;
+                                                        send(tid, uris, ticket.result);
+						      }		
+
                                                   }
                                               }
                                           },
@@ -174,31 +207,44 @@ class PacahonDriver {
                                                   }
                                               }
                                           },
-                                          (Command cmd, Function fn, string ticket, string uri, immutable(Individual)[] individual, Tid tid) 
+                                          (Command cmd, Function fn, string _ticket, string uri, immutable(Individual)[] individual, Tid tid) 
 					  {
                                               if (tid !is Tid.init)
                                               {
                                                   if (cmd == Command.Put && fn == Function.Individual)
                                                   {
-                                                      ResultCode res = context.put_individual(ticket, uri, cast(Individual)individual[ 0 ]);
-
-                                                      send(tid, res);
+						      Ticket* ticket = context.get_ticket (_ticket);
+						      if (ticket.result == ResultCode.OK)
+						      {	
+                                                        ResultCode res = context.put_individual(ticket, uri, cast(Individual)individual[ 0 ]);
+                                                        send(tid, res);
+						      }
+						      else
+						      {
+                                                        send(tid, ticket.result);    
+						      }	    
                                                   }
                                               }
                                           },
-                                          (Command cmd, Function fn, string arg1, string arg2, string ticket, LANG lang, Tid tid) {
+                                          (Command cmd, Function fn, string arg1, string arg2, string _ticket, LANG lang, Tid tid) {
                                               if (tid !is Tid.init)
                                               {
                                                   if (cmd == Command.Get && fn == Function.PropertyOfIndividual)
                                                   {
+						      ResultCode rc;	
                                                       string res1;
                                                       immutable(Individual)[ string ] onto_individuals =
                                                           context.get_onto_as_map_individuals();
                                                       immutable(Individual) individual = onto_individuals.get(arg1, _empty_iIndividual);
                                                       if (individual == _empty_iIndividual)
                                                       {
+						      Ticket* ticket = context.get_ticket (_ticket);
+						      if (ticket.result == ResultCode.OK)
+						      {	
                                                           immutable(Individual) individual1 =
-                                                              context.get_individual(arg1, ticket).idup;
+                                                              context.get_individual(ticket, arg1).idup;
+							    
+
                                                           immutable Resources res = individual1.resources.get(arg2, Resources.init);
 
                                                           foreach (rr; res)
@@ -209,6 +255,11 @@ class PacahonDriver {
                                                                   break;
                                                               }
                                                           }
+
+							rc = ResultCode.OK;	
+						      }
+						      else	
+							rc = ticket.result;	
                                                       }
                                                       else
                                                       {
@@ -222,8 +273,10 @@ class PacahonDriver {
                                                                   break;
                                                               }
                                                           }
+							rc = ResultCode.OK;	
                                                       }
-                                                      send(tid, res1);
+						      	
+                                                      send(tid, res1, rc);
                                                   }
                                               }
                                           },

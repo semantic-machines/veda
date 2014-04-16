@@ -131,7 +131,6 @@ interface VedaStorageRest_API {
 class VedaStorageRest : VedaStorageRest_API {
 override:
 Ticket authenticate(string login, string password) {
-
     Tid my_task = Task.getThis();
     if (my_task !is Tid.init) {
         send(io_task, Command.Get, Function.NewTicket, login, password, my_task);
@@ -176,7 +175,12 @@ string[] query(string ticket, string query) {
     immutable (string)[] individuals_ids;
     if (my_task !is Tid.init) {
         send(io_task, Command.Get, Function.IndividualsIdsToQuery, query, ticket, my_task);
-        individuals_ids = receiveOnly!(immutable (string)[]);
+
+	ResultCode rc;
+	receive ((immutable(string)[] _individuals_ids, ResultCode _rc) {individuals_ids = _individuals_ids; rc = _rc;});
+	if (rc != ResultCode.OK)
+	    throw new HTTPStatusException(HTTPStatus.unauthorized);
+//        individuals_ids = receiveOnly!(immutable (string)[]);
     }
     return cast(string[])individuals_ids;
 }
@@ -186,7 +190,13 @@ Individuals query_(string ticket, string query) {
     immutable(Individual)[] individuals;
     if (my_task !is Tid.init) {
         send(io_task, Command.Get, Function.IndividualsToQuery, query, ticket, my_task);
-        individuals = receiveOnly!(immutable(Individual)[]);
+
+	ResultCode rc;
+	receive ((immutable(Individual)[] _individuals, ResultCode _rc) {individuals = _individuals; rc = _rc;});
+	if (rc != ResultCode.OK)
+	    throw new HTTPStatusException(HTTPStatus.unauthorized);
+
+//        individuals = receiveOnly!(immutable(Individual)[]);
     }
     return cast(Individual[])individuals;
 }
@@ -198,10 +208,15 @@ Json[] get_individuals(string ticket, string uris[]) {
 
     Tid my_task = Task.getThis();
     immutable(Individual)[] individuals = Individual[].init;
-    if (my_task !is Tid.init) {
-        immutable(Individual)[] individual;
+    if (my_task !is Tid.init) 
+    {
+//        immutable(Individual)[] individual;
         send(io_task, Command.Get, Function.Individuals, uris.idup, ticket, my_task);
-        individuals = receiveOnly!(immutable(Individual)[]);
+
+	ResultCode rc;
+	receive ((immutable(Individual)[] _individuals, ResultCode _rc) {individuals = _individuals; rc = _rc;});
+	if (rc != ResultCode.OK)
+	    throw new HTTPStatusException(HTTPStatus.unauthorized);
     }
 
 //	sw.stop();
@@ -225,7 +240,14 @@ Individual get_individual_(string ticket, string uri) {
     if (my_task !is Tid.init) {
         immutable(Individual)[] individual;
         send(io_task, Command.Get, Function.Individual, uri, ticket, my_task);
-        individual = receiveOnly!(immutable(Individual)[]);
+
+	ResultCode rc;
+	receive ((immutable(Individual)[] _individuals, ResultCode _rc) {individual = _individuals; rc = _rc;});
+	if (rc != ResultCode.OK)
+	    throw new HTTPStatusException(HTTPStatus.unauthorized);
+//        individual = receiveOnly!(immutable(Individual)[]);
+
+
         if (individual.length > 0) {
             result = cast(Individual)individual[ 0 ];
 		}
@@ -240,7 +262,13 @@ Json get_individual(string ticket, string uri) {
     
     immutable(Individual)[] individual;
     send(io_task, Command.Get, Function.Individual, uri, ticket, my_task);
-    individual = receiveOnly!(immutable(Individual)[]);
+//    individual = receiveOnly!(immutable(Individual)[]);
+	ResultCode rc;
+	receive ((immutable(Individual)[] _individuals, ResultCode _rc) {individual = _individuals; rc = _rc;});
+
+	if (rc != ResultCode.OK)
+	    throw new HTTPStatusException(HTTPStatus.unauthorized);
+
     
     if (individual.length == 0) return Json.init;
 	
