@@ -2,7 +2,7 @@
 
 "use strict";
 
-var veda = new (function () {
+var veda = new (function AppModel() {
 	var self = $.observable(this);
 	self._id = "veda";
 	self._name = "veda";
