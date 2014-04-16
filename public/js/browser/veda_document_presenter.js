@@ -4,13 +4,11 @@ veda.DocumentPresenter = function() { "use strict";
 	// Get or create Model
 	var doc = veda.document || veda.RegisterModule(new veda.DocumentModel(), veda, "document");
 
-	// Get Template
-	var template = $("#document-template").html();
-	
 	// Render View
+	var template = $("#document-template").html();
 	$("#main").html(template);
 
-	// listen browser events
+	// Listen View changes & update Model
 	$("#document #load").on("click", function(event) {
 		event.preventDefault();
 	});
@@ -18,7 +16,7 @@ veda.DocumentPresenter = function() { "use strict";
 		event.preventDefault();
 	});
 
-	// listen Model events
+	// Listen Model changes & update View
 	doc.on("loaded", function() {
 	});
 	doc.on("saved", function() {

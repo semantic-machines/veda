@@ -6,12 +6,13 @@ var veda = new (function AppModel() {
 	var self = $.observable(this);
 	self._id = "veda";
 	self._name = "veda";
-	self._path = undefined;
+	self._path = "/#";
 	self._parent = null;
 	self._register = function(new_module) { 
 		veda[new_module._name] = new_module;
 	};
 
+	// Define Model data setters & getters
 	var user_uri, ticket, end_time;
 	Object.defineProperty(self, "user_uri", {
 		get: function() { return user_uri; },
@@ -26,7 +27,8 @@ var veda = new (function AppModel() {
 		set: function(value) { if (compare(end_time, value)) return; end_time = value; self.trigger("set", "end_time", value); }
     });
 	if (typeof console != undefined) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
-	
+
+	// Define Model functions
 	self.login = function (username, password) {
 		var res = authenticate(username, password);
 		self.ticket = res.id;
@@ -37,8 +39,11 @@ var veda = new (function AppModel() {
 	self.logout = function() {
 		self.ticket = "";
 	};
+
+	// Define Model event handlers
 	self.on("login", function() { 
 		veda.RegisterModule( new veda.DocumentModel(self.user_uri), self, "user");
 	});
+
 	return self;
 })();

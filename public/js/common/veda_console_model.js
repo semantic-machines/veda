@@ -5,7 +5,7 @@
 veda.ConsoleModel = function() { 
 	var self = $.observable(this);
 
-	// Define setters & getters
+	// Define Model data setters & getters
 	var script, result, runat, time;
 	Object.defineProperty(self, "script", {
 		get: function() { return script; },
@@ -23,8 +23,9 @@ veda.ConsoleModel = function() {
 		get: function() { return time; },
 		set: function(value) { if (compare(time, value)) return; time = value; self.trigger("set", "time", value); }
     });
-	if (typeof console != undefined) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
+	if (typeof console != undefined) self.on("set", function(property, value) { console.log("property set:", property, "=", value) });
 
+	// Define Model functions
 	self.run = function() {
 		var start = new Date().getTime();
 		if (self.runat == "server") {
@@ -44,5 +45,8 @@ veda.ConsoleModel = function() {
 		self.runat = "";
 		self.time = "";
 	}
+
+	// Define Model event handlers
+
 	return self;
 };
