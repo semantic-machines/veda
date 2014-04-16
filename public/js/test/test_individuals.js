@@ -145,7 +145,8 @@ asyncTest(
 					'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
 			ok(ticket_user1.id != "");
 
-			admin_ticket = getCookie('ticket');
+			admin_ticket = authenticate("karpovr",
+					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
 
 			new_test_doc1_uri = guid();
 			new_test_doc1 = {
@@ -178,7 +179,8 @@ asyncTest(
 		});
 
 asyncTest("Individual store and read", function() {
-	ticket = getCookie('ticket');
+	ticket = authenticate("karpovr",
+					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
 	new_test_doc1_uri = guid();
 	new_test_doc1 = {
 		'@' : new_test_doc1_uri,
@@ -219,7 +221,8 @@ asyncTest("Individual store and read", function() {
 
 asyncTest("Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 		function() {
-			ticket = getCookie('ticket');
+			ticket = authenticate("karpovr",
+					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
 
 			permissionSubject = guid();
 			permissionObject = guid();
@@ -288,7 +291,8 @@ asyncTest("Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 asyncTest(
 		"Individual of [veda-schema:NoPermissionStatement] store 3 and read 3",
 		function() {
-			ticket = getCookie('ticket');
+			ticket = authenticate("karpovr",
+					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
 
 			permissionSubject = guid();
 			permissionObject = guid();
@@ -356,7 +360,8 @@ asyncTest(
 
 asyncTest("Individual of [veda-schema:Membership] store 3 and read 2",
 		function() {
-			ticket = getCookie('ticket');
+			ticket = authenticate("karpovr",
+					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
 
 			memberOf = guid();
 			resources = guid();
@@ -412,7 +417,8 @@ asyncTest("Individual of [veda-schema:Membership] store 3 and read 2",
 
 asyncTest("Individual of [veda-schema:NoMembership] store 3 and read 3",
 		function() {
-			ticket = getCookie('ticket');
+			ticket = authenticate("karpovr",
+					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
 
 			memberOf = guid();
 			resources = guid();
