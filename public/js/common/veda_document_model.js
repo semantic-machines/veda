@@ -2,7 +2,7 @@
 
 "use strict";
 
-function DocumentModel(uri) { 
+veda.DocumentModel = function(uri) {
 	var self = $.observable(this);
 
 	var individual = {};
@@ -10,16 +10,16 @@ function DocumentModel(uri) {
 		get: function() { return individual; },
 		set: function(value) { if (compare(individual, value)) return; individual = value; self.trigger("set", "individual", value); }
     });
-	if (console.log) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
+	if (typeof console != undefined) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
 		
 	self.load = function(uri) {
-		get_individual(app.ticket, uri, function(data) {
+		get_individual(veda.ticket, uri, function(data) {
 			self.individual = data;
 			self.trigger("loaded");
 		});
 	};
 	self.save = function() {
-		put_individual(app.ticket, self.individual, function(data) {
+		put_individual(veda.ticket, self.individual, function(data) {
 			self.trigger("saved");
 		});
 	};

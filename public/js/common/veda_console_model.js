@@ -2,7 +2,7 @@
 
 "use strict";
 
-function ConsoleModel() { 
+veda.ConsoleModel = function() { 
 	var self = $.observable(this);
 
 	// Define setters & getters
@@ -23,7 +23,7 @@ function ConsoleModel() {
 		get: function() { return time; },
 		set: function(value) { if (compare(time, value)) return; time = value; self.trigger("set", "time", value); }
     });
-	if (console.log) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
+	if (typeof console != undefined) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
 
 	self.run = function() {
 		var start = new Date().getTime();

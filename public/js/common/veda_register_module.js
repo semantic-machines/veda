@@ -2,7 +2,7 @@
 
 "use strict";
 
-function RegisterModule(module, parent, name) {
+veda.RegisterModule = function(module, parent, name) {
 	module._id = guid();
 	module._name = name || module._id;
 	module._path = parent ? parent._path + "." + module._name : module._name;

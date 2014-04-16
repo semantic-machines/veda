@@ -1,8 +1,8 @@
 // Document Presenter
 
-function DocumentPresenter() { "use strict";
+veda.DocumentPresenter = function() { "use strict";
 	// Get or create Model
-	var doc = app.document || RegisterModule(new DocumentModel(), app, "document");
+	var doc = veda.document || veda.RegisterModule(new veda.DocumentModel(), veda, "document");
 
 	// Get Template
 	var template = $("#document-template").html();

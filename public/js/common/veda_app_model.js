@@ -2,8 +2,15 @@
 
 "use strict";
 
-function VedaModel() {
+var veda = new (function () {
 	var self = $.observable(this);
+	self._id = "veda";
+	self._name = "veda";
+	self._path = undefined;
+	self._parent = null;
+	self._register = function(new_module) { 
+		veda[new_module._name] = new_module;
+	};
 
 	var user_uri, ticket, end_time;
 	Object.defineProperty(self, "user_uri", {
@@ -18,7 +25,7 @@ function VedaModel() {
 		get: function() { return end_time; },
 		set: function(value) { if (compare(end_time, value)) return; end_time = value; self.trigger("set", "end_time", value); }
     });
-	if (console.log) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
+	if (typeof console != undefined) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
 	
 	self.login = function (username, password) {
 		var res = authenticate(username, password);
@@ -31,7 +38,7 @@ function VedaModel() {
 		self.ticket = "";
 	};
 	self.on("login", function() { 
-		RegisterModule( new DocumentModel(self.user_uri), self, "user");
+		veda.RegisterModule( new veda.DocumentModel(self.user_uri), self, "user");
 	});
 	return self;
-};
+})();

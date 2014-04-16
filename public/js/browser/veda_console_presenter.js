@@ -1,8 +1,8 @@
 // Console Presenter
 
-function ConsolePresenter() { "use strict";
+veda.ConsolePresenter = function() { "use strict";
 	// Get or create Model
-	var cons = app.console || RegisterModule(new ConsoleModel(), app, "console");
+	var cons = veda.console || veda.RegisterModule(new veda.ConsoleModel(), veda, "console");
 
 	// Get View
 	var template = $("#console-template").html();
