@@ -28,3 +28,9 @@ function sleep(usec) {
 	var endtime= new Date().getTime() + usec;
     while (new Date().getTime() < endtime);
 }
+
+var ticket_manager             = 0;
+var subject_manager 	       = 1;
+var acl_manager                = 2;
+var fulltext_indexer           = 4;
+var condition                  = 6;

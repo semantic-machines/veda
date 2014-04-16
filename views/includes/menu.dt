@@ -17,7 +17,7 @@ nav.navbar.navbar-inverse(role="navigation")
 			li
 				a(href="/search/", title="Search") Поиск / Search
 			li
-				a(href="/tests", title="Search") Тесты / Tests
+				a(href="/qunit.html", title="Search") Тесты / Tests
 
 		a.btn.btn-xs.btn-danger.navbar-btn.navbar-right(href="/logout")
 			i.glyphicon.glyphicon-log-out

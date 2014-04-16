@@ -61,8 +61,8 @@ asyncTest(
 			};
 
 			put_individual(ticket_user1.id, new_test_doc1);
-			wait_pmodule(6);// TODO ? WTF
-			wait_pmodule(2);// TODO ? WTF
+			wait_pmodule(condition);
+			wait_pmodule(acl_manager);
 
 			read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
@@ -101,8 +101,8 @@ asyncTest(
 			};
 
 			put_individual(ticket_user1.id, new_test_doc1);
-			wait_pmodule(6);
-			wait_pmodule(2);
+			wait_pmodule(condition);
+			wait_pmodule(acl_manager);
 
 			read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual) == false);
@@ -166,8 +166,8 @@ asyncTest(
 			};
 
 			put_individual(ticket_user1.id, new_test_doc1);
-			wait_pmodule(6);
-			wait_pmodule(2);
+			wait_pmodule(condition);
+			wait_pmodule(acl_manager);
 
 			read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
 
@@ -211,7 +211,7 @@ asyncTest("Individual store and read", function() {
 	};
 
 	put_individual(ticket, new_test_doc1);
-	wait_pmodule(1);
+	wait_pmodule(subject_manager);
 
 	read_individual = get_individual(ticket, new_test_doc1_uri);
 
@@ -257,7 +257,7 @@ asyncTest("Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 			};
 
 			put_individual(ticket, new_test_doc1);
-			wait_pmodule(1);
+			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
@@ -269,7 +269,7 @@ asyncTest("Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 				data : 'false',
 				type : 'String'
 			} ], put_individual(ticket, new_test_doc2);
-			wait_pmodule(1);
+			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket, new_test_doc2_uri);
 			ok(compare(new_test_doc2, read_individual));
@@ -281,7 +281,7 @@ asyncTest("Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 				data : 'true',
 				type : 'String'
 			} ], put_individual(ticket, new_test_doc3);
-			wait_pmodule(1);
+			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket, new_test_doc3_uri);
 			ok((read_individual['@'] == new_test_doc3_uri) == false);
@@ -327,7 +327,7 @@ asyncTest(
 			};
 
 			put_individual(ticket, new_test_doc1);
-			wait_pmodule(1);
+			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
@@ -339,7 +339,7 @@ asyncTest(
 				data : 'false',
 				type : 'String'
 			} ], put_individual(ticket, new_test_doc2);
-			wait_pmodule(1);
+			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket, new_test_doc2_uri);
 			ok(compare(new_test_doc2, read_individual));
@@ -351,7 +351,7 @@ asyncTest(
 				data : 'true',
 				type : 'String'
 			} ], put_individual(ticket, new_test_doc3);
-			wait_pmodule(1);
+			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket, new_test_doc3_uri);
 			ok((read_individual['@'] == new_test_doc3_uri) == true);
@@ -384,7 +384,7 @@ asyncTest("Individual of [veda-schema:Membership] store 3 and read 2",
 			};
 
 			put_individual(ticket, new_test_doc1);
-			wait_pmodule(1);
+			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
@@ -396,7 +396,7 @@ asyncTest("Individual of [veda-schema:Membership] store 3 and read 2",
 				data : guid(),
 				type : 'Uri'
 			} ], put_individual(ticket, new_test_doc2);
-			wait_pmodule(1);
+			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket, new_test_doc2_uri);
 			ok(compare(new_test_doc2, read_individual));
@@ -408,7 +408,7 @@ asyncTest("Individual of [veda-schema:Membership] store 3 and read 2",
 				data : memberOf,
 				type : 'Uri'
 			} ], put_individual(ticket, new_test_doc3);
-			wait_pmodule(1);
+			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket, new_test_doc3_uri);
 			ok((read_individual['@'] == new_test_doc3_uri) == false);
@@ -441,7 +441,7 @@ asyncTest("Individual of [veda-schema:NoMembership] store 3 and read 3",
 			};
 
 			put_individual(ticket, new_test_doc1);
-			wait_pmodule(1);
+			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
@@ -453,7 +453,7 @@ asyncTest("Individual of [veda-schema:NoMembership] store 3 and read 3",
 				data : guid(),
 				type : 'Uri'
 			} ], put_individual(ticket, new_test_doc2);
-			wait_pmodule(1);
+			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket, new_test_doc2_uri);
 			ok(compare(new_test_doc2, read_individual));
@@ -465,7 +465,7 @@ asyncTest("Individual of [veda-schema:NoMembership] store 3 and read 3",
 				data : memberOf,
 				type : 'Uri'
 			} ], put_individual(ticket, new_test_doc3);
-			wait_pmodule(1);
+			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket, new_test_doc3_uri);
 			ok((read_individual['@'] == new_test_doc3_uri) == true);
