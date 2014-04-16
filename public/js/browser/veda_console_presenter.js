@@ -2,16 +2,16 @@
 
 function ConsolePresenter() { "use strict";
 	// Get or create Model
-	var cons = app.console || RegisterModule(Model(new ConsoleModel()), app, "console");
+	var cons = app.console || RegisterModule(new ConsoleModel(), app, "console");
 
 	// Get View
 	var template = $("#console-template").html();
-	var rendered = $.render(template, cons._properties);
+	var rendered = $.render(template, cons);
 	$("#main").html( rendered );
 	
 	// Bind UI changes to Model
 	$("#console [bound]").on("change", function() {
-		cons[this.id]($(this).val());
+		cons[this.id] = $(this).val();
 	});
 
 	// Listen Model events

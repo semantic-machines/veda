@@ -3,7 +3,7 @@
 function VedaPresenter(hash) { "use strict";
 
 	// Get or create the application Model
-	window.app = window.app || RegisterModule( Model( new VedaModel() ), window.app, "veda" );
+	window.app = window.app || RegisterModule( new VedaModel(), window.app, "veda" );
 
 	// Listen to a link click and call router
 	$("body").on("click", "[href^='#/']", function(e) {
@@ -19,8 +19,8 @@ function VedaPresenter(hash) { "use strict";
 		var params = hash_tokens.slice(1);
 		page == "console" 	? 	ConsolePresenter(params) : 
 		page == "document"	? 	DocumentPresenter(params) :
-		page == "search"		? 	SearchPresenter(params) : 
-										ConsolePresenter(params); // Default Presenter
+		page == "search"	? 	SearchPresenter(params) : 
+								ConsolePresenter(params); // Default Presenter
 	});
 
 	// Call router for current browser location hash

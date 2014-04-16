@@ -1,16 +1,27 @@
-// veda_document Model
-;(function (app) { "use strict";
-	var self = $.observable({});
-	self.name = "document";
-	
+// Document Model
+
+"use strict";
+
+function DocumentModel(uri) { 
+	var self = $.observable(this);
 	self.individual = {};
-	
 	self.load = function(uri) {
-		self.individual = get_individual(app.ticket, uri);
+		get_individual(app.ticket(), uri, function(data) {
+			self.individual(data);
+			self.trigger("loaded");
+		});
 	};
 	self.save = function() {
-		put_individual(app.ticket, self.individual);
+		put_individual(app.ticket(), self.individual(), function(data) {
+			self.trigger("saved");
+		});
 	};
-	
-	app.on("ready", app.register(self));
-})(app);
+	self.on("loaded", function() { 
+		console.log("document loaded: ", self.individual());
+	});
+	self.on("saved", function() { 
+		console.log("document saved: ", self.individual());
+	});
+	if (uri) self.load(uri);
+	return self;
+};

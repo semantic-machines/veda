@@ -1,31 +1,28 @@
-// veda_console Model
-;(function console(app) { "use strict";
-	var self = $.observable({});
-	self.name = "console";
+// Console Model
 
-	self.script = self.runat = self.result = self.output = "";
-	self.start = self.stop = 0;
+"use strict";
+
+function ConsoleModel() { 
+	var self = $.observable(this);
+	self.script = self.result = self.runat = self.time = "";
 	self.run = function() {
-		self.trigger("run");
-		if (self.runat == "server") {
-			execute_script(self.script, function(res) {
-				self.result = res[0];
-				self.output = res[1];
-				self.trigger("done");
+		var start = new Date().getTime();
+		if (self.runat() == "server") {
+			execute_script(self.script(), function(res) {
+				self.result(res[0]);
+				self.time(new Date().getTime() - start);
 			});
 		} else {
-			var res = eval(self.script);
-			self.result = res;
-			self.output = "";
-			self.trigger("done");
+			var res = eval(self.script());
+			self.result(res);
+			self.time(new Date().getTime() - start);
 		}
 	}
-	self.on("run", function() {
-		self.start = new Date().getTime();
-	});
-	self.on("done", function() {
-		self.stop = new Date().getTime();
-	});
-
-	app.on("ready", app.register(self));
-})(app);
+	self.reset = function() {
+		self.script("");
+		self.result("");
+		self.runat("");
+		self.time("");
+	}
+	return self;
+};
