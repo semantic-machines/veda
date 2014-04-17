@@ -1,7 +1,7 @@
 module('Individuals', {});
 
 test(
-		"Login",
+		"#001 Login",
 		function() {
 			ticket = authenticate("karpovr",
 					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
@@ -9,7 +9,7 @@ test(
 		});
 
 asyncTest(
-		"Get individual 'owl:'",
+		"#002 Get individual 'owl:'",
 		function() {
 			ticket = authenticate("karpovr",
 					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
@@ -21,7 +21,7 @@ asyncTest(
 		});
 
 asyncTest(
-		"Query '@' == 'owl:' ++ Get individual 'owl:'",
+		"#003 Query '@' == 'owl:' ++ Get individual 'owl:'",
 		function() {
 			ticket = authenticate("karpovr",
 					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
@@ -33,7 +33,7 @@ asyncTest(
 		});
 
 asyncTest(
-		"Individual store user1 and no read user2",
+		"#004 Individual store user1 and no read user2",
 		function() {
 			ticket_user1 = authenticate('bushenevv',
 					'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
@@ -73,7 +73,7 @@ asyncTest(
 		});
 
 asyncTest(
-		"Individual store user1, add right and read user2",
+		"#005 Individual store user1, add right and read user2",
 		function() {
 			ticket_user1 = authenticate('bushenevv',
 					'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
@@ -138,7 +138,7 @@ asyncTest(
 		});
 
 asyncTest(
-		"Individual store user1 and read admin",
+		"#006 Individual store user1 and read admin",
 		function() {
 
 			ticket_user1 = authenticate('bushenevv',
@@ -178,7 +178,7 @@ asyncTest(
 			start();
 		});
 
-asyncTest("Individual store and read", function() {
+asyncTest("#007 Individual store and read", function() {
 	ticket = authenticate("karpovr",
 					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
 	new_test_doc1_uri = guid();
@@ -219,7 +219,7 @@ asyncTest("Individual store and read", function() {
 	start();
 });
 
-asyncTest("Individual of [veda-schema:PermissionStatement] store 3 and read 2",
+asyncTest("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 		function() {
 			ticket = authenticate("karpovr",
 					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
@@ -289,7 +289,7 @@ asyncTest("Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 		});
 
 asyncTest(
-		"Individual of [veda-schema:NoPermissionStatement] store 3 and read 3",
+		"#009 Individual of [veda-schema:NoPermissionStatement] store 3 and read 3",
 		function() {
 			ticket = authenticate("karpovr",
 					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
@@ -358,7 +358,7 @@ asyncTest(
 			start();
 		});
 
-asyncTest("Individual of [veda-schema:Membership] store 3 and read 2",
+asyncTest("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 		function() {
 			ticket = authenticate("karpovr",
 					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
@@ -415,7 +415,7 @@ asyncTest("Individual of [veda-schema:Membership] store 3 and read 2",
 			start();
 		});
 
-asyncTest("Individual of [veda-schema:NoMembership] store 3 and read 3",
+asyncTest("#011 Individual of [veda-schema:NoMembership] store 3 and read 3",
 		function() {
 			ticket = authenticate("karpovr",
 					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
