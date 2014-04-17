@@ -8,31 +8,25 @@ test(
 			ok(ticket.length > 0);
 		});
 
-asyncTest(
+test(
 		"#002 Get individual 'owl:'",
 		function() {
 			ticket = authenticate("karpovr",
 					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
-			get_individual(ticket, "owl:", function(data) {
-				ok(data["@"] == "owl:");
-				start();
-			});
-
+			data = get_individual(ticket, "owl:");
+			ok(data["@"] == "owl:");
 		});
 
-asyncTest(
+test(
 		"#003 Query '@' == 'owl:' ++ Get individual 'owl:'",
 		function() {
 			ticket = authenticate("karpovr",
 					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
-			query(ticket, "owl:", function(data) {
-				ok(data.indexOf("owl:") >= 0);
-				start();
-			});
-
+			data = query(ticket, "owl:");
+			ok(data.indexOf("owl:") >= 0);
 		});
 
-asyncTest(
+test(
 		"#004 Individual store user1 and no read user2",
 		function() {
 			ticket_user1 = authenticate('bushenevv',
@@ -69,10 +63,10 @@ asyncTest(
 
 			read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual) == false);
-			start();
+			
 		});
 
-asyncTest(
+test(
 		"#005 Individual store user1, add right and read user2",
 		function() {
 			ticket_user1 = authenticate('bushenevv',
@@ -134,10 +128,10 @@ asyncTest(
 
 			read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
-			start();
+			
 		});
 
-asyncTest(
+test(
 		"#006 Individual store user1 and read admin",
 		function() {
 
@@ -175,11 +169,11 @@ asyncTest(
 
 			read_individual = get_individual(admin_ticket, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
-			start();
+			
 		});
 
-asyncTest("#007 Individual store and read", function() {
-	ticket = authenticate("karpovr",
+test("#007 Individual store and read", function() {
+	ticket = authenticate('bushenevv',
 					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
 	new_test_doc1_uri = guid();
 	new_test_doc1 = {
@@ -216,10 +210,10 @@ asyncTest("#007 Individual store and read", function() {
 	read_individual = get_individual(ticket, new_test_doc1_uri);
 
 	ok(compare(new_test_doc1, read_individual));
-	start();
+	
 });
 
-asyncTest("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2",
+test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 		function() {
 			ticket = authenticate("karpovr",
 					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
@@ -285,10 +279,10 @@ asyncTest("#008 Individual of [veda-schema:PermissionStatement] store 3 and read
 
 			read_individual = get_individual(ticket, new_test_doc3_uri);
 			ok((read_individual['@'] == new_test_doc3_uri) == false);
-			start();
+			
 		});
 
-asyncTest(
+test(
 		"#009 Individual of [veda-schema:NoPermissionStatement] store 3 and read 3",
 		function() {
 			ticket = authenticate("karpovr",
@@ -355,10 +349,10 @@ asyncTest(
 
 			read_individual = get_individual(ticket, new_test_doc3_uri);
 			ok((read_individual['@'] == new_test_doc3_uri) == true);
-			start();
+			
 		});
 
-asyncTest("#010 Individual of [veda-schema:Membership] store 3 and read 2",
+test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 		function() {
 			ticket = authenticate("karpovr",
 					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
@@ -412,10 +406,10 @@ asyncTest("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 
 			read_individual = get_individual(ticket, new_test_doc3_uri);
 			ok((read_individual['@'] == new_test_doc3_uri) == false);
-			start();
+			
 		});
 
-asyncTest("#011 Individual of [veda-schema:NoMembership] store 3 and read 3",
+	test("#011 Individual of [veda-schema:NoMembership] store 3 and read 3",
 		function() {
 			ticket = authenticate("karpovr",
 					"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3").id;
@@ -469,5 +463,5 @@ asyncTest("#011 Individual of [veda-schema:NoMembership] store 3 and read 3",
 
 			read_individual = get_individual(ticket, new_test_doc3_uri);
 			ok((read_individual['@'] == new_test_doc3_uri) == true);
-			start();
+			
 		});
