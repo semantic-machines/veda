@@ -63,11 +63,12 @@
 		<script src="/js/browser/jquery.js"></script>
 		<script src="/js/browser/bootstrap.min.js"></script>
 		<script src="/js/browser/cookie.js"></script>
+		<script src="/js/browser/sha256.js"></script>
 
 		<!-- Veda browser & server -->
 		<script src="/js/common/riot.js"></script>
 		<script src="/js/common/util.js"></script>
-		<script src="/js/common/veda_app_model.js"></script>
+		<script src="/js/common/veda_model.js"></script>
 		<script src="/js/common/veda_console_model.js"></script>
 		<script src="/js/common/veda_document_model.js"></script>
 		<script src="/js/common/veda_register_module.js"></script>
@@ -80,11 +81,33 @@
 
 		<script type="text/javascript">
 			$(function(){
-				veda.AppPresenter( location.hash );
+				veda.VedaPresenter( location.hash );
 			});
 		</script>
 
 		<!-- Templates -->
+
+		<!-- Login -->
+		<script type="html/template" id="login-template">
+			<div class="container-fluid" id="login-form">
+				<div class="row">
+					<div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+						<h1>Представьтесь <span class="text-muted">/ Login</span></h1>
+						<form role="form" id="credentials">
+							<div class="form-group">
+								<label for="login">Логин / Login</label>
+								<input id="login" required="required" type="text" placeholder="Введите логин / Enter login" name="login" class="form-control"/>
+							</div>
+							<div class="form-group">
+								<label for="password">Пароль / Password</label>
+								<input id="password" required="required" type="password" placeholder="Введите пароль / Enter password" name="password" autofocus="autofocus" class="form-control"/>
+							</div>
+							<button type="submit" id="submit" class="btn btn-primary">Войти / Enter</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</script>
 
 		<!-- Console template -->
 		<script type="html/template" id="console-template">

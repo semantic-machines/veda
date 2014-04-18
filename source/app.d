@@ -165,12 +165,12 @@ shared static this()
 
 	auto router = new URLRouter;
 	router.get("*", serveStaticFiles("public"));
+	router.get("/", serveStaticFile("public/index.html"));
 	router.get("/logout", &logout);
 	registerRestInterface(router, new VedaStorageRest());
 
 	router.any("*", &login);
 	//router.get("/", &index);
-	router.get("/", serveStaticFile("public/index.html"));
 	router.get("/tests", serveStaticFile("public/tests.html"));
 	router.get("/view_classes", &view_classes);
 	router.get("/view_classes/", &view_classes);

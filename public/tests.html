@@ -7,18 +7,11 @@
 		<meta name="description" content=""/>
 		<meta name="author" content=""/>
 		<link href="/css/veda.min.css" rel="stylesheet"/>
-		<style> 
-			.pass:before { 
-				content: "PASS: "; 
-				color:  green; 
-				font-weight: bold; 
-			} 
-			.fail:before { 
-				content: "FAIL: "; 
-				color: red; 
-				font-weight: bold; 
-			} 
-		</style> 
+		<link rel="stylesheet" href="./css/qunit.css">
+		<!-- 
+		<link rel="stylesheet" href="./css/qunit-coverage.css">
+		-->
+		
 		<!-- Do not cache tests page -->
 		<meta http-equiv="pragma" content="no-cache" />
 		<meta http-equiv="cache-control" content="no-cache" />
@@ -58,11 +51,17 @@
 				</div>
 			</div>
 		</nav>
-		
-		<div class="container-fluid" id="tests">
-			<br />
-			<ul id="output"></ol>
-		</div>
+
+        <!--h1 id="qunit-header">Veda QA</h1>
+        <h2 id="qunit-banner"></h2-->
+        <div id="qunit-testrunner-toolbar">
+        </div>
+        <h2 id="qunit-userAgent"></h2>
+        <ol id="qunit-tests">
+        </ol>
+        <div id="qunit-fixture">
+            <div id="container"></div>
+        </div>        
 
 		<br />
 		<nav style="min-height:20px;" class="navbar navbar-fixed-bottom" id="copyright">
@@ -89,334 +88,18 @@
 		<!-- Veda browser only -->
 		<script src="/js/browser/veda_backend.js"></script>
 		
-		<script> 
-			var output = document.getElementById("output"); 
-			function assert( outcome, description ) { 
-				var li = document.createElement("li"); 
-				li.className = outcome ? "pass" : "fail"; 
-				li.appendChild( document.createTextNode( description ) ); 
-
-				output.appendChild(li); 
-			}; 
-		</script>
-
-		<!-- TESTS -->
-
+		<!-- QUNIT tests -->
+		<script src="./js/test/qunit.js"></script>
+		<script src="./js/test/qunit-reporter-junit.js"></script>
+		<!-- 
+		<script src="./js/test/qunit-coverage.js"></script>
+		<script src="./js/test/qunit-jstestdriver.js"></script>
+		-->
+		<script src="./js/test/test_individuals.js"></script>
 		<script>
-			(function() { var description = "1. Get individual 'owl:'";
-			
-				var ticket = getCookie("ticket");
-				get_individual(ticket, "owl:", function(data){
-					assert (
-						data["@"] == "owl:"
-					,description);
-				});
-
-			})();
-		</script>
-
-		<script>
-			(function() { var description = "2. Query '@' == 'owl:' ++ Get individual 'owl:'";
-			
-				var ticket = getCookie('ticket');
-				query(ticket, "owl:", function(data){
-					assert (
-						data.indexOf("owl:") >= 0
-					,description);
-				});
-
-			})();
-		</script>
-
-		<script>
-			(function() { var description = "3. Individual store user1 and no read user2";
-		
-				var ticket_user1 = authenticate('bushenevv', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
-				if (ticket_user1.id == "")
-				{
-				    assert (false, description + " #1");
-				    return;	
-				}	
-
-				var ticket_user2 = authenticate('BychinA', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
-				if (ticket_user2.id == "")
-				{
-				    assert (false, description + " #2");
-				    return;	
-				}	
-
-				var new_test_doc1_uri = "test3:" + guid ();
-				var new_test_doc1 =
-				  {
-				     '@' : new_test_doc1_uri,
-				     'rdf:type' : [{data: 'veda-schema:document', type : 'Uri'}],
-				     'veda-schema:author' : [{data: 'mondi-data:ValeriyBushenev-Programmer1', type : 'Uri'}],
-				     'veda-schema:test_field'  : [{data:  'test data', type : 'String'}]
-				  };
-
-				put_individual(ticket_user1.id, new_test_doc1); //
-				wait_pmodule (6);
-				wait_pmodule (2);
-
-				var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);	    
-				if (compare (new_test_doc1, read_individual) == false)
-				{	
-				    assert (false, description + " #3");
-				    return;	
-				}	
-
-				read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);	    
-				assert (compare (new_test_doc1, read_individual) == false, description);
-				     	
-			})();
-		</script>
-
-		<script>
-			(function() { var description = "4. Individual store user1, add right and read user2";
-		
-				var ticket_user1 = authenticate('bushenevv', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
-				if (ticket_user1.id == "")
-				{
-				    assert (false, description + " #1");
-				    return;	
-				}	
-
-				var ticket_user2 = authenticate('BychinA', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
-				if (ticket_user2.id == "")
-				{
-				    assert (false, description + " #2");
-				    return;	
-				}	
-
-				var new_test_doc1_uri = guid ();
-				var new_test_doc1 =
-				  {
-				     '@' : new_test_doc1_uri,
-				     'rdf:type' : [{data: 'veda-schema:document', type : 'Uri'}],
-				     'veda-schema:author' : [{data: 'mondi-data:ValeriyBushenev-Programmer1', type : 'Uri'}],
-				     'veda-schema:test_field'  : [{data:  'test data', type : 'String'}]
-				  };
-
-				put_individual(ticket_user1.id, new_test_doc1); //
-				wait_pmodule (6);
-				wait_pmodule (2);
-
-				var read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);	    
-				if (compare (new_test_doc1, read_individual) == true)
-				{
-				    assert (false, description + " #3");
-				    return;	
-				}	
-
-				read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);	    
-				if (compare (new_test_doc1, read_individual) == false)
-				{
-				    assert (false, description + " #4");
-				    return;	
-				}	
-
-                                var new_permission =
-                                  {
-                                     '@' : guid (),
-                                     'rdf:type' : [{data: 'veda-schema:PermissionStatement', type : 'Uri'}],
-                                     'veda-schema:canRead' : [{data: 'true', type : 'String'}],
-                                     'veda-schema:permissionObject' : [{data: new_test_doc1_uri, type : 'Uri'}],
-                                     'veda-schema:permissionSubject'  : [{data:  ticket_user2.user_uri, type : 'Uri'}]
-                                  };
-                                put_individual(ticket_user1.id, new_permission); //
-				wait_pmodule (2);
-
-				var read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);	    
-				assert (compare (new_test_doc1, read_individual), description);
-				     	
-			})();
-		</script>
-
-		<script>
-			(function() { var description = "5. Individual store user1 and read admin";
-		
-				var ticket_user1 = authenticate('bushenevv', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
-				if (ticket_user1.id == "")
-				{
-				    assert (false, description + " #1");
-				    return;	
-				}	
-
-				var admin_ticket = getCookie('ticket');
-
-				var new_test_doc1_uri = guid ();
-				var new_test_doc1 =
-				  {
-				     '@' : new_test_doc1_uri,
-				     'rdf:type' : [{data: 'veda-schema:document', type : 'Uri'}],
-				     'veda-schema:author' : [{data: 'mondi-data:ValeriyBushenev-Programmer1', type : 'Uri'}],
-				     'veda-schema:test_field'  : [{data:  'test data', type : 'String'}]
-				  };
-
-				put_individual(ticket_user1.id, new_test_doc1); //
-				wait_pmodule (6);
-				wait_pmodule (2);
-
-				var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);	    
-			    
-				if (compare (new_test_doc1, read_individual) == false)
-				{
-				    assert (false, description + " #2");
-				    return;	
-				}	
-
-				read_individual = get_individual(admin_ticket, new_test_doc1_uri);	    
-				assert (compare (new_test_doc1, read_individual), description);
-				     	
-			})();
-		</script>
-
-
-		<script>
-			(function() { var description = "6. Individual store and read";
-		
-				var ticket = getCookie('ticket');
-				var new_test_doc1_uri = guid ();
-				var new_test_doc1 =
-				  {
-				     '@' : new_test_doc1_uri,
-				     'rdf:type' : [{data: 'veda-schema:PermissionStatement1', type : 'Uri'}],
-				     'veda-schema:canDelete' : [{data: 'true', type : 'String'}],
-				     'veda-schema:canRead' : [{data: 'true', type : 'String'}],
-				     'veda-schema:canUpdate' : [{data: 'true', type : 'String'}],
-				     'veda-schema:permissionObject' : [{data: 'individual_1', type : 'Uri'}],
-				     'veda-schema:permissionSubject'  : [{data:  'individual_2', type : 'Uri'}]
-				  };
-
-				put_individual(ticket, new_test_doc1);
-				wait_pmodule (1);
-
-				var read_individual = get_individual(ticket, new_test_doc1_uri);
-
-				assert (compare (new_test_doc1, read_individual), description); 	
-			})();
-		</script>
-
-		<script>
-			function test11(type, description, passed) { 
-				var ticket = getCookie('ticket');
-				
-				var permissionSubject = guid ();
-				var permissionObject = guid ();
-
-				var new_test_doc1_uri = guid ();
-				var new_test_doc1 =
-				  {
-				     '@' : new_test_doc1_uri,
-				     'rdf:type' : [{data: type, type : 'Uri'}],
-				     'veda-schema:canDelete' : [{data: 'true', type : 'String'}],
-				     'veda-schema:canRead' : [{data: 'true', type : 'String'}],
-				     'veda-schema:canUpdate' : [{data: 'true', type : 'String'}],
-				     'veda-schema:permissionObject' : [{data: permissionObject, type : 'Uri'}],
-				     'veda-schema:permissionSubject'  : [{data: permissionSubject, type : 'Uri'}]
-				  };
-
-				put_individual(ticket, new_test_doc1);
-				wait_pmodule (1);
-
-				var read_individual = get_individual(ticket, new_test_doc1_uri);
-				if (compare (new_test_doc1, read_individual) == false)
-				{
-				 	assert (false, description + " : #1");				
-				    return;	
-				}	
-				
-				var new_test_doc2 = new_test_doc1;
-				new_test_doc2_uri = guid ();
-				new_test_doc2['@'] = new_test_doc2_uri;
-			     	new_test_doc2['veda-schema:canRead'] = [{data: 'false', type : 'String'}],
-				put_individual(ticket, new_test_doc2);
-				wait_pmodule (1);
-
-				read_individual = get_individual(ticket, new_test_doc2_uri);
-				if (compare (new_test_doc2, read_individual) == false)
-				{
-				 	assert (false, description + " : #2");				
-				    return;	
-				}	
-					
-				var new_test_doc3 = new_test_doc2;
-				new_test_doc3_uri = guid ();
-				new_test_doc3['@'] = new_test_doc3_uri;
-			     	new_test_doc3['veda-schema:canRead'] = [{data: 'true', type : 'String'}],
-				put_individual(ticket, new_test_doc3);
-				wait_pmodule (1);
-
-				read_individual = get_individual(ticket, new_test_doc3_uri);
-				assert (((read_individual['@'] == new_test_doc3_uri) == passed), description);
+			QUnit.jUnitReport = function(report) {
+			    console.log(report.xml);
 			};
-
-			(function() { 
-				test11 ("veda-schema:PermissionStatement", "7. Individual of [veda-schema:PermissionStatement] store 3 and read 2", false);
-				test11 ("veda-schema:NoPermissionStatement", "8. Individual of [veda-schema:NoPermissionStatement] store 3 and read 3", true);
-			})();
-		    
-
 		</script>
-
-		<script>
-			function test12(type, description, passed) { 
-				var ticket = getCookie('ticket');
-				
-				var memberOf = guid ();
-				var resources = guid ();
-
-				var new_test_doc1_uri = guid ();
-				var new_test_doc1 =
-				  {
-				     '@' : new_test_doc1_uri,
-				     'rdf:type' : [{data: type, type : 'Uri'}],
-				     'veda-schema:memberOf' : [{data: memberOf, type : 'Uri'}],
-				     'veda-schema:resource'  : [{data: resources, type : 'Uri'}]
-				  };
-
-				put_individual(ticket, new_test_doc1);
-				wait_pmodule (1);
-
-				var read_individual = get_individual(ticket, new_test_doc1_uri);
-				if (compare (new_test_doc1, read_individual) == false)
-				{
-				 	assert (false, description + " : #1");				
-				    return;	
-				}	
-				
-				var new_test_doc2 = new_test_doc1;
-				new_test_doc2_uri = guid ();
-				new_test_doc2['@'] = new_test_doc2_uri;
-			        new_test_doc2['veda-schema:memberOf'] = [{data: guid (), type : 'Uri'}],
-				put_individual(ticket, new_test_doc2);
-				wait_pmodule (1);
-
-				read_individual = get_individual(ticket, new_test_doc2_uri);
-				if (compare (new_test_doc2, read_individual) == false)
-				{
-				 	assert (false, description + " : #2");				
-				    return;	
-				}	
-					
-				var new_test_doc3 = new_test_doc2;
-				new_test_doc3_uri = guid ();
-				new_test_doc3['@'] = new_test_doc3_uri;
-			        new_test_doc3['veda-schema:memberOf'] = [{data: memberOf, type : 'Uri'}],
-				put_individual(ticket, new_test_doc3);
-				wait_pmodule (1);
-
-				read_individual = get_individual(ticket, new_test_doc3_uri);
-				assert (((read_individual['@'] == new_test_doc3_uri) == passed), description);
-			};
-
-			(function() { 
-				test12 ("veda-schema:Membership", "9. Individual of [veda-schema:Membership] store 3 and read 2", false);
-				test12 ("veda-schema:NoMembership", "10. Individual of [veda-schema:NoMembership] store 3 and read 3", true);
-			})();
-		    
-
-		</script>
-
 	</body>
 </html>

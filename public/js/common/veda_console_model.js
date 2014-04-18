@@ -2,9 +2,9 @@
 
 "use strict";
 
-veda.ConsoleModel = function() { 
+Veda.prototype.ConsoleModel = function ConsoleModel() { 
 	var self = $.observable(this);
-
+	
 	// Define Model data setters & getters
 	var script, result, runat, time;
 	Object.defineProperty(self, "script", {
@@ -47,6 +47,5 @@ veda.ConsoleModel = function() {
 	}
 
 	// Define Model event handlers
-
 	return self;
 };

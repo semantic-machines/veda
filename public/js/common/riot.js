@@ -88,7 +88,8 @@ var currentHash,
 
 function pop(hash) {
   hash = hash.type ? location.hash : hash;
-  if (hash != currentHash) pops.trigger("pop", hash);
+  // ( KarpovR ) Do not compare currentHash with hash so the pop is always triggered
+  /*if (hash != currentHash)*/ pops.trigger("pop", hash);
   currentHash = hash;
 }
 

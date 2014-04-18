@@ -1,6 +1,6 @@
 // Console Presenter
 
-veda.ConsolePresenter = function() { "use strict";
+Veda.prototype.ConsolePresenter = function ConsolePresenter() { "use strict";
 	// Get or create Model
 	var cons = veda.console || veda.RegisterModule(new veda.ConsoleModel(), veda, "console");
 

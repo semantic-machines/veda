@@ -1,6 +1,6 @@
 // Document Presenter
 
-veda.DocumentPresenter = function() { "use strict";
+Veda.prototype.DocumentPresenter = function DocumentPresenter() { "use strict";
 	// Get or create Model
 	var doc = veda.document || veda.RegisterModule(new veda.DocumentModel(), veda, "document");
 

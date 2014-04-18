@@ -2,7 +2,7 @@
 
 "use strict";
 
-veda.DocumentModel = function(uri) {
+Veda.prototype.DocumentModel = function DocumentModel(uri) {
 	var self = $.observable(this);
 
 	// Define Model data setters & getters
