@@ -1,9 +1,7 @@
 // Veda application Presenter
 
-veda(function VedaPresenter(app) { "use strict";
+Veda.prototype.VedaPresenter = function VedaPresenter(hash) { "use strict";
 
-	app.on("ready", function () {
-	
 	// Router function to call appropriate Presenter
 	riot.route(function(hash) {
 		var hash_tokens = hash.slice(2).split("/");
@@ -20,10 +18,10 @@ veda(function VedaPresenter(app) { "use strict";
 				riot.route(hash);
 			});
 		} else {
-			page == "console" 	? 	app.trigger("load:console") : 
-			page == "document"	? 	app.trigger("load:document") :
-			page == "search"	? 	app.trigger("load:search") : 
-									app.trigger("load:console"); // Default Presenter
+			page == "console" 	? 	app.ConsolePresenter(params) : 
+			page == "document"	? 	app.DocumentPresenter(params) :
+			page == "search"	? 	app.SearchPresenter(params) : 
+									app.ConsolePresenter(params); // Default Presenter
 		}
 	});
 
@@ -35,14 +33,13 @@ veda(function VedaPresenter(app) { "use strict";
 	});
 
 	// Listem to Model events
-	app.on("authenticate", function (ticket, end_time) {
+	veda.on("authenticate", function (ticket, end_time) {
 		setCookie("ticket", ticket, {path: "/", expires: end_time});
 	});
-	app.on("quit", function () {
+	veda.on("quit", function () {
 		deleteCookie("ticket");
 	});
 
 	// Call router for current browser location hash
 	riot.route(location.hash);
-	});
-});
+};

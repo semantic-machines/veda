@@ -2,9 +2,20 @@
 
 "use strict";
 
-function Veda(config) {
+var veda = new Veda();
+
+function Veda() {
 	var self = riot.observable(this);
 	
+	self._ = guid();
+	self._id = "veda";
+	self._name = "veda";
+	self._path = "/#";
+	self._parent = null;
+	self._register = function(new_module) { 
+		veda[new_module._name] = new_module;
+	};
+
 	// Define Model data setters & getters
 	var user_uri, ticket, end_time;
 	Object.defineProperty(self, "user_uri", {
@@ -38,8 +49,9 @@ function Veda(config) {
 
 	// Define Model event handlers
 	self.on("authenticate", function() { 
-		RegisterModule( new app.DocumentModel(self.user_uri), self, "user");
+		veda.RegisterModule( new veda.DocumentModel(self.user_uri), self, "user");
 	});
-
+	
+	self.trigger("ready");
 	return self;
 };

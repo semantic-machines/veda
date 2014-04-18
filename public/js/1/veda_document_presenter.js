@@ -1,9 +1,9 @@
 // Document Presenter
 
-veda(function DocumentPresenter(app) { "use strict";
-	app.on("load:document", function () {
+Veda.prototype.DocumentPresenter  = function DocumentPresenter() { "use strict";
+
 	// Get or create Model
-	var doc = app.document || RegisterModule(new app.DocumentModel(), app, "document");
+	var doc = veda.document || veda.RegisterModule(new veda.DocumentModel(), veda, "document");
 
 	// Render View
 	var template = $("#document-template").html();
@@ -22,5 +22,4 @@ veda(function DocumentPresenter(app) { "use strict";
 	});
 	doc.on("saved", function() {
 	});
-	});
-});
+};

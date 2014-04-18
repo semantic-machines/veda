@@ -1,11 +1,9 @@
 // Console Presenter
 
-veda(function ConsolePresenter(app) { "use strict";
-	
-	app.on("load:console", function (){
+Veda.prototype.ConsolePresenter = function ConsolePresenter() { "use strict";
 	
 	// Get or create Model
-	var cons = app.console || RegisterModule(new app.ConsoleModel(), app, "console");
+	var cons = veda.console || veda.RegisterModule(new veda.ConsoleModel(), veda, "console");
 
 	// Render View
 	var template = $("#console-template").html();
@@ -32,5 +30,4 @@ veda(function ConsolePresenter(app) { "use strict";
 		if ($el.is("input, textarea, select")) $el.val( value );
 		else $el.html( value );
 	});
-	});
-});
+};
