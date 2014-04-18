@@ -5,6 +5,7 @@ import veda.storage_rest;
 import onto.owl;
 import onto.lang;
 import onto.individual;
+import pacahon.log_msg;
 import pacahon.context;
 import std.datetime;
 
@@ -117,20 +118,28 @@ void search(HTTPServerRequest req, HTTPServerResponse res) {
 	auto storage = new VedaStorageRest();
 	//start timer
 	StopWatch sw;
-	sw.start();
 	string ticket = req.cookies.get("ticket", "");
 	string query = req.query.get("query", "");
 
 	if (query != "") {
-		logInfo(query);
+		if (trace_msg[ 900 ] == 1)
+		{
+		    logInfo("query:" ~ query);
+		    sw.start();
+		}
+
 		Individual[] individuals = storage.query_(ticket, query);
 		
 		//stop & log timer & start again
 		sw.stop();
 		long t = cast(long) sw.peek().msecs;
-		logInfo("query execution time:"~text(t)~" msecs");
-		sw.reset();
-		sw.start();
+
+		if (trace_msg[ 900 ] == 1)
+		{
+		    logInfo("query execution time:"~text(t)~" msecs");
+		    sw.reset();
+		    sw.start();
+		}
 		
 		res.renderCompat!("search.dt",
 			HTTPServerRequest, "req",
@@ -146,9 +155,12 @@ void search(HTTPServerRequest req, HTTPServerResponse res) {
 	}
 
 	//stop & log timer
-	sw.stop();
-	long t = cast(long) sw.peek().msecs;
-	logInfo("page rendering time:"~text(t)~" msecs");
+	if (trace_msg[ 900 ] == 1)
+	{
+	    sw.stop();
+	    long t = cast(long) sw.peek().msecs;
+	    logInfo("page rendering time:"~text(t)~" msecs");
+	}
 }
 
 shared static this()
