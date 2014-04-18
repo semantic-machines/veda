@@ -6,7 +6,7 @@ Veda.prototype.ConsolePresenter = function ConsolePresenter() { "use strict";
 
 	// Render View
 	var template = $("#console-template").html();
-	var rendered = $.render(template, cons);
+	var rendered = riot.render(template, cons);
 	$("#main").html( rendered );
 	
 	// Listen View changes & update Model

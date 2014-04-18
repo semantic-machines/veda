@@ -3,7 +3,7 @@
 Veda.prototype.VedaPresenter = function VedaPresenter(hash) { "use strict";
 
 	// Router function to call appropriate Presenter
-	$.route(function(hash) {
+	riot.route(function(hash) {
 		var hash_tokens = hash.slice(2).split("/");
 		var page = hash_tokens[0];
 		var params = hash_tokens.slice(1);
@@ -15,7 +15,7 @@ Veda.prototype.VedaPresenter = function VedaPresenter(hash) { "use strict";
 			$("#login-form #submit").on("click", function(event) {
 				event.preventDefault();
 				veda.authenticate( $("#login-form #login").val(), Sha256.hash( $("#login-form #password").val() ) );
-				$.route(hash);
+				riot.route(hash);
 			});
 		} else {
 			page == "console" 	? 	veda.ConsolePresenter(params) : 
@@ -29,7 +29,7 @@ Veda.prototype.VedaPresenter = function VedaPresenter(hash) { "use strict";
 	$("body").on("click", "[href^='#/']", function(e) {
 		e.preventDefault();
 		var link = $(this);
-		return $.route($(this).attr("href"));
+		return riot.route($(this).attr("href"));
 	});
 
 	// Listem to Model events
@@ -41,5 +41,5 @@ Veda.prototype.VedaPresenter = function VedaPresenter(hash) { "use strict";
 	});
 
 	// Call router for current browser location hash
-	$.route(hash);
+	riot.route(hash);
 };

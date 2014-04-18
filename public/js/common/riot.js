@@ -1,10 +1,10 @@
-/* Riot 0.9.9, @license MIT, (c) 2014 Moot Inc + contributors */
+/* Riot 1.0.0, @license MIT, (c) 2014 Muut Inc + contributors */
 
-var exports = exports || {}, $ = $ || exports;
+var exports = exports || {}, riot = riot || exports;
 
-(function($) { "use strict";
+(function(riot) { "use strict";
 
-$.observable = function(el) {
+riot.observable = function(el) {
   var callbacks = {}, slice = [].slice;
 
   el.on = function(events, fn) {
@@ -55,24 +55,25 @@ var FN = {}, // Precompiled templates (JavaScript functions)
   template_escape = {"\\": "\\\\", "\n": "\\n", "\r": "\\r", "'": "\\'"},
   render_escape = {'&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;'};
 
-function escape(str) {
+function default_escape_fn(str, key) {
   return str == undefined ? '' : (str+'').replace(/[&\"<>]/g, function(char) {
     return render_escape[char];
   });
 }
 
-$.render = function(tmpl, data, escape_fn) {
-  if (typeof escape_fn != 'function' && escape_fn !== false) escape_fn = escape;
+riot.render = function(tmpl, data, escape_fn) {
+  if (escape_fn === true) escape_fn = default_escape_fn;
   tmpl = tmpl || '';
 
-  return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "return '" +
-
+  return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "try { return '" +
     tmpl.replace(/[\\\n\r']/g, function(char) {
       return template_escape[char];
 
-    }).replace(/{\s*([\w\.]+)\s*}/g, "'+(function(){try{return e?e(_.$1):_.$1}catch(e){return ''}})()+'") + "'"
+    }).replace(/{\s*([\w\.]+)\s*}/g, "' + (e?e(_.$1,'$1'):_.$1||(_.$1==undefined?'':_.$1)) + '")
+      + "' } catch(e) { return '' }"
+    )
 
-  ))(data, escape_fn);
+  )(data, escape_fn);
 
 };
 
@@ -82,29 +83,33 @@ $.render = function(tmpl, data, escape_fn) {
 if (typeof top != "object") return;
 
 var currentHash,
-  pops = $.observable({}),
+  pops = riot.observable({}),
   listen = window.addEventListener,
   doc = document;
 
 function pop(hash) {
   hash = hash.type ? location.hash : hash;
-  // ( KarpovR ) Do not compare currentHash with hash so the pop is always triggered
+  // (KarpovR:) Always trigger pop
   /*if (hash != currentHash)*/ pops.trigger("pop", hash);
   currentHash = hash;
 }
 
+/* Always fire pop event upon page load (normalize behaviour across browsers) */
+
+// standard browsers
 if (listen) {
   listen("popstate", pop, false);
   doc.addEventListener("DOMContentLoaded", pop, false);
 
+// IE
 } else {
   doc.attachEvent("onreadystatechange", function() {
     if (doc.readyState === "complete") pop("");
   });
 }
 
-// Change the browser URL or listen to changes on the URL
-$.route = function(to) {
+/* Change the browser URL or listen to changes on the URL */
+riot.route = function(to) {
   // listen
   if (typeof to === "function") return pops.on("pop", to);
 
@@ -112,4 +117,4 @@ $.route = function(to) {
   if (history.pushState) history.pushState(0, 0, to);
   pop(to);
 
-};})(typeof top == "object" ? window.$ || (window.$ = {}) : exports);
+};})(typeof top == "object" ? window.riot = {} : exports);

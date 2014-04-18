@@ -3,7 +3,7 @@
 "use strict";
 
 Veda.prototype.DocumentModel = function DocumentModel(uri) {
-	var self = $.observable(this);
+	var self = riot.observable(this);
 
 	// Define Model data setters & getters
 	var individual = {};

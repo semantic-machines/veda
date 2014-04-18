@@ -5,7 +5,7 @@
 var veda = new Veda();
 
 function Veda() {
-	var self = $.observable(this);
+	var self = riot.observable(this);
 	
 	self._ = guid();
 	self._id = "veda";

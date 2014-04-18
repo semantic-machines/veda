@@ -3,7 +3,7 @@
 "use strict";
 
 Veda.prototype.ConsoleModel = function ConsoleModel() { 
-	var self = $.observable(this);
+	var self = riot.observable(this);
 	
 	// Define Model data setters & getters
 	var script, result, runat, time;
