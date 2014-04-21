@@ -2,7 +2,7 @@
 
 "use strict";
 
-Veda.prototype.ConsoleModel = function ConsoleModel() { 
+VedaModel.prototype.ConsoleModel = function ConsoleModel() { 
 	var self = riot.observable(this);
 	
 	// Define Model data setters & getters
@@ -47,5 +47,5 @@ Veda.prototype.ConsoleModel = function ConsoleModel() {
 	}
 
 	// Define Model event handlers
-	return self;
+
 };

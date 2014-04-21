@@ -2,7 +2,7 @@
 
 "use strict";
 
-function Veda(config) {
+function VedaModel(config) {
 	var self = riot.observable(this);
 	
 	// Define Model data setters & getters
@@ -41,5 +41,4 @@ function Veda(config) {
 		RegisterModule( new app.DocumentModel(self.user_uri), self, "user");
 	});
 
-	return self;
 };

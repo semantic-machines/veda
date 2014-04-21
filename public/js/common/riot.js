@@ -90,7 +90,7 @@ var currentHash,
 function pop(hash) {
   hash = hash.type ? location.hash : hash;
   // (KarpovR:) Always trigger pop
-  /*if (hash != currentHash)*/ pops.trigger("pop", hash);
+  if (hash != currentHash) pops.trigger("pop", hash);
   currentHash = hash;
 }
 

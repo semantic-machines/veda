@@ -2,7 +2,7 @@
 
 "use strict";
 
-Veda.prototype.DocumentModel = function DocumentModel(uri) {
+VedaModel.prototype.DocumentModel = function DocumentModel(uri) {
 	var self = riot.observable(this);
 
 	// Define Model data setters & getters
@@ -37,5 +37,4 @@ Veda.prototype.DocumentModel = function DocumentModel(uri) {
 	// Load data 
 	if (uri) self.load(uri);
 
-	return self;
 };

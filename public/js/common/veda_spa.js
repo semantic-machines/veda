@@ -6,7 +6,7 @@ var app;
 var veda = riot.observable(function(arg) {
 
   // veda() --> return instance
-  if (!arg) return instance;
+  if (!arg) return app;
 
   // veda(fn) --> add a new module
   if ($.isFunction(arg)) {
@@ -15,12 +15,12 @@ var veda = riot.observable(function(arg) {
   // veda(conf) --> initialize the application
   } else {
 
-    app = RegisterModule(new Veda(arg), app, "veda");
+    app = RegisterModule(new VedaModel(arg), app, "veda");
 
     app.on("ready", function() {
       veda.trigger("ready", app);
     });
-    
+
     app.trigger("ready");
 
   }
