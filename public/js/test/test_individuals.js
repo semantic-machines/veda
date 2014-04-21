@@ -1,3 +1,4 @@
+'use strict';
 module('Individuals', {});
 
 var _admin_ticket = '';
@@ -8,7 +9,7 @@ function get_admin_ticket ()
 {
     if (_admin_ticket == '')
     {
-	_admin_ticket = authenticate("karpovr", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");	
+	return  _admin_ticket = authenticate("karpovr", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");	
     }
     return _admin_ticket;
 }
@@ -26,38 +27,38 @@ function get_user1_ticket ()
 test(
 		"#001 Login",
 		function() {
-			ticket = get_admin_ticket ();
+			var ticket = get_admin_ticket ();
 			ok(ticket.id.length > 0);
 		});
 
 test(
 		"#002 Get individual 'owl:'",
 		function() {
-			ticket = get_admin_ticket ();
-			data = get_individual(ticket.id, "owl:");
+			var ticket = get_admin_ticket ();
+			var data = get_individual(ticket.id, "owl:");
 			ok(data["@"] == "owl:");
 		});
 
 test(
 		"#003 Query '@' == 'owl:' ++ Get individual 'owl:'",
 		function() {
-			ticket = get_admin_ticket ();
-			data = query(ticket.id, "owl:");
+			var ticket = get_admin_ticket ();
+			var data = query(ticket.id, "owl:");
 			ok(data.indexOf("owl:") >= 0);
 		});
 
 test(
 		"#004 Individual store user1 and no read user2",
 		function() {
-			ticket_user1 = get_user1_ticket ();
+			var ticket_user1 = get_user1_ticket ();
 			ok(ticket_user1.id.length > 0);
 
-			ticket_user2 = authenticate('BychinA',
+			var ticket_user2 = authenticate('BychinA',
 					'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
 			ok(ticket_user2.id.length > 0);
 
-			new_test_doc1_uri = "test3:" + guid();
-			new_test_doc1 = {
+			var new_test_doc1_uri = "test3:" + guid();
+			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:document',
@@ -77,7 +78,7 @@ test(
 			wait_pmodule(condition);
 			wait_pmodule(acl_manager);
 
-			read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
+			var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
 
 			read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);
@@ -88,15 +89,15 @@ test(
 test(
 		"#005 Individual store user1, add right and read user2",
 		function() {
-			ticket_user1 = get_user1_ticket ();
+			var ticket_user1 = get_user1_ticket ();
 			ok(ticket_user1.id.length > 0);
 
-			ticket_user2 = authenticate('BychinA',
+			var ticket_user2 = authenticate('BychinA',
 					'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
 			ok(ticket_user2.id.length > 0);
 
-			new_test_doc1_uri = guid();
-			new_test_doc1 = {
+			var new_test_doc1_uri = guid();
+			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:document',
@@ -116,13 +117,13 @@ test(
 			wait_pmodule(condition);
 			wait_pmodule(acl_manager);
 
-			read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);
+			var read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual) == false);
 
 			read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
 
-			new_permission = {
+			var new_permission = {
 				'@' : guid(),
 				'rdf:type' : [ {
 					data : 'veda-schema:PermissionStatement',
@@ -153,13 +154,13 @@ test(
 		"#006 Individual store user1 and read admin",
 		function() {
 
-			ticket_user1 = get_user1_ticket ();
+			var ticket_user1 = get_user1_ticket ();
 			ok(ticket_user1.id != "");
 
-			a_ticket = get_admin_ticket ();
+			var a_ticket = get_admin_ticket ();
 
-			new_test_doc1_uri = guid();
-			new_test_doc1 = {
+			var new_test_doc1_uri = guid();
+			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:document',
@@ -179,7 +180,7 @@ test(
 			wait_pmodule(condition);
 			wait_pmodule(acl_manager);
 
-			read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
+			var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
 
 			ok(compare(new_test_doc1, read_individual));
 
@@ -189,10 +190,10 @@ test(
 		});
 
 test("#007 Individual store and read", function() {
-			ticket = get_admin_ticket ();
+	var ticket = get_admin_ticket ();
 
-	new_test_doc1_uri = guid();
-	new_test_doc1 = {
+	var new_test_doc1_uri = guid();
+	var new_test_doc1 = {
 		'@' : new_test_doc1_uri,
 		'rdf:type' : [ {
 			data : 'veda-schema:PermissionStatement1',
@@ -223,7 +224,7 @@ test("#007 Individual store and read", function() {
 	put_individual(ticket.id, new_test_doc1);
 	wait_pmodule(subject_manager);
 
-	read_individual = get_individual(ticket.id, new_test_doc1_uri);
+	var read_individual = get_individual(ticket.id, new_test_doc1_uri);
 
 	ok(compare(new_test_doc1, read_individual));
 	
@@ -231,13 +232,13 @@ test("#007 Individual store and read", function() {
 
 test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 		function() {
-			ticket = get_admin_ticket ();
+			var ticket = get_admin_ticket ();
 
-			permissionSubject = guid();
-			permissionObject = guid();
+			var permissionSubject = guid();
+			var permissionObject = guid();
 
-			new_test_doc1_uri = guid();
-			new_test_doc1 = {
+			var new_test_doc1_uri = guid();
+			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:PermissionStatement',
@@ -268,11 +269,11 @@ test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 			put_individual(ticket.id, new_test_doc1);
 			wait_pmodule(subject_manager);
 
-			read_individual = get_individual(ticket.id, new_test_doc1_uri);
+			var read_individual = get_individual(ticket.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
 
-			new_test_doc2 = new_test_doc1;
-			new_test_doc2_uri = guid();
+			var new_test_doc2 = new_test_doc1;
+			var new_test_doc2_uri = guid();
 			new_test_doc2['@'] = new_test_doc2_uri;
 			new_test_doc2['veda-schema:canRead'] = [ {
 				data : 'false',
@@ -280,11 +281,11 @@ test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 			} ], put_individual(ticket.id, new_test_doc2);
 			wait_pmodule(subject_manager);
 
-			read_individual = get_individual(ticket.id, new_test_doc2_uri);
+			var read_individual = get_individual(ticket.id, new_test_doc2_uri);
 			ok(compare(new_test_doc2, read_individual));
 
-			new_test_doc3 = new_test_doc2;
-			new_test_doc3_uri = guid();
+			var new_test_doc3 = new_test_doc2;
+			var new_test_doc3_uri = guid();
 			new_test_doc3['@'] = new_test_doc3_uri;
 			new_test_doc3['veda-schema:canRead'] = [ {
 				data : 'true',
@@ -300,13 +301,13 @@ test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 test(
 		"#009 Individual of [veda-schema:NoPermissionStatement] store 3 and read 3",
 		function() {
-			ticket = get_admin_ticket ();
+			var ticket = get_admin_ticket ();
 
-			permissionSubject = guid();
-			permissionObject = guid();
+			var permissionSubject = guid();
+			var permissionObject = guid();
 
-			new_test_doc1_uri = guid();
-			new_test_doc1 = {
+			var new_test_doc1_uri = guid();
+			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:NoPermissionStatement',
@@ -337,28 +338,30 @@ test(
 			put_individual(ticket.id, new_test_doc1);
 			wait_pmodule(subject_manager);
 
-			read_individual = get_individual(ticket.id, new_test_doc1_uri);
+			var read_individual = get_individual(ticket.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
 
-			new_test_doc2 = new_test_doc1;
-			new_test_doc2_uri = guid();
+			var new_test_doc2 = new_test_doc1;
+			var new_test_doc2_uri = guid();
 			new_test_doc2['@'] = new_test_doc2_uri;
 			new_test_doc2['veda-schema:canRead'] = [ {
 				data : 'false',
 				type : 'String'
-			} ], put_individual(ticket.id, new_test_doc2);
+			} ];
+		        put_individual(ticket.id, new_test_doc2);
 			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket.id, new_test_doc2_uri);
 			ok(compare(new_test_doc2, read_individual));
 
-			new_test_doc3 = new_test_doc2;
-			new_test_doc3_uri = guid();
+			var new_test_doc3 = new_test_doc2;
+			var new_test_doc3_uri = guid();
 			new_test_doc3['@'] = new_test_doc3_uri;
 			new_test_doc3['veda-schema:canRead'] = [ {
 				data : 'true',
 				type : 'String'
-			} ], put_individual(ticket.id, new_test_doc3);
+			} ];
+			put_individual(ticket.id, new_test_doc3);
 			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket.id, new_test_doc3_uri);
@@ -368,13 +371,13 @@ test(
 
 test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 		function() {
-			ticket = get_admin_ticket ();
+			var ticket = get_admin_ticket ();
 
-			memberOf = guid();
-			resources = guid();
+			var memberOf = guid();
+			var resources = guid();
 
-			new_test_doc1_uri = guid();
-			new_test_doc1 = {
+			var new_test_doc1_uri = guid();
+			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:Membership',
@@ -393,28 +396,30 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 			put_individual(ticket.id, new_test_doc1);
 			wait_pmodule(subject_manager);
 
-			read_individual = get_individual(ticket.id, new_test_doc1_uri);
+			var read_individual = get_individual(ticket.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
 
-			new_test_doc2 = new_test_doc1;
-			new_test_doc2_uri = guid();
+			var new_test_doc2 = new_test_doc1;
+			var new_test_doc2_uri = guid();
 			new_test_doc2['@'] = new_test_doc2_uri;
 			new_test_doc2['veda-schema:memberOf'] = [ {
 				data : guid(),
 				type : 'Uri'
-			} ], put_individual(ticket.id, new_test_doc2);
+			} ];
+			put_individual(ticket.id, new_test_doc2);
 			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket.id, new_test_doc2_uri);
 			ok(compare(new_test_doc2, read_individual));
 
-			new_test_doc3 = new_test_doc2;
-			new_test_doc3_uri = guid();
+			var new_test_doc3 = new_test_doc2;
+			var new_test_doc3_uri = guid();
 			new_test_doc3['@'] = new_test_doc3_uri;
 			new_test_doc3['veda-schema:memberOf'] = [ {
 				data : memberOf,
 				type : 'Uri'
-			} ], put_individual(ticket.id, new_test_doc3);
+			} ];
+			put_individual(ticket.id, new_test_doc3);
 			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket.id, new_test_doc3_uri);
@@ -424,13 +429,13 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 
 	test("#011 Individual of [veda-schema:NoMembership] store 3 and read 3",
 		function() {
-			ticket = get_admin_ticket ();
+			var ticket = get_admin_ticket ();
 
-			memberOf = guid();
-			resources = guid();
+			var memberOf = guid();
+			var resources = guid();
 
-			new_test_doc1_uri = guid();
-			new_test_doc1 = {
+			var new_test_doc1_uri = guid();
+			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:NoMembership',
@@ -449,31 +454,74 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 			put_individual(ticket.id, new_test_doc1);
 			wait_pmodule(subject_manager);
 
-			read_individual = get_individual(ticket.id, new_test_doc1_uri);
+			var read_individual = get_individual(ticket.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
 
-			new_test_doc2 = new_test_doc1;
-			new_test_doc2_uri = guid();
+			var new_test_doc2 = new_test_doc1;
+			var new_test_doc2_uri = guid();
 			new_test_doc2['@'] = new_test_doc2_uri;
 			new_test_doc2['veda-schema:memberOf'] = [ {
 				data : guid(),
 				type : 'Uri'
-			} ], put_individual(ticket.id, new_test_doc2);
+			} ];
+			put_individual(ticket.id, new_test_doc2);
 			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket.id, new_test_doc2_uri);
 			ok(compare(new_test_doc2, read_individual));
 
-			new_test_doc3 = new_test_doc2;
-			new_test_doc3_uri = guid();
+			var new_test_doc3 = new_test_doc2;
+			var new_test_doc3_uri = guid();
 			new_test_doc3['@'] = new_test_doc3_uri;
 			new_test_doc3['veda-schema:memberOf'] = [ {
 				data : memberOf,
 				type : 'Uri'
-			} ], put_individual(ticket.id, new_test_doc3);
+			} ];
+			put_individual(ticket.id, new_test_doc3);
 			wait_pmodule(subject_manager);
 
 			read_individual = get_individual(ticket.id, new_test_doc3_uri);
 			ok((read_individual['@'] == new_test_doc3_uri) == true);
+			
+		});
+
+test(
+		"#012 Individual store user1 and no search user2",
+		function() {
+			var ticket_user1 = get_user1_ticket ();
+			ok(ticket_user1.id.length > 0);
+
+			var ticket_user2 = authenticate('BychinA',
+					'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
+			ok(ticket_user2.id.length > 0);
+
+			var new_test_doc1_uri = "test12:" + guid();
+			var test_data = guid();
+			var new_test_doc1 = {
+				'@' : new_test_doc1_uri,
+				'rdf:type' : [ {
+					data : 'veda-schema:document',
+					type : 'Uri'
+				} ],
+				'veda-schema:author' : [ {
+					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					type : 'Uri'
+				} ],
+				'veda-schema:test_field' : [ {
+					data : test_data,
+					type : 'String'
+				} ]
+			};
+
+			put_individual(ticket_user1.id, new_test_doc1);
+//			wait_pmodule(subject_manager);
+//			wait_pmodule(condition);
+			wait_pmodule(fulltext_indexer);
+
+			var data = query(ticket_user1.id, test_data);
+			ok(compare(data.length, 1));
+
+			var read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);
+			ok(compare(new_test_doc1, read_individual) == false);
 			
 		});
