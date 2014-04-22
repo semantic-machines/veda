@@ -17,7 +17,7 @@ function UserModel(veda, params) {
 	// Define Model functions
 	self.load = function(uri) {
 		get_individual(veda.ticket, uri, function(data) {
-			self.individual = data;
+			individual = data;
 			self.trigger("user:loaded");
 		});
 	};
@@ -31,7 +31,6 @@ function UserModel(veda, params) {
 	if (uri) self.load(uri);
 	
 	// Model loaded message
-	
 	self.on("user:loaded", function(){
 		if (veda) veda.trigger("user:loaded", self);
 	});
