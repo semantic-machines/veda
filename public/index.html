@@ -29,7 +29,7 @@
 				</a>
 				<p class="navbar-text navbar-right">
 					Signed in as 
-					<a href="#" class="navbar-link">Roman Karpov</a>
+					<a href="#" class="navbar-link" id="current-user">Roman Karpov</a>
 				</p>
 				<div data-toggle="buttons" class="navbar-right btn-group">
 					<label id="ru-label" class="btn btn-xs btn-info navbar-btn active">
@@ -86,10 +86,7 @@
 
 		<script type="text/javascript">
 			$(function(){
-				Veda({
-					name: "veda",
-					page: location.hash
-				});
+				Veda({/* configuration object*/});
 			});
 		</script>
 
@@ -203,6 +200,11 @@
 				<h2>Document</h2>
 				<a href="#/console" class="btn btn-info" >Console</a>
 			</div>
+		</script>
+
+		<!-- Document template -->
+		<script type="html/template" id="current-user-template">
+			<span>{name}</span>
 		</script>
 
 	</body>

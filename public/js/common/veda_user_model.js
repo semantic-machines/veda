@@ -31,5 +31,8 @@ function UserModel(veda, params) {
 	if (uri) self.load(uri);
 	
 	// Model loaded message
-	if (veda) veda.trigger("user:loaded", self);
+	
+	self.on("user:loaded", function(){
+		if (veda) veda.trigger("user:loaded", self);
+	});
 };

@@ -2,7 +2,7 @@
 
 "use strict";
 
-function ConsoleModel(veda) { 
+function ConsoleModel(veda, params) { 
 	var self = riot.observable(this);
 	
 	// Define Model data setters & getters

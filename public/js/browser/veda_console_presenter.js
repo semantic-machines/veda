@@ -4,9 +4,6 @@ Veda(function ConsolePresenter(veda) { "use strict";
 	
 	veda.on("console:loaded", function (console) {
 	
-		// Get or create Model
-		//var cons = veda.console || RegisterModule(new ConsoleModel(), veda, "console");
-	
 		// Render View
 		var template = $("#console-template").html();
 		var rendered = riot.render(template, console);

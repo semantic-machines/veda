@@ -1,4 +1,4 @@
-// Veda Backend 
+// Veda HTTP server functions
 
 $.ajaxSetup ({
 	dataType: "json",
