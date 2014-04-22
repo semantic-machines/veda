@@ -492,7 +492,7 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 		});
 
 test(
-		"#012 user1 store 3 individuals (one individual content author filed), search 2 individials to user1 and 0 to user2",
+		"#012 user1 store 3 individuals (one of the individuals contains an invalid field [author]), the user1 finds 2 individuals, and the user2 does not find anything.",
 		function() {
 			var ticket_user1 = get_user1_ticket ();
 			ok(ticket_user1.id.length > 0);
@@ -501,7 +501,10 @@ test(
 			ok(ticket_user2.id.length > 0);
 
 			var new_test_doc1_uri_1 = "test12:" + guid();
-			var test_data = guid();
+
+			var test_data_uid = guid();
+			var test_data = 'testdata ' + test_data_uid;
+
 			var new_test_doc1 = {
 				'@' : new_test_doc1_uri_1,
 				'rdf:type' : [ {
@@ -560,10 +563,10 @@ test(
 //			wait_pmodule(condition);
 			wait_pmodule(fulltext_indexer);
 
-			var data = query(ticket_user1.id, test_data);
+			var data = query(ticket_user1.id, test_data_uid);
 			ok(compare(data.length, 2));
 
-			data = query(ticket_user2.id, test_data);
+			data = query(ticket_user2.id,  test_data_uid);
 			ok(compare(data.length, 0));
 			
 		});
