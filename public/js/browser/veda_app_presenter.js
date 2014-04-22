@@ -9,6 +9,8 @@ veda(function VedaPresenter(app) { "use strict";
 			deleteCookie("user_uri");
 			deleteCookie("ticket");
 			deleteCookie("end_time");
+			
+			//Show login form
 			var template = $("#login-template").html();
 			$("#main").html(template);		
 
@@ -34,11 +36,13 @@ veda(function VedaPresenter(app) { "use strict";
 			
 			if (!app.ticket || !app.user_uri || !app.end_time) return app.trigger("auth:quit");
 			else
-				page == "console" 	? 	app.trigger("load:console", params) : 
-				page == "document"	? 	app.trigger("load:document", params) :
-				page == "search"	? 	app.trigger("load:search", params) : 
+				page == "console" 	? 	app.trigger("console:loaded", params) : 
+				page == "document"	? 	app.trigger("doc:loaded", params) :
+				page == "search"	? 	app.trigger("search:loaded", params) : 
 										// Default wellcome view
 										$("#main").html( $("#wellcome-template").html() );
+
+				//page != "" ? app.load(page, params) : $("#main").html( $("#wellcome-template").html() );
 		});
 
 		// Listen to a link click and call router

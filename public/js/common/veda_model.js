@@ -36,10 +36,17 @@ function VedaModel(config) {
 		self.end_time = "";
 		self.trigger("auth:quit");
 	};
+	/*self.load = function (page, params) {
+		return 
+			page == "console" 	? (function(params){ RegisterModule(new app.ConsoleModel(params), self, "console") })() :
+			page == "document" 	? (function(params){ RegisterModule(new app.DocumentModel(params), self, "document") })() :
+			page == "search" 	? (function(params){ RegisterModule(new app.SearchModel(params), self, "search") })() :
+			page == "user"	 	? (function(params){ RegisterModule(new app.UserModel(params), self, "user") })() : "";
+	};*/
 
 	// Define Model event handlers
 	self.on("auth:success", function() { 
-		app.RegisterModule( new app.DocumentModel(user_uri), self, "user");
+		self.RegisterModule( new app.UserModel(user_uri), self, "user");
 	});
 
 };

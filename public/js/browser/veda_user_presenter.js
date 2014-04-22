@@ -1,10 +1,10 @@
-// Document Presenter
+// User Presenter
 
-veda(function DocumentPresenter(app) { "use strict";
+veda(function UserPresenter(app) { "use strict";
 
-	app.on("doc:loaded", function (params) {
+	app.on("user:loaded", function (params) {
 		// Get or create Model
-		var doc = app.document || app.RegisterModule(new app.DocumentModel(), app, "document");
+		var user = app.user || app.RegisterModule(new app.UserModel(), app, "user");
 	
 		// Render View
 		var template = $("#document-template").html();
@@ -19,9 +19,9 @@ veda(function DocumentPresenter(app) { "use strict";
 		});
 	
 		// Listen Model changes & update View
-		doc.on("doc:loaded", function() {
+		user.on("user:loaded", function() {
 		});
-		doc.on("doc:saved", function() {
+		user.on("user:saved", function() {
 		});
 
 	});

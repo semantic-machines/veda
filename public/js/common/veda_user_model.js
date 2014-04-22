@@ -1,8 +1,8 @@
-// Document Model
+// User Model
 
 "use strict";
 
-VedaModel.prototype.DocumentModel = function DocumentModel(uri) {
+VedaModel.prototype.UserModel = function UserModel(uri) {
 	var self = riot.observable(this);
 
 	// Define Model data setters & getters
@@ -17,24 +17,15 @@ VedaModel.prototype.DocumentModel = function DocumentModel(uri) {
 	self.load = function(uri) {
 		get_individual(app.ticket, uri, function(data) {
 			self.individual = data;
-			self.trigger("doc:loaded");
+			self.trigger("user:loaded");
 		});
 	};
 	self.save = function() {
 		put_individual(app.ticket, self.individual, function(data) {
-			self.trigger("doc:saved");
+			self.trigger("user:saved");
 		});
 	};
 
-	// Define Model event handlers
-	self.on("doc:loaded", function() { 
-		console.log("document loaded: ", self.individual);
-	});
-	self.on("doc:saved", function() { 
-		console.log("document saved: ", self.individual);
-	});
-
 	// Load data 
 	if (uri) self.load(uri);
-
 };
