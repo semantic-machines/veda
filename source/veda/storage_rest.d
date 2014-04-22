@@ -217,7 +217,7 @@ class VedaStorageRest : VedaStorageRest_API {
             ResultCode rc;
             receive((immutable(string)[] _individuals_ids, ResultCode _rc) { individuals_ids = _individuals_ids; rc = _rc; });
             if (rc != ResultCode.OK)
-                throw new HTTPStatusException(HTTPStatus.unauthorized);
+                throw new HTTPStatusException(rc);
 //        individuals_ids = receiveOnly!(immutable (string)[]);
         }
         return cast(string[])individuals_ids;
@@ -235,7 +235,7 @@ class VedaStorageRest : VedaStorageRest_API {
             ResultCode rc;
             receive((immutable(Individual)[] _individuals, ResultCode _rc) { individuals = _individuals; rc = _rc; });
             if (rc != ResultCode.OK)
-                throw new HTTPStatusException(HTTPStatus.unauthorized);
+                throw new HTTPStatusException(rc);
 
 //        individuals = receiveOnly!(immutable(Individual)[]);
         }
@@ -258,7 +258,7 @@ class VedaStorageRest : VedaStorageRest_API {
             ResultCode rc;
             receive((immutable(Individual)[] _individuals, ResultCode _rc) { individuals = _individuals; rc = _rc; });
             if (rc != ResultCode.OK)
-                throw new HTTPStatusException(HTTPStatus.unauthorized);
+                throw new HTTPStatusException(rc);
         }
 
 //	sw.stop();
@@ -290,7 +290,7 @@ class VedaStorageRest : VedaStorageRest_API {
             ResultCode rc;
             receive((immutable(Individual)[] _individuals, ResultCode _rc) { individual = _individuals; rc = _rc; });
             if (rc != ResultCode.OK)
-                throw new HTTPStatusException(HTTPStatus.unauthorized);
+                throw new HTTPStatusException(rc);
 //        individual = receiveOnly!(immutable(Individual)[]);
 
 
@@ -316,7 +316,7 @@ class VedaStorageRest : VedaStorageRest_API {
         receive((immutable(Individual)[] _individuals, ResultCode _rc) { individual = _individuals; rc = _rc; });
 
         if (rc != ResultCode.OK)
-            throw new HTTPStatusException(HTTPStatus.unauthorized);
+            throw new HTTPStatusException(rc);
 
 
         if (individual.length == 0)
