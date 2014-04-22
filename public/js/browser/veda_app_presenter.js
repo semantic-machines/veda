@@ -46,7 +46,7 @@ veda(function VedaPresenter(app) { "use strict";
 		});
 
 		// If ticket not in cookies or expired show login form
-		if (!app.ticket || !app.user_uri || !is_ticket_valid(app.ticket)) {
+		if ( !app.ticket || !app.user_uri || !is_ticket_valid(app.ticket) ) {
 			app.trigger("auth:quit"); 
 			return;
 		} 
