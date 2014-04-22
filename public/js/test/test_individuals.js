@@ -23,6 +23,14 @@ function get_user1_ticket ()
     return _user1_ticket;
 }
 
+function get_user2_ticket ()
+{
+    if (_user2_ticket == '')
+    {
+	_user2_ticket = authenticate("BychinA", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");	
+    }
+    return _user2_ticket;
+}
 
 test(
 		"#001 Login",
@@ -53,8 +61,7 @@ test(
 			var ticket_user1 = get_user1_ticket ();
 			ok(ticket_user1.id.length > 0);
 
-			var ticket_user2 = authenticate('BychinA',
-					'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
+			var ticket_user2 = get_user2_ticket ();
 			ok(ticket_user2.id.length > 0);
 
 			var new_test_doc1_uri = "test3:" + guid();
@@ -92,8 +99,7 @@ test(
 			var ticket_user1 = get_user1_ticket ();
 			ok(ticket_user1.id.length > 0);
 
-			var ticket_user2 = authenticate('BychinA',
-					'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
+			var ticket_user2 = get_user2_ticket ();
 			ok(ticket_user2.id.length > 0);
 
 			var new_test_doc1_uri = guid();
@@ -491,8 +497,7 @@ test(
 			var ticket_user1 = get_user1_ticket ();
 			ok(ticket_user1.id.length > 0);
 
-			var ticket_user2 = authenticate('BychinA',
-					'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
+			var ticket_user2 = get_user2_ticket ();
 			ok(ticket_user2.id.length > 0);
 
 			var new_test_doc1_uri = "test12:" + guid();
