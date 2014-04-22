@@ -2,7 +2,7 @@
 
 veda(function DocumentPresenter(app) { "use strict";
 
-	app.on("load:document", function () {
+	app.on("load:document", function (params) {
 		// Get or create Model
 		var doc = app.document || app.RegisterModule(new app.DocumentModel(), app, "document");
 	

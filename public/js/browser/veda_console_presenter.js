@@ -2,7 +2,7 @@
 
 veda(function ConsolePresenter(app) { "use strict";
 	
-	app.on("load:console", function () {
+	app.on("load:console", function (params) {
 	
 		// Get or create Model
 		var cons = app.console || app.RegisterModule(new app.ConsoleModel(), app, "console");

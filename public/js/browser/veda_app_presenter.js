@@ -6,6 +6,9 @@ veda(function VedaPresenter(app) { "use strict";
 
 		// Listen to quit && authentication failure events
 		app.on("auth:quit auth:failed", function () {
+			deleteCookie("user_uri");
+			deleteCookie("ticket");
+			deleteCookie("end_time");
 			var template = $("#login-template").html();
 			$("#main").html(template);		
 
@@ -31,13 +34,11 @@ veda(function VedaPresenter(app) { "use strict";
 			
 			if (!app.ticket || !app.user_uri || !app.end_time) return app.trigger("auth:quit");
 			else
-				page == "console" 	? 	app.trigger("load:console") : 
-				page == "document"	? 	app.trigger("load:document") :
-				page == "search"	? 	app.trigger("load:search") : 
-										(function showWellcome() { 
-											var template = $("#wellcome").html();
-											$("#main").html(template);
-										})();
+				page == "console" 	? 	app.trigger("load:console", params) : 
+				page == "document"	? 	app.trigger("load:document", params) :
+				page == "search"	? 	app.trigger("load:search", params) : 
+										// Default wellcome view
+										$("#main").html( $("#wellcome-template").html() );
 		});
 
 		// Listen to a link click and call router

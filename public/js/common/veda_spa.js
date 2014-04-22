@@ -17,7 +17,7 @@ var veda = riot.observable(function(arg) {
 
     app = new VedaModel(arg);
     
-    app.RegisterModule(app, app, "veda");
+    app.RegisterModule(app, app);
 
     app.on("ready", function() {
       veda.trigger("ready", app);
