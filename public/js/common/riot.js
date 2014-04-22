@@ -87,10 +87,10 @@ var currentHash,
   listen = window.addEventListener,
   doc = document;
 
-function pop(hash) {
+function pop(hash, forced) {
   hash = hash.type ? location.hash : hash;
-  // (KarpovR:) Always trigger pop
-  if (hash != currentHash) pops.trigger("pop", hash);
+  /* (KarpovR:) Trigger pop if forced == true */
+  if (hash != currentHash || forced) pops.trigger("pop", hash);
   currentHash = hash;
 }
 
@@ -109,12 +109,13 @@ if (listen) {
 }
 
 /* Change the browser URL or listen to changes on the URL */
-riot.route = function(to) {
+/* (KarpovR:) Trigger pop if forced == true */
+riot.route = function(to, forced) {
   // listen
   if (typeof to === "function") return pops.on("pop", to);
 
   // fire
   if (history.pushState) history.pushState(0, 0, to);
-  pop(to);
+  pop(to, forced);
 
 };})(typeof top == "object" ? window.riot = {} : exports);
