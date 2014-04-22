@@ -492,7 +492,7 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 		});
 
 test(
-		"#012 Individual store user1 and no search user2",
+		"#012 user1 store 3 individuals (one individual content author filed), search 2 individials to user1 and 0 to user2",
 		function() {
 			var ticket_user1 = get_user1_ticket ();
 			ok(ticket_user1.id.length > 0);
@@ -500,10 +500,45 @@ test(
 			var ticket_user2 = get_user2_ticket ();
 			ok(ticket_user2.id.length > 0);
 
-			var new_test_doc1_uri = "test12:" + guid();
+			var new_test_doc1_uri_1 = "test12:" + guid();
 			var test_data = guid();
 			var new_test_doc1 = {
-				'@' : new_test_doc1_uri,
+				'@' : new_test_doc1_uri_1,
+				'rdf:type' : [ {
+					data : 'veda-schema:document',
+					type : 'Uri'
+				} ],
+				'veda-schema:author' : [ {
+					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					type : 'Uri'
+				} ],
+				'veda-schema:test_field' : [ {
+					data : test_data,
+					type : 'String'
+				} ]
+			};
+
+			// document content author != user1
+			var new_test_doc1_uri_2 = "test12:" + guid();
+			var new_test_doc2 = {
+				'@' : new_test_doc1_uri_2,
+				'rdf:type' : [ {
+					data : 'veda-schema:document',
+					type : 'Uri'
+				} ],
+				'veda-schema:author' : [ {
+					data : 'mondi-data:ValeriyBushenev-Programmer2',
+					type : 'Uri'
+				} ],
+				'veda-schema:test_field' : [ {
+					data : test_data,
+					type : 'String'
+				} ]
+			};
+
+			var new_test_doc1_uri_3 = "test12:" + guid();
+			var new_test_doc3 = {
+				'@' : new_test_doc1_uri_3,
 				'rdf:type' : [ {
 					data : 'veda-schema:document',
 					type : 'Uri'
@@ -519,14 +554,16 @@ test(
 			};
 
 			put_individual(ticket_user1.id, new_test_doc1);
+			put_individual(ticket_user1.id, new_test_doc2);
+			put_individual(ticket_user1.id, new_test_doc3);
 //			wait_pmodule(subject_manager);
 //			wait_pmodule(condition);
 			wait_pmodule(fulltext_indexer);
 
 			var data = query(ticket_user1.id, test_data);
-			ok(compare(data.length, 1));
+			ok(compare(data.length, 2));
 
-			var read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);
-			ok(compare(new_test_doc1, read_individual) == false);
+			data = query(ticket_user2.id, test_data);
+			ok(compare(data.length, 0));
 			
 		});
