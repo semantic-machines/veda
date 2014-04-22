@@ -159,8 +159,8 @@ mondi-data:KarpovR
 .
 mondi-data:Membership_1
   rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:SuperAdmin ;
-  veda-schema:resource mondi-data:AndreyBychin-ExecutiveDirector ;
+  veda-schema:memberOf mondi-data:UserGroup_1 ;
+  veda-schema:resource mondi-data:AndreyBychin ;
   rdfs:label "Membership_1"@en ;
   rdfs:label "Членство_1"@ru ;
 .
@@ -215,7 +215,7 @@ mondi-data:Membership_8
 .
 mondi-data:Membership_9
   rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:SuperAdmin ;
+  veda-schema:memberOf mondi-data:ResGroup_1 ;
   veda-schema:resource mondi-data:AndreyBychin ;
   rdfs:label "Membership_9"@en ;
   rdfs:label "Членство_9"@ru ;
