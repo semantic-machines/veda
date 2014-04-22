@@ -103,6 +103,7 @@ void login(HTTPServerRequest req, HTTPServerResponse res) {
 		Ticket ticket = storage.authenticate(login, password);
 		if (ticket != Ticket.init) {
 			Cookie ticket_cookie = res.setCookie("ticket", ticket.id, "/");
+			Cookie user_uri_cookie = res.setCookie("user_uri", ticket.user_uri, "/");
 			//ticket_cookie.expires = to_rfc822(SysTime(ticket.end_time, TimeZone.getTimeZone("UTC")));
 			res.setCookie("password", null, "/");
 		} else {

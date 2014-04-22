@@ -1,12 +1,11 @@
-//-
-	- import veda.storage_rest, onto.resource, onto.lang;
-	- auto storage = new VedaStorageRest();
-	- Resource[] empty_resource(string uri)
-		- Resource[] res;
-		- Resource resource;
-		- resource.data = uri;
-		- res ~= resource;
-		- return res;
+- import veda.storage_rest, onto.resource, onto.lang;
+- auto storage = new VedaStorageRest();
+- Resource[] empty_resource(string uri)
+	- Resource[] res;
+	- Resource resource;
+	- resource.data = uri;
+	- res ~= resource;
+	- return res;
 
 nav.navbar.navbar-inverse(role="navigation")
 	.container-fluid
@@ -24,7 +23,8 @@ nav.navbar.navbar-inverse(role="navigation")
 
 		p.navbar-text.navbar-right
 			| Signed in as 
-			a.navbar-link(href="#") Roman Karpov
+			a.navbar-link(href="#") 
+				| #{ text( storage.get_individual_(req.cookies.get("ticket",""), req.cookies.get("user_uri","")).resources.get("rdfs:label", empty_resource(""))[0].data ) }
 
 		.navbar-right.btn-group(data-toggle="buttons")
 			label#ru-label.btn.btn-xs.btn-info.navbar-btn.active
@@ -40,3 +40,6 @@ nav.navbar.navbar-inverse(role="navigation")
 				label.btn.btn-xs.btn-info.navbar-btn.active
 					input#ru(type="radio")
 					| #{language.resources.get("rdfs:label", empty_resource(property_uri))}
+
+
+

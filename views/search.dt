@@ -1,13 +1,14 @@
 extends generic
 block content
-	- import veda.storage_rest, onto.resource, onto.lang;
-	- auto storage = new VedaStorageRest();
-	- Resource[] empty_resource(string uri)
-		- Resource[] res;
-		- Resource resource;
-		- resource.data = uri;
-		- res ~= resource;
-		- return res;
+	//-
+		- import veda.storage_rest, onto.resource, onto.lang;
+		- auto storage = new VedaStorageRest();
+		- Resource[] empty_resource(string uri)
+			- Resource[] res;
+			- Resource resource;
+			- resource.data = uri;
+			- res ~= resource;
+			- return res;
 	- auto preferred_lang = LANG.RU;
 	- auto show_alternative_lang = true;
 	- if (req.query.get("query", "") == "")
