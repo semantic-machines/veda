@@ -2,7 +2,7 @@
 
 "use strict";
 
-VedaModel.prototype.RegisterModule = function RegisterModule(module, parent, name) {
+function RegisterModule(module, parent, name) {
 	module._id = guid();
 	module._name = name || module._id;
 	module._path = parent ? !parent._path ? "" : parent._path + "/" + module._name : module._name;

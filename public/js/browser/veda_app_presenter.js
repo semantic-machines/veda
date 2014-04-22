@@ -1,11 +1,11 @@
 // Veda application Presenter
 
-veda(function VedaPresenter(app) { "use strict";
+Veda(function VedaPresenter(veda) { "use strict";
 
-	app.on("ready", function() {
+	veda.on("ready", function() {
 
 		// Listen to quit && authentication failure events
-		app.on("auth:quit auth:failed", function () {
+		veda.on("auth:quit auth:failed", function () {
 			deleteCookie("user_uri");
 			deleteCookie("ticket");
 			deleteCookie("end_time");
@@ -16,15 +16,15 @@ veda(function VedaPresenter(app) { "use strict";
 
 			$("#login-form #submit").on("click", function(event) {
 				event.preventDefault();
-				app.authenticate( $("#login-form #login").val(), Sha256.hash( $("#login-form #password").val() ) );
+				veda.authenticate( $("#login-form #login").val(), Sha256.hash( $("#login-form #password").val() ) );
 			});
 		});
 
 		// Listen to authentication success event
-		app.on("auth:success", function (user_uri, ticket, end_time ) {
-			setCookie("user_uri", user_uri, {path: "/", expires: end_time});
-			setCookie("ticket", ticket, {path: "/", expires: end_time});
-			setCookie("end_time", end_time, {path: "/", expires: end_time});
+		veda.on("auth:success", function (user_uri, ticket, end_time) {
+			setCookie("user_uri", user_uri, { path: "/", expires: new Date(end_time) });
+			setCookie("ticket", ticket, { path: "/", expires: new Date(end_time) });
+			setCookie("end_time", end_time, { path: "/", expires: new Date(end_time) });
 			riot.route(location.hash, true);
 		});
 
@@ -34,15 +34,8 @@ veda(function VedaPresenter(app) { "use strict";
 			var page = hash_tokens[0];
 			var params = hash_tokens.slice(1);
 			
-			if (!app.ticket || !app.user_uri || !app.end_time) return app.trigger("auth:quit");
-			else
-				page == "console" 	? 	app.trigger("console:loaded", params) : 
-				page == "document"	? 	app.trigger("doc:loaded", params) :
-				page == "search"	? 	app.trigger("search:loaded", params) : 
-										// Default wellcome view
-										$("#main").html( $("#wellcome-template").html() );
-
-				//page != "" ? app.load(page, params) : $("#main").html( $("#wellcome-template").html() );
+			if (!veda.ticket || !veda.user_uri || !veda.end_time) veda.trigger("auth:quit");
+			else page != "" ? veda.load(page, params) : $("#main").html( $("#wellcome-template").html() );
 		});
 
 		// Listen to a link click and call router
@@ -53,11 +46,11 @@ veda(function VedaPresenter(app) { "use strict";
 		});
 
 		// If ticket absent or expired show login form
-		if (!getCookie("ticket") || !getCookie("user_uri") || !getCookie("end_time")) return app.trigger("auth:quit");
-		app.ticket = getCookie("ticket");
-		app.user_uri = getCookie("user_uri");
-		app.end_time = getCookie("end_time");
-		app.trigger("auth:success", app.user_uri, app.ticket, app.end_time);
+		if (!getCookie("ticket") || !getCookie("user_uri") || !getCookie("end_time")) return veda.trigger("auth:quit");
+		veda.ticket = getCookie("ticket");
+		veda.user_uri = getCookie("user_uri");
+		veda.end_time = getCookie("end_time");
+		veda.trigger("auth:success", veda.user_uri, veda.ticket, veda.end_time);
 	});
 
 });

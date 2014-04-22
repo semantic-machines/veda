@@ -1,10 +1,10 @@
 // User Presenter
 
-veda(function UserPresenter(app) { "use strict";
+Veda(function UserPresenter(veda) { "use strict";
 
-	app.on("user:loaded", function (params) {
+	veda.on("user:loaded", function (user) {
 		// Get or create Model
-		var user = app.user || app.RegisterModule(new app.UserModel(), app, "user");
+		//var user = veda.user || RegisterModule(new UserModel(), veda, "user");
 	
 		// Render View
 		var template = $("#document-template").html();

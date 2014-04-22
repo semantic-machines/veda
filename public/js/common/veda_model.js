@@ -27,7 +27,7 @@ function VedaModel(config) {
 		self.ticket = res.id;
 		if (!ticket) return self.trigger("auth:failed", user_uri, ticket, end_time);
 		self.user_uri = res.user_uri;
-		self.end_time = new Date( (res.end_time - 621355968000000000)/10000 );
+		self.end_time =  Math.floor((res.end_time - 621355968000000000) / 10000 );
 		self.trigger("auth:success", user_uri, ticket, end_time);
 	};
 	self.quit = function() {
@@ -36,17 +36,29 @@ function VedaModel(config) {
 		self.end_time = "";
 		self.trigger("auth:quit");
 	};
-	/*self.load = function (page, params) {
-		return 
-			page == "console" 	? (function(params){ RegisterModule(new app.ConsoleModel(params), self, "console") })() :
-			page == "document" 	? (function(params){ RegisterModule(new app.DocumentModel(params), self, "document") })() :
-			page == "search" 	? (function(params){ RegisterModule(new app.SearchModel(params), self, "search") })() :
-			page == "user"	 	? (function(params){ RegisterModule(new app.UserModel(params), self, "user") })() : "";
-	};*/
+	
+	// Invoke existing or create new module
+	self.load = function (page, params) {
+		switch (page) {
+			case "console": 
+				self.console ? self.trigger("console:loaded", self.console) : RegisterModule(new ConsoleModel(self, params), self, "console"); 
+				break
+			case "document": 
+				self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, params), self, "document"); 
+				break
+			case "search": 
+				self.search ? self.trigger("search:loaded", self.search) : RegisterModule(new SearchModel(self, params), self, "search"); 
+				break
+			case "user": 
+				self.user ? self.trigger("user:loaded", self.user) : RegisterModule(new UserModel(self, params), self, "user"); 
+				break
+			default: ""; break
+		}
+	};
 
 	// Define Model event handlers
 	self.on("auth:success", function() { 
-		self.RegisterModule( new app.UserModel(user_uri), self, "user");
+		RegisterModule( new UserModel(self, [user_uri]), self, "user");
 	});
 
 };

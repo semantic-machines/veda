@@ -2,7 +2,8 @@
 
 "use strict";
 
-VedaModel.prototype.UserModel = function UserModel(uri) {
+function UserModel(veda, params) {
+	var uri = params[0];
 	var self = riot.observable(this);
 
 	// Define Model data setters & getters
@@ -15,17 +16,20 @@ VedaModel.prototype.UserModel = function UserModel(uri) {
 		
 	// Define Model functions
 	self.load = function(uri) {
-		get_individual(app.ticket, uri, function(data) {
+		get_individual(veda.ticket, uri, function(data) {
 			self.individual = data;
 			self.trigger("user:loaded");
 		});
 	};
 	self.save = function() {
-		put_individual(app.ticket, self.individual, function(data) {
+		put_individual(veda.ticket, self.individual, function(data) {
 			self.trigger("user:saved");
 		});
 	};
 
 	// Load data 
 	if (uri) self.load(uri);
+	
+	// Model loaded message
+	if (veda) veda.trigger("user:loaded", self);
 };

@@ -1,10 +1,8 @@
 // Document Presenter
 
-veda(function DocumentPresenter(app) { "use strict";
+Veda(function DocumentPresenter(veda) { "use strict";
 
-	app.on("doc:loaded", function (params) {
-		// Get or create Model
-		var doc = app.document || app.RegisterModule(new app.DocumentModel(), app, "document");
+	veda.on("document:loaded", function (document) {
 	
 		// Render View
 		var template = $("#document-template").html();
@@ -19,9 +17,9 @@ veda(function DocumentPresenter(app) { "use strict";
 		});
 	
 		// Listen Model changes & update View
-		doc.on("doc:loaded", function() {
+		document.on("document:loaded", function() {
 		});
-		doc.on("doc:saved", function() {
+		document.on("document:saved", function() {
 		});
 
 	});
