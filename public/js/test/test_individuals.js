@@ -568,5 +568,13 @@ test(
 
 			data = query(ticket_user2.id,  test_data_uid);
 			ok(compare(data.length, 0));
+
+			data = query(ticket_user1.id,  "'veda-schema:test_field' == '" + test_data_uid + "'");
+			ok(compare(data.length, 2));
 			
+			data = query(ticket_user1.id,  "'veda-schema:test_field1' == '" + test_data_uid + "'");
+			ok(compare(data.length, 0));
+
+			data = query(ticket_user1.id,  "'veda-schema:test_field1' == '" + test_data_uid + " t1'");
+			ok(compare(data.length, 0));
 		});
