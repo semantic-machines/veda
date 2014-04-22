@@ -5,34 +5,34 @@ $.ajaxSetup ({
 	cache: false
 });
 
-function authenticate(login, password, callback) {
+function authenticate(login, password, done, fail) {
 	var params = {
 			type: "GET",
 			url: "authenticate",
 			data: { "login": login, "password": password }
 	};
-	if(!callback) {
+	if(!done) {
 		params.async = false;
 		return JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
-		.fail( function () { callback(null) } )
-		.done( function (data) { callback(data) } );
+		.done( function (data) { done(data) } )
+		.fail( function (data, code) { fail(data, code) } );
 }
 
-function is_ticket_valid(ticket, callback) {
+function is_ticket_valid(ticket, done, fail) {
 	var params = {
 		type: "GET",
 		url: "is_ticket_valid",
 		data: { "ticket": ticket }
 	};
-	if(!callback) {
+	if(!done) {
 		params.async = false;
 		return JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
-		.fail( function () { callback(false) } )
-		.done( function (data) { callback(data) } );
+		.done( function (data) { done(data) } )
+		.fail( function (data, code) { fail(data, code) } );
 }
 
 function wait_pmodule(pmodule_id, callback) {

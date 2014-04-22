@@ -25,20 +25,21 @@ function VedaModel(config) {
 	self.authenticate = function (username, password) {
 		var res = authenticate(username, password);
 		self.ticket = res.id;
+		if (!ticket) return self.trigger("auth:failed", user_uri, ticket, end_time);
 		self.user_uri = res.user_uri;
 		self.end_time = new Date( (res.end_time - 621355968000000000)/10000 );
-		if (ticket) self.trigger("authenticate", ticket, end_time);
+		self.trigger("auth:success", user_uri, ticket, end_time);
 	};
 	self.quit = function() {
 		self.ticket = "";
 		self.user_uri = "";
 		self.end_time = "";
-		self.trigger("quit");
+		self.trigger("auth:quit");
 	};
 
 	// Define Model event handlers
-	self.on("authenticate", function() { 
-		RegisterModule( new app.DocumentModel(self.user_uri), self, "user");
+	self.on("auth:success", function() { 
+		app.RegisterModule( new app.DocumentModel(user_uri), self, "user");
 	});
 
 };

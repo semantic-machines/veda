@@ -4,7 +4,7 @@ veda(function DocumentPresenter(app) { "use strict";
 
 	app.on("load:document", function () {
 		// Get or create Model
-		var doc = app.document || RegisterModule(new app.DocumentModel(), app, "document");
+		var doc = app.document || app.RegisterModule(new app.DocumentModel(), app, "document");
 	
 		// Render View
 		var template = $("#document-template").html();

@@ -84,7 +84,7 @@ Json resource_to_json(Resource resource)
         resource_json[ "data" ] = parse!int (resource.data);
     else if (resource.type == ResourceType.Float)
         resource_json[ "data" ] = parse!double (resource.data);
-    else if (resource.type == ResourceType.Float)
+    else if (resource.type == ResourceType.Boolean)
         resource_json[ "data" ] = parse!bool(resource.data);
     else
         resource_json[ "data" ] = Json.undefined;
@@ -163,6 +163,7 @@ class VedaStorageRest : VedaStorageRest_API {
             immutable(Ticket)[] tickets = receiveOnly!(immutable(Ticket)[]);
             if (tickets.length > 0)
             {
+            	if (tickets[ 0 ].result != ResultCode.OK) throw new HTTPStatusException(tickets[ 0 ].result);
                 return tickets[ 0 ];
             }
         }

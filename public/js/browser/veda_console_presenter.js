@@ -5,7 +5,7 @@ veda(function ConsolePresenter(app) { "use strict";
 	app.on("load:console", function () {
 	
 		// Get or create Model
-		var cons = app.console || RegisterModule(new app.ConsoleModel(), app, "console");
+		var cons = app.console || app.RegisterModule(new app.ConsoleModel(), app, "console");
 	
 		// Render View
 		var template = $("#console-template").html();
