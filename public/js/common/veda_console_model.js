@@ -9,19 +9,19 @@ function ConsoleModel(veda, params) {
 	var script, result, runat, time;
 	Object.defineProperty(self, "script", {
 		get: function() { return script; },
-		set: function(value) { if (compare(script, value)) return; script = value; self.trigger("set", "script", value); }
+		set: function(value) { if (compare(script, value)) return; script = value; self.trigger("set", "script", script); }
     });
 	Object.defineProperty(self, "result", {
 		get: function() { return result; },
-		set: function(value) { if (compare(result, value)) return; result = value; self.trigger("set", "result", value); }
+		set: function(value) { if (compare(result, value)) return; result = value; self.trigger("set", "result", result); }
     });
 	Object.defineProperty(self, "runat", {
 		get: function() { return runat; },
-		set: function(value) { if (compare(runat, value)) return; runat = value; self.trigger("set", "runat", value); }
+		set: function(value) { if (compare(runat, value)) return; runat = value; self.trigger("set", "runat", runat); }
     });
 	Object.defineProperty(self, "time", {
 		get: function() { return time; },
-		set: function(value) { if (compare(time, value)) return; time = value; self.trigger("set", "time", value); }
+		set: function(value) { if (compare(time, value)) return; time = value; self.trigger("set", "time", time); }
     });
 	if (typeof console != undefined) self.on("set", function(property, value) { console.log("property set:", property, "=", value) });
 

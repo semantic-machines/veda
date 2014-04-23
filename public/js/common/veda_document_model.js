@@ -10,7 +10,7 @@ function DocumentModel(veda, params) {
 	var individual = {};
 	Object.defineProperty(self, "individual", {
 		get: function() { return individual; },
-		set: function(value) { if (compare(individual, value)) return; individual = value; self.trigger("set", "individual", value); }
+		set: function(value) { if (compare(individual, value)) return; individual = value; self.trigger("set", "individual", individual); }
     });
 	if (typeof console != undefined) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
 		

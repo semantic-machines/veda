@@ -9,15 +9,15 @@ function VedaModel(config) {
 	var user_uri, ticket, end_time;
 	Object.defineProperty(self, "user_uri", {
 		get: function() { return user_uri; },
-		set: function(value) { if (compare(user_uri, value)) return; user_uri = value; self.trigger("set", "user_uri", value); }
+		set: function(value) { if (compare(user_uri, value)) return; user_uri = value; self.trigger("set", "user_uri", user_uri); }
     });
 	Object.defineProperty(self, "ticket", {
 		get: function() { return ticket; },
-		set: function(value) { if (compare(ticket, value)) return; ticket = value; self.trigger("set", "ticket", value); }
+		set: function(value) { if (compare(ticket, value)) return; ticket = value; self.trigger("set", "ticket", ticket); }
     });
 	Object.defineProperty(self, "end_time", {
 		get: function() { return end_time; },
-		set: function(value) { if (compare(end_time, value)) return; end_time = value; self.trigger("set", "end_time", value); }
+		set: function(value) { if (compare(end_time, value)) return; end_time = value; self.trigger("set", "end_time", end_time); }
     });
 	if (typeof console != undefined) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
 
