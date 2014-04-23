@@ -4,6 +4,19 @@ Veda(function VedaPresenter(veda) { "use strict";
 
 	veda.on("ready", function() {
 
+		// Turn on/off tracing
+		$("#set-trace").on("click", function(e) {
+			var $el = $(this);
+			e.preventDefault();
+			if ($el.hasClass("active")) { 
+				set_trace(0, false);
+				$el.removeClass("active");
+				return;
+			}
+			set_trace(0, true);
+			$el.addClass("active");
+		});
+
 		// Listen to quit && authentication failure events
 		veda.on("auth:quit auth:failed", function () {
 			deleteCookie("user_uri");
