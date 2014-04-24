@@ -518,6 +518,14 @@ test(
 				'veda-schema:test_field' : [ {
 					data : test_data,
 					type : 'String'
+				} ],
+				'veda-schema:test_fieldA' : [ {
+					data : 'BBB' + test_data_uid,
+					type : 'String'
+				} ],
+				'veda-schema:test_fieldB' : [ {
+					data : 'CCC' + test_data_uid,
+					type : 'String'
 				} ]
 			};
 
@@ -553,6 +561,10 @@ test(
 				'veda-schema:test_field' : [ {
 					data : test_data,
 					type : 'String'
+				} ],
+				'veda-schema:test_fieldA' : [ {
+					data : 'BBB' + test_data_uid,
+					type : 'String'
 				} ]
 			};
 
@@ -569,6 +581,14 @@ test(
 				} ],
 				'veda-schema:test_field' : [ {
 					data : 'AAA' + test_data_uid,
+					type : 'String'
+				} ],
+				'veda-schema:test_fieldA' : [ {
+					data : 'BBB' + test_data_uid,
+					type : 'String'
+				} ],
+				'veda-schema:test_fieldB' : [ {
+					data : 'CCC' + test_data_uid,
 					type : 'String'
 				} ]
 			};
@@ -598,4 +618,7 @@ test(
 
 			data = query(ticket_user1.id,  "'veda-schema:test_field' == '" + test_data_uid + "' || 'veda-schema:test_field' == 'AAA" + test_data_uid + "'");
 			ok(compare(data.length, 3));
+
+			data = query(ticket_user1.id,  "'veda-schema:test_fieldB' == 'CCC" + test_data_uid + "' && 'veda-schema:test_fieldA' == 'BBB" + test_data_uid + "'");
+			ok(compare(data.length, 2));
 		});
