@@ -7,11 +7,15 @@ function DocumentModel(veda, params) {
 	var self = riot.observable(this);
 
 	// Define Model data setters & getters
-	var individual = {};
-	Object.defineProperty(self, "individual", {
-		get: function() { return individual; },
-		set: function(value) { if (compare(individual, value)) return; individual = value; self.trigger("set", "individual", individual); }
-    });
+	var _ = {individual:""};
+	for (var property in _) {
+		(function(property) {
+			Object.defineProperty(self, property, {
+				get: function() { return _[property]; },
+				set: function(value) { if (compare(_[property], value)) return; _[property] = value; self.trigger("set", property, _[property]); }
+   			});
+   		})(property);
+    }
 	if (typeof console != undefined) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
 		
 	// Define Model functions

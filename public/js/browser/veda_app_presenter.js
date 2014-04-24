@@ -4,7 +4,7 @@ Veda(function VedaPresenter(veda) { "use strict";
 
 	veda.on("ready", function() {
 
-		// Turn on/off tracing
+		// Toggle tracing
 		$("#set-trace").on("click", function(e) {
 			var $el = $(this);
 			e.preventDefault();
