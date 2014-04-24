@@ -35,16 +35,17 @@ var acl_manager                = 2;
 var fulltext_indexer           = 4;
 var condition                  = 6;
 
-function get_property_chain (ticket, uri, element) 
+function get_property_chain (ticket, first, rest) 
 { 
-	var doc = get_individual (ticket, uri); 
+	var doc;
+	doc = typeof first === "object" ? first : get_individual (ticket, first);
 	var doc_first = doc;
 	var field;
 
 	for (var i = 1; i < arguments.length; i++) 
 	{
 		field = doc[arguments[i]];
-		if (field)		
+		if (field && field[0].type == "Uri")
 		{
 			doc = get_individual (ticket, field[0].data); 	
 			if (!doc) break;

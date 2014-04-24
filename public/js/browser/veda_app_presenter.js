@@ -59,11 +59,13 @@ Veda(function VedaPresenter(veda) { "use strict";
 		});
 
 		// If ticket absent or expired show login form
+
 		if (!getCookie("ticket") || !getCookie("user_uri") || !getCookie("end_time")) return veda.trigger("auth:quit");
 		veda.ticket = getCookie("ticket");
 		veda.user_uri = getCookie("user_uri");
 		veda.end_time = getCookie("end_time");
 		veda.trigger("auth:success", veda.user_uri, veda.ticket, veda.end_time);
+
 	});
 
 });

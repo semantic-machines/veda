@@ -25,11 +25,13 @@ veda-ui:EN
   rdf:type veda-ui:Language ;
   rdfs:label "English"@en ;
   rdfs:label "Английский"@ru ;
+  rdf:value "EN" ;
 .
 veda-ui:RU
   rdf:type veda-ui:Language ;
   rdfs:label "Russian"@en ;
   rdfs:label "Русский"@ru ;
+  rdf:value "RU" ;
 .
 veda-ui:preferredLanguage
   rdf:type owl:ObjectProperty ;
