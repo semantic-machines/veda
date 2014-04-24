@@ -556,9 +556,27 @@ test(
 				} ]
 			};
 
+			var new_test_doc1_uri_4 = "test12:" + guid();
+			var new_test_doc4 = {
+				'@' : new_test_doc1_uri_4,
+				'rdf:type' : [ {
+					data : 'veda-schema:document',
+					type : 'Uri'
+				} ],
+				'veda-schema:author' : [ {
+					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					type : 'Uri'
+				} ],
+				'veda-schema:test_field' : [ {
+					data : 'AAA' + test_data_uid,
+					type : 'String'
+				} ]
+			};
+
 			put_individual(ticket_user1.id, new_test_doc1);
 			put_individual(ticket_user1.id, new_test_doc2);
 			put_individual(ticket_user1.id, new_test_doc3);
+			put_individual(ticket_user1.id, new_test_doc4);
 //			wait_pmodule(subject_manager);
 //			wait_pmodule(condition);
 			wait_pmodule(fulltext_indexer);
@@ -577,4 +595,7 @@ test(
 
 			data = query(ticket_user1.id,  "'veda-schema:test_field1' == '" + test_data_uid + " t1'");
 			ok(compare(data.length, 0));
+
+			data = query(ticket_user1.id,  "'veda-schema:test_field' == '" + test_data_uid + "' || 'veda-schema:test_field' == 'AAA" + test_data_uid + "'");
+			ok(compare(data.length, 3));
 		});
