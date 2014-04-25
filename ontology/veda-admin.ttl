@@ -57,10 +57,8 @@ if (ff)
     if (first_doc)
     {
 	var doc_uri = first_doc['@'];	
-//    print ("doc_uri=" + doc_uri);
     if (employee_uri)
     {
-//    print ("employee_uri=" + employee_uri);
 	var new_permission = 
 	{
         '@' : guid (), 

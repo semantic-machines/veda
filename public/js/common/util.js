@@ -38,14 +38,14 @@ var condition                  = 6;
 function get_property_chain (ticket, first, rest) 
 { 
 	var doc;
-	doc = typeof first === "object" ? first : get_individual (ticket, first);
+	doc = typeof first == "object" ? first : get_individual (ticket, first);
 	var doc_first = doc;
 	var field;
 
 	for (var i = 1; i < arguments.length; i++) 
 	{
 		field = doc[arguments[i]];
-		if (field && field[0].type == "Uri")
+		if (field && (field[0].type == "Uri" || field[0].type == 1))
 		{
 			doc = get_individual (ticket, field[0].data); 	
 			if (!doc) break;
