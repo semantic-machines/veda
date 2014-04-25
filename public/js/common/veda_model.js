@@ -6,16 +6,18 @@ function VedaModel(config) {
 	var self = riot.observable(this);
 	
 	// Define Model data setters & getters
-	var _ = { user_uri:"", ticket:"", end_time:"" };
-	for (var property in _) {
+	var properties = { user_uri:"", ticket:"", end_time:"" };
+	function define_GS_etters(property) {
 		(function(property) {
 			Object.defineProperty(self, property, {
-				get: function() { return _[property]; },
-				set: function(value) { if (compare(_[property], value)) return; _[property] = value; self.trigger("set", property, _[property]); }
+				get: function() { return properties[property]; },
+				set: function(value) { if (compare(properties[property], value)) return; properties[property] = value; self.trigger("set", property, properties[property]); }
    			});
    		})(property);
-	}
-
+	};
+	for (var property in properties) {
+		define_GS_etters(property);
+    }
 	if (typeof console != undefined) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
 
 	// Define Model functions
