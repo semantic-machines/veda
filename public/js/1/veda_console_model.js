@@ -23,7 +23,7 @@ Veda.prototype.ConsoleModel = function ConsoleModel() {
 		get: function() { return time; },
 		set: function(value) { if (compare(time, value)) return; time = value; self.trigger("set", "time", value); }
     });
-	if (typeof console != undefined) self.on("set", function(property, value) { console.log("property set:", property, "=", value) });
+	if (typeof console != "undefined") self.on("set", function(property, value) { console.log("property set:", property, "=", value) });
 
 	// Define Model functions
 	self.run = function() {

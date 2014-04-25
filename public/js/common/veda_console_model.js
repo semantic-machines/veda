@@ -11,14 +11,18 @@ function ConsoleModel(veda, params) {
 		(function(property) {
 			Object.defineProperty(self, property, {
 				get: function() { return properties[property]; },
-				set: function(value) { if (compare(properties[property], value)) return; properties[property] = value; self.trigger("set", property, properties[property]); }
+				set: function(value) { 
+					if (properties[property] == value) return; 
+					properties[property] = value; 
+					self.trigger("set", property, properties[property]);
+				}
    			});
    		})(property);
 	};
 	for (var property in properties) {
 		define_GS_etters(property);
     }
-	if (typeof console != undefined) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
+	if (typeof console != "undefined") self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
 
 	// Define Model functions
 	self.run = function() {
