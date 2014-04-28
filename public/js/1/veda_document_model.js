@@ -11,7 +11,7 @@ Veda.prototype.DocumentModel = function DocumentModel(uri) {
 		get: function() { return individual; },
 		set: function(value) { if (compare(individual, value)) return; individual = value; self.trigger("set", "individual", value); }
     });
-	if (typeof console != undefined) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
+	if (typeof console != "undefined") self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
 		
 	// Define Model functions
 	self.load = function(uri) {

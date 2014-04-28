@@ -8,19 +8,23 @@ function UserModel(veda, params) {
 	var self = riot.observable(this);
 
 	// Define Model data setters & getters
-	var _ = {individual:"", language:"", preferences: ""};
-	function define_GS_etters() {
-		
-	};
-	for (var property in _) {
+	var properties = {individual:"", language:"", preferences: ""};
+	function define_GS_etters(property) {
 		(function(property) {
 			Object.defineProperty(self, property, {
-				get: function() { return _[property]; },
-				set: function(value) { if (compare(_[property], value)) return; _[property] = value; self.trigger("set", property, _[property]); }
+				get: function() { return properties[property]; },
+				set: function(value) { 
+					if (properties[property] == value) return; 
+					properties[property] = value; 
+					self.trigger("set", property, properties[property]);
+				}
    			});
    		})(property);
+	};
+	for (var property in properties) {
+		define_GS_etters(property);
     }
-	if (typeof console != undefined) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
+	if (typeof console != "undefined") self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
 		
 	// Define Model functions
 	self.load = function(uri) {

@@ -35,9 +35,9 @@ Veda(function VedaPresenter(veda) { "use strict";
 
 		// Listen to authentication success event
 		veda.on("auth:success", function (user_uri, ticket, end_time) {
-			setCookie("user_uri", user_uri, { path: "/", expires: new Date(end_time) });
-			setCookie("ticket", ticket, { path: "/", expires: new Date(end_time) });
-			setCookie("end_time", end_time, { path: "/", expires: new Date(end_time) });
+			setCookie("user_uri", user_uri, { path: "/", expires: new Date(parseInt(end_time)) });
+			setCookie("ticket", ticket, { path: "/", expires: new Date(parseInt(end_time)) });
+			setCookie("end_time", end_time, { path: "/", expires: new Date(parseInt(end_time)) });
 			riot.route(location.hash, true);
 		});
 

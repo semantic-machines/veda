@@ -30,7 +30,7 @@ function Veda() {
 		get: function() { return end_time; },
 		set: function(value) { if (compare(end_time, value)) return; end_time = value; self.trigger("set", "end_time", value); }
     });
-	if (typeof console != undefined) self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
+	if (typeof console != "undefined") self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
 
 	// Define Model functions
 	self.authenticate = function (username, password) {
