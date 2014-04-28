@@ -180,10 +180,10 @@ shared static this()
 	router.get("*", serveStaticFiles("public"));
 	router.get("/", serveStaticFile("public/index.html"));
 	router.get("/tests", serveStaticFile("public/tests.html"));
-	router.get("/logout", &logout);
+	//router.get("/logout", &logout);
 	registerRestInterface(router, new VedaStorageRest());
 
-	router.any("*", &login);
+	//router.any("*", &login);
 	router.get("/view_classes", &view_classes);
 	router.get("/view_classes/", &view_classes);
 	router.get("/view_class/:uri", &view_class);
