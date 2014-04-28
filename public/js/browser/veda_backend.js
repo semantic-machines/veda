@@ -28,7 +28,7 @@ function is_ticket_valid(ticket, done, fail) {
 	};
 	if(!done) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		return $.ajax(params).responseText; //JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
 		.done( function (data) { done(data) } )

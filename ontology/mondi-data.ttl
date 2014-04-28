@@ -282,7 +282,7 @@ mondi-data:Preferences_AndreyBychin
 mondi-data:Preferences_RomanKarpov
   rdf:type veda-ui:Preferences ;
   veda-schema:owner mondi-data:RomanKarpov ;
-  veda-ui:preferredLanguage veda-ui:EN ;
+  veda-ui:preferredLanguage veda-ui:RU ;
   rdfs:label "Preferences (Roman Karpov)"@en ;
   rdfs:label "Предпочтения (Роман Карпов)"@ru ;
 .

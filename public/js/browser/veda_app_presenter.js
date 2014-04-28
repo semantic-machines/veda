@@ -4,6 +4,23 @@ Veda(function VedaPresenter(veda) { "use strict";
 
 	veda.on("ready", function() {
 
+		// Router function
+		riot.route( function (hash) {
+			var hash_tokens = hash.slice(2).split("/");
+			var page = hash_tokens[0];
+			var params = hash_tokens.slice(1);
+			
+			if (!veda.ticket || !veda.user_uri || !veda.end_time) veda.trigger("auth:quit");
+			else page != "" ? veda.load(page, params) : $("#main").html( $("#wellcome-template").html() );
+		});
+
+		// Listen to a link click and call router
+		$("body").on("click", "[href^='#/']", function(e) {
+			e.preventDefault();
+			var link = $(this);
+			return riot.route($(this).attr("href"));
+		});
+
 		// Toggle tracing
 		$("#set-trace").on("click", function(e) {
 			var $el = $(this);
@@ -33,7 +50,7 @@ Veda(function VedaPresenter(veda) { "use strict";
 			});
 		});
 
-		// Listen to authentication success event
+		// Listen to user loaded event
 		veda.on("auth:success", function (user_uri, ticket, end_time) {
 			setCookie("user_uri", user_uri, { path: "/", expires: new Date(parseInt(end_time)) });
 			setCookie("ticket", ticket, { path: "/", expires: new Date(parseInt(end_time)) });
@@ -41,25 +58,7 @@ Veda(function VedaPresenter(veda) { "use strict";
 			riot.route(location.hash, true);
 		});
 
-		// Router function
-		riot.route( function (hash) {
-			var hash_tokens = hash.slice(2).split("/");
-			var page = hash_tokens[0];
-			var params = hash_tokens.slice(1);
-			
-			if (!veda.ticket || !veda.user_uri || !veda.end_time) veda.trigger("auth:quit");
-			else page != "" ? veda.load(page, params) : $("#main").html( $("#wellcome-template").html() );
-		});
-
-		// Listen to a link click and call router
-		$("body").on("click", "[href^='#/']", function(e) {
-			e.preventDefault();
-			var link = $(this);
-			return riot.route($(this).attr("href"));
-		});
-
 		// If ticket absent or expired show login form
-
 		if (!getCookie("ticket") || !getCookie("user_uri") || !getCookie("end_time")) return veda.trigger("auth:quit");
 		veda.ticket = getCookie("ticket");
 		veda.user_uri = getCookie("user_uri");

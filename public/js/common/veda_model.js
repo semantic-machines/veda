@@ -44,10 +44,10 @@ function VedaModel(config) {
 	self.load = function (page, params) {
 		switch (page) {
 			case "console": 
-				self.console ? self.trigger("console:loaded", self.console) : RegisterModule(new ConsoleModel(self, params), self, "console"); 
+				self.console ? self.trigger("console:loaded", self.console) : RegisterModule(new ConsoleModel(self, params), self, "console");
 				break
 			case "document": 
-				self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, params), self, "document"); 
+				self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, ["mondi-data:AdministrativeDocument_1"]), self, "document");
 				break
 			case "search": 
 				self.search ? self.trigger("search:loaded", self.search) : RegisterModule(new SearchModel(self, params), self, "search"); 
@@ -61,7 +61,7 @@ function VedaModel(config) {
 
 	// Define Model event handlers
 	self.on("auth:success", function() { 
-		RegisterModule( new UserModel(self, [self.user_uri]), self, "user");
+		RegisterModule(new UserModel(self, [self.user_uri]), self, "user");
 	});
 
 };

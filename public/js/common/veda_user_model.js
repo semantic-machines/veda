@@ -46,11 +46,12 @@ function UserModel(veda, params) {
 		});
 	};
 
-	// Load data 
-	if (uri) self.load(uri);
-	
 	// Model loaded message
 	self.on("user:loaded", function(){
 		if (veda) veda.trigger("user:loaded", self);
 	});
+	
+	// Load data 
+	if (uri) self.load(uri);
+
 };
