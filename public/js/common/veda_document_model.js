@@ -28,6 +28,29 @@ function DocumentModel(veda, params) {
 	// Define Model functions
 	self.load = function(uri) {
 		self.individual = get_individual(veda.ticket, uri);
+		
+		/*
+		function localize_resources(resources, lang) {
+			var localed = [], unlocaled = [];
+			for (var i in resources) {
+				if ( resources[i]["lang"] == lang) localed.push(resources[i]["data"]);
+				if (typeof resources[i]["lang"] == "undefined") unlocaled.push(resources[i]["data"]);
+			}
+			return localed.length ? localed : unlocaled;
+		}
+		var flat_individual = {};
+		for (var property_uri in individual) {
+			if (property_uri == "@") {
+				flat_individual["@"] = individual["@"];
+				continue;
+			}
+			var property_name = localize_resources( get_individual(veda.ticket, property_uri)["rdfs:label"], veda.user.language );
+			var values = localize_resources(individual[property_uri], veda.user.language);
+			flat_individual[property_name] = values;
+		}
+		*/
+		
+		
 		self.trigger("document:loaded");
 	};
 
