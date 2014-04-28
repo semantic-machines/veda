@@ -219,7 +219,7 @@ veda-schema:childUnit
 veda-schema:created
   rdf:type owl:DatatypeProperty ;
   rdfs:domain veda-schema:Document ;
-  rdfs:label "Creation date"@en ;
+  rdfs:label "creation date"@en ;
   rdfs:label "дата создания"@ru ;
   rdfs:range xsd:dateTime ;
 .
