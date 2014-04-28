@@ -59,9 +59,14 @@ function VedaModel(config) {
 		}
 	};
 
+	// Authentication complete after user has been loaded
+	self.on("user:loaded", function() {
+		self.trigger("auth:complete", self.user_uri, self.ticket, self.end_time);
+	});
+	
 	// Define Model event handlers
 	self.on("auth:success", function() { 
 		RegisterModule(new UserModel(self, [self.user_uri]), self, "user");
 	});
-
+	
 };
