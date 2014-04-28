@@ -203,8 +203,15 @@
 			<div class="container-fluid" id="document">
 				<h2>Document</h2>
 				<a href="#/console" class="btn btn-info" >Console</a>
+				<dl id="doc" class="dl-horizontal">
+				</dl>
 			</div>
 		</script>
+		
+		<!-- Single property template -->
+		<script type="html/template" id="single-property-template">
+			<dt>{property}</dt><dd>{value}</dd>
+		</script>	
 
 		<!-- Document template -->
 		<script type="html/template" id="current-user-template">
