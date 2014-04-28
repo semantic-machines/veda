@@ -8,15 +8,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		var template = $("#document-template").html();
 		$("#main").html(template);
 	
-		//$("#document #doc").html(JSON.stringify(document.individual));
+		$("#document #doc").html(JSON.stringify(document.individual));
 		
-		var tmpl = $("#single-property-template").html();
-		for (var property in document.flat_individual) {
-			$("#document #doc").append(
-				riot.render(tmpl, { property: property, value: document.flat_individual[property] })
-			);
-		}
-
 	});
 
 });

@@ -7,6 +7,7 @@ Veda(function UserPresenter(veda) { "use strict";
 		// Listen to logout click
 		$("#logout").on("click", function(e) {
 			e.preventDefault();
+			$("#current-user").html("");
 			return veda.quit();
 		});
 

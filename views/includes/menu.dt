@@ -20,6 +20,7 @@ nav.navbar.navbar-inverse(role="navigation")
 
 		a.btn.btn-xs.btn-danger.navbar-btn.navbar-right(href="/logout")
 			i.glyphicon.glyphicon-log-out
+			Logout
 
 		p.navbar-text.navbar-right
 			| Signed in as 
