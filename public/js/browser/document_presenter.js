@@ -7,8 +7,12 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		// Render View
 		var template = $("#document-template").html();
 		$("#main").html(template);
+		
+		var single_property = $("#single-property-template").html();
 	
-		$("#document #doc").html(JSON.stringify(document.individual));
+		for (var i in document.flat_individual) {
+			$("#document #individual").append( riot.render(single_property, {property: i, value: document.flat_individual[i]}) );
+		}
 		
 	});
 

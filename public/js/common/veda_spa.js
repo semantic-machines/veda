@@ -15,7 +15,7 @@ var Veda = riot.observable(function(arg) {
   // Veda(conf) --> initialize the application
   } else {
 
-    app = new VedaModel(arg);
+    app = new AppModel(arg);
     
     RegisterModule(app, app);
     

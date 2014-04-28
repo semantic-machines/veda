@@ -2,7 +2,7 @@
 
 "use strict";
 
-function VedaModel(config) {
+function AppModel(config) {
 	var self = riot.observable(this);
 	
 	// Define Model data setters & getters

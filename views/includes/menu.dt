@@ -9,7 +9,8 @@
 
 nav.navbar.navbar-inverse(role="navigation")
 	.container-fluid
-		a.btn.btn-info.navbar-btn.navbar-left(href="/") VEDA
+		a.navbar-brand(href="/#/")
+			img(src="/img/veda-logo.png", style="position:relative; top:-3px")
 		ul.nav.navbar-nav.navbar-left
 			li
 				a(href="/view_classes/", title="Classes") Классы / Classes
@@ -20,7 +21,7 @@ nav.navbar.navbar-inverse(role="navigation")
 
 		a.btn.btn-xs.btn-danger.navbar-btn.navbar-right(href="/logout")
 			i.glyphicon.glyphicon-log-out
-			Logout
+			| Logout
 
 		p.navbar-text.navbar-right
 			| Signed in as 

@@ -29,7 +29,7 @@ function DocumentModel(veda, params) {
 	self.load = function(uri) {
 		self.individual = get_individual(veda.ticket, uri);
 		
-		/*
+		
 		function localize_resources(resources, lang) {
 			var localed = [], unlocaled = [];
 			for (var i in resources) {
@@ -38,17 +38,19 @@ function DocumentModel(veda, params) {
 			}
 			return localed.length ? localed : unlocaled;
 		}
-		var flat_individual = {};
+		
+		var flat_individual = {}, individual = self.individual;
 		for (var property_uri in individual) {
 			if (property_uri == "@") {
 				flat_individual["@"] = individual["@"];
 				continue;
 			}
-			var property_name = localize_resources( get_individual(veda.ticket, property_uri)["rdfs:label"], veda.user.language );
+			var property_name = localize_resources( get_individual(veda.ticket, property_uri)["rdfs:label"], veda.user.language )[0];
 			var values = localize_resources(individual[property_uri], veda.user.language);
 			flat_individual[property_name] = values;
+			console.log(property_name, flat_individual[property_name]);
 		}
-		*/
+		self.flat_individual = flat_individual;
 		
 		
 		self.trigger("document:loaded");
@@ -60,7 +62,7 @@ function DocumentModel(veda, params) {
 	};
 
 	// Model loaded message
-	self.on("document:loaded", function(){
+	self.on("document:loaded", function() {
 		if (veda) veda.trigger("document:loaded", self);
 	});
 
