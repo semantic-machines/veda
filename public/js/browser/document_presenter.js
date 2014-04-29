@@ -10,23 +10,20 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		
 		var single_property = $("#single-property-template").html();
 	
-		var doc = document.flat_individual;
-		for (var i in document.flat_individual) {
+		var doc = document.expanded_localized;
+		for (var i in doc) {
 			if (i == "@") continue;
+			console.log(doc[i]["property"]);
 			$("#document #doc").append( 
 				riot.render(
 					single_property, 
 					{ 
-						property_uri: doc[i]["property_uri"], 
-						property_label: doc[i]["property_label"], 
-						property_range: doc[i]["property_range"][0]["data"], 
-						property_values: doc[i]["property_values"]
+						property: JSON.stringify(doc[i]["property"]["rdfs:label"]), //[0]["data"]),
+						values: JSON.stringify(doc[i]["values"])
 					}
 				) 
 			);
 		}
-
-		//$("#document #ind").html( "<pre>" + JSON.stringify(localized, true, 2) + "</pre>");
 
 	});
 

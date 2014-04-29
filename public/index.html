@@ -71,13 +71,13 @@
 		<script src="/js/common/search_model.js"></script>
 
 		<!-- Veda browser only -->
-		<script src="/js/browser/backend.js"></script>
 		<script src="/js/browser/app_presenter.js"></script>
+		<script src="/js/browser/backend.js"></script>
 		<script src="/js/browser/console_presenter.js"></script>
 		<script src="/js/browser/document_presenter.js"></script>
 		<script src="/js/browser/user_presenter.js"></script>
 		<script src="/js/browser/search_presenter.js"></script>
-
+		
 		<script type="text/javascript">
 			$(function(){
 				Veda({/* configuration object*/});
@@ -158,9 +158,6 @@
 				<a href="#/console" class="btn btn-info" >Console</a>
 				<div class="container-fluid" id="doc">
 				</div>
-				<hr>
-				<div class="container-fluid" id="ind">
-				</div>
 			</div>
 		</script>
 		
@@ -168,13 +165,13 @@
 		<script type="html/template" id="single-property-template">
 			<div class="row">
 				<div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 text-right">
-					<strong>{property_label}</strong> [{property_uri}, {property_range}]
+					<strong>{property}</strong>
 				</div>
 				<div class="col-xs-8 col-sm-8 col-md-9 col-lg-9">
-					{property_values}
+					{values}
 				</div>
 			</div>
-			<!--hr style="margin:5px"-->
+			<hr style="margin:5px">
 		</script>	
 
 		<!-- Current user template -->
