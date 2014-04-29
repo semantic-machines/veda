@@ -13,7 +13,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		var doc = document.flat_individual;
 		for (var i in document.flat_individual) {
 			if (i == "@") continue;
-			$("#document #individual").append( 
+			$("#document #doc").append( 
 				riot.render(
 					single_property, 
 					{ 
@@ -25,7 +25,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				) 
 			);
 		}
-		
+
+		//$("#document #ind").html( "<pre>" + JSON.stringify(localized, true, 2) + "</pre>");
+
 	});
 
 });

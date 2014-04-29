@@ -40,7 +40,7 @@ function AppModel(config) {
 		self.trigger("auth:quit");
 	};
 	
-	self.storage = localStorage ? localStorage : {};
+	self.cache = localStorage ? localStorage : {};
 	
 	// Invoke existing or create new module
 	self.load = function (page, params) {
@@ -51,7 +51,8 @@ function AppModel(config) {
 				break
 			case "document": 
 				//self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, ["mondi-data:AdministrativeDocument_1"]), self, "document");
-				new DocumentModel(self, params);
+				//new DocumentModel(self, params);
+				new DocumentModel(self, [self.user_uri]);
 				break
 			case "search": 
 				//self.search ? self.trigger("search:loaded", self.search) : RegisterModule(new SearchModel(self, params), self, "search"); 
@@ -65,20 +66,20 @@ function AppModel(config) {
 		}
 	};
 
-	// App load complete after user & ontology has been loaded
+	// Load ontology complete after user has been loaded
 	self.on("user:loaded", function() {
-		// Load ontology
 		var q = "'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'owl:Class' || 'rdf:type' == 'rdf:Property' || 'rdf:type' == 'owl:DatatypeProperty' || 'rdf:type' == 'owl:ObjectProperty'";
 		var q_results = query(self.ticket, q);
 		for (var i=0; i<q_results.length; i++) {
 			var ontology_individual = get_individual(self.ticket, q_results[i], function (data) {
-				self.storage[data["@"]] = JSON.stringify(data);
+				self.cache[data["@"]] = JSON.stringify(data);
 			});
 		}
+		// App started
 		self.trigger("app:complete", self.user_uri, self.ticket, self.end_time);
 	});
 	
-	// Define Model event handlers
+	// Load user after successful authentication
 	self.on("auth:success", function() { 
 		RegisterModule(new UserModel(self, [self.user_uri]), self, "user");
 	});
