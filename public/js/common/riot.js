@@ -95,7 +95,7 @@ function pop(hash, forced) {
 }
 
 /* Always fire pop event upon page load (normalize behaviour across browsers) */
-/*
+
 // standard browsers
 if (listen) {
   listen("popstate", pop, false);
@@ -106,7 +106,7 @@ if (listen) {
   doc.attachEvent("onreadystatechange", function() {
     if (doc.readyState === "complete") pop("");
   });
-}*/
+}
 
 /* Change the browser URL or listen to changes on the URL */
 /* (KarpovR:) Trigger pop if forced == true */

@@ -32,6 +32,13 @@ Veda(function VedaPresenter(veda) { "use strict";
 		$el.addClass("active");
 	});
 
+	// Listen to logout click
+	$("#logout").on("click", function(e) {
+		e.preventDefault();
+		$("#current-user").html("");
+		veda.trigger("auth:quit");
+	});
+
 	// Listen to quit && authentication failure events
 	veda.on("auth:quit auth:failed", function () {
 		deleteCookie("user_uri");
@@ -49,7 +56,7 @@ Veda(function VedaPresenter(veda) { "use strict";
 	});
 
 	// Listen to user loaded event
-	veda.on("auth:complete", function (user_uri, ticket, end_time) {
+	veda.on("app:complete", function (user_uri, ticket, end_time) {
 		setCookie("user_uri", user_uri, { path: "/", expires: new Date(parseInt(end_time)) });
 		setCookie("ticket", ticket, { path: "/", expires: new Date(parseInt(end_time)) });
 		setCookie("end_time", end_time, { path: "/", expires: new Date(parseInt(end_time)) });

@@ -29,6 +29,9 @@
 				<a class="btn btn-xs btn-success navbar-btn navbar-left" id="set-trace">
 					<i class="glyphicon glyphicon-flash"></i> Trace
 				</a>
+				<a class="btn btn-xs btn-danger navbar-btn navbar-right" id="logout">
+					<i class="glyphicon glyphicon-log-out"></i> Logout
+				</a>				
 				<div id="user-info" class="navbar-right"></div>
 			</div>
 		</nav>
@@ -122,7 +125,7 @@
 		<script type="html/template" id="console-template">
 			<div class="container-fluid" id="console">
 				<h2>JavaScript console</h2>
-				<a href="#/document" class="btn btn-info" >Document</a>
+				<a href="#/document/mondi-data:AdministrativeDocument_1" class="btn btn-info" >Document</a>
 				<br><br>
 				<form role="form">
 					<div class="form-group row">
@@ -153,24 +156,29 @@
 			<div class="container-fluid" id="document">
 				<h2>Document</h2>
 				<a href="#/console" class="btn btn-info" >Console</a>
-				<dl id="individual" class="dl-horizontal">
-				</dl>
+				<div class="container-fluid" id="individual">
+				</div>
 			</div>
 		</script>
 		
 		<!-- Single property template -->
 		<script type="html/template" id="single-property-template">
-			<dt>{property}</dt><dd>{value}</dd>
+			<div class="row">
+				<div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 text-right">
+					<strong>{property_label}</strong> [{property_uri}, {property_range}]
+				</div>
+				<div class="col-xs-8 col-sm-8 col-md-9 col-lg-9">
+					{property_values}
+				</div>
+			</div>
+			<hr style="margin:5px">
 		</script>	
 
 		<!-- Current user template -->
 		<script type="html/template" id="current-user-template">
-			<a class="btn btn-xs btn-danger navbar-btn navbar-right" id="logout">
-				<i class="glyphicon glyphicon-log-out"></i> Logout
-			</a>				
 			<p class="navbar-text navbar-right">
 				Signed in as 
-				<a href="#" class="navbar-link" id="current-user">{name}</a>
+				<a href="#/document/{id}" class="navbar-link" id="current-user">{name}</a>
 			</p>
 			<div data-toggle="buttons" class="navbar-right btn-group">
 				<label id="ru-label" class="btn btn-xs btn-info navbar-btn active">
