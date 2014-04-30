@@ -12,6 +12,11 @@ nav.navbar.navbar-inverse(role="navigation")
 		a.navbar-brand(href="/#/")
 			img(src="/img/veda-logo.png", style="position:relative; top:-3px")
 		ul.nav.navbar-nav.navbar-left
+
+			li
+				a(href="/#/document") Документ / Document
+			li
+				a(href="/#/console") Консоль / Console
 			li
 				a(href="/view_classes/", title="Classes") Классы / Classes
 			li

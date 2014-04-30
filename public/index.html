@@ -17,13 +17,19 @@
 				<a href="#/" class="navbar-brand"><img src="/img/veda-logo.png" style="position:relative; top:-3px"/></a>
 				<ul class="nav navbar-nav navbar-left">
 					<li>
-						<a href="/view_classes/" title="Classes">Классы / Classes</a>
+						<a href="/#/document">Документ / Document</a>
+					</li>
+					<li>	
+						<a href="/#/console">Консоль / Console</a>
 					</li>
 					<li>
-						<a href="/search/" title="Search">Поиск / Search</a>
+						<a href="/view_classes/">Классы / Classes</a>
 					</li>
 					<li>
-						<a href="/tests" title="Search">Тесты / Tests</a>
+						<a href="/search/">Поиск / Search</a>
+					</li>
+					<li>
+						<a href="/tests">Тесты / Tests</a>
 					</li>
 				</ul>
 				<a class="btn btn-xs btn-success navbar-btn navbar-left" id="set-trace">
@@ -125,8 +131,6 @@
 		<script type="html/template" id="console-template">
 			<div class="container-fluid" id="console">
 				<h2>JavaScript console</h2>
-				<a href="#/document" class="btn btn-info" >Document</a>
-				<br><br>
 				<form role="form">
 					<div class="form-group row">
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -154,8 +158,7 @@
 		<!-- Document template -->
 		<script type="html/template" id="document-template">
 			<div class="container-fluid" id="document">
-				<h2>Document</h2>
-				<a href="#/console" class="btn btn-info" >Console</a>
+				<h2 id="label">Тип: наименование</h2>
 				<div class="container-fluid" id="doc">
 				</div>
 			</div>
