@@ -23,42 +23,11 @@ function DocumentModel(veda, params) {
 	for (var property in properties) {
 		define_GS_etters(property);
     }
-	if (typeof console != "undefined") self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
+	//if (typeof console != "undefined") self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
 		
 	// Define Model functions
 	self.load = function(uri) {
 		self.individual = get_individual(veda.ticket, uri);
-
-		// TODO: move individual to separate model (and perhaps presenter?)
-
-		self.expanded = {};
-		var ind = self.individual;
-		for (var property_uri in ind) {
-			self.expanded[property_uri] = {};
-			if (property_uri == "@") {
-				self.expanded["@"] = ind["@"];
-				continue;
-			}
-			var property = veda.cache[property_uri] ? JSON.parse( veda.cache[property_uri] ) : get_individual(veda.ticket, property_uri);
-			var values = ind[property_uri];
-			for (var i in values) {
-				if (values[i].type != "Uri") continue;
-				values[i] = veda.cache[values[i].data] ? JSON.parse( veda.cache[values[i].data] ) : get_individual(veda.ticket, values[i].data);
-			}
-			self.expanded[property_uri]["property"] = property;
-			self.expanded[property_uri]["values"] = values;
-		}
-		
-		self.expanded_localized = JSON.parse(
-			JSON.stringify( self.expanded )
-			.replace(/{[^{]*?"lang":"(.{2})"[^}]*?}/g, function (match, lang) {
-				return lang == veda.user.language ? match : "";
-			})
-			.replace(/\[(,)|(,)\]|\[(,)\]/g, function (match, p1, p2, p3) {
-				return p1 ? "[" : p2 ? "]" : "[]";
-			})
-		);
-		
 		self.trigger("document:loaded");
 	};
 
@@ -67,6 +36,26 @@ function DocumentModel(veda, params) {
 		});
 	};
 
+	self.get_expanded = function () {
+		var expanded = {};
+		for (var property_uri in self.individual) {
+			expanded[property_uri] = {};
+			if (property_uri == "@") {
+				expanded["@"] = self.individual["@"];
+				continue;
+			}
+			var property = veda.cache[property_uri] ? JSON.parse( veda.cache[property_uri] ) : get_individual(veda.ticket, property_uri);
+			var values = self.individual[property_uri];
+			for (var i in values) {
+				if (values[i].type != "Uri") continue;
+				values[i] = veda.cache[values[i].data] ? JSON.parse( veda.cache[values[i].data] ) : get_individual(veda.ticket, values[i].data);
+			}
+			expanded[property_uri]["property"] = property;
+			expanded[property_uri]["values"] = values;
+		}
+		return expanded;
+	}
+	
 	// Model loaded message
 	self.on("document:loaded", function() {
 		if (veda) veda.trigger("document:loaded", self);

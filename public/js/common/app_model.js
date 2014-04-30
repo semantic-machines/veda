@@ -5,6 +5,7 @@
 function AppModel(config) {
 	var self = riot.observable(this);
 	
+	self.authenticated = false;
 	// Define Model data setters & getters
 	var properties = { user_uri:"", ticket:"", end_time:"" };
 	function define_GS_etters(property) {
@@ -22,7 +23,7 @@ function AppModel(config) {
 	for (var property in properties) {
 		define_GS_etters(property);
     }
-	if (typeof console != "undefined") self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
+	//if (typeof console != "undefined") self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
 
 	// Define Model functions
 	self.authenticate = function (username, password) {
@@ -76,6 +77,7 @@ function AppModel(config) {
 			});
 		}
 		// App started
+		self.authenticated = true;
 		self.trigger("app:complete", self.user_uri, self.ticket, self.end_time);
 	});
 	
@@ -84,5 +86,7 @@ function AppModel(config) {
 		RegisterModule(new UserModel(self, [self.user_uri]), self, "user");
 	});
 	
-	
+	self.on("auth:quit", function() { 
+		self.authenticated = false;
+	});
 };
