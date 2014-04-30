@@ -50,6 +50,21 @@ function wait_pmodule(pmodule_id, callback) {
 		.done( function (data) { callback(data) } );
 }
 
+function backup(callback) {
+	var params = {
+		type: "GET",
+		url: "backup",
+		data: { }
+	};
+	if(!callback) {
+		params.async = false;
+		return JSON.parse($.ajax(params).responseText);
+	}
+	$.ajax(params)
+		.fail( function () { callback(false) } )
+		.done( function (data) { callback(data) } );
+}
+
 function set_trace(idx, state, callback) {
 	var params = {
 		type: "GET",
