@@ -117,6 +117,9 @@ interface VedaStorageRest_API {
     @path("set_trace") @method(HTTPMethod.GET)
     void set_trace(int idx, bool state);
 
+    @path("backup") @method(HTTPMethod.GET)
+    void backup();
+
     @path("query") @method(HTTPMethod.GET)
     string[] query(string ticket, string query);
 
@@ -188,6 +191,17 @@ class VedaStorageRest : VedaStorageRest_API {
         if (my_task !is Tid.init)
         {
             send(io_task, Command.Set, Function.Trace, idx, state, my_task);
+            receiveOnly!(bool);
+        }
+    }
+
+    void backup()
+    {
+        Tid my_task = Task.getThis();
+
+        if (my_task !is Tid.init)
+        {
+            send(io_task, Command.Execute, Function.Backup, my_task);
             receiveOnly!(bool);
         }
     }

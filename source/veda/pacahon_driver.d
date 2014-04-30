@@ -41,7 +41,8 @@ enum Function
     TicketValid,
     Script,
     PModule,
-    Trace
+    Trace,
+    Backup
 }
 
 Task io_task;
@@ -64,6 +65,17 @@ class PacahonDriver {
                               while (true)
                               {
                                   receive(
+                                          (Command cmd, Function fn, Tid tid)
+                                          {
+                                              if (tid != Tid.init)
+                                              {
+                                                  if (cmd == Command.Execute && fn == Function.Backup)
+                                                  {
+                                                      context.backup();
+                                                      send(tid, true);
+                                                  }
+                                              }
+                                          },
                                           (Command cmd, Function fn, int arg1, bool arg2, Tid tid)
                                           {
                                               if (tid != Tid.init)
