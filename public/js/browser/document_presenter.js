@@ -29,7 +29,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		// Strict localizer
 		var doc = JSON.parse(
 			JSON.stringify( document.get_expanded() )
-			.replace(/(\[{[^\[\]]*?}\])/g, function (match) {
+			.replace(/(\[{[^\[\]]*?"type":"String"[^\[\]]*?}\])/g, function (match) {
 				match.replace
 				
 			})
