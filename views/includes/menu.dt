@@ -14,7 +14,7 @@ nav.navbar.navbar-inverse(role="navigation")
 		ul.nav.navbar-nav.navbar-left
 
 			li
-				a(href="/#/document") Документ / Document
+				a(href="/#/document/mondi-data:") Документ / Document
 			li
 				a(href="/#/console") Консоль / Console
 			li

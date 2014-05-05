@@ -5,6 +5,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 	veda.on("document:loaded", function (document) {
 
 		// Localize document with preferred language
+		
 		var doc = JSON.parse(
 
 			JSON.stringify( document.get_expanded() )
@@ -28,6 +29,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		// Render document to screen
 		$("#document #label").html( 
 			
+			// Document title (type: label)
 			doc["rdf:type"]["values"].reduce(function(p, c) {
 				return p + c["rdfs:label"].reduce(function(p, c) { return p != "" ? p + ", " + c.data : c.data}, "");
 			}, "") 
@@ -40,6 +42,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			
 		);
 		
+		// Document properties (property: values)
 		for (var i in doc) {
 			if (i == "@") continue;
 			
@@ -49,17 +52,17 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			
 			var values = doc[i]["values"].reduce(function(p, c) {
 				if (!c["@"]) return p != "" ? p + ", " + c.data : c.data;
-				return p + c["rdfs:label"].reduce(function(p, c) { return p != "" ? p + ", " + c.data : c.data}, "");
+				return p + c["rdfs:label"].reduce(function(p1, c1) { return p1 != "" ? p1 + ", " + "<a href='/#/document/" + c["@"] + "'>" + c1.data + "</a>" : "<a href='/#/document/" + c["@"] + "'>" + c1.data + "</a>" }, "");
 			}, "")
 			
-			$("#document #doc").append( 
+			$("#document #doc").append(
 				riot.render(
-					single_property, 
-					{ 
+					single_property,
+					{
 						property: property,
 						values: values
 					}
-				) 
+				)
 			);
 		}
 
