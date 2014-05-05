@@ -6,6 +6,10 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 		// Localize document with preferred language
 		
+		//$("#main").html( JSON.stringify(document.get_expanded()) );
+		
+		
+		// Non strict localizer
 		var doc = JSON.parse(
 
 			JSON.stringify( document.get_expanded() )
@@ -21,9 +25,22 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			})
 		);
 
+/*
+		// Strict localizer
+		var doc = JSON.parse(
+			JSON.stringify( document.get_expanded() )
+			.replace(/(\[{[^\[\]]*?}\])/g, function (match) {
+				match.replace
+				
+			})
+		);
+*/
 		// Get templates
 		var template = $("#document-template").html();
 		$("#main").html(template);
+		
+		
+		
 		var single_property = $("#single-property-template").html();
 		
 		// Render document to screen
@@ -46,15 +63,20 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		for (var i in doc) {
 			if (i == "@") continue;
 			
-			var property = doc[i]["property"]["rdfs:label"].reduce(function(p, c) { 
-				return p!="" ? p + ", " + c.data : c.data; 
-			}, "");
+			if (doc[i]["property"]["@"]) { 
+				var property = doc[i]["property"]["rdfs:label"].reduce(function(p, c) { 
+					return p != "" ? p + ", " + "<a href='#/document/" + doc[i]["property"]["@"] + "'>" + c.data + "</a>" : "<a href='#/document/" + doc[i]["property"]["@"] + "'>" + c.data + "</a>"; 
+				}, "");
+			} else { 
+				var property = i;
+			}
 			
 			var values = doc[i]["values"].reduce(function(p, c) {
+				if (c.type == "Uri" && c.data.indexOf("://") >= 0 ) return p != "" ? p + ", " + "<a href='" + c.data + "'>" + c.data + "</a>" : "<a href='" + c.data + "'>" + c.data + "</a>" ;
 				if (!c["@"]) return p != "" ? p + ", " + c.data : c.data;
-				return p + c["rdfs:label"].reduce(function(p1, c1) { return p1 != "" ? p1 + ", " + "<a href='/#/document/" + c["@"] + "'>" + c1.data + "</a>" : "<a href='/#/document/" + c["@"] + "'>" + c1.data + "</a>" }, "");
+				return p + c["rdfs:label"].reduce(function(p1, c1) { return p1 != "" ? p1 + ", " + "<a href='#/document/" + c["@"] + "'>" + c1.data + "</a>" : "<a href='#/document/" + c["@"] + "'>" + c1.data + "</a>" }, "");
 			}, "")
-			
+	
 			$("#document #doc").append(
 				riot.render(
 					single_property,
