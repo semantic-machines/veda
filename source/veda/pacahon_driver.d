@@ -149,7 +149,11 @@ class PacahonDriver {
                                                           rc = ticket.result;
                                                           if (rc == ResultCode.OK)
                                                           {
-                                                              individuals ~= context.get_individual(ticket, arg1).idup;
+							      Individual ii = context.get_individual(ticket, arg1);
+							      if (ii.getStatus () == ResultCode.OK)		
+                                                                individuals ~= ii.idup;
+							      else
+								rc = ii.getStatus ();
                                                           }
                                                       }
 
