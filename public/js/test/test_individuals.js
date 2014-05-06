@@ -77,6 +77,7 @@ test(
 				} ],
 				'veda-schema:test_field' : [ {
 					data : 'test data',
+					lang : 'NONE',
 					type : 'String'
 				} ]
 			};
@@ -115,6 +116,7 @@ test(
 				} ],
 				'veda-schema:test_field' : [ {
 					data : 'test data',
+					lang : 'NONE',
 					type : 'String'
 				} ]
 			};
@@ -137,6 +139,7 @@ test(
 				} ],
 				'veda-schema:canRead' : [ {
 					data : 'true',
+					lang : 'NONE',
 					type : 'String'
 				} ],
 				'veda-schema:permissionObject' : [ {
@@ -178,6 +181,7 @@ test(
 				} ],
 				'veda-schema:test_field' : [ {
 					data : 'test data',
+					lang : 'NONE',
 					type : 'String'
 				} ]
 			};
@@ -207,14 +211,17 @@ test("#007 Individual store and read", function() {
 		} ],
 		'veda-schema:canDelete' : [ {
 			data : 'true',
+			lang : 'NONE',
 			type : 'String'
 		} ],
 		'veda-schema:canRead' : [ {
 			data : 'true',
+			lang : 'NONE',
 			type : 'String'
 		} ],
 		'veda-schema:canUpdate' : [ {
 			data : 'true',
+			lang : 'NONE',
 			type : 'String'
 		} ],
 		'veda-schema:permissionObject' : [ {
@@ -252,14 +259,17 @@ test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 				} ],
 				'veda-schema:canDelete' : [ {
 					data : 'true',
+					lang : 'NONE',
 					type : 'String'
 				} ],
 				'veda-schema:canRead' : [ {
 					data : 'true',
+					lang : 'NONE',
 					type : 'String'
 				} ],
 				'veda-schema:canUpdate' : [ {
 					data : 'true',
+					lang : 'NONE',
 					type : 'String'
 				} ],
 				'veda-schema:permissionObject' : [ {
@@ -283,6 +293,7 @@ test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 			new_test_doc2['@'] = new_test_doc2_uri;
 			new_test_doc2['veda-schema:canRead'] = [ {
 				data : 'false',
+				lang : 'NONE',
 				type : 'String'
 			} ], put_individual(ticket.id, new_test_doc2);
 			wait_pmodule(subject_manager);
@@ -295,6 +306,7 @@ test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 			new_test_doc3['@'] = new_test_doc3_uri;
 			new_test_doc3['veda-schema:canRead'] = [ {
 				data : 'true',
+				lang : 'NONE',
 				type : 'String'
 			} ], put_individual(ticket.id, new_test_doc3);
 			wait_pmodule(subject_manager);
@@ -321,14 +333,17 @@ test(
 				} ],
 				'veda-schema:canDelete' : [ {
 					data : 'true',
+					lang : 'NONE',
 					type : 'String'
 				} ],
 				'veda-schema:canRead' : [ {
 					data : 'true',
+					lang : 'NONE',
 					type : 'String'
 				} ],
 				'veda-schema:canUpdate' : [ {
 					data : 'true',
+					lang : 'NONE',
 					type : 'String'
 				} ],
 				'veda-schema:permissionObject' : [ {
@@ -352,6 +367,7 @@ test(
 			new_test_doc2['@'] = new_test_doc2_uri;
 			new_test_doc2['veda-schema:canRead'] = [ {
 				data : 'false',
+				lang : 'NONE',
 				type : 'String'
 			} ];
 		        put_individual(ticket.id, new_test_doc2);
@@ -365,6 +381,7 @@ test(
 			new_test_doc3['@'] = new_test_doc3_uri;
 			new_test_doc3['veda-schema:canRead'] = [ {
 				data : 'true',
+				lang : 'NONE',
 				type : 'String'
 			} ];
 			put_individual(ticket.id, new_test_doc3);
@@ -517,14 +534,17 @@ test(
 				} ],
 				'veda-schema:test_field' : [ {
 					data : test_data,
+					lang : 'NONE',
 					type : 'String'
 				} ],
 				'veda-schema:test_fieldA' : [ {
 					data : 'BBB' + test_data_uid,
+					lang : 'NONE',
 					type : 'String'
 				} ],
 				'veda-schema:test_fieldB' : [ {
 					data : 'CCC' + test_data_uid,
+					lang : 'NONE',
 					type : 'String'
 				} ]
 			};
@@ -543,6 +563,7 @@ test(
 				} ],
 				'veda-schema:test_field' : [ {
 					data : test_data,
+					lang : 'NONE',
 					type : 'String'
 				} ]
 			};
@@ -560,10 +581,12 @@ test(
 				} ],
 				'veda-schema:test_field' : [ {
 					data : test_data,
+					lang : 'NONE',
 					type : 'String'
 				} ],
 				'veda-schema:test_fieldA' : [ {
 					data : 'BBB' + test_data_uid,
+					lang : 'NONE',
 					type : 'String'
 				} ]
 			};
@@ -581,14 +604,17 @@ test(
 				} ],
 				'veda-schema:test_field' : [ {
 					data : 'AAA' + test_data_uid,
+					lang : 'NONE',
 					type : 'String'
 				} ],
 				'veda-schema:test_fieldA' : [ {
 					data : 'BBB' + test_data_uid,
+					lang : 'NONE',
 					type : 'String'
 				} ],
 				'veda-schema:test_fieldB' : [ {
 					data : 'CCC' + test_data_uid,
+					lang : 'NONE',
 					type : 'String'
 				} ]
 			};
