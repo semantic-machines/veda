@@ -22,6 +22,9 @@
 					<li>	
 						<a href="#/console">Консоль / Console</a>
 					</li>
+					<li>	
+							<a href="#/search">Search</a>
+					</li>
 					<li>
 						<a href="/view_classes/">Классы / Classes</a>
 					</li>
@@ -43,7 +46,7 @@
 		</nav>
 
 		<!-- Main container -->
-		<div id="main"></div>
+		<div id="main" class="container-fluid"></div>
 		
 		<br />
 		<!-- Footer -->
@@ -64,7 +67,8 @@
 		<script src="/js/browser/bootstrap.min.js"></script>
 		<script src="/js/browser/cookie.js"></script>
 		<script src="/js/browser/sha256.js"></script>
-
+		<script src="/js/browser/util.js"></script>
+		
 		<!-- Veda browser & server -->
 		<script src="/js/common/riot.js"></script>
 		<script src="/js/common/util.js"></script>
@@ -157,9 +161,9 @@
 
 		<!-- Document template -->
 		<script type="html/template" id="document-template">
-			<div class="container-fluid" id="document">
+			<div class="" id="document">
 				<h2 id="label">Тип: наименование</h2>
-				<div class="container-fluid" id="doc">
+				<div class="container-fluid" id="document-properties">
 				</div>
 			</div>
 		</script>
@@ -174,7 +178,7 @@
 					{values}
 				</div>
 			</div>
-			<hr style="margin:5px">
+			<hr style="margin:5px; border-color:#f9f9f9">
 		</script>	
 
 		<!-- Current user template -->
@@ -194,6 +198,38 @@
 				</label>
 			</div>
 		</script>
+
+		<!-- Search template -->
+		<script type="html/template" id="search-template">
+			<br />
+			<div id="search">
+				<div class="well">
+					<div class="container-fluid">
+						<form method="GET" role="form">
+							<div class="row">
+								<div class="col-xs-7 col-sm-7 col-sm-offset-1 col-md-8 col-md-offset-1 col-lg-8 col-lg-offset-1">
+									<label for="q" class="sr-only">Запрос / Query:</label>
+									<input id="q" bound type="text" placeholder="Введите запрос / Enter query" name="q" value="" class="form-control" autofocus="autofocus"/>
+								</div>
+								<div class="col-xs-5 col-sm-4 col-md-3 col-lg-3">
+									<button type="submit" id="search-submit" class="btn btn-primary">Искать / Search</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div class="container-fluid">
+					<h1 class="text-center">Результаты поиска
+						<span class="text-muted">/ Search results</span>
+						(<span id="results_count" bound>0</span>)
+					</h1>
+					<hr/>
+					<ol id="search-results-list">
+					</ol>
+					<div id="results" bound></div>
+				</div>
+			</div>
+		</script>		
 
 	</body>
 </html>

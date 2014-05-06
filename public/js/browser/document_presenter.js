@@ -3,63 +3,53 @@
 Veda(function DocumentPresenter(veda) { "use strict";
 
 	veda.on("document:loaded", function (document) {
-
+		
+		console.log("document presented!", document.individual["@"]);
+		
 		// Localize document with preferred language
-		
-		//$("#main").html( JSON.stringify(document.get_expanded()) );
-		
-		
-		// Non strict localizer
 		var doc = JSON.parse(
-
 			JSON.stringify( document.get_expanded() )
 
 			// Filter localized substrings like {"lang":"EN", "data":"data123", "type":"type123"}
-			.replace(/{[^{]*?"lang":"(.{2})"[^}]*?}/g, function (match, lang) {
-				return lang == veda.user.language ? match : "";
+			.replace(/{[^\[{]*?"lang":"([A-Z]{2,4})"[^}\]]*?}/g, function (match, lang) {
+				// Strict localization
+				//return lang == veda.user.language ? match : "";
+				
+				// Non-strict localization
+				return lang == veda.user.language || lang == "NONE" ? match : "";
 			})
 			
-			// Filter residues like "[," ",]" "[,]"
+			// Filter possible residues like "[," ",]" "[,]"
 			.replace(/\[(,)|(,)\]|\[(,)\]/g, function (match, p1, p2, p3) {
 				return p1 ? "[" : p2 ? "]" : "[]";
 			})
 		);
 
-/*
-		// Strict localizer
-		var doc = JSON.parse(
-			JSON.stringify( document.get_expanded() )
-			.replace(/(\[{[^\[\]]*?"type":"String"[^\[\]]*?}\])/g, function (match) {
-				match.replace
-				
-			})
-		);
-*/
 		// Get templates
 		var template = $("#document-template").html();
-		$("#main").html(template);
-		
-		
+		var container = $("#main");
+		container.html(template);
 		
 		var single_property = $("#single-property-template").html();
 		
-		// Render document to screen
-		$("#document #label").html( 
+		// Render document title
+		$("#label", container).html( 
 			
-			// Document title (type: label)
 			doc["rdf:type"]["values"].reduce(function(p, c) {
 				return p + c["rdfs:label"].reduce(function(p, c) { return p != "" ? p + ", " + c.data : c.data}, "");
 			}, "") 
 			
-			+ ": "+
+			+ ": " +
 			
 			doc["rdfs:label"]["values"].reduce(function(p, c) {
 				return p != "" ? p + ", " + c.data : c.data;
 			}, "")
 			
+			//+ " <a href='#/document/" + document.individual["@"] + "'><i class='glyphicon glyphicon-share-alt'></i></a>"
+			
 		);
 		
-		// Document properties (property: values)
+		// Render document properties
 		for (var i in doc) {
 			if (i == "@") continue;
 			
@@ -74,10 +64,13 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			var values = doc[i]["values"].reduce(function(p, c) {
 				if (c.type == "Uri" && c.data.indexOf("://") >= 0 ) return p != "" ? p + ", " + "<a href='" + c.data + "'>" + c.data + "</a>" : "<a href='" + c.data + "'>" + c.data + "</a>" ;
 				if (!c["@"]) return p != "" ? p + ", " + c.data : c.data;
-				return p + c["rdfs:label"].reduce(function(p1, c1) { return p1 != "" ? p1 + ", " + "<a href='#/document/" + c["@"] + "'>" + c1.data + "</a>" : "<a href='#/document/" + c["@"] + "'>" + c1.data + "</a>" }, "");
+				return p != "" ? 
+					p + ", " + c["rdfs:label"].reduce(function(p1, c1) { return p1 != "" ? p1 + ", " + "<a href='#/document/" + c["@"] + "'>" + c1.data + "</a>" : "<a href='#/document/" + c["@"] + "'>" + c1.data + "</a>" }, "")
+					:
+					c["rdfs:label"].reduce(function(p1, c1) { return p1 != "" ? p1 + ", " + "<a href='#/document/" + c["@"] + "'>" + c1.data + "</a>" : "<a href='#/document/" + c["@"] + "'>" + c1.data + "</a>" }, "");
 			}, "")
 	
-			$("#document #doc").append(
+			$("#document-properties", container).append(
 				riot.render(
 					single_property,
 					{

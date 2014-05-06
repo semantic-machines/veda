@@ -24,8 +24,8 @@ Veda(function ConsolePresenter(veda) { "use strict";
 		});
 	
 		// Listen Model changes & update View
-		console.on("set", function(property, value) {
-			var $el = $("#console #" + property);
+		console.on("property:changed", function(property, value) {
+			var $el = $("#console #" + property + "[bound]");
 			if ($el.is("input, textarea, select")) $el.val( value );
 			else $el.html( value );
 		});

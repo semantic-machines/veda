@@ -15,7 +15,7 @@ function DocumentModel(veda, params) {
 				set: function(value) { 
 					if (properties[property] == value) return; 
 					properties[property] = value; 
-					self.trigger("set", property, properties[property]);
+					self.trigger("property:changed", property, properties[property]);
 				}
    			});
    		})(property);
@@ -23,7 +23,6 @@ function DocumentModel(veda, params) {
 	for (var property in properties) {
 		define_GS_etters(property);
     }
-	//if (typeof console != "undefined") self.on("set", function(property, value){ console.log("property set:", property, "=", value) });
 		
 	// Define Model functions
 	self.load = function(uri) {
