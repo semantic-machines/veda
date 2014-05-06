@@ -4,8 +4,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 	veda.on("document:loaded", function (document) {
 		
-		console.log("document presented!", document.individual["@"]);
-		
 		// Localize document with preferred language
 		var doc = JSON.parse(
 			JSON.stringify( document.get_expanded() )
