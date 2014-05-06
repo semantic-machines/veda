@@ -48,6 +48,7 @@ function DocumentModel(veda, params) {
 			var values = self.individual[property_uri];
 			for (var i in values) {
 				if (values[i].type != "Uri") continue;
+				if (values[i].data.indexOf("://") >= 0) continue; // Link to external resource
 				values[i] = veda.cache[values[i].data] ? JSON.parse( veda.cache[values[i].data] ) : get_individual(veda.ticket, values[i].data);
 			}
 			expanded[property_uri]["property"] = property;

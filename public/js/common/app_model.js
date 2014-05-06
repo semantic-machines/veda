@@ -52,8 +52,8 @@ function AppModel(config) {
 				break
 			case "document": 
 				//self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, ["mondi-data:AdministrativeDocument_1"]), self, "document");
-				//new DocumentModel(self, params);
-				new DocumentModel(self, [self.user_uri]);
+				new DocumentModel(self, params);
+				//new DocumentModel(self, [self.user_uri]);
 				break
 			case "search": 
 				//self.search ? self.trigger("search:loaded", self.search) : RegisterModule(new SearchModel(self, params), self, "search"); 

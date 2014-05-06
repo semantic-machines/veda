@@ -77,7 +77,7 @@ Json resource_to_json(Resource resource)
     else if (resource.type == ResourceType.String)
     {
         resource_json[ "data" ] = resource.data;
-        if (resource.lang != LANG.NONE)
+        //if (resource.lang != LANG.NONE)
             resource_json[ "lang" ] = text(resource.lang);
     }
     else if (resource.type == ResourceType.Integer)
