@@ -42,7 +42,8 @@ enum Function
     Script,
     PModule,
     Trace,
-    Backup
+    Backup,
+    CountIndividuals
 }
 
 Task io_task;
@@ -73,6 +74,11 @@ class PacahonDriver {
                                                   {
                                                       context.backup();
                                                       send(tid, true);
+                                                  }
+                                                  else if (cmd == Command.Execute && fn == Function.CountIndividuals)
+                                                  {
+                                                      long count = context.count_individuals();
+                                                      send(tid, count);
                                                   }
                                               }
                                           },

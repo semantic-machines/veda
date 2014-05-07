@@ -119,6 +119,9 @@ interface VedaStorageRest_API {
     @path("backup") @method(HTTPMethod.GET)
     void backup();
 
+    @path("count_individuals") @method(HTTPMethod.GET)
+    long count_individuals();
+
     @path("query") @method(HTTPMethod.GET)
     string[] query(string ticket, string query);
 
@@ -203,6 +206,19 @@ class VedaStorageRest : VedaStorageRest_API {
             send(io_task, Command.Execute, Function.Backup, my_task);
             receiveOnly!(bool);
         }
+    }
+
+    long count_individuals()
+    {
+        Tid my_task = Task.getThis();
+
+        if (my_task !is Tid.init)
+        {
+            send(io_task, Command.Execute, Function.CountIndividuals, my_task);
+            long res = receiveOnly!(long);
+	    return res;
+        }
+	return -1;
     }
 
     bool is_ticket_valid(string ticket)
