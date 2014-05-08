@@ -8,8 +8,8 @@ Veda(function AppPresenter(veda) { "use strict";
 		var page = hash_tokens[0];
 		var params = hash_tokens.slice(1);
 		
-		// Important: avoid routing if not authenticated!
-		if (veda.authenticated) page != "" ? veda.load(page, params) : $("#main").html( $("#wellcome-template").html() );
+		// Important: avoid routing if not started yet!
+		if (veda.started) page != "" ? veda.load(page, params) : $("#main").html( $("#wellcome-template").html() );
 	});
 
 	// Listen to a link click and call router

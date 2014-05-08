@@ -5,7 +5,7 @@
 function AppModel(config) {
 	var self = riot.observable(this);
 	
-	self.authenticated = false;
+	self.started = false;
 	// Define Model data setters & getters
 	var properties = { user_uri:"", ticket:"", end_time:"" };
 	function define_GS_etters(property) {
@@ -76,7 +76,7 @@ function AppModel(config) {
 			});
 		}
 		// App started
-		self.authenticated = true;
+		self.started = true;
 		self.trigger("app:complete", self.user_uri, self.ticket, self.end_time);
 	});
 	
@@ -86,6 +86,6 @@ function AppModel(config) {
 	});
 	
 	self.on("auth:quit", function() { 
-		self.authenticated = false;
+		self.started = false;
 	});
 };
