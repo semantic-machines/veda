@@ -2,6 +2,15 @@
 
 "use strict";
 
+var _Uri      = 1;
+var _String   = 2;
+var _Integer  = 4;
+var _Datetime = 8;
+var _Date     = 16;
+var _Float    = 32;
+var _Bool     = 64;
+
+
 function guid() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
@@ -17,8 +26,53 @@ function compare (a, b) {
 	else if (typeof a != "object" || typeof b != "object") return a === b;
 	if (Object.keys(a).length != Object.keys(b).length) return false;
 	var result = true;
-	for (var key in a) {
-		result &= compare(a[key], b[key]);
+	for (var key in a) 
+	{
+		var bb = b[key];
+		var aa = a[key];
+
+		var tbb = typeof bb;
+		var taa = typeof aa;
+
+		if (key == "type")
+		{
+		    if (tbb == 'number' && taa == 'string')
+		    {
+		    if (bb == _Uri)
+			bb = 'Uri';
+		    else if (bb == _String)
+			bb = 'String';
+		    else if (bb == _Integer)
+			bb = 'Integer';
+		    else if (bb == _Datetime)
+			bb = 'Datetime';
+		    else if (bb == _Date)
+			bb = 'Date';
+		    else if (bb == _Float)
+			bb = 'Float';
+		    else if (bb == _Bool)
+			bb = 'Boolean';
+		    }				    
+		    else if (taa == 'number' && tbb == 'string')
+		    {
+		    if (aa == _Uri)
+			aa = 'Uri';
+		    else if (aa == _String)
+			aa = 'String';
+		    else if (aa == _Integer)
+			aa = 'Integer';
+		    else if (aa == _Datetime)
+			aa = 'Datetime';
+		    else if (aa == _Date)
+			aa = 'Date';
+		    else if (aa == _Float)
+			aa = 'Float';
+		    else if (aa == _Bool)
+			aa = 'Boolean';
+		    }
+		}
+
+		result &= compare(aa, bb);
 		if (!result) return false;
 	}
 	return result;

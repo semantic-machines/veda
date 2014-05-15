@@ -69,16 +69,16 @@ test(
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:document',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:author' : [ {
 					data : 'mondi-data:ValeriyBushenev-Programmer1',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:test_field' : [ {
 					data : 'test data',
 					lang : 'NONE',
-					type : 'String'
+					type : _String
 				} ]
 			};
 
@@ -108,16 +108,16 @@ test(
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:document',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:author' : [ {
 					data : 'mondi-data:ValeriyBushenev-Programmer1',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:test_field' : [ {
 					data : 'test data',
 					lang : 'NONE',
-					type : 'String'
+					type : _String
 				} ]
 			};
 
@@ -135,20 +135,19 @@ test(
 				'@' : guid(),
 				'rdf:type' : [ {
 					data : 'veda-schema:PermissionStatement',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:canRead' : [ {
-					data : 'true',
-					lang : 'NONE',
-					type : 'String'
+					data : true,
+					type : _Bool
 				} ],
 				'veda-schema:permissionObject' : [ {
 					data : new_test_doc1_uri,
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:permissionSubject' : [ {
 					data : ticket_user2.user_uri,
-					type : 'Uri'
+					type : _Uri
 				} ]
 			};
 			put_individual(ticket_user1.id, new_permission); //
@@ -173,16 +172,16 @@ test(
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:document',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:author' : [ {
 					data : 'mondi-data:ValeriyBushenev-Programmer1',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:test_field' : [ {
 					data : 'test data',
 					lang : 'NONE',
-					type : 'String'
+					type : _String
 				} ]
 			};
 
@@ -207,30 +206,27 @@ test("#007 Individual store and read", function() {
 		'@' : new_test_doc1_uri,
 		'rdf:type' : [ {
 			data : 'veda-schema:PermissionStatement1',
-			type : 'Uri'
+			type : _Uri
 		} ],
 		'veda-schema:canDelete' : [ {
-			data : 'true',
-			lang : 'NONE',
-			type : 'String'
+			data : true,
+			type : _Bool
 		} ],
 		'veda-schema:canRead' : [ {
-			data : 'true',
-			lang : 'NONE',
-			type : 'String'
+			data : true,
+			type : _Bool
 		} ],
 		'veda-schema:canUpdate' : [ {
-			data : 'true',
-			lang : 'NONE',
-			type : 'String'
+			data : true,
+			type : _Bool
 		} ],
 		'veda-schema:permissionObject' : [ {
 			data : 'individual_1',
-			type : 'Uri'
+			type : _Uri
 		} ],
 		'veda-schema:permissionSubject' : [ {
 			data : 'individual_2',
-			type : 'Uri'
+			type : _Uri
 		} ]
 	};
 
@@ -243,7 +239,7 @@ test("#007 Individual store and read", function() {
 	
 });
 
-test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2",
+test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2 (check on duplicate)",
 		function() {
 			var ticket = get_admin_ticket ();
 
@@ -255,30 +251,27 @@ test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:PermissionStatement',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:canDelete' : [ {
-					data : 'true',
-					lang : 'NONE',
-					type : 'String'
+					data : true,
+					type : _Bool
 				} ],
 				'veda-schema:canRead' : [ {
-					data : 'true',
-					lang : 'NONE',
-					type : 'String'
+					data : true,
+					type : _Bool
 				} ],
 				'veda-schema:canUpdate' : [ {
-					data : 'true',
-					lang : 'NONE',
-					type : 'String'
+					data : true,
+					type : _Bool
 				} ],
 				'veda-schema:permissionObject' : [ {
 					data : permissionObject,
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:permissionSubject' : [ {
 					data : permissionSubject,
-					type : 'Uri'
+					type : _Uri
 				} ]
 			};
 
@@ -292,9 +285,8 @@ test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 			var new_test_doc2_uri = guid();
 			new_test_doc2['@'] = new_test_doc2_uri;
 			new_test_doc2['veda-schema:canRead'] = [ {
-				data : 'false',
-				lang : 'NONE',
-				type : 'String'
+				data : false,
+				type : _Bool
 			} ], put_individual(ticket.id, new_test_doc2);
 			wait_pmodule(subject_manager);
 
@@ -305,9 +297,8 @@ test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2",
 			var new_test_doc3_uri = guid();
 			new_test_doc3['@'] = new_test_doc3_uri;
 			new_test_doc3['veda-schema:canRead'] = [ {
-				data : 'true',
-				lang : 'NONE',
-				type : 'String'
+				data : true,
+				type : _Bool
 			} ], put_individual(ticket.id, new_test_doc3);
 			wait_pmodule(subject_manager);
 
@@ -329,30 +320,27 @@ test(
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:NoPermissionStatement',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:canDelete' : [ {
-					data : 'true',
-					lang : 'NONE',
-					type : 'String'
+					data : true,
+					type : _Bool
 				} ],
 				'veda-schema:canRead' : [ {
-					data : 'true',
-					lang : 'NONE',
-					type : 'String'
+					data : true,
+					type : _Bool
 				} ],
 				'veda-schema:canUpdate' : [ {
-					data : 'true',
-					lang : 'NONE',
-					type : 'String'
+					data : true,
+					type : _Bool
 				} ],
 				'veda-schema:permissionObject' : [ {
 					data : permissionObject,
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:permissionSubject' : [ {
 					data : permissionSubject,
-					type : 'Uri'
+					type : _Uri
 				} ]
 			};
 
@@ -366,9 +354,8 @@ test(
 			var new_test_doc2_uri = guid();
 			new_test_doc2['@'] = new_test_doc2_uri;
 			new_test_doc2['veda-schema:canRead'] = [ {
-				data : 'false',
-				lang : 'NONE',
-				type : 'String'
+				data : false,
+				type : _Bool
 			} ];
 		        put_individual(ticket.id, new_test_doc2);
 			wait_pmodule(subject_manager);
@@ -380,9 +367,8 @@ test(
 			var new_test_doc3_uri = guid();
 			new_test_doc3['@'] = new_test_doc3_uri;
 			new_test_doc3['veda-schema:canRead'] = [ {
-				data : 'true',
-				lang : 'NONE',
-				type : 'String'
+				data : true,
+				type : _Bool
 			} ];
 			put_individual(ticket.id, new_test_doc3);
 			wait_pmodule(subject_manager);
@@ -404,15 +390,15 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:Membership',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:memberOf' : [ {
 					data : memberOf,
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:resource' : [ {
 					data : resources,
-					type : 'Uri'
+					type : _Uri
 				} ]
 			};
 
@@ -427,7 +413,7 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 			new_test_doc2['@'] = new_test_doc2_uri;
 			new_test_doc2['veda-schema:memberOf'] = [ {
 				data : guid(),
-				type : 'Uri'
+				type : _Uri
 			} ];
 			put_individual(ticket.id, new_test_doc2);
 			wait_pmodule(subject_manager);
@@ -440,7 +426,7 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 			new_test_doc3['@'] = new_test_doc3_uri;
 			new_test_doc3['veda-schema:memberOf'] = [ {
 				data : memberOf,
-				type : 'Uri'
+				type : _Uri
 			} ];
 			put_individual(ticket.id, new_test_doc3);
 			wait_pmodule(subject_manager);
@@ -462,15 +448,15 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:NoMembership',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:memberOf' : [ {
 					data : memberOf,
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:resource' : [ {
 					data : resources,
-					type : 'Uri'
+					type : _Uri
 				} ]
 			};
 
@@ -485,7 +471,7 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 			new_test_doc2['@'] = new_test_doc2_uri;
 			new_test_doc2['veda-schema:memberOf'] = [ {
 				data : guid(),
-				type : 'Uri'
+				type : _Uri
 			} ];
 			put_individual(ticket.id, new_test_doc2);
 			wait_pmodule(subject_manager);
@@ -498,7 +484,7 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 			new_test_doc3['@'] = new_test_doc3_uri;
 			new_test_doc3['veda-schema:memberOf'] = [ {
 				data : memberOf,
-				type : 'Uri'
+				type : _Uri
 			} ];
 			put_individual(ticket.id, new_test_doc3);
 			wait_pmodule(subject_manager);
@@ -526,26 +512,26 @@ test(
 				'@' : new_test_doc1_uri_1,
 				'rdf:type' : [ {
 					data : 'veda-schema:document',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:author' : [ {
 					data : 'mondi-data:ValeriyBushenev-Programmer1',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:test_field' : [ {
 					data : test_data,
 					lang : 'NONE',
-					type : 'String'
+					type : _String
 				} ],
 				'veda-schema:test_fieldA' : [ {
 					data : 'BBB' + test_data_uid,
 					lang : 'NONE',
-					type : 'String'
+					type : _String
 				} ],
 				'veda-schema:test_fieldB' : [ {
 					data : 'CCC' + test_data_uid,
 					lang : 'NONE',
-					type : 'String'
+					type : _String
 				} ]
 			};
 
@@ -555,16 +541,16 @@ test(
 				'@' : new_test_doc1_uri_2,
 				'rdf:type' : [ {
 					data : 'veda-schema:document',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:author' : [ {
 					data : 'mondi-data:ValeriyBushenev-Programmer2',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:test_field' : [ {
 					data : test_data,
 					lang : 'NONE',
-					type : 'String'
+					type : _String
 				} ]
 			};
 
@@ -573,21 +559,21 @@ test(
 				'@' : new_test_doc1_uri_3,
 				'rdf:type' : [ {
 					data : 'veda-schema:document',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:author' : [ {
 					data : 'mondi-data:ValeriyBushenev-Programmer1',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:test_field' : [ {
 					data : test_data,
 					lang : 'NONE',
-					type : 'String'
+					type : _String
 				} ],
 				'veda-schema:test_fieldA' : [ {
 					data : 'BBB' + test_data_uid,
 					lang : 'NONE',
-					type : 'String'
+					type : _String
 				} ]
 			};
 
@@ -596,26 +582,26 @@ test(
 				'@' : new_test_doc1_uri_4,
 				'rdf:type' : [ {
 					data : 'veda-schema:document',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:author' : [ {
 					data : 'mondi-data:ValeriyBushenev-Programmer1',
-					type : 'Uri'
+					type : _Uri
 				} ],
 				'veda-schema:test_field' : [ {
 					data : 'AAA' + test_data_uid,
 					lang : 'NONE',
-					type : 'String'
+					type : _String
 				} ],
 				'veda-schema:test_fieldA' : [ {
 					data : 'BBB' + test_data_uid,
 					lang : 'NONE',
-					type : 'String'
+					type : _String
 				} ],
 				'veda-schema:test_fieldB' : [ {
 					data : 'CCC' + test_data_uid,
 					lang : 'NONE',
-					type : 'String'
+					type : _String
 				} ]
 			};
 

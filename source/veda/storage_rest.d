@@ -29,13 +29,15 @@ static this() {
         "String":ResourceType.String,
         "Integer":ResourceType.Integer,
         "Datetime":ResourceType.Datetime,
+        "Date":ResourceType.Date,
         "Float":ResourceType.Float,
-        "Boolean":ResourceType.Boolean
+        "Boolean":ResourceType.Boolean,
     ];
 }
 
 Json individual_to_json(immutable(Individual)individual)
 {
+//    writeln ("\nINDIVIDUAL->:", individual);
     Json json = Json.emptyObject;
 
     json[ "@" ] = individual.uri;
@@ -46,11 +48,13 @@ Json individual_to_json(immutable(Individual)individual)
             resources_json ~= resource_to_json(property_value);
         json[ property_name ] = resources_json;
     }
+//    writeln ("->JSON:", json);
     return json;
 }
 
 Individual json_to_individual(const Json individual_json)
 {
+//    writeln ("\nJSON->:", individual_json);
     Individual individual = Individual.init;
 
     foreach (string property_name, ref const property_values; individual_json)
@@ -64,6 +68,7 @@ Individual json_to_individual(const Json individual_json)
             resources ~= json_to_resource(property_value);
         individual.resources[ property_name ] = resources;
     }
+//    writeln ("->INDIVIDUAL:", individual);
     return individual;
 }
 
@@ -74,6 +79,7 @@ Json resource_to_json(Resource resource)
     resource_json[ "type" ] = text(resource.type);
     if (resource.type == ResourceType.Uri || resource.type == ResourceType.Datetime)
         resource_json[ "data" ] = resource.data;
+
     else if (resource.type == ResourceType.String)
     {
         resource_json[ "data" ] = resource.data;
@@ -84,7 +90,14 @@ Json resource_to_json(Resource resource)
     else if (resource.type == ResourceType.Float)
         resource_json[ "data" ] = parse!double (resource.data);
     else if (resource.type == ResourceType.Boolean)
-        resource_json[ "data" ] = parse!bool(resource.data);
+    {
+//	writeln ("@@@1 resource.data=", resource.data);    
+	if (resource.data == "1")
+    	    resource_json[ "data" ] = true;
+	else
+    	    resource_json[ "data" ] = false;
+//	writeln ("@@@2");    
+    }
     else
         resource_json[ "data" ] = Json.undefined;
     return resource_json;
@@ -94,10 +107,43 @@ Resource json_to_resource(const Json resource_json)
 {
     Resource resource = Resource.init;
 
-    resource.type = Resource_type.get(resource_json[ "type" ].get!string, ResourceType.String);
-    if (resource_json[ "lang" ].type is Json.Type.string)
-        resource.lang = Lang.get(resource_json[ "lang" ].get!string, Lang[ "NONE" ]);
-    resource.data = resource_json[ "data" ].get!string;
+    if (resource_json[ "type" ].type is Json.Type.Int)
+	resource.type = cast(ResourceType)resource_json[ "type" ].get!long;
+    else
+	resource.type = Resource_type.get(resource_json[ "type" ].get!string, ResourceType.String);
+
+    if (resource.type == ResourceType.String)
+    {
+	if (resource_json[ "lang" ].type is Json.Type.string)
+    	    resource.lang = Lang.get(resource_json[ "lang" ].get!string, Lang[ "NONE" ]);
+    }
+
+    auto data_type = resource_json[ "data" ].type;
+
+    if (resource.type == ResourceType.Boolean && (data_type is Json.Type.Int || data_type is Json.Type.Bool))
+    {
+	if (data_type is Json.Type.Bool)
+	{
+	    long bb = resource_json[ "data" ].get!bool;
+	    if (bb == true)
+		resource.data = "1";
+	    else
+		resource.data = "0";
+	}
+	else if (data_type is Json.Type.Int)
+	{
+	    long bb = resource_json[ "data" ].get!long;
+	    if (bb == 1)
+		resource.data = "1";
+	    else
+		resource.data = "0";
+	}
+    }
+    else
+    {
+	resource.data = resource_json[ "data" ].get!string;
+    }
+
     return resource;
 }
 

@@ -62,12 +62,12 @@ if (ff)
 	var new_permission = 
 	{
         '@' : guid (), 
-        'rdf:type' : [{data: 'veda-schema:PermissionStatement', type : 1}],
-        'veda-schema:canDelete' : [{data: 'true'}],
-        'veda-schema:canRead' : [{data: 'true'}],
-        'veda-schema:canUpdate' : [{data: 'true'}],
-        'veda-schema:permissionObject' : [{data: doc_uri, type : 1}],
-        'veda-schema:permissionSubject'  : [{data: employee_uri, type : 1}]
+        'rdf:type' : [{data: 'veda-schema:PermissionStatement', type : _Uri}],
+        'veda-schema:canDelete' : [{data: true, type : _Bool}],
+        'veda-schema:canRead' : [{data: true, type : _Bool}],
+        'veda-schema:canUpdate' : [{data: true, type : _Bool}],
+        'veda-schema:permissionObject' : [{data: doc_uri, type : _Uri}],
+        'veda-schema:permissionSubject'  : [{data: employee_uri, type : _Uri}]
 	};
 	put_individual (ticket, new_permission);
     }
