@@ -172,7 +172,7 @@ class PacahonDriver {
                                                       if (ticket.result == ResultCode.OK)
                                                       {
                                                           immutable(Individual)[] individuals =
-                                                              context.get_individuals_via_query(ticket, arg1);
+                                                              context.iget_individuals_via_query(ticket, arg1);
                                                           send(tid, individuals, ticket.result);
                                                       }
                                                       else
@@ -275,7 +275,7 @@ class PacahonDriver {
                                                               {
                                                                   if (rr.lang == lang)
                                                                   {
-                                                                      res1 = rr.data;
+                                                                      res1 = rr.idata;
                                                                       break;
                                                                   }
                                                               }
@@ -293,7 +293,7 @@ class PacahonDriver {
                                                           {
                                                               if (rr.lang == lang)
                                                               {
-                                                                  res1 = rr.data;
+                                                                  res1 = rr.idata;
                                                                   break;
                                                               }
                                                           }

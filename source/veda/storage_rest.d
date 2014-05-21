@@ -45,7 +45,7 @@ Json individual_to_json(immutable(Individual)individual)
     {
         Json resources_json = Json.emptyArray;
         foreach (property_value; property_values)
-            resources_json ~= resource_to_json(property_value);
+            resources_json ~= resource_to_json(cast(Resource)property_value);
         json[ property_name ] = resources_json;
     }
 //    writeln ("->JSON:", json);
@@ -76,27 +76,29 @@ Json resource_to_json(Resource resource)
 {
     Json resource_json = Json.emptyObject;
 
-    resource_json[ "type" ] = text(resource.type);
-    if (resource.type == ResourceType.Uri || resource.type == ResourceType.Datetime)
-        resource_json[ "data" ] = resource.data;
+    string data = resource.data;
 
+//    writeln ("@* resource=", resource);
+
+    resource_json[ "type" ] = text(resource.type);
+
+    if (resource.type == ResourceType.Uri || resource.type == ResourceType.Datetime)
+        resource_json[ "data" ] = data;
     else if (resource.type == ResourceType.String)
     {
-        resource_json[ "data" ] = resource.data;
+        resource_json[ "data" ] = data;
         resource_json[ "lang" ] = text(resource.lang);
     }
     else if (resource.type == ResourceType.Integer)
-        resource_json[ "data" ] = parse!int (resource.data);
+        resource_json[ "data" ] = parse!int (data);
     else if (resource.type == ResourceType.Float)
-        resource_json[ "data" ] = parse!double (resource.data);
+        resource_json[ "data" ] = parse!double (data);
     else if (resource.type == ResourceType.Boolean)
     {
-//	writeln ("@@@1 resource.data=", resource.data);    
-	if (resource.data == "1")
+	if (resource.get!bool == true)
     	    resource_json[ "data" ] = true;
 	else
     	    resource_json[ "data" ] = false;
-//	writeln ("@@@2");    
     }
     else
         resource_json[ "data" ] = Json.undefined;
@@ -107,43 +109,40 @@ Resource json_to_resource(const Json resource_json)
 {
     Resource resource = Resource.init;
 
-    if (resource_json[ "type" ].type is Json.Type.Int)
-	resource.type = cast(ResourceType)resource_json[ "type" ].get!long;
-    else
-	resource.type = Resource_type.get(resource_json[ "type" ].get!string, ResourceType.String);
+    ResourceType type;
 
-    if (resource.type == ResourceType.String)
-    {
-	if (resource_json[ "lang" ].type is Json.Type.string)
-    	    resource.lang = Lang.get(resource_json[ "lang" ].get!string, Lang[ "NONE" ]);
-    }
+    if (resource_json[ "type" ].type is Json.Type.Int)
+	type = cast(ResourceType)resource_json[ "type" ].get!long;
+    else
+	type = Resource_type.get(resource_json[ "type" ].get!string, ResourceType.String);
 
     auto data_type = resource_json[ "data" ].type;
 
-    if (resource.type == ResourceType.Boolean && (data_type is Json.Type.Int || data_type is Json.Type.Bool))
+    if (type == ResourceType.String)
     {
+	if (resource_json[ "lang" ].type is Json.Type.string)
+    	    resource.lang = Lang.get(resource_json[ "lang" ].get!string, Lang[ "NONE" ]);
+        resource.data = resource_json[ "data" ].get!string;
+    }
+    else if (type == ResourceType.Boolean)
+    {
+
 	if (data_type is Json.Type.Bool)
 	{
-	    long bb = resource_json[ "data" ].get!bool;
+	    bool bb = resource_json[ "data" ].get!bool;
 	    if (bb == true)
-		resource.data = "1";
+		resource = true;
 	    else
-		resource.data = "0";
-	}
-	else if (data_type is Json.Type.Int)
-	{
-	    long bb = resource_json[ "data" ].get!long;
-	    if (bb == 1)
-		resource.data = "1";
-	    else
-		resource.data = "0";
+		resource = false;
 	}
     }
-    else
+    else if (type == ResourceType.Uri)
     {
-	resource.data = resource_json[ "data" ].get!string;
+
+        resource.data = resource_json[ "data" ].get!string;
     }
 
+    resource.type = type;
     return resource;
 }
 

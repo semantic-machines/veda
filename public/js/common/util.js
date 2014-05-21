@@ -99,7 +99,7 @@ function get_property_chain (ticket, first, rest)
 	for (var i = 1; i < arguments.length; i++) 
 	{
 		field = doc[arguments[i]];
-		if (field && (field[0].type == "Uri" || field[0].type == 1))
+		if (field && (field[0].type == "Uri" || field[0].type == _Uri))
 		{
 			doc = get_individual (ticket, field[0].data); 	
 			if (!doc) break;
