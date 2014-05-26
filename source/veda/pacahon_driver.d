@@ -10,7 +10,6 @@ import onto.owl;
 import onto.individual;
 import onto.resource;
 import onto.lang;
-import util.lmultidigraph;
 
 /*
  * TODO: Проблема, не удается передавать структуру типа Individual между волокнами, хотя например Tid, хорошо передается
@@ -208,7 +207,7 @@ class PacahonDriver {
                                                   }
                                                   else if (cmd == Command.Get && fn == Function.AllClasses)
                                                   {
-                                                      send(tid, context.get_owl_classes().values);
+                                                      send(tid, context.iget_owl_classes().values);
                                                   }
                                                   else if (cmd == Command.Is && fn == Function.TicketValid)
                                                   {
@@ -219,8 +218,7 @@ class PacahonDriver {
                                                   {
                                                       immutable(Class)[] classes;
                                                       Ticket ticket;
-
-                                                      immutable(Class) classz = context.get_owl_classes().get(args, _empty_iClass);
+                                                      immutable(Class) classz = context.iget_owl_classes().get(args, _empty_iClass);
 
                                                       if (classz != _empty_iClass)
                                                           classes ~= classz;
