@@ -292,7 +292,6 @@ class VedaStorageRest : VedaStorageRest_API {
             receive((immutable(string)[] _individuals_ids, ResultCode _rc) { individuals_ids = _individuals_ids; rc = _rc; });
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc);
-//        individuals_ids = receiveOnly!(immutable (string)[]);
         }
         return cast(string[])individuals_ids;
     }
@@ -311,7 +310,6 @@ class VedaStorageRest : VedaStorageRest_API {
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc);
 
-//        individuals = receiveOnly!(immutable(Individual)[]);
         }
         return cast(Individual[])individuals;
     }
