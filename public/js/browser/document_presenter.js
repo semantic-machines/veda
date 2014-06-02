@@ -2,7 +2,7 @@
 
 Veda(function DocumentPresenter(veda) { "use strict";
 
-	veda.on("document:loaded", function (document) {
+	veda.on("document:loaded", function (document, container_param) {
 		
 		// Localize document with preferred language
 		var doc = JSON.parse(
@@ -25,7 +25,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 		// Get templates
 		var template = $("#document-template").html();
-		var container = $("#main");
+		var container = container_param || $("#main");
 		container.html(template);
 		
 		var single_property = $("#single-property-template").html();

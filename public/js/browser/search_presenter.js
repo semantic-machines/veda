@@ -6,9 +6,9 @@ Veda(function SearchPresenter(veda) { "use strict";
 		
 		// Get template
 		var template = $("#search-template").html();
-		
+		var rendered = riot.render(template, search);
 		var container = $("#main");
-		container.html(template);
+		container.html(rendered);
 
 		// Listen View changes & update Model
 		$("#search [bound]", container).on("change", function() {
@@ -29,7 +29,11 @@ Veda(function SearchPresenter(veda) { "use strict";
 
 		// Display search results
 		search.on("search:complete", function () {
-
+			$("#search-results-list").empty();
+			for (var i = 0; i < search.results_count; i++) {
+				var $li = jQuery("<li/>").appendTo("#search-results-list");
+				new DocumentModel(veda, [search.results[i], $li]);
+			}
 		});
 
 	});

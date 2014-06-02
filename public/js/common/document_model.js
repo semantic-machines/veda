@@ -4,6 +4,7 @@
 
 function DocumentModel(veda, params) {
 	var uri = params[0];
+	var container = params[1] || undefined;
 	var self = riot.observable(this);
 
 	// Define Model data setters & getters
@@ -58,7 +59,7 @@ function DocumentModel(veda, params) {
 	
 	// Model loaded message
 	self.on("document:loaded", function() {
-		if (veda) veda.trigger("document:loaded", self);
+		if (veda) veda.trigger("document:loaded", self, container);
 	});
 
 	// Load data 
