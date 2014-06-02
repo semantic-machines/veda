@@ -32,9 +32,9 @@ function SearchModel(veda, params) {
 		});
 	};
 
-	self.load_results = function() {
+	self.load_results = function(container) {
 		for (var i in self.results) {
-			new DocumentModel(veda, [self.results[i]]);
+			new DocumentModel(veda, [self.results[i], container]);
 		}
 	};
 	

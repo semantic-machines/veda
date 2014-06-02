@@ -55,8 +55,8 @@ function AppModel(config) {
 				//new DocumentModel(self, [self.user_uri]);
 				break
 			case "search": 
-				//self.search ? self.trigger("search:loaded", self.search) : RegisterModule(new SearchModel(self, params), self, "search"); 
-				new SearchModel(self, params);
+				self.search ? self.trigger("search:loaded", self.search) : RegisterModule(new SearchModel(self, params), self, "search"); 
+				//new SearchModel(self, params);
 				break
 			case "user": 
 				//self.user ? self.trigger("user:loaded", self.user) : RegisterModule(new UserModel(self, params), self, "user"); 
