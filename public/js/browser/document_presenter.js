@@ -43,7 +43,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				return p != "" ? p + ", " + c.data : c.data;
 			}, "")
 			
-			//+ " <a href='#/document/" + document.individual["@"] + "'><i class='glyphicon glyphicon-share-alt'></i></a>"
+			+ " <small><a href='#/document/" + document.individual["@"] + "'><i class='glyphicon glyphicon-share-alt'></i></a></small>"
 			
 		);
 		

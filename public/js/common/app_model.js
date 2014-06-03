@@ -46,16 +46,15 @@ function AppModel(config) {
 	self.load = function (page, params) {
 		switch (page) {
 			case "console": 
-				//self.console ? self.trigger("console:loaded", self.console) : RegisterModule(new ConsoleModel(self, params), self, "console");
-				new ConsoleModel(self, params);
+				self.console ? self.trigger("console:loaded", self.console) : RegisterModule(new ConsoleModel(self, params), self, "console");
+				//new ConsoleModel(self, params);
 				break
 			case "document": 
 				//self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, ["mondi-data:AdministrativeDocument_1"]), self, "document");
 				new DocumentModel(self, params);
-				//new DocumentModel(self, [self.user_uri]);
 				break
 			case "search": 
-				self.search ? self.trigger("search:loaded", self.search) : RegisterModule(new SearchModel(self, params), self, "search"); 
+				self.search && ( (self.search._params == params) || params.length == 0 )? self.trigger("search:loaded", self.search) : RegisterModule(new SearchModel(self, params), self, "search", params);
 				//new SearchModel(self, params);
 				break
 			case "user": 
@@ -66,9 +65,9 @@ function AppModel(config) {
 		}
 	};
 
-	// Load ontology complete after user has been loaded
+	// Load ontology after user has been loaded
 	self.on("user:loaded", function() {
-		var q = "'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'owl:Class' || 'rdf:type' == 'rdf:Property' || 'rdf:type' == 'owl:DatatypeProperty' || 'rdf:type' == 'owl:ObjectProperty'";
+		var q = "'rdf:type' == 'rdfs:*' || 'rdf:type' == 'rdf:*' || 'rdf:type' == 'owl:*'";
 		var q_results = query(self.ticket, q);
 		for (var i=0; i<q_results.length; i++) {
 			var ontology_individual = get_individual(self.ticket, q_results[i], function (data) {

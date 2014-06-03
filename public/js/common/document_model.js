@@ -8,7 +8,7 @@ function DocumentModel(veda, params) {
 	var self = riot.observable(this);
 
 	// Define Model data setters & getters
-	var properties = {individual:""};
+	var properties = {individual:"", uri:uri};
 	function define_GS_etters(property) {
 		(function(property) {
 			Object.defineProperty(self, property, {
@@ -27,7 +27,7 @@ function DocumentModel(veda, params) {
 		
 	// Define Model functions
 	self.load = function(uri) {
-		self.individual = get_individual(veda.ticket, uri);
+		self.individual = veda.cache[uri] ? JSON.parse( veda.cache[uri] ) : get_individual(veda.ticket, uri);
 		self.trigger("document:loaded");
 	};
 

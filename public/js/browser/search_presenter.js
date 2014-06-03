@@ -28,14 +28,14 @@ Veda(function SearchPresenter(veda) { "use strict";
 		});
 
 		// Display search results
-		search.on("search:complete", function () {
-			$("#search-results-list").empty();
+		search.on("search:complete", function() {
+			$("#search-results-list", container).empty();
 			for (var i = 0; i < search.results_count; i++) {
 				var $li = jQuery("<li/>").appendTo("#search-results-list");
 				new DocumentModel(veda, [search.results[i], $li]);
 			}
 		});
-
+		
 	});
 
 });

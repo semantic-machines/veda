@@ -2,10 +2,11 @@
 
 "use strict";
 
-function RegisterModule(module, parent, name) {
-	module._id = guid();
-	module._name = name || module._id;
-	module._path = parent ? !parent._path ? "" : parent._path + "/" + module._name : module._name;
+function RegisterModule(module, parent, name, params) {
+	module._name = name || "";
+	module._params = params;
+	module._path = !parent._path ? "#/" : parent._path == "#/" ? parent._path + module._name : parent._path + "/" + module._name;
+	module._path += params && params.length ? params.reduce(function(p, c) {return p + "/" + c}, "") : "";
 	module._parent = parent || null;
 	module._register = function(new_module) {
 		module[new_module._name] = new_module;

@@ -39,13 +39,10 @@ function SearchModel(veda, params) {
 	};
 	
 	// Model messages
-	self.on("search:loaded", function() {
-		if (veda) veda.trigger("search:loaded", self);
-	});
-
-	self.on("search:complete", function() {
-		if (veda) veda.trigger("search:complete", self);
-	});
-
-	self.trigger("search:loaded");
+	veda.trigger("search:loaded", self);
+	
+	// Search if params given
+	self.q = params[0];
+	if (self.q) self.search();
+	
 };
