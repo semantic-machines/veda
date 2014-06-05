@@ -59,3 +59,10 @@ veda-ui:hasPreferences
   rdfs:label "предпочтения"@ru ;
   rdfs:range veda-ui:Preferences ;
 .
+veda-ui:displayedElements
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:Preferences ;
+  rdfs:label "отображать элементов"@ru ;
+  rdfs:label "display elements"@en ;
+  rdfs:range xsd:nonNegativeInteger ;
+.

@@ -1,13 +1,16 @@
 // Console Presenter
 
 Veda(function ConsolePresenter(veda) { "use strict";
+
+	//Get template
+	var template = $("#console-template").html();
+	var container = $("#main");
 	
 	veda.on("console:loaded", function (console) {
 	
 		// Render View
-		var template = $("#console-template").html();
 		var rendered = riot.render(template, console);
-		$("#main").html( rendered );
+		container.html( rendered );
 		
 		// Listen View changes & update Model
 		$("#console [bound]").on("change", function() {

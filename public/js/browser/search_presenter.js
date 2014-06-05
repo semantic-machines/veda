@@ -2,12 +2,13 @@
 
 Veda(function SearchPresenter(veda) { "use strict";
 
+	var template = $("#search-template").html();
+	var container = $("#main");
+
 	veda.on("search:loaded", function (search) {
 		
 		// Get template
-		var template = $("#search-template").html();
 		var rendered = riot.render(template, search);
-		var container = $("#main");
 		container.html(rendered);
 
 		// Listen View changes & update Model
@@ -26,16 +27,15 @@ Veda(function SearchPresenter(veda) { "use strict";
 			if ($el.is("input, textarea, select")) $el.val( value );
 			else $el.html( value );
 		});
-
-		// Display search results
-		search.on("search:complete", function() {
-			$("#search-results-list", container).empty();
-			for (var i = 0; i < search.results_count; i++) {
-				var $li = jQuery("<li/>").appendTo("#search-results-list");
-				new DocumentModel(veda, [search.results[i], $li]);
-			}
-		});
-		
+	});
+	
+	// Display search results
+	veda.on("search:complete", function (search) {
+		$("#search-results-list", container).empty();
+		for (var i = 0; i < search.results_count && i < veda.user.displayedElements; i++) {
+			var $li = jQuery("<li/>").appendTo("#search-results-list");
+			new DocumentModel(veda, [search.results[i], $li]);
+		}
 	});
 
 });

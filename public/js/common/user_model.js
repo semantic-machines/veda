@@ -4,7 +4,10 @@
 
 function UserModel(veda, params) {
 	var uri = params[0];
-	var defaultLanguage = "RU";
+	var defaults = {
+		language : "RU",
+		displayedElements : 10
+	}
 	var self = riot.observable(this);
 
 	// Define Model data setters & getters
@@ -32,8 +35,10 @@ function UserModel(veda, params) {
 			try { 
 				self.preferences = get_property_chain(veda.ticket, self.individual, "veda-ui:hasPreferences").last;
 				self.language = get_property_chain(veda.ticket, self.preferences, "veda-ui:preferredLanguage", "rdf:value").field[0].data;
+				self.displayedElements = self.preferences["veda-ui:displayedElements"][0].data;
 			} catch (e) {
-				self.language = defaultLanguage;
+				self.language = defaults.language;
+				self.displayedElements = defaults.displayedElements;
 				console.log("User preferred language undefined! Default applied.");
 			}
 			self.trigger("user:loaded");

@@ -2,6 +2,10 @@
 
 Veda(function DocumentPresenter(veda) { "use strict";
 
+	// Get templates
+	var template = $("#document-template").html();
+	var single_property = $("#single-property-template").html();
+	
 	veda.on("document:loaded", function (document, container_param) {
 		
 		// Localize document with preferred language
@@ -23,12 +27,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			})
 		);
 
-		// Get templates
-		var template = $("#document-template").html();
 		var container = container_param || $("#main");
 		container.html(template);
-		
-		var single_property = $("#single-property-template").html();
 		
 		// Render document title
 		$("#label", container).html( 
