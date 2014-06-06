@@ -7,7 +7,7 @@ function UserModel(veda, params) {
 	var defaults = {
 		language : "RU",
 		displayedElements : 10
-	}
+	};
 	var self = riot.observable(this);
 
 	// Define Model data setters & getters

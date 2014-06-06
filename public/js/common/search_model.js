@@ -6,7 +6,7 @@ function SearchModel(veda, params) {
 	var self = riot.observable(this);
 
 	// Define Model data setters & getters
-	var properties = {q:"", results:"", results_count:""};
+	var properties = {q:"", results:"", results_count:"", currentPage: 0};
 	function define_GS_etters(property) {
 		(function(property) {
 			Object.defineProperty(self, property, {
