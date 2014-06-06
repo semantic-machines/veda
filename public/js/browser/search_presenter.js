@@ -4,7 +4,8 @@ Veda(function SearchPresenter(veda) { "use strict";
 
 	var template = $("#search-template").html();
 	var container = $("#main");
-
+	var currentPage = 0;
+		
 	veda.on("search:loaded", function (search) {
 		
 		// Get template
@@ -33,25 +34,25 @@ Veda(function SearchPresenter(veda) { "use strict";
 	veda.on("search:complete", function (search) {
 		$("#search-results-list", container)
 			.empty()
-			.attr("start", search.currentPage * veda.user.displayedElements + 1);
+			.attr("start", currentPage * veda.user.displayedElements + 1);
 		$("#pager", container).empty();
-		for (var page = 0; page < Math.floor(search.results_count / veda.user.displayedElements) + 1; page++) {
+		for (var page = 0; page < Math.floor(search.results_count / veda.user.displayedElements) + 1 * (search.results_count % veda.user.displayedElements ? 1 : 0); page++) {
 			(function (page) {
 				var $page = $("<li/>", {
-					"class" : page == search.currentPage ? "active" : ""
+					"class" : page == currentPage ? "active" : ""
 				}).appendTo("#pager", container);
 				var $a = $("<a/>", { 
 					"text" : page + 1, 
 					"click": function (event) {
 						event.preventDefault(); 
-						search.currentPage = page; 
+						currentPage = page; 
 						veda.trigger('search:complete', search);
 					}, 
 					"href" : ""
 				}).appendTo($page);
 			})(page);
 		}
-		for (var i = search.currentPage * veda.user.displayedElements; i < (search.currentPage + 1) * veda.user.displayedElements && i < search.results_count; i++) {
+		for (var i = currentPage * veda.user.displayedElements; i < (currentPage + 1) * veda.user.displayedElements && i < search.results_count; i++) {
 			var $li = $("<li/>").appendTo("#search-results-list");
 			new DocumentModel(veda, [search.results[i], $li]);
 		}
