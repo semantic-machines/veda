@@ -19,6 +19,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 		
 		$("#search #search-submit", container).on("click", function(event) {
 			event.preventDefault();
+			$("#search-submit").button("loading");
 			search.search();
 		});
 	
@@ -32,6 +33,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 	
 	// Display search results
 	veda.on("search:complete", function (search) {
+		$("#search-submit").button("reset");
 		if (!search.results_count) {
 			$("#search-results", container).addClass("hidden");
 			$("#not-found", container).removeClass("hidden");

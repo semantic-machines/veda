@@ -212,7 +212,7 @@
 									<input id="q" bound value="{q}" type="text" placeholder="Введите запрос / Enter query" name="q" class="form-control" autofocus="autofocus"/>
 								</div>
 								<div class="col-xs-5 col-sm-4 col-md-3 col-lg-3">
-									<button type="submit" id="search-submit" class="btn btn-primary">Искать / Search</button>
+									<button type="submit" id="search-submit" class="btn btn-primary" data-loading-text="Поиск... / Searching...">Искать / Search</button>
 								</div>
 							</div>
 						</form>
@@ -232,8 +232,7 @@
 						</ul>
 					</div>
 				</div>
-				<div class="alert alert-warning alert-dismissable hidden" id="not-found">
-					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				<div class="alert alert-warning hidden" id="not-found">
 					<strong>Пусто!</strong> По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.
 				</div>				
 			</div>
