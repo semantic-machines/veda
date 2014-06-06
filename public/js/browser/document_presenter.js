@@ -31,22 +31,27 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		container.html(template);
 		
 		// Render document title
-		$("#label", container).html( 
-			
-			doc["rdf:type"]["values"].reduce(function(p, c) {
-				return p + c["rdfs:label"].reduce(function(p, c) { return p != "" ? p + ", " + c.data : c.data}, "");
-			}, "") 
-			
-			+ ": " +
-			
-			doc["rdfs:label"]["values"].reduce(function(p, c) {
-				return p != "" ? p + ", " + c.data : c.data;
-			}, "")
-			
-			+ " <small><a href='#/document/" + document.individual["@"] + "'><i class='glyphicon glyphicon-share-alt'></i></a></small>"
-			
-		);
-		
+		try {
+			$("#label", container).html( 
+				
+				doc["rdf:type"]["values"].reduce(function(p, c) {
+					return p + c["rdfs:label"].reduce(function(p, c) { return p != "" ? p + ", " + c.data : c.data}, "");
+				}, "") 
+				
+				+ ": " +
+				
+				doc["rdfs:label"]["values"].reduce(function(p, c) {
+					return p != "" ? p + ", " + c.data : c.data;
+				}, "")
+				
+				+ " <small><a href='#/document/" + doc["@"] + "'><i class='glyphicon glyphicon-share-alt'></i></a></small>"
+				
+			);
+		} catch (e) {
+			$("#label", container).html( 
+				doc["@"] + "<small><a href='#/document/" + doc["@"] + "'><i class='glyphicon glyphicon-share-alt'></i></a></small>"
+			);
+		}
 		// Render document properties
 		for (var i in doc) {
 			if (i == "@") continue;

@@ -32,6 +32,13 @@ Veda(function SearchPresenter(veda) { "use strict";
 	
 	// Display search results
 	veda.on("search:complete", function (search) {
+		if (!search.results_count) {
+			$("#search-results", container).addClass("hidden");
+			$("#not-found", container).removeClass("hidden");
+			return;
+		}
+		$("#not-found", container).addClass("hidden");
+		$("#search-results", container).removeClass("hidden");
 		$("#search-results-list", container)
 			.empty()
 			.attr("start", currentPage * veda.user.displayedElements + 1);

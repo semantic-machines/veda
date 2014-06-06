@@ -218,7 +218,7 @@
 						</form>
 					</div>
 				</div>
-				<div class="container-fluid">
+				<div class="container-fluid hidden" id="search-results">
 					<h1 class="text-center">Результаты поиска
 						<span class="text-muted">/ Search results</span>
 						(<span id="results_count" bound>{results_count}</span>)
@@ -232,6 +232,10 @@
 						</ul>
 					</div>
 				</div>
+				<div class="alert alert-warning alert-dismissable hidden" id="not-found">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+					<strong>Пусто!</strong> По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.
+				</div>				
 			</div>
 		</script>		
 
