@@ -68,7 +68,7 @@ test(
 			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:document',
+					data : 'veda-schema:Document',
 					type : _Uri
 				} ],
 				'veda-schema:author' : [ {
@@ -107,7 +107,7 @@ test(
 			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:document',
+					data : 'veda-schema:Document',
 					type : _Uri
 				} ],
 				'veda-schema:author' : [ {
@@ -171,7 +171,7 @@ test(
 			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:document',
+					data : 'veda-schema:Document',
 					type : _Uri
 				} ],
 				'veda-schema:author' : [ {
@@ -511,7 +511,7 @@ test(
 			var new_test_doc1 = {
 				'@' : new_test_doc1_uri_1,
 				'rdf:type' : [ {
-					data : 'veda-schema:document',
+					data : 'veda-schema:Document',
 					type : _Uri
 				} ],
 				'veda-schema:author' : [ {
@@ -540,7 +540,7 @@ test(
 			var new_test_doc2 = {
 				'@' : new_test_doc1_uri_2,
 				'rdf:type' : [ {
-					data : 'veda-schema:document',
+					data : 'veda-schema:Document',
 					type : _Uri
 				} ],
 				'veda-schema:author' : [ {
@@ -558,7 +558,7 @@ test(
 			var new_test_doc3 = {
 				'@' : new_test_doc1_uri_3,
 				'rdf:type' : [ {
-					data : 'veda-schema:document',
+					data : 'veda-schema:Document',
 					type : _Uri
 				} ],
 				'veda-schema:author' : [ {
@@ -581,7 +581,7 @@ test(
 			var new_test_doc4 = {
 				'@' : new_test_doc1_uri_4,
 				'rdf:type' : [ {
-					data : 'veda-schema:document',
+					data : 'veda-schema:Document',
 					type : _Uri
 				} ],
 				'veda-schema:author' : [ {
