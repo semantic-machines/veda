@@ -8,6 +8,13 @@ Veda(function DocumentPresenter(veda) { "use strict";
 	
 	veda.on("document:loaded", function (document, container_param) {
 		
+		
+		
+		
+		
+		
+		
+		
 		// Localize document with preferred language
 		var doc = JSON.parse(
 			JSON.stringify( document.get_expanded() )
@@ -49,7 +56,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			);
 		} catch (e) {
 			$("#label", container).html( 
-				doc["@"] + "<small><a href='#/document/" + doc["@"] + "'><i class='glyphicon glyphicon-share-alt'></i></a></small>"
+				doc["@"] + " <small><a href='#/document/" + doc["@"] + "'><i class='glyphicon glyphicon-share-alt'></i></a></small>"
 			);
 		}
 		// Render document properties

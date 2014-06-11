@@ -18,11 +18,9 @@ nav.navbar.navbar-inverse(role="navigation")
 			li
 				a(href="/#/console") Консоль / Console
 			li
-				a(href="/#/search") Search
+				a(href="/#/search") Поиск / Search
 			li
 				a(href="/view_classes/", title="Classes") Классы / Classes
-			li
-				a(href="/search/", title="Search") Поиск / Search
 			li
 				a(href="/tests", title="Search") Тесты / Tests
 

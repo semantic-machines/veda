@@ -5,7 +5,8 @@ Veda(function SearchPresenter(veda) { "use strict";
 	var template = $("#search-template").html();
 	var container = $("#main");
 	var currentPage = 0;
-		
+	
+	// Initialize search page
 	veda.on("search:loaded", function (search) {
 		
 		// Get template
@@ -19,7 +20,8 @@ Veda(function SearchPresenter(veda) { "use strict";
 		
 		$("#search #search-submit", container).on("click", function(event) {
 			event.preventDefault();
-			$("#search-submit").button("loading");
+			$("#search-submit").button("loading"); 
+			currentPage = 0;
 			search.search();
 		});
 	
@@ -33,6 +35,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 	
 	// Display search results
 	veda.on("search:complete", function (search) {
+		// Show/hide 'results' or 'not found'
 		$("#search-submit").button("reset");
 		if (!search.results_count) {
 			$("#search-results", container).addClass("hidden");
@@ -45,6 +48,14 @@ Veda(function SearchPresenter(veda) { "use strict";
 			.empty()
 			.attr("start", currentPage * veda.user.displayedElements + 1);
 		$("#pager", container).empty();
+		
+		// Show results
+		for (var i = currentPage * veda.user.displayedElements; i < (currentPage + 1) * veda.user.displayedElements && i < search.results_count; i++) {
+			var $li = $("<li/>").appendTo("#search-results-list");
+			new DocumentModel(veda, [search.results[i], $li]);
+		}
+		
+		// Show pager
 		for (var page = 0; page < Math.floor(search.results_count / veda.user.displayedElements) + 1 * (search.results_count % veda.user.displayedElements ? 1 : 0); page++) {
 			(function (page) {
 				var $page = $("<li/>", {
@@ -61,10 +72,5 @@ Veda(function SearchPresenter(veda) { "use strict";
 				}).appendTo($page);
 			})(page);
 		}
-		for (var i = currentPage * veda.user.displayedElements; i < (currentPage + 1) * veda.user.displayedElements && i < search.results_count; i++) {
-			var $li = $("<li/>").appendTo("#search-results-list");
-			new DocumentModel(veda, [search.results[i], $li]);
-		}
 	});
-
 });

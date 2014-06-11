@@ -275,7 +275,7 @@ mondi-data:Permission_3
 mondi-data:Preferences_AndreyBychin
   rdf:type veda-ui:Preferences ;
   veda-schema:owner mondi-data:AndreyBychin ;
-  veda-ui:preferredLanguage veda-schema:RU ;
+  veda-ui:preferredLanguage veda-ui:RU ;
   rdfs:label "Preferences (Andrey Bychin)"@en ;
   rdfs:label "Предпочтения (Андрей Бычин)"@ru ;
 .
