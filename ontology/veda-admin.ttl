@@ -23,11 +23,11 @@
 .
 veda-admin:VedaSystem
   rdf:type veda-schema:Person ;
-  veda-schema:actualVersion veda-schema:VedaSystem ;
+  veda-schema:actualVersion veda-admin:VedaSystem ;
   veda-schema:birthday "2014-03-05"^^xsd:date ;
   veda-schema:firstName "Veda"@en ;
   veda-schema:firstName "Веда"@ru ;
-  veda-schema:hasAccount veda-schema:VedaSystemAccount ;
+  veda-schema:hasAccount veda-admin:VedaSystemAccount ;
   veda-schema:lastName "System"@en ;
   veda-schema:lastName "Система"@ru ;
   rdfs:label "Veda System"@en ;
@@ -37,7 +37,7 @@ veda-admin:VedaSystemAccount
   rdf:type veda-schema:Account ;
   veda-schema:login "veda"^^xsd:string ;
   veda-schema:mailbox "veda@semantic-machines.com"^^xsd:string ;
-  veda-schema:owner veda-schema:VedaSystem ;
+  veda-schema:owner veda-admin:VedaSystem ;
   veda-schema:password "6220b3e1f255f8e29b87488abab1bde126a6bbb44c62bf9b297b3d20347f8b4e"^^xsd:string ;
   rdfs:label "Veda System Account"@en ;
   rdfs:label "Учетная запись системы Веда"@ru ;

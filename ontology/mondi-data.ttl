@@ -17,33 +17,33 @@
   owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
   owl:versionInfo "1.0" ;
 .
-mondi-data:AdministrativeDocument_1
+mondi-data:AdministrativeDocument_2
   rdf:type mondi-schema:AdministrativeDocument ;
   mondi-schema:content "To comply the federal law №135-FL issued 12.10.2012 I order..."@en ;
   mondi-schema:content "Во исполнение федерального закона №135-ФЗ от 12.10.2012 приказываю..."@ru ;
   mondi-schema:nomenclatureType mondi-data:RegulatoryOrder2013 ;
   mondi-schema:signer mondi-data:ValeriyBushenev-Programmer1 ;
-  veda-schema:actualVersion mondi-data:AdministrativeDocument_1 ;
+  veda-schema:actualVersion mondi-data:AdministrativeDocument_2 ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T15:42:27"^^xsd:dateTime ;
-  veda-schema:previousVersion mondi-data:AdministrativeDocument_1_1 ;
+  veda-schema:previousVersion mondi-data:AdministrativeDocument_1 ;
   veda-schema:published "2014-01-30T12:13:11"^^xsd:dateTime ;
-  rdfs:label "AdministrativeDocument_1"@en ;
-  rdfs:label "Распорядительный документ_1"@ru ;
+  rdfs:label "AdministrativeDocument_2"@en ;
+  rdfs:label "Распорядительный документ_2"@ru ;
 .
-mondi-data:AdministrativeDocument_2
+mondi-data:AdministrativeDocument_1
   rdf:type mondi-schema:AdministrativeDocument ;
   mondi-schema:content "2 To comply the federal law №153-FL issued 12.10.2012 I order..."@en ;
   mondi-schema:content "2 Во исполнение федерального закона №153-ФЗ от 12.10.2012 приказываю..."@ru ;
   mondi-schema:nomenclatureType mondi-data:RegulatoryOrder2013 ;
   mondi-schema:signer mondi-data:ValeriyBushenev-Programmer1 ;
-  veda-schema:actualVersion mondi-data:AdministrativeDocument_1 ;
+  veda-schema:actualVersion mondi-data:AdministrativeDocument_2 ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:created "2014-01-30T15:42:27"^^xsd:dateTime ;
-  veda-schema:nextVersion mondi-data:AdministrativeDocument_1 ;
+  veda-schema:nextVersion mondi-data:AdministrativeDocument_2 ;
   veda-schema:published "2014-01-30T12:13:11"^^xsd:dateTime ;
-  rdfs:label "AdministrativeDocument_2"@en ;
-  rdfs:label "Распорядительный документ_2"@ru ;
+  rdfs:label "AdministrativeDocument_1"@en ;
+  rdfs:label "Распорядительный документ_1"@ru ;
 .
 mondi-data:Analyst1
   rdf:type veda-schema:Position ;
@@ -110,7 +110,7 @@ mondi-data:BushenevV
   veda-schema:mailbox "valeriy.bushenev@mondigroup.com"^^xsd:string ;
   veda-schema:owner mondi-data:ValeriyBushenev ;
   veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  rdfs:label "BushenevV"@en ;
+  rdfs:label "BushenevV" ;
 .
 mondi-data:BychinA
   rdf:type veda-schema:Account ;
@@ -118,7 +118,7 @@ mondi-data:BychinA
   veda-schema:mailbox "andrey.bychin@mondigroup.com"^^xsd:string ;
   veda-schema:owner mondi-data:AndreyBychin ;
   veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  rdfs:label "BychinA"@en ;
+  rdfs:label "BychinA" ;
 .
 mondi-data:CCIP
   rdf:type veda-schema:Department ;
@@ -155,7 +155,7 @@ mondi-data:KarpovR
   veda-schema:mailbox "roman.karpov@mondigroup.com"^^xsd:string ;
   veda-schema:owner mondi-data:RomanKarpov ;
   veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  rdfs:label "KarpovR"@en ;
+  rdfs:label "KarpovR" ;
 .
 mondi-data:Membership_1
   rdf:type veda-schema:Membership ;
@@ -202,7 +202,7 @@ mondi-data:Membership_6
 mondi-data:Membership_7
   rdf:type veda-schema:Membership ;
   veda-schema:memberOf mondi-data:ResGroup_1 ;
-  veda-schema:resource mondi-data:Mandate_1 ;
+  veda-schema:resource veda-admin:Mandate_1 ;
   rdfs:label "Membership_7"@en ;
   rdfs:label "Членство_7"@ru ;
 .
