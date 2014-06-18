@@ -25,7 +25,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		}
 		
 		// Render document properties
-		document.properties.map ( function (property_uri) {
+		Object.keys(document.predicates).map ( function (property_uri) {
 			if (property_uri == "@") return;
 			
 			try {
@@ -41,7 +41,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				property_label = property_uri;
 			}
 			
-			var property_values = Object.create(document[property_uri].values);
+			var property_values = Object.create(document[property_uri]);
 			for (var i in property_values) {
 				if (property_values[i].type != "Uri") {
 					if (property_values[i].type == "String" && property_values[i].lang != veda.user.language && property_values[i].lang != "NONE") {

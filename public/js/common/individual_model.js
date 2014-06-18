@@ -8,7 +8,8 @@ function IndividualModel(veda, params) {
 
 	// Define Model functions
 	var individual = {};
-	self.properties = [];
+	self.predicates = {};
+	self.objects = {};
 
 	self.load = function(uri) {
 		individual = veda.cache[uri] ? JSON.parse( veda.cache[uri] ) : get_individual(veda.ticket, uri);
@@ -17,9 +18,12 @@ function IndividualModel(veda, params) {
 				Object.defineProperty(self, property_uri, {
 					get: function() { 
 						if (property_uri == "@") return individual["@"];
-						var property = new IndividualModel(veda, [property_uri]);
-						var values = individual[property_uri];
-						return {property: property, values: values};
+						if (!self.predicates[property_uri]) self.predicates[property_uri] = new IndividualModel(veda, [property_uri]); 
+						/*self.objects[property_uri] = individual[property_uri].map( function(resource) {
+							resource.data = resource.type == "Uri" ? new IndividualModel(veda, [resource.data]) : resource.data;
+							return resource;
+						});*/
+						return individual[property_uri]; 
 					},
 					set: function(value) { 
 						if (individual[property_uri] == value) return; 
@@ -27,7 +31,7 @@ function IndividualModel(veda, params) {
 						self.trigger("property:changed", property_uri, individual[property_uri]);
 					}
 				});
-				self.properties.push(property_uri);
+				self.predicates[property_uri] = undefined;
 			})(property_uri);
 		}
 		self.trigger("individual:loaded");
