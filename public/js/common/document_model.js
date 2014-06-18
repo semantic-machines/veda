@@ -3,66 +3,15 @@
 "use strict";
 
 function DocumentModel(veda, params) {
-	var uri = params[0];
-	var container = params[1] || undefined;
+	var container = params[1];
+	
 	var self = riot.observable(this);
-
-	// Define Model data setters & getters
-	var properties = {individual:"", uri:uri};
-	function define_GS_etters(property) {
-		(function(property) {
-			Object.defineProperty(self, property, {
-				get: function() { return properties[property]; },
-				set: function(value) { 
-					if (properties[property] == value) return; 
-					properties[property] = value; 
-					self.trigger("property:changed", property, properties[property]);
-				}
-   			});
-   		})(property);
-	};
-	for (var property in properties) {
-		define_GS_etters(property);
-    }
-		
-	// Define Model functions
-	self.load = function(uri) {
-		self.individual = veda.cache[uri] ? JSON.parse( veda.cache[uri] ) : get_individual(veda.ticket, uri);
-		self.trigger("document:loaded");
-	};
-
-	self.save = function() {
-		put_individual(veda.ticket, self.individual, function(data) {
-		});
-	};
-
-	self.get_expanded = function () {
-		var expanded = {};
-		for (var property_uri in self.individual) {
-			expanded[property_uri] = {};
-			if (property_uri == "@") {
-				expanded["@"] = self.individual["@"];
-				continue;
-			}
-			var property = veda.cache[property_uri] ? JSON.parse( veda.cache[property_uri] ) : get_individual(veda.ticket, property_uri);
-			var values = self.individual[property_uri];
-			for (var i in values) {
-				if (values[i].type != "Uri") continue;
-				if (values[i].data.indexOf("://") >= 0) continue; // Link to external resource
-				values[i] = veda.cache[values[i].data] ? JSON.parse( veda.cache[values[i].data] ) : get_individual(veda.ticket, values[i].data);
-			}
-			expanded[property_uri]["property"] = property;
-			expanded[property_uri]["values"] = values;
-		}
-		return expanded;
-	}
 	
-	// Model loaded message
-	self.on("document:loaded", function() {
-		if (veda) veda.trigger("document:loaded", self, container);
+	self.on("individual:loaded", function() {
+		veda.trigger("document:loaded", self, container);
 	});
-
-	// Load data 
-	if (uri) self.load(uri);
 	
+	// Inherit from IndividualModel
+	IndividualModel.call(this, veda, params);
+
 };

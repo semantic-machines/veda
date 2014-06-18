@@ -5,6 +5,11 @@ var exports = exports || {}, riot = riot || exports;
 (function(riot) { "use strict";
 
 riot.observable = function(el) {
+  
+  //KarpovR: Avoid re-initialization of observable
+  if (el.observable) return el;
+  el.observable = true;
+  
   var callbacks = {}, slice = [].slice;
 
   el.on = function(events, fn) {

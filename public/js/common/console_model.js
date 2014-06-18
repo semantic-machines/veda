@@ -7,7 +7,7 @@ function ConsoleModel(veda, params) {
 	
 	// Define Model data setters & getters
 	var properties = {script:"", result:"", runat:"", time:""};
-	function define_GS_etters(property) {
+	for (var property in properties) {
 		(function(property) {
 			Object.defineProperty(self, property, {
 				get: function() { return properties[property]; },
@@ -18,9 +18,6 @@ function ConsoleModel(veda, params) {
 				}
    			});
    		})(property);
-	};
-	for (var property in properties) {
-		define_GS_etters(property);
     }
 
 	// Define Model functions

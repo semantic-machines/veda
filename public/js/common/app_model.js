@@ -8,7 +8,7 @@ function AppModel(config) {
 	self.started = false;
 	// Define Model data setters & getters
 	var properties = { user_uri:"", ticket:"", end_time:"" };
-	function define_GS_etters(property) {
+	for (var property in properties) {
 		(function(property) {
 			Object.defineProperty(self, property, {
 				get: function() { return properties[property]; },
@@ -19,9 +19,6 @@ function AppModel(config) {
 				}
    			});
    		})(property);
-	};
-	for (var property in properties) {
-		define_GS_etters(property);
     }
 
 	// Define Model functions

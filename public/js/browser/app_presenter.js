@@ -55,7 +55,7 @@ Veda(function AppPresenter(veda) { "use strict";
 		
 		//Show login form
 		var template = $("#login-template").html();
-		$("#main").html(template);		
+		$("#main").html(template);
 
 		$("#login-form #submit").on("click", function(event) {
 			event.preventDefault();
@@ -64,7 +64,7 @@ Veda(function AppPresenter(veda) { "use strict";
 	});
 
 	//if (!veda.ticket || !veda.user_uri || !veda.end_time) veda.trigger("auth:quit");
-	if (!getCookie("ticket") || !getCookie("user_uri") || !getCookie("end_time")) return veda.trigger("auth:quit");
+	if (!getCookie("ticket") || !getCookie("user_uri") || !getCookie("end_time") || !is_ticket_valid(getCookie("ticket"))) return veda.trigger("auth:quit");
 	veda.ticket = getCookie("ticket");
     veda.user_uri = getCookie("user_uri");
     veda.end_time = getCookie("end_time");
