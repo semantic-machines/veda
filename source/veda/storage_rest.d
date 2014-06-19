@@ -193,12 +193,13 @@ interface VedaStorageRest_API {
 
     @path("execute_script") @method(HTTPMethod.POST)
     string[ 2 ] execute_script(string script);
-
+/*
     @path("get_classes") @method(HTTPMethod.GET)
     immutable(Class)[ string ] get_classes();
 
     @path("get_class") @method(HTTPMethod.GET)
     Class get_class(string uri);
+*/
 }
 
 class VedaStorageRest : VedaStorageRest_API {
@@ -455,7 +456,7 @@ class VedaStorageRest : VedaStorageRest_API {
 
         return res;
     }
-
+/*
     immutable(Class)[ string ] get_classes()
     {
         Tid my_task = Task.getThis();
@@ -491,4 +492,5 @@ class VedaStorageRest : VedaStorageRest_API {
         }
         return Class.init;
     }
+*/
 }

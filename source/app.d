@@ -27,25 +27,34 @@ shared static this()
 	router.get("/tests", serveStaticFile("public/tests.html"));
 	registerRestInterface(router, new VedaStorageRest());
 
-	logInfo("============ROUTES=============");
-	auto routes = router.getAllRoutes();
-	logInfo("GET:");
-	foreach(key, value; routes[HTTPMethod.GET]) {
-		logInfo(text(key) ~ ": " ~ value.pattern);
-	}
-	logInfo("PUT:");
-	foreach(key, value; routes[HTTPMethod.PUT]) {
-		logInfo(text(key) ~ ": " ~ value.pattern);
-	}
-	logInfo("POST:");
-	foreach(key, value; routes[HTTPMethod.POST]) {
-		logInfo(text(key) ~ ": " ~ value.pattern);
-	}
-	logInfo("DELETE:");
-	foreach(key, value; routes[HTTPMethod.DELETE]) {
-		logInfo(text(key) ~ ": " ~ value.pattern);
-	}
-	logInfo("===============================");
+        logInfo("============ROUTES=============");
+        auto routes = router.getAllRoutes();
+        logInfo("GET:");
+        foreach(route; routes)
+        {
+                if (route.method == HTTPMethod.GET)
+                    logInfo(route.pattern);
+        }
+
+        logInfo("PUT:");
+        foreach(route; routes)
+        {
+                if (route.method == HTTPMethod.PUT)
+                    logInfo(route.pattern);
+        }
+        logInfo("POST:");
+        foreach(route; routes)
+        {
+                if (route.method == HTTPMethod.POST)
+                    logInfo(route.pattern);
+        }
+        logInfo("DELETE:");
+        foreach(route; routes)
+        {
+                if (route.method == HTTPMethod.DELETE)
+                    logInfo(route.pattern);
+        }
+        logInfo("===============================");
 
 	listenHTTP(settings, router);
 	logInfo("Please open http://127.0.0.1:8080/ in your browser.");
