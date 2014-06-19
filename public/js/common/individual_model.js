@@ -3,35 +3,65 @@
 "use strict";
 
 function IndividualModel(veda, params) {
-	var uri = params[0];
 	var self = riot.observable(this);
+	var uri = params[0]; self.uri = uri;
 
 	// Define Model functions
 	var individual = {};
-	self.predicates = {};
-	self.objects = {};
+	var properties = {};
+	self.properties = {};
 
 	self.load = function(uri) {
 		individual = veda.cache[uri] ? JSON.parse( veda.cache[uri] ) : get_individual(veda.ticket, uri);
 		for (var property_uri in individual) {
 			(function(property_uri) {
+				
+				properties[property_uri] = undefined;
+
 				Object.defineProperty(self, property_uri, {
 					get: function() { 
 						if (property_uri == "@") return individual["@"];
-						if (!self.predicates[property_uri]) self.predicates[property_uri] = new IndividualModel(veda, [property_uri]); 
-						/*self.objects[property_uri] = individual[property_uri].map( function(resource) {
-							resource.data = resource.type == "Uri" ? new IndividualModel(veda, [resource.data]) : resource.data;
-							return resource;
-						});*/
-						return individual[property_uri]; 
+						var values = individual[property_uri].map(function(value) {
+							switch (value.type) {
+								case "Uri" : 
+									//if (value.data.indexOf("://") >= 0) return String(value.data);
+									try { 
+										var result = new IndividualModel(veda, [value.data]);
+										return result;
+									} catch (e) {
+										return String(value.data);
+									}
+								case "String" : 
+									if (value.lang != veda.user.language && value.lang != 'NONE') return undefined;
+									return String(value.data); break
+								case "Integer" : return Number(value.data); break
+								case "Datetime" : return Date(Number(value.data)); break
+								case "Date" : return Date( Number(value.data) ); break
+								case "Float" : return Number(value.data); break
+								case "Boolean" : return Boolean(value.data); break
+								default : return; break
+							}
+						}).filter(function(item){return item});
+						return values;
 					},
 					set: function(value) { 
-						if (individual[property_uri] == value) return; 
-						individual[property_uri] = value; 
+						if (individual[property_uri] == value) return;
+						individual[property_uri] = value;
 						self.trigger("property:changed", property_uri, individual[property_uri]);
 					}
 				});
-				self.predicates[property_uri] = undefined;
+
+				Object.defineProperty(self.properties, property_uri, {
+					get: function() { 
+						if (!properties[property_uri]) properties[property_uri] = new IndividualModel(veda, [property_uri]);
+						return properties[property_uri];
+					},
+					set: function(value) { 
+						if (properties[property_uri] == value) return; 
+						properties[property_uri] = value; 
+						self.trigger("property:changed", property_uri, properties[property_uri]);
+					}
+				});
 			})(property_uri);
 		}
 		self.trigger("individual:loaded");
@@ -43,6 +73,6 @@ function IndividualModel(veda, params) {
 	};
 
 	// Load data 
-	if (uri) self.load(uri);
+	if (uri) self.load(uri); 
 	
 };

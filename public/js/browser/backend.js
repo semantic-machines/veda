@@ -137,7 +137,7 @@ function get_individual(ticket, uri, callback) {
 		return JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
-		.fail( function () { callback(null) } )
+		.fail( function () { /*callback(null)*/ throw "Error: get_individual failed" } )
 		.done( function (data) { callback(data) } );
 }
 

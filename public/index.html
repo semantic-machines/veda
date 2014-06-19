@@ -26,9 +26,6 @@
 						<a href="#/search">Поиск / Search</a>
 					</li>
 					<li>
-						<a href="/view_classes/">Классы / Classes</a>
-					</li>
-					<li>
 						<a href="/tests">Тесты / Tests</a>
 					</li>
 				</ul>
@@ -160,17 +157,22 @@
 		<!-- Document template -->
 		<script type="html/template" id="document-template">
 			<div class="" id="document">
-				<h3 id="label">Тип: наименование</h3>
+				<div id="label"></div>
 				<div class="container-fluid" id="document-properties">
 				</div>
 			</div>
 		</script>
 		
-		<!-- Single property template -->
-		<script type="html/template" id="single-property-template">
+		<!-- Document label template -->
+		<script type="html/template" id="document-label-template">
+			<h3 id="label">{label}<small> <a href="#/document/{uri}"><i class="glyphicon glyphicon-share-alt"></i></a></small></h3>
+		</script>
+		
+		<!-- Document single property template -->
+		<script type="html/template" id="document-single-property-template">
 			<div class="row">
 				<div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 text-right">
-					<strong>{property}</strong>
+					<strong><a href="#/document/{uri}">{label}</a></strong>
 				</div>
 				<div class="col-xs-8 col-sm-8 col-md-9 col-lg-9">
 					{values}
