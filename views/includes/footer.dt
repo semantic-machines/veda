@@ -5,7 +5,3 @@ nav.navbar.navbar-fixed-bottom(role="navigation", style="min-height:20px")
 			a(href="http://www.semantic-machines.com", title="Официальный сайт компании") &copy; "Смысловые машины", ООО.
 			| Лицензия / License
 			a(alt="GNU General Public License version 3 official text", href="http://www.gnu.org/licenses/gpl.html") GPLv3.
-// Javascript placed at the end of the document so the pages load faster
-script(src="/js/browser/bootstrap.min.js")
-script(src="/js/browser/cookie.js")
-script(src="/js/browser/util.js")
