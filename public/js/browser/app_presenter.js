@@ -18,6 +18,10 @@ Veda(function AppPresenter(veda) { "use strict";
 		var link = $(this);
 		return riot.route($(this).attr("href"));
 	});
+	$("body").on("click", "a[href='']", function(e) {
+		e.preventDefault();
+		$(this).addClass("text-danger");
+	});
 
 	// Toggle tracing
 	$("#set-trace").on("click", function(e) {

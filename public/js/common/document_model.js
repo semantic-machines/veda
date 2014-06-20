@@ -13,5 +13,4 @@ function DocumentModel(veda, params) {
 	
 	// Inherit from IndividualModel
 	IndividualModel.call(this, veda, params);
-
 };

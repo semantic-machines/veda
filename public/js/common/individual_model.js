@@ -4,11 +4,12 @@
 
 function IndividualModel(veda, params) {
 	var self = riot.observable(this);
-	var uri = params[0]; self.uri = uri;
+	var uri = params[0];
 
 	// Define Model functions
 	var individual = {};
 	var properties = {};
+	var values = {};
 	self.properties = {};
 
 	self.load = function(uri) {
@@ -17,20 +18,18 @@ function IndividualModel(veda, params) {
 			(function(property_uri) {
 				
 				properties[property_uri] = undefined;
+				values[property_uri] = undefined;
 
 				Object.defineProperty(self, property_uri, {
 					get: function() { 
 						if (property_uri == "@") return individual["@"];
-						var values = individual[property_uri].map(function(value) {
+						if (values[property_uri]) return values[property_uri];
+						values[property_uri] = individual[property_uri].map(function(value) {
 							switch (value.type) {
 								case "Uri" : 
-									//if (value.data.indexOf("://") >= 0) return String(value.data);
-									try { 
-										var result = new IndividualModel(veda, [value.data]);
-										return result;
-									} catch (e) {
-										return String(value.data);
-									}
+									if (value.data.search(/^.{3,5}:\/\//) == 0) return String(value.data);
+									try { return new IndividualModel(veda, [value.data]); } 
+									catch (e) { return String(value.data); }
 								case "String" : 
 									if (value.lang != veda.user.language && value.lang != 'NONE') return undefined;
 									return String(value.data); break
@@ -41,8 +40,9 @@ function IndividualModel(veda, params) {
 								case "Boolean" : return Boolean(value.data); break
 								default : return; break
 							}
-						}).filter(function(item){return item});
-						return values;
+						// Remove "null" & "undefined" values
+						}).filter(function(item){return item}); 
+						return values[property_uri];
 					},
 					set: function(value) { 
 						if (individual[property_uri] == value) return;
@@ -53,7 +53,9 @@ function IndividualModel(veda, params) {
 
 				Object.defineProperty(self.properties, property_uri, {
 					get: function() { 
-						if (!properties[property_uri]) properties[property_uri] = new IndividualModel(veda, [property_uri]);
+						if (properties[property_uri]) return properties[property_uri];
+						try { properties[property_uri] = new IndividualModel(veda, [property_uri]); } 
+						catch (e) { properties[property_uri] = property_uri; }
 						return properties[property_uri];
 					},
 					set: function(value) { 

@@ -5,7 +5,10 @@
 function AppModel(config) {
 	var self = riot.observable(this);
 	
+	self.config = config;
+
 	self.started = false;
+
 	// Define Model data setters & getters
 	var properties = { user_uri:"", ticket:"", end_time:"" };
 	for (var property in properties) {
@@ -37,7 +40,7 @@ function AppModel(config) {
 		self.trigger("auth:quit");
 	};
 	
-	self.cache = localStorage ? localStorage : {};
+	self.cache = typeof localStorage != "undefined" ? localStorage : {};
 	
 	// Invoke existing or create new module
 	self.load = function (page, params) {
@@ -51,12 +54,8 @@ function AppModel(config) {
 				new DocumentModel(self, params);
 				break
 			case "search": 
-				self.search && ( (self.search._params == params) || params.length == 0 )? self.trigger("search:loaded", self.search) && self.trigger("search:complete", self.search) : RegisterModule(new SearchModel(self, params), self, "search", params);
+				self.search && ( (self.search._params == params) || params.length == 0 ) ? self.trigger("search:loaded", self.search) && self.trigger("search:complete", self.search) : RegisterModule(new SearchModel(self, params), self, "search", params);
 				//new SearchModel(self, params);
-				break
-			case "user": 
-				//self.user ? self.trigger("user:loaded", self.user) : RegisterModule(new UserModel(self, params), self, "user"); 
-				new UserModel(self, params);
 				break
 			default: ""; break
 		}

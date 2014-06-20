@@ -18,24 +18,24 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				document_label_template,
 				{ 
 					label: document["rdfs:label"] ? document["rdfs:label"].join(", ") : document["@"],
-					uri: document["@"] 
+					uri: "#/document/" + document["@"] 
 				}
 			) 
 		);
 		
 		// Render document properties
 		Object.getOwnPropertyNames(document.properties).map ( function (property_uri) {
-			console.log("property", property_uri);
 			if (property_uri == "@") return;
 			$("#document-properties", container).append(
 				riot.render(
 					document_single_property_template,
 					{
-						label: document.properties[property_uri]["rdfs:label"] ? document.properties[property_uri]["rdfs:label"].join(", ") : property_uri,
-						uri: document.properties[property_uri]["@"],
+						label: typeof document.properties[property_uri] == "object" ? document.properties[property_uri]["rdfs:label"].join(", ") : document.properties[property_uri],
+						uri: typeof document.properties[property_uri] == "object" ? "#/document/" + document.properties[property_uri]["@"] : "",
 						values: document[property_uri].map( function (item) {
-							console.log("value", item);
-							if (typeof item != "object") return item;
+							if (typeof item != "object") 
+								// Check if string starts with http:// or ftp://
+								return item.toString().search(/^.{3,5}:\/\//) == 0 ? "<a href='" + item + "'>" + item + "</a>" : item ;
 							return "<a href='#/document/" + item["@"] + "'>" + (item["rdfs:label"] ? item["rdfs:label"].join(", ") : item["@"]) + "</a>";
 						}).join(", ")
 					}

@@ -30,13 +30,13 @@ function UserModel(veda, params) {
 		get_individual(veda.ticket, uri, function(individual) {
 			self.individual = individual;
 			try { 
-				self.preferences = get_property_chain(veda.ticket, self.individual, "veda-ui:hasPreferences").last;
-				self.language = get_property_chain(veda.ticket, self.preferences, "veda-ui:preferredLanguage", "rdf:value").field[0].data;
-				self.displayedElements = self.preferences["veda-ui:displayedElements"][0].data;
+				self.preferences = new IndividualModel(veda, [self.individual["veda-ui:hasPreferences"][0].data]);
+				self.language = self.preferences["veda-ui:preferredLanguage"][0]["rdf:value"][0];
+				self.displayedElements = self.preferences["veda-ui:displayedElements"][0];
 			} catch (e) {
 				self.language = defaults.language;
 				self.displayedElements = defaults.displayedElements;
-				console.log("User preferred language undefined! Default applied.");
+				console.log(e, "User preferred language undefined! Default applied.");
 			}
 			self.trigger("user:loaded");
 		});

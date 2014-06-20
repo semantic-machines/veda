@@ -89,7 +89,8 @@ test(
 			var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
 
-			read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);
+			try { read_individual = get_individual(ticket_user2.id, new_test_doc1_uri); }
+			catch (e) { read_individual = {}; }
 			ok(compare(new_test_doc1, read_individual) == false);
 			
 		});
@@ -125,7 +126,9 @@ test(
 			wait_pmodule(condition);
 			wait_pmodule(acl_manager);
 
-			var read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);
+			var read_individual;
+			try { read_individual = get_individual(ticket_user2.id, new_test_doc1_uri); }
+			catch (e) { read_individual = {}; }
 			ok(compare(new_test_doc1, read_individual) == false);
 
 			read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
@@ -302,7 +305,8 @@ test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2 (c
 			} ], put_individual(ticket.id, new_test_doc3);
 			wait_pmodule(subject_manager);
 
-			read_individual = get_individual(ticket.id, new_test_doc3_uri);
+			try { read_individual = get_individual(ticket.id, new_test_doc3_uri); }
+			catch (e) { read_individual = {}; }
 			ok((read_individual['@'] == new_test_doc3_uri) == false);
 			
 		});
@@ -431,7 +435,8 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 			put_individual(ticket.id, new_test_doc3);
 			wait_pmodule(subject_manager);
 
-			read_individual = get_individual(ticket.id, new_test_doc3_uri);
+			try { read_individual = get_individual(ticket.id, new_test_doc3_uri); }
+			catch (e) { read_individual = {}; }
 			ok((read_individual['@'] == new_test_doc3_uri) == false);
 			
 		});

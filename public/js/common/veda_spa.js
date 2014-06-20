@@ -9,7 +9,8 @@ var Veda = riot.observable(function(arg) {
   if (!arg) return app;
 
   // Veda(fn) --> add a new module
-  if ($.isFunction(arg)) {
+  if (typeof arg == 'function') {
+
     Veda.on("ready", arg);
 
   // Veda(conf) --> initialize the application

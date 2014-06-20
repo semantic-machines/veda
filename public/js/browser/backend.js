@@ -73,10 +73,12 @@ function count_individuals(callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { callback(false) } )
+		.fail( function () { throw {status: result.status, description: result.statusText } } )
 		.done( function (data) { callback(data) } );
 }
 
@@ -88,10 +90,12 @@ function set_trace(idx, state, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { callback(false) } )
+		.fail( function () { throw {status: result.status, description: result.statusText } } )
 		.done( function (data) { callback(data) } );
 }
 
@@ -103,10 +107,12 @@ function query(ticket, query, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { callback(null) } )
+		.fail( function () { throw {status: result.status, description: result.statusText } } )
 		.done( function (data) { callback(data) } );
 }
 
@@ -119,10 +125,12 @@ function get_individuals(ticket, uris, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { callback(null) } )
+		.fail( function () { throw {status: result.status, description: result.statusText } } )
 		.done( function (data) { callback(data) } );
 }
 
@@ -134,10 +142,12 @@ function get_individual(ticket, uri, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { /*callback(null)*/ throw "Error: get_individual failed" } )
+		.fail( function () { throw {status: result.status, description: result.statusText } } )
 		.done( function (data) { callback(data) } );
 }
 
@@ -150,10 +160,12 @@ function put_individuals(ticket, individuals, callback) {
 	}
 	if(!callback) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { callback(null) } )
+		.fail( function () { throw {status: result.status, description: result.statusText } } )
 		.done( function (data) { callback(data) } );
 }
 
@@ -167,10 +179,12 @@ function put_individual(ticket, individual, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { callback(null) } )
+		.fail( function () { throw {status: result.status, description: result.statusText } } )
 		.done( function (data) { callback(data) } );
 }
 
@@ -182,10 +196,12 @@ function get_property_value(ticket, uri, property_uri, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { callback(null) } )
+		.fail( function () { throw {status: result.status, description: result.statusText } } )
 		.done( function (data) { callback(data) } );
 }
 
@@ -198,9 +214,11 @@ function execute_script(script, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { callback(null) } )
+		.fail( function () { throw {status: result.status, description: result.statusText } } )
 		.done( function (data) { callback(data) } );
 }
