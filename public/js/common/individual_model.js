@@ -31,7 +31,7 @@ function IndividualModel(veda, params) {
 									try { return new IndividualModel(veda, [value.data]); } 
 									catch (e) { return String(value.data); }
 								case "String" : 
-									if (value.lang != veda.user.language && value.lang != 'NONE') return undefined;
+									//if (value.lang != veda.user.language && value.lang != 'NONE') return undefined;
 									return String(value.data); break
 								case "Integer" : return Number(value.data); break
 								case "Datetime" : return Date(Number(value.data)); break

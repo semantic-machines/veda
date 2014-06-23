@@ -6,7 +6,7 @@ Veda(function UserPresenter(veda) { "use strict";
 
 		// Render View
 		var template = $("#current-user-template").html();
-		$("#nav-container #user-info").html( riot.render(template, {name: user.individual["rdfs:label"][0].data, id: user.individual["@"]}) );
+		$("#nav-container #user-info").html( riot.render(template, {name: user["rdfs:label"][0], id: user["@"]}) );
 
 	});
 

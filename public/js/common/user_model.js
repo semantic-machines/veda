@@ -9,50 +9,25 @@ function UserModel(veda, params) {
 		displayedElements : 10
 	};
 	var self = riot.observable(this);
-
-	// Define Model data setters & getters
-	var properties = {individual:"", language:"", preferences: ""};
-	for (var property in properties) {
-		(function(property) {
-			Object.defineProperty(self, property, {
-				get: function() { return properties[property]; },
-				set: function(value) { 
-					if (properties[property] == value) return; 
-					properties[property] = value; 
-					self.trigger("property:changed", property, properties[property]);
-				}
-   			});
-   		})(property);
-    }
-		
-	// Define Model functions
-	self.load = function(uri) {
-		get_individual(veda.ticket, uri, function(individual) {
-			self.individual = individual;
-			try { 
-				self.preferences = new IndividualModel(veda, [self.individual["veda-ui:hasPreferences"][0].data]);
-				self.language = self.preferences["veda-ui:preferredLanguage"][0]["rdf:value"][0];
-				self.displayedElements = self.preferences["veda-ui:displayedElements"][0];
-			} catch (e) {
-				self.language = defaults.language;
-				self.displayedElements = defaults.displayedElements;
-				console.log(e, "User preferred language undefined! Default applied.");
-			}
-			self.trigger("user:loaded");
-		});
-	};
-	self.save = function() {
-		put_individual(veda.ticket, self.individual, function(data) {
-			self.trigger("user:saved");
-		});
-	};
-
+	
+	self.on("individual:loaded", function() {
+		try { 
+			self.preferences = new IndividualModel(veda, [self["veda-ui:hasPreferences"][0]]);
+			self.language = self.preferences["veda-ui:preferredLanguage"][0]["rdf:value"][0];
+			self.displayedElements = self.preferences["veda-ui:displayedElements"][0];
+		} catch (e) {
+			self.language = defaults.language;
+			self.displayedElements = defaults.displayedElements;
+			console.log(e, "User preferred language undefined! Default applied.");
+		}
+		self.trigger("user:loaded");
+	});
+	
 	// Model loaded message
 	self.on("user:loaded", function(){
 		if (veda) veda.trigger("user:loaded", self);
 	});
-	
-	// Load data 
-	if (uri) self.load(uri);
-
+		
+	// Inherit from IndividualModel
+	IndividualModel.call(this, veda, params);
 };
