@@ -1,3 +1,5 @@
+String.prototype.language = "NONE";
+
 // Document Model
 
 "use strict";

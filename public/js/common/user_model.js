@@ -12,7 +12,7 @@ function UserModel(veda, params) {
 	
 	self.on("individual:loaded", function() {
 		try { 
-			self.preferences = new IndividualModel(veda, [self["veda-ui:hasPreferences"][0]]);
+			self.preferences = new IndividualModel(veda, [self["veda-ui:hasPreferences"][0]["@"]]);
 			self.language = self.preferences["veda-ui:preferredLanguage"][0]["rdf:value"][0];
 			self.displayedElements = self.preferences["veda-ui:displayedElements"][0];
 		} catch (e) {
