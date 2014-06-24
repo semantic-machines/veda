@@ -17,8 +17,10 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			riot.render(
 				document_label_template,
 				{ 
-					label: document["rdfs:label"] ? document["rdfs:label"].join(", ") : document["@"],
-					uri: "#/document/" + document["@"] 
+					label: document["rdfs:label"] ? document["rdfs:label"]
+						.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
+						.join(", ") : document["@"],
+					uri: document["@"] 
 				}
 			) 
 		);
@@ -30,14 +32,24 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				riot.render(
 					document_single_property_template,
 					{
-						label: typeof document.properties[property_uri] == "object" ? document.properties[property_uri]["rdfs:label"].join(", ") : document.properties[property_uri],
-						uri: typeof document.properties[property_uri] == "object" ? "#/document/" + document.properties[property_uri]["@"] : "",
-						values: document[property_uri].map( function (item) {
-							if (typeof item != "object") 
-								// Check if string starts with http:// or ftp://
-								return item.toString().search(/^.{3,5}:\/\//) == 0 ? "<a href='" + item + "'>" + item + "</a>" : item ;
-							return "<a href='#/document/" + item["@"] + "'>" + (item["rdfs:label"] ? item["rdfs:label"].join(", ") : item["@"]) + "</a>";
-						}).join(", ")
+						label: typeof document.properties[property_uri] == "object" ? 
+							document.properties[property_uri]["rdfs:label"]
+								.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
+								.join(", ")
+							: document.properties[property_uri],
+						uri: typeof document.properties[property_uri] == "object" ? document.properties[property_uri]["@"] : "",
+						values: document[property_uri]
+							.map( function (item) {
+								if (item instanceof String)
+									// Check if string starts with http:// or ftp://
+									return item.search(/^.{3,5}:\/\//) == 0 ? "<a href='" + item + "'>" + item + "</a>" : item ;
+								if (typeof item == "object")
+									return "<a href='#/document/" + item["@"] + "'>" + 
+										(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item["@"]) + "</a>";
+								return item;
+							})
+							.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
+							.join(", ")
 					}
 				)
 			);

@@ -18,7 +18,6 @@ function UserModel(veda, params) {
 		} catch (e) {
 			self.language = defaults.language;
 			self.displayedElements = defaults.displayedElements;
-			console.log(e, "User preferred language undefined! Default applied.");
 		}
 		self.trigger("user:loaded");
 	});

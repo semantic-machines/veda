@@ -28,28 +28,29 @@ function IndividualModel(veda, params) {
 						if (values[property_uri]) return values[property_uri];
 						values[property_uri] = individual[property_uri].map(function(value) {
 							switch (value.type) {
-								case "Uri" : 
-									if (value.data.search(/^.{3,5}:\/\//) == 0) return String(value.data);
-									try { return new IndividualModel(veda, [value.data]); } 
-									catch (e) { return String(value.data); }
 								case "String" : 
-									//if (value.lang != veda.user.language && value.lang != 'NONE') return undefined;
-									return String(value.data); break
-								case "Integer" : return Number(value.data); break
+									var string = new String(value.data);
+									string.language = value.lang;
+									return string; 
+									break
+								case "Uri" : 
+									if (value.data.search(/^.{3,5}:\/\//) == 0) return new String(value.data);
+									try { return new IndividualModel(veda, [value.data]); } 
+									catch (e) { return new String(value.data); }
+									break
 								case "Datetime" : return Date(Number(value.data)); break
-								case "Date" : return Date( Number(value.data) ); break
+								case "Integer" : return Number(value.data); break
 								case "Float" : return Number(value.data); break
 								case "Boolean" : return Boolean(value.data); break
-								default : return; break
+								default : throw ("Unsupported type of property value"); break
 							}
-						// Remove "null" & "undefined" values
-						}).filter(function(item){return item}); 
+						});
 						return values[property_uri];
 					},
 					set: function(value) { 
-						if (individual[property_uri] == value) return;
-						individual[property_uri] = value;
-						self.trigger("property:changed", property_uri, individual[property_uri]);
+						if (values[property_uri] == value) return;
+						values[property_uri] = value;
+						self.trigger("value:changed", property_uri, values[property_uri]);
 					}
 				});
 
@@ -72,6 +73,33 @@ function IndividualModel(veda, params) {
 	};
 
 	self.save = function() {
+		for (var property_uri in values) {
+			individual[property_uri] = values[property_uri].map( function(value) {
+				var result = {};
+				switch (typeof value) {
+					case "string" : 
+						result.type = "String";
+						result.data = value;
+						result.lang = "NONE";
+						return result;
+						break
+					case "number" : 
+						result.type = Number.isInteger(value) ? "Integer" : "Float";
+						result.data = value;
+						return result;
+						break
+					case "boolean" : 
+						result.type = "Boolean";
+						result.data = value;
+						return result;
+						break
+					default: 
+						if (value instanceof Date) { return; }
+						if (value instanceof String) { return; }
+				}
+			});
+		}
+		
 		put_individual(veda.ticket, individual, function(data) {
 		});
 	};

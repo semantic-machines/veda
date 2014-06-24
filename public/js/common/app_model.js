@@ -77,7 +77,7 @@ function AppModel(config) {
 	
 	// Load user after successful authentication
 	self.on("auth:success", function() { 
-		RegisterModule(new UserModel(self, [self.user_uri]), self, "user");
+		self.user = new UserModel(self, [self.user_uri]);
 	});
 	
 	self.on("auth:quit", function() { 

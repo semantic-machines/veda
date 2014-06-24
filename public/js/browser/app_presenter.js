@@ -4,12 +4,18 @@ Veda(function AppPresenter(veda) { "use strict";
 
 	// Router function
 	riot.route( function (hash) {
-		var hash_tokens = hash.slice(2).split("/");
-		var page = hash_tokens[0];
-		var params = hash_tokens.slice(1);
 		
-		// Important: avoid routing if not started yet!
-		if (veda.started) page != "" ? veda.load(page, params) : $("#main").html( $("#wellcome-template").html() );
+		setTimeout(function(){
+		
+			var hash_tokens = hash.slice(2).split("/");
+			var page = hash_tokens[0];
+			var params = hash_tokens.slice(1);
+			
+			// Important: avoid routing if not started yet!
+			if (veda.started) page != "" ? veda.load(page, params) : $("#main").html( $("#wellcome-template").html() );
+			
+		}, 0);
+		
 	});
 
 	// Listen to a link click and call router
@@ -44,18 +50,18 @@ Veda(function AppPresenter(veda) { "use strict";
 	});
 
 	// Listen to user loaded event
-    veda.on("app:complete", function (user_uri, ticket, end_time) {
-        setCookie("user_uri", user_uri, { path: "/", expires: new Date(parseInt(end_time)) });
-        setCookie("ticket", ticket, { path: "/", expires: new Date(parseInt(end_time)) });
-        setCookie("end_time", end_time, { path: "/", expires: new Date(parseInt(end_time)) });
-        riot.route(location.hash, true);
-    });
+	veda.on("app:complete", function (user_uri, ticket, end_time) {
+		setCookie("user_uri", user_uri, { path: "/", expires: new Date(parseInt(end_time)) });
+		setCookie("ticket", ticket, { path: "/", expires: new Date(parseInt(end_time)) });
+		setCookie("end_time", end_time, { path: "/", expires: new Date(parseInt(end_time)) });
+		riot.route(location.hash, true);
+	});
 
 	// Listen to quit && authentication failure events
 	veda.on("auth:quit", function () {
-        deleteCookie("user_uri");
-        deleteCookie("ticket");
-        deleteCookie("end_time");
+		deleteCookie("user_uri");
+		deleteCookie("ticket");
+		deleteCookie("end_time");
 		
 		//Show login form
 		var template = $("#login-template").html();
@@ -70,8 +76,8 @@ Veda(function AppPresenter(veda) { "use strict";
 	//if (!veda.ticket || !veda.user_uri || !veda.end_time) veda.trigger("auth:quit");
 	if (!getCookie("ticket") || !getCookie("user_uri") || !getCookie("end_time") || !is_ticket_valid(getCookie("ticket"))) return veda.trigger("auth:quit");
 	veda.ticket = getCookie("ticket");
-    veda.user_uri = getCookie("user_uri");
-    veda.end_time = getCookie("end_time");
-    veda.trigger("auth:success", veda.user_uri, veda.ticket, veda.end_time);
-    
+	veda.user_uri = getCookie("user_uri");
+	veda.end_time = getCookie("end_time");
+	veda.trigger("auth:success", veda.user_uri, veda.ticket, veda.end_time);
+		
 });
