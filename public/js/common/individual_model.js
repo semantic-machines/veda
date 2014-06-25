@@ -18,13 +18,13 @@ function IndividualModel(veda, params) {
 		individual = veda.cache[uri] ? JSON.parse( veda.cache[uri] ) : get_individual(veda.ticket, uri);
 		for (var property_uri in individual) {
 			(function(property_uri) {
-				
+
 				properties[property_uri] = undefined;
 				values[property_uri] = undefined;
 
 				Object.defineProperty(self, property_uri, {
 					get: function() { 
-						if (property_uri == "@") return individual["@"];
+						if (property_uri == "@") return individual["@"];						
 						if (values[property_uri]) return values[property_uri];
 						values[property_uri] = individual[property_uri].map(function(value) {
 							switch (value.type) {
@@ -38,10 +38,10 @@ function IndividualModel(veda, params) {
 									try { return new IndividualModel(veda, [value.data]); } 
 									catch (e) { return new String(value.data); }
 									break
-								case "Datetime" : return Date(Number(value.data)); break
-								case "Integer" : return Number(value.data); break
-								case "Float" : return Number(value.data); break
-								case "Boolean" : return Boolean(value.data); break
+								case "Datetime" : return new Date(Number(value.data)); break
+								case "Integer" : return new Number(value.data); break
+								case "Float" : return new Number(value.data); break
+								case "Boolean" : return new Boolean(value.data); break
 								default : throw ("Unsupported type of property value"); break
 							}
 						});
@@ -76,31 +76,32 @@ function IndividualModel(veda, params) {
 		for (var property_uri in values) {
 			individual[property_uri] = values[property_uri].map( function(value) {
 				var result = {};
-				switch (typeof value) {
-					case "string" : 
-						result.type = "String";
-						result.data = value;
-						result.lang = "NONE";
-						return result;
-						break
-					case "number" : 
-						result.type = Number.isInteger(value) ? "Integer" : "Float";
-						result.data = value;
-						return result;
-						break
-					case "boolean" : 
-						result.type = "Boolean";
-						result.data = value;
-						return result;
-						break
-					default: 
-						if (value instanceof Date) { return; }
-						if (value instanceof String) { return; }
-				}
+				if (value instanceof Number) {
+					result.type = Number.isInteger(value) ? "Integer" : "Float";
+					result.data = value.valueOf();
+					return result;
+				} else if (value instanceof Boolean) {
+					result.type = "Boolean";
+					result.data = value.valueOf();
+					return result;
+				} else if (value instanceof Date) {
+					result.type = "Datetime";
+					result.data = value.toISOString;
+					return result;
+				} else if (value instanceof String) {
+					result.type = "String";
+					result.data = value.valueOf();
+					result.lang = value.language || "NONE";
+					return result;
+				} else if (value instanceof IndividualModel) {
+					result.type = "Uri";
+					result.data = value["@"];
+					return result;
+				} else return value;
 			});
 		}
-		
-		put_individual(veda.ticket, individual, function(data) {
+		put_individual(veda.ticket, JSON.stringify(individual), function(data) {
+			console.log("Saved", JSON.stringify(individual), "result", data);
 		});
 	};
 

@@ -17,23 +17,23 @@
 				<a href="#/" class="navbar-brand"><img src="/img/veda-logo.png" style="position:relative; top:-3px"/></a>
 				<ul class="nav navbar-nav navbar-left">
 					<li>
-						<a href="#/document/mondi-data:">Документ / Document</a>
+						<a href="#/document/mondi-data:">Документ</a>
 					</li>
 					<li>	
-						<a href="#/console">Консоль / Console</a>
+						<a href="#/console">Консоль</a>
 					</li>
 					<li>	
-						<a href="#/search">Поиск / Search</a>
+						<a href="#/search">Поиск</a>
 					</li>
 					<li>
-						<a href="/tests">Тесты / Tests</a>
+						<a href="/tests">Тесты</a>
 					</li>
 				</ul>
 				<a class="btn btn-xs btn-success navbar-btn navbar-left" id="set-trace">
 					<i class="glyphicon glyphicon-flash"></i> Trace
 				</a>
 				<a class="btn btn-xs btn-danger navbar-btn navbar-right" id="logout">
-					<i class="glyphicon glyphicon-log-out"></i> Logout
+					<i class="glyphicon glyphicon-log-out"></i> Выйти
 				</a>				
 				<div id="user-info" class="navbar-right"></div>
 			</div>
@@ -48,7 +48,7 @@
 			<footer>
 				<div class="container-fluid" style="background-color: white; border-top: 1px solid lightgray">
 					<a href="http://www.semantic-machines.com" title="Официальный сайт компании">&copy; "Смысловые машины", ООО.</a>
-					Лицензия / License
+					Лицензия
 					<a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
 				</div>
 			</footer>
@@ -96,17 +96,17 @@
 			<div class="container-fluid" id="login-form">
 				<div class="row">
 					<div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
-						<h1>Представьтесь <span class="text-muted">/ Login</span></h1>
+						<h1>Представьтесь</h1>
 						<form role="form" id="credentials">
 							<div class="form-group">
-								<label for="login">Логин / Login</label>
-								<input id="login" required="required" type="text" placeholder="Введите логин / Enter login" name="login" class="form-control"/>
+								<label for="login">Логин</label>
+								<input id="login" required="required" type="text" placeholder="Введите логин" name="login" class="form-control"/>
 							</div>
 							<div class="form-group">
-								<label for="password">Пароль / Password</label>
-								<input id="password" required="required" type="password" placeholder="Введите пароль / Enter password" name="password" autofocus="autofocus" class="form-control"/>
+								<label for="password">Пароль</label>
+								<input id="password" required="required" type="password" placeholder="Введите пароль" name="password" autofocus="autofocus" class="form-control"/>
 							</div>
-							<button type="submit" id="submit" class="btn btn-primary">Войти / Enter</button>
+							<button type="submit" id="submit" class="btn btn-primary">Войти</button>
 						</form>
 					</div>
 				</div>
@@ -119,10 +119,8 @@
 			<div class="jumbotron well">
 				<div class="container-fluid">
 					<h1><span class="text-info">Добро пожаловать в Veda!</span></h1>
-					<h1><span class="text-muted">Welcome to Veda!</span></h1>
 					<p span class="text-info">Veda - это крупномасштабная документоориентированная система управления предприятием</p>
-					<p class="text-muted">Veda is a large scale document-oriented enterprise management system</p>
-					<p><a class="btn btn-primary btn-lg" href="#/console">Поехали <span class="text-muted">/ Go!</span></a></p>
+					<p><a class="btn btn-primary btn-lg" href="#/search">Поехали</a></p>
 				</div>
 			</div>
 		</script>
@@ -130,27 +128,27 @@
 		<!-- Console template -->
 		<script type="html/template" id="console-template">
 			<div class="container-fluid" id="console">
-				<h2>JavaScript console</h2>
+				<h2>Консоль JavaScript</h2>
 				<form role="form">
 					<div class="form-group row">
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<label for="script">Script</label>
-							<textarea rows="10" class="form-control" placeholder="Enter script" autofocus="autofocus" id="script" bound>{script}</textarea>
+							<label for="script">Скрипт</label>
+							<textarea rows="10" class="form-control" placeholder="Введите скрипт" autofocus="autofocus" id="script" bound>{script}</textarea>
 						</div>
 					</div>
 					<div class="form-group row">
 						<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
 							<select class="form-control" id="runat" bound>
-								<option value="browser">Browser</option>
-								<option value="server">Server</option>
+								<option value="browser">Браузер</option>
+								<option value="server">Сервер</option>
 							</select>
 						</div>
-						<button type="submit" class="btn btn-success" id="run">Run!</button>
-						<button type="reset" class="btn" id="reset">Clear</button>
+						<button type="submit" class="btn btn-success" id="run">Выполнить!</button>
+						<button type="reset" class="btn" id="reset">Сброс</button>
 					</div>
 				</form>
 				<hr />
-				<p><strong>Result <span class="text-muted">(executed in <span id="time" bound>{time}</span> msecs)</span></label></strong></p>
+				<p><strong>Результат <span class="text-muted">(выполнено за <span id="time" bound>{time}</span> мсек)</span></label></strong></p>
 				<pre id="result" bound>{result}</pre>
 			</div>
 		</script>
@@ -186,17 +184,16 @@
 		<!-- Current user template -->
 		<script type="html/template" id="current-user-template">
 			<p class="navbar-text navbar-right">
-				Signed in as 
-				<a href="#/document/{id}" class="navbar-link" id="current-user">{name}</a>
+				<a href="#/document/{id}" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {name}</a>
 			</p>
 			<div data-toggle="buttons" class="navbar-right btn-group">
 				<label id="ru-label" class="btn btn-xs btn-info navbar-btn active">
 					<input id="ru" type="radio"/>
-					Ru
+					Русский
 				</label>
 				<label id="en-label" class="btn btn-xs btn-info navbar-btn">
 					<input id="ru" type="radio"/>
-					En
+					English
 				</label>
 			</div>
 		</script>
@@ -210,11 +207,11 @@
 						<form method="GET" role="form">
 							<div class="row">
 								<div class="col-xs-7 col-sm-7 col-sm-offset-1 col-md-8 col-md-offset-1 col-lg-8 col-lg-offset-1">
-									<label for="q" class="sr-only">Запрос / Query:</label>
-									<input id="q" bound value="{q}" type="text" placeholder="Введите запрос / Enter query" name="q" class="form-control" autofocus="autofocus"/>
+									<label for="q" class="sr-only">Запрос:</label>
+									<input id="q" bound value="{q}" type="text" placeholder="Введите запрос" name="q" class="form-control" autofocus="autofocus"/>
 								</div>
 								<div class="col-xs-5 col-sm-4 col-md-3 col-lg-3">
-									<button type="submit" id="search-submit" class="btn btn-primary" data-loading-text="Поиск... / Searching...">Искать / Search</button>
+									<button type="submit" id="search-submit" class="btn btn-primary" data-loading-text="Поиск...">Найти</button>
 								</div>
 							</div>
 						</form>
@@ -222,7 +219,6 @@
 				</div>
 				<div class="container-fluid hidden" id="search-results">
 					<h1 class="text-center">Результаты поиска
-						<span class="text-muted">/ Search results</span>
 						(<span id="results_count" bound>{results_count}</span>)
 					</h1>
 					<hr/>
