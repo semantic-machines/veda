@@ -24,7 +24,7 @@ function IndividualModel(veda, params) {
 
 				Object.defineProperty(self, property_uri, {
 					get: function() { 
-						if (property_uri == "@") return individual["@"];						
+						if (property_uri == "@") return values[property_uri] = individual["@"];						
 						if (values[property_uri]) return values[property_uri];
 						values[property_uri] = individual[property_uri].map(function(value) {
 							switch (value.type) {
@@ -74,10 +74,15 @@ function IndividualModel(veda, params) {
 
 	self.save = function() {
 		for (var property_uri in values) {
+			if (property_uri == "@") {
+				individual[property_uri] = values[property_uri]; 
+				continue;
+			}
 			individual[property_uri] = values[property_uri].map( function(value) {
 				var result = {};
 				if (value instanceof Number) {
-					result.type = Number.isInteger(value) ? "Integer" : "Float";
+					//result.type = Number.isInteger(value) ? "Integer" : "Float";
+					result.type = "String";
 					result.data = value.valueOf();
 					return result;
 				} else if (value instanceof Boolean) {
@@ -85,8 +90,9 @@ function IndividualModel(veda, params) {
 					result.data = value.valueOf();
 					return result;
 				} else if (value instanceof Date) {
-					result.type = "Datetime";
-					result.data = value.toISOString;
+					result.type = "String";
+					result.data = value.toISOString();
+					result.lang = "NONE";
 					return result;
 				} else if (value instanceof String) {
 					result.type = "String";
@@ -100,8 +106,7 @@ function IndividualModel(veda, params) {
 				} else return value;
 			});
 		}
-		put_individual(veda.ticket, JSON.stringify(individual), function(data) {
-			console.log("Saved", JSON.stringify(individual), "result", data);
+		put_individual(veda.ticket, individual, function(data) {
 		});
 	};
 

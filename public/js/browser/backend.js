@@ -170,7 +170,6 @@ function put_individuals(ticket, individuals, callback) {
 }
 
 function put_individual(ticket, individual, callback) {
-	var expect_completion = expect_completion || false;
 	var params = {
 		type: "PUT",
 		url: "put_individual",

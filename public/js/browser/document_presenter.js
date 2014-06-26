@@ -28,28 +28,32 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		// Render document properties
 		Object.getOwnPropertyNames(document.properties).map ( function (property_uri) {
 			if (property_uri == "@") return;
+			var label, uri, values;
+			label = typeof document.properties[property_uri] == "object" ? 
+						document.properties[property_uri]["rdfs:label"]
+							.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
+							.join(", ")
+						: document.properties[property_uri];
+			uri = typeof document.properties[property_uri] == "object" ? document.properties[property_uri]["@"] : "";
+			values = document[property_uri]
+						.map( function (item) {
+							if (item instanceof String)
+								// Check if string starts with http:// or ftp://
+								return item.search(/^.{3,5}:\/\//) == 0 ? "<a href='" + item + "'>" + item + "</a>" : item ;
+							else if (item instanceof IndividualModel)
+								return "<a href='#/document/" + item["@"] + "'>" + 
+									(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item["@"]) + "</a>";
+							else return item;
+						})
+						.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
+						.join(", ");
 			$("#document-properties", container).append(
 				riot.render(
 					document_single_property_template,
 					{
-						label: typeof document.properties[property_uri] == "object" ? 
-							document.properties[property_uri]["rdfs:label"]
-								.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
-								.join(", ")
-							: document.properties[property_uri],
-						uri: typeof document.properties[property_uri] == "object" ? document.properties[property_uri]["@"] : "",
-						values: document[property_uri]
-							.map( function (item) {
-								if (item instanceof String)
-									// Check if string starts with http:// or ftp://
-									return item.search(/^.{3,5}:\/\//) == 0 ? "<a href='" + item + "'>" + item + "</a>" : item ;
-								if (typeof item == "object")
-									return "<a href='#/document/" + item["@"] + "'>" + 
-										(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item["@"]) + "</a>";
-								return item;
-							})
-							.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
-							.join(", ")
+						label: label,
+						uri: uri,
+						values: values
 					}
 				)
 			);
