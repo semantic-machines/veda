@@ -1,41 +1,41 @@
-// Document Presenter
+// Search Result Presenter
 
-Veda(function DocumentPresenter(veda) { "use strict";
-
-	// Get templates
-	var document_template = $("#document-template").html();
-	var document_single_property_template = $("#document-single-property-template").html();
-	var document_label_template = $("#document-label-template").html();
+Veda(function SearchResultPresenter(veda) { "use strict";
 	
-	veda.on("document:loaded", function (document, container_param) {
+	// Get templates
+	var search_result_template = $("#search-result-template").html();
+	var search_result_single_property_template = $("#search-result-single-property-template").html();
+	var search_result_label_template = $("#search-result-label-template").html();
+	
+	veda.on("search_result:loaded", function (search_result, container_param) {
 		
 		var container = container_param || $("#main");
-		container.html(document_template);
+		container.html(search_result_template);
 
 		// Render document title		
-		$("#document-label", container).html( 
+		$("#search-result-label", container).html( 
 			riot.render(
-				document_label_template,
+				search_result_label_template,
 				{ 
-					label: document["rdfs:label"] ? document["rdfs:label"]
+					label: search_result["rdfs:label"] ? search_result["rdfs:label"]
 						.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
-						.join(", ") : document["@"],
-					uri: document["@"] 
+						.join(", ") : search_result["@"],
+					uri: search_result["@"] 
 				}
 			) 
 		);
 		
 		// Render document properties
-		Object.getOwnPropertyNames(document.properties).map ( function (property_uri) {
+		Object.getOwnPropertyNames(search_result.properties).map ( function (property_uri) {
 			if (property_uri == "@") return;
 			var label, uri, values;
-			label = typeof document.properties[property_uri] == "object" ? 
-						document.properties[property_uri]["rdfs:label"]
+			label = typeof search_result.properties[property_uri] == "object" ? 
+						search_result.properties[property_uri]["rdfs:label"]
 							.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
 							.join(", ")
-						: document.properties[property_uri];
-			uri = typeof document.properties[property_uri] == "object" ? document.properties[property_uri]["@"] : "";
-			values = document[property_uri]
+						: search_result.properties[property_uri];
+			uri = typeof search_result.properties[property_uri] == "object" ? search_result.properties[property_uri]["@"] : "";
+			values = search_result[property_uri]
 						.map( function (item) {
 							if (item instanceof String)
 								// Check if string starts with http:// or ftp://
@@ -47,9 +47,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						})
 						.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
 						.join(", ");
-			$("#document-properties", container).append(
+			$("#search-result-properties", container).append(
 				riot.render(
-					document_single_property_template,
+					search_result_single_property_template,
 					{
 						label: label,
 						uri: uri,

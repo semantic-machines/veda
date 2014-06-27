@@ -1,5 +1,3 @@
-String.prototype.language = "NONE";
-
 // Document Model
 
 "use strict";
@@ -36,7 +34,7 @@ function IndividualModel(veda, params) {
 								case "Uri" : 
 									if (value.data.search(/^.{3,5}:\/\//) == 0) return new String(value.data);
 									try { return new IndividualModel(veda, [value.data]); } 
-									catch (e) { return new String(value.data); }
+									catch (e) { return new String(value.data) }
 									break
 								case "Datetime" : return new Date(Number(value.data)); break
 								case "Integer" : return new Number(value.data); break
@@ -75,7 +73,7 @@ function IndividualModel(veda, params) {
 	self.save = function() {
 		for (var property_uri in values) {
 			if (property_uri == "@") {
-				individual[property_uri] = values[property_uri]; 
+				individual["@"] = values["@"]; 
 				continue;
 			}
 			individual[property_uri] = values[property_uri].map( function(value) {

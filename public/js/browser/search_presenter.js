@@ -35,6 +35,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 	
 	// Display search results
 	veda.on("search:complete", function (search) {
+		
 		// Show/hide 'results' or 'not found'
 		$("#search-submit").button("reset");
 		if (!search.results_count) {
@@ -52,7 +53,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 		// Show results
 		for (var i = currentPage * veda.user.displayedElements; i < (currentPage + 1) * veda.user.displayedElements && i < search.results_count; i++) {
 			var $li = $("<li/>").appendTo("#search-results-list");
-			new DocumentModel(veda, [search.results[i], $li]);
+			new SearchResultModel(veda, [search.results[i], $li]);
 		}
 		
 		// Show pager

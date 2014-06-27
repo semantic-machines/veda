@@ -15,17 +15,17 @@
 		<nav role="navigation" class="navbar navbar-inverse" id="navigation">
 			<div class="container-fluid" id="nav-container">
 				<a href="#/" class="navbar-brand"><img src="/img/veda-logo.png" style="position:relative; top:-3px"/></a>
-				<ul class="nav navbar-nav navbar-left">
-					<li>
+				<ul class="nav navbar-nav navbar-left" id="menu">
+					<li id="document">
 						<a href="#/document/mondi-data:">Документ</a>
 					</li>
-					<li>	
+					<li id="console">	
 						<a href="#/console">Консоль</a>
 					</li>
-					<li>	
+					<li id="search">	
 						<a href="#/search">Поиск</a>
 					</li>
-					<li>
+					<li id="tests">
 						<a href="/tests">Тесты</a>
 					</li>
 				</ul>
@@ -74,12 +74,14 @@
 		<script src="/js/common/document_model.js"></script>
 		<script src="/js/common/user_model.js"></script>
 		<script src="/js/common/search_model.js"></script>
+		<script src="/js/common/search_result_model.js"></script>
 
 		<!-- Veda browser only -->
 		<script src="/js/browser/backend.js"></script>
 		<script src="/js/browser/console_presenter.js"></script>
 		<script src="/js/browser/document_presenter.js"></script>
 		<script src="/js/browser/search_presenter.js"></script>
+		<script src="/js/browser/search_result_presenter.js"></script>
 		<script src="/js/browser/user_presenter.js"></script>
 		<script src="/js/browser/app_presenter.js"></script>
 		
@@ -153,19 +155,39 @@
 			</div>
 		</script>
 
+		<!-- Search result template -->
+		<script type="html/template" id="search-result-template">
+			<div id="search-result-label"></div>
+			<div class="container-fluid" id="search-result-properties"></div>
+			<br>
+		</script>
+		
+		<!-- Search result label template -->
+		<script type="html/template" id="search-result-label-template">
+			<a href="#/document/{uri}"><h3>{label}</h3></a>
+		</script>
+
+		<!-- Search result single property template -->
+		<script type="html/template" id="search-result-single-property-template">
+			<span class="text-muted">{label}: </span>
+			<span>{values};</span>
+		</script>	
+
 		<!-- Document template -->
 		<script type="html/template" id="document-template">
-			<div class="" id="document">
-				<div id="label"></div>
-				<div class="container-fluid" id="document-properties">
+			<div id="document">
+				<div id="document-label"></div>
+				<div class="container-fluid" id="document-properties"></div>
+				<br>
+				<div class="well">
+					<button type="button" class="btn btn-default">Редактировать</button>
 				</div>
 			</div>
 		</script>
 		
 		<!-- Document label template -->
 		<script type="html/template" id="document-label-template">
-			<h3 id="label">{label}<small> <a href="#/document/{uri}"><i class="glyphicon glyphicon-share-alt"></i></a></small></h3>
-			<!--a href="{uri}"><h3 id="label">{label}</h3></a-->
+			<h2 id="label">{label}<small> <a href="#/document/{uri}"><i class="glyphicon glyphicon-share-alt"></i></a></small></h2>
 		</script>
 		
 		<!-- Document single property template -->
@@ -222,12 +244,10 @@
 						(<span id="results_count" bound>{results_count}</span>)
 					</h1>
 					<hr/>
-					<ol id="search-results-list">
-					</ol>
+					<ol id="search-results-list"></ol>
 					<hr/>
 					<div class="text-center">
-						<ul class="pagination" id="pager">
-						</ul>
+						<ul class="pagination" id="pager"></ul>
 					</div>
 				</div>
 				<div class="alert alert-warning hidden" id="not-found">

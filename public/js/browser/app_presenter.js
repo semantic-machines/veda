@@ -12,7 +12,16 @@ Veda(function AppPresenter(veda) { "use strict";
 			var params = hash_tokens.slice(1);
 			
 			// Important: avoid routing if not started yet!
-			if (veda.started) page != "" ? veda.load(page, params) : $("#main").html( $("#wellcome-template").html() );
+			if (veda.started) {
+				if (page != "") {
+					$("#menu > li").removeClass("active");
+					$("#menu > li#" + page).addClass("active");
+					veda.load(page, params);
+				} else {
+					$("#menu > li").removeClass("active");
+					$("#main").html( $("#wellcome-template").html() );
+				}
+			}
 			
 		}, 0);
 		

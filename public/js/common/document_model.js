@@ -12,5 +12,19 @@ function DocumentModel(veda, params) {
 	});
 	
 	// Inherit from IndividualModel
-	IndividualModel.call(this, veda, params);
+	IndividualModel.call(self, veda, params);
+
+	/*Object.defineProperty(self, "domainProperties", {
+		get: function() {
+			
+			var types = self["rdf:type"].map( function(item) {
+				
+				var query = "'rdfs:domain' == '" + item["@"] + "'" ;
+			})
+			
+		},
+		set: function(value) { 
+		}
+	});*/
+	
 };

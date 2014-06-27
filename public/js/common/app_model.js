@@ -66,7 +66,7 @@ function AppModel(config) {
 		var q = "'rdf:type' == 'rdfs:*' || 'rdf:type' == 'rdf:*' || 'rdf:type' == 'owl:*'";
 		var q_results = query(self.ticket, q);
 		for (var i=0; i<q_results.length; i++) {
-			var ontology_individual = get_individual(self.ticket, q_results[i], function (data) {
+			get_individual(self.ticket, q_results[i], function (data) {
 				self.cache[data["@"]] = JSON.stringify(data);
 			});
 		}
