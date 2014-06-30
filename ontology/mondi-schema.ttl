@@ -24,13 +24,18 @@ mondi-schema:AdministrativeDocument
   rdfs:label "Распорядительный документ"@ru ;
   rdfs:subClassOf veda-schema:Document ;
   rdfs:subClassOf veda-schema:Versioned ;
-  rdfs:subClassOf [
-      rdf:type owl:Restriction ;
-      owl:onClass mondi-schema:AdministrativeDocumentType ;
-      owl:onProperty mondi-schema:nomenclatureType ;
-      owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-    ] ;
+  rdfs:subClassOf mondi-schema:AdministrativeDocumentRestriction ;
 .
+
+mondi-schema:AdministrativeDocumentRestriction
+  rdf:type owl:Restriction ;
+  rdfs:label "AdministrativeDocumentRestriction"@en ;
+  rdfs:label "Ограничение для Административного документа"@ru ;
+  owl:onClass mondi-schema:AdministrativeDocumentType ;
+  owl:onProperty mondi-schema:nomenclatureType ;
+  owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+.
+
 mondi-schema:AdministrativeDocumentType
   rdf:type owl:Class ;
   rdfs:label "Document type"@en ;

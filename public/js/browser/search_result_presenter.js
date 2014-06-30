@@ -26,8 +26,9 @@ Veda(function SearchResultPresenter(veda) { "use strict";
 		);
 		
 		// Render document properties
-		Object.getOwnPropertyNames(search_result.properties).map ( function (property_uri) {
-			if (property_uri == "@") return;
+		Object.getOwnPropertyNames(search_result.properties).reduce ( function (limit, property_uri) {
+			if (limit <= 0) return limit;
+			if (property_uri == "@") return limit;
 			var label, uri, values;
 			label = typeof search_result.properties[property_uri] == "object" ? 
 						search_result.properties[property_uri]["rdfs:label"]
@@ -57,7 +58,8 @@ Veda(function SearchResultPresenter(veda) { "use strict";
 					}
 				)
 			);
-		});
+			return --limit;
+		}, 5);
 
 	});
 
