@@ -85,7 +85,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			getTypes(_class, types) 
 		});
 
-		$("#document-properties", container).append("<hr>");
+		//$("#document-properties", container).append("<hr>");
 		
 		types["rdfs:Resource"] = new ClassModel(veda, ["rdfs:Resource"]);
 		
@@ -138,6 +138,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						.join(", ")
 					+ "</h4>"
 				);
+				el.prepend("<hr>");
 			}
 		});
 		
@@ -182,6 +183,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		if (acc) {
 			$("#document-properties", container).append(el);
 			el.prepend("<h4>" + "Без типа" + "</h4>");
+			el.prepend("<hr>");
 		}
 		
 	});
