@@ -182,7 +182,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		});
 		if (acc) {
 			$("#document-properties", container).append(el);
-			el.prepend("<h4>" + "Без типа" + "</h4>");
 			el.prepend("<hr>");
 		}
 		
