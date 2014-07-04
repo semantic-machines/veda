@@ -3,6 +3,7 @@
 Veda(function SearchResultPresenter(veda) { "use strict";
 	
 	// Get templates
+	var displayedPropertiesLimit = 5;
 	var search_result_template = $("#search-result-template").html();
 	var search_result_single_property_template = $("#search-result-single-property-template").html();
 	var search_result_label_template = $("#search-result-label-template").html();
@@ -29,37 +30,11 @@ Veda(function SearchResultPresenter(veda) { "use strict";
 		Object.getOwnPropertyNames(search_result.properties).reduce ( function (limit, property_uri) {
 			if (limit <= 0) return limit;
 			if (property_uri == "@") return limit;
-			var label, uri, values;
-			label = typeof search_result.properties[property_uri] == "object" ? 
-						search_result.properties[property_uri]["rdfs:label"]
-							.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
-							.join(", ")
-						: search_result.properties[property_uri];
-			uri = typeof search_result.properties[property_uri] == "object" ? search_result.properties[property_uri]["@"] : "";
-			values = search_result[property_uri]
-						.map( function (item) {
-							if (item instanceof String)
-								// Check if string starts with http:// or ftp://
-								return item.search(/^.{3,5}:\/\//) == 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
-							else if (item instanceof IndividualModel)
-								return "<a href='#/document/" + item["@"] + "'>" + 
-									(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item["@"]) + "</a>";
-							else return item;
-						})
-						.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
-						.join(", ");
-			$("#search-result-properties", container).append(
-				riot.render(
-					search_result_single_property_template,
-					{
-						label: label,
-						uri: uri,
-						values: values
-					}
-				)
-			);
+			try {
+				renderProperty (veda, search_result, property_uri, search_result_single_property_template, $("#search-result-properties", container));
+			} catch (e) {}
 			return --limit;
-		}, 5);
+		}, displayedPropertiesLimit);
 
 	});
 

@@ -1,5 +1,4 @@
 // Document Presenter
-
 Veda(function DocumentPresenter(veda) { "use strict";
 
 	// Get templates
@@ -25,42 +24,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			) 
 		);
 
-		/*
-		// Render document properties
-		Object.getOwnPropertyNames(document.properties).map ( function (property_uri) {
-			if (property_uri == "@") return;
-			var label, uri, values;
-			label = typeof document.properties[property_uri] == "object" ? 
-						document.properties[property_uri]["rdfs:label"]
-							.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
-							.join(", ")
-						: document.properties[property_uri];
-			uri = typeof document.properties[property_uri] == "object" ? document.properties[property_uri]["@"] : "";
-			values = document[property_uri]
-						.map( function (item) {
-							if (item instanceof String)
-								// Check if string starts with http:// or ftp://
-								return item.search(/^.{3,5}:\/\//) == 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
-							else if (item instanceof IndividualModel)
-								return "<a href='#/document/" + item["@"] + "'>" + 
-									(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item["@"]) + "</a>";
-							else return item;
-						})
-						.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
-						.join(", ");
-			$("#document-properties", container).append(
-				riot.render(
-					document_single_property_template,
-					{
-						label: label,
-						uri: uri,
-						values: values
-					}
-				)
-			);
-		});
-		*/
-		
 		// Render document properties (from classes)
 		var props = {};
 		
@@ -84,8 +47,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			types[_class["@"]] = new ClassModel(veda, [_class["@"]]);
 			getTypes(_class, types) 
 		});
-
-		//$("#document-properties", container).append("<hr>");
 		
 		types["rdfs:Resource"] = new ClassModel(veda, ["rdfs:Resource"]);
 		
@@ -94,35 +55,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			var el = $("<div>");
 			Object.getOwnPropertyNames(types[type].domainProperties).map( function (property_uri) {
 				try {
-					var label, uri, values;
-					label = typeof document.properties[property_uri] == "object" ? 
-								document.properties[property_uri]["rdfs:label"]
-									.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
-									.join(", ")
-								: document.properties[property_uri];
-					uri = typeof document.properties[property_uri] == "object" ? document.properties[property_uri]["@"] : "";
-					values = document[property_uri]
-								.map( function (item) {
-									if (item instanceof String)
-										// Check if string starts with http:// or ftp://
-										return item.search(/^.{3,5}:\/\//) == 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
-									else if (item instanceof IndividualModel)
-										return "<a href='#/document/" + item["@"] + "'>" + 
-											(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item["@"]) + "</a>";
-									else return item;
-								})
-								.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
-								.join(", ");
-					el.append(
-						riot.render(
-							document_single_property_template,
-							{
-								label: label,
-								uri: uri,
-								values: values
-							}
-						)
-					);
+					renderProperty(veda, document, property_uri, document_single_property_template, el);
 					acc++;
 					props[property_uri] = "rendered";
 				} catch (e) {
@@ -131,12 +64,12 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			});
 			if (acc) { 
 				$("#document-properties", container).append(el);
-				el.prepend("<h4>" 
+				el.prepend("<h5 class='text-muted text-right'>" 
 					+ 
 					types[type]["rdfs:label"]
 						.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
 						.join(", ")
-					+ "</h4>"
+					+ "</h5>"
 				);
 				el.prepend("<hr>");
 			}
@@ -149,36 +82,12 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		Object.getOwnPropertyNames(props).map ( function (property_uri) {
 			if (property_uri == "@") return;
 			if (props[property_uri] == "rendered") return;
-			var label, uri, values;
-			label = typeof document.properties[property_uri] == "object" ? 
-						document.properties[property_uri]["rdfs:label"]
-							.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
-							.join(", ")
-						: document.properties[property_uri];
-			uri = typeof document.properties[property_uri] == "object" ? document.properties[property_uri]["@"] : "";
-			values = document[property_uri]
-						.map( function (item) {
-							if (item instanceof String)
-								// Check if string starts with http:// or ftp://
-								return item.search(/^.{3,5}:\/\//) == 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
-							else if (item instanceof IndividualModel)
-								return "<a href='#/document/" + item["@"] + "'>" + 
-									(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item["@"]) + "</a>";
-							else return item;
-						})
-						.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
-						.join(", ");
-			el.append(
-				riot.render(
-					document_single_property_template,
-					{
-						label: label,
-						uri: uri,
-						values: values
-					}
-				)
-			);
-			acc++;
+			try {
+				renderProperty(veda, document, property_uri, document_single_property_template, el);
+				acc++;
+			} catch (e) {
+				return;
+			}
 		});
 		if (acc) {
 			$("#document-properties", container).append(el);

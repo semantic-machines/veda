@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<meta name="description" content=""/>
 		<meta name="author" content=""/>
-		<link href="/css/veda.min.css" rel="stylesheet"/>
+		<link href="/css/bootstrap.min.css" rel="stylesheet"/>
 		<meta http-equiv="pragma" content="no-cache" />
 		<meta http-equiv="cache-control" content="no-cache" />
 	</head>
@@ -99,7 +99,7 @@
 			<div class="container-fluid" id="login-form">
 				<div class="row">
 					<div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
-						<h1>Представьтесь</h1>
+						<h3>Представьтесь</h3>
 						<form role="form" id="credentials">
 							<div class="form-group">
 								<label for="login">Логин</label>
@@ -118,7 +118,6 @@
 
 		<!-- Welcome -->
 		<script type="html/template" id="wellcome-template">
-			<br/>
 			<div class="jumbotron well">
 				<div class="container-fluid">
 					<h1><span class="text-info">Добро пожаловать в Veda!</span></h1>
@@ -131,7 +130,7 @@
 		<!-- Console template -->
 		<script type="html/template" id="console-template">
 			<div class="container-fluid" id="console">
-				<h2>Консоль JavaScript</h2>
+				<h3>Консоль JavaScript</h3>
 				<form role="form">
 					<div class="form-group row">
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -160,12 +159,12 @@
 		<script type="html/template" id="search-result-template">
 			<div id="search-result-label"></div>
 			<div class="container-fluid" id="search-result-properties"></div>
-			<br>
+			<br/>
 		</script>
 		
 		<!-- Search result label template -->
 		<script type="html/template" id="search-result-label-template">
-			<a href="#/document/{uri}"><h3>{label}</h3></a>
+			<a href="#/document/{uri}"><h4>{label}</h4></a>
 		</script>
 
 		<!-- Search result single property template -->
@@ -180,7 +179,7 @@
 				<div id="document-label"></div>
 				<div id="document-properties"></div>
 				<br>
-				<div class="well">
+				<div class="well well-sm">
 					<button type="button" class="btn btn-default">Редактировать</button>
 				</div>
 			</div>
@@ -188,7 +187,7 @@
 		
 		<!-- Document label template -->
 		<script type="html/template" id="document-label-template">
-			<h2 id="label">{label}<small> <a href="#/document/{uri}"><i class="glyphicon glyphicon-share-alt"></i></a></small></h2>
+			<h4 id="label">{label}<small> <a href="#/document/{uri}"><i class="glyphicon glyphicon-share-alt"></i></a></small></h4>
 		</script>
 		
 		<!-- Document single property template -->
@@ -223,7 +222,6 @@
 
 		<!-- Search template -->
 		<script type="html/template" id="search-template">
-			<br />
 			<div id="search">
 				<div class="well">
 					<div class="container-fluid">
@@ -240,10 +238,10 @@
 						</form>
 					</div>
 				</div>
-				<div class="container-fluid hidden" id="search-results">
-					<h1 class="text-center">Результаты поиска
+				<div class="container-fluid" id="search-results">
+					<h3 class="text-center">Результаты поиска
 						(<span id="results_count" bound>{results_count}</span>)
-					</h1>
+					</h3>
 					<hr/>
 					<ol id="search-results-list"></ol>
 					<hr/>
@@ -251,7 +249,7 @@
 						<ul class="pagination" id="pager"></ul>
 					</div>
 				</div>
-				<div class="alert alert-warning hidden" id="not-found">
+				<div class="alert alert-warning" id="not-found">
 					<strong>Пусто!</strong> По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.
 				</div>				
 			</div>

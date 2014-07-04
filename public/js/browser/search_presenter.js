@@ -12,6 +12,10 @@ Veda(function SearchPresenter(veda) { "use strict";
 		// Get template
 		var rendered = riot.render(template, search);
 		container.html(rendered);
+		
+		$("#q", container).focus();
+		$("#not-found", container).hide();
+		$("#search-results", container).hide();
 
 		// Listen View changes & update Model
 		$("#search [bound]", container).on("change", function() {
@@ -38,13 +42,19 @@ Veda(function SearchPresenter(veda) { "use strict";
 		
 		// Show/hide 'results' or 'not found'
 		$("#search-submit").button("reset");
-		if (!search.results_count) {
-			$("#search-results", container).addClass("hidden");
-			$("#not-found", container).removeClass("hidden");
+		if (!search.q) {
+			$("#q", container).focus();
+			$("#search-results", container).hide();
+			$("#not-found", container).hide()
+			return;
+		} else if (search.q && !search.results_count) {
+			$("#q", container).focus();
+			$("#search-results", container).hide();
+			$("#not-found", container).show();
 			return;
 		}
-		$("#not-found", container).addClass("hidden");
-		$("#search-results", container).removeClass("hidden");
+		$("#not-found", container).hide();
+		$("#search-results", container).show();
 		$("#search-results-list", container)
 			.empty()
 			.attr("start", currentPage * veda.user.displayedElements + 1);
@@ -73,5 +83,6 @@ Veda(function SearchPresenter(veda) { "use strict";
 				}).appendTo($page);
 			})(page);
 		}
+	
 	});
 });
