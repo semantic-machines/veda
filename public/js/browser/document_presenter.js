@@ -25,19 +25,19 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		);
 
 		// Render document properties (from classes)
-		var props = {};
+		var properties = {};
 		
-		Object.getOwnPropertyNames(document.properties).reduce( function (acc, property_uri) {
-			acc[property_uri] = undefined;
-			return acc;
-		}, props);
+		Object.getOwnPropertyNames(document.properties).reduce( function (accumulator, property_uri) {
+			accumulator[property_uri] = undefined;
+			return accumulator;
+		}, properties);
 		
 		function getTypes(individual, types) {
 			if (!individual["rdfs:subClassOf"]) return;
-			individual["rdfs:subClassOf"].reduce(function (acc, _class) {
-				getTypes(_class, acc);
-				acc[_class["@"]] = new ClassModel(veda, [_class["@"]]);
-				return acc;
+			individual["rdfs:subClassOf"].reduce(function (accumulator, _class) {
+				getTypes(_class, accumulator);
+				accumulator[_class["@"]] = new ClassModel(veda, [_class["@"]]);
+				return accumulator;
 			}, types);
 		}
 		
@@ -51,18 +51,18 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		types["rdfs:Resource"] = new ClassModel(veda, ["rdfs:Resource"]);
 		
 		Object.getOwnPropertyNames(types).map( function (type) {
-			var acc=0;
+			var counter=0;
 			var el = $("<div>");
 			Object.getOwnPropertyNames(types[type].domainProperties).map( function (property_uri) {
 				try {
 					renderProperty(veda, document, property_uri, document_single_property_template, el);
-					acc++;
-					props[property_uri] = "rendered";
+					counter++;
+					properties[property_uri] = "rendered";
 				} catch (e) {
 					return;
 				}
 			});
-			if (acc) { 
+			if (counter) { 
 				$("#document-properties", container).append(el);
 				el.prepend("<h5 class='text-muted text-right'>" 
 					+ 
@@ -76,20 +76,20 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		});
 		
 		// Render rest document properties
-		var acc=0;
+		var counter=0;
 		var el = $("<div>");
 		
-		Object.getOwnPropertyNames(props).map ( function (property_uri) {
+		Object.getOwnPropertyNames(properties).map ( function (property_uri) {
 			if (property_uri == "@") return;
-			if (props[property_uri] == "rendered") return;
+			if (properties[property_uri] == "rendered") return;
 			try {
 				renderProperty(veda, document, property_uri, document_single_property_template, el);
-				acc++;
+				counter++;
 			} catch (e) {
 				return;
 			}
 		});
-		if (acc) {
+		if (counter) {
 			$("#document-properties", container).append(el);
 			el.prepend("<hr>");
 		}
