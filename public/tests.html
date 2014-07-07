@@ -63,24 +63,23 @@
 		<!-- Javascript placed at the end of the document so the pages load faster -->
 		
 		<!-- Utils & UI -->
+		<script src="./js/test/esprima.js"></script>
 		<script src="/js/browser/jquery.js"></script>
 		<script src="/js/browser/bootstrap.min.js"></script>
-		<script src="/js/browser/cookie.js"></script>
+		<script src="/js/browser/cookie.js" data-cover></script>
 
 		<!-- Veda browser & server -->
 		<script src="/js/common/riot.js"></script>
-		<script src="/js/common/util.js"></script>
+		<script src="/js/common/util.js" data-cover></script>
 
 		<!-- Veda browser only -->
-		<script src="/js/browser/backend.js"></script>
+		<script src="/js/browser/backend.js" data-cover></script>
 		
 		<!-- QUNIT tests -->
 		<script src="./js/test/qunit.js"></script>
 		<script src="./js/test/qunit-reporter-junit.js"></script>
-		<!-- 
-		<script src="./js/test/qunit-coverage.js"></script>
-		<script src="./js/test/qunit-jstestdriver.js"></script>
-		-->
+		
+		<script src="./js/test/blanket.min.js"></script>
 		<script src="./js/test/test_individuals.js"></script>
 		<script>
 			QUnit.jUnitReport = function(report) {
