@@ -7,6 +7,7 @@
 		<meta name="description" content=""/>
 		<meta name="author" content=""/>
 		<link href="/css/bootstrap.min.css" rel="stylesheet"/>
+		<link href="/css/veda.css" rel="stylesheet"/>
 		<meta http-equiv="pragma" content="no-cache" />
 		<meta http-equiv="cache-control" content="no-cache" />
 	</head>
@@ -194,7 +195,7 @@
 		<script type="html/template" id="document-single-property-template">
 			<div class="row">
 				<div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 text-right">
-					<strong><a href="#/document/{uri}">{label}</a></strong>
+					<strong><a data-toggle="popover" href="#/document/{uri}">{label}</a></strong>
 				</div>
 				<div class="col-xs-8 col-sm-8 col-md-9 col-lg-9">
 					{values}
