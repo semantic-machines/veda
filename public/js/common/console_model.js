@@ -2,7 +2,7 @@
 
 "use strict";
 
-function ConsoleModel(veda, params) { 
+function ConsoleModel(veda) { 
 	var self = riot.observable(this);
 	
 	// Define Model data setters & getters
@@ -42,4 +42,6 @@ function ConsoleModel(veda, params) {
 	}
 	
 	if (veda) veda.trigger("console:loaded", self);
+	
+	return self;
 };

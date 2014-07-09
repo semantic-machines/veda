@@ -20,7 +20,7 @@ function renderProperty (veda, individual, property_uri, template, container) {
 						// Check if string starts with http:// or ftp://
 						return item.search(/^.{3,5}:\/\//) == 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
 					else if (item instanceof IndividualModel)
-						return "<a href='#/document/" + item["@"] + "'>" + 
+						return "<a data-toggle='popover' href='#/document/" + item["@"] + "'>" + 
 							(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item["@"]) + "</a>";
 					else return item;
 				})
@@ -45,25 +45,30 @@ $( function () {
 		uri = uri.substring(uri.indexOf("#/document/") + "#/document/".length);
 		var thisTimeout = setTimeout( function () {
 			if ($("#"+escape4$(uri)).length) {
-				popover_element.popover({
+				
+				var popover = popover_element.popover({
 					content: $("#popover_"+escape4$(uri)).text(),
 					html: true,
 					placement: "auto",
 					container: "body"
 				}).popover("show");
+				
 			} else {
+				
 				var container = $("<div/>", {
 					id: "popover_" + uri,
 					class: "hide",
 				}).appendTo("body");
-				new DocumentModel(app, [uri, container]);
-				console.log(container);
-				popover_element.popover({
+				
+				new DocumentModel(app, uri, container);
+				
+				var popover = popover_element.popover({
 					content: container.html(),
 					html: true,
 					placement: "auto",
 					container: "body"
 				}).popover("show");
+				
 			}
 		}, 700);
 		popover_element.mouseleave ( function () {

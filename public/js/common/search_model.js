@@ -2,7 +2,7 @@
 
 "use strict";
 
-function SearchModel(veda, params) {
+function SearchModel(veda, q) {
 	var self = riot.observable(this);
 
 	// Define Model data setters & getters
@@ -45,7 +45,8 @@ function SearchModel(veda, params) {
 	self.trigger("search:loaded");
 	
 	// Search if params given
-	self.q = params[0];
+	self.q = q;
 	if (self.q) self.search();
 	
+	return self;
 };

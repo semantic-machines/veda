@@ -2,9 +2,7 @@
 
 "use strict";
 
-function DocumentModel(veda, params) {
-	var container = params[1];
-	
+function DocumentModel(veda, uri, container) {
 	var self = riot.observable(this);
 	
 	self.on("individual:loaded", function() {
@@ -12,5 +10,7 @@ function DocumentModel(veda, params) {
 	});
 	
 	// Inherit from IndividualModel
-	IndividualModel.call(self, veda, params);
+	IndividualModel.call(self, veda, uri);
+	
+	return self;
 };

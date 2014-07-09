@@ -46,15 +46,15 @@ function AppModel(config) {
 	self.load = function (page, params) {
 		switch (page) {
 			case "console": 
-				self.console ? self.trigger("console:loaded", self.console) : RegisterModule(new ConsoleModel(self, params), self, "console");
+				self.console ? self.trigger("console:loaded", self.console) : RegisterModule(ConsoleModel.apply(new Object(), [self].concat(params)), self, "console");
 				//new ConsoleModel(self, params);
 				break
 			case "document": 
 				//self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, ["mondi-data:AdministrativeDocument_1"]), self, "document");
-				new DocumentModel(self, params);
+				DocumentModel.apply(new Object(), [self].concat(params));
 				break
 			case "search": 
-				self.search && ( (self.search._params == params) || params.length == 0 ) ? self.trigger("search:loaded", self.search) && self.trigger("search:complete", self.search) : RegisterModule(new SearchModel(self, params), self, "search", params);
+				self.search && ( (self.search._params == params) || params.length == 0 ) ? self.trigger("search:loaded", self.search) && self.trigger("search:complete", self.search) : RegisterModule(SearchModel.apply(new Object(), [self].concat(params)), self, "search", params);
 				//new SearchModel(self, params);
 				break
 			default: ""; break
@@ -77,10 +77,12 @@ function AppModel(config) {
 	
 	// Load user after successful authentication
 	self.on("auth:success", function() { 
-		self.user = new UserModel(self, [self.user_uri]);
+		self.user = new UserModel(self, self.user_uri);
 	});
 	
 	self.on("auth:quit", function() { 
 		self.started = false;
 	});
+	
+	return self;
 };

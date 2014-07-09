@@ -2,9 +2,8 @@
 
 "use strict";
 
-function IndividualModel(veda, params) {
+function IndividualModel(veda, uri) {
 	var self = riot.observable(this);
-	var uri = params[0];
 
 	// Define Model functions
 	var individual = {};
@@ -33,7 +32,7 @@ function IndividualModel(veda, params) {
 									break
 								case "Uri" : 
 									if (value.data.search(/^.{3,5}:\/\//) == 0) return new String(value.data);
-									try { return new IndividualModel(veda, [value.data]); } 
+									try { return new IndividualModel(veda, value.data); } 
 									catch (e) { return new String(value.data) }
 									break
 								case "Datetime" : return new Date(Number(value.data)); break
@@ -55,7 +54,7 @@ function IndividualModel(veda, params) {
 				Object.defineProperty(self.properties, property_uri, {
 					get: function() { 
 						if (properties[property_uri]) return properties[property_uri];
-						try { properties[property_uri] = new IndividualModel(veda, [property_uri]); } 
+						try { properties[property_uri] = new IndividualModel(veda, property_uri); } 
 						catch (e) { properties[property_uri] = property_uri; }
 						return properties[property_uri];
 					},
@@ -111,4 +110,5 @@ function IndividualModel(veda, params) {
 	// Load data 
 	if (uri) self.load(uri); 
 	
+	return self;
 };
