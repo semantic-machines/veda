@@ -1,7 +1,7 @@
 // Veda application Presenter
 
 Veda(function AppPresenter(veda) { "use strict";
-
+	
 	// Router function
 	riot.route( function (hash) {
 		

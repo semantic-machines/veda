@@ -21,6 +21,17 @@ function UserModel(veda, uri) {
 		self.trigger("user:loaded");
 	});
 	
+	self.switch_language = function(language) {
+		self.language = language;
+		if (language == "RU") {
+			self.preferences["veda-ui:preferredLanguage"][0] = new IndividualModel(veda, "veda-ui:RU");
+		}
+		if (language == "EN") {
+			self.preferences["veda-ui:preferredLanguage"][0] = new IndividualModel(veda, "veda-ui:EN");
+		}
+		self.preferences.save();
+	}
+	
 	// Model loaded message
 	self.on("user:loaded", function(){
 		if (veda) veda.trigger("user:loaded", self);

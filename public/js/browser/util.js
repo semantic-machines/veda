@@ -10,7 +10,7 @@ function localize(nodeSelector, lang) {
 	$.ajax({
 		type: "GET",
 		dataType: "script",
-		url: "js/i18n/vocabulary_"+lang+".js"
+		url: "js/i18n/vocabulary_"+lang.toLowerCase()+".js"
 	}).done(function( msg ) {
 		eval(msg);
 		$(nodeSelector + ' .i18n').each(function() {

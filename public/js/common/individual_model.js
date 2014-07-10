@@ -72,9 +72,10 @@ function IndividualModel(veda, uri) {
 	self.save = function() {
 		for (var property_uri in values) {
 			if (property_uri == "@") {
-				individual["@"] = values["@"]; 
+				//individual["@"] = values["@"]; 
 				continue;
 			}
+			if (values[property_uri] == undefined) continue;
 			individual[property_uri] = values[property_uri].map( function(value) {
 				var result = {};
 				if (value instanceof Number) {
@@ -103,6 +104,7 @@ function IndividualModel(veda, uri) {
 				} else return value;
 			});
 		}
+		console.log(individual);
 		put_individual(veda.ticket, individual, function(data) {
 		});
 	};
