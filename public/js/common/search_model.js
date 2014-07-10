@@ -6,7 +6,7 @@ function SearchModel(veda, q) {
 	var self = riot.observable(this);
 
 	// Define Model data setters & getters
-	var properties = {q:"", results:"", results_count:""};
+	var properties = {q:"", results:{}, results_count:""};
 	for (var property in properties) {
 		(function(property) {
 			Object.defineProperty(self, property, {
@@ -22,8 +22,20 @@ function SearchModel(veda, q) {
 
 	// Define Model functions
 	self.search = function() {
+		
+		// Clear previous results 
+		self.results = {};
+		
 		query(veda.ticket, self.q, function(data) {
-			self.results = data;
+			var results = data;
+			for (var i in results){
+				(function(i){
+					Object.defineProperty(self.results, i, {
+						get: function() { 
+							return ( typeof results[i] == 'object' ? results[i] : results[i] = new IndividualModel(veda, results[i]) ); }
+					});
+				})(i);
+			}
 			self.results_count = data.length;
 			self.trigger("search:complete");
 		});
