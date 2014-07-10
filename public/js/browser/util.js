@@ -5,6 +5,20 @@ function escape4$(str) {
 	return str;
 }
 
+// Localize nodeSelector
+function localize(nodeSelector, lang) {
+	$.ajax({
+		type: "GET",
+		dataType: "script",
+		url: "js/i18n/vocabulary_"+lang+".js"
+	}).done(function( msg ) {
+		eval(msg);
+		$(nodeSelector + ' .i18n').each(function() {
+			$(this).text($.i18n._($(this).attr('label')));
+		});
+	});
+}
+
 // Helper to render a single property
 function renderProperty (veda, individual, property_uri, template, container) {
 	var label, uri, values;

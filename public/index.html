@@ -18,16 +18,16 @@
 				<a href="#/" class="navbar-brand"><img src="/img/veda-logo.png" style="position:relative; top:-3px"/></a>
 				<ul class="nav navbar-nav navbar-left" id="menu">
 					<li id="document">
-						<a href="#/document/mondi-data:">Документ</a>
+						<a class="i18n" label="[Document]" href="#/document/mondi-data:">Документ</a>
 					</li>
 					<li id="console">	
-						<a href="#/console">Консоль</a>
+						<a class="i18n" label="[Console]" href="#/console">Консоль</a>
 					</li>
 					<li id="search">	
-						<a href="#/search">Поиск</a>
+						<a class="i18n" label="[Search]" href="#/search">Поиск</a>
 					</li>
 					<li id="tests">
-						<a href="/tests">Тесты</a>
+						<a class="i18n" label="[Tests]" href="/tests">Тесты</a>
 					</li>
 				</ul>
 				<a class="btn btn-xs btn-success navbar-btn navbar-left" id="set-trace">
@@ -59,6 +59,7 @@
 
 		<!-- Utils & UI -->
 		<script src="/js/browser/jquery.js"></script>
+		<script src="/js/browser/jquery.i18n.min.js"></script>
 		<script src="/js/browser/bootstrap.min.js"></script>
 		<script src="/js/browser/cookie.js"></script>
 		<script src="/js/browser/sha256.js"></script>
@@ -210,12 +211,12 @@
 				<a href="#/document/{id}" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {name}</a>
 			</p>
 			<div data-toggle="buttons" class="navbar-right btn-group">
-				<label id="ru-label" class="btn btn-xs btn-info navbar-btn active">
+				<label id="ru-label" class="btn btn-xs btn-info navbar-btn active" onclick="localize('body', 'ru');" >
 					<input id="ru" type="radio"/>
 					Русский
 				</label>
-				<label id="en-label" class="btn btn-xs btn-info navbar-btn">
-					<input id="ru" type="radio"/>
+				<label id="en-label" class="btn btn-xs btn-info navbar-btn" onclick="localize('body', 'en');">
+					<input id="en" type="radio"/>
 					English
 				</label>
 			</div>
