@@ -26,6 +26,11 @@ Veda(function AppPresenter(veda) { "use strict";
 		}, 0);
 		
 	});
+	
+	veda.on("language:changed", function (){
+		// Refresh 'page'
+		riot.route(location.hash, true);
+	});
 
 	// Listen to a link click and call router
 	$("body").on("click", "[href^='#/']", function(e) {

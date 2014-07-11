@@ -26,9 +26,7 @@ Veda(function UserPresenter(veda) { "use strict";
 				$(this).on("click", function(){ 
 					localize("body", this.id); 
 					user.switch_language(this.id);
-
-					// Refresh 'page'
-					riot.route(location.hash, true);
+					veda.trigger("language:changed");
 				});
 			});
 
