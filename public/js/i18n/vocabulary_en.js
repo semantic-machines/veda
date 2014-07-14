@@ -1,11 +1,13 @@
 var vocabulary_en = {
 
-//Menu
+//Navs
 	'[Document]' : 'Document',
 	'[Console]' : 'Console',
 	'[Search]' : 'Search',
 	'[Tests]' : 'Tests',
 	'[Logout]' : 'Logout',
+	'[Semantic machines]' : '© Semantic machines, LLC.',
+	'[License]' : 'License',
 
 //Document
 	'[Edit]' : 'Edit',

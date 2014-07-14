@@ -1,11 +1,13 @@
 var vocabulary_ru = {
 
-//Menu
+//Navs
 	'[Document]' : 'Документ',
 	'[Console]' : 'Консоль',
 	'[Search]' : 'Поиск',
 	'[Tests]' : 'Тесты',
 	'[Logout]' : 'Выйти',
+	'[Semantic machines]' : '© Смысловые машины, ООО.',
+	'[License]' : 'Лицензия',	
 
 //Document
 	'[Edit]' : 'Редактировать',	
