@@ -10,7 +10,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		
 		var container = container_param || $("#main");
 		container.html(document_template);
-
+		localize(container, veda.user.language);
+		
 		// Render document title		
 		$("#document-label", container).html( 
 			riot.render(
@@ -93,6 +94,10 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			$("#document-properties", container).append(el);
 			el.prepend("<hr>");
 		}
+		
+		$("#edit-document", container).on("click", function (){
+		
+		});
 		
 	});
 

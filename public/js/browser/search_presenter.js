@@ -12,6 +12,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 		// Get template
 		var rendered = riot.render(template, search);
 		container.html(rendered);
+		localize(container, veda.user.language);
 		
 		$("#q", container).focus();
 		$("#not-found", container).hide();
@@ -24,7 +25,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 		
 		$("#search #search-submit", container).on("click", function(event) {
 			event.preventDefault();
-			$("#search-submit").button("loading"); 
+			$("#search-submit").addClass("disabled"); 
 			currentPage = 0;
 			search.search();
 		});
@@ -41,7 +42,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 	veda.on("search:complete", function (search) {
 		
 		// Show/hide 'results' or 'not found'
-		$("#search-submit").button("reset");
+		$("#search-submit").removeClass("disabled");
 		if (!search.q) {
 			$("#q", container).focus();
 			$("#search-results", container).hide();

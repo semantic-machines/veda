@@ -6,15 +6,17 @@ function escape4$(str) {
 }
 
 // Localize nodeSelector
-function localize(nodeSelector, lang) {
+function localize(container, lang) {
 	$.ajax({
 		type: "GET",
 		dataType: "script",
-		url: "js/i18n/vocabulary_"+lang.toLowerCase()+".js"
+		url: "js/i18n/vocabulary_"+lang.toLowerCase()+".js",
+		async: false,
+		cache: true,
 	}).done(function( msg ) {
 		eval(msg);
-		$(nodeSelector + ' .i18n').each(function() {
-			$(this).text($.i18n._($(this).attr('label')));
+		$('[i18n]', container).each(function() {
+			$(this).text($.i18n._($(this).attr('i18n')));
 		});
 	});
 }
@@ -58,10 +60,10 @@ $( function () {
 		uri = popover_element.attr("href");
 		uri = uri.substring(uri.indexOf("#/document/") + "#/document/".length);
 		var thisTimeout = setTimeout( function () {
-			if ($("#"+escape4$(uri)).length) {
+			if ($("#popover_"+escape4$(uri)).length) {
 				
 				var popover = popover_element.popover({
-					content: $("#popover_"+escape4$(uri)).text(),
+					content: $("#popover_"+escape4$(uri)).html(),
 					html: true,
 					placement: "auto",
 					container: "body"
@@ -74,7 +76,7 @@ $( function () {
 					class: "hide",
 				}).appendTo("body");
 				
-				new DocumentModel(app, uri, container);
+				new DocumentModel(Veda(), uri, container);
 				
 				var popover = popover_element.popover({
 					content: container.html(),

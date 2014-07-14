@@ -11,19 +11,19 @@ function IndividualModel(veda, uri) {
 	var values = {};
 	self.properties = {};
 
-	self.load = function(uri) {
+	self.load = function (uri) {
 		individual = veda.cache[uri] ? JSON.parse( veda.cache[uri] ) : get_individual(veda.ticket, uri);
 		for (var property_uri in individual) {
-			(function(property_uri) {
+			(function (property_uri) {
 
 				properties[property_uri] = undefined;
 				values[property_uri] = undefined;
 
 				Object.defineProperty(self, property_uri, {
-					get: function() { 
+					get: function () { 
 						if (property_uri == "@") return values[property_uri] = individual["@"];						
 						if (values[property_uri]) return values[property_uri];
-						values[property_uri] = individual[property_uri].map(function(value) {
+						values[property_uri] = individual[property_uri].map( function (value) {
 							switch (value.type) {
 								case "String" : 
 									var string = new String(value.data);
@@ -44,7 +44,7 @@ function IndividualModel(veda, uri) {
 						});
 						return values[property_uri];
 					},
-					set: function(value) { 
+					set: function (value) { 
 						if (values[property_uri] == value) return;
 						values[property_uri] = value;
 						self.trigger("value:changed", property_uri, values[property_uri]);
@@ -52,13 +52,13 @@ function IndividualModel(veda, uri) {
 				});
 
 				Object.defineProperty(self.properties, property_uri, {
-					get: function() { 
+					get: function () { 
 						if (properties[property_uri]) return properties[property_uri];
 						try { properties[property_uri] = new IndividualModel(veda, property_uri); } 
 						catch (e) { properties[property_uri] = property_uri; }
 						return properties[property_uri];
 					},
-					set: function(value) { 
+					set: function (value) { 
 						if (properties[property_uri] == value) return; 
 						properties[property_uri] = value; 
 						self.trigger("property:changed", property_uri, properties[property_uri]);
@@ -72,11 +72,11 @@ function IndividualModel(veda, uri) {
 	self.save = function() {
 		for (var property_uri in values) {
 			if (property_uri == "@") {
-				//individual["@"] = values["@"]; 
+				individual["@"] = values["@"] || individual["@"];
 				continue;
 			}
 			if (values[property_uri] == undefined) continue;
-			individual[property_uri] = values[property_uri].map( function(value) {
+			individual[property_uri] = values[property_uri].map( function (value) {
 				var result = {};
 				if (value instanceof Number) {
 					//result.type = Number.isInteger(value) ? "Integer" : "Float";
@@ -104,8 +104,7 @@ function IndividualModel(veda, uri) {
 				} else return value;
 			});
 		}
-		console.log(individual);
-		put_individual(veda.ticket, individual, function(data) {
+		put_individual(veda.ticket, individual, function (data) {
 		});
 	};
 

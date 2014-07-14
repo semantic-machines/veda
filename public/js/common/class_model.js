@@ -32,7 +32,7 @@ function ClassModel(veda, uri) {
 			});
 		});
 	
-	/*var superClasses = {};
+	var superClasses = {};
 	self.superClasses = {};
 
 	if (self["rdfs:subClassOf"]) 
@@ -43,7 +43,6 @@ function ClassModel(veda, uri) {
 				}
 			});
 		});
-	*/
 	
 	return self;
 };

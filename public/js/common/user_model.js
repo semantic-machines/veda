@@ -38,7 +38,7 @@ function UserModel(veda, uri) {
 	});
 		
 	// Inherit from IndividualModel
-	IndividualModel.call(this, veda, uri);
+	IndividualModel.call(self, veda, uri);
 	
 	return self;
 };

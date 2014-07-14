@@ -1,50 +1,45 @@
 // Veda application Presenter
 
 Veda(function AppPresenter(veda) { "use strict";
-	
+
+	$(function () {
+		localize($("nav"), veda.user.language);
+	});
+
 	// Router function
 	riot.route( function (hash) {
+		var hash_tokens = hash.slice(2).split("/");
+		var page = hash_tokens[0];
+		var params = hash_tokens.slice(1);
 		
-		setTimeout(function(){
-		
-			var hash_tokens = hash.slice(2).split("/");
-			var page = hash_tokens[0];
-			var params = hash_tokens.slice(1);
-			
-			// Important: avoid routing if not started yet!
-			if (veda.started) {
-				if (page != "") {
-					$("#menu > li").removeClass("active");
-					$("#menu > li#" + page).addClass("active");
-					veda.load(page, params);
-				} else {
-					$("#menu > li").removeClass("active");
-					$("#main").html( $("#wellcome-template").html() );
-				}
+		// Important: avoid routing if not started yet!
+		if (veda.started) {
+			if (page != "") {
+				$("#menu > li").removeClass("active");
+				$("#menu > li#" + page).addClass("active");
+				veda.load(page, params);
+			} else {
+				$("#menu > li").removeClass("active");
+				$("#main").html( $("#wellcome-template").html() );
 			}
-			
-		}, 0);
-		
+		}
 	});
 	
-	veda.on("language:changed", function (){
+	veda.on("language:changed", function () {
+		localize($("nav"), veda.user.language);
 		// Refresh 'page'
 		riot.route(location.hash, true);
 	});
-
+	
 	// Listen to a link click and call router
-	$("body").on("click", "[href^='#/']", function(e) {
+	$("body").on("click", "[href^='#/']", function (e) {
 		e.preventDefault();
 		var link = $(this);
 		return riot.route($(this).attr("href"));
 	});
-	$("body").on("click", "a[href='']", function(e) {
-		e.preventDefault();
-		$(this).addClass("text-danger");
-	});
 
 	// Toggle tracing
-	$("#set-trace").on("click", function(e) {
+	$("#set-trace").on("click", function (e) {
 		var $el = $(this);
 		e.preventDefault();
 		if ($el.hasClass("active")) { 
@@ -57,7 +52,7 @@ Veda(function AppPresenter(veda) { "use strict";
 	});
 
 	// Listen to logout click
-	$("#logout").on("click", function(e) {
+	$("#logout").on("click", function (e) {
 		e.preventDefault();
 		$("#current-user").html("");
 		veda.trigger("auth:quit");
@@ -68,9 +63,10 @@ Veda(function AppPresenter(veda) { "use strict";
 		setCookie("user_uri", user_uri, { path: "/", expires: new Date(parseInt(end_time)) });
 		setCookie("ticket", ticket, { path: "/", expires: new Date(parseInt(end_time)) });
 		setCookie("end_time", end_time, { path: "/", expires: new Date(parseInt(end_time)) });
-		riot.route(location.hash, true);
+		setTimeout( function () {
+			riot.route(location.hash, true);
+		}, 0);
 	});
-
 	// Listen to quit && authentication failure events
 	veda.on("auth:quit", function () {
 		deleteCookie("user_uri");
@@ -81,8 +77,8 @@ Veda(function AppPresenter(veda) { "use strict";
 		var template = $("#login-template").html();
 		$("#main").html(template);
 
-		$("#login-form #submit").on("click", function(event) {
-			event.preventDefault();
+		$("#login-form #submit").on("click", function (e) {
+			e.preventDefault();
 			veda.authenticate( $("#login-form #login").val(), Sha256.hash( $("#login-form #password").val() ) );
 		});
 	});

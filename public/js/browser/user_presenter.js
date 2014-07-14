@@ -24,13 +24,10 @@ Veda(function UserPresenter(veda) { "use strict";
 			$("#preferred-language > label", container).each( function() {
 				if (this.id == user.language) $(this).addClass("active");
 				$(this).on("click", function(){ 
-					localize("body", this.id); 
 					user.switch_language(this.id);
 					veda.trigger("language:changed");
 				});
 			});
-
-			localize("body", user.language); 
 
 		}, 0);
 		

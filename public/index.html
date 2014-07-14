@@ -18,23 +18,23 @@
 				<a href="#/" class="navbar-brand"><img src="/img/veda-logo.png" style="position:relative; top:-3px"/></a>
 				<ul class="nav navbar-nav navbar-left" id="menu">
 					<li id="document">
-						<a class="i18n" label="[Document]" href="#/document/mondi-data:">Документ</a>
+						<a i18n="[Document]" label="[Document]" href="#/document/mondi-data:">Документ</a>
 					</li>
 					<li id="console">	
-						<a class="i18n" label="[Console]" href="#/console">Консоль</a>
+						<a i18n="[Console]" href="#/console">Консоль</a>
 					</li>
 					<li id="search">	
-						<a class="i18n" label="[Search]" href="#/search">Поиск</a>
+						<a i18n="[Search]" href="#/search">Поиск</a>
 					</li>
 					<li id="tests">
-						<a class="i18n" label="[Tests]" href="/tests">Тесты</a>
+						<a i18n="[Tests]" href="/tests">Тесты</a>
 					</li>
 				</ul>
 				<a class="btn btn-xs btn-success navbar-btn navbar-left" id="set-trace">
 					<i class="glyphicon glyphicon-flash"></i> Trace
 				</a>
 				<a class="btn btn-xs btn-danger navbar-btn navbar-right" id="logout">
-					<i class="glyphicon glyphicon-log-out"></i> Выйти
+					<i class="glyphicon glyphicon-log-out"></i> <span i18n="[Logout]">Выйти</span>
 				</a>				
 				<div id="user-info" class="navbar-right"></div>
 			</div>
@@ -104,11 +104,11 @@
 						<form role="form" id="credentials">
 							<div class="form-group">
 								<label for="login">Логин</label>
-								<input id="login" required="required" type="text" placeholder="Введите логин" name="login" class="form-control"/>
+								<input id="login" required="required" type="text" name="login" class="form-control"/>
 							</div>
 							<div class="form-group">
 								<label for="password">Пароль</label>
-								<input id="password" required="required" type="password" placeholder="Введите пароль" name="password" autofocus="autofocus" class="form-control"/>
+								<input id="password" required="required" type="password" name="password" autofocus="autofocus" class="form-control"/>
 							</div>
 							<button type="submit" id="submit" class="btn btn-primary">Войти</button>
 						</form>
@@ -131,27 +131,27 @@
 		<!-- Console template -->
 		<script type="html/template" id="console-template">
 			<div class="container-fluid" id="console">
-				<h3>Консоль JavaScript</h3>
+				<h3 i18n="[Javascript console]">Консоль JavaScript</h3>
 				<form role="form">
 					<div class="form-group row">
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<label for="script">Скрипт</label>
-							<textarea rows="10" class="form-control" placeholder="Введите скрипт" autofocus="autofocus" id="script" bound>{script}</textarea>
+							<label i18n="[Script]" for="script">Скрипт</label>
+							<textarea rows="10" class="form-control" autofocus="autofocus" id="script" bound>{script}</textarea>
 						</div>
 					</div>
 					<div class="form-group row">
 						<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
 							<select class="form-control" id="runat" bound>
-								<option value="browser">Браузер</option>
-								<option value="server">Сервер</option>
+								<option i18n="[Browser]" value="browser">Браузер</option>
+								<option i18n="[Server]" value="server">Сервер</option>
 							</select>
 						</div>
-						<button type="submit" class="btn btn-success" id="run">Выполнить!</button>
-						<button type="reset" class="btn" id="reset">Сброс</button>
+						<button type="submit" class="btn btn-success" id="run" i18n="[Run]">Выполнить!</button>
+						<button type="reset" class="btn" id="reset" i18n="[Reset]">Сброс</button>
 					</div>
 				</form>
 				<hr />
-				<p><strong>Результат <span class="text-muted">(выполнено за <span id="time" bound>{time}</span> мсек)</span></label></strong></p>
+				<p><strong><span i18n="[Result]">Результат</span> <span class="text-muted">(<span id="time" bound>{time}</span> msec)</span></label></strong></p>
 				<pre id="result" bound>{result}</pre>
 			</div>
 		</script>
@@ -165,7 +165,7 @@
 		
 		<!-- Search result label template -->
 		<script type="html/template" id="search-result-label-template">
-			<a data-toggle="popover" href="#/document/{uri}"><h4>{label}</h4></a>
+			<a data-toggle="popover" href="#/document/{uri}"><strong>{label}</strong></a>
 		</script>
 
 		<!-- Search result single property template -->
@@ -181,7 +181,7 @@
 				<div id="document-properties"></div>
 				<br>
 				<div class="well well-sm">
-					<button type="button" class="btn btn-default">Редактировать</button>
+					<button type="button" class="btn btn-default" id="edit-document" i18n="[Edit]">Редактировать</button>
 				</div>
 			</div>
 		</script>
@@ -229,18 +229,18 @@
 						<form method="GET" role="form">
 							<div class="row">
 								<div class="col-xs-7 col-sm-7 col-sm-offset-1 col-md-8 col-md-offset-1 col-lg-8 col-lg-offset-1">
-									<label for="q" class="sr-only">Запрос:</label>
-									<input id="q" bound value="{q}" type="text" placeholder="Введите запрос" name="q" class="form-control" autofocus="autofocus"/>
+									<label for="q" class="sr-only" i18n="[Query]">Запрос</label>
+									<input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
 								</div>
 								<div class="col-xs-5 col-sm-4 col-md-3 col-lg-3">
-									<button type="submit" id="search-submit" class="btn btn-primary" data-loading-text="Поиск...">Найти</button>
+									<button type="submit" id="search-submit" class="btn btn-primary" i18n="[Search]">Найти</button>
 								</div>
 							</div>
 						</form>
 					</div>
 				</div>
-				<div class="container-fluid" id="search-results">
-					<h3 class="text-center">Результаты поиска
+				<div class="container-fluid" id="search-results" style="display: none">
+					<h3 class="text-center"><span i18n="[Search results]">Результаты поиска</span>
 						(<span id="results_count" bound>{results_count}</span>)
 					</h3>
 					<hr/>
@@ -250,8 +250,8 @@
 						<ul class="pagination" id="pager"></ul>
 					</div>
 				</div>
-				<div class="alert alert-warning" id="not-found">
-					<strong>Пусто!</strong> По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.
+				<div class="alert alert-warning" id="not-found" style="display: none">
+					<strong i18n="[Empty!]">Пусто!</strong> <span i18n="[Nothing found]">По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 				</div>				
 			</div>
 		</script>		

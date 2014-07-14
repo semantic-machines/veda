@@ -12,7 +12,8 @@ Veda(function SearchResultPresenter(veda) { "use strict";
 		
 		var container = container_param || $("#main");
 		container.html(search_result_template);
-
+		localize(container, veda.user.language);
+		
 		// Render document title		
 		$("#search-result-label", container).html( 
 			riot.render(
