@@ -62,7 +62,7 @@ function AppModel(config) {
 	};
 
 	// Load ontology after user has been loaded
-	self.on("user:loaded", function() {
+	self.one("user:loaded", function() {
 		var q = "'rdf:type' == 'rdfs:*' || 'rdf:type' == 'rdf:*' || 'rdf:type' == 'owl:*'";
 		var q_results = query(self.ticket, q);
 		for (var i=0; i<q_results.length; i++) {

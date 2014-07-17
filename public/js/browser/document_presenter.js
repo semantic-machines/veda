@@ -12,7 +12,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		container.html(document_template);
 		localize(container, veda.user.language);
 		
-		// Render document title		
+		// Render document title
 		$("#document-label", container).html( 
 			riot.render(
 				document_label_template,
@@ -25,36 +25,18 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			) 
 		);
 
-		// Render document properties (from classes)
+		// Render document properties (respecting classes)
 		var properties = {};
-		
 		Object.getOwnPropertyNames(document.properties).reduce( function (accumulator, property_uri) {
 			accumulator[property_uri] = undefined;
 			return accumulator;
 		}, properties);
-		
-		function getTypes(individual, types) {
-			if (!individual["rdfs:subClassOf"]) return;
-			individual["rdfs:subClassOf"].reduce(function (accumulator, _class) {
-				getTypes(_class, accumulator);
-				accumulator[_class["@"]] = new ClassModel(veda, [_class["@"]]);
-				return accumulator;
-			}, types);
-		}
-		
-		var types = {};
-		
-		document["rdf:type"].map(function(_class){ 
-			types[_class["@"]] = new ClassModel(veda, [_class["@"]]);
-			getTypes(_class, types) 
-		});
-		
-		types["rdfs:Resource"] = new ClassModel(veda, ["rdfs:Resource"]);
-		
-		Object.getOwnPropertyNames(types).map( function (type) {
+
+		// Loop through classes and render domain properties 
+		Object.getOwnPropertyNames(document.classTree.classes).map( function (_class) {
 			var counter=0;
 			var el = $("<div>");
-			Object.getOwnPropertyNames(types[type].domainProperties).map( function (property_uri) {
+			Object.getOwnPropertyNames(document.classTree.classes[_class].domainProperties).map( function (property_uri) {
 				try {
 					renderProperty(veda, document, property_uri, document_single_property_template, el);
 					counter++;
@@ -67,7 +49,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				$("#document-properties", container).append(el);
 				el.prepend("<h5 class='text-muted text-right'>" 
 					+ 
-					types[type]["rdfs:label"]
+					document.classTree.classes[_class]["rdfs:label"]
 						.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
 						.join(", ")
 					+ "</h5>"
