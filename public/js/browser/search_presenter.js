@@ -27,7 +27,8 @@ Veda(function SearchPresenter(veda) { "use strict";
 			event.preventDefault();
 			$("#search-submit").addClass("disabled"); 
 			currentPage = 0;
-			search.search();
+			//search.search();
+			riot.route("#/search/" + search.q, true);
 		});
 	
 		// Listen Model changes & update View
