@@ -83,7 +83,7 @@
 		<script src="/js/browser/console_presenter.js"></script>
 		<script src="/js/browser/document_presenter.js"></script>
 		<script src="/js/browser/search_presenter.js"></script>
-		<script src="/js/browser/search_result_presenter.js"></script>
+		<script src="/js/browser/individual_presenter.js"></script>
 		<script src="/js/browser/user_presenter.js"></script>
 		<script src="/js/browser/app_presenter.js"></script>
 		
@@ -156,20 +156,20 @@
 			</div>
 		</script>
 
-		<!-- Search result template -->
-		<script type="html/template" id="search-result-template">
-			<div id="search-result-label"></div>
-			<div class="container-fluid" id="search-result-properties"></div>
+		<!-- Individual template -->
+		<script type="html/template" id="individual-template">
+			<div id="individual-label"></div>
+			<div class="container-fluid" id="individual-properties"></div>
 			<br/>
 		</script>
 		
-		<!-- Search result label template -->
-		<script type="html/template" id="search-result-label-template">
+		<!-- Individual label template -->
+		<script type="html/template" id="individual-label-template">
 			<a data-toggle="popover" href="#/document/{uri}"><strong>{label}</strong></a>
 		</script>
 
-		<!-- Search result single property template -->
-		<script type="html/template" id="search-result-single-property-template">
+		<!-- Individual single property template -->
+		<script type="html/template" id="individual-single-property-template">
 			<span class="text-muted">{label}: </span>
 			<span>{values};</span>
 		</script>	

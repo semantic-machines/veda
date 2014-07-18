@@ -2,7 +2,7 @@
 
 "use strict";
 
-function IndividualModel(veda, uri) {
+function IndividualModel(veda, uri, container) {
 	var self = riot.observable(this);
 
 	// Define Model functions
@@ -66,7 +66,7 @@ function IndividualModel(veda, uri) {
 				});
 			})(property_uri);
 		}
-		self.trigger("individual:loaded");
+		veda.trigger("individual:loaded", self, container);
 	};
 
 	self.save = function() {
@@ -78,36 +78,38 @@ function IndividualModel(veda, uri) {
 			if (values[property_uri] == undefined) continue;
 			individual[property_uri] = values[property_uri].map( function (value) {
 				var result = {};
-				if (value instanceof Number) {
+				if (value instanceof Number || typeof value === "number" ) {
 					//result.type = Number.isInteger(value) ? "Integer" : "Float";
 					result.type = "String";
-					result.data = value.valueOf();
+					result.data = value.toString();
 					return result;
-				} else if (value instanceof Boolean) {
+				} else if (value instanceof Boolean || typeof value === "boolean") {
 					result.type = "Boolean";
 					result.data = value.valueOf();
+					return result;
+				} else if (value instanceof String || typeof value === "string") {
+					result.type = "String";
+					result.data = value.valueOf();
+					result.lang = value.language || "NONE";
 					return result;
 				} else if (value instanceof Date) {
 					result.type = "String";
 					result.data = value.toISOString();
 					result.lang = "NONE";
 					return result;
-				} else if (value instanceof String) {
-					result.type = "String";
-					result.data = value.valueOf();
-					result.lang = value.language || "NONE";
-					return result;
 				} else if (value instanceof IndividualModel) {
 					result.type = "Uri";
 					result.data = value["@"];
 					return result;
-				} else return value;
+				} else {
+					return value;
+				}
 			});
 		}
 		put_individual(veda.ticket, individual, function (data) {
 		});
 	};
-
+		
 	// Load data 
 	if (uri) self.load(uri); 
 	

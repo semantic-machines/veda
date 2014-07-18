@@ -41,12 +41,6 @@ function SearchModel(veda, q) {
 		});
 	};
 
-	self.load_results = function(container) {
-		for (var i in self.results) {
-			new DocumentModel(veda, [self.results[i], container]);
-		}
-	};
-	
 	// Model messages
 	self.on("search:loaded", function() {
 		if (veda) veda.trigger("search:loaded", self);

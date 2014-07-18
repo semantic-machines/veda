@@ -64,7 +64,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 		// Show results
 		for (var i = currentPage * veda.user.displayedElements; i < (currentPage + 1) * veda.user.displayedElements && i < search.results_count; i++) {
 			var $li = $("<li/>").appendTo("#search-results-list");
-			veda.trigger("search_result:loaded", search.results[i], $li);			
+			veda.trigger("individual:loaded", search.results[i], $li);			
 		}
 		
 		// Show pager
