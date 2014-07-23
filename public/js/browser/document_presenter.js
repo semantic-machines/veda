@@ -58,22 +58,24 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		);
 
 		// Render document properties (respecting classes)
-		var properties = {};
+		var renderedProperties = {};
 		Object.getOwnPropertyNames(document.properties).reduce( function (accumulator, property_uri) {
 			accumulator[property_uri] = undefined;
 			return accumulator;
-		}, properties);
+		}, renderedProperties);
 
+		var renderedClasses = {};
 		Object.getOwnPropertyNames(document.classTree.roots).map( function (class_uri) {
+			// Separate function for recursive calls
 			(function renderClassProperties (_class) {
-				if (!_class.rendered) {
-					var counter=0;
+				if (!renderedClasses[_class["@"]]) {
+					var counter = 0;
 					var el = $("<div>");
 					Object.getOwnPropertyNames(_class.domainProperties).map( function (property_uri) {
 						try {
 							renderDocumentProperty(veda, document, property_uri, document_single_property_template, el);
 							counter++;
-							properties[property_uri] = "rendered";
+							renderedProperties[property_uri] = "rendered";
 						} catch (e) {
 							return;
 						}
@@ -90,22 +92,22 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						el.prepend("<hr>");
 					}
 				}
-				_class.rendered = true;
+				renderedClasses[_class["@"]] = "rendered";
 				
-				if (!_class.subclasses) return;
-				_class.subclasses.map (function (subclass){
-					renderClassProperties(subclass);
+				if (!_class.subClasses) return;
+				_class.subClasses.map (function (subClass){
+					renderClassProperties(subClass);
 				});
 			})(document.classTree.classes[class_uri]);
 		});
 
 		// Render rest document properties
-		var counter=0;
+		var counter = 0;
 		var el = $("<div>");
 		
-		Object.getOwnPropertyNames(properties).map ( function (property_uri) {
+		Object.getOwnPropertyNames(renderedProperties).map ( function (property_uri) {
 			if (property_uri == "@") return;
-			if (properties[property_uri] == "rendered") return;
+			if (renderedProperties[property_uri] == "rendered") return;
 			try {
 				renderDocumentProperty(veda, document, property_uri, document_single_property_template, el);
 				counter++;
@@ -119,7 +121,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		}
 		
 		$("#edit-document", container).on("click", function (){
-			new EditorModel(veda, document, container);
+			EditorModel(veda, document, container);
 		});
 		
 	});

@@ -12,6 +12,9 @@ var vocabulary_en = {
 //Document
 	'[Edit]' : 'Edit',
 
+//Editor
+	'[Save]' : 'Save',
+
 //Console
 	'[Javascript console]' : 'Javascript console',
 	'[Script]' : 'Script',

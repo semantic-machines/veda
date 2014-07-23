@@ -12,7 +12,7 @@ function ClassModel(veda, individual) {
 	self.domainProperties = {};
 	var domainProperties = {};
 
-	if (domainPropertiesList) 
+	if (domainPropertiesList) {
 		domainPropertiesList.map(function (property_uri) {
 			Object.defineProperty(self.domainProperties, property_uri, {
 				get: function() {
@@ -23,21 +23,7 @@ function ClassModel(veda, individual) {
 				}
 			});
 		});
+	}
 	
-/*	var superClasses = {};
-	self.superClasses = {};
-
-	if (self["rdfs:subClassOf"]) 
-		self["rdfs:subClassOf"].map(function (superClass) {
-			Object.defineProperty(self.superClasses, superClass["@"], {
-				get: function() {
-					return superClasses[superClass["@"]] ? 
-						superClasses[superClass["@"]] 
-						: 
-						superClasses[superClass["@"]] = new ClassModel(veda, superClass);
-				}
-			});
-		});
-*/	
 	return self;
 };

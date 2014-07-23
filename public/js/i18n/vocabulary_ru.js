@@ -12,6 +12,9 @@ var vocabulary_ru = {
 //Document
 	'[Edit]' : 'Редактировать',	
 
+//Editor
+	'[Save]' : 'Сохранить',
+
 //Console
 	'[Javascript console]' : 'Консоль Javascript',
 	'[Script]' : 'Скрипт',

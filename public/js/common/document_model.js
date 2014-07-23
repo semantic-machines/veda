@@ -16,11 +16,11 @@ function DocumentModel(veda, individual, container) {
 						if (!classTree.classes[item["@"]]) {
 							var res;
 							res = new ClassModel(veda, item);
-							res.subclasses = [_class];
+							res.subClasses = [_class];
 							classTree.classes[item["@"]] = res;
 							return res;
 						} else {
-							classTree.classes[item["@"]].subclasses.push(_class);
+							classTree.classes[item["@"]].subClasses.push(_class);
 							return classTree.classes[item["@"]];
 						}
 					}), classTree);

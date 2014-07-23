@@ -16,10 +16,10 @@ Veda(function EditorPresenter(veda) { "use strict";
 							return item.search(/^.{3,5}:\/\//) == 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
 						else if (item instanceof IndividualModel)
 							return "<a data-toggle='popover' href='#/document/" + item["@"] + "'>" + 
-								(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item["@"]) + "</a>";
+								(item["rdfs:label"] ? item["rdfs:label"].filter( function (item) { return item.language == veda.user.language || item.language == "NONE" }).join(", ") : item["@"]) + "</a>";
 						else return item;
 					})
-					.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
+					.filter(function (item) { return item.language ? item.language == veda.user.language || item.language == "NONE" : item })
 					.join(", ");
 		container.append(
 			riot.render(
@@ -34,92 +34,80 @@ Veda(function EditorPresenter(veda) { "use strict";
 	}
 
 	// Get templates
-	var document_template = $("#document-template").html();
-	var document_single_property_template = $("#document-single-property-template").html();
-	var document_label_template = $("#document-label-template").html();
+	var editor_template = $("#editor-template").html();
+	var editor_single_property_template = $("#editor-single-property-template").html();
 	
-	veda.on("editor:loaded", function (document, container_param) {
+	veda.on("editor:loaded", function (editor, container_param) {
 		
 		var container = container_param || $("#main");
-		container.html(document_template);
+		container.html(editor_template);
 		localize(container, veda.user.language);
 		
-		// Render document title
-		$("#document-label", container).html( 
-			riot.render(
-				document_label_template,
-				{ 
-					label: document["rdfs:label"] ? document["rdfs:label"]
-						.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
-						.join(", ") : document["@"],
-					uri: document["@"] 
-				}
-			) 
-		);
-
 		// Render document properties (respecting classes)
-		var properties = {};
-		Object.getOwnPropertyNames(document.properties).reduce( function (accumulator, property_uri) {
+		var renderedProperties = {};
+		Object.getOwnPropertyNames(editor.properties).reduce( function (accumulator, property_uri) {
 			accumulator[property_uri] = undefined;
 			return accumulator;
-		}, properties);
+		}, renderedProperties);
 
-		Object.getOwnPropertyNames(document.classTree.roots).map( function (class_uri) {
+		var renderedClasses = {};
+		Object.getOwnPropertyNames(editor.classTree.roots).map( function (class_uri) {
+			// Separate function for recursive calls
 			(function renderClassProperties (_class) {
-				if (!_class.rendered) {
-					var counter=0;
+				if (!renderedClasses[_class["@"]]) {
+					var counter = 0;
 					var el = $("<div>");
 					Object.getOwnPropertyNames(_class.domainProperties).map( function (property_uri) {
 						try {
-							renderDocumentProperty(veda, document, property_uri, document_single_property_template, el);
+							renderDocumentProperty(veda, editor, property_uri, editor_single_property_template, el);
 							counter++;
-							properties[property_uri] = "rendered";
+							renderedProperties[property_uri] = "rendered";
 						} catch (e) {
 							return;
 						}
 					});
 					if (counter) { 
-						$("#document-properties", container).append(el);
+						$("#editor-properties", container).append(el);
 						el.prepend("<h5 class='text-muted text-right'>" 
 							+ 
 							_class["rdfs:label"]
-								.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
+								.filter( function (item) { return item.language ? item.language == veda.user.language || item.language == "NONE" : item } )
 								.join(", ")
 							+ "</h5>"
 						);
-						el.prepend("<hr>");
+						//el.prepend("<hr>");
 					}
 				}
-				_class.rendered = true;
+				renderedClasses[_class["@"]] = "rendered";
 				
-				if (!_class.subclasses) return;
-				_class.subclasses.map (function (subclass){
-					renderClassProperties(subclass);
+				if (!_class.subClasses) return;
+				_class.subClasses.map (function (subClass) {
+					renderClassProperties(subClass);
 				});
-			})(document.classTree.classes[class_uri]);
+			})(editor.classTree.classes[class_uri]);
 		});
 
 		// Render rest document properties
-		var counter=0;
+		var counter = 0;
 		var el = $("<div>");
 		
-		Object.getOwnPropertyNames(properties).map ( function (property_uri) {
+		Object.getOwnPropertyNames(renderedProperties).map ( function (property_uri) {
 			if (property_uri == "@") return;
-			if (properties[property_uri] == "rendered") return;
+			if (renderedProperties[property_uri] == "rendered") return;
 			try {
-				renderDocumentProperty(veda, document, property_uri, document_single_property_template, el);
+				renderDocumentProperty(veda, editor, property_uri, editor_single_property_template, el);
 				counter++;
 			} catch (e) {
 				return;
 			}
 		});
 		if (counter) {
-			$("#document-properties", container).append(el);
-			el.prepend("<hr>");
+			$("#editor-properties", container).append(el);
+			//el.prepend("<hr>");
 		}
 		
-		$("#edit-document", container).on("click", function (){
-			new EditorModel(veda, document, container);
+		$("#save", container).on("click", function () {
+			editor.save();
 		});
 		
 	});
