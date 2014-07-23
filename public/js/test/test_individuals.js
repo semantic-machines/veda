@@ -32,6 +32,11 @@ function get_user2_ticket ()
     return _user2_ticket;
 }
 
+var i = 0;
+
+for (i = 0; i < 1; i++)
+{
+
 test(
 		"#001 Login",
 		function() {
@@ -211,9 +216,9 @@ test("#007 Individual store and read", function() {
 			data : 'veda-schema:PermissionStatement1',
 			type : _Uri
 		} ],
-		'veda-schema:canDelete' : [ {
-			data : true,
-			type : _Bool
+		'veda-schema:test_decimal' : [ {
+			data : 127.35,
+			type : _Decimal
 		} ],
 		'veda-schema:canRead' : [ {
 			data : true,
@@ -639,3 +644,4 @@ test(
 			data = query(ticket_user1.id,  "'veda-schema:test_fieldB' == 'CCC" + test_data_uid + "' && 'veda-schema:test_fieldA' == 'BBB" + test_data_uid + "'");
 			ok(compare(data.length, 2));
 		});
+}

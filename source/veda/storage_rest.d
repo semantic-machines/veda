@@ -6,6 +6,7 @@ import veda.pacahon_driver;
 import std.stdio, std.datetime, std.conv, std.string;
 import vibe.core.concurrency, vibe.core.core, vibe.core.log, vibe.core.task;
 
+import type;
 import pacahon.context;
 import onto.owl;
 import onto.individual;
@@ -13,7 +14,7 @@ import onto.resource;
 import onto.lang;
 
 static LANG[ string ] Lang;
-static ResourceType[ string ] Resource_type;
+static DataType[ string ] Resource_type;
 
 static this() {
     Lang =
@@ -25,13 +26,12 @@ static this() {
 
     Resource_type =
     [
-        "Uri":ResourceType.Uri,
-        "String":ResourceType.String,
-        "Integer":ResourceType.Integer,
-        "Datetime":ResourceType.Datetime,
-        "Date":ResourceType.Date,
-        "Float":ResourceType.Float,
-        "Boolean":ResourceType.Boolean,
+        "Uri":DataType.Uri,
+        "String":DataType.String,
+        "Integer":DataType.Integer,
+        "Datetime":DataType.Datetime,
+        "Decimal":DataType.Decimal,
+        "Boolean":DataType.Boolean,
     ];
 }
 
@@ -82,18 +82,21 @@ Json resource_to_json(Resource resource)
 
     resource_json[ "type" ] = text(resource.type);
 
-    if (resource.type == ResourceType.Uri || resource.type == ResourceType.Datetime)
+    if (resource.type == DataType.Uri || resource.type == DataType.Datetime)
         resource_json[ "data" ] = data;
-    else if (resource.type == ResourceType.String)
+    else if (resource.type == DataType.String)
     {
         resource_json[ "data" ] = data;
         resource_json[ "lang" ] = text(resource.lang);
     }
-    else if (resource.type == ResourceType.Integer)
+    else if (resource.type == DataType.Integer)
         resource_json[ "data" ] = parse!int (data);
-    else if (resource.type == ResourceType.Float)
-        resource_json[ "data" ] = parse!double (data);
-    else if (resource.type == ResourceType.Boolean)
+    else if (resource.type == DataType.Decimal)
+    {
+	decimal dd = resource.get!decimal;
+        resource_json[ "data" ] = dd.toDouble ();
+    }
+    else if (resource.type == DataType.Boolean)
     {
 	if (resource.get!bool == true)
     	    resource_json[ "data" ] = true;
@@ -109,22 +112,22 @@ Resource json_to_resource(const Json resource_json)
 {
     Resource resource = Resource.init;
 
-    ResourceType type;
+    DataType type;
 
     if (resource_json[ "type" ].type is Json.Type.Int)
-	type = cast(ResourceType)resource_json[ "type" ].get!long;
+	type = cast(DataType)resource_json[ "type" ].get!long;
     else
-	type = Resource_type.get(resource_json[ "type" ].get!string, ResourceType.String);
+	type = Resource_type.get(resource_json[ "type" ].get!string, DataType.String);
 
     auto data_type = resource_json[ "data" ].type;
 
-    if (type == ResourceType.String)
+    if (type == DataType.String)
     {
 	if (resource_json[ "lang" ].type is Json.Type.string)
     	    resource.lang = Lang.get(resource_json[ "lang" ].get!string, Lang[ "NONE" ]);
         resource.data = resource_json[ "data" ].get!string;
     }
-    else if (type == ResourceType.Boolean)
+    else if (type == DataType.Boolean)
     {
 
 	if (data_type is Json.Type.Bool)
@@ -136,10 +139,14 @@ Resource json_to_resource(const Json resource_json)
 		resource = false;
 	}
     }
-    else if (type == ResourceType.Uri)
+    else if (type == DataType.Uri)
     {
 
         resource.data = resource_json[ "data" ].get!string;
+    }
+    else if (type == DataType.Decimal)
+    {
+        resource = decimal (resource_json[ "data" ].get!double);	
     }
 
     resource.type = type;

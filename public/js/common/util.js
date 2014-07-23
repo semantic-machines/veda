@@ -6,8 +6,7 @@ var _Uri      = 1;
 var _String   = 2;
 var _Integer  = 4;
 var _Datetime = 8;
-var _Date     = 16;
-var _Float    = 32;
+var _Decimal  = 32;
 var _Bool     = 64;
 
 
@@ -46,10 +45,8 @@ function compare (a, b) {
 			bb = 'Integer';
 		    else if (bb == _Datetime)
 			bb = 'Datetime';
-		    else if (bb == _Date)
-			bb = 'Date';
-		    else if (bb == _Float)
-			bb = 'Float';
+		    else if (bb == _Decimal)
+			bb = 'Decimal';
 		    else if (bb == _Bool)
 			bb = 'Boolean';
 		    }				    
@@ -63,10 +60,8 @@ function compare (a, b) {
 			aa = 'Integer';
 		    else if (aa == _Datetime)
 			aa = 'Datetime';
-		    else if (aa == _Date)
-			aa = 'Date';
-		    else if (aa == _Float)
-			aa = 'Float';
+		    else if (aa == _Decimal)
+			aa = 'Decimal';
 		    else if (aa == _Bool)
 			aa = 'Boolean';
 		    }
@@ -93,6 +88,10 @@ function get_property_chain (ticket, first, rest)
 { 
 	var doc;
 	doc = typeof first == "object" ? first : get_individual (ticket, first);
+
+//	print ('@js ------------------');
+//	print ('@js #1 doc=', toJson (doc));;
+
 	var doc_first = doc;
 	var field;
 
@@ -102,6 +101,7 @@ function get_property_chain (ticket, first, rest)
 		if (field && (field[0].type == "Uri" || field[0].type == _Uri))
 		{
 			doc = get_individual (ticket, field[0].data); 	
+//			print ('@js #2 doc=', toJson (doc));;
 			if (!doc) break;
 		}
 	}		
