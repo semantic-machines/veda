@@ -3,7 +3,7 @@ module veda.storage_rest;
 import vibe.d;
 import veda.pacahon_driver;
 
-import std.stdio, std.datetime, std.conv, std.string;
+import std.stdio, std.datetime, std.conv, std.string, std.datetime;
 import vibe.core.concurrency, vibe.core.core, vibe.core.log, vibe.core.task;
 
 import type;
@@ -82,15 +82,20 @@ Json resource_to_json(Resource resource)
 
     resource_json[ "type" ] = text(resource.type);
 
-    if (resource.type == DataType.Uri || resource.type == DataType.Datetime)
+    if (resource.type == DataType.Uri)
+    {
         resource_json[ "data" ] = data;
+    }
     else if (resource.type == DataType.String)
     {
         resource_json[ "data" ] = data;
         resource_json[ "lang" ] = text(resource.lang);
     }
     else if (resource.type == DataType.Integer)
-        resource_json[ "data" ] = parse!int (data);
+    {
+	//writeln ("@v #resource.get!long=", resource.get!long);
+        resource_json[ "data" ] = resource.get!long;
+    }
     else if (resource.type == DataType.Decimal)
     {
 	decimal dd = resource.get!decimal;
@@ -103,8 +108,18 @@ Json resource_to_json(Resource resource)
 	else
     	    resource_json[ "data" ] = false;
     }
-    else
-        resource_json[ "data" ] = Json.undefined;
+    else if (resource.type == DataType.Datetime)
+    {
+//	writeln ("@v #r->j #1 resource.get!long=", resource.get!long);
+
+	SysTime st = SysTime(unixTimeToStdTime(resource.get!long), UTC()); 
+        resource_json[ "data" ] = st.toISOExtString();
+
+//	writeln ("@v #r->j #2 val=", st.toISOExtString());
+    }
+    else    
+	resource_json[ "data" ] = Json.undefined;
+
     return resource_json;
 }
 
@@ -147,6 +162,26 @@ Resource json_to_resource(const Json resource_json)
     else if (type == DataType.Decimal)
     {
         resource = decimal (resource_json[ "data" ].get!double);	
+    }
+    else if (type == DataType.Integer)
+    {
+        resource = resource_json[ "data" ].get!long;	
+    }
+    else if (type == DataType.Datetime)
+    {
+	try
+	{
+	    string val = resource_json[ "data" ].get!string;
+//	    writeln ("@v j->r #0 ", val);
+	    long tm = stdTimeToUnixTime (SysTime.fromISOExtString(val).stdTime()); 
+    	    resource = tm; 
+//	    writeln ("@v j->r #1 ", tm);
+	}
+	catch (Exception ex)
+	{
+	    writeln ("EX! ", __FILE__, ", line:", __LINE__, ", [", ex.msg, "], in ", resource_json);
+	}
+//	writeln ("@v j->r #2");
     }
 
     resource.type = type;

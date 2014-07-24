@@ -144,25 +144,9 @@ function get_individual(ticket, uri, callback) {
 		params.async = false;
 		var result = $.ajax(params);
 		if (result.status >= 400) throw {status: result.status, description: result.statusText };
-		return JSON.parse(result.responseText);
-	}
-	$.ajax(params)
-		.fail( function () { throw {status: result.status, description: result.statusText } } )
-		.done( function (data) { callback(data) } );
-}
-
-function put_individuals(ticket, individuals, callback) {
-	var params = {
-		type: "PUT",
-		url: "put_individuals",
-		data: JSON.stringify({"ticket": ticket, "individuals": individuals}),
-		contentType: "application/json"
-	}
-	if(!callback) {
-		params.async = false;
-		var result = $.ajax(params);
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
-		return JSON.parse(result.responseText);
+		return JSON.parse(result.responseText, function dateReviver (key, value) {
+			return key === "data" && this.type === "Datetime" ? new Date(value) : value;
+		});
 	}
 	$.ajax(params)
 		.fail( function () { throw {status: result.status, description: result.statusText } } )

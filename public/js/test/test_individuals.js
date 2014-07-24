@@ -213,24 +213,44 @@ test("#007 Individual store and read", function() {
 	var new_test_doc1 = {
 		'@' : new_test_doc1_uri,
 		'rdf:type' : [ {
-			data : 'veda-schema:PermissionStatement1',
+			data : 'veda-schema:test-data-types',
 			type : _Uri
 		} ],
+		'veda-schema:test_integer' : [ {
+			data : 12745784850035,
+			type : _Integer
+		} ],
+		'veda-schema:test_negative_integer' : [ {
+			data : -144365435,
+			type : _Integer
+		} ],
 		'veda-schema:test_decimal' : [ {
-			data : 127.35,
+			data : 127.0035,
 			type : _Decimal
 		} ],
-		'veda-schema:canRead' : [ {
-			data : true,
-			type : _Bool
+		'veda-schema:test_negative_decimal' : [ {
+			data : -54.89,
+			type : _Decimal
+		} ],
+		'veda-schema:test_datetime0' : [ {
+			data : new Date ("2014-01-02Z"),
+			type : _Datetime
+		} ],
+		'veda-schema:test_datetime1' : [ {
+			data : new Date ("2014-01-02T20:00"),
+			type : _Datetime
+		} ],
+		'veda-schema:test_datetime2' : [ {
+			data : new Date ("2014-01-02T20:10:24"),
+			type : _Datetime
+		} ],
+		'veda-schema:test_datetime3' : [ {
+			data : new Date ("2014-01-02T20:10:24.768"),
+			type : _Datetime
 		} ],
 		'veda-schema:canUpdate' : [ {
 			data : true,
 			type : _Bool
-		} ],
-		'veda-schema:permissionObject' : [ {
-			data : 'individual_1',
-			type : _Uri
 		} ],
 		'veda-schema:permissionSubject' : [ {
 			data : 'individual_2',
