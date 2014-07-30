@@ -3,12 +3,12 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 	function renderDocumentProperty (veda, individual, property_uri, template, container) {
 		var label, uri, values;
-		label = typeof individual.properties[property_uri] == "object" ? 
-					individual.properties[property_uri]["rdfs:label"]
+		label = typeof veda.ontology[property_uri] == "object" ? 
+					veda.ontology[property_uri]["rdfs:label"]
 						.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
 						.join(", ")
-					: individual.properties[property_uri];
-		uri = typeof individual.properties[property_uri] == "object" ? individual.properties[property_uri]["@"] : "";
+					: property_uri;
+		uri = typeof veda.ontology[property_uri] == "object" ? "#/document/" + veda.ontology[property_uri]["@"] : "";
 		values = individual[property_uri]
 					.map( function (item) {
 						if (item instanceof String)
@@ -52,7 +52,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					label: document["rdfs:label"] ? document["rdfs:label"]
 						.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
 						.join(", ") : document["@"],
-					uri: document["@"] 
+					uri: "#/document/" + document["@"]
 				}
 			) 
 		);

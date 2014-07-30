@@ -40,6 +40,7 @@ function AppModel(config) {
 		self.trigger("auth:quit");
 	};
 	
+	self.ontology = {};
 	self.cache = typeof localStorage != "undefined" ? localStorage : {};
 	
 	// Invoke existing or create new module
@@ -68,6 +69,7 @@ function AppModel(config) {
 		for (var i=0; i<q_results.length; i++) {
 			get_individual(self.ticket, q_results[i], function (data) {
 				self.cache[data["@"]] = JSON.stringify(data);
+				self.ontology[data["@"]] = new IndividualModel(self, data["@"]);
 			});
 		}
 		// App started

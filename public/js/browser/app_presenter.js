@@ -37,6 +37,11 @@ Veda(function AppPresenter(veda) { "use strict";
 		var link = $(this);
 		return riot.route($(this).attr("href"));
 	});
+	
+	// Prevent empty links routing
+	$("body").on("click", "[href='']", function (e) {
+		e.preventDefault();
+	});
 
 	// Toggle tracing
 	$("#set-trace").on("click", function (e) {
