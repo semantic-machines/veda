@@ -42,6 +42,10 @@
 
 		<!-- Main container -->
 		<div id="main" class="container-fluid"></div>
+
+		<!-- Main container -->
+		<div id="main2" class="container-fluid"></div>
+
 		
 		<br />
 		<!-- Footer -->
@@ -64,6 +68,7 @@
 		<script src="/js/browser/cookie.js"></script>
 		<script src="/js/browser/sha256.js"></script>
 		<script src="/js/browser/util.js"></script>
+		<script src="/js/browser/hogan-3.0.2.min.js"></script>
 		
 		<!-- Veda browser & server -->
 		<script src="/js/common/riot.js"></script>
@@ -83,6 +88,7 @@
 		<script src="/js/browser/backend.js"></script>
 		<script src="/js/browser/console_presenter.js"></script>
 		<script src="/js/browser/document_presenter.js"></script>
+		<script src="/js/browser/document_presenter2.js"></script>
 		<script src="/js/browser/editor_presenter.js"></script>
 		<script src="/js/browser/search_presenter.js"></script>
 		<script src="/js/browser/individual_presenter.js"></script>
@@ -234,7 +240,7 @@
 		<!-- Current user template -->
 		<script type="html/template" id="current-user-template">
 			<p class="navbar-text navbar-right">
-				<a href="#/document/{id}" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {name}</a>
+				<a href="#/document/{@}" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {rdfs:label}</a>
 			</p>
 			<div data-toggle="buttons" class="navbar-right btn-group" id="preferred-language">
 				<label id="RU" class="btn btn-xs btn-info navbar-btn">
@@ -283,5 +289,29 @@
 			</div>
 		</script>		
 
+		<script type="html/template" id="doc-tmpl">
+			<div id="document" class="container-fluid">
+				<div id="document-label">
+					<h4 id="label">{{rdfs:label}}<small> <a href="#/document/{{@}}"><i class="glyphicon glyphicon-share-alt"></i></a></small></h4>
+				</div>
+				<div id="document-properties">
+					{{#propertiesList}}
+						<div class="row">
+							<div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 text-right">
+								<strong><a data-toggle="popover" href="#/document/{{@}}">{{rdfs:label}}</a></strong>
+							</div>
+							<div class="col-xs-8 col-sm-8 col-md-9 col-lg-9">
+							</div>
+						</div>
+						<hr style="margin:1px; border-color:transparent">
+					{{/propertiesList}}
+				</div>
+				<br>
+				<div class="well well-sm">
+					<button type="button" class="btn btn-default" id="edit-document" i18n="[Edit]">Редактировать</button>
+				</div>
+			</div>
+		</script>
+		
 	</body>
 </html>

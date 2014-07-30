@@ -11,14 +11,12 @@ Veda(function UserPresenter(veda) { "use strict";
 
 			// Render View
 			container.html( 
-				riot.render(
-					template, 
-					{	
-						name: user["rdfs:label"]
-								.filter(function(item){return item.language == veda.user.language || item.language == "NONE"}), 
-						id: user["@"]
-					}
-				) 
+				riot.render( template, user, function localizeData(data) {
+					return data instanceof Array ? 
+						data.filter(function(i){return !(i instanceof String) ? true : i.language == Veda().user.language || i.language == "NONE" }).join(", ") 
+						:
+						data;
+				})
 			);
 			
 			$("#preferred-language > label", container).each( function() {
@@ -29,7 +27,7 @@ Veda(function UserPresenter(veda) { "use strict";
 				});
 			});
 
-		}, 0);
+		}, 10);
 		
 	});
 	

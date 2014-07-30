@@ -77,11 +77,23 @@ riot.render = function(tmpl, data, escape_fn) {
   if (escape_fn === true) escape_fn = default_escape_fn;
   tmpl = tmpl || '';
 
-  return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "return '" +
+  return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "return '" + 
+    tmpl.replace(/[\\\n\r']/g, function(char) {
+      return template_escape[char];
+    }).replace(/{\s*(.+?)\s*}/g, function(m, g) {
+		var acc = g.split(".").reduce(function (acc, i) {
+			return isNaN(i) ? acc + "['" + i + "']" : acc + "[" + i + "]";
+		}, "");
+		return "' + (e?e(_" + acc + ",\"" + acc + "\"):_" + acc + "||(_" + acc + "==null?'':_" + acc + ")) + '";
+    }) + "'")
+  )(data, escape_fn);
+  
+  /*return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "return '" +
     tmpl.replace(/[\\\n\r']/g, function(char) {
       return template_escape[char];
     }).replace(/{\s*([\w\.]+)\s*}/g, "' + (e?e(_.$1,'$1'):_.$1||(_.$1==null?'':_.$1)) + '") + "'")
-  )(data, escape_fn);
+  )(data, escape_fn);*/
+  
 };
 /* Cross browser popstate */
 (function () {

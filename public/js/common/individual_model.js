@@ -35,9 +35,9 @@ function IndividualModel(veda, uri, container) {
 									try { return new IndividualModel(veda, value.data); } 
 									catch (e) { return new String(value.data) }
 									break
-								case "Datetime" : return new Date(Number(value.data)); break
+								case "Datetime" : return new Date(Date.parse(value.data)); break
+								case "Decimal" : return new Number(value.data); break
 								case "Integer" : return new Number(value.data); break
-								case "Float" : return new Number(value.data); break
 								case "Boolean" : return new Boolean(value.data); break
 								default : throw ("Unsupported type of property value"); break
 							}
@@ -64,6 +64,7 @@ function IndividualModel(veda, uri, container) {
 						self.trigger("property:changed", property_uri, properties[property_uri]);
 					}
 				});
+				
 			})(property_uri);
 		}
 		veda.trigger("individual:loaded", self, container);
@@ -79,9 +80,8 @@ function IndividualModel(veda, uri, container) {
 			individual[property_uri] = values[property_uri].map( function (value) {
 				var result = {};
 				if (value instanceof Number || typeof value === "number" ) {
-					//result.type = Number.isInteger(value) ? "Integer" : "Float";
-					result.type = "String";
-					result.data = value.toString();
+					result.type = Number.isInteger(value.valueOf()) ? "Integer" : "Decimal";
+					result.data = value.valueOf();
 					return result;
 				} else if (value instanceof Boolean || typeof value === "boolean") {
 					result.type = "Boolean";
@@ -93,7 +93,7 @@ function IndividualModel(veda, uri, container) {
 					result.lang = value.language || "NONE";
 					return result;
 				} else if (value instanceof Date) {
-					result.type = "String";
+					result.type = "Datetime";
 					result.data = value.toISOString();
 					result.lang = "NONE";
 					return result;

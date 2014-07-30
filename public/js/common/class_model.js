@@ -7,10 +7,10 @@ function ClassModel(veda, individual) {
 	if (individual instanceof IndividualModel) var self = individual;
 	else var self = new IndividualModel(veda, individual);
 
-	var domainPropertiesList = query(veda.ticket, "'rdfs:domain' == '" + self["@"] + "'");
-
 	self.domainProperties = {};
 	var domainProperties = {};
+
+	var domainPropertiesList = query(veda.ticket, "'rdfs:domain' == '" + self["@"] + "'");
 
 	if (domainPropertiesList) {
 		domainPropertiesList.map(function (property_uri) {
@@ -24,6 +24,26 @@ function ClassModel(veda, individual) {
 			});
 		});
 	}
+	
+	self.templates = {};
+	var templates = {}; 
+	
+	var templatesList = query(veda.ticket, "'veda-ui:forClass' == '" + self["@"] + "'");
+	
+	if (templatesList) {
+		templatesList.map(function (template_uri) {
+			Object.defineProperty(self.templates, template_uri, {
+				get: function() {
+					return templates[template_uri] ? 
+						templates[template_uri] 
+						: 
+						templates[template_uri] = new IndividualModel(veda, template_uri);
+				}
+			});
+		});
+	}
+
+
 	
 	return self;
 };

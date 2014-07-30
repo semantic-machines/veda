@@ -120,10 +120,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			el.prepend("<hr>");
 		}
 		
-		$("#edit-document", container).on("click", function (){
-			EditorModel(veda, document, container);
-		});
-		
 	});
 
 });
