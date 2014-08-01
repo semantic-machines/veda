@@ -86,6 +86,7 @@
 		<script src="/js/browser/backend.js"></script>
 		<script src="/js/browser/console_presenter.js"></script>
 		<script src="/js/browser/document_presenter.js"></script>
+		<script src="/js/browser/saved_search_presenter.js"></script>
 		<script src="/js/browser/search_presenter.js"></script>
 		<script src="/js/browser/individual_presenter.js"></script>
 		<script src="/js/browser/user_presenter.js"></script>
@@ -258,8 +259,12 @@
 						<form method="GET" role="form">
 							<div class="row">
 								<div class="col-xs-7 col-sm-7 col-sm-offset-1 col-md-8 col-md-offset-1 col-lg-8 col-lg-offset-1">
-									<label for="q" class="sr-only" i18n="[Query]">Запрос</label>
-									<input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
+									<div class="input-group">
+										<input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
+										<span class="input-group-btn">
+											<button class="btn btn-default" type="button" id="save-search"><i class="glyphicon glyphicon-star-empty"></i></button>
+										</span>
+									</div>
 								</div>
 								<div class="col-xs-5 col-sm-4 col-md-3 col-lg-3">
 									<button type="submit" id="search-submit" class="btn btn-primary" i18n="[Search]">Найти</button>

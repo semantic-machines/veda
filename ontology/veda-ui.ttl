@@ -40,6 +40,26 @@ veda-ui:preferredLanguage
   rdfs:label "предпочитаемый язык"@ru ;
   rdfs:range veda-ui:Language ;
 .
+veda-ui:forClass
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain veda-ui:ClassTemplate ;
+  rdfs:label "for template"@en ;
+  rdfs:label "для класса"@ru ;
+  rdfs:range owl:Class ;
+.
+veda-ui:template
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:ClassTemplate ;
+  rdfs:label "template"@en ;
+  rdfs:label "шаблон"@ru ;
+  rdfs:range xsd:string ;
+.
+veda-ui:ClassTemplate
+  rdf:type owl:Class ;
+  rdfs:label "Class template"@en ;
+  rdfs:label "Шаблон класса"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
 veda-ui:Language
   rdf:type owl:Class ;
   rdfs:label "Language"@en ;

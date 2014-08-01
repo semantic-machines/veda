@@ -283,7 +283,7 @@ mondi-data:Preferences_RomanKarpov
   rdf:type veda-ui:Preferences ;
   veda-schema:owner mondi-data:RomanKarpov ;
   veda-ui:preferredLanguage veda-ui:RU ;
-  veda-ui:displayedElements "100"^^xsd:nonNegativeInteger ;
+  veda-ui:displayedElements "10"^^xsd:nonNegativeInteger ;
   rdfs:label "Preferences (Roman Karpov)"@en ;
   rdfs:label "Предпочтения (Роман Карпов)"@ru ;
 .
@@ -428,4 +428,21 @@ mondi-data:ValeriyBushenev-TechnicalDirector
   veda-schema:startTime "2014-01-30T15:30:21"^^xsd:dateTime ;
   rdfs:label "Appointment_3"@en ;
   rdfs:label "Назначение_3"@ru ;
+.
+mondi-data:SavedSearch1
+  rdf:type veda-schema:SavedSearch ;
+  veda-schema:author mondi-data:RomanKarpov ;
+  veda-schema:created "2014-08-01T15:22:21"^^xsd:dateTime ;
+  veda-schema:query "owl" ;
+  rdfs:label "Сохраненный запрос 1"@ru ;
+  rdfs:label "Saved search 1"@en ;
+.
+mondi-data:PersonTemplate
+  rdf:type veda-ui:ClassTemplate ;
+  rdfs:label "Шаблон персоны"@ru ;
+  rdfs:label "Person template"@en ;
+  veda-ui:forClass veda-schema:Person ;
+  veda-ui:template """
+  <h3>Hello world! I'am Person template</h3>
+"""
 .

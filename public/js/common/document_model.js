@@ -6,9 +6,18 @@ function DocumentModel(veda, individual, container) {
 
 	var self = individual instanceof IndividualModel ? individual : new IndividualModel(veda, individual);
 
-	self.classTree = {roots:{}, classes:{}, direct:{}};
-	self.classTree = (function buildClassTree (_classes, classTree) {
-		_classes.map( function (_class) {
+	self.classTree = {roots:{}, classes:{}};
+
+	var directClasses = self["rdf:type"]
+		.filter(function (item) {
+			return item instanceof IndividualModel;
+		})
+		.map( function (item) {
+			return new ClassModel(veda, item); 
+		});
+
+	self.classTree = (function buildClassTree (classes, classTree) {
+		classes.map( function (_class) {
 			classTree.classes[_class["@"]] = _class;
 			if (_class["rdfs:subClassOf"]) {
 				buildClassTree(
@@ -29,17 +38,8 @@ function DocumentModel(veda, individual, container) {
 			}
 		});
 		return classTree;
-	})(
-		self["rdf:type"]
-		.filter(function (item) {
-			return item instanceof IndividualModel;
-		})
-		.map( function (item) {
-			self.classTree.direct[item["@"]] = item["@"]; 
-			return self.classTree.classes[item["@"]] = new ClassModel(veda, item); 
-		}), self.classTree
-	  );
-	
+	})( directClasses, self.classTree );
+
 	// Add base rdfs:Resource class if not present
 	if (!self.classTree.classes["rdfs:Resource"]) {
 		self.classTree.classes["rdfs:Resource"] = new ClassModel(veda, "rdfs:Resource");

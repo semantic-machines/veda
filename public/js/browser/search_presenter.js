@@ -28,7 +28,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 			$("#search-submit").addClass("disabled"); 
 			currentPage = 0;
 			//search.search();
-			riot.route("#/search/" + search.q, true);
+			if (search.q) riot.route("#/search/" + search.q, true);
 		});
 	
 		// Listen Model changes & update View
@@ -37,6 +37,9 @@ Veda(function SearchPresenter(veda) { "use strict";
 			if ($el.is("input, textarea, select")) $el.val( value );
 			else $el.html( value );
 		});
+		
+		veda.trigger("search:rendered", search);
+			
 	});
 	
 	// Display search results
@@ -85,7 +88,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 				}).appendTo($page);
 			})(page);
 		}
-	
+
 	});
 
 });

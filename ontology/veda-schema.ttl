@@ -148,6 +148,12 @@ veda-schema:Position
   owl:disjointWith veda-schema:Department ;
   owl:disjointWith veda-schema:Organization ;
 .
+veda-schema:SavedSearch
+  rdf:type owl:Class ;
+  rdfs:label "Saved search"@en ;
+  rdfs:label "Сохраненный запрос"@ru ;
+  rdfs:subClassOf veda-schema:Document ;
+.
 veda-schema:Versioned
   rdf:type owl:Class ;
   rdfs:label "Versioned thing"@en ;
@@ -415,6 +421,13 @@ veda-schema:published
   rdfs:label "date published"@en ;
   rdfs:label "дата публикации"@ru ;
   rdfs:range xsd:dateTime ;
+.
+veda-schema:query
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-schema:SavedSearch ;
+  rdfs:label "query"@en ;
+  rdfs:label "запрос"@ru ;
+  rdfs:range xsd:string ;
 .
 veda-schema:resource
   rdf:type owl:ObjectProperty ;
