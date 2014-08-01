@@ -29,7 +29,16 @@ function DocumentModel(veda, individual, container) {
 			}
 		});
 		return classTree;
-	})(self["rdf:type"].map( function (item) { self.classTree.direct[item["@"]] = item["@"]; return self.classTree.classes[item["@"]] = new ClassModel(veda, item); } ), self.classTree);
+	})(
+		self["rdf:type"]
+		.filter(function (item) {
+			return item instanceof IndividualModel;
+		})
+		.map( function (item) {
+			self.classTree.direct[item["@"]] = item["@"]; 
+			return self.classTree.classes[item["@"]] = new ClassModel(veda, item); 
+		}), self.classTree
+	  );
 	
 	// Add base rdfs:Resource class if not present
 	if (!self.classTree.classes["rdfs:Resource"]) {

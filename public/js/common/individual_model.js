@@ -10,9 +10,11 @@ function IndividualModel(veda, uri, container) {
 	var properties = {};
 	var values = {};
 	self.properties = {};
-
+	self.propertiesList = [];
+		
 	self.load = function (uri) {
 		individual = veda.cache[uri] ? JSON.parse( veda.cache[uri] ) : get_individual(veda.ticket, uri);
+		var i = 0;
 		for (var property_uri in individual) {
 			(function (property_uri) {
 
@@ -50,7 +52,7 @@ function IndividualModel(veda, uri, container) {
 						self.trigger("value:changed", property_uri, values[property_uri]);
 					}
 				});
-
+				
 				Object.defineProperty(self.properties, property_uri, {
 					get: function () { 
 						if (properties[property_uri]) return properties[property_uri];
@@ -65,7 +67,14 @@ function IndividualModel(veda, uri, container) {
 					}
 				});
 				
+				Object.defineProperty(self.propertiesList, i, {
+					get: function () { 
+						return self.properties[property_uri]; 
+					}
+				});
+				
 			})(property_uri);
+			++i;
 		}
 		veda.trigger("individual:loaded", self, container);
 	};

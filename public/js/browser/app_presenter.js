@@ -74,9 +74,9 @@ Veda(function AppPresenter(veda) { "use strict";
 	});
 	// Listen to quit && authentication failure events
 	veda.on("auth:quit", function () {
-		deleteCookie("user_uri");
-		deleteCookie("ticket");
-		deleteCookie("end_time");
+		delCookie("user_uri");
+		delCookie("ticket");
+		delCookie("end_time");
 		
 		//Show login form
 		var template = $("#login-template").html();

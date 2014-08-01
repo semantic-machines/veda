@@ -53,6 +53,6 @@ function setCookie(name, value, props) {
 }
 
 // удаляет cookie
-function deleteCookie(name) {
+function delCookie(name) {
 	setCookie(name, null, { expires: -1 })
 }
