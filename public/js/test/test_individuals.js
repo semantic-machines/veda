@@ -206,7 +206,7 @@ test(
 			
 		});
 
-test("#007 Individual store and read", function() {
+test("#007 Individual store and read, test datatype", function() {
 	var ticket = get_admin_ticket ();
 
 	var new_test_doc1_uri = guid();
@@ -231,6 +231,10 @@ test("#007 Individual store and read", function() {
 		'veda-schema:test_negative_decimal' : [ {
 			data : -54.89,
 			type : _Decimal
+		} ],
+		'veda-schema:created' : [ {
+			data : new Date (),
+			type : _Datetime
 		} ],
 		'veda-schema:test_datetime0' : [ {
 			data : new Date ("2014-01-02Z"),
@@ -664,4 +668,158 @@ test(
 			data = query(ticket_user1.id,  "'veda-schema:test_fieldB' == 'CCC" + test_data_uid + "' && 'veda-schema:test_fieldA' == 'BBB" + test_data_uid + "'");
 			ok(compare(data.length, 2));
 		});
+
+test(
+		"#013 user1 store 5 individuals, ft search use range ",
+		function() {
+			var ticket_user1 = get_user1_ticket ();
+			ok(ticket_user1.id.length > 0);
+
+			var test_group_uid = guid();
+
+			var new_test_doc1_uri = "test12:" + guid();
+			var new_test_doc1 = {
+				'@' : new_test_doc1_uri,
+				'rdf:type' : [ {
+					data : 'veda-schema:Document',
+					type : _Uri
+				} ],
+				'veda-schema:author' : [ {
+					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					type : _Uri
+				} ],
+				'veda-schema:created' : [ {
+				data : new Date (),
+				type : _Datetime
+				} ],
+				'veda-schema:test_group' : [ {
+					data : test_group_uid,
+					lang : 'NONE',
+					type : _String
+				} ],
+				'veda-schema:test_datetime0' : [ {
+				data : new Date ("2014-01-01Z"),
+				type : _Datetime
+				} ],
+				'veda-schema:test_datetime1' : [ {
+				data : new Date ("2014-05-01Z"),
+				type : _Datetime
+				} ]
+			};
+
+			var new_test_doc2_uri = "test12:" + guid();
+			var new_test_doc2 = {
+				'@' : new_test_doc2_uri,
+				'rdf:type' : [ {
+					data : 'veda-schema:Document',
+					type : _Uri
+				} ],
+				'veda-schema:author' : [ {
+					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					type : _Uri
+				} ],
+				'veda-schema:created' : [ {
+				data : new Date (),
+				type : _Datetime
+				} ],
+				'veda-schema:test_group' : [ {
+					data : test_group_uid,
+					lang : 'NONE',
+					type : _String
+				} ],
+				'veda-schema:test_datetime0' : [ {
+				data : new Date ("2014-01-02Z"),
+				type : _Datetime
+				} ],
+				'veda-schema:test_datetime1' : [ {
+				data : new Date ("2014-05-01Z"),
+				type : _Datetime
+				} ]
+			};
+
+			var new_test_doc3_uri = "test12:" + guid();
+			var new_test_doc3 = {
+				'@' : new_test_doc3_uri,
+				'rdf:type' : [ {
+					data : 'veda-schema:Document',
+					type : _Uri
+				} ],
+				'veda-schema:author' : [ {
+					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					type : _Uri
+				} ],
+				'veda-schema:created' : [ {
+				data : new Date (),
+				type : _Datetime
+				} ],
+				'veda-schema:test_group' : [ {
+					data : test_group_uid,
+					lang : 'NONE',
+					type : _String
+				} ],
+				'veda-schema:test_datetime0' : [ {
+				data : new Date ("2014-01-02Z"),
+				type : _Datetime
+				} ],
+				'veda-schema:test_datetime1' : [ {
+				data : new Date ("2014-06-11Z"),
+				type : _Datetime
+				} ]
+			};
+
+			var new_test_doc4_uri = "test12:" + guid();
+			var new_test_doc4 = {
+				'@' : new_test_doc4_uri,
+				'rdf:type' : [ {
+					data : 'veda-schema:Document',
+					type : _Uri
+				} ],
+				'veda-schema:author' : [ {
+					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					type : _Uri
+				} ],
+				'veda-schema:created' : [ {
+				data : new Date (),
+				type : _Datetime
+				} ],
+				'veda-schema:test_group' : [ {
+					data : test_group_uid,
+					lang : 'NONE',
+					type : _String
+				} ],
+				'veda-schema:test_datetime0' : [ {
+				data : new Date ("2014-01-03Z"),
+				type : _Datetime
+				} ],
+				'veda-schema:test_datetime1' : [ {
+				data : new Date ("2014-06-12Z"),
+				type : _Datetime
+				} ]
+			};
+
+			put_individual(ticket_user1.id, new_test_doc1);
+			put_individual(ticket_user1.id, new_test_doc2);
+			put_individual(ticket_user1.id, new_test_doc3);
+			put_individual(ticket_user1.id, new_test_doc4);
+			wait_pmodule(fulltext_indexer);
+
+			var data = query(ticket_user1.id, test_group_uid);
+			ok(compare(data.length, 4));
+
+			data = query(ticket_user1.id,  "'veda-schema:test_group' == '" + test_group_uid + "'");
+			ok(compare(data.length, 4));
+			
+			data = query(ticket_user1.id,  
+				     "'veda-schema:test_datetime0' == [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'veda-schema:test_group' == '" + test_group_uid + "'");
+			ok(compare(data.length, 3));
+			ok ((data[0] == new_test_doc1_uri || data[1] == new_test_doc1_uri || data[2] == new_test_doc1_uri) && 
+			    (data[0] == new_test_doc2_uri || data[1] == new_test_doc2_uri || data[2] == new_test_doc2_uri) && 
+			    (data[0] == new_test_doc3_uri || data[1] == new_test_doc3_uri || data[2] == new_test_doc3_uri));
+
+			data = query(ticket_user1.id,  
+				     "'veda-schema:test_datetime1' == [2014-04-01T00:00:00, 2014-06-03T00:00:00] && 'veda-schema:test_datetime0' == [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'veda-schema:test_group' == '" + test_group_uid + "'");
+			ok(compare(data.length, 2));
+			ok ((data[0] == new_test_doc1_uri || data[1] == new_test_doc1_uri) && (data[0] == new_test_doc2_uri || data[1] == new_test_doc2_uri));
+		});
+
 }
