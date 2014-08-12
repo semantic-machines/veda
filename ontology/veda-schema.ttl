@@ -184,7 +184,7 @@ veda-schema:birthday
   rdfs:isDefinedBy veda-schema: ;
   rdfs:label "birthday"@en ;
   rdfs:label "день рождения"@ru ;
-  rdfs:range xsd:date ;
+  rdfs:range xsd:dateTime ;
 .
 veda-schema:canCreate
   rdf:type owl:DatatypeProperty ;
@@ -244,7 +244,7 @@ veda-schema:delegates
   rdfs:range veda-schema:OrganizationUnit ;
 .
 veda-schema:deleted
-  rdf:type rdf:Property ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:domain rdfs:Resource ;
   rdfs:label "deleted"@en ;
   rdfs:label "удален"@ru ;
@@ -279,7 +279,7 @@ veda-schema:firstName
   rdfs:isDefinedBy veda-schema: ;
   rdfs:label "firstName"@en ;
   rdfs:label "имя"@ru ;
-  rdfs:range rdfs:Literal ;
+  rdfs:range xsd:string ;
 .
 veda-schema:hasAccount
   rdf:type owl:ObjectProperty ;
@@ -302,7 +302,7 @@ veda-schema:lastName
   rdfs:isDefinedBy veda-schema: ;
   rdfs:label "lastName"@en ;
   rdfs:label "фамилия"@ru ;
-  rdfs:range rdfs:Literal ;
+  rdfs:range xsd:string ;
 .
 veda-schema:login
   rdf:type owl:DatatypeProperty ;
@@ -350,7 +350,7 @@ veda-schema:occupation
   rdfs:range veda-schema:OrganizationUnit ;
 .
 veda-schema:official
-  rdf:type rdf:Property ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:domain veda-schema:Appointment ;
   rdfs:label "official"@en ;
   rdfs:label "официально"@ru ;

@@ -42,23 +42,208 @@ veda-ui:preferredLanguage
 .
 veda-ui:forClass
   rdf:type owl:ObjectProperty ;
-  rdfs:domain veda-ui:ClassTemplate ;
-  rdfs:label "for template"@en ;
+  rdfs:domain veda-ui:DocumentTemplate ;
+  rdfs:domain veda-ui:PropertySpecification ;
+  rdfs:label "for class"@en ;
   rdfs:label "для класса"@ru ;
+  rdfs:range owl:Class ;
+.
+veda-ui:forProperty
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain veda-ui:PropertySpecification ;
+  rdfs:label "for property"@en ;
+  rdfs:label "для свойства"@ru ;
   rdfs:range owl:Class ;
 .
 veda-ui:template
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain veda-ui:ClassTemplate ;
+  rdfs:domain veda-ui:DocumentTemplate ;
   rdfs:label "template"@en ;
   rdfs:label "шаблон"@ru ;
   rdfs:range xsd:string ;
 .
-veda-ui:ClassTemplate
+veda-ui:DocumentTemplate
   rdf:type owl:Class ;
-  rdfs:label "Class template"@en ;
-  rdfs:label "Шаблон класса"@ru ;
+  rdfs:label "Document template"@en ;
+  rdfs:label "Шаблон документа"@ru ;
   rdfs:subClassOf owl:Thing ;
+.
+veda-ui:PropertyControl
+  rdf:type owl:Class ;
+  rdfs:label "Property control"@en ;
+  rdfs:label "Управляющий элемент"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+veda-ui:controlName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:PropertyControl ;
+  rdfs:label "имя элемента управления"@ru ;
+  rdfs:label "control name"@en ;
+  rdfs:range xsd:string ;
+.
+veda-ui:PropertySpecification
+  rdf:type owl:Class ;
+  rdfs:label "Property specification"@en ;
+  rdfs:label "Спецификация свойства"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+veda-ui:displayName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:PropertySpecification ;
+  rdfs:label "отображаемое имя"@ru ;
+  rdfs:label "display name"@en ;
+  rdfs:range xsd:string ;
+.
+veda-ui:immutable
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:PropertySpecification ;
+  rdfs:label "неизменяемое свойство"@ru ;
+  rdfs:label "immutable property"@en ;
+  rdfs:range xsd:boolean ;
+.
+veda-ui:tooltip
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:PropertySpecification ;
+  rdfs:label "подсказка"@ru ;
+  rdfs:label "tooltip"@en ;
+  rdfs:range xsd:string ;
+.
+veda-ui:minCardinality
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:PropertySpecification ;
+  rdfs:label "минимальная кардинальность"@ru ;
+  rdfs:label "minimal cardinality"@en ;
+  rdfs:range xsd:integer ;
+.
+veda-ui:maxCardinality
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:PropertySpecification ;
+  rdfs:label "максимальная кардинальность"@ru ;
+  rdfs:label "maximal cardinality"@en ;
+  rdfs:range xsd:integer ;
+.
+veda-ui:regexp
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:IntegerPropertySpecification ;
+  rdfs:domain veda-ui:DecimalPropertySpecification ;
+  rdfs:domain veda-ui:DatetimePropertySpecification ;
+  rdfs:domain veda-ui:StringPropertySpecification ;
+  rdfs:label "регулярное выражение"@ru ;
+  rdfs:label "regular expression"@en ;
+  rdfs:range xsd:string ;
+.
+veda-ui:control
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain veda-ui:PropertySpecification ;
+  rdfs:label "элемент управления"@ru ;
+  rdfs:label "control"@en ;
+  rdfs:range veda-ui:PropertyControl ;
+.
+veda-ui:IntegerPropertySpecification
+  rdf:type owl:Class ;
+  rdfs:subClassOf veda-ui:PropertySpecification ;
+  rdfs:label "Integer property specification"@en ;
+  rdfs:label "Спецификация целочисленного свойства"@ru ;
+.
+veda-ui:defaultIntegerValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:IntegerPropertySpecification ;
+  rdfs:label "целочисленное значение по-умолчанию"@ru ;
+  rdfs:label "default integer value"@en ;
+  rdfs:range xsd:integer ;
+.
+veda-ui:DecimalPropertySpecification
+  rdf:type owl:Class ;
+  rdfs:subClassOf veda-ui:PropertySpecification ;
+  rdfs:label "Decimal property specification"@en ;
+  rdfs:label "Спецификация десятичного свойства"@ru ;
+.
+veda-ui:defaultDecimalValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:DecimalPropertySpecification ;
+  rdfs:label "десятичное значение по-умолчанию"@ru ;
+  rdfs:label "default decimal value"@en ;
+  rdfs:range xsd:double ;
+.
+veda-ui:DatetimePropertySpecification
+  rdf:type owl:Class ;
+  rdfs:subClassOf veda-ui:PropertySpecification ;
+  rdfs:label "Datetime property specification"@en ;
+  rdfs:label "Спецификация календарного свойства"@ru ;
+.
+veda-ui:defaultDatetimeValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:DatetimePropertySpecification ;
+  rdfs:label "календарное значение по-умолчанию"@ru ;
+  rdfs:label "default datetime value"@en ;
+  rdfs:range xsd:dateTime ;
+.
+veda-ui:withTime
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:DatetimePropertySpecification ;
+  rdfs:label "с временем"@ru ;
+  rdfs:label "with time"@en ;
+  rdfs:range xsd:boolean ;
+.
+veda-ui:StringPropertySpecification
+  rdf:type owl:Class ;
+  rdfs:subClassOf veda-ui:PropertySpecification ;
+  rdfs:label "String property specification"@en ;
+  rdfs:label "Спецификация строкового свойства"@ru ;
+.
+veda-ui:defaultStringValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:StringPropertySpecification ;
+  rdfs:label "строковое значение по-умолчанию"@ru ;
+  rdfs:label "default string value"@en ;
+  rdfs:range xsd:string ;
+.
+veda-ui:predefinedStringValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:StringPropertySpecification ;
+  rdfs:label "предопределенное строковое значение"@ru ;
+  rdfs:label "predefined string value"@en ;
+  rdfs:range xsd:string ;
+.
+veda-ui:BooleanPropertySpecification
+  rdf:type owl:Class ;
+  rdfs:subClassOf veda-ui:PropertySpecification ;
+  rdfs:label "Boolean property specification"@en ;
+  rdfs:label "Спецификация булева свойства"@ru ;
+.
+veda-ui:defaultBooleanValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:BooleanPropertySpecification ;
+  rdfs:label "булево значение по-умолчанию"@ru ;
+  rdfs:label "default boolean value"@en ;
+  rdfs:range xsd:boolean ;
+.
+veda-ui:ObjectPropertySpecification
+  rdf:type owl:Class ;
+  rdfs:subClassOf veda-ui:PropertySpecification ;
+  rdfs:label "Object property specification"@en ;
+  rdfs:label "Спецификация объектного свойства"@ru ;
+.
+veda-ui:defaultObjectValue
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain veda-ui:ObjectPropertySpecification ;
+  rdfs:label "объектное значение по-умолчанию"@ru ;
+  rdfs:label "default object value"@en ;
+  rdfs:range rdfs:Resource ;
+.
+veda-ui:dataSourceQuery
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain veda-ui:ObjectPropertySpecification ;
+  rdfs:label "запрос для источника данных"@ru ;
+  rdfs:label "data source query"@en ;
+  rdfs:range xsd:string ;
+.
+veda-ui:dataDisplayTemplate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain veda-ui:ObjectPropertySpecification ;
+  rdfs:label "шаблон отображения данных"@ru ;
+  rdfs:label "data display template"@en ;
+  rdfs:range veda-ui:DocumentTemplate ;
 .
 veda-ui:Language
   rdf:type owl:Class ;

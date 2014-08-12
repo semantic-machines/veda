@@ -24,7 +24,7 @@
 veda-admin:VedaSystem
   rdf:type veda-schema:Person ;
   veda-schema:actualVersion veda-admin:VedaSystem ;
-  veda-schema:birthday "2014-03-05"^^xsd:date ;
+  veda-schema:birthday "2014-03-05"^^xsd:dateTime ;
   veda-schema:firstName "Veda"@en ;
   veda-schema:firstName "Веда"@ru ;
   veda-schema:hasAccount veda-admin:VedaSystemAccount ;

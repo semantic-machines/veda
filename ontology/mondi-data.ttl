@@ -60,7 +60,7 @@ mondi-data:Analyst2
 mondi-data:AndreyBychin
   rdf:type veda-schema:Person ;
   veda-schema:actualVersion mondi-data:AndreyBychin ;
-  veda-schema:birthday "1976-05-03"^^xsd:date ;
+  veda-schema:birthday "1976-05-03"^^xsd:dateTime ;
   veda-schema:firstName "Andrey"@en ;
   veda-schema:firstName "Андрей"@ru ;
   veda-schema:hasAccount mondi-data:BychinA ;
@@ -336,7 +336,7 @@ mondi-data:RegulatoryOrder2014
 mondi-data:RomanKarpov
   rdf:type veda-schema:Person ;
   veda-schema:actualVersion mondi-data:RomanKarpov ;
-  veda-schema:birthday "1981-01-09"^^xsd:date ;
+  veda-schema:birthday "1981-01-09"^^xsd:dateTime ;
   veda-schema:firstName "Roman"@en ;
   veda-schema:firstName "Роман"@ru ;
   veda-schema:hasAccount mondi-data:KarpovR ;
@@ -393,7 +393,7 @@ mondi-data:TechnicalDirector
 mondi-data:ValeriyBushenev
   rdf:type veda-schema:Person ;
   veda-schema:actualVersion mondi-data:ValeriyBushenev ;
-  veda-schema:birthday "1973-05-09"^^xsd:date ;
+  veda-schema:birthday "1973-05-09"^^xsd:dateTime ;
   veda-schema:firstName "Valeriy"@en ;
   veda-schema:firstName "Валерий"@ru ;
   veda-schema:hasAccount mondi-data:BushenevV ;
@@ -437,12 +437,69 @@ mondi-data:SavedSearch1
   rdfs:label "Сохраненный запрос 1"@ru ;
   rdfs:label "Saved search 1"@en ;
 .
-mondi-data:PersonTemplate
-  rdf:type veda-ui:ClassTemplate ;
+mondi-data:PersonTemplate1
+  rdf:type veda-ui:DocumentTemplate ;
   rdfs:label "Шаблон персоны"@ru ;
   rdfs:label "Person template"@en ;
   veda-ui:forClass veda-schema:Person ;
   veda-ui:template """
-  <h3>Hello world! I'am Person template</h3>
+  <div class="container-fluid">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">{class.rdfs:label}</h3>
+      </div>
+      <div class="panel-body">
+        <h3>{document.rdfs:label}</h3>
+        <div class="row">
+          <div class="col-md-2" id="veda-schema:lastName">{veda-schema:lastName}</div>
+          <div class="col-md-2" id="veda-schema:firstName">{veda-schema:firstName}</div>
+          <div class="col-md-2" id="veda-schema:middleName">{veda-schema:middleName}</div>
+          <div class="col-md-6" id="veda-schema:birthday">{veda-schema:birthday}</div>
+        </div>
+      </div>
+    </div>
+  </div>
 """
+.
+mondi-data:PropertySpecification1
+  rdf:type veda-ui:PropertySpecification ;
+  rdfs:label "Спецификация даты рождения для класса персона"@ru ;
+  rdfs:label "Birthday property specification for Person class"@en ;
+  veda-ui:forClass veda-schema:Person ;
+  veda-ui:forProperty veda-schema:birthday ;
+  veda-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  veda-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  veda-ui:control "datetime"^^xsd:string ;
+  veda-ui:tooltip "дата в формате 2001-01-01"@ru ;
+  veda-ui:tooltip "date in format 2001-01-01"@en ;
+.
+mondi-data:PropertySpecification2
+  rdf:type veda-ui:PropertySpecification ;
+  rdfs:label "Спецификация имени для класса персона"@ru ;
+  rdfs:label "First name property specification for Person class"@en ;
+  veda-ui:forClass veda-schema:Person ;
+  veda-ui:forProperty veda-schema:firstName ;
+  veda-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  veda-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  veda-ui:control "text"^^xsd:string ;
+.
+mondi-data:PropertySpecification3
+  rdf:type veda-ui:PropertySpecification ;
+  rdfs:label "Спецификация фамилии для класса персона"@ru ;
+  rdfs:label "Last name property specification for Person class"@en ;
+  veda-ui:forClass veda-schema:Person ;
+  veda-ui:forProperty veda-schema:lastName ;
+  veda-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  veda-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  veda-ui:control "text"^^xsd:string ;
+.
+mondi-data:PropertySpecification4
+  rdf:type veda-ui:PropertySpecification ;
+  rdfs:label "Спецификация отчества для класса персона"@ru ;
+  rdfs:label "Middle name property specification for Person class"@en ;
+  veda-ui:forClass veda-schema:Person ;
+  veda-ui:forProperty veda-schema:middleName ;
+  veda-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  veda-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  veda-ui:control "text"^^xsd:string ;
 .
