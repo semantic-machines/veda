@@ -25,25 +25,46 @@ function ClassModel(veda, individual) {
 		});
 	}
 	
-	self.templates = {};
-	var templates = {}; 
+	var documentTemplatesList = query(veda.ticket, "'rdf:type' == 'veda-ui:DocumentTemplate' && 'veda-ui:forClass' == '" + self["@"] + "'");
+	var documentTemplate;
 	
-	var templatesList = query(veda.ticket, "'veda-ui:forClass' == '" + self["@"] + "'");
+	if (documentTemplatesList) {
+		Object.defineProperty(self, "documentTemplate", {
+			get: function() {
+				return documentTemplate ? 
+					documentTemplate 
+					: 
+					documentTemplate = new IndividualModel(veda, documentTemplatesList.pop());
+			}
+		});
+	}
+
+	self.specs = {};
+	var specs = {}; 
+
+	var specsList = query(veda.ticket, "'rdf:type' == 'veda-ui:PropertySpecification' && 'veda-ui:forClass' == '" + self["@"] + "'");
 	
-	if (templatesList) {
-		templatesList.map(function (template_uri) {
-			Object.defineProperty(self.templates, template_uri, {
+	if (specsList) {
+		specsList.map(function (spec_uri) {
+			Object.defineProperty(self.specs, spec_uri, {
 				get: function() {
-					return templates[template_uri] ? 
-						templates[template_uri] 
+					return specs[spec_uri] ? 
+						specs[spec_uri]
 						: 
-						templates[template_uri] = new IndividualModel(veda, template_uri);
+						specs[spec_uri] = new IndividualModel(veda, spec_uri);
 				}
 			});
 		});
 	}
 
-
+	Object.defineProperty(self, "specsByProps", {
+		get: function() {
+			return Object.getOwnPropertyNames(self.specs).reduce(function (acc, spec_uri) {
+				acc[self.specs[spec_uri]["veda-ui:forProperty"][0]["@"]] = self.specs[spec_uri];
+				return acc;
+			}, {});
+		}
+	});
 	
 	return self;
 };

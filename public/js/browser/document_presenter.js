@@ -67,7 +67,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 		var renderedClasses = {};
 		Object.getOwnPropertyNames(document.classTree.roots).map( function (class_uri) {
-			// Separate function for recursive calls
+			// Named IIFE for recursive calls
 			(function renderClassProperties (_class) {
 				if (!renderedClasses[_class["@"]]) {
 					var counter = 0;

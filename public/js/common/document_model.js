@@ -8,7 +8,7 @@ function DocumentModel(veda, individual, container) {
 
 	self.classTree = {roots:{}, classes:{}};
 
-	var directClasses = self["rdf:type"]
+	self.directClasses = self["rdf:type"]
 		.filter(function (item) {
 			return item instanceof IndividualModel;
 		})
@@ -38,7 +38,7 @@ function DocumentModel(veda, individual, container) {
 			}
 		});
 		return classTree;
-	})( directClasses, self.classTree );
+	})( self.directClasses, self.classTree );
 
 	// Add base rdfs:Resource class if not present
 	if (!self.classTree.classes["rdfs:Resource"]) {

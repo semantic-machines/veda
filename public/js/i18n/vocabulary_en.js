@@ -2,6 +2,7 @@ var vocabulary_en = {
 
 //Navs
 	'[Document]' : 'Document',
+	'[Document2]' : 'Document2',
 	'[Console]' : 'Console',
 	'[Search]' : 'Search',
 	'[Tests]' : 'Tests',

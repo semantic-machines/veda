@@ -48,11 +48,15 @@ function AppModel(config) {
 		switch (page) {
 			case "console": 
 				self.console ? self.trigger("console:loaded", self.console) : RegisterModule(ConsoleModel.apply(new Object(), [self].concat(params)), self, "console");
-				//new ConsoleModel(self, params);
+				//ConsoleModel.apply(new Object(), [self].concat(params));
 				break
 			case "document": 
 				//self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, ["mondi-data:AdministrativeDocument_1"]), self, "document");
 				DocumentModel.apply(new Object(), [self].concat(params));
+				break
+			case "document2": 
+				//self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, ["mondi-data:AdministrativeDocument_1"]), self, "document");
+				DocumentModel2.apply(new Object(), [self].concat(params));
 				break
 			case "search": 
 				self.search && ( (self.search._params == params) || params.length == 0 ) ? self.trigger("search:loaded", self.search) && self.trigger("search:complete", self.search) : RegisterModule(SearchModel.apply(new Object(), [self].concat(params)), self, "search", params);

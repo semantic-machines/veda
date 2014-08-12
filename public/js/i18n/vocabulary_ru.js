@@ -2,6 +2,7 @@ var vocabulary_ru = {
 
 //Navs
 	'[Document]' : 'Документ',
+	'[Document2]' : 'Документ2',
 	'[Console]' : 'Консоль',
 	'[Search]' : 'Поиск',
 	'[Tests]' : 'Тесты',

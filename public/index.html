@@ -18,7 +18,10 @@
 				<a href="#/" class="navbar-brand"><img src="/img/veda-logo.png" style="position:relative; top:-3px"/></a>
 				<ul class="nav navbar-nav navbar-left" id="menu">
 					<li id="document">
-						<a i18n="[Document]" label="[Document]" href="#/document/mondi-data:">Документ</a>
+						<a i18n="[Document]" label="[Document]" href="#/document/mondi-data:RomanKarpov">Документ</a>
+					</li>
+					<li id="document2">
+						<a i18n="[Document2]" label="[Document2]" href="#/document2/mondi-data:RomanKarpov">Документ2</a>
 					</li>
 					<li id="console">	
 						<a i18n="[Console]" href="#/console">Консоль</a>
@@ -78,6 +81,7 @@
 		<script src="/js/common/console_model.js"></script>
 		<script src="/js/common/individual_model.js"></script>
 		<script src="/js/common/document_model.js"></script>
+		<script src="/js/common/document_model2.js"></script>
 		<script src="/js/common/user_model.js"></script>
 		<script src="/js/common/search_model.js"></script>
 		<script src="/js/common/class_model.js"></script>
@@ -86,6 +90,7 @@
 		<script src="/js/browser/backend.js"></script>
 		<script src="/js/browser/console_presenter.js"></script>
 		<script src="/js/browser/document_presenter.js"></script>
+		<script src="/js/browser/document_presenter2.js"></script>		
 		<script src="/js/browser/saved_search_presenter.js"></script>
 		<script src="/js/browser/search_presenter.js"></script>
 		<script src="/js/browser/individual_presenter.js"></script>
@@ -289,6 +294,32 @@
 				</div>				
 			</div>
 		</script>		
+		
+		<script type="html/template" id="string-value">
+			<div class="{property.@} property-value" contenteditable="false">
+				{value} <i class="glyphicon glyphicon-remove value-control hidden"></i>
+			</div>
+		</script>
+
+		<script type="html/template" id="string">
+			<div class="container-fluid">
+				<div id="values">
+					{values}
+				</div>
+				<div class="input-group input-control hidden">
+					<span class="input-group-addon">Aa</span>
+					<input type="text" class="form-control" bound id="{property.@}"/>
+				</div>
+			</div>
+		</script>
+
+		<script type="html/template" id="actions">
+			<div class="container-fluid">
+				<div class="well well-sm">
+					<button type="button" class="btn btn-default" id="edit" i18n="[Edit]">Редактировать</button>
+				</div>
+			</div> 
+		</script>
 		
 	</body>
 </html>
