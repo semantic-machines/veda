@@ -5,7 +5,7 @@
 	"authors": ["karpovr"],
 	"dependencies": {
 		"vibe-d": "0.7.20",
-		"pacahon": "0.1.103-alpha"
+		"pacahon": "0.1.104-alpha"
 	},
 	"versions": ["VibeDefaultMain"]
 }
