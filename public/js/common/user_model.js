@@ -11,7 +11,7 @@ function UserModel(veda, individual) {
 	var self = individual instanceof IndividualModel ? individual : new IndividualModel(veda, individual);
 	
 	try { 
-		self.preferences = new IndividualModel(veda, self["veda-ui:hasPreferences"][0]["@"]);
+		self.preferences = new IndividualModel(veda, self["veda-ui:hasPreferences"][0].id);
 		self.language = self.preferences["veda-ui:preferredLanguage"][0]["rdf:value"][0];
 		self.displayedElements = self.preferences["veda-ui:displayedElements"][0];
 	} catch (e) {

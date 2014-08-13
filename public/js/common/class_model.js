@@ -10,7 +10,7 @@ function ClassModel(veda, individual) {
 	self.domainProperties = {};
 	var domainProperties = {};
 
-	var domainPropertiesList = query(veda.ticket, "'rdfs:domain' == '" + self["@"] + "'");
+	var domainPropertiesList = query(veda.ticket, "'rdfs:domain' == '" + self.id + "'");
 
 	if (domainPropertiesList) {
 		domainPropertiesList.map(function (property_uri) {
@@ -25,7 +25,7 @@ function ClassModel(veda, individual) {
 		});
 	}
 	
-	var documentTemplatesList = query(veda.ticket, "'rdf:type' == 'veda-ui:DocumentTemplate' && 'veda-ui:forClass' == '" + self["@"] + "'");
+	var documentTemplatesList = query(veda.ticket, "'rdf:type' == 'veda-ui:DocumentTemplate' && 'veda-ui:forClass' == '" + self.id + "'");
 	var documentTemplate;
 	
 	if (documentTemplatesList) {
@@ -42,7 +42,7 @@ function ClassModel(veda, individual) {
 	self.specs = {};
 	var specs = {}; 
 
-	var specsList = query(veda.ticket, "'rdf:type' == 'veda-ui:PropertySpecification' && 'veda-ui:forClass' == '" + self["@"] + "'");
+	var specsList = query(veda.ticket, "'rdf:type' == 'veda-ui:PropertySpecification' && 'veda-ui:forClass' == '" + self.id + "'");
 	
 	if (specsList) {
 		specsList.map(function (spec_uri) {
@@ -60,7 +60,7 @@ function ClassModel(veda, individual) {
 	Object.defineProperty(self, "specsByProps", {
 		get: function() {
 			return Object.getOwnPropertyNames(self.specs).reduce(function (acc, spec_uri) {
-				acc[self.specs[spec_uri]["veda-ui:forProperty"][0]["@"]] = self.specs[spec_uri];
+				acc[self.specs[spec_uri]["veda-ui:forProperty"][0].id] = self.specs[spec_uri];
 				return acc;
 			}, {});
 		}
