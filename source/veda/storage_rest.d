@@ -8,6 +8,7 @@ import vibe.core.concurrency, vibe.core.core, vibe.core.log, vibe.core.task;
 
 import type;
 import pacahon.context;
+import pacahon.know_predicates;
 import onto.owl;
 import onto.individual;
 import onto.resource;
@@ -77,8 +78,6 @@ Json resource_to_json(Resource resource)
     Json   resource_json = Json.emptyObject;
 
     string data = resource.data;
-
-//    writeln ("@* resource=", resource);
 
     resource_json[ "type" ] = text(resource.type);
 
@@ -189,6 +188,12 @@ Resource json_to_resource(const Json resource_json)
 //////////////////////////////////////////////////// Rest API /////////////////////////////////////////////////////////////////
 
 interface VedaStorageRest_API {
+    @path("get_rights") @method(HTTPMethod.GET)
+    Json get_rights(string ticket, string uri);
+
+    @path("get_rights_origin") @method(HTTPMethod.GET)
+    Json[] get_rights_origin(string ticket, string uri);
+
     @path("authenticate") @method(HTTPMethod.GET)
     Ticket authenticate(string login, string password);
 
@@ -244,6 +249,58 @@ interface VedaStorageRest_API {
 
 class VedaStorageRest : VedaStorageRest_API {
     override :
+
+    Json get_rights(string ticket, string uri)
+    {
+        Individual indv_res;
+        Tid        my_task = Task.getThis();
+
+        if (my_task !is Tid.init)
+        {
+            indv_res.uri = "_";
+            send(io_task, Command.Get, Function.Rights, uri, ticket, my_task);
+            ubyte res = receiveOnly!(ubyte);
+
+//	    writeln ("@v res=", res);
+
+            indv_res.addResource(rdf__type, Resource(DataType.Uri, veda_schema__PermissionStatement));
+
+            if ((res & Access.can_read) > 0)
+                indv_res.addResource(veda_schema__canRead, Resource(true));
+
+            if ((res & Access.can_update) > 0)
+                indv_res.addResource(veda_schema__canUpdate, Resource(true));
+
+            if ((res & Access.can_delete) > 0)
+                indv_res.addResource(veda_schema__canDelete, Resource(true));
+
+            if ((res & Access.can_create) > 0)
+                indv_res.addResource(veda_schema__canCreate, Resource(true));
+        }
+
+//	writeln ("@v indv_res=", indv_res);
+        Json json = individual_to_json(indv_res.idup);
+        return json;
+    }
+
+    Json[] get_rights_origin(string ticket, string uri)
+    {
+        immutable(Individual)[] individuals;
+        Tid                     my_task = Task.getThis();
+
+        if (my_task !is Tid.init)
+        {
+            send(io_task, Command.Get, Function.RightsOrigin, uri, ticket, my_task);
+            individuals = receiveOnly!(immutable(Individual)[]);
+        }
+
+        Json[] json = Json[].init;
+        foreach (individual; individuals)
+            json ~= individual_to_json(individual);
+
+        return json;
+    }
+
     Ticket authenticate(string login, string password)
     {
         Tid my_task = Task.getThis();

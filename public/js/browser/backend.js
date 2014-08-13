@@ -5,6 +5,36 @@ $.ajaxSetup ({
 	cache: false
 });
 
+function get_rights(ticket, uri, callback) {
+	var params = {
+		type: "GET",
+		url: "get_rights",
+		data: { "ticket": ticket, "uri": uri }
+	};
+	if(!callback) {
+		params.async = false;
+		return $.ajax(params).responseText; //JSON.parse($.ajax(params).responseText);
+	}
+	$.ajax(params)
+		.done( function (data) { done(data) } )
+		.fail( function (data, code) { fail(data, code) } );
+}
+
+function get_rights_origin(ticket, uri, callback) {
+	var params = {
+		type: "GET",
+		url: "get_rights_origin",
+		data: { "ticket": ticket, "uri": uri }
+	};
+	if(!callback) {
+		params.async = false;
+		return $.ajax(params).responseText; //JSON.parse($.ajax(params).responseText);
+	}
+	$.ajax(params)
+		.done( function (data) { done(data) } )
+		.fail( function (data, code) { fail(data, code) } );
+}
+
 function authenticate(login, password, done, fail) {
 	var params = {
 			type: "GET",

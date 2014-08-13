@@ -6,6 +6,8 @@ import vibe.core.concurrency, vibe.core.core, vibe.core.log, vibe.core.task;
 import pacahon.server;
 import pacahon.context;
 import pacahon.thread_context;
+import pacahon.know_predicates;
+import type;
 import onto.owl;
 import onto.individual;
 import onto.resource;
@@ -42,7 +44,9 @@ enum Function
     PModule,
     Trace,
     Backup,
-    CountIndividuals
+    CountIndividuals,
+    Rights,
+    RightsOrigin
 }
 
 Task io_task;
@@ -125,7 +129,48 @@ class PacahonDriver {
                                           // writeln("Tid=", cast(void *)tid);
                                               if (tid != Tid.init)
                                               {
-                                                  if (cmd == Command.Get && fn == Function.NewTicket)
+                                                  if (cmd == Command.Get && fn == Function.Rights)
+                                                  {
+                                                      ResultCode rc;
+
+                                                      Ticket *ticket = context.get_ticket(arg2);
+                                                      ubyte res;
+                                                      rc = ticket.result;
+                                                      if (rc == ResultCode.OK)
+                                                      {
+                                                          res = context.get_rights(ticket, arg1);
+                                                      }
+                                                      send(tid, res);
+                                                  }
+                                                  else if (cmd == Command.Get && fn == Function.RightsOrigin)
+                                                  {
+                                                      immutable(Individual)[] res;
+                                                      void trace(string resource_group, string subject_group, string right)
+                                                      {
+                                                          Individual indv_res = Individual.init;
+                                                          indv_res.uri = "_";
+                                                          indv_res.addResource(rdf__type,
+                                                                               Resource(DataType.Uri, veda_schema__PermissionStatement));
+                                                          indv_res.addResource(veda_schema__permissionObject,
+                                                                               Resource(DataType.Uri, resource_group));
+                                                          indv_res.addResource(veda_schema__permissionSubject,
+                                                                               Resource(DataType.Uri, subject_group));
+                                                          indv_res.addResource(right, Resource(true));
+
+                                                          res ~= indv_res.idup;
+                                                      }
+
+                                                      ResultCode rc;
+
+                                                      Ticket *ticket = context.get_ticket(arg2);
+                                                      rc = ticket.result;
+                                                      if (rc == ResultCode.OK)
+                                                      {
+                                                          context.get_rights_origin(ticket, arg1, &trace);
+                                                      }
+                                                      send(tid, res);
+                                                  }
+                                                  else if (cmd == Command.Get && fn == Function.NewTicket)
                                                   {
                                                       immutable(Ticket)[] tickets;
                                                       Ticket ticket = context.authenticate(arg1, arg2);
