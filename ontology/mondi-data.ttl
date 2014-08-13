@@ -471,9 +471,9 @@ mondi-data:PropertySpecification1
   veda-ui:forProperty veda-schema:birthday ;
   veda-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   veda-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  veda-ui:control "datetime"^^xsd:string ;
   veda-ui:tooltip "дата в формате 2001-01-01"@ru ;
   veda-ui:tooltip "date in format 2001-01-01"@en ;
+  veda-ui:control "datetime"^^xsd:string ;
 .
 mondi-data:PropertySpecification2
   rdf:type veda-ui:PropertySpecification ;

@@ -9,15 +9,15 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
 						.join(", ")
 					: property_uri;
-		uri = typeof individual.properties[property_uri] == "object" ? "#/document/" + individual.properties[property_uri]["@"] : "";
+		uri = typeof individual.properties[property_uri] == "object" ? "#/document/" + individual.properties[property_uri].id : "";
 		values = individual[property_uri]
 					.map( function (item) {
 						if (item instanceof String)
 							// Check if string starts with http:// or ftp://
 							return item.search(/^.{3,5}:\/\//) == 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
 						else if (item instanceof IndividualModel)
-							return "<a data-toggle='popover' href='#/document/" + item["@"] + "'>" + 
-								(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item["@"]) + "</a>";
+							return "<a data-toggle='popover' href='#/document/" + item.id + "'>" + 
+								(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item.id) + "</a>";
 						else return item;
 					})
 					.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
@@ -52,8 +52,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				{ 
 					label: document["rdfs:label"] ? document["rdfs:label"]
 						.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
-						.join(", ") : document["@"],
-					uri: "#/document/" + document["@"]
+						.join(", ") : document.id,
+					uri: "#/document/" + document.id
 				}
 			) 
 		);
@@ -69,7 +69,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		Object.getOwnPropertyNames(document.classTree.roots).map( function (class_uri) {
 			// Named IIFE for recursive calls
 			(function renderClassProperties (_class) {
-				if (!renderedClasses[_class["@"]]) {
+				if (!renderedClasses[_class.id]) {
 					var counter = 0;
 					var el = $("<div>");
 					Object.getOwnPropertyNames(_class.domainProperties).map( function (property_uri) {
@@ -93,7 +93,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						el.prepend("<hr>");
 					}
 				}
-				renderedClasses[_class["@"]] = "rendered";
+				renderedClasses[_class.id] = "rendered";
 				
 				if (!_class.subClasses) return;
 				_class.subClasses.map (function (subClass){
@@ -107,7 +107,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		var el = $("<div>");
 		
 		Object.getOwnPropertyNames(renderedProperties).map ( function (property_uri) {
-			if (property_uri == "@") return;
 			if (renderedProperties[property_uri] == "rendered") return;
 			try {
 				renderDocumentProperty(veda, document, property_uri, document_single_property_template, el);

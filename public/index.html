@@ -242,7 +242,7 @@
 		<!-- Current user template -->
 		<script type="html/template" id="current-user-template">
 			<p class="navbar-text navbar-right">
-				<a href="#/document/{@}" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {rdfs:label}</a>
+				<a href="#/document/{id}" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {rdfs:label}</a>
 			</p>
 			<div data-toggle="buttons" class="navbar-right btn-group" id="preferred-language">
 				<label id="RU" class="btn btn-xs btn-info navbar-btn">
@@ -296,7 +296,7 @@
 		</script>		
 		
 		<script type="html/template" id="string-value">
-			<div class="{property.@} property-value" contenteditable="false">
+			<div class="{property.id} property-value" contenteditable="false">
 				{value} <i class="glyphicon glyphicon-remove value-control hidden"></i>
 			</div>
 		</script>
@@ -308,7 +308,7 @@
 				</div>
 				<div class="input-group input-control hidden">
 					<span class="input-group-addon">Aa</span>
-					<input type="text" class="form-control" bound id="{property.@}"/>
+					<input type="text" class="form-control" bound id="{property.id}"/>
 				</div>
 			</div>
 		</script>

@@ -9,16 +9,16 @@ Veda(function SavedSearchPresenter(veda) { "use strict";
 		$("#save-search").on("click", function () {
 			var ss = new IndividualModel(veda);
 
-			ss.addProperty("rdf:type");
+			ss.defineProperty("rdf:type");
 			ss["rdf:type"] = [new IndividualModel(veda, "veda-schema:SavedSearch")];
 
-			ss.addProperty("veda-schema:author"); 
+			ss.defineProperty("veda-schema:author"); 
 			ss["veda-schema:author"] = [veda.user];
 			
-			ss.addProperty("veda-schema:created");
+			ss.defineProperty("veda-schema:created");
 			ss["veda-schema:created"] = [new Date()];
 			
-			ss.addProperty("veda-schema:query");
+			ss.defineProperty("veda-schema:query");
 			ss["veda-schema:query"] = [search.q];
 			
 			ss.save();

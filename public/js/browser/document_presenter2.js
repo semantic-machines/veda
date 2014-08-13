@@ -9,15 +9,15 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 						.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
 						.join(", ")
 					: property_uri;
-		uri = typeof individual.properties[property_uri] == "object" ? "#/document/" + individual.properties[property_uri]["@"] : "";
+		uri = typeof individual.properties[property_uri] == "object" ? "#/document/" + individual.properties[property_uri].id : "";
 		values = individual[property_uri]
 					.map( function (item) {
 						if (item instanceof String)
 							// Check if string starts with http:// or ftp://
 							return item.search(/^.{3,5}:\/\//) == 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
 						else if (item instanceof IndividualModel)
-							return "<a data-toggle='popover' href='#/document/" + item["@"] + "'>" + 
-								(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item["@"]) + "</a>";
+							return "<a data-toggle='popover' href='#/document/" + item.id + "'>" + 
+								(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item.id) + "</a>";
 						else return item;
 					})
 					.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
@@ -52,15 +52,14 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				{ 
 					label: document["rdfs:label"] ? document["rdfs:label"]
 						.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
-						.join(", ") : document["@"],
-					uri: "#/document2/" + document["@"]
+						.join(", ") : document.id,
+					uri: "#/document2/" + document.id
 				}
 			) 
 		);
 
 		// Render document properties
 		Object.getOwnPropertyNames(document.properties).map ( function (property_uri) {
-			if (property_uri == "@") return;
 			try {
 				renderDocumentProperty (veda, document, property_uri, document_single_property_template, $("#document-properties", container));
 			} catch (e) {}
@@ -69,7 +68,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 	});
 
 	function renderProperty (property, spec, values) {
-
+		
 		if ( property["rdfs:range"][0] instanceof IndividualModel ) {
 			console.log("object", property, spec, values);
 			return;
@@ -147,9 +146,9 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				container.append(template);
 				console.log(template);
 				
-				Object.getOwnPropertyNames(_class.domainProperties).reduce (function (acc, property_uri) {
+				Object.getOwnPropertyNames(document.properties).reduce (function (acc, property_uri) {
 
-					var property = _class.domainProperties[property_uri];
+					var property = document.properties[property_uri];
 					var spec = _class.specsByProps[property_uri];
 					var values = document[property_uri];
 					acc[property_uri] = renderProperty(property, spec, values);

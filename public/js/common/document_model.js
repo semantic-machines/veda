@@ -18,23 +18,23 @@ function DocumentModel(veda, individual, container) {
 
 	self.classTree = (function buildClassTree (classes, classTree) {
 		classes.map( function (_class) {
-			classTree.classes[_class["@"]] = _class;
+			classTree.classes[_class.id] = _class;
 			if (_class["rdfs:subClassOf"]) {
 				buildClassTree(
 					_class["rdfs:subClassOf"].map(function (item) {
-						if (!classTree.classes[item["@"]]) {
+						if (!classTree.classes[item.id]) {
 							var res;
 							res = new ClassModel(veda, item);
 							res.subClasses = [_class];
-							classTree.classes[item["@"]] = res;
+							classTree.classes[item.id] = res;
 							return res;
 						} else {
-							classTree.classes[item["@"]].subClasses.push(_class);
-							return classTree.classes[item["@"]];
+							classTree.classes[item.id].subClasses.push(_class);
+							return classTree.classes[item.id];
 						}
 					}), classTree);
 			} else {
-				classTree.roots[_class["@"]] = _class["@"];
+				classTree.roots[_class.id] = _class.id;
 			}
 		});
 		return classTree;
