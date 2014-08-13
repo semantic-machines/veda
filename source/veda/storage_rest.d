@@ -74,7 +74,7 @@ Individual json_to_individual(const Json individual_json)
 
 Json resource_to_json(Resource resource)
 {
-    Json resource_json = Json.emptyObject;
+    Json   resource_json = Json.emptyObject;
 
     string data = resource.data;
 
@@ -93,32 +93,32 @@ Json resource_to_json(Resource resource)
     }
     else if (resource.type == DataType.Integer)
     {
-	//writeln ("@v #resource.get!long=", resource.get!long);
+        //writeln ("@v #resource.get!long=", resource.get!long);
         resource_json[ "data" ] = resource.get!long;
     }
     else if (resource.type == DataType.Decimal)
     {
-	decimal dd = resource.get!decimal;
-        resource_json[ "data" ] = dd.toDouble ();
+        decimal dd = resource.get!decimal;
+        resource_json[ "data" ] = dd.toDouble();
     }
     else if (resource.type == DataType.Boolean)
     {
-	if (resource.get!bool == true)
-    	    resource_json[ "data" ] = true;
-	else
-    	    resource_json[ "data" ] = false;
+        if (resource.get!bool == true)
+            resource_json[ "data" ] = true;
+        else
+            resource_json[ "data" ] = false;
     }
     else if (resource.type == DataType.Datetime)
     {
 //	writeln ("@v #r->j #1 resource.get!long=", resource.get!long);
 
-	SysTime st = SysTime(unixTimeToStdTime(resource.get!long), UTC()); 
+        SysTime st = SysTime(unixTimeToStdTime(resource.get!long), UTC());
         resource_json[ "data" ] = st.toISOExtString();
 
 //	writeln ("@v #r->j #2 val=", st.toISOExtString());
     }
-    else    
-	resource_json[ "data" ] = Json.undefined;
+    else
+        resource_json[ "data" ] = Json.undefined;
 
     return resource_json;
 }
@@ -130,57 +130,55 @@ Resource json_to_resource(const Json resource_json)
     DataType type;
 
     if (resource_json[ "type" ].type is Json.Type.Int)
-	type = cast(DataType)resource_json[ "type" ].get!long;
+        type = cast(DataType)resource_json[ "type" ].get!long;
     else
-	type = Resource_type.get(resource_json[ "type" ].get!string, DataType.String);
+        type = Resource_type.get(resource_json[ "type" ].get!string, DataType.String);
 
     auto data_type = resource_json[ "data" ].type;
 
     if (type == DataType.String)
     {
-	if (resource_json[ "lang" ].type is Json.Type.string)
-    	    resource.lang = Lang.get(resource_json[ "lang" ].get!string, Lang[ "NONE" ]);
+        if (resource_json[ "lang" ].type is Json.Type.string)
+            resource.lang = Lang.get(resource_json[ "lang" ].get!string, Lang[ "NONE" ]);
         resource.data = resource_json[ "data" ].get!string;
     }
     else if (type == DataType.Boolean)
     {
-
-	if (data_type is Json.Type.Bool)
-	{
-	    bool bb = resource_json[ "data" ].get!bool;
-	    if (bb == true)
-		resource = true;
-	    else
-		resource = false;
-	}
+        if (data_type is Json.Type.Bool)
+        {
+            bool bb = resource_json[ "data" ].get!bool;
+            if (bb == true)
+                resource = true;
+            else
+                resource = false;
+        }
     }
     else if (type == DataType.Uri)
     {
-
         resource.data = resource_json[ "data" ].get!string;
     }
     else if (type == DataType.Decimal)
     {
-        resource = decimal (resource_json[ "data" ].get!double);	
+        resource = decimal(resource_json[ "data" ].get!double);
     }
     else if (type == DataType.Integer)
     {
-        resource = resource_json[ "data" ].get!long;	
+        resource = resource_json[ "data" ].get!long;
     }
     else if (type == DataType.Datetime)
     {
-	try
-	{
-	    string val = resource_json[ "data" ].get!string;
+        try
+        {
+            string val = resource_json[ "data" ].get!string;
 //	    writeln ("@v j->r #0 ", val);
-	    long tm = stdTimeToUnixTime (SysTime.fromISOExtString(val).stdTime()); 
-    	    resource = tm; 
+            long   tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
+            resource = tm;
 //	    writeln ("@v j->r #1 ", tm);
-	}
-	catch (Exception ex)
-	{
-	    writeln ("EX! ", __FILE__, ", line:", __LINE__, ", [", ex.msg, "], in ", resource_json);
-	}
+        }
+        catch (Exception ex)
+        {
+            writeln("EX! ", __FILE__, ", line:", __LINE__, ", [", ex.msg, "], in ", resource_json);
+        }
 //	writeln ("@v j->r #2");
     }
 
@@ -241,7 +239,7 @@ interface VedaStorageRest_API {
 
     @path("get_class") @method(HTTPMethod.GET)
     Class get_class(string uri);
-*/
+ */
 }
 
 class VedaStorageRest : VedaStorageRest_API {
@@ -256,7 +254,8 @@ class VedaStorageRest : VedaStorageRest_API {
             immutable(Ticket)[] tickets = receiveOnly!(immutable(Ticket)[]);
             if (tickets.length > 0)
             {
-            	if (tickets[ 0 ].result != ResultCode.OK) throw new HTTPStatusException(tickets[ 0 ].result);
+                if (tickets[ 0 ].result != ResultCode.OK)
+                    throw new HTTPStatusException(tickets[ 0 ].result);
                 return tickets[ 0 ];
             }
         }
@@ -304,9 +303,9 @@ class VedaStorageRest : VedaStorageRest_API {
         {
             send(io_task, Command.Execute, Function.CountIndividuals, my_task);
             long res = receiveOnly!(long);
-	    return res;
+            return res;
         }
-	return -1;
+        return -1;
     }
 
     bool is_ticket_valid(string ticket)
@@ -352,7 +351,6 @@ class VedaStorageRest : VedaStorageRest_API {
             receive((immutable(Individual)[] _individuals, ResultCode _rc) { individuals = _individuals; rc = _rc; });
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc);
-
         }
         return cast(Individual[])individuals;
     }
@@ -534,5 +532,5 @@ class VedaStorageRest : VedaStorageRest_API {
         }
         return Class.init;
     }
-*/
+ */
 }
