@@ -215,14 +215,14 @@ interface VedaStorageRest_API {
     @path("query") @method(HTTPMethod.GET)
     string[] query(string ticket, string query);
 
-    @path("query_") @method(HTTPMethod.GET)
-    Individuals query_(string ticket, string query);
+//    @path("query_") @method(HTTPMethod.GET)
+//    Individuals query_(string ticket, string query);
 
     @path("get_individuals") @method(HTTPMethod.POST)
     Json[] get_individuals(string ticket, string uris[]);
 
-    @path("get_individual_") @method(HTTPMethod.GET)
-    Individual get_individual_(string ticket, string uri);
+//    @path("get_individual_") @method(HTTPMethod.GET)
+//    Individual get_individual_(string ticket, string uri);
 
     @path("get_individual") @method(HTTPMethod.GET)
     Json get_individual(string ticket, string uri);
@@ -238,13 +238,6 @@ interface VedaStorageRest_API {
 
     @path("execute_script") @method(HTTPMethod.POST)
     string[ 2 ] execute_script(string script);
-/*
-    @path("get_classes") @method(HTTPMethod.GET)
-    immutable(Class)[ string ] get_classes();
-
-    @path("get_class") @method(HTTPMethod.GET)
-    Class get_class(string uri);
- */
 }
 
 class VedaStorageRest : VedaStorageRest_API {
@@ -394,7 +387,7 @@ class VedaStorageRest : VedaStorageRest_API {
         }
         return cast(string[])individuals_ids;
     }
-
+/*
     Individuals query_(string ticket, string query)
     {
         Tid                     my_task = Task.getThis();
@@ -411,7 +404,7 @@ class VedaStorageRest : VedaStorageRest_API {
         }
         return cast(Individual[])individuals;
     }
-
+*/
     Json[] get_individuals(string ticket, string uris[])
     {
 //	StopWatch sw;
@@ -446,7 +439,7 @@ class VedaStorageRest : VedaStorageRest_API {
 
         return json;
     }
-
+/*
     Individual get_individual_(string ticket, string uri)
     {
         Tid        my_task = Task.getThis();
@@ -471,7 +464,7 @@ class VedaStorageRest : VedaStorageRest_API {
         }
         return result;
     }
-
+*/
     Json get_individual(string ticket, string uri)
     {
         Tid my_task = Task.getThis();
@@ -553,41 +546,4 @@ class VedaStorageRest : VedaStorageRest_API {
 
         return res;
     }
-/*
-    immutable(Class)[ string ] get_classes()
-    {
-        Tid my_task = Task.getThis();
-
-        immutable(Class)[ string ] res;
-        immutable(Class)[] classes;
-        if (my_task !is Tid.init)
-        {
-            send(io_task, Command.Get, Function.AllClasses, "", my_task);
-            classes = receiveOnly!(immutable(Class)[]);
-            foreach (clasz; classes)
-            {
-                res[ clasz.uri ] = clasz;
-            }
-            res.rehash();
-        }
-        return res;
-    }
-
-    Class get_class(string uri)
-    {
-        Tid                my_task = Task.getThis();
-
-        immutable(Class)[] classes;
-        if (my_task !is Tid.init)
-        {
-            send(io_task, Command.Get, Function.Class, uri, my_task);
-            classes = receiveOnly!(immutable(Class)[]);
-        }
-        if (classes.length > 0)
-        {
-            return cast(Class)classes[ 0 ];
-        }
-        return Class.init;
-    }
- */
 }
