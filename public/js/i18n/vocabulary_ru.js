@@ -12,9 +12,9 @@ var vocabulary_ru = {
 
 //Document
 	'[Edit]' : 'Редактировать',	
-
-//Editor
 	'[Save]' : 'Сохранить',
+	'[Delete]' : 'Удалить',
+	'[Cancel]' : 'Отмена',
 
 //Console
 	'[Javascript console]' : 'Консоль Javascript',
