@@ -237,7 +237,7 @@ test("#007 Individual store and read, test datatype", function() {
 			type : _Datetime
 		} ],
 		'veda-schema:test_datetime0' : [ {
-			data : new Date ("2014-01-02Z"),
+			data : new Date ("2014-01-02"),
 			type : _Datetime
 		} ],
 		'veda-schema:test_datetime1' : [ {
@@ -698,11 +698,11 @@ test(
 					type : _String
 				} ],
 				'veda-schema:test_datetime0' : [ {
-				data : new Date ("2014-01-01Z"),
+				data : new Date ("2014-01-01"),
 				type : _Datetime
 				} ],
 				'veda-schema:test_datetime1' : [ {
-				data : new Date ("2014-05-01Z"),
+				data : new Date ("2014-05-01"),
 				type : _Datetime
 				} ]
 			};
@@ -728,11 +728,11 @@ test(
 					type : _String
 				} ],
 				'veda-schema:test_datetime0' : [ {
-				data : new Date ("2014-01-02Z"),
+				data : new Date ("2014-01-02"),
 				type : _Datetime
 				} ],
 				'veda-schema:test_datetime1' : [ {
-				data : new Date ("2014-05-01Z"),
+				data : new Date ("2014-05-01"),
 				type : _Datetime
 				} ]
 			};
@@ -758,11 +758,11 @@ test(
 					type : _String
 				} ],
 				'veda-schema:test_datetime0' : [ {
-				data : new Date ("2014-01-02Z"),
+				data : new Date ("2014-01-02"),
 				type : _Datetime
 				} ],
 				'veda-schema:test_datetime1' : [ {
-				data : new Date ("2014-06-11Z"),
+				data : new Date ("2014-06-11"),
 				type : _Datetime
 				} ]
 			};
@@ -788,11 +788,11 @@ test(
 					type : _String
 				} ],
 				'veda-schema:test_datetime0' : [ {
-				data : new Date ("2014-01-03Z"),
+				data : new Date ("2014-01-03"),
 				type : _Datetime
 				} ],
 				'veda-schema:test_datetime1' : [ {
-				data : new Date ("2014-06-12Z"),
+				data : new Date ("2014-06-12"),
 				type : _Datetime
 				} ]
 			};
