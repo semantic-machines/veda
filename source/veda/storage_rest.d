@@ -8,6 +8,7 @@ import vibe.core.concurrency, vibe.core.core, vibe.core.log, vibe.core.task;
 
 import type;
 import pacahon.context;
+import pacahon.know_predicates;
 import onto.owl;
 import onto.individual;
 import onto.resource;
@@ -74,11 +75,9 @@ Individual json_to_individual(const Json individual_json)
 
 Json resource_to_json(Resource resource)
 {
-    Json resource_json = Json.emptyObject;
+    Json   resource_json = Json.emptyObject;
 
     string data = resource.data;
-
-//    writeln ("@* resource=", resource);
 
     resource_json[ "type" ] = text(resource.type);
 
@@ -93,32 +92,32 @@ Json resource_to_json(Resource resource)
     }
     else if (resource.type == DataType.Integer)
     {
-	//writeln ("@v #resource.get!long=", resource.get!long);
+        //writeln ("@v #resource.get!long=", resource.get!long);
         resource_json[ "data" ] = resource.get!long;
     }
     else if (resource.type == DataType.Decimal)
     {
-	decimal dd = resource.get!decimal;
-        resource_json[ "data" ] = dd.toDouble ();
+        decimal dd = resource.get!decimal;
+        resource_json[ "data" ] = dd.toDouble();
     }
     else if (resource.type == DataType.Boolean)
     {
-	if (resource.get!bool == true)
-    	    resource_json[ "data" ] = true;
-	else
-    	    resource_json[ "data" ] = false;
+        if (resource.get!bool == true)
+            resource_json[ "data" ] = true;
+        else
+            resource_json[ "data" ] = false;
     }
     else if (resource.type == DataType.Datetime)
     {
 //	writeln ("@v #r->j #1 resource.get!long=", resource.get!long);
 
-	SysTime st = SysTime(unixTimeToStdTime(resource.get!long), UTC()); 
+        SysTime st = SysTime(unixTimeToStdTime(resource.get!long), UTC());
         resource_json[ "data" ] = st.toISOExtString();
 
 //	writeln ("@v #r->j #2 val=", st.toISOExtString());
     }
-    else    
-	resource_json[ "data" ] = Json.undefined;
+    else
+        resource_json[ "data" ] = Json.undefined;
 
     return resource_json;
 }
@@ -130,57 +129,55 @@ Resource json_to_resource(const Json resource_json)
     DataType type;
 
     if (resource_json[ "type" ].type is Json.Type.Int)
-	type = cast(DataType)resource_json[ "type" ].get!long;
+        type = cast(DataType)resource_json[ "type" ].get!long;
     else
-	type = Resource_type.get(resource_json[ "type" ].get!string, DataType.String);
+        type = Resource_type.get(resource_json[ "type" ].get!string, DataType.String);
 
     auto data_type = resource_json[ "data" ].type;
 
     if (type == DataType.String)
     {
-	if (resource_json[ "lang" ].type is Json.Type.string)
-    	    resource.lang = Lang.get(resource_json[ "lang" ].get!string, Lang[ "NONE" ]);
+        if (resource_json[ "lang" ].type is Json.Type.string)
+            resource.lang = Lang.get(resource_json[ "lang" ].get!string, Lang[ "NONE" ]);
         resource.data = resource_json[ "data" ].get!string;
     }
     else if (type == DataType.Boolean)
     {
-
-	if (data_type is Json.Type.Bool)
-	{
-	    bool bb = resource_json[ "data" ].get!bool;
-	    if (bb == true)
-		resource = true;
-	    else
-		resource = false;
-	}
+        if (data_type is Json.Type.Bool)
+        {
+            bool bb = resource_json[ "data" ].get!bool;
+            if (bb == true)
+                resource = true;
+            else
+                resource = false;
+        }
     }
     else if (type == DataType.Uri)
     {
-
         resource.data = resource_json[ "data" ].get!string;
     }
     else if (type == DataType.Decimal)
     {
-        resource = decimal (resource_json[ "data" ].get!double);	
+        resource = decimal(resource_json[ "data" ].get!double);
     }
     else if (type == DataType.Integer)
     {
-        resource = resource_json[ "data" ].get!long;	
+        resource = resource_json[ "data" ].get!long;
     }
     else if (type == DataType.Datetime)
     {
-	try
-	{
-	    string val = resource_json[ "data" ].get!string;
+        try
+        {
+            string val = resource_json[ "data" ].get!string;
 //	    writeln ("@v j->r #0 ", val);
-	    long tm = stdTimeToUnixTime (SysTime.fromISOExtString(val).stdTime()); 
-    	    resource = tm; 
+            long   tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
+            resource = tm;
 //	    writeln ("@v j->r #1 ", tm);
-	}
-	catch (Exception ex)
-	{
-	    writeln ("EX! ", __FILE__, ", line:", __LINE__, ", [", ex.msg, "], in ", resource_json);
-	}
+        }
+        catch (Exception ex)
+        {
+            writeln("EX! ", __FILE__, ", line:", __LINE__, ", [", ex.msg, "], in ", resource_json);
+        }
 //	writeln ("@v j->r #2");
     }
 
@@ -191,6 +188,12 @@ Resource json_to_resource(const Json resource_json)
 //////////////////////////////////////////////////// Rest API /////////////////////////////////////////////////////////////////
 
 interface VedaStorageRest_API {
+    @path("get_rights") @method(HTTPMethod.GET)
+    Json get_rights(string ticket, string uri);
+
+    @path("get_rights_origin") @method(HTTPMethod.GET)
+    Json[] get_rights_origin(string ticket, string uri);
+
     @path("authenticate") @method(HTTPMethod.GET)
     Ticket authenticate(string login, string password);
 
@@ -212,14 +215,14 @@ interface VedaStorageRest_API {
     @path("query") @method(HTTPMethod.GET)
     string[] query(string ticket, string query);
 
-    @path("query_") @method(HTTPMethod.GET)
-    Individuals query_(string ticket, string query);
+//    @path("query_") @method(HTTPMethod.GET)
+//    Individuals query_(string ticket, string query);
 
     @path("get_individuals") @method(HTTPMethod.POST)
     Json[] get_individuals(string ticket, string uris[]);
 
-    @path("get_individual_") @method(HTTPMethod.GET)
-    Individual get_individual_(string ticket, string uri);
+//    @path("get_individual_") @method(HTTPMethod.GET)
+//    Individual get_individual_(string ticket, string uri);
 
     @path("get_individual") @method(HTTPMethod.GET)
     Json get_individual(string ticket, string uri);
@@ -235,17 +238,62 @@ interface VedaStorageRest_API {
 
     @path("execute_script") @method(HTTPMethod.POST)
     string[ 2 ] execute_script(string script);
-/*
-    @path("get_classes") @method(HTTPMethod.GET)
-    immutable(Class)[ string ] get_classes();
-
-    @path("get_class") @method(HTTPMethod.GET)
-    Class get_class(string uri);
-*/
 }
 
 class VedaStorageRest : VedaStorageRest_API {
     override :
+
+    Json get_rights(string ticket, string uri)
+    {
+        Individual indv_res;
+        Tid        my_task = Task.getThis();
+
+        if (my_task !is Tid.init)
+        {
+            indv_res.uri = "_";
+            send(io_task, Command.Get, Function.Rights, uri, ticket, my_task);
+            ubyte res = receiveOnly!(ubyte);
+
+//	    writeln ("@v res=", res);
+
+            indv_res.addResource(rdf__type, Resource(DataType.Uri, veda_schema__PermissionStatement));
+
+            if ((res & Access.can_read) > 0)
+                indv_res.addResource(veda_schema__canRead, Resource(true));
+
+            if ((res & Access.can_update) > 0)
+                indv_res.addResource(veda_schema__canUpdate, Resource(true));
+
+            if ((res & Access.can_delete) > 0)
+                indv_res.addResource(veda_schema__canDelete, Resource(true));
+
+            if ((res & Access.can_create) > 0)
+                indv_res.addResource(veda_schema__canCreate, Resource(true));
+        }
+
+//	writeln ("@v indv_res=", indv_res);
+        Json json = individual_to_json(indv_res.idup);
+        return json;
+    }
+
+    Json[] get_rights_origin(string ticket, string uri)
+    {
+        immutable(Individual)[] individuals;
+        Tid                     my_task = Task.getThis();
+
+        if (my_task !is Tid.init)
+        {
+            send(io_task, Command.Get, Function.RightsOrigin, uri, ticket, my_task);
+            individuals = receiveOnly!(immutable(Individual)[]);
+        }
+
+        Json[] json = Json[].init;
+        foreach (individual; individuals)
+            json ~= individual_to_json(individual);
+
+        return json;
+    }
+
     Ticket authenticate(string login, string password)
     {
         Tid my_task = Task.getThis();
@@ -256,7 +304,8 @@ class VedaStorageRest : VedaStorageRest_API {
             immutable(Ticket)[] tickets = receiveOnly!(immutable(Ticket)[]);
             if (tickets.length > 0)
             {
-            	if (tickets[ 0 ].result != ResultCode.OK) throw new HTTPStatusException(tickets[ 0 ].result);
+                if (tickets[ 0 ].result != ResultCode.OK)
+                    throw new HTTPStatusException(tickets[ 0 ].result);
                 return tickets[ 0 ];
             }
         }
@@ -304,9 +353,9 @@ class VedaStorageRest : VedaStorageRest_API {
         {
             send(io_task, Command.Execute, Function.CountIndividuals, my_task);
             long res = receiveOnly!(long);
-	    return res;
+            return res;
         }
-	return -1;
+        return -1;
     }
 
     bool is_ticket_valid(string ticket)
@@ -338,7 +387,7 @@ class VedaStorageRest : VedaStorageRest_API {
         }
         return cast(string[])individuals_ids;
     }
-
+/*
     Individuals query_(string ticket, string query)
     {
         Tid                     my_task = Task.getThis();
@@ -352,11 +401,10 @@ class VedaStorageRest : VedaStorageRest_API {
             receive((immutable(Individual)[] _individuals, ResultCode _rc) { individuals = _individuals; rc = _rc; });
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc);
-
         }
         return cast(Individual[])individuals;
     }
-
+*/
     Json[] get_individuals(string ticket, string uris[])
     {
 //	StopWatch sw;
@@ -391,7 +439,7 @@ class VedaStorageRest : VedaStorageRest_API {
 
         return json;
     }
-
+/*
     Individual get_individual_(string ticket, string uri)
     {
         Tid        my_task = Task.getThis();
@@ -416,7 +464,7 @@ class VedaStorageRest : VedaStorageRest_API {
         }
         return result;
     }
-
+*/
     Json get_individual(string ticket, string uri)
     {
         Tid my_task = Task.getThis();
@@ -498,41 +546,4 @@ class VedaStorageRest : VedaStorageRest_API {
 
         return res;
     }
-/*
-    immutable(Class)[ string ] get_classes()
-    {
-        Tid my_task = Task.getThis();
-
-        immutable(Class)[ string ] res;
-        immutable(Class)[] classes;
-        if (my_task !is Tid.init)
-        {
-            send(io_task, Command.Get, Function.AllClasses, "", my_task);
-            classes = receiveOnly!(immutable(Class)[]);
-            foreach (clasz; classes)
-            {
-                res[ clasz.uri ] = clasz;
-            }
-            res.rehash();
-        }
-        return res;
-    }
-
-    Class get_class(string uri)
-    {
-        Tid                my_task = Task.getThis();
-
-        immutable(Class)[] classes;
-        if (my_task !is Tid.init)
-        {
-            send(io_task, Command.Get, Function.Class, uri, my_task);
-            classes = receiveOnly!(immutable(Class)[]);
-        }
-        if (classes.length > 0)
-        {
-            return cast(Class)classes[ 0 ];
-        }
-        return Class.init;
-    }
-*/
 }
