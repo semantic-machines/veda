@@ -209,22 +209,6 @@ class PacahonDriver {
 
                                                       send(tid, individuals, rc);
                                                   }
-                                                  else if (cmd == Command.Get && fn == Function.IndividualsToQuery)
-                                                  {
-                                                      Ticket *ticket = context.get_ticket(arg2);
-
-                                                      if (ticket.result == ResultCode.OK)
-                                                      {
-                                                          immutable(Individual)[] individuals =
-                                                              context.iget_individuals_via_query(ticket, arg1);
-                                                          send(tid, individuals, ticket.result);
-                                                      }
-                                                      else
-                                                      {
-                                                          immutable(Individual)[] individuals;
-                                                          send(tid, individuals, ticket.result);
-                                                      }
-                                                  }
                                                   else if (cmd == Command.Get && fn == Function.IndividualsIdsToQuery)
                                                   {
                                                       Ticket *ticket = context.get_ticket(arg2);

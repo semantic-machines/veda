@@ -215,14 +215,8 @@ interface VedaStorageRest_API {
     @path("query") @method(HTTPMethod.GET)
     string[] query(string ticket, string query);
 
-//    @path("query_") @method(HTTPMethod.GET)
-//    Individuals query_(string ticket, string query);
-
     @path("get_individuals") @method(HTTPMethod.POST)
     Json[] get_individuals(string ticket, string uris[]);
-
-//    @path("get_individual_") @method(HTTPMethod.GET)
-//    Individual get_individual_(string ticket, string uri);
 
     @path("get_individual") @method(HTTPMethod.GET)
     Json get_individual(string ticket, string uri);
@@ -387,24 +381,7 @@ class VedaStorageRest : VedaStorageRest_API {
         }
         return cast(string[])individuals_ids;
     }
-/*
-    Individuals query_(string ticket, string query)
-    {
-        Tid                     my_task = Task.getThis();
 
-        immutable(Individual)[] individuals;
-        if (my_task !is Tid.init)
-        {
-            send(io_task, Command.Get, Function.IndividualsToQuery, query, ticket, my_task);
-
-            ResultCode rc;
-            receive((immutable(Individual)[] _individuals, ResultCode _rc) { individuals = _individuals; rc = _rc; });
-            if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc);
-        }
-        return cast(Individual[])individuals;
-    }
-*/
     Json[] get_individuals(string ticket, string uris[])
     {
 //	StopWatch sw;
@@ -439,32 +416,7 @@ class VedaStorageRest : VedaStorageRest_API {
 
         return json;
     }
-/*
-    Individual get_individual_(string ticket, string uri)
-    {
-        Tid        my_task = Task.getThis();
-        Individual result  = Individual.init;
 
-        if (my_task !is Tid.init)
-        {
-            immutable(Individual)[] individual;
-            send(io_task, Command.Get, Function.Individual, uri, ticket, my_task);
-
-            ResultCode rc;
-            receive((immutable(Individual)[] _individuals, ResultCode _rc) { individual = _individuals; rc = _rc; });
-            if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc);
-//        individual = receiveOnly!(immutable(Individual)[]);
-
-
-            if (individual.length > 0)
-            {
-                result = cast(Individual)individual[ 0 ];
-            }
-        }
-        return result;
-    }
-*/
     Json get_individual(string ticket, string uri)
     {
         Tid my_task = Task.getThis();
