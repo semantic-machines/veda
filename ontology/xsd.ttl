@@ -1,0 +1,54 @@
+# baseURI: http://www.w3.org/2001/XMLSchema#
+# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+# imports: http://www.w3.org/2000/01/rdf-schema#
+# imports: http://www.w3.org/2002/07/owl
+
+# c14n-version: 3
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+<http://www.w3.org/2001/XMLSchema#>
+  rdf:type owl:Ontology ;
+  rdfs:label "XML data types ontology"@en ;
+  rdfs:label "Онтология типов данных XML"@ru ;
+  owl:imports rdf: ;
+  owl:imports rdfs: ;
+  owl:imports owl: ;
+  owl:versionInfo "1.0" ;
+.
+xsd:string
+  rdf:type rdfs:Datatype ;
+  rdfs:label "String datatype"@en ;
+  rdfs:label "Строковый тип данных"@ru ;
+  rdfs:isDefinedBy xsd: ;
+  rdfs:subClassOf rdf:XMLLiteral ;
+.
+xsd:integer
+  rdf:type rdfs:Datatype ;
+  rdfs:label "Integer datatype"@en ;
+  rdfs:label "Челочисленный тип данных"@ru ;
+  rdfs:isDefinedBy xsd: ;
+  rdfs:subClassOf rdf:XMLLiteral ;
+.
+xsd:decimal
+  rdf:type rdfs:Datatype ;
+  rdfs:label "Decimal datatype"@en ;
+  rdfs:label "Десятичный тип данных"@ru ;
+  rdfs:isDefinedBy xsd: ;
+  rdfs:subClassOf rdf:XMLLiteral ;
+.
+xsd:boolean
+  rdf:type rdfs:Datatype ;
+  rdfs:label "Boolean datatype"@en ;
+  rdfs:label "Булевый тип данных"@ru ;
+  rdfs:isDefinedBy xsd: ;
+  rdfs:subClassOf rdf:XMLLiteral ;
+.
+xsd:dateTime
+  rdf:type rdfs:Datatype ;
+  rdfs:label "Datetime datatype"@en ;
+  rdfs:label "Календарный тип данных"@ru ;
+  rdfs:isDefinedBy xsd: ;
+  rdfs:subClassOf rdf:XMLLiteral ;
+.
