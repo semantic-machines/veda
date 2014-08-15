@@ -13,7 +13,7 @@ function get_rights(ticket, uri, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return $.ajax(params).responseText; //JSON.parse($.ajax(params).responseText);
+		return JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
 		.done( function (data) { done(data) } )
@@ -28,7 +28,7 @@ function get_rights_origin(ticket, uri, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return $.ajax(params).responseText; //JSON.parse($.ajax(params).responseText);
+		return JSON.parse($.ajax(params).responseText);
 	}
 	$.ajax(params)
 		.done( function (data) { done(data) } )
