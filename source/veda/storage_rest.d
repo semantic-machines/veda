@@ -15,13 +15,13 @@ import onto.resource;
 import onto.lang;
 import veda.util;
 
-public const string veda_schema_File          = "veda-schema:File";
-public const string veda_schema_fileName      = "veda-schema:fileName";
-public const string veda_schema_fileSize      = "veda-schema:fileSize";
-public const string veda_schema_fileThumbnail = "veda-schema:fileThumbnail";
-public const string veda_schema_fileURI       = "veda-schema:fileURI";
+public const string veda_schema__File          = "veda-schema:File";
+public const string veda_schema__fileName      = "veda-schema:fileName";
+public const string veda_schema__fileSize      = "veda-schema:fileSize";
+public const string veda_schema__fileThumbnail = "veda-schema:fileThumbnail";
+public const string veda_schema__fileURI       = "veda-schema:fileURI";
 
-const string        attachments_db_path    = "./data/attachments";
+const string        attachments_db_path = "./data/files";
 
 static this() {
     Lang =
@@ -47,8 +47,7 @@ static this() {
     }
     catch (Exception ex)
     {
-    }    
-
+    }
 }
 
 
@@ -101,7 +100,60 @@ interface VedaStorageRest_API {
     string[ 2 ] execute_script(string script);
 }
 
-class VedaStorageRest : VedaStorageRest_API {
+class VedaStorageRest : VedaStorageRest_API
+{
+    void fileManager(HTTPServerRequest req, HTTPServerResponse res)
+    {
+        writeln("@v req.path=", req.path);
+
+        string uri;
+        // uri субьекта
+
+        long pos = lastIndexOf(req.path, "/");
+        if (pos > 0)
+        {
+            uri = req.path[ pos + 1..$ ];
+        }
+        else
+            return;
+
+        // найдем в хранилище указанного субьекта
+
+        writeln("@v uri=", uri);
+
+        string ticket = req.cookies.get("ticket", "");
+
+        writeln("@v ticket=", ticket);
+
+        if (uri.length > 3 && ticket !is null)
+        {
+            Tid my_task = Task.getThis();
+
+            if (my_task is Tid.init)
+                return;
+
+            immutable(Individual)[] individual;
+            send(io_task, Command.Get, Function.Individual, uri, ticket, my_task);
+
+            ResultCode rc;
+            receive((immutable(Individual)[] _individuals, ResultCode _rc) { individual = _individuals; rc = _rc; });
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc);
+
+            if (individual.length == 0)
+                return;
+
+            Individual file_info = cast(Individual)individual[ 0 ];
+
+            writeln("@v file_info=", file_info);
+
+            HTTPServerRequestDelegate dg = serveStaticFile(attachments_db_path ~ "/" ~ file_info.getFirstResource(
+                                                                                                                  veda_schema__fileURI).get!string);
+            dg(req, res);
+        }
+    }
+
     override :
 
     Json get_rights(string ticket, string uri)
