@@ -12,10 +12,10 @@ var vocabulary_en = {
 
 //Document
 	'[Edit]' : 'Edit',
-
-//Editor
 	'[Save]' : 'Save',
-
+	'[Delete]' : 'Delete',
+	'[Cancel]' : 'Cancel',
+		
 //Console
 	'[Javascript console]' : 'Javascript console',
 	'[Script]' : 'Script',

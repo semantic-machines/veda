@@ -54,18 +54,6 @@ mondi-schema:RegistrationRecord
   rdfs:label "Регистрационная запись"@ru ;
   rdfs:subClassOf veda-schema:Document ;
 .
-mondi-schema:attachment
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          mondi-schema:AdministrativeDocument
-          mondi-schema:RegistrationRecord
-        ) ;
-    ] ;
-  rdfs:label "attachment"@en ;
-  rdfs:label "вложение"@ru ;
-.
 mondi-schema:content
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mondi-schema:AdministrativeDocument ;

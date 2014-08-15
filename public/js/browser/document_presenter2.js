@@ -69,12 +69,9 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 
 	function renderProperty (property, spec, values) {
 		
-		if ( property["rdfs:range"][0] instanceof IndividualModel ) {
-			console.log("object", property, spec, values);
-			return;
-		}
+		switch( property["rdfs:range"][0].id ) {
 
-		switch( property["rdfs:range"][0].valueOf() ) {
+			case "rdfs:Literal" : 
 
 			case "xsd:string" : 
 				var template = $("#string").html();
@@ -89,17 +86,15 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 						renderedValues += riot.render(value_template, {property: property, value: value});
 					});
 				
-				console.log("string rendered", renderedValues);
+				//console.log("string rendered", renderedValues);
 				return riot.render(template, {property: property, values: renderedValues});
 				break
 
+			case "xsd:boolean" : 
+			
 			case "xsd:integer" : 
-				console.log("integer", property, spec, values);
-				break
 
 			case "xsd:decimal" : 
-				console.log("decimal", property, spec, values);
-				break
 
 			case "xsd:dateTime" : 
 				var template = $("#string").html();
@@ -111,16 +106,12 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 						renderedValues += riot.render(value_template, {property: property, value: value});
 					});
 				
-				console.log("string rendered", renderedValues);
-				return renderedValues;
-				break
-
-			case "xsd:boolean" : 
-				console.log("boolean", property, spec, values);
+				//console.log("datetime rendered", renderedValues);
+				return riot.render(template, {property: property, values: renderedValues});
 				break
 
 			default : 
-				console.log("generic", property, spec, values);
+				//console.log("object", property, spec, values);
 				break
 
 		}
@@ -143,9 +134,6 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				var template = _class.documentTemplate["veda-ui:template"] ? _class.documentTemplate["veda-ui:template"][0] : undefined;
 				var renderedProperties = {};
 				
-				container.append(template);
-				console.log(template);
-				
 				Object.getOwnPropertyNames(document.properties).reduce (function (acc, property_uri) {
 
 					var property = document.properties[property_uri];
@@ -155,6 +143,8 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 					return acc;
 					
 				}, renderedProperties);
+				
+				renderedProperties.id = document.id;
 
 				var renderedTemplate = riot.render (
 					template, 
@@ -179,8 +169,29 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		
 		$("#edit", container).on("click", function (e) {
 			$(".input-control, .value-control").toggleClass("hidden");
+			
+			$(this).toggleClass("hidden");
+			$("#save", container).toggleClass("hidden");
+			$("#cancel", container).toggleClass("hidden");
 		});
-		
+
+		$("#save", container).on("click", function (e) {
+			document.save();
+			$(".input-control, .value-control").toggleClass("hidden");
+			
+			$(this).toggleClass("hidden");
+			$("#edit", container).toggleClass("hidden");
+			$("#cancel", container).toggleClass("hidden");			
+		});
+
+		$("#cancel", container).on("click", function (e) {
+			$(".input-control, .value-control").toggleClass("hidden");
+			
+			$(this).toggleClass("hidden");
+			$("#edit", container).toggleClass("hidden");
+			$("#save", container).toggleClass("hidden");
+		});
+
 	});
 
 });

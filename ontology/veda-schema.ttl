@@ -78,6 +78,14 @@ veda-schema:Document
   rdfs:label "Документ"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
+veda-schema:File
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy veda-schema: ;  
+  rdfs:label "Файл"@en ;
+  rdfs:label "File"@ru ;
+  rdfs:comment "File description"@en ;
+  rdfs:comment "Описание файла"@ru ;
+.
 veda-schema:Group
   rdf:type owl:Class ;
   rdfs:comment "Group of resources"@en ;
@@ -457,9 +465,50 @@ veda-schema:startTime
   rdfs:label "время начала"@ru ;
   rdfs:range xsd:dateTime ;
 .
-
 veda-schema:AllResourcesGroup
   rdf:type veda-schema:Group ;
   rdfs:label "All resources"@ru ;
   rdfs:label "Все ресурсы"@ru ;
+.
+veda-schema:attachment
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain veda-schema:Document ;
+  rdfs:label "attachment"@en ;
+  rdfs:label "вложение"@ru ;
+  rdfs:range veda-schema:File ;
+.
+veda-schema:fileName
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain veda-schema:File ;
+  rdfs:label "file name"@en ;
+  rdfs:label "имя файла"@ru ;
+  rdfs:range xsd:string ;
+.
+veda-schema:fileSize
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain veda-schema:File ;
+  rdfs:label "file size"@en ;
+  rdfs:label "размер файла"@ru ;
+  rdfs:range xsd:integer ;
+.
+veda-schema:fileDescription
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain veda-schema:File ;
+  rdfs:label "file name"@en ;
+  rdfs:label "имя файла"@ru ;
+  rdfs:range xsd:string ;
+.
+veda-schema:fileThumbnail
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain veda-schema:File ;
+  rdfs:label "thumbnail"@en ;
+  rdfs:label "миниатюра"@ru ;
+  rdfs:range xsd:string ;
+.
+veda-schema:fileURI
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain veda-schema:File ;
+  rdfs:label "file URI"@en ;
+  rdfs:label "URI файла"@ru ;
+  rdfs:range xsd:string ;
 .
