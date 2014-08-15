@@ -313,6 +313,27 @@
 			</div>
 		</script>
 
+		<script type="html/template" id="datetime-property">
+			<div class="{property.id} container-fluid">
+				<div>
+					<dl>
+						<dt>{property.rdfs:label}</dt>
+						<dd>
+							<div class="value">{value}</div>
+							<div class="input-group input-control hidden">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+								<input type="text" class="form-control" bound data-for="{property.id}" value="{value}"/>
+								<span class="input-group-btn">
+									<button class="btn btn-default" type="button"><i class="glyphicon glyphicon-remove"></i></button>
+								</span>
+							</div>
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</script>
+
+
 		<script type="html/template" id="actions">
 			<div class="container-fluid">
 				<div class="well well-sm">
