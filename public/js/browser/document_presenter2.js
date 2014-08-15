@@ -83,11 +83,14 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 						return value.language == Veda().user.language || value.language == "NONE";
 					})
 					.map (function (value) {
-						renderedValues += riot.render(value_template, {property: property, value: value});
+						renderedValues += riot.render(
+							value_template, 
+							{property: property, value: value}
+						);
 					});
 				
-				//console.log("string rendered", renderedValues);
 				return riot.render(template, {property: property, values: renderedValues});
+
 				break
 
 			case "xsd:boolean" : 
@@ -97,17 +100,27 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 			case "xsd:decimal" : 
 
 			case "xsd:dateTime" : 
-				var template = $("#string").html();
-				var value_template = $("#string-value").html();
+				var template = $("#datetime-property").html();
 				var renderedValues = "";
 
 				values
 					.map (function (value) {
-						renderedValues += riot.render(value_template, {property: property, value: value});
+						renderedValues += riot.render(
+							template, 
+							{property: property, value: value},
+							function (value) {
+								if ( !(value instanceof Array) ) return value;
+								var res = value.filter(function (item) {
+									return !(item instanceof String) ? true : item.language == Veda().user.language || item.language == "NONE";
+								});
+								return res;
+							}
+						);
 					});
 				
-				//console.log("datetime rendered", renderedValues);
-				return riot.render(template, {property: property, values: renderedValues});
+				console.log(renderedValues);
+				return renderedValues;
+				
 				break
 
 			default : 
@@ -145,7 +158,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				}, renderedProperties);
 				
 				renderedProperties.id = document.id;
-
+				
 				var renderedTemplate = riot.render (
 					template, 
 					{
@@ -168,7 +181,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		container.append(actionsTemplate);
 		
 		$("#edit", container).on("click", function (e) {
-			$(".input-control, .value-control").toggleClass("hidden");
+			$(".value, .input-control, .value-control").toggleClass("hidden");
 			
 			$(this).toggleClass("hidden");
 			$("#save", container).toggleClass("hidden");
@@ -177,7 +190,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 
 		$("#save", container).on("click", function (e) {
 			document.save();
-			$(".input-control, .value-control").toggleClass("hidden");
+			$(".value, .input-control, .value-control").toggleClass("hidden");
 			
 			$(this).toggleClass("hidden");
 			$("#edit", container).toggleClass("hidden");
@@ -185,7 +198,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		});
 
 		$("#cancel", container).on("click", function (e) {
-			$(".input-control, .value-control").toggleClass("hidden");
+			$(".value, .input-control, .value-control").toggleClass("hidden");
 			
 			$(this).toggleClass("hidden");
 			$("#edit", container).toggleClass("hidden");
