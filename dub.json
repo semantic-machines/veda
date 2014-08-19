@@ -7,5 +7,15 @@
 		"vibe-d": "0.7.20",
 		"pacahon": "0.1.109-alpha"
 	},
-	"versions": ["VibeDefaultMain"]
+	"versions": ["VibeDefaultMain"],
+    "configurations": [
+	{
+	    "name": "app",
+	    "targetType": "executable"
+	},
+	{
+	    "name": "trace-app",
+	    "versions": ["trace"],
+	    "targetType": "executable"
+	}]
 }
