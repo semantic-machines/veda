@@ -3,7 +3,7 @@ module veda.storage_rest;
 import vibe.d;
 import veda.pacahon_driver;
 
-import std.stdio, std.datetime, std.conv, std.string, std.datetime;
+import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file;
 import vibe.core.concurrency, vibe.core.core, vibe.core.log, vibe.core.task;
 
 import type;
@@ -13,9 +13,15 @@ import onto.owl;
 import onto.individual;
 import onto.resource;
 import onto.lang;
+import veda.util;
 
-static LANG[ string ] Lang;
-static DataType[ string ] Resource_type;
+public const string veda_schema__File          = "veda-schema:File";
+public const string veda_schema__fileName      = "veda-schema:fileName";
+public const string veda_schema__fileSize      = "veda-schema:fileSize";
+public const string veda_schema__fileThumbnail = "veda-schema:fileThumbnail";
+public const string veda_schema__fileURI       = "veda-schema:fileURI";
+
+const string        attachments_db_path = "./data/files";
 
 static this() {
     Lang =
@@ -34,156 +40,16 @@ static this() {
         "Decimal":DataType.Decimal,
         "Boolean":DataType.Boolean,
     ];
+
+    try
+    {
+        mkdir(attachments_db_path);
+    }
+    catch (Exception ex)
+    {
+    }
 }
 
-Json individual_to_json(immutable(Individual)individual)
-{
-//    writeln ("\nINDIVIDUAL->:", individual);
-    Json json = Json.emptyObject;
-
-    json[ "@" ] = individual.uri;
-    foreach (property_name, property_values; individual.resources)
-    {
-        Json resources_json = Json.emptyArray;
-        foreach (property_value; property_values)
-            resources_json ~= resource_to_json(cast(Resource)property_value);
-        json[ property_name ] = resources_json;
-    }
-//    writeln ("->JSON:", json);
-    return json;
-}
-
-Individual json_to_individual(const Json individual_json)
-{
-//    writeln ("\nJSON->:", individual_json);
-    Individual individual = Individual.init;
-
-    foreach (string property_name, ref const property_values; individual_json)
-    {
-        if (property_name == "@")
-        {
-            individual.uri = individual_json[ property_name ].get!string; continue;
-        }
-        Resource[] resources = Resource[].init;
-        foreach (property_value; property_values)
-            resources ~= json_to_resource(property_value);
-        individual.resources[ property_name ] = resources;
-    }
-//    writeln ("->INDIVIDUAL:", individual);
-    return individual;
-}
-
-Json resource_to_json(Resource resource)
-{
-    Json   resource_json = Json.emptyObject;
-
-    string data = resource.data;
-
-    resource_json[ "type" ] = text(resource.type);
-
-    if (resource.type == DataType.Uri)
-    {
-        resource_json[ "data" ] = data;
-    }
-    else if (resource.type == DataType.String)
-    {
-        resource_json[ "data" ] = data;
-        resource_json[ "lang" ] = text(resource.lang);
-    }
-    else if (resource.type == DataType.Integer)
-    {
-        //writeln ("@v #resource.get!long=", resource.get!long);
-        resource_json[ "data" ] = resource.get!long;
-    }
-    else if (resource.type == DataType.Decimal)
-    {
-        decimal dd = resource.get!decimal;
-        resource_json[ "data" ] = dd.toDouble();
-    }
-    else if (resource.type == DataType.Boolean)
-    {
-        if (resource.get!bool == true)
-            resource_json[ "data" ] = true;
-        else
-            resource_json[ "data" ] = false;
-    }
-    else if (resource.type == DataType.Datetime)
-    {
-//	writeln ("@v #r->j #1 resource.get!long=", resource.get!long);
-
-        SysTime st = SysTime(unixTimeToStdTime(resource.get!long), UTC());
-        resource_json[ "data" ] = st.toISOExtString();
-
-//	writeln ("@v #r->j #2 val=", st.toISOExtString());
-    }
-    else
-        resource_json[ "data" ] = Json.undefined;
-
-    return resource_json;
-}
-
-Resource json_to_resource(const Json resource_json)
-{
-    Resource resource = Resource.init;
-
-    DataType type;
-
-    if (resource_json[ "type" ].type is Json.Type.Int)
-        type = cast(DataType)resource_json[ "type" ].get!long;
-    else
-        type = Resource_type.get(resource_json[ "type" ].get!string, DataType.String);
-
-    auto data_type = resource_json[ "data" ].type;
-
-    if (type == DataType.String)
-    {
-        if (resource_json[ "lang" ].type is Json.Type.string)
-            resource.lang = Lang.get(resource_json[ "lang" ].get!string, Lang[ "NONE" ]);
-        resource.data = resource_json[ "data" ].get!string;
-    }
-    else if (type == DataType.Boolean)
-    {
-        if (data_type is Json.Type.Bool)
-        {
-            bool bb = resource_json[ "data" ].get!bool;
-            if (bb == true)
-                resource = true;
-            else
-                resource = false;
-        }
-    }
-    else if (type == DataType.Uri)
-    {
-        resource.data = resource_json[ "data" ].get!string;
-    }
-    else if (type == DataType.Decimal)
-    {
-        resource = decimal(resource_json[ "data" ].get!double);
-    }
-    else if (type == DataType.Integer)
-    {
-        resource = resource_json[ "data" ].get!long;
-    }
-    else if (type == DataType.Datetime)
-    {
-        try
-        {
-            string val = resource_json[ "data" ].get!string;
-//	    writeln ("@v j->r #0 ", val);
-            long   tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
-            resource = tm;
-//	    writeln ("@v j->r #1 ", tm);
-        }
-        catch (Exception ex)
-        {
-            writeln("EX! ", __FILE__, ", line:", __LINE__, ", [", ex.msg, "], in ", resource_json);
-        }
-//	writeln ("@v j->r #2");
-    }
-
-    resource.type = type;
-    return resource;
-}
 
 //////////////////////////////////////////////////// Rest API /////////////////////////////////////////////////////////////////
 
@@ -234,7 +100,60 @@ interface VedaStorageRest_API {
     string[ 2 ] execute_script(string script);
 }
 
-class VedaStorageRest : VedaStorageRest_API {
+class VedaStorageRest : VedaStorageRest_API
+{
+    void fileManager(HTTPServerRequest req, HTTPServerResponse res)
+    {
+        writeln("@v req.path=", req.path);
+
+        string uri;
+        // uri субьекта
+
+        long pos = lastIndexOf(req.path, "/");
+        if (pos > 0)
+        {
+            uri = req.path[ pos + 1..$ ];
+        }
+        else
+            return;
+
+        // найдем в хранилище указанного субьекта
+
+        writeln("@v uri=", uri);
+
+        string ticket = req.cookies.get("ticket", "");
+
+        writeln("@v ticket=", ticket);
+
+        if (uri.length > 3 && ticket !is null)
+        {
+            Tid my_task = Task.getThis();
+
+            if (my_task is Tid.init)
+                return;
+
+            immutable(Individual)[] individual;
+            send(io_task, Command.Get, Function.Individual, uri, ticket, my_task);
+
+            ResultCode rc;
+            receive((immutable(Individual)[] _individuals, ResultCode _rc) { individual = _individuals; rc = _rc; });
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc);
+
+            if (individual.length == 0)
+                return;
+
+            Individual file_info = cast(Individual)individual[ 0 ];
+
+            writeln("@v file_info=", file_info);
+
+            HTTPServerRequestDelegate dg = serveStaticFile(attachments_db_path ~ "/" ~ file_info.getFirstResource(
+                                                                                                                  veda_schema__fileURI).get!string);
+            dg(req, res);
+        }
+    }
+
     override :
 
     Json get_rights(string ticket, string uri)

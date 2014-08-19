@@ -139,8 +139,10 @@ test(
 			read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
 
+			var permission_uri = guid();
+
 			var new_permission = {
-				'@' : guid(),
+				'@' : permission_uri,
 				'rdf:type' : [ {
 					data : 'veda-schema:PermissionStatement',
 					type : _Uri
@@ -163,7 +165,28 @@ test(
 
 			read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
-			
+
+			new_permission["@"] = "_";
+			delete new_permission["veda-schema:permissionObject"];
+			delete new_permission["veda-schema:permissionSubject"];
+
+			var right1 = get_rights (ticket_user1.id, new_test_doc1_uri);
+			var right2 = get_rights (ticket_user2.id, new_test_doc1_uri);
+
+			ok(compare(new_permission, right2));
+
+			new_permission['veda-schema:canUpdate'] = [{
+					data : true,
+					type : _Bool
+				}];
+
+			new_permission['veda-schema:canDelete'] = [{
+					data : true,
+					type : _Bool
+				}];
+
+			ok(compare(new_permission, right1));
+
 		});
 
 test(
@@ -237,7 +260,7 @@ test("#007 Individual store and read, test datatype", function() {
 			type : _Datetime
 		} ],
 		'veda-schema:test_datetime0' : [ {
-			data : new Date ("2014-01-02Z"),
+			data : new Date ("2014-01-02"),
 			type : _Datetime
 		} ],
 		'veda-schema:test_datetime1' : [ {
@@ -698,11 +721,11 @@ test(
 					type : _String
 				} ],
 				'veda-schema:test_datetime0' : [ {
-				data : new Date ("2014-01-01Z"),
+				data : new Date ("2014-01-01"),
 				type : _Datetime
 				} ],
 				'veda-schema:test_datetime1' : [ {
-				data : new Date ("2014-05-01Z"),
+				data : new Date ("2014-05-01"),
 				type : _Datetime
 				} ]
 			};
@@ -728,11 +751,11 @@ test(
 					type : _String
 				} ],
 				'veda-schema:test_datetime0' : [ {
-				data : new Date ("2014-01-02Z"),
+				data : new Date ("2014-01-02"),
 				type : _Datetime
 				} ],
 				'veda-schema:test_datetime1' : [ {
-				data : new Date ("2014-05-01Z"),
+				data : new Date ("2014-05-01"),
 				type : _Datetime
 				} ]
 			};
@@ -758,11 +781,11 @@ test(
 					type : _String
 				} ],
 				'veda-schema:test_datetime0' : [ {
-				data : new Date ("2014-01-02Z"),
+				data : new Date ("2014-01-02"),
 				type : _Datetime
 				} ],
 				'veda-schema:test_datetime1' : [ {
-				data : new Date ("2014-06-11Z"),
+				data : new Date ("2014-06-11"),
 				type : _Datetime
 				} ]
 			};
@@ -788,11 +811,11 @@ test(
 					type : _String
 				} ],
 				'veda-schema:test_datetime0' : [ {
-				data : new Date ("2014-01-03Z"),
+				data : new Date ("2014-01-03"),
 				type : _Datetime
 				} ],
 				'veda-schema:test_datetime1' : [ {
-				data : new Date ("2014-06-12Z"),
+				data : new Date ("2014-06-12"),
 				type : _Datetime
 				} ]
 			};

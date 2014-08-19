@@ -17,6 +17,10 @@
   owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
   owl:versionInfo "1.0" ;
 .
+mondi-data:File_1
+    rdf:type veda-schema:File ;
+    veda-schema:fileURI "111.pdf" ;
+.
 mondi-data:AdministrativeDocument_2
   rdf:type mondi-schema:AdministrativeDocument ;
   mondi-schema:content "To comply the federal law №135-FL issued 12.10.2012 I order..."@en ;
