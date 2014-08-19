@@ -295,44 +295,45 @@
 			</div>
 		</script>		
 		
-		<script type="html/template" id="string-value">
-			<div class="{property.id} property-value" contenteditable="false">
-				{value} <i class="glyphicon glyphicon-remove value-control hidden"></i>
-			</div>
-		</script>
-
-		<script type="html/template" id="string">
-			<div class="container-fluid">
-				<div id="values">
-					{values}
-				</div>
-				<div class="input-group input-control hidden">
-					<span class="input-group-addon">Aa</span>
-					<input type="text" class="form-control" bound id="{property.id}"/>
-				</div>
-			</div>
-		</script>
-
-		<script type="html/template" id="datetime-property">
+		<script type="html/template" id="property-template">
 			<div class="{property.id} container-fluid">
 				<div>
 					<dl>
 						<dt>{property.rdfs:label}</dt>
 						<dd>
-							<div class="value">{value}</div>
-							<div class="input-group input-control hidden">
-								<span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
-								<input type="text" class="form-control" bound data-for="{property.id}" value="{value}"/>
-								<span class="input-group-btn">
-									<button class="btn btn-default" type="button"><i class="glyphicon glyphicon-remove"></i></button>
-								</span>
-							</div>
+							{values}
 						</dd>
 					</dl>
+					<button type="button" class="btn btn-link input-control hidden" id="add" i18n="[Add]">Добавить</button>
 				</div>
 			</div>
 		</script>
 
+		<script type="html/template" id="string-value-template">
+			<div>
+				<div class="value">{value}</div>
+				<div class="input-group input-control hidden">
+					<span class="input-group-addon"><i class="glyphicon glyphicon-font"></i></span>
+					<textarea class="form-control" bound rows="1">{value}</textarea>
+					<span class="input-group-addon btn btn-default">
+						<i class="glyphicon glyphicon-remove"></i>
+					</span>
+				</div>
+			</div>
+		</script>
+
+		<script type="html/template" id="datetime-value-template">
+			<div>
+				<div class="value">{value}</div>
+				<div class="input-group input-control hidden">
+					<span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+					<input type="text" class="form-control" bound value="{value}"/>
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button"><i class="glyphicon glyphicon-remove"></i></button>
+					</span>
+				</div>
+			</div>
+		</script>
 
 		<script type="html/template" id="actions">
 			<div class="container-fluid">

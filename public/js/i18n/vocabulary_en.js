@@ -15,6 +15,7 @@ var vocabulary_en = {
 	'[Save]' : 'Save',
 	'[Delete]' : 'Delete',
 	'[Cancel]' : 'Cancel',
+	'[Add]' : 'Add',	
 		
 //Console
 	'[Javascript console]' : 'Javascript console',

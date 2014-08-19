@@ -3,3 +3,8 @@
   max-width: 400px;
   width: auto;
 }
+
+dl {
+	margin-top: 20px;
+	margin-bottom: 5px;
+}

@@ -448,22 +448,22 @@ mondi-data:PersonTemplate1
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <h3 class="panel-title">{_class.rdfs:label}</h3>
+	        <h3 class="panel-title" data-property="_class.rdfs:label">{_class.rdfs:label}</h3>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
-  	        <h3 class="panel-title">{document.id}</h3>
+  	        <h3 class="panel-title" data-property="document.id">{document.id}</h3>
 	      </div>  
 	    </div>
       </div>
       <div class="panel-body">
-        <h3>{document.rdfs:label}</h3>
+        <h3 data-property="document.rdfs:label">{document.rdfs:label}</h3>
         <div class="row">
-          <div class="col-md-6" id="veda-schema:lastName">{document.veda-schema:lastName}</div>
-          <div class="col-md-6" id="veda-schema:firstName">{document.veda-schema:firstName}</div>
+          <div class="col-md-6" data-property="document.veda-schema:lastName">{document.veda-schema:lastName}</div>
+          <div class="col-md-6" data-property="document.veda-schema:firstName">{document.veda-schema:firstName}</div>
 		</div>
         <div class="row">
-          <div class="col-md-6" id="veda-schema:middleName">{document.veda-schema:middleName}</div>
-          <div class="col-md-6" id="veda-schema:birthday">{document.veda-schema:birthday}</div>
+          <div class="col-md-6" data-property="document.veda-schema:middleName">{document.veda-schema:middleName}</div>
+          <div class="col-md-6" data-property="document.veda-schema:birthday">{document.veda-schema:birthday}</div>
         </div>
       </div>
     </div>

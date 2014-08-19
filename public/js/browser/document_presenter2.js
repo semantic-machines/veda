@@ -69,65 +69,55 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 
 	function renderProperty (property, spec, values) {
 		
+		var propertyTemplate = $("#property-template").html();
+		var renderedProperty = "";
+		var renderedValues = "";
+		
 		switch( property["rdfs:range"][0].id ) {
 
 			case "rdfs:Literal" : 
-
 			case "xsd:string" : 
-				var template = $("#string").html();
-				var value_template = $("#string-value").html();
-				var renderedValues = "";
-
+				var valueTemplate = $("#string-value-template").html();
+				
 				values
 					.filter (function (value) {
-						return value.language == Veda().user.language || value.language == "NONE";
+						return value.language == Veda().user.language;
 					})
 					.map (function (value) {
-						renderedValues += riot.render(
-							value_template, 
-							{property: property, value: value}
-						);
+						renderedValues += riot.render(valueTemplate, {value: value});
 					});
-				
-				return riot.render(template, {property: property, values: renderedValues});
-
+	
 				break
 
 			case "xsd:boolean" : 
-			
 			case "xsd:integer" : 
-
 			case "xsd:decimal" : 
-
 			case "xsd:dateTime" : 
-				var template = $("#datetime-property").html();
-				var renderedValues = "";
-
+				var valueTemplate = $("#datetime-value-template").html();
+				
 				values
 					.map (function (value) {
-						renderedValues += riot.render(
-							template, 
-							{property: property, value: value},
-							function (value) {
-								if ( !(value instanceof Array) ) return value;
-								var res = value.filter(function (item) {
-									return !(item instanceof String) ? true : item.language == Veda().user.language || item.language == "NONE";
-								});
-								return res;
-							}
-						);
+						renderedValues += riot.render(valueTemplate, {value: value});
 					});
-				
-				console.log(renderedValues);
-				return renderedValues;
-				
+
 				break
 
 			default : 
-				//console.log("object", property, spec, values);
 				break
-
 		}
+
+		renderedProperty = riot.render (
+			propertyTemplate, 
+			{property: property, values: renderedValues},
+			function (value) {
+				if ( !(value instanceof Array) ) return value;
+				var res = value.filter(function (item) {
+					return !(item instanceof String) ? true : item.language == Veda().user.language;
+				});
+				return res;
+			}
+		);
+		return renderedProperty;
 	
 	}
 	
@@ -159,7 +149,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				
 				renderedProperties.id = document.id;
 				
-				var renderedTemplate = riot.render (
+				/*var renderedTemplate = riot.render (
 					template, 
 					{
 						document: renderedProperties, 
@@ -173,7 +163,29 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 						return res;
 					}
 				);
-				container.append(renderedTemplate);
+				
+				var renderedDocument = $("<div/>");
+				renderedDocument.append(renderedTemplate);
+				
+				container.append(renderedDocument); */
+				
+				var renderedDocument = $("<div/>");
+				renderedDocument.append(template);
+				
+				var data = {
+					document: renderedProperties, 
+					_class: _class
+				};
+				
+				$('[data-property]', renderedDocument).each( function () {
+					var $this = $(this);
+					var key = $this.data("property").split(".").reduce(function (acc, i) {
+							return isNaN(i) ? acc + "['" + i + "']" : acc + "[" + i + "]";
+					}, "");
+					$this.empty().append( eval("data"+key) );
+				});
+				
+				container.append( renderedDocument );
 				
 			});
 		

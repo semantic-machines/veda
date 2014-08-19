@@ -15,6 +15,7 @@ var vocabulary_ru = {
 	'[Save]' : 'Сохранить',
 	'[Delete]' : 'Удалить',
 	'[Cancel]' : 'Отмена',
+	'[Add]' : 'Добавить',
 
 //Console
 	'[Javascript console]' : 'Консоль Javascript',
