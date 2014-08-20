@@ -67,9 +67,10 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		
 	});
 
-	function renderProperty (property, spec, values) {
+	function renderProperty (document, property, spec, values) {
 		
 		var propertyTemplate = $("#property-template").html();
+		
 		var renderedProperty = "";
 		var renderedValues = "";
 		
@@ -81,7 +82,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				
 				values
 					.filter (function (value) {
-						return value.language == Veda().user.language;
+						return value.language == Veda().user.language || value.language == "NONE";
 					})
 					.map (function (value) {
 						renderedValues += riot.render(valueTemplate, {value: value});
@@ -94,10 +95,9 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 			case "xsd:decimal" : 
 			case "xsd:dateTime" : 
 				var valueTemplate = $("#datetime-value-template").html();
-				
 				values
-					.map (function (value) {
-						renderedValues += riot.render(valueTemplate, {value: value});
+					.map (function (value, index) {
+						renderedValues += riot.render(valueTemplate, {value: value, index: index, property: property});
 					});
 
 				break
@@ -112,13 +112,23 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 			function (value) {
 				if ( !(value instanceof Array) ) return value;
 				var res = value.filter(function (item) {
-					return !(item instanceof String) ? true : item.language == Veda().user.language;
+					return !(item instanceof String) ? true : item.language == Veda().user.language || item.language == "NONE";
 				});
 				return res;
 			}
 		);
-		return renderedProperty;
-	
+		
+		var result = $("<div/>");
+		result.append(renderedProperty);
+		
+		var controls = $("[bound]", result);
+		controls.on("change", function ( e ) {
+			document[property.id] = controls.map(function () {
+				return this.value;
+			}).get();
+		});
+		
+		return result;
 	}
 	
 	veda.on("document2:loaded", function (document, container_param) {
@@ -142,35 +152,15 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 					var property = document.properties[property_uri];
 					var spec = _class.specsByProps[property_uri];
 					var values = document[property_uri];
-					acc[property_uri] = renderProperty(property, spec, values);
+					acc[property_uri] = renderProperty(document, property, spec, values);
 					return acc;
 					
 				}, renderedProperties);
 				
 				renderedProperties.id = document.id;
 				
-				/*var renderedTemplate = riot.render (
-					template, 
-					{
-						document: renderedProperties, 
-						_class: _class
-					}, 
-					function (value) {
-						if ( !(value instanceof Array) ) return value;
-						var res = value.filter(function (item) {
-							return !(item instanceof String) ? true : item.language == Veda().user.language || item.language == "NONE";
-						});
-						return res;
-					}
-				);
-				
 				var renderedDocument = $("<div/>");
-				renderedDocument.append(renderedTemplate);
-				
-				container.append(renderedDocument); */
-				
-				var renderedDocument = $("<div/>");
-				renderedDocument.append(template);
+				renderedDocument.append (template);
 				
 				var data = {
 					document: renderedProperties, 
@@ -183,6 +173,13 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 							return isNaN(i) ? acc + "['" + i + "']" : acc + "[" + i + "]";
 					}, "");
 					$this.empty().append( eval("data"+key) );
+				});
+				
+				document.on("value:changed", function (property_uri, values) {
+					var property = document.properties[property_uri];
+					var spec = _class.specsByProps[property_uri];
+					var tmp = renderProperty(document, property, spec, values);
+					$("[data-property='document." + property_uri + "']", renderedDocument).empty().append(tmp);
 				});
 				
 				container.append( renderedDocument );
@@ -216,6 +213,8 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 			$("#edit", container).toggleClass("hidden");
 			$("#save", container).toggleClass("hidden");
 		});
+
+		localize(container, veda.user.language);
 
 	});
 

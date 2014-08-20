@@ -109,14 +109,18 @@ function IndividualModel(veda, uri, container) {
 			if (property_uri == "@") return;
 			self.defineProperty(property_uri);
 		});
-		veda.trigger("individual:loaded", self, container);
+		self.trigger("individual:loaded", self, container);
 	};
 
 	self.save = function() {
 		put_individual(veda.ticket, individual, function (data) {
-			veda.trigger("individual:saved", self);
+			self.trigger("individual:saved", self, container);
 		});
 	};
+
+	self.on("individual:saved individual:loaded", function ( event ) {
+		veda.trigger(event, self, container);
+	});
 
 	// Load data 
 	if (uri) self.load(uri); 
