@@ -246,11 +246,11 @@
 			</p>
 			<div data-toggle="buttons" class="navbar-right btn-group" id="preferred-language">
 				<label id="RU" class="btn btn-xs btn-info navbar-btn">
-					<input type="radio"/>
+					<input type="checkbox"/>
 					Русский
 				</label>
 				<label id="EN" class="btn btn-xs btn-info navbar-btn">
-					<input type="radio"/>
+					<input type="checkbox"/>
 					English
 				</label>
 			</div>
@@ -304,7 +304,7 @@
 							{values}
 						</dd>
 					</dl>
-					<button type="button" class="btn btn-link input-control hidden" id="add" i18n="[Add]">Добавить</button>
+					<button type="button" class="btn btn-link input-control" id="add" i18n="[Add]">Добавить</button>
 				</div>
 			</div>
 		</script>
@@ -312,7 +312,7 @@
 		<script type="html/template" id="string-value-template">
 			<div>
 				<div class="value">{value}</div>
-				<div class="input-group input-control hidden">
+				<div class="input-group input-control">
 					<span class="input-group-addon"><i class="glyphicon glyphicon-font"></i></span>
 					<textarea class="form-control" bound rows="1">{value}</textarea>
 					<span class="input-group-addon btn btn-default">
@@ -325,7 +325,7 @@
 		<script type="html/template" id="datetime-value-template">
 			<div>
 				<div class="value">{value}</div>
-				<div class="input-group input-control hidden">
+				<div class="input-group input-control">
 					<span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
 					<input type="text" class="form-control" bound value="{value}"/>
 					<span class="input-group-btn">
@@ -335,12 +335,65 @@
 			</div>
 		</script>
 
+		<script type="html/template" id="integer-value-template">
+			<div>
+				<div class="value">{value}</div>
+				<div class="input-group input-control">
+					<span class="input-group-addon"><strong>10</strong></span>
+					<input type="text" class="form-control" bound value="{value}"/>
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button"><i class="glyphicon glyphicon-remove"></i></button>
+					</span>
+				</div>
+			</div>
+		</script>
+
+		<script type="html/template" id="decimal-value-template">
+			<div>
+				<div class="value">{value}</div>
+				<div class="input-group input-control">
+					<span class="input-group-addon"><strong>0.1</strong></span>
+					<input type="text" class="form-control" bound value="{value}"/>
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button"><i class="glyphicon glyphicon-remove"></i></button>
+					</span>
+				</div>
+			</div>
+		</script>
+
+		<script type="html/template" id="boolean-value-template">
+			<div>
+				<div class="value">{value}</div>
+				<div class="input-group input-control">
+					<span class="input-group-addon"><i class="glyphicon glyphicon-ok"></i></span>
+					<input type="text" class="form-control" bound value="{value}"/>
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button"><i class="glyphicon glyphicon-remove"></i></button>
+					</span>
+				</div>
+			</div>
+		</script>
+
+		<script type="html/template" id="object-value-template">
+			<div>
+				<div class="value">{value.id}</div>
+				<div class="input-group input-control">
+					<span class="input-group-addon"><i class="glyphicon glyphicon-share-alt"></i></span>
+					<input type="text" class="form-control" bound value="{value}"/>
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button"><i class="glyphicon glyphicon-remove"></i></button>
+					</span>
+				</div>
+			</div>
+		</script>
+
+
 		<script type="html/template" id="actions">
 			<div class="container-fluid">
 				<div class="well well-sm">
 					<button type="button" class="btn btn-default" id="edit" i18n="[Edit]">Редактировать</button>
-					<button type="button" class="btn btn-default hidden" id="save" i18n="[Save]">Сохранить</button>
-					<button type="button" class="btn btn-default hidden" id="cancel" i18n="[Cancel]">Отмена</button>
+					<button type="button" class="btn btn-default" id="save" i18n="[Save]">Сохранить</button>
+					<button type="button" class="btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
 				</div>
 			</div> 
 		</script>

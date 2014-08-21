@@ -21,6 +21,7 @@ function UserModel(veda, individual) {
 	
 	self.switch_language = function(language) {
 		self.language = language;
+
 		if (language == "RU") {
 			self.preferences["veda-ui:preferredLanguage"] = [new IndividualModel(veda, "veda-ui:RU")];
 		}

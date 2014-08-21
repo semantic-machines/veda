@@ -36,7 +36,7 @@ function IndividualModel(veda, uri, container) {
 						case "String" : 
 							var string = new String(value.data);
 							string.language = value.lang;
-							return string; 
+							return string;
 							break
 						case "Uri" : 
 							if (value.data.search(/^.{3,5}:\/\//) == 0) return new String(value.data);
@@ -50,7 +50,7 @@ function IndividualModel(veda, uri, container) {
 						default : throw ("Unsupported type of property value"); break
 					}
 				});
-				return values[property_uri];
+				return values[property_uri].filter(function( item ){ return item }); // Remove undefined values
 			},
 			set: function (value) { 
 				if (values[property_uri] == value) return;

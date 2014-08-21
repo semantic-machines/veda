@@ -8,6 +8,8 @@ function AppModel(config) {
 	self.config = config;
 
 	self.started = false;
+	
+	self.language = ["RU"];
 
 	// Define Model data setters & getters
 	var properties = { user_uri:"", ticket:"", end_time:"" };

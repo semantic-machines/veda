@@ -81,9 +81,9 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				var valueTemplate = $("#string-value-template").html();
 				
 				values
-					.filter (function (value) {
+					/*.filter (function (value) {
 						return value.language == Veda().user.language || value.language == "NONE";
-					})
+					})*/
 					.map (function (value) {
 						renderedValues += riot.render(valueTemplate, {value: value});
 					});
@@ -91,8 +91,31 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				break
 
 			case "xsd:boolean" : 
+				var valueTemplate = $("#boolean-value-template").html();
+				values
+					.map (function (value, index) {
+						renderedValues += riot.render(valueTemplate, {value: value, index: index, property: property});
+					});
+
+				break
 			case "xsd:integer" : 
+				var valueTemplate = $("#integer-value-template").html();
+				values
+					.map (function (value, index) {
+						renderedValues += riot.render(valueTemplate, {value: value, index: index, property: property});
+					});
+
+				break
+			
 			case "xsd:decimal" : 
+				var valueTemplate = $("#decimal-value-template").html();
+				values
+					.map (function (value, index) {
+						renderedValues += riot.render(valueTemplate, {value: value, index: index, property: property});
+					});
+
+				break
+
 			case "xsd:dateTime" : 
 				var valueTemplate = $("#datetime-value-template").html();
 				values
@@ -103,6 +126,12 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				break
 
 			default : 
+				var valueTemplate = $("#object-value-template").html();
+				values
+					.map (function (value, index) {
+						renderedValues += riot.render(valueTemplate, {value: value, index: index, property: property});
+					});
+
 				break
 		}
 
@@ -170,16 +199,18 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				$('[data-property]', renderedDocument).each( function () {
 					var $this = $(this);
 					var key = $this.data("property").split(".").reduce(function (acc, i) {
-							return isNaN(i) ? acc + "['" + i + "']" : acc + "[" + i + "]";
+						return isNaN(i) ? acc + "['" + i + "']" : acc + "[" + i + "]";
 					}, "");
 					$this.empty().append( eval("data"+key) );
 				});
 				
-				document.on("value:changed", function (property_uri, values) {
+				document.on("value:changed", function (property_uri, vals) {
 					var property = document.properties[property_uri];
 					var spec = _class.specsByProps[property_uri];
-					var tmp = renderProperty(document, property, spec, values);
-					$("[data-property='document." + property_uri + "']", renderedDocument).empty().append(tmp);
+					var result = renderProperty (document, property, spec, vals);
+					$(".value", result).hide();
+					$(".input-control, .value-control").show();
+					$('[data-property="document.' + property_uri + '"]', renderedDocument).empty().append(result);
 				});
 				
 				container.append( renderedDocument );
@@ -188,30 +219,35 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		
 		var actionsTemplate = $("#actions").html();
 		container.append(actionsTemplate);
-		
+
+		$(".input-control, .value-control").hide();
+		$("#save, #cancel", container).hide();
+				
 		$("#edit", container).on("click", function (e) {
-			$(".value, .input-control, .value-control").toggleClass("hidden");
+			$(".value").hide();
+			$(".input-control, .value-control").show();
 			
-			$(this).toggleClass("hidden");
-			$("#save", container).toggleClass("hidden");
-			$("#cancel", container).toggleClass("hidden");
+			$(this).hide();
+			$("#save, #cancel", container).show();
 		});
 
 		$("#save", container).on("click", function (e) {
 			document.save();
-			$(".value, .input-control, .value-control").toggleClass("hidden");
+			$(".value").show();
+			$(".input-control, .value-control").hide();
 			
-			$(this).toggleClass("hidden");
-			$("#edit", container).toggleClass("hidden");
-			$("#cancel", container).toggleClass("hidden");			
+			$(this).hide();
+			$("#cancel", container).hide();
+			$("#edit", container).show();
 		});
 
 		$("#cancel", container).on("click", function (e) {
-			$(".value, .input-control, .value-control").toggleClass("hidden");
+			$(".value").show();
+			$(".input-control, .value-control").hide();
 			
-			$(this).toggleClass("hidden");
-			$("#edit", container).toggleClass("hidden");
-			$("#save", container).toggleClass("hidden");
+			$(this).hide();
+			$("#edit", container).show();
+			$("#save", container).hide();
 		});
 
 		localize(container, veda.user.language);
