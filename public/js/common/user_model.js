@@ -4,7 +4,7 @@
 
 function UserModel(veda, individual) {
 	var defaults = {
-		language : {"veda-ui:RU": veda.availableLanguages["veda-ui:RU"]},
+		language : {"RU": veda.availableLanguages["RU"]},
 		displayedElements : 10
 	};
 	
@@ -14,7 +14,7 @@ function UserModel(veda, individual) {
 		self.preferences = new IndividualModel(veda, self["veda-ui:hasPreferences"][0].id);
 
 		self.language = self.preferences["veda-ui:preferredLanguage"].reduce( function (acc, lang) {
-			acc[lang.id] = veda.availableLanguages[lang.id];
+			acc[lang["rdf:value"][0]] = veda.availableLanguages[lang["rdf:value"][0]];
 			return acc;
 		}, {} );
 
@@ -24,14 +24,14 @@ function UserModel(veda, individual) {
 		self.displayedElements = defaults.displayedElements;
 	}
 	
-	self.toggleLanguage = function(language_uri) {
+	self.toggleLanguage = function(language_val) {
 		
-		if (language_uri in self.language && Object.keys(self.language).length == 1) return;
+		if (language_val in self.language && Object.keys(self.language).length == 1) return;
 				
-		language_uri in self.language ? delete self.language[language_uri] : self.language[language_uri] = veda.availableLanguages[language_uri];
+		language_val in self.language ? delete self.language[language_val] : self.language[language_val] = veda.availableLanguages[language_val];
 		
-		self.preferences["veda-ui:preferredLanguage"] = Object.keys(self.language).map ( function (language_uri) {
-			return self.language[language_uri];
+		self.preferences["veda-ui:preferredLanguage"] = Object.keys(self.language).map ( function (language_val) {
+			return self.language[language_val];
 		});
 
 		self.preferences.save();

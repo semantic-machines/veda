@@ -37,8 +37,8 @@ function IndividualModel(veda, uri, container) {
 					switch (value.type) {
 						case "String" : 
 							var string = new String(value.data);
-							string.language = value.lang == "NONE" ? "NONE" : veda.availableLanguages["veda-ui:" + value.lang].id;
-							return (string.language in veda.user.language || string.language == "NONE") ? (
+							string.language = value.lang;
+							return (string.language == "NONE" || string.language in veda.user.language) ? (
 								string
 							) : (
 								filteredStrings.push(string),

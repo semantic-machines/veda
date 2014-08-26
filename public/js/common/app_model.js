@@ -86,7 +86,8 @@ function AppModel(config) {
 		var langs = query(self.ticket, "'rdf:type' == 'veda-ui:Language'");
 		self.availableLanguages = langs.reduce ( 
 			function (acc, language_uri) {
-				acc[language_uri] =  new IndividualModel(self, language_uri);
+				var lang = new IndividualModel(self, language_uri);
+				acc[lang["rdf:value"][0]] = lang;  
 				return acc;
 			}, {});
 		self.user = new UserModel(self, self.user_uri);
