@@ -126,7 +126,7 @@ function IndividualModel(veda, uri, container) {
 		Object.keys(individual).reduce(function (acc, property_uri) {
 			if (property_uri == "@") return acc;
 			acc[property_uri] = individual[property_uri].filter(function (item) {
-				return item.value != "" || item.value;
+				return item;
 			});
 			if (!acc[property_uri].length) delete acc[property_uri];
 			return acc;

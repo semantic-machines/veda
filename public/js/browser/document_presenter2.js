@@ -61,15 +61,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		
 	});
 
-	function renderValue (property, spec, value) {
-		return
-	}
-	
-	function renderProperty (document, property, spec, values) {
-		
-		var propertyTemplate = $("#property-template").html();
-		
-		var renderedProperty = "";
+	function renderValues (property, spec, values) {
 		
 		var renderedValues = "";
 		
@@ -130,19 +122,39 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 
 				break
 		}
-
+		
+		var result = $("<div/>");
+		
+		result.append(renderedValues);
+		
+		return result;
+	}
+	
+	function renderProperty (document, property, spec, values) {
+		
+		var propertyTemplate = $("#property-template").html();
+		
+		var renderedProperty = "";
+		
 		renderedProperty = riot.render (
 			propertyTemplate, 
-			{property: property, values: renderedValues}
+			{property: property}
 		);
 		
 		var result = $("<div/>");
 		result.append(renderedProperty);
 		
+		$(".values", result).append( renderValues(property, spec, values) );
+		
 		$("[bound]", result).on("change", function ( e ) {
 			document[property.id] = $("[bound]", result).map(function () {
 				return this.value;
 			}).get();
+		});
+
+		$(".add", result).on("click", function () {
+			values.push(undefined);
+			document[property.id] = values; 
 		});
 
 		$(".remove", result).on("click", function () {
