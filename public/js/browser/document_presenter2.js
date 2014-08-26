@@ -5,9 +5,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 	function renderDocumentProperty (veda, individual, property_uri, template, container) {
 		var label, uri, values;
 		label = typeof individual.properties[property_uri] == "object" ? 
-					individual.properties[property_uri]["rdfs:label"]
-						.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
-						.join(", ")
+					individual.properties[property_uri]["rdfs:label"].join(", ")
 					: property_uri;
 		uri = typeof individual.properties[property_uri] == "object" ? "#/document/" + individual.properties[property_uri].id : "";
 		values = individual[property_uri]
@@ -17,11 +15,9 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 							return item.search(/^.{3,5}:\/\//) == 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
 						else if (item instanceof IndividualModel)
 							return "<a data-toggle='popover' href='#/document/" + item.id + "'>" + 
-								(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item.id) + "</a>";
+								(item["rdfs:label"] ? item["rdfs:label"].join(", ") : item.id) + "</a>";
 						else return item;
-					})
-					.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
-					.join(", ");
+					}).join(", ");
 		container.append(
 			riot.render(
 				template,
@@ -50,9 +46,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 			riot.render(
 				document_label_template,
 				{ 
-					label: document["rdfs:label"] ? document["rdfs:label"]
-						.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
-						.join(", ") : document.id,
+					label: document["rdfs:label"] ? document["rdfs:label"].join(", ") : document.id,
 					uri: "#/document2/" + document.id
 				}
 			) 
@@ -67,11 +61,16 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		
 	});
 
+	function renderValue (property, spec, value) {
+		return
+	}
+	
 	function renderProperty (document, property, spec, values) {
 		
 		var propertyTemplate = $("#property-template").html();
 		
 		var renderedProperty = "";
+		
 		var renderedValues = "";
 		
 		switch( property["rdfs:range"][0].id ) {
@@ -81,11 +80,8 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				var valueTemplate = $("#string-value-template").html();
 				
 				values
-					/*.filter (function (value) {
-						return value.language == Veda().user.language || value.language == "NONE";
-					})*/
-					.map (function (value) {
-						renderedValues += riot.render(valueTemplate, {value: value});
+					.map (function (value, index) {
+						renderedValues += riot.render(valueTemplate, {value: value, index: index, property: property});
 					});
 	
 				break
@@ -137,26 +133,26 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 
 		renderedProperty = riot.render (
 			propertyTemplate, 
-			{property: property, values: renderedValues},
-			function (value) {
-				if ( !(value instanceof Array) ) return value;
-				var res = value.filter(function (item) {
-					return !(item instanceof String) ? true : item.language == Veda().user.language || item.language == "NONE";
-				});
-				return res;
-			}
+			{property: property, values: renderedValues}
 		);
 		
 		var result = $("<div/>");
 		result.append(renderedProperty);
 		
-		var controls = $("[bound]", result);
-		controls.on("change", function ( e ) {
-			document[property.id] = controls.map(function () {
+		$("[bound]", result).on("change", function ( e ) {
+			document[property.id] = $("[bound]", result).map(function () {
 				return this.value;
 			}).get();
 		});
-		
+
+		$(".remove", result).on("click", function () {
+			var $target = $(this.parentNode);
+			$target.remove();
+			var bound = $("[bound]", result);
+			if (bound.length) return bound.trigger("change");
+			document[property.id] = [];
+		});
+
 		return result;
 	}
 	
@@ -209,7 +205,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 					var spec = _class.specsByProps[property_uri];
 					var result = renderProperty (document, property, spec, vals);
 					$(".value", result).hide();
-					$(".input-control, .value-control").show();
+					$(".input-control").show();
 					$('[data-property="document.' + property_uri + '"]', renderedDocument).empty().append(result);
 				});
 				
@@ -220,12 +216,12 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		var actionsTemplate = $("#actions").html();
 		container.append(actionsTemplate);
 
-		$(".input-control, .value-control").hide();
+		$(".input-control").hide();
 		$("#save, #cancel", container).hide();
 				
 		$("#edit", container).on("click", function (e) {
 			$(".value").hide();
-			$(".input-control, .value-control").show();
+			$(".input-control").show();
 			
 			$(this).hide();
 			$("#save, #cancel", container).show();
@@ -234,7 +230,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		$("#save", container).on("click", function (e) {
 			document.save();
 			$(".value").show();
-			$(".input-control, .value-control").hide();
+			$(".input-control").hide();
 			
 			$(this).hide();
 			$("#cancel", container).hide();
@@ -243,7 +239,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 
 		$("#cancel", container).on("click", function (e) {
 			$(".value").show();
-			$(".input-control, .value-control").hide();
+			$(".input-control").hide();
 			
 			$(this).hide();
 			$("#edit", container).show();

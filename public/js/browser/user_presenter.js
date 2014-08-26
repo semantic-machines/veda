@@ -3,27 +3,26 @@
 Veda(function UserPresenter(veda) { "use strict";
 
 	var template = $("#current-user-template").html();
+	var languageTemplate = $("#language-template").html();
 	var container = $("#nav-container #user-info");
 	
 	veda.on("user:loaded", function (user) {
 
-		setTimeout(function(){
+		setTimeout ( function () {
 
-			// Render View
-			container.html( 
-				riot.render( template, user, function localizeData(data) {
-					return data instanceof Array ? 
-						data.filter(function(i){return !(i instanceof String) ? true : i.language == Veda().user.language || i.language == "NONE" }).join(", ") 
-						:
-						data;
-				})
-			);
+			// Render languages
+			var languages = ""
+			Object.keys(veda.availableLanguages).map ( function (language_uri) {
+				languages += riot.render(languageTemplate, veda.availableLanguages[language_uri]);
+			});
+			
+			// Render user
+			container.html( riot.render(template, {user: user, languages: languages}) );
 			
 			$("#preferred-language > label", container).each( function() {
-				if (this.id == user.language) $(this).addClass("active");
-				$(this).on("click", function(){ 
-					user.switch_language(this.id);
-					veda.trigger("language:changed");
+				if (this.id in user.language) $(this).addClass("active");
+				$(this).on("click", function() { 
+					user.toggleLanguage(this.id);
 				});
 			});
 

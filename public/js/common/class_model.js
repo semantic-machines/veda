@@ -34,7 +34,7 @@ function ClassModel(veda, individual) {
 				return documentTemplate ? 
 					documentTemplate 
 					: 
-					documentTemplate = new IndividualModel(veda, documentTemplatesList.pop());
+					documentTemplate = new IndividualModel(veda, documentTemplatesList[0]);
 			}
 		});
 	}

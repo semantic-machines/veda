@@ -27,7 +27,9 @@ function IndividualModel(veda, uri, container) {
 
 		properties[property_uri] = undefined;
 		values[property_uri] = undefined;
-
+		
+		var filteredStrings = [];
+		
 		Object.defineProperty(self, property_uri, {
 			get: function () { 
 				if (values[property_uri]) return values[property_uri];
@@ -35,8 +37,13 @@ function IndividualModel(veda, uri, container) {
 					switch (value.type) {
 						case "String" : 
 							var string = new String(value.data);
-							string.language = value.lang;
-							return string;
+							string.language = value.lang == "NONE" ? "NONE" : veda.availableLanguages["veda-ui:" + value.lang].id;
+							return (string.language in veda.user.language || string.language == "NONE") ? (
+								string
+							) : (
+								filteredStrings.push(string),
+								undefined
+							);
 							break
 						case "Uri" : 
 							if (value.data.search(/^.{3,5}:\/\//) == 0) return new String(value.data);
@@ -50,11 +57,14 @@ function IndividualModel(veda, uri, container) {
 						default : throw ("Unsupported type of property value"); break
 					}
 				});
-				return values[property_uri].filter(function( item ){ return item }); // Remove undefined values
+				values[property_uri] = values[property_uri].filter(function (item) { return item }); // Remove undefined values
+				return values[property_uri];
 			},
 			set: function (value) { 
-				if (values[property_uri] == value) return;
 				values[property_uri] = value;
+				if (filteredStrings.length) { 
+					values[property_uri] = values[property_uri].concat(filteredStrings);
+				}
 				individual[property_uri] = values[property_uri].map( function (value) {
 					var result = {};
 					if (value instanceof Number || typeof value === "number" ) {
@@ -113,6 +123,14 @@ function IndividualModel(veda, uri, container) {
 	};
 
 	self.save = function() {
+		Object.keys(individual).reduce(function (acc, property_uri) {
+			if (property_uri == "@") return acc;
+			acc[property_uri] = individual[property_uri].filter(function (item) {
+				return item.value != "" || item.value;
+			});
+			if (!acc[property_uri].length) delete acc[property_uri];
+			return acc;
+		}, individual);
 		put_individual(veda.ticket, individual, function (data) {
 			self.trigger("individual:saved", self, container);
 		});

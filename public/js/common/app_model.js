@@ -8,8 +8,6 @@ function AppModel(config) {
 	self.config = config;
 
 	self.started = false;
-	
-	self.language = ["RU"];
 
 	// Define Model data setters & getters
 	var properties = { user_uri:"", ticket:"", end_time:"" };
@@ -85,6 +83,12 @@ function AppModel(config) {
 	
 	// Load user after successful authentication
 	self.on("auth:success", function() { 
+		var langs = query(self.ticket, "'rdf:type' == 'veda-ui:Language'");
+		self.availableLanguages = langs.reduce ( 
+			function (acc, language_uri) {
+				acc[language_uri] =  new IndividualModel(self, language_uri);
+				return acc;
+			}, {});
 		self.user = new UserModel(self, self.user_uri);
 	});
 	

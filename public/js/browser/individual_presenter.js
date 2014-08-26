@@ -5,9 +5,7 @@ Veda(function IndividualPresenter (veda) { "use strict";
 	function renderIndividualProperty (veda, individual, property_uri, template, container) {
 		var label, uri, values;
 		label = typeof individual.properties[property_uri] == "object" ? 
-					individual.properties[property_uri]["rdfs:label"]
-						.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
-						.join(", ")
+					individual.properties[property_uri]["rdfs:label"].join(", ")
 					: individual.properties[property_uri];
 		uri = typeof individual.properties[property_uri] == "object" ? individual.properties[property_uri].id : "";
 		values = individual[property_uri]
@@ -17,10 +15,9 @@ Veda(function IndividualPresenter (veda) { "use strict";
 							return item.search(/^.{3,5}:\/\//) == 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
 						else if (item instanceof IndividualModel)
 							return "<a data-toggle='popover' href='#/document/" + item.id + "'>" + 
-								(item["rdfs:label"] ? item["rdfs:label"].filter(function(item){return item.language == veda.user.language || item.language == "NONE"}).join(", ") : item.id) + "</a>";
+								(item["rdfs:label"] ? item["rdfs:label"].join(", ") : item.id) + "</a>";
 						else return item;
 					})
-					.filter(function(item){return item.language ? item.language == veda.user.language || item.language == "NONE" : item})
 					.join(", ");
 		container.append (
 			riot.render (
@@ -52,9 +49,7 @@ Veda(function IndividualPresenter (veda) { "use strict";
 			riot.render(
 				individual_label_template,
 				{ 
-					label: individual["rdfs:label"] ? individual["rdfs:label"]
-						.filter(function(item){return item.language == veda.user.language || item.language == "NONE"})
-						.join(", ") : individual.id,
+					label: individual["rdfs:label"] ? individual["rdfs:label"].join(", ") : individual.id,
 					uri: individual.id 
 				}
 			) 

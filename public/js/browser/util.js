@@ -7,7 +7,7 @@ function escape4$(str) {
 
 // Localize nodeSelector
 function localize(container, lang) {
-	$.ajax({
+	/*$.ajax({
 		type: "GET",
 		dataType: "script",
 		url: "js/i18n/vocabulary_"+lang.toLowerCase()+".js",
@@ -18,6 +18,6 @@ function localize(container, lang) {
 		$('[i18n]', container).each(function() {
 			$(this).text($.i18n._($(this).attr('i18n')));
 		});
-	});
+	});*/
 }
 
