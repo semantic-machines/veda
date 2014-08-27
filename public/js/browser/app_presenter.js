@@ -61,7 +61,7 @@ Veda(function AppPresenter(veda) { "use strict";
 		e.preventDefault();
 		$("#current-user").html("");
 		veda.trigger("auth:quit");
-		Veda({});
+		Veda(veda.config);
 	});
 
 	// Listen to user loaded event
