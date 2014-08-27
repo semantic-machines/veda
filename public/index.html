@@ -298,11 +298,14 @@
 			<div class="{property.id} container-fluid">
 				<div>
 					<dl>
-						<dt>{property.rdfs:label}</dt>
+						<dt><a href="#/document/{property.id}" data-toggle="popover">{property.rdfs:label}</a></dt>
 						<dd class="values">
 						</dd>
 					</dl>
 					<button type="button" class="btn btn-link input-control add" i18n="[Add]">Добавить</button>
+					<!--<div class="row"><strong>{property.rdfs:label}</strong></div>
+					<div class="row values"></div>
+					<button type="button" class="btn btn-link input-control add" i18n="[Add]">Добавить</button>-->
 				</div>
 			</div>
 		</script>
@@ -311,7 +314,7 @@
 			<div>
 				<div class="value">{value}</div>
 				<div class="input-group input-control">
-					<span class="input-group-addon"><i class="glyphicon glyphicon-font"></i></span>
+					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-font"></i></span>
 					<textarea class="form-control" rows="1" bound data-property="{property.id}" data-index="{index}">{value}</textarea>
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
@@ -324,7 +327,7 @@
 			<div>
 				<div class="value">{value}</div>
 				<div class="input-group input-control">
-					<span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-time"></i></span>
 					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
@@ -337,7 +340,7 @@
 			<div>
 				<div class="value">{value}</div>
 				<div class="input-group input-control">
-					<span class="input-group-addon"><strong>10</strong></span>
+					<span class="input-group-addon btn btn-default"><strong>10</strong></span>
 					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
@@ -350,7 +353,7 @@
 			<div>
 				<div class="value">{value}</div>
 				<div class="input-group input-control">
-					<span class="input-group-addon"><strong>0.1</strong></span>
+					<span class="input-group-addon btn btn-default"><strong>0.1</strong></span>
 					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
@@ -363,7 +366,7 @@
 			<div>
 				<div class="value">{value}</div>
 				<div class="input-group input-control">
-					<span class="input-group-addon"><i class="glyphicon glyphicon-ok"></i></span>
+					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-ok"></i></span>
 					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
@@ -376,7 +379,7 @@
 			<div>
 				<div class="value">{value.id}</div>
 				<div class="input-group input-control">
-					<span class="input-group-addon"><i class="glyphicon glyphicon-share-alt"></i></span>
+					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-search"></i></span>
 					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>

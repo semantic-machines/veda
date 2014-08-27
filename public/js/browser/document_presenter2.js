@@ -181,7 +181,17 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 			.map( function (item) {
 				
 				var _class = new ClassModel(veda, item);
-				var template = _class.documentTemplate["veda-ui:template"] ? _class.documentTemplate["veda-ui:template"][0] : undefined;
+				var template = _class.documentTemplate["veda-ui:template"] ? ( 
+					_class.documentTemplate["veda-ui:template"][0] 
+				) : ( 
+					[$("<h3/>", {"data-property":"document.rdfs:label"})]
+						.concat( 
+							Object.getOwnPropertyNames(document.properties).map( function (property_uri) {
+								if (property_uri == "rdfs:label") return;
+								return $("<div/>", {"data-property":"document." + property_uri});
+							})
+						)
+				);
 				var renderedProperties = {};
 				
 				Object.getOwnPropertyNames(document.properties).reduce (function (acc, property_uri) {
