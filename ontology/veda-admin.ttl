@@ -73,7 +73,7 @@ if (ff)
     }
     }
 }
-"""^^xsd:string ;
+""" ;
   rdfs:comment "Выдача прав авторам"@ru ;
   rdfs:label "Mandate_1"@en ;
   rdfs:label "Мандат_1"@ru ;
