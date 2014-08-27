@@ -2,9 +2,9 @@
 
 Veda(function AppPresenter(veda) { "use strict";
 
-	$(function () {
+/*	$(function () {
 		localize($("nav"), veda.user.language);
-	});
+	});*/
 
 	// Router function
 	riot.route( function (hash) {
@@ -61,6 +61,7 @@ Veda(function AppPresenter(veda) { "use strict";
 		e.preventDefault();
 		$("#current-user").html("");
 		veda.trigger("auth:quit");
+		Veda({});
 	});
 
 	// Listen to user loaded event
