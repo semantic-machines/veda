@@ -144,7 +144,8 @@ if (ff)
     	    '@' : guid (), 
     	    'rdf:type' : [{data: 'veda-schema:Membership', type : _Uri}],
     	    'veda-schema:memberOf' : [{data: 'veda-admin:ReadResGroup', type : _Uri}],
-    	    'veda-schema:resource'  : [{data: doc_uri, type : _Uri}]
+    	    'veda-schema:resource'  : [{data: doc_uri, type : _Uri}],
+    	    'rdfs:comment'  : [{data: "выдан veda-admin:Mandate_2", type : _String}]
 	    };
 
 	    if (deleted && deleted[0].data == true)
@@ -157,8 +158,48 @@ if (ff)
     }
 }
 """ ;
-  rdfs:comment "скрипт автоматической выдачи всем прав на чтение для оргструктуры"@ru ;
+  rdfs:comment "скрипт автоматической выдачи прав на чтение для оргструктуры + перенос атрибута veda-schema:deleted"@ru ;
   rdfs:label "Mandate_2"@en ;
   rdfs:label "Мандат_2"@ru ;
 .
+
+
+veda-admin:Mandate_3
+  rdf:type veda-schema:Mandate ;
+  veda-schema:author veda-admin:VedaSystemAccount ;
+  veda-schema:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  veda-schema:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  veda-schema:script """
+var ticket = '';
+        var doc;
+        ff = get_individual (ticket, '$document');
+if (ff)
+{
+    var type = ff['rdf:type'];
+    if (type)
+    {
+	var prefix = type[0].data.split (':', 1);
+	if (prefix == 'owl' || prefix == 'rdf' || 
+	    prefix == 'rdfs')
+	{
+	    var doc_uri = ff['@'];	
+	    var new_membership = 
+	    {
+    	    '@' : guid (), 
+    	    'rdf:type' : [{data: 'veda-schema:Membership', type : _Uri}],
+    	    'veda-schema:memberOf' : [{data: 'veda-admin:ReadResGroup', type : _Uri}],
+    	    'veda-schema:resource'  : [{data: doc_uri, type : _Uri}],
+    	    'rdfs:comment'  : [{data: "выдан veda-admin:Mandate_3", type : _String}]
+	    };
+
+	    put_individual (ticket, new_membership);
+	}
+    }
+}
+""" ;
+  rdfs:comment "скрипт автоматической выдачи прав на чтение для всех онтологий"@ru ;
+  rdfs:label "Mandate_3"@en ;
+  rdfs:label "Мандат_3"@ru ;
+.
+
 
