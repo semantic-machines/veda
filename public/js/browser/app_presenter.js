@@ -46,7 +46,6 @@ Veda(function AppPresenter(veda) { "use strict";
 	// Toggle tracing
 	$("#set-trace").on("click", function (e) {
 		var $el = $(this);
-		e.preventDefault();
 		if ($el.hasClass("active")) { 
 			set_trace(0, false);
 			$el.removeClass("active");
@@ -58,14 +57,13 @@ Veda(function AppPresenter(veda) { "use strict";
 
 	// Listen to logout click
 	$("#logout").on("click", function (e) {
-		e.preventDefault();
 		$("#current-user").html("");
 		veda.trigger("auth:quit");
 		Veda(veda.config);
 	});
 
 	// Listen to user loaded event
-	veda.on("app:complete", function (user_uri, ticket, end_time) {
+	veda.on("app:started", function (user_uri, ticket, end_time) {
 		setCookie("user_uri", user_uri, { path: "/", expires: new Date(parseInt(end_time)) });
 		setCookie("ticket", ticket, { path: "/", expires: new Date(parseInt(end_time)) });
 		setCookie("end_time", end_time, { path: "/", expires: new Date(parseInt(end_time)) });
