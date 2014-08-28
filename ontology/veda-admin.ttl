@@ -36,6 +36,20 @@ veda-admin:ReadResGroup
   rdfs:label "Resource group to read"@en ;
   rdfs:label "Группа ресурсов для чтения"@ru ;
 .
+veda-admin:Membership_rl1
+  rdf:type veda-schema:Membership ;
+  veda-schema:memberOf veda-admin:ReadResGroup ;
+  veda-schema:resource veda-ui:EN ;
+  rdfs:label "Membership_rl1"@en ;
+  rdfs:label "Членство_rl1"@ru ;
+.
+veda-admin:Membership_rl2
+  rdf:type veda-schema:Membership ;
+  veda-schema:memberOf veda-admin:ReadResGroup ;
+  veda-schema:resource veda-ui:RU ;
+  rdfs:label "Membership_rl2"@en ;
+  rdfs:label "Членство_rl2"@ru ;
+.
 veda-admin:VedaSystem
   rdf:type veda-schema:Person ;
   veda-schema:actualVersion veda-admin:VedaSystem ;
