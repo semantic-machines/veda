@@ -21,6 +21,35 @@
   owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "1.0" ;
 .
+veda-admin:SuperAdmin
+  rdf:type veda-schema:Group ;
+  rdfs:label "Super admin"@en ;
+  rdfs:label "Супер админ"@ru ;
+.
+veda-admin:ReadUser
+  rdf:type veda-schema:Group ;
+  rdfs:label "Read User"@en ;
+  rdfs:label "Пользователи имеющие право на чтение"@ru ;
+.
+veda-admin:ReadResGroup
+  rdf:type veda-schema:Group ;
+  rdfs:label "Resource group to read"@en ;
+  rdfs:label "Группа ресурсов для чтения"@ru ;
+.
+veda-admin:Membership_rl1
+  rdf:type veda-schema:Membership ;
+  veda-schema:memberOf veda-admin:ReadResGroup ;
+  veda-schema:resource veda-ui:EN ;
+  rdfs:label "Membership_rl1"@en ;
+  rdfs:label "Членство_rl1"@ru ;
+.
+veda-admin:Membership_rl2
+  rdf:type veda-schema:Membership ;
+  veda-schema:memberOf veda-admin:ReadResGroup ;
+  veda-schema:resource veda-ui:RU ;
+  rdfs:label "Membership_rl2"@en ;
+  rdfs:label "Членство_rl2"@ru ;
+.
 veda-admin:VedaSystem
   rdf:type veda-schema:Person ;
   veda-schema:actualVersion veda-admin:VedaSystem ;
@@ -41,6 +70,18 @@ veda-admin:VedaSystemAccount
   veda-schema:password "6220b3e1f255f8e29b87488abab1bde126a6bbb44c62bf9b297b3d20347f8b4e"^^xsd:string ;
   rdfs:label "Veda System Account"@en ;
   rdfs:label "Учетная запись системы Веда"@ru ;
+.
+veda-admin:Permission_rr
+  rdf:type veda-schema:PermissionStatement ;
+  veda-schema:author veda-admin:VedaSystem ;
+  veda-schema:canRead "true"^^xsd:boolean ;
+  veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
+  veda-schema:permissionObject veda-admin:ReadResGroup ;
+  veda-schema:permissionSubject veda-admin:ReadUser ;
+  veda-schema:published "2014-01-30T16:45:33"^^xsd:dateTime ;
+  veda-schema:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
+  rdfs:label "Permissions record rr"@en ;
+  rdfs:label "Запись о выдаче прав rr"@ru ;
 .
 veda-admin:Mandate_1
   rdf:type veda-schema:Mandate ;
@@ -78,3 +119,87 @@ if (ff)
   rdfs:label "Mandate_1"@en ;
   rdfs:label "Мандат_1"@ru ;
 .
+veda-admin:Mandate_2
+  rdf:type veda-schema:Mandate ;
+  veda-schema:author veda-admin:VedaSystemAccount ;
+  veda-schema:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  veda-schema:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  veda-schema:script """
+var ticket = '';
+        var doc;
+        ff = get_individual (ticket, '$document');
+if (ff)
+{
+// print ('@@1 =', toJson (ff));
+    var type = ff['rdf:type'];
+    if (type)
+    {
+	if (type[0].data == 'veda-schema:Department' || type[0].data == 'veda-schema:Position' || 
+	    type[0].data == 'veda-schema:Appointment' || type[0].data == 'veda-schema:Person')
+	{
+	    var deleted = ff['veda-schema:deleted'];
+	    var doc_uri = ff['@'];	
+	    var new_membership = 
+	    {
+    	    '@' : guid (), 
+    	    'rdf:type' : [{data: 'veda-schema:Membership', type : _Uri}],
+    	    'veda-schema:memberOf' : [{data: 'veda-admin:ReadResGroup', type : _Uri}],
+    	    'veda-schema:resource'  : [{data: doc_uri, type : _Uri}],
+    	    'rdfs:comment'  : [{data: "выдан veda-admin:Mandate_2", type : _String}]
+	    };
+
+	    if (deleted && deleted[0].data == true)
+	    {
+		//print ('IS DELETED');
+		new_membership['veda-schema:deleted'] = deleted;
+	    }
+	    put_individual (ticket, new_membership);
+	}
+    }
+}
+""" ;
+  rdfs:comment "скрипт автоматической выдачи прав на чтение для оргструктуры + перенос атрибута veda-schema:deleted"@ru ;
+  rdfs:label "Mandate_2"@en ;
+  rdfs:label "Мандат_2"@ru ;
+.
+
+
+veda-admin:Mandate_3
+  rdf:type veda-schema:Mandate ;
+  veda-schema:author veda-admin:VedaSystemAccount ;
+  veda-schema:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  veda-schema:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  veda-schema:script """
+var ticket = '';
+        var doc;
+        ff = get_individual (ticket, '$document');
+if (ff)
+{
+    var type = ff['rdf:type'];
+    if (type)
+    {
+	var prefix = type[0].data.split (':', 1);
+	if (prefix == 'owl' || prefix == 'rdf' || 
+	    prefix == 'rdfs')
+	{
+	    var doc_uri = ff['@'];	
+	    var new_membership = 
+	    {
+    	    '@' : guid (), 
+    	    'rdf:type' : [{data: 'veda-schema:Membership', type : _Uri}],
+    	    'veda-schema:memberOf' : [{data: 'veda-admin:ReadResGroup', type : _Uri}],
+    	    'veda-schema:resource'  : [{data: doc_uri, type : _Uri}],
+    	    'rdfs:comment'  : [{data: "выдан veda-admin:Mandate_3", type : _String}]
+	    };
+
+	    put_individual (ticket, new_membership);
+	}
+    }
+}
+""" ;
+  rdfs:comment "скрипт автоматической выдачи прав на чтение для всех онтологий"@ru ;
+  rdfs:label "Mandate_3"@en ;
+  rdfs:label "Мандат_3"@ru ;
+.
+
+

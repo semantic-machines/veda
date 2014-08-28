@@ -170,7 +170,7 @@ mondi-data:Membership_1
 .
 mondi-data:Membership_2
   rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:SuperAdmin ;
+  veda-schema:memberOf veda-admin:SuperAdmin ;
   veda-schema:resource mondi-data:RomanKarpov-CommercialDirector ;
   rdfs:label "Membership_2"@en ;
   rdfs:label "Членство_2"@ru ;
@@ -191,7 +191,7 @@ mondi-data:Membership_4
 .
 mondi-data:Membership_5
   rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:SuperAdmin ;
+  veda-schema:memberOf veda-admin:SuperAdmin ;
   veda-schema:resource mondi-data:RomanKarpov ;
   rdfs:label "Membership_5"@en ;
   rdfs:label "Членство_5"@ru ;
@@ -212,7 +212,7 @@ mondi-data:Membership_7
 .
 mondi-data:Membership_8
   rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:SuperAdmin ;
+  veda-schema:memberOf veda-admin:SuperAdmin ;
   veda-schema:resource mondi-data:RomanKarpov-CommercialDirector ;
   rdfs:label "Membership_8"@en ;
   rdfs:label "Членство_8"@ru ;
@@ -231,6 +231,13 @@ mondi-data:Membership_10
   rdfs:label "Membership_10"@en ;
   rdfs:label "Членство_10"@ru ;
 .
+mondi-data:Membership_11
+  rdf:type veda-schema:Membership ;
+  veda-schema:memberOf veda-admin:ReadUser ;
+  veda-schema:resource mondi-data:ValeriyBushenev ;
+  rdfs:label "Membership_11"@en ;
+  rdfs:label "Членство_11"@ru ;
+.
 mondi-data:MondiSyktyvkar
   rdf:type veda-schema:Organization ;
   veda-schema:childUnit mondi-data:CCIP ;
@@ -246,7 +253,7 @@ mondi-data:Permission_1
   veda-schema:canUpdate "true"^^xsd:boolean ;
   veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
   veda-schema:permissionObject veda-schema:AllResourcesGroup ;
-  veda-schema:permissionSubject mondi-data:SuperAdmin ;
+  veda-schema:permissionSubject veda-admin:SuperAdmin ;
   veda-schema:published "2014-01-30T16:45:33"^^xsd:dateTime ;
   veda-schema:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
   rdfs:label "Permissions record_1"@en ;
@@ -382,11 +389,6 @@ mondi-data:SemanticMachines
   veda-schema:childUnit mondi-data:TechnicalDirector ;
   rdfs:label "Semantic machines, LLC"@en ;
   rdfs:label "ООО Смысловые машины"@ru ;
-.
-mondi-data:SuperAdmin
-  rdf:type veda-schema:Group ;
-  rdfs:label "Super admin"@en ;
-  rdfs:label "Супер админ"@ru ;
 .
 mondi-data:TechnicalDirector
   rdf:type veda-schema:Position ;
