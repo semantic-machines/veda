@@ -130,13 +130,14 @@ var ticket = '';
         ff = get_individual (ticket, '$document');
 if (ff)
 {
+// print ('@@1 =', toJson (ff));
     var type = ff['rdf:type'];
     if (type)
     {
 	if (type[0].data == 'veda-schema:Department' || type[0].data == 'veda-schema:Position' || 
 	    type[0].data == 'veda-schema:Appointment' || type[0].data == 'veda-schema:Person')
 	{
-//print ('@@4 type=', type[0].data);
+	    var deleted = ff['veda-schema:deleted'];
 	    var doc_uri = ff['@'];	
 	    var new_membership = 
 	    {
@@ -145,7 +146,12 @@ if (ff)
     	    'veda-schema:memberOf' : [{data: 'veda-admin:ReadResGroup', type : _Uri}],
     	    'veda-schema:resource'  : [{data: doc_uri, type : _Uri}]
 	    };
-//print ('@@5');
+
+	    if (deleted && deleted[0].data == true)
+	    {
+		//print ('IS DELETED');
+		new_membership['veda-schema:deleted'] = deleted;
+	    }
 	    put_individual (ticket, new_membership);
 	}
     }
