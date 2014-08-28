@@ -34,30 +34,29 @@ function IndividualModel(veda, uri, container) {
 			get: function () { 
 				if (values[property_uri]) return values[property_uri];
 				values[property_uri] = individual[property_uri].map( function (value) {
-					switch (value.type) {
-						case "String" : 
-							var string = new String(value.data);
-							string.language = value.lang;
-							return (string.language == "NONE" || string.language in veda.user.language) ? (
-								string
-							) : (
-								filteredStrings.push(string),
-								undefined
-							);
-							break
-						case "Uri" : 
-							if (value.data.search(/^.{3,5}:\/\//) == 0) return new String(value.data);
-							try { return new IndividualModel(veda, value.data); } 
-							catch (e) { return new String(value.data) }
-							break
-						case "Datetime" : return new Date(Date.parse(value.data)); break
-						case "Decimal" : return new Number(value.data); break
-						case "Integer" : return new Number(value.data); break
-						case "Boolean" : return new Boolean(value.data); break
-						default : throw ("Unsupported type of property value"); break
-					}
+					if (value.type == "String") {
+						var string = new String(value.data);
+						string.language = value.lang;
+						return (string.language == "NONE" || string.language in veda.user.language) ? (
+							string
+						) : (
+							filteredStrings.push(string),
+							undefined
+						);
+					} 
+					else if (value.type == "Uri") {
+						if (value.data.search(/^.{3,5}:\/\//) == 0) return new String(value.data);
+						try { return new IndividualModel(veda, value.data); } 
+						catch (e) { return new String(value.data) }
+					} 
+					else if (value.type == "Datetime") return new Date(Date.parse(value.data));
+					else if (value.type == "Decimal") return new Number(value.data);
+					else if (value.type == "Integer") return new Number(value.data);
+					else if (value.type == "Boolean") return new Boolean(value.data);
+					else throw ("Unsupported type of property value");
 				});
-				values[property_uri] = values[property_uri].filter(function (item) { return item }); // Remove undefined values
+				// Filter undefined values
+				values[property_uri] = values[property_uri].filter(function (item) { return item });
 				return values[property_uri];
 			},
 			set: function (value) { 

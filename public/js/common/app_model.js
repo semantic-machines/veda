@@ -78,7 +78,7 @@ function AppModel(config) {
 		}
 		// App started
 		self.started = true;
-		self.trigger("app:complete", self.user_uri, self.ticket, self.end_time);
+		self.trigger("app:started", self.user_uri, self.ticket, self.end_time);
 	});
 	
 	// Load user after successful authentication
