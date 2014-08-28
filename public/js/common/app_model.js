@@ -34,10 +34,8 @@ function AppModel(config) {
 		self.trigger("auth:success", self.user_uri, self.ticket, self.end_time);
 	};
 	self.quit = function() {
-		self.ticket = "";
-		self.user_uri = "";
-		self.end_time = "";
 		self.trigger("auth:quit");
+		Veda(config);
 	};
 	
 	self.ontology = {};
@@ -92,10 +90,6 @@ function AppModel(config) {
 			}, {});
 		self.user = new UserModel(self, self.user_uri);
 	});
-	
-	self.on("auth:quit", function() { 
-		self.started = false;
-	});
-	
+
 	return self;
 };

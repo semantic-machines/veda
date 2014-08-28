@@ -71,6 +71,7 @@
 		<script src="/js/browser/cookie.js"></script>
 		<script src="/js/browser/sha256.js"></script>
 		<script src="/js/browser/util.js"></script>
+		<script src="/js/browser/jquery.autosize.min.js"></script>
 		
 		<!-- Veda browser & server -->
 		<script src="/js/common/riot.js"></script>
@@ -294,15 +295,35 @@
 			</div>
 		</script>		
 		
+		<script type="html/template" id="generic-class-template">
+			<div class="container-fluid">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<div class="row">
+							<div class="col-md-6">
+								<h3 class="panel-title" data-property="_class.rdfs:label">Персона</h3>
+							</div>
+							<div class="col-md-6 text-right text-muted">
+								<h3 class="panel-title" data-property="document.id">mondi-data:RomanKarpov</h3>
+							</div>  
+						</div>
+					</div>
+					<div class="panel-body properties">
+						<h3 data-property="document.rdfs:label"><div>
+					</div>
+				</div>
+			</div>
+		</script>
+
 		<script type="html/template" id="property-template">
 			<div class="{property.id} container-fluid">
 				<div>
 					<dl>
-						<dt><a href="#/document/{property.id}" data-toggle="popover">{property.rdfs:label}</a></dt>
-						<dd class="values">
-						</dd>
+						<dt>
+							<span class="text-muted" href="#/document/{property.id}" data-toggle="popover">{property.rdfs:label}</span>
+							<button type="button" class="btn btn-info btn-xs input-control add"><i class="glyphicon glyphicon-plus"></i></button></dt>
+						<dd class="values"></dd>
 					</dl>
-					<button type="button" class="btn btn-link input-control add" i18n="[Add]">Добавить</button>
 					<!--<div class="row"><strong>{property.rdfs:label}</strong></div>
 					<div class="row values"></div>
 					<button type="button" class="btn btn-link input-control add" i18n="[Add]">Добавить</button>-->
@@ -315,7 +336,7 @@
 				<div class="value">{value}</div>
 				<div class="input-group input-control">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-font"></i></span>
-					<textarea class="form-control" rows="1" bound data-property="{property.id}" data-index="{index}">{value}</textarea>
+					<textarea class="form-control" bound data-property="{property.id}" data-index="{index}">{value}</textarea>
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
 					</span>
@@ -377,10 +398,10 @@
 
 		<script type="html/template" id="object-value-template">
 			<div>
-				<div class="value">{value.id}</div>
+				<div class="value"><a data-toggle="popover" href="#/document/{value.id}">{value.rdfs:label}</a></div>
 				<div class="input-group input-control">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-search"></i></span>
-					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
+					<input type="text" class="form-control" value="{value.id}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
 					</span>

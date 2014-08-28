@@ -1,134 +1,6 @@
 // Document Presenter
 
 Veda(function DocumentPresenter2(veda) { "use strict";
-
-	function renderDocumentProperty (veda, individual, property_uri, template, container) {
-		var label, uri, values;
-		label = typeof individual.properties[property_uri] == "object" ? 
-					individual.properties[property_uri]["rdfs:label"].join(", ")
-					: property_uri;
-		uri = typeof individual.properties[property_uri] == "object" ? "#/document/" + individual.properties[property_uri].id : "";
-		values = individual[property_uri]
-					.map( function (item) {
-						if (item instanceof String)
-							// Check if string starts with http:// or ftp://
-							return item.search(/^.{3,5}:\/\//) == 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
-						else if (item instanceof IndividualModel)
-							return "<a data-toggle='popover' href='#/document/" + item.id + "'>" + 
-								(item["rdfs:label"] ? item["rdfs:label"].join(", ") : item.id) + "</a>";
-						else return item;
-					}).join(", ");
-		container.append(
-			riot.render(
-				template,
-				{
-					label: label,
-					uri: uri,
-					values: values
-				}
-			)
-		);
-	}
-
-	// Get templates
-	var document_template = $("#document-template").html();
-	var document_single_property_template = $("#document-single-property-template").html();
-	var document_label_template = $("#document-label-template").html();
-	
-	veda.on("document2:loaded", function (document, container_param) {
-		
-		var container = container_param || $("#main");
-		container.html(document_template);
-		localize(container, veda.user.language);
-		
-		// Render document title
-		$("#document-label", container).html( 
-			riot.render(
-				document_label_template,
-				{ 
-					label: document["rdfs:label"] ? document["rdfs:label"].join(", ") : document.id,
-					uri: "#/document2/" + document.id
-				}
-			) 
-		);
-
-		// Render document properties
-		Object.getOwnPropertyNames(document.properties).map ( function (property_uri) {
-			try {
-				renderDocumentProperty (veda, document, property_uri, document_single_property_template, $("#document-properties", container));
-			} catch (e) {}
-		});
-		
-	});
-
-	function renderValues (property, spec, values) {
-		
-		var renderedValues = "";
-		
-		switch( property["rdfs:range"][0].id ) {
-
-			case "rdfs:Literal" : 
-			case "xsd:string" : 
-				var valueTemplate = $("#string-value-template").html();
-				
-				values
-					.map (function (value, index) {
-						renderedValues += riot.render(valueTemplate, {value: value, index: index, property: property});
-					});
-	
-				break
-
-			case "xsd:boolean" : 
-				var valueTemplate = $("#boolean-value-template").html();
-				values
-					.map (function (value, index) {
-						renderedValues += riot.render(valueTemplate, {value: value, index: index, property: property});
-					});
-
-				break
-			case "xsd:integer" : 
-				var valueTemplate = $("#integer-value-template").html();
-				values
-					.map (function (value, index) {
-						renderedValues += riot.render(valueTemplate, {value: value, index: index, property: property});
-					});
-
-				break
-			
-			case "xsd:decimal" : 
-				var valueTemplate = $("#decimal-value-template").html();
-				values
-					.map (function (value, index) {
-						renderedValues += riot.render(valueTemplate, {value: value, index: index, property: property});
-					});
-
-				break
-
-			case "xsd:dateTime" : 
-				var valueTemplate = $("#datetime-value-template").html();
-				values
-					.map (function (value, index) {
-						renderedValues += riot.render(valueTemplate, {value: value, index: index, property: property});
-					});
-
-				break
-
-			default : 
-				var valueTemplate = $("#object-value-template").html();
-				values
-					.map (function (value, index) {
-						renderedValues += riot.render(valueTemplate, {value: value, index: index, property: property});
-					});
-
-				break
-		}
-		
-		var result = $("<div/>");
-		
-		result.append(renderedValues);
-		
-		return result;
-	}
 	
 	function renderProperty (document, property, spec, values) {
 		
@@ -144,25 +16,98 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		var result = $("<div/>");
 		result.append(renderedProperty);
 		
-		$(".values", result).append( renderValues(property, spec, values) );
+		var renderedValues = (function renderValue() {
 		
-		$("[bound]", result).on("change", function ( e ) {
-			document[property.id] = $("[bound]", result).map(function () {
-				return this.value;
-			}).get();
-		});
+			var renderedValuesString = "";
+		
+			switch( property["rdfs:range"][0].id ) {
+
+				case "rdfs:Literal" : 
+				case "xsd:string" : 
+					var valueTemplate = $("#string-value-template").html();
+					
+					values
+						.map (function (value, index) {
+							renderedValuesString += riot.render(valueTemplate, {value: value, index: index, property: property});
+						});
+		
+					break
+
+				case "xsd:boolean" : 
+					var valueTemplate = $("#boolean-value-template").html();
+					values
+						.map (function (value, index) {
+							renderedValuesString += riot.render(valueTemplate, {value: value, index: index, property: property});
+						});
+
+					break
+				case "xsd:integer" : 
+					var valueTemplate = $("#integer-value-template").html();
+					values
+						.map (function (value, index) {
+							renderedValuesString += riot.render(valueTemplate, {value: value, index: index, property: property});
+						});
+
+					break
+				
+				case "xsd:decimal" : 
+					var valueTemplate = $("#decimal-value-template").html();
+					values
+						.map (function (value, index) {
+							renderedValuesString += riot.render(valueTemplate, {value: value, index: index, property: property});
+						});
+
+					break
+
+				case "xsd:dateTime" : 
+					var valueTemplate = $("#datetime-value-template").html();
+					values
+						.map (function (value, index) {
+							renderedValuesString += riot.render(valueTemplate, {value: value, index: index, property: property});
+						});
+
+					break
+
+				default : 
+					var valueTemplate = $("#object-value-template").html();
+					values
+						.map (function (value, index) {
+							value = value || {};
+							renderedValuesString += riot.render(valueTemplate, {value: value, index: index, property: property});
+						});
+
+					break
+			}
+			
+			var result = $("<div/>");
+			
+			result.append(renderedValuesString);
+			
+			$("textarea", result).autosize(); 
+
+			$("[bound]", result).on("change", function ( e ) {
+				document[property.id] = $("[bound]", result).map(function () {
+					return this.value;
+				}).get();
+			});
+
+			$(".remove", result).on("click", function () {
+				var $target = $(this.parentNode);
+				$target.remove();
+				var bound = $("[bound]", result);
+				if (bound.length) return bound.first().trigger("change");
+				else document[property.id] = [];
+			});
+			
+			return result;
+		
+		})();
+		
+		$(".values", result).append( renderedValues );
 
 		$(".add", result).on("click", function () {
 			values.push(undefined);
 			document[property.id] = values; 
-		});
-
-		$(".remove", result).on("click", function () {
-			var $target = $(this.parentNode);
-			$target.remove();
-			var bound = $("[bound]", result);
-			if (bound.length) return bound.trigger("change");
-			document[property.id] = [];
 		});
 
 		return result;
@@ -171,8 +116,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 	veda.on("document2:loaded", function (document, container_param) {
 		
 		var container = container_param || $("#main");
-		
-		//container.empty();
+		container.empty();
 		
 		document["rdf:type"]
 			.filter( function (item) {
@@ -181,17 +125,21 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 			.map( function (item) {
 				
 				var _class = new ClassModel(veda, item);
-				var template = _class.documentTemplate["veda-ui:template"] ? ( 
-					_class.documentTemplate["veda-ui:template"][0] 
-				) : ( 
-					[$("<h3/>", {"data-property":"document.rdfs:label"})]
-						.concat( 
-							Object.getOwnPropertyNames(document.properties).map( function (property_uri) {
-								if (property_uri == "rdfs:label") return;
-								return $("<div/>", {"data-property":"document." + property_uri});
-							})
-						)
-				);
+				
+				var template;
+				
+				if (_class.documentTemplate["veda-ui:template"]) {
+					template = _class.documentTemplate["veda-ui:template"][0]
+				} else {
+					template = $("<div/>").append($("#generic-class-template").html());
+					$(".properties", template).append(
+						Object.getOwnPropertyNames(document.properties).map( function (property_uri) {
+							if (property_uri == "rdfs:label") return;
+							return $("<div/>", {"data-property":"document." + property_uri});
+						})
+					)
+				}
+				
 				var renderedProperties = {};
 				
 				Object.getOwnPropertyNames(document.properties).reduce (function (acc, property_uri) {
@@ -260,12 +208,13 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		});
 
 		$("#cancel", container).on("click", function (e) {
-			$(".value").show();
+			new DocumentModel2(veda, document.id, container_param);
+			/*$(".value").show();
 			$(".input-control").hide();
 			
 			$(this).hide();
 			$("#edit", container).show();
-			$("#save", container).hide();
+			$("#save", container).hide();*/
 		});
 
 		localize(container, veda.user.language);

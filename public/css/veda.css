@@ -1,10 +1,27 @@
+body {
+  color: #555;
+}
+
 .popover {
   min-width: 200px ! important;
   max-width: 400px;
   width: auto;
 }
 
+/*.value {
+	white-space:pre-wrap;
+}*/
+
 dl {
-	margin-top: 20px;
-	margin-bottom: 5px;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+dd {
+  margin-top: 3px;
+}
+dt {
+  font-weight: normal;
+}
+dd {
+  font-weight: bold;
 }

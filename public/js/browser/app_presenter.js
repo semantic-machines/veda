@@ -58,8 +58,7 @@ Veda(function AppPresenter(veda) { "use strict";
 	// Listen to logout click
 	$("#logout").on("click", function (e) {
 		$("#current-user").html("");
-		veda.trigger("auth:quit");
-		Veda(veda.config);
+		veda.quit();
 	});
 
 	// Listen to user loaded event
@@ -71,6 +70,7 @@ Veda(function AppPresenter(veda) { "use strict";
 			riot.route(location.hash, true);
 		}, 0);
 	});
+
 	// Listen to quit && authentication failure events
 	veda.on("auth:quit", function () {
 		delCookie("user_uri");
@@ -87,7 +87,6 @@ Veda(function AppPresenter(veda) { "use strict";
 		});
 	});
 
-	//if (!veda.ticket || !veda.user_uri || !veda.end_time) veda.trigger("auth:quit");
 	if (!getCookie("ticket") || !getCookie("user_uri") || !getCookie("end_time") || !is_ticket_valid(getCookie("ticket"))) return veda.trigger("auth:quit");
 	veda.ticket = getCookie("ticket");
 	veda.user_uri = getCookie("user_uri");
