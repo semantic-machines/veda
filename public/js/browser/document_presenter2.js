@@ -5,122 +5,166 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 	function renderEscape (value) { return value instanceof Array ? value.join(", ") : value; }
 	
 	function renderProperty (document, property, spec, values) {
-		
-		var propertyTemplate = $("#property-template").html();
-		
-		var renderedProperty = riot.render (
-			propertyTemplate, 
-			{property: property},
-			renderEscape
-		);
-		
+
 		var result = $("<div/>");
-		result.append(renderedProperty);
+
+		var propertyTemplate, renderedProperty;
 		
-		var renderedValues = (function renderValue() {
-		
-			var res = $("<div/>");
+		switch( property["rdfs:range"][0].id ) {
+
+			case "rdfs:Literal" : 
+			case "xsd:string" : 
+				propertyTemplate = $("#string-property-template").html();
+
+				renderedProperty = riot.render (
+					propertyTemplate, 
+					{property: property},
+					renderEscape
+				);
+				result.append(renderedProperty);
+
+				var valueTemplate = $("#string-value-template").html();
+				var tmp = $(".values", result);
+				tmp.append(
+					values.map (function (value, index) {
+						return riot.render(valueTemplate, {value: value, index: index, property: property});
+					})
+				);
+				$("textarea", result).autosize(); 
+				$("[bound]", result).on("change", function ( e ) {
+					document[property.id] = $("[bound]", result).map(function () {
+						return new String(this.value);
+					}).get();
+				});
+				break
+
+			case "xsd:boolean" : 
+				propertyTemplate = $("#property-template").html();
+
+				renderedProperty = riot.render (
+					propertyTemplate, 
+					{property: property},
+					renderEscape
+				);
+				result.append(renderedProperty);
+
+				var valueTemplate = $("#boolean-value-template").html();
+				$(".values", result).append(
+					values.map (function (value, index) {
+						return riot.render(valueTemplate, {value: value, index: index, property: property});
+					})
+				);
+				$("[bound]", result).on("change", function ( e ) {
+					document[property.id] = $("[bound]", result).map(function () {
+						return new Boolean(this.value == "true" ? true : false);
+					}).get();
+				});
+				break
+
+			case "xsd:integer" : 
+				propertyTemplate = $("#property-template").html();
+
+				renderedProperty = riot.render (
+					propertyTemplate, 
+					{property: property},
+					renderEscape
+				);
+				result.append(renderedProperty);
+
+				var valueTemplate = $("#integer-value-template").html();
+				$(".values", result).append(
+					values.map (function (value, index) {
+						return riot.render(valueTemplate, {value: value, index: index, property: property});
+					})
+				);
+				$("[bound]", result).on("change", function ( e ) {
+					document[property.id] = $("[bound]", result).map(function () {
+						return new Number( parseInt(this.value, 10) );
+					}).get();
+				});
+				break
 			
-			switch( property["rdfs:range"][0].id ) {
+			case "xsd:decimal" : 
+				propertyTemplate = $("#property-template").html();
 
-				case "rdfs:Literal" : 
-				case "xsd:string" : 
-					var valueTemplate = $("#string-value-template").html();
-					values
-						.map (function (value, index) {
-							res.append( riot.render(valueTemplate, {value: value, index: index, property: property}) );
-						});
-					$("textarea", res).autosize(); 
-					$("[bound]", res).on("change", function ( e ) {
-						document[property.id] = $("[bound]", res).map(function () {
-							return new String(this.value);
-						}).get();
-					});
-					break
+				renderedProperty = riot.render (
+					propertyTemplate, 
+					{property: property},
+					renderEscape
+				);
+				result.append(renderedProperty);
 
-				case "xsd:boolean" : 
-					var valueTemplate = $("#boolean-value-template").html();
-					values
-						.map (function (value, index) {
-							res.append( riot.render(valueTemplate, {value: value, index: index, property: property}) );
-						});
-					$("[bound]", res).on("change", function ( e ) {
-						document[property.id] = $("[bound]", res).map(function () {
-							return new Boolean(this.value == "true" ? true : false);
-						}).get();
-					});
-					break
+				var valueTemplate = $("#decimal-value-template").html();
+				$(".values", result).append(
+					values.map (function (value, index) {
+						return riot.render(valueTemplate, {value: value, index: index, property: property});
+					})
+				);
+				$("[bound]", result).on("change", function ( e ) {
+					document[property.id] = $("[bound]", result).map(function () {
+						return new Number( parseFloat(this.value) );
+					}).get();
+				});
+				break
 
-				case "xsd:integer" : 
-					var valueTemplate = $("#integer-value-template").html();
-					values
-						.map (function (value, index) {
-							res.append( riot.render(valueTemplate, {value: value, index: index, property: property}) );
-						});
-					$("[bound]", res).on("change", function ( e ) {
-						document[property.id] = $("[bound]", res).map(function () {
-							return new Number( parseInt(this.value, 10) );
-						}).get();
-					});
-					break
-				
-				case "xsd:decimal" : 
-					var valueTemplate = $("#decimal-value-template").html();
-					values
-						.map (function (value, index) {
-							res.append( riot.render(valueTemplate, {value: value, index: index, property: property}) );
-						});
-					$("[bound]", res).on("change", function ( e ) {
-						document[property.id] = $("[bound]", res).map(function () {
-							return new Number( parseFloat(this.value) );
-						}).get();
-					});
-					break
+			case "xsd:dateTime" : 
+				propertyTemplate = $("#property-template").html();
 
-				case "xsd:dateTime" : 
-					var valueTemplate = $("#datetime-value-template").html();
-					values
-						.map (function (value, index) {
-							res.append( riot.render(valueTemplate, {value: value, index: index, property: property}) );
-						});
-					$("[bound]", res).on("change", function ( e ) {
-						document[property.id] = $("[bound]", res).map(function () {
-							return new Date( this.value );
-						}).get();
-					});
-					break
+				renderedProperty = riot.render (
+					propertyTemplate, 
+					{property: property},
+					renderEscape
+				);
+				result.append(renderedProperty);
 
-				default : 
-					var valueTemplate = $("#object-value-template").html();
-					values
-						.map (function (value, index) {
-							value = value || {};
-							res.append( riot.render(valueTemplate, {value: value, index: index, property: property}) );
-						});
-					$("[bound]", res).on("change", function ( e ) {
-						var tmp = $("[bound]", res).map(function () {
-							if (!this.value) return this.value;
-							try { return new IndividualModel( veda, this.value ); } 
-							catch (e) { return "" }
-						}).get();
-						document[property.id] = tmp;
-					});
-					break
-			}
+				var valueTemplate = $("#datetime-value-template").html();
+				$(".values", result).append(
+					values.map (function (value, index) {
+						return riot.render(valueTemplate, {value: value, index: index, property: property});
+					})
+				);
+				$("[bound]", result).on("change", function ( e ) {
+					document[property.id] = $("[bound]", result).map(function () {
+						return new Date( this.value );
+					}).get();
+				});
+				break
 
-			$(".remove", res).on("click", function () {
-				var $target = $(this.parentNode);
-				$target.remove();
-				var bound = $("[bound]", res);
-				if (bound.length) return bound.first().trigger("change");
-				else document[property.id] = [];
-			});
-			
-			return res;
-		
-		})();
+			default : 
+				propertyTemplate = $("#property-template").html();
 
-		$(".values", result).append( renderedValues );
+				renderedProperty = riot.render (
+					propertyTemplate, 
+					{property: property},
+					renderEscape
+				);
+				result.append(renderedProperty);
+
+				var valueTemplate = $("#object-value-template").html();
+				$(".values", result).append(
+					values.map (function (value, index) {
+						value = value || {};
+						return riot.render(valueTemplate, {value: value, index: index, property: property});
+					})
+				);
+				$("[bound]", result).on("change", function ( e ) {
+					var tmp = $("[bound]", result).map(function () {
+						if (!this.value) return this.value;
+						try { return new IndividualModel( veda, this.value ); } 
+						catch (e) { return "" }
+					}).get();
+					document[property.id] = tmp;
+				});
+				break
+		}
+
+		$(".remove", result).on("click", function () {
+			var $target = $(this.parentNode);
+			$target.remove();
+			var bound = $("[bound]", result);
+			if (bound.length) return bound.first().trigger("change");
+			else document[property.id] = [];
+		});
 		
 		$(".add", result).on("click", function () {
 			values.push(undefined);

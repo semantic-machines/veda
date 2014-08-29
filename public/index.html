@@ -321,7 +321,22 @@
 					<dl>
 						<dt>
 							<span class="text-muted" href="#/document/{property.id}" data-toggle="popover">{property.rdfs:label}</span>
-							<button type="button" class="btn btn-info btn-xs input-control add"><i class="glyphicon glyphicon-plus"></i></button></dt>
+							<button type="button" class="btn btn-link input-control add">Добавить</button></dt>
+							<!--button type="button" class="btn btn-info btn-xs input-control add"><i class="glyphicon glyphicon-plus"></i></button></dt-->
+						<dd class="values"></dd>
+					</dl>
+				</div>
+			</div>
+		</script>
+
+		<script type="html/template" id="string-property-template">
+			<div class="{property.id} container-fluid">
+				<div>
+					<dl>
+						<dt>
+							<span class="text-muted" href="#/document/{property.id}" data-toggle="popover">{property.rdfs:label}</span>
+							<button type="button" class="btn btn-link input-control add">Добавить</button></dt>
+							<!--button type="button" class="btn btn-info btn-xs input-control add"><i class="glyphicon glyphicon-plus"></i></button></dt-->
 						<dd class="values"></dd>
 					</dl>
 				</div>
