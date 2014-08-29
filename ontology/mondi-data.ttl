@@ -148,11 +148,22 @@ mondi-data:UserGroup_1
   rdfs:label "Test user group 1"@en ;
   rdfs:label "Тестовая пользовательская группа 1"@ru ;
 .
+mondi-data:UserGroup_2
+  rdf:type veda-schema:Group ;
+  rdfs:label "Test user group 2"@en ;
+  rdfs:label "Тестовая пользовательская группа 2"@ru ;
+.
 mondi-data:ResGroup_1
   rdf:type veda-schema:Group ;
   rdfs:label "Test resource group 1"@en ;
   rdfs:label "Тестовая группа для ресуров 1"@ru ;
 .
+mondi-data:ResGroup_2
+  rdf:type veda-schema:Group ;
+  rdfs:label "Test resource group 2"@en ;
+  rdfs:label "Тестовая группа для ресуров 2"@ru ;
+.
+
 mondi-data:KarpovR
   rdf:type veda-schema:Account ;
   veda-schema:login "KarpovR"^^xsd:string ;
@@ -161,13 +172,15 @@ mondi-data:KarpovR
   veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "KarpovR" ;
 .
+
 mondi-data:Membership_1
   rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:UserGroup_1 ;
+  veda-schema:memberOf mondi-data:UserGroup_2 ;
   veda-schema:resource mondi-data:AndreyBychin ;
   rdfs:label "Membership_1"@en ;
   rdfs:label "Членство_1"@ru ;
 .
+
 mondi-data:Membership_2
   rdf:type veda-schema:Membership ;
   veda-schema:memberOf veda-admin:SuperAdmin ;
@@ -175,13 +188,7 @@ mondi-data:Membership_2
   rdfs:label "Membership_2"@en ;
   rdfs:label "Членство_2"@ru ;
 .
-mondi-data:Membership_3
-  rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:UserGroup_1 ;
-  veda-schema:resource mondi-data:RomanKarpov-CommercialDirector ;
-  rdfs:label "Membership_3"@en ;
-  rdfs:label "Членство_3"@ru ;
-.
+
 mondi-data:Membership_4
   rdf:type veda-schema:Membership ;
   veda-schema:memberOf mondi-data:UserGroup_1 ;
@@ -189,6 +196,7 @@ mondi-data:Membership_4
   rdfs:label "Membership_4"@en ;
   rdfs:label "Членство_4"@ru ;
 .
+
 mondi-data:Membership_5
   rdf:type veda-schema:Membership ;
   veda-schema:memberOf veda-admin:SuperAdmin ;
@@ -196,6 +204,7 @@ mondi-data:Membership_5
   rdfs:label "Membership_5"@en ;
   rdfs:label "Членство_5"@ru ;
 .
+
 mondi-data:Membership_6
   rdf:type veda-schema:Membership ;
   veda-schema:memberOf mondi-data:ResGroup_1 ;
@@ -203,6 +212,7 @@ mondi-data:Membership_6
   rdfs:label "Membership_6"@en ;
   rdfs:label "Членство_6"@ru ;
 .
+
 mondi-data:Membership_7
   rdf:type veda-schema:Membership ;
   veda-schema:memberOf mondi-data:ResGroup_1 ;
@@ -210,6 +220,7 @@ mondi-data:Membership_7
   rdfs:label "Membership_7"@en ;
   rdfs:label "Членство_7"@ru ;
 .
+
 mondi-data:Membership_8
   rdf:type veda-schema:Membership ;
   veda-schema:memberOf veda-admin:SuperAdmin ;
@@ -217,13 +228,15 @@ mondi-data:Membership_8
   rdfs:label "Membership_8"@en ;
   rdfs:label "Членство_8"@ru ;
 .
+
 mondi-data:Membership_9
   rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:ResGroup_1 ;
+  veda-schema:memberOf mondi-data:ResGroup_2 ;
   veda-schema:resource mondi-data:AndreyBychin ;
   rdfs:label "Membership_9"@en ;
   rdfs:label "Членство_9"@ru ;
 .
+
 mondi-data:Membership_10
   rdf:type veda-schema:Membership ;
   veda-schema:memberOf mondi-data:ResGroup_1 ;
@@ -231,6 +244,7 @@ mondi-data:Membership_10
   rdfs:label "Membership_10"@en ;
   rdfs:label "Членство_10"@ru ;
 .
+
 mondi-data:Membership_11
   rdf:type veda-schema:Membership ;
   veda-schema:memberOf veda-admin:ReadUser ;
@@ -238,13 +252,31 @@ mondi-data:Membership_11
   rdfs:label "Membership_11"@en ;
   rdfs:label "Членство_11"@ru ;
 .
+
 mondi-data:Membership_12
   rdf:type veda-schema:Membership ;
-  veda-schema:memberOf veda-admin:ReadResGroup ;
+  veda-schema:memberOf mondi-data:ResGroup_1 ;
+  veda-schema:resource mondi-data:PersonTemplate2 ;
+  rdfs:label "Membership_12"@en ;
+  rdfs:label "Членство_12"@ru ;
+.
+
+mondi-data:Membership_13
+  rdf:type veda-schema:Membership ;
+  veda-schema:memberOf mondi-data:ResGroup_2 ;
   veda-schema:resource mondi-data:PersonTemplate1 ;
   rdfs:label "Membership_12"@en ;
   rdfs:label "Членство_12"@ru ;
 .
+
+mondi-data:Membership_14
+  rdf:type veda-schema:Membership ;
+  veda-schema:memberOf veda-admin:ReadUser ;
+  veda-schema:resource mondi-data:AndreyBychin ;
+  rdfs:label "Membership_14"@en ;
+  rdfs:label "Членство_14"@ru ;
+.
+
 mondi-data:MondiSyktyvkar
   rdf:type veda-schema:Organization ;
   veda-schema:childUnit mondi-data:CCIP ;
@@ -283,8 +315,8 @@ mondi-data:Permission_3
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
   veda-schema:canRead "true"^^xsd:boolean ;
   veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
-  veda-schema:permissionObject mondi-data:ResGroup_1 ;
-  veda-schema:permissionSubject mondi-data:UserGroup_1 ;
+  veda-schema:permissionObject mondi-data:ResGroup_2 ;
+  veda-schema:permissionSubject mondi-data:UserGroup_2 ;
   veda-schema:published "2014-01-30T16:45:33"^^xsd:dateTime ;
   veda-schema:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
   rdfs:label "Permissions record_3"@en ;
@@ -450,7 +482,81 @@ mondi-data:SavedSearch1
   rdfs:label "Сохраненный запрос 1"@ru ;
   rdfs:label "Saved search 1"@en ;
 .
+
 mondi-data:PersonTemplate1
+  rdf:type veda-ui:DocumentTemplate ;
+  rdfs:label "Шаблон персоны 2"@ru ;
+  rdfs:label "Person template 2"@en ;
+  veda-ui:forClass veda-schema:Person ;
+  veda-ui:template """
+  <div class="container-fluid">
+    <img src="/img/veda-logo.png">aaa</img>
+    <div class="panel panel-danger">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-6">
+	        <h3 class="panel-title" data-property="_class.rdfs:label">{_class.rdfs:label}</h3>
+  	      </div>  
+          <div class="col-md-6 text-right text-muted">
+  	        <h3 class="panel-title" data-property="document.id">{document.id}</h3>
+	      </div>  
+	    </div>
+      </div>
+    </div>
+  </div>
+                <script>
+                        alert ("TTTTT");
+                </script>
+
+  <div class="container-fluid">
+    <img src="/img/veda-logo.png">aaa</img>
+    <div class="panel panel-danger">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-6">
+	        <h3 class="panel-title" data-property="_class.rdfs:label">{_class.rdfs:label}</h3>
+  	      </div>  
+          <div class="col-md-6 text-right text-muted">
+  	        <h3 class="panel-title" data-property="document.id">{document.id}</h3>
+	      </div>  
+	    </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <img src="/img/veda-logo.png">aaa</img>
+    <div class="panel panel-danger">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-6">
+	        <h3 class="panel-title" data-property="_class.rdfs:label">{_class.rdfs:label}</h3>
+  	      </div>  
+          <div class="col-md-6 text-right text-muted">
+  	        <h3 class="panel-title" data-property="document.id">{document.id}</h3>
+	      </div>  
+	    </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <img src="/img/veda-logo.png">aaa</img>
+    <div class="panel panel-danger">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-6">
+	        <h3 class="panel-title" data-property="_class.rdfs:label">{_class.rdfs:label}</h3>
+  	      </div>  
+          <div class="col-md-6 text-right text-muted">
+  	        <h3 class="panel-title" data-property="document.id">{document.id}</h3>
+	      </div>  
+	    </div>
+      </div>
+    </div>
+  </div>
+""" ;
+.
+
+mondi-data:PersonTemplate2
   rdf:type veda-ui:DocumentTemplate ;
   rdfs:label "Шаблон персоны"@ru ;
   rdfs:label "Person template"@en ;
@@ -483,8 +589,9 @@ mondi-data:PersonTemplate1
       </div>
     </div>
   </div>
-"""
+""" ;
 .
+
 mondi-data:PropertySpecification1
   rdf:type veda-ui:PropertySpecification ;
   rdfs:label "Спецификация даты рождения для класса персона"@ru ;
