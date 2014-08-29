@@ -2,15 +2,16 @@
 
 Veda(function DocumentPresenter2(veda) { "use strict";
 	
+	function renderEscape (value) { return value instanceof Array ? value.join(", ") : value; }
+	
 	function renderProperty (document, property, spec, values) {
 		
 		var propertyTemplate = $("#property-template").html();
 		
-		var renderedProperty = "";
-		
-		renderedProperty = riot.render (
+		var renderedProperty = riot.render (
 			propertyTemplate, 
-			{property: property}
+			{property: property},
+			renderEscape
 		);
 		
 		var result = $("<div/>");
@@ -97,10 +98,12 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 							res.append( riot.render(valueTemplate, {value: value, index: index, property: property}) );
 						});
 					$("[bound]", res).on("change", function ( e ) {
-						document[property.id] = $("[bound]", res).map(function () {
-							if (!this.value) return undefined;
-							return new IndividualModel( veda, this.value );
+						var tmp = $("[bound]", res).map(function () {
+							if (!this.value) return this.value;
+							try { return new IndividualModel( veda, this.value ); } 
+							catch (e) { return "" }
 						}).get();
+						document[property.id] = tmp;
 					});
 					break
 			}
@@ -142,9 +145,11 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				
 				var template;
 				
+				// Get template from class
 				if (_class.documentTemplate["veda-ui:template"]) {
 					template = _class.documentTemplate["veda-ui:template"][0]
 				} else {
+					// Generic template
 					template = $("<div/>").append($("#generic-class-template").html());
 					$(".properties", template).append(
 						Object.getOwnPropertyNames(document.properties).map( function (property_uri) {
@@ -181,7 +186,8 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 					var key = $this.data("property").split(".").reduce(function (acc, i) {
 						return isNaN(i) ? acc + "['" + i + "']" : acc + "[" + i + "]";
 					}, "");
-					$this.empty().append( eval("data"+key) );
+					var tmp = eval("data"+key);
+					$this.empty().append( tmp instanceof Array ? tmp.join(", ") : tmp );
 				});
 				
 				document.on("value:changed", function (property_uri, vals) {
