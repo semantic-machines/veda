@@ -18,54 +18,75 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		
 		var renderedValues = (function renderValue() {
 		
-			var renderedValuesString = "";
-		
+			var res = $("<div/>");
+			
 			switch( property["rdfs:range"][0].id ) {
 
 				case "rdfs:Literal" : 
 				case "xsd:string" : 
 					var valueTemplate = $("#string-value-template").html();
-					
 					values
 						.map (function (value, index) {
-							renderedValuesString += riot.render(valueTemplate, {value: value, index: index, property: property});
+							res.append( riot.render(valueTemplate, {value: value, index: index, property: property}) );
 						});
-		
+					$("textarea", res).autosize(); 
+					$("[bound]", res).on("change", function ( e ) {
+						document[property.id] = $("[bound]", res).map(function () {
+							return new String(this.value);
+						}).get();
+					});
 					break
 
 				case "xsd:boolean" : 
 					var valueTemplate = $("#boolean-value-template").html();
 					values
 						.map (function (value, index) {
-							renderedValuesString += riot.render(valueTemplate, {value: value, index: index, property: property});
+							res.append( riot.render(valueTemplate, {value: value, index: index, property: property}) );
 						});
-
+					$("[bound]", res).on("change", function ( e ) {
+						document[property.id] = $("[bound]", res).map(function () {
+							return new Boolean(this.value == "true" ? true : false);
+						}).get();
+					});
 					break
+
 				case "xsd:integer" : 
 					var valueTemplate = $("#integer-value-template").html();
 					values
 						.map (function (value, index) {
-							renderedValuesString += riot.render(valueTemplate, {value: value, index: index, property: property});
+							res.append( riot.render(valueTemplate, {value: value, index: index, property: property}) );
 						});
-
+					$("[bound]", res).on("change", function ( e ) {
+						document[property.id] = $("[bound]", res).map(function () {
+							return new Number( parseInt(this.value, 10) );
+						}).get();
+					});
 					break
 				
 				case "xsd:decimal" : 
 					var valueTemplate = $("#decimal-value-template").html();
 					values
 						.map (function (value, index) {
-							renderedValuesString += riot.render(valueTemplate, {value: value, index: index, property: property});
+							res.append( riot.render(valueTemplate, {value: value, index: index, property: property}) );
 						});
-
+					$("[bound]", res).on("change", function ( e ) {
+						document[property.id] = $("[bound]", res).map(function () {
+							return new Number( parseFloat(this.value) );
+						}).get();
+					});
 					break
 
 				case "xsd:dateTime" : 
 					var valueTemplate = $("#datetime-value-template").html();
 					values
 						.map (function (value, index) {
-							renderedValuesString += riot.render(valueTemplate, {value: value, index: index, property: property});
+							res.append( riot.render(valueTemplate, {value: value, index: index, property: property}) );
 						});
-
+					$("[bound]", res).on("change", function ( e ) {
+						document[property.id] = $("[bound]", res).map(function () {
+							return new Date( this.value );
+						}).get();
+					});
 					break
 
 				default : 
@@ -73,38 +94,31 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 					values
 						.map (function (value, index) {
 							value = value || {};
-							renderedValuesString += riot.render(valueTemplate, {value: value, index: index, property: property});
+							res.append( riot.render(valueTemplate, {value: value, index: index, property: property}) );
 						});
-
+					$("[bound]", res).on("change", function ( e ) {
+						document[property.id] = $("[bound]", res).map(function () {
+							if (!this.value) return undefined;
+							return new IndividualModel( veda, this.value );
+						}).get();
+					});
 					break
 			}
-			
-			var result = $("<div/>");
-			
-			result.append(renderedValuesString);
-			
-			$("textarea", result).autosize(); 
 
-			$("[bound]", result).on("change", function ( e ) {
-				document[property.id] = $("[bound]", result).map(function () {
-					return this.value;
-				}).get();
-			});
-
-			$(".remove", result).on("click", function () {
+			$(".remove", res).on("click", function () {
 				var $target = $(this.parentNode);
 				$target.remove();
-				var bound = $("[bound]", result);
+				var bound = $("[bound]", res);
 				if (bound.length) return bound.first().trigger("change");
 				else document[property.id] = [];
 			});
 			
-			return result;
+			return res;
 		
 		})();
-		
-		$(".values", result).append( renderedValues );
 
+		$(".values", result).append( renderedValues );
+		
 		$(".add", result).on("click", function () {
 			values.push(undefined);
 			document[property.id] = values; 
