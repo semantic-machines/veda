@@ -34,7 +34,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				$("[bound]", result).on("change", function ( e ) {
 					document[property.id] = $("[bound]", result).map(function () {
 						var res = new String(this.value);
-						res.language = $(this).data("language");
+						res.language = $(this).data("language") || "NONE" ;
 						return res;
 					}).get();
 				});
