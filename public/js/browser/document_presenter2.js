@@ -33,7 +33,9 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				$("textarea", result).autosize(); 
 				$("[bound]", result).on("change", function ( e ) {
 					document[property.id] = $("[bound]", result).map(function () {
-						return new String(this.value);
+						var res = new String(this.value);
+						res.language = $(this).data("language");
+						return res;
 					}).get();
 				});
 				break
