@@ -24,13 +24,41 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				result.append(renderedProperty);
 
 				var valueTemplate = $("#string-value-template").html();
+				
 				var tmp = $(".values", result);
-				tmp.append(
-					values.map (function (value, index) {
-						return riot.render(valueTemplate, {value: value, index: index, property: property});
-					})
-				);
-				$("textarea", result).autosize(); 
+
+				values.map (function (value, index) {
+					var res = $("<div>");
+					res.append( riot.render(valueTemplate, {value: value, index: index, property: property}) );
+					
+					$("textarea", res).autosize();
+					
+					var $first = $("<li>").append( $("<a>", {href: "#", "data-language": "", text: "-"}).addClass("language") );
+					if (!value.language) $first.addClass("active");
+					$(".language-list", res).append(
+						$first,
+						Object.keys(veda.availableLanguages).map(function (language_name) {
+							var $li = $("<li>"), 
+								$a = $("<a>", {href: "#", "data-language": language_name, text: language_name}).addClass("language");
+							$li.append($a);
+							if (value.language == language_name) $li.addClass("active");
+							return $li;
+						})
+					);
+					
+					$(".language", res).on("click", function ( e ) {
+						e.preventDefault();
+						$(".language-selector", res)
+							.empty()
+							.append($(this).data("language"), " <span class='caret'></span>");
+						$("textarea", res)
+							.data("language", $(this).data("language") )
+							.trigger("change");
+					});
+
+					tmp.append(res);
+				});
+				
 				$("[bound]", result).on("change", function ( e ) {
 					document[property.id] = $("[bound]", result).map(function () {
 						var res = new String(this.value);
@@ -38,6 +66,23 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 						return res;
 					}).get();
 				});
+				
+				$(".remove", result).on("click", function () {
+					var $target = $(this.parentNode);
+					$target.remove();
+					var bound = $("[bound]", result);
+					if (bound.length) return bound.first().trigger("change");
+					else document[property.id] = [];
+				});
+
+				$(".add", result).on("click", function () {
+					var emptyVal = new String(""); emptyVal.language = undefined;
+					values.push(emptyVal);
+					document[property.id] = values; 
+				});
+				
+				// Important! Return immediately
+				return result; 
 				break
 
 			case "xsd:boolean" : 

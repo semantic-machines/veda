@@ -335,6 +335,7 @@
 					<dl>
 						<dt>
 							<span class="text-muted" href="#/document/{property.id}" data-toggle="popover">{property.rdfs:label}</span>
+							<button type="button" class="btn btn-link input-control add">Добавить</button></dt>
 						<dd class="values"></dd>
 					</dl>
 				</div>
@@ -345,7 +346,11 @@
 			<div>
 				<div class="value">{value}</div>
 				<div class="input-group input-control">
-					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-font"></i></span>
+					<!--span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-font"></i></span-->
+					<!--span class="input-group-addon btn btn-default" style="font-size:10px">{value.language}</span-->
+					<span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown">{value.language} <span class="caret"></span></span>
+					<ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
+					</ul>
 					<textarea class="form-control" bound data-property="{property.id}" data-index="{index}" data-language="{value.language}">{value}</textarea>
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>

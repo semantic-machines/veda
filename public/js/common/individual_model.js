@@ -36,8 +36,8 @@ function IndividualModel(veda, uri, container) {
 				values[property_uri] = individual[property_uri].map( function (value) {
 					if (value.type == "String") {
 						var string = new String(value.data);
-						string.language = value.lang;
-						return (string.language == "NONE" || string.language in veda.user.language) ? (
+						string.language = value.lang == "NONE" ? undefined : value.lang;
+						return (string.language == undefined || string.language in veda.user.language) ? (
 							string
 						) : (
 							filteredStrings.push(string),
@@ -82,7 +82,6 @@ function IndividualModel(veda, uri, container) {
 					} else if (value instanceof Date) {
 						result.type = "Datetime";
 						result.data = value.toISOString();
-						result.lang = "NONE";
 						return result;
 					} else if (value instanceof IndividualModel) {
 						result.type = "Uri";
