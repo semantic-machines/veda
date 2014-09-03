@@ -1,6 +1,6 @@
 // Document Presenter
 
-Veda(function DocumentPresenter2(veda) { "use strict";
+Veda(function DocumentPresenter(veda) { "use strict";
 	
 	function renderEscape (value) { return value instanceof Array ? value.join(", ") : value; }
 	
@@ -10,7 +10,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 
 		var propertyTemplate, renderedProperty;
 		
-		switch( property["rdfs:range"][0].id ) {
+		switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
 
 			case "rdfs:Literal" : 
 			case "xsd:string" : 
@@ -221,7 +221,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		return result;
 	}
 	
-	veda.on("document2:loaded", function (document, container_param) {
+	veda.on("document:loaded", function (document, container_param) {
 		
 		var container = container_param || $("#main");
 		container.empty();
@@ -319,7 +319,9 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		});
 
 		$("#cancel", container).on("click", function (e) {
-			new DocumentModel2(veda, document.id, container_param);
+			
+			new DocumentModel(veda, document.id, container_param);
+			
 			/*$(".view").show();
 			$(".edit").hide();
 			
