@@ -2,7 +2,7 @@
 
 "use strict";
 
-function DocumentModel(veda, individual, container) {
+function DocumentModel2(veda, individual, container) {
 
 	var self = individual instanceof IndividualModel ? individual : new IndividualModel(veda, individual);
 
@@ -46,6 +46,6 @@ function DocumentModel(veda, individual, container) {
 		self.classTree.roots["rdfs:Resource"] = "rdfs:Resource";
 	}
 
-	veda.trigger("document:loaded", self, container);
+	veda.trigger("document2:loaded", self, container);
 	return self;
 };

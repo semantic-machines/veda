@@ -1,5 +1,5 @@
 body {
-  color: #555;
+  color: #333;
 }
 
 .popover {
@@ -20,8 +20,8 @@ dd {
   margin-top: 3px;
 }
 dt {
-  font-weight: normal;
+  font-weight: bold;
 }
 dd {
-  font-weight: bold;
+  font-weight: normal;
 }

@@ -1,6 +1,6 @@
 // Document Presenter
 
-Veda(function DocumentPresenter(veda) { "use strict";
+Veda(function DocumentPresenter2(veda) { "use strict";
 
 	function renderDocumentProperty (veda, individual, property_uri, template, container) {
 		var label, uri, values;
@@ -36,7 +36,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 	var document_single_property_template = $("#document-single-property-template").html();
 	var document_label_template = $("#document-label-template").html();
 	
-	veda.on("document:loaded", function (document, container_param) {
+	veda.on("document2:loaded", function (document, container_param) {
 		
 		var container = container_param || $("#main");
 		container.html(document_template);
