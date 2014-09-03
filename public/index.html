@@ -321,8 +321,8 @@
 					<dl>
 						<dt>
 							<span class="text-muted" href="#/document/{property.id}" data-toggle="popover">{property.rdfs:label}</span>
-							<button type="button" class="btn btn-link input-control add">Добавить</button></dt>
-							<!--button type="button" class="btn btn-info btn-xs input-control add"><i class="glyphicon glyphicon-plus"></i></button></dt-->
+							<button type="button" class="btn btn-link edit add">Добавить</button></dt>
+							<!--button type="button" class="btn btn-info btn-xs edit add"><i class="glyphicon glyphicon-plus"></i></button></dt-->
 						<dd class="values"></dd>
 					</dl>
 				</div>
@@ -335,7 +335,7 @@
 					<dl>
 						<dt>
 							<span class="text-muted" href="#/document/{property.id}" data-toggle="popover">{property.rdfs:label}</span>
-							<button type="button" class="btn btn-link input-control add">Добавить</button></dt>
+							<button type="button" class="btn btn-link edit add">Добавить</button></dt>
 						<dd class="values"></dd>
 					</dl>
 				</div>
@@ -344,8 +344,8 @@
 
 		<script type="html/template" id="string-value-template">
 			<div>
-				<div class="value">{value}</div>
-				<div class="input-group input-control">
+				<div class="view">{value}</div>
+				<div class="input-group edit">
 					<!--span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-font"></i></span-->
 					<!--span class="input-group-addon btn btn-default" style="font-size:10px">{value.language}</span-->
 					<span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown">{value.language} <span class="caret"></span></span>
@@ -361,8 +361,8 @@
 
 		<script type="html/template" id="datetime-value-template">
 			<div>
-				<div class="value">{value}</div>
-				<div class="input-group input-control">
+				<div class="view">{value}</div>
+				<div class="input-group edit">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-time"></i></span>
 					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
@@ -374,8 +374,8 @@
 
 		<script type="html/template" id="integer-value-template">
 			<div>
-				<div class="value">{value}</div>
-				<div class="input-group input-control">
+				<div class="view">{value}</div>
+				<div class="input-group edit">
 					<span class="input-group-addon btn btn-default"><strong>10</strong></span>
 					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
@@ -387,8 +387,8 @@
 
 		<script type="html/template" id="decimal-value-template">
 			<div>
-				<div class="value">{value}</div>
-				<div class="input-group input-control">
+				<div class="view">{value}</div>
+				<div class="input-group edit">
 					<span class="input-group-addon btn btn-default"><strong>0.1</strong></span>
 					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
@@ -400,8 +400,8 @@
 
 		<script type="html/template" id="boolean-value-template">
 			<div>
-				<div class="value">{value}</div>
-				<div class="input-group input-control">
+				<div class="view">{value}</div>
+				<div class="input-group edit">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-ok"></i></span>
 					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
@@ -413,8 +413,8 @@
 
 		<script type="html/template" id="object-value-template">
 			<div>
-				<div class="value"><a data-toggle="popover" href="#/document/{value.id}">{value.rdfs:label}</a></div>
-				<div class="input-group input-control">
+				<div class="view"><a data-toggle="popover" href="#/document/{value.id}">{value.rdfs:label}</a></div>
+				<div class="input-group edit">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-search"></i></span>
 					<input type="text" class="form-control" value="{value.id}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">

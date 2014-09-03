@@ -285,8 +285,8 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 					var property = document.properties[property_uri];
 					var spec = _class.specsByProps[property_uri];
 					var result = renderProperty (document, property, spec, vals);
-					$(".value", result).hide();
-					$(".input-control").show();
+					$(".view", result).hide();
+					$(".edit").show();
 					$('[data-property="document.' + property_uri + '"]', renderedDocument).empty().append(result);
 				});
 				
@@ -297,12 +297,12 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 		var actionsTemplate = $("#actions").html();
 		container.append(actionsTemplate);
 
-		$(".input-control").hide();
+		$(".edit").hide();
 		$("#save, #cancel", container).hide();
 				
 		$("#edit", container).on("click", function (e) {
-			$(".value").hide();
-			$(".input-control").show();
+			$(".view").hide();
+			$(".edit").show();
 			
 			$(this).hide();
 			$("#save, #cancel", container).show();
@@ -310,8 +310,8 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 
 		$("#save", container).on("click", function (e) {
 			document.save();
-			$(".value").show();
-			$(".input-control").hide();
+			$(".view").show();
+			$(".edit").hide();
 			
 			$(this).hide();
 			$("#cancel", container).hide();
@@ -320,8 +320,8 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 
 		$("#cancel", container).on("click", function (e) {
 			new DocumentModel2(veda, document.id, container_param);
-			/*$(".value").show();
-			$(".input-control").hide();
+			/*$(".view").show();
+			$(".edit").hide();
 			
 			$(this).hide();
 			$("#edit", container).show();
