@@ -286,18 +286,19 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					var spec = _class.specsByProps[property_uri];
 					var result = renderProperty (document, property, spec, vals);
 					$(".view", result).hide();
-					$(".edit").show();
 					$('[data-property="document.' + property_uri + '"]', renderedDocument).empty().append(result);
 				});
 				
 				container.append( renderedDocument );
+				
+				$("textarea", container).trigger("autosize.resize");
 				
 			});
 		
 		var actionsTemplate = $("#actions").html();
 		container.append(actionsTemplate);
 
-		$(".edit").hide();
+		$(".edit", container).hide();
 		$("#save, #cancel", container).hide();
 				
 		$("#edit", container).on("click", function (e) {
