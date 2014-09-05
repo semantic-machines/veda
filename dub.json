@@ -5,17 +5,19 @@
 	"authors": ["karpovr"],
 	"dependencies": {
 		"vibe-d": "0.7.20",
-		"pacahon": "0.1.113-alpha"
+		"pacahon": "0.1.114-alpha"
 	},
 	"versions": ["VibeDefaultMain"],
     "configurations": [
 	{
 	    "name": "app",
+	    "docs": ["syntaxOnly"],
 	    "targetType": "executable"
 	},
 	{
 	    "name": "trace-app",
 	    "versions": ["trace"],
 	    "targetType": "executable"
+	    
 	}]
 }
