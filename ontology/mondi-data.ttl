@@ -462,6 +462,10 @@ mondi-data:ValeriyBushenev-Programmer1
   rdfs:label "Appointment_1"@en ;
   rdfs:label "Назначение_1"@ru ;
 .
+mondi-data:ValeriyBushenev-Programmer1
+  rdf:type veda-schema:Appointment1 ;
+  rdfs:label "test add"@ru ;
+.
 mondi-data:ValeriyBushenev-TechnicalDirector
   rdf:type veda-schema:Appointment ;
   veda-schema:author mondi-data:RomanKarpov-Analyst1 ;

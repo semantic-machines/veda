@@ -54,9 +54,21 @@ static this() {
 //////////////////////////////////////////////////// Rest API /////////////////////////////////////////////////////////////////
 
 interface VedaStorageRest_API {
+    /**
+     * получить для индивида список прав на ресурс.
+     * Params: ticket = указывает на индивида
+     *	       uri    = uri ресурса			
+     * Returns: JSON
+     */
     @path("get_rights") @method(HTTPMethod.GET)
     Json get_rights(string ticket, string uri);
-
+    
+    /**
+     * получить для индивида детализированный список прав на ресурс.
+     * Params: ticket = указывает на индивида
+     *	       uri    = uri ресурса			
+     * Returns: JSON
+     */
     @path("get_rights_origin") @method(HTTPMethod.GET)
     Json[] get_rights_origin(string ticket, string uri);
 
