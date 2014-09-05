@@ -107,7 +107,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					}).get();
 				});
 				break
-
+			
+			case "xsd:nonNegativeInteger" : 
 			case "xsd:integer" : 
 				propertyTemplate = $("#property-template").html();
 
@@ -170,6 +171,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						return riot.render(valueTemplate, {value: value, index: index, property: property});
 					})
 				);
+				 
 				$("[bound]", result).on("change", function ( e ) {
 					document[property.id] = $("[bound]", result).map(function () {
 						return new Date( this.value );
@@ -194,6 +196,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						return riot.render(valueTemplate, {value: value, index: index, property: property});
 					})
 				);
+				
 				$("[bound]", result).on("change", function ( e ) {
 					var tmp = $("[bound]", result).map(function () {
 						if (!this.value) return this.value;
@@ -279,6 +282,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					}, "");
 					var tmp = eval("data"+key);
 					$this.empty().append( tmp instanceof Array ? tmp.join(", ") : tmp );
+					$this.attr("data-id", document.id);
 				});
 				
 				document.on("value:changed", function (property_uri, vals) {
@@ -286,7 +290,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					var spec = _class.specsByProps[property_uri];
 					var result = renderProperty (document, property, spec, vals);
 					$(".view", result).hide();
-					$('[data-property="document.' + property_uri + '"]', renderedDocument).empty().append(result);
+					$("[data-property='document." + property_uri + "'][data-id='" + document.id + "']", renderedDocument).empty().append(result);
 				});
 				
 				container.append( renderedDocument );

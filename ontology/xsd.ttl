@@ -32,6 +32,13 @@ xsd:integer
   rdfs:isDefinedBy xsd: ;
   rdfs:subClassOf rdf:XMLLiteral ;
 .
+xsd:nonNegativeInteger
+  rdf:type rdfs:Datatype ;
+  rdfs:label "Non negative Integer datatype"@en ;
+  rdfs:label "Неотрицательный целочисленный тип данных"@ru ;
+  rdfs:isDefinedBy xsd: ;
+  rdfs:subClassOf rdf:XMLLiteral ;
+.
 xsd:decimal
   rdf:type rdfs:Datatype ;
   rdfs:label "Decimal datatype"@en ;
