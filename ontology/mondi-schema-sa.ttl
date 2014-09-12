@@ -26,7 +26,6 @@ mondi-schema-sa:SafetyAudit
   rdfs:label "Safety audit"@en ;
   rdfs:label "Аудит безопасности"@ru ;
   rdfs:subClassOf veda-schema:Document ;
-  rdfs:subClassOf veda-schema:Versioned ;
   veda-schema:deprecatedId "9fb73a44385d4b2c9db9b85da8ae2220" ;
 .
 mondi-schema-sa: SafetyStandardSection
@@ -104,7 +103,7 @@ mondi-schema-sa:member
   rdfs:range veda-schema:Appointment ;
   veda-schema:deprecatedId "Список участников" ;
 .
-mondi-schema-sa:distributors
+mondi-schema-sa:recipient
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mondi-schema-sa:SafetyAudit ;
   rdfs:label "Список рассылки"@ru ;
