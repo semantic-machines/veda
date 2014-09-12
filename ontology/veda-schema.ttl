@@ -267,14 +267,9 @@ veda-schema:employee
 .
 veda-schema:endTime
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          veda-schema:HRRecord
-          veda-schema:DelegationStatement
-          veda-schema:PermissionStatement
-        ) ;
-    ] ;
+  rdfs:domain veda-schema:HRRecord ;
+  rdfs:domain veda-schema:DelegationStatement
+  rdfs:domain veda-schema:PermissionStatement
   rdfs:label "end time"@en ;
   rdfs:label "время окончания"@ru ;
   rdfs:range xsd:dateTime ;
@@ -357,6 +352,13 @@ veda-schema:occupation
   rdfs:label "занимает должность"@ru ;
   rdfs:range veda-schema:OrganizationUnit ;
 .
+veda-schema:valid
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-schema:Appointment ;
+  rdfs:label "valid"@en ;
+  rdfs:label "действительно"@ru ;
+  rdfs:range xsd:boolean ;
+.
 veda-schema:official
   rdf:type owl:DatatypeProperty ;
   rdfs:domain veda-schema:Appointment ;
@@ -366,22 +368,12 @@ veda-schema:official
 .
 veda-schema:owner
   rdf:type owl:ObjectProperty ;
-  rdfs:domain [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          veda-schema:Account
-          <http://semantic-machines.com/veda/veda-ui/Preferences>
-        ) ;
-    ] ;
+  rdfs:domain veda-schema:Account ;
+  rdfs:domain veda-ui:Preferences ;
   rdfs:label "owner"@en ;
   rdfs:label "владелец"@ru ;
-  rdfs:range [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          veda-schema:Person
-          veda-schema:OrganizationUnit
-        ) ;
-    ] ;
+  rdfs:range veda-schema:Person ;
+  rdfs:range veda-schema:OrganizationUnit ;
 .
 veda-schema:parentUnit
   rdf:type owl:ObjectProperty ;
