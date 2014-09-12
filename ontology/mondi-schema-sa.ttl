@@ -10,7 +10,7 @@
 @prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix veda-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix mondi-schema-sa: <http://semantic-machines.com/veda/mondi-schema-sa/>
+@prefix mondi-schema-sa: <http://semantic-machines.com/veda/mondi-schema-sa/> .
 
 <http://semantic-machines.com/veda/mondi-schema-sa>
   rdf:type owl:Ontology ;
@@ -29,7 +29,7 @@ mondi-schema-sa:SafetyAudit
   rdfs:subClassOf veda-schema:Versioned ;
   veda-schema:deprecatedId "9fb73a44385d4b2c9db9b85da8ae2220" ;
 .
-mondi-schema-sa: SafetyStandardSection
+mondi-schema-sa:SafetyStandardSection
   rdf:type owl:Class ;
   rdfs:label "Section of safety standard"@en ;
   rdfs:label "Вид надзора"@ru ;
