@@ -220,15 +220,7 @@ mondi-data:Membership_7
   rdfs:label "Membership_7"@en ;
   rdfs:label "Членство_7"@ru ;
 .
-
-mondi-data:Membership_8
-  rdf:type veda-schema:Membership ;
-  veda-schema:memberOf veda-admin:SuperAdmin ;
-  veda-schema:resource mondi-data:RomanKarpov-CommercialDirector ;
-  rdfs:label "Membership_8"@en ;
-  rdfs:label "Членство_8"@ru ;
-.
-
+#
 mondi-data:Membership_9
   rdf:type veda-schema:Membership ;
   veda-schema:memberOf mondi-data:ResGroup_2 ;
