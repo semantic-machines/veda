@@ -6,7 +6,11 @@ function DocumentModel(veda, individual, container) {
 
 	var self = individual instanceof IndividualModel ? individual : new IndividualModel(veda, individual);
 
-	veda.trigger("document:loaded", self, container);
+	self.on("individual:loaded", function (_individual, container) {
+		veda.trigger("document:loaded", self, container);
+	});
 	
+	veda.trigger("document:loaded", self, container);
+
 	return self;
 };

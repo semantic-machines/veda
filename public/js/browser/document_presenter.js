@@ -325,8 +325,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		});
 
 		$("#cancel", container).on("click", function (e) {
-			
-			new DocumentModel(veda, document.id, container_param);
+			document.reset();
+			//new DocumentModel(veda, document.id, container_param);
 			
 			/*$(".view").show();
 			$(".edit").hide();

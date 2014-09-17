@@ -7,6 +7,7 @@ function IndividualModel(veda, uri, container) {
 
 	// Define Model functions
 	var individual = {};
+	var original_individual = {};
 	var properties = {};
 	var values = {};
 	self.properties = {};
@@ -113,6 +114,7 @@ function IndividualModel(veda, uri, container) {
 
 	self.load = function (uri) {
 		individual = veda.cache[uri] ? JSON.parse( veda.cache[uri] ) : get_individual(veda.ticket, uri);
+		original_individual = JSON.stringify(individual);
 		Object.keys(individual).map(function (property_uri) {
 			if (property_uri == "@") return;
 			self.defineProperty(property_uri);
@@ -132,6 +134,11 @@ function IndividualModel(veda, uri, container) {
 		put_individual(veda.ticket, individual, function (data) {
 			self.trigger("individual:saved", self, container);
 		});
+	};
+
+	self.reset = function() {
+		individual = JSON.parse(original_individual);
+		self.trigger("individual:loaded", self, container);
 	};
 
 	self.on("individual:saved individual:loaded", function ( event ) {
