@@ -28,7 +28,7 @@ function SearchModel(veda, q) {
 		
 		query(veda.ticket, self.q, function(data) {
 			var results = data;
-			for (var i in results){
+			for (var i in results) {
 				(function(i){
 					Object.defineProperty(self.results, i, {
 						get: function() { 

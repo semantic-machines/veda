@@ -6,24 +6,6 @@ function ClassModel(veda, individual) {
 
 	if (individual instanceof IndividualModel) var self = individual;
 	else var self = new IndividualModel(veda, individual);
-
-	self.domainProperties = {};
-	var domainProperties = {};
-
-	var domainPropertiesList = query(veda.ticket, "'rdfs:domain' == '" + self.id + "'");
-
-	if (domainPropertiesList) {
-		domainPropertiesList.map(function (property_uri) {
-			Object.defineProperty(self.domainProperties, property_uri, {
-				get: function() {
-					return domainProperties[property_uri] ? 
-						domainProperties[property_uri] 
-						: 
-						domainProperties[property_uri] = new IndividualModel(veda, property_uri);
-				}
-			});
-		});
-	}
 	
 	var documentTemplatesList = query(veda.ticket, "'rdf:type' == 'veda-ui:DocumentTemplate' && 'veda-ui:forClass' == '" + self.id + "'");
 	var documentTemplate;
@@ -35,7 +17,8 @@ function ClassModel(veda, individual) {
 					documentTemplate 
 					: 
 					documentTemplate = new IndividualModel(veda, documentTemplatesList[0]);
-			}
+			},
+			configurable: true
 		});
 	}
 
@@ -52,7 +35,8 @@ function ClassModel(veda, individual) {
 						specs[spec_uri]
 						: 
 						specs[spec_uri] = new IndividualModel(veda, spec_uri);
-				}
+				},
+				configurable: true
 			});
 		});
 	}
@@ -63,8 +47,28 @@ function ClassModel(veda, individual) {
 				acc[self.specs[spec_uri]["veda-ui:forProperty"][0].id] = self.specs[spec_uri];
 				return acc;
 			}, {});
-		}
+		},
+		configurable: true
 	});
 	
+	self.domainProperties = function (list) {
+		var result = list || {};
+		var q = "'rdfs:domain' == '" + self.id + "'";
+		var query_result = query(veda.ticket, q);
+		query_result.map (function (item) {
+			result[item] = result[item] || new IndividualModel(veda, item);
+		});
+		if (!self["rdfs:subClassOf"]) return result;
+		self["rdfs:subClassOf"]
+			.filter(function (item) {
+				return item instanceof IndividualModel;
+			})
+			.map( function (item) {
+				var superClass = new ClassModel(veda, item);
+				superClass.domainProperties(result);
+			});
+		return result;
+	};
+
 	return self;
 };
