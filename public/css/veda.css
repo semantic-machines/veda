@@ -25,3 +25,9 @@ dt {
 dd {
   font-weight: normal;
 }
+hr.thin-margin {
+  margin: 5px 0px;
+}
+ol.no-marks, ul.no-marks {
+  list-style: none;
+}

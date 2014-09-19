@@ -199,7 +199,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				
 				$("[bound]", result).on("change", function ( e ) {
 					var tmp = $("[bound]", result).map(function () {
-						if (!this.value) return this.value;
+						if (!this.value) return "";
 						try { return new IndividualModel( veda, this.value ); } 
 						catch (e) { return "" }
 					}).get();

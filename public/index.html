@@ -169,7 +169,7 @@
 
 		<!-- Individual template -->
 		<script type="html/template" id="individual-template">
-			<div id="individual-label"></div>
+			<span id="individual-label"></span>
 			<div class="container-fluid" id="individual-properties"></div>
 			<br/>
 		</script>
@@ -261,28 +261,29 @@
 			<div id="search">
 				<div class="well">
 					<div class="container-fluid">
-						<form method="GET" role="form">
-							<div class="row">
-								<div class="col-xs-7 col-sm-7 col-sm-offset-1 col-md-8 col-md-offset-1 col-lg-8 col-lg-offset-1">
-									<div class="input-group">
-										<input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
-										<span class="input-group-btn">
-											<button class="btn btn-default" type="button" id="save-search"><i class="glyphicon glyphicon-star-empty"></i></button>
-										</span>
-									</div>
-								</div>
-								<div class="col-xs-5 col-sm-4 col-md-3 col-lg-3">
+						<form method="GET" role="form" class="form-horizontal">
+							<div class="input-group">
+								<input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
+								<span class="input-group-btn">
+									<button class="btn btn-default" type="button" id="save-search"><i class="glyphicon glyphicon-star-empty"></i></button>
 									<button type="submit" id="search-submit" class="btn btn-primary" i18n="[Search]">Найти</button>
-								</div>
+								</span>
 							</div>
 						</form>
 					</div>
 				</div>
 				<div class="container-fluid" id="search-results" style="display: none">
-					<h3 class="text-center"><span i18n="[Search results]">Результаты поиска</span>
+					<h4 class="text-center"><span i18n="[Search results]">Результаты поиска</span>
 						(<span id="results_count" bound>{results_count}</span>)
-					</h3>
-					<hr/>
+					</h4>
+					<ul class="no-marks">
+						<li>
+							<label class="checkbox-inline">
+								<input type="checkbox" id="select-all"> Выбрать все
+							</label>
+						</li>
+					</ul>
+					<hr class="thin-margin"/>
 					<ol id="search-results-list"></ol>
 					<hr/>
 					<div class="text-center">
@@ -293,7 +294,13 @@
 					<strong i18n="[Empty!]">Пусто!</strong> <span i18n="[Nothing found]">По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 				</div>				
 			</div>
-		</script>		
+		</script>
+		
+		<script type="html/template" id="search-select-template">
+			<label class="checkbox-inline">
+				<input type="checkbox"> &nbsp;
+			</label>		
+		</script>
 		
 		<script type="html/template" id="generic-class-template">
 			<div class="container-fluid">

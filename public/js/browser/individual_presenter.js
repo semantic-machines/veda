@@ -41,18 +41,18 @@ Veda(function IndividualPresenter (veda) { "use strict";
 		
 		if (!container) return;
 		
-		container.html(individual_template);
+		container.append(individual_template);
 		localize(container, veda.user.language);
 		
 		// Render document title		
-		$("#individual-label", container).html( 
+		$("#individual-label", container).append( 
 			riot.render(
 				individual_label_template,
 				{ 
 					label: individual["rdfs:label"] ? individual["rdfs:label"].join(", ") : individual.id,
 					uri: individual.id 
 				}
-			) 
+			)
 		);
 		
 		// Render document properties

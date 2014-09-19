@@ -67,10 +67,20 @@ Veda(function SearchPresenter(veda) { "use strict";
 		
 		// Show results
 		for (var i = currentPage * veda.user.displayedElements; i < (currentPage + 1) * veda.user.displayedElements && i < search.results_count; i++) {
-			var $li = $("<li/>").appendTo("#search-results-list");
-			veda.trigger("individual:loaded", search.results[i], $li);			
+			(function (i) { var $li = $("<li/>").appendTo("#search-results-list");
+				
+				// Select search results 
+				var $select = $( $("#search-select-template").html() );
+				$("input", $select).on("click", function (e) {
+					search.toggleSelected(i);
+				});
+				if (search.results[i].id in search.selected) $("input", $select).attr("checked", "checked");
+				
+				$li.append( $select );
+				veda.trigger("individual:loaded", search.results[i], $li);
+			})(i)
 		}
-		
+
 		// Show pager
 		for (var page = 0; page < Math.floor(search.results_count / veda.user.displayedElements) + 1 * (search.results_count % veda.user.displayedElements ? 1 : 0); page++) {
 			(function (page) {
