@@ -7,7 +7,7 @@ function ClassModel(veda, individual) {
 	if (individual instanceof IndividualModel) var self = individual;
 	else var self = new IndividualModel(veda, individual);
 	
-	var documentTemplatesList = query(veda.ticket, "'rdf:type' == 'veda-ui:DocumentTemplate' && 'veda-ui:forClass' == '" + self.id + "'");
+	var documentTemplatesList = query(veda.ticket, "'rdf:type' == 'veda-ui:ClassTemplate' && 'veda-ui:forClass' == '" + self.id + "'");
 	var documentTemplate;
 	
 	if (documentTemplatesList) {

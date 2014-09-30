@@ -42,8 +42,9 @@ veda-ui:preferredLanguage
 .
 veda-ui:forClass
   rdf:type owl:ObjectProperty ;
-  rdfs:domain veda-ui:DocumentTemplate ;
+  rdfs:domain veda-ui:ClassTemplate ;
   rdfs:domain veda-ui:PropertySpecification ;
+  rdfs:domain veda-ui:ClassIndex ;
   rdfs:label "for class"@en ;
   rdfs:label "для класса"@ru ;
   rdfs:range owl:Class ;
@@ -57,15 +58,28 @@ veda-ui:forProperty
 .
 veda-ui:template
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain veda-ui:DocumentTemplate ;
+  rdfs:domain veda-ui:ClassTemplate ;
   rdfs:label "template"@en ;
   rdfs:label "шаблон"@ru ;
   rdfs:range xsd:string ;
 .
-veda-ui:DocumentTemplate
+veda-ui:index
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain veda-ui:ClassIndex ;
+  rdfs:label "index"@en ;
+  rdfs:label "индекс"@ru ;
+  rdfs:range xsd:string ;
+.
+veda-ui:ClassTemplate
   rdf:type owl:Class ;
   rdfs:label "Document template"@en ;
   rdfs:label "Шаблон документа"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+veda-ui:ClassIndex
+  rdf:type owl:Class ;
+  rdfs:label "Class index"@en ;
+  rdfs:label "Индекс класса"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
 veda-ui:PropertyControl
@@ -237,13 +251,6 @@ veda-ui:dataSourceQuery
   rdfs:label "запрос для источника данных"@ru ;
   rdfs:label "data source query"@en ;
   rdfs:range xsd:string ;
-.
-veda-ui:dataDisplayTemplate
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain veda-ui:ObjectPropertySpecification ;
-  rdfs:label "шаблон отображения данных"@ru ;
-  rdfs:label "data display template"@en ;
-  rdfs:range veda-ui:DocumentTemplate ;
 .
 veda-ui:Language
   rdf:type owl:Class ;

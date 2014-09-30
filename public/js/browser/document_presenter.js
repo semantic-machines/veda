@@ -241,7 +241,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				
 				// Get template from class
 				if (_class.documentTemplate["veda-ui:template"]) {
-					template = _class.documentTemplate["veda-ui:template"][0]
+					template = _class.documentTemplate["veda-ui:template"][0];
 				} else {
 					// Generic template
 					template = $("<div/>").append($("#generic-class-template").html());
@@ -251,7 +251,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 							return $("<div/>", {"data-property":"document." + property_uri});
 						})
 					)
-					console.log(template.html());
 				}
 				
 				var renderedProperties = {};

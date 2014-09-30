@@ -71,7 +71,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 				
 				// Select search results 
 				var $select = $( $("#search-select-template").html() );
-				$("input", $select).on("click", function (e) {
+				$("input[type='checkbox']", $select).on("click", function (e) {
 					search.toggleSelected(i);
 				});
 				if (search.results[i].id in search.selected) $("input", $select).attr("checked", "checked");
@@ -82,11 +82,12 @@ Veda(function SearchPresenter(veda) { "use strict";
 		}
 
 		// Show pager
+		var $pager = $("#pager", container);
 		for (var page = 0; page < Math.floor(search.results_count / veda.user.displayedElements) + 1 * (search.results_count % veda.user.displayedElements ? 1 : 0); page++) {
 			(function (page) {
 				var $page = $("<li/>", {
 					"class" : page == currentPage ? "active" : ""
-				}).appendTo("#pager", container);
+				}).appendTo($pager);
 				var $a = $("<a/>", { 
 					"text" : page + 1, 
 					"click": function (event) {

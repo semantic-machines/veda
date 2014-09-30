@@ -6,7 +6,7 @@ function SearchModel(veda, q) {
 	var self = riot.observable(this);
 
 	// Define Model data setters & getters
-	var properties = {q:"", results:{}, results_count:"", selected:{}};
+	var properties = {q:undefined, results:{}, results_count:undefined, selected:{}};
 	for (var property in properties) {
 		(function(property) {
 			Object.defineProperty(self, property, {
@@ -21,7 +21,7 @@ function SearchModel(veda, q) {
     }
 
 	self.toggleSelected = function (i) {
-		if (!self.results[i]) return;
+		if (!self.results[i]) return self.selected;
 		if (self.selected[self.results[i].id]) {
 			delete self.selected[self.results[i].id];
 		} else {
