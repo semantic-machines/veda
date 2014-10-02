@@ -3,11 +3,12 @@
 Veda(function SearchPresenter(veda) { "use strict";
 
 	var template = $("#search-template").html();
-	var container = $("#main");
 	var currentPage = 0;
 	
 	// Initialize search page
-	veda.on("search:loaded", function (search) {
+	veda.on("search:loaded", function (search, container_param) {
+		
+		var container = container_param || $("#main");
 		
 		// Get template
 		var rendered = riot.render(template, search);
@@ -27,8 +28,8 @@ Veda(function SearchPresenter(veda) { "use strict";
 			event.preventDefault();
 			$("#search-submit").addClass("disabled"); 
 			currentPage = 0;
-			//search.search();
-			if (search.q) riot.route("#/search/" + search.q, true);
+			search.search();
+			//if (search.q) riot.route("#/search/" + search.q, true);
 		});
 	
 		// Listen Model changes & update View
@@ -38,12 +39,20 @@ Veda(function SearchPresenter(veda) { "use strict";
 			else $el.html( value );
 		});
 		
-		veda.trigger("search:rendered", search);
+		$("#select-all", container).on("click", function (e) {
+			search.toggleAll();
+			// Redraw current page
+			veda.trigger("search:complete", search, container);
+		});
+		
+		veda.trigger("search:rendered", search, container);
 			
 	});
 	
 	// Display search results
-	veda.on("search:complete", function (search) {
+	veda.on("search:complete", function (search, container_param) {
+		
+		var container = container_param || $("#main");
 		
 		// Show/hide 'results' or 'not found'
 		$("#search-submit").removeClass("disabled");

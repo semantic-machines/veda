@@ -2,16 +2,16 @@
 
 "use strict";
 
-function SearchModel(veda, q) {
+function SearchModel(veda, q, container) {
 	var self = riot.observable(this);
 
 	// Define Model data setters & getters
 	var properties = {q:undefined, results:{}, results_count:undefined, selected:{}};
 	for (var property in properties) {
-		(function(property) {
+		(function (property) {
 			Object.defineProperty(self, property, {
-				get: function() { return properties[property]; },
-				set: function(value) { 
+				get: function () { return properties[property]; },
+				set: function (value) { 
 					if (properties[property] == value) return; 
 					properties[property] = value; 
 					self.trigger("property:changed", property, properties[property]);
@@ -22,7 +22,7 @@ function SearchModel(veda, q) {
 
 	self.toggleSelected = function (i) {
 		if (!self.results[i]) return self.selected;
-		if (self.selected[self.results[i].id]) {
+		if (self.results[i].id in self.selected) {
 			delete self.selected[self.results[i].id];
 		} else {
 			self.selected[self.results[i].id] = self.results[i];
@@ -31,18 +31,30 @@ function SearchModel(veda, q) {
 		return self.selected;
 	}
 
+	self.toggleAll = function () {
+		if (Object.keys(self.selected).length != self.results_count) {
+			for (var i=0; i<self.results_count; i++) {
+				self.selected[self.results[i].id] = self.results[i];
+			}
+		} else {
+			self.selected = {};
+		}
+		console.log(self.selected);
+		return self.selected;
+	}
+
 	// Define Model functions
-	self.search = function() {
+	self.search = function () {
 		
 		// Clear previous results 
 		self.results = {};
 		
-		query(veda.ticket, self.q, function(data) {
+		query(veda.ticket, self.q, function (data) {
 			var results = data;
 			for (var i in results) {
 				(function(i){
 					Object.defineProperty(self.results, i, {
-						get: function() { 
+						get: function () { 
 							return ( typeof results[i] == 'object' ? results[i] : results[i] = new IndividualModel(veda, results[i]) ); }
 					});
 				})(i);
@@ -53,11 +65,11 @@ function SearchModel(veda, q) {
 	};
 
 	// Model messages
-	self.on("search:loaded", function() {
-		if (veda) veda.trigger("search:loaded", self);
+	self.on("search:loaded", function () {
+		if (veda) veda.trigger("search:loaded", self, container);
 	});
-	self.on("search:complete", function() {
-		if (veda) veda.trigger("search:complete", self);
+	self.on("search:complete", function () {
+		if (veda) veda.trigger("search:complete", self, container);
 	});
 	self.trigger("search:loaded");
 	

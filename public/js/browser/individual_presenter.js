@@ -49,7 +49,7 @@ Veda(function IndividualPresenter (veda) { "use strict";
 			riot.render(
 				individual_label_template,
 				{ 
-					label: individual["rdfs:label"] ? individual["rdfs:label"].join(", ") : individual.id,
+					label: individual["rdfs:label"].length ? individual["rdfs:label"].join(", ") : individual.id,
 					uri: individual.id 
 				}
 			)

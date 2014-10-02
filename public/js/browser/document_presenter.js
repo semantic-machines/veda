@@ -193,7 +193,26 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				$(".values", result).append(
 					values.map (function (value, index) {
 						value = value || {};
-						return riot.render(valueTemplate, {value: value, index: index, property: property});
+						var res = $( riot.render(valueTemplate, {value: value, index: index, property: property}) );
+						
+						// Search modal
+						$(".search-component", res).on("click", function ( e ) {
+							var $modal = $("#search-modal");
+							var search = new SearchModel(veda, undefined, $(".modal-body", $modal) );
+							
+							$modal.modal();
+							
+							// Add found values
+							$("button#ok", $modal).on("click", function (e) {
+								var selected = [];
+								for (var uri in search.selected) {
+									selected.push( search.selected[uri] );
+								}
+								document[property.id] = values.concat(selected);
+							});
+							
+						});
+						return res;
 					})
 				);
 				

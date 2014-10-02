@@ -259,7 +259,7 @@
 		<!-- Search template -->
 		<script type="html/template" id="search-template">
 			<div id="search">
-				<div class="well">
+				<div class="well no-margin">
 					<div class="container-fluid">
 						<form method="GET" role="form" class="form-horizontal">
 							<div class="input-group">
@@ -273,13 +273,13 @@
 					</div>
 				</div>
 				<div class="container-fluid" id="search-results" style="display: none">
-					<h4 class="text-center"><span i18n="[Search results]">Результаты поиска</span>
+					<h3 class="text-center"><span i18n="[Search results]">Результаты поиска</span>
 						(<span id="results_count" bound>{results_count}</span>)
-					</h4>
+					</h3>
 					<ul class="no-marks">
 						<li>
 							<label class="checkbox-inline">
-								<input type="checkbox" id="select-all"> Выбрать все
+								<input type="checkbox" id="select-all"> <span i18n="[Select all]">Выбрать все</span>
 							</label>
 						</li>
 					</ul>
@@ -302,16 +302,17 @@
 			</label>		
 		</script>
 		
+		<!-- Generic class template -->
 		<script type="html/template" id="generic-class-template">
 			<div class="container-fluid">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<div class="row">
 							<div class="col-md-6">
-								<h3 class="panel-title" data-property="_class.rdfs:label">Персона</h3>
+								<h3 class="panel-title" data-property="_class.rdfs:label"></h3>
 							</div>
 							<div class="col-md-6 text-right text-muted">
-								<h3 class="panel-title" data-property="document.id">mondi-data:RomanKarpov</h3>
+								<h3 class="panel-title" data-property="document.id"></h3>
 							</div>  
 						</div>
 					</div>
@@ -321,7 +322,8 @@
 				</div>
 			</div>
 		</script>
-
+		
+		<!-- Generic property template -->
 		<script type="html/template" id="property-template">
 			<div class="{property.id} container-fluid">
 				<div>
@@ -335,7 +337,8 @@
 				</div>
 			</div>
 		</script>
-
+		
+		<!-- String property template -->
 		<script type="html/template" id="string-property-template">
 			<div class="{property.id} container-fluid">
 				<div>
@@ -349,12 +352,11 @@
 			</div>
 		</script>
 
+		<!-- String value template -->
 		<script type="html/template" id="string-value-template">
 			<div>
 				<div class="view">{value}</div>
-				<div class="input-group edit">
-					<!--span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-font"></i></span-->
-					<!--span class="input-group-addon btn btn-default" style="font-size:10px">{value.language}</span-->
+				<div class="edit input-group">
 					<span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown">{value.language} <span class="caret"></span></span>
 					<ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
 					</ul>
@@ -365,11 +367,12 @@
 				</div>
 			</div>
 		</script>
-
+		
+		<!-- Datetime value template -->
 		<script type="html/template" id="datetime-value-template">
 			<div>
 				<div class="view">{value}</div>
-				<div class="input-group edit">
+				<div class="edit input-group">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-time"></i></span>
 					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
@@ -379,10 +382,11 @@
 			</div>
 		</script>
 
+		<!-- Integer value template -->
 		<script type="html/template" id="integer-value-template">
 			<div>
 				<div class="view">{value}</div>
-				<div class="input-group edit">
+				<div class="edit input-group">
 					<span class="input-group-addon btn btn-default"><strong>10</strong></span>
 					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
@@ -392,10 +396,11 @@
 			</div>
 		</script>
 
+		<!-- Decimal value template -->
 		<script type="html/template" id="decimal-value-template">
 			<div>
 				<div class="view">{value}</div>
-				<div class="input-group edit">
+				<div class="edit input-group">
 					<span class="input-group-addon btn btn-default"><strong>0.1</strong></span>
 					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
@@ -405,10 +410,11 @@
 			</div>
 		</script>
 
+		<!-- Boolean value template -->
 		<script type="html/template" id="boolean-value-template">
 			<div>
 				<div class="view">{value}</div>
-				<div class="input-group edit">
+				<div class="edit input-group">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-ok"></i></span>
 					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
@@ -418,11 +424,12 @@
 			</div>
 		</script>
 
+		<!-- Object value template -->
 		<script type="html/template" id="object-value-template">
 			<div>
 				<div class="view"><a data-toggle="popover" href="#/document/{value.id}">{value.rdfs:label}</a></div>
-				<div class="input-group edit">
-					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-search"></i></span>
+				<div class="edit input-group">
+					<span class="input-group-addon btn btn-default search-component" ><i class="glyphicon glyphicon-search"></i></span>
 					<input type="text" class="form-control" value="{value.id}" bound data-property="{property.id}" data-index="{index}"/>
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
@@ -431,7 +438,25 @@
 			</div>
 		</script>
 
+		<!-- Search modal -->
+		<div class="modal" id="search-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<!--div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+						<h4 class="modal-title" id="myModalLabel">Поиск объекта</h4>
+					</div-->
+					<div class="modal-body">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
+						<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Отмена</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
+		<!-- Actions template -->
 		<script type="html/template" id="actions">
 			<div class="container-fluid">
 				<div class="well well-sm">

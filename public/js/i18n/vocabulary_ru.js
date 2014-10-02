@@ -30,6 +30,7 @@ var vocabulary_ru = {
 	'[Query]' : 'Запрос',
 	'[Search results]' : 'Результаты поиска',
 	'[Empty!]' : 'Пусто!',
-	'[Nothing found]' : 'Ничего не найдено. Пожалуйста, уточните запрос'		
+	'[Nothing found]' : 'Ничего не найдено. Пожалуйста, уточните запрос',
+	'[Select all]' : 'Выбрать все'
 };
 $.i18n.load(vocabulary_ru);

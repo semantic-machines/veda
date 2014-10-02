@@ -30,6 +30,7 @@ var vocabulary_en = {
 	'[Query]' : 'Query',
 	'[Search results]' : 'Search results',
 	'[Empty!]' : 'Empty!',
-	'[Nothing found]' : 'Nothing found. Please specify the query'
+	'[Nothing found]' : 'Nothing found. Please specify the query',
+	'[Select all]' : 'Select all'
 };
 $.i18n.load(vocabulary_en);

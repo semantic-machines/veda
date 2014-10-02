@@ -60,6 +60,7 @@ function IndividualModel(veda, uri, container) {
 				values[property_uri] = values[property_uri].filter(function (item) { return item });
 				return values[property_uri];
 			},
+			
 			set: function (value) { 
 				values[property_uri] = value;
 				if (filteredStrings.length) { 
@@ -93,7 +94,10 @@ function IndividualModel(veda, uri, container) {
 					}
 				});
 				self.trigger("value:changed", property_uri, value);
-			}
+			},
+			
+			configurable: true
+		
 		});
 		
 		Object.defineProperty(self.properties, property_uri, {
@@ -103,11 +107,15 @@ function IndividualModel(veda, uri, container) {
 				catch (e) { properties[property_uri] = property_uri; }
 				return properties[property_uri];
 			},
+			
 			set: function (value) { 
 				if (properties[property_uri] == value) return; 
 				properties[property_uri] = value; 
 				self.trigger("property:changed", property_uri, value);
-			}
+			},
+			
+			configurable: true
+		
 		});
 		
 	}
@@ -136,8 +144,13 @@ function IndividualModel(veda, uri, container) {
 		});
 	};
 
-	self.reset = function() {
+	self.reset = function () {
 		individual = JSON.parse(original_individual);
+		values = {};
+		Object.keys(individual).map(function (property_uri) {
+			if (property_uri == "@") return;
+			self.defineProperty(property_uri);
+		});
 		self.trigger("individual:loaded", self, container);
 	};
 

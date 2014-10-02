@@ -8,6 +8,10 @@ body {
   width: auto;
 }
 
+.no-margin {
+  margin: 0px;
+}
+
 /*.value {
 	white-space:pre-wrap;
 }*/
