@@ -8,6 +8,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix veda-admin: <http://semantic-machines.com/veda/veda-admin/> .
 @prefix veda-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 <http://semantic-machines.com/veda/mondi-data>
@@ -478,109 +479,38 @@ mondi-data:SavedSearch1
   rdfs:label "Сохраненный запрос 1"@ru ;
   rdfs:label "Saved search 1"@en ;
 .
-
 mondi-data:PersonTemplate1
-  rdf:type veda-ui:ClassTemplate ;
-  rdfs:label "Шаблон персоны 2"@ru ;
-  rdfs:label "Person template 2"@en ;
-  veda-ui:forClass veda-schema:Person ;
-  veda-ui:template """
-  <div class="container-fluid">
-    <img src="/img/veda-logo.png">aaa</img>
-    <div class="panel panel-danger">
-      <div class="panel-heading">
-        <div class="row">
-          <div class="col-md-6">
-	        <h3 class="panel-title" data-property="_class.rdfs:label">{_class.rdfs:label}</h3>
-  	      </div>  
-          <div class="col-md-6 text-right text-muted">
-  	        <h3 class="panel-title" data-property="document.id">{document.id}</h3>
-	      </div>  
-	    </div>
-      </div>
-    </div>
-  </div>
-                <script>
-                        alert ("TTTTT");
-                </script>
-
-  <div class="container-fluid">
-    <img src="/img/veda-logo.png">aaa</img>
-    <div class="panel panel-danger">
-      <div class="panel-heading">
-        <div class="row">
-          <div class="col-md-6">
-	        <h3 class="panel-title" data-property="_class.rdfs:label">{_class.rdfs:label}</h3>
-  	      </div>  
-          <div class="col-md-6 text-right text-muted">
-  	        <h3 class="panel-title" data-property="document.id">{document.id}</h3>
-	      </div>  
-	    </div>
-      </div>
-    </div>
-  </div>
-  <div class="container-fluid">
-    <img src="/img/veda-logo.png">aaa</img>
-    <div class="panel panel-danger">
-      <div class="panel-heading">
-        <div class="row">
-          <div class="col-md-6">
-	        <h3 class="panel-title" data-property="_class.rdfs:label">{_class.rdfs:label}</h3>
-  	      </div>  
-          <div class="col-md-6 text-right text-muted">
-  	        <h3 class="panel-title" data-property="document.id">{document.id}</h3>
-	      </div>  
-	    </div>
-      </div>
-    </div>
-  </div>
-  <div class="container-fluid">
-    <img src="/img/veda-logo.png">aaa</img>
-    <div class="panel panel-danger">
-      <div class="panel-heading">
-        <div class="row">
-          <div class="col-md-6">
-	        <h3 class="panel-title" data-property="_class.rdfs:label">{_class.rdfs:label}</h3>
-  	      </div>  
-          <div class="col-md-6 text-right text-muted">
-  	        <h3 class="panel-title" data-property="document.id">{document.id}</h3>
-	      </div>  
-	    </div>
-      </div>
-    </div>
-  </div>
-""" ;
-.
-
-mondi-data:PersonTemplate2
   rdf:type veda-ui:ClassTemplate ;
   rdfs:label "Шаблон персоны"@ru ;
   rdfs:label "Person template"@en ;
   veda-ui:forClass veda-schema:Person ;
+  veda-ui:index "veda-schema:firstName" ;
+  veda-ui:index "veda-schema:middleName" ;
+  veda-ui:index "veda-schema:lastName" ;
   veda-ui:template """
   <div class="container-fluid">
     <div class="panel panel-default">
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <h3 class="panel-title" data-property="_class.rdfs:label">{_class.rdfs:label}</h3>
+	        <h3 class="panel-title" data-property="_class.rdfs:label">Имя класса</h3>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
-  	        <h3 class="panel-title" data-property="document.id">{document.id}</h3>
+  	        <h3 class="panel-title" data-property="document.id">ID документа</h3>
 	      </div>  
 	    </div>
       </div>
       <div class="panel-body">
-        <h3 data-property="document.rdfs:label">{document.rdfs:label}</h3>
+        <h3 data-property="document.rdfs:label">Наименование</h3>
         <div class="row">
-          <div class="col-md-3" data-property="document.veda-schema:lastName">{document.veda-schema:lastName}</div>
-          <div class="col-md-3" data-property="document.veda-schema:firstName">{document.veda-schema:firstName}</div>
-          <div class="col-md-3" data-property="document.veda-schema:middleName">{document.veda-schema:middleName}</div>
-          <div class="col-md-3" data-property="document.veda-schema:birthday">{document.veda-schema:birthday}</div>
+          <div class="col-md-3" data-property="document.veda-schema:lastName">Фамилия</div>
+          <div class="col-md-3" data-property="document.veda-schema:firstName">Имя</div>
+          <div class="col-md-3" data-property="document.veda-schema:middleName">Отчество</div>
+          <div class="col-md-3" data-property="document.veda-schema:birthday">День рождения</div>
 		</div>
         <div class="row">
-          <div class="col-md-6" data-property="document.veda-ui:hasPreferences">{document.veda-ui:hasPreferences}</div>
-          <div class="col-md-6" data-property="document.veda-schema:hasAccount">{document.veda-schema:hasAccount}</div>
+          <div class="col-md-6" data-property="document.veda-ui:hasPreferences">Предпочтения</div>
+          <div class="col-md-6" data-property="document.veda-schema:hasAccount">Аккаунт</div>
         </div>
       </div>
     </div>
@@ -592,6 +522,8 @@ mondi-data:AppointmentTemplate1
   rdfs:label "Шаблон Назначения"@ru ;
   rdfs:label "Appointment template"@en ;
   veda-ui:forClass veda-schema:Appointment ;
+  veda-ui:index "veda-schema:employee" ;
+  veda-ui:index "veda-schema:occupation" ;
   veda-ui:template """
   <div class="container-fluid">
     <div class="panel panel-default">
@@ -614,31 +546,17 @@ mondi-data:AppointmentTemplate1
       </div>
     </div>
   </div>
-""" ;
+  """ ;
 .
-mondi-data:PersonIndex1
-  rdf:type veda-ui:ClassIndex ;
-  rdfs:label "Индекс для класса Персона"@ru ;
-  rdfs:label "Index for Person class"@en ;
-  veda-ui:forClass veda-schema:Person ;
-  veda-ui:index "veda-schema:firstName" ;
-  veda-ui:index "veda-schema:middleName" ;
-  veda-ui:index "veda-schema:lastName" ;
-.
-mondi-data:PositionIndex1
-  rdf:type veda-ui:ClassIndex ;
-  rdfs:label "Индекс для класса Должность"@ru ;
-  rdfs:label "Index for Position class"@en ;
+mondi-data:PositionTemplate1
+  rdf:type veda-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Должность"@ru ;
+  rdfs:label "Template for Position class"@en ;
   veda-ui:forClass veda-schema:Position ;
   veda-ui:index "rdfs:label" ;
-.
-mondi-data:AppointmentIndex1
-  rdf:type veda-ui:ClassIndex ;
-  rdfs:label "Индекс для класса Назначение"@ru ;
-  rdfs:label "Index for Appointment class"@en ;
-  veda-ui:forClass veda-schema:Appointment ;
-  veda-ui:index "veda-schema:employee" ;
-  veda-ui:index "veda-schema:occupation" ;
+  veda-ui:template """
+  <span data-property="document.rdfs:label">{document.rdfs:label}</span>
+  """ ;
 .
 mondi-data:PropertySpecification1
   rdf:type veda-ui:PropertySpecification ;

@@ -8,6 +8,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix veda-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 <http://semantic-machines.com/veda/veda-schema>
   rdf:type owl:Ontology ;
@@ -268,8 +269,8 @@ veda-schema:employee
 veda-schema:endTime
   rdf:type owl:DatatypeProperty ;
   rdfs:domain veda-schema:HRRecord ;
-  rdfs:domain veda-schema:DelegationStatement
-  rdfs:domain veda-schema:PermissionStatement
+  rdfs:domain veda-schema:DelegationStatement ;
+  rdfs:domain veda-schema:PermissionStatement ;
   rdfs:label "end time"@en ;
   rdfs:label "время окончания"@ru ;
   rdfs:range xsd:dateTime ;
