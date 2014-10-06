@@ -1,4 +1,4 @@
-# baseURI: http://semantic-machines.com/veda/mondi-schema
+# baseURI: http://semantic-machines.com/veda/mondi-schema-sa
 # imports: http://semantic-machines.com/veda/veda-schema
 # imports: http://semantic-machines.com/veda/veda-ui
 
@@ -173,7 +173,7 @@ mondi-schema-sa:dateFrom
 .
 mondi-schema-sa:area
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;;
+  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
   rdfs:label "Участок"@ru ;
   rdfs:range mondi-schema:Area ;
   veda-schema:deprecatedId "Участок" ;
@@ -188,7 +188,7 @@ mondi-schema-sa:place
 # ?? range OrganizationUnit или Department
 mondi-schema-sa:department
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;;
+  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
   rdfs:label "Подразделение СЛПК"@ru ;
   rdfs:range veda-schema:OrganizationUnit ;
   veda-schema:deprecatedId "Подразделение" ;
@@ -217,7 +217,7 @@ mondi-schema-sa:responsibleAdd
 # ?? code action или observationOfSafetyAudit или safetyAuditObservation
 mondi-schema-sa:addToDoc
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;;
+  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
   rdfs:label "Замечание в рамках Аудита"@ru ;
   rdfs:range mondi-schema-sa:SafetyAudit ;
   veda-schema:deprecatedId "add_to_doc" ;
