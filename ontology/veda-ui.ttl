@@ -64,7 +64,7 @@ veda-ui:template
 .
 veda-ui:index
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain veda-ui:ClassTemplate ;
+  rdfs:domain veda-ui:ObjectPropertySpecification ;
   rdfs:label "index"@en ;
   rdfs:label "индекс"@ru ;
   rdfs:range xsd:string ;
@@ -239,13 +239,6 @@ veda-ui:defaultObjectValue
   rdfs:range rdfs:Resource ;
 .
 veda-ui:dataSourceQuery
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain veda-ui:ObjectPropertySpecification ;
-  rdfs:label "запрос для источника данных"@ru ;
-  rdfs:label "data source query"@en ;
-  rdfs:range xsd:string ;
-.
-veda-ui:displayTemplate
   rdf:type owl:ObjectProperty ;
   rdfs:domain veda-ui:ObjectPropertySpecification ;
   rdfs:label "запрос для источника данных"@ru ;

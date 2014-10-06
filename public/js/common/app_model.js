@@ -33,6 +33,7 @@ function AppModel(config) {
 		self.end_time =  Math.floor((res.end_time - 621355968000000000) / 10000 );
 		self.trigger("auth:success", self.user_uri, self.ticket, self.end_time);
 	};
+	
 	self.quit = function() {
 		self.trigger("auth:quit");
 		Veda(config);

@@ -59,6 +59,7 @@ Veda(function AppPresenter(veda) { "use strict";
 	$("#logout").on("click", function (e) {
 		$("#current-user").html("");
 		veda.quit();
+		location.reload();
 	});
 
 	// Listen to user loaded event
@@ -79,11 +80,12 @@ Veda(function AppPresenter(veda) { "use strict";
 		
 		//Show login form
 		var template = $("#login-template").html();
-		$("#main").html(template);
+		var container = $("#main");
+		container.html(template);
 
-		$("#login-form #submit").on("click", function (e) {
+		$("#submit", container).on("click", function (e) {
 			e.preventDefault();
-			veda.authenticate( $("#login-form #login").val(), Sha256.hash( $("#login-form #password").val() ) );
+			veda.authenticate( $("#login", container).val(), Sha256.hash( $("#password", container).val() ) );
 		});
 	});
 

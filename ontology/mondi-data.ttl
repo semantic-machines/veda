@@ -522,8 +522,6 @@ mondi-data:AppointmentTemplate1
   rdfs:label "Шаблон Назначения"@ru ;
   rdfs:label "Appointment template"@en ;
   veda-ui:forClass veda-schema:Appointment ;
-  veda-ui:index "veda-schema:employee" ;
-  veda-ui:index "veda-schema:occupation" ;
   veda-ui:template """
   <div class="container-fluid">
     <div class="panel panel-default">
@@ -555,7 +553,43 @@ mondi-data:PositionTemplate1
   veda-ui:forClass veda-schema:Position ;
   veda-ui:index "rdfs:label" ;
   veda-ui:template """
-  <span data-property="document.rdfs:label">{document.rdfs:label}</span>
+  <span data-property="document.rdfs:label">Должность</span>
+  """ ;
+.
+mondi-data:PropertySpecification5
+  rdf:type veda-ui:PropertySpecification ;
+  rdfs:label "Спецификация работника для класса Назначение"@ru ;
+  rdfs:label "Employee property specification for Appointment class"@en ;
+  veda-ui:forClass veda-schema:Appointment ;
+  veda-ui:forProperty veda-schema:employee ;
+  veda-ui:index veda-schema:lastName ;
+  veda-ui:index veda-schema:firstName ;
+  veda-ui:index veda-schema:middleName ;
+  veda-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  veda-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  veda-ui:control "full-text search"^^xsd:string ;
+.
+mondi-data:PropertySpecification6
+  rdf:type veda-ui:PropertySpecification ;
+  rdfs:label "Спецификация работника для класса Назначение"@ru ;
+  rdfs:label "Employee property specification for Appointment class"@en ;
+  veda-ui:forClass veda-schema:Appointment ;
+  veda-ui:forProperty veda-schema:position ;
+  veda-ui:index rdfs:label ;
+  veda-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  veda-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  veda-ui:control "full-text search"^^xsd:string ;
+.
+mondi-data:PersonTemplate2
+  rdf:type veda-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Персона 2"@ru ;
+  rdfs:label "Template for Person class 2"@en ;
+  veda-ui:forClass veda-schema:Person ;
+  veda-ui:index "rdfs:label" ;
+  veda-ui:template """
+  <span data-property="document.veda-schema:lastName">Фамилия</span>
+  <span data-property="document.veda-schema:firstName">Имя</span>
+  <span data-property="document.veda-schema:middleName">Отчество</span>
   """ ;
 .
 mondi-data:PropertySpecification1
