@@ -427,7 +427,10 @@
 		<!-- Object value template -->
 		<script type="html/template" id="object-value-template">
 			<div>
-				<div class="view"><a data-toggle="popover" href="#/document/{value.id}">{value.rdfs:label}</a></div>
+				<div class="view">
+					<a data-toggle="popover" href="#/document/{value.id}">{value.rdfs:label}</a>
+					<a href=""><i class="glyphicon glyphicon-collapse-down"></i></a>
+				</div>
 				<div class="edit input-group">
 					<span class="input-group-addon btn btn-default search-component" ><i class="glyphicon glyphicon-search"></i></span>
 					<input type="text" class="form-control" value="{value.id}" bound data-property="{property.id}" data-index="{index}"/>

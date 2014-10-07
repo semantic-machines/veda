@@ -538,8 +538,8 @@ mondi-data:AppointmentTemplate1
       <div class="panel-body">
         <h3 data-property="document.rdfs:label">{document.rdfs:label}</h3>
         <div class="row">
-          <div class="col-md-3" data-property="document.veda-schema:employee"></div>
-          <div class="col-md-3" data-property="document.veda-schema:occupation"></div>
+          <div class="col-md-3" data-property="document.veda-schema:employee">Работник</div>
+          <div class="col-md-3" data-property="document.veda-schema:occupation">Должность</div>
         </div>
       </div>
     </div>
