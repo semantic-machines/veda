@@ -8,7 +8,7 @@ import pacahon.context;
 import pacahon.thread_context;
 import pacahon.know_predicates;
 import type;
-import onto.owl;
+import onto.onto;
 import onto.individual;
 import onto.resource;
 import onto.lang;
@@ -31,8 +31,6 @@ enum Command
 
 enum Function
 {
-    AllClasses,
-    Class,
     Individual,
     Individuals,
     PropertyOfIndividual,
@@ -63,7 +61,6 @@ class PacahonDriver {
         writeln("START VEDA STORAGE FIBER LISTENER");
         io_task = runTask({
                               immutable(Individual) _empty_iIndividual = (immutable(Individual)).init;
-                              immutable(Class) _empty_iClass = (immutable(Class)).init;
                               Resources _empty_Resources = Resources.init;
 
                               while (true)
@@ -234,25 +231,10 @@ class PacahonDriver {
                                                   {
                                                       send(tid, context.execute_script(args));
                                                   }
-                                                  else if (cmd == Command.Get && fn == Function.AllClasses)
-                                                  {
-                                                      send(tid, context.iget_owl_classes().values);
-                                                  }
                                                   else if (cmd == Command.Is && fn == Function.TicketValid)
                                                   {
                                                       bool res = context.is_ticket_valid(args);
                                                       send(tid, res);
-                                                  }
-                                                  else if (cmd == Command.Get && fn == Function.Class)
-                                                  {
-                                                      immutable(Class)[] classes;
-                                                      Ticket ticket;
-                                                      immutable(Class) classz = context.iget_owl_classes().get(args, _empty_iClass);
-
-                                                      if (classz != _empty_iClass)
-                                                          classes ~= classz;
-
-                                                      send(tid, classes);
                                                   }
                                               }
                                           },

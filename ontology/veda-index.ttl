@@ -1,0 +1,89 @@
+# baseURI: http://semantic-machines.com/veda/vi-index
+# imports: http://semantic-machines.com/veda/veda-schema
+# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+# imports: http://www.w3.org/2000/01/rdf-schema#
+# imports: http://www.w3.org/2002/07/owl
+
+# c14n-version: 3
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-index>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system data index ontology"@en ;
+  rdfs:label "Онтология индексирования данных системы Веда"@ru ;
+  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
+  owl:imports rdf: ;
+  owl:imports rdfs: ;
+  owl:imports <http://www.w3.org/2002/07/owl> ;
+  owl:versionInfo "2.0" ;
+.
+vdi:forClass
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain vdi:ClassIndex ;
+  rdfs:label "for class"@en ;
+  rdfs:label "для класса"@ru ;
+  rdfs:range owl:Class ;
+.
+vdi:forProperty
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain vdi:ClassIndex ;
+  rdfs:label "for property"@en ;
+  rdfs:label "для свойства"@ru ;
+  rdfs:range owl:Class ;
+.
+vdi:ClassIndex
+  rdf:type owl:Class ;
+  rdfs:label "Class index"@en ;
+  rdfs:label "Индекс класса"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+vdi:inherited_index
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain vdi:ClassIndex ;
+  rdfs:label "inherited index"@en ;
+  rdfs:label "наследуемый индекс"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+vdi:indexed_field
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain vdi:ClassIndex ;
+  rdfs:label "indexed field"@en ;
+  rdfs:label "индексируемое поле"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+#---------------------------------------------
+vdi:index_1
+  rdf:type vdi:ClassIndex ;
+  vdi:forProperty veda-schema:author ;
+  vdi:inherited_index vdi:index_2 ;
+  vdi:inherited_index vdi:index_3 ;
+.
+vdi:index_2
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass veda-schema:Appointment ;
+  vdi:forProperty veda-schema:employee ;
+  vdi:inherited_index vdi:index_4 ;
+.
+vdi:index_3
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass veda-schema:Appointment ;
+  vdi:forProperty veda-schema:occupation ;
+  vdi:inherited_index vdi:index_5 ;
+.
+vdi:index_4
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass veda-schema:Person ;
+  vdi:indexed_field veda-schema:firstName ;
+  vdi:indexed_field veda-schema:lastName ;
+  vdi:indexed_field veda-schema:middleName ;
+.
+vdi:index_5
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass veda-schema:OrganizationUnit ;
+  vdi:indexed_field rdfs:label ;
+.
