@@ -77,7 +77,7 @@ test(
 					type : _Uri
 				} ],
 				'v-s:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
 				'v-s:test_field' : [ {
@@ -117,7 +117,7 @@ test(
 					type : _Uri
 				} ],
 				'v-s:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
 				'v-s:test_field' : [ {
@@ -206,7 +206,7 @@ test(
 					type : _Uri
 				} ],
 				'v-s:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
 				'v-s:test_field' : [ {
@@ -572,7 +572,7 @@ test(
 					type : _Uri
 				} ],
 				'v-s:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
 				'v-s:test_field' : [ {
@@ -601,7 +601,7 @@ test(
 					type : _Uri
 				} ],
 				'v-s:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer2',
+					data : 'mnd-d:ValeriyBushenev-Programmer2',
 					type : _Uri
 				} ],
 				'v-s:test_field' : [ {
@@ -619,7 +619,7 @@ test(
 					type : _Uri
 				} ],
 				'v-s:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
 				'v-s:test_field' : [ {
@@ -642,7 +642,7 @@ test(
 					type : _Uri
 				} ],
 				'v-s:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
 				'v-s:test_field' : [ {
@@ -708,7 +708,7 @@ test(
 					type : _Uri
 				} ],
 				'v-s:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
 				'v-s:created' : [ {
@@ -738,7 +738,7 @@ test(
 					type : _Uri
 				} ],
 				'v-s:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
 				'v-s:created' : [ {
@@ -768,7 +768,7 @@ test(
 					type : _Uri
 				} ],
 				'v-s:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
 				'v-s:created' : [ {
@@ -798,7 +798,7 @@ test(
 					type : _Uri
 				} ],
 				'v-s:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
 				'v-s:created' : [ {
