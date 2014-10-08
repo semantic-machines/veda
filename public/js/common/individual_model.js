@@ -140,6 +140,7 @@ function IndividualModel(veda, uri, container) {
 			return acc;
 		}, individual);
 		put_individual(veda.ticket, individual, function (data) {
+			original_individual = JSON.stringify(individual);
 			self.trigger("individual:saved", self, container);
 		});
 	};

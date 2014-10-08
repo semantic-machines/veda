@@ -9,7 +9,7 @@ import vibe.core.concurrency, vibe.core.core, vibe.core.log, vibe.core.task;
 import type;
 import pacahon.context;
 import pacahon.know_predicates;
-import onto.owl;
+import onto.onto;
 import onto.individual;
 import onto.resource;
 import onto.lang;

@@ -94,15 +94,15 @@ Veda(function SearchPresenter(veda) { "use strict";
 		var $pager = $("#pager", container);
 		for (var page = 0; page < Math.floor(search.results_count / veda.user.displayedElements) + 1 * (search.results_count % veda.user.displayedElements ? 1 : 0); page++) {
 			(function (page) {
-				var $page = $("<li/>", {
-					"class" : page == currentPage ? "active" : ""
-				}).appendTo($pager);
+				var $page = $("<li/>")
+						.attr("class", page == currentPage ? "active" : "")
+						.appendTo($pager);
 				var $a = $("<a/>", { 
 					"text" : page + 1, 
 					"click": function (event) {
 						event.preventDefault(); 
 						currentPage = page; 
-						veda.trigger('search:complete', search);
+						veda.trigger('search:complete', search, container);
 					}, 
 					"href" : ""
 				}).appendTo($page);

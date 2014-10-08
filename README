@@ -3,5 +3,7 @@ Veda system project.
 I. Project dependencies
   See dub.json for dependencies list
 
+sudo apt-get install libevent-dev libssl-dev
+
 II. Building & running veda:
   cd /path/to/veda && ./m.sh
