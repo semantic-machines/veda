@@ -3,13 +3,14 @@
 # imports: http://semantic-machines.com/veda/veda-ui
 
 # c14n-version: 3
-@prefix mondi-schema: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
-@prefix veda-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
 <http://semantic-machines.com/veda/mondi-schema>
   rdf:type owl:Ontology ;
   owl:imports <http://semantic-machines.com/veda/veda-schema> ;
@@ -18,145 +19,144 @@
   rdfs:label "Mondi ontology"@en ;
   rdfs:label "Онтология Монди"@ru ;
 .
-mondi-schema:AdministrativeDocument
+mnd-s:AdministrativeDocument
   rdf:type owl:Class ;
   rdfs:label "Administrative document"@en ;
   rdfs:label "Распорядительный документ"@ru ;
-  rdfs:subClassOf veda-schema:Document ;
-  rdfs:subClassOf veda-schema:Versioned ;
-  rdfs:subClassOf mondi-schema:AdministrativeDocumentRestriction ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
+  rdfs:subClassOf mnd-s:AdministrativeDocumentRestriction ;
 .
 
-mondi-schema:AdministrativeDocumentRestriction
+mnd-s:AdministrativeDocumentRestriction
   rdf:type owl:Restriction ;
   rdfs:label "AdministrativeDocumentRestriction"@en ;
   rdfs:label "Ограничение для Административного документа"@ru ;
-  owl:onClass mondi-schema:AdministrativeDocumentType ;
-  owl:onProperty mondi-schema:nomenclatureType ;
+  owl:onClass mnd-s:AdministrativeDocumentType ;
+  owl:onProperty mnd-s:nomenclatureType ;
   owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
 .
-
-mondi-schema:AdministrativeDocumentType
+mnd-s:AdministrativeDocumentType
   rdf:type owl:Class ;
   rdfs:label "Document type"@en ;
   rdfs:label "Вид документа"@ru ;
-  rdfs:subClassOf mondi-schema:DocumentType ;
+  rdfs:subClassOf mnd-s:DocumentType ;
 .
-mondi-schema:DocumentType
+mnd-s:DocumentType
   rdf:type owl:Class ;
   rdfs:label "Document type"@en ;
   rdfs:label "Вид документа"@ru ;
-  rdfs:subClassOf veda-schema:Dictionary ;
+  rdfs:subClassOf v-s:Dictionary ;
 .
-mondi-schema:RegistrationRecord
+mnd-s:RegistrationRecord
   rdf:type owl:Class ;
   rdfs:label "Registration record"@en ;
   rdfs:label "Регистрационная запись"@ru ;
-  rdfs:subClassOf veda-schema:Document ;
+  rdfs:subClassOf v-s:Document ;
 .
-mondi-schema:content
+mnd-s:content
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema:AdministrativeDocument ;
+  rdfs:domain mnd-s:AdministrativeDocument ;
   rdfs:label "content"@en ;
   rdfs:label "содержание"@ru ;
   rdfs:range xsd:string ;
 .
-mondi-schema:nomenclatureType
+mnd-s:nomenclatureType
   rdf:type owl:ObjectProperty ;
   rdfs:domain [
       rdf:type owl:Class ;
       owl:unionOf (
-          mondi-schema:AdministrativeDocument
-          mondi-schema:RegistrationRecord
+          mnd-s:AdministrativeDocument
+          mnd-s:RegistrationRecord
         ) ;
     ] ;
   rdfs:label "document type"@en ;
   rdfs:label "вид документа"@ru ;
-  rdfs:range mondi-schema:DocumentType ;
+  rdfs:range mnd-s:DocumentType ;
 .
-mondi-schema:registrationDate
+mnd-s:RegistrationDate
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema:RegistrationRecord ;
+  rdfs:domain mnd-s:RegistrationRecord ;
   rdfs:label "Дата регистрации"@ru ;
   rdfs:range xsd:dateTime ;
 .
-mondi-schema:registrationNumber
+mnd-s:registrationNumber
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema:RegistrationRecord ;
+  rdfs:domain mnd-s:RegistrationRecord ;
   rdfs:label "Регистрационный номер"@ru ;
   rdfs:range xsd:string ;
 .
-mondi-schema:signer
+mnd-s:signer
   rdf:type owl:ObjectProperty ;
-  rdfs:domain mondi-schema:AdministrativeDocument ;
+  rdfs:domain mnd-s:AdministrativeDocument ;
   rdfs:label "signer"@en ;
   rdfs:label "подписант"@ru ;
-  rdfs:range veda-schema:Appointment ;
+  rdfs:range v-s:Appointment ;
 .
 
-mondi-schema:Dossier
+mnd-s:Dossier
   rdf:type owl:Class ;
   rdfs:label "Dossier"@en ;
   rdfs:label "Досье контрагента"@ru ;
-  rdfs:subClassOf veda-schema:Document ;
-  rdfs:subClassOf veda-schema:Versioned ;
-  veda-schema:deprecatedId "6b0ea5c4957640c3bab5ab49b01eb01c" ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
+  v-s:deprecatedId "6b0ea5c4957640c3bab5ab49b01eb01c" ;
 .
 
-mondi-schema:Action
+mnd-s:Action
   rdf:type owl:Class ;
   rdfs:label "Action"@en ;
   rdfs:label "Мероприятие"@ru ;
-  rdfs:subClassOf veda-schema:Document ;
-  rdfs:subClassOf veda-schema:Versioned ;
-  veda-schema:deprecatedId "6b0ea5c4957640c3bab5ab49b01eb01c" ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
+  v-s:deprecatedId "6b0ea5c4957640c3bab5ab49b01eb01c" ;
 .
 
 # Не версионное, потому что простой справочник
-mondi-schema:Status
+mnd-s:Status
   rdf:type owl:Class ;
   rdfs:label "Status"@en ;
   rdfs:label "Статус"@ru ;
-  rdfs:subClassOf veda-schema:Dictionary ;
-  veda-schema:deprecatedId "b1cadfae1ba041d8a88a9b8c935024a3" ;
+  rdfs:subClassOf v-s:Dictionary ;
+  v-s:deprecatedId "b1cadfae1ba041d8a88a9b8c935024a3" ;
 .
 # Не версионное, потому что простой справочник
-mondi-schema:Area
+mnd-s:Area
   rdf:type owl:Class ;
   rdfs:label "Area"@en ;
   rdfs:label "Участок"@ru ;
-  rdfs:subClassOf veda-schema:Dictionary ;
-  veda-schema:deprecatedId "5c2ce098-66a1-471c-886f-addb170f98da" ;
+  rdfs:subClassOf v-s:Dictionary ;
+  v-s:deprecatedId "5c2ce098-66a1-471c-886f-addb170f98da" ;
 .
 # Не версионное, потому что простой справочник
-mondi-schema:PositiveNegative
+mnd-s:PositiveNegative
   rdf:type owl:Class ;
   rdfs:label "Positive. Negative"@en ;
   rdfs:label "Положительный. Отрицательный"@ru ;
-  rdfs:subClassOf veda-schema:Dictionary ;
-  veda-schema:deprecatedId "92dd9031f2bb49a08c847081988c0cac" ;
+  rdfs:subClassOf v-s:Dictionary ;
+  v-s:deprecatedId "92dd9031f2bb49a08c847081988c0cac" ;
 .
 # Не версионное, потому что простой справочник
-mondi-schema:ClassifierLevel
+mnd-s:ClassifierLevel
   rdf:type owl:Class ;
   rdfs:label "Classifier of level"@en ;
   rdfs:label "Классификатор уровней"@ru ;
-  rdfs:subClassOf veda-schema:Dictionary ;
-  veda-schema:deprecatedId "6f121c4c4dc745e5a794c9b18c924ffa" ;
+  rdfs:subClassOf v-s:Dictionary ;
+  v-s:deprecatedId "6f121c4c4dc745e5a794c9b18c924ffa" ;
 .
-mondi-schema:AddInfo
+mnd-s:AddInfo
   rdf:type owl:Class ;
   rdfs:label "Add Info"@en ;
   rdfs:label "Доп информация"@ru ;
-  rdfs:subClassOf veda-schema:Document ;
-  rdfs:subClassOf veda-schema:Versioned ;
-  veda-schema:deprecatedId "a96be31d57d043539de3187ec9c320c5" ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
+  v-s:deprecatedId "a96be31d57d043539de3187ec9c320c5" ;
 .
-mondi-schema:NormativeDocument
+mnd-s:NormativeDocument
   rdf:type owl:Class ;
   rdfs:label "Normative Document"@en ;
   rdfs:label "Нормативный документ"@ru ;
-  rdfs:subClassOf veda-schema:Document ;
-  rdfs:subClassOf veda-schema:Versioned ;
-  veda-schema:deprecatedId "fc534b64efdb4dbe93f28c3a6f53240c" ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
+  v-s:deprecatedId "fc534b64efdb4dbe93f28c3a6f53240c" ;
 .

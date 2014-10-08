@@ -2,7 +2,7 @@ module veda.util;
 
 import std.conv, std.stdio;
 import vibe.d;
-import onto.owl;
+import onto.onto;
 import onto.individual;
 import onto.resource;
 import onto.lang;

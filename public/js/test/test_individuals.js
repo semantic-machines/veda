@@ -73,14 +73,14 @@ test(
 			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:Document',
+					data : 'v-s:Document',
 					type : _Uri
 				} ],
-				'veda-schema:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+				'v-s:author' : [ {
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
-				'veda-schema:test_field' : [ {
+				'v-s:test_field' : [ {
 					data : 'test data',
 					lang : 'NONE',
 					type : _String
@@ -113,14 +113,14 @@ test(
 			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:Document',
+					data : 'v-s:Document',
 					type : _Uri
 				} ],
-				'veda-schema:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+				'v-s:author' : [ {
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
-				'veda-schema:test_field' : [ {
+				'v-s:test_field' : [ {
 					data : 'test data',
 					lang : 'NONE',
 					type : _String
@@ -144,18 +144,18 @@ test(
 			var new_permission = {
 				'@' : permission_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:PermissionStatement',
+					data : 'v-s:PermissionStatement',
 					type : _Uri
 				} ],
-				'veda-schema:canRead' : [ {
+				'v-s:canRead' : [ {
 					data : true,
 					type : _Bool
 				} ],
-				'veda-schema:permissionObject' : [ {
+				'v-s:permissionObject' : [ {
 					data : new_test_doc1_uri,
 					type : _Uri
 				} ],
-				'veda-schema:permissionSubject' : [ {
+				'v-s:permissionSubject' : [ {
 					data : ticket_user2.user_uri,
 					type : _Uri
 				} ]
@@ -167,20 +167,20 @@ test(
 			ok(compare(new_test_doc1, read_individual));
 
 			new_permission["@"] = "_";
-			delete new_permission["veda-schema:permissionObject"];
-			delete new_permission["veda-schema:permissionSubject"];
+			delete new_permission["v-s:permissionObject"];
+			delete new_permission["v-s:permissionSubject"];
 
 			var right1 = get_rights (ticket_user1.id, new_test_doc1_uri);
 			var right2 = get_rights (ticket_user2.id, new_test_doc1_uri);
 
 			ok(compare(new_permission, right2));
 
-			new_permission['veda-schema:canUpdate'] = [{
+			new_permission['v-s:canUpdate'] = [{
 					data : true,
 					type : _Bool
 				}];
 
-			new_permission['veda-schema:canDelete'] = [{
+			new_permission['v-s:canDelete'] = [{
 					data : true,
 					type : _Bool
 				}];
@@ -202,14 +202,14 @@ test(
 			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:Document',
+					data : 'v-s:Document',
 					type : _Uri
 				} ],
-				'veda-schema:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+				'v-s:author' : [ {
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
-				'veda-schema:test_field' : [ {
+				'v-s:test_field' : [ {
 					data : 'test data',
 					lang : 'NONE',
 					type : _String
@@ -236,50 +236,50 @@ test("#007 Individual store and read, test datatype", function() {
 	var new_test_doc1 = {
 		'@' : new_test_doc1_uri,
 		'rdf:type' : [ {
-			data : 'veda-schema:test-data-types',
+			data : 'v-s:test-data-types',
 			type : _Uri
 		} ],
-		'veda-schema:test_integer' : [ {
+		'v-s:test_integer' : [ {
 			data : 12745784850035,
 			type : _Integer
 		} ],
-		'veda-schema:test_negative_integer' : [ {
+		'v-s:test_negative_integer' : [ {
 			data : -144365435,
 			type : _Integer
 		} ],
-		'veda-schema:test_decimal' : [ {
+		'v-s:test_decimal' : [ {
 			data : 127.0035,
 			type : _Decimal
 		} ],
-		'veda-schema:test_negative_decimal' : [ {
+		'v-s:test_negative_decimal' : [ {
 			data : -54.89,
 			type : _Decimal
 		} ],
-		'veda-schema:created' : [ {
+		'v-s:created' : [ {
 			data : new Date (),
 			type : _Datetime
 		} ],
-		'veda-schema:test_datetime0' : [ {
+		'v-s:test_datetime0' : [ {
 			data : new Date ("2014-01-02"),
 			type : _Datetime
 		} ],
-		'veda-schema:test_datetime1' : [ {
+		'v-s:test_datetime1' : [ {
 			data : new Date ("2014-01-02T20:00"),
 			type : _Datetime
 		} ],
-		'veda-schema:test_datetime2' : [ {
+		'v-s:test_datetime2' : [ {
 			data : new Date ("2014-01-02T20:10:24"),
 			type : _Datetime
 		} ],
-		'veda-schema:test_datetime3' : [ {
+		'v-s:test_datetime3' : [ {
 			data : new Date ("2014-01-02T20:10:24.768"),
 			type : _Datetime
 		} ],
-		'veda-schema:canUpdate' : [ {
+		'v-s:canUpdate' : [ {
 			data : true,
 			type : _Bool
 		} ],
-		'veda-schema:permissionSubject' : [ {
+		'v-s:permissionSubject' : [ {
 			data : 'individual_2',
 			type : _Uri
 		} ]
@@ -294,7 +294,7 @@ test("#007 Individual store and read, test datatype", function() {
 	
 });
 
-test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2 (check on duplicate)",
+test("#008 Individual of [v-s:PermissionStatement] store 3 and read 2 (check on duplicate)",
 		function() {
 			var ticket = get_admin_ticket ();
 
@@ -305,26 +305,26 @@ test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2 (c
 			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:PermissionStatement',
+					data : 'v-s:PermissionStatement',
 					type : _Uri
 				} ],
-				'veda-schema:canDelete' : [ {
+				'v-s:canDelete' : [ {
 					data : true,
 					type : _Bool
 				} ],
-				'veda-schema:canRead' : [ {
+				'v-s:canRead' : [ {
 					data : true,
 					type : _Bool
 				} ],
-				'veda-schema:canUpdate' : [ {
+				'v-s:canUpdate' : [ {
 					data : true,
 					type : _Bool
 				} ],
-				'veda-schema:permissionObject' : [ {
+				'v-s:permissionObject' : [ {
 					data : permissionObject,
 					type : _Uri
 				} ],
-				'veda-schema:permissionSubject' : [ {
+				'v-s:permissionSubject' : [ {
 					data : permissionSubject,
 					type : _Uri
 				} ]
@@ -339,7 +339,7 @@ test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2 (c
 			var new_test_doc2 = new_test_doc1;
 			var new_test_doc2_uri = guid();
 			new_test_doc2['@'] = new_test_doc2_uri;
-			new_test_doc2['veda-schema:canRead'] = [ {
+			new_test_doc2['v-s:canRead'] = [ {
 				data : false,
 				type : _Bool
 			} ], put_individual(ticket.id, new_test_doc2);
@@ -351,7 +351,7 @@ test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2 (c
 			var new_test_doc3 = new_test_doc2;
 			var new_test_doc3_uri = guid();
 			new_test_doc3['@'] = new_test_doc3_uri;
-			new_test_doc3['veda-schema:canRead'] = [ {
+			new_test_doc3['v-s:canRead'] = [ {
 				data : true,
 				type : _Bool
 			} ], put_individual(ticket.id, new_test_doc3);
@@ -364,7 +364,7 @@ test("#008 Individual of [veda-schema:PermissionStatement] store 3 and read 2 (c
 		});
 
 test(
-		"#009 Individual of [veda-schema:NoPermissionStatement] store 3 and read 3",
+		"#009 Individual of [v-s:NoPermissionStatement] store 3 and read 3",
 		function() {
 			var ticket = get_admin_ticket ();
 
@@ -375,26 +375,26 @@ test(
 			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:NoPermissionStatement',
+					data : 'v-s:NoPermissionStatement',
 					type : _Uri
 				} ],
-				'veda-schema:canDelete' : [ {
+				'v-s:canDelete' : [ {
 					data : true,
 					type : _Bool
 				} ],
-				'veda-schema:canRead' : [ {
+				'v-s:canRead' : [ {
 					data : true,
 					type : _Bool
 				} ],
-				'veda-schema:canUpdate' : [ {
+				'v-s:canUpdate' : [ {
 					data : true,
 					type : _Bool
 				} ],
-				'veda-schema:permissionObject' : [ {
+				'v-s:permissionObject' : [ {
 					data : permissionObject,
 					type : _Uri
 				} ],
-				'veda-schema:permissionSubject' : [ {
+				'v-s:permissionSubject' : [ {
 					data : permissionSubject,
 					type : _Uri
 				} ]
@@ -409,7 +409,7 @@ test(
 			var new_test_doc2 = new_test_doc1;
 			var new_test_doc2_uri = guid();
 			new_test_doc2['@'] = new_test_doc2_uri;
-			new_test_doc2['veda-schema:canRead'] = [ {
+			new_test_doc2['v-s:canRead'] = [ {
 				data : false,
 				type : _Bool
 			} ];
@@ -422,7 +422,7 @@ test(
 			var new_test_doc3 = new_test_doc2;
 			var new_test_doc3_uri = guid();
 			new_test_doc3['@'] = new_test_doc3_uri;
-			new_test_doc3['veda-schema:canRead'] = [ {
+			new_test_doc3['v-s:canRead'] = [ {
 				data : true,
 				type : _Bool
 			} ];
@@ -434,7 +434,7 @@ test(
 			
 		});
 
-test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
+test("#010 Individual of [v-s:Membership] store 3 and read 2",
 		function() {
 			var ticket = get_admin_ticket ();
 
@@ -445,14 +445,14 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:Membership',
+					data : 'v-s:Membership',
 					type : _Uri
 				} ],
-				'veda-schema:memberOf' : [ {
+				'v-s:memberOf' : [ {
 					data : memberOf,
 					type : _Uri
 				} ],
-				'veda-schema:resource' : [ {
+				'v-s:resource' : [ {
 					data : resources,
 					type : _Uri
 				} ]
@@ -467,7 +467,7 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 			var new_test_doc2 = new_test_doc1;
 			var new_test_doc2_uri = guid();
 			new_test_doc2['@'] = new_test_doc2_uri;
-			new_test_doc2['veda-schema:memberOf'] = [ {
+			new_test_doc2['v-s:memberOf'] = [ {
 				data : guid(),
 				type : _Uri
 			} ];
@@ -480,7 +480,7 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 			var new_test_doc3 = new_test_doc2;
 			var new_test_doc3_uri = guid();
 			new_test_doc3['@'] = new_test_doc3_uri;
-			new_test_doc3['veda-schema:memberOf'] = [ {
+			new_test_doc3['v-s:memberOf'] = [ {
 				data : memberOf,
 				type : _Uri
 			} ];
@@ -493,7 +493,7 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 			
 		});
 
-	test("#011 Individual of [veda-schema:NoMembership] store 3 and read 3",
+	test("#011 Individual of [v-s:NoMembership] store 3 and read 3",
 		function() {
 			var ticket = get_admin_ticket ();
 
@@ -504,14 +504,14 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:NoMembership',
+					data : 'v-s:NoMembership',
 					type : _Uri
 				} ],
-				'veda-schema:memberOf' : [ {
+				'v-s:memberOf' : [ {
 					data : memberOf,
 					type : _Uri
 				} ],
-				'veda-schema:resource' : [ {
+				'v-s:resource' : [ {
 					data : resources,
 					type : _Uri
 				} ]
@@ -526,7 +526,7 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 			var new_test_doc2 = new_test_doc1;
 			var new_test_doc2_uri = guid();
 			new_test_doc2['@'] = new_test_doc2_uri;
-			new_test_doc2['veda-schema:memberOf'] = [ {
+			new_test_doc2['v-s:memberOf'] = [ {
 				data : guid(),
 				type : _Uri
 			} ];
@@ -539,7 +539,7 @@ test("#010 Individual of [veda-schema:Membership] store 3 and read 2",
 			var new_test_doc3 = new_test_doc2;
 			var new_test_doc3_uri = guid();
 			new_test_doc3['@'] = new_test_doc3_uri;
-			new_test_doc3['veda-schema:memberOf'] = [ {
+			new_test_doc3['v-s:memberOf'] = [ {
 				data : memberOf,
 				type : _Uri
 			} ];
@@ -568,24 +568,24 @@ test(
 			var new_test_doc1 = {
 				'@' : new_test_doc1_uri_1,
 				'rdf:type' : [ {
-					data : 'veda-schema:Document',
+					data : 'v-s:Document',
 					type : _Uri
 				} ],
-				'veda-schema:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+				'v-s:author' : [ {
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
-				'veda-schema:test_field' : [ {
+				'v-s:test_field' : [ {
 					data : test_data,
 					lang : 'NONE',
 					type : _String
 				} ],
-				'veda-schema:test_fieldA' : [ {
+				'v-s:test_fieldA' : [ {
 					data : 'BBB' + test_data_uid,
 					lang : 'NONE',
 					type : _String
 				} ],
-				'veda-schema:test_fieldB' : [ {
+				'v-s:test_fieldB' : [ {
 					data : 'CCC' + test_data_uid,
 					lang : 'NONE',
 					type : _String
@@ -597,14 +597,14 @@ test(
 			var new_test_doc2 = {
 				'@' : new_test_doc1_uri_2,
 				'rdf:type' : [ {
-					data : 'veda-schema:Document',
+					data : 'v-s:Document',
 					type : _Uri
 				} ],
-				'veda-schema:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer2',
+				'v-s:author' : [ {
+					data : 'mnd-d:ValeriyBushenev-Programmer2',
 					type : _Uri
 				} ],
-				'veda-schema:test_field' : [ {
+				'v-s:test_field' : [ {
 					data : test_data,
 					lang : 'NONE',
 					type : _String
@@ -615,19 +615,19 @@ test(
 			var new_test_doc3 = {
 				'@' : new_test_doc1_uri_3,
 				'rdf:type' : [ {
-					data : 'veda-schema:Document',
+					data : 'v-s:Document',
 					type : _Uri
 				} ],
-				'veda-schema:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+				'v-s:author' : [ {
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
-				'veda-schema:test_field' : [ {
+				'v-s:test_field' : [ {
 					data : test_data,
 					lang : 'NONE',
 					type : _String
 				} ],
-				'veda-schema:test_fieldA' : [ {
+				'v-s:test_fieldA' : [ {
 					data : 'BBB' + test_data_uid,
 					lang : 'NONE',
 					type : _String
@@ -638,24 +638,24 @@ test(
 			var new_test_doc4 = {
 				'@' : new_test_doc1_uri_4,
 				'rdf:type' : [ {
-					data : 'veda-schema:Document',
+					data : 'v-s:Document',
 					type : _Uri
 				} ],
-				'veda-schema:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+				'v-s:author' : [ {
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
-				'veda-schema:test_field' : [ {
+				'v-s:test_field' : [ {
 					data : 'AAA' + test_data_uid,
 					lang : 'NONE',
 					type : _String
 				} ],
-				'veda-schema:test_fieldA' : [ {
+				'v-s:test_fieldA' : [ {
 					data : 'BBB' + test_data_uid,
 					lang : 'NONE',
 					type : _String
 				} ],
-				'veda-schema:test_fieldB' : [ {
+				'v-s:test_fieldB' : [ {
 					data : 'CCC' + test_data_uid,
 					lang : 'NONE',
 					type : _String
@@ -676,19 +676,19 @@ test(
 			data = query(ticket_user2.id,  test_data_uid);
 			ok(compare(data.length, 0));
 
-			data = query(ticket_user1.id,  "'veda-schema:test_field' == '" + test_data_uid + "'");
+			data = query(ticket_user1.id,  "'v-s:test_field' == '" + test_data_uid + "'");
 			ok(compare(data.length, 2));
 			
-			data = query(ticket_user1.id,  "'veda-schema:test_field1' == '" + test_data_uid + "'");
+			data = query(ticket_user1.id,  "'v-s:test_field1' == '" + test_data_uid + "'");
 			ok(compare(data.length, 0));
 
-			data = query(ticket_user1.id,  "'veda-schema:test_field1' == '" + test_data_uid + " t1'");
+			data = query(ticket_user1.id,  "'v-s:test_field1' == '" + test_data_uid + " t1'");
 			ok(compare(data.length, 0));
 
-			data = query(ticket_user1.id,  "'veda-schema:test_field' == '" + test_data_uid + "' || 'veda-schema:test_field' == 'AAA" + test_data_uid + "'");
+			data = query(ticket_user1.id,  "'v-s:test_field' == '" + test_data_uid + "' || 'v-s:test_field' == 'AAA" + test_data_uid + "'");
 			ok(compare(data.length, 3));
 
-			data = query(ticket_user1.id,  "'veda-schema:test_fieldB' == 'CCC" + test_data_uid + "' && 'veda-schema:test_fieldA' == 'BBB" + test_data_uid + "'");
+			data = query(ticket_user1.id,  "'v-s:test_fieldB' == 'CCC" + test_data_uid + "' && 'v-s:test_fieldA' == 'BBB" + test_data_uid + "'");
 			ok(compare(data.length, 2));
 		});
 
@@ -704,27 +704,27 @@ test(
 			var new_test_doc1 = {
 				'@' : new_test_doc1_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:Document',
+					data : 'v-s:Document',
 					type : _Uri
 				} ],
-				'veda-schema:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+				'v-s:author' : [ {
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
-				'veda-schema:created' : [ {
+				'v-s:created' : [ {
 				data : new Date (),
 				type : _Datetime
 				} ],
-				'veda-schema:test_group' : [ {
+				'v-s:test_group' : [ {
 					data : test_group_uid,
 					lang : 'NONE',
 					type : _String
 				} ],
-				'veda-schema:test_datetime0' : [ {
+				'v-s:test_datetime0' : [ {
 				data : new Date ("2014-01-01"),
 				type : _Datetime
 				} ],
-				'veda-schema:test_datetime1' : [ {
+				'v-s:test_datetime1' : [ {
 				data : new Date ("2014-05-01"),
 				type : _Datetime
 				} ]
@@ -734,27 +734,27 @@ test(
 			var new_test_doc2 = {
 				'@' : new_test_doc2_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:Document',
+					data : 'v-s:Document',
 					type : _Uri
 				} ],
-				'veda-schema:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+				'v-s:author' : [ {
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
-				'veda-schema:created' : [ {
+				'v-s:created' : [ {
 				data : new Date (),
 				type : _Datetime
 				} ],
-				'veda-schema:test_group' : [ {
+				'v-s:test_group' : [ {
 					data : test_group_uid,
 					lang : 'NONE',
 					type : _String
 				} ],
-				'veda-schema:test_datetime0' : [ {
+				'v-s:test_datetime0' : [ {
 				data : new Date ("2014-01-02"),
 				type : _Datetime
 				} ],
-				'veda-schema:test_datetime1' : [ {
+				'v-s:test_datetime1' : [ {
 				data : new Date ("2014-05-01"),
 				type : _Datetime
 				} ]
@@ -764,27 +764,27 @@ test(
 			var new_test_doc3 = {
 				'@' : new_test_doc3_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:Document',
+					data : 'v-s:Document',
 					type : _Uri
 				} ],
-				'veda-schema:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+				'v-s:author' : [ {
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
-				'veda-schema:created' : [ {
+				'v-s:created' : [ {
 				data : new Date (),
 				type : _Datetime
 				} ],
-				'veda-schema:test_group' : [ {
+				'v-s:test_group' : [ {
 					data : test_group_uid,
 					lang : 'NONE',
 					type : _String
 				} ],
-				'veda-schema:test_datetime0' : [ {
+				'v-s:test_datetime0' : [ {
 				data : new Date ("2014-01-02"),
 				type : _Datetime
 				} ],
-				'veda-schema:test_datetime1' : [ {
+				'v-s:test_datetime1' : [ {
 				data : new Date ("2014-06-11"),
 				type : _Datetime
 				} ]
@@ -794,27 +794,27 @@ test(
 			var new_test_doc4 = {
 				'@' : new_test_doc4_uri,
 				'rdf:type' : [ {
-					data : 'veda-schema:Document',
+					data : 'v-s:Document',
 					type : _Uri
 				} ],
-				'veda-schema:author' : [ {
-					data : 'mondi-data:ValeriyBushenev-Programmer1',
+				'v-s:author' : [ {
+					data : 'mnd-d:ValeriyBushenev-Programmer1',
 					type : _Uri
 				} ],
-				'veda-schema:created' : [ {
+				'v-s:created' : [ {
 				data : new Date (),
 				type : _Datetime
 				} ],
-				'veda-schema:test_group' : [ {
+				'v-s:test_group' : [ {
 					data : test_group_uid,
 					lang : 'NONE',
 					type : _String
 				} ],
-				'veda-schema:test_datetime0' : [ {
+				'v-s:test_datetime0' : [ {
 				data : new Date ("2014-01-03"),
 				type : _Datetime
 				} ],
-				'veda-schema:test_datetime1' : [ {
+				'v-s:test_datetime1' : [ {
 				data : new Date ("2014-06-12"),
 				type : _Datetime
 				} ]
@@ -829,18 +829,18 @@ test(
 			var data = query(ticket_user1.id, test_group_uid);
 			ok(compare(data.length, 4));
 
-			data = query(ticket_user1.id,  "'veda-schema:test_group' == '" + test_group_uid + "'");
+			data = query(ticket_user1.id,  "'v-s:test_group' == '" + test_group_uid + "'");
 			ok(compare(data.length, 4));
 			
 			data = query(ticket_user1.id,  
-				     "'veda-schema:test_datetime0' == [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'veda-schema:test_group' == '" + test_group_uid + "'");
+				     "'v-s:test_datetime0' == [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'v-s:test_group' == '" + test_group_uid + "'");
 			ok(compare(data.length, 3));
 			ok ((data[0] == new_test_doc1_uri || data[1] == new_test_doc1_uri || data[2] == new_test_doc1_uri) && 
 			    (data[0] == new_test_doc2_uri || data[1] == new_test_doc2_uri || data[2] == new_test_doc2_uri) && 
 			    (data[0] == new_test_doc3_uri || data[1] == new_test_doc3_uri || data[2] == new_test_doc3_uri));
 
 			data = query(ticket_user1.id,  
-				     "'veda-schema:test_datetime1' == [2014-04-01T00:00:00, 2014-06-03T00:00:00] && 'veda-schema:test_datetime0' == [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'veda-schema:test_group' == '" + test_group_uid + "'");
+				     "'v-s:test_datetime1' == [2014-04-01T00:00:00, 2014-06-03T00:00:00] && 'v-s:test_datetime0' == [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'v-s:test_group' == '" + test_group_uid + "'");
 			ok(compare(data.length, 2));
 			ok ((data[0] == new_test_doc1_uri || data[1] == new_test_doc1_uri) && (data[0] == new_test_doc2_uri || data[1] == new_test_doc2_uri));
 		});

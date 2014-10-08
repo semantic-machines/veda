@@ -3,14 +3,14 @@
 # imports: http://semantic-machines.com/veda/veda-ui
 
 # c14n-version: 3
-@prefix mondi-schema: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
-@prefix veda-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix mondi-schema-sa: <http://semantic-machines.com/veda/mondi-schema-sa/> .
+@prefix mnd-sa: <http://semantic-machines.com/veda/mondi-schema-sa/> .
 
 <http://semantic-machines.com/veda/mondi-schema-sa>
   rdf:type owl:Ontology ;
@@ -21,319 +21,319 @@
   rdfs:label "Mondi ontology. Safety audit"@en ;
   rdfs:label "Онтология Монди. Аудит безопасности"@ru ;
 .
-mondi-schema-sa:SafetyAudit
+mnd-sa:SafetyAudit
   rdf:type owl:Class ;
   rdfs:label "Safety audit"@en ;
   rdfs:label "Аудит безопасности"@ru ;
-  rdfs:subClassOf veda-schema:Document ;
-  veda-schema:deprecatedId "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  rdfs:subClassOf v-s:Document ;
+  v-s:deprecatedId "9fb73a44385d4b2c9db9b85da8ae2220" ;
 .
-mondi-schema-sa:SafetyStandardSection
+mnd-sa:SafetyStandardSection
   rdf:type owl:Class ;
   rdfs:label "Section of safety standard"@en ;
   rdfs:label "Вид надзора"@ru ;
-  rdfs:subClassOf veda-schema:Dictionary ;
-  veda-schema:deprecatedId "3366dfbe-f34b-4ca8-aff1-3d34200326e3" ;
+  rdfs:subClassOf v-s:Dictionary ;
+  v-s:deprecatedId "3366dfbe-f34b-4ca8-aff1-3d34200326e3" ;
 .
-mondi-schema-sa:SafetyAuditObservation
+mnd-sa:SafetyAuditObservation
   rdf:type owl:Class ;
   rdfs:label "Observation of safety audit"@en ;
   rdfs:label "Замечание аудита безопасности"@ru ;
-  rdfs:subClassOf veda-schema:Document ;
-  rdfs:subClassOf veda-schema:Versioned ;
-  veda-schema:deprecatedId "74eb8e54882545f3a35c1acae761500e" ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
+  v-s:deprecatedId "74eb8e54882545f3a35c1acae761500e" ;
 .
-mondi-schema-sa:SafetyAuditObservationKind
+mnd-sa:SafetyAuditObservationKind
   rdf:type owl:Class ;
   rdfs:label "Kind of safety audit observation"@en ;
   rdfs:label "Вид Замечания аудита безопасности"@ru ;
-  rdfs:subClassOf veda-schema:Dictionary ;
-  veda-schema:deprecatedId "13e63952889c4177b0dbaca23bdc4d5c" ;
+  rdfs:subClassOf v-s:Dictionary ;
+  v-s:deprecatedId "13e63952889c4177b0dbaca23bdc4d5c" ;
 .
-mondi-schema-sa:SafetyStandardTheme
+mnd-sa:SafetyStandardTheme
   rdf:type owl:Class ;
   rdfs:label "Theme of safety standard"@en ;
   rdfs:label "Тема аудита безопасности"@ru ;
-  rdfs:subClassOf veda-schema:Dictionary ;
-  veda-schema:deprecatedId "19faf6e8-8843-4426-a905-ce2b0a1a07e0" ;
+  rdfs:subClassOf v-s:Dictionary ;
+  v-s:deprecatedId "19faf6e8-8843-4426-a905-ce2b0a1a07e0" ;
 .
 
-# begin-------------- mondi-schema-sa:SafetyAudit
-mondi-schema-sa:registrationNumber
+# begin-------------- mnd-sa:SafetyAudit
+mnd-sa:registrationNumber
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Регистрационный номер"@ru ;
   rdfs:range xsd:string ;
-  veda-schema:deprecatedId "№" ;
+  v-s:deprecatedId "№" ;
 .
-mondi-schema-sa:dateFrom
+mnd-sa:dateFrom
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Дата проведения"@ru ;
   rdfs:range xsd:dateTime ;
-  veda-schema:deprecatedId "Дата" ;
+  v-s:deprecatedId "Дата" ;
 .
 # ?? range OrganizationUnit или Department
-mondi-schema-sa:department
+mnd-sa:department
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Подразделение СЛПК"@ru ;
-  rdfs:range veda-schema:OrganizationUnit ;
-  veda-schema:deprecatedId "Подразделение" ;
+  rdfs:range v-s:OrganizationUnit ;
+  v-s:deprecatedId "Подразделение" ;
 .
-mondi-schema-sa:contractor
+mnd-sa:contractor
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Подрядчик"@ru ;
-  rdfs:range mondi-schema:Dossier ;
-  veda-schema:deprecatedId "contractor" ;
+  rdfs:range mnd-s:Dossier ;
+  v-s:deprecatedId "contractor" ;
 .
 # ?? code classifierWork или safetyStandardSection
-mondi-schema-sa:classifierWork
+mnd-sa:classifierWork
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Вид надзора"@ru ;
-  rdfs:range mondi-schema-sa:SafetyStandardSection ;
-  veda-schema:deprecatedId "Тема" ;
+  rdfs:range mnd-sa:SafetyStandardSection ;
+  v-s:deprecatedId "Тема" ;
 .
-mondi-schema-sa:member
+mnd-sa:member
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Список участников"@ru ;
-  rdfs:range veda-schema:Appointment ;
-  veda-schema:deprecatedId "Список участников" ;
+  rdfs:range v-s:Appointment ;
+  v-s:deprecatedId "Список участников" ;
 .
-mondi-schema-sa:recipient
+mnd-sa:recipient
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Список рассылки"@ru ;
-  rdfs:range veda-schema:Appointment ;
-  veda-schema:deprecatedId "Список рассылки" ;
+  rdfs:range v-s:Appointment ;
+  v-s:deprecatedId "Список рассылки" ;
 .
 # ?? code action или observationOfSafetyAudit или safetyAuditObservation
-mondi-schema-sa:action
+mnd-sa:action
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Замечания аудита"@ru ;
-  rdfs:range mondi-schema-sa:SafetyAuditObservation ;
-  veda-schema:deprecatedId "action" ;
+  rdfs:range mnd-sa:SafetyAuditObservation ;
+  v-s:deprecatedId "action" ;
 .
-mondi-schema-sa:summary
+mnd-sa:summary
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Вывод"@ru ;
   rdfs:range xsd:string ;
-  veda-schema:deprecatedId "Вывод" ;
+  v-s:deprecatedId "Вывод" ;
 .
-mondi-schema-sa:comment
+mnd-sa:comment
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Комментарий"@ru ;
   rdfs:range xsd:string ;
-  veda-schema:deprecatedId "Комментарий" ;
+  v-s:deprecatedId "Комментарий" ;
 .
-mondi-schema-sa:status
+mnd-sa:status
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Статус"@ru ;
-  rdfs:range mondi-schema:Status ;
-  veda-schema:deprecatedId "status" ;
+  rdfs:range mnd-s:Status ;
+  v-s:deprecatedId "status" ;
 .
 # ?? range Documents или какой-нибудь MondiDocument
-mondi-schema-sa:addDoc
+mnd-sa:addDoc
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Связанный документ"@ru ;
-  rdfs:range mondi-schema:Documents ;
-  veda-schema:deprecatedId "add_doc" ;
+  rdfs:range mnd-s:Documents ;
+  v-s:deprecatedId "add_doc" ;
 .
-# end-------------- mondi-schema-sa:SafetyAudit
+# end-------------- mnd-sa:SafetyAudit
 
-# begin-------------- mondi-schema-sa:SafetyAuditObservation
-mondi-schema-sa:registrationNumber
+# begin-------------- mnd-sa:SafetyAuditObservation
+mnd-sa:registrationNumber
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Регистрационный номер"@ru ;
   rdfs:range xsd:string ;
-  veda-schema:deprecatedId "auto_num" ;
+  v-s:deprecatedId "auto_num" ;
 .
-mondi-schema-sa:dateFrom
+mnd-sa:dateFrom
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Дата"@ru ;
   rdfs:range xsd:dateTime ;
-  veda-schema:deprecatedId "Дата" ;
+  v-s:deprecatedId "Дата" ;
 .
-mondi-schema-sa:dateFrom
+mnd-sa:dateFrom
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Вложение"@ru ;
-  rdfs:range veda-schema:File ;
-  veda-schema:deprecatedId "Вложение" ;
+  rdfs:range v-s:File ;
+  v-s:deprecatedId "Вложение" ;
 .
-mondi-schema-sa:area
+mnd-sa:area
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Участок"@ru ;
-  rdfs:range mondi-schema:Area ;
-  veda-schema:deprecatedId "Участок" ;
+  rdfs:range mnd-s:Area ;
+  v-s:deprecatedId "Участок" ;
 .
-mondi-schema-sa:place
+mnd-sa:place
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Место"@ru ;
   rdfs:range xsd:string ;
-  veda-schema:deprecatedId "Место" ;
+  v-s:deprecatedId "Место" ;
 .
 # ?? range OrganizationUnit или Department
-mondi-schema-sa:department
+mnd-sa:department
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Подразделение СЛПК"@ru ;
-  rdfs:range veda-schema:OrganizationUnit ;
-  veda-schema:deprecatedId "Подразделение" ;
+  rdfs:range v-s:OrganizationUnit ;
+  v-s:deprecatedId "Подразделение" ;
 .
-mondi-schema-sa:responsible
+mnd-sa:responsible
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Ответственное лицо СЛПК"@ru ;
-  rdfs:range veda-schema:Appointment ;
-  veda-schema:deprecatedId "responsible" ;
+  rdfs:range v-s:Appointment ;
+  v-s:deprecatedId "responsible" ;
 .
-mondi-schema-sa:contractor
+mnd-sa:contractor
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Подрядчик"@ru ;
-  rdfs:range mondi-schema:Dossier ;
-  veda-schema:deprecatedId "contractor" ;
+  rdfs:range mnd-s:Dossier ;
+  v-s:deprecatedId "contractor" ;
 .
-mondi-schema-sa:responsibleAdd
+mnd-sa:responsibleAdd
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Ответственное лицо подрядчика"@ru ;
   rdfs:range xsd:string ;
-  veda-schema:deprecatedId "responsible_add" ;
+  v-s:deprecatedId "responsible_add" ;
 .
 # ?? code action или observationOfSafetyAudit или safetyAuditObservation
-mondi-schema-sa:addToDoc
+mnd-sa:addToDoc
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Замечание в рамках Аудита"@ru ;
-  rdfs:range mondi-schema-sa:SafetyAudit ;
-  veda-schema:deprecatedId "add_to_doc" ;
+  rdfs:range mnd-sa:SafetyAudit ;
+  v-s:deprecatedId "add_to_doc" ;
 .
-mondi-schema-sa:observation
+mnd-sa:observation
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Наблюдение"@ru ;
   rdfs:range xsd:string ;
-  veda-schema:deprecatedId "Наблюдение" ;
+  v-s:deprecatedId "Наблюдение" ;
 .
-mondi-schema-sa:requirement
+mnd-sa:requirement
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Мероприятие незамедлительное"@ru ;
   rdfs:range xsd:string ;
-  veda-schema:deprecatedId "Мероприятие незамедлительное" ;
+  v-s:deprecatedId "Мероприятие незамедлительное" ;
 .
-mondi-schema-sa:recommendation
+mnd-sa:recommendation
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Мероприятие для предотвращения в будущем"@ru ;
   rdfs:range xsd:string ;
-  veda-schema:deprecatedId "Мероприятие для предотвращения" ;
+  v-s:deprecatedId "Мероприятие для предотвращения" ;
 .
 # ?? label Характер замечания или Уровень
-mondi-schema-sa:level
+mnd-sa:level
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Характер замечания"@ru ;
-  rdfs:range mondi-schema:PositiveNegative ;
-  veda-schema:deprecatedId "characteristic" ;
+  rdfs:range mnd-s:PositiveNegative ;
+  v-s:deprecatedId "characteristic" ;
 .
-mondi-schema-sa:safetyAuditObservationKind
+mnd-sa:safetyAuditObservationKind
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Вид замечания"@ru ;
-  rdfs:range mondi-schema-sa:SafetyAuditObservationKind ;
-  veda-schema:deprecatedId "kind" ;
+  rdfs:range mnd-sa:SafetyAuditObservationKind ;
+  v-s:deprecatedId "kind" ;
 .
 # ?? code classifierLevel или safetyAuditObservationLevel
-mondi-schema-sa:classifierLevel
+mnd-sa:classifierLevel
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Приоритет"@ru ;
-  rdfs:range mondi-schema:ClassifierLevel ;
-  veda-schema:deprecatedId "risk" ;
+  rdfs:range mnd-s:ClassifierLevel ;
+  v-s:deprecatedId "risk" ;
 .
-mondi-schema-sa:dateTo
+mnd-sa:dateTo
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Срок устранения"@ru ;
   rdfs:range xsd:dateTime ;
-  veda-schema:deprecatedId "date_to" ;
+  v-s:deprecatedId "date_to" ;
 .
-mondi-schema-sa:dateFact
+mnd-sa:dateFact
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Дата фактического устранения"@ru ;
   rdfs:range xsd:dateTime ;
-  veda-schema:deprecatedId "date_fact" ;
+  v-s:deprecatedId "date_fact" ;
 .
 # ?? code classifierWork или safetyStandardSection
-mondi-schema-sa:classifierWork
+mnd-sa:classifierWork
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Вид надзора"@ru ;
-  rdfs:range mondi-schema-sa:SafetyStandardSection ;
-  veda-schema:deprecatedId "Тема" ;
+  rdfs:range mnd-sa:SafetyStandardSection ;
+  v-s:deprecatedId "Тема" ;
 .
 # ?? code theme или SafetyStandardTheme
-mondi-schema-sa:theme
+mnd-sa:theme
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Тема"@ru ;
-  rdfs:range mondi-schema-sa:SafetyStandardTheme ;
-  veda-schema:deprecatedId "Вид требования" ;
+  rdfs:range mnd-sa:SafetyStandardTheme ;
+  v-s:deprecatedId "Вид требования" ;
 .
-mondi-schema-sa:addInfo
+mnd-sa:addInfo
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Доп информация"@ru ;
-  rdfs:range mondi-schema:AddInfo ;
-  veda-schema:deprecatedId "add_info" ;
+  rdfs:range mnd-s:AddInfo ;
+  v-s:deprecatedId "add_info" ;
 .
 # ?? как сложатся файлы онтологий если comment упомянут несколько раз для разных domain
-mondi-schema-sa:comment
+mnd-sa:comment
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Комментарий"@ru ;
   rdfs:range xsd:string ;
-  veda-schema:deprecatedId "Комментарий" ;
+  v-s:deprecatedId "Комментарий" ;
 .
 # ?? range Documents или какой-нибудь MondiDocument
-mondi-schema-sa:reason
+mnd-sa:reason
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Основание"@ru ;
-  rdfs:range mondi-schema:NormativeDocument ;
-  veda-schema:deprecatedId "Основание" ;
+  rdfs:range mnd-s:NormativeDocument ;
+  v-s:deprecatedId "Основание" ;
 .
 # ?? code 
-mondi-schema-sa:reasonTxt
+mnd-sa:reasonTxt
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Основание текст"@ru ;
   rdfs:range xsd:string ;
-  veda-schema:deprecatedId "Основание текст" ;
+  v-s:deprecatedId "Основание текст" ;
 .
-mondi-schema-sa:status
+mnd-sa:status
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mondi-schema-sa:SafetyAuditObservation ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Статус"@ru ;
-  rdfs:range mondi-schema:Status ;
-  veda-schema:deprecatedId "status" ;
+  rdfs:range mnd-s:Status ;
+  v-s:deprecatedId "status" ;
 .
-# end-------------- mondi-schema-sa:ObservationOfSafetyAudit
+# end-------------- mnd-sa:ObservationOfSafetyAudit
 
 

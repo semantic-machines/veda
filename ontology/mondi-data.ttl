@@ -2,15 +2,16 @@
 # imports: http://semantic-machines.com/veda/mondi-schema
 
 # c14n-version: 3
-@prefix mondi-data: <http://semantic-machines.com/veda/mondi-data/> .
-@prefix mondi-schema: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix mnd-d: <http://semantic-machines.com/veda/mondi-data/> .
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
-@prefix veda-admin: <http://semantic-machines.com/veda/veda-admin/> .
-@prefix veda-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-a: <http://semantic-machines.com/veda/veda-admin/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
 <http://semantic-machines.com/veda/mondi-data>
   rdf:type owl:Ontology ;
   rdfs:label "Mondi individuals ontology"@en ;
@@ -18,476 +19,476 @@
   owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
   owl:versionInfo "1.0" ;
 .
-mondi-data:File_1
-    rdf:type veda-schema:File ;
-    veda-schema:fileURI "111.pdf" ;
+mnd-d:File_1
+    rdf:type vs:File ;
+    vs:fileURI "111.pdf" ;
 .
-mondi-data:AdministrativeDocument_2
-  rdf:type mondi-schema:AdministrativeDocument ;
-  mondi-schema:content "To comply the federal law №135-FL issued 12.10.2012 I order..."@en ;
-  mondi-schema:content "Во исполнение федерального закона №135-ФЗ от 12.10.2012 приказываю..."@ru ;
-  mondi-schema:nomenclatureType mondi-data:RegulatoryOrder2013 ;
-  mondi-schema:signer mondi-data:ValeriyBushenev-Programmer1 ;
-  veda-schema:actualVersion mondi-data:AdministrativeDocument_2 ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:created "2014-01-30T15:42:27"^^xsd:dateTime ;
-  veda-schema:previousVersion mondi-data:AdministrativeDocument_1 ;
-  veda-schema:published "2014-01-30T12:13:11"^^xsd:dateTime ;
+mnd-d:AdministrativeDocument_2
+  rdf:type mnd-s:AdministrativeDocument ;
+  mnd-s:content "To comply the federal law №135-FL issued 12.10.2012 I order..."@en ;
+  mnd-s:content "Во исполнение федерального закона №135-ФЗ от 12.10.2012 приказываю..."@ru ;
+  mnd-s:nomenclatureType mnd-d:RegulatoryOrder2013 ;
+  mnd-s:signer mnd-d:ValeriyBushenev-Programmer1 ;
+  v-s:actualVersion mnd-d:AdministrativeDocument_2 ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:created "2014-01-30T15:42:27"^^xsd:dateTime ;
+  v-s:previousVersion mnd-d:AdministrativeDocument_1 ;
+  v-s:published "2014-01-30T12:13:11"^^xsd:dateTime ;
   rdfs:label "AdministrativeDocument_2"@en ;
   rdfs:label "Распорядительный документ_2"@ru ;
 .
-mondi-data:AdministrativeDocument_1
-  rdf:type mondi-schema:AdministrativeDocument ;
-  mondi-schema:content "2 To comply the federal law №153-FL issued 12.10.2012 I order..."@en ;
-  mondi-schema:content "2 Во исполнение федерального закона №153-ФЗ от 12.10.2012 приказываю..."@ru ;
-  mondi-schema:nomenclatureType mondi-data:RegulatoryOrder2013 ;
-  mondi-schema:signer mondi-data:ValeriyBushenev-Programmer1 ;
-  veda-schema:actualVersion mondi-data:AdministrativeDocument_2 ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:created "2014-01-30T15:42:27"^^xsd:dateTime ;
-  veda-schema:nextVersion mondi-data:AdministrativeDocument_2 ;
-  veda-schema:published "2014-01-30T12:13:11"^^xsd:dateTime ;
+mnd-d:AdministrativeDocument_1
+  rdf:type mnd-s:AdministrativeDocument ;
+  mnd-s:content "2 To comply the federal law №153-FL issued 12.10.2012 I order..."@en ;
+  mnd-s:content "2 Во исполнение федерального закона №153-ФЗ от 12.10.2012 приказываю..."@ru ;
+  mnd-s:nomenclatureType mnd-d:RegulatoryOrder2013 ;
+  mnd-s:signer mnd-d:ValeriyBushenev-Programmer1 ;
+  v-s:actualVersion mnd-d:AdministrativeDocument_2 ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:created "2014-01-30T15:42:27"^^xsd:dateTime ;
+  v-s:nextVersion mnd-d:AdministrativeDocument_2 ;
+  v-s:published "2014-01-30T12:13:11"^^xsd:dateTime ;
   rdfs:label "AdministrativeDocument_1"@en ;
   rdfs:label "Распорядительный документ_1"@ru ;
 .
-mondi-data:Analyst1
-  rdf:type veda-schema:Position ;
-  veda-schema:parentUnit mondi-data:ApplicationDevelopmentGroup ;
+mnd-d:Analyst1
+  rdf:type v-s:Position ;
+  v-s:parentUnit mnd-d:ApplicationDevelopmentGroup ;
   rdfs:label "Analyst"@en ;
   rdfs:label "Аналитик"@ru ;
 .
-mondi-data:Analyst2
-  rdf:type veda-schema:Position ;
-  veda-schema:parentUnit mondi-data:ApplicationDevelopmentGroup ;
+mnd-d:Analyst2
+  rdf:type v-s:Position ;
+  v-s:parentUnit mnd-d:ApplicationDevelopmentGroup ;
   rdfs:label "Analyst"@en ;
   rdfs:label "Аналитик"@ru ;
 .
-mondi-data:AndreyBychin
-  rdf:type veda-schema:Person ;
-  veda-schema:actualVersion mondi-data:AndreyBychin ;
-  veda-schema:birthday "1976-05-03"^^xsd:dateTime ;
-  veda-schema:firstName "Andrey"@en ;
-  veda-schema:firstName "Андрей"@ru ;
-  veda-schema:hasAccount mondi-data:BychinA ;
-  veda-schema:lastName "Bychin"@en ;
-  veda-schema:lastName "Бычин"@ru ;
-  veda-schema:middleName "Vladimirovitch"@en ;
-  veda-schema:middleName "Владимирович"@ru ;
-  veda-ui:hasPreferences mondi-data:Preferences_AndreyBychin ;
+mnd-d:AndreyBychin
+  rdf:type v-s:Person ;
+  v-s:actualVersion mnd-d:AndreyBychin ;
+  v-s:birthday "1976-05-03"^^xsd:dateTime ;
+  v-s:firstName "Andrey"@en ;
+  v-s:firstName "Андрей"@ru ;
+  v-s:hasAccount mnd-d:BychinA ;
+  v-s:lastName "Bychin"@en ;
+  v-s:lastName "Бычин"@ru ;
+  v-s:middleName "Vladimirovitch"@en ;
+  v-s:middleName "Владимирович"@ru ;
+  v-ui:hasPreferences mnd-d:Preferences_AndreyBychin ;
   rdfs:label "Andrey Bychin"@en ;
   rdfs:label "Андрей Бычин"@ru ;
 .
-mondi-data:AndreyBychin-Analyst2
-  rdf:type veda-schema:Appointment ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda-schema:employee mondi-data:AndreyBychin ;
-  veda-schema:occupation mondi-data:Analyst2 ;
-  veda-schema:official "true"^^xsd:boolean ;
-  veda-schema:published "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda-schema:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
+mnd-d:AndreyBychin-Analyst2
+  rdf:type v-s:Appointment ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:employee mnd-d:AndreyBychin ;
+  v-s:occupation mnd-d:Analyst2 ;
+  v-s:official "true"^^xsd:boolean ;
+  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Appointment_6"@en ;
   rdfs:label "Назначение_6"@ru ;
 .
-mondi-data:AndreyBychin-ExecutiveDirector
-  rdf:type veda-schema:Appointment ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda-schema:employee mondi-data:AndreyBychin ;
-  veda-schema:occupation mondi-data:ExecutiveDirector ;
-  veda-schema:official "true"^^xsd:boolean ;
-  veda-schema:published "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda-schema:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
+mnd-d:AndreyBychin-ExecutiveDirector
+  rdf:type v-s:Appointment ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:employee mnd-d:AndreyBychin ;
+  v-s:occupation mnd-d:ExecutiveDirector ;
+  v-s:official "true"^^xsd:boolean ;
+  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Appointment_5"@en ;
   rdfs:label "Назначение_5"@ru ;
 .
-mondi-data:ApplicationDevelopmentGroup
-  rdf:type veda-schema:Department ;
-  veda-schema:childUnit mondi-data:Analyst1 ;
-  veda-schema:childUnit mondi-data:Programmer1 ;
-  veda-schema:parentUnit mondi-data:CCIP ;
+mnd-d:ApplicationDevelopmentGroup
+  rdf:type v-s:Department ;
+  v-s:childUnit mnd-d:Analyst1 ;
+  v-s:childUnit mnd-d:Programmer1 ;
+  v-s:parentUnit mnd-d:CCIP ;
   rdfs:label "Application development group"@en ;
   rdfs:label "Группа прикладного програмирования"@ru ;
 .
-mondi-data:BushenevV
-  rdf:type veda-schema:Account ;
-  veda-schema:login "BushenevV"^^xsd:string ;
-  veda-schema:mailbox "valeriy.bushenev@mondigroup.com"^^xsd:string ;
-  veda-schema:owner mondi-data:ValeriyBushenev ;
-  veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+mnd-d:BushenevV
+  rdf:type v-s:Account ;
+  v-s:login "BushenevV"^^xsd:string ;
+  v-s:mailbox "valeriy.bushenev@mondigroup.com"^^xsd:string ;
+  v-s:owner mnd-d:ValeriyBushenev ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "BushenevV" ;
 .
-mondi-data:BychinA
-  rdf:type veda-schema:Account ;
-  veda-schema:login "BychinA"^^xsd:string ;
-  veda-schema:mailbox "andrey.bychin@mondigroup.com"^^xsd:string ;
-  veda-schema:owner mondi-data:AndreyBychin ;
-  veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+mnd-d:BychinA
+  rdf:type v-s:Account ;
+  v-s:login "BychinA"^^xsd:string ;
+  v-s:mailbox "andrey.bychin@mondigroup.com"^^xsd:string ;
+  v-s:owner mnd-d:AndreyBychin ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "BychinA" ;
 .
-mondi-data:CCIP
-  rdf:type veda-schema:Department ;
-  veda-schema:childUnit mondi-data:ApplicationDevelopmentGroup ;
-  veda-schema:parentUnit mondi-data:MondiSyktyvkar ;
+mnd-d:CCIP
+  rdf:type v-s:Department ;
+  v-s:childUnit mnd-d:ApplicationDevelopmentGroup ;
+  v-s:parentUnit mnd-d:MondiSyktyvkar ;
   rdfs:label "Competence center information process"@en ;
   rdfs:label "Управление информационных технологий"@ru ;
 .
-mondi-data:CommercialDirector
-  rdf:type veda-schema:Position ;
-  veda-schema:parentUnit mondi-data:SemanticMachines ;
+mnd-d:CommercialDirector
+  rdf:type v-s:Position ;
+  v-s:parentUnit mnd-d:SemanticMachines ;
   rdfs:label "Commercial director"@en ;
   rdfs:label "Коммерческий директор"@ru ;
 .
-mondi-data:ExecutiveDirector
-  rdf:type veda-schema:Position ;
-  veda-schema:parentUnit mondi-data:SemanticMachines ;
+mnd-d:ExecutiveDirector
+  rdf:type v-s:Position ;
+  v-s:parentUnit mnd-d:SemanticMachines ;
   rdfs:label "Executive director"@en ;
   rdfs:label "Исполнительный директор"@ru ;
 .
-mondi-data:UserGroup_1
-  rdf:type veda-schema:Group ;
+mnd-d:UserGroup_1
+  rdf:type v-s:Group ;
   rdfs:label "Test user group 1"@en ;
   rdfs:label "Тестовая пользовательская группа 1"@ru ;
 .
-mondi-data:UserGroup_2
-  rdf:type veda-schema:Group ;
+mnd-d:UserGroup_2
+  rdf:type v-s:Group ;
   rdfs:label "Test user group 2"@en ;
   rdfs:label "Тестовая пользовательская группа 2"@ru ;
 .
-mondi-data:ResGroup_1
-  rdf:type veda-schema:Group ;
+mnd-d:ResGroup_1
+  rdf:type v-s:Group ;
   rdfs:label "Test resource group 1"@en ;
   rdfs:label "Тестовая группа для ресуров 1"@ru ;
 .
-mondi-data:ResGroup_2
-  rdf:type veda-schema:Group ;
+mnd-d:ResGroup_2
+  rdf:type v-s:Group ;
   rdfs:label "Test resource group 2"@en ;
   rdfs:label "Тестовая группа для ресуров 2"@ru ;
 .
 
-mondi-data:KarpovR
-  rdf:type veda-schema:Account ;
-  veda-schema:login "KarpovR"^^xsd:string ;
-  veda-schema:mailbox "roman.karpov@mondigroup.com"^^xsd:string ;
-  veda-schema:owner mondi-data:RomanKarpov ;
-  veda-schema:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+mnd-d:KarpovR
+  rdf:type v-s:Account ;
+  v-s:login "KarpovR"^^xsd:string ;
+  v-s:mailbox "roman.karpov@mondigroup.com"^^xsd:string ;
+  v-s:owner mnd-d:RomanKarpov ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "KarpovR" ;
 .
 
-mondi-data:Membership_1
-  rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:UserGroup_2 ;
-  veda-schema:resource mondi-data:AndreyBychin ;
+mnd-d:Membership_1
+  rdf:type v-s:Membership ;
+  v-s:memberOf mnd-d:UserGroup_2 ;
+  v-s:resource mnd-d:AndreyBychin ;
   rdfs:label "Membership_1"@en ;
   rdfs:label "Членство_1"@ru ;
 .
 
-mondi-data:Membership_2
-  rdf:type veda-schema:Membership ;
-  veda-schema:memberOf veda-admin:SuperAdmin ;
-  veda-schema:resource mondi-data:RomanKarpov-CommercialDirector ;
+mnd-d:Membership_2
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:SuperAdmin ;
+  v-s:resource mnd-d:RomanKarpov-CommercialDirector ;
   rdfs:label "Membership_2"@en ;
   rdfs:label "Членство_2"@ru ;
 .
 
-mondi-data:Membership_4
-  rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:UserGroup_1 ;
-  veda-schema:resource mondi-data:ValeriyBushenev ;
+mnd-d:Membership_4
+  rdf:type v-s:Membership ;
+  v-s:memberOf mnd-d:UserGroup_1 ;
+  v-s:resource mnd-d:ValeriyBushenev ;
   rdfs:label "Membership_4"@en ;
   rdfs:label "Членство_4"@ru ;
 .
 
-mondi-data:Membership_5
-  rdf:type veda-schema:Membership ;
-  veda-schema:memberOf veda-admin:SuperAdmin ;
-  veda-schema:resource mondi-data:RomanKarpov ;
+mnd-d:Membership_5
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:SuperAdmin ;
+  v-s:resource mnd-d:RomanKarpov ;
   rdfs:label "Membership_5"@en ;
   rdfs:label "Членство_5"@ru ;
 .
 
-mondi-data:Membership_6
-  rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:ResGroup_1 ;
-  veda-schema:resource mondi-data:AdministrativeDocument_2 ;
+mnd-d:Membership_6
+  rdf:type v-s:Membership ;
+  v-s:memberOf mnd-d:ResGroup_1 ;
+  v-s:resource mnd-d:AdministrativeDocument_2 ;
   rdfs:label "Membership_6"@en ;
   rdfs:label "Членство_6"@ru ;
 .
 
-mondi-data:Membership_7
-  rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:ResGroup_1 ;
-  veda-schema:resource veda-admin:Mandate_1 ;
+mnd-d:Membership_7
+  rdf:type v-s:Membership ;
+  v-s:memberOf mnd-d:ResGroup_1 ;
+  v-s:resource v-a:Mandate_1 ;
   rdfs:label "Membership_7"@en ;
   rdfs:label "Членство_7"@ru ;
 .
 #
-mondi-data:Membership_9
-  rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:ResGroup_2 ;
-  veda-schema:resource mondi-data:AndreyBychin ;
+mnd-d:Membership_9
+  rdf:type v-s:Membership ;
+  v-s:memberOf mnd-d:ResGroup_2 ;
+  v-s:resource mnd-d:AndreyBychin ;
   rdfs:label "Membership_9"@en ;
   rdfs:label "Членство_9"@ru ;
 .
 
-mondi-data:Membership_10
-  rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:ResGroup_1 ;
-  veda-schema:resource mondi-data:ValeriyBushenev ;
+mnd-d:Membership_10
+  rdf:type v-s:Membership ;
+  v-s:memberOf mnd-d:ResGroup_1 ;
+  v-s:resource mnd-d:ValeriyBushenev ;
   rdfs:label "Membership_10"@en ;
   rdfs:label "Членство_10"@ru ;
 .
 
-mondi-data:Membership_11
-  rdf:type veda-schema:Membership ;
-  veda-schema:memberOf veda-admin:ReadUser ;
-  veda-schema:resource mondi-data:ValeriyBushenev ;
+mnd-d:Membership_11
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:ReadUser ;
+  v-s:resource mnd-d:ValeriyBushenev ;
   rdfs:label "Membership_11"@en ;
   rdfs:label "Членство_11"@ru ;
 .
 
-mondi-data:Membership_12
-  rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:ResGroup_1 ;
-  veda-schema:resource mondi-data:PersonTemplate2 ;
+mnd-d:Membership_12
+  rdf:type v-s:Membership ;
+  v-s:memberOf mnd-d:ResGroup_1 ;
+  v-s:resource mnd-d:PersonTemplate2 ;
   rdfs:label "Membership_12"@en ;
   rdfs:label "Членство_12"@ru ;
 .
 
-mondi-data:Membership_13
-  rdf:type veda-schema:Membership ;
-  veda-schema:memberOf mondi-data:ResGroup_2 ;
-  veda-schema:resource mondi-data:PersonTemplate1 ;
+mnd-d:Membership_13
+  rdf:type v-s:Membership ;
+  v-s:memberOf mnd-d:ResGroup_2 ;
+  v-s:resource mnd-d:PersonTemplate1 ;
   rdfs:label "Membership_12"@en ;
   rdfs:label "Членство_12"@ru ;
 .
 
-mondi-data:Membership_14
-  rdf:type veda-schema:Membership ;
-  veda-schema:memberOf veda-admin:ReadUser ;
-  veda-schema:resource mondi-data:AndreyBychin ;
+mnd-d:Membership_14
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:ReadUser ;
+  v-s:resource mnd-d:AndreyBychin ;
   rdfs:label "Membership_14"@en ;
   rdfs:label "Членство_14"@ru ;
 .
 
-mondi-data:MondiSyktyvkar
-  rdf:type veda-schema:Organization ;
-  veda-schema:childUnit mondi-data:CCIP ;
+mnd-d:MondiSyktyvkar
+  rdf:type v-s:Organization ;
+  v-s:childUnit mnd-d:CCIP ;
   rdfs:label "Mondi Syktyvkar, OJSC"@en ;
   rdfs:label "ОАО Монди СЛПК"@ru ;
 .
-mondi-data:Permission_1
-  rdf:type veda-schema:PermissionStatement ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:canCreate "true"^^xsd:boolean ;
-  veda-schema:canDelete "true"^^xsd:boolean ;
-  veda-schema:canRead "true"^^xsd:boolean ;
-  veda-schema:canUpdate "true"^^xsd:boolean ;
-  veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
-  veda-schema:permissionObject veda-schema:AllResourcesGroup ;
-  veda-schema:permissionSubject veda-admin:SuperAdmin ;
-  veda-schema:published "2014-01-30T16:45:33"^^xsd:dateTime ;
-  veda-schema:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
+mnd-d:Permission_1
+  rdf:type v-s:PermissionStatement ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:canDelete "true"^^xsd:boolean ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:canUpdate "true"^^xsd:boolean ;
+  v-s:created "2014-01-30T16:45:33"^^xsd:dateTime ;
+  v-s:permissionObject v-s:AllResourcesGroup ;
+  v-s:permissionSubject v-a:SuperAdmin ;
+  v-s:published "2014-01-30T16:45:33"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
   rdfs:label "Permissions record_1"@en ;
   rdfs:label "Запись о выдаче прав_1"@ru ;
 .
-mondi-data:Permission_2
-  rdf:type veda-schema:PermissionStatement ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:canRead "true"^^xsd:boolean ;
-  veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
-  veda-schema:permissionObject mondi-data:ResGroup_1 ;
-  veda-schema:permissionSubject mondi-data:UserGroup_1 ;
-  veda-schema:published "2014-01-30T16:45:33"^^xsd:dateTime ;
-  veda-schema:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
+mnd-d:Permission_2
+  rdf:type v-s:PermissionStatement ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:created "2014-01-30T16:45:33"^^xsd:dateTime ;
+  v-s:permissionObject mnd-d:ResGroup_1 ;
+  v-s:permissionSubject mnd-d:UserGroup_1 ;
+  v-s:published "2014-01-30T16:45:33"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
   rdfs:label "Permissions record_2"@en ;
   rdfs:label "Запись о выдаче прав_2"@ru ;
 .
-mondi-data:Permission_3
-  rdf:type veda-schema:PermissionStatement ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:canRead "true"^^xsd:boolean ;
-  veda-schema:created "2014-01-30T16:45:33"^^xsd:dateTime ;
-  veda-schema:permissionObject mondi-data:ResGroup_2 ;
-  veda-schema:permissionSubject mondi-data:UserGroup_2 ;
-  veda-schema:published "2014-01-30T16:45:33"^^xsd:dateTime ;
-  veda-schema:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
+mnd-d:Permission_3
+  rdf:type v-s:PermissionStatement ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:created "2014-01-30T16:45:33"^^xsd:dateTime ;
+  v-s:permissionObject mnd-d:ResGroup_2 ;
+  v-s:permissionSubject mnd-d:UserGroup_2 ;
+  v-s:published "2014-01-30T16:45:33"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
   rdfs:label "Permissions record_3"@en ;
   rdfs:label "Запись о выдаче прав_3"@ru ;
 .
-mondi-data:Preferences_AndreyBychin
-  rdf:type veda-ui:Preferences ;
-  veda-schema:owner mondi-data:AndreyBychin ;
-  veda-ui:preferredLanguage veda-ui:RU ;
+mnd-d:Preferences_AndreyBychin
+  rdf:type v-ui:Preferences ;
+  v-s:owner mnd-d:AndreyBychin ;
+  v-ui:preferredLanguage v-ui:RU ;
   rdfs:label "Preferences (Andrey Bychin)"@en ;
   rdfs:label "Предпочтения (Андрей Бычин)"@ru ;
 .
-mondi-data:Preferences_RomanKarpov
-  rdf:type veda-ui:Preferences ;
-  veda-schema:owner mondi-data:RomanKarpov ;
-  veda-ui:preferredLanguage veda-ui:RU ;
-  veda-ui:displayedElements "10"^^xsd:nonNegativeInteger ;
+mnd-d:Preferences_RomanKarpov
+  rdf:type v-ui:Preferences ;
+  v-s:owner mnd-d:RomanKarpov ;
+  v-ui:preferredLanguage v-ui:RU ;
+  v-ui:displayedElements "10"^^xsd:nonNegativeInteger ;
   rdfs:label "Preferences (Roman Karpov)"@en ;
   rdfs:label "Предпочтения (Роман Карпов)"@ru ;
 .
-mondi-data:Preferences_ValeriyBushenev
-  rdf:type veda-ui:Preferences ;
-  veda-schema:author mondi-data:ValeriyBushenev-Programmer1 ;
-  veda-schema:owner mondi-data:ValeriyBushenev ;
-  veda-ui:preferredLanguage veda-ui:RU ;
+mnd-d:Preferences_ValeriyBushenev
+  rdf:type v-ui:Preferences ;
+  v-s:author mnd-d:ValeriyBushenev-Programmer1 ;
+  v-s:owner mnd-d:ValeriyBushenev ;
+  v-ui:preferredLanguage v-ui:RU ;
   rdfs:label "Preferences (Valeriy Bushenev)"@en ;
   rdfs:label "Предпочтения (Валерий Бушенев)"@ru ;
 .
-mondi-data:Programmer1
-  rdf:type veda-schema:Position ;
-  veda-schema:parentUnit mondi-data:ApplicationDevelopmentGroup ;
+mnd-d:Programmer1
+  rdf:type v-s:Position ;
+  v-s:parentUnit mnd-d:ApplicationDevelopmentGroup ;
   rdfs:label "Programmer"@en ;
   rdfs:label "Программист"@ru ;
 .
-mondi-data:RegulatoryDisposal2013
-  rdf:type mondi-schema:AdministrativeDocumentType ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda-schema:published "2014-01-30T15:35:11"^^xsd:dateTime ;
+mnd-d:RegulatoryDisposal2013
+  rdf:type mnd-s:AdministrativeDocumentType ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Regulatory disposal. 2013"@en ;
   rdfs:label "Распоряжение по основной деятельности. 2013"@ru ;
 .
-mondi-data:RegulatoryDisposal2014
-  rdf:type mondi-schema:AdministrativeDocumentType ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda-schema:published "2014-01-30T15:35:11"^^xsd:dateTime ;
+mnd-d:RegulatoryDisposal2014
+  rdf:type mnd-s:AdministrativeDocumentType ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Regulatory disposal. 2014"@en ;
   rdfs:label "Распоряжение по основной деятельности. 2014"@ru ;
 .
-mondi-data:RegulatoryOrder2013
-  rdf:type mondi-schema:AdministrativeDocumentType ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda-schema:published "2014-01-30T15:35:11"^^xsd:dateTime ;
+mnd-d:RegulatoryOrder2013
+  rdf:type mnd-s:AdministrativeDocumentType ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Regulatory order. 2013"@en ;
   rdfs:label "Приказ по основной деятельности. 2013"@ru ;
 .
-mondi-data:RegulatoryOrder2014
-  rdf:type mondi-schema:AdministrativeDocumentType ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda-schema:published "2014-01-30T15:35:11"^^xsd:dateTime ;
+mnd-d:RegulatoryOrder2014
+  rdf:type mnd-s:AdministrativeDocumentType ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Regulatory order. 2014"@en ;
   rdfs:label "Приказ по основной деятельности. 2014"@ru ;
 .
-mondi-data:RomanKarpov
-  rdf:type veda-schema:Person ;
-  veda-schema:actualVersion mondi-data:RomanKarpov ;
-  veda-schema:birthday "1981-01-09"^^xsd:dateTime ;
-  veda-schema:firstName "Roman"@en ;
-  veda-schema:firstName "Роман"@ru ;
-  veda-schema:hasAccount mondi-data:KarpovR ;
-  veda-schema:lastName "Karpov"@en ;
-  veda-schema:lastName "Карпов"@ru ;
-  veda-schema:middleName "Konstantinovitch"@en ;
-  veda-schema:middleName "Константинович"@ru ;
-  veda-ui:hasPreferences mondi-data:Preferences_RomanKarpov ;
+mnd-d:RomanKarpov
+  rdf:type v-s:Person ;
+  v-s:actualVersion mnd-d:RomanKarpov ;
+  v-s:birthday "1981-01-09"^^xsd:dateTime ;
+  v-s:firstName "Roman"@en ;
+  v-s:firstName "Роман"@ru ;
+  v-s:hasAccount mnd-d:KarpovR ;
+  v-s:lastName "Karpov"@en ;
+  v-s:lastName "Карпов"@ru ;
+  v-s:middleName "Konstantinovitch"@en ;
+  v-s:middleName "Константинович"@ru ;
+  v-ui:hasPreferences mnd-d:Preferences_RomanKarpov ;
   rdfs:label "Roman Karpov"@en ;
   rdfs:label "Роман Карпов"@ru ;
 .
-mondi-data:RomanKarpov-Analyst1
-  rdf:type veda-schema:Appointment ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:created "2014-01-30T15:22:33"^^xsd:dateTime ;
-  veda-schema:employee mondi-data:RomanKarpov ;
-  veda-schema:occupation mondi-data:Analyst1 ;
-  veda-schema:official "true"^^xsd:boolean ;
-  veda-schema:published "2014-01-30T15:22:33"^^xsd:dateTime ;
-  veda-schema:startTime "2014-01-30T15:22:33"^^xsd:dateTime ;
+mnd-d:RomanKarpov-Analyst1
+  rdf:type v-s:Appointment ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:created "2014-01-30T15:22:33"^^xsd:dateTime ;
+  v-s:employee mnd-d:RomanKarpov ;
+  v-s:occupation mnd-d:Analyst1 ;
+  v-s:official "true"^^xsd:boolean ;
+  v-s:published "2014-01-30T15:22:33"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T15:22:33"^^xsd:dateTime ;
   rdfs:label "Appointment_2"@en ;
   rdfs:label "Назначение_2"@ru ;
 .
-mondi-data:RomanKarpov-CommercialDirector
-  rdf:type veda-schema:Appointment ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda-schema:employee mondi-data:RomanKarpov ;
-  veda-schema:occupation mondi-data:CommercialDirector ;
-  veda-schema:official "true"^^xsd:boolean ;
-  veda-schema:published "2014-01-30T15:35:11"^^xsd:dateTime ;
-  veda-schema:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
+mnd-d:RomanKarpov-CommercialDirector
+  rdf:type v-s:Appointment ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:employee mnd-d:RomanKarpov ;
+  v-s:occupation mnd-d:CommercialDirector ;
+  v-s:official "true"^^xsd:boolean ;
+  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Appointment_4"@en ;
   rdfs:label "Назначение_4"@ru ;
 .
-mondi-data:SemanticMachines
-  rdf:type veda-schema:Organization ;
-  veda-schema:childUnit mondi-data:CommercialDirector ;
-  veda-schema:childUnit mondi-data:TechnicalDirector ;
+mnd-d:SemanticMachines
+  rdf:type v-s:Organization ;
+  v-s:childUnit mnd-d:CommercialDirector ;
+  v-s:childUnit mnd-d:TechnicalDirector ;
   rdfs:label "Semantic machines, LLC"@en ;
   rdfs:label "ООО Смысловые машины"@ru ;
 .
-mondi-data:TechnicalDirector
-  rdf:type veda-schema:Position ;
-  veda-schema:parentUnit mondi-data:SemanticMachines ;
+mnd-d:TechnicalDirector
+  rdf:type v-s:Position ;
+  v-s:parentUnit mnd-d:SemanticMachines ;
   rdfs:label "Technical director"@en ;
   rdfs:label "Технический директор"@ru ;
 .
-mondi-data:ValeriyBushenev
-  rdf:type veda-schema:Person ;
-  veda-schema:actualVersion mondi-data:ValeriyBushenev ;
-  veda-schema:birthday "1973-05-09"^^xsd:dateTime ;
-  veda-schema:firstName "Valeriy"@en ;
-  veda-schema:firstName "Валерий"@ru ;
-  veda-schema:hasAccount mondi-data:BushenevV ;
-  veda-schema:lastName "Bushenev"@en ;
-  veda-schema:lastName "Бушенев"@ru ;
-  veda-schema:middleName "Alexandrovitch"@en ;
-  veda-schema:middleName "Александрович"@ru ;
-  veda-ui:hasPreferences mondi-data:Preferences_ValeriyBushenev ;
+mnd-d:ValeriyBushenev
+  rdf:type v-s:Person ;
+  v-s:actualVersion mnd-d:ValeriyBushenev ;
+  v-s:birthday "1973-05-09"^^xsd:dateTime ;
+  v-s:firstName "Valeriy"@en ;
+  v-s:firstName "Валерий"@ru ;
+  v-s:hasAccount mnd-d:BushenevV ;
+  v-s:lastName "Bushenev"@en ;
+  v-s:lastName "Бушенев"@ru ;
+  v-s:middleName "Alexandrovitch"@en ;
+  v-s:middleName "Александрович"@ru ;
+  v-ui:hasPreferences mnd-d:Preferences_ValeriyBushenev ;
   rdfs:label "Valeriy Bushenev"@en ;
   rdfs:label "Валерий Бушенев"@ru ;
 .
-mondi-data:ValeriyBushenev-Programmer1
-  rdf:type veda-schema:Appointment ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:created "2014-01-30T15:12:15"^^xsd:dateTime ;
-  veda-schema:employee mondi-data:ValeriyBushenev ;
-  veda-schema:occupation mondi-data:Programmer1 ;
-  veda-schema:official "true"^^xsd:boolean ;
-  veda-schema:published "2014-01-30T15:12:15"^^xsd:dateTime ;
-  veda-schema:startTime "2014-01-30T15:12:15"^^xsd:dateTime ;
+mnd-d:ValeriyBushenev-Programmer1
+  rdf:type v-s:Appointment ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:created "2014-01-30T15:12:15"^^xsd:dateTime ;
+  v-s:employee mnd-d:ValeriyBushenev ;
+  v-s:occupation mnd-d:Programmer1 ;
+  v-s:official "true"^^xsd:boolean ;
+  v-s:published "2014-01-30T15:12:15"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T15:12:15"^^xsd:dateTime ;
   rdfs:label "Appointment_1"@en ;
   rdfs:label "Назначение_1"@ru ;
 .
-mondi-data:ValeriyBushenev-Programmer1
-  rdf:type veda-schema:Appointment ;
+mnd-d:ValeriyBushenev-Programmer1
+  rdf:type v-s:Appointment ;
   rdfs:label "test add"@ru ;
 .
-mondi-data:ValeriyBushenev-TechnicalDirector
-  rdf:type veda-schema:Appointment ;
-  veda-schema:author mondi-data:RomanKarpov-Analyst1 ;
-  veda-schema:created "2014-01-30T15:30:21"^^xsd:dateTime ;
-  veda-schema:employee mondi-data:ValeriyBushenev ;
-  veda-schema:occupation mondi-data:TechnicalDirector ;
-  veda-schema:official "true"^^xsd:boolean ;
-  veda-schema:published "2014-01-30T15:30:21"^^xsd:dateTime ;
-  veda-schema:startTime "2014-01-30T15:30:21"^^xsd:dateTime ;
+mnd-d:ValeriyBushenev-TechnicalDirector
+  rdf:type v-s:Appointment ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
+  v-s:created "2014-01-30T15:30:21"^^xsd:dateTime ;
+  v-s:employee mnd-d:ValeriyBushenev ;
+  v-s:occupation mnd-d:TechnicalDirector ;
+  v-s:official "true"^^xsd:boolean ;
+  v-s:published "2014-01-30T15:30:21"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T15:30:21"^^xsd:dateTime ;
   rdfs:label "Appointment_3"@en ;
   rdfs:label "Назначение_3"@ru ;
 .
-mondi-data:SavedSearch1
-  rdf:type veda-schema:SavedSearch ;
-  veda-schema:author mondi-data:RomanKarpov ;
-  veda-schema:created "2014-08-01T15:22:21"^^xsd:dateTime ;
-  veda-schema:query "owl" ;
+mnd-d:SavedSearch1
+  rdf:type v-s:SavedSearch ;
+  v-s:author mnd-d:RomanKarpov ;
+  v-s:created "2014-08-01T15:22:21"^^xsd:dateTime ;
+  v-s:query "owl" ;
   rdfs:label "Сохраненный запрос 1"@ru ;
   rdfs:label "Saved search 1"@en ;
 .
-mondi-data:PersonTemplate1
-  rdf:type veda-ui:ClassTemplate ;
+mnd-d:PersonTemplate1
+  rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон персоны"@ru ;
   rdfs:label "Person template"@en ;
-  veda-ui:forClass veda-schema:Person ;
-  veda-ui:index "veda-schema:firstName" ;
-  veda-ui:index "veda-schema:middleName" ;
-  veda-ui:index "veda-schema:lastName" ;
-  veda-ui:template """
+  v-ui:forClass v-s:Person ;
+  v-ui:index "v-s:firstName" ;
+  v-ui:index "v-s:middleName" ;
+  v-ui:index "v-s:lastName" ;
+  v-ui:template """
   <div class="container-fluid">
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -503,26 +504,26 @@ mondi-data:PersonTemplate1
       <div class="panel-body">
         <h3 data-property="document.rdfs:label">Наименование</h3>
         <div class="row">
-          <div class="col-md-3" data-property="document.veda-schema:lastName">Фамилия</div>
-          <div class="col-md-3" data-property="document.veda-schema:firstName">Имя</div>
-          <div class="col-md-3" data-property="document.veda-schema:middleName">Отчество</div>
-          <div class="col-md-3" data-property="document.veda-schema:birthday">День рождения</div>
+          <div class="col-md-3" data-property="document.v-s:lastName">Фамилия</div>
+          <div class="col-md-3" data-property="document.v-s:firstName">Имя</div>
+          <div class="col-md-3" data-property="document.v-s:middleName">Отчество</div>
+          <div class="col-md-3" data-property="document.v-s:birthday">День рождения</div>
 		</div>
         <div class="row">
-          <div class="col-md-6" data-property="document.veda-ui:hasPreferences">Предпочтения</div>
-          <div class="col-md-6" data-property="document.veda-schema:hasAccount">Аккаунт</div>
+          <div class="col-md-6" data-property="document.v-ui:hasPreferences">Предпочтения</div>
+          <div class="col-md-6" data-property="document.v-s:hasAccount">Аккаунт</div>
         </div>
       </div>
     </div>
   </div>
 """ ;
 .
-mondi-data:AppointmentTemplate1
-  rdf:type veda-ui:ClassTemplate ;
+mnd-d:AppointmentTemplate1
+  rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон Назначения"@ru ;
   rdfs:label "Appointment template"@en ;
-  veda-ui:forClass veda-schema:Appointment ;
-  veda-ui:template """
+  v-ui:forClass v-s:Appointment ;
+  v-ui:template """
   <div class="container-fluid">
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -538,99 +539,99 @@ mondi-data:AppointmentTemplate1
       <div class="panel-body">
         <h3 data-property="document.rdfs:label">{document.rdfs:label}</h3>
         <div class="row">
-          <div class="col-md-3" data-property="document.veda-schema:employee">Работник</div>
-          <div class="col-md-3" data-property="document.veda-schema:occupation">Должность</div>
+          <div class="col-md-3" data-property="document.v-s:employee"></div>
+          <div class="col-md-3" data-property="document.v-s:occupation"></div>
         </div>
       </div>
     </div>
   </div>
   """ ;
 .
-mondi-data:PositionTemplate1
-  rdf:type veda-ui:ClassTemplate ;
+mnd-d:PositionTemplate1
+  rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Должность"@ru ;
   rdfs:label "Template for Position class"@en ;
-  veda-ui:forClass veda-schema:Position ;
-  veda-ui:index "rdfs:label" ;
-  veda-ui:template """
+  v-ui:forClass v-s:Position ;
+  v-ui:index "rdfs:label" ;
+  v-ui:template """
   <span data-property="document.rdfs:label">Должность</span>
   """ ;
 .
-mondi-data:PropertySpecification5
-  rdf:type veda-ui:PropertySpecification ;
+mnd-d:PropertySpecification5
+  rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация работника для класса Назначение"@ru ;
   rdfs:label "Employee property specification for Appointment class"@en ;
-  veda-ui:forClass veda-schema:Appointment ;
-  veda-ui:forProperty veda-schema:employee ;
-  veda-ui:index veda-schema:lastName ;
-  veda-ui:index veda-schema:firstName ;
-  veda-ui:index veda-schema:middleName ;
-  veda-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  veda-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  veda-ui:control "full-text search"^^xsd:string ;
+  v-ui:forClass v-s:Appointment ;
+  v-ui:forProperty v-s:employee ;
+  v-ui:index v-s:lastName ;
+  v-ui:index v-s:firstName ;
+  v-ui:index v-s:middleName ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:control "full-text search"^^xsd:string ;
 .
-mondi-data:PropertySpecification6
-  rdf:type veda-ui:PropertySpecification ;
+mnd-d:PropertySpecification6
+  rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация работника для класса Назначение"@ru ;
   rdfs:label "Employee property specification for Appointment class"@en ;
-  veda-ui:forClass veda-schema:Appointment ;
-  veda-ui:forProperty veda-schema:position ;
-  veda-ui:index rdfs:label ;
-  veda-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  veda-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  veda-ui:control "full-text search"^^xsd:string ;
+  v-ui:forClass v-s:Appointment ;
+  v-ui:forProperty v-s:position ;
+  v-ui:index rdfs:label ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:control "full-text search"^^xsd:string ;
 .
-mondi-data:PersonTemplate2
-  rdf:type veda-ui:ClassTemplate ;
+mnd-d:PersonTemplate2
+  rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Персона 2"@ru ;
   rdfs:label "Template for Person class 2"@en ;
-  veda-ui:forClass veda-schema:Person ;
-  veda-ui:index "rdfs:label" ;
-  veda-ui:template """
-  <span data-property="document.veda-schema:lastName">Фамилия</span>
-  <span data-property="document.veda-schema:firstName">Имя</span>
-  <span data-property="document.veda-schema:middleName">Отчество</span>
+  v-ui:forClass v-s:Person ;
+  v-ui:index "rdfs:label" ;
+  v-ui:template """
+  <span data-property="document.v-s:lastName">Фамилия</span>
+  <span data-property="document.v-s:firstName">Имя</span>
+  <span data-property="document.v-s:middleName">Отчество</span>
   """ ;
 .
-mondi-data:PropertySpecification1
-  rdf:type veda-ui:PropertySpecification ;
+mnd-d:PropertySpecification1
+  rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация даты рождения для класса персона"@ru ;
   rdfs:label "Birthday property specification for Person class"@en ;
-  veda-ui:forClass veda-schema:Person ;
-  veda-ui:forProperty veda-schema:birthday ;
-  veda-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  veda-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  veda-ui:tooltip "дата в формате 2001-01-01"@ru ;
-  veda-ui:tooltip "date in format 2001-01-01"@en ;
-  veda-ui:control "datetime"^^xsd:string ;
+  v-ui:forClass v-s:Person ;
+  v-ui:forProperty v-s:birthday ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "дата в формате 2001-01-01"@ru ;
+  v-ui:tooltip "date in format 2001-01-01"@en ;
+  v-ui:control "datetime"^^xsd:string ;
 .
-mondi-data:PropertySpecification2
-  rdf:type veda-ui:PropertySpecification ;
+mnd-d:PropertySpecification2
+  rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация имени для класса персона"@ru ;
   rdfs:label "First name property specification for Person class"@en ;
-  veda-ui:forClass veda-schema:Person ;
-  veda-ui:forProperty veda-schema:firstName ;
-  veda-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  veda-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  veda-ui:control "text"^^xsd:string ;
+  v-ui:forClass v-s:Person ;
+  v-ui:forProperty v-s:firstName ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:control "text"^^xsd:string ;
 .
-mondi-data:PropertySpecification3
-  rdf:type veda-ui:PropertySpecification ;
+mnd-d:PropertySpecification3
+  rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация фамилии для класса персона"@ru ;
   rdfs:label "Last name property specification for Person class"@en ;
-  veda-ui:forClass veda-schema:Person ;
-  veda-ui:forProperty veda-schema:lastName ;
-  veda-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  veda-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  veda-ui:control "text"^^xsd:string ;
+  v-ui:forClass v-s:Person ;
+  v-ui:forProperty v-s:lastName ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:control "text"^^xsd:string ;
 .
-mondi-data:PropertySpecification4
-  rdf:type veda-ui:PropertySpecification ;
+mnd-d:PropertySpecification4
+  rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация отчества для класса персона"@ru ;
   rdfs:label "Middle name property specification for Person class"@en ;
-  veda-ui:forClass veda-schema:Person ;
-  veda-ui:forProperty veda-schema:middleName ;
-  veda-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  veda-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  veda-ui:control "text"^^xsd:string ;
+  v-ui:forClass v-s:Person ;
+  v-ui:forProperty v-s:middleName ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:control "text"^^xsd:string ;
 .
