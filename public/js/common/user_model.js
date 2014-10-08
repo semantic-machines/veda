@@ -11,14 +11,14 @@ function UserModel(veda, individual) {
 	var self = individual instanceof IndividualModel ? individual : new IndividualModel(veda, individual);
 	
 	try { 
-		self.preferences = new IndividualModel(veda, self["veda-ui:hasPreferences"][0].id);
+		self.preferences = new IndividualModel(veda, self["v-ui:hasPreferences"][0].id);
 
-		self.language = self.preferences["veda-ui:preferredLanguage"].reduce( function (acc, lang) {
+		self.language = self.preferences["v-ui:preferredLanguage"].reduce( function (acc, lang) {
 			acc[lang["rdf:value"][0]] = veda.availableLanguages[lang["rdf:value"][0]];
 			return acc;
 		}, {} );
 
-		self.displayedElements = self.preferences["veda-ui:displayedElements"][0];
+		self.displayedElements = self.preferences["v-ui:displayedElements"][0];
 	} catch (e) {
 		self.language = defaults.language;
 		self.displayedElements = defaults.displayedElements;
@@ -30,7 +30,7 @@ function UserModel(veda, individual) {
 				
 		language_val in self.language ? delete self.language[language_val] : self.language[language_val] = veda.availableLanguages[language_val];
 		
-		self.preferences["veda-ui:preferredLanguage"] = Object.keys(self.language).map ( function (language_val) {
+		self.preferences["v-ui:preferredLanguage"] = Object.keys(self.language).map ( function (language_val) {
 			return self.language[language_val];
 		});
 

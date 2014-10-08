@@ -50,11 +50,11 @@ function AppModel(config) {
 				//ConsoleModel.apply(new Object(), [self].concat(params));
 				break
 			case "document": 
-				//self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, ["mondi-data:AdministrativeDocument_1"]), self, "document");
+				//self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, ["mnd-d:AdministrativeDocument_1"]), self, "document");
 				DocumentModel.apply(new Object(), [self].concat(params));
 				break
 			case "document2": 
-				//self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, ["mondi-data:AdministrativeDocument_1"]), self, "document");
+				//self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, ["mnd-d:AdministrativeDocument_1"]), self, "document");
 				DocumentModel2.apply(new Object(), [self].concat(params));
 				break
 			case "search": 
@@ -82,7 +82,7 @@ function AppModel(config) {
 	
 	// Load user after successful authentication
 	self.on("auth:success", function() { 
-		var langs = query(self.ticket, "'rdf:type' == 'veda-ui:Language'");
+		var langs = query(self.ticket, "'rdf:type' == 'v-ui:Language'");
 		self.availableLanguages = langs.reduce ( 
 			function (acc, language_uri) {
 				var lang = new IndividualModel(self, language_uri);

@@ -7,7 +7,7 @@ function ClassModel(veda, individual) {
 	if (individual instanceof IndividualModel) var self = individual;
 	else var self = new IndividualModel(veda, individual);
 	
-	var documentTemplatesList = query(veda.ticket, "'rdf:type' == 'veda-ui:ClassTemplate' && 'veda-ui:forClass' == '" + self.id + "'");
+	var documentTemplatesList = query(veda.ticket, "'rdf:type' == 'v-ui:ClassTemplate' && 'v-ui:forClass' == '" + self.id + "'");
 	var documentTemplate;
 	
 	if (documentTemplatesList) {
@@ -25,7 +25,7 @@ function ClassModel(veda, individual) {
 	self.specs = {};
 	var specs = {}; 
 
-	var specsList = query(veda.ticket, "'rdf:type' == 'veda-ui:PropertySpecification' && 'veda-ui:forClass' == '" + self.id + "'");
+	var specsList = query(veda.ticket, "'rdf:type' == 'v-ui:PropertySpecification' && 'v-ui:forClass' == '" + self.id + "'");
 	
 	if (specsList) {
 		specsList.map(function (spec_uri) {
@@ -44,7 +44,7 @@ function ClassModel(veda, individual) {
 	Object.defineProperty(self, "specsByProps", {
 		get: function() {
 			return Object.getOwnPropertyNames(self.specs).reduce(function (acc, spec_uri) {
-				acc[self.specs[spec_uri]["veda-ui:forProperty"][0].id] = self.specs[spec_uri];
+				acc[self.specs[spec_uri]["v-ui:forProperty"][0].id] = self.specs[spec_uri];
 				return acc;
 			}, {});
 		},

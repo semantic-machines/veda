@@ -247,14 +247,6 @@ mnd-d:Membership_11
   rdfs:label "Членство_11"@ru ;
 .
 
-mnd-d:Membership_12
-  rdf:type v-s:Membership ;
-  v-s:memberOf mnd-d:ResGroup_1 ;
-  v-s:resource mnd-d:PersonTemplate2 ;
-  rdfs:label "Membership_12"@en ;
-  rdfs:label "Членство_12"@ru ;
-.
-
 mnd-d:Membership_13
   rdf:type v-s:Membership ;
   v-s:memberOf mnd-d:ResGroup_2 ;
@@ -489,7 +481,7 @@ mnd-d:PersonTemplate1
   v-ui:index "v-s:middleName" ;
   v-ui:index "v-s:lastName" ;
   v-ui:template """
-  <div class="container-fluid">
+  <div>
     <div class="panel panel-default">
       <div class="panel-heading">
         <div class="row">
@@ -524,7 +516,7 @@ mnd-d:AppointmentTemplate1
   rdfs:label "Appointment template"@en ;
   v-ui:forClass v-s:Appointment ;
   v-ui:template """
-  <div class="container-fluid">
+  <div>
     <div class="panel panel-default">
       <div class="panel-heading">
         <div class="row">
@@ -580,18 +572,6 @@ mnd-d:PropertySpecification6
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:control "full-text search"^^xsd:string ;
-.
-mnd-d:PersonTemplate2
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса Персона 2"@ru ;
-  rdfs:label "Template for Person class 2"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:index "rdfs:label" ;
-  v-ui:template """
-  <span data-property="document.v-s:lastName">Фамилия</span>
-  <span data-property="document.v-s:firstName">Имя</span>
-  <span data-property="document.v-s:middleName">Отчество</span>
-  """ ;
 .
 mnd-d:PropertySpecification1
   rdf:type v-ui:PropertySpecification ;

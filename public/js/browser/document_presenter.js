@@ -218,7 +218,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 							$linkContainer = $("<div />"),
 							linkedDoc;
 						$toggle.on("click", function ( e ) {
-							$("i", $toggle).toggleClass("glyphicon-collapse-down glyphicon-collapse-up");
+							$("i", $toggle).toggleClass("glyphicon-chevron-right glyphicon-chevron-down");
 							$linkContainer.toggle();
 							$toggle.after( $linkContainer );
 							if (!linkedDoc) linkedDoc = new DocumentModel(veda, value, $linkContainer);
@@ -271,8 +271,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				var template;
 				
 				// Get template from class
-				if (_class.documentTemplate["veda-ui:template"]) {
-					template = _class.documentTemplate["veda-ui:template"][0];
+				if (_class.documentTemplate["v-ui:template"]) {
+					template = _class.documentTemplate["v-ui:template"][0];
 				} else {
 					// Generic template
 					template = $("<div/>").append($("#generic-class-template").html());
