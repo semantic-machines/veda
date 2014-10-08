@@ -15,7 +15,7 @@ Veda(function IndividualPresenter (veda) { "use strict";
 							return item.search(/^.{3,5}:\/\//) == 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
 						else if (item instanceof IndividualModel)
 							return "<a data-toggle='popover' href='#/document/" + item.id + "'>" + 
-								(item["rdfs:label"] ? item["rdfs:label"].join(", ") : item.id) + "</a>";
+								(item["rdfs:label"] && item["rdfs:label"].length ? item["rdfs:label"].join(", ") : item.id) + "</a>";
 						else return item;
 					})
 					.join(", ");
@@ -49,7 +49,7 @@ Veda(function IndividualPresenter (veda) { "use strict";
 			riot.render(
 				individual_label_template,
 				{ 
-					label: individual["rdfs:label"].length ? individual["rdfs:label"].join(", ") : individual.id,
+					label: individual["rdfs:label"] && individual["rdfs:label"].length ? individual["rdfs:label"].join(", ") : individual.id,
 					uri: individual.id 
 				}
 			)

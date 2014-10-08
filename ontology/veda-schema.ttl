@@ -83,8 +83,8 @@ v-s:Document
 v-s:File
   rdf:type owl:Class ;
   rdfs:isDefinedBy v-s: ;  
-  rdfs:label "Файл"@en ;
-  rdfs:label "File"@ru ;
+  rdfs:label "Файл"@ru ;
+  rdfs:label "File"@en ;
   rdfs:comment "File description"@en ;
   rdfs:comment "Описание файла"@ru ;
 .

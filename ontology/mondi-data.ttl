@@ -477,9 +477,6 @@ mnd-d:PersonTemplate1
   rdfs:label "Шаблон персоны"@ru ;
   rdfs:label "Person template"@en ;
   v-ui:forClass v-s:Person ;
-  v-ui:index "v-s:firstName" ;
-  v-ui:index "v-s:middleName" ;
-  v-ui:index "v-s:lastName" ;
   v-ui:template """
   <div>
     <div class="panel panel-default">
@@ -544,9 +541,21 @@ mnd-d:PositionTemplate1
   rdfs:label "Шаблон для класса Должность"@ru ;
   rdfs:label "Template for Position class"@en ;
   v-ui:forClass v-s:Position ;
-  v-ui:index "rdfs:label" ;
   v-ui:template """
   <span data-property="document.rdfs:label">Должность</span>
+  """ ;
+.
+mnd-d:PreferencesTemplate1
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Предпочтения"@ru ;
+  rdfs:label "Template for Preferences class"@en ;
+  v-ui:forClass v-ui:Preferences ;
+  v-ui:template """
+  <div>
+    <span data-property="document.v-s:owner">Владелец</span>
+    <span data-property="document.v-ui:preferredLanguage">Язык</span>
+    <span data-property="document.v-ui:displayedElements">999</span>
+  </div>
   """ ;
 .
 mnd-d:PropertySpecification5
@@ -555,9 +564,6 @@ mnd-d:PropertySpecification5
   rdfs:label "Employee property specification for Appointment class"@en ;
   v-ui:forClass v-s:Appointment ;
   v-ui:forProperty v-s:employee ;
-  v-ui:index v-s:lastName ;
-  v-ui:index v-s:firstName ;
-  v-ui:index v-s:middleName ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:control "full-text search"^^xsd:string ;
