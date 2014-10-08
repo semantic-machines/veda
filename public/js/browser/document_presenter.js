@@ -212,6 +212,18 @@ Veda(function DocumentPresenter(veda) { "use strict";
 							});
 							
 						});
+						
+						// Toggle linked object view
+						var $toggle = $(".toggle-expand", res),
+							$linkContainer = $("<div />"),
+							linkedDoc;
+						$toggle.on("click", function ( e ) {
+							$("i", $toggle).toggleClass("glyphicon-collapse-down glyphicon-collapse-up");
+							$linkContainer.toggle();
+							$toggle.after( $linkContainer );
+							if (!linkedDoc) linkedDoc = new DocumentModel(veda, value, $linkContainer);
+						});
+						
 						return res;
 					})
 				);
@@ -314,46 +326,39 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				
 				container.append( renderedDocument );
 				
-				$("textarea", container).trigger("autosize.resize");
-				
+				$("textarea", renderedDocument).trigger("autosize.resize");
+			
 			});
 		
-		var actionsTemplate = $("#actions").html();
-		container.append(actionsTemplate);
+		var $actions = $( $("#actions").html() );
 
 		$(".edit", container).hide();
-		$("#save, #cancel", container).hide();
+		$("#save, #cancel", $actions).hide();
 				
-		$("#edit", container).on("click", function (e) {
-			$(".view").hide();
-			$(".edit").show();
+		$("#edit", $actions).on("click", function (e) {
+			$(".view", container).hide();
+			$(".edit", container).show();
 			
 			$(this).hide();
-			$("#save, #cancel", container).show();
+			$("#save, #cancel", $actions).show();
 		});
 
-		$("#save", container).on("click", function (e) {
+		$("#save", $actions).on("click", function (e) {
 			document.save();
-			$(".view").show();
-			$(".edit").hide();
+			$(".view", container).show();
+			$(".edit", container).hide();
 			
 			$(this).hide();
-			$("#cancel", container).hide();
-			$("#edit", container).show();
+			$("#cancel", $actions).hide();
+			$("#edit", $actions).show();
 		});
 
-		$("#cancel", container).on("click", function (e) {
+		$("#cancel", $actions).on("click", function (e) {
 			document.reset();
-			//new DocumentModel(veda, document.id, container_param);
-			
-			/*$(".view").show();
-			$(".edit").hide();
-			
-			$(this).hide();
-			$("#edit", container).show();
-			$("#save", container).hide();*/
 		});
-
+		
+		container.append($actions);
+		
 		localize(container, veda.user.language);
 
 	});

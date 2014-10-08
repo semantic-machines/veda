@@ -304,14 +304,14 @@
 		
 		<!-- Generic class template -->
 		<script type="html/template" id="generic-class-template">
-			<div class="container-fluid">
+			<div>
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<div class="row">
-							<div class="col-md-6">
+							<div class="col-md-4">
 								<h3 class="panel-title" data-property="_class.rdfs:label"></h3>
 							</div>
-							<div class="col-md-6 text-right text-muted">
+							<div class="col-md-8 text-right text-muted">
 								<h3 class="panel-title" data-property="document.id"></h3>
 							</div>  
 						</div>
@@ -429,7 +429,7 @@
 			<div>
 				<div class="view">
 					<a data-toggle="popover" href="#/document/{value.id}">{value.rdfs:label}</a>
-					<a href=""><i class="glyphicon glyphicon-collapse-down"></i></a>
+					<a href="" class="toggle-expand"><i class="glyphicon glyphicon-collapse-down"></i></a>
 				</div>
 				<div class="edit input-group">
 					<span class="input-group-addon btn btn-default search-component" ><i class="glyphicon glyphicon-search"></i></span>
@@ -461,7 +461,7 @@
 
 		<!-- Actions template -->
 		<script type="html/template" id="actions">
-			<div class="container-fluid">
+			<div>
 				<div class="well well-sm">
 					<button type="button" class="btn btn-default" id="edit" i18n="[Edit]">Редактировать</button>
 					<button type="button" class="btn btn-default" id="save" i18n="[Save]">Сохранить</button>
