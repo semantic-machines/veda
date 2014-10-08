@@ -8,7 +8,7 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix veda-schema: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -59,31 +59,31 @@ vdi:indexed_field
 #---------------------------------------------
 vdi:index_1
   rdf:type vdi:ClassIndex ;
-  vdi:forProperty veda-schema:author ;
+  vdi:forProperty v-s:author ;
   vdi:inherited_index vdi:index_2 ;
   vdi:inherited_index vdi:index_3 ;
 .
 vdi:index_2
   rdf:type vdi:ClassIndex ;
-  vdi:forClass veda-schema:Appointment ;
-  vdi:forProperty veda-schema:employee ;
+  vdi:forClass v-s:Appointment ;
+  vdi:forProperty v-s:employee ;
   vdi:inherited_index vdi:index_4 ;
 .
 vdi:index_3
   rdf:type vdi:ClassIndex ;
-  vdi:forClass veda-schema:Appointment ;
-  vdi:forProperty veda-schema:occupation ;
+  vdi:forClass v-s:Appointment ;
+  vdi:forProperty v-s:occupation ;
   vdi:inherited_index vdi:index_5 ;
 .
 vdi:index_4
   rdf:type vdi:ClassIndex ;
-  vdi:forClass veda-schema:Person ;
-  vdi:indexed_field veda-schema:firstName ;
-  vdi:indexed_field veda-schema:lastName ;
-  vdi:indexed_field veda-schema:middleName ;
+  vdi:forClass v-s:Person ;
+  vdi:indexed_field v-s:firstName ;
+  vdi:indexed_field v-s:lastName ;
+  vdi:indexed_field v-s:middleName ;
 .
 vdi:index_5
   rdf:type vdi:ClassIndex ;
-  vdi:forClass veda-schema:OrganizationUnit ;
+  vdi:forClass v-s:OrganizationUnit ;
   vdi:indexed_field rdfs:label ;
 .

@@ -15,11 +15,11 @@ import onto.resource;
 import onto.lang;
 import veda.util;
 
-public const string veda_schema__File          = "veda-schema:File";
-public const string veda_schema__fileName      = "veda-schema:fileName";
-public const string veda_schema__fileSize      = "veda-schema:fileSize";
-public const string veda_schema__fileThumbnail = "veda-schema:fileThumbnail";
-public const string veda_schema__fileURI       = "veda-schema:fileURI";
+public const string veda_schema__File          = "v-s:File";
+public const string veda_schema__fileName      = "v-s:fileName";
+public const string veda_schema__fileSize      = "v-s:fileSize";
+public const string veda_schema__fileThumbnail = "v-s:fileThumbnail";
+public const string veda_schema__fileURI       = "v-s:fileURI";
 
 const string        attachments_db_path = "./data/files";
 
