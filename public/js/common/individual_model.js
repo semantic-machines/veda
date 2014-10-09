@@ -11,7 +11,6 @@ function IndividualModel(veda, uri, container) {
 	var properties = {};
 	var values = {};
 	self.properties = {};
-	self.propertiesList = [];
 
 	if (!uri) individual["@"] = guid();
 	

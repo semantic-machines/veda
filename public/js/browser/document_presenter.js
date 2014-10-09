@@ -218,7 +218,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 							$linkContainer = $("<div />"),
 							linkedDoc;
 						$toggle.on("click", function ( e ) {
-							$("i", $toggle).toggleClass("glyphicon-chevron-right glyphicon-chevron-down");
+							$("i", $toggle).toggleClass("glyphicon-collapse-down glyphicon-collapse-up");
 							$linkContainer.toggle();
 							$toggle.after( $linkContainer );
 							if (!linkedDoc) linkedDoc = new DocumentModel(veda, value, $linkContainer);
