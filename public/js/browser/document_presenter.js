@@ -364,3 +364,77 @@ Veda(function DocumentPresenter(veda) { "use strict";
 	});
 
 });
+/*
+Veda(function DocumentPresenter(veda) { "use strict";
+	
+	veda.on("document:loaded", function (document, container_param) {
+		
+		var container = container_param || $("#main");
+		container.empty();
+		
+		document["rdf:type"]
+			.filter( function (item) {
+				return item instanceof IndividualModel
+			})
+			.map( function (item) {
+				
+				var _class = new ClassModel(veda, item);
+				
+				var template;
+				
+				// Get template from class
+				template = _class.documentTemplate["v-ui:template"][0];
+				
+				var $template = $(template.toString());
+				
+				$("[property]", $template).map( function () {
+					
+					var $this = $(this);
+					
+					var property_uri = $this.attr("property");
+					
+					if (document[property_uri] instanceof Array) {
+						document[property_uri].map ( function (item) {
+							var $clone = $this.clone();
+							$clone.val(item);
+							$this.after( $clone );
+						});
+					}
+					$this.remove();
+					
+				});
+				
+				container.append($template);
+				
+			});
+		
+		var $actions = $( $("#actions").html() );
+
+		$("#save, #cancel", $actions).hide();
+				
+		$("#edit", $actions).on("click", function (e) {
+			$("input[disabled]", container).removeAttr("disabled");
+			
+			$(this).hide();
+			$("#save, #cancel", $actions).show();
+		});
+
+		$("#save", $actions).on("click", function (e) {
+			document.save();
+			$("input", container).attr("disabled", "disabled");
+			
+			$(this).hide();
+			$("#cancel", $actions).hide();
+			$("#edit", $actions).show();
+		});
+
+		$("#cancel", $actions).on("click", function (e) {
+			document.reset();
+		});
+		
+		container.append($actions);
+		
+	});
+
+});
+*/
