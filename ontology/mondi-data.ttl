@@ -518,18 +518,18 @@ mnd-d:AppointmentTemplate1
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <h3 class="panel-title" data-property="_class.rdfs:label">{_class.rdfs:label}</h3>
+	        <h3 class="panel-title" data-property="_class.rdfs:label">Имя класса</h3>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
-  	        <h3 class="panel-title" data-property="document.id">{document.id}</h3>
+  	        <h3 class="panel-title" data-property="document.id">ID документа</h3>
 	      </div>  
 	    </div>
       </div>
       <div class="panel-body">
-        <h3 data-property="document.rdfs:label">{document.rdfs:label}</h3>
+        <h3 data-property="document.rdfs:label"></h3>
         <div class="row">
-          <div class="col-md-3" data-property="document.v-s:employee"></div>
-          <div class="col-md-3" data-property="document.v-s:occupation"></div>
+          <div class="col-md-3" data-property="document.v-s:employee">Работник</div>
+          <div class="col-md-3" data-property="document.v-s:occupation">Должность</div>
         </div>
       </div>
     </div>

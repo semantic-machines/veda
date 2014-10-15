@@ -347,13 +347,12 @@
 		
 		<!-- Generic property template -->
 		<script type="html/template" id="property-template">
-			<div class="{property.id} container-fluid">
+			<div class="container-fluid">
 				<div>
 					<dl>
 						<dt>
 							<span class="text-muted" href="#/document/{property.id}" data-toggle="popover">{property.rdfs:label}</span>
 							<button type="button" class="btn btn-link edit add">Добавить</button></dt>
-							<!--button type="button" class="btn btn-info btn-xs edit add"><i class="glyphicon glyphicon-plus"></i></button></dt-->
 						<dd class="values"></dd>
 					</dl>
 				</div>
@@ -362,7 +361,7 @@
 		
 		<!-- String property template -->
 		<script type="html/template" id="string-property-template">
-			<div class="{property.id} container-fluid">
+			<div class="container-fluid">
 				<div>
 					<dl>
 						<dt>
@@ -382,7 +381,7 @@
 					<span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown">{value.language} <span class="caret"></span></span>
 					<ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
 					</ul>
-					<textarea class="form-control" bound data-property="{property.id}" data-index="{index}" data-language="{value.language}">{value}</textarea>
+					<textarea class="form-control" bound data-language="{value.language}">{value}</textarea>
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
 					</span>
@@ -396,7 +395,7 @@
 				<div class="view">{value}</div>
 				<div class="edit input-group">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-time"></i></span>
-					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
+					<input type="text" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
 					</span>
@@ -410,7 +409,7 @@
 				<div class="view">{value}</div>
 				<div class="edit input-group">
 					<span class="input-group-addon btn btn-default"><strong>10</strong></span>
-					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
+					<input type="text" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
 					</span>
@@ -424,7 +423,7 @@
 				<div class="view">{value}</div>
 				<div class="edit input-group">
 					<span class="input-group-addon btn btn-default"><strong>0.1</strong></span>
-					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
+					<input type="text" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
 					</span>
@@ -438,7 +437,7 @@
 				<div class="view">{value}</div>
 				<div class="edit input-group">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-ok"></i></span>
-					<input type="text" class="form-control" value="{value}" bound data-property="{property.id}" data-index="{index}"/>
+					<input type="text" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
 					</span>
@@ -455,7 +454,7 @@
 				</div>
 				<div class="edit input-group">
 					<span class="input-group-addon btn btn-default search-component" ><i class="glyphicon glyphicon-search"></i></span>
-					<input type="text" class="form-control" value="{value.id}" bound data-property="{property.id}" data-index="{index}"/>
+					<input type="text" class="form-control" value="{value.id}" bound />
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
 					</span>
