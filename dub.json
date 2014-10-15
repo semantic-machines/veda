@@ -5,10 +5,11 @@
 	"authors": ["karpovr"],
 	"dependencies": {
 		"vibe-d": "0.7.20",
-		"pacahon": "0.1.117-alpha"
+		"pacahon": "0.1.118-alpha"
 	},
-	"versions": ["VibeDefaultMain"],
-    "configurations": [
+	"buildOptions": ["debugMode", "debugInfo"],	
+	"versions": ["VibeDefaultMain"],	
+	"configurations": [
 	{
 	    "name": "app",
 	    "docs": ["syntaxOnly"],
