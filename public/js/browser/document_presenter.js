@@ -279,7 +279,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					$(".properties", template).append(
 						Object.getOwnPropertyNames(_class.domainProperties()).map( function (property_uri) {
 							if (property_uri == "rdfs:label") return;
-							return $("<div/>", {"data-property":"document." + property_uri});
+							return $("<div/>", {"property":"document." + property_uri});
 						})
 					)
 				}
@@ -306,9 +306,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					_class: _class
 				};
 				
-				$('[data-property]', renderedDocument).each( function () {
+				$('[property]', renderedDocument).each( function () {
 					var $this = $(this);
-					var key = $this.data("property").split(".").reduce(function (acc, i) {
+					var key = $this.attr("property").split(".").reduce(function (acc, i) {
 						return isNaN(i) ? acc + "['" + i + "']" : acc + "[" + i + "]";
 					}, "");
 					var tmp = eval("data"+key);
@@ -321,7 +321,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					var spec = _class.specsByProps[property_uri];
 					var result = renderProperty (document, property, spec, vals);
 					$(".view", result).hide();
-					$("[data-property='document." + property_uri + "'][data-id='" + document.id + "']", renderedDocument).empty().append(result);
+					$("[property='document." + property_uri + "'][data-id='" + document.id + "']", renderedDocument).empty().append(result);
 				});
 				
 				container.append( renderedDocument );
@@ -364,6 +364,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 	});
 
 });
+
 /*
 Veda(function DocumentPresenter(veda) { "use strict";
 	

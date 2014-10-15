@@ -483,24 +483,24 @@ mnd-d:PersonTemplate1
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <h3 class="panel-title" data-property="_class.rdfs:label">Имя класса</h3>
+	        <h3 class="panel-title" property="_class.rdfs:label">Имя класса</h3>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
-  	        <h3 class="panel-title" data-property="document.id">ID документа</h3>
+  	        <h3 class="panel-title" property="document.id">ID документа</h3>
 	      </div>  
 	    </div>
       </div>
       <div class="panel-body">
-        <h3 data-property="document.rdfs:label">Наименование</h3>
+        <h3 property="document.rdfs:label">Наименование</h3>
         <div class="row">
-          <div class="col-md-3" data-property="document.v-s:lastName">Фамилия</div>
-          <div class="col-md-3" data-property="document.v-s:firstName">Имя</div>
-          <div class="col-md-3" data-property="document.v-s:middleName">Отчество</div>
-          <div class="col-md-3" data-property="document.v-s:birthday">День рождения</div>
+          <div class="col-md-3" property="document.v-s:lastName">Фамилия</div>
+          <div class="col-md-3" property="document.v-s:firstName">Имя</div>
+          <div class="col-md-3" property="document.v-s:middleName">Отчество</div>
+          <div class="col-md-3" property="document.v-s:birthday">День рождения</div>
 		</div>
         <div class="row">
-          <div class="col-md-6" data-property="document.v-ui:hasPreferences">Предпочтения</div>
-          <div class="col-md-6" data-property="document.v-s:hasAccount">Аккаунт</div>
+          <div class="col-md-6" property="document.v-ui:hasPreferences">Предпочтения</div>
+          <div class="col-md-6" property="document.v-s:hasAccount">Аккаунт</div>
         </div>
       </div>
     </div>
@@ -518,18 +518,18 @@ mnd-d:AppointmentTemplate1
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <h3 class="panel-title" data-property="_class.rdfs:label">Имя класса</h3>
+	        <h3 class="panel-title" property="_class.rdfs:label">Имя класса</h3>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
-  	        <h3 class="panel-title" data-property="document.id">ID документа</h3>
+  	        <h3 class="panel-title" property="document.id">ID документа</h3>
 	      </div>  
 	    </div>
       </div>
       <div class="panel-body">
         <h3 data-property="document.rdfs:label">Наменование</h3>
         <div class="row">
-          <div class="col-md-3" data-property="document.v-s:employee">Работник</div>
-          <div class="col-md-3" data-property="document.v-s:occupation">Должность</div>
+          <div class="col-md-3" property="document.v-s:employee">Работник</div>
+          <div class="col-md-3" property="document.v-s:occupation">Должность</div>
         </div>
       </div>
     </div>
@@ -584,7 +584,7 @@ mnd-d:PositionTemplate1
   rdfs:label "Template for Position class"@en ;
   v-ui:forClass v-s:Position ;
   v-ui:template """
-  <span data-property="document.rdfs:label">Должность</span>
+  <span property="document.rdfs:label">Должность</span>
   """ ;
 .
 mnd-d:PreferencesTemplate1
@@ -594,9 +594,9 @@ mnd-d:PreferencesTemplate1
   v-ui:forClass v-ui:Preferences ;
   v-ui:template """
   <div>
-    <span data-property="document.v-s:owner">Владелец</span>
-    <span data-property="document.v-ui:preferredLanguage">Язык</span>
-    <span data-property="document.v-ui:displayedElements">999</span>
+    <span property="document.v-s:owner">Владелец</span>
+    <span property="document.v-ui:preferredLanguage">Язык</span>
+    <span property="document.v-ui:displayedElements">999</span>
   </div>
   """ ;
 .
