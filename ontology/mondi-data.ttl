@@ -526,10 +526,52 @@ mnd-d:AppointmentTemplate1
 	    </div>
       </div>
       <div class="panel-body">
-        <h3 data-property="document.rdfs:label"></h3>
+        <h3 data-property="document.rdfs:label">Наменование</h3>
         <div class="row">
           <div class="col-md-3" data-property="document.v-s:employee">Работник</div>
           <div class="col-md-3" data-property="document.v-s:occupation">Должность</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  """ ;
+.
+mnd-d:AccountTemplate1
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон Учетной записи"@ru ;
+  rdfs:label "Account template"@en ;
+  v-ui:forClass v-s:Account ;
+  v-ui:template """
+  <div>
+    <div class="panel panel-default" resource="id" typeof="class">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-6">
+	        <h3 class="panel-title" rel="rdf:type" template="mnd-d:ClassTemplate1">Имя класса</h3>
+  	      </div>  
+          <div class="col-md-6 text-right text-muted">
+  	        <h3 class="panel-title" property="id" control="string">ID документа</h3>
+	      </div>  
+	    </div>
+      </div>
+      <div class="panel-body">
+        <input type="text" class="form-control input-lg" property="rdfs:label" value="Наменование"  disabled />
+        <div class="row">
+          <div class="col-md-12" rel="v-s:owner" template="mnd-d:PersonTemplate1">Владелец</div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+               E-mail
+               <input type="text" class="form-control" property="v-s:mailbox" value="E-mail" disabled />
+          </div>
+          <div class="col-md-4">
+               Логин
+               <input type="text" class="form-control" property="v-s:login" value="Логин" disabled  />
+	      </div>
+          <div class="col-md-4">
+               Пароль
+               <input type="text" class="form-control" property="v-s:password" value="Пароль" disabled  />
+          </div>
         </div>
       </div>
     </div>
