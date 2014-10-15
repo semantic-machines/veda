@@ -155,7 +155,9 @@ if (ff)
 		//print ('IS DELETED');
 		new_membership['v-s:deleted'] = deleted;
 	    }
-	    put_individual (ticket, new_membership);
+	    var res = put_individual (ticket, new_membership);
+	    if (res != 200 && res != 1022)
+		print ('res=', res, ' @@1 =', toJson (new_membership));		
 	}
     }
 }

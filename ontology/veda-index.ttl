@@ -57,6 +57,13 @@ vdi:indexed_field
   rdfs:range rdfs:Resource ;
 .
 #---------------------------------------------
+vdi:index_0
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass mnd-sa:SafetyAudit ;
+  vdi:forProperty mnd-sa:recipient ;
+  vdi:inherited_index vdi:index_2 ;
+  vdi:inherited_index vdi:index_3 ;
+.
 vdi:index_1
   rdf:type vdi:ClassIndex ;
   vdi:forProperty v-s:author ;
