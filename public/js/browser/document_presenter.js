@@ -381,33 +381,55 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				
 				var _class = new ClassModel(veda, item);
 				
-				var template;
-				
 				// Get template from class
-				template = _class.documentTemplate["v-ui:template"][0];
+				var classTemplate = _class.documentTemplate["v-ui:template"][0];
 				
-				var $template = $(template.toString());
+				var $classTemplate = $(classTemplate.toString());
 				
-				$("[property]", $template).map( function () {
+				$("[property]", $classTemplate).not("[about]").map( function () {
 					
-					var $this = $(this);
-					
-					var property_uri = $this.attr("property");
-					
+					var propertyContainer = $(this), 
+						property_uri = propertyContainer.attr("property"),
+						propertyTemplate = propertyContainer.attr("template"),
+						values = document[property_uri];
+						
 					if (document[property_uri] instanceof Array) {
 						document[property_uri].map( function (item) {
-							var $clone = $this.clone();
-							$clone.val(item);
-							$this.after($clone);
+							var clone = propertyContainer.clone();
+							clone.val(item);
+							propertyContainer.after(clone);
 						});
-						$this.remove();
+						propertyContainer.remove();
 					} else {
-						$this.val(document[property_uri]);
+						propertyContainer.val(document[property_uri]);
 					}
 
 				});
 				
-				container.append($template);
+				$("[about]", $classTemplate).map( function () {
+					
+					var propertyContainer = $(this), 
+						about = new IndividualModel(veda, propertyContainer.attr("about")),
+						property_uri = propertyContainer.attr("property");
+
+					propertyContainer.html( about[property_uri] );
+
+				});
+
+				$("[rel]", $classTemplate).map( function () {
+					
+					var relContainer = $(this), 
+						rel_uri = relContainer.attr("rel"),
+						relTemplate = relContainer.attr("template"),
+						values = document[rel_uri];
+					
+					values.map( function (value) {
+						relContainer.html(value.id );
+					});
+					
+				});
+				
+				container.append($classTemplate);
 				
 			});
 		
@@ -441,5 +463,4 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 });
 */
-
 

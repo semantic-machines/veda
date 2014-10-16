@@ -493,14 +493,26 @@ mnd-d:PersonTemplate1
       <div class="panel-body">
         <h3 property="document.rdfs:label">Наименование</h3>
         <div class="row">
-          <div class="col-md-3" property="document.v-s:lastName">Фамилия</div>
-          <div class="col-md-3" property="document.v-s:firstName">Имя</div>
-          <div class="col-md-3" property="document.v-s:middleName">Отчество</div>
-          <div class="col-md-3" property="document.v-s:birthday">День рождения</div>
-		</div>
+          <div class="col-md-3">
+            <div property="document.v-s:lastName">Фамилия</div>
+          </div>
+          <div class="col-md-3">
+            <div property="document.v-s:firstName">Имя</div>
+          </div>
+          <div class="col-md-3">
+            <div property="document.v-s:middleName">Отчество</div>
+          </div>
+          <div class="col-md-3">
+            <div property="document.v-s:birthday">День рождения</div>
+          </div>
+	    </div>
         <div class="row">
-          <div class="col-md-6" property="document.v-ui:hasPreferences">Предпочтения</div>
-          <div class="col-md-6" property="document.v-s:hasAccount">Аккаунт</div>
+          <div class="col-md-6">
+            <div property="document.v-ui:hasPreferences">Предпочтения</div>
+          </div>
+          <div class="col-md-6">
+            <div property="document.v-s:hasAccount">Аккаунт</div>
+          </div>
         </div>
       </div>
     </div>
@@ -559,23 +571,24 @@ mnd-d:AccountTemplate1
         <input type="text" class="form-control input-lg" property="rdfs:label" value="Наменование"  disabled />
         <br />
         <div class="row">
-          <div class="col-md-12" rel="v-s:owner" template="mnd-d:PersonTemplate1">
-            <strong>Владелец</strong>
-          </div>
+            <div class="col-md-12">
+               <strong about="v-s:owner" property="rdfs:label">Владелец</strong>
+               <div rel="v-s:owner" template="mnd-d:PersonTemplate1"></div>
+            </div>
         </div>
         <br />
         <div class="row">
           <div class="col-md-4">
-               <strong>E-mail</strong>
+               <strong about="v-s:mailbox" property="rdfs:label">E-mail</strong>
                <input type="text" class="form-control" property="v-s:mailbox" value="address@example.com" disabled />
           </div>
           <div class="col-md-4">
-               <strong>Логин</strong>
+               <strong about="v-s:login" property="rdfs:label">Логин</strong>
                <input type="text" class="form-control" property="v-s:login" value="UserName" disabled  />
 	      </div>
           <div class="col-md-4">
-               <strong>Пароль</strong>
-               <input type="text" class="form-control" property="v-s:password" value="PaSsWoRd" disabled  >
+               <strong about="v-s:password" property="rdfs:label">Пароль</strong>
+               <input type="text" class="form-control" property="v-s:password" value="PaSsWoRd" disabled  />
           </div>
         </div>
       </div>
@@ -598,7 +611,7 @@ mnd-d:PreferencesTemplate1
   rdfs:label "Template for Preferences class"@en ;
   v-ui:forClass v-ui:Preferences ;
   v-ui:template """
-  <div>
+  <div class="well well-sm">
     <span property="document.v-s:owner">Владелец</span>
     <span property="document.v-ui:preferredLanguage">Язык</span>
     <span property="document.v-ui:displayedElements">999</span>
