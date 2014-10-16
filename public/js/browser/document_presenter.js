@@ -395,14 +395,16 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					var property_uri = $this.attr("property");
 					
 					if (document[property_uri] instanceof Array) {
-						document[property_uri].map ( function (item) {
+						document[property_uri].map( function (item) {
 							var $clone = $this.clone();
 							$clone.val(item);
-							$this.after( $clone );
+							$this.after($clone);
 						});
+						$this.remove();
+					} else {
+						$this.val(document[property_uri]);
 					}
-					$this.remove();
-					
+
 				});
 				
 				container.append($template);
@@ -439,3 +441,5 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 });
 */
+
+

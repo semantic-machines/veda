@@ -547,30 +547,35 @@ mnd-d:AccountTemplate1
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <h3 class="panel-title" rel="rdf:type" template="mnd-d:ClassTemplate1">Имя класса</h3>
+	        <p class="panel-title" rel="rdf:type" template="mnd-d:ClassTemplate1">Имя класса</p>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
-  	        <h3 class="panel-title" property="id" control="string">ID документа</h3>
+  	        <!--p class="panel-title" property="id" control="string">ID документа</p-->
+                <input type="text" class="form-control text-right" property="id" value="ID" readonly />
 	      </div>  
 	    </div>
       </div>
       <div class="panel-body">
         <input type="text" class="form-control input-lg" property="rdfs:label" value="Наменование"  disabled />
+        <br />
         <div class="row">
-          <div class="col-md-12" rel="v-s:owner" template="mnd-d:PersonTemplate1">Владелец</div>
+          <div class="col-md-12" rel="v-s:owner" template="mnd-d:PersonTemplate1">
+            <strong>Владелец</strong>
+          </div>
         </div>
+        <br />
         <div class="row">
           <div class="col-md-4">
-               E-mail
-               <input type="text" class="form-control" property="v-s:mailbox" value="E-mail" disabled />
+               <strong>E-mail</strong>
+               <input type="text" class="form-control" property="v-s:mailbox" value="address@example.com" disabled />
           </div>
           <div class="col-md-4">
-               Логин
-               <input type="text" class="form-control" property="v-s:login" value="Логин" disabled  />
+               <strong>Логин</strong>
+               <input type="text" class="form-control" property="v-s:login" value="UserName" disabled  />
 	      </div>
           <div class="col-md-4">
-               Пароль
-               <input type="text" class="form-control" property="v-s:password" value="Пароль" disabled  />
+               <strong>Пароль</strong>
+               <input type="text" class="form-control" property="v-s:password" value="PaSsWoRd" disabled  >
           </div>
         </div>
       </div>
