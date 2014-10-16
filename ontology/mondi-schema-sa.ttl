@@ -160,11 +160,11 @@ mnd-sa:registrationNumber
 mnd-sa:dateFrom
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
-  rdfs:label "Дата"@ru ;
+  rdfs:label "Дата проведения"@ru ;
   rdfs:range xsd:dateTime ;
   v-s:deprecatedId "Дата" ;
 .
-mnd-sa:dateFrom
+mnd-sa:attachment
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Вложение"@ru ;
