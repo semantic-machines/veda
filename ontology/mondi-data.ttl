@@ -559,7 +559,7 @@ mnd-d:AccountTemplate1
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <p class="panel-title" rel="rdf:type" template="mnd-d:ClassTemplate1">Имя класса</p>
+	        <p class="panel-title" about="v-s:Account" property="rdfs:label">Имя класса</p>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
   	        <!--p class="panel-title" property="id" control="string">ID документа</p-->
@@ -611,10 +611,10 @@ mnd-d:PreferencesTemplate1
   rdfs:label "Template for Preferences class"@en ;
   v-ui:forClass v-ui:Preferences ;
   v-ui:template """
-  <div class="well well-sm">
-    <span property="document.v-s:owner">Владелец</span>
-    <span property="document.v-ui:preferredLanguage">Язык</span>
-    <span property="document.v-ui:displayedElements">999</span>
+  <div>
+    <!--span property="document.v-s:owner">Владелец</span-->
+    <strong><span about="v-ui:preferredLanguage" property="rdfs:label">Язык</span></strong>: <ul><li rel="v-ui:preferredLanguage">RU</li></ul>
+    <strong><span about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</span></strong>: <span property="v-ui:displayedElements">999</span>
   </div>
   """ ;
 .
