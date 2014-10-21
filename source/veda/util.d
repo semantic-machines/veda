@@ -133,7 +133,14 @@ Resource json_to_resource(const Json resource_json)
     }
     else if (type == DataType.Decimal)
     {
-        resource = decimal(resource_json[ "data" ].get!double);
+	if (data_type is Json.Type.Float)
+	{
+    	    resource = decimal(resource_json[ "data" ].get!double);
+	}
+	else if (data_type is Json.Type.Int)
+	{
+    	    resource = resource_json[ "data" ].get!long;
+	}
     }
     else if (type == DataType.Integer)
     {

@@ -811,7 +811,7 @@ test(
 					type : _String
 				} ],
 				'v-s:test_datetime0' : [ {
-				data : new Date ("2014-01-03"),
+				data : new Date ("2014-01-04"),
 				type : _Datetime
 				} ],
 				'v-s:test_datetime1' : [ {
