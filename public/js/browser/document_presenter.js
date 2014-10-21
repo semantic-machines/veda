@@ -369,7 +369,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 Veda(function DocumentPresenter(veda) { "use strict";
 	
-	veda.on("document:loaded", function (document, container_param) {
+	veda.on("document:loaded", function (document, container_param, template) {
 		
 		var container = container_param || $("#main");
 		container.empty().hide();
@@ -384,8 +384,10 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				
 				var classTemplate;
 				
+				if (template) { 
+					classTemplate = $( template["v-ui:template"][0].toString() ); 
 				// Get template from class
-				if (_class.documentTemplate["v-ui:template"]) {
+				} else if (_class.documentTemplate["v-ui:template"]) {
 					classTemplate = $( _class.documentTemplate["v-ui:template"][0].toString() );
 				} else {
 					// Construct generic template
@@ -439,16 +441,26 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						relTemplate = relContainer.attr("template"),
 						values = document[rel_uri];
 					
-					values.map( function (value) {
-						var clone = relContainer.clone();
-						setTimeout( function () {
-							new DocumentModel(veda, value, clone, relTemplate);
-						}, 0);
-						relContainer.before(clone);
-					});
+					relTemplate = relTemplate ? 
+						new IndividualModel(veda, relTemplate) 
+						:
+						new IndividualModel(veda, "mnd-d:LabelTemplate");
 					
+					if (values) {
+						values.map( function (value) {
+							var clone = relContainer.clone();
+							setTimeout( function () {
+								new DocumentModel(veda, value, clone, relTemplate);
+							}, 0);
+							relContainer.before(clone);
+						});
+					}
 					relContainer.remove();
 					
+				});
+				
+				$("[href='id']", $classTemplate).map( function () {
+					$( this ).attr("href", "#/document/" + document.id);
 				});
 				
 				container.append($classTemplate);
