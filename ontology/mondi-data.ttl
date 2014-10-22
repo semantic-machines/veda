@@ -568,12 +568,12 @@ mnd-d:AccountTemplate1
 	    </div>
       </div>
       <div class="panel-body">
-        <input type="text" class="form-control input-lg" property="rdfs:label" value="Наменование"  disabled />
+        <input type="text" class="form-control input-lg" property="rdfs:label" value="Наменование" disabled />
         <br />
         <div class="row">
             <div class="col-md-12">
                <strong about="v-s:owner" property="rdfs:label">Владелец</strong>
-               <div rel="v-s:owner" template="mnd-d:PreferencesTemplate1"></div>
+               <div rel="v-s:owner" template="mnd-d:LabelTemplate"></div>
             </div>
         </div>
         <br />
@@ -584,11 +584,12 @@ mnd-d:AccountTemplate1
           </div>
           <div class="col-md-4">
                <strong about="v-s:login" property="rdfs:label">Логин</strong>
-               <input type="text" class="form-control" property="v-s:login" value="UserName" disabled  />
+               <input type="text" class="form-control" property="v-s:login" value="UserName" disabled />
 	      </div>
           <div class="col-md-4">
                <strong about="v-s:password" property="rdfs:label">Пароль</strong>
-               <input type="text" class="form-control" property="v-s:password" value="PaSsWoRd" disabled  />
+               <input type="text" class="form-control" property="v-s:password" value="PaSsWoRd" disabled />
+               <div property="v-s:password" template="string"></div>
           </div>
         </div>
       </div>
@@ -623,7 +624,7 @@ mnd-d:LabelTemplate
   rdfs:label "Шаблон с меткой"@ru ;
   rdfs:label "Template with label"@en ;
   v-ui:template """
-  <span><a property="rdfs:label" href="id">наименование</a></span>
+  <span><a href="id"><i class="glyphicon glyphicon-search"></i></a> <span property="rdfs:label" style="margin-right:10px">наименование</span></span>
   """ ;
 .
 mnd-d:PropertySpecification5
