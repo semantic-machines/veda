@@ -21,12 +21,17 @@
   rdfs:label "Mondi ontology. Safety audit"@en ;
   rdfs:label "Онтология Монди. Аудит безопасности"@ru ;
 .
+mnd-sa:KLADR
+  rdf:type owl:Class ;
+  rdfs:label "Территориальное деление"@en ;
+  rdfs:label "Территориальное деление"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
 mnd-sa:SafetyAudit
   rdf:type owl:Class ;
   rdfs:label "Safety audit"@en ;
   rdfs:label "Аудит безопасности"@ru ;
   rdfs:subClassOf v-s:Document ;
-  v-s:deprecatedId "9fb73a44385d4b2c9db9b85da8ae2220" ;
 .
 mnd-sa:SafetyStandardSection
   rdf:type owl:Class ;
@@ -41,7 +46,6 @@ mnd-sa:SafetyAuditObservation
   rdfs:label "Замечание аудита безопасности"@ru ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
-  v-s:deprecatedId "74eb8e54882545f3a35c1acae761500e" ;
 .
 mnd-sa:SafetyAuditObservationKind
   rdf:type owl:Class ;
@@ -58,20 +62,43 @@ mnd-sa:SafetyStandardTheme
   v-s:deprecatedId "19faf6e8-8843-4426-a905-ce2b0a1a07e0" ;
 .
 
+# begin-------------- mnd-sa:KLADR
+mnd-sa:code
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-sa:KLADR ;
+  rdfs:label "Код"@ru ;
+  rdfs:range xsd:string ;
+  v-s:deprecatedId "Код" ;
+.
+mnd-sa:code
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-sa:KLADR ;
+  rdfs:label "Код"@ru ;
+  rdfs:range xsd:string ;
+  v-s:deprecatedId "Код" ;
+.
+
+# end---------------- mnd-sa:KLADR
+
 # begin-------------- mnd-sa:SafetyAudit
+mnd-sa:theme
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-sa:SafetyAudit ;
+  rdfs:label "Тема"@ru ;
+  rdfs:range mnd-sa:SafetyStandardTheme ;
+.
 mnd-sa:registrationNumber
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:KLADR ;
   rdfs:label "Регистрационный номер"@ru ;
   rdfs:range xsd:string ;
-  v-s:deprecatedId "№" ;
 .
 mnd-sa:dateFrom
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Дата проведения"@ru ;
   rdfs:range xsd:dateTime ;
-  v-s:deprecatedId "Дата" ;
 .
 # ?? range OrganizationUnit или Department
 mnd-sa:department
@@ -79,14 +106,12 @@ mnd-sa:department
   rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Подразделение СЛПК"@ru ;
   rdfs:range v-s:OrganizationUnit ;
-  v-s:deprecatedId "Подразделение" ;
 .
 mnd-sa:contractor
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Подрядчик"@ru ;
   rdfs:range mnd-s:Dossier ;
-  v-s:deprecatedId "contractor" ;
 .
 # ?? code classifierWork или safetyStandardSection
 mnd-sa:classifierWork
@@ -94,21 +119,18 @@ mnd-sa:classifierWork
   rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Вид надзора"@ru ;
   rdfs:range mnd-sa:SafetyStandardSection ;
-  v-s:deprecatedId "Тема" ;
 .
 mnd-sa:member
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Список участников"@ru ;
   rdfs:range v-s:Appointment ;
-  v-s:deprecatedId "Список участников" ;
 .
 mnd-sa:recipient
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Список рассылки"@ru ;
   rdfs:range v-s:Appointment ;
-  v-s:deprecatedId "Список рассылки" ;
 .
 # ?? code action или observationOfSafetyAudit или safetyAuditObservation
 mnd-sa:action
@@ -116,28 +138,24 @@ mnd-sa:action
   rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Замечания аудита"@ru ;
   rdfs:range mnd-sa:SafetyAuditObservation ;
-  v-s:deprecatedId "action" ;
 .
 mnd-sa:summary
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Вывод"@ru ;
   rdfs:range xsd:string ;
-  v-s:deprecatedId "Вывод" ;
 .
 mnd-sa:comment
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Комментарий"@ru ;
   rdfs:range xsd:string ;
-  v-s:deprecatedId "Комментарий" ;
 .
 mnd-sa:status
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Статус"@ru ;
   rdfs:range mnd-s:Status ;
-  v-s:deprecatedId "status" ;
 .
 # ?? range Documents или какой-нибудь MondiDocument
 mnd-sa:addDoc
@@ -145,7 +163,6 @@ mnd-sa:addDoc
   rdfs:domain mnd-sa:SafetyAudit ;
   rdfs:label "Связанный документ"@ru ;
   rdfs:range mnd-s:Documents ;
-  v-s:deprecatedId "add_doc" ;
 .
 # end-------------- mnd-sa:SafetyAudit
 
@@ -155,35 +172,30 @@ mnd-sa:registrationNumber
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Регистрационный номер"@ru ;
   rdfs:range xsd:string ;
-  v-s:deprecatedId "auto_num" ;
 .
 mnd-sa:dateFrom
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Дата проведения"@ru ;
   rdfs:range xsd:dateTime ;
-  v-s:deprecatedId "Дата" ;
 .
 mnd-sa:attachment
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Вложение"@ru ;
   rdfs:range v-s:File ;
-  v-s:deprecatedId "Вложение" ;
 .
 mnd-sa:area
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Участок"@ru ;
   rdfs:range mnd-s:Area ;
-  v-s:deprecatedId "Участок" ;
 .
 mnd-sa:place
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Место"@ru ;
   rdfs:range xsd:string ;
-  v-s:deprecatedId "Место" ;
 .
 # ?? range OrganizationUnit или Department
 mnd-sa:department
@@ -191,28 +203,24 @@ mnd-sa:department
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Подразделение СЛПК"@ru ;
   rdfs:range v-s:OrganizationUnit ;
-  v-s:deprecatedId "Подразделение" ;
 .
 mnd-sa:responsible
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Ответственное лицо СЛПК"@ru ;
   rdfs:range v-s:Appointment ;
-  v-s:deprecatedId "responsible" ;
 .
 mnd-sa:contractor
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Подрядчик"@ru ;
   rdfs:range mnd-s:Dossier ;
-  v-s:deprecatedId "contractor" ;
 .
 mnd-sa:responsibleAdd
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Ответственное лицо подрядчика"@ru ;
   rdfs:range xsd:string ;
-  v-s:deprecatedId "responsible_add" ;
 .
 # ?? code action или observationOfSafetyAudit или safetyAuditObservation
 mnd-sa:addToDoc
@@ -220,28 +228,24 @@ mnd-sa:addToDoc
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Замечание в рамках Аудита"@ru ;
   rdfs:range mnd-sa:SafetyAudit ;
-  v-s:deprecatedId "add_to_doc" ;
 .
 mnd-sa:observation
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Наблюдение"@ru ;
   rdfs:range xsd:string ;
-  v-s:deprecatedId "Наблюдение" ;
 .
 mnd-sa:requirement
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Мероприятие незамедлительное"@ru ;
   rdfs:range xsd:string ;
-  v-s:deprecatedId "Мероприятие незамедлительное" ;
 .
 mnd-sa:recommendation
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Мероприятие для предотвращения в будущем"@ru ;
   rdfs:range xsd:string ;
-  v-s:deprecatedId "Мероприятие для предотвращения" ;
 .
 # ?? label Характер замечания или Уровень
 mnd-sa:level
@@ -249,14 +253,12 @@ mnd-sa:level
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Характер замечания"@ru ;
   rdfs:range mnd-s:PositiveNegative ;
-  v-s:deprecatedId "characteristic" ;
 .
 mnd-sa:safetyAuditObservationKind
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Вид замечания"@ru ;
   rdfs:range mnd-sa:SafetyAuditObservationKind ;
-  v-s:deprecatedId "kind" ;
 .
 # ?? code classifierLevel или safetyAuditObservationLevel
 mnd-sa:classifierLevel
@@ -264,44 +266,38 @@ mnd-sa:classifierLevel
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Приоритет"@ru ;
   rdfs:range mnd-s:ClassifierLevel ;
-  v-s:deprecatedId "risk" ;
 .
 mnd-sa:dateTo
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Срок устранения"@ru ;
   rdfs:range xsd:dateTime ;
-  v-s:deprecatedId "date_to" ;
 .
 mnd-sa:dateFact
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Дата фактического устранения"@ru ;
   rdfs:range xsd:dateTime ;
-  v-s:deprecatedId "date_fact" ;
 .
 # ?? code classifierWork или safetyStandardSection
 mnd-sa:classifierWork
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mnd-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Вид надзора"@ru ;
   rdfs:range mnd-sa:SafetyStandardSection ;
-  v-s:deprecatedId "Тема" ;
 .
 # ?? code theme или SafetyStandardTheme
 mnd-sa:theme
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain mnd-sa:SafetyAudit ;
+  rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Тема"@ru ;
   rdfs:range mnd-sa:SafetyStandardTheme ;
-  v-s:deprecatedId "Вид требования" ;
 .
 mnd-sa:addInfo
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Доп информация"@ru ;
   rdfs:range mnd-s:AddInfo ;
-  v-s:deprecatedId "add_info" ;
 .
 # ?? как сложатся файлы онтологий если comment упомянут несколько раз для разных domain
 mnd-sa:comment
@@ -309,7 +305,6 @@ mnd-sa:comment
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Комментарий"@ru ;
   rdfs:range xsd:string ;
-  v-s:deprecatedId "Комментарий" ;
 .
 # ?? range Documents или какой-нибудь MondiDocument
 mnd-sa:reason
@@ -317,7 +312,6 @@ mnd-sa:reason
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Основание"@ru ;
   rdfs:range mnd-s:NormativeDocument ;
-  v-s:deprecatedId "Основание" ;
 .
 # ?? code 
 mnd-sa:reasonTxt
@@ -325,15 +319,276 @@ mnd-sa:reasonTxt
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Основание текст"@ru ;
   rdfs:range xsd:string ;
-  v-s:deprecatedId "Основание текст" ;
 .
 mnd-sa:status
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-sa:SafetyAuditObservation ;
   rdfs:label "Статус"@ru ;
   rdfs:range mnd-s:Status ;
-  v-s:deprecatedId "status" ;
 .
 # end-------------- mnd-sa:ObservationOfSafetyAudit
+
+#######################################################################################
+mnd-sa:tr_1
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:KLADR ;
+  mnd-sa:destProperty mnd-sa:registrationNumber ;
+  v-s:deprecatedClass "5c2ce098-66a1-471c-886f-addb170f98da" ;
+  v-s:deprecatedProperty "Шифр" ;
+.    
+# --------------------------------------------------------- 
+mnd-sa:tr_112
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAudit ;
+  mnd-sa:destProperty mnd-sa:registrationNumber ;
+  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:deprecatedProperty "№" ;
+.    
+mnd-sa:tr_113
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAudit ;
+  mnd-sa:destProperty mnd-sa:dateFrom ;
+  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:deprecatedProperty "Дата" ;
+.    
+mnd-sa:tr_114
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAudit ;
+  mnd-sa:destProperty mnd-sa:department ;
+  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:deprecatedProperty "Подразделение" ;
+.    
+mnd-sa:tr_115
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAudit ;
+  mnd-sa:destProperty mnd-sa:contractor ;
+  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:deprecatedProperty "contractor" ;
+.    
+mnd-sa:tr_116
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAudit ;
+  mnd-sa:destProperty mnd-sa:classifierWork ;
+  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:deprecatedProperty "Тема" ;
+.    
+mnd-sa:tr_117
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAudit ;
+  mnd-sa:destProperty mnd-sa:summary ;
+  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:deprecatedProperty "Вывод" ;
+.    
+mnd-sa:tr_118
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAudit ;
+  mnd-sa:destProperty mnd-sa:comment ;
+  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:deprecatedProperty "Комментарий" ;
+.    
+mnd-sa:tr_119
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAudit ;
+  mnd-sa:destProperty mnd-sa:status ;
+  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:deprecatedProperty "status" ;
+.    
+mnd-sa:tr_120
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAudit ;
+  mnd-sa:destProperty mnd-sa:addDoc ;
+  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:deprecatedProperty "add_doc" ;
+.   
+mnd-sa:tr_121
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAudit ;
+  mnd-sa:destProperty mnd-sa:theme ;
+  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:deprecatedProperty "Вид требования" ;
+.    
+mnd-sa:tr_122
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAudit ;
+  mnd-sa:destProperty mnd-sa:member ;
+  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:deprecatedProperty "Список участников" ;
+.    
+mnd-sa:tr_123
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAudit ;
+  mnd-sa:destProperty mnd-sa:recipient ;
+  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:deprecatedProperty "Список рассылки" ;
+.    
+mnd-sa:tr_124
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAudit ;
+  mnd-sa:destProperty mnd-sa:action ;
+  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:deprecatedProperty "action" ;
+.    
+# --------------------------------------------------------- 
+mnd-sa:tr_200
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:registrationNumber ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "auto_num" ;
+.    
+mnd-sa:tr_201
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:dateFrom ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "Дата" ;
+.    
+mnd-sa:tr_202
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:attachment ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "Вложение" ;
+.    
+mnd-sa:tr_203
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:place ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "Место" ;
+.    
+mnd-sa:tr_204
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:department ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "Подразделение" ;
+.    
+mnd-sa:tr_205
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:responsible ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "responsible" ;
+.    
+mnd-sa:tr_206
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:contractor ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "contractor" ;
+.    
+mnd-sa:tr_207
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:responsibleAdd ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "responsible_add" ;
+.    
+mnd-sa:tr_208
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:addToDoc ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "add_to_doc" ;
+.    
+mnd-sa:tr_209
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:observation ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "Наблюдение" ;
+.    
+mnd-sa:tr_210
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:requirement ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "Мероприятие незамедлительное" ;
+.    
+mnd-sa:tr_211
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:recommendation ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "Мероприятие для предотвращения" ;
+.    
+mnd-sa:tr_212
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:level ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "characteristic" ;
+.    
+mnd-sa:tr_213
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:safetyAuditObservationKind ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "kind" ;
+.    
+mnd-sa:tr_214
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:classifierLevel ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "risk" ;
+.    
+mnd-sa:tr_215
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:dateTo ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "date_to" ;
+.    
+mnd-sa:tr_216
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:dateFact ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "date_fact" ;
+.    
+mnd-sa:tr_217
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:theme ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "Вид требования" ;
+.    
+mnd-sa:tr_218
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:addInfo ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "add_info" ;
+.    
+mnd-sa:tr_219
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:comment ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "Комментарий" ;
+.    
+mnd-sa:tr_220
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:status ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "status" ;
+.    
+mnd-sa:tr_221
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:reason ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "Основание" ;
+.    
+mnd-sa:tr_222
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
+  mnd-sa:destProperty mnd-sa:reasonTxt ;
+  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:deprecatedProperty "Основание текст" ;
+.    
 
 
