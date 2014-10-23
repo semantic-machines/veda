@@ -562,34 +562,32 @@ mnd-d:AccountTemplate1
 	        <p class="panel-title" about="v-s:Account" property="rdfs:label">Имя класса</p>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
-  	        <!--p class="panel-title" property="id" control="string">ID документа</p-->
-                <input type="text" class="form-control text-right" property="id" value="ID" readonly />
+                <div property="id">ID</div>
 	      </div>  
 	    </div>
       </div>
       <div class="panel-body">
-        <input type="text" class="form-control input-lg" property="rdfs:label" value="Наменование" disabled />
+        <h3 property="rdfs:label">Наименование</h3>
         <br />
         <div class="row">
             <div class="col-md-12">
                <strong about="v-s:owner" property="rdfs:label">Владелец</strong>
-               <div rel="v-s:owner" template="mnd-d:LabelTemplate"></div>
+               <div rel="v-s:owner" template="mnd-d:LabelTemplate">mnd-d:LabelTemplate</div>
             </div>
         </div>
         <br />
         <div class="row">
           <div class="col-md-4">
                <strong about="v-s:mailbox" property="rdfs:label">E-mail</strong>
-               <input type="text" class="form-control" property="v-s:mailbox" value="address@example.com" disabled />
+               <div property="v-s:mailbox">address@example.com</div>
           </div>
           <div class="col-md-4">
                <strong about="v-s:login" property="rdfs:label">Логин</strong>
-               <input type="text" class="form-control" property="v-s:login" value="UserName" disabled />
+               <div property="v-s:login">IvanovI</div>
 	      </div>
           <div class="col-md-4">
                <strong about="v-s:password" property="rdfs:label">Пароль</strong>
-               <input type="text" class="form-control" property="v-s:password" value="PaSsWoRd" disabled />
-               <div property="v-s:password" template="string"></div>
+               <div property="v-s:password">PaSsWoRd</div>
           </div>
         </div>
       </div>
