@@ -64,15 +64,6 @@ v-a:VedaSystem
   rdfs:label "Veda System"@en ;
   rdfs:label "Система Веда"@ru ;
 .
-v-a:VedaSystemAccount
-  rdf:type v-s:Account ;
-  v-s:login "veda"^^xsd:string ;
-  v-s:mailbox "veda@semantic-machines.com"^^xsd:string ;
-  v-s:owner v-a:VedaSystem ;
-  v-s:password "6220b3e1f255f8e29b87488abab1bde126a6bbb44c62bf9b297b3d20347f8b4e"^^xsd:string ;
-  rdfs:label "Veda System Account"@en ;
-  rdfs:label "Учетная запись системы Веда"@ru ;
-.
 v-a:Permission_rr
   rdf:type v-s:PermissionStatement ;
   v-s:author v-a:VedaSystem ;
@@ -205,5 +196,20 @@ if (ff)
   rdfs:label "Mandate_3"@en ;
   rdfs:label "Мандат_3"@ru ;
 .
-
-
+v-a:VedaSystemAccount
+  v-s:author v-a:VedaSystem ;
+  rdf:type v-s:Account ;
+  v-s:login "veda"^^xsd:string ;
+  v-s:mailbox "veda@semantic-machines.com"^^xsd:string ;
+  v-s:owner v-a:VedaSystem ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "Veda System Account"@en ;
+  rdfs:label "Учетная запись системы Веда"@ru ;
+.
+v-a:Membership_1
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:SuperAdmin ;
+  v-s:resource v-a:VedaSystem ;
+  rdfs:label "v-a:Membership_1"@en ;
+  rdfs:label "v-a:Членство_1"@ru ;
+.
