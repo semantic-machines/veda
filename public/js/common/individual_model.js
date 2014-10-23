@@ -92,6 +92,7 @@ function IndividualModel(veda, uri, container) {
 						return value;
 					}
 				});
+				self.trigger(property_uri + ":changed", property_uri, value);
 				self.trigger("value:changed", property_uri, value);
 			},
 			

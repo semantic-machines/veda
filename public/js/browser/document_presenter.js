@@ -420,6 +420,10 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						propertyTemplate = propertyContainer.attr("template");
 						
 					renderProperty(document, property_uri, propertyContainer);
+					
+					document.on(property_uri+":changed", function() {
+						renderProperty(document, property_uri, propertyContainer);
+					});
 
 				});
 				
@@ -454,6 +458,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				
 				container.append(classTemplate);
 				
+				document.trigger("view");
+				
 				container.show();
 				
 				$("textarea", container).autosize();
@@ -465,7 +471,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		$("#save, #cancel", $actions).hide();
 				
 		$("#edit", $actions).on("click", function (e) {
-			$("input[disabled]", container).removeAttr("disabled");
+			document.trigger("edit");
 			
 			$(this).hide();
 			$("#save, #cancel", $actions).show();
@@ -473,8 +479,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 		$("#save", $actions).on("click", function (e) {
 			document.save();
-			$("input", container).attr("disabled", "disabled");
-			
+			document.trigger("view");
+						
 			$(this).hide();
 			$("#cancel", $actions).hide();
 			$("#edit", $actions).show();
@@ -482,6 +488,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 		$("#cancel", $actions).on("click", function (e) {
 			document.reset();
+			document.trigger("view");			
 		});
 		
 		container.append($actions);
@@ -490,7 +497,11 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 
 
+
+
 	function renderProperty (document, property_uri, container) {
+		
+		if ( !(document[property_uri]) ) return;
 		
 		container.empty();
 		
@@ -512,15 +523,24 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				values.map (function (value, index) {
 					
 					var $template = $(template);
-					
-					//$("textarea", res).autosize();
+
+					document.on("edit", function() {
+						$(".view", $template).hide();
+						$(".edit", $template).show();
+					});
+					document.on("view", function() {
+						$(".view", $template).show();
+						$(".edit", $template).hide();
+					});
+
+					$("textarea", $template).autosize();
 					
 					$("[bound]", $template)
 						.html(value)
 						.val(value)
 						.data("language", value.language)
 						.on("change", function ( e ) {
-							document[property.id] = $("[bound]", container).map(function () {
+							document[property.id] = $(".edit > [bound]", container).map(function () {
 								var res = new String(this.value);
 								res.language = $(this).data("language");
 								return res;
@@ -532,7 +552,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					$(".remove", $template).on("click", function () {
 						var $target = $(this.parentNode);
 						$target.remove();
-						var bound = $("[bound]", result);
+						var bound = $(".edit > [bound]", container);
 						if (bound.length) return bound.first().trigger("change");
 						else document[property.id] = [];
 					});
@@ -540,7 +560,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					$(".add", $template).on("click", function () {
 						var emptyVal = new String(""); emptyVal.language = undefined;
 						values.push(emptyVal);
-						document[property.id] = values; 
+						document[property.id] = values;
 					});
 
 					var $first = $("<li>").append( $("<a>", {href: "#", "data-language": "", text: "-"}).addClass("language") );
@@ -568,7 +588,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 					container.append($template);
 				});
-
+				
+				$("textarea", container).autosize();
+				
 				return; 
 				break
 
@@ -577,16 +599,22 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 				values.map (function (value, index) {
 					var $template = $(template);
-					
+					document.on("edit", function() {
+						$(".view", $template).hide();
+						$(".edit", $template).show();
+					});
+					document.on("view", function() {
+						$(".view", $template).show();
+						$(".edit", $template).hide();
+					});
 					$("[bound]", $template)
 						.html(value)
 						.val(value)
 						.on("change", function ( e ) {
-							document[property.id] = $("[bound]", result).map(function () {
+							document[property.id] = $(".edit > [bound]", container).map(function () {
 								return new Boolean(this.value == "true" ? true : false);
 							}).get();
 						});
-					
 					container.append($template);
 				});
 				break
@@ -594,14 +622,21 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			case "xsd:nonNegativeInteger" : 
 			case "xsd:integer" : 
 				template = $("#integer-control-template").html();
-				
 				values.map (function (value, index) {
 					var $template = $(template);
+					document.on("edit", function() {
+						$(".view", $template).hide();
+						$(".edit", $template).show();
+					});
+					document.on("view", function() {
+						$(".view", $template).show();
+						$(".edit", $template).hide();
+					});
 					$("[bound]", $template)
 						.html(value)
 						.val(value)
 						.on("change", function ( e ) {
-							document[property.id] = $("[bound]", result).map(function () {
+							document[property.id] = $(".edit > [bound]", container).map(function () {
 								return new Number( parseInt(this.value, 10) );
 							}).get();
 						});
@@ -613,11 +648,19 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				template = $("#decimal-control-template").html();
 				values.map (function (value, index) {
 					var $template = $(template);
+					document.on("edit", function() {
+						$(".view", $template).hide();
+						$(".edit", $template).show();
+					});
+					document.on("view", function() {
+						$(".view", $template).show();
+						$(".edit", $template).hide();
+					});
 					$("[bound]", $template)
 						.html(value)
 						.val(value)
 						.on("change", function ( e ) {
-							document[property.id] = $("[bound]", result).map(function () {
+							document[property.id] = $(".edit > [bound]", container).map(function () {
 								return new Number( parseFloat(this.value) );
 							}).get();
 						});
@@ -629,11 +672,19 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				template = $("#datetime-control-template").html();
 				values.map (function (value, index) {
 					var $template = $(template);
+					document.on("edit", function() {
+						$(".view", $template).hide();
+						$(".edit", $template).show();
+					});
+					document.on("view", function() {
+						$(".view", $template).show();
+						$(".edit", $template).hide();
+					});
 					$("[bound]", $template)
 						.html(value)
 						.val(value)
 						.on("change", function ( e ) {
-							document[property.id] = $("[bound]", result).map(function () {
+							document[property.id] = $(".edit > [bound]", container).map(function () {
 								return new Date( this.value );
 							}).get();
 						});
@@ -645,14 +696,14 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		$(".remove", container).on("click", function () {
 			var $target = $(this.parentNode);
 			$target.remove();
-			var bound = $("[bound]", container);
+			var bound = $(".edit > [bound]", container);
 			if (bound.length) return bound.first().trigger("change");
 			else document[property_uri] = [];
 		});
 		
 		$(".add", container).on("click", function () {
 			values.push(undefined);
-			document[property.id] = values;
+			document[property_uri] = values;
 		});
 
 	}
@@ -669,3 +720,4 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 
 */
+
