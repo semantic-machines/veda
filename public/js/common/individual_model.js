@@ -62,10 +62,10 @@ function IndividualModel(veda, uri, container) {
 			
 			set: function (value) { 
 				values[property_uri] = value;
-				if (filteredStrings.length) { 
+				/*if (filteredStrings.length) { 
 					values[property_uri] = values[property_uri].concat(filteredStrings);
-				}
-				individual[property_uri] = values[property_uri].map( function (value) {
+				}*/
+				individual[property_uri] = values[property_uri].concat(filteredStrings).map( function (value) {
 					var result = {};
 					if (value instanceof Number || typeof value === "number" ) {
 						result.type = Number.isInteger(value.valueOf()) ? "Integer" : "Decimal";

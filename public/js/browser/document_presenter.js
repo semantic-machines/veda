@@ -277,7 +277,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					template = _class.documentTemplate["v-ui:template"][0];
 				} else {
 					// Generic template
-					template = $("<div/>").append($("#generic-class-template").html());
+					template = $("<div/>").append($("#generic-class-template2").html());
 					$(".properties", template).append(
 						Object.getOwnPropertyNames(_class.domainProperties()).map( function (property_uri) {
 							if (property_uri == "rdfs:label") return;
@@ -367,8 +367,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 });
 
-/*
 
+/*
 Veda(function DocumentPresenter(veda) { "use strict";
 	
 	veda.on("document:loaded", function (document, container_param, template) {
@@ -393,14 +393,29 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					classTemplate = $( _class.documentTemplate["v-ui:template"][0].toString() );
 				} else {
 					// Construct generic template
-					classTemplate = $("<span/>").append (
-						"<a href='#/document/" + document.id + "'>" + 
-						(document["rdfs:label"] && document["rdfs:label"].length ? 
-							document["rdfs:label"].join(", ") 
-							: 
-							document.id
-						) + "</a>"
-					);
+					classTemplate = $("<div/>").append( $("#generic-class-template").html() );
+					$(".properties", classTemplate).append(
+						Object.getOwnPropertyNames(_class.domainProperties()).map( function (property_uri) {
+							var property = _class.domainProperties()[property_uri];
+							if (property_uri == "rdfs:label") return;
+							
+							switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
+								case "rdfs:Literal" : 
+								case "xsd:string" : 
+								case "xsd:boolean" : 
+								case "xsd:nonNegativeInteger" : 
+								case "xsd:integer" : 
+								case "xsd:decimal" : 
+								case "xsd:dateTime" :
+									return $("<div/>", {"property": property_uri});
+								break
+								default:
+									return $("<div/>", {"rel": property_uri});
+								break
+							}
+							
+						})
+					)
 				}
 
 				$("[about]", classTemplate).map( function () {
@@ -423,6 +438,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					
 					document.on(property_uri+":changed", function() {
 						renderProperty(document, property_uri, propertyContainer);
+						document.trigger("edit");
 					});
 
 				});
@@ -491,7 +507,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			document.trigger("view");			
 		});
 		
-		container.append($actions);
+		//container.append($actions);
 		
 	});
 
@@ -554,13 +570,13 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						$target.remove();
 						var bound = $(".edit > [bound]", container);
 						if (bound.length) return bound.first().trigger("change");
-						else document[property.id] = [];
+						else document[property_uri] = [];
 					});
 
 					$(".add", $template).on("click", function () {
 						var emptyVal = new String(""); emptyVal.language = undefined;
 						values.push(emptyVal);
-						document[property.id] = values;
+						document[property_uri] = values;
 					});
 
 					var $first = $("<li>").append( $("<a>", {href: "#", "data-language": "", text: "-"}).addClass("language") );
@@ -611,7 +627,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						.html(value)
 						.val(value)
 						.on("change", function ( e ) {
-							document[property.id] = $(".edit > [bound]", container).map(function () {
+							document[property_uri] = $(".edit > [bound]", container).map(function () {
 								return new Boolean(this.value == "true" ? true : false);
 							}).get();
 						});
@@ -636,7 +652,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						.html(value)
 						.val(value)
 						.on("change", function ( e ) {
-							document[property.id] = $(".edit > [bound]", container).map(function () {
+							document[property_uri] = $(".edit > [bound]", container).map(function () {
 								return new Number( parseInt(this.value, 10) );
 							}).get();
 						});
@@ -660,7 +676,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						.html(value)
 						.val(value)
 						.on("change", function ( e ) {
-							document[property.id] = $(".edit > [bound]", container).map(function () {
+							document[property_uri] = $(".edit > [bound]", container).map(function () {
 								return new Number( parseFloat(this.value) );
 							}).get();
 						});
@@ -684,7 +700,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						.html(value)
 						.val(value)
 						.on("change", function ( e ) {
-							document[property.id] = $(".edit > [bound]", container).map(function () {
+							document[property_uri] = $(".edit > [bound]", container).map(function () {
 								return new Date( this.value );
 							}).get();
 						});
@@ -717,7 +733,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 
 });
-
 
 */
 

@@ -301,7 +301,7 @@
 		</script>
 		
 		<!-- Generic class template -->
-		<script type="html/template" id="generic-class-template">
+		<script type="html/template" id="generic-class-template2">
 			<div>
 				<div class="panel panel-default">
 					<div class="panel-heading">
@@ -485,9 +485,9 @@
 
 		<!-- String control template -->
 		<script type="html/template" id="string-control-template">
-			<div>
-				<div class="view" bound></div>
-				<div class="edit input-group">
+			<span>
+				<span class="view" bound></span>
+				<span class="edit input-group">
 					<span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown"> <span class="caret"></span></span>
 					<ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
 					</ul>
@@ -498,80 +498,115 @@
 					<span class="input-group-addon btn btn-default add">
 						<i class="glyphicon glyphicon-plus"></i>
 					</span>
-				</div>
-			</div>
+				</span>
+			</span>
 		</script>
 		
 		<!-- Datetime control template -->
 		<script type="html/template" id="datetime-control-template">
-			<div>
-				<div class="view" bound></div>
-				<div class="edit input-group">
+			<span>
+				<span class="view" bound></span>
+				<span class="edit input-group">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-time"></i></span>
 					<input type="text" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
 					</span>
-				</div>
-			</div>
+					<span class="input-group-addon btn btn-default add">
+						<i class="glyphicon glyphicon-plus"></i>
+					</span>
+				</span>
+			</span>
 		</script>
 
 		<!-- Integer control template -->
 		<script type="html/template" id="integer-control-template">
-			<div>
-				<div class="view" bound></div>
-				<div class="edit input-group">
+			<span>
+				<span class="view" bound></span>
+				<span class="edit input-group">
 					<span class="input-group-addon btn btn-default"><strong>10</strong></span>
 					<input type="text" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
 					</span>
-				</div>
-			</div>
+					<span class="input-group-addon btn btn-default add">
+						<i class="glyphicon glyphicon-plus"></i>
+					</span>
+				</span>
+			</span>
 		</script>
 
 		<!-- Decimal control template -->
 		<script type="html/template" id="decimal-control-template">
-			<div>
-				<div class="view" bound></div>
-				<div class="edit input-group">
+			<span>
+				<span class="view" bound></span>
+				<span class="edit input-group">
 					<span class="input-group-addon btn btn-default"><strong>0.1</strong></span>
 					<input type="text" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
 					</span>
-				</div>
-			</div>
+					<span class="input-group-addon btn btn-default add">
+						<i class="glyphicon glyphicon-plus"></i>
+					</span>
+				</span>
+			</span>
 		</script>
 
 		<!-- Boolean control template -->
 		<script type="html/template" id="boolean-control-template">
-			<div>
-				<div class="view" bound></div>
-				<div class="edit input-group">
+			<span>
+				<span class="view" bound></span>
+				<span class="edit input-group">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-ok"></i></span>
 					<input type="text" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
 					</span>
-				</div>
-			</div>
+					<span class="input-group-addon btn btn-default add">
+						<i class="glyphicon glyphicon-plus"></i>
+					</span>
+				</span>
+			</span>
 		</script>
 
 		<!-- File control template -->
 		<script type="html/template" id="file-control-template">
-			<div>
-				<div class="view" bound></div>
-				<div class="edit input-group">
+			<span>
+				<span class="view" bound></span>
+				<span class="edit input-group">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-ok"></i></span>
 					<input type="file" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
 					</span>
+					<span class="input-group-addon btn btn-default add">
+						<i class="glyphicon glyphicon-plus"></i>
+					</span>
+				</span>
+			</span>
+		</script>
+
+		<!-- Generic class template -->
+		<script type="html/template" id="generic-class-template">
+			<div>
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<div class="row">
+							<!--div class="col-md-4">
+								<h3 class="panel-title" property="rdfs:label"></h3>
+							</div-->
+							<div class="col-md-8 text-right text-muted">
+								<a href="id"><span property="id"></span></a>
+							</div>  
+						</div>
+					</div>
+					<div class="panel-body properties">
+						<h3 property="rdfs:label"><h3>
+					</div>
 				</div>
 			</div>
 		</script>
-
 
 
 

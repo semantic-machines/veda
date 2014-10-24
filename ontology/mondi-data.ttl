@@ -483,35 +483,42 @@ mnd-d:PersonTemplate1
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <h3 class="panel-title" property="_class.rdfs:label">Имя класса</h3>
+	        <span about="v-s:Person" property="rdfs:label">Персона</span>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
-  	        <h3 class="panel-title" property="document.id">ID документа</h3>
+  	        <a href="id"><span property="id">ID</span></a>
 	      </div>  
 	    </div>
       </div>
       <div class="panel-body">
-        <h3 property="document.rdfs:label">Наименование</h3>
+        <h3 property="rdfs:label">Персона</h3>
         <div class="row">
           <div class="col-md-3">
-            <div property="document.v-s:lastName">Фамилия</div>
+            <strong about="v-s:lastName" property="rdfs:label">Фамилия</strong>
+            <div property="v-s:lastName">Иванов</div>
           </div>
           <div class="col-md-3">
-            <div property="document.v-s:firstName">Имя</div>
+            <strong about="v-s:firstName" property="rdfs:label">Имя</strong>
+            <div property="v-s:firstName">Иван</div>
           </div>
           <div class="col-md-3">
-            <div property="document.v-s:middleName">Отчество</div>
+            <strong about="v-s:middleName" property="rdfs:label">Отчество</strong>
+            <div property="v-s:middleName">Иванович</div>
           </div>
           <div class="col-md-3">
-            <div property="document.v-s:birthday">День рождения</div>
+            <strong about="v-s:birthday" property="rdfs:label">День рождения</strong>
+            <div property="v-s:birthday">1980-01-01</div>
           </div>
 	    </div>
+        <hr />
         <div class="row">
           <div class="col-md-6">
-            <div property="document.v-ui:hasPreferences">Предпочтения</div>
+            <!--strong about="v-ui:hasPreferences" property="rdfs:label">Предпочтения (линк)</strong-->
+            <div rel="v-ui:hasPreferences" template="mnd-d:PreferencesTemplate1">шаблон: mnd-d:PreferencesTemplate1</div>
           </div>
           <div class="col-md-6">
-            <div property="document.v-s:hasAccount">Аккаунт</div>
+            <!--strong about="v-s:hasAccount" property="rdfs:label">Аккаунт (линк)</strong-->
+            <div rel="v-s:hasAccount" template="mnd-d:AccountTemplate1">шаблон: mnd-d:AccountTemplate1</div>
           </div>
         </div>
       </div>
@@ -562,7 +569,7 @@ mnd-d:AccountTemplate1
 	        <p class="panel-title" about="v-s:Account" property="rdfs:label">Имя класса</p>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
-                <div property="id">ID</div>
+                <a href="id"><span property="id">ID</span></a>
 	      </div>  
 	    </div>
       </div>
@@ -577,15 +584,18 @@ mnd-d:AccountTemplate1
         </div>
         <br />
         <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-6">
                <strong about="v-s:mailbox" property="rdfs:label">E-mail</strong>
                <div property="v-s:mailbox">address@example.com</div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
                <strong about="v-s:login" property="rdfs:label">Логин</strong>
                <div property="v-s:login">IvanovI</div>
-	      </div>
-          <div class="col-md-4">
+	  </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col-md-12">
                <strong about="v-s:password" property="rdfs:label">Пароль</strong>
                <div property="v-s:password">PaSsWoRd</div>
           </div>
@@ -610,11 +620,26 @@ mnd-d:PreferencesTemplate1
   rdfs:label "Template for Preferences class"@en ;
   v-ui:forClass v-ui:Preferences ;
   v-ui:template """
-  <div>
-    <!--span property="document.v-s:owner">Владелец</span-->
-    <strong><span about="v-ui:preferredLanguage" property="rdfs:label">Язык</span></strong>: <ul><li rel="v-ui:preferredLanguage">RU</li></ul>
-    <strong><span about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</span></strong>: <span property="v-ui:displayedElements">999</span>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <div class="row">
+      <div class="col-md-4">
+        <p class="panel-title" about="v-ui:Preferences" property="rdfs:label">Предпочтения</p>
+      </div>
+      <div class="col-md-8 text-right text-muted">
+        <a href="id"><span property="id">ID</span></a>
+      </div>  
+    </div>
   </div>
+  <div class="panel-body">
+    <div>
+      <!--span property="document.v-s:owner">Владелец</span-->
+      <strong><span about="v-ui:preferredLanguage" property="rdfs:label">Язык</span></strong>: <ul><li rel="v-ui:preferredLanguage">RU</li></ul>
+      <strong><span about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</span></strong>: <span property="v-ui:displayedElements">999</span>
+    </div>
+  </div>
+</div>
+
   """ ;
 .
 mnd-d:LabelTemplate
