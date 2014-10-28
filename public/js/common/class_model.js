@@ -21,7 +21,7 @@ function ClassModel(veda, individual) {
 			configurable: true
 		});
 	}
-
+	
 	self.specs = {};
 	var specs = {}; 
 

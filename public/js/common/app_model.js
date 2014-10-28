@@ -38,8 +38,7 @@ function AppModel(config) {
 		self.trigger("auth:quit");
 		Veda(config);
 	};
-	
-	self.ontology = {};
+
 	self.cache = typeof localStorage != "undefined" ? localStorage : {};
 	
 	// Invoke existing or create new module
@@ -67,14 +66,21 @@ function AppModel(config) {
 
 	// Load ontology after user has been loaded
 	self.one("user:loaded", function() {
-		var q = "'rdf:type' == 'rdfs:*' || 'rdf:type' == 'rdf:*' || 'rdf:type' == 'owl:*'";
+		
+		var q = "'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'owl:Class' || 'rdf:type' == 'rdfs:Datatype' || 'rdf:type' == 'owl:Ontology' ||" + // Classes
+				"'rdf:type' == 'rdf:Property' || 'rdf:type' == 'owl:DatatypeProperty' || 'rdf:type' == 'owl:ObjectProperty' || " + // Properties
+				"'rdf:type' == 'v-ui:ClassTemplate' || " + // Templates
+				"'rdf:type' == 'v-ui:PropertySpecification'"; // Property specifications
 		var q_results = query(self.ticket, q);
 		for (var i=0; i<q_results.length; i++) {
+			if ( self.cache[q_results[i]] ) continue;
 			get_individual(self.ticket, q_results[i], function (data) {
 				self.cache[data["@"]] = JSON.stringify(data);
-				self.ontology[data["@"]] = new IndividualModel(self, data["@"]);
 			});
 		}
+		
+		self.ontology = new OntologyModel(self);
+		
 		// App started
 		self.started = true;
 		self.trigger("app:started", self.user_uri, self.ticket, self.end_time);

@@ -368,7 +368,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 });
 
 
+
 /*
+
 Veda(function DocumentPresenter(veda) { "use strict";
 	
 	veda.on("document:loaded", function (document, container_param, template) {
@@ -734,5 +736,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 });
 
-*/
 
+
+*/
