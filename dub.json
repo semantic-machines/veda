@@ -4,8 +4,8 @@
 	"copyright": "Copyright © 2014, karpovr",
 	"authors": ["karpovr"],
 	"dependencies": {
-		"vibe-d": "0.7.21-rc.3",
-		"pacahon": "0.1.118-alpha"
+		"vibe-d": "0.7.21-rc.4",
+		"pacahon": "0.1.119-alpha"
 	},
 	"buildOptions": ["debugMode", "debugInfo"],	
 	"versions": ["VibeDefaultMain"],	
