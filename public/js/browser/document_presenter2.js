@@ -67,7 +67,7 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				if (!renderedClasses[_class.id]) {
 					var counter = 0;
 					var el = $("<div>");
-					Object.getOwnPropertyNames(_class.domainProperties()).map( function (property_uri) {
+					Object.getOwnPropertyNames(_class.domainProperties).map( function (property_uri) {
 						try {
 							renderDocumentProperty(veda, document, property_uri, document_single_property_template, el);
 							counter++;
@@ -89,8 +89,8 @@ Veda(function DocumentPresenter2(veda) { "use strict";
 				renderedClasses[_class.id] = "rendered";
 				
 				if (!_class.subClasses) return;
-				_class.subClasses.map (function (subClass){
-					renderClassProperties(subClass);
+				Object.keys(_class.subClasses).map (function (uri){
+					renderClassProperties(_class.subClasses[uri]);
 				});
 			})(document.classTree.classes[class_uri]);
 		});

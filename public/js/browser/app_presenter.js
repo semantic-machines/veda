@@ -26,7 +26,7 @@ Veda(function AppPresenter(veda) { "use strict";
 	});
 	
 	veda.on("language:changed", function () {
-		localize($("nav"), Object.keys(veda.user.language));
+		// localize($("nav"), Object.keys(veda.user.language));
 		// Refresh 'page'
 		riot.route(location.hash, true);
 	});

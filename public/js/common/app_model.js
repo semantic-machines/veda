@@ -40,6 +40,7 @@ function AppModel(config) {
 	};
 
 	self.cache = typeof localStorage != "undefined" ? localStorage : {};
+	self.dictionary = {};
 	
 	// Invoke existing or create new module
 	self.load = function (page, params) {
@@ -64,20 +65,8 @@ function AppModel(config) {
 		}
 	};
 
-	// Load ontology after user has been loaded
+	// Load dictionary after user has been loaded
 	self.one("user:loaded", function() {
-		
-		var q = "'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'owl:Class' || 'rdf:type' == 'rdfs:Datatype' || 'rdf:type' == 'owl:Ontology' ||" + // Classes
-				"'rdf:type' == 'rdf:Property' || 'rdf:type' == 'owl:DatatypeProperty' || 'rdf:type' == 'owl:ObjectProperty' || " + // Properties
-				"'rdf:type' == 'v-ui:ClassTemplate' || " + // Templates
-				"'rdf:type' == 'v-ui:PropertySpecification'"; // Property specifications
-		var q_results = query(self.ticket, q);
-		for (var i=0; i<q_results.length; i++) {
-			if ( self.cache[q_results[i]] ) continue;
-			get_individual(self.ticket, q_results[i], function (data) {
-				self.cache[data["@"]] = JSON.stringify(data);
-			});
-		}
 		
 		self.ontology = new OntologyModel(self);
 		

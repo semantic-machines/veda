@@ -121,8 +121,11 @@ function IndividualModel(veda, uri, container) {
 	}
 
 	self.load = function (uri) {
+		if (veda["dictionary"] && veda["dictionary"][uri]) {
+			self = veda["dictionary"][uri];
+			return self.trigger("individual:loaded", self, container);
+		}
 		individual = veda.cache[uri] ? JSON.parse( veda.cache[uri] ) : get_individual(veda.ticket, uri);
-		//individual = veda.ontology[uri] ? veda.ontology[uri] : get_individual(veda.ticket, uri);
 		original_individual = JSON.stringify(individual);
 		Object.keys(individual).map(function (property_uri) {
 			if (property_uri == "@") return;

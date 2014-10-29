@@ -1,6 +1,6 @@
 // Document Presenter
 
-
+/*
 
 Veda(function DocumentPresenter(veda) { "use strict";
 	
@@ -279,7 +279,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					// Generic template
 					template = $("<div/>").append($("#generic-class-template2").html());
 					$(".properties", template).append(
-						Object.getOwnPropertyNames(_class.domainProperties()).map( function (property_uri) {
+						Object.getOwnPropertyNames(_class.domainProperties).map( function (property_uri) {
 							if (property_uri == "rdfs:label") return;
 							return $("<div/>", {"property":"document." + property_uri});
 						})
@@ -369,7 +369,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 
 
-/*
+*/
 
 Veda(function DocumentPresenter(veda) { "use strict";
 	
@@ -397,9 +397,13 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					// Construct generic template
 					classTemplate = $("<div/>").append( $("#generic-class-template").html() );
 					$(".properties", classTemplate).append(
-						Object.getOwnPropertyNames(_class.domainProperties()).map( function (property_uri) {
-							var property = _class.domainProperties()[property_uri];
+						Object.getOwnPropertyNames(_class.domainProperties).map( function (property_uri, index, array) {
+							var property = _class.domainProperties[property_uri];
 							if (property_uri == "rdfs:label") return;
+							
+							var result = $("<div/>").append( 
+								$("<strong/>", {"about": property_uri, "property": "rdfs:label"})
+							);
 							
 							switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
 								case "rdfs:Literal" : 
@@ -409,13 +413,16 @@ Veda(function DocumentPresenter(veda) { "use strict";
 								case "xsd:integer" : 
 								case "xsd:decimal" : 
 								case "xsd:dateTime" :
-									return $("<div/>", {"property": property_uri});
+									result.append( $("<div/>", {"property": property_uri}).addClass("container-fluid") ); 
 								break
 								default:
-									return $("<div/>", {"rel": property_uri});
+									result.append( $("<div/>", {"rel": property_uri}).addClass("container-fluid") ); 
 								break
 							}
 							
+							if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 5px") ); 
+							
+							return result;
 						})
 					)
 				}
@@ -730,12 +737,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 
 
-
-
-
-
 });
 
 
 
-*/
+
