@@ -53,10 +53,6 @@ function AppModel(config) {
 				//self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, ["mnd-d:AdministrativeDocument_1"]), self, "document");
 				DocumentModel.apply(new Object(), [self].concat(params));
 				break
-			case "document2": 
-				//self.document ? self.trigger("document:loaded", self.document) : RegisterModule(new DocumentModel(self, ["mnd-d:AdministrativeDocument_1"]), self, "document");
-				DocumentModel2.apply(new Object(), [self].concat(params));
-				break
 			case "search": 
 				self.search && ( (self.search._params == params) || params.length == 0 ) ? self.trigger("search:loaded", self.search) && self.trigger("search:complete", self.search) : RegisterModule(SearchModel.apply(new Object(), [self].concat(params)), self, "search", params);
 				//new SearchModel(self, params);

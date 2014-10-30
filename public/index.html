@@ -43,9 +43,6 @@
 					<li id="document">
 						<a i18n="[Document]" label="[Document]" href="#/document/mnd-d:RomanKarpov">Документ</a>
 					</li>
-					<li id="document2">
-						<a i18n="[Document2]" label="[Document2]" href="#/document2/mnd-d:RomanKarpov">Документ2</a>
-					</li>
 					<li id="console">	
 						<a i18n="[Console]" href="#/console">Консоль</a>
 					</li>
@@ -68,10 +65,6 @@
 
 		<!-- Main container -->
 		<div id="main" class="container-fluid"></div>
-
-		<!-- Main container -->
-		<div id="main2" class="container-fluid"></div>
-
 		
 		<br />
 		<!-- Footer -->
@@ -105,7 +98,6 @@
 		<script src="/js/common/console_model.js"></script>
 		<script src="/js/common/individual_model.js"></script>
 		<script src="/js/common/document_model.js"></script>
-		<script src="/js/common/document_model2.js"></script>
 		<script src="/js/common/user_model.js"></script>
 		<script src="/js/common/search_model.js"></script>
 		<script src="/js/common/class_model.js"></script>
@@ -116,7 +108,6 @@
 		<script src="/js/browser/backend.js"></script>
 		<script src="/js/browser/console_presenter.js"></script>
 		<script src="/js/browser/document_presenter.js"></script>
-		<script src="/js/browser/document_presenter2.js"></script>		
 		<script src="/js/browser/saved_search_presenter.js"></script>
 		<script src="/js/browser/search_presenter.js"></script>
 		<script src="/js/browser/individual_presenter.js"></script>
@@ -210,36 +201,6 @@
 			<span>{values};</span>
 		</script>	
 
-		<!-- Document template -->
-		<script type="html/template" id="document-template">
-			<div id="document" class="container-fluid">
-				<div id="document-label"></div>
-				<div id="document-properties"></div>
-				<br>
-				<div class="well well-sm">
-					<button type="button" class="btn btn-default" id="edit-document" i18n="[Edit]">Редактировать</button>
-				</div>
-			</div>
-		</script>
-		
-		<!-- Document label template -->
-		<script type="html/template" id="document-label-template">
-			<h4 id="label">{label}<small> <a href="{uri}"><i class="glyphicon glyphicon-share-alt"></i></a></small></h4>
-		</script>
-		
-		<!-- Document single property template -->
-		<script type="html/template" id="document-single-property-template">
-			<div class="row">
-				<div class="col-xs-4 col-sm-4 col-md-3 col-lg-3 text-right">
-					<strong><a data-toggle="popover" href="{uri}">{label}</a></strong>
-				</div>
-				<div class="col-xs-8 col-sm-8 col-md-9 col-lg-9">
-					{values}
-				</div>
-			</div>
-			<hr style="margin:1px; border-color:transparent">
-		</script>	
-
 		<!-- Current user template -->
 		<script type="html/template" id="current-user-template">
 			<p class="navbar-text navbar-right">
@@ -296,148 +257,11 @@
 			</div>
 		</script>
 		
+		<!-- Checkbox for search -->
 		<script type="html/template" id="search-select-template">
 			<label class="checkbox-inline">
 				<input type="checkbox"> &nbsp;
 			</label>		
-		</script>
-		
-		<!-- Generic class template -->
-		<script type="html/template" id="generic-class-template2">
-			<div>
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<div class="row">
-							<div class="col-md-4">
-								<h3 class="panel-title" property="_class.rdfs:label"></h3>
-							</div>
-							<div class="col-md-8 text-right text-muted">
-								<h3 class="panel-title" property="document.id"></h3>
-							</div>  
-						</div>
-					</div>
-					<div class="panel-body properties">
-						<h3 property="document.rdfs:label"><div>
-					</div>
-				</div>
-			</div>
-		</script>
-		
-		<!-- Generic property template -->
-		<script type="html/template" id="property-template">
-			<div class="container-fluid">
-				<div>
-					<dl>
-						<dt>
-							<span class="text-muted" href="#/document/{property.id}" data-toggle="popover">{property.rdfs:label}</span>
-							<button type="button" class="btn btn-link edit add">Добавить</button></dt>
-						<dd class="values"></dd>
-					</dl>
-				</div>
-			</div>
-		</script>
-		
-		<!-- String property template -->
-		<script type="html/template" id="string-property-template">
-			<div class="container-fluid">
-				<div>
-					<dl>
-						<dt>
-							<span class="text-muted" href="#/document/{property.id}" data-toggle="popover">{property.rdfs:label}</span>
-							<button type="button" class="btn btn-link edit add">Добавить</button></dt>
-						<dd class="values"></dd>
-					</dl>
-				</div>
-			</div>
-		</script>
-
-		<!-- String value template -->
-		<script type="html/template" id="string-value-template">
-			<div>
-				<div class="view">{value}</div>
-				<div class="edit input-group">
-					<span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown">{value.language} <span class="caret"></span></span>
-					<ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
-					</ul>
-					<textarea class="form-control" bound data-language="{value.language}">{value}</textarea>
-					<span class="input-group-addon btn btn-default remove">
-						<i class="glyphicon glyphicon-remove"></i>
-					</span>
-				</div>
-			</div>
-		</script>
-		
-		<!-- Datetime value template -->
-		<script type="html/template" id="datetime-value-template">
-			<div>
-				<div class="view">{value}</div>
-				<div class="edit input-group">
-					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-time"></i></span>
-					<input type="text" class="form-control" value="{value}" bound />
-					<span class="input-group-addon btn btn-default remove">
-						<i class="glyphicon glyphicon-remove"></i>
-					</span>
-				</div>
-			</div>
-		</script>
-
-		<!-- Integer value template -->
-		<script type="html/template" id="integer-value-template">
-			<div>
-				<div class="view">{value}</div>
-				<div class="edit input-group">
-					<span class="input-group-addon btn btn-default"><strong>10</strong></span>
-					<input type="text" class="form-control" value="{value}" bound />
-					<span class="input-group-addon btn btn-default remove">
-						<i class="glyphicon glyphicon-remove"></i>
-					</span>
-				</div>
-			</div>
-		</script>
-
-		<!-- Decimal value template -->
-		<script type="html/template" id="decimal-value-template">
-			<div>
-				<div class="view">{value}</div>
-				<div class="edit input-group">
-					<span class="input-group-addon btn btn-default"><strong>0.1</strong></span>
-					<input type="text" class="form-control" value="{value}" bound />
-					<span class="input-group-addon btn btn-default remove">
-						<i class="glyphicon glyphicon-remove"></i>
-					</span>
-				</div>
-			</div>
-		</script>
-
-		<!-- Boolean value template -->
-		<script type="html/template" id="boolean-value-template">
-			<div>
-				<div class="view">{value}</div>
-				<div class="edit input-group">
-					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-ok"></i></span>
-					<input type="text" class="form-control" value="{value}" bound />
-					<span class="input-group-addon btn btn-default remove">
-						<i class="glyphicon glyphicon-remove"></i>
-					</span>
-				</div>
-			</div>
-		</script>
-
-		<!-- Object value template -->
-		<script type="html/template" id="object-value-template">
-			<div>
-				<div class="view">
-					<a data-toggle="popover" href="#/document/{value.id}">{value.rdfs:label}</a>
-					<a href="" class="toggle-expand"><i class="glyphicon glyphicon-collapse-down"></i></a>
-				</div>
-				<div class="edit input-group">
-					<span class="input-group-addon btn btn-default search-component" ><i class="glyphicon glyphicon-search"></i></span>
-					<input type="text" class="form-control" value="{value.id}" bound />
-					<span class="input-group-addon btn btn-default remove">
-						<i class="glyphicon glyphicon-remove"></i>
-					</span>
-				</div>
-			</div>
 		</script>
 
 		<!-- Search modal -->
@@ -457,33 +281,6 @@
 				</div>
 			</div>
 		</div>
-
-		<!-- Actions template -->
-		<script type="html/template" id="actions">
-			<div>
-				<div class="well well-sm">
-					<button type="button" class="btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
-					<button type="button" class="btn btn-success" id="save" i18n="[Save]">Сохранить</button>
-					<button type="button" class="btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-				</div>
-			</div> 
-		</script>
-		
-		<script type="html/template" id="string">
-			<div>
-				<div class="well well-sm">
-					<button type="button" class="btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
-					<button type="button" class="btn btn-success" id="save" i18n="[Save]">Сохранить</button>
-					<button type="button" class="btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-				</div>
-			</div> 
-		</script>
-
-
-
-
-
-
 
 		<!-- String control template -->
 		<script type="html/template" id="string-control-template">
@@ -526,7 +323,7 @@
 			<span>
 				<span class="view" bound></span>
 				<span class="edit input-group">
-					<span class="input-group-addon btn btn-default"><strong>10</strong></span>
+					<span class="input-group-addon btn btn-default"><strong>#</strong></span>
 					<input type="text" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
@@ -543,7 +340,7 @@
 			<span>
 				<span class="view" bound></span>
 				<span class="edit input-group">
-					<span class="input-group-addon btn btn-default"><strong>0.1</strong></span>
+					<span class="input-group-addon btn btn-default"><strong>#.#</strong></span>
 					<input type="text" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
@@ -603,17 +400,19 @@
 							</div>  
 						</div>
 					</div>
-					<div class="panel-body properties">
-						<h3 property="rdfs:label"><h3>
+					<div class="panel-body">
+						<div class="container-fluid properties">
+							<h3 property="rdfs:label"></h3>
+						</div>
+					</div>
+					<div class="panel-footer">
+						<button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
+						<button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
+						<button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
 					</div>
 				</div>
 			</div>
 		</script>
-
-
-
-
-
 		
 	</body>
 </html>
