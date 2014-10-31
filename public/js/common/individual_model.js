@@ -156,7 +156,7 @@ function IndividualModel(veda, uri, container) {
 			if (property_uri == "@") return;
 			self.defineProperty(property_uri);
 		});
-		self.trigger("individual:loaded", self, container);
+		self.trigger("individual:reset", self, container);
 	};
 
 	self.on("individual:saved individual:loaded", function ( event, self, container ) {

@@ -144,7 +144,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				});
 				
 				container.append(classTemplate);
+				
 				document.trigger("view");
+				
 				$("textarea", container).autosize();
 				
 			});

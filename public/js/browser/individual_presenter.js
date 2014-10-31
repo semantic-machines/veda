@@ -42,7 +42,7 @@ Veda(function IndividualPresenter (veda) { "use strict";
 		if (!container) return;
 		
 		container.append(individual_template);
-		localize(container, veda.user.language);
+		//localize(container, veda.user.language);
 		
 		// Render document title		
 		$("#individual-label", container).append( 
