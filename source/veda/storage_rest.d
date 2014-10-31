@@ -4,7 +4,7 @@ import vibe.d;
 import veda.pacahon_driver;
 
 import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file;
-import vibe.core.concurrency, vibe.core.core, vibe.core.log, vibe.core.task;
+import vibe.core.concurrency, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 
 import type;
 import pacahon.context;
@@ -159,9 +159,19 @@ class VedaStorageRest : VedaStorageRest_API
             Individual file_info = cast(Individual)individual[ 0 ];
 
             writeln("@v file_info=", file_info);
+	    auto fileServerSettings = new HTTPFileServerSettings;
+    	    fileServerSettings.encodingFileExtension = ["jpeg" : ".JPG"];
 
-            HTTPServerRequestDelegate dg = serveStaticFile(attachments_db_path ~ "/" ~ file_info.getFirstResource(
-                                                                                                                  veda_schema__fileURI).get!string);
+            HTTPServerRequestDelegate dg = serveStaticFile(attachments_db_path ~ "/" ~ file_info.getFirstResource(veda_schema__fileURI).get!string, fileServerSettings);
+	    string originFileName = file_info.getFirstResource(veda_schema__fileName).get!string;
+	    
+            writeln("@v originFileName=", originFileName);
+            writeln("@v getMimeTypeForFile(originFileName)=", getMimeTypeForFile(originFileName));
+
+	    res.headers["Content-Disposition"] = "Content-Disposition: attachment; filename=\"" ~ originFileName ~ "\"";
+	    
+
+	    res.contentType = getMimeTypeForFile(originFileName);
             dg(req, res);
         }
     }
