@@ -89,7 +89,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				// About
 				$("[about]", classTemplate).map( function () {
 					
-					var propertyContainer = $(this), 
+					var propertyContainer = $( this ), 
 						about = new IndividualModel(veda, propertyContainer.attr("about")),
 						property_uri = propertyContainer.attr("property");
 					if (property_uri == "id") propertyContainer.html( about[property_uri] );
@@ -178,7 +178,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					var $template = $(template),
 						$view = $(".view", $template),
 						$edit = $(".edit", $template);
-						
+					
+					$view.stringControl();
+					
 					document.on("edit", function() {
 						$view.hide();
 						$edit.show();
