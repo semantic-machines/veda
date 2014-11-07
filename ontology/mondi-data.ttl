@@ -632,6 +632,7 @@ mnd-d:PreferencesTemplate1
   rdfs:label "Шаблон для класса Предпочтения"@ru ;
   rdfs:label "Template for Preferences class"@en ;
   v-ui:forClass v-ui:Preferences ;
+  v-ui:embedded "true"^xsd:boolean ;
   v-ui:template """
 <div class="panel panel-default">
   <div class="panel-heading">

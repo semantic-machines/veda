@@ -63,12 +63,12 @@ v-ui:template
   rdfs:label "шаблон"@ru ;
   rdfs:range xsd:string ;
 .
-v-ui:index
+v-ui:embedded
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "index"@en ;
-  rdfs:label "индекс"@ru ;
-  rdfs:range xsd:string ;
+  rdfs:domain rdfs:domain v-ui:ClassTemplate ;
+  rdfs:label "embedded"@en ;
+  rdfs:label "встроенный"@ru ;
+  rdfs:range xsd:boolean ;
 .
 v-ui:ClassTemplate
   rdf:type owl:Class ;
