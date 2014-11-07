@@ -65,7 +65,7 @@ v-ui:template
 .
 v-ui:embedded
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain rdfs:domain v-ui:ClassTemplate ;
+  rdfs:domain v-ui:ClassTemplate ;
   rdfs:label "embedded"@en ;
   rdfs:label "встроенный"@ru ;
   rdfs:range xsd:boolean ;
