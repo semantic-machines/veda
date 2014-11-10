@@ -85,6 +85,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				
 				document.off("view edit save cancel");
 				
+				// Trigger same events for embedded templates
 				document.on("edit save cancel", function (event) {
 					embedded.map(function (item) {
 						item.trigger(event);
@@ -135,10 +136,12 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					if (values) {
 						values.map( function (value) {
 							var clone = relContainer.clone();
-							setTimeout( function () {
-								var lnk = new DocumentModel(veda, value, clone, relTemplate);
-								if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) embedded.push(lnk);
-							}, 0);
+							if (value instanceof IndividualModel) {
+								setTimeout( function () {
+									var lnk = new DocumentModel(veda, value, clone, relTemplate);
+									if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) embedded.push(lnk);
+								}, 0);
+							}
 							relContainer.before(clone);
 						});
 					}
@@ -186,12 +189,13 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			return;
 		}
 		
-		var property = document.properties[property_uri],
+		var property = veda.dictionary[property_uri],
 			values = document[property_uri] || [undefined],
 			template, renderedProperty;
 
 		switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
 
+			case "rdfs:Resource" : 
 			case "rdfs:Literal" : 
 			case "xsd:string" : 
 				template = $("#string-control-template").html();
@@ -267,7 +271,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 							.data("language", $(this).data("language") )
 							.trigger("change");
 					});
-
+					
+					console.log($template.html());
+					
 					container.append($template);
 				});
 				

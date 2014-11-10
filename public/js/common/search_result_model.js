@@ -8,6 +8,10 @@ function SearchResultModel(veda, individual, container, template) {
 
 	self.off("*");
 	
+	self.on("individual:loaded individual:reset individual:saved", function (event) {
+		veda.trigger("search_result:loaded", self, container, template);
+	});
+	
 	veda.trigger("search_result:loaded", self, container, template);
 
 	return self;

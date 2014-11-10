@@ -2,7 +2,7 @@
 
 "use strict";
 
-function IndividualModel(veda, uri, container) {
+function IndividualModel(veda, uri) {
 	var self = riot.observable(this);
 
 	// Define Model functions
@@ -123,7 +123,9 @@ function IndividualModel(veda, uri, container) {
 	self.load = function (uri) {
 		if (veda["dictionary"] && veda["dictionary"][uri]) {
 			self = veda["dictionary"][uri];
-			return self.trigger("individual:loaded", self, container);
+			// Remove any unexpected handlers
+			self.off("*");
+			return self.trigger("individual:loaded", self);
 		}
 		individual = veda.cache[uri] ? JSON.parse( veda.cache[uri] ) : get_individual(veda.ticket, uri);
 		original_individual = JSON.stringify(individual);
@@ -131,7 +133,7 @@ function IndividualModel(veda, uri, container) {
 			if (property_uri == "@") return;
 			self.defineProperty(property_uri);
 		});
-		self.trigger("individual:loaded", self, container);
+		self.trigger("individual:loaded", self);
 	};
 
 	self.save = function() {
@@ -145,7 +147,7 @@ function IndividualModel(veda, uri, container) {
 		}, individual);
 		put_individual(veda.ticket, individual, function (data) {
 			original_individual = JSON.stringify(individual);
-			self.trigger("individual:saved", self, container);
+			self.trigger("individual:saved", self);
 		});
 	};
 
@@ -156,7 +158,7 @@ function IndividualModel(veda, uri, container) {
 			if (property_uri == "@") return;
 			self.defineProperty(property_uri);
 		});
-		self.trigger("individual:reset", self, container);
+		self.trigger("individual:reset", self);
 	};
 
 	// Load data 

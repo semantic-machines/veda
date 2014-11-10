@@ -8,11 +8,7 @@ function DocumentModel(veda, individual, container, template) {
 
 	self.off("*");
 	
-	self.on("individual:reset", function (_individual, _container) {
-		veda.trigger("document:loaded", self, container, template);
-	});
-	
-	self.on("individual:saved", function (_individual, _container) {
+	self.on("individual:loaded individual:reset individual:saved", function (event) {
 		veda.trigger("document:loaded", self, container, template);
 	});
 
