@@ -55,7 +55,9 @@ function SearchModel(veda, q, container) {
 				(function(i){
 					Object.defineProperty(self.results, i, {
 						get: function () { 
-							return ( typeof results[i] == 'object' ? results[i] : results[i] = new IndividualModel(veda, results[i]) ); }
+							if (typeof results[i] == 'object') return results[i];
+							return results[i] = new SearchResultModel(veda, results[i]);
+						}
 					});
 				})(i);
 			}

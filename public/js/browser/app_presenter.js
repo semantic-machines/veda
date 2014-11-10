@@ -81,12 +81,18 @@ Veda(function AppPresenter(veda) { "use strict";
 		//Show login form
 		var template = $("#login-template").html();
 		var container = $("#main");
+		
+		container.hide().empty();
+
 		container.html(template);
 
 		$("#submit", container).on("click", function (e) {
 			e.preventDefault();
 			veda.authenticate( $("#login", container).val(), Sha256.hash( $("#password", container).val() ) );
 		});
+		
+		container.fadeIn(250);
+		
 	});
 
 	if (!getCookie("ticket") || !getCookie("user_uri") || !getCookie("end_time") || !is_ticket_valid(getCookie("ticket"))) return veda.trigger("auth:quit");

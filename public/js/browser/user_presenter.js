@@ -9,6 +9,8 @@ Veda(function UserPresenter(veda) { "use strict";
 	veda.on("user:loaded", function (user) {
 
 		setTimeout ( function () {
+			
+			container.hide();
 
 			// Render languages
 			var languages = ""
@@ -25,6 +27,8 @@ Veda(function UserPresenter(veda) { "use strict";
 					user.toggleLanguage(this.id);
 				});
 			});
+
+			container.fadeIn(250);
 
 		}, 10);
 		

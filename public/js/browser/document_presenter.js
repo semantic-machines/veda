@@ -2,11 +2,18 @@
 
 Veda(function DocumentPresenter(veda) { "use strict";
 	
+	var cnt = 0;
+	
 	veda.on("document:loaded", function (document, container_param, template) {
 		
-		var container = container_param || $("#main");
-		container.empty();
+		console.log("document presenter:", ++cnt, document.id);
 		
+		var container = container_param || $("#main");
+		
+		container.empty().hide();
+		
+		var embedded = [];
+				
 		document["rdf:type"]
 			.filter( function (item) {
 				return item instanceof IndividualModel
@@ -64,27 +71,42 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				$edit
 					.on("click", function (e) {
 						document.trigger("edit");
-						$(this).hide();
-						$save.show();
-						$cancel.show();
 					});
 				
-				$save
-					.hide()
+				$save.hide()
 					.on("click", function (e) {
-						document.save();
-						document.trigger("view");
-						$(this).hide();
-						$cancel.hide();
-						$edit.show();
+						document.trigger("save");
 					});
 				
-				$cancel
-					.hide()
+				$cancel.hide()
 					.on("click", function (e) {
-						document.reset();
-						document.trigger("view");			
+						document.trigger("cancel");
 					});
+				
+				document.off("view edit save cancel");
+				
+				document.on("edit save cancel", function (event) {
+					embedded.map(function (item) {
+						item.trigger(event);
+					});
+				});
+				
+				document.on("edit", function () {
+					$edit.hide();
+					$save.show();
+					$cancel.show();
+				});
+
+				document.on("save", function () {
+					document.save();
+					$save.hide();
+					$cancel.hide();
+					$edit.show();
+				});
+
+				document.on("cancel", function () {
+					document.reset();
+				});
 
 				// About
 				$("[about]", classTemplate).map( function () {
@@ -114,7 +136,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						values.map( function (value) {
 							var clone = relContainer.clone();
 							setTimeout( function () {
-								new DocumentModel(veda, value, clone, relTemplate);
+								var lnk = new DocumentModel(veda, value, clone, relTemplate);
+								if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) embedded.push(lnk);
 							}, 0);
 							relContainer.before(clone);
 						});
@@ -147,7 +170,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				
 				document.trigger("view");
 				
-				$("textarea", container).autosize();
+				container.fadeIn(250);
 				
 			});
 	});
@@ -164,7 +187,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		}
 		
 		var property = document.properties[property_uri],
-			values = document[property_uri],
+			values = document[property_uri] || [undefined],
 			template, renderedProperty;
 
 		switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
@@ -179,8 +202,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						$view = $(".view", $template),
 						$edit = $(".edit", $template);
 					
-					$view.stringControl();
-					
 					document.on("edit", function() {
 						$view.hide();
 						$edit.show();
@@ -190,7 +211,11 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						$edit.hide();
 					});
 
-					$("textarea", $template).autosize();
+					$("textarea", $template)
+						.autosize()
+						.on("focus", function (event) {
+							$(this).trigger("autosize.resize");
+						});
 					
 					$("[bound]", $template)
 						.html(value)
@@ -245,8 +270,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 					container.append($template);
 				});
-				
-				$("textarea", container).autosize();
 				
 				return; 
 				break

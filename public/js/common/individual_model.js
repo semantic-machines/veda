@@ -159,10 +159,6 @@ function IndividualModel(veda, uri, container) {
 		self.trigger("individual:reset", self, container);
 	};
 
-	self.on("individual:saved individual:loaded", function ( event, self, container ) {
-		veda.trigger(event, self, container);
-	});
-
 	// Load data 
 	if (uri) self.load(uri); 
 	

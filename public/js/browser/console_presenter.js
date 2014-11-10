@@ -7,6 +7,8 @@ Veda(function ConsolePresenter(veda) { "use strict";
 	var container = $("#main");
 	
 	veda.on("console:loaded", function (console) {
+		
+		container.hide().empty();
 	
 		// Render View
 		var rendered = riot.render(template, console);
@@ -37,6 +39,8 @@ Veda(function ConsolePresenter(veda) { "use strict";
 			if ($el.is("input, textarea, select")) $el.val( value );
 			else $el.html( value );
 		});
+		
+		container.fadeIn(250);
 		
 	});
 

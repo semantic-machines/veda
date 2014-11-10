@@ -10,6 +10,8 @@ Veda(function SearchPresenter(veda) { "use strict";
 		
 		var container = container_param || $("#main");
 		
+		container.hide();
+		
 		// Get template
 		var rendered = riot.render(template, search);
 		container.html(rendered);
@@ -46,7 +48,8 @@ Veda(function SearchPresenter(veda) { "use strict";
 		});
 		
 		veda.trigger("search:rendered", search, container);
-			
+		
+		container.fadeIn(250);	
 	});
 	
 	// Display search results
@@ -86,7 +89,9 @@ Veda(function SearchPresenter(veda) { "use strict";
 				if (search.results[i].id in search.selected) $("input", $select).attr("checked", "checked");
 				
 				$li.append( $select );
-				veda.trigger("individual:loaded", search.results[i], $li);
+				
+				// Invoke search result presenter
+				veda.trigger("search_result:loaded", search.results[i], $li);
 			})(i)
 		}
 
@@ -108,7 +113,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 				}).appendTo($page);
 			})(page);
 		}
-
+	
 	});
 
 });
