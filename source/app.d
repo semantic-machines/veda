@@ -59,7 +59,7 @@ shared static this()
     VedaStorageRest vsr = new VedaStorageRest();
 
     auto            settings = new HTTPServerSettings;
-    settings.port           = 8080;
+    settings.port           = 8081;
     settings.maxRequestSize = 1024 * 1024 * 1000;
     //settings.bindAddresses = ["::1", "127.0.0.1", "172.17.35.148"];
     //settings.bindAddresses = ["127.0.0.1"];
