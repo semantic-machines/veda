@@ -147,6 +147,10 @@ function IndividualModel(veda, uri) {
 		}, individual);
 		put_individual(veda.ticket, individual, function (data) {
 			original_individual = JSON.stringify(individual);
+			
+			// Update local cache
+			if ( veda.cache[uri] ) veda.cache[uri] = original_individual;
+			
 			self.trigger("individual:saved", self);
 		});
 	};

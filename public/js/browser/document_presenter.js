@@ -180,7 +180,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 	function renderProperty (document, property_uri, container) {
 		
-		if ( !(document[property_uri]) ) return;
+		if ( !veda.dictionary[property_uri] ) return;
 		
 		container.empty();
 		
@@ -190,12 +190,17 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		}
 		
 		var property = veda.dictionary[property_uri],
-			values = document[property_uri] || [undefined],
 			template, renderedProperty;
+		
+		var values = document[property_uri] ? (
+			document[property_uri] 
+		) : (
+			document.defineProperty(property_uri),
+			[""]
+		);
 
 		switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
 
-			case "rdfs:Resource" : 
 			case "rdfs:Literal" : 
 			case "xsd:string" : 
 				template = $("#string-control-template").html();
@@ -272,8 +277,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 							.trigger("change");
 					});
 					
-					console.log($template.html());
-					
 					container.append($template);
 				});
 				
@@ -329,7 +332,10 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						.val(value)
 						.on("change", function ( e ) {
 							document[property_uri] = $(".edit > [bound]", container).map(function () {
-								return new Number( parseInt(this.value, 10) );
+								var value = "", 
+									int = parseInt(this.value, 10);
+								if ( isNaN(int) == false ) value = new Number(int);
+								return value;
 							}).get();
 						});
 					container.append($template);
@@ -356,7 +362,10 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						.val(value)
 						.on("change", function ( e ) {
 							document[property_uri] = $(".edit > [bound]", container).map(function () {
-								return new Number( parseFloat(this.value) );
+								var value = "", 
+									float = parseFloat(this.value);
+								if ( isNaN(float) == false ) value = new Number(float);
+								return value;
 							}).get();
 						});
 					container.append($template);
@@ -383,7 +392,10 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						.val(value)
 						.on("change", function ( e ) {
 							document[property_uri] = $(".edit > [bound]", container).map(function () {
-								return new Date( this.value );
+								var value = "", 
+									timestamp = Date.parse(this.value);
+								if ( isNaN(timestamp) == false ) value = new Date(timestamp);
+								return value;
 							}).get();
 						});
 					container.append($template);
