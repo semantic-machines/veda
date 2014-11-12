@@ -5,7 +5,7 @@
 	"authors": ["karpovr"],
 	"dependencies": {
 		"vibe-d": "0.7.21-rc.4",
-		"pacahon": "0.1.123-alpha"
+		"pacahon": "0.1.124-alpha"
 	},
 	"buildOptions": ["debugMode", "debugInfo"],	
 	"versions": ["VibeDefaultMain"],	
