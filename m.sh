@@ -3,5 +3,5 @@ rm *.log
 rm veda.app
 rm dub.selections.json
 #dub build --build=debug --config=app
-./dub
+dub
 #./veda.app
