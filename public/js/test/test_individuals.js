@@ -275,6 +275,10 @@ test("#007 Individual store and read, test datatype", function() {
 			data : new Date ("2014-01-02T20:10:24.768"),
 			type : _Datetime
 		} ],
+		'v-s:test_datetime4' : [ {
+			data : new Date ("1960-01-02"),
+			type : _Datetime
+		} ],
 		'v-s:canUpdate' : [ {
 			data : true,
 			type : _Bool
