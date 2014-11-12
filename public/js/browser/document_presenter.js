@@ -191,19 +191,17 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		
 		var property = veda.dictionary[property_uri],
 			template, renderedProperty;
-		
-		var values = document[property_uri] ? (
-			document[property_uri] 
-		) : (
-			document.defineProperty(property_uri),
-			[""]
-		);
+
+		if ( !document[property_uri] ) document.defineProperty(property_uri);
+		var values = document[property_uri];
 
 		switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
 
 			case "rdfs:Literal" : 
 			case "xsd:string" : 
 				template = $("#string-control-template").html();
+
+				if (!values.length) values.push("");
 
 				values.map (function (value, index) {
 					
@@ -286,6 +284,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			case "xsd:boolean" : 
 				template = $("#boolean-control-template").html();
 
+				if (!values.length) values.push(new Boolean(false));
+
 				values.map (function (value, index) {
 					var $template = $(template),
 						$view = $(".view", $template),
@@ -314,6 +314,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			case "xsd:nonNegativeInteger" : 
 			case "xsd:integer" : 
 				template = $("#integer-control-template").html();
+
+				if (!values.length) values.push(undefined);
+
 				values.map (function (value, index) {
 					var $template = $(template),
 						$view = $(".view", $template),
@@ -344,6 +347,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			
 			case "xsd:decimal" : 
 				template = $("#decimal-control-template").html();
+
+				if (!values.length) values.push(undefined);
+				
 				values.map (function (value, index) {
 					var $template = $(template),
 						$view = $(".view", $template),
@@ -374,6 +380,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 			case "xsd:dateTime" : 
 				template = $("#datetime-control-template").html();
+
+				if (!values.length) values.push(undefined);
+				
 				values.map (function (value, index) {
 					var $template = $(template),
 						$view = $(".view", $template),

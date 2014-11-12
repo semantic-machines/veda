@@ -33,6 +33,7 @@ function IndividualModel(veda, uri) {
 		Object.defineProperty(self, property_uri, {
 			get: function () { 
 				if (values[property_uri]) return values[property_uri];
+				if (!individual[property_uri]) individual[property_uri] = [];
 				values[property_uri] = individual[property_uri].map( function (value) {
 					if (value.type == "String") {
 						var string = new String(value.data);
@@ -157,6 +158,8 @@ function IndividualModel(veda, uri) {
 
 	self.reset = function () {
 		individual = JSON.parse(original_individual);
+		properties = {};
+		self.properties = {};
 		values = {};
 		Object.keys(individual).map(function (property_uri) {
 			if (property_uri == "@") return;
