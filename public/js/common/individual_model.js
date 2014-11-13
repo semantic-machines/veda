@@ -2,7 +2,12 @@
 
 "use strict";
 
-function IndividualModel(veda, uri) {
+/* 
+ * Параметр newInstance используется для создания нового индивида, 
+ * если параметр отсутствует (чаще всего) либо равен false,
+ * делается попытка использовать объект из словаря.
+ */
+function IndividualModel(veda, uri, newInstance) {
 	var self = riot.observable(this);
 
 	// Define Model functions
@@ -122,11 +127,13 @@ function IndividualModel(veda, uri) {
 	}
 
 	self.load = function (uri) {
-		if (veda["dictionary"] && veda["dictionary"][uri]) {
-			self = veda["dictionary"][uri];
-			// Remove any unexpected handlers
-			self.off("*");
-			return self.trigger("individual:loaded", self);
+		if ( !newInstance ) {
+			if (veda["dictionary"] && veda["dictionary"][uri]) {
+				self = veda["dictionary"][uri];
+				// Remove any unexpected handlers
+				self.off("*");
+				return self.trigger("individual:loaded", self);
+			}
 		}
 		individual = veda.cache[uri] ? JSON.parse( veda.cache[uri] ) : get_individual(veda.ticket, uri);
 		original_individual = JSON.stringify(individual);

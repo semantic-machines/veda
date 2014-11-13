@@ -32,7 +32,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				} else {
 					// Construct generic template
 					classTemplate = $("<div/>").append( $("#generic-class-template").html() );
-					$(".properties", classTemplate).append(
+					$(".properties", classTemplate).append (
 						Object.getOwnPropertyNames(_class.domainProperties).map( function (property_uri, index, array) {
 							var property = _class.domainProperties[property_uri];
 							if (property_uri == "rdfs:label") return;
@@ -177,10 +177,11 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				
 			});
 	});
-
+	
+	
 	function renderProperty (document, property_uri, container) {
 		
-		if ( !veda.dictionary[property_uri] ) return;
+		if ( property_uri != 'id' && !veda.dictionary[property_uri] ) return;
 		
 		container.empty();
 		

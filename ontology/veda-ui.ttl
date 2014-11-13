@@ -171,7 +171,7 @@ v-ui:defaultDecimalValue
   rdfs:domain v-ui:DecimalPropertySpecification ;
   rdfs:label "десятичное значение по-умолчанию"@ru ;
   rdfs:label "default decimal value"@en ;
-  rdfs:range xsd:double ;
+  rdfs:range xsd:decimal ;
 .
 v-ui:DatetimePropertySpecification
   rdf:type owl:Class ;

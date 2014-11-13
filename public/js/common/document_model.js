@@ -4,7 +4,7 @@
 
 function DocumentModel(veda, individual, container, template) {
 
-	var self = individual instanceof IndividualModel ? individual : new IndividualModel(veda, individual);
+	var self = individual instanceof IndividualModel ? individual : new IndividualModel(veda, individual, true);
 
 	self.off("*");
 	
