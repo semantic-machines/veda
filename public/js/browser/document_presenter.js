@@ -131,7 +131,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					relTemplate = relTemplate ? 
 						new IndividualModel(veda, relTemplate) 
 						:
-						new IndividualModel(veda, "mnd-d:LabelTemplate");
+						new IndividualModel(veda, "mnd-d:ClassNameLabelTemplate");
 					
 					if (values) {
 						values.map( function (value) {
