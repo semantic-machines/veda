@@ -6,32 +6,30 @@ Veda(function UserPresenter(veda) { "use strict";
 	var languageTemplate = $("#language-template").html();
 	var container = $("#nav-container #user-info");
 	
-	veda.on("user:loaded", function (user) {
+	veda.on("started", function () {
 
-		setTimeout ( function () {
-			
-			container.hide();
+		container.hide();
 
-			// Render languages
-			var languages = ""
-			Object.keys(veda.availableLanguages).map ( function (language_uri) {
-				languages += riot.render(languageTemplate, veda.availableLanguages[language_uri]);
-			});
-			
-			// Render user
-			container.html( riot.render(template, {user: user, languages: languages}) );
-			
-			$("#preferred-language > label", container).each( function() {
-				if (this.id in user.language) $(this).addClass("active");
-				$(this).on("click", function() { 
-					user.toggleLanguage(this.id);
-				});
-			});
-
-			container.fadeIn(250);
-
-		}, 10);
+		// Render languages
+		var languages = ""
+		Object.keys(veda.availableLanguages).map ( function (language_uri) {
+			languages += riot.render(languageTemplate, veda.availableLanguages[language_uri]);
+		});
 		
+		// Render user
+		container.html( riot.render(template, {user: veda.user, languages: languages}) );
+		
+		var $languages = $("#preferred-language > label", container);
+		$languages.each( function() {
+			if (this.id in veda.user.language) $(this).addClass("active");
+			$(this).on("click", function() { 
+				veda.user.toggleLanguage(this.id);
+				this.id in veda.user.language ? $(this).addClass("active") : $(this).removeClass("active");
+			});
+		});
+
+		container.fadeIn(250);
+
 	});
 	
 });
