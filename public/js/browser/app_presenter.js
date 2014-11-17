@@ -55,7 +55,7 @@ Veda(function AppPresenter(veda) { "use strict";
 			return riot.route($(this).attr("href"));
 		});
 		
-		// Forced route to current hash. Riot render bug?
+		// Forced route to current hash. Riot route bug?
 		riot.route(location.hash, true);
 	});
 
