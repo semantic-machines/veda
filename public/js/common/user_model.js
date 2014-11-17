@@ -37,9 +37,6 @@ function UserModel(veda, individual) {
 		self.preferences.save();
 		veda.trigger("language:changed");
 	}
-	
-	// Model loaded message
-	veda.trigger("user:loaded", self);
 		
 	return self;
 };
