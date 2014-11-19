@@ -139,6 +139,11 @@ Veda(function DocumentPresenter(veda) { "use strict";
 							if (value instanceof IndividualModel) {
 								setTimeout( function () {
 									var lnk = new DocumentModel(veda, value, clone, relTemplate);
+									/*clone.attr("style", "position:relative");
+									var b = $("<button>").addClass("btn btn-sm btn-default").attr("style", "position:absolute; top:0px; right:0px");
+									var i = $("<i>").addClass("glyphicon glyphicon-remove");
+									b.append(i);
+									clone.append(b);*/
 									if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) embedded.push(lnk);
 								}, 0);
 							}
