@@ -79,20 +79,24 @@ Veda(function SearchPresenter(veda) { "use strict";
 		
 		// Show results
 		for (var i = currentPage * veda.user.displayedElements; i < (currentPage + 1) * veda.user.displayedElements && i < search.results_count; i++) {
-			(function (i) { var $li = $("<li/>").appendTo("#search-results-list");
-				
-				// Select search results 
-				var $select = $( $("#search-select-template").html() );
-				$("input[type='checkbox']", $select).on("click", function (e) {
-					search.toggleSelected(i);
-				});
-				if (search.results[i].id in search.selected) $("input", $select).attr("checked", "checked");
-				
-				$li.append( $select );
-				
-				// Invoke search result presenter
-				veda.trigger("search_result:loaded", search.results[i], $li);
-			})(i)
+			(function (i) { 
+				setTimeout(function () {
+					var $li = $("<li/>").appendTo("#search-results-list");
+					
+					// Select search results 
+					var $select = $( $("#search-select-template").html() );
+					$("input[type='checkbox']", $select).on("click", function (e) {
+						search.toggleSelected(i);
+					});
+					if (search.results[i].id in search.selected) $("input", $select).attr("checked", "checked");
+					
+					$li.append( $select );
+					
+					
+					// Invoke search result presenter
+					veda.trigger("search_result:loaded", search.results[i], $li);
+				}, 0);
+			})(i);
 		}
 
 		// Show pager

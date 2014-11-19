@@ -146,6 +146,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						});
 					}
 					relContainer.remove();
+					
+					
+					
 				});
 
 				// Properties

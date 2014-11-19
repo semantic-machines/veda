@@ -33,7 +33,7 @@ function SearchModel(veda, q, container) {
 
 	self.toggleAll = function () {
 		if (Object.keys(self.selected).length != self.results_count) {
-			for (var i=0; i<self.results_count; i++) {
+			for (var i=0; i < self.results_count; i++) {
 				self.selected[self.results[i].id] = self.results[i];
 			}
 		} else {
