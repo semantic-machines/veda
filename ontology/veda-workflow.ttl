@@ -65,6 +65,11 @@ v-wf:Mapping
 	rdfs:label "Mapping"@en ;
 	rdfs:label "Преобразование"@ru ;
 .
+v-wf:ExecutorDefinition
+	rdf:type owl:Class ;
+	rdfs:label "Executor definition"@en ;
+	rdfs:label "Выбор исполнителя"@ru ;
+.
 v-wf:TransitionBehavior
 	rdf:type owl:Class ;
 	rdfs:label "Transition behavior"@en ;
@@ -151,21 +156,14 @@ v-wf:startingMapping
 	rdfs:label "starting mapping"@en ;
 	rdfs:label "стартовое преобразование"@ru ;
 	rdfs:domain v-wf:Task ;
-	rdfs:range xsd:string ;
+	rdfs:range v-wf:Mapping ;
 .
 v-wf:completedMapping
 	rdf:type rdf:Property ;
 	rdfs:label "completed mapping"@en ;
 	rdfs:label "конечное преобразование"@ru ;
 	rdfs:domain v-wf:Task ;
-	rdfs:range xsd:string ;
-.
-v-wf:executor
-	rdf:type rdf:Property ;
-	rdfs:label "executor"@en ;
-	rdfs:label "исполнитель"@ru ;
-	rdfs:domain v-wf:Task ;
-	rdfs:range rdf:Resource ;
+	rdfs:range v-wf:Mapping ;
 .
 v-wf:mapsTo
 	rdf:type rdf:Property ;
@@ -174,10 +172,24 @@ v-wf:mapsTo
 	rdfs:domain v-wf:Mapping ;
 	rdfs:range rdf:Resource ;
 .
-v-wf:expression
+v-wf:mappingExpression
 	rdf:type rdf:Property ;
-	rdfs:label "expression"@en ;
-	rdfs:label "выражение"@ru ;
+	rdfs:label "mapping expression"@en ;
+	rdfs:label "выражение преобразования"@ru ;
 	rdfs:domain v-wf:Mapping ;
+	rdfs:range xsd:string ;
+.
+v-wf:executor
+	rdf:type rdf:Property ;
+	rdfs:label "executor"@en ;
+	rdfs:label "исполнитель"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:ExecutorDefinition ;
+.
+v-wf:executorExpression
+	rdf:type rdf:Property ;
+	rdfs:label "executor choice expression"@en ;
+	rdfs:label "выражение выбора исполнителя"@ru ;
+	rdfs:domain v-wf:Task ;
 	rdfs:range xsd:string ;
 .
