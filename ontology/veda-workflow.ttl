@@ -21,11 +21,6 @@
   owl:imports owl: ;
   owl:versionInfo "1.0" ;
 .
-v-wf:Actor
-	rdf:type owl:Class ;
-	rdfs:label "Net"@en ;
-	rdfs:label "Сеть"@ru ;
-.
 v-wf:Net
 	rdf:type owl:Class ;
 	rdfs:label "Net"@en ;
