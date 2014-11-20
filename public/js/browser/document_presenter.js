@@ -139,12 +139,22 @@ Veda(function DocumentPresenter(veda) { "use strict";
 							if (value instanceof IndividualModel) {
 								setTimeout( function () {
 									var lnk = new DocumentModel(veda, value, clone, relTemplate);
-									/*clone.attr("style", "position:relative");
-									var b = $("<button>").addClass("btn btn-sm btn-default").attr("style", "position:absolute; top:0px; right:0px");
-									var i = $("<i>").addClass("glyphicon glyphicon-remove");
-									b.append(i);
-									clone.append(b);*/
 									if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) embedded.push(lnk);
+									
+									/*clone.attr("style", "position:relative");
+									var b = $("<button>").addClass("btn btn-default").attr("style", "position:absolute; top:0px; right:0px");
+									var i = $("<i>").addClass("glyphicon glyphicon-remove");
+									b.append(i).hide();
+									clone.append(b);
+									document.on("edit", function(){
+										clone.on("mouseenter", function(){b.show(); });
+										clone.on("mouseleave", function(){b.hide(); });
+									});
+									document.on("view", function(){
+										b.append(i).hide();
+										clone.off("*");
+									});*/
+
 								}, 0);
 							}
 							relContainer.before(clone);

@@ -30,8 +30,9 @@ Veda(function SearchPresenter(veda) { "use strict";
 			event.preventDefault();
 			$("#search-submit").addClass("disabled"); 
 			currentPage = 0;
+			
+			if (!container_param) return riot.route("#/search/" + search.q, true);
 			search.search();
-			//if (search.q) riot.route("#/search/" + search.q, true);
 		});
 	
 		// Listen Model changes & update View

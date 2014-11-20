@@ -28,7 +28,9 @@ Veda(function AppPresenter(veda) { "use strict";
 	
 	// Toggle language
 	veda.on("language:changed", function () {
-		riot.route(location.hash, true);
+		//veda.init();
+		//riot.route(location.hash, true);
+		location.reload();
 	});
 	
 	// Triggered in veda.init()

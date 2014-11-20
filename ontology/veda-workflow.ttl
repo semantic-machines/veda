@@ -1,0 +1,188 @@
+# baseURI: http://semantic-machines.com/veda/veda-workflow
+# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+# imports: http://www.w3.org/2000/01/rdf-schema#
+# imports: http://www.w3.org/2002/07/owl
+
+# c14n-version: 3
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-workflow>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system workflow ontology"@en ;
+  rdfs:label "Онтология потоков работ системы Veda"@ru ;
+  owl:imports rdf: ;
+  owl:imports rdfs: ;
+  owl:imports owl: ;
+  owl:versionInfo "1.0" ;
+.
+v-wf:Actor
+	rdf:type owl:Class ;
+	rdfs:label "Net"@en ;
+	rdfs:label "Сеть"@ru ;
+.
+v-wf:Net
+	rdf:type owl:Class ;
+	rdfs:label "Net"@en ;
+	rdfs:label "Сеть"@ru ;
+.
+v-wf:NetElement
+	rdf:type owl:Class ;
+	rdfs:label "Net element"@en ;
+	rdfs:label "Элемент сети"@ru ;
+.
+v-wf:Condition
+	rdf:type owl:Class ;
+	rdfs:subClassOf v-wf:NetElement ;
+	rdfs:label "Condition"@en ;
+	rdfs:label "Состояние"@ru ;
+.
+v-wf:InputCondition
+	rdf:type owl:Class ;
+	rdfs:subClassOf v-wf:Condition ;
+	rdfs:label "Input condition"@en ;
+	rdfs:label "Входное состояние"@ru ;
+.
+v-wf:OutputCondition
+	rdf:type owl:Class ;
+	rdfs:subClassOf v-wf:Condition ;
+	rdfs:label "Output condition"@en ;
+	rdfs:label "Выходное состояние"@ru ;
+.
+v-wf:Task
+	rdf:type owl:Class ;
+	rdfs:subClassOf v-wf:NetElement ;	
+	rdfs:label "Output condition"@en ;
+	rdfs:label "Выходное состояние"@ru ;
+.
+v-wf:Flow
+	rdf:type owl:Class ;
+	rdfs:label "Flow"@en ;
+	rdfs:label "Поток"@ru ;
+.
+v-wf:Mapping
+	rdf:type owl:Class ;
+	rdfs:label "Mapping"@en ;
+	rdfs:label "Преобразование"@ru ;
+.
+v-wf:TransitionBehavior
+	rdf:type owl:Class ;
+	rdfs:label "Transition behavior"@en ;
+	rdfs:label "Тип перехода"@ru ;
+.
+v-wf:XOR
+	rdf:type v-wf:TransitionBehavior ;
+	rdfs:label "XOR"^^xsd:string ;
+.
+v-wf:OR
+	rdf:type v-wf:TransitionBehavior ;
+	rdfs:label "OR"^^xsd:string ;
+.
+v-wf:AND
+	rdf:type v-wf:TransitionBehavior ;
+	rdfs:label "AND"^^xsd:string ;
+.
+v-wf:None
+	rdf:type v-wf:TransitionBehavior ;
+	rdfs:label "None"^^xsd:string ;
+.
+v-wf:inputVariable
+	rdf:type rdf:Property ;
+	rdfs:label "input variable"@en ;
+	rdfs:label "входная переменная"@ru ;
+	rdfs:domain v-wf:Net ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range rdf:Resource ;
+.
+v-wf:outputVariable
+	rdf:type rdf:Property ;
+	rdfs:label "output variable"@en ;
+	rdfs:label "выходная переменная"@ru ;
+	rdfs:domain v-wf:Net ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range rdf:Resource ;
+.
+v-wf:localVariable
+	rdf:type rdf:Property ;
+	rdfs:label "local variable"@en ;
+	rdfs:label "локальная переменная"@ru ;
+	rdfs:domain v-wf:Net ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range rdf:Resource ;
+.
+v-wf:inputOutputVariable
+	rdf:type rdf:Property ;
+	rdfs:label "input/output variable"@en ;
+	rdfs:label "входная / выходная переменная"@ru ;
+	rdfs:domain v-wf:Net ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range rdf:Resource ;
+.
+v-wf:split
+	rdf:type rdf:Property ;
+	rdfs:label "split"@en ;
+	rdfs:label "разветвление"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:TransitionBehavior ;
+.
+v-wf:join
+	rdf:type rdf:Property ;
+	rdfs:label "join"@en ;
+	rdfs:label "объединение"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:TransitionBehavior ;
+.
+v-wf:flowsInto
+	rdf:type rdf:Property ;
+	rdfs:label "flows into"@en ;
+	rdfs:label "направление потока"@ru ;
+	rdfs:domain v-wf:Flow ;
+	rdfs:range v-wf:NetElement ;
+.
+v-wf:predicate
+	rdf:type rdf:Property ;
+	rdfs:label "flow predicate"@en ;
+	rdfs:label "предикат потока"@ru ;
+	rdfs:domain v-wf:Flow ;
+	rdfs:range xsd:string ;
+.
+v-wf:startingMapping
+	rdf:type rdf:Property ;
+	rdfs:label "starting mapping"@en ;
+	rdfs:label "стартовое преобразование"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range xsd:string ;
+.
+v-wf:completedMapping
+	rdf:type rdf:Property ;
+	rdfs:label "completed mapping"@en ;
+	rdfs:label "конечное преобразование"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range xsd:string ;
+.
+v-wf:executor
+	rdf:type rdf:Property ;
+	rdfs:label "executor"@en ;
+	rdfs:label "исполнитель"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range rdf:Resource ;
+.
+v-wf:mapsTo
+	rdf:type rdf:Property ;
+	rdfs:label "maps to"@en ;
+	rdfs:label "преобразуется в"@ru ;
+	rdfs:domain v-wf:Mapping ;
+	rdfs:range rdf:Resource ;
+.
+v-wf:expression
+	rdf:type rdf:Property ;
+	rdfs:label "expression"@en ;
+	rdfs:label "выражение"@ru ;
+	rdfs:domain v-wf:Mapping ;
+	rdfs:range xsd:string ;
+.

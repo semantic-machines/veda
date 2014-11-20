@@ -568,6 +568,7 @@ mnd-d:AccountTemplate1
   rdfs:label "Шаблон Учетной записи"@ru ;
   rdfs:label "Account template"@en ;
   v-ui:forClass v-s:Account ;
+  v-ui:embedded "true"^^xsd:boolean ;  
   v-ui:template """
   <div>
     <div class="panel panel-default" resource="id" typeof="class">
@@ -609,11 +610,11 @@ mnd-d:AccountTemplate1
           </div>
         </div>
       </div>
-      <div class="panel-footer">
+      <!--div class="panel-footer">
         <button type="button" class="action btn btn-sm btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
         <button type="button" class="action btn btn-sm btn-success" id="save" i18n="[Save]">Сохранить</button>
         <button type="button" class="action btn btn-sm btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-      </div>
+      </div-->
     </div>
   </div>
   """ ;
@@ -652,11 +653,11 @@ mnd-d:PreferencesTemplate1
       <strong class="text-muted" about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</strong>: <span property="v-ui:displayedElements">999</span>
     </div>
   </div>
-  <div class="panel-footer">
+  <!--div class="panel-footer">
     <button type="button" class="action btn btn-sm btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
     <button type="button" class="action btn btn-sm btn-success" id="save" i18n="[Save]">Сохранить</button>
     <button type="button" class="action btn btn-sm btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-  </div>
+  </div-->
 </div>
 
   """ ;
@@ -674,7 +675,7 @@ mnd-d:ClassNameLabelTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <div><a href="id"><i class="glyphicon glyphicon-search"></i></a> <span rel="rdf:type" template="mnd-d:LabelTemplate">Имя класса</span>: <span property="rdfs:label">наименование</span></div>
+  <div><a href="id"><span rel="rdf:type" template="mnd-d:LabelTemplate">Имя класса</span>: <span property="rdfs:label">наименование</span></a></div>
   """ ;
 .
 mnd-d:PropertySpecification5
