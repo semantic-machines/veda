@@ -12,6 +12,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		
 		container.empty().hide();
 		
+		// Embedded documents list
 		var embedded = [];
 				
 		document["rdf:type"]
@@ -31,36 +32,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					classTemplate = $( _class.documentTemplate["v-ui:template"][0].toString() );
 				} else {
 					// Construct generic template
-					classTemplate = $("<div/>").append( $("#generic-class-template").html() );
-					$(".properties", classTemplate).append (
-						Object.getOwnPropertyNames(_class.domainProperties).map( function (property_uri, index, array) {
-							var property = _class.domainProperties[property_uri];
-							if (property_uri == "rdfs:label") return;
-							
-							var result = $("<div/>").append( 
-								$("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
-							);
-							
-							switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
-								case "rdfs:Literal" : 
-								case "xsd:string" : 
-								case "xsd:boolean" : 
-								case "xsd:nonNegativeInteger" : 
-								case "xsd:integer" : 
-								case "xsd:decimal" : 
-								case "xsd:dateTime" :
-									result.append( $("<div/>", {"property": property_uri}) ); 
-								break
-								default:
-									result.append( $("<div/>", {"rel": property_uri}) ); 
-								break
-							}
-							
-							if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") ); 
-							
-							return result;
-						})
-					)
+					classTemplate = genericTemplate(_class);
 				}
 
 				// Actions
@@ -125,45 +97,15 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					
 					var relContainer = $(this), 
 						rel_uri = relContainer.attr("rel"),
-						relTemplate = relContainer.attr("template"),
-						values = document[rel_uri];
+						relTemplate = relContainer.attr("template");
 					
 					relTemplate = relTemplate ? 
 						new IndividualModel(veda, relTemplate) 
 						:
 						new IndividualModel(veda, "mnd-d:ClassNameLabelTemplate");
 					
-					if (values) {
-						values.map( function (value) {
-							var clone = relContainer.clone();
-							if (value instanceof IndividualModel) {
-								setTimeout( function () {
-									var lnk = new DocumentModel(veda, value, clone, relTemplate);
-									if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) embedded.push(lnk);
-									
-									/*clone.attr("style", "position:relative");
-									var b = $("<button>").addClass("btn btn-default").attr("style", "position:absolute; top:0px; right:0px");
-									var i = $("<i>").addClass("glyphicon glyphicon-remove");
-									b.append(i).hide();
-									clone.append(b);
-									document.on("edit", function(){
-										clone.on("mouseenter", function(){b.show(); });
-										clone.on("mouseleave", function(){b.hide(); });
-									});
-									document.on("view", function(){
-										b.append(i).hide();
-										clone.off("*");
-									});*/
-
-								}, 0);
-							}
-							relContainer.before(clone);
-						});
-					}
-					relContainer.remove();
-					
-					
-					
+					renderLink(document, rel_uri, relContainer, relTemplate, embedded);
+			
 				});
 
 				// Properties
@@ -196,6 +138,72 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			});
 	});
 	
+	
+	function renderLink (document, rel_uri, relContainer, relTemplate, embedded) {
+		
+		var values = document[rel_uri];
+		
+		var renderValue = function (value) {
+			var clone = relContainer.clone();
+			if (value instanceof IndividualModel) {
+				setTimeout( function () {
+					var lnk = new DocumentModel(veda, value, clone, relTemplate);
+					if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) embedded.push(lnk);
+					
+					clone.attr("style", "position:relative");
+					var b = $("<button>").addClass("btn btn-default").attr("style", "position:absolute; top:0px; right:0px");
+					var i = $("<i>").addClass("glyphicon glyphicon-remove");
+					b.append(i).hide();
+					clone.append(b);
+					document.on("edit", function(){
+						clone.on("mouseenter", function(){b.show(); });
+						clone.on("mouseleave", function(){b.hide(); });
+					});
+					document.on("view", function(){
+						b.append(i).hide();
+						clone.off("*");
+					});
+
+				}, 0);
+			}
+			relContainer.before(clone);
+		}
+		
+		if (values) {
+			values.map( renderValue );
+		}
+
+		var template = $( $("#link-control-template").html() );
+		template.hide();
+		relContainer.before(template);
+		
+		document.on("edit", function () {
+			template.show();
+		});
+		document.on("view", function () {
+			template.hide();
+		});
+
+		// Search modal
+		$(".search", template).on("click", function (e) {
+			var $modal = $("#search-modal");
+			var search = new SearchModel(veda, undefined, $(".modal-body", $modal) );
+			$modal.modal();
+			// Add found values
+			$("button#ok", $modal).on("click", function (e) {
+				var selected = [];
+				for (var uri in search.selected) {
+					selected.push( search.selected[uri] );
+				}
+				
+				document[rel_uri] = values.concat(selected);
+				selected.map( renderValue );
+			});
+		});
+
+		//relContainer.remove();
+
+	}
 	
 	function renderProperty (document, property_uri, container) {
 		
@@ -444,6 +452,41 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			document[property_uri] = values;
 		});
 
+	}
+	
+	function genericTemplate (_class) {
+		// Construct generic template
+		var template = $("<div/>").append( $("#generic-class-template").html() );
+		$(".properties", template).append (
+			Object.getOwnPropertyNames(_class.domainProperties).map( function (property_uri, index, array) {
+				var property = _class.domainProperties[property_uri];
+				if (property_uri == "rdfs:label") return;
+				
+				var result = $("<div/>").append( 
+					$("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
+				);
+				
+				switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
+					case "rdfs:Literal" : 
+					case "xsd:string" : 
+					case "xsd:boolean" : 
+					case "xsd:nonNegativeInteger" : 
+					case "xsd:integer" : 
+					case "xsd:decimal" : 
+					case "xsd:dateTime" :
+						result.append( $("<div/>", {"property": property_uri}) ); 
+					break
+					default:
+						result.append( $("<div/>", {"rel": property_uri}) ); 
+					break
+				}
+				
+				if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") ); 
+				
+				return result;
+			})
+		);
+		return template;
 	}
 
 });
