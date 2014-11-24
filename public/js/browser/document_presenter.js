@@ -157,8 +157,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						if (embedded.length) embedded = embedded.filter(function (item) { return item != lnk });
 					});
 					document.on("edit", function(){
-						clone.on("mouseenter", function(){ clear.show(); });
-						clone.on("mouseleave", function(){ clear.hide(); });
+						clone.on("mouseenter", function () { clear.show(); });
+						clone.on("mouseleave", function () { clear.hide(); });
 					});
 					document.on("view", function(){
 						clear.hide();
