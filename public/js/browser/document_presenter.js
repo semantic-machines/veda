@@ -141,9 +141,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 	
 	function renderLink (document, rel_uri, relContainer, relTemplate, embedded) {
 		
-		var values = document[rel_uri];
-		
-		var renderValue = function (value) {
+		var renderValue = function (value, mode) {
 			var clone = relContainer.clone();
 			if (value instanceof IndividualModel) {
 				setTimeout( function () {
@@ -151,31 +149,38 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) embedded.push(lnk);
 					
 					clone.attr("style", "position:relative");
-					var b = $("<button>").addClass("btn btn-default").attr("style", "position:absolute; top:0px; right:0px");
-					var i = $("<i>").addClass("glyphicon glyphicon-remove");
-					b.append(i).hide();
-					clone.append(b);
+					var clear = $( $("#link-clear-button-template").html() ).hide();
+					clone.append(clear);
+					clear.on("click", function () {
+						clone.fadeOut(250, function () { clone.remove() });
+						document[rel_uri] = document[rel_uri].filter(function (item) { return item != lnk });
+						if (embedded.length) embedded = embedded.filter(function (item) { return item != lnk });
+					});
 					document.on("edit", function(){
-						clone.on("mouseenter", function(){b.show(); });
-						clone.on("mouseleave", function(){b.hide(); });
+						clone.on("mouseenter", function(){ clear.show(); });
+						clone.on("mouseleave", function(){ clear.hide(); });
 					});
 					document.on("view", function(){
-						b.append(i).hide();
+						clear.hide();
 						clone.off("*");
 					});
-
+					document.trigger(mode);
 				}, 0);
 			}
-			relContainer.before(clone);
+			relContainer.before(clone.show());
 		}
 		
-		if (values) {
-			values.map( renderValue );
+		relContainer.empty().hide();
+		
+		if ( !document[rel_uri] ) document.defineProperty(rel_uri);
+
+		if (document[rel_uri].length) {
+			document[rel_uri].map( function (value) {renderValue (value, "view")} );
 		}
 
 		var template = $( $("#link-control-template").html() );
 		template.hide();
-		relContainer.before(template);
+		relContainer.after(template);
 		
 		document.on("edit", function () {
 			template.show();
@@ -191,17 +196,15 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			$modal.modal();
 			// Add found values
 			$("button#ok", $modal).on("click", function (e) {
+				$(this).off("click");
 				var selected = [];
 				for (var uri in search.selected) {
 					selected.push( search.selected[uri] );
 				}
-				
-				document[rel_uri] = values.concat(selected);
-				selected.map( renderValue );
+				document[rel_uri] = document[rel_uri].concat(selected);
+				selected.map( function (value) {renderValue (value, "edit")} );
 			});
 		});
-
-		//relContainer.remove();
 
 	}
 	
