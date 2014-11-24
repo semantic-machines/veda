@@ -58,7 +58,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				document.off("view edit save cancel");
 				
 				// Trigger same events for embedded templates
-				document.on("edit save cancel", function (event) {
+				document.on("edit save", function (event) {
 					embedded.map(function (item) {
 						item.trigger(event);
 					});
@@ -145,6 +145,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			var clone = relContainer.clone();
 			if (value instanceof IndividualModel) {
 				setTimeout( function () {
+					
 					var lnk = new DocumentModel(veda, value, clone, relTemplate);
 					if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) embedded.push(lnk);
 					
@@ -156,15 +157,16 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						document[rel_uri] = document[rel_uri].filter(function (item) { return item != lnk });
 						if (embedded.length) embedded = embedded.filter(function (item) { return item != lnk });
 					});
-					document.on("edit", function(){
+					document.on("edit", function () {
 						clone.on("mouseenter", function () { clear.show(); });
 						clone.on("mouseleave", function () { clear.hide(); });
 					});
-					document.on("view", function(){
+					document.on("view", function () {
 						clear.hide();
 						clone.off("*");
 					});
 					document.trigger(mode);
+					
 				}, 0);
 			}
 			relContainer.before(clone.show());
