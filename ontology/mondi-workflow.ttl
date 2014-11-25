@@ -50,8 +50,60 @@ mnd-wf:input_condition_1
 	rdf:type v-wf:InputCondition ;
 	v-wf:net mnd-wf:complex_route ;
 .
-mnd-wf:task_1 
-	rdf:type v-wf:Task ;
-	rdf:label "Уже запущен?";
+mnd-wf:output_condition_1 
+	rdf:type v-wf:OutputCondition ;
 	v-wf:net mnd-wf:complex_route ;
 .
+mnd-wf:task_1 
+	rdf:type v-wf:Task ;
+	rdf:label "Уже запущен?" ;
+	v-wf:executor mnd-wf:codelet_is_run ;
+	v-wf:net mnd-wf:complex_route ;
+	v-wf:hasFlow mnd-wf:flow_1_e ;
+	v-wf:split v-wf:XOR ;	
+.
+mnd-wf:task_2 
+	rdf:type v-wf:Task ;
+	rdf:label "Запомнить и понизить права" ;
+	v-wf:net mnd-wf:complex_route ;
+.
+mnd-wf:flow_1_e
+	rdf:type v-wf:Flow ;
+	v-wf:flowsInto mnd-wf:output_condition_1 ;
+	v-wf:predicate "true () ";
+.	
+mnd-wf:flow_1_2
+	rdf:type v-wf:Flow ;
+	v-wf:flowsInto mnd-wf:task_2 ;
+	v-wf:predicate "false ()" ;
+.	
+mnd-wf:codelet_is_run
+	rdf:type v-s:Codelet ;
+	rdf:label "запущен ли процесс" ;
+	v-s:script """
+public Element execute(Element inData, List<YParameter> inParams, List<YParameter> outParams) throws CodeletExecutionException 
+{
+        // set the inputs passed in the base class
+        setInputs(inData, inParams, outParams);
+        
+        int max;
+        
+        try{
+            max = Integer.parseInt((String) getParameterValue("max"));
+        }
+        catch (ClassCastException cce) {
+            throw new CodeletExecutionException("Exception casting input values to " +
+                                                "int types.") ;
+        }
+                
+        //create a random number between 1 and max (input)
+        Random generator = new Random();
+        int r = generator.nextInt(max) + 1;
+        
+        //set the value for the output parameter
+        setParameterValue("r", String.valueOf(r));
+        
+        return getOutputData();
+};
+""" ;
+.	

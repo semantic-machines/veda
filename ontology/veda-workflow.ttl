@@ -80,12 +80,19 @@ v-wf:Variable
 	rdfs:label "Variable"@en ;
 	rdfs:label "Переменная"@ru ;
 .
-v-wf:net
+v-wf:belongsTo
 	rdf:type rdf:Property ;
-	rdfs:label "net"@en ;
-	rdfs:label "сеть"@ru ;
+	rdfs:label "belongs to..."@en ;
+	rdfs:label "принадлежит к..."@ru ;
 	rdfs:domain v-wf:NetElement ;
 	rdfs:range v-wf:Net ;
+.
+v-wf:hasFlow
+	rdf:type rdf:Property ;
+	rdfs:label "has flow"@en ;
+	rdfs:label "имеет поток"@ru ;
+	rdfs:domain v-wf:NetElement ;
+	rdfs:range v-wf:Flow ;
 .
 v-wf:variableName
 	rdf:type rdf:Property ;
@@ -213,11 +220,13 @@ v-wf:executor
 	rdfs:label "исполнитель"@ru ;
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:ExecutorDefinition ;
+	rdfs:range v-s:Appointment ;
+	rdfs:range v-s:Codelet ;
 .
 v-wf:executorExpression
 	rdf:type rdf:Property ;
 	rdfs:label "executor choice expression"@en ;
 	rdfs:label "выражение выбора исполнителя"@ru ;
-	rdfs:domain v-wf:Task ;
+	rdfs:domain v-wf:ExecutorDefinition ;
 	rdfs:range xsd:string ;
 .
