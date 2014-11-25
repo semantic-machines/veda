@@ -126,6 +126,13 @@ v-wf:None
 	rdf:type v-wf:TransitionBehavior ;
 	rdfs:label "None"^^xsd:string ;
 .
+v-wf:subNet
+	rdf:type rdf:Property ;
+	rdfs:label "subnet"@en ;
+	rdfs:label "подсеть"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:Net ;
+.
 v-wf:inputVariable
 	rdf:type rdf:Property ;
 	rdfs:label "input variable"@en ;
