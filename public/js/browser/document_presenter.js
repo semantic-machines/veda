@@ -4,11 +4,13 @@ Veda(function DocumentPresenter(veda) { "use strict";
 	
 	var cnt = 0;
 	
-	veda.on("document:loaded", function (document, container_param, template) {
+	veda.on("document:loaded", function (document, container_param, template, _mode) {
 		
 		console.log("document presenter:", ++cnt, document.id);
 		
 		var container = container_param || $("#main");
+		
+		var mode = _mode || "view";
 		
 		container.empty().hide();
 		
@@ -131,7 +133,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				
 				container.append(classTemplate);
 				
-				document.trigger("view");
+				document.trigger(mode);
 				
 				container.fadeIn(250);
 				
@@ -146,11 +148,20 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			if (value instanceof IndividualModel) {
 				setTimeout( function () {
 					
-					var lnk = new DocumentModel(veda, value, clone, relTemplate);
+					var lnk = new DocumentModel(veda, value, clone, relTemplate, mode);
 					if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) embedded.push(lnk);
 					
 					clone.attr("style", "position:relative");
-					var clear = $( $("#link-clear-button-template").html() ).hide();
+					var clear = $( $("#link-clear-button-template").html() );
+					
+					if (mode == "view") { 
+						clear.hide();
+					} else {
+						clear.hide();
+						clone.on("mouseenter", function () { clear.show(); });
+						clone.on("mouseleave", function () { clear.hide(); });
+					}
+					
 					clone.append(clear);
 					clear.on("click", function () {
 						clone.fadeOut(250, function () { clone.remove() });
@@ -165,7 +176,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						clear.hide();
 						clone.off("*");
 					});
-					document.trigger(mode);
 					
 				}, 0);
 			}
@@ -222,7 +232,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		}
 		
 		var property = veda.dictionary[property_uri],
-			template, renderedProperty;
+			template, emptyValue;
 
 		if ( !document[property_uri] ) document.defineProperty(property_uri);
 		var values = document[property_uri];
@@ -233,6 +243,303 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			case "xsd:string" : 
 				template = $("#string-control-template").html();
 
+				if (!values.length) values.push("");
+
+				values.map (function (value, index) {
+					
+					var $template = $(template),
+						$view = $(".view", $template),
+						$edit = $(".edit", $template);
+					
+					document.on("edit", function() {
+						$view.hide();
+						$edit.show();
+					});
+					document.on("view", function() {
+						$view.show();
+						$edit.hide();
+					});
+					
+					$(".remove", $template).on("click", function () {
+						var $target = $(this.parentNode);
+						$target.remove();
+						var bound = $(".edit > [bound]", container);
+						if (bound.length) return bound.first().trigger("change");
+						else document[property_uri] = [];
+					});
+
+					$(".add", $template).on("click", function () {
+						var emptyVal = new String(""); emptyVal.language = undefined;
+						values.push(emptyVal);
+						document[property_uri] = values;
+					});
+					
+					$("[bound]", $template)
+						.html(value)
+						.val(value)
+						.data("language", value.language)
+						.on("change", function ( e ) {
+							document[property.id] = $(".edit > [bound]", container).map(function () {
+								var res = new String(this.value);
+								res.language = $(this).data("language");
+								return res;
+							}).get();
+						});							
+					
+					$(".language-selector", $template).prepend(value.language);
+					
+					var $first = $("<li>").append( $("<a>", {href: "#", "data-language": "", text: "-"}).addClass("language") );
+					if (!value.language) $first.addClass("active");
+					$(".language-list", $template).append(
+						$first,
+						Object.keys(veda.availableLanguages).map(function (language_name) {
+							var $li = $("<li>"), 
+								$a = $("<a>", {href: "#", "data-language": language_name, text: language_name}).addClass("language");
+							$li.append($a);
+							if (value.language == language_name) $li.addClass("active");
+							return $li;
+						})
+					);
+					
+					$(".language", $template).on("click", function ( e ) {
+						e.preventDefault();
+						$(".language-selector", $template)
+							.empty()
+							.append($(this).data("language"), " <span class='caret'></span>");
+						$("textarea", $template)
+							.data("language", $(this).data("language") )
+							.trigger("change");
+					});
+					
+					$("textarea", $template)
+						.autosize()
+						.on("focus", function (event) {
+							$(this).trigger("autosize.resize");
+						});
+					
+					container.append($template);
+				});
+				
+				return; 
+				break
+
+			case "xsd:boolean" : 
+				template = $("#boolean-control-template").html();
+
+				if (!values.length) values.push(new Boolean(false));
+
+				values.map (function (value, index) {
+					var $template = $(template),
+						$view = $(".view", $template),
+						$edit = $(".edit", $template);
+						
+					document.on("edit", function() {
+						$view.hide();
+						$edit.show();
+					});
+					document.on("view", function() {
+						$view.show();
+						$edit.hide();
+					});
+					$("[bound]", $template)
+						.html(value)
+						.val(value)
+						.on("change", function ( e ) {
+							document[property_uri] = $(".edit > [bound]", container).map(function () {
+								return new Boolean(this.value == "true" ? true : false);
+							}).get();
+						});
+					container.append($template);
+				});
+				break
+		
+			case "xsd:nonNegativeInteger" : 
+			case "xsd:integer" : 
+				template = $("#integer-control-template").html();
+
+				if (!values.length) values.push(undefined);
+
+				values.map (function (value, index) {
+					var $template = $(template),
+						$view = $(".view", $template),
+						$edit = $(".edit", $template);
+						
+					document.on("edit", function() {
+						$view.hide();
+						$edit.show();
+					});
+					document.on("view", function() {
+						$view.show();
+						$edit.hide();
+					});
+					$("[bound]", $template)
+						.html(value)
+						.val(value)
+						.on("change", function ( e ) {
+							document[property_uri] = $(".edit > [bound]", container).map(function () {
+								var value = "", 
+									int = parseInt(this.value, 10);
+								if ( isNaN(int) == false ) value = new Number(int);
+								return value;
+							}).get();
+						});
+					container.append($template);
+				});
+				break
+			
+			case "xsd:decimal" : 
+				template = $("#decimal-control-template").html();
+
+				if (!values.length) values.push(undefined);
+				
+				values.map (function (value, index) {
+					var $template = $(template),
+						$view = $(".view", $template),
+						$edit = $(".edit", $template);
+						
+					document.on("edit", function() {
+						$view.hide();
+						$edit.show();
+					});
+					document.on("view", function() {
+						$view.show();
+						$edit.hide();
+					});
+					$("[bound]", $template)
+						.html(value)
+						.val(value)
+						.on("change", function ( e ) {
+							document[property_uri] = $(".edit > [bound]", container).map(function () {
+								var value = "", 
+									float = parseFloat(this.value);
+								if ( isNaN(float) == false ) value = new Number(float);
+								return value;
+							}).get();
+						});
+					container.append($template);
+				});
+				break
+
+			case "xsd:dateTime" : 
+				template = $("#datetime-control-template").html();
+
+				if (!values.length) values.push(undefined);
+				
+				values.map (function (value, index) {
+					var $template = $(template),
+						$view = $(".view", $template),
+						$edit = $(".edit", $template);
+						
+					document.on("edit", function() {
+						$view.hide();
+						$edit.show();
+					});
+					document.on("view", function() {
+						$view.show();
+						$edit.hide();
+					});
+					$("[bound]", $template)
+						.html(value)
+						.val(value)
+						.on("change", function ( e ) {
+							document[property_uri] = $(".edit > [bound]", container).map(function () {
+								var value = "", 
+									timestamp = Date.parse(this.value);
+								if ( isNaN(timestamp) == false ) value = new Date(timestamp);
+								return value;
+							}).get();
+						});
+					container.append($template);
+				});
+				break
+		}
+
+		$(".remove", container).on("click", function () {
+			var $target = $(this.parentNode);
+			$target.remove();
+			var bound = $(".edit > [bound]", container);
+			if (bound.length) return bound.first().trigger("change");
+			else document[property_uri] = [];
+		});
+		
+		$(".add", container).on("click", function () {
+			values.push(undefined);
+			document[property_uri] = values;
+		});
+
+	}
+	
+	function genericTemplate (_class) {
+		// Construct generic template
+		var template = $("<div/>").append( $("#generic-class-template").html() );
+		$(".properties", template).append (
+			Object.getOwnPropertyNames(_class.domainProperties).map( function (property_uri, index, array) {
+				var property = _class.domainProperties[property_uri];
+				if (property_uri == "rdfs:label") return;
+				
+				var result = $("<div/>").append( 
+					$("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
+				);
+				
+				switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
+					case "rdfs:Literal" : 
+					case "xsd:string" : 
+					case "xsd:boolean" : 
+					case "xsd:nonNegativeInteger" : 
+					case "xsd:integer" : 
+					case "xsd:decimal" : 
+					case "xsd:dateTime" :
+						result.append( $("<div/>", {"property": property_uri}) ); 
+					break
+					default:
+						result.append( $("<div/>", {"rel": property_uri}) ); 
+					break
+				}
+				
+				if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") ); 
+				
+				return result;
+			})
+		);
+		return template;
+	}
+
+
+
+
+
+
+
+/*
+
+	function renderProperty (document, property_uri, container) {
+		
+		if ( property_uri != 'id' && !veda.dictionary[property_uri] ) return;
+		
+		container.empty();
+		
+		if (property_uri == "id") { 
+			container.val(document[property_uri]).html(document[property_uri]); 
+			return;
+		}
+		
+		var property = veda.dictionary[property_uri],
+			template, emptyValue, valueParser;
+
+		if ( !document[property_uri] ) document.defineProperty(property_uri);
+		var values = document[property_uri];
+
+		switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
+
+			case "rdfs:Literal" : 
+			case "xsd:string" : 
+				
+				template = $("#string-control-template").html();
+				emptyValue = "";
+				valueParser = function (value) {
+					return
+				}
+				
 				if (!values.length) values.push("");
 
 				values.map (function (value, index) {
@@ -458,43 +765,60 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		});
 
 	}
-	
-	function genericTemplate (_class) {
-		// Construct generic template
-		var template = $("<div/>").append( $("#generic-class-template").html() );
-		$(".properties", template).append (
-			Object.getOwnPropertyNames(_class.domainProperties).map( function (property_uri, index, array) {
-				var property = _class.domainProperties[property_uri];
-				if (property_uri == "rdfs:label") return;
-				
-				var result = $("<div/>").append( 
-					$("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
-				);
-				
-				switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
-					case "rdfs:Literal" : 
-					case "xsd:string" : 
-					case "xsd:boolean" : 
-					case "xsd:nonNegativeInteger" : 
-					case "xsd:integer" : 
-					case "xsd:decimal" : 
-					case "xsd:dateTime" :
-						result.append( $("<div/>", {"property": property_uri}) ); 
-					break
-					default:
-						result.append( $("<div/>", {"rel": property_uri}) ); 
-					break
-				}
-				
-				if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") ); 
-				
-				return result;
-			})
-		);
-		return template;
+
+
+
+
+
+
+
+*/
+
+	function genericControl(options) {
+		
+		var template = $(templateName).html(),
+			$template = $(template),
+			$view = $(".view", $template),
+			$edit = $(".edit", $template),
+			$remove = $(".remove", $template),
+			$add = $(".add", $template);
+		
+		document.on("edit", function() {
+			$view.hide();
+			$edit.show();
+		});
+		document.on("view", function() {
+			$view.show();
+			$edit.hide();
+		});
+		
+		$remove.on("click", function () {
+			var $target = $(this.parentNode);
+			$target.remove();
+			var bound = $(".edit > [bound]", container);
+			if (bound.length) return bound.first().trigger("change");
+			else document[property_uri] = [];
+		});
+
+		$add.on("click", function () {
+			var emptyVal = new String(""); emptyVal.language = undefined;
+			values.push(emptyVal);
+			document[property_uri] = values;
+		});
+		
+		$("[bound]", $template)
+			.html(value)
+			.val(value)
+			.data("language", value.language)
+			.on("change", function ( e ) {
+				document[property.id] = $(".edit > [bound]", container).map(function () {
+					var res = new String(this.value);
+					res.language = $(this).data("language");
+					return res;
+				}).get();
+			});	
+		
+		return $template;
 	}
 
 });
-
-
-

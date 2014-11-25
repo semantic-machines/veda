@@ -2,7 +2,7 @@
 
 "use strict";
 
-function DocumentModel(veda, individual, container, template) {
+function DocumentModel(veda, individual, container, template, mode) {
 
 	var self;
 	
@@ -20,7 +20,7 @@ function DocumentModel(veda, individual, container, template) {
 		self["rdf:type"] = new IndividualModel(veda, "v-s:Document");
 	}*/
 
-	veda.trigger("document:loaded", self, container, template);
+	veda.trigger("document:loaded", self, container, template, mode);
 
 	return self;
 };
