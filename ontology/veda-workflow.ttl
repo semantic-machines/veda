@@ -75,6 +75,34 @@ v-wf:TransitionBehavior
 	rdfs:label "Transition behavior"@en ;
 	rdfs:label "Тип перехода"@ru ;
 .
+v-wf:Variable
+	rdf:type owl:Class ;
+	rdfs:label "Variable"@en ;
+	rdfs:label "Переменная"@ru ;
+.
+v-wf:net
+	rdf:type rdf:Property ;
+	rdfs:label "net"@en ;
+	rdfs:label "сеть"@ru ;
+	rdfs:domain v-wf:NetElement ;
+	rdfs:range v-wf:Net ;
+.
+v-wf:variableName
+	rdf:type rdf:Property ;
+	rdfs:label "variable name"@en ;
+	rdfs:label "имя переменной"@ru ;
+	rdfs:domain v-wf:Variable ;
+	rdfs:range xsd:string ;
+.
+v-wf:variableValue
+	rdf:type rdf:Property ;
+	rdfs:label "variable value"@en ;
+	rdfs:label "значение переменной"@ru ;
+	rdfs:domain v-wf:Variable ;
+	rdfs:range rdf:Resource ;
+.
+
+
 v-wf:XOR
 	rdf:type v-wf:TransitionBehavior ;
 	rdfs:label "XOR"^^xsd:string ;
@@ -97,7 +125,7 @@ v-wf:inputVariable
 	rdfs:label "входная переменная"@ru ;
 	rdfs:domain v-wf:Net ;
 	rdfs:domain v-wf:Task ;
-	rdfs:range rdf:Resource ;
+	rdfs:range v-wf:Variable ;
 .
 v-wf:outputVariable
 	rdf:type rdf:Property ;
@@ -105,7 +133,7 @@ v-wf:outputVariable
 	rdfs:label "выходная переменная"@ru ;
 	rdfs:domain v-wf:Net ;
 	rdfs:domain v-wf:Task ;
-	rdfs:range rdf:Resource ;
+	rdfs:range v-wf:Variable ;
 .
 v-wf:localVariable
 	rdf:type rdf:Property ;
@@ -113,7 +141,7 @@ v-wf:localVariable
 	rdfs:label "локальная переменная"@ru ;
 	rdfs:domain v-wf:Net ;
 	rdfs:domain v-wf:Task ;
-	rdfs:range rdf:Resource ;
+	rdfs:range v-wf:Variable ;
 .
 v-wf:inputOutputVariable
 	rdf:type rdf:Property ;
@@ -121,7 +149,7 @@ v-wf:inputOutputVariable
 	rdfs:label "входная / выходная переменная"@ru ;
 	rdfs:domain v-wf:Net ;
 	rdfs:domain v-wf:Task ;
-	rdfs:range rdf:Resource ;
+	rdfs:range v-wf:Variable ;
 .
 v-wf:split
 	rdf:type rdf:Property ;

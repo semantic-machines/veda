@@ -1,0 +1,57 @@
+# baseURI: http://semantic-machines.com/veda/mondi-workflow
+# imports: http://semantic-machines.com/veda/veda-workflow
+
+# c14n-version: 3
+@prefix mnd-wf: <http://semantic-machines.com/veda/mondi-workflow/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+
+<http://semantic-machines.com/veda/mondi-workflow>
+  rdf:type owl:Ontology ;
+  owl:imports <http://semantic-machines.com/veda/veda-workflow> ;
+  owl:versionInfo "1.0" ;
+  rdfs:label "Mondi workflow ontology"@en ;
+  rdfs:label "Онтология бизнес процессов Монди"@ru ;
+.
+mnd-wf:complex_route
+        rdf:type v-wf:Net ;
+	v-wf:inputVariable mnd-wf:var_doc_id ;
+	v-wf:inputVariable mnd-wf:var_initiator ;
+	v-wf:inputVariable mnd-wf:var_agreed_1 ;
+	v-wf:inputVariable mnd-wf:var_agreed_2 ;
+	v-wf:inputVariable mnd-wf:var_agreed_3 ;
+        rdfs:label "Complex route"@en ;
+        rdfs:label "Комплексный маршрут"@ru ;
+.
+mnd-wf:var_initiator
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "initiator" ;
+.
+mnd-wf:var_doc_id
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "doc_id" ;
+.
+mnd-wf:var_agreed_1
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "agreed_level_1" ;
+.
+mnd-wf:var_agreed_2
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "agreed_level_2" ;
+.
+mnd-wf:var_agreed_3
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "agreed_level_3" ;
+.
+mnd-wf:input_condition_1 
+	rdf:type v-wf:InputCondition ;
+	v-wf:net mnd-wf:complex_route ;
+.
+mnd-wf:task_1 
+	rdf:type v-wf:Task ;
+	rdf:label "Уже запущен?";
+	v-wf:net mnd-wf:complex_route ;
+.

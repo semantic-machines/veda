@@ -6,7 +6,8 @@ veda-schema.ttl
 veda-admin.ttl
 veda-ui.ttl
 veda-workflow.ttl
-mondi-schema.ttl
-mondi-data.ttl
-mondi-schema-sa.ttl
 veda-index.ttl
+mondi-schema.ttl
+mondi-schema-sa.ttl
+mondi-workflow.ttl
+mondi-data.ttl
