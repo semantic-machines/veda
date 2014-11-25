@@ -56,30 +56,35 @@ mnd-wf:output_condition_1
 .
 mnd-wf:task_1 
 	rdf:type v-wf:Task ;
-	rdf:label "Уже запущен?" ;
+	rdfs:label "Уже запущен?" ;
 	v-wf:executor mnd-wf:codelet_is_run ;
 	v-wf:net mnd-wf:complex_route ;
-	v-wf:hasFlow mnd-wf:flow_1_e ;
+	v-wf:hasFlow mnd-wf:flow_t1_t2 ;
+	v-wf:hasFlow mnd-wf:flow_t1_ce ;
 	v-wf:split v-wf:XOR ;	
 .
 mnd-wf:task_2 
 	rdf:type v-wf:Task ;
-	rdf:label "Запомнить и понизить права" ;
+	v-wf:executor rdfs:label "Запомнить и понизить права" ;
+	mnd-wf:codelet_store_down_right
 	v-wf:net mnd-wf:complex_route ;
+	v-wf:hasFlow mnd-wf:flow_t1_ce ;
 .
-mnd-wf:flow_1_e
+mnd-wf:flow_t1_ce
 	rdf:type v-wf:Flow ;
+	v-wf:net mnd-wf:complex_route ;
 	v-wf:flowsInto mnd-wf:output_condition_1 ;
 	v-wf:predicate "true () ";
 .	
-mnd-wf:flow_1_2
+mnd-wf:flow_t1_t2
 	rdf:type v-wf:Flow ;
+	v-wf:net mnd-wf:complex_route ;
 	v-wf:flowsInto mnd-wf:task_2 ;
 	v-wf:predicate "false ()" ;
 .	
 mnd-wf:codelet_is_run
 	rdf:type v-s:Codelet ;
-	rdf:label "запущен ли процесс" ;
+	rdfs:label "запущен ли процесс" ;
 	v-s:script """
 public Element execute(Element inData, List<YParameter> inParams, List<YParameter> outParams) throws CodeletExecutionException 
 {
@@ -107,3 +112,23 @@ public Element execute(Element inData, List<YParameter> inParams, List<YParamete
 };
 """ ;
 .	
+mnd-wf:codelet_store_down_right
+	rdf:type v-s:Codelet ;
+	rdfs:label "Запомнить и понизить права" ;
+	v-s:script """
+public Element execute(Element inData, List<YParameter> inParams, List<YParameter> outParams) throws CodeletExecutionException 
+{
+        return getOutputData();
+};
+""" ;
+.	
+mnd-wf:condition_1
+	rdf:type v-wf:Condition ;
+	v-wf:net mnd-wf:complex_route ;
+.
+mnd-wf:flow_t2_c1
+	rdf:type v-wf:Flow ;
+	v-wf:net mnd-wf:complex_route ;
+	v-wf:flowsInto mnd-wf:condition_1 ;
+.	
+
