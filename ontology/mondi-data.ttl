@@ -678,12 +678,12 @@ mnd-d:ClassNameLabelTemplate
   <div><a href="id"><span rel="rdf:type" template="mnd-d:LabelTemplate">Имя класса</span>: <span property="rdfs:label">наименование</span></a></div>
   """ ;
 .
-mnd-d:ClassNameLabelIdTemplate
+mnd-d:ClassNameIdTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с именем класса, меткой и id"@ru ;
   rdfs:label "Template with class name, label and id"@en ;
   v-ui:template """
-  <div><a href="id"><span rel="rdf:type" template="mnd-d:LabelTemplate">Имя класса</span>: <span property="rdfs:label">наименование</span>:&nbsp;<span property="id">id</span></a></div>
+  <div><a href="id"><span rel="rdf:type" template="mnd-d:LabelTemplate">Имя класса</span>: &nbsp;<span property="id">id</span></a></div>
   """ ;
 .
 mnd-d:PropertySpecification5
