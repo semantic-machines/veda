@@ -106,7 +106,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						:
 						new IndividualModel(veda, "mnd-d:ClassNameLabelTemplate");
 					if (!document[rel_uri] || !document[rel_uri][0] || !document[rel_uri][0]["rdfs:label"]) {
-						relTemplate = new IndividualModel(veda, "mnd-d:ClassNameLabelIdTemplate");
+						relTemplate = new IndividualModel(veda, "mnd-d:ClassNameIdTemplate");
 					}
 					
 					renderLink(document, rel_uri, relContainer, relTemplate, embedded);
