@@ -212,7 +212,7 @@ v-wf:mapsTo
 	rdfs:label "maps to"@en ;
 	rdfs:label "преобразуется в"@ru ;
 	rdfs:domain v-wf:Mapping ;
-	rdfs:range rdf:Resource ;
+	rdfs:range v-wf:Variable ;
 .
 v-wf:mappingExpression
 	rdf:type rdf:Property ;

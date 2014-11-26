@@ -62,6 +62,17 @@ mnd-wf:task_1
 	v-wf:hasFlow mnd-wf:flow_t1_t2 ;
 	v-wf:hasFlow mnd-wf:flow_t1_ce ;
 	v-wf:split v-wf:XOR ;	
+	v-wf:inputVariable mnd-wf:var_doc_id_t1 ;
+	v-wf:startingMapping mnd-wf:map_task_1_b ;
+.
+mnd-wf:var_doc_id_t1
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "doc_id" ;
+.
+mnd-wf:map_task_1_b
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_doc_id_t1 ;	
+	v-wf:mappingExpression	"net.getVariableValue ('var_doc_id')" ;
 .
 mnd-wf:task_2 
 	rdf:type v-wf:Task ;
