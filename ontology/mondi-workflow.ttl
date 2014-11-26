@@ -23,6 +23,7 @@ mnd-wf:net_complex_route
 	v-wf:inputVariable mnd-wf:var_agreed_1 ;
 	v-wf:inputVariable mnd-wf:var_agreed_2 ;
 	v-wf:inputVariable mnd-wf:var_agreed_3 ;
+	v-wf:localVariable mnd-wf:var_right_1 ;
         rdfs:label "Complex route"@en ;
         rdfs:label "Комплексный маршрут"@ru ;
 .
@@ -45,6 +46,10 @@ mnd-wf:var_agreed_2
 mnd-wf:var_agreed_3
         rdf:type v-wf:Variable ;
 	v-wf:variableName "agreed_level_3" ;
+.
+mnd-wf:var_right_1
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "original_right" ;
 .
 mnd-wf:input_condition_1 
 	rdf:type v-wf:InputCondition ;
@@ -72,7 +77,7 @@ mnd-wf:var_doc_id_t1
 mnd-wf:map_task_1_b
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t1 ;	
-	v-wf:mappingExpression	"net.getVariableValue ('var_doc_id')" ;
+	v-wf:mappingExpression	"net.getVariableValue ('doc_id')" ;
 .
 mnd-wf:task_2 
 	rdf:type v-wf:Task ;
@@ -80,7 +85,30 @@ mnd-wf:task_2
 	v-wf:executor mnd-wf:codelet_store_down_right ;
 	v-wf:net mnd-wf:net_complex_route ;
 	v-wf:hasFlow mnd-wf:flow_t1_ce ;
+	v-wf:inputVariable mnd-wf:var_doc_id_t2 ;
+	v-wf:outputVariable mnd-wf:var_t2_rights ;
+	v-wf:startingMapping mnd-wf:map_task_2_b ;
+	v-wf:completedMapping mnd-wf:map_task_2_e ;
 .
+mnd-wf:var_doc_id_t2
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "doc_id" ;
+.
+mnd-wf:var_t2_rights
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "rights" ;
+.
+mnd-wf:map_task_2_b
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_doc_id_t2 ;	
+	v-wf:mappingExpression	"net.getVariableValue ('doc_id')" ;
+.
+mnd-wf:map_task_2_e
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_right_1 ;	
+	v-wf:mappingExpression	"task.getVariableValue ('rights')" ;
+.
+
 mnd-wf:flow_t1_ce
 	rdf:type v-wf:Flow ;
 	v-wf:net mnd-wf:net_complex_route ;
