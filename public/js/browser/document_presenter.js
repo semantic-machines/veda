@@ -105,6 +105,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						new IndividualModel(veda, relTemplate) 
 						:
 						new IndividualModel(veda, "mnd-d:ClassNameLabelTemplate");
+					if (!document[rel_uri] || !document[rel_uri][0] || !document[rel_uri][0]["rdfs:label"]) {
+						relTemplate = new IndividualModel(veda, "mnd-d:ClassNameLabelIdTemplate");
+					}
 					
 					renderLink(document, rel_uri, relContainer, relTemplate, embedded);
 			
@@ -766,59 +769,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 	}
 
-
-
-
-
-
-
 */
 
-	function genericControl(options) {
-		
-		var template = $(templateName).html(),
-			$template = $(template),
-			$view = $(".view", $template),
-			$edit = $(".edit", $template),
-			$remove = $(".remove", $template),
-			$add = $(".add", $template);
-		
-		document.on("edit", function() {
-			$view.hide();
-			$edit.show();
-		});
-		document.on("view", function() {
-			$view.show();
-			$edit.hide();
-		});
-		
-		$remove.on("click", function () {
-			var $target = $(this.parentNode);
-			$target.remove();
-			var bound = $(".edit > [bound]", container);
-			if (bound.length) return bound.first().trigger("change");
-			else document[property_uri] = [];
-		});
-
-		$add.on("click", function () {
-			var emptyVal = new String(""); emptyVal.language = undefined;
-			values.push(emptyVal);
-			document[property_uri] = values;
-		});
-		
-		$("[bound]", $template)
-			.html(value)
-			.val(value)
-			.data("language", value.language)
-			.on("change", function ( e ) {
-				document[property.id] = $(".edit > [bound]", container).map(function () {
-					var res = new String(this.value);
-					res.language = $(this).data("language");
-					return res;
-				}).get();
-			});	
-		
-		return $template;
-	}
 
 });
