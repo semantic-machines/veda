@@ -23,6 +23,7 @@ mnd-wf:net_complex_route
 	v-wf:inputVariable mnd-wf:var_agreed_1 ;
 	v-wf:inputVariable mnd-wf:var_agreed_2 ;
 	v-wf:inputVariable mnd-wf:var_agreed_3 ;
+	v-wf:localVariable mnd-wf:var_right_1 ;
         rdfs:label "Complex route"@en ;
         rdfs:label "Комплексный маршрут"@ru ;
 .
@@ -46,13 +47,21 @@ mnd-wf:var_agreed_3
         rdf:type v-wf:Variable ;
 	v-wf:variableName "agreed_level_3" ;
 .
+mnd-wf:var_right_1
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "original_right" ;
+.
 mnd-wf:input_condition_1 
 	rdf:type v-wf:InputCondition ;
 	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:locationX 12 ;
+	v-wf:locationY 512 ;
 .
 mnd-wf:output_condition_1 
 	rdf:type v-wf:OutputCondition ;
 	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:locationX 992 ;
+	v-wf:locationY 324 ;
 .
 mnd-wf:task_1 
 	rdf:type v-wf:Task ;
@@ -62,6 +71,19 @@ mnd-wf:task_1
 	v-wf:hasFlow mnd-wf:flow_t1_t2 ;
 	v-wf:hasFlow mnd-wf:flow_t1_ce ;
 	v-wf:split v-wf:XOR ;	
+	v-wf:inputVariable mnd-wf:var_doc_id_t1 ;
+	v-wf:startingMapping mnd-wf:map_task_1_b ;
+	v-wf:locationX 84 ;
+	v-wf:locationY 512 ;
+.
+mnd-wf:var_doc_id_t1
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "doc_id" ;
+.
+mnd-wf:map_task_1_b
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_doc_id_t1 ;	
+	v-wf:mappingExpression	"net.getVariableValue ('doc_id')" ;
 .
 mnd-wf:task_2 
 	rdf:type v-wf:Task ;
@@ -69,7 +91,32 @@ mnd-wf:task_2
 	v-wf:executor mnd-wf:codelet_store_down_right ;
 	v-wf:net mnd-wf:net_complex_route ;
 	v-wf:hasFlow mnd-wf:flow_t1_ce ;
+	v-wf:inputVariable mnd-wf:var_doc_id_t2 ;
+	v-wf:outputVariable mnd-wf:var_t2_rights ;
+	v-wf:startingMapping mnd-wf:map_t2_b ;
+	v-wf:completedMapping mnd-wf:map_t2_e ;
+	v-wf:locationX 120 ;
+	v-wf:locationY 348 ;
 .
+mnd-wf:var_doc_id_t2
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "doc_id" ;
+.
+mnd-wf:var_t2_rights
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "rights" ;
+.
+mnd-wf:map_t2_b
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_doc_id_t2 ;	
+	v-wf:mappingExpression	"net.getVariableValue ('doc_id')" ;
+.
+mnd-wf:map_t2_e
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_right_1 ;	
+	v-wf:mappingExpression	"task.getVariableValue ('rights')" ;
+.
+
 mnd-wf:flow_t1_ce
 	rdf:type v-wf:Flow ;
 	v-wf:net mnd-wf:net_complex_route ;

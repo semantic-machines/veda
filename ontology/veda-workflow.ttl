@@ -108,7 +108,20 @@ v-wf:variableValue
 	rdfs:domain v-wf:Variable ;
 	rdfs:range rdf:Resource ;
 .
-
+v-wf:locationX
+	rdf:type rdf:Property ;
+	rdfs:label "location X"@en ;
+	rdfs:label "позиция по Х"@ru ;
+	rdfs:domain v-wf:NetElement ;
+	rdfs:range xsd:integer ;
+.
+v-wf:locationY
+	rdf:type rdf:Property ;
+	rdfs:label "location Y"@en ;
+	rdfs:label "позиция по Y"@ru ;
+	rdfs:domain v-wf:NetElement ;
+	rdfs:range xsd:integer ;
+.
 
 v-wf:XOR
 	rdf:type v-wf:TransitionBehavior ;
@@ -212,7 +225,7 @@ v-wf:mapsTo
 	rdfs:label "maps to"@en ;
 	rdfs:label "преобразуется в"@ru ;
 	rdfs:domain v-wf:Mapping ;
-	rdfs:range rdf:Resource ;
+	rdfs:range v-wf:Variable ;
 .
 v-wf:mappingExpression
 	rdf:type rdf:Property ;
