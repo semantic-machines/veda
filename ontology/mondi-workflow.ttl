@@ -16,6 +16,7 @@
   rdfs:label "Mondi workflow ontology"@en ;
   rdfs:label "Онтология бизнес процессов Монди"@ru ;
 .
+# --- begin ----------------------- NET Complex Route --------------------------------------- #
 mnd-wf:net_complex_route
         rdf:type v-wf:Net ;
 	v-wf:inputVariable mnd-wf:var_doc_id ;
@@ -51,21 +52,24 @@ mnd-wf:var_right_1
         rdf:type v-wf:Variable ;
 	v-wf:variableName "original_right" ;
 .
+# ------------------------------- NET Complex Route : Input Condition ----------------------------- #
 mnd-wf:input_condition_1 
 	rdf:type v-wf:InputCondition ;
 	v-wf:net mnd-wf:net_complex_route ;
 	v-wf:locationX 12 ;
 	v-wf:locationY 512 ;
 .
+# ------------------------------- NET Complex Route : Output Condition ---------------------------- #
 mnd-wf:output_condition_1 
 	rdf:type v-wf:OutputCondition ;
 	v-wf:net mnd-wf:net_complex_route ;
 	v-wf:locationX 992 ;
 	v-wf:locationY 324 ;
 .
+# ------------------------------- NET Complex Route : task "Проверить, запущен ли?" ---------------- #
 mnd-wf:task_1 
 	rdf:type v-wf:Task ;
-	rdfs:label "Уже запущен?" ;
+	rdfs:label "Проверить, запущен ли?" ;
 	v-wf:executor mnd-wf:codelet_is_run ;
 	v-wf:net mnd-wf:net_complex_route ;
 	v-wf:hasFlow mnd-wf:flow_t1_t2 ;
@@ -85,9 +89,22 @@ mnd-wf:map_task_1_b
 	v-wf:mapsTo mnd-wf:var_doc_id_t1 ;	
 	v-wf:mappingExpression	"net.getVariableValue ('doc_id')" ;
 .
+mnd-wf:flow_t1_ce
+	rdf:type v-wf:Flow ;
+	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:flowsInto mnd-wf:output_condition_1 ;
+	v-wf:predicate "true () ";
+.	
+mnd-wf:flow_t1_t2
+	rdf:type v-wf:Flow ;
+	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:flowsInto mnd-wf:task_2 ;
+	v-wf:predicate "false ()" ;
+.	
+# ------------------------------- NET Complex Route : task "понизить права" ------------------------- #
 mnd-wf:task_2 
 	rdf:type v-wf:Task ;
-	rdfs:label "Запомнить и понизить права" ;
+	rdfs:label "понизить права" ;
 	v-wf:executor mnd-wf:codelet_store_down_right ;
 	v-wf:net mnd-wf:net_complex_route ;
 	v-wf:hasFlow mnd-wf:flow_t1_ce ;
@@ -116,19 +133,39 @@ mnd-wf:map_t2_e
 	v-wf:mapsTo mnd-wf:var_right_1 ;	
 	v-wf:mappingExpression	"task.getVariableValue ('rights')" ;
 .
+# ------------------------------- NET Complex Route : condition 1 ---------------------------------- #
+mnd-wf:condition_1
+	rdf:type v-wf:Condition ;
+	v-wf:net mnd-wf:net_complex_route ;
+.
+mnd-wf:flow_t2_c1
+	rdf:type v-wf:Flow ;
+	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:flowsInto mnd-wf:condition_1 ;
+.	
+# ------------------------------- NET Complex Route : task "Согласование 1" ------------------------ #
+mnd-wf:task_3
+	rdf:type v-wf:Task ;
+	v-wf:net mnd-wf:net_complex_route ;
+	rdfs:label "Согласование 1" ;
+	v-wf:executor mnd-wf:executor_def_1 ;
+	v-wf:subNet mnd-wf:net_agree;
+.
+mnd-wf:executor_def_1
+	rdf:type v-wf:ExecutorDefinition ;
+	v-s:scipt "{}" ;
+.
+# --- end ----------------------- NET Complex Route --------------------------------------- #
 
-mnd-wf:flow_t1_ce
-	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
-	v-wf:flowsInto mnd-wf:output_condition_1 ;
-	v-wf:predicate "true () ";
-.	
-mnd-wf:flow_t1_t2
-	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
-	v-wf:flowsInto mnd-wf:task_2 ;
-	v-wf:predicate "false ()" ;
-.	
+# ------------------------------- NET Agree --------------------------------------------------------- #
+mnd-wf:net_agree
+        rdf:type v-wf:Net ;
+	v-wf:inputVariable mnd-wf:var_doc_id ;
+	v-wf:inputVariable mnd-wf:var_initiator ;
+	v-wf:inputVariable mnd-wf:var_agreed ;
+        rdfs:label "Маршрут подписание"@ru ;
+.
+# ------------------------------ CODELET : "запущен ли процесс" ------------------------------------- #
 mnd-wf:codelet_is_run
 	rdf:type v-s:Codelet ;
 	rdfs:label "запущен ли процесс" ;
@@ -159,6 +196,7 @@ public Element execute(Element inData, List<YParameter> inParams, List<YParamete
 };
 """ ;
 .	
+# ------------------------------ CODELET : "Запомнить и понизить права" ----------------------------- #
 mnd-wf:codelet_store_down_right
 	rdf:type v-s:Codelet ;
 	rdfs:label "Запомнить и понизить права" ;
@@ -169,31 +207,4 @@ public Element execute(Element inData, List<YParameter> inParams, List<YParamete
 };
 """ ;
 .	
-mnd-wf:condition_1
-	rdf:type v-wf:Condition ;
-	v-wf:net mnd-wf:net_complex_route ;
-.
-mnd-wf:flow_t2_c1
-	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
-	v-wf:flowsInto mnd-wf:condition_1 ;
-.	
-mnd-wf:task_3
-	rdf:type v-wf:Task ;
-	v-wf:net mnd-wf:net_complex_route ;
-	rdfs:label "Согласование 1" ;
-	v-wf:executor mnd-wf:executor_def_1 ;
-	v-wf:subNet mnd-wf:net_agree;
-.
-mnd-wf:executor_def_1
-	rdf:type v-wf:ExecutorDefinition ;
-	v-s:scipt "{}" ;
-.
-mnd-wf:net_agree
-        rdf:type v-wf:Net ;
-	v-wf:inputVariable mnd-wf:var_doc_id ;
-	v-wf:inputVariable mnd-wf:var_initiator ;
-	v-wf:inputVariable mnd-wf:var_agreed ;
-        rdfs:label "Маршрут подписание"@ru ;
-.
 
