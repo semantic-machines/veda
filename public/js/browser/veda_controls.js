@@ -1,63 +1,55 @@
 // Veda controls implemented as JQuery plugins
-(function( $ ) {
+(function( $ ) { "use strict";
 
 	// Generic control behaviour
-	$.fn.vedaControl = function( jq, options ) {
+	$.fn.vedaControl = function( $el, options ) {
+		var opts = $.extend( {}, $.fn.vedaControl.defaults, options ),
+			control = $(opts.template),
+			view = $(".view", control),
+			edit = $(".edit", control);
 
-		var opts = $.extend( {}, $.fn.vedaControl.defaults, options );
-		
-		var control = $(opts.template);
-		
-		view = $(".view", control),
-		edit = $(".edit", control);
-
-		jq.on("view", function () {
+		$el.on("view", function () {
 			view.show();
 			edit.hide();
 		});
-		jq.on("edit", function () {
+		$el.on("edit", function () {
 			view.hide();
 			edit.show();
 		});
 
 		$(".remove", control).on("click", function () {
-			jq.empty().remove();
+			$el.empty().remove();
 			opts.remove();
 		});
-
 		$(".add", control).on("click", function () {
 			opts.add();
 		});
-
+		$("[bound]", control)
+			.html(opts.value)
+			.val(opts.value)
+			.on("change", function ( e ) {
+				var value = opts.inputParser( this.value, this );
+				view.val(value.toString()).html(value.toString());
+				opts.change(value);
+			});	
 		return control;
-		
 	}
-	
 	$.fn.vedaControl.defaults = {
 		add: function () { alert("add") },
 		remove: function () { alert("remove") },
 		change: function (value) { alert(value) },
+		inputParser: function (input) {return input}
 	}
 
 	// String control
 	$.fn.vedaString = function( options ) {
-		
-		var opts = $.extend( {}, $.fn.vedaString.defaults, options );
+		var opts = $.extend( {}, $.fn.vedaString.defaults, options ),
+			control = $.fn.vedaControl(this, opts);
 
-		var control = $.fn.vedaControl(this, opts);
-		
-		$("[bound]", control)
-			.html(opts.value)
-			.val(opts.value)
-			.data("language", opts.value.language)
-			.on("change", function ( e ) {
-				var value = new String(this.value);
-				value.language = $(this).data("language");
-				opts.change(value);
-			});							
-		
+		$("[bound]", control).data("language", opts.value.language);
+
 		$(".language-selector", control).prepend(opts.value.language);
-		
+
 		var first = $("<li>").append( $("<a>", {href: "#", "data-language": "", text: "-"}).addClass("language") );
 		if (!opts.value.language) first.addClass("active");
 		$(".language-list", control).append(
@@ -88,125 +80,87 @@
 			});
 
 		this.append(control);
-		
 		return this;
 	};
-
 	$.fn.vedaString.defaults = {
 		value: new String(""),
 		template: $("#string-control-template").html(),
-		change: function (value) { alert(value) }
+		change: function (value) { alert(value + " : " + value.language) },
+		inputParser: function (input, el) {
+			var value = new String(input);
+			value.language = $(el).data("language");
+			return value;
+		}
 	};
 	
 	// Boolean control	
 	$.fn.vedaBoolean = function( options ) {
-		
-		var opts = $.extend( {}, $.fn.vedaBoolean.defaults, options );
-
-		var control = $.fn.vedaControl(this, opts);
-		
-		$("[bound]", control)
-			.html(opts.value)
-			.val(opts.value)
-			.on("change", function ( e ) {
-				var value = new Boolean(this.value == "true" ? true : false);
-				opts.change(value);
-			});						
-		
+		var opts = $.extend( {}, $.fn.vedaBoolean.defaults, options ),
+			control = $.fn.vedaControl(this, opts);
 		this.append(control);
-		
 		return this;
 	};
-
 	$.fn.vedaBoolean.defaults = {
 		value: new Boolean(false),
 		template: $("#boolean-control-template").html(),
-		change: function (value) { alert(value) }
+		inputParser: function (input) {
+			var value = new Boolean(input == "true" ? true : false);
+			return value;
+		}
 	};	
-	
+
 	// Integer control
 	$.fn.vedaInteger = function( options ) {
-		
-		var opts = $.extend( {}, $.fn.vedaInteger.defaults, options );
-
-		var control = $.fn.vedaControl(this, opts);
-		
-		$("[bound]", control)
-			.html(opts.value)
-			.val(opts.value)
-			.on("change", function ( e ) {
-				var value = "", 
-					int = parseInt(this.value, 10);
-				if ( isNaN(int) == false ) value = new Number(int);
-				opts.change(value);
-			});						
-		
+		var opts = $.extend( {}, $.fn.vedaInteger.defaults, options ),
+			control = $.fn.vedaControl(this, opts);
 		this.append(control);
-		
 		return this;
 	};
-
 	$.fn.vedaInteger.defaults = {
 		value: undefined,
 		template: $("#integer-control-template").html(),
-		change: function (value) { alert(value) }
+		inputParser: function (input) {
+			var value = "", 
+				int = parseInt(input, 10);
+			if ( isNaN(int) == false ) value = new Number(int);
+			return value;
+		}
 	};
 
 	// Decimal control
 	$.fn.vedaDecimal = function( options ) {
-		
-		var opts = $.extend( {}, $.fn.vedaDecimal.defaults, options );
-
-		var control = $.fn.vedaControl(this, opts);
-		
-		$("[bound]", control)
-			.html(opts.value)
-			.val(opts.value)
-			.on("change", function ( e ) {
-				var value = "", 
-					float = parseFloat(this.value);
-				if ( isNaN(float) == false ) value = new Number(float);
-				opts.change(value);
-			});						
-		
+		var opts = $.extend( {}, $.fn.vedaDecimal.defaults, options ),
+			control = $.fn.vedaControl(this, opts);
 		this.append(control);
-		
 		return this;
 	};
-
 	$.fn.vedaDecimal.defaults = {
 		value: undefined,
 		template: $("#decimal-control-template").html(),
-		change: function (value) { alert(value) }
+		inputParser: function (input) {
+			var value = "", 
+				float = parseFloat(input);
+			if ( isNaN(float) == false ) value = new Number(float);
+			return value;
+		}
 	};
 
 	// Datetime control
 	$.fn.vedaDatetime = function( options ) {
-		
-		var opts = $.extend( {}, $.fn.vedaDatetime.defaults, options );
-
-		var control = $.fn.vedaControl(this, opts);
-		
-		$("[bound]", control)
-			.html(opts.value)
-			.val(opts.value)
-			.on("change", function ( e ) {
-				var value = "", 
-					timestamp = Date.parse(this.value);
-				if ( isNaN(timestamp) == false ) value = new Date(timestamp);
-				opts.change(value);
-			});						
-		
+		var opts = $.extend( {}, $.fn.vedaDatetime.defaults, options ),
+			control = $.fn.vedaControl(this, opts);
 		this.append(control);
-		
 		return this;
 	};
-
 	$.fn.vedaDatetime.defaults = {
 		value: undefined,
 		template: $("#datetime-control-template").html(),
-		change: function (value) { alert(value) }
+		inputParser: function (input) {
+			var value = "", 
+				timestamp = Date.parse(input);
+			if ( isNaN(timestamp) == false ) value = new Date(timestamp);
+			return value;
+		}
 	};
 
 })( jQuery );
-
