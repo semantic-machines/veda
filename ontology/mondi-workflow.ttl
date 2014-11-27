@@ -113,7 +113,7 @@ mnd-wf:f_t1_t2
 mnd-wf:t2 
 	rdf:type v-wf:Task ;
 	rdfs:label "понизить права" ;
-	v-wf:executor mnd-wf:codelet_store_down_right ;
+	v-wf:executor mnd-wf:codelet_down_right ;
 	v-wf:net mnd-wf:net_complex_route ;
 	v-wf:hasFlow mnd-wf:f_t1_oc1 ;
 	v-wf:inputVariable mnd-wf:var_doc_id_t2 ;
@@ -451,6 +451,44 @@ mnd-wf:f_c3_t9
 	rdf:type v-wf:Flow ;
 	v-wf:net mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t9 ;
+.
+# ------------------------------- NET Complex Route : task "восстановить права" ------------------------ #
+mnd-wf:t9
+	rdf:type v-wf:Task ;
+	v-wf:net mnd-wf:net_complex_route ;
+	rdfs:label "восстановить права" ;
+	v-wf:executor mnd-wf:codelet_restore_right ;
+	v-wf:subNet mnd-wf:net_review;
+	v-wf:locationX 882 ;
+	v-wf:locationY 296 ;
+	v-wf:hasFlow mnd-wf:f_t9_oc1 ;
+	v-wf:inputVariable mnd-wf:var_doc_id_t9 ;
+	v-wf:inputVariable mnd-wf:var_t9_right ;
+	v-wf:startingMapping mnd-wf:map_t9_b1 ;
+	v-wf:startingMapping mnd-wf:map_t9_b2 ;
+.
+mnd-wf:var_doc_id_t9
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "docId" ;
+.
+mnd-wf:var_t9_right
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "originalRight" ;
+.
+mnd-wf:map_t9_b1
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_doc_id_t9 ;	
+	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
+.
+mnd-wf:map_t9_b2
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_t9_right ;	
+	v-wf:mappingExpression	"net.getVariableValue ('originalRight')" ;
+.
+mnd-wf:f_t9_oc1
+	rdf:type v-wf:Flow ;
+	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:flowsInto mnd-wf:oc1 ;
 .	
 # ------------------------------- NET Complex Route : Output Condition ---------------------------- #
 mnd-wf:oc1 
@@ -500,10 +538,21 @@ public Element execute(Element inData, List<YParameter> inParams, List<YParamete
 };
 """ ;
 .	
-# ------------------------------ CODELET : "Запомнить и понизить права" ----------------------------- #
-mnd-wf:codelet_store_down_right
+# ------------------------------ CODELET : "понизить права" ----------------------------- #
+mnd-wf:codelet_down_right
 	rdf:type v-s:Codelet ;
-	rdfs:label "Запомнить и понизить права" ;
+	rdfs:label "понизить права" ;
+	v-s:script """
+public Element execute(Element inData, List<YParameter> inParams, List<YParameter> outParams) throws CodeletExecutionException 
+{
+        return getOutputData();
+};
+""" ;
+.	
+# ------------------------------ CODELET : "восстановить права" ----------------------------- #
+mnd-wf:codelet_restore_right
+	rdf:type v-s:Codelet ;
+	rdfs:label "восстановить права" ;
 	v-s:script """
 public Element execute(Element inData, List<YParameter> inParams, List<YParameter> outParams) throws CodeletExecutionException 
 {
