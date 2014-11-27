@@ -74,6 +74,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 				document.on("save", function () {
 					document.save();
+					document.trigger("view");
 					$save.hide();
 					$cancel.hide();
 					$edit.show();
@@ -120,12 +121,14 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						property_uri = propertyContainer.attr("property"),
 						propertyTemplate = propertyContainer.attr("template");
 						
-					renderProperty(document, property_uri, propertyContainer);
+					renderProperty2(document, property_uri, propertyContainer, mode);
 					
+					/*
+					renderProperty(document, property_uri, propertyContainer, mode);
 					document.on(property_uri+":changed", function() {
 						renderProperty(document, property_uri, propertyContainer);
 						document.trigger("edit");
-					});
+					});*/
 
 				});
 				
@@ -222,7 +225,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		});
 
 	}
-	
+	/*
 	function renderProperty (document, property_uri, container) {
 		
 		if ( property_uri != 'id' && !veda.dictionary[property_uri] ) return;
@@ -470,7 +473,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			document[property_uri] = values;
 		});
 
-	}
+	}*/
 	
 	function genericTemplate (_class) {
 		// Construct generic template
@@ -508,10 +511,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 	}
 
 
-/*
+	function renderProperty2 (document, property_uri, container, mode) {
 
-	function renderProperty (document, property_uri, container) {
-		
 		if ( property_uri != 'id' && !veda.dictionary[property_uri] ) return;
 		
 		container.empty();
@@ -526,47 +527,51 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 		if ( !document[property_uri] ) document.defineProperty(property_uri);
 		var values = document[property_uri];
+		
+		var range = property["rdfs:range"][0].id;
+		var controlType, emptyVal;
+		range == "xsd:boolean"  			? 	(controlType = $.fn.vedaBoolean,  emptyVal = new Boolean(false) ) :
+		range == "xsd:integer"  			? 	(controlType = $.fn.vedaInteger,  emptyVal = undefined ) :
+		range == "xsd:nonNegativeInteger"   ? 	(controlType = $.fn.vedaInteger,  emptyVal = undefined ) :
+		range == "xsd:decimal"  			? 	(controlType = $.fn.vedaDecimal,  emptyVal = undefined ) :
+		range == "xsd:dateTime" 			? 	(controlType = $.fn.vedaDatetime, emptyVal = undefined ) :
+												(controlType = $.fn.vedaString,   emptyVal = new String("") ) ;
 
-		switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
-			case "rdfs:Literal" : case "xsd:string" : 
-				if (!values.length) values.push("");
-				values.map (function (value, index) {
-					var control = $("<span>").vedaString({value: value});
-					container.append(control);
-				});
-				break
-			case "xsd:boolean" : 
-				if (!values.length) values.push(new Boolean(false));
-				values.map (function (value, index) {
-					var control = $("<span>").vedaBoolean({value: value});
-					container.append(control);
-				});
-				break
-			case "xsd:nonNegativeInteger" : case "xsd:integer" : 
-				if (!values.length) values.push(undefined);
-				values.map (function (value, index) {
-					var control = $("<span>").vedaInteger({value: value});
-					container.append(control);
-				});
-				break
-			case "xsd:decimal" : 
-				if (!values.length) values.push(undefined);
-				values.map (function (value, index) {
-					var control = $("<span>").vedaDecimal({value: value});
-					container.append(control);
-				});
-				break
-			case "xsd:dateTime" : 
-				if (!values.length) values.push(undefined);
-				values.map (function (value, index) {
-					var control = $("<span>").vedaDatetime({value: value});
-					container.append(control);
-				});
-				break
+		if (!values.length) values.push( emptyVal );
+		var controls = values.map( renderControl );
+		
+		controls.map(function (item) {
+			item.trigger(mode);
+		});
+		
+		document.on("view edit", function (mode) {
+			controls.map(function (item) {
+				item.trigger(mode);
+			});
+		});
+		
+		function renderControl (value, index) {
+			var opts = {};
+			opts.value = value;
+			opts.change = function (value) {
+				values[index] = value;
+				document[property_uri] = values;
+			};
+			opts.add = function () {
+				values.push( emptyVal );
+				var control = renderControl(emptyVal, values.length);
+				controls.push(control);
+			};
+			opts.remove = function () {
+				values[index] = undefined;
+				controls.splice(index, 1);
+				document[property_uri] = values;
+			};
+			var control = controlType.call( $("<span>"), opts );
+			container.append(control);
+			return control;
 		}
+
 	}
-
-*/
-
 
 });

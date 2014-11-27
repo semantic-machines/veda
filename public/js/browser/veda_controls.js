@@ -6,24 +6,39 @@
 		var opts = $.extend( {}, $.fn.vedaControl.defaults, options ),
 			control = $(opts.template),
 			view = $(".view", control),
-			edit = $(".edit", control);
+			edit = $(".edit", control),
+			remove = $(".remove", control),
+			add = $(".add", control);
+			
+		$el
+			.on("view", function () {
+				view.show();
+				edit.hide();
+			})
+			.on("edit", function () {
+				view.hide();
+				edit.show();
+			})
+			.on("mouseenter", function () {
+				add.show();
+				remove.show();
+			})
+			.on("mouseleave", function () {
+				add.hide();
+				remove.hide();
+			});
 
-		$el.on("view", function () {
-			view.show();
-			edit.hide();
-		});
-		$el.on("edit", function () {
-			view.hide();
-			edit.show();
-		});
-
-		$(".remove", control).on("click", function () {
-			$el.empty().remove();
-			opts.remove();
-		});
-		$(".add", control).on("click", function () {
-			opts.add();
-		});
+		remove
+			.hide()
+			.on("click", function () {
+				$el.empty().remove();
+				opts.remove();
+			});
+		add
+			.hide()
+			.on("click", function () {
+				opts.add();
+			});
 		$("[bound]", control)
 			.html(opts.value)
 			.val(opts.value)
@@ -38,7 +53,8 @@
 		add: function () { alert("add") },
 		remove: function () { alert("remove") },
 		change: function (value) { alert(value) },
-		inputParser: function (input) {return input}
+		inputParser: function (input) {return input},
+		value: undefined
 	}
 
 	// String control
@@ -68,6 +84,8 @@
 			$(".language-selector", control)
 				.empty()
 				.append($(this).data("language"), " <span class='caret'></span>");
+			$(".language-list li", control).removeClass("active");
+			$(this).parent().addClass("active");
 			$("textarea", control)
 				.data("language", $(this).data("language") )
 				.trigger("change");
