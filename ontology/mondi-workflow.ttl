@@ -59,6 +59,11 @@ mnd-wf:ic1
 	v-wf:locationX 12 ;
 	v-wf:locationY 512 ;
 .
+mnd-wf:f_ic1_t1
+	rdf:type v-wf:Flow ;
+	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:flowsInto mnd-wf:t1 ;
+.	
 # ------------------------------- NET Complex Route : task "Проверить, запущен ли?" ---------------- #
 mnd-wf:t1 
 	rdf:type v-wf:Task ;
@@ -135,7 +140,26 @@ mnd-wf:f_t2_c1
 mnd-wf:c1
 	rdf:type v-wf:Condition ;
 	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:locationX 200 ;
+	v-wf:locationY 348 ;
 .
+mnd-wf:f_c1_t3
+	rdf:type v-wf:Flow ;
+	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:flowsInto mnd-wf:t3 ;
+.	
+# ------------------------------- NET Complex Route : condition 2 ---------------------------------- #
+mnd-wf:c2
+	rdf:type v-wf:Condition ;
+	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:locationX 420 ;
+	v-wf:locationY 76 ;
+.
+mnd-wf:f_c1_t3
+	rdf:type v-wf:Flow ;
+	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:flowsInto mnd-wf:t8 ;
+.	
 # ------------------------------- NET Complex Route : task "Согласование 1" ------------------------ #
 mnd-wf:t3
 	rdf:type v-wf:Task ;
@@ -145,25 +169,131 @@ mnd-wf:t3
 	v-wf:subNet mnd-wf:net_agree;
 	v-wf:locationX 272 ;
 	v-wf:locationY 332 ;
-	v-wf:hasFlow mnd-wf:f_t1_t2 ;
-	v-wf:hasFlow mnd-wf:f_t1_oc1 ;
+	v-wf:hasFlow mnd-wf:f_t3_c2 ;
+	v-wf:hasFlow mnd-wf:f_t3_t4 ;
 	v-wf:split v-wf:XOR ;	
+	v-wf:inputVariable mnd-wf:var_doc_id_t3 ;
+	v-wf:outputVariable mnd-wf:var_t3_res ;
+	v-wf:startingMapping mnd-wf:map_t3_b ;
+.
+mnd-wf:var_doc_id_t3
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "docId" ;
+.
+mnd-wf:var_t3_res
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "result" ;
+.
+mnd-wf:map_t3_b
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_doc_id_t3 ;	
+	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
 .
 mnd-wf:executor_def_1
 	rdf:type v-wf:ExecutorDefinition ;
 	v-s:scipt "net.getVariableValue ('agreedLevel1')" ;
 .
-mnd-wf:f_t3_oc1
+mnd-wf:f_t3_c2
 	rdf:type v-wf:Flow ;
 	v-wf:net mnd-wf:net_complex_route ;
-	v-wf:flowsInto mnd-wf:oc1 ;
-	v-wf:predicate "true () ";
+	v-wf:flowsInto mnd-wf:c2 ;
+	v-wf:predicate "eval (net.result == false)";
 .	
-mnd-wf:f_t3_t2
+mnd-wf:f_t3_t4
 	rdf:type v-wf:Flow ;
 	v-wf:net mnd-wf:net_complex_route ;
-	v-wf:flowsInto mnd-wf:t2 ;
-	v-wf:predicate "false ()" ;
+	v-wf:flowsInto mnd-wf:t4 ;
+	v-wf:predicate "eval (net.result == true)" ;
+.
+# ------------------------------- NET Complex Route : task "Согласование 2" ------------------------ #
+mnd-wf:t4
+	rdf:type v-wf:Task ;
+	v-wf:net mnd-wf:net_complex_route ;
+	rdfs:label "Согласование 2" ;
+	v-wf:executor mnd-wf:executor_def_2 ;
+	v-wf:subNet mnd-wf:net_agree;
+	v-wf:locationX 368 ;
+	v-wf:locationY 308 ;
+	v-wf:hasFlow mnd-wf:f_t4_c2 ;
+	v-wf:hasFlow mnd-wf:f_t4_t5 ;
+	v-wf:split v-wf:XOR ;	
+	v-wf:inputVariable mnd-wf:var_doc_id_t4 ;
+	v-wf:outputVariable mnd-wf:var_t4_res ;
+	v-wf:startingMapping mnd-wf:map_t4_b ;
+.
+mnd-wf:var_doc_id_t4
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "docId" ;
+.
+mnd-wf:var_t4_res
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "result" ;
+.
+mnd-wf:map_t4_b
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_doc_id_t4 ;	
+	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
+.
+mnd-wf:executor_def_2
+	rdf:type v-wf:ExecutorDefinition ;
+	v-s:scipt "net.getVariableValue ('agreedLevel2')" ;
+.
+mnd-wf:f_t4_c2
+	rdf:type v-wf:Flow ;
+	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:flowsInto mnd-wf:c2 ;
+	v-wf:predicate "eval (net.result == false)";
+.	
+mnd-wf:f_t4_t5
+	rdf:type v-wf:Flow ;
+	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:flowsInto mnd-wf:t5 ;
+	v-wf:predicate "eval (net.result == true)" ;
+.
+# ------------------------------- NET Complex Route : task "Согласование 3" ------------------------ #
+mnd-wf:t5
+	rdf:type v-wf:Task ;
+	v-wf:net mnd-wf:net_complex_route ;
+	rdfs:label "Согласование 3" ;
+	v-wf:executor mnd-wf:executor_def_3 ;
+	v-wf:subNet mnd-wf:net_agree;
+	v-wf:locationX 452 ;
+	v-wf:locationY 284 ;
+	v-wf:hasFlow mnd-wf:f_t5_c2 ;
+	v-wf:hasFlow mnd-wf:f_t5_t6 ;
+	v-wf:split v-wf:XOR ;	
+	v-wf:inputVariable mnd-wf:var_doc_id_t5 ;
+	v-wf:outputVariable mnd-wf:var_t5_res ;
+	v-wf:startingMapping mnd-wf:map_t5_b ;
+.
+mnd-wf:var_doc_id_t5
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "docId" ;
+.
+mnd-wf:var_t5_res
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "result" ;
+.
+mnd-wf:map_t5_b
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_doc_id_t5 ;	
+	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
+.
+mnd-wf:executor_def_3
+	rdf:type v-wf:ExecutorDefinition ;
+	v-s:scipt "net.getVariableValue ('agreedLevel3')" ;
+.
+mnd-wf:f_t5_c2
+	rdf:type v-wf:Flow ;
+	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:flowsInto mnd-wf:c2 ;
+	v-wf:predicate "eval (net.result == false)";
+.	
+mnd-wf:f_t5_t6
+	rdf:type v-wf:Flow ;
+	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:flowsInto mnd-wf:t6 ;
+	v-wf:predicate "eval (net.result == true)" ;
 .
 # ------------------------------- NET Complex Route : Output Condition ---------------------------- #
 mnd-wf:oc1 
@@ -172,7 +302,8 @@ mnd-wf:oc1
 	v-wf:locationX 992 ;
 	v-wf:locationY 324 ;
 .	
-# --- end ----------------------- NET Complex Route --------------------------------------- #
+	
+# --- end -------------------------- NET Complex Route ----------------------------------- end ---- #
 
 # ------------------------------- NET Agree --------------------------------------------------------- #
 mnd-wf:net_agree
