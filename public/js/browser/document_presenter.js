@@ -60,7 +60,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				document.off("view edit save cancel");
 				
 				// Trigger same events for embedded templates
-				document.on("edit save", function (event) {
+				document.on("view edit save", function (event) {
 					embedded.map(function (item) {
 						item.trigger(event);
 					});
@@ -121,15 +121,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						property_uri = propertyContainer.attr("property"),
 						propertyTemplate = propertyContainer.attr("template");
 						
-					renderProperty2(document, property_uri, propertyContainer, mode);
-					
-					/*
 					renderProperty(document, property_uri, propertyContainer, mode);
-					document.on(property_uri+":changed", function() {
-						renderProperty(document, property_uri, propertyContainer);
-						document.trigger("edit");
-					});*/
-
+					
 				});
 				
 				// Specials
@@ -225,9 +218,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		});
 
 	}
-	/*
-	function renderProperty (document, property_uri, container) {
-		
+
+	function renderProperty (document, property_uri, container, mode) {
+
 		if ( property_uri != 'id' && !veda.dictionary[property_uri] ) return;
 		
 		container.empty();
@@ -242,238 +235,57 @@ Veda(function DocumentPresenter(veda) { "use strict";
 
 		if ( !document[property_uri] ) document.defineProperty(property_uri);
 		var values = document[property_uri];
-
-		switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
-
-			case "rdfs:Literal" : 
-			case "xsd:string" : 
-				template = $("#string-control-template").html();
-
-				if (!values.length) values.push("");
-
-				values.map (function (value, index) {
-					
-					var $template = $(template),
-						$view = $(".view", $template),
-						$edit = $(".edit", $template);
-					
-					document.on("edit", function() {
-						$view.hide();
-						$edit.show();
-					});
-					document.on("view", function() {
-						$view.show();
-						$edit.hide();
-					});
-					
-					$(".remove", $template).on("click", function () {
-						var $target = $(this.parentNode);
-						$target.remove();
-						var bound = $(".edit > [bound]", container);
-						if (bound.length) return bound.first().trigger("change");
-						else document[property_uri] = [];
-					});
-
-					$(".add", $template).on("click", function () {
-						var emptyVal = new String(""); emptyVal.language = undefined;
-						values.push(emptyVal);
-						document[property_uri] = values;
-					});
-					
-					$("[bound]", $template)
-						.html(value)
-						.val(value)
-						.data("language", value.language)
-						.on("change", function ( e ) {
-							document[property.id] = $(".edit > [bound]", container).map(function () {
-								var res = new String(this.value);
-								res.language = $(this).data("language");
-								return res;
-							}).get();
-						});							
-					
-					$(".language-selector", $template).prepend(value.language);
-					
-					var $first = $("<li>").append( $("<a>", {href: "#", "data-language": "", text: "-"}).addClass("language") );
-					if (!value.language) $first.addClass("active");
-					$(".language-list", $template).append(
-						$first,
-						Object.keys(veda.availableLanguages).map(function (language_name) {
-							var $li = $("<li>"), 
-								$a = $("<a>", {href: "#", "data-language": language_name, text: language_name}).addClass("language");
-							$li.append($a);
-							if (value.language == language_name) $li.addClass("active");
-							return $li;
-						})
-					);
-					
-					$(".language", $template).on("click", function ( e ) {
-						e.preventDefault();
-						$(".language-selector", $template)
-							.empty()
-							.append($(this).data("language"), " <span class='caret'></span>");
-						$("textarea", $template)
-							.data("language", $(this).data("language") )
-							.trigger("change");
-					});
-					
-					$("textarea", $template)
-						.autosize()
-						.on("focus", function (event) {
-							$(this).trigger("autosize.resize");
-						});
-					
-					container.append($template);
-				});
-				
-				return; 
-				break
-
-			case "xsd:boolean" : 
-				template = $("#boolean-control-template").html();
-
-				if (!values.length) values.push(new Boolean(false));
-
-				values.map (function (value, index) {
-					var $template = $(template),
-						$view = $(".view", $template),
-						$edit = $(".edit", $template);
-						
-					document.on("edit", function() {
-						$view.hide();
-						$edit.show();
-					});
-					document.on("view", function() {
-						$view.show();
-						$edit.hide();
-					});
-					$("[bound]", $template)
-						.html(value)
-						.val(value)
-						.on("change", function ( e ) {
-							document[property_uri] = $(".edit > [bound]", container).map(function () {
-								return new Boolean(this.value == "true" ? true : false);
-							}).get();
-						});
-					container.append($template);
-				});
-				break
 		
-			case "xsd:nonNegativeInteger" : 
-			case "xsd:integer" : 
-				template = $("#integer-control-template").html();
+		var range = property["rdfs:range"][0].id;
+		var controlType, emptyVal;
+		range == "xsd:boolean"  			? 	(controlType = $.fn.vedaBoolean,  emptyVal = new Boolean(false) ) :
+		range == "xsd:integer"  			? 	(controlType = $.fn.vedaInteger,  emptyVal = undefined ) :
+		range == "xsd:nonNegativeInteger"   ? 	(controlType = $.fn.vedaInteger,  emptyVal = undefined ) :
+		range == "xsd:decimal"  			? 	(controlType = $.fn.vedaDecimal,  emptyVal = undefined ) :
+		range == "xsd:dateTime" 			? 	(controlType = $.fn.vedaDatetime, emptyVal = undefined ) :
+												(controlType = $.fn.vedaString,   emptyVal = new String("") ) ;
 
-				if (!values.length) values.push(undefined);
-
-				values.map (function (value, index) {
-					var $template = $(template),
-						$view = $(".view", $template),
-						$edit = $(".edit", $template);
-						
-					document.on("edit", function() {
-						$view.hide();
-						$edit.show();
-					});
-					document.on("view", function() {
-						$view.show();
-						$edit.hide();
-					});
-					$("[bound]", $template)
-						.html(value)
-						.val(value)
-						.on("change", function ( e ) {
-							document[property_uri] = $(".edit > [bound]", container).map(function () {
-								var value = "", 
-									int = parseInt(this.value, 10);
-								if ( isNaN(int) == false ) value = new Number(int);
-								return value;
-							}).get();
-						});
-					container.append($template);
+		if (!values.length) values.push( emptyVal );
+		var controls = values.map( renderControl );
+		
+		controls.map(function (item) {
+			item.trigger(mode);
+		});
+		
+		document.on("view edit", function (mode) {
+			controls
+				.filter(function (item) {
+					return !!item;
+				})
+				.map(function (item) {
+					item.trigger(mode);
 				});
-				break
-			
-			case "xsd:decimal" : 
-				template = $("#decimal-control-template").html();
-
-				if (!values.length) values.push(undefined);
-				
-				values.map (function (value, index) {
-					var $template = $(template),
-						$view = $(".view", $template),
-						$edit = $(".edit", $template);
-						
-					document.on("edit", function() {
-						$view.hide();
-						$edit.show();
-					});
-					document.on("view", function() {
-						$view.show();
-						$edit.hide();
-					});
-					$("[bound]", $template)
-						.html(value)
-						.val(value)
-						.on("change", function ( e ) {
-							document[property_uri] = $(".edit > [bound]", container).map(function () {
-								var value = "", 
-									float = parseFloat(this.value);
-								if ( isNaN(float) == false ) value = new Number(float);
-								return value;
-							}).get();
-						});
-					container.append($template);
-				});
-				break
-
-			case "xsd:dateTime" : 
-				template = $("#datetime-control-template").html();
-
-				if (!values.length) values.push(undefined);
-				
-				values.map (function (value, index) {
-					var $template = $(template),
-						$view = $(".view", $template),
-						$edit = $(".edit", $template);
-						
-					document.on("edit", function() {
-						$view.hide();
-						$edit.show();
-					});
-					document.on("view", function() {
-						$view.show();
-						$edit.hide();
-					});
-					$("[bound]", $template)
-						.html(value)
-						.val(value)
-						.on("change", function ( e ) {
-							document[property_uri] = $(".edit > [bound]", container).map(function () {
-								var value = "", 
-									timestamp = Date.parse(this.value);
-								if ( isNaN(timestamp) == false ) value = new Date(timestamp);
-								return value;
-							}).get();
-						});
-					container.append($template);
-				});
-				break
+		});
+		
+		function renderControl (value, index) {
+			var opts = {};
+			opts.value = value;
+			opts.change = function (value) {
+				values[index] = value;
+				document[property_uri] = values;
+			};
+			opts.add = function () {
+				values.push( emptyVal );
+				var control = renderControl(emptyVal, values.length-1);
+				controls.push(control);
+				control.trigger("edit");
+			};
+			opts.remove = function () {
+				values[index] = undefined;
+				controls[index] = undefined;
+				document[property_uri] = values;
+			};
+			var control = controlType.call( $("<span>"), opts );
+			container.append(control);
+			return control;
 		}
 
-		$(".remove", container).on("click", function () {
-			var $target = $(this.parentNode);
-			$target.remove();
-			var bound = $(".edit > [bound]", container);
-			if (bound.length) return bound.first().trigger("change");
-			else document[property_uri] = [];
-		});
-		
-		$(".add", container).on("click", function () {
-			values.push(undefined);
-			document[property_uri] = values;
-		});
-
-	}*/
+	}
 	
 	function genericTemplate (_class) {
 		// Construct generic template
@@ -508,70 +320,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			})
 		);
 		return template;
-	}
-
-
-	function renderProperty2 (document, property_uri, container, mode) {
-
-		if ( property_uri != 'id' && !veda.dictionary[property_uri] ) return;
-		
-		container.empty();
-		
-		if (property_uri == "id") { 
-			container.val(document[property_uri]).html(document[property_uri]); 
-			return;
-		}
-		
-		var property = veda.dictionary[property_uri],
-			template, emptyValue;
-
-		if ( !document[property_uri] ) document.defineProperty(property_uri);
-		var values = document[property_uri];
-		
-		var range = property["rdfs:range"][0].id;
-		var controlType, emptyVal;
-		range == "xsd:boolean"  			? 	(controlType = $.fn.vedaBoolean,  emptyVal = new Boolean(false) ) :
-		range == "xsd:integer"  			? 	(controlType = $.fn.vedaInteger,  emptyVal = undefined ) :
-		range == "xsd:nonNegativeInteger"   ? 	(controlType = $.fn.vedaInteger,  emptyVal = undefined ) :
-		range == "xsd:decimal"  			? 	(controlType = $.fn.vedaDecimal,  emptyVal = undefined ) :
-		range == "xsd:dateTime" 			? 	(controlType = $.fn.vedaDatetime, emptyVal = undefined ) :
-												(controlType = $.fn.vedaString,   emptyVal = new String("") ) ;
-
-		if (!values.length) values.push( emptyVal );
-		var controls = values.map( renderControl );
-		
-		controls.map(function (item) {
-			item.trigger(mode);
-		});
-		
-		document.on("view edit", function (mode) {
-			controls.map(function (item) {
-				item.trigger(mode);
-			});
-		});
-		
-		function renderControl (value, index) {
-			var opts = {};
-			opts.value = value;
-			opts.change = function (value) {
-				values[index] = value;
-				document[property_uri] = values;
-			};
-			opts.add = function () {
-				values.push( emptyVal );
-				var control = renderControl(emptyVal, values.length);
-				controls.push(control);
-			};
-			opts.remove = function () {
-				values[index] = undefined;
-				controls.splice(index, 1);
-				document[property_uri] = values;
-			};
-			var control = controlType.call( $("<span>"), opts );
-			container.append(control);
-			return control;
-		}
-
 	}
 
 });

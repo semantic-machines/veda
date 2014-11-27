@@ -7,8 +7,8 @@
 			control = $(opts.template),
 			view = $(".view", control),
 			edit = $(".edit", control),
-			remove = $(".remove", control),
-			add = $(".add", control);
+			add = $(".add", control),
+			remove = $(".remove", control);
 			
 		$el
 			.on("view", function () {
@@ -19,13 +19,22 @@
 				view.hide();
 				edit.show();
 			})
-			.on("mouseenter", function () {
+			.hover(function () {
+				add.toggle();
+				remove.toggle();
+			})
+			.on("focusin", function () {
+				$el.off("mouseenter mouseleave");
 				add.show();
 				remove.show();
 			})
-			.on("mouseleave", function () {
+			.on("focusout", function () {
 				add.hide();
 				remove.hide();
+				$el.hover(function () {
+					add.toggle();
+					remove.toggle();
+				});
 			});
 
 		remove
