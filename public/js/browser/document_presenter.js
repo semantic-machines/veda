@@ -142,7 +142,43 @@ Veda(function DocumentPresenter(veda) { "use strict";
 	
 	function renderLink (document, rel_uri, relContainer, relTemplate, embedded) {
 		
-		var renderValue = function (value, mode) {
+		relContainer.empty().hide();
+		
+		if ( !document[rel_uri] ) document.defineProperty(rel_uri);
+
+		if (document[rel_uri].length) {
+			document[rel_uri].map( function (value) {renderValue (value, "view")} );
+		}
+
+		var template = $( $("#link-control-template").html() );
+		template.hide();
+		relContainer.after(template);
+		
+		document.on("edit", function () {
+			template.show();
+		});
+		document.on("view", function () {
+			template.hide();
+		});
+
+		// Search modal
+		$(".search", template).on("click", function (e) {
+			var $modal = $("#search-modal");
+			var search = new SearchModel(veda, undefined, $(".modal-body", $modal) );
+			$modal.modal();
+			// Add found values
+			$("button#ok", $modal).on("click", function (e) {
+				$(this).off("click");
+				var selected = [];
+				for (var uri in search.selected) {
+					selected.push( search.selected[uri] );
+				}
+				document[rel_uri] = document[rel_uri].concat(selected);
+				selected.map( function (value) {renderValue (value, "edit")} );
+			});
+		});
+
+		function renderValue(value, mode) {
 			var clone = relContainer.clone();
 			if (value instanceof IndividualModel) {
 				setTimeout( function () {
@@ -180,42 +216,6 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			}
 			relContainer.before(clone.show());
 		}
-		
-		relContainer.empty().hide();
-		
-		if ( !document[rel_uri] ) document.defineProperty(rel_uri);
-
-		if (document[rel_uri].length) {
-			document[rel_uri].map( function (value) {renderValue (value, "view")} );
-		}
-
-		var template = $( $("#link-control-template").html() );
-		template.hide();
-		relContainer.after(template);
-		
-		document.on("edit", function () {
-			template.show();
-		});
-		document.on("view", function () {
-			template.hide();
-		});
-
-		// Search modal
-		$(".search", template).on("click", function (e) {
-			var $modal = $("#search-modal");
-			var search = new SearchModel(veda, undefined, $(".modal-body", $modal) );
-			$modal.modal();
-			// Add found values
-			$("button#ok", $modal).on("click", function (e) {
-				$(this).off("click");
-				var selected = [];
-				for (var uri in search.selected) {
-					selected.push( search.selected[uri] );
-				}
-				document[rel_uri] = document[rel_uri].concat(selected);
-				selected.map( function (value) {renderValue (value, "edit")} );
-			});
-		});
 
 	}
 

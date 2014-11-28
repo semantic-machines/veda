@@ -19,9 +19,13 @@
 				view.hide();
 				edit.show();
 			})
-			.hover(function () {
-				add.toggle();
-				remove.toggle();
+			.mouseenter(function () {
+				add.show();
+				remove.show();
+			})
+			.mouseleave(function () {
+				add.hide();
+				remove.hide();
 			})
 			.on("focusin", function () {
 				$el.off("mouseenter mouseleave");
@@ -29,12 +33,15 @@
 				remove.show();
 			})
 			.on("focusout", function () {
-				add.hide();
-				remove.hide();
-				$el.hover(function () {
-					add.toggle();
-					remove.toggle();
-				});
+				$el
+					.mouseenter(function () {
+						add.show();
+						remove.show();
+					})
+					.mouseleave(function () {
+						add.hide();
+						remove.hide();
+					});
 			});
 
 		remove
