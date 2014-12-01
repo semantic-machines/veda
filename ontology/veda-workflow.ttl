@@ -250,3 +250,16 @@ v-wf:executorExpression
 	rdfs:domain v-wf:ExecutorDefinition ;
 	rdfs:range xsd:string ;
 .
+v-wf:NetTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Сеть"@ru ;
+  rdfs:label "Template for Net class"@en ;
+  v-ui:forClass v-wf:Net ;
+  v-ui:embedded "false"^^xsd:boolean ;
+  v-ui:template """
+<div class="panel panel-default">
+  
+</div>
+
+  """ ;
+.
