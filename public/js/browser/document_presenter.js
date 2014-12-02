@@ -17,138 +17,128 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		// Embedded documents list
 		var embedded = [];
 				
-		/*var templates =  template_param ? (
-			[ $( template["v-ui:template"][0].toString() ) ]
-		) : (
-			document["rdf:type"]
+		var templates;
+
+		if (template_param) {
+			templates = [ $( template_param["v-ui:template"][0].toString() ) ];
+		} else {
+			templates = document["rdf:type"]
 				.filter( function (item) {
 					return item instanceof IndividualModel;
 				})
-				.map( function (item) { genericTemplate(document, item); });
-		)
-		 
-		
-		templates*/
-		document["rdf:type"]
-			.filter( function (item) {
-				return item instanceof IndividualModel;
-			})
-			.map( function (item) {
-				
-				var _class = new ClassModel(veda, item);
-				
-				var classTemplate;
-				
-				if (template_param) { 
-					classTemplate = $( template_param["v-ui:template"][0].toString() ); 
-				} else if (_class.documentTemplate["v-ui:template"]) {
-					// Get template from class
-					classTemplate = $( _class.documentTemplate["v-ui:template"][0].toString() );
-				} else {
-					// Construct generic template
-					classTemplate = genericTemplate(document, _class);
-				}
-				
-				// Actions
-				var $edit = $("#edit", classTemplate),
-					$save = $("#save", classTemplate),
-					$cancel = $("#cancel", classTemplate);
-				
-				$edit
-					.on("click", function (e) {
-						document.trigger("edit");
-					});
-				
-				$save.hide()
-					.on("click", function (e) {
-						document.trigger("save");
-					});
-				
-				$cancel.hide()
-					.on("click", function (e) {
-						document.trigger("cancel");
-					});
-				
-				document.off("view edit save cancel");
-				
-				// Trigger same events for embedded templates
-				document.on("view edit save", function (event) {
-					embedded.map(function (item) {
-						item.trigger(event);
-					});
-				});
-				
-				document.on("edit", function () {
-					$edit.hide();
-					$save.show();
-					$cancel.show();
-				});
-				
-				document.on("save", function () {
-					document.save();
-					document.trigger("view");
-					$save.hide();
-					$cancel.hide();
-					$edit.show();
-				});
-				
-				document.on("cancel", function () {
-					document.reset();
-				});
-				
-				// About
-				$("[about]", classTemplate).map( function () {
-					
-					var propertyContainer = $( this ), 
-						about = new IndividualModel(veda, propertyContainer.attr("about")),
-						property_uri = propertyContainer.attr("property");
-					if (property_uri == "id") propertyContainer.html( about[property_uri] );
-					else propertyContainer.html( about[property_uri].join(", ") );
-					
-				});
-				
-				// Object links				
-				$("[rel]", classTemplate).map( function () {
-					
-					var relContainer = $(this), 
-						rel_uri = relContainer.attr("rel"),
-						relTemplate = relContainer.attr("template");
-					
-					relTemplate = relTemplate ? 
-						new IndividualModel(veda, relTemplate) 
-						:
-						new IndividualModel(veda, "mnd-d:ClassNameLabelTemplate");
-					if (!document[rel_uri] || !document[rel_uri][0] || !document[rel_uri][0]["rdfs:label"]) {
-						relTemplate = new IndividualModel(veda, "mnd-d:ClassNameIdTemplate");
+				.map( function (item) { 
+					var _class = new ClassModel(veda, item);
+					if (_class.documentTemplate["v-ui:template"]) {
+						// Get template from class
+						return $( _class.documentTemplate["v-ui:template"][0].toString() );
 					}
-					
-					renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
-					
+					// Construct generic template
+					return genericTemplate(document, _class); 
+				})
+		}
+				 
+		templates.map( function (classTemplate) {
+			
+			// Actions
+			var $edit = $("#edit", classTemplate),
+				$save = $("#save", classTemplate),
+				$cancel = $("#cancel", classTemplate);
+			
+			$edit
+				.on("click", function (e) {
+					document.trigger("edit");
 				});
-				
-				// Properties
-				$("[property]", classTemplate).not("[about]").map( function () {
-					
-					var propertyContainer = $(this), 
-						property_uri = propertyContainer.attr("property"),
-						propertyTemplate = propertyContainer.attr("template");
-						
-					renderProperty(document, property_uri, propertyContainer, mode);
-					
+			
+			$save.hide()
+				.on("click", function (e) {
+					document.trigger("save");
 				});
-				
-				// Specials
-				$("[href='id']", classTemplate).map( function () {
-					$( this ).attr("href", "#/document/" + document.id);
+			
+			$cancel.hide()
+				.on("click", function (e) {
+					document.trigger("cancel");
 				});
+			
+			document.off("view edit save cancel");
+			
+			// Trigger same events for embedded templates
+			document.on("view edit save", function (event) {
+				embedded.map(function (item) {
+					item.trigger(event);
+				});
+			});
+			
+			document.on("edit", function () {
+				$edit.hide();
+				$save.show();
+				$cancel.show();
+			});
+			
+			document.on("save", function () {
+				document.save();
+				document.trigger("view");
+				$save.hide();
+				$cancel.hide();
+				$edit.show();
+			});
+			
+			document.on("cancel", function () {
+				document.reset();
+			});
+			
+			// About
+			$("[about]", classTemplate).map( function () {
 				
-				container.append(classTemplate);
-				
-				document.trigger(mode);
-				
-				container.fadeIn(250);
+				var propertyContainer = $( this ), 
+					about = new IndividualModel(veda, propertyContainer.attr("about")),
+					property_uri = propertyContainer.attr("property");
+				if (property_uri == "id") propertyContainer.html( about[property_uri] );
+				else propertyContainer.html( about[property_uri].join(", ") );
 				
 			});
+			
+			// Object links				
+			$("[rel]", classTemplate).map( function () {
+				
+				var relContainer = $(this), 
+					rel_uri = relContainer.attr("rel"),
+					relTemplate = relContainer.attr("template");
+				
+				relTemplate = relTemplate ? 
+					new IndividualModel(veda, relTemplate) 
+					:
+					new IndividualModel(veda, "mnd-d:ClassNameLabelTemplate");
+				if (!document[rel_uri] || !document[rel_uri][0] || !document[rel_uri][0]["rdfs:label"]) {
+					relTemplate = new IndividualModel(veda, "mnd-d:ClassNameIdTemplate");
+				}
+				
+				renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
+				
+			});
+			
+			// Properties
+			$("[property]", classTemplate).not("[about]").map( function () {
+				
+				var propertyContainer = $(this), 
+					property_uri = propertyContainer.attr("property"),
+					propertyTemplate = propertyContainer.attr("template");
+					
+				renderProperty(document, property_uri, propertyContainer, mode);
+				
+			});
+			
+			// Specials
+			$("[href='id']", classTemplate).map( function () {
+				$( this ).attr("href", "#/document/" + document.id);
+			});
+			
+			container.append(classTemplate);
+			
+			document.trigger(mode);
+			
+			container.fadeIn(250);
+			
+		});
 	});
 	
 	
@@ -168,6 +158,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				var clone = relContainer.clone();
 				var lnk = new DocumentModel(veda, undefined, clone, relTemplate, "edit");
 				embedded.push(lnk);
+				document[rel_uri] = document[rel_uri].concat(lnk);
 				relContainer.before(clone.show());
 			});
 		} else $(".add", template).hide();
@@ -180,6 +171,13 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		});
 		document.on("view", function () {
 			template.hide();
+		});
+		
+		$(".typeahead", template).on("keypress", function (e) {
+			var input = $( this );
+			var pos = input.position();
+			var t = $("<div>").attr("style", "position:absolute; height:100px; width:" + input.width() + ";left:" + pos.left + "px;top:" + (input.height() + 10) + "px; border:1px solid red" ).html("blah!");
+			input.after(t);
 		});
 		
 		// Search modal

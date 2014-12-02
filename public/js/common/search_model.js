@@ -49,6 +49,20 @@ function SearchModel(veda, q, container) {
 		// Clear previous results 
 		self.results = {};
 		
+		/*var results = query(veda.ticket, self.q);
+		for (var i in results) {
+			(function(i){
+				Object.defineProperty(self.results, i, {
+					get: function () { 
+						if (typeof results[i] == 'object') return results[i];
+						return results[i] = new SearchResultModel(veda, results[i]);
+					}
+				});
+			})(i);
+		}
+		self.results_count = results.length;
+		self.trigger("search:complete");
+		*/
 		query(veda.ticket, self.q, function (data) {
 			var results = data;
 			for (var i in results) {
