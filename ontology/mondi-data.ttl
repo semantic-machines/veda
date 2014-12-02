@@ -466,7 +466,7 @@ mnd-d:ValeriyBushenev-TechnicalDirector
 .
 mnd-d:SavedSearch1
   rdf:type v-s:SavedSearch ;
-  v-s:author mnd-d:RomanKarpov ;
+  v-s:author mnd-d:RomanKarpov-Analyst1 ;
   v-s:created "2014-08-01T15:22:21"^^xsd:dateTime ;
   v-s:query "owl" ;
   rdfs:label "Сохраненный запрос 1"@ru ;

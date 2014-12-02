@@ -323,12 +323,34 @@ v-wf:complete
 	rdfs:domain v-wf:NetInstance ;
 	rdfs:range v-wf:CompleteType ;
 .
-v-wf:belongsTo
+
+v-wf:inputVariable
 	rdf:type rdf:Property ;
-	rdfs:label "belongs to..."@en ;
-	rdfs:label "принадлежит к..."@ru ;
+	rdfs:label "input variable"@en ;
+	rdfs:label "входная переменная"@ru ;
 	rdfs:domain v-wf:NetInstance ;
-	rdfs:range v-wf:Net ;
+	rdfs:range v-wf:Variable ;
+.
+v-wf:outputVariable
+	rdf:type rdf:Property ;
+	rdfs:label "output variable"@en ;
+	rdfs:label "выходная переменная"@ru ;
+	rdfs:domain v-wf:NetInstance ;
+	rdfs:range v-wf:Variable ;
+.
+v-wf:localVariable
+	rdf:type rdf:Property ;
+	rdfs:label "local variable"@en ;
+	rdfs:label "локальная переменная"@ru ;
+	rdfs:domain v-wf:NetInstance ;
+	rdfs:range v-wf:Variable ;
+.
+v-wf:inputOutputVariable
+	rdf:type rdf:Property ;
+	rdfs:label "input/output variable"@en ;
+	rdfs:label "входная / выходная переменная"@ru ;
+	rdfs:domain v-wf:NetInstance ;
+	rdfs:range v-wf:Variable ;
 .
 # ---------------------------- Work Instance --------------------------------------------
 
