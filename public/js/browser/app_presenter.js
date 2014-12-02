@@ -25,6 +25,12 @@ Veda(function AppPresenter(veda) { "use strict";
 		set_trace(0, true);
 		$el.addClass("active");
 	});
+
+	// Clear local storage
+	$("#clear-storage").on("click", function (e) {
+		localStorage.clear();
+		location.reload();
+	});
 	
 	// Toggle language
 	veda.on("language:changed", function () {

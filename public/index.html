@@ -56,13 +56,16 @@
 				<a class="btn btn-xs btn-success navbar-btn navbar-left" id="set-trace">
 					<i class="glyphicon glyphicon-flash"></i> Trace
 				</a>
+				<a class="btn btn-xs btn-default navbar-btn navbar-left" id="clear-storage">
+					<i class="glyphicon glyphicon-trash"></i> Clear
+				</a>
 				<a class="btn btn-xs btn-danger navbar-btn navbar-right" id="logout">
 					<i class="glyphicon glyphicon-log-out"></i> <span i18n="[Logout]">Выйти</span>
 				</a>				
 				<div id="user-info" class="navbar-right"></div>
 			</div>
 		</nav>
-
+		
 		<!-- Main container -->
 		<div id="main" class="container-fluid"></div>
 		
@@ -242,15 +245,13 @@
 
 		<!-- Link control template -->
 		<script type="html/template" id="link-control-template">
-			<span>
-				<span class="edit input-group">
-					<span class="input-group-addon btn btn-default search"><i class="glyphicon glyphicon-search"></i></span>
-					<input type="text" class="form-control" />
-					<span class="input-group-addon btn btn-default add">
-						<i class="glyphicon glyphicon-plus"></i>
-					</span>
+			<div class="edit input-group" style="display:table">
+				<span class="input-group-addon btn btn-default search"><i class="glyphicon glyphicon-search"></i></span>
+				<input type="text" class="form-control" />
+				<span class="input-group-addon btn btn-default add">
+					<i class="glyphicon glyphicon-plus"></i>
 				</span>
-			</span>
+			</div>
 		</script>
 
 		<!-- Link clear button -->
@@ -264,7 +265,7 @@
 		<script type="html/template" id="string-control-template">
 			<span>
 				<span class="view" bound></span>
-				<span class="edit input-group">
+				<span class="edit input-group" style="display:table">
 					<span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown"> <span class="caret"></span></span>
 					<ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
 					</ul>
@@ -283,7 +284,7 @@
 		<script type="html/template" id="datetime-control-template">
 			<span>
 				<span class="view" bound></span>
-				<span class="edit input-group">
+				<span class="edit input-group" style="display:table">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-time"></i></span>
 					<input type="text" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
@@ -300,9 +301,9 @@
 		<script type="html/template" id="integer-control-template">
 			<span>
 				<span class="view" bound></span>
-				<span class="edit input-group">
+				<span class="edit input-group" style="display:table">
 					<span class="input-group-addon btn btn-default"><strong>#</strong></span>
-					<input type="text" class="form-control" value="{value}" bound />
+					<input type="text" class="form-control" bound />
 					<span class="input-group-addon btn btn-default remove">
 						<i class="glyphicon glyphicon-remove"></i>
 					</span>
@@ -317,7 +318,7 @@
 		<script type="html/template" id="decimal-control-template">
 			<span>
 				<span class="view" bound></span>
-				<span class="edit input-group">
+				<span class="edit input-group" style="display:table">
 					<span class="input-group-addon btn btn-default"><strong>#.#</strong></span>
 					<input type="text" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
@@ -334,7 +335,7 @@
 		<script type="html/template" id="boolean-control-template">
 			<span>
 				<span class="view" bound></span>
-				<span class="edit input-group">
+				<span class="edit input-group" style="display:table">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-ok"></i></span>
 					<input type="text" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
@@ -351,7 +352,7 @@
 		<script type="html/template" id="file-control-template">
 			<span>
 				<span class="view" bound></span>
-				<span class="edit input-group">
+				<span class="edit input-group" style="display:table">
 					<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-ok"></i></span>
 					<input type="file" class="form-control" value="{value}" bound />
 					<span class="input-group-addon btn btn-default remove">
@@ -370,8 +371,7 @@
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<div class="row">
-							<div class="col-md-4">
-								<span rel="rdf:type" template="mnd-d:LabelTemplate"></span>
+							<div class="col-md-4 className">
 							</div>
 							<div class="col-md-8 text-right text-muted">
 								<a href="id"><span property="id"></span></a>

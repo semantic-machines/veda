@@ -4,7 +4,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 	
 	var cnt = 0;
 	
-	veda.on("document:loaded", function (document, container_param, template, _mode) {
+	veda.on("document:loaded", function (document, container_param, template_param, _mode) {
 		
 		console.log("document presenter:", ++cnt, document.id);
 		
@@ -17,9 +17,21 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		// Embedded documents list
 		var embedded = [];
 				
+		/*var templates =  template_param ? (
+			[ $( template["v-ui:template"][0].toString() ) ]
+		) : (
+			document["rdf:type"]
+				.filter( function (item) {
+					return item instanceof IndividualModel;
+				})
+				.map( function (item) { genericTemplate(document, item); });
+		)
+		 
+		
+		templates*/
 		document["rdf:type"]
 			.filter( function (item) {
-				return item instanceof IndividualModel
+				return item instanceof IndividualModel;
 			})
 			.map( function (item) {
 				
@@ -27,16 +39,16 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				
 				var classTemplate;
 				
-				if (template) { 
-					classTemplate = $( template["v-ui:template"][0].toString() ); 
+				if (template_param) { 
+					classTemplate = $( template_param["v-ui:template"][0].toString() ); 
 				} else if (_class.documentTemplate["v-ui:template"]) {
 					// Get template from class
 					classTemplate = $( _class.documentTemplate["v-ui:template"][0].toString() );
 				} else {
 					// Construct generic template
-					classTemplate = genericTemplate(_class);
+					classTemplate = genericTemplate(document, _class);
 				}
-
+				
 				// Actions
 				var $edit = $("#edit", classTemplate),
 					$save = $("#save", classTemplate),
@@ -71,7 +83,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					$save.show();
 					$cancel.show();
 				});
-
+				
 				document.on("save", function () {
 					document.save();
 					document.trigger("view");
@@ -79,11 +91,11 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					$cancel.hide();
 					$edit.show();
 				});
-
+				
 				document.on("cancel", function () {
 					document.reset();
 				});
-
+				
 				// About
 				$("[about]", classTemplate).map( function () {
 					
@@ -92,9 +104,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						property_uri = propertyContainer.attr("property");
 					if (property_uri == "id") propertyContainer.html( about[property_uri] );
 					else propertyContainer.html( about[property_uri].join(", ") );
-
+					
 				});
-
+				
 				// Object links				
 				$("[rel]", classTemplate).map( function () {
 					
@@ -110,10 +122,10 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						relTemplate = new IndividualModel(veda, "mnd-d:ClassNameIdTemplate");
 					}
 					
-					renderLink(document, rel_uri, relContainer, relTemplate, embedded);
-			
+					renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
+					
 				});
-
+				
 				// Properties
 				$("[property]", classTemplate).not("[about]").map( function () {
 					
@@ -140,18 +152,27 @@ Veda(function DocumentPresenter(veda) { "use strict";
 	});
 	
 	
-	function renderLink (document, rel_uri, relContainer, relTemplate, embedded) {
+	function renderLink (document, rel_uri, relContainer, relTemplate, mode, embedded) {
 		
 		relContainer.empty().hide();
 		
 		if ( !document[rel_uri] ) document.defineProperty(rel_uri);
-
+		
 		if (document[rel_uri].length) {
-			document[rel_uri].map( function (value) {renderValue (value, "view")} );
+			document[rel_uri].map( function (value) {renderValue (value, mode)} );
 		}
-
+		
 		var template = $( $("#link-control-template").html() );
-		template.hide();
+		if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
+			$(".add", template).on("click", function () {
+				var clone = relContainer.clone();
+				var lnk = new DocumentModel(veda, undefined, clone, relTemplate, "edit");
+				embedded.push(lnk);
+				relContainer.before(clone.show());
+			});
+		} else $(".add", template).hide();
+		
+		if (mode == "view") template.hide();
 		relContainer.after(template);
 		
 		document.on("edit", function () {
@@ -160,7 +181,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		document.on("view", function () {
 			template.hide();
 		});
-
+		
 		// Search modal
 		$(".search", template).on("click", function (e) {
 			var $modal = $("#search-modal");
@@ -177,24 +198,27 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				selected.map( function (value) {renderValue (value, "edit")} );
 			});
 		});
-
+		
 		function renderValue(value, mode) {
 			var clone = relContainer.clone();
 			if (value instanceof IndividualModel) {
 				setTimeout( function () {
+					if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
+						var lnk = new DocumentModel(veda, value, clone, relTemplate, mode);
+						embedded.push(lnk);
+					} else {
+						var lnk = new DocumentModel(veda, value, clone, relTemplate);
+					}
 					
-					var lnk = new DocumentModel(veda, value, clone, relTemplate, mode);
-					if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) embedded.push(lnk);
-					
-					clone.attr("style", "position:relative");
+					clone.attr("style", "position:relative;");
 					var clear = $( $("#link-clear-button-template").html() );
 					
 					if (mode == "view") { 
 						clear.hide();
 					} else {
 						clear.hide();
-						clone.on("mouseenter", function () { clear.show(); });
-						clone.on("mouseleave", function () { clear.hide(); });
+						clone.on("mouseenter", function () { clear.show(); clone.toggleClass("bg-danger"); });
+						clone.on("mouseleave", function () { clear.hide(); clone.toggleClass("bg-danger"); });
 					}
 					
 					clone.append(clear);
@@ -204,23 +228,23 @@ Veda(function DocumentPresenter(veda) { "use strict";
 						if (embedded.length) embedded = embedded.filter(function (item) { return item != lnk });
 					});
 					document.on("edit", function () {
-						clone.on("mouseenter", function () { clear.show(); });
-						clone.on("mouseleave", function () { clear.hide(); });
+						clone.on("mouseenter", function () { clear.show(); clone.toggleClass("bg-danger"); });
+						clone.on("mouseleave", function () { clear.hide(); clone.toggleClass("bg-danger"); });
 					});
 					document.on("view", function () {
 						clear.hide();
-						clone.off("*");
+						clone.off();
 					});
 					
 				}, 0);
 			}
 			relContainer.before(clone.show());
 		}
-
+		
 	}
 
 	function renderProperty (document, property_uri, container, mode) {
-
+		
 		if ( property_uri != 'id' && !veda.dictionary[property_uri] ) return;
 		
 		container.empty();
@@ -232,7 +256,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		
 		var property = veda.dictionary[property_uri],
 			template, emptyValue;
-
+		
 		if ( !document[property_uri] ) document.defineProperty(property_uri);
 		var values = document[property_uri];
 		
@@ -244,7 +268,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		range == "xsd:decimal"  			? 	(controlType = $.fn.vedaDecimal,  emptyVal = undefined ) :
 		range == "xsd:dateTime" 			? 	(controlType = $.fn.vedaDatetime, emptyVal = undefined ) :
 												(controlType = $.fn.vedaString,   emptyVal = new String("") ) ;
-
+		
 		if (!values.length) values.push( emptyVal );
 		var controls = values.map( renderControl );
 		
@@ -284,16 +308,20 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			container.append(control);
 			return control;
 		}
-
+		
 	}
 	
-	function genericTemplate (_class) {
+	function genericTemplate (document, _class) {
 		// Construct generic template
 		var template = $("<div/>").append( $("#generic-class-template").html() );
+		$(".className", template).append (
+			$("<span/>", {"about": _class.id, "property": "rdfs:label"})
+		)
 		$(".properties", template).append (
 			Object.getOwnPropertyNames(_class.domainProperties).map( function (property_uri, index, array) {
 				var property = _class.domainProperties[property_uri];
 				if (property_uri == "rdfs:label") return;
+				if (property_uri == "rdfs:class") return;
 				
 				var result = $("<div/>").append( 
 					$("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
@@ -317,9 +345,10 @@ Veda(function DocumentPresenter(veda) { "use strict";
 				if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") ); 
 				
 				return result;
+				
 			})
 		);
 		return template;
 	}
-
+	
 });

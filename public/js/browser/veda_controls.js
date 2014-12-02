@@ -56,13 +56,23 @@
 				opts.add();
 			});
 		$("[bound]", control)
-			.html(opts.value)
+			.text(opts.value)
 			.val(opts.value)
 			.on("change", function ( e ) {
 				var value = opts.inputParser( this.value, this );
-				view.val(value.toString()).html(value.toString());
+				view
+					.val( escape(value.toString()) )
+					.html( escape(value.toString()) );
 				opts.change(value);
 			});	
+			
+		var render_escape = {'&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;'};
+		function escape(str) {
+			return str == null ? '' : (str+'').replace(/[&\"<>]/g, function(char) {
+				return render_escape[char];
+			});
+		}
+		
 		return control;
 	}
 	$.fn.vedaControl.defaults = {
