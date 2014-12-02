@@ -263,3 +263,79 @@ v-wf:NetTemplate
 
   """ ;
 .
+# ---------------------------- Complete Type --------------------------------------------
+v-wf:CompleteType
+	rdf:type owl:Class ;
+	rdfs:label "complete type"@en ;
+	rdfs:label "виды завершения"@ru ;
+.
+v-wf:Normal
+	rdf:type v-wf:CompleteType ;
+	rdfs:label "Normal" ;
+.
+v-wf:Fail
+	rdf:type v-wf:CompleteType ;
+	rdfs:label "Fail" ;
+.
+v-wf:Force
+	rdf:type v-wf:CompleteType ;
+	rdfs:label "Force" ;
+.
+# ---------------------------- Net Instance --------------------------------------------
+v-wf:NetInstance
+        rdf:type owl:Class ;
+        rdfs:label "Net Instance"@en ;
+        rdfs:label "Экземпляр сети"@ru ;
+.
+
+v-wf:startFrom
+	rdf:type rdf:Property ;
+	rdfs:label "start from"@en ;
+	rdfs:label "запуск по маршруту"@ru ;
+	rdfs:domain v-wf:NetInstance ;
+	rdfs:range v-wf:Net ;
+.
+v-wf:whoLaunched
+	rdf:type rdf:Property ;
+	rdfs:label "who launched"@en ;
+	rdfs:label "кто запустил"@ru ;
+	rdfs:domain v-wf:NetInstance ;
+	rdfs:range v-s:Appointment ;
+.
+v-wf:whenLaunched
+	rdf:type rdf:Property ;
+	rdfs:label "when launched"@en ;
+	rdfs:label "когда запустили"@ru ;
+	rdfs:domain v-wf:NetInstance ;
+	rdfs:range xsd:dateTime ;
+.
+v-wf:ready
+	rdf:type rdf:Property ;
+	rdfs:label "ready to run"@en ;
+	rdfs:label "готов к запуску"@ru ;
+	rdfs:domain v-wf:NetInstance ;
+	rdfs:range xsd:boolean ;
+.
+v-wf:complete
+	rdf:type rdf:Property ;
+	rdfs:label "complete"@en ;
+	rdfs:label "завершен"@ru ;
+	rdfs:domain v-wf:NetInstance ;
+	rdfs:range v-wf:CompleteType ;
+.
+v-wf:belongsTo
+	rdf:type rdf:Property ;
+	rdfs:label "belongs to..."@en ;
+	rdfs:label "принадлежит к..."@ru ;
+	rdfs:domain v-wf:NetInstance ;
+	rdfs:range v-wf:Net ;
+.
+# ---------------------------- Work Instance --------------------------------------------
+
+v-wf:WorkItem
+        rdf:type owl:Class ;
+        rdfs:label "Work Item"@en ;
+        rdfs:label "Рабочий экземпляр"@ru ;
+.
+
+

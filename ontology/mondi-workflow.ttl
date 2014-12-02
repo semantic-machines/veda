@@ -65,13 +65,13 @@ mnd-wf:var_right_1
 # ------------------------------- NET Complex Route : Input Condition ----------------------------- #
 mnd-wf:ic1 
 	rdf:type v-wf:InputCondition ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:locationX 12 ;
 	v-wf:locationY 512 ;
 .
 mnd-wf:f_ic1_t1
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t1 ;
 .	
 # ------------------------------- NET Complex Route : task "Проверить, запущен ли?" ---------------- #
@@ -79,7 +79,7 @@ mnd-wf:t1
 	rdf:type v-wf:Task ;
 	rdfs:label "Проверить, запущен ли?" ;
 	v-wf:executor mnd-wf:codelet_is_run ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:hasFlow mnd-wf:f_t1_t2 ;
 	v-wf:hasFlow mnd-wf:f_t1_oc1 ;
 	v-wf:split v-wf:XOR ;	
@@ -99,13 +99,13 @@ mnd-wf:map_task_1_b
 .
 mnd-wf:f_t1_oc1
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:oc1 ;
 	v-wf:predicate "true () ";
 .	
 mnd-wf:f_t1_t2
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t2 ;
 	v-wf:predicate "false ()" ;
 .	
@@ -114,7 +114,7 @@ mnd-wf:t2
 	rdf:type v-wf:Task ;
 	rdfs:label "понизить права" ;
 	v-wf:executor mnd-wf:codelet_down_right ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:hasFlow mnd-wf:f_t1_oc1 ;
 	v-wf:inputVariable mnd-wf:var_doc_id_t2 ;
 	v-wf:outputVariable mnd-wf:var_t2_rights ;
@@ -143,37 +143,37 @@ mnd-wf:map_t2_e
 .
 mnd-wf:f_t2_c1
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c1 ;
 .	
 # ------------------------------- NET Complex Route : condition 1 ---------------------------------- #
 mnd-wf:c1
 	rdf:type v-wf:Condition ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:locationX 200 ;
 	v-wf:locationY 348 ;
 .
 mnd-wf:f_c1_t3
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t3 ;
 .	
 # ------------------------------- NET Complex Route : condition 2 ---------------------------------- #
 mnd-wf:c2
 	rdf:type v-wf:Condition ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:locationX 420 ;
 	v-wf:locationY 76 ;
 .
 mnd-wf:f_c2_t8
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t8 ;
 .	
 # ------------------------------- NET Complex Route : task "Согласование 1" ------------------------ #
 mnd-wf:t3
 	rdf:type v-wf:Task ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	rdfs:label "Согласование 1" ;
 	v-wf:executor mnd-wf:executor_def_1 ;
 	v-wf:subNet mnd-wf:net_agree;
@@ -205,20 +205,20 @@ mnd-wf:executor_def_1
 .
 mnd-wf:f_t3_c2
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c2 ;
 	v-wf:predicate "eval (net.result == false)";
 .	
 mnd-wf:f_t3_t4
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t4 ;
 	v-wf:predicate "eval (net.result == true)" ;
 .
 # ------------------------------- NET Complex Route : task "Согласование 2" ------------------------ #
 mnd-wf:t4
 	rdf:type v-wf:Task ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	rdfs:label "Согласование 2" ;
 	v-wf:executor mnd-wf:executor_def_2 ;
 	v-wf:subNet mnd-wf:net_agree;
@@ -250,20 +250,20 @@ mnd-wf:executor_def_2
 .
 mnd-wf:f_t4_c2
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c2 ;
 	v-wf:predicate "eval (net.result == false)";
 .	
 mnd-wf:f_t4_t5
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t5 ;
 	v-wf:predicate "eval (net.result == true)" ;
 .
 # ------------------------------- NET Complex Route : task "Согласование 3" ------------------------ #
 mnd-wf:t5
 	rdf:type v-wf:Task ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	rdfs:label "Согласование 3" ;
 	v-wf:executor mnd-wf:executor_def_3 ;
 	v-wf:subNet mnd-wf:net_agree;
@@ -295,20 +295,20 @@ mnd-wf:executor_def_3
 .
 mnd-wf:f_t5_c2
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c2 ;
 	v-wf:predicate "eval (net.result == false)";
 .	
 mnd-wf:f_t5_t6
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t6 ;
 	v-wf:predicate "eval (net.result == true)" ;
 .
 # ------------------------------- NET Complex Route : task "Подписание" ------------------------ #
 mnd-wf:t6
 	rdf:type v-wf:Task ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	rdfs:label "Подписание" ;
 	v-wf:executor mnd-wf:executor_def_4 ;
 	v-wf:subNet mnd-wf:net_sing;
@@ -340,20 +340,20 @@ mnd-wf:executor_def_4
 .
 mnd-wf:f_t6_c2
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c2 ;
 	v-wf:predicate "eval (net.result == false)";
 .	
 mnd-wf:f_t6_t7
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t7 ;
 	v-wf:predicate "eval (net.result == true)" ;
 .
 # ------------------------------- NET Complex Route : task "Рассмотрение" ------------------------ #
 mnd-wf:t7
 	rdf:type v-wf:Task ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	rdfs:label "Рассмотрение" ;
 	v-wf:executor mnd-wf:executor_def_5 ;
 	v-wf:subNet mnd-wf:net_review;
@@ -385,20 +385,20 @@ mnd-wf:executor_def_5
 .
 mnd-wf:f_t7_c2
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c2 ;
 	v-wf:predicate "eval (net.result == false)";
 .	
 mnd-wf:f_t7_c3
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c3 ;
 	v-wf:predicate "eval (net.result == true)" ;
 .
 # ------------------------------- NET Complex Route : task "Доработать" ------------------------ #
 mnd-wf:t8
 	rdf:type v-wf:Task ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	rdfs:label "Доработать" ;
 	v-wf:executor mnd-wf:executor_def_6 ;
 	v-wf:subNet mnd-wf:net_review;
@@ -430,32 +430,32 @@ mnd-wf:executor_def_5
 .
 mnd-wf:f_t8_c3
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c3 ;
 	v-wf:predicate "eval (net.result == false)";
 .	
 mnd-wf:f_t8_c1
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c1 ;
 	v-wf:predicate "eval (net.result == true)" ;
 .
 # ------------------------------- NET Complex Route : condition 3 ---------------------------------- #
 mnd-wf:c3
 	rdf:type v-wf:Condition ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:locationX 800 ;
 	v-wf:locationY 296 ;
 .
 mnd-wf:f_c3_t9
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t9 ;
 .
 # ------------------------------- NET Complex Route : task "восстановить права" ------------------------ #
 mnd-wf:t9
 	rdf:type v-wf:Task ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	rdfs:label "восстановить права" ;
 	v-wf:executor mnd-wf:codelet_restore_right ;
 	v-wf:subNet mnd-wf:net_review;
@@ -487,13 +487,13 @@ mnd-wf:map_t9_b2
 .
 mnd-wf:f_t9_oc1
 	rdf:type v-wf:Flow ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:oc1 ;
 .	
 # ------------------------------- NET Complex Route : Output Condition ---------------------------- #
 mnd-wf:oc1 
 	rdf:type v-wf:OutputCondition ;
-	v-wf:net mnd-wf:net_complex_route ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:locationX 992 ;
 	v-wf:locationY 324 ;
 .		
