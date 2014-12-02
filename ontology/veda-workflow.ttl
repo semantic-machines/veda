@@ -323,13 +323,7 @@ v-wf:complete
 	rdfs:domain v-wf:NetInstance ;
 	rdfs:range v-wf:CompleteType ;
 .
-v-wf:belongsTo
-	rdf:type rdf:Property ;
-	rdfs:label "belongs to..."@en ;
-	rdfs:label "принадлежит к..."@ru ;
-	rdfs:domain v-wf:NetInstance ;
-	rdfs:range v-wf:Net ;
-.
+
 v-wf:inputVariable
 	rdf:type rdf:Property ;
 	rdfs:label "input variable"@en ;
