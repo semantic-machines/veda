@@ -106,14 +106,14 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					rel_uri = relContainer.attr("rel"),
 					relTemplate = relContainer.attr("template");
 				
-				relTemplate = relTemplate ? 
+				relTemplate = relTemplate ? (
 					new IndividualModel(veda, relTemplate) 
-					:
-					new IndividualModel(veda, "mnd-d:ClassNameLabelTemplate");
-				if (!document[rel_uri] || !document[rel_uri][0] || !document[rel_uri][0]["rdfs:label"]) {
-					relTemplate = new IndividualModel(veda, "mnd-d:ClassNameIdTemplate");
-				}
-				
+				) : (
+					!document[rel_uri] || !document[rel_uri][0] || !document[rel_uri][0]["rdfs:label"] ? 
+						new IndividualModel(veda, "mnd-d:ClassNameIdTemplate") 
+						: 
+						new IndividualModel(veda, "mnd-d:ClassNameLabelTemplate")
+				)
 				renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
 				
 			});

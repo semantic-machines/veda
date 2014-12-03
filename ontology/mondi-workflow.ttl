@@ -617,7 +617,7 @@ mnd-wf:var_reviewer_1_n1
         rdfs:label "рассматривающий"@ru ;
 .
 mnd-wf:var_right_1_n1
-        rdf:type v-wf:Variable ;
+    rdf:type v-wf:Variable ;
 	v-wf:variableName "originalRight" ;
 	v-wf:variableValue "no right" ;
 .

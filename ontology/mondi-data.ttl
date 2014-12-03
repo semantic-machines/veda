@@ -548,16 +548,20 @@ mnd-d:AppointmentTemplate1
 	    </div>
       </div>
       <div class="panel-body">
-        <h3 data-property="document.rdfs:label">Наменование</h3>
+        <h3 property="rdfs:label">Наменование</h3>
         <div class="row">
-          <div class="col-md-3" property="document.v-s:employee">Работник</div>
-          <div class="col-md-3" property="document.v-s:occupation">Должность</div>
+          <div class="col-md-6">
+            <div rel="v-s:employee">Работник</div>
+          </div>
+          <div class="col-md-6">
+            <div rel="v-s:occupation">Должность</div>
+          </div>
         </div>
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-sm btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
-        <button type="button" class="action btn btn-sm btn-success" id="save" i18n="[Save]">Сохранить</button>
-        <button type="button" class="action btn btn-sm btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
+        <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
+        <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
+        <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
       </div>
     </div>
   </div>

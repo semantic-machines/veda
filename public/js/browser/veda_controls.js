@@ -1,6 +1,13 @@
 // Veda controls implemented as JQuery plugins
 (function( $ ) { "use strict";
 
+	var render_escape = {'&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;'};
+	function escape(str) {
+		return str == null ? '' : (str+'').replace(/[&\"<>]/g, function(char) {
+			return render_escape[char];
+		});
+	}
+	
 	// Generic control behaviour
 	$.fn.vedaControl = function( $el, options ) {
 		var opts = $.extend( {}, $.fn.vedaControl.defaults, options ),
@@ -56,22 +63,15 @@
 				opts.add();
 			});
 		$("[bound]", control)
-			.text(opts.value)
+			.html(opts.value)
 			.val(opts.value)
 			.on("change", function ( e ) {
 				var value = opts.inputParser( this.value, this );
 				view
-					.val( escape(value.toString()) )
-					.html( escape(value.toString()) );
+					.val( value )
+					.html( value );
 				opts.change(value);
 			});	
-			
-		var render_escape = {'&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;'};
-		function escape(str) {
-			return str == null ? '' : (str+'').replace(/[&\"<>]/g, function(char) {
-				return render_escape[char];
-			});
-		}
 		
 		return control;
 	}
