@@ -465,7 +465,7 @@ v-wf:process_template_1
   v-ui:forClass v-wf:Process ;
   v-ui:template """
   <div>
-    <div class="panel panel-default" resource="id" typeof="class">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
@@ -478,6 +478,7 @@ v-wf:process_template_1
       </div>
       <div class="panel-body">
         <h3 property="rdfs:label">Наименование</h3>
+        <hr />
         <div class="row">
           <div class="col-md-12">
                <strong about="v-wf:instanceOf" property="rdfs:label" class="text-muted">экземпляр сети</strong>
@@ -491,12 +492,14 @@ v-wf:process_template_1
                <div rel="v-wf:inputVariable" template="v-wf:VariableTemplate">v-wf:VariableTemplate</div>
             </div>
         </div>
+        <hr />
         <div class="row">
             <div class="col-md-12">
                <strong class="text-muted" about="v-wf:localVariable" property="rdfs:label">Локальные переменные</strong>
                <div rel="v-wf:localVariable" template="v-wf:VariableTemplate">v-wf:VariableTemplate</div>
             </div>
         </div>
+        <hr />
         <div class="row">
             <div class="col-md-12">
                <strong class="text-muted" about="v-wf:outputVariable" property="rdfs:label">Выходные переменные</strong>

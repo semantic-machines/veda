@@ -17,6 +17,142 @@
   rdfs:label "Онтология бизнес процессов Монди"@ru ;
 .
 # --- begin ----------------------- NET Complex Route --------------------------------------- #
+
+mnd-wf:StartForm
+	rdf:type rdfs:Class ;
+	rdfs:label "Стартовая форма"@ru ;
+	rdfs:label "Start form"@en ;
+.
+mnd-wf:processed_document
+	rdf:type rdf:Property ;
+	rdfs:label "Обрабатываемый документ"@ru ;
+	rdfs:label "Processed document"@en ;
+	rdfs:domain mnd-wf:StartForm ;
+	rdfs:range v-s:Document ;
+.
+mnd-wf:process_initiator
+	rdf:type rdf:Property ;
+	rdfs:label "Инициатор процесса"@ru ;
+	rdfs:label "Process initiator"@en ;
+	rdfs:domain mnd-wf:StartForm ;
+	rdfs:range v-s:Appointment ;
+.
+mnd-wf:ComplexRouteStartForm
+	rdf:type rdfs:Class ;
+	rdfs:subClassOf mnd-wf:StartForm ;
+	rdfs:label "Стартовая форма сети Комплексный маршрут"@ru ;
+	rdfs:label "Complex route start form"@en ;
+.
+mnd-wf:ComplexRouteStartForm_coordinator1
+	rdf:type rdf:Property ;
+	rdfs:label "согласующий 1 уровня"@ru ;
+	rdfs:label "coordinator 1 level"@en ;
+	rdfs:domain mnd-wf:ComplexRouteStartForm ;
+	rdfs:range v-s:Appointment ;
+.
+mnd-wf:ComplexRouteStartForm_coordinator2
+	rdf:type rdf:Property ;
+	rdfs:label "согласующий 2 уровня"@ru ;
+	rdfs:label "coordinator 3 level"@en ;
+	rdfs:domain mnd-wf:ComplexRouteStartForm ;
+	rdfs:range v-s:Appointment ;
+.
+mnd-wf:ComplexRouteStartForm_coordinator3
+	rdf:type rdf:Property ;
+	rdfs:label "согласующий 3 уровня"@ru ;
+	rdfs:label "coordinator 3 level"@en ;
+	rdfs:domain mnd-wf:ComplexRouteStartForm ;
+	rdfs:range v-s:Appointment ;
+.
+mnd-wf:ComplexRouteStartForm_reviewer
+	rdf:type rdf:Property ;
+	rdfs:label "рассматривающий"@ru ;
+	rdfs:label "reviewer"@en ;
+	rdfs:domain mnd-wf:ComplexRouteStartForm ;
+	rdfs:range v-s:Appointment ;
+.
+mnd-wf:ComplexRouteStartForm_signer
+	rdf:type rdf:Property ;
+	rdfs:label "подписывающий"@ru ;
+	rdfs:label "signer"@en ;
+	rdfs:domain mnd-wf:ComplexRouteStartForm ;
+	rdfs:range v-s:Appointment ;
+.
+mnd-wf:ComplexRouteStartForm_1
+	rdf:type mnd-wf:ComplexRouteStartForm ; 
+	mnd-wf:process_initiator mnd-d:RomanKarpov-Analyst1 ; 
+	mnd-wf:processed_document mnd-d:SavedSearch1 ; 
+	mnd-wf:ComplexRouteStartForm_coordinator1 mnd-d:RomanKarpov-Analyst1 ; 
+	mnd-wf:ComplexRouteStartForm_coordinator2 mnd-d:ValeriyBushenev-Programmer1 ; 
+	mnd-wf:ComplexRouteStartForm_coordinator3 mnd-d:AndreyBychin-ExecutiveDirector ; 
+	mnd-wf:ComplexRouteStartForm_reviewer mnd-d:ValeriyBushenev-Programmer1 ; 
+	mnd-wf:ComplexRouteStartForm_signer mnd-d:AndreyBychin-ExecutiveDirector ; 
+.
+mnd-wf:ComplexRouteStartForm_Template
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон стартовых данных Комплексного маршрута"@ru ;
+  rdfs:label "Complex route start form template"@en ;
+  v-ui:forClass mnd-wf:ComplexRouteStartForm ;
+  v-ui:template """
+  <div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-6">
+	        <span about="mnd-wf:ComplexRouteStartForm" property="rdfs:label">Стартовая форма</span>
+  	      </div>  
+          <div class="col-md-6 text-right text-muted">
+                <a href="id"><span property="id">ID</span></a>
+	      </div>  
+	    </div>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+            <div class="col-md-4">
+               <strong class="text-muted" about="mnd-wf:process_initiator" property="rdfs:label">Инициатор</strong>
+               <div rel="mnd-wf:process_initiator" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+            </div>
+            <div class="col-md-4">
+               <strong class="text-muted" about="mnd-wf:processed_document" property="rdfs:label">Документ</strong>
+               <div rel="mnd-wf:processed_document">Ссылка на документ</div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-4">
+               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_coordinator1" property="rdfs:label">Согласующие 1 уровня</strong>
+               <div rel="mnd-wf:ComplexRouteStartForm_coordinator1" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+            </div>
+            <div class="col-md-4">
+               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_coordinator2" property="rdfs:label">Согласующие 2 уровня</strong>
+               <div rel="mnd-wf:ComplexRouteStartForm_coordinator2" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+            </div>
+            <div class="col-md-4">
+               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_coordinator3" property="rdfs:label">Согласующие 3 уровня</strong>
+               <div rel="mnd-wf:ComplexRouteStartForm_coordinator3" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-4">
+               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_reviewer" property="rdfs:label">Рассматривающий</strong>
+               <div rel="mnd-wf:ComplexRouteStartForm_reviewer" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+            </div>
+            <div class="col-md-4">
+               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_signer" property="rdfs:label">Подписывающий</strong>
+               <div rel="mnd-wf:ComplexRouteStartForm_signer" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+            </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
+        <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
+        <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
+      </div>
+    </div>
+  </div>
+  """ ;
+.
 mnd-wf:net_complex_route
         rdf:type v-wf:Net ;
 	v-wf:inputVariable mnd-wf:var_doc_id ;

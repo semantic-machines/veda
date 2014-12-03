@@ -567,6 +567,18 @@ mnd-d:AppointmentTemplate1
   </div>
   """ ;
 .
+mnd-d:AppointmentTemplate2
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон Назначения 2"@ru ;
+  rdfs:label "Appointment template 2"@en ;
+  v-ui:forClass v-s:Appointment ;
+  v-ui:template """
+	<div>
+		<span rel="v-s:employee" template="mnd-d:LabelTemplate">Работник</span>, 
+		<span rel="v-s:occupation" template="mnd-d:LabelTemplate">Должность</span>
+	</div>
+  """ ;
+.
 mnd-d:AccountTemplate1
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон Учетной записи"@ru ;
