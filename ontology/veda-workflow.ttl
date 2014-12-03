@@ -257,10 +257,107 @@ v-wf:NetTemplate
   v-ui:forClass v-wf:Net ;
   v-ui:embedded "false"^^xsd:boolean ;
   v-ui:template """
-<div class="panel panel-default">
-  
+<div class="container workflow-wrapper" style="">
+	<div class="row">
+		<div class="col-md-3" style="text-align: center;">
+			<div class="btn-group"
+				style="padding-top: 3px; padding-bottom: 30px; display: inline-block;">
+				<button type="button" class="btn btn-default create-state"
+					aria-label="Left Align">
+					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+				</button>
+				<button type="button" class="btn btn-default"
+					aria-label="Center Align">
+					<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+				</button>
+				<button type="button" class="btn btn-default"
+					aria-label="Right Align">
+					<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+				</button>
+			</div>
+			<form id="selected-item" class="form-horizontal">
+				<div class="form-group">
+					<div class="col-sm-2" style="margin-top: 7px;">ID</div>
+					<div class="col-sm-10">
+						<input id="item-id" class="form-control" type="text" readonly />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-2">
+						<span class="glyphicon glyphicon-pencil control-label"></span>
+					</div>
+					<div class="col-sm-10">
+						<input id="item-caption" class="form-control" type="text" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-2">
+						<span class="glyphicon glyphicon-tag control-label"></span>
+					</div>
+					<div class="col-sm-10">
+						<input id="item-label" class="form-control" type="text" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-2">
+						<span class="glyphicon glyphicon-log-out control-label"></span>
+					</div>
+					<div class="col-sm-10">
+						<div id="split-buttons" class="btn-group" data-toggle="buttons">
+							<label class="btn btn-default active"> 
+								<input type="radio" name="item-split-type" value="no" checked>NO
+							</label> 
+							<label class="btn btn-default"> 
+								<input type="radio" name="item-split-type" value="and">AND
+							</label> 
+							<label class="btn btn-default"> 
+								<input type="radio" name="item-split-type" value="xor">XOR
+							</label> 
+							<label class="btn btn-default"> 
+								<input type="radio" name="item-split-type" value="or">OR
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-2">
+						<span class="glyphicon glyphicon-log-in control-label"></span>
+					</div>
+					<div class="col-sm-10">
+						<div id="join-buttons" class="btn-group" data-toggle="buttons">
+							<label class="btn btn-default active"> 
+								<input type="radio" name="item-join-type" value="no" checked>NO
+							</label> 
+							<label class="btn btn-default"> 
+								<input type="radio" name="item-join-type" value="and">AND
+							</label> 
+							<label class="btn btn-default"> 
+								<input type="radio" name="item-join-type" value="xor">XOR
+							</label> 
+							<label class="btn btn-default"> 
+								<input type="radio" name="item-join-type" value="or">OR
+							</label>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div id="workflow-canvas-wrapper" class="col-md-9 workflow">
+			<div id="workflow-canvas">
+			</div>
+		</div>
+	</div>	
 </div>
+<script type="text/javascript">
+    var workflow;
+    // Create a new workflow instance as workflow1
+    workflow = new jsWorkflow.Instance();
 
+    // Initialize workflow1 with workflow container id
+    workflow.init('workflow-canvas');
+    
+    applyNetEditorFunctions();
+</script>
   """ ;
 .
 # ---------------------------- Complete Type --------------------------------------------
