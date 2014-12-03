@@ -569,9 +569,9 @@ public Element execute(Element inData, List<YParameter> inParams, List<YParamete
 .	
 # -------- стартовая форма маршрута ----------------
 
-mnd-wf:net_instance1
-	rdf:type v-wf:NetInstance ;
-	v-wf:startFrom mnd-wf:net_complex_route ;
+mnd-wf:process1
+	rdf:type v-wf:Process ;
+	v-wf:instanceOf mnd-wf:net_complex_route ;
 	v-wf:inputVariable mnd-wf:var_doc_id_n1 ;
 	v-wf:inputVariable mnd-wf:var_initiator_n1 ;
 	v-wf:inputVariable mnd-wf:var_agreed_1_n1 ;
@@ -581,31 +581,44 @@ mnd-wf:net_instance1
 	v-wf:localVariable mnd-wf:var_right_1_n1 ;
 .
 mnd-wf:var_initiator_n1
-        rdf:type mnd-wf:var_initiator ;
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "initiator" ;
+        rdfs:label "Инициатор"@ru ;
 	v-wf:variableValue mnd-d:RomanKarpov-Analyst1 ;
 .
 mnd-wf:var_doc_id_n1
-        rdf:type mnd-wf:var_doc_id ;
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "docId" ;
+        rdfs:label "документ"@ru ;
 	v-wf:variableValue mnd-d:SavedSearch1 ;
 .
 mnd-wf:var_agreed_1_n1
-        rdf:type mnd-wf:var_agreed_1 ;
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "agreedLevel1" ;
+        rdfs:label "список согласующих 1 уровень"@ru ;
 	v-wf:variableValue mnd-d:ValeriyBushenev-Programmer1 ;
 .
 mnd-wf:var_agreed_2_n1
-        rdf:type mnd-wf:var_agreed_2 ;
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "agreedLevel2" ;
+        rdfs:label "список согласующих 2 уровень"@ru ;
 	v-wf:variableValue mnd-d:AndreyBychin-ExecutiveDirector ;
 .
 mnd-wf:var_signer_1_n1
-        rdf:type mnd-wf:var_signer_1 ;
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "signer" ;
 	v-wf:variableValue mnd-d:ValeriyBushenev-Programmer1 ; 
+        rdfs:label "подписывающий"@ru ;
 .
 mnd-wf:var_reviewer_1_n1
-        rdf:type mnd-wf:var_reviewer_1 ;
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "reviewer" ;
 	v-wf:variableValue mnd-d:AndreyBychin-ExecutiveDirector ; 
+        rdfs:label "рассматривающий"@ru ;
 .
 mnd-wf:var_right_1_n1
-        rdf:type mnd-wf:var_right_1 ;
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "originalRight" ;
 	v-wf:variableValue "no right" ;
 .
 

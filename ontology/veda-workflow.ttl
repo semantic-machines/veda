@@ -282,45 +282,45 @@ v-wf:Force
 	rdfs:label "Force" ;
 .
 # ---------------------------- Net Instance --------------------------------------------
-v-wf:NetInstance
+v-wf:Process
         rdf:type owl:Class ;
-        rdfs:label "Net Instance"@en ;
-        rdfs:label "Экземпляр сети"@ru ;
+        rdfs:label "Process"@en ;
+        rdfs:label "Процесс"@ru ;
 .
 
-v-wf:startFrom
+v-wf:instanceOf
 	rdf:type rdf:Property ;
-	rdfs:label "start from"@en ;
-	rdfs:label "запуск по маршруту"@ru ;
-	rdfs:domain v-wf:NetInstance ;
+	rdfs:label "instance of"@en ;
+	rdfs:label "экземпляр сети"@ru ;
+	rdfs:domain v-wf:Process ;
 	rdfs:range v-wf:Net ;
 .
 v-wf:whoLaunched
 	rdf:type rdf:Property ;
 	rdfs:label "who launched"@en ;
 	rdfs:label "кто запустил"@ru ;
-	rdfs:domain v-wf:NetInstance ;
+	rdfs:domain v-wf:Process ;
 	rdfs:range v-s:Appointment ;
 .
 v-wf:whenLaunched
 	rdf:type rdf:Property ;
 	rdfs:label "when launched"@en ;
 	rdfs:label "когда запустили"@ru ;
-	rdfs:domain v-wf:NetInstance ;
+	rdfs:domain v-wf:Process ;
 	rdfs:range xsd:dateTime ;
 .
 v-wf:ready
 	rdf:type rdf:Property ;
 	rdfs:label "ready to run"@en ;
 	rdfs:label "готов к запуску"@ru ;
-	rdfs:domain v-wf:NetInstance ;
+	rdfs:domain v-wf:Process ;
 	rdfs:range xsd:boolean ;
 .
 v-wf:complete
 	rdf:type rdf:Property ;
 	rdfs:label "complete"@en ;
 	rdfs:label "завершен"@ru ;
-	rdfs:domain v-wf:NetInstance ;
+	rdfs:domain v-wf:Process ;
 	rdfs:range v-wf:CompleteType ;
 .
 
@@ -328,28 +328,28 @@ v-wf:inputVariable
 	rdf:type rdf:Property ;
 	rdfs:label "input variable"@en ;
 	rdfs:label "входная переменная"@ru ;
-	rdfs:domain v-wf:NetInstance ;
+	rdfs:domain v-wf:Process ;
 	rdfs:range v-wf:Variable ;
 .
 v-wf:outputVariable
 	rdf:type rdf:Property ;
 	rdfs:label "output variable"@en ;
 	rdfs:label "выходная переменная"@ru ;
-	rdfs:domain v-wf:NetInstance ;
+	rdfs:domain v-wf:Process ;
 	rdfs:range v-wf:Variable ;
 .
 v-wf:localVariable
 	rdf:type rdf:Property ;
 	rdfs:label "local variable"@en ;
 	rdfs:label "локальная переменная"@ru ;
-	rdfs:domain v-wf:NetInstance ;
+	rdfs:domain v-wf:Process ;
 	rdfs:range v-wf:Variable ;
 .
 v-wf:inputOutputVariable
 	rdf:type rdf:Property ;
 	rdfs:label "input/output variable"@en ;
 	rdfs:label "входная / выходная переменная"@ru ;
-	rdfs:domain v-wf:NetInstance ;
+	rdfs:domain v-wf:Process ;
 	rdfs:range v-wf:Variable ;
 .
 # ---------------------------- Work Instance --------------------------------------------
@@ -360,4 +360,60 @@ v-wf:WorkItem
         rdfs:label "Рабочий экземпляр"@ru ;
 .
 
-
+# --- ui template ---
+v-wf:process_template_1
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон стартовых данных маршрута"@ru ;
+  rdfs:label "Process template"@en ;
+  v-ui:forClass v-wf:Process ;
+  v-ui:embedded "true"^^xsd:boolean ;  
+  v-ui:template """
+  <div>
+    <div class="panel panel-default" resource="id" typeof="class">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-6">
+	        <span about="v-wf:Process" property="rdfs:label">Имя класса</span>
+  	      </div>  
+          <div class="col-md-6 text-right text-muted">
+                <a href="id"><span property="id">ID</span></a>
+	      </div>  
+	    </div>
+      </div>
+      <div class="panel-body">
+        <h3 property="rdfs:label">Наименование</h3>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+               <strong class="text-muted" about="v-wf:inputVariable" property="rdfs:label">Владелец</strong>
+               <div rel="v-s:owner" template="mnd-d:LabelTemplate">mnd-d:LabelTemplate</div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col-md-6">
+               <strong class="text-muted" about="v-s:mailbox" property="rdfs:label">E-mail</strong>
+               <div property="v-s:mailbox">address@example.com</div>
+          </div>
+          <div class="col-md-6">
+               <strong class="text-muted" about="v-s:login" property="rdfs:label">Логин</strong>
+               <div property="v-s:login">IvanovI</div>
+	  </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col-md-12">
+               <strong class="text-muted" about="v-s:password" property="rdfs:label">Пароль</strong>
+               <div property="v-s:password">PaSsWoRd</div>
+          </div>
+        </div>
+      </div>
+      <!--div class="panel-footer">
+        <button type="button" class="action btn btn-sm btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
+        <button type="button" class="action btn btn-sm btn-success" id="save" i18n="[Save]">Сохранить</button>
+        <button type="button" class="action btn btn-sm btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
+      </div-->
+    </div>
+  </div>
+  """ ;
+.
