@@ -486,15 +486,19 @@ v-wf:process_template_1
         </div>
         <hr />
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-12">
                <strong class="text-muted" about="v-wf:inputVariable" property="rdfs:label">Входные переменные</strong>
                <div rel="v-wf:inputVariable" template="v-wf:VariableTemplate">v-wf:VariableTemplate</div>
             </div>
-            <div class="col-md-4">
+        </div>
+        <div class="row">
+            <div class="col-md-12">
                <strong class="text-muted" about="v-wf:localVariable" property="rdfs:label">Локальные переменные</strong>
                <div rel="v-wf:localVariable" template="v-wf:VariableTemplate">v-wf:VariableTemplate</div>
             </div>
-            <div class="col-md-4">
+        </div>
+        <div class="row">
+            <div class="col-md-12">
                <strong class="text-muted" about="v-wf:outputVariable" property="rdfs:label">Выходные переменные</strong>
                <div rel="v-wf:outputVariable" template="v-wf:VariableTemplate">v-wf:VariableTemplate</div>
             </div>
