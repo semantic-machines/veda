@@ -47,3 +47,125 @@ fieldset[disabled] .form-control {
   height:auto;
   padding: 0;
 }
+
+/* [BEGIN] NET EDITOR */
+
+.w { 	
+	min-width: 100px;
+	min-height: 50px;
+	padding:16px;
+	position:absolute;
+	z-index:4;
+	border:1px solid #2e6f9a;
+	box-shadow: 2px 2px 19px #e0e0e0;
+	-o-box-shadow: 2px 2px 19px #e0e0e0;
+	-webkit-box-shadow: 2px 2px 19px #e0e0e0;
+	-moz-box-shadow: 2px 2px 19px #e0e0e0;
+	-moz-border-radius:8px;
+	border-radius:8px;
+	opacity:0.8;
+	filter:alpha(opacity=80);
+	cursor:move;
+	background-color:white;
+	font-size:11px;
+	-webkit-transition:background-color 0.25s ease-in;
+	-moz-transition:background-color 0.25s ease-in;
+	transition:background-color 0.25s ease-in;	
+	text-align: center;
+}
+
+.w:hover {
+	color:red;
+        font-weight: bold;
+}
+
+.w_active {
+	color: #FF0000;
+        font-weight: bold;
+}
+
+.aLabel {
+	-webkit-transition:background-color 0.25s ease-in;
+	-moz-transition:background-color 0.25s ease-in;
+	transition:background-color 0.25s ease-in;
+}
+
+.aLabel._jsPlumb_hover, ._jsPlumb_source_hover, ._jsPlumb_target_hover {
+	color:red;
+        font-weight: bold;
+}
+
+.aLabel {
+	background-color:white;
+	opacity:0.8;
+	padding:0.3em;				
+	border-radius:0.5em;
+	border:1px solid #bbb;
+	cursor:pointer;
+}
+
+.ep {
+	position:absolute;
+	bottom: 37%;
+	right: 4px;
+	width:11px;
+	height:11px;
+	background-color:#bbb;
+	cursor:pointer;
+	box-shadow: 0px 0px 2px black;
+	-webkit-transition:-webkit-box-shadow 0.25s ease-in;
+	-moz-transition:-moz-box-shadow 0.25s ease-in;
+	transition:box-shadow 0.25s ease-in;
+}
+
+.ep:hover {
+	box-shadow: 0px 0px 6px black;
+}
+
+._jsPlumb_endpoint {
+	z-index:3;
+}
+
+.dragHover { 
+	border:2px solid #bbb; 
+}
+
+path { 
+	cursor:pointer; 
+}
+
+.aLabel {
+	display: none;
+}
+
+._jsPlumb_connector { z-index:18 !important; }
+._jsPlumb_endpoint { z-index:19 !important; }
+._jsPlumb_overlay { z-index:20 !important; }
+
+
+.split-join {
+   background-repeat:no-repeat;
+   background-position:center center;
+   background-size: 100% 100%, auto;
+}
+
+.workflow-wrapper {
+	height:100%;
+}
+
+#workflow-canvas-wrapper {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    height: 800px;
+}
+#workflow-canvas {
+	margin: 2px;
+	overflow-x:scroll;
+	overflow-y:scroll;
+	position: relative;
+    height: 99%;
+    border: 1px solid black;
+    border-radius: 8px;
+}
+/* [END] NET EDITOR */
