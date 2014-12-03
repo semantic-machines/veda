@@ -14,14 +14,14 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		
 		container.empty().hide();
 		
-		// Embedded documents list
+		// Embedded templates list
 		var embedded = [];
 				
 		var templates;
 
 		if (template_param) {
 			templates = [ $( template_param["v-ui:template"][0].toString() ) ];
-		} else {
+		} else if ( document["rdf:type"] && document["rdf:type"].length) {
 			templates = document["rdf:type"]
 				.filter( function (item) {
 					return item instanceof IndividualModel;
@@ -35,6 +35,8 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					// Construct generic template
 					return genericTemplate(document, _class); 
 				})
+		} else {
+			templates = [ genericTemplate(document) ];
 		}
 				 
 		templates.map( function (classTemplate) {
@@ -155,11 +157,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		var template = $( $("#link-control-template").html() );
 		if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
 			$(".add", template).on("click", function () {
-				var clone = relContainer.clone();
-				var lnk = new DocumentModel(veda, undefined, clone, relTemplate, "edit");
-				embedded.push(lnk);
-				document[rel_uri] = document[rel_uri].concat(lnk);
-				relContainer.before(clone.show());
+				var lnk = renderValue(undefined, "edit"); 
 			});
 		} else $(".add", template).hide();
 		
@@ -176,7 +174,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		$(".typeahead", template).on("keypress", function (e) {
 			var input = $( this );
 			var pos = input.position();
-			var t = $("<div>").attr("style", "position:absolute; height:100px; width:" + input.width() + ";left:" + pos.left + "px;top:" + (input.height() + 10) + "px; border:1px solid red" ).html("blah!");
+			var t = $("<div>").attr("style", "position:absolute; height:100px; width:" + input.width() + ";left:" + pos.left + "px;top:" + input.outerHeight() + "px; border:1px solid red" ).html("blah!");
 			input.after(t);
 		});
 		
@@ -199,13 +197,16 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		
 		function renderValue(value, mode) {
 			var clone = relContainer.clone();
-			if (value instanceof IndividualModel) {
+			var lnk;
+			if (value instanceof IndividualModel || !value) {
 				setTimeout( function () {
 					if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
-						var lnk = new DocumentModel(veda, value, clone, relTemplate, mode);
+						lnk = new DocumentModel(veda, value, clone, relTemplate, mode);
 						embedded.push(lnk);
+						// New instance
+						if (!value) document[rel_uri] = document[rel_uri].concat(lnk);
 					} else {
-						var lnk = new DocumentModel(veda, value, clone, relTemplate);
+						lnk = new DocumentModel(veda, value, clone, relTemplate);
 					}
 					
 					clone.attr("style", "position:relative;");
@@ -235,8 +236,12 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					});
 					
 				}, 0);
+			} else {
+				// External resources
+				clone.append( $("<a>", {href: value, text: value}) );
 			}
 			relContainer.before(clone.show());
+			return lnk;
 		}
 		
 	}
@@ -312,12 +317,27 @@ Veda(function DocumentPresenter(veda) { "use strict";
 	function genericTemplate (document, _class) {
 		// Construct generic template
 		var template = $("<div/>").append( $("#generic-class-template").html() );
-		$(".className", template).append (
-			$("<span/>", {"about": _class.id, "property": "rdfs:label"})
-		)
+		var properties;
+
+		if (_class) {
+			properties = _class.domainProperties;
+			$(".className", template).append (
+				$("<span/>", {"about": _class.id, "property": "rdfs:label"})
+			);
+		} else {
+			properties = document.properties;
+			$(".properties", template).append (
+				$("<div/>").append( 
+					$("<strong/>", {"about": "rdf:type", "property": "rdfs:label"}).addClass("text-muted"),
+					$("<div/>", {"rel": "rdf:type"}),
+					$("<hr/>").attr("style", "margin: 10px 0px")
+				)
+			);
+		}
+		
 		$(".properties", template).append (
-			Object.getOwnPropertyNames(_class.domainProperties).map( function (property_uri, index, array) {
-				var property = _class.domainProperties[property_uri];
+			Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
+				var property = veda.dictionary[property_uri];
 				if (property_uri == "rdfs:label") return;
 				if (property_uri == "rdfs:class") return;
 				
@@ -340,7 +360,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					break
 				}
 				
-				if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") ); 
+				if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") );
 				
 				return result;
 				
