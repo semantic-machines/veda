@@ -63,13 +63,13 @@
 				opts.add();
 			});
 		$("[bound]", control)
-			.html(opts.value)
+			.text(opts.value)
 			.val(opts.value)
 			.on("change", function ( e ) {
 				var value = opts.inputParser( this.value, this );
 				view
 					.val( value )
-					.html( value );
+					.text( value );
 				opts.change(value);
 			});	
 		

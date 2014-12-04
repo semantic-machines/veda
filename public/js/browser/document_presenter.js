@@ -18,9 +18,21 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		var embedded = [];
 				
 		var templates;
+		
+		// Extracted scripts
+		var scripts = [];
 
+		var templateStr;
+		
 		if (template_param) {
-			templates = [ $( template_param["v-ui:template"][0].toString() ) ];
+			
+			templateStr = template_param["v-ui:template"][0].toString();
+			templateStr = templateStr.replace(/<script.*>((?:\s*?.*?\s*?)*)<\/script>/gi, function (m, script) {
+				scripts.push(script);
+				return "";
+			});
+			templates = [ $( templateStr ) ];
+			
 		} else if ( document["rdf:type"] && document["rdf:type"].length) {
 			templates = document["rdf:type"]
 				.filter( function (item) {
@@ -30,7 +42,14 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					var _class = new ClassModel(veda, item);
 					if (_class.documentTemplate["v-ui:template"]) {
 						// Get template from class
-						return $( _class.documentTemplate["v-ui:template"][0].toString() );
+
+						templateStr = _class.documentTemplate["v-ui:template"][0].toString()
+						templateStr = templateStr.replace(/<script.*>((?:\s*?.*?\s*?)*)<\/script>/gi, function (m, script) {
+							scripts.push(script);
+							return "";
+						});
+						return $( templateStr );
+						
 					}
 					// Construct generic template
 					return genericTemplate(document, _class); 
@@ -38,7 +57,9 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		} else {
 			templates = [ genericTemplate(document) ];
 		}
-				 
+		
+		//console.log("scripts:", scripts);
+		
 		templates.map( function (classTemplate) {
 			
 			// Actions
@@ -135,6 +156,10 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			});
 			
 			container.append(classTemplate);
+			
+			scripts.map( function (item) { 
+				eval(item); 
+			});
 			
 			document.trigger(mode);
 			
