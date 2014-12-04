@@ -267,35 +267,30 @@ v-wf:NetTemplate
   v-ui:template """
 <div class="container workflow-wrapper" style="">
 	<div class="row">
+		<div id="workflow-net-name" class="col-md-12" style="text-align: center;"></div>			
+	</div>
+	<div class="row">
 		<div class="col-md-3" style="text-align: center;">
 			<div class="btn-group"
 				style="padding-top: 3px; padding-bottom: 30px; display: inline-block;">
-				<button type="button" class="btn btn-default create-state"
-					aria-label="Left Align">
+				<button type="button" class="btn btn-default create-state create-task">
 					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+				</button>								
+				<button type="button" class="btn btn-default create-state create-condition">
+					<span class="glyphicon glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
 				</button>
-				<button type="button" class="btn btn-default"
-					aria-label="Center Align">
+				<button type="button" class="btn btn-default">
 					<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
 				</button>
-				<button type="button" class="btn btn-default"
-					aria-label="Right Align">
+				<button type="button" class="btn btn-default">
 					<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 				</button>
 			</div>
-			<form id="selected-item" class="form-horizontal">
+			<form id="workflow-selected-item" class="form-horizontal">
 				<div class="form-group">
-					<div class="col-sm-2" style="margin-top: 7px;">ID</div>
+					<div class="col-sm-2" style="font-size: 8pt;">ID</div>
 					<div class="col-sm-10">
-						<input id="item-id" class="form-control" type="text" readonly />
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-2">
-						<span class="glyphicon glyphicon-pencil control-label"></span>
-					</div>
-					<div class="col-sm-10">
-						<input id="item-caption" class="form-control" type="text" />
+						<input id="workflow-item-id" class="form-control" type="text" style="font-size: 8pt;" readonly />
 					</div>
 				</div>
 				<div class="form-group">
@@ -303,15 +298,15 @@ v-wf:NetTemplate
 						<span class="glyphicon glyphicon-tag control-label"></span>
 					</div>
 					<div class="col-sm-10">
-						<input id="item-label" class="form-control" type="text" />
+						<input id="workflow-item-label" class="form-control" type="text" />
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group task-buttons">
 					<div class="col-sm-2">
 						<span class="glyphicon glyphicon-log-out control-label"></span>
 					</div>
 					<div class="col-sm-10">
-						<div id="split-buttons" class="btn-group" data-toggle="buttons">
+						<div id="workflow-split-buttons" class="btn-group" data-toggle="buttons">
 							<label class="btn btn-default active"> 
 								<input type="radio" name="item-split-type" value="no" checked>NO
 							</label> 
@@ -327,12 +322,12 @@ v-wf:NetTemplate
 						</div>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group task-buttons">
 					<div class="col-sm-2">
 						<span class="glyphicon glyphicon-log-in control-label"></span>
 					</div>
 					<div class="col-sm-10">
-						<div id="join-buttons" class="btn-group" data-toggle="buttons">
+						<div id="workflow-join-buttons" class="btn-group" data-toggle="buttons">
 							<label class="btn btn-default active"> 
 								<input type="radio" name="item-join-type" value="no" checked>NO
 							</label> 
@@ -357,192 +352,18 @@ v-wf:NetTemplate
 	</div>	
 </div>
 <script type="text/javascript">
+jsWorkflow.ready(function () {
+		
     var workflow;
     // Create a new workflow instance as workflow1
     workflow = new jsWorkflow.Instance();
 
     // Initialize workflow1 with workflow container id
-    workflow.init('workflow-canvas');
+    var net = workflow.init('workflow-canvas', veda, document);
     
-    applyNetEditorFunctions();
+	applyNetEditorFunctions();
+});
 </script>
-  """ ;
-.
-# ---------------------------- Complete Type --------------------------------------------
-v-wf:CompleteType
-	rdf:type owl:Class ;
-	rdfs:label "complete type"@en ;
-	rdfs:label "виды завершения"@ru ;
-.
-v-wf:Normal
-	rdf:type v-wf:CompleteType ;
-	rdfs:label "Normal" ;
-.
-v-wf:Fail
-	rdf:type v-wf:CompleteType ;
-	rdfs:label "Fail" ;
-.
-v-wf:Force
-	rdf:type v-wf:CompleteType ;
-	rdfs:label "Force" ;
-.
-# ---------------------------- Net Instance --------------------------------------------
-v-wf:Process
-        rdf:type owl:Class ;
-        rdfs:label "Process"@en ;
-        rdfs:label "Процесс"@ru ;
-.
-
-v-wf:instanceOf
-	rdf:type rdf:Property ;
-	rdfs:label "instance of"@en ;
-	rdfs:label "экземпляр сети"@ru ;
-	rdfs:domain v-wf:Process ;
-	rdfs:range v-wf:Net ;
-.
-v-wf:whoLaunched
-	rdf:type rdf:Property ;
-	rdfs:label "who launched"@en ;
-	rdfs:label "кто запустил"@ru ;
-	rdfs:domain v-wf:Process ;
-	rdfs:range v-s:Appointment ;
-.
-v-wf:whenLaunched
-	rdf:type rdf:Property ;
-	rdfs:label "when launched"@en ;
-	rdfs:label "когда запустили"@ru ;
-	rdfs:domain v-wf:Process ;
-	rdfs:range xsd:dateTime ;
-.
-v-wf:ready
-	rdf:type rdf:Property ;
-	rdfs:label "ready to run"@en ;
-	rdfs:label "готов к запуску"@ru ;
-	rdfs:domain v-wf:Process ;
-	rdfs:range xsd:boolean ;
-.
-v-wf:complete
-	rdf:type rdf:Property ;
-	rdfs:label "complete"@en ;
-	rdfs:label "завершен"@ru ;
-	rdfs:domain v-wf:Process ;
-	rdfs:range v-wf:CompleteType ;
-.
-
-v-wf:inputVariable
-	rdf:type rdf:Property ;
-	rdfs:label "input variable"@en ;
-	rdfs:label "входная переменная"@ru ;
-	rdfs:domain v-wf:Process ;
-	rdfs:range v-wf:Variable ;
-.
-v-wf:outputVariable
-	rdf:type rdf:Property ;
-	rdfs:label "output variable"@en ;
-	rdfs:label "выходная переменная"@ru ;
-	rdfs:domain v-wf:Process ;
-	rdfs:range v-wf:Variable ;
-.
-v-wf:localVariable
-	rdf:type rdf:Property ;
-	rdfs:label "local variable"@en ;
-	rdfs:label "локальная переменная"@ru ;
-	rdfs:domain v-wf:Process ;
-	rdfs:range v-wf:Variable ;
-.
-v-wf:inputOutputVariable
-	rdf:type rdf:Property ;
-	rdfs:label "input/output variable"@en ;
-	rdfs:label "входная / выходная переменная"@ru ;
-	rdfs:domain v-wf:Process ;
-	rdfs:range v-wf:Variable ;
-.
-# ---------------------------- Work Instance --------------------------------------------
-
-v-wf:WorkItem
-        rdf:type owl:Class ;
-        rdfs:label "Work Item"@en ;
-        rdfs:label "Рабочий экземпляр"@ru ;
-.
-
-# --- ui template ---
-v-wf:process_template_1
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон стартовых данных маршрута"@ru ;
-  rdfs:label "Process template"@en ;
-  v-ui:forClass v-wf:Process ;
-  v-ui:template """
-  <div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="row">
-          <div class="col-md-6">
-	        <span about="v-wf:Process" property="rdfs:label">Процесс</span>
-  	      </div>  
-          <div class="col-md-6 text-right text-muted">
-                <a href="id"><span property="id">ID</span></a>
-	      </div>  
-	    </div>
-      </div>
-      <div class="panel-body">
-        <h3 property="rdfs:label">Наименование</h3>
-        <hr />
-        <div class="row">
-          <div class="col-md-12">
-               <strong about="v-wf:instanceOf" property="rdfs:label" class="text-muted">экземпляр сети</strong>
-               <div rel="v-wf:instanceOf">Экземпляр сети</div>
-          </div>
-        </div>
-        <hr />
-        <div class="row">
-            <div class="col-md-12">
-               <strong class="text-muted" about="v-wf:inputVariable" property="rdfs:label">Входные переменные</strong>
-               <div rel="v-wf:inputVariable" template="v-wf:VariableTemplate">v-wf:VariableTemplate</div>
-            </div>
-        </div>
-        <hr />
-        <div class="row">
-            <div class="col-md-12">
-               <strong class="text-muted" about="v-wf:localVariable" property="rdfs:label">Локальные переменные</strong>
-               <div rel="v-wf:localVariable" template="v-wf:VariableTemplate">v-wf:VariableTemplate</div>
-            </div>
-        </div>
-        <hr />
-        <div class="row">
-            <div class="col-md-12">
-               <strong class="text-muted" about="v-wf:outputVariable" property="rdfs:label">Выходные переменные</strong>
-               <div rel="v-wf:outputVariable" template="v-wf:VariableTemplate">v-wf:VariableTemplate</div>
-            </div>
-        </div>
-      </div>
-      <div class="panel-footer">
-        <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
-        <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
-        <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-      </div>
-    </div>
-  </div>
-  """ ;
-.
-v-wf:VariableTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон класса Переменная"@ru ;
-  rdfs:label "Variable template"@en ;
-  v-ui:forClass v-wf:Variable ;
-  v-ui:embedded "true"^^xsd:boolean ;  
-  v-ui:template """
-<div class="well well-sm">
-  <div class="row">
-    <div class="col-md-6">
-      <strong class="text-muted" about="v-wf:variableName" property="rdfs:label">Имя</strong>
-      <div property="v-wf:variableName">Var1</div>
-    </div>
-    <div class="col-md-6">
-      <strong class="text-muted" about="v-wf:variableValue" property="rdfs:label">Значение</strong>
-      <div rel="v-wf:variableValue">Value1</div>
-    </div>
-  </div>
-</div>
   """ ;
 .
 

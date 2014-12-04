@@ -31,7 +31,7 @@ jsWorkflow.ready = jsPlumb.ready;
          *@param {Object} workflowData A workflow object to render new workflow State elements in the DOM
          *return {Object} instance Returns an initialized instance of the workflow object
          */
-        jsWorkflow.Instance.prototype.init = function(workflowData) {
+        jsWorkflow.Instance.prototype.init = function(workflowData, veda, net) {
 
             var instance,
                     windows,
@@ -77,6 +77,16 @@ jsWorkflow.ready = jsPlumb.ready;
             instance.bind("dblclick", function(transition) {
                 instance.detach(transition);
             });
+            
+            instance.bind("click", function(transition) {
+            	var _this = this, currentElement = $(_this), properties;
+                properties = $('#workflow-selected-item');
+                $('#'+properties.find('#workflow-item-id').val()).removeClass('w_active');
+
+                properties.find('#workflow-item-id').val(transition._jsPlumb.component.id);
+                properties.find('#workflow-item-label').val(transition.getLabel());
+                currentElement.addClass('w_active');
+            });
 
             // Get an array of State elements.
             windows = jsPlumb.getSelector("#" + workflow + " .w");
@@ -92,27 +102,30 @@ jsWorkflow.ready = jsPlumb.ready;
             bindStateEvents = function(windows) {
 
                 // По клику переходим на свойства объекта
-                windows.bind("click", function() {
-                    var _this = this, properties;
-                    properties = $('#selected-item');
-                    
-                    properties.find('#item-id').val(_this.id);
-                    
-                    $('#'+properties.find('#item-id').val()).removeClass('w_active'); // deactivate old selection
+                windows.bind("click", function() {                	
+                    var _this = this, currentElement = $(_this), properties, itemId;
+                    properties = $('#workflow-selected-item');
+                                        
+                    $('#'+escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active'); // deactivate old selection
+                    properties.find('#workflow-item-id').val(_this.id);
+                    properties.find('#workflow-item-label').val(currentElement.find('.state-name').text());
+
                     ["no", "and", "or", "xor"].forEach(function(entry) {
-                        if ($(_this).hasClass('split-'+entry)) {
-                        	$('#split-buttons label').removeClass('active').find('input').attr("checked",false);                        	
+                        if (currentElement.hasClass('split-'+entry)) {
+                        	$('#workflow-split-buttons label').removeClass('active').find('input').attr("checked",false);                        	
                         	$('input[name=item-split-type][value='+entry+']').attr("checked",true).parent().addClass('active');
                         }                        
-                        if ($(_this).hasClass('split-'+entry)) {
-                        	$('#join-buttons label').removeClass('active').find('input').attr("checked",false);                        	
+                        if (currentElement.hasClass('join-'+entry)) {
+                        	$('#workflow-join-buttons label').removeClass('active').find('input').attr("checked",false);                        	
                         	$('input[name=item-join-type][value='+entry+']').attr("checked",true).parent().addClass('active');
                         }
-                    });                    
-                    /*
-                    properties.find('#item-label').val("124124");
-                    */
-                    $(_this).addClass('w_active');
+                    });          
+                    if (currentElement.hasClass('state-condition')) {
+                    	$('.task-buttons').hide();
+                    } else {
+                    	$('.task-buttons').show();
+                    }
+                    currentElement.addClass('w_active');
                 });
 
                 // Bind a click listener to each State elements. On double click, State elements are deleted.
@@ -121,7 +134,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     var _this = this,
                             deleteState;
 
-                    deleteState = confirm('Deleting State(' + jQuery(_this).attr('id').toUpperCase() + ') ...');
+                    deleteState = confirm('Deleting State(' + $(_this).attr('id').toUpperCase() + ') ...');
 
                     if (deleteState) {
 
@@ -129,7 +142,7 @@ jsWorkflow.ready = jsPlumb.ready;
                         instance.detachAllConnections(_this);
 
                         // remove the State element.
-                        jQuery(_this).remove();
+                        $(_this).remove();
 
                     } else {
                         return false;
@@ -144,7 +157,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 // Initialize all State elements as Connection sources.
                 instance.makeSource(windows, {
                     filter: ".ep",
-                    anchor: ["Perimeter", { shape:"Rectangle" }],
+                    anchor: ["Perimeter", { shape: windows.hasClass('state-condition')?"Circle":"Rectangle" }],
                     connector: ["Straight", {
                             stub: 0,
                             gap: 1
@@ -155,23 +168,22 @@ jsWorkflow.ready = jsPlumb.ready;
                         outlineColor: "transparent",
                         outlineWidth: 4
                     },
-                    /*
-                    connectorOverlays: [
-                        ["Arrow", {width: 10, length: 30, location: 1, id: "arrow"}],
-                        ["Label", {label: "foo", id: "label"}]
-                    ],*/
+                    connectorOverlays:[
+                        [ "Label", { label:"fooBAR", id:"label"} ]
+                    ],
                     maxConnections: 20,
                     onMaxConnections: function(info, e) {
                         alert("Maximum connections (" + info.maxConnections + ") reached");
                     }
                 });
 
-                // Initialize all State elements as connection targets.  
+                // Initialize all State elements as connection targets.
+                
                 instance.makeTarget(windows, {
                     dropOptions: {
                         hoverClass: "dragHover"
                     },
-                    anchor: ["Perimeter", { shape:"Rectangle" }]
+                    anchor: ["Perimeter", { shape:windows.hasClass('state-condition')?"Circle":"Rectangle" }]
                 });
             };
 
@@ -185,29 +197,40 @@ jsWorkflow.ready = jsPlumb.ready;
                 var _this = this,
                         stateName,
                         stateId,
-                        stateElement;
+                        stateElement, 
+                        individual = new veda.IndividualModel(); // create individual (Task / Condition) 
+                                
+                individual.defineProperty("rdf:type");
+                individual.defineProperty("rdfs:label");
 
                 stateName = prompt("Enter the name of the state");
+                
+                individual["rdfs:label"] = [new String(stateName.replace(/[^a-zA-Z0-9 ]/g, ''))]; 
+                	
+                //individual.save();
 
-                if (stateName && stateName !== '') {
+                    if ($("#workflow-canvas").find('#' + individual.id).length < 1) {
 
-                    stateName = stateName.replace(/[^a-zA-Z0-9 ]/g, '');
+                    	if ($(_this).hasClass('create-condition')) {
+                            individual["rdf:type"] = [veda.dictionary["v-wf:Condition"]];
+                            /* var label_ru = new String(value); label_ru.language = veda.dictionary["v-ui:RU"] 
+                            individual["rdfs:label"] = [label_ru];*/
+                            
+                    		stateElement = '<div class="w state-condition split-join split-no join-no" id="' + escape4$(individual.id) + '"><div class="state-name">' + stateName + '</div><div class="ep"></div></div>';
+                    	} else { 
+                            individual["rdf:type"] = [veda.dictionary["v-wf:Task"]];
+                    		stateElement = '<div class="w state-task split-join split-no join-no" id="' + escape4$(individual.id) + '"><div class="state-name">' + stateName + '</div><div class="ep"></div></div>';
+                    	}
 
-                    stateId = stateName.toLocaleLowerCase().replace(' ', '-');
-
-                    if (jQuery("#workflow-canvas").find('#' + stateId).length < 1) {
-
-                        stateElement = '<div class="w wwww state split-join split-no join-no" id="' + stateId + '">' + stateName + '<div class="ep"></div></div>';
-
-                        jQuery("#workflow-canvas").append(stateElement);
+                        $("#workflow-canvas").append(stateElement);
 
                         // Bind required functionalities to this State element
-                        bindStateEvents(jQuery('#' + stateId));
-
+                        bindStateEvents($('#' + individual.id));
+                        
+                        $('#' + individual.id).click();
                     } else {
                         alert('This state is already present.');
                     }
-                }
                 $(this).blur();
             });
 
@@ -246,7 +269,7 @@ jsWorkflow.ready = jsPlumb.ready;
 
                 for (var i = 0; i < stateCount; i += 1) {
 
-                    workflowStateName[jQuery(windows[i]).attr('id')] = jQuery(windows[i]).text().trim();
+                    workflowStateName[$(windows[i]).attr('id')] = $(windows[i]).text().trim();
                 }
                 return workflowStateName;
             }
@@ -259,14 +282,13 @@ jsWorkflow.ready = jsPlumb.ready;
             instance.getStatePositions = function() {
 
                 // Get updates array of State elements.
-                windows = jsPlumb.getSelector("." + workflow + " .w");
-
+                windows = jsPlumb.getSelector("." + workflow + " .w");                
                 var stateCount = windows.length,
                         workflowStatePosition = {};
 
                 for (var i = 0; i < stateCount; i += 1) {
 
-                    workflowStatePosition[jQuery(windows[i]).attr('id')] = jQuery(windows[i]).position();
+                    workflowStatePosition[$(windows[i]).attr('id')] = $(windows[i]).position();
                 }
                 return workflowStatePosition;
             }
@@ -291,14 +313,62 @@ jsWorkflow.ready = jsPlumb.ready;
 
                 return workflowObject;
             }
+            
+            // Add State to Workspace
+            instance.createState = function(type, state) {
+            	var stateElement = '';
+            	switch (type) {
+    			case 'v-wf:InputCondition':    				
+    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + 2*state['v-wf:locationX'][0] + 'px; top: ' + 2*state['v-wf:locationY'][0] + 'px;"><div><span class="glyphicon glyphicon-play" aria-hidden="true"></div><div class="ep"></div></div>';
+    				break;
+    			case 'v-wf:OutputCondition':
+    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + 2*state['v-wf:locationX'][0] + 'px; top: ' + 2*state['v-wf:locationY'][0] + 'px;"><div><span class="glyphicon glyphicon-stop" aria-hidden="true"></div></div>';
+    				break;
+    			case 'v-wf:Condition':
+    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="left: ' + 2*state['v-wf:locationX'][0] + 'px; top: ' + 2*state['v-wf:locationY'][0] + 'px;"><div class="state-name"></div><div class="ep"></div></div>';
+    				break;
+    			case 'v-wf:Task':
+            		stateElement = '<div class="w state-task split-join split-no join-no" id="' + state.id + '" style="left: ' + 2*state['v-wf:locationX'][0] + 'px; top: ' + 2*state['v-wf:locationY'][0] + 'px;"><div class="state-name">' + state['rdfs:label'][0] + '</div><div class="ep"></div></div>';
+    				break;
+    			}
+            	if (stateElement!='') {
+                	$("#workflow-canvas").append(stateElement);
+                	bindStateEvents($('#' + escape4$(state.id)));
+            	}
+            }
+            
+            instance.createFlow = function(state, flow) {
+            	instance.connect({
+                    source: state.id,
+                    target: flow['v-wf:flowsInto'][0].id
+                });
+            }
 
             /**
-             *Create workflow State transitions from the given Object.
-             *@method createStateTrasitions A public method
+             *Create workflow Net by given Object (v-wf:Net individual).
+             *@method createNet A public method
              *@param {Object} workflowData A workflow object to create State transitions
              */
-            instance.createStateTrasitions = function(workflowData) {
+            instance.createNet = function(net) {
+            	$('#workflow-net-name').text(net['rdfs:label'][0]);
+            	// Create States
+            	net['v-wf:consistsOf'].forEach(function(el) {
+            		el['rdf:type'].forEach(function (type) {
+            			instance.createState(type.id, el);
+            		});
+            	});
+            	instance.getStatePositions();
+            	
+            	// Create Flows
+            	net['v-wf:consistsOf'].forEach(function(el) {
+            		if (undefined != el['v-wf:hasFlow']) {
+            			el['v-wf:hasFlow'].forEach(function (flow) {
+            				instance.createFlow(el, flow);
+            			});
+            		}
+            	});
 
+            	/*
                 var transitions = workflowData.transitions,
                         targetState;
 
@@ -310,14 +380,9 @@ jsWorkflow.ready = jsPlumb.ready;
                             target: targetState[i]
                         });
                     }
-                }
+                }*/
             }
-
-            // Create workflow State transitions from the given workflowData Object.
-            if (typeof workflowData === 'object') {
-                instance.createStateTrasitions(workflowData);
-            }
-
+            instance.createNet(net);
             return instance;
         }
         /**
@@ -325,6 +390,7 @@ jsWorkflow.ready = jsPlumb.ready;
          *@method createWorkflowDOM
          *@param {Object} workflowData A workflow object to render new workflow State elements in the DOM
          */
+        /*
         jsWorkflow.Instance.createWorkflowDOM = function(workflowData) {
 
             var container = workflowData.container,
@@ -338,8 +404,8 @@ jsWorkflow.ready = jsPlumb.ready;
                 }
             }
 
-            jQuery('#' + container).append(elements);
-        }
+            $('#' + container).append(elements);
+        }*/
     });
 })();
 
@@ -372,7 +438,12 @@ function updateSVGBackground(item) {
 }
 
 function applyNetEditorFunctions() {
-
+  // Label
+  $("#workflow-item-label").change(function () {
+	var item = $('#' + $('#item-id').val());    
+	item.find('.state-name').text($(this).val());
+  });
+	
   // Split type
   $("input[name=item-split-type]:radio").change(function () {
     var item = $('#' + $('#item-id').val());    

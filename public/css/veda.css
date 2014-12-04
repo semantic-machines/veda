@@ -50,19 +50,14 @@ fieldset[disabled] .form-control {
 
 /* [BEGIN] NET EDITOR */
 
-.w { 	
-	min-width: 100px;
-	min-height: 50px;
-	padding:16px;
+.w {
 	position:absolute;
 	z-index:4;
 	border:1px solid #2e6f9a;
 	box-shadow: 2px 2px 19px #e0e0e0;
 	-o-box-shadow: 2px 2px 19px #e0e0e0;
 	-webkit-box-shadow: 2px 2px 19px #e0e0e0;
-	-moz-box-shadow: 2px 2px 19px #e0e0e0;
-	-moz-border-radius:8px;
-	border-radius:8px;
+	-moz-box-shadow: 2px 2px 19px #e0e0e0;		
 	opacity:0.8;
 	filter:alpha(opacity=80);
 	cursor:move;
@@ -76,7 +71,27 @@ fieldset[disabled] .form-control {
 
 .w:hover {
 	color:red;
-        font-weight: bold;
+    font-weight: bold;
+}
+
+.state-task {	
+	width: 90px;
+	height: 50px;	
+	-moz-border-radius:8px;
+	border-radius:8px;	
+}
+
+.state-condition {
+	width: 50px;
+	height: 50px;	
+	-moz-border-radius:25px;
+	border-radius:25px;
+}
+
+.state-name {
+	width: inherit;
+	position: absolute;
+	top: 50px;	
 }
 
 .w_active {
@@ -151,6 +166,7 @@ path {
 
 .workflow-wrapper {
 	height:100%;
+	width: 100%;
 }
 
 #workflow-canvas-wrapper {

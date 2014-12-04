@@ -56,6 +56,7 @@ mnd-wf:net_complex_route
 	v-wf:consistsOf mnd-wf:t7 ;
 	v-wf:consistsOf mnd-wf:f_t7_c2 ;
 	v-wf:consistsOf mnd-wf:f_t7_c3 ;
+	v-wf:consistsOf mnd-wf:f_t7_t8 ;
 	v-wf:consistsOf mnd-wf:t8 ;
 	v-wf:consistsOf mnd-wf:f_t8_c3 ;
 	v-wf:consistsOf mnd-wf:f_t8_c1 ;
@@ -412,6 +413,7 @@ mnd-wf:t7
 	v-wf:locationX "680"^^xsd:integer ;
 	v-wf:locationY "288"^^xsd:integer ;
 	v-wf:hasFlow mnd-wf:f_t7_c2 ;
+	v-wf:hasFlow mnd-wf:f_t7_c3 ;
 	v-wf:hasFlow mnd-wf:f_t7_t8 ;
 	v-wf:split v-wf:XOR ;	
 	v-wf:inputVariable mnd-wf:var_doc_id_t7 ;
@@ -447,6 +449,12 @@ mnd-wf:f_t7_c3
 	v-wf:flowsInto mnd-wf:c3 ;
 	v-wf:predicate "eval (net.result == true)" ;
 .
+mnd-wf:f_t7_t8
+	rdf:type v-wf:Flow ;
+	v-wf:belongsTo mnd-wf:net_complex_route ;
+	v-wf:flowsInto mnd-wf:t8 ;
+	v-wf:predicate "eval (net.result == true)" ;
+.
 
 # ------------------------------- NET Complex Route : task "Доработать" ------------------------ #
 mnd-wf:t8
@@ -458,7 +466,7 @@ mnd-wf:t8
 	v-wf:locationX "180"^^xsd:integer ;
 	v-wf:locationY "208"^^xsd:integer ;
 	v-wf:hasFlow mnd-wf:f_t8_c1 ;
-	v-wf:hasFlow mnd-wf:f_t8_t3 ;
+	v-wf:hasFlow mnd-wf:f_t8_c3 ;
 	v-wf:split v-wf:XOR ;	
 	v-wf:inputVariable mnd-wf:var_doc_id_t8 ;
 	v-wf:outputVariable mnd-wf:var_t8_res ;
@@ -485,7 +493,7 @@ mnd-wf:f_t8_c3
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c3 ;
-	v-wf:predicate "eval (net.result == false)";
+	v-wf:predicate "eval (net.result == false)" ;
 .	
 mnd-wf:f_t8_c1
 	rdf:type v-wf:Flow ;
