@@ -537,3 +537,29 @@ v-wf:VariableTemplate
 </div>
   """ ;
 .
+v-wf:StartForm
+	rdf:type rdfs:Class ;
+	rdfs:label "Стартовая форма"@ru ;
+	rdfs:label "Start form"@en ;
+.
+v-wf:processed_document
+	rdf:type rdf:Property ;
+	rdfs:label "Обрабатываемый документ"@ru ;
+	rdfs:label "Processed document"@en ;
+	rdfs:domain mnd-wf:StartForm ;
+	rdfs:range v-s:Document ;
+.
+v-wf:process_initiator
+	rdf:type rdf:Property ;
+	rdfs:label "Инициатор процесса"@ru ;
+	rdfs:label "Process initiator"@en ;
+	rdfs:domain mnd-wf:StartForm ;
+	rdfs:range v-s:Appointment ;
+.
+v-wf:for_net
+	rdf:type rdf:Property ;
+	rdfs:label "Для сети..."@ru ;
+	rdfs:label "For net..."@en ;
+	rdfs:domain mnd-wf:StartForm ;
+	rdfs:range v-wf:Net ;
+.

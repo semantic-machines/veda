@@ -16,143 +16,8 @@
   rdfs:label "Mondi workflow ontology"@en ;
   rdfs:label "Онтология бизнес процессов Монди"@ru ;
 .
-# --- begin ----------------------- NET Complex Route --------------------------------------- #
 
-mnd-wf:StartForm
-	rdf:type rdfs:Class ;
-	rdfs:label "Стартовая форма"@ru ;
-	rdfs:label "Start form"@en ;
-.
-mnd-wf:processed_document
-	rdf:type rdf:Property ;
-	rdfs:label "Обрабатываемый документ"@ru ;
-	rdfs:label "Processed document"@en ;
-	rdfs:domain mnd-wf:StartForm ;
-	rdfs:range v-s:Document ;
-.
-mnd-wf:process_initiator
-	rdf:type rdf:Property ;
-	rdfs:label "Инициатор процесса"@ru ;
-	rdfs:label "Process initiator"@en ;
-	rdfs:domain mnd-wf:StartForm ;
-	rdfs:range v-s:Appointment ;
-.
-mnd-wf:ComplexRouteStartForm
-	rdf:type rdfs:Class ;
-	rdfs:subClassOf mnd-wf:StartForm ;
-	rdfs:label "Стартовая форма сети Комплексный маршрут"@ru ;
-	rdfs:label "Complex route start form"@en ;
-.
-mnd-wf:ComplexRouteStartForm_coordinator1
-	rdf:type rdf:Property ;
-	rdfs:label "согласующий 1 уровня"@ru ;
-	rdfs:label "coordinator 1 level"@en ;
-	rdfs:domain mnd-wf:ComplexRouteStartForm ;
-	rdfs:range v-s:Appointment ;
-.
-mnd-wf:ComplexRouteStartForm_coordinator2
-	rdf:type rdf:Property ;
-	rdfs:label "согласующий 2 уровня"@ru ;
-	rdfs:label "coordinator 3 level"@en ;
-	rdfs:domain mnd-wf:ComplexRouteStartForm ;
-	rdfs:range v-s:Appointment ;
-.
-mnd-wf:ComplexRouteStartForm_coordinator3
-	rdf:type rdf:Property ;
-	rdfs:label "согласующий 3 уровня"@ru ;
-	rdfs:label "coordinator 3 level"@en ;
-	rdfs:domain mnd-wf:ComplexRouteStartForm ;
-	rdfs:range v-s:Appointment ;
-.
-mnd-wf:ComplexRouteStartForm_reviewer
-	rdf:type rdf:Property ;
-	rdfs:label "рассматривающий"@ru ;
-	rdfs:label "reviewer"@en ;
-	rdfs:domain mnd-wf:ComplexRouteStartForm ;
-	rdfs:range v-s:Appointment ;
-.
-mnd-wf:ComplexRouteStartForm_signer
-	rdf:type rdf:Property ;
-	rdfs:label "подписывающий"@ru ;
-	rdfs:label "signer"@en ;
-	rdfs:domain mnd-wf:ComplexRouteStartForm ;
-	rdfs:range v-s:Appointment ;
-.
-mnd-wf:ComplexRouteStartForm_1
-	rdf:type mnd-wf:ComplexRouteStartForm ; 
-	mnd-wf:process_initiator mnd-d:RomanKarpov-Analyst1 ; 
-	mnd-wf:processed_document mnd-d:SavedSearch1 ; 
-	mnd-wf:ComplexRouteStartForm_coordinator1 mnd-d:RomanKarpov-Analyst1 ; 
-	mnd-wf:ComplexRouteStartForm_coordinator2 mnd-d:ValeriyBushenev-Programmer1 ; 
-	mnd-wf:ComplexRouteStartForm_coordinator3 mnd-d:AndreyBychin-ExecutiveDirector ; 
-	mnd-wf:ComplexRouteStartForm_reviewer mnd-d:ValeriyBushenev-Programmer1 ; 
-	mnd-wf:ComplexRouteStartForm_signer mnd-d:AndreyBychin-ExecutiveDirector ; 
-.
-mnd-wf:ComplexRouteStartForm_Template
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон стартовых данных Комплексного маршрута"@ru ;
-  rdfs:label "Complex route start form template"@en ;
-  v-ui:forClass mnd-wf:ComplexRouteStartForm ;
-  v-ui:template """
-  <div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="row">
-          <div class="col-md-6">
-	        <span about="mnd-wf:ComplexRouteStartForm" property="rdfs:label">Стартовая форма</span>
-  	      </div>  
-          <div class="col-md-6 text-right text-muted">
-                <a href="id"><span property="id">ID</span></a>
-	      </div>  
-	    </div>
-      </div>
-      <div class="panel-body">
-        <div class="row">
-            <div class="col-md-4">
-               <strong class="text-muted" about="mnd-wf:process_initiator" property="rdfs:label">Инициатор</strong>
-               <div rel="mnd-wf:process_initiator" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
-            </div>
-            <div class="col-md-4">
-               <strong class="text-muted" about="mnd-wf:processed_document" property="rdfs:label">Документ</strong>
-               <div rel="mnd-wf:processed_document">Ссылка на документ</div>
-            </div>
-        </div>
-        <hr />
-        <div class="row">
-            <div class="col-md-4">
-               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_coordinator1" property="rdfs:label">Согласующие 1 уровня</strong>
-               <div rel="mnd-wf:ComplexRouteStartForm_coordinator1" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
-            </div>
-            <div class="col-md-4">
-               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_coordinator2" property="rdfs:label">Согласующие 2 уровня</strong>
-               <div rel="mnd-wf:ComplexRouteStartForm_coordinator2" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
-            </div>
-            <div class="col-md-4">
-               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_coordinator3" property="rdfs:label">Согласующие 3 уровня</strong>
-               <div rel="mnd-wf:ComplexRouteStartForm_coordinator3" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
-            </div>
-        </div>
-        <hr />
-        <div class="row">
-            <div class="col-md-4">
-               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_reviewer" property="rdfs:label">Рассматривающий</strong>
-               <div rel="mnd-wf:ComplexRouteStartForm_reviewer" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
-            </div>
-            <div class="col-md-4">
-               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_signer" property="rdfs:label">Подписывающий</strong>
-               <div rel="mnd-wf:ComplexRouteStartForm_signer" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
-            </div>
-        </div>
-      </div>
-      <div class="panel-footer">
-        <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
-        <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
-        <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-      </div>
-    </div>
-  </div>
-  """ ;
-.
+# --- begin ----------------------- NET Complex Route --------------------------------------- #
 mnd-wf:net_complex_route
         rdf:type v-wf:Net ;
 	v-wf:inputVariable mnd-wf:var_doc_id ;
@@ -205,6 +70,7 @@ mnd-wf:var_right_1
         rdf:type v-wf:Variable ;
 	v-wf:variableName "originalRight" ;
 .
+
 # ------------------------------- NET Complex Route : Input Condition ----------------------------- #
 mnd-wf:ic1 
 	rdf:type v-wf:InputCondition ;
@@ -217,6 +83,7 @@ mnd-wf:f_ic1_t1
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t1 ;
 .	
+
 # ------------------------------- NET Complex Route : task "Проверить, запущен ли?" ---------------- #
 mnd-wf:t1 
 	rdf:type v-wf:Task ;
@@ -252,6 +119,7 @@ mnd-wf:f_t1_t2
 	v-wf:flowsInto mnd-wf:t2 ;
 	v-wf:predicate "false ()" ;
 .	
+
 # ------------------------------- NET Complex Route : task "понизить права" ------------------------- #
 mnd-wf:t2 
 	rdf:type v-wf:Task ;
@@ -289,6 +157,7 @@ mnd-wf:f_t2_c1
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c1 ;
 .	
+
 # ------------------------------- NET Complex Route : condition 1 ---------------------------------- #
 mnd-wf:c1
 	rdf:type v-wf:Condition ;
@@ -300,7 +169,8 @@ mnd-wf:f_c1_t3
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t3 ;
-.	
+.
+	
 # ------------------------------- NET Complex Route : condition 2 ---------------------------------- #
 mnd-wf:c2
 	rdf:type v-wf:Condition ;
@@ -312,7 +182,8 @@ mnd-wf:f_c2_t8
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t8 ;
-.	
+.
+	
 # ------------------------------- NET Complex Route : task "Согласование 1" ------------------------ #
 mnd-wf:t3
 	rdf:type v-wf:Task ;
@@ -358,6 +229,7 @@ mnd-wf:f_t3_t4
 	v-wf:flowsInto mnd-wf:t4 ;
 	v-wf:predicate "eval (net.result == true)" ;
 .
+
 # ------------------------------- NET Complex Route : task "Согласование 2" ------------------------ #
 mnd-wf:t4
 	rdf:type v-wf:Task ;
@@ -403,6 +275,7 @@ mnd-wf:f_t4_t5
 	v-wf:flowsInto mnd-wf:t5 ;
 	v-wf:predicate "eval (net.result == true)" ;
 .
+
 # ------------------------------- NET Complex Route : task "Согласование 3" ------------------------ #
 mnd-wf:t5
 	rdf:type v-wf:Task ;
@@ -448,6 +321,7 @@ mnd-wf:f_t5_t6
 	v-wf:flowsInto mnd-wf:t6 ;
 	v-wf:predicate "eval (net.result == true)" ;
 .
+
 # ------------------------------- NET Complex Route : task "Подписание" ------------------------ #
 mnd-wf:t6
 	rdf:type v-wf:Task ;
@@ -493,6 +367,7 @@ mnd-wf:f_t6_t7
 	v-wf:flowsInto mnd-wf:t7 ;
 	v-wf:predicate "eval (net.result == true)" ;
 .
+
 # ------------------------------- NET Complex Route : task "Рассмотрение" ------------------------ #
 mnd-wf:t7
 	rdf:type v-wf:Task ;
@@ -538,6 +413,7 @@ mnd-wf:f_t7_c3
 	v-wf:flowsInto mnd-wf:c3 ;
 	v-wf:predicate "eval (net.result == true)" ;
 .
+
 # ------------------------------- NET Complex Route : task "Доработать" ------------------------ #
 mnd-wf:t8
 	rdf:type v-wf:Task ;
@@ -595,6 +471,7 @@ mnd-wf:f_c3_t9
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t9 ;
 .
+
 # ------------------------------- NET Complex Route : task "восстановить права" ------------------------ #
 mnd-wf:t9
 	rdf:type v-wf:Task ;
@@ -639,7 +516,116 @@ mnd-wf:oc1
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:locationX 992 ;
 	v-wf:locationY 324 ;
-.		
+.
+
+# ------------------------------- NET Complex Route : User Form ---------------------------- #
+mnd-wf:ComplexRouteStartForm
+	rdf:type rdfs:Class ;
+	rdfs:subClassOf v-wf:StartForm ;
+	rdfs:label "Стартовая форма сети Комплексный маршрут"@ru ;
+	rdfs:label "Complex route start form"@en ;
+.
+mnd-wf:ComplexRouteStartForm_coordinator1
+	rdf:type rdf:Property ;
+	rdfs:label "согласующий 1 уровня"@ru ;
+	rdfs:label "coordinator 1 level"@en ;
+	rdfs:domain mnd-wf:ComplexRouteStartForm ;
+	rdfs:range v-s:Appointment ;
+.
+mnd-wf:ComplexRouteStartForm_coordinator2
+	rdf:type rdf:Property ;
+	rdfs:label "согласующий 2 уровня"@ru ;
+	rdfs:label "coordinator 3 level"@en ;
+	rdfs:domain mnd-wf:ComplexRouteStartForm ;
+	rdfs:range v-s:Appointment ;
+.
+mnd-wf:ComplexRouteStartForm_coordinator3
+	rdf:type rdf:Property ;
+	rdfs:label "согласующий 3 уровня"@ru ;
+	rdfs:label "coordinator 3 level"@en ;
+	rdfs:domain mnd-wf:ComplexRouteStartForm ;
+	rdfs:range v-s:Appointment ;
+.
+mnd-wf:ComplexRouteStartForm_reviewer
+	rdf:type rdf:Property ;
+	rdfs:label "рассматривающий"@ru ;
+	rdfs:label "reviewer"@en ;
+	rdfs:domain mnd-wf:ComplexRouteStartForm ;
+	rdfs:range v-s:Appointment ;
+.
+mnd-wf:ComplexRouteStartForm_signer
+	rdf:type rdf:Property ;
+	rdfs:label "подписывающий"@ru ;
+	rdfs:label "signer"@en ;
+	rdfs:domain mnd-wf:ComplexRouteStartForm ;
+	rdfs:range v-s:Appointment ;
+.
+mnd-wf:ComplexRouteStartForm_Template
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон стартовых данных Комплексного маршрута"@ru ;
+  rdfs:label "Complex route start form template"@en ;
+  v-ui:forClass mnd-wf:ComplexRouteStartForm ;
+  v-ui:template """
+  <div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-6">
+	        <span about="mnd-wf:ComplexRouteStartForm" property="rdfs:label">Стартовая форма</span>
+  	      </div>  
+          <div class="col-md-6 text-right text-muted">
+                <a href="id"><span property="id">ID</span></a>
+	      </div>  
+	    </div>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+            <div class="col-md-4">
+               <strong class="text-muted" about="v-wf:process_initiator" property="rdfs:label">Инициатор</strong>
+               <div rel="v-wf:process_initiator" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+            </div>
+            <div class="col-md-4">
+               <strong class="text-muted" about="v-wf:processed_document" property="rdfs:label">Документ</strong>
+               <div rel="v-wf:processed_document">Ссылка на документ</div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-4">
+               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_coordinator1" property="rdfs:label">Согласующие 1 уровня</strong>
+               <div rel="mnd-wf:ComplexRouteStartForm_coordinator1" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+            </div>
+            <div class="col-md-4">
+               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_coordinator2" property="rdfs:label">Согласующие 2 уровня</strong>
+               <div rel="mnd-wf:ComplexRouteStartForm_coordinator2" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+            </div>
+            <div class="col-md-4">
+               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_coordinator3" property="rdfs:label">Согласующие 3 уровня</strong>
+               <div rel="mnd-wf:ComplexRouteStartForm_coordinator3" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-4">
+               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_reviewer" property="rdfs:label">Рассматривающий</strong>
+               <div rel="mnd-wf:ComplexRouteStartForm_reviewer" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+            </div>
+            <div class="col-md-4">
+               <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_signer" property="rdfs:label">Подписывающий</strong>
+               <div rel="mnd-wf:ComplexRouteStartForm_signer" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+            </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
+        <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
+        <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
+      </div>
+    </div>
+  </div>
+  """ ;
+.
+		
 # --- end -------------------------- NET Complex Route ----------------------------------- end ---- #
 
 # ------------------------------- NET Agree --------------------------------------------------------- #
@@ -650,6 +636,7 @@ mnd-wf:net_agree
 	v-wf:inputVariable mnd-wf:var_agreed ;
         rdfs:label "Маршрут подписание"@ru ;
 .
+
 # ------------------------------ CODELET : "запущен ли процесс" ------------------------------------- #
 mnd-wf:codelet_is_run
 	rdf:type v-s:Codelet ;
@@ -680,7 +667,8 @@ public Element execute(Element inData, List<YParameter> inParams, List<YParamete
         return getOutputData();
 };
 """ ;
-.	
+.
+	
 # ------------------------------ CODELET : "понизить права" ----------------------------- #
 mnd-wf:codelet_down_right
 	rdf:type v-s:Codelet ;
@@ -692,6 +680,7 @@ public Element execute(Element inData, List<YParameter> inParams, List<YParamete
 };
 """ ;
 .	
+
 # ------------------------------ CODELET : "восстановить права" ----------------------------- #
 mnd-wf:codelet_restore_right
 	rdf:type v-s:Codelet ;
@@ -703,8 +692,20 @@ public Element execute(Element inData, List<YParameter> inParams, List<YParamete
 };
 """ ;
 .	
-# -------- стартовая форма маршрута ----------------
 
+# -------- стартовая форма маршрута ----------------
+mnd-wf:ComplexRouteStartForm_1
+	rdf:type mnd-wf:ComplexRouteStartForm ; 
+	v-wf:for_net mnd-wf:net_complex_route ;
+	v-wf:process_initiator mnd-d:RomanKarpov-Analyst1 ; 
+	v-wf:processed_document mnd-d:SavedSearch1 ; 
+	mnd-wf:ComplexRouteStartForm_coordinator1 mnd-d:RomanKarpov-Analyst1 ; 
+	mnd-wf:ComplexRouteStartForm_coordinator2 mnd-d:ValeriyBushenev-Programmer1 ; 
+	mnd-wf:ComplexRouteStartForm_coordinator3 mnd-d:AndreyBychin-ExecutiveDirector ; 
+	mnd-wf:ComplexRouteStartForm_reviewer mnd-d:ValeriyBushenev-Programmer1 ; 
+	mnd-wf:ComplexRouteStartForm_signer mnd-d:AndreyBychin-ExecutiveDirector ; 
+.
+# -------- стартовые данные маршрута ----------------
 mnd-wf:process1
 	rdf:type v-wf:Process ;
 	v-wf:instanceOf mnd-wf:net_complex_route ;
@@ -757,5 +758,4 @@ mnd-wf:var_right_1_n1
 	v-wf:variableName "originalRight" ;
 	v-wf:variableValue "no right" ;
 .
-
 
