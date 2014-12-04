@@ -94,6 +94,14 @@ v-wf:hasFlow
 	rdfs:domain v-wf:NetElement ;
 	rdfs:range v-wf:Flow ;
 .
+v-wf:consistsOf
+	rdf:type rdf:Property ;
+	rdfs:label "Consists Of"@en ;
+	rdfs:label "Состоит из"@ru ;
+	rdfs:domain v-wf:Net ;
+	rdfs:range v-wf:NetElement ;
+	rdfs:range v-wf:Flow ;
+.
 v-wf:variableName
 	rdf:type rdf:Property ;
 	rdfs:label "variable name"@en ;
