@@ -1,6 +1,6 @@
 // Console Presenter
 
-Veda(function ConsolePresenter(veda) { "use strict";
+veda.Present(function ConsolePresenter(veda) { "use strict";
 
 	//Get template
 	var template = $("#console-template").html();

@@ -1,18 +1,20 @@
-// Document Model
+// Search result Model
 
-"use strict";
+;(function (veda) { "use strict";
 
-function SearchResultModel(veda, individual, container, template) {
+	veda.SearchResultModel = function (individual, container, template) {
 
-	var self = individual instanceof IndividualModel ? individual : new IndividualModel(veda, individual);
+		var self = individual instanceof veda.IndividualModel ? individual : new veda.IndividualModel(individual);
 
-	self.off("*");
-	
-	self.on("individual:loaded individual:reset individual:saved", function (event) {
+		self.off("*");
+		
+		self.on("individual:loaded individual:reset individual:saved", function (event) {
+			veda.trigger("search_result:loaded", self, container, template);
+		});
+		
 		veda.trigger("search_result:loaded", self, container, template);
-	});
-	
-	veda.trigger("search_result:loaded", self, container, template);
 
-	return self;
-};
+		return self;
+	};
+
+}(veda));

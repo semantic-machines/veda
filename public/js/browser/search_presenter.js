@@ -1,6 +1,6 @@
 // Search Presenter
 
-Veda(function SearchPresenter(veda) { "use strict";
+veda.Present(function SearchPresenter(veda) { "use strict";
 
 	var template = $("#search-template").html();
 	var currentPage = 0;
@@ -97,7 +97,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 					// Invoke search result presenter
 					veda.trigger("search_result:loaded", search.results[i], $li);
 				}, 0);
-			})(i);
+			}(i));
 		}
 
 		// Show pager
@@ -116,7 +116,7 @@ Veda(function SearchPresenter(veda) { "use strict";
 					}, 
 					"href" : ""
 				}).appendTo($page);
-			})(page);
+			}(page));
 		}
 	
 	});

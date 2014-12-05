@@ -1,19 +1,22 @@
 // Class Model
 
-"use strict";
-
-function ClassModel(veda, individual) {
-
-	if (individual instanceof IndividualModel) var self = individual;
-	else var self = new IndividualModel(veda, individual);
+;(function (veda) { "use strict";
 	
-	self.domainProperties = self.domainProperties || {};
-	
-	self.documentTemplate = self.documentTemplate || {};
+	veda.ClassModel = function (individual) {
 
-	self.specsByProps = self.specsByProps || {};
-	
-	self.subClasses = self.subClasses || {};
+		if (individual instanceof veda.IndividualModel) var self = individual;
+		else var self = new veda.IndividualModel(individual);
+		
+		self.domainProperties = self.domainProperties || {};
+		
+		self.documentTemplate = self.documentTemplate || {};
 
-	return self;
-};
+		self.specsByProps = self.specsByProps || {};
+		
+		self.subClasses = self.subClasses || {};
+
+		return self;
+
+	};
+	
+}(veda));
