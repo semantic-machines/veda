@@ -1,6 +1,6 @@
 // Document Presenter
 
-veda.Present(function DocumentPresenter(veda) { "use strict";
+veda.Present(function Document(veda) { "use strict";
 	
 	var cnt = 0;
 	

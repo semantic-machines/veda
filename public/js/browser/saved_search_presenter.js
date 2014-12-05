@@ -1,6 +1,6 @@
 // Document Presenter
 
-veda.Present(function SavedSearchPresenter(veda) { "use strict";
+veda.Present(function SavedSearch(veda) { "use strict";
 
 	veda.on("search:rendered", function (search) {
 		
