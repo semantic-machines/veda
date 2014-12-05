@@ -727,8 +727,10 @@ public Element execute(Element inData, List<YParameter> inParams, List<YParamete
 """ ;
 .	
 
+# ---------------------------- Тестовые экземпляры ------------------------------
+
 # -------- стартовая форма маршрута ----------------
-mnd-wf:ComplexRouteStartForm_1
+mnd-wf:ComplexRouteStartForm1
 	rdf:type mnd-wf:ComplexRouteStartForm ; 
 	v-wf:for_net mnd-wf:net_complex_route ;
 	v-wf:process_initiator mnd-d:RomanKarpov-Analyst1 ; 

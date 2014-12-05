@@ -545,6 +545,7 @@ v-wf:VariableTemplate
 </div>
   """ ;
 .
+# --------------------------- Start Form ---------------------------
 v-wf:StartForm
 	rdf:type rdfs:Class ;
 	rdfs:label "Стартовая форма"@ru ;
@@ -570,4 +571,31 @@ v-wf:for_net
 	rdfs:label "For net..."@en ;
 	rdfs:domain mnd-wf:StartForm ;
 	rdfs:range v-wf:Net ;
+.
+# --------------------------- Decomposition ---------------------------
+v-wf:Decomposition
+	rdf:type rdfs:Class ;
+	rdfs:label "Декомпозиция"@ru ;
+	rdfs:label "Decomposition"@en ;
+.
+v-wf:for_net
+	rdf:type rdf:Property ;
+	rdfs:label "Для сети..."@ru ;
+	rdfs:label "For net..."@en ;
+	rdfs:domain mnd-wf:Decomposition ;
+	rdfs:range v-wf:Net ;
+.
+v-wf:for_form
+	rdf:type rdf:Property ;
+	rdfs:label "Для сети..."@ru ;
+	rdfs:label "For net..."@en ;
+	rdfs:domain mnd-wf:Decomposition ;
+	rdfs:range v-wf:StartForm ;
+.
+v-wf:startingMapping
+	rdf:type rdf:Property ;
+	rdfs:label "starting mapping"@en ;
+	rdfs:label "стартовое преобразование"@ru ;
+	rdfs:domain mnd-wf:Decomposition ;
+	rdfs:range v-wf:Mapping ;
 .
