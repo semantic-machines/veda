@@ -1,12 +1,12 @@
 // (KarpovR) Derived from riot-admin
-// The ability to split your single-page application (SPA) into loosely-coupled modules
+// The ability to split single-page application (SPA) into loosely-coupled modules
 
-var app;
+var veda;
 
 var Veda = riot.observable(function(arg) {
 
 	// Veda() --> return instance
-	if (!arg) return app;
+	if (!arg) return veda;
 
 	// Veda(fn) --> add a new module
 	if (typeof arg == 'function') {
@@ -16,15 +16,15 @@ var Veda = riot.observable(function(arg) {
 	// Veda(conf) --> initialize the application
 	} else {
 
-		app = new AppModel(arg);
+		veda = new AppModel(arg);
 		
-		RegisterModule(app, app);
+		RegisterModule(veda, veda);
 		
-		app.on("ready", function() {
-			Veda.trigger("ready", app);
+		veda.on("ready", function() {
+			Veda.trigger("ready", veda);
 		});
 
-		app.trigger("ready");
+		veda.trigger("ready");
 
 	}
 
