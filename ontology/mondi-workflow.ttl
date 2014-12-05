@@ -249,7 +249,7 @@ mnd-wf:map_t3_b
 .
 mnd-wf:executor_def_1
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:scipt "net.getVariableValue ('coordinatorLevel1')" ;
+	v-s:script "net.getVariableValue ('coordinatorLevel1')" ;
 .
 mnd-wf:f_t3_c2
 	rdf:type v-wf:Flow ;
@@ -295,7 +295,7 @@ mnd-wf:map_t4_b
 .
 mnd-wf:executor_def_2
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:scipt "net.getVariableValue ('coordinatorLevel2')" ;
+	v-s:script "net.getVariableValue ('coordinatorLevel2')" ;
 .
 mnd-wf:f_t4_c2
 	rdf:type v-wf:Flow ;
@@ -341,7 +341,7 @@ mnd-wf:map_t5_b
 .
 mnd-wf:executor_def_3
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:scipt "net.getVariableValue ('coordinatorLevel3')" ;
+	v-s:script "net.getVariableValue ('coordinatorLevel3')" ;
 .
 mnd-wf:f_t5_c2
 	rdf:type v-wf:Flow ;
@@ -387,7 +387,7 @@ mnd-wf:map_t6_b
 .
 mnd-wf:executor_def_4
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:scipt "net.getVariableValue ('reviewer')" ;
+	v-s:script "net.getVariableValue ('reviewer')" ;
 .
 mnd-wf:f_t6_c2
 	rdf:type v-wf:Flow ;
@@ -433,7 +433,7 @@ mnd-wf:map_t7_b
 .
 mnd-wf:executor_def_5
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:scipt "net.getVariableValue ('reviewer')" ;
+	v-s:script "net.getVariableValue ('reviewer')" ;
 .
 mnd-wf:f_t7_c2
 	rdf:type v-wf:Flow ;
@@ -477,9 +477,9 @@ mnd-wf:map_t8_b
 	v-wf:mapsTo mnd-wf:var_doc_id_t8 ;	
 	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
 .
-mnd-wf:executor_def_5
+mnd-wf:executor_def_6
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:scipt "net.getVariableValue ('initiator')" ;
+	v-s:script "net.getVariableValue ('initiator')" ;
 .
 mnd-wf:f_t8_c3
 	rdf:type v-wf:Flow ;
@@ -707,13 +707,13 @@ mnd-wf:map_decomposition5
 mnd-wf:map_decomposition6
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_reviewer ;
-	v-wf:mappingExpression	"doc.getValue ('mnd-wf:ComplexRouteStartForm_reviewer)" ;
+	v-wf:mappingExpression	"doc.getValue ('mnd-wf:ComplexRouteStartForm_reviewer')" ;
 .
 
 mnd-wf:map_decomposition7
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_signer ;
-	v-wf:mappingExpression	"doc.getValue ('mnd-wf:ComplexRouteStartForm_signer)" ;
+	v-wf:mappingExpression	"doc.getValue ('mnd-wf:ComplexRouteStartForm_signer')" ;
 .
 
 # --- end -------------------------- NET Complex Route ----------------------------------- end ---- #
