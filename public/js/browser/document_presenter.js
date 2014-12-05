@@ -1,6 +1,6 @@
 // Document Presenter
 
-Veda(function DocumentPresenter(veda) { "use strict";
+veda.Present(function DocumentPresenter(veda) { "use strict";
 	
 	var cnt = 0;
 	
@@ -36,10 +36,10 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		} else if ( document["rdf:type"] && document["rdf:type"].length) {
 			templates = document["rdf:type"]
 				.filter( function (item) {
-					return item instanceof IndividualModel;
+					return item instanceof veda.IndividualModel;
 				})
 				.map( function (item) { 
-					var _class = new ClassModel(veda, item);
+					var _class = new veda.ClassModel(item);
 					if (_class.documentTemplate["v-ui:template"]) {
 						// Get template from class
 
@@ -113,7 +113,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			$("[about]", classTemplate).map( function () {
 				
 				var propertyContainer = $( this ), 
-					about = new IndividualModel(veda, propertyContainer.attr("about")),
+					about = new veda.IndividualModel(propertyContainer.attr("about")),
 					property_uri = propertyContainer.attr("property");
 				if (property_uri == "id") propertyContainer.html( about[property_uri] );
 				else propertyContainer.html( about[property_uri].join(", ") );
@@ -128,12 +128,12 @@ Veda(function DocumentPresenter(veda) { "use strict";
 					relTemplate = relContainer.attr("template");
 				
 				relTemplate = relTemplate ? (
-					new IndividualModel(veda, relTemplate) 
+					new veda.IndividualModel(relTemplate) 
 				) : (
 					!document[rel_uri] || !document[rel_uri][0] || !document[rel_uri][0]["rdfs:label"] ? 
-						new IndividualModel(veda, "mnd-d:ClassNameIdTemplate") 
+						new veda.IndividualModel("mnd-d:ClassNameIdTemplate") 
 						: 
-						new IndividualModel(veda, "mnd-d:ClassNameLabelTemplate")
+						new veda.IndividualModel("mnd-d:ClassNameLabelTemplate")
 				)
 				renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
 				
@@ -206,7 +206,7 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		// Search modal
 		$(".search", template).on("click", function (e) {
 			var $modal = $("#search-modal");
-			var search = new SearchModel(veda, undefined, $(".modal-body", $modal) );
+			var search = new veda.SearchModel(undefined, $(".modal-body", $modal) );
 			$modal.modal();
 			// Add found values
 			$("button#ok", $modal).on("click", function (e) {
@@ -223,15 +223,15 @@ Veda(function DocumentPresenter(veda) { "use strict";
 		function renderValue(value, mode) {
 			var clone = relContainer.clone();
 			var lnk;
-			if (value instanceof IndividualModel || !value) {
+			if (value instanceof veda.IndividualModel || !value) {
 				setTimeout( function () {
 					if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
-						lnk = new DocumentModel(veda, value, clone, relTemplate, mode);
+						lnk = new veda.DocumentModel(value, clone, relTemplate, mode);
 						embedded.push(lnk);
 						// New instance
 						if (!value) document[rel_uri] = document[rel_uri].concat(lnk);
 					} else {
-						lnk = new DocumentModel(veda, value, clone, relTemplate);
+						lnk = new veda.DocumentModel(value, clone, relTemplate);
 					}
 					
 					clone.attr("style", "position:relative;");
@@ -351,13 +351,15 @@ Veda(function DocumentPresenter(veda) { "use strict";
 			);
 		} else {
 			properties = document.properties;
-			$(".properties", template).append (
-				$("<div/>").append( 
-					$("<strong/>", {"about": "rdf:type", "property": "rdfs:label"}).addClass("text-muted"),
-					$("<div/>", {"rel": "rdf:type"}),
-					$("<hr/>").attr("style", "margin: 10px 0px")
-				)
-			);
+			if (!properties["rdf:type"]) {
+				$(".properties", template).append (
+					$("<div/>").append( 
+						$("<strong/>", {"about": "rdf:type", "property": "rdfs:label"}).addClass("text-muted"),
+						$("<div/>", {"rel": "rdf:type"}),
+						$("<hr/>").attr("style", "margin: 10px 0px")
+					)
+				);
+			}
 		}
 		
 		$(".properties", template).append (

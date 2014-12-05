@@ -1,5 +1,5 @@
 // Veda controls implemented as JQuery plugins
-(function( $ ) { "use strict";
+;(function( $ ) { "use strict";
 
 	var render_escape = {'&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;'};
 	function escape(str) {
@@ -96,7 +96,7 @@
 		if (!opts.value.language) first.addClass("active");
 		$(".language-list", control).append(
 			first,
-			Object.keys(Veda().availableLanguages).map(function (language_name) {
+			Object.keys(veda.availableLanguages).map(function (language_name) {
 				var li = $("<li>"), 
 					a = $("<a>", {href: "#", "data-language": language_name, text: language_name}).addClass("language");
 				li.append(a);
@@ -207,4 +207,4 @@
 		}
 	};
 
-})( jQuery );
+}( jQuery ));

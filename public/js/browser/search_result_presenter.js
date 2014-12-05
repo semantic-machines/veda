@@ -1,6 +1,6 @@
 // Search Result Presenter
 
-Veda(function SearchResultPresenter (veda) { "use strict";
+veda.Present(function SearchResultPresenter (veda) { "use strict";
 	
 	function renderIndividualProperty (veda, individual, property_uri, template, container) {
 		var label, uri, values;
@@ -13,7 +13,7 @@ Veda(function SearchResultPresenter (veda) { "use strict";
 						if (item instanceof String)
 							// Check if string starts with http:// or ftp://
 							return item.search(/^.{3,5}:\/\//) == 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
-						else if (item instanceof IndividualModel)
+						else if (item instanceof veda.IndividualModel)
 							return "<a data-toggle='popover' href='#/document/" + item.id + "'>" + 
 								(item["rdfs:label"] && item["rdfs:label"].length ? item["rdfs:label"].join(", ") : item.id) + "</a>";
 						else return item;
@@ -96,7 +96,7 @@ Veda(function SearchResultPresenter (veda) { "use strict";
 					class: "hide",
 				}).appendTo("body");
 				
-				new IndividualModel(veda, uri, container);
+				new veda.IndividualModel(uri, container);
 				
 				var popover = popover_element.popover({
 					content: container.html(),

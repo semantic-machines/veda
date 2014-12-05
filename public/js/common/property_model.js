@@ -1,11 +1,13 @@
-// Class Model
+// Property Model
 
-"use strict";
+;(function (veda) { "use strict";
 
-function PropertyModel(veda, individual) {
+	veda.PropertyModel = function (individual) {
 
-	if (individual instanceof IndividualModel) var self = individual;
-	else var self = new IndividualModel(veda, individual);
-	
-	return self;
-};
+		if (individual instanceof veda.IndividualModel) var self = individual;
+		else var self = new veda.IndividualModel(individual);
+		
+		return self;
+	};
+
+}(veda));

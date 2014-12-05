@@ -1,6 +1,6 @@
 // User Presenter
 
-Veda(function UserPresenter(veda) { "use strict";
+veda.Present(function UserPresenter(veda) { "use strict";
 
 	var template = $("#current-user-template").html();
 	var languageTemplate = $("#language-template").html();
