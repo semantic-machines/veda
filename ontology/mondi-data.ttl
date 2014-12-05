@@ -19,10 +19,12 @@
   owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
   owl:versionInfo "1.0" ;
 .
+
 mnd-d:File_1
     rdf:type vs:File ;
     vs:fileURI "111.pdf" ;
 .
+
 mnd-d:AdministrativeDocument_2
   rdf:type mnd-s:AdministrativeDocument ;
   mnd-s:content "To comply the federal law №135-FL issued 12.10.2012 I order..."@en ;
@@ -37,6 +39,7 @@ mnd-d:AdministrativeDocument_2
   rdfs:label "AdministrativeDocument_2"@en ;
   rdfs:label "Распорядительный документ_2"@ru ;
 .
+
 mnd-d:AdministrativeDocument_1
   rdf:type mnd-s:AdministrativeDocument ;
   mnd-s:content "2 To comply the federal law №153-FL issued 12.10.2012 I order..."@en ;
@@ -51,18 +54,21 @@ mnd-d:AdministrativeDocument_1
   rdfs:label "AdministrativeDocument_1"@en ;
   rdfs:label "Распорядительный документ_1"@ru ;
 .
+
 mnd-d:Analyst1
   rdf:type v-s:Position ;
   v-s:parentUnit mnd-d:ApplicationDevelopmentGroup ;
   rdfs:label "Analyst"@en ;
   rdfs:label "Аналитик"@ru ;
 .
+
 mnd-d:Analyst2
   rdf:type v-s:Position ;
   v-s:parentUnit mnd-d:ApplicationDevelopmentGroup ;
   rdfs:label "Analyst"@en ;
   rdfs:label "Аналитик"@ru ;
 .
+
 mnd-d:AndreyBychin
   rdf:type v-s:Person ;
   v-s:actualVersion mnd-d:AndreyBychin ;
@@ -78,6 +84,7 @@ mnd-d:AndreyBychin
   rdfs:label "Andrey Bychin"@en ;
   rdfs:label "Андрей Бычин"@ru ;
 .
+
 mnd-d:AndreyBychin-Analyst2
   rdf:type v-s:Appointment ;
   v-s:author mnd-d:RomanKarpov-Analyst1 ;
@@ -90,6 +97,7 @@ mnd-d:AndreyBychin-Analyst2
   rdfs:label "Appointment_6"@en ;
   rdfs:label "Назначение_6"@ru ;
 .
+
 mnd-d:AndreyBychin-ExecutiveDirector
   rdf:type v-s:Appointment ;
   v-s:author mnd-d:RomanKarpov-Analyst1 ;
@@ -102,6 +110,7 @@ mnd-d:AndreyBychin-ExecutiveDirector
   rdfs:label "Appointment_5"@en ;
   rdfs:label "Назначение_5"@ru ;
 .
+
 mnd-d:ApplicationDevelopmentGroup
   rdf:type v-s:Department ;
   v-s:childUnit mnd-d:Analyst1 ;
@@ -110,6 +119,7 @@ mnd-d:ApplicationDevelopmentGroup
   rdfs:label "Application development group"@en ;
   rdfs:label "Группа прикладного програмирования"@ru ;
 .
+
 mnd-d:BushenevV
   rdf:type v-s:Account ;
   v-s:login "BushenevV"^^xsd:string ;
@@ -118,6 +128,7 @@ mnd-d:BushenevV
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "BushenevV" ;
 .
+
 mnd-d:BychinA
   rdf:type v-s:Account ;
   v-s:login "BychinA"^^xsd:string ;
@@ -126,6 +137,7 @@ mnd-d:BychinA
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "BychinA" ;
 .
+
 mnd-d:CCIP
   rdf:type v-s:Department ;
   v-s:childUnit mnd-d:ApplicationDevelopmentGroup ;
@@ -133,28 +145,33 @@ mnd-d:CCIP
   rdfs:label "Competence center information process"@en ;
   rdfs:label "Управление информационных технологий"@ru ;
 .
+
 mnd-d:CommercialDirector
   rdf:type v-s:Position ;
   v-s:parentUnit mnd-d:SemanticMachines ;
   rdfs:label "Commercial director"@en ;
   rdfs:label "Коммерческий директор"@ru ;
 .
+
 mnd-d:ExecutiveDirector
   rdf:type v-s:Position ;
   v-s:parentUnit mnd-d:SemanticMachines ;
   rdfs:label "Executive director"@en ;
   rdfs:label "Исполнительный директор"@ru ;
 .
+
 mnd-d:UserGroup_1
   rdf:type v-s:Group ;
   rdfs:label "Test user group 1"@en ;
   rdfs:label "Тестовая пользовательская группа 1"@ru ;
 .
+
 mnd-d:UserGroup_2
   rdf:type v-s:Group ;
   rdfs:label "Test user group 2"@en ;
   rdfs:label "Тестовая пользовательская группа 2"@ru ;
 .
+
 mnd-d:ResGroup_1
   rdf:type v-s:Group ;
   rdfs:label "Test resource group 1"@en ;
@@ -222,7 +239,7 @@ mnd-d:Membership_7
   rdfs:label "Membership_7"@en ;
   rdfs:label "Членство_7"@ru ;
 .
-#
+
 mnd-d:Membership_9
   rdf:type v-s:Membership ;
   v-s:memberOf mnd-d:ResGroup_2 ;
@@ -269,6 +286,7 @@ mnd-d:MondiSyktyvkar
   rdfs:label "Mondi Syktyvkar, OJSC"@en ;
   rdfs:label "ОАО Монди СЛПК"@ru ;
 .
+
 mnd-d:Permission_1
   rdf:type v-s:PermissionStatement ;
   v-s:author mnd-d:RomanKarpov-Analyst1 ;
@@ -284,6 +302,7 @@ mnd-d:Permission_1
   rdfs:label "Permissions record_1"@en ;
   rdfs:label "Запись о выдаче прав_1"@ru ;
 .
+
 mnd-d:Permission_2
   rdf:type v-s:PermissionStatement ;
   v-s:author mnd-d:RomanKarpov-Analyst1 ;
@@ -296,6 +315,7 @@ mnd-d:Permission_2
   rdfs:label "Permissions record_2"@en ;
   rdfs:label "Запись о выдаче прав_2"@ru ;
 .
+
 mnd-d:Permission_3
   rdf:type v-s:PermissionStatement ;
   v-s:author mnd-d:RomanKarpov-Analyst1 ;
@@ -315,6 +335,7 @@ mnd-d:Preferences_AndreyBychin
   rdfs:label "Preferences (Andrey Bychin)"@en ;
   rdfs:label "Предпочтения (Андрей Бычин)"@ru ;
 .
+
 mnd-d:Preferences_RomanKarpov
   rdf:type v-ui:Preferences ;
   v-s:owner mnd-d:RomanKarpov ;
@@ -323,6 +344,7 @@ mnd-d:Preferences_RomanKarpov
   rdfs:label "Preferences (Roman Karpov)"@en ;
   rdfs:label "Предпочтения (Роман Карпов)"@ru ;
 .
+
 mnd-d:Preferences_ValeriyBushenev
   rdf:type v-ui:Preferences ;
   v-s:author mnd-d:ValeriyBushenev-Programmer1 ;
@@ -331,12 +353,14 @@ mnd-d:Preferences_ValeriyBushenev
   rdfs:label "Preferences (Valeriy Bushenev)"@en ;
   rdfs:label "Предпочтения (Валерий Бушенев)"@ru ;
 .
+
 mnd-d:Programmer1
   rdf:type v-s:Position ;
   v-s:parentUnit mnd-d:ApplicationDevelopmentGroup ;
   rdfs:label "Programmer"@en ;
   rdfs:label "Программист"@ru ;
 .
+
 mnd-d:RegulatoryDisposal2013
   rdf:type mnd-s:AdministrativeDocumentType ;
   v-s:author mnd-d:RomanKarpov-Analyst1 ;
@@ -345,6 +369,7 @@ mnd-d:RegulatoryDisposal2013
   rdfs:label "Regulatory disposal. 2013"@en ;
   rdfs:label "Распоряжение по основной деятельности. 2013"@ru ;
 .
+
 mnd-d:RegulatoryDisposal2014
   rdf:type mnd-s:AdministrativeDocumentType ;
   v-s:author mnd-d:RomanKarpov-Analyst1 ;
@@ -353,6 +378,7 @@ mnd-d:RegulatoryDisposal2014
   rdfs:label "Regulatory disposal. 2014"@en ;
   rdfs:label "Распоряжение по основной деятельности. 2014"@ru ;
 .
+
 mnd-d:RegulatoryOrder2013
   rdf:type mnd-s:AdministrativeDocumentType ;
   v-s:author mnd-d:RomanKarpov-Analyst1 ;
@@ -361,6 +387,7 @@ mnd-d:RegulatoryOrder2013
   rdfs:label "Regulatory order. 2013"@en ;
   rdfs:label "Приказ по основной деятельности. 2013"@ru ;
 .
+
 mnd-d:RegulatoryOrder2014
   rdf:type mnd-s:AdministrativeDocumentType ;
   v-s:author mnd-d:RomanKarpov-Analyst1 ;
@@ -369,6 +396,7 @@ mnd-d:RegulatoryOrder2014
   rdfs:label "Regulatory order. 2014"@en ;
   rdfs:label "Приказ по основной деятельности. 2014"@ru ;
 .
+
 mnd-d:RomanKarpov
   rdf:type v-s:Person ;
   v-s:actualVersion mnd-d:RomanKarpov ;
@@ -384,6 +412,7 @@ mnd-d:RomanKarpov
   rdfs:label "Roman Karpov"@en ;
   rdfs:label "Роман Карпов"@ru ;
 .
+
 mnd-d:RomanKarpov-Analyst1
   rdf:type v-s:Appointment ;
   v-s:author mnd-d:RomanKarpov-Analyst1 ;
@@ -396,6 +425,7 @@ mnd-d:RomanKarpov-Analyst1
   rdfs:label "Appointment_2"@en ;
   rdfs:label "Назначение_2"@ru ;
 .
+
 mnd-d:RomanKarpov-CommercialDirector
   rdf:type v-s:Appointment ;
   v-s:author mnd-d:RomanKarpov-Analyst1 ;
@@ -408,6 +438,7 @@ mnd-d:RomanKarpov-CommercialDirector
   rdfs:label "Appointment_4"@en ;
   rdfs:label "Назначение_4"@ru ;
 .
+
 mnd-d:SemanticMachines
   rdf:type v-s:Organization ;
   v-s:childUnit mnd-d:CommercialDirector ;
@@ -415,12 +446,14 @@ mnd-d:SemanticMachines
   rdfs:label "Semantic machines, LLC"@en ;
   rdfs:label "ООО Смысловые машины"@ru ;
 .
+
 mnd-d:TechnicalDirector
   rdf:type v-s:Position ;
   v-s:parentUnit mnd-d:SemanticMachines ;
   rdfs:label "Technical director"@en ;
   rdfs:label "Технический директор"@ru ;
 .
+
 mnd-d:ValeriyBushenev
   rdf:type v-s:Person ;
   v-s:actualVersion mnd-d:ValeriyBushenev ;
@@ -436,6 +469,7 @@ mnd-d:ValeriyBushenev
   rdfs:label "Valeriy Bushenev"@en ;
   rdfs:label "Валерий Бушенев"@ru ;
 .
+
 mnd-d:ValeriyBushenev-Programmer1
   rdf:type v-s:Appointment ;
   v-s:author mnd-d:RomanKarpov-Analyst1 ;
@@ -448,10 +482,12 @@ mnd-d:ValeriyBushenev-Programmer1
   rdfs:label "Appointment_1"@en ;
   rdfs:label "Назначение_1"@ru ;
 .
+
 mnd-d:ValeriyBushenev-Programmer1
   rdf:type v-s:Appointment ;
   rdfs:label "test add"@ru ;
 .
+
 mnd-d:ValeriyBushenev-TechnicalDirector
   rdf:type v-s:Appointment ;
   v-s:author mnd-d:RomanKarpov-Analyst1 ;
@@ -464,6 +500,7 @@ mnd-d:ValeriyBushenev-TechnicalDirector
   rdfs:label "Appointment_3"@en ;
   rdfs:label "Назначение_3"@ru ;
 .
+
 mnd-d:SavedSearch1
   rdf:type v-s:SavedSearch ;
   v-s:author mnd-d:RomanKarpov-Analyst1 ;
@@ -472,6 +509,7 @@ mnd-d:SavedSearch1
   rdfs:label "Сохраненный запрос 1"@ru ;
   rdfs:label "Saved search 1"@en ;
 .
+
 mnd-d:PersonTemplate1
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон персоны"@ru ;
@@ -529,6 +567,7 @@ mnd-d:PersonTemplate1
   </div>
 """ ;
 .
+
 mnd-d:AppointmentTemplate1
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон Назначения"@ru ;
@@ -567,6 +606,7 @@ mnd-d:AppointmentTemplate1
   </div>
   """ ;
 .
+
 mnd-d:AppointmentTemplate2
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон Назначения 2"@ru ;
@@ -579,6 +619,7 @@ mnd-d:AppointmentTemplate2
 	</div>
   """ ;
 .
+
 mnd-d:AccountTemplate1
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон Учетной записи"@ru ;
@@ -635,6 +676,7 @@ mnd-d:AccountTemplate1
   </div>
   """ ;
 .
+
 mnd-d:PositionTemplate1
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Должность"@ru ;
@@ -644,6 +686,7 @@ mnd-d:PositionTemplate1
   <span property="document.rdfs:label">Должность</span>
   """ ;
 .
+
 mnd-d:PreferencesTemplate1
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Предпочтения"@ru ;
@@ -678,6 +721,7 @@ mnd-d:PreferencesTemplate1
 
   """ ;
 .
+
 mnd-d:LabelTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с меткой"@ru ;
@@ -686,6 +730,7 @@ mnd-d:LabelTemplate
   <span><span property="rdfs:label">наименование</span></span>
   """ ;
 .
+
 mnd-d:ClassNameLabelTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
@@ -694,6 +739,7 @@ mnd-d:ClassNameLabelTemplate
   <div><a href="id"><span rel="rdf:type" template="mnd-d:LabelTemplate">Имя класса</span>: <span property="rdfs:label">наименование</span></a></div>
   """ ;
 .
+
 mnd-d:ClassNameIdTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с именем класса, меткой и id"@ru ;
@@ -702,6 +748,7 @@ mnd-d:ClassNameIdTemplate
   <div><a href="id"><span rel="rdf:type" template="mnd-d:LabelTemplate">Имя класса</span>: <span property="id">id</span></a></div>
   """ ;
 .
+
 mnd-d:PropertySpecification5
   rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация работника для класса Назначение"@ru ;
@@ -712,6 +759,7 @@ mnd-d:PropertySpecification5
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:control "full-text search"^^xsd:string ;
 .
+
 mnd-d:PropertySpecification6
   rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация работника для класса Назначение"@ru ;
@@ -723,6 +771,7 @@ mnd-d:PropertySpecification6
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:control "full-text search"^^xsd:string ;
 .
+
 mnd-d:PropertySpecification1
   rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация даты рождения для класса персона"@ru ;
@@ -735,6 +784,7 @@ mnd-d:PropertySpecification1
   v-ui:tooltip "date in format 2001-01-01"@en ;
   v-ui:control "datetime"^^xsd:string ;
 .
+
 mnd-d:PropertySpecification2
   rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация имени для класса персона"@ru ;
@@ -745,6 +795,7 @@ mnd-d:PropertySpecification2
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:control "text"^^xsd:string ;
 .
+
 mnd-d:PropertySpecification3
   rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация фамилии для класса персона"@ru ;
@@ -755,6 +806,7 @@ mnd-d:PropertySpecification3
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:control "text"^^xsd:string ;
 .
+
 mnd-d:PropertySpecification4
   rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация отчества для класса персона"@ru ;
@@ -765,3 +817,73 @@ mnd-d:PropertySpecification4
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:control "text"^^xsd:string ;
 .
+
+# ---------------------------- Тестовые экземпляры маршрутов ------------------------------
+
+# -------- стартовая форма маршрута ----------------
+mnd-d:ComplexRouteStartForm1
+	rdf:type mnd-wf:ComplexRouteStartForm ; 
+	v-wf:forNet mnd-wf:net_complex_route ;
+	v-wf:processed_document mnd-d:SavedSearch1 ; 
+	v-wf:process_initiator mnd-d:RomanKarpov-Analyst1 ; 
+	mnd-wf:ComplexRouteStartForm_coordinator1 mnd-d:RomanKarpov-Analyst1 ; 
+	mnd-wf:ComplexRouteStartForm_coordinator2 mnd-d:ValeriyBushenev-Programmer1 ; 
+	mnd-wf:ComplexRouteStartForm_coordinator3 mnd-d:AndreyBychin-ExecutiveDirector ; 
+	mnd-wf:ComplexRouteStartForm_reviewer mnd-d:ValeriyBushenev-Programmer1 ; 
+	mnd-wf:ComplexRouteStartForm_signer mnd-d:AndreyBychin-ExecutiveDirector ; 
+.
+
+# -------- стартовые данные маршрута ----------------
+mnd-d:process1
+	rdf:type v-wf:Process ;
+	v-wf:instanceOf mnd-wf:net_complex_route ;
+	v-wf:inputVariable mnd-d:var_doc_id_n1 ;
+	v-wf:inputVariable mnd-d:var_initiator_n1 ;
+	v-wf:inputVariable mnd-d:var_coordinator_1_n1 ;
+	v-wf:inputVariable mnd-d:var_coordinator_2_n1 ;
+	v-wf:inputVariable mnd-d:var_signer_1_n1 ;
+	v-wf:inputVariable mnd-d:var_reviewer_1_n1 ;
+	v-wf:localVariable mnd-d:var_right_1_n1 ;
+.
+mnd-d:var_initiator_n1
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "initiator" ;
+        rdfs:label "Инициатор"@ru ;
+	v-wf:variableValue mnd-d:RomanKarpov-Analyst1 ;
+.
+mnd-d:var_doc_id_n1
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "docId" ;
+        rdfs:label "документ"@ru ;
+	v-wf:variableValue mnd-d:SavedSearch1 ;
+.
+mnd-d:var_coordinator_1_n1
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "coordinatorLevel1" ;
+        rdfs:label "список согласующих 1 уровень"@ru ;
+	v-wf:variableValue mnd-d:ValeriyBushenev-Programmer1 ;
+.
+mnd-d:var_coordinator_2_n1
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "coordinatorLevel2" ;
+        rdfs:label "список согласующих 2 уровень"@ru ;
+	v-wf:variableValue mnd-d:AndreyBychin-ExecutiveDirector ;
+.
+mnd-d:var_signer_1_n1
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "signer" ;
+	v-wf:variableValue mnd-d:ValeriyBushenev-Programmer1 ; 
+        rdfs:label "подписывающий"@ru ;
+.
+mnd-d:var_reviewer_1_n1
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "reviewer" ;
+	v-wf:variableValue mnd-d:AndreyBychin-ExecutiveDirector ; 
+        rdfs:label "рассматривающий"@ru ;
+.
+mnd-d:var_right_1_n1
+	rdf:type v-wf:Variable ;
+	v-wf:variableName "originalRight" ;
+	v-wf:variableValue "no right" ;
+.
+

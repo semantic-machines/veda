@@ -22,9 +22,9 @@ mnd-wf:net_complex_route
         rdf:type v-wf:Net ;
 	v-wf:inputVariable mnd-wf:var_doc_id ;
 	v-wf:inputVariable mnd-wf:var_initiator ;
-	v-wf:inputVariable mnd-wf:var_agreed_1 ;
-	v-wf:inputVariable mnd-wf:var_agreed_2 ;
-	v-wf:inputVariable mnd-wf:var_agreed_3 ;
+	v-wf:inputVariable mnd-wf:var_coordinator_1 ;
+	v-wf:inputVariable mnd-wf:var_coordinator_2 ;
+	v-wf:inputVariable mnd-wf:var_coordinator_3 ;
 	v-wf:inputVariable mnd-wf:var_signer_1 ;
 	v-wf:inputVariable mnd-wf:var_reviewer_1 ;
 	v-wf:localVariable mnd-wf:var_right_1 ;
@@ -75,19 +75,19 @@ mnd-wf:var_doc_id
 	v-wf:variableName "docId" ;
         rdfs:label "документ"@ru ;
 .
-mnd-wf:var_agreed_1
+mnd-wf:var_coordinator_1
         rdf:type v-wf:Variable ;
-	v-wf:variableName "agreedLevel1" ;
+	v-wf:variableName "coordinatorLevel1" ;
         rdfs:label "список согласующих 1 уровень"@ru ;
 .
-mnd-wf:var_agreed_2
+mnd-wf:var_coordinator_2
         rdf:type v-wf:Variable ;
-	v-wf:variableName "agreedLevel2" ;
+	v-wf:variableName "coordinatorLevel2" ;
         rdfs:label "список согласующих 2 уровень"@ru ;
 .
-mnd-wf:var_agreed_3
+mnd-wf:var_coordinator_3
         rdf:type v-wf:Variable ;
-	v-wf:variableName "agreedLevel3" ;
+	v-wf:variableName "coordinatorLevel3" ;
         rdfs:label "список согласующих 3 уровень"@ru ;
 .
 mnd-wf:var_signer_1
@@ -109,8 +109,8 @@ mnd-wf:var_right_1
 mnd-wf:ic1 
 	rdf:type v-wf:InputCondition ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
-	v-wf:locationX 12 ;
-	v-wf:locationY 512 ;
+	v-wf:locationX "12"^^xsd:integer ;
+	v-wf:locationY "512"^^xsd:integer ;
 .
 mnd-wf:f_ic1_t1
 	rdf:type v-wf:Flow ;
@@ -129,8 +129,8 @@ mnd-wf:t1
 	v-wf:split v-wf:XOR ;	
 	v-wf:inputVariable mnd-wf:var_doc_id_t1 ;
 	v-wf:startingMapping mnd-wf:map_task_1_b ;
-	v-wf:locationX 84 ;
-	v-wf:locationY 512 ;
+	v-wf:locationX "84"^^xsd:integer ;
+	v-wf:locationY "512"^^xsd:integer ;
 .
 mnd-wf:var_doc_id_t1
         rdf:type v-wf:Variable ;
@@ -165,8 +165,8 @@ mnd-wf:t2
 	v-wf:outputVariable mnd-wf:var_t2_rights ;
 	v-wf:startingMapping mnd-wf:map_t2_b ;
 	v-wf:completedMapping mnd-wf:map_t2_e ;
-	v-wf:locationX 120 ;
-	v-wf:locationY 348 ;
+	v-wf:locationX "120"^^xsd:integer ;
+	v-wf:locationY "348"^^xsd:integer ;
 .
 mnd-wf:var_doc_id_t2
         rdf:type v-wf:Variable ;
@@ -196,8 +196,8 @@ mnd-wf:f_t2_c1
 mnd-wf:c1
 	rdf:type v-wf:Condition ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
-	v-wf:locationX 200 ;
-	v-wf:locationY 348 ;
+	v-wf:locationX "200"^^xsd:integer ;
+	v-wf:locationY "348"^^xsd:integer ;
 .
 mnd-wf:f_c1_t3
 	rdf:type v-wf:Flow ;
@@ -209,8 +209,8 @@ mnd-wf:f_c1_t3
 mnd-wf:c2
 	rdf:type v-wf:Condition ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
-	v-wf:locationX 420 ;
-	v-wf:locationY 76 ;
+	v-wf:locationX "420"^^xsd:integer ;
+	v-wf:locationY "76"^^xsd:integer ;
 .
 mnd-wf:f_c2_t8
 	rdf:type v-wf:Flow ;
@@ -225,8 +225,8 @@ mnd-wf:t3
 	rdfs:label "Согласование 1" ;
 	v-wf:executor mnd-wf:executor_def_1 ;
 	v-wf:subNet mnd-wf:net_agree;
-	v-wf:locationX 272 ;
-	v-wf:locationY 332 ;
+	v-wf:locationX "272"^^xsd:integer ;
+	v-wf:locationY "332"^^xsd:integer ;
 	v-wf:hasFlow mnd-wf:f_t3_c2 ;
 	v-wf:hasFlow mnd-wf:f_t3_t4 ;
 	v-wf:split v-wf:XOR ;	
@@ -249,7 +249,7 @@ mnd-wf:map_t3_b
 .
 mnd-wf:executor_def_1
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:scipt "net.getVariableValue ('agreedLevel1')" ;
+	v-s:scipt "net.getVariableValue ('coordinatorLevel1')" ;
 .
 mnd-wf:f_t3_c2
 	rdf:type v-wf:Flow ;
@@ -271,8 +271,8 @@ mnd-wf:t4
 	rdfs:label "Согласование 2" ;
 	v-wf:executor mnd-wf:executor_def_2 ;
 	v-wf:subNet mnd-wf:net_agree;
-	v-wf:locationX 368 ;
-	v-wf:locationY 308 ;
+	v-wf:locationX "368"^^xsd:integer ;
+	v-wf:locationY "308"^^xsd:integer ;
 	v-wf:hasFlow mnd-wf:f_t4_c2 ;
 	v-wf:hasFlow mnd-wf:f_t4_t5 ;
 	v-wf:split v-wf:XOR ;	
@@ -295,7 +295,7 @@ mnd-wf:map_t4_b
 .
 mnd-wf:executor_def_2
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:scipt "net.getVariableValue ('agreedLevel2')" ;
+	v-s:scipt "net.getVariableValue ('coordinatorLevel2')" ;
 .
 mnd-wf:f_t4_c2
 	rdf:type v-wf:Flow ;
@@ -317,8 +317,8 @@ mnd-wf:t5
 	rdfs:label "Согласование 3" ;
 	v-wf:executor mnd-wf:executor_def_3 ;
 	v-wf:subNet mnd-wf:net_agree;
-	v-wf:locationX 452 ;
-	v-wf:locationY 284 ;
+	v-wf:locationX "452"^^xsd:integer ;
+	v-wf:locationY "284"^^xsd:integer ;
 	v-wf:hasFlow mnd-wf:f_t5_c2 ;
 	v-wf:hasFlow mnd-wf:f_t5_t6 ;
 	v-wf:split v-wf:XOR ;	
@@ -341,7 +341,7 @@ mnd-wf:map_t5_b
 .
 mnd-wf:executor_def_3
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:scipt "net.getVariableValue ('agreedLevel3')" ;
+	v-s:scipt "net.getVariableValue ('coordinatorLevel3')" ;
 .
 mnd-wf:f_t5_c2
 	rdf:type v-wf:Flow ;
@@ -363,8 +363,8 @@ mnd-wf:t6
 	rdfs:label "Подписание" ;
 	v-wf:executor mnd-wf:executor_def_4 ;
 	v-wf:subNet mnd-wf:net_sing;
-	v-wf:locationX 572 ;
-	v-wf:locationY 280 ;
+	v-wf:locationX "572"^^xsd:integer ;
+	v-wf:locationY "280"^^xsd:integer ;
 	v-wf:hasFlow mnd-wf:f_t6_c2 ;
 	v-wf:hasFlow mnd-wf:f_t6_t7 ;
 	v-wf:split v-wf:XOR ;	
@@ -383,7 +383,7 @@ mnd-wf:var_t6_res
 mnd-wf:map_t6_b
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t6 ;	
-	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
+	v-wf:mappingExpression	"net.getVariableValue (docId)" ;
 .
 mnd-wf:executor_def_4
 	rdf:type v-wf:ExecutorDefinition ;
@@ -409,8 +409,8 @@ mnd-wf:t7
 	rdfs:label "Рассмотрение" ;
 	v-wf:executor mnd-wf:executor_def_5 ;
 	v-wf:subNet mnd-wf:net_review;
-	v-wf:locationX 680 ;
-	v-wf:locationY 288 ;
+	v-wf:locationX "680"^^xsd:integer ;
+	v-wf:locationY "288"^^xsd:integer ;
 	v-wf:hasFlow mnd-wf:f_t7_c2 ;
 	v-wf:hasFlow mnd-wf:f_t7_t8 ;
 	v-wf:split v-wf:XOR ;	
@@ -455,8 +455,8 @@ mnd-wf:t8
 	rdfs:label "Доработать" ;
 	v-wf:executor mnd-wf:executor_def_6 ;
 	v-wf:subNet mnd-wf:net_review;
-	v-wf:locationX 180 ;
-	v-wf:locationY 208 ;
+	v-wf:locationX "180"^^xsd:integer ;
+	v-wf:locationY "208"^^xsd:integer ;
 	v-wf:hasFlow mnd-wf:f_t8_c1 ;
 	v-wf:hasFlow mnd-wf:f_t8_t3 ;
 	v-wf:split v-wf:XOR ;	
@@ -493,12 +493,13 @@ mnd-wf:f_t8_c1
 	v-wf:flowsInto mnd-wf:c1 ;
 	v-wf:predicate "eval (net.result == true)" ;
 .
+
 # ------------------------------- NET Complex Route : condition 3 ---------------------------------- #
 mnd-wf:c3
 	rdf:type v-wf:Condition ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
-	v-wf:locationX 800 ;
-	v-wf:locationY 296 ;
+	v-wf:locationX "800"^^xsd:integer ;
+	v-wf:locationY "296"^^xsd:integer ;
 .
 mnd-wf:f_c3_t9
 	rdf:type v-wf:Flow ;
@@ -513,8 +514,8 @@ mnd-wf:t9
 	rdfs:label "восстановить права" ;
 	v-wf:executor mnd-wf:codelet_restore_right ;
 	v-wf:subNet mnd-wf:net_review;
-	v-wf:locationX 882 ;
-	v-wf:locationY 296 ;
+	v-wf:locationX "882"^^xsd:integer ;
+	v-wf:locationY "296"^^xsd:integer ;
 	v-wf:hasFlow mnd-wf:f_t9_oc1 ;
 	v-wf:inputVariable mnd-wf:var_doc_id_t9 ;
 	v-wf:inputVariable mnd-wf:var_t9_right ;
@@ -543,13 +544,14 @@ mnd-wf:f_t9_oc1
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:oc1 ;
-.	
+.
+	
 # ------------------------------- NET Complex Route : Output Condition ---------------------------- #
 mnd-wf:oc1 
 	rdf:type v-wf:OutputCondition ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
-	v-wf:locationX 992 ;
-	v-wf:locationY 324 ;
+	v-wf:locationX "992"^^xsd:integer ;
+	v-wf:locationY "324"^^xsd:integer ;
 .
 
 # ------------------------------- NET Complex Route : User Form ---------------------------- #
@@ -659,7 +661,61 @@ mnd-wf:ComplexRouteStartForm_Template
   </div>
   """ ;
 .
-		
+
+mnd-wf:decomposition1
+        rdf:type v-wf:Decomposition ;
+	v-wf:forNet mnd-wf:net_complex_route ;
+	v-wf:forFormClass mnd-wf:ComplexRouteStartForm ; 
+	v-wf:startingMapping mnd-wf:map_decomposition1 ;	
+	v-wf:startingMapping mnd-wf:map_decomposition2 ;	
+	v-wf:startingMapping mnd-wf:map_decomposition3 ;	
+	v-wf:startingMapping mnd-wf:map_decomposition4 ;	
+	v-wf:startingMapping mnd-wf:map_decomposition5 ;	
+	v-wf:startingMapping mnd-wf:map_decomposition6 ;	
+.		
+
+mnd-wf:map_decomposition1
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_doc_id ;	
+	v-wf:mappingExpression	"doc.getValue ('v-wf:processed_document')" ;
+.
+
+mnd-wf:map_decomposition2
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_initiator ; 
+	v-wf:mappingExpression	"doc.getValue ('v-wf:process_initiator')" ;
+.
+
+mnd-wf:map_decomposition3
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_coordinator_1 ;
+	v-wf:mappingExpression	"doc.getValue ('mnd-wf:ComplexRouteStartForm_coordinator1')" ;
+.
+
+mnd-wf:map_decomposition4
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_coordinator_2 ;
+	v-wf:mappingExpression	"doc.getValue ('mnd-wf:ComplexRouteStartForm_coordinator2')" ;
+.
+
+mnd-wf:map_decomposition5
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_coordinator_3 ;
+	v-wf:mappingExpression	"doc.getValue ('mnd-wf:ComplexRouteStartForm_coordinator3')" ;
+.
+
+mnd-wf:map_decomposition6
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_reviewer ;
+	v-wf:mappingExpression	"doc.getValue ('mnd-wf:ComplexRouteStartForm_reviewer)" ;
+.
+
+mnd-wf:map_decomposition7
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_signer ;
+	v-wf:mappingExpression	"doc.getValue ('mnd-wf:ComplexRouteStartForm_signer)" ;
+.
+
 # --- end -------------------------- NET Complex Route ----------------------------------- end ---- #
 
 # ------------------------------- NET Agree --------------------------------------------------------- #
@@ -667,7 +723,7 @@ mnd-wf:net_agree
         rdf:type v-wf:Net ;
 	v-wf:inputVariable mnd-wf:var_doc_id ;
 	v-wf:inputVariable mnd-wf:var_initiator ;
-	v-wf:inputVariable mnd-wf:var_agreed ;
+	v-wf:inputVariable mnd-wf:var_coordinator ;
         rdfs:label "Маршрут подписание"@ru ;
 .
 
@@ -726,72 +782,4 @@ public Element execute(Element inData, List<YParameter> inParams, List<YParamete
 };
 """ ;
 .	
-
-# ---------------------------- Тестовые экземпляры ------------------------------
-
-# -------- стартовая форма маршрута ----------------
-mnd-wf:ComplexRouteStartForm1
-	rdf:type mnd-wf:ComplexRouteStartForm ; 
-	v-wf:for_net mnd-wf:net_complex_route ;
-	v-wf:process_initiator mnd-d:RomanKarpov-Analyst1 ; 
-	v-wf:processed_document mnd-d:SavedSearch1 ; 
-	mnd-wf:ComplexRouteStartForm_coordinator1 mnd-d:RomanKarpov-Analyst1 ; 
-	mnd-wf:ComplexRouteStartForm_coordinator2 mnd-d:ValeriyBushenev-Programmer1 ; 
-	mnd-wf:ComplexRouteStartForm_coordinator3 mnd-d:AndreyBychin-ExecutiveDirector ; 
-	mnd-wf:ComplexRouteStartForm_reviewer mnd-d:ValeriyBushenev-Programmer1 ; 
-	mnd-wf:ComplexRouteStartForm_signer mnd-d:AndreyBychin-ExecutiveDirector ; 
-.
-# -------- стартовые данные маршрута ----------------
-mnd-wf:process1
-	rdf:type v-wf:Process ;
-	v-wf:instanceOf mnd-wf:net_complex_route ;
-	v-wf:inputVariable mnd-wf:var_doc_id_n1 ;
-	v-wf:inputVariable mnd-wf:var_initiator_n1 ;
-	v-wf:inputVariable mnd-wf:var_agreed_1_n1 ;
-	v-wf:inputVariable mnd-wf:var_agreed_2_n1 ;
-	v-wf:inputVariable mnd-wf:var_signer_1_n1 ;
-	v-wf:inputVariable mnd-wf:var_reviewer_1_n1 ;
-	v-wf:localVariable mnd-wf:var_right_1_n1 ;
-.
-mnd-wf:var_initiator_n1
-        rdf:type v-wf:Variable ;
-	v-wf:variableName "initiator" ;
-        rdfs:label "Инициатор"@ru ;
-	v-wf:variableValue mnd-d:RomanKarpov-Analyst1 ;
-.
-mnd-wf:var_doc_id_n1
-        rdf:type v-wf:Variable ;
-	v-wf:variableName "docId" ;
-        rdfs:label "документ"@ru ;
-	v-wf:variableValue mnd-d:SavedSearch1 ;
-.
-mnd-wf:var_agreed_1_n1
-        rdf:type v-wf:Variable ;
-	v-wf:variableName "agreedLevel1" ;
-        rdfs:label "список согласующих 1 уровень"@ru ;
-	v-wf:variableValue mnd-d:ValeriyBushenev-Programmer1 ;
-.
-mnd-wf:var_agreed_2_n1
-        rdf:type v-wf:Variable ;
-	v-wf:variableName "agreedLevel2" ;
-        rdfs:label "список согласующих 2 уровень"@ru ;
-	v-wf:variableValue mnd-d:AndreyBychin-ExecutiveDirector ;
-.
-mnd-wf:var_signer_1_n1
-        rdf:type v-wf:Variable ;
-	v-wf:variableName "signer" ;
-	v-wf:variableValue mnd-d:ValeriyBushenev-Programmer1 ; 
-        rdfs:label "подписывающий"@ru ;
-.
-mnd-wf:var_reviewer_1_n1
-        rdf:type v-wf:Variable ;
-	v-wf:variableName "reviewer" ;
-	v-wf:variableValue mnd-d:AndreyBychin-ExecutiveDirector ; 
-        rdfs:label "рассматривающий"@ru ;
-.
-mnd-wf:var_right_1_n1
-    rdf:type v-wf:Variable ;
-	v-wf:variableName "originalRight" ;
-	v-wf:variableValue "no right" ;
-.
 
