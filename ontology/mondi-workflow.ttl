@@ -56,7 +56,6 @@ mnd-wf:net_complex_route
 	v-wf:consistsOf mnd-wf:t7 ;
 	v-wf:consistsOf mnd-wf:f_t7_c2 ;
 	v-wf:consistsOf mnd-wf:f_t7_c3 ;
-	v-wf:consistsOf mnd-wf:f_t7_t8 ;
 	v-wf:consistsOf mnd-wf:t8 ;
 	v-wf:consistsOf mnd-wf:f_t8_c3 ;
 	v-wf:consistsOf mnd-wf:f_t8_c1 ;
@@ -112,6 +111,7 @@ mnd-wf:ic1
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:locationX "12"^^xsd:integer ;
 	v-wf:locationY "512"^^xsd:integer ;
+	v-wf:hasFlow mnd-wf:f_ic1_t1 ;
 .
 mnd-wf:f_ic1_t1
 	rdf:type v-wf:Flow ;
@@ -161,7 +161,7 @@ mnd-wf:t2
 	rdfs:label "понизить права" ;
 	v-wf:executor mnd-wf:codelet_down_right ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
-	v-wf:hasFlow mnd-wf:f_t1_oc1 ;
+	v-wf:hasFlow mnd-wf:f_t2_c1 ;
 	v-wf:inputVariable mnd-wf:var_doc_id_t2 ;
 	v-wf:outputVariable mnd-wf:var_t2_rights ;
 	v-wf:startingMapping mnd-wf:map_t2_b ;
@@ -197,6 +197,7 @@ mnd-wf:f_t2_c1
 mnd-wf:c1
 	rdf:type v-wf:Condition ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
+	v-wf:hasFlow mnd-wf:f_c1_t3 ;
 	v-wf:locationX "200"^^xsd:integer ;
 	v-wf:locationY "348"^^xsd:integer ;
 .
@@ -210,6 +211,7 @@ mnd-wf:f_c1_t3
 mnd-wf:c2
 	rdf:type v-wf:Condition ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
+	v-wf:hasFlow mnd-wf:f_c2_t8 ;
 	v-wf:locationX "420"^^xsd:integer ;
 	v-wf:locationY "76"^^xsd:integer ;
 .
@@ -414,7 +416,6 @@ mnd-wf:t7
 	v-wf:locationY "288"^^xsd:integer ;
 	v-wf:hasFlow mnd-wf:f_t7_c2 ;
 	v-wf:hasFlow mnd-wf:f_t7_c3 ;
-	v-wf:hasFlow mnd-wf:f_t7_t8 ;
 	v-wf:split v-wf:XOR ;	
 	v-wf:inputVariable mnd-wf:var_doc_id_t7 ;
 	v-wf:outputVariable mnd-wf:var_t7_res ;
@@ -447,12 +448,6 @@ mnd-wf:f_t7_c3
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c3 ;
-	v-wf:predicate "eval (net.result == true)" ;
-.
-mnd-wf:f_t7_t8
-	rdf:type v-wf:Flow ;
-	v-wf:belongsTo mnd-wf:net_complex_route ;
-	v-wf:flowsInto mnd-wf:t8 ;
 	v-wf:predicate "eval (net.result == true)" ;
 .
 
@@ -506,6 +501,7 @@ mnd-wf:f_t8_c1
 mnd-wf:c3
 	rdf:type v-wf:Condition ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
+	v-wf:hasFlow mnd-wf:f_c3_t9 ;
 	v-wf:locationX "800"^^xsd:integer ;
 	v-wf:locationY "296"^^xsd:integer ;
 .

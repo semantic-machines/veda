@@ -160,13 +160,19 @@ jsWorkflow.ready = jsPlumb.ready;
                 // Initialize all State elements as Connection sources.
                 instance.makeSource(windows, {
                     filter: ".ep",
+                    anchor: "Continuous",
+                    connector: ["Bezier", {
+                    	curviness: 0,
+                        stub: 0
+                    }],
+                    /*
                     anchor: ["Perimeter", { shape: windows.hasClass('state-condition')?"Circle":"Rectangle" }],
                     connector: ["Straight", {
                             stub: 0,
                             gap: 1
-                        }],
+                        }],*/
                     connectorStyle: {
-                        strokeStyle: "#bbb",
+                        strokeStyle: "#444444",
                         lineWidth: 1,
                         outlineColor: "transparent",
                         outlineWidth: 4
@@ -185,8 +191,9 @@ jsWorkflow.ready = jsPlumb.ready;
                 instance.makeTarget(windows, {
                     dropOptions: {
                         hoverClass: "dragHover"
-                    },
-                    anchor: ["Perimeter", { shape:windows.hasClass('state-condition')?"Circle":"Rectangle" }]
+                    }
+                	,anchor: "Continuous"
+                	/*,anchor: ["Perimeter", { shape:windows.hasClass('state-condition')?"Circle":"Rectangle" }]*/
                 });
             };
 
@@ -317,6 +324,35 @@ jsWorkflow.ready = jsPlumb.ready;
                 return workflowObject;
             }
             
+            instance.getSplitJoinType = function(sj, type) {
+            	if (type == null || type == undefined || type == '') {
+            		return ' '+sj+'-no';
+            	}
+            	var res = 'no';
+            	
+            	if (type == 'v-wf:XOR')  return ' '+sj+'-xor';
+            	if (type == 'v-wf:OR')   return ' '+sj+'-or';
+            	if (type == 'v-wf:AND')  return ' '+sj+'-and';
+            	if (type == 'v-wf:NONE') return ' '+sj+'-none';
+            	
+            	/*
+            	switch (type) {
+        		  'v-wf:XOR':
+        			  res = 'xor';
+        		  break;
+        		  'v-wf:OR':
+        			  res = 'or';
+        		  break;
+    			  'v-wf:AND': 
+    				  res = 'and';
+        		  break;
+    			  'v-wf:NONE': 
+    				  res = 'no';
+        		  break;
+            	}*/
+            	return ' '+sj+'-'+res;
+            }
+            
             // Add State to Workspace
             instance.createState = function(type, state) {
             	var stateElement = '';
@@ -331,12 +367,18 @@ jsWorkflow.ready = jsPlumb.ready;
     				stateElement = '<div class="w state-condition" id="' + state.id + '" style="left: ' + 2*state['v-wf:locationX'][0] + 'px; top: ' + 2*state['v-wf:locationY'][0] + 'px;"><div class="state-name"></div><div class="ep"></div></div>';
     				break;
     			case 'v-wf:Task':
-            		stateElement = '<div class="w state-task split-join split-no join-no" id="' + state.id + '" style="left: ' + 2*state['v-wf:locationX'][0] + 'px; top: ' + 2*state['v-wf:locationY'][0] + 'px;"><div class="state-name">' + state['rdfs:label'][0] + '</div><div class="ep"></div></div>';
+            		stateElement = '<div class="w state-task split-join '
+            			+ instance.getSplitJoinType('split', state['v-wf:split']!=null?state['v-wf:split'][0].id:null)
+            			+ instance.getSplitJoinType('join', state['v-wf:join']!=null?state['v-wf:join'][0].id:null)
+            			+ '" id="' + state.id + '" style="left: ' 
+            			+ 2*state['v-wf:locationX'][0] + 'px; top: ' 
+            			+ 2*state['v-wf:locationY'][0] + 'px;"><div class="state-name">' + state['rdfs:label'][0] + '</div><div class="ep"></div></div>';
     				break;
     			}
             	if (stateElement!='') {
                 	$("#workflow-canvas").append(stateElement);
                 	bindStateEvents($('#' + escape4$(state.id)));
+                	updateSVGBackground($('#' + escape4$(state.id)));
             	}
             }
             
@@ -371,6 +413,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	});
             }
             instance.createNet(net);
+            
             return instance;
         }
         /**
@@ -428,13 +471,13 @@ function updateSVGBackground(item) {
 function applyNetEditorFunctions() {
   // Label
   $("#workflow-item-label").change(function () {
-	var item = $('#' + $('#item-id').val());    
+	var item = $('#' + escape4$($('#workflow-item-id').val()));    
 	item.find('.state-name').text($(this).val());
   });
 	
   // Split type
   $("input[name=item-split-type]:radio").change(function () {
-    var item = $('#' + $('#item-id').val());    
+    var item = $('#' + escape4$($('#workflow-item-id').val()));    
     item.removeClass('split-no split-and split-or split-xor');
     item.addClass('split-' + $(this).val());
     updateSVGBackground(item);
@@ -442,11 +485,15 @@ function applyNetEditorFunctions() {
 
   // Join type
   $("input[name=item-join-type]:radio").change(function () {
-    var item = $('#' + $('#item-id').val());
+    var item = $('#' + escape4$($('#workflow-item-id').val()));
     item.removeClass('join-no join-and join-or join-xor');
     item.addClass('join-' + $(this).val());
     updateSVGBackground(item);
   });
 }
+
+$('#workflow-canvas').on('show', function() {
+	alert('1');
+});
 
 // [END] Block of element editor
