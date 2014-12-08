@@ -103,6 +103,9 @@ jsWorkflow.ready = jsPlumb.ready;
 
                 // По клику переходим на свойства объекта
                 windows.bind("click", function() {                	
+                	
+                	instance.repaintEverything();
+                	
                     var _this = this, currentElement = $(_this), properties, itemId;
                     properties = $('#workflow-selected-item');
                                         
@@ -357,7 +360,6 @@ jsWorkflow.ready = jsPlumb.ready;
             			instance.createState(type.id, el);
             		});
             	});
-            	instance.getStatePositions();
             	
             	// Create Flows
             	net['v-wf:consistsOf'].forEach(function(el) {
@@ -367,20 +369,6 @@ jsWorkflow.ready = jsPlumb.ready;
             			});
             		}
             	});
-
-            	/*
-                var transitions = workflowData.transitions,
-                        targetState;
-
-                for (var name in transitions) {
-                    targetState = transitions[name].split(',');
-                    for (var i = 0; i < targetState.length; i += 1) {
-                        instance.connect({
-                            source: name,
-                            target: targetState[i]
-                        });
-                    }
-                }*/
             }
             instance.createNet(net);
             return instance;
