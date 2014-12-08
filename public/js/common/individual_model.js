@@ -149,14 +149,11 @@
 				if (!acc[property_uri].length) delete acc[property_uri];
 				return acc;
 			}, individual);
-			put_individual(veda.ticket, individual, function (data) {
-				original_individual = JSON.stringify(individual);
-				
-				// Update local cache
-				if ( veda.cache[uri] ) veda.cache[uri] = original_individual;
-				
-				self.trigger("individual:saved", self);
-			});
+			put_individual(veda.ticket, individual);
+			original_individual = JSON.stringify(individual);
+			// Update local cache
+			if ( veda.cache[uri] ) veda.cache[uri] = original_individual;
+			self.trigger("individual:saved", self);
 		};
 
 		self.reset = function () {
