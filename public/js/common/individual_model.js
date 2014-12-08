@@ -143,6 +143,7 @@
 			original_individual = JSON.stringify(individual);
 			Object.keys(individual).map(function (property_uri) {
 				if (property_uri == "@") return;
+				//if (property_uri == "rdf:type") return;
 				self.defineProperty(property_uri);
 			});
 			self.trigger("individual:loaded", self);
@@ -181,6 +182,43 @@
 
 		// Load data 
 		if (uri) self.load(uri); 
+		
+		/*
+		Object.defineProperty(self, "rdf:type", {
+			get: function () { 
+				if (values["rdf:type"]) return values["rdf:type"];
+				if (!individual["rdf:type"]) individual["rdf:type"] = [];
+				values["rdf:type"] = individual["rdf:type"].map( function (value) {
+					//if (value.data.search(/^.{3,5}:\/\//) == 0) return new String(value.data);
+					//try { return new veda.IndividualModel(value.data); } 
+					//catch (e) { return new String(value.data) }
+					return new veda.IndividualModel(value.data);
+				});
+				// Filter undefined values
+				values["rdf:type"] = values["rdf:type"].filter(function (item) { return item });
+				return values["rdf:type"];
+			},
+			
+			set: function (value) { 
+				values["rdf:type"] = value;
+				individual["rdf:type"] = values["rdf:type"].map( function (value) {
+					var result = {};
+					if (value instanceof veda.IndividualModel) {
+						result.type = "Uri";
+						result.data = value.id;
+						return result;
+					} else {
+						return value;
+					}
+				});
+				self.trigger("rdf:type" + ":changed", "rdf:type", value);
+				self.trigger("value:changed", "rdf:type", value);
+			},
+			
+			configurable: true
+		
+		});
+		*/
 		
 		return self;
 	};
