@@ -214,6 +214,13 @@ v-wf:predicate
 	rdfs:domain v-wf:Flow ;
 	rdfs:range xsd:string ;
 .
+v-wf:curviness
+	rdf:type rdf:Property ;
+	rdfs:label "curviness"@en ;
+	rdfs:label "степень кривизны"@ru ;
+	rdfs:domain v-wf:Flow ;
+	rdfs:range xsd:integer ;
+.
 v-wf:startingMapping
 	rdf:type rdf:Property ;
 	rdfs:label "starting mapping"@en ;

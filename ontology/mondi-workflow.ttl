@@ -635,6 +635,11 @@ mnd-wf:ComplexRouteStartForm_Template
         </div>
         <hr />
         <div class="row">
+          <div class="col-md-12">
+            <div rel="v-wf:forNet" template="v-wf:NetTemplate">шаблон: v-wf:NetTemplate</div>
+          </div>
+        </div>
+        <div class="row">
             <div class="col-md-4">
                <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_coordinator1" property="rdfs:label">Согласующие 1 уровня</strong>
                <div rel="mnd-wf:ComplexRouteStartForm_coordinator1" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
