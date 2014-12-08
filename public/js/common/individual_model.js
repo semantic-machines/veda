@@ -19,25 +19,30 @@
 		var values = {};
 		self.properties = {};
 
-		if (!uri) { individual["@"] = guid();
-			original_individual = '{"@":"' + individual["@"] +'"}';
-		}
-		
-		Object.defineProperty(self, "id", {
-			get: function () { 
-				return individual["@"];
-			},
-			set: function (value) { 
-				individual["@"] = value;
-			}
-		});
-
-		self.defineProperty = function (property_uri) {
-
+		self.defineProperty = function (property_uri, getter, setter) {
+			
 			properties[property_uri] = undefined;
-			values[property_uri] = undefined;
+			
+			Object.defineProperty(self.properties, property_uri, {
+				get: function () { 
+					if (properties[property_uri]) return properties[property_uri];
+					try { properties[property_uri] = new veda.IndividualModel(property_uri); } 
+					catch (e) { properties[property_uri] = property_uri; }
+					return properties[property_uri];
+				},
+				
+				set: function (value) { 
+					if (properties[property_uri] == value) return; 
+					properties[property_uri] = value; 
+					self.trigger("property:changed", property_uri, value);
+				},
+				
+				configurable: true
+			
+			});
 			
 			var filteredStrings = [];
+			values[property_uri] = undefined;
 			
 			Object.defineProperty(self, property_uri, {
 				get: function () { 
@@ -67,6 +72,9 @@
 					});
 					// Filter undefined values
 					values[property_uri] = values[property_uri].filter(function (item) { return item });
+					
+					if (getter) getter(values[property_uri]);
+					
 					return values[property_uri];
 				},
 				
@@ -104,24 +112,7 @@
 					});
 					self.trigger(property_uri + ":changed", property_uri, value);
 					self.trigger("value:changed", property_uri, value);
-				},
-				
-				configurable: true
-			
-			});
-			
-			Object.defineProperty(self.properties, property_uri, {
-				get: function () { 
-					if (properties[property_uri]) return properties[property_uri];
-					try { properties[property_uri] = new veda.IndividualModel(property_uri); } 
-					catch (e) { properties[property_uri] = property_uri; }
-					return properties[property_uri];
-				},
-				
-				set: function (value) { 
-					if (properties[property_uri] == value) return; 
-					properties[property_uri] = value; 
-					self.trigger("property:changed", property_uri, value);
+					if (setter) setter(values[property_uri]);
 				},
 				
 				configurable: true
@@ -143,7 +134,7 @@
 			original_individual = JSON.stringify(individual);
 			Object.keys(individual).map(function (property_uri) {
 				if (property_uri == "@") return;
-				//if (property_uri == "rdf:type") return;
+				if (property_uri == "rdf:type") return;
 				self.defineProperty(property_uri);
 			});
 			self.trigger("individual:loaded", self);
@@ -180,45 +171,23 @@
 			self.trigger("individual:reset", self);
 		};
 
+		if (!uri) { individual["@"] = guid();
+			original_individual = '{"@":"' + individual["@"] +'"}';
+		}
+		
+		Object.defineProperty(self, "id", {
+			get: function () { 
+				return individual["@"];
+			},
+			set: function (value) { 
+				individual["@"] = value;
+			}
+		});
+
+		self.defineProperty("rdf:type", undefined, undefined);
+		
 		// Load data 
 		if (uri) self.load(uri); 
-		
-		/*
-		Object.defineProperty(self, "rdf:type", {
-			get: function () { 
-				if (values["rdf:type"]) return values["rdf:type"];
-				if (!individual["rdf:type"]) individual["rdf:type"] = [];
-				values["rdf:type"] = individual["rdf:type"].map( function (value) {
-					//if (value.data.search(/^.{3,5}:\/\//) == 0) return new String(value.data);
-					//try { return new veda.IndividualModel(value.data); } 
-					//catch (e) { return new String(value.data) }
-					return new veda.IndividualModel(value.data);
-				});
-				// Filter undefined values
-				values["rdf:type"] = values["rdf:type"].filter(function (item) { return item });
-				return values["rdf:type"];
-			},
-			
-			set: function (value) { 
-				values["rdf:type"] = value;
-				individual["rdf:type"] = values["rdf:type"].map( function (value) {
-					var result = {};
-					if (value instanceof veda.IndividualModel) {
-						result.type = "Uri";
-						result.data = value.id;
-						return result;
-					} else {
-						return value;
-					}
-				});
-				self.trigger("rdf:type" + ":changed", "rdf:type", value);
-				self.trigger("value:changed", "rdf:type", value);
-			},
-			
-			configurable: true
-		
-		});
-		*/
 		
 		return self;
 	};
