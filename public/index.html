@@ -40,8 +40,12 @@
 				<a href="#/" class="navbar-brand"><img src="/img/veda-logo.png" style="position:relative; top:-3px"/></a>
 				<!--a href="#/" class="navbar-brand"><strong>veda</strong></a-->
 				<ul class="nav navbar-nav navbar-left" id="menu">
-					<li id="document">
-						<a i18n="[Document]" label="[Document]" href="#/document/mnd-d:RomanKarpov">Документ</a>
+					<li class="dropdown" id="document">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Документ <span class="caret"></span></a>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href="#/document////edit">Создать</a></li>
+							<li class="divider"></li>
+						</ul>
 					</li>
 					<li id="console">	
 						<a i18n="[Console]" href="#/console">Консоль</a>

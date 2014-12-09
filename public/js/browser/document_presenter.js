@@ -103,6 +103,8 @@ veda.Present(function Document(veda) { "use strict";
 				$save.hide();
 				$cancel.hide();
 				$edit.show();
+				// Change location.hash if document was presented in #main container
+				if (!container_param) riot.route("#/document/" + document.id, false);
 			});
 			
 			document.on("cancel", function () {

@@ -60,10 +60,13 @@ veda.Present(function App(veda) { "use strict";
 		// Route on link click
 		$("body").on("click", "[href^='#/']", function (e) {
 			e.preventDefault();
-			return riot.route($(this).attr("href"));
+			var forced, 
+				hash = $(this).attr("href");
+			forced = (hash == location.hash ? false : true);
+			return riot.route(hash, forced);
 		});
 		
-		// Forced route to current hash. Riot route bug?
+		// Forced route to current hash
 		riot.route(location.hash, true);
 	});
 

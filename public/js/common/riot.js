@@ -134,6 +134,9 @@ riot.render = function(tmpl, data, escape_fn) {
 
     // fire
     if (history.pushState) history.pushState(0, 0, to);
+    
+    /* (KarpovR:) change hash only if forced === false */
+    if (forced === false) return;
     pop(to, forced);
 
   };

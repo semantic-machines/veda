@@ -21,7 +21,8 @@
 
 		self.defineProperty = function (property_uri, getter, setter) {
 			
-			properties[property_uri] = undefined;
+			//properties[property_uri] = undefined;
+			if (properties[property_uri]) return;
 			
 			Object.defineProperty(self.properties, property_uri, {
 				get: function () { 
@@ -110,8 +111,6 @@
 							return value;
 						}
 					});
-					self.trigger(property_uri + ":changed", property_uri, value);
-					self.trigger("value:changed", property_uri, value);
 					if (setter) setter(values[property_uri]);
 				},
 				
@@ -181,7 +180,14 @@
 			}
 		});
 
-		self.defineProperty("rdf:type", undefined, undefined);
+		self.defineProperty("rdf:type", undefined, function (classes) {
+			classes.map(function (_class) {
+				Object.keys(_class.domainProperties).map(function (property_uri) {
+					self.defineProperty(property_uri);
+				});
+			});
+			self.trigger("type:changed", classes);
+		});
 		
 		// Load data 
 		if (uri) self.load(uri); 
