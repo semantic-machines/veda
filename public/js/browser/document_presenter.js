@@ -157,13 +157,13 @@ veda.Present(function Document(veda) { "use strict";
 			
 			container.append(classTemplate);
 			
-			scripts.map( function (item) { 
-				eval(item); 
-			});
-			
 			document.trigger(mode);
 			
 			container.fadeIn(250);
+
+			scripts.map( function (item) { 
+				eval(item); 
+			});
 			
 		});
 	});
