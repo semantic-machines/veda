@@ -6,7 +6,7 @@ veda.Present(function Document(veda) { "use strict";
 	
 	veda.on("document:loaded", function (document, container_param, template_param, _mode) {
 		
-		console.log("document presenter:", ++cnt, document.id);
+		console.log("document presenter:", ++cnt, document.id, document);
 		
 		var container = container_param || $("#main");
 		
@@ -58,8 +58,10 @@ veda.Present(function Document(veda) { "use strict";
 			templates = [ genericTemplate(document) ];
 		}
 		
-		//console.log("scripts:", scripts);
-		
+		/*console.log("scripts:", scripts);
+		console.log("templates:");
+		templates.map( function (item) { console.log(item.html()) });*/
+
 		templates.map( function (classTemplate) {
 			
 			// Actions
@@ -82,15 +84,7 @@ veda.Present(function Document(veda) { "use strict";
 					document.trigger("cancel");
 				});
 			
-			document.off("view edit save cancel");
-			
-			// Trigger same events for embedded templates
-			document.on("view edit save", function (event) {
-				embedded.map(function (item) {
-					item.trigger(event);
-				});
-			});
-			
+			// Define handlers
 			document.on("edit", function () {
 				$edit.hide();
 				$save.show();
@@ -108,7 +102,16 @@ veda.Present(function Document(veda) { "use strict";
 			});
 			
 			document.on("cancel", function () {
+				// Clear defined handlers
+				document.off("view edit save cancel");
 				document.reset();
+			});
+			
+			// Trigger same events for embedded templates
+			document.on("view edit save", function (event) {
+				embedded.map(function (item) {
+					item.trigger(event);
+				});
 			});
 			
 			// About
