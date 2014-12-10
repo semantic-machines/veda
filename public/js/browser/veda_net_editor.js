@@ -75,17 +75,26 @@ jsWorkflow.ready = jsPlumb.ready;
 
             // Bind a click listener to each transition (connection). On double click, the transition is deleted.
             instance.bind("dblclick", function(transition) {
-                instance.detach(transition);
+                 if (confirm('Delete Flow?')) {
+                	 instance.detach(transition);
+                 }
             });
             
             instance.bind("click", function(transition) {
             	var _this = this, currentElement = $(_this), properties;
                 properties = $('#workflow-selected-item');
                 $('#'+properties.find('#workflow-item-id').val()).removeClass('w_active');
-
-                properties.find('#workflow-item-id').val(transition._jsPlumb.component.id);
+                
+                if (transition.id == '__label') {
+                	transition = transition.component;
+                }
+                
+                properties.find('#workflow-item-id').val(transition.getParameter('id'));
+                properties.find('#workflow-item-id-hidden').val(transition.id);
+                properties.find('#workflow-item-type').val('flow');
                 properties.find('#workflow-item-label').val(transition.getLabel());
-                currentElement.addClass('w_active');
+                currentElement.addClass('w_active');                
+               	$('.task-buttons').hide();
             });
 
             // Get an array of State elements.
@@ -111,6 +120,7 @@ jsWorkflow.ready = jsPlumb.ready;
                                         
                     $('#'+escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active'); // deactivate old selection
                     properties.find('#workflow-item-id').val(_this.id);
+                    properties.find('#workflow-item-type').val('state');
                     properties.find('#workflow-item-label').val(currentElement.find('.state-name').text());
 
                     ["no", "and", "or", "xor"].forEach(function(entry) {
@@ -177,9 +187,10 @@ jsWorkflow.ready = jsPlumb.ready;
                         outlineColor: "transparent",
                         outlineWidth: 4
                     },
+                    /*
                     connectorOverlays:[
                         [ "Label", { label:"fooBAR", id:"label"} ]
-                    ],
+                    ],*/
                     maxConnections: 20,
                     onMaxConnections: function(info, e) {
                         alert("Maximum connections (" + info.maxConnections + ") reached");
@@ -335,21 +346,6 @@ jsWorkflow.ready = jsPlumb.ready;
             	if (type == 'v-wf:AND')  return ' '+sj+'-and';
             	if (type == 'v-wf:NONE') return ' '+sj+'-none';
             	
-            	/*
-            	switch (type) {
-        		  'v-wf:XOR':
-        			  res = 'xor';
-        		  break;
-        		  'v-wf:OR':
-        			  res = 'or';
-        		  break;
-    			  'v-wf:AND': 
-    				  res = 'and';
-        		  break;
-    			  'v-wf:NONE': 
-    				  res = 'no';
-        		  break;
-            	}*/
             	return ' '+sj+'-'+res;
             }
             
@@ -383,10 +379,12 @@ jsWorkflow.ready = jsPlumb.ready;
             }
             
             instance.createFlow = function(state, flow) {
-            	instance.connect({
+            	var connector = instance.connect({
                     source: state.id,
                     target: flow['v-wf:flowsInto'][0].id
                 });
+            	connector.setParameter("id", flow.id);
+/*            	connector.setLabel('123');*/
             }
 
             /**
@@ -468,11 +466,25 @@ function updateSVGBackground(item) {
     item.css('background', svgBackground);
 }
 
-function applyNetEditorFunctions() {
+function applyNetEditorFunctions(workflow) {
   // Label
   $("#workflow-item-label").change(function () {
-	var item = $('#' + escape4$($('#workflow-item-id').val()));    
-	item.find('.state-name').text($(this).val());
+	var _this = this;
+	switch ($('#workflow-item-type').val()) {
+		case 'state':
+			var item = $('#' + escape4$($('#workflow-item-id').val()));
+			item.find('.state-name').text($(this).val());
+			break;
+		case 'flow':			
+			var id=$('#workflow-item-id-hidden').val();
+			workflow.getAllConnections().forEach(function (conn) {
+				if (conn.id == id) {
+					conn.setLabel($(_this).val());
+				}
+			});
+			
+			break;
+	}
   });
 	
   // Split type
@@ -491,9 +503,4 @@ function applyNetEditorFunctions() {
     updateSVGBackground(item);
   });
 }
-
-$('#workflow-canvas').on('show', function() {
-	alert('1');
-});
-
 // [END] Block of element editor
