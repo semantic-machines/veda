@@ -71,7 +71,6 @@ fieldset[disabled] .form-control {
 
 .w:hover {
 	color:red;
-    font-weight: bold;
 }
 
 .state-task {	
@@ -96,7 +95,6 @@ fieldset[disabled] .form-control {
 
 .w_active {
 	color: #FF0000;
-        font-weight: bold;
 }
 
 .aLabel {
@@ -106,8 +104,7 @@ fieldset[disabled] .form-control {
 }
 
 .aLabel._jsPlumb_hover, ._jsPlumb_source_hover, ._jsPlumb_target_hover {
-	color:red;
-        font-weight: bold;
+	color:blue;
 }
 
 .aLabel {

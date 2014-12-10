@@ -160,7 +160,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 // Initialize all State elements as Connection sources.
                 instance.makeSource(windows, {
                     filter: ".ep",
-                    anchor: "Continuous",
+                    anchor: ["Continuous", { faces:[ "top", "left", "right" ] } ],
                     connector: ["Bezier", {
                     	curviness: 0,
                         stub: 0
@@ -172,7 +172,7 @@ jsWorkflow.ready = jsPlumb.ready;
                             gap: 1
                         }],*/
                     connectorStyle: {
-                        strokeStyle: "#444444",
+                        strokeStyle: "#666666",
                         lineWidth: 1,
                         outlineColor: "transparent",
                         outlineWidth: 4
@@ -192,7 +192,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     dropOptions: {
                         hoverClass: "dragHover"
                     }
-                	,anchor: "Continuous"
+                	,anchor: ["Continuous", { faces:[ "top", "left", "right" ] } ]
                 	/*,anchor: ["Perimeter", { shape:windows.hasClass('state-condition')?"Circle":"Rectangle" }]*/
                 });
             };
