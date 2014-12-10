@@ -3,6 +3,23 @@
 veda.Present(function Document(veda) { "use strict";
 	
 	//var cnt = 0;
+	var container = $("#main2");
+	var a = $("<input>", {type: "text"});
+	container.append(a);
+	a.remoteList({
+		minLength: 0,
+		maxLength: 0,
+		source: function(value, response){
+			response(['Options 1', 'Option 2', {value: "Option 3", label: "This option with a label"}]);
+		},
+		select: function(){
+			if(window.console){
+				console.log('selectedOption:', $(this).remoteList('selectedOption'));
+				console.log('selectedData:', $(this).remoteList('selectedData'));
+			}
+		}
+	});
+
 	
 	veda.on("document:loaded", function (document, container_param, template_param, _mode) {
 		
