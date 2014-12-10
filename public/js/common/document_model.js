@@ -11,7 +11,11 @@
 
 		self.off("*");
 		
-		self.on("individual:loaded individual:reset type:changed", function (event) {
+		self.on("individual:loaded individual:reset", function (event) {
+			veda.trigger("document:loaded", self, container, template);
+		});
+
+		self.on("type:changed", function (event) {
 			veda.trigger("document:loaded", self, container, template, mode);
 		});
 

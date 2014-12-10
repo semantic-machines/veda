@@ -2,11 +2,11 @@
 
 veda.Present(function Document(veda) { "use strict";
 	
-	var cnt = 0;
+	//var cnt = 0;
 	
 	veda.on("document:loaded", function (document, container_param, template_param, _mode) {
 		
-		console.log("document presenter:", ++cnt, document.id, document);
+		//console.log("document presenter:", ++cnt, document.id, document);
 		
 		var container = container_param || $("#main");
 		
@@ -84,6 +84,13 @@ veda.Present(function Document(veda) { "use strict";
 					document.trigger("cancel");
 				});
 			
+			// Trigger same events for embedded templates
+			document.on("view edit save", function (event) {
+				embedded.map(function (item) {
+					item.trigger(event);
+				});
+			});			
+			
 			// Define handlers
 			document.on("edit", function () {
 				$edit.hide();
@@ -105,13 +112,6 @@ veda.Present(function Document(veda) { "use strict";
 				// Clear defined handlers
 				document.off("view edit save cancel");
 				document.reset();
-			});
-			
-			// Trigger same events for embedded templates
-			document.on("view edit save", function (event) {
-				embedded.map(function (item) {
-					item.trigger(event);
-				});
 			});
 			
 			// About
@@ -184,24 +184,24 @@ veda.Present(function Document(veda) { "use strict";
 			document[rel_uri].map( function (value) {renderValue (value, mode)} );
 		}
 		
-		var template = $( $("#link-control-template").html() );
+		var control = $( $("#link-control-template").html() );
 		if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
-			$(".add", template).on("click", function () {
+			$(".add", control).on("click", function () {
 				var lnk = renderValue(undefined, "edit"); 
 			});
-		} else $(".add", template).hide();
+		} else $(".add", control).hide();
 		
-		if (mode == "view") template.hide();
-		relContainer.after(template);
+		if (mode == "view") control.hide();
+		relContainer.after(control);
 		
 		document.on("edit", function () {
-			template.show();
+			control.show();
 		});
 		document.on("view", function () {
-			template.hide();
+			control.hide();
 		});
 		
-		$(".typeahead", template).on("keypress", function (e) {
+		$(".typeahead", control).on("keypress", function (e) {
 			var input = $( this );
 			var pos = input.position();
 			var t = $("<div>").attr("style", "position:absolute; height:100px; width:" + input.width() + ";left:" + pos.left + "px;top:" + input.outerHeight() + "px; border:1px solid red" ).html("blah!");
@@ -209,7 +209,7 @@ veda.Present(function Document(veda) { "use strict";
 		});
 		
 		// Search modal
-		$(".search", template).on("click", function (e) {
+		$(".search", control).on("click", function (e) {
 			var $modal = $("#search-modal");
 			var search = new veda.SearchModel(undefined, $(".modal-body", $modal) );
 			$modal.modal();
@@ -254,7 +254,10 @@ veda.Present(function Document(veda) { "use strict";
 					clear.on("click", function () {
 						clone.fadeOut(250, function () { clone.remove() });
 						document[rel_uri] = document[rel_uri].filter(function (item) { return item != lnk });
-						if (embedded.length) embedded = embedded.filter(function (item) { return item != lnk });
+						if (embedded.length) {
+							var index = embedded.indexOf(lnk);
+							if ( !(index<0) ) embedded.splice(index, 1);
+						}
 					});
 					document.on("edit", function () {
 						clone.on("mouseenter", function () { clear.show(); clone.toggleClass("bg-danger"); });
@@ -288,13 +291,12 @@ veda.Present(function Document(veda) { "use strict";
 		}
 		
 		var property = veda.dictionary[property_uri],
-			template, emptyValue;
+			controlType, emptyVal;
 		
 		if ( !document[property_uri] ) document.defineProperty(property_uri);
 		var values = document[property_uri];
 		
 		var range = property["rdfs:range"][0].id;
-		var controlType, emptyVal;
 		range == "xsd:boolean"  			? 	(controlType = $.fn.vedaBoolean,  emptyVal = new Boolean(false) ) :
 		range == "xsd:integer"  			? 	(controlType = $.fn.vedaInteger,  emptyVal = undefined ) :
 		range == "xsd:nonNegativeInteger"   ? 	(controlType = $.fn.vedaInteger,  emptyVal = undefined ) :
@@ -320,23 +322,24 @@ veda.Present(function Document(veda) { "use strict";
 		});
 		
 		function renderControl (value, index) {
-			var opts = {};
-			opts.value = value;
-			opts.change = function (value) {
-				values[index] = value;
-				document[property_uri] = values;
-			};
-			opts.add = function () {
-				values.push( emptyVal );
-				var control = renderControl(emptyVal, values.length-1);
-				controls.push(control);
-				control.trigger("edit");
-			};
-			opts.remove = function () {
-				values[index] = undefined;
-				controls[index] = undefined;
-				document[property_uri] = values;
-			};
+			var opts = {
+				value: value,
+				change: function (value) {
+					values[index] = value;
+					document[property_uri] = values;
+				},
+				add: function () {
+					values.push( emptyVal );
+					var control = renderControl(emptyVal, values.length-1);
+					controls.push(control);
+					control.trigger("edit");
+				},
+				remove: function () {
+					values[index] = undefined;
+					controls[index] = undefined;
+					document[property_uri] = values;
+				}
+			}
 			var control = controlType.call( $("<span>"), opts );
 			container.append(control);
 			return control;
