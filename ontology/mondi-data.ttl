@@ -235,7 +235,7 @@ mnd-d:Membership_6
 mnd-d:Membership_7
   rdf:type v-s:Membership ;
   v-s:memberOf mnd-d:ResGroup_1 ;
-  v-s:resource v-a:Mandate_1 ;
+  v-s:resource v-a:Event_1 ;
   rdfs:label "Membership_7"@en ;
   rdfs:label "Членство_7"@ru ;
 .
@@ -826,13 +826,14 @@ mnd-d:ComplexRouteStartForm1
 	v-wf:forNet mnd-wf:net_complex_route ;
 	v-wf:processedDocument mnd-d:SavedSearch1 ; 
 	v-wf:processInitiator mnd-d:RomanKarpov-Analyst1 ; 
+	v-wf:useDecomposition mnd-wf:decomposition1 ;
 	mnd-wf:ComplexRouteStartForm_coordinator1 mnd-d:RomanKarpov-Analyst1 ; 
 	mnd-wf:ComplexRouteStartForm_coordinator2 mnd-d:ValeriyBushenev-Programmer1 ; 
 	mnd-wf:ComplexRouteStartForm_coordinator3 mnd-d:AndreyBychin-ExecutiveDirector ; 
 	mnd-wf:ComplexRouteStartForm_reviewer mnd-d:ValeriyBushenev-Programmer1 ; 
 	mnd-wf:ComplexRouteStartForm_signer mnd-d:AndreyBychin-ExecutiveDirector ; 
-	v-wf:isProcess mnd-d:process1 ;
 .
+#	v-wf:isProcess mnd-d:process1 ;
 
 # -------- стартовые данные маршрута ----------------
 mnd-d:process1

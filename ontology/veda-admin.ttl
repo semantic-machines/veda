@@ -76,8 +76,8 @@ v-a:Permission_rr
   rdfs:label "Permissions record rr"@en ;
   rdfs:label "Запись о выдаче прав rr"@ru ;
 .
-v-a:Mandate_1
-  rdf:type v-s:Mandate ;
+v-a:Event_1
+  rdf:type v-s:Event ;
   v-s:author v-a:VedaSystemAccount ;
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
@@ -109,11 +109,11 @@ if (ff)
 }
 """ ;
   rdfs:comment "скрипт автоматической выдачи прав авторам"@ru ;
-  rdfs:label "Mandate_1"@en ;
-  rdfs:label "Мандат_1"@ru ;
+  rdfs:label "Event_1"@en ;
+  rdfs:label "Событие_1"@ru ;
 .
-v-a:Mandate_2
-  rdf:type v-s:Mandate ;
+v-a:Event_2
+  rdf:type v-s:Event ;
   v-s:author v-a:VedaSystemAccount ;
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
@@ -138,7 +138,7 @@ if (ff)
     	    'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
     	    'v-s:memberOf' : [{data: 'v-a:ReadResGroup', type : _Uri}],
     	    'v-s:resource'  : [{data: doc_uri, type : _Uri}],
-    	    'rdfs:comment'  : [{data: "выдан v-a:Mandate_2", type : _String}]
+    	    'rdfs:comment'  : [{data: "выдан v-a:Event_2", type : _String}]
 	    };
 
 	    if (deleted && deleted[0].data == true)
@@ -154,13 +154,13 @@ if (ff)
 }
 """ ;
   rdfs:comment "скрипт автоматической выдачи прав на чтение для оргструктуры + перенос атрибута v-s:deleted"@ru ;
-  rdfs:label "Mandate_2"@en ;
-  rdfs:label "Мандат_2"@ru ;
+  rdfs:label "Event_2"@en ;
+  rdfs:label "Событие_2"@ru ;
 .
 
 
-v-a:Mandate_3
-  rdf:type v-s:Mandate ;
+v-a:Event_3
+  rdf:type v-s:Event ;
   v-s:author v-a:VedaSystemAccount ;
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
@@ -184,7 +184,7 @@ if (ff)
     	    'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
     	    'v-s:memberOf' : [{data: 'v-a:ReadResGroup', type : _Uri}],
     	    'v-s:resource'  : [{data: doc_uri, type : _Uri}],
-    	    'rdfs:comment'  : [{data: "выдан v-a:Mandate_3", type : _String}]
+    	    'rdfs:comment'  : [{data: "выдан v-a:Event_3", type : _String}]
 	    };
 
 	    put_individual (ticket, new_membership);
@@ -193,8 +193,8 @@ if (ff)
 }
 """ ;
   rdfs:comment "скрипт автоматической выдачи прав на чтение для всех онтологий"@ru ;
-  rdfs:label "Mandate_3"@en ;
-  rdfs:label "Мандат_3"@ru ;
+  rdfs:label "Event_3"@en ;
+  rdfs:label "Событие_3"@ru ;
 .
 v-a:VedaSystemAccount
   v-s:author v-a:VedaSystem ;

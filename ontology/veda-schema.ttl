@@ -107,10 +107,10 @@ v-s:HRRecord
   rdfs:label "Кадровая запись"@ru ;
   rdfs:subClassOf v-s:Document ;
 .
-v-s:Mandate
+v-s:Event
   rdf:type owl:Class ;
-  rdfs:label "Mandate"@en ;
-  rdfs:label "Мандат"@ru ;
+  rdfs:label "Event"@en ;
+  rdfs:label "Событие"@ru ;
   rdfs:subClassOf v-s:AuthorizationStatement ;
 .
 v-s:Membership
@@ -445,7 +445,7 @@ v-s:resource
 .
 v-s:script
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Mandate ;
+  rdfs:domain v-s:Event ;
   rdfs:domain v-s:Codelet ;
   rdfs:label "script"@en ;
   rdfs:label "скрипт"@ru ;

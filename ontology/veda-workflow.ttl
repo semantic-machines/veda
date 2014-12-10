@@ -408,6 +408,13 @@ v-wf:isProcess
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-wf:Process ;
 .
+v-wf:useDecomposition
+	rdf:type rdf:Property ;
+	rdfs:label "Использовать декомпозицию"@ru ;
+	rdfs:label "Use decomposition"@en ;
+	rdfs:domain v-wf:StartForm ;
+	rdfs:range v-wf:Process ;
+.
 
 # --------------------------- Decomposition ---------------------------
 v-wf:Decomposition
