@@ -76,6 +76,8 @@ v-a:Permission_rr
   rdfs:label "Permissions record rr"@en ;
   rdfs:label "Запись о выдаче прав rr"@ru ;
 .
+
+# --------------------------- обработка событий => создание записей о правах ------------------------------
 v-a:Event_1
   rdf:type v-s:Event ;
   v-s:author v-a:VedaSystemAccount ;
@@ -112,6 +114,7 @@ if (ff)
   rdfs:label "Event_1"@en ;
   rdfs:label "Событие_1"@ru ;
 .
+
 v-a:Event_2
   rdf:type v-s:Event ;
   v-s:author v-a:VedaSystemAccount ;
@@ -158,7 +161,6 @@ if (ff)
   rdfs:label "Событие_2"@ru ;
 .
 
-
 v-a:Event_3
   rdf:type v-s:Event ;
   v-s:author v-a:VedaSystemAccount ;
@@ -196,6 +198,30 @@ if (ff)
   rdfs:label "Event_3"@en ;
   rdfs:label "Событие_3"@ru ;
 .
+
+# --------------------------- обработка событий => docflow ---------------------------------------
+v-a:Event_df1
+  rdf:type v-s:Event ;
+  v-s:author v-a:VedaSystemAccount ;
+  v-s:script """
+var ticket = '';
+        var doc;
+        ff = get_individual (ticket, '$document');
+if (ff)
+{
+    var type = ff['rdf:type'];
+    if (type == 'v-wf:StartForm')
+    {
+    }
+}
+""" ;
+  rdfs:label "триггер запуска маршрута из пользовательской формы"@ru ;
+.
+
+
+# -------------------------------------------------------------------------------------------------
+
+
 v-a:VedaSystemAccount
   v-s:author v-a:VedaSystem ;
   rdf:type v-s:Account ;

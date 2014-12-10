@@ -823,6 +823,7 @@ mnd-d:PropertySpecification4
 # -------- стартовая форма маршрута ----------------
 mnd-d:ComplexRouteStartForm1
 	rdf:type mnd-wf:ComplexRouteStartForm ; 
+	rdf:type v-wf:StartForm ; 
 	v-wf:forNet mnd-wf:net_complex_route ;
 	v-wf:processedDocument mnd-d:SavedSearch1 ; 
 	v-wf:processInitiator mnd-d:RomanKarpov-Analyst1 ; 

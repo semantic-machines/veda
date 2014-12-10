@@ -111,7 +111,6 @@ v-s:Event
   rdf:type owl:Class ;
   rdfs:label "Event"@en ;
   rdfs:label "Событие"@ru ;
-  rdfs:subClassOf v-s:AuthorizationStatement ;
 .
 v-s:Membership
   rdf:type owl:Class ;
