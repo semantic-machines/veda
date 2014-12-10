@@ -621,12 +621,12 @@ mnd-wf:ComplexRouteStartForm_Template
       <div class="panel-body">
         <div class="row">
             <div class="col-md-4">
-               <strong class="text-muted" about="v-wf:process_initiator" property="rdfs:label">Инициатор</strong>
-               <div rel="v-wf:process_initiator" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+               <strong class="text-muted" about="v-wf:processInitiator" property="rdfs:label">Инициатор</strong>
+               <div rel="v-wf:processInitiator" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
             </div>
             <div class="col-md-4">
-               <strong class="text-muted" about="v-wf:processed_document" property="rdfs:label">Документ</strong>
-               <div rel="v-wf:processed_document">Ссылка на документ</div>
+               <strong class="text-muted" about="v-wf:processedDocument" property="rdfs:label">Документ</strong>
+               <div rel="v-wf:processedDocument">Ссылка на документ</div>
             </div>
         </div>
         <hr />
@@ -686,13 +686,13 @@ mnd-wf:decomposition1
 mnd-wf:map_decomposition1
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id ;	
-	v-wf:mappingExpression	"doc.getValue ('v-wf:processed_document')" ;
+	v-wf:mappingExpression	"doc.getValue ('v-wf:processedDocument')" ;
 .
 
 mnd-wf:map_decomposition2
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_initiator ; 
-	v-wf:mappingExpression	"doc.getValue ('v-wf:process_initiator')" ;
+	v-wf:mappingExpression	"doc.getValue ('v-wf:processInitiator')" ;
 .
 
 mnd-wf:map_decomposition3

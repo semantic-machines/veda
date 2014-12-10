@@ -380,14 +380,14 @@ v-wf:StartForm
 	rdfs:label "Стартовая форма"@ru ;
 	rdfs:label "Start form"@en ;
 .
-v-wf:processed_document
+v-wf:processedDocument
 	rdf:type rdf:Property ;
 	rdfs:label "Обрабатываемый документ"@ru ;
 	rdfs:label "Processed document"@en ;
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-s:Document ;
 .
-v-wf:process_initiator
+v-wf:processInitiator
 	rdf:type rdf:Property ;
 	rdfs:label "Инициатор процесса"@ru ;
 	rdfs:label "Process initiator"@en ;
@@ -400,6 +400,13 @@ v-wf:forNet
 	rdfs:label "For net..."@en ;
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-wf:Net ;
+.
+v-wf:isProcess
+	rdf:type rdf:Property ;
+	rdfs:label "Запущен процесс"@ru ;
+	rdfs:label "Started process"@en ;
+	rdfs:domain v-wf:StartForm ;
+	rdfs:range v-wf:Process ;
 .
 
 # --------------------------- Decomposition ---------------------------
@@ -428,4 +435,38 @@ v-wf:startingMapping
 	rdfs:label "стартовое преобразование"@ru ;
 	rdfs:domain v-wf:Decomposition ;
 	rdfs:range v-wf:Mapping ;
+.
+# --------------------------- Process ---------------------------
+v-wf:Process
+	rdf:type rdfs:Class ;
+	rdfs:label "Процесс"@ru ;
+	rdfs:label "Process"@en ;
+.
+v-wf:instanceOf
+	rdf:type rdf:Property ;
+	rdfs:label "процесс сети..."@ru ;
+	rdfs:label "instance of..."@en ;
+	rdfs:domain v-wf:Process ;
+	rdfs:range v-wf:Net ;
+.
+v-wf:inputVariable
+	rdf:type rdf:Property ;
+	rdfs:label "input variable"@en ;
+	rdfs:label "входная переменная"@ru ;
+	rdfs:domain v-wf:Process ;
+	rdfs:range v-wf:Variable ;
+.
+v-wf:outputVariable
+	rdf:type rdf:Property ;
+	rdfs:label "output variable"@en ;
+	rdfs:label "выходная переменная"@ru ;
+	rdfs:domain v-wf:Process ;
+	rdfs:range v-wf:Variable ;
+.
+v-wf:localVariable
+	rdf:type rdf:Property ;
+	rdfs:label "local variable"@en ;
+	rdfs:label "локальная переменная"@ru ;
+	rdfs:domain v-wf:Process ;
+	rdfs:range v-wf:Variable ;
 .

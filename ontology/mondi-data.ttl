@@ -824,13 +824,14 @@ mnd-d:PropertySpecification4
 mnd-d:ComplexRouteStartForm1
 	rdf:type mnd-wf:ComplexRouteStartForm ; 
 	v-wf:forNet mnd-wf:net_complex_route ;
-	v-wf:processed_document mnd-d:SavedSearch1 ; 
-	v-wf:process_initiator mnd-d:RomanKarpov-Analyst1 ; 
+	v-wf:processedDocument mnd-d:SavedSearch1 ; 
+	v-wf:processInitiator mnd-d:RomanKarpov-Analyst1 ; 
 	mnd-wf:ComplexRouteStartForm_coordinator1 mnd-d:RomanKarpov-Analyst1 ; 
 	mnd-wf:ComplexRouteStartForm_coordinator2 mnd-d:ValeriyBushenev-Programmer1 ; 
 	mnd-wf:ComplexRouteStartForm_coordinator3 mnd-d:AndreyBychin-ExecutiveDirector ; 
 	mnd-wf:ComplexRouteStartForm_reviewer mnd-d:ValeriyBushenev-Programmer1 ; 
 	mnd-wf:ComplexRouteStartForm_signer mnd-d:AndreyBychin-ExecutiveDirector ; 
+	v-wf:isProcess mnd-d:process1 ;
 .
 
 # -------- стартовые данные маршрута ----------------
