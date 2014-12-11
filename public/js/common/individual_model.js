@@ -112,6 +112,7 @@
 						}
 					});
 					if (setter) setter(values[property_uri]);
+					/*self.trigger("property:changed:" + property_uri, values[property_uri]);*/
 				},
 				
 				configurable: true

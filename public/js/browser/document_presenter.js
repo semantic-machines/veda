@@ -75,9 +75,27 @@ veda.Present(function Document(veda) { "use strict";
 			templates = [ genericTemplate(document) ];
 		}
 		
-		/*console.log("scripts:", scripts);
-		console.log("templates:");
-		templates.map( function (item) { console.log(item.html()) });*/
+		// Clear previous handlers
+		document.off("view edit save cancel");
+		
+		// Define handlers
+		document.on("save", function () {
+			document.save();
+			document.trigger("view");
+		});
+		
+		document.on("cancel", function () {
+			// Clear defined handlers
+			document.off("view edit save cancel");
+			document.reset();
+		});
+
+		// Trigger same events for embedded templates
+		document.on("view edit save", function (event) {
+			embedded.map(function (item) {
+				item.trigger(event);
+			});
+		});			
 
 		templates.map( function (classTemplate) {
 			
@@ -86,38 +104,21 @@ veda.Present(function Document(veda) { "use strict";
 				$save = $("#save", classTemplate),
 				$cancel = $("#cancel", classTemplate);
 			
-			$edit
-				.on("click", function (e) {
-					document.trigger("edit");
-				});
-			
-			$save.hide()
-				.on("click", function (e) {
-					document.trigger("save");
-				});
-			
-			$cancel.hide()
-				.on("click", function (e) {
-					document.trigger("cancel");
-				});
-			
-			// Trigger same events for embedded templates
-			document.on("view edit save", function (event) {
-				embedded.map(function (item) {
-					item.trigger(event);
-				});
-			});			
-			
-			// Define handlers
+			$edit.on("click", function (e) {
+				document.trigger("edit");
+			});
+
 			document.on("edit", function () {
 				$edit.hide();
 				$save.show();
-				$cancel.show();
+				$cancel.show();					
 			});
 			
-			document.on("save", function () {
-				document.save();
-				document.trigger("view");
+			$save.hide().on("click", function (e) {
+				document.trigger("save");
+			});
+						
+			document.on("save", function (e) {
 				$save.hide();
 				$cancel.hide();
 				$edit.show();
@@ -125,10 +126,8 @@ veda.Present(function Document(veda) { "use strict";
 				if (!container_param) riot.route("#/document/" + document.id, false);
 			});
 			
-			document.on("cancel", function () {
-				// Clear defined handlers
-				document.off("view edit save cancel");
-				document.reset();
+			$cancel.hide().on("click", function (e) {
+				document.trigger("cancel");
 			});
 			
 			// About
@@ -311,7 +310,7 @@ veda.Present(function Document(veda) { "use strict";
 			controlType, emptyVal;
 		
 		if ( !document[property_uri] ) document.defineProperty(property_uri);
-		var values = document[property_uri];
+		var values = document[property_uri].filter(function(){return true});
 		
 		var range = property["rdfs:range"][0].id;
 		range == "xsd:boolean"  			? 	(controlType = $.fn.vedaBoolean,  emptyVal = new Boolean(false) ) :
@@ -323,10 +322,19 @@ veda.Present(function Document(veda) { "use strict";
 		
 		if (!values.length) values.push( emptyVal );
 		var controls = values.map( renderControl );
-		
+
 		controls.map(function (item) {
 			item.trigger(mode);
 		});
+		
+		/*// Re-render property if its' values were changed elsewhere
+		function rerender (docValues) {
+			if (docValues !== values) {
+				document.off("property:changed:"+property_uri, rerender);
+				renderProperty (document, property_uri, container, mode);
+			}
+		}
+		document.on("property:changed:"+property_uri, rerender);*/
 		
 		document.on("view edit", function (mode) {
 			controls
