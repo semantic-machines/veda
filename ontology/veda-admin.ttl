@@ -199,28 +199,7 @@ if (ff)
   rdfs:label "Событие_3"@ru ;
 .
 
-# --------------------------- обработка событий => docflow ---------------------------------------
-v-a:Event_df1
-  rdf:type v-s:Event ;
-  v-s:author v-a:VedaSystemAccount ;
-  v-s:script """
-var ticket = '';
-        var doc;
-        ff = get_individual (ticket, '$document');
-if (ff)
-{
-    var type = ff['rdf:type'];
-    if (type == 'v-wf:StartForm')
-    {
-    }
-}
-""" ;
-  rdfs:label "триггер запуска маршрута из пользовательской формы"@ru ;
-.
-
-
 # -------------------------------------------------------------------------------------------------
-
 
 v-a:VedaSystemAccount
   v-s:author v-a:VedaSystem ;

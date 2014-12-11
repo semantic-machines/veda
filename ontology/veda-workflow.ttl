@@ -477,3 +477,42 @@ v-wf:localVariable
 	rdfs:domain v-wf:Process ;
 	rdfs:range v-wf:Variable ;
 .
+
+# --------------------------- обработка событий => docflow ---------------------------------------
+v-wf:Event_df1
+	rdf:type v-s:Event ;
+	v-s:author v-a:VedaSystemAccount ;
+	v-s:script """
+
+var ticket = '';
+var doc;
+ff = get_individual (ticket, '$document');
+if (ff)
+{
+    var type = ff['rdf:type'];
+    if (type == 'v-wf:StartForm')
+    {
+	    var decomposition_link = ff['v-wf:useDecomposition'];	    
+	    var decomposition = get_individual (ticket, decomposition_link);
+	    if (decomposition)
+	    {
+		var mapping = decomposition['v-wf:startingMapping'];
+		print ("mapping:" + toJson (mapping));
+	    }
+
+
+            var new_process =
+            {
+        	'@' : guid (),
+        	'rdf:type' : [{data: 'v-wf:Process', type : _Uri}],
+            };
+
+            put_individual (ticket, new_process);
+    }
+}
+
+""" ;
+	rdfs:label "триггер запуска маршрута из пользовательской формы"@ru ;
+.
+
+

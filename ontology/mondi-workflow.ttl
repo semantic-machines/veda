@@ -703,43 +703,43 @@ mnd-wf:decomposition1
 mnd-wf:map_decomposition1
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id ;	
-	v-wf:mappingExpression	"doc.getValue ('v-wf:processedDocument')" ;
+	v-wf:mappingExpression	"document['v-wf:processedDocument']" ;
 .
 
 mnd-wf:map_decomposition2
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_initiator ; 
-	v-wf:mappingExpression	"doc.getValue ('v-wf:processInitiator')" ;
+	v-wf:mappingExpression	"document['v-wf:processInitiator']" ;
 .
 
 mnd-wf:map_decomposition3
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_coordinator_1 ;
-	v-wf:mappingExpression	"doc.getValue ('mnd-wf:ComplexRouteStartForm_coordinator1')" ;
+	v-wf:mappingExpression	"document['mnd-wf:ComplexRouteStartForm_coordinator1']" ;
 .
 
 mnd-wf:map_decomposition4
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_coordinator_2 ;
-	v-wf:mappingExpression	"doc.getValue ('mnd-wf:ComplexRouteStartForm_coordinator2')" ;
+	v-wf:mappingExpression	"document['mnd-wf:ComplexRouteStartForm_coordinator2']" ;
 .
 
 mnd-wf:map_decomposition5
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_coordinator_3 ;
-	v-wf:mappingExpression	"doc.getValue ('mnd-wf:ComplexRouteStartForm_coordinator3')" ;
+	v-wf:mappingExpression	"document['mnd-wf:ComplexRouteStartForm_coordinator3']" ;
 .
 
 mnd-wf:map_decomposition6
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_reviewer ;
-	v-wf:mappingExpression	"doc.getValue ('mnd-wf:ComplexRouteStartForm_reviewer')" ;
+	v-wf:mappingExpression	"document['mnd-wf:ComplexRouteStartForm_reviewer']" ;
 .
 
 mnd-wf:map_decomposition7
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_signer ;
-	v-wf:mappingExpression	"doc.getValue ('mnd-wf:ComplexRouteStartForm_signer')" ;
+	v-wf:mappingExpression	"document['mnd-wf:ComplexRouteStartForm_signer']" ;
 .
 
 # --- end -------------------------- NET Complex Route ----------------------------------- end ---- #
