@@ -12,10 +12,6 @@
   margin: 0px;
 }
 
-/*.value {
-	white-space:pre-wrap;
-}*/
-
 dl {
   margin-top: 0;
   margin-bottom: 10px;
@@ -71,7 +67,6 @@ fieldset[disabled] .form-control {
 
 .w:hover {
 	color:red;
-    font-weight: bold;
 }
 
 .state-task {	
@@ -96,7 +91,6 @@ fieldset[disabled] .form-control {
 
 .w_active {
 	color: #FF0000;
-        font-weight: bold;
 }
 
 .aLabel {
@@ -106,8 +100,7 @@ fieldset[disabled] .form-control {
 }
 
 .aLabel._jsPlumb_hover, ._jsPlumb_source_hover, ._jsPlumb_target_hover {
-	color:red;
-        font-weight: bold;
+	color:blue;
 }
 
 .aLabel {
