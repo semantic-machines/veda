@@ -89,12 +89,16 @@ jsWorkflow.ready = jsPlumb.ready;
                 	transition = transition.component;
                 }
                 
-                properties.find('#workflow-item-id').val(transition.getParameter('id'));
-                properties.find('#workflow-item-id-hidden').val(transition.id);
+                properties.find('#workflow-item-id').val(transition.id);
                 properties.find('#workflow-item-type').val('flow');
                 properties.find('#workflow-item-label').val(transition.getLabel());
                 currentElement.addClass('w_active');                
                	$('.task-buttons').hide();
+            });
+            
+            instance.bind("connection", function(info) {
+            	// Adding new flow
+                /*alert(info.sourceId);*/
             });
 
             // Get an array of State elements.
@@ -234,7 +238,7 @@ jsWorkflow.ready = jsPlumb.ready;
 
                     	if ($(_this).hasClass('create-condition')) {
                             individual["rdf:type"] = [veda.dictionary["v-wf:Condition"]];
-                            /* var label_ru = new String(value); label_ru.language = veda.dictionary["v-ui:RU"] 
+                            /* var label_ru = new String(stateName.replace(/[^a-zA-Z0-9 ]/g, '')); label_ru.language = veda.dictionary["v-ui:RU"] 
                             individual["rdfs:label"] = [label_ru];*/
                             
                     		stateElement = '<div class="w state-condition split-join split-no join-no" id="' + escape4$(individual.id) + '"><div class="state-name">' + stateName + '</div><div class="ep"></div></div>';
@@ -380,10 +384,11 @@ jsWorkflow.ready = jsPlumb.ready;
             
             instance.createFlow = function(state, flow) {
             	var connector = instance.connect({
+            		id: flow.id,
                     source: state.id,
                     target: flow['v-wf:flowsInto'][0].id
                 });
-            	connector.setParameter("id", flow.id);
+/*            	connector.setParameter("id", flow.id);*/
 /*            	connector.setLabel('123');*/
             }
 
@@ -476,7 +481,7 @@ function applyNetEditorFunctions(workflow) {
 			item.find('.state-name').text($(this).val());
 			break;
 		case 'flow':			
-			var id=$('#workflow-item-id-hidden').val();
+			var id=$('#workflow-item-id').val();
 			workflow.getAllConnections().forEach(function (conn) {
 				if (conn.id == id) {
 					conn.setLabel($(_this).val());
