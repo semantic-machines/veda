@@ -286,7 +286,7 @@ v-wf:NetTemplate
 				<button type="button" class="btn btn-default create-state create-condition">
 					<span class="glyphicon glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
 				</button>
-				<button type="button" class="btn btn-default">
+				<button id="workflow-save-button" type="button" class="btn btn-default">
 					<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
 				</button>
 				<button type="button" class="btn btn-default">
