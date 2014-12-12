@@ -116,3 +116,14 @@ function get_property_chain (ticket, first, rest)
 	}
 	return res;	
 }
+
+function is_exist (individual, field, value)
+{
+        var ff = individual[field];
+	for (var i = 0; i < ff.length; i++) 
+	{
+	    if (ff[i].data == value)
+		return true; 
+	}
+	return false;
+}

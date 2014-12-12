@@ -19,3 +19,11 @@ function getUri (field)
 	    return field[0].data;
     }    
 }
+
+function getFirstValue (field)
+{
+    if (field && field.length > 0)
+    {
+	    return field[0].data;
+    }    
+}

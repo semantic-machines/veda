@@ -698,6 +698,7 @@ mnd-wf:decomposition1
 	v-wf:startingMapping mnd-wf:map_decomposition4 ;	
 	v-wf:startingMapping mnd-wf:map_decomposition5 ;	
 	v-wf:startingMapping mnd-wf:map_decomposition6 ;	
+	v-wf:startingMapping mnd-wf:map_decomposition7 ;	
 .		
 
 mnd-wf:map_decomposition1
