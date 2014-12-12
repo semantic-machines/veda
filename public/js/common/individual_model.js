@@ -35,7 +35,6 @@
 				set: function (value) { 
 					if (properties[property_uri] == value) return; 
 					properties[property_uri] = value; 
-					self.trigger("property:changed", property_uri, value);
 				},
 				
 				configurable: true
@@ -87,7 +86,7 @@
 					individual[property_uri] = values[property_uri].concat(filteredStrings).map( function (value) {
 						var result = {};
 						if (value instanceof Number || typeof value === "number" ) {
-							result.type = Number.isInteger(value.valueOf()) ? "Integer" : "Decimal";
+							result.type = isInteger(value.valueOf()) ? "Integer" : "Decimal";
 							result.data = value.valueOf();
 							return result;
 						} else if (value instanceof Boolean || typeof value === "boolean") {
@@ -112,7 +111,7 @@
 						}
 					});
 					if (setter) setter(values[property_uri]);
-					/*self.trigger("property:changed:" + property_uri, values[property_uri]);*/
+					/*self.trigger("individual:propertyChanged:" + property_uri, values[property_uri]);*/
 				},
 				
 				configurable: true
@@ -121,13 +120,16 @@
 			
 		}
 
+		function isInteger (n) { return n % 1 === 0; }
+		
 		self.load = function (uri) {
+			self.trigger("individual:beforeLoad");
 			if ( !newInstance ) {
 				if (veda["dictionary"] && veda["dictionary"][uri]) {
 					self = veda["dictionary"][uri];
 					// Remove any unexpected handlers
 					self.off("*");
-					return self.trigger("individual:loaded", self);
+					return self.trigger("individual:afterLoad");
 				}
 			}
 			individual = veda.cache[uri] ? JSON.parse( veda.cache[uri] ) : get_individual(veda.ticket, uri);
@@ -137,11 +139,13 @@
 				if (property_uri == "rdf:type") return;
 				self.defineProperty(property_uri);
 			});
-			self.trigger("individual:loaded", self);
+			self.trigger("individual:afterLoad");
 		};
 
 		self.save = function() {
+			self.trigger("individual:beforeSave");
 			Object.keys(individual).reduce(function (acc, property_uri) {
+				self[property_uri];
 				if (property_uri == "@") return acc;
 				acc[property_uri] = individual[property_uri].filter(function (item) {
 					return item && item.data != "";
@@ -153,10 +157,11 @@
 			original_individual = JSON.stringify(individual);
 			// Update local cache
 			if ( veda.cache[uri] ) veda.cache[uri] = original_individual;
-			self.trigger("individual:saved", self);
+			self.trigger("individual:afterSave");
 		};
 
 		self.reset = function () {
+			self.trigger("individual:beforeReset");
 			individual = JSON.parse(original_individual);
 			properties = {};
 			self.properties = {};
@@ -165,7 +170,7 @@
 				if (property_uri == "@") return;
 				self.defineProperty(property_uri);
 			});
-			self.trigger("individual:reset", self);
+			self.trigger("individual:afterReset");
 		};
 
 		if (!uri) { individual["@"] = guid();
@@ -187,7 +192,7 @@
 					self.defineProperty(property_uri);
 				});
 			});
-			self.trigger("type:changed", classes);
+			self.trigger("individual:typeChanged", classes);
 		});
 		
 		// Load data 

@@ -11,15 +11,15 @@
 
 		self.off("*");
 		
-		self.on("individual:loaded individual:reset", function (event) {
-			veda.trigger("document:loaded", self, container, template);
+		self.on("individual:afterLoad individual:afterReset", function (event) {
+			veda.trigger("document:afterLoad", self, container, template);
 		});
 
-		self.on("type:changed", function (event) {
-			veda.trigger("document:loaded", self, container, template, mode);
+		self.on("individual:typeChanged", function (event) {
+			veda.trigger("document:afterLoad", self, container, template, mode);
 		});
 
-		veda.trigger("document:loaded", self, container, template, mode);
+		veda.trigger("document:afterLoad", self, container, template, mode);
 
 		return self;
 	};

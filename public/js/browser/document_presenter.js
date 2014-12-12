@@ -21,7 +21,7 @@ veda.Present(function Document(veda) { "use strict";
 	});
 
 	
-	veda.on("document:loaded", function (document, container_param, template_param, _mode) {
+	veda.on("document:afterLoad", function (document, container_param, template_param, _mode) {
 		
 		//console.log("document presenter:", ++cnt, document.id, document);
 		
@@ -183,7 +183,8 @@ veda.Present(function Document(veda) { "use strict";
 			container.fadeIn(250);
 
 			scripts.map( function (item) { 
-				eval(item); 
+				var fun = new Function("veda", "document", item);
+				fun(veda, document);
 			});
 			
 		});
