@@ -14,13 +14,9 @@ function getSubIndividual(net, property, id, func) {
 }
 
 function removeSubIndividual(net, property, id) {
-	for (var i=0; i<net[property].length; i++) {
-		if (net[property][i].id==id) {
-			net[property].splice(i,1);
-			return net[property];
-		}
-	}
-	return net[property];
+	return net[property].filter( function (item) {
+		return item.id !== id; 
+	});
 }
 
 //[BEGIN] Block of net editor
