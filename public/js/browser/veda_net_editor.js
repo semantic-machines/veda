@@ -92,6 +92,9 @@ jsWorkflow.ready = jsPlumb.ready;
             instance.bind("dblclick", function(transition) {            	 
                  if (confirm('Delete Flow?')) {
                 	 net['v-wf:consistsOf'] = removeSubIndividual(net, 'v-wf:consistsOf', transition.id);
+                	 getSubIndividual(net, 'v-wf:consistsOf', transition.sourceId, function (el) {
+                		 el['v-wf:hasFlow'] = removeSubIndividual(el, 'v-wf:hasFlow', transition.id);
+                	 });
                 	 instance.detach(transition);
                  }
             });
@@ -430,7 +433,6 @@ jsWorkflow.ready = jsPlumb.ready;
             instance.createNet(net);
             
             $('#workflow-save-button').on('click', function() {
-            	alert(net);
             	net.save();
             	net['v-wf:consistsOf'].forEach(function(el) {
             		el.save();
