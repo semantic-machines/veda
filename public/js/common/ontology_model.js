@@ -27,15 +27,15 @@
 		
 		var q_results = query(veda.ticket, q);
 		
-		var uncached_uris = q_results.reduce( function (acc, item) {
-			if ( !veda.cache[item] ) acc.push(item);
+		var unstored_uris = q_results.reduce( function (acc, item) {
+			if ( !veda.storage[item] ) acc.push(item);
 			else veda.dictionary[item] = new veda.IndividualModel(item);
 			return acc;
 		}, []);
 		
-		var uncached = get_individuals(veda.ticket, uncached_uris);
-		uncached.map( function (item) {
-			veda.cache[item["@"]] = JSON.stringify(item);
+		var unstored = get_individuals(veda.ticket, unstored_uris);
+		unstored.map( function (item) {
+			veda.storage[item["@"]] = JSON.stringify(item);
 			veda.dictionary[item["@"]] = new veda.IndividualModel(item["@"]);
 		});
 

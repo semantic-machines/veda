@@ -132,7 +132,7 @@
 					return self.trigger("individual:afterLoad");
 				}
 			}
-			individual = veda.cache[uri] ? JSON.parse( veda.cache[uri] ) : get_individual(veda.ticket, uri);
+			individual = veda.storage[uri] ? JSON.parse( veda.storage[uri] ) : get_individual(veda.ticket, uri);
 			original_individual = JSON.stringify(individual);
 			Object.keys(individual).map(function (property_uri) {
 				if (property_uri == "@") return;
@@ -155,8 +155,8 @@
 			}, individual);
 			put_individual(veda.ticket, individual);
 			original_individual = JSON.stringify(individual);
-			// Update local cache
-			if ( veda.cache[uri] ) veda.cache[uri] = original_individual;
+			// Update local storage
+			if ( veda.storage[uri] ) veda.storage[uri] = original_individual;
 			self.trigger("individual:afterSave");
 		};
 

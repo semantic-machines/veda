@@ -77,6 +77,13 @@ veda.Present(function Document(veda) { "use strict";
 		
 		// Clear previous handlers
 		document.off("view edit save cancel");
+
+		// Trigger same events for embedded templates
+		document.on("view edit save", function (event) {
+			embedded.map(function (item) {
+				item.trigger(event);
+			});
+		});
 		
 		// Define handlers
 		document.on("save", function () {
@@ -89,13 +96,6 @@ veda.Present(function Document(veda) { "use strict";
 			document.off("view edit save cancel");
 			document.reset();
 		});
-
-		// Trigger same events for embedded templates
-		document.on("view edit save", function (event) {
-			embedded.map(function (item) {
-				item.trigger(event);
-			});
-		});			
 
 		templates.map( function (classTemplate) {
 			
