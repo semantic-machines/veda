@@ -3,23 +3,6 @@
 veda.Present(function Document(veda) { "use strict";
 	
 	//var cnt = 0;
-	var container = $("#main2");
-	var a = $("<input>", {type: "text"});
-	container.append(a);
-	a.remoteList({
-		minLength: 0,
-		maxLength: 0,
-		source: function(value, response){
-			response(['Options 1', 'Option 2', {value: "Option 3", label: "This option with a label"}]);
-		},
-		select: function(){
-			if(window.console){
-				console.log('selectedOption:', $(this).remoteList('selectedOption'));
-				console.log('selectedData:', $(this).remoteList('selectedData'));
-			}
-		}
-	});
-
 	
 	veda.on("document:afterLoad", function (document, container_param, template_param, _mode) {
 		
@@ -56,8 +39,8 @@ veda.Present(function Document(veda) { "use strict";
 					return item instanceof veda.IndividualModel;
 				})
 				.map( function (item) { 
-					var _class = new veda.ClassModel(item);
-					if (_class.documentTemplate["v-ui:template"]) {
+					var _class = veda.ontology.classes[item.id];//new veda.ClassModel(item);
+					if (_class.documentTemplate && _class.documentTemplate["v-ui:template"]) {
 						// Get template from class
 
 						templateStr = _class.documentTemplate["v-ui:template"][0].toString()

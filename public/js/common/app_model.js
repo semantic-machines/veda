@@ -11,6 +11,7 @@
 		self.storage = typeof localStorage != "undefined" ? localStorage : {};
 		self.cache = {};
 		self.dictionary = {};
+		self.ontology = {};
 
 		// Define Model functions
 		self.login = function (username, password) {

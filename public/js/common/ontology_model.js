@@ -4,14 +4,6 @@
 
 	veda.OntologyModel = function () {
 
-		function merge () {
-			var c = {};
-			for (var i in arguments) {
-				for (var j in arguments[i]) c[j] = arguments[i][j];
-			}
-			return c;
-		}
-
 		var self = riot.observable(this);
 		
 		self.classes = {};
