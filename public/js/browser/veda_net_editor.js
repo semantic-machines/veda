@@ -375,21 +375,21 @@ jsWorkflow.ready = jsPlumb.ready;
             	var stateElement = '';
             	switch (type) {
     			case 'v-wf:InputCondition':    				
-    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + 2*state['v-wf:locationX'][0] + 'px; top: ' + 2*state['v-wf:locationY'][0] + 'px;"><div><span class="glyphicon glyphicon-play" aria-hidden="true"></div><div class="ep"></div></div>';
+    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + state['v-wf:locationX'][0] + 'px; top: ' + state['v-wf:locationY'][0] + 'px;"><div><span class="glyphicon glyphicon-play" aria-hidden="true"></div><div class="ep"></div></div>';
     				break;
     			case 'v-wf:OutputCondition':
-    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + 2*state['v-wf:locationX'][0] + 'px; top: ' + 2*state['v-wf:locationY'][0] + 'px;"><div><span class="glyphicon glyphicon-stop" aria-hidden="true"></div></div>';
+    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + state['v-wf:locationX'][0] + 'px; top: ' + state['v-wf:locationY'][0] + 'px;"><div><span class="glyphicon glyphicon-stop" aria-hidden="true"></div></div>';
     				break;
     			case 'v-wf:Condition':
-    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="left: ' + 2*state['v-wf:locationX'][0] + 'px; top: ' + 2*state['v-wf:locationY'][0] + 'px;"><div class="state-name"></div><div class="ep"></div></div>';
+    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="left: ' + state['v-wf:locationX'][0] + 'px; top: ' + state['v-wf:locationY'][0] + 'px;"><div class="state-name"></div><div class="ep"></div></div>';
     				break;
     			case 'v-wf:Task':
             		stateElement = '<div class="w state-task split-join '
             			+ instance.getSplitJoinType('split', state['v-wf:split']!=null?state['v-wf:split'][0].id:null)
             			+ instance.getSplitJoinType('join', state['v-wf:join']!=null?state['v-wf:join'][0].id:null)
             			+ '" id="' + state.id + '" style="left: ' 
-            			+ 2*state['v-wf:locationX'][0] + 'px; top: ' 
-            			+ 2*state['v-wf:locationY'][0] + 'px;"><div class="state-name">' + state['rdfs:label'][0] + '</div><div class="ep"></div></div>';
+            			+ state['v-wf:locationX'][0] + 'px; top: ' 
+            			+ state['v-wf:locationY'][0] + 'px;"><div class="state-name">' + state['rdfs:label'][0] + '</div><div class="ep"></div></div>';
     				break;
     			}
             	if (stateElement!='') {
@@ -435,6 +435,12 @@ jsWorkflow.ready = jsPlumb.ready;
             $('#workflow-save-button').on('click', function() {
             	net.save();
             	net['v-wf:consistsOf'].forEach(function(el) {
+            		if (el['rdf:type'][0].id != 'v-wf:Flow') { // TODO refactor this
+            			// update X/Y location      
+            			var element = $('#'+escape4$(el.id));
+            			el['v-wf:locationX'] = [new Number(Math.round(element.position().left+element.parent().scrollLeft()))];
+            			el['v-wf:locationY'] = [new Number(Math.round(element.position().top+element.parent().scrollTop()))];
+            		}
             		el.save();
             	});
             });
