@@ -126,7 +126,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 individual.defineProperty("rdfs:label");                
                 individual.defineProperty("v-wf:flowsInto");
                 
-                individual["rdf:type"] = [veda.dictionary["v-wf:Flow"]];
+                individual["rdf:type"] = [veda.ontology["v-wf:Flow"]];
                 individual["rdfs:label"] = [new String('')];
                 
                 net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]); // <- Add new Flow to Net
@@ -255,16 +255,16 @@ jsWorkflow.ready = jsPlumb.ready;
                 stateName = prompt("Enter the name of the state");
                 
                 individual['rdfs:label'] = [new String(stateName.replace(/[^a-zA-Z0-9 ]/g, ''))];
-                individual['v-wf:locationX'] = [new Number(0)];
-                individual['v-wf:locationY'] = [new Number(0)];
+                individual['v-wf:locationX'] = [new Number(1)];
+                individual['v-wf:locationY'] = [new Number(1)];
                 
                 if ($("#workflow-canvas").find('#' + individual.id).length < 1) {
 
                    	if ($(_this).hasClass('create-condition')) {
-                   		individual["rdf:type"] = [veda.dictionary["v-wf:Condition"]];
+                   		individual["rdf:type"] = [veda.ontology["v-wf:Condition"]];
                     	instance.createState('v-wf:Condition', individual);
                     } else { 
-                        individual["rdf:type"] = [veda.dictionary["v-wf:Task"]];
+                        individual["rdf:type"] = [veda.ontology["v-wf:Task"]];
                     	instance.createState('v-wf:Task', individual);
                     }
 

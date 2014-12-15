@@ -281,7 +281,7 @@ veda.Present(function Document(veda) { "use strict";
 
 	function renderProperty (document, property_uri, container, mode) {
 		
-		if ( property_uri != 'id' && !veda.dictionary[property_uri] ) return;
+		if ( property_uri != 'id' && !veda.ontology[property_uri] ) return;
 		
 		container.empty();
 		
@@ -290,7 +290,7 @@ veda.Present(function Document(veda) { "use strict";
 			return;
 		}
 		
-		var property = veda.dictionary[property_uri],
+		var property = veda.ontology[property_uri],
 			controlType, emptyVal;
 		
 		if ( !document[property_uri] ) document.defineProperty(property_uri);
@@ -381,7 +381,7 @@ veda.Present(function Document(veda) { "use strict";
 		
 		$(".properties", template).append (
 			Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
-				var property = veda.dictionary[property_uri];
+				var property = veda.ontology[property_uri];
 				if (property_uri == "rdfs:label") return;
 				if (property_uri == "rdfs:class") return;
 				

@@ -4,13 +4,15 @@
 
 	veda.OntologyModel = function () {
 
-		var self = riot.observable(this);
+		var self = this;
 		
 		self.classes = {};
 		self.properties = {};
 		self.templates = {};
 		self.specs = {};
 		self.other = {};
+		
+		var storage = typeof localStorage != 'undefined' ? localStorage : {};
 
 		var q = "'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'owl:Class' || 'rdf:type' == 'rdfs:Datatype' || 'rdf:type' == 'owl:Ontology' ||" + // Classes
 				"'rdf:type' == 'rdf:Property' || 'rdf:type' == 'owl:DatatypeProperty' || 'rdf:type' == 'owl:ObjectProperty' || " + // Properties
@@ -20,19 +22,21 @@
 		var q_results = query(veda.ticket, q);
 		
 		var unstored_uris = q_results.reduce( function (acc, item) {
-			if ( !veda.storage[item] ) acc.push(item);
-			else veda.dictionary[item] = new veda.IndividualModel(item);
+			if ( !storage[item] ) acc.push(item);
+			else self[item] = new veda.IndividualModel( JSON.parse(storage[item]) );
 			return acc;
 		}, []);
 		
-		var unstored = get_individuals(veda.ticket, unstored_uris);
-		unstored.map( function (item) {
-			veda.storage[item["@"]] = JSON.stringify(item);
-			veda.dictionary[item["@"]] = new veda.IndividualModel(item["@"]);
-		});
+		if (unstored_uris.length) {
+			var unstored = get_individuals(veda.ticket, unstored_uris);
+			unstored.map( function (item) {
+				storage[ item["@"] ] = JSON.stringify(item);
+				self[ item["@"] ] = new veda.IndividualModel( item );
+			});
+		}
 
-		Object.keys(veda.dictionary).map( function (uri) {
-			var individual = veda.dictionary[uri];
+		q_results.map( function (uri) {
+			var individual = self[uri];
 			switch ( individual["rdf:type"][0].id ) {
 				case "rdfs:Class" :
 				case "owl:Class" :

@@ -292,13 +292,8 @@ v-s:firstName
 .
 v-s:hasAccount
   rdf:type owl:ObjectProperty ;
-  rdfs:domain [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          v-s:Person
-          v-s:OrganizationUnit
-        ) ;
-    ] ;
+  rdfs:domain v-s:Person ;
+  rdfs:domain v-s:OrganizationUnit ;
   rdfs:label "account"@en ;
   rdfs:label "учетная запись"@ru ;
   rdfs:range v-s:Account ;
@@ -452,14 +447,9 @@ v-s:script
 .
 v-s:startTime
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          v-s:HRRecord
-          v-s:DelegationStatement
-          v-s:PermissionStatement
-        ) ;
-    ] ;
+  rdfs:domain v-s:HRRecord ;
+  rdfs:domain v-s:DelegationStatement ;
+  rdfs:domain v-s:PermissionStatement ;
   rdfs:label "start time"@en ;
   rdfs:label "время начала"@ru ;
   rdfs:range xsd:dateTime ;

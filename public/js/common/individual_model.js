@@ -3,12 +3,12 @@
 ;(function (veda) { "use strict";
 
 	/* 
-	 * Параметр newInstance используется для создания нового индивида, 
+	 * Параметр noCache используется для создания нового индивида, 
 	 * если параметр отсутствует (чаще всего) либо равен false,
-	 * делается попытка использовать объект из словаря.
+	 * делается попытка извлечения объект из кэша.
 	 */
 	
-	veda.IndividualModel = function (uri, newInstance) {
+	veda.IndividualModel = function (uri, noCache) {
 		
 		var self = riot.observable(this);
 
@@ -61,8 +61,7 @@
 						} 
 						else if (value.type == "Uri") {
 							if (value.data.search(/^.{3,5}:\/\//) == 0) return new String(value.data);
-							try { return new veda.IndividualModel(value.data); } 
-							catch (e) { return new String(value.data) }
+							return new veda.IndividualModel(value.data);
 						} 
 						else if (value.type == "Datetime") return new Date(Date.parse(value.data));
 						else if (value.type == "Decimal") return new Number(value.data);
@@ -80,9 +79,6 @@
 				
 				set: function (value) { 
 					values[property_uri] = value;
-					/*if (filteredStrings.length) { 
-						values[property_uri] = values[property_uri].concat(filteredStrings);
-					}*/
 					individual[property_uri] = values[property_uri].concat(filteredStrings).map( function (value) {
 						var result = {};
 						if (value instanceof Number || typeof value === "number" ) {
@@ -124,21 +120,34 @@
 		
 		self.load = function (uri) {
 			self.trigger("individual:beforeLoad");
-			if ( !newInstance ) {
-				if (veda["dictionary"] && veda["dictionary"][uri]) {
-					self = veda["dictionary"][uri];
-					// Remove any unexpected handlers
-					self.off("*");
-					return self.trigger("individual:afterLoad");
+			if (typeof uri == "string") {
+				if (veda.cache[uri] && !noCache) {
+					self = veda.cache[uri];
+					self.trigger("individual:afterLoad");
+					return;
 				}
+				try {
+					individual = get_individual(veda.ticket, uri);
+				} catch (e) {
+					individual = {
+						"@": uri,
+						"rdfs:label": [{type: "String", data: uri, lang: "NONE"}]
+					}
+				}
+			} else if (uri instanceof veda.IndividualModel) {
+				self = uri;
+				self.trigger("individual:afterLoad");
+				return;
+			} else {
+				individual = uri;
 			}
-			individual = veda.storage[uri] ? JSON.parse( veda.storage[uri] ) : get_individual(veda.ticket, uri);
 			original_individual = JSON.stringify(individual);
 			Object.keys(individual).map(function (property_uri) {
 				if (property_uri == "@") return;
 				if (property_uri == "rdf:type") return;
 				self.defineProperty(property_uri);
 			});
+			if (!noCache) veda.cache[self.id] = self;
 			self.trigger("individual:afterLoad");
 		};
 
@@ -148,15 +157,13 @@
 				self[property_uri];
 				if (property_uri == "@") return acc;
 				acc[property_uri] = individual[property_uri].filter(function (item) {
-					return item && item.data != "";
+					return item && item.data !== "";
 				});
 				if (!acc[property_uri].length) delete acc[property_uri];
 				return acc;
 			}, individual);
 			put_individual(veda.ticket, individual);
 			original_individual = JSON.stringify(individual);
-			// Update local storage
-			if ( veda.storage[uri] ) veda.storage[uri] = original_individual;
 			self.trigger("individual:afterSave");
 		};
 
