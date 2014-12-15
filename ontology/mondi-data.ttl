@@ -833,53 +833,5 @@ mnd-d:ComplexRouteStartForm1
 	mnd-wf:ComplexRouteStartForm_coordinator3 mnd-d:AndreyBychin-ExecutiveDirector ; 
 	mnd-wf:ComplexRouteStartForm_reviewer mnd-d:ValeriyBushenev-Programmer1 ; 
 	mnd-wf:ComplexRouteStartForm_signer mnd-d:AndreyBychin-ExecutiveDirector ; 
-	v-wf:isProcess mnd-d:process2 ;
 .
-
-# -------- стартовые данные маршрута ----------------
-mnd-d:process1
-	rdf:type v-wf:Process ;
-	v-wf:instanceOf mnd-wf:net_complex_route ;
-	v-wf:inputVariable mnd-d:var_doc_id_n1 ;
-	v-wf:inputVariable mnd-d:var_initiator_n1 ;
-	v-wf:inputVariable mnd-d:var_coordinator_1_n1 ;
-	v-wf:inputVariable mnd-d:var_coordinator_2_n1 ;
-	v-wf:inputVariable mnd-d:var_signer_1_n1 ;
-	v-wf:inputVariable mnd-d:var_reviewer_1_n1 ;
-	v-wf:localVariable mnd-d:var_right_1_n1 ;
-.
-mnd-d:var_initiator_n1
-        rdf:type v-wf:Variable ;
-	v-wf:variableName "initiator" ;
-	v-wf:variableValue mnd-d:RomanKarpov-Analyst1 ;
-.
-mnd-d:var_doc_id_n1
-        rdf:type v-wf:Variable ;
-	v-wf:variableName "docId" ;
-	v-wf:variableValue mnd-d:SavedSearch1 ;
-.
-mnd-d:var_coordinator_1_n1
-        rdf:type v-wf:Variable ;
-	v-wf:variableName "coordinatorLevel1" ;
-	v-wf:variableValue mnd-d:ValeriyBushenev-Programmer1 ;
-.
-mnd-d:var_coordinator_2_n1
-        rdf:type v-wf:Variable ;
-	v-wf:variableName "coordinatorLevel2" ;
-	v-wf:variableValue mnd-d:AndreyBychin-ExecutiveDirector ;
-.
-mnd-d:var_signer_1_n1
-        rdf:type v-wf:Variable ;
-	v-wf:variableName "signer" ;
-	v-wf:variableValue mnd-d:ValeriyBushenev-Programmer1 ; 
-.
-mnd-d:var_reviewer_1_n1
-        rdf:type v-wf:Variable ;
-	v-wf:variableName "reviewer" ;
-	v-wf:variableValue mnd-d:AndreyBychin-ExecutiveDirector ; 
-.
-mnd-d:var_right_1_n1
-	rdf:type v-wf:Variable ;
-	v-wf:variableName "originalRight" ;
-	v-wf:variableValue "no right" ;
-.
+#	v-wf:isProcess mnd-d:process2 ;
