@@ -765,7 +765,7 @@ mnd-d:PropertySpecification6
   rdfs:label "Спецификация работника для класса Назначение"@ru ;
   rdfs:label "Employee property specification for Appointment class"@en ;
   v-ui:forClass v-s:Appointment ;
-  v-ui:forProperty v-s:position ;
+  v-ui:forProperty v-s:occupation ;
   v-ui:index rdfs:label ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;

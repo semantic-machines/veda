@@ -8,8 +8,10 @@
 		
 		self.config = config;
 		self.user_uri = self.ticket = self.end_time = ""
-		self.cache = typeof localStorage != "undefined" ? localStorage : {};
+		self.storage = typeof localStorage != "undefined" ? localStorage : {};
+		self.cache = {};
 		self.dictionary = {};
+		self.ontology = {};
 
 		// Define Model functions
 		self.login = function (username, password) {
