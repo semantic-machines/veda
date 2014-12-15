@@ -63,13 +63,8 @@ mnd-s:content
 .
 mnd-s:nomenclatureType
   rdf:type owl:ObjectProperty ;
-  rdfs:domain [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          mnd-s:AdministrativeDocument
-          mnd-s:RegistrationRecord
-        ) ;
-    ] ;
+  rdfs:domain mnd-s:AdministrativeDocument ;
+  rdfs:domain mnd-s:RegistrationRecord ;
   rdfs:label "document type"@en ;
   rdfs:label "вид документа"@ru ;
   rdfs:range mnd-s:DocumentType ;
