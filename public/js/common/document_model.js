@@ -4,10 +4,7 @@
 
 	veda.DocumentModel = function (individual, container, template, mode) {
 
-		var self;
-		
-		if (individual instanceof veda.IndividualModel) self = individual;
-		else self = new veda.IndividualModel(individual, true);
+		var self = new veda.IndividualModel(individual, true);
 
 		self.off("*");
 		

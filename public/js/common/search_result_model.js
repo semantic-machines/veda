@@ -4,7 +4,7 @@
 
 	veda.SearchResultModel = function (individual, container, template) {
 
-		var self = individual instanceof veda.IndividualModel ? individual : new veda.IndividualModel(individual);
+		var self = new veda.IndividualModel(individual);
 
 		self.off("*");
 		

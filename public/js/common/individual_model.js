@@ -162,9 +162,13 @@
 				if (!acc[property_uri].length) delete acc[property_uri];
 				return acc;
 			}, individual);
-			put_individual(veda.ticket, individual);
+			try { 
+				put_individual(veda.ticket, individual);
+			} catch (e) {
+				alert("Error: " + e.status + "\n" + "description: " + e.description);
+			}
 			original_individual = JSON.stringify(individual);
-			self.trigger("individual:afterSave");
+			self.trigger("individual:afterSave", original_individual);
 		};
 
 		self.reset = function () {
