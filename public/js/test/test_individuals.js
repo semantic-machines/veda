@@ -346,7 +346,8 @@ test("#008 Individual of [v-s:PermissionStatement] store 3 and read 2 (check on 
 			new_test_doc2['v-s:canRead'] = [ {
 				data : false,
 				type : _Bool
-			} ], put_individual(ticket.id, new_test_doc2);
+			} ];
+			put_individual(ticket.id, new_test_doc2);
 			wait_pmodule(subject_manager);
 
 			var read_individual = get_individual(ticket.id, new_test_doc2_uri);
@@ -358,11 +359,13 @@ test("#008 Individual of [v-s:PermissionStatement] store 3 and read 2 (check on 
 			new_test_doc3['v-s:canRead'] = [ {
 				data : true,
 				type : _Bool
-			} ], put_individual(ticket.id, new_test_doc3);
+			} ];
+
+			try { put_individual(ticket.id, new_test_doc3); } catch (err) {}
+
 			wait_pmodule(subject_manager);
 
-			try { read_individual = get_individual(ticket.id, new_test_doc3_uri); }
-			catch (e) { read_individual = {}; }
+			try { read_individual = get_individual(ticket.id, new_test_doc3_uri); } catch (e) { read_individual = {}; }
 			ok((read_individual['@'] == new_test_doc3_uri) == false);
 			
 		});
@@ -488,7 +491,7 @@ test("#010 Individual of [v-s:Membership] store 3 and read 2",
 				data : memberOf,
 				type : _Uri
 			} ];
-			put_individual(ticket.id, new_test_doc3);
+			try { put_individual(ticket.id, new_test_doc3); } catch (err) {}
 			wait_pmodule(subject_manager);
 
 			try { read_individual = get_individual(ticket.id, new_test_doc3_uri); }
