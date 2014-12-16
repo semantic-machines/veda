@@ -394,6 +394,8 @@ class VedaStorageRest : VedaStorageRest_API
             ind ~= indv.idup;
             send(io_task, Command.Put, Function.Individual, ticket, indv.uri, ind, my_task);
             ResultCode res = receiveOnly!(ResultCode);
+            if (res != ResultCode.OK)
+				throw new HTTPStatusException(res);
             return res.to!int;
         }
         return ResultCode.Service_Unavailable.to!int;

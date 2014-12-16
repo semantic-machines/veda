@@ -12,8 +12,8 @@
 		self.specs = {};
 		self.other = {};
 		
-		var storage = typeof localStorage != 'undefined' ? localStorage : {};
-
+		var storage = typeof localStorage != 'undefined' ? localStorage : undefined;
+		
 		var q = "'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'owl:Class' || 'rdf:type' == 'rdfs:Datatype' || 'rdf:type' == 'owl:Ontology' ||" + // Classes
 				"'rdf:type' == 'rdf:Property' || 'rdf:type' == 'owl:DatatypeProperty' || 'rdf:type' == 'owl:ObjectProperty' || " + // Properties
 				"'rdf:type' == 'v-ui:ClassTemplate' || " + // Templates
@@ -21,22 +21,38 @@
 		
 		var q_results = query(veda.ticket, q);
 		
-		var unstored_uris = q_results.reduce( function (acc, item) {
-			if ( !storage[item] ) acc.push(item);
-			else self[item] = new veda.IndividualModel( JSON.parse(storage[item]) );
-			return acc;
-		}, []);
-		
-		if (unstored_uris.length) {
-			var unstored = get_individuals(veda.ticket, unstored_uris);
+		if (storage) {
+			var unstored_uris = q_results.reduce( function (acc, item) {
+				if ( !storage[item] ) { 
+					acc.push(item);
+				} else { 
+					var individual = new veda.IndividualModel( JSON.parse(storage[item]) );
+					self[item] = individual;
+				}
+				return acc;
+			}, []);
+			
+			var unstored = unstored_uris.length ? get_individuals(veda.ticket, unstored_uris) : [];
 			unstored.map( function (item) {
 				storage[ item["@"] ] = JSON.stringify(item);
+				var individual = new veda.IndividualModel( item );
+				self[ item["@"] ] = individual;
+			});
+
+		} else {
+			get_individuals(veda.ticket, q_results).map( function (item) {
 				self[ item["@"] ] = new veda.IndividualModel( item );
 			});
 		}
-
+		
 		q_results.map( function (uri) {
 			var individual = self[uri];
+			
+			// Update localStorage after individual was saved
+			individual.on("individual:afterSave", function (data) {
+				storage[uri] = data;
+			});
+			
 			switch ( individual["rdf:type"][0].id ) {
 				case "rdfs:Class" :
 				case "owl:Class" :
