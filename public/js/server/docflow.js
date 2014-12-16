@@ -1,17 +1,30 @@
 "use strict";
 
 /*
+    обработка процесса
+*/
+function prepare_process (ticket, document, script_id)
+{
+//    print ("### prepare_process");
+}
+
+/*
     Обработка стартовой формы и создание экземпляра процесса.
     Условие запуска процесса: в стартовой форме должно быть заполнено поле v-wf:isProcess, 
     но экземпляра в хранилище еще не должно быть.
 */
-function prepare_start_form (ticket, document)
+function prepare_start_form (ticket, document, script_id)
 {
+    var event_id = document['@'] + script_id;
+    print ("### prepare_start_form #B event_id=" + event_id);
+
     var new_process_uri = getUri (document['v-wf:isProcess']);	    
 
-    if (!new_process_uri)
+    if (new_process_uri)
         return;
 	
+    var new_process_uri = guid ();
+
     var decomposition_link = getUri (document['v-wf:useDecomposition']);	    
     if (!decomposition_link)
         return;
@@ -34,7 +47,7 @@ function prepare_start_form (ticket, document)
 	'v-wf:instanceOf' : forNet
     };
 
-    // сформируем входящие переменные	
+    // сформируем входящие переменные
     var process_input_vars = [];
     var mapping = decomposition['v-wf:startingMapping'];
     for (var i = 0; i < mapping.length; i++)
@@ -67,7 +80,7 @@ function prepare_start_form (ticket, document)
 
 	new_vars[variable_name] = new_process_variable ;
 
-       	put_individual (ticket, new_process_variable);
+       	put_individual (ticket, new_process_variable, event_id);
 
 	process_input_vars.push ({data: new_uri, type : _Uri});
     }
@@ -93,12 +106,17 @@ function prepare_start_form (ticket, document)
        	'rdf:type' : [{data: 'v-wf:Variable', type : _Uri}],
 	'v-wf:variableName' : [{data: variable_name, type : _String}]
        	};
-       	put_individual (ticket, new_process_variable);
+       	put_individual (ticket, new_process_variable, event_id);
 
 	process_local_vars.push ({data: new_uri, type : _Uri});
     }
     if (process_local_vars.length > 0)
 	new_process['v-wf:localVariable'] = process_local_vars;
 
-    put_individual (ticket, new_process);    
+    put_individual (ticket, new_process, event_id);    
+
+    document['v-wf:isProcess'] = [{data: new_process_uri, type : _Uri}];
+    put_individual (ticket, document, event_id);  
+  
+    print ("### prepare_start_form #E");
 }
