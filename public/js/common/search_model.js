@@ -49,7 +49,7 @@
 			// Clear previous results 
 			self.results = {};
 			
-			/*var results = query(veda.ticket, self.q);
+			var results = query(veda.ticket, self.q);
 			for (var i in results) {
 				(function(i){
 					Object.defineProperty(self.results, i, {
@@ -62,32 +62,11 @@
 			}
 			self.results_count = results.length;
 			self.trigger("search:complete");
-			*/
-			query(veda.ticket, self.q, function (data) {
-				var results = data;
-				for (var i in results) {
-					(function(i){
-						Object.defineProperty(self.results, i, {
-							get: function () { 
-								if (typeof results[i] == 'object') return results[i];
-								return results[i] = new veda.SearchResultModel(results[i]);
-							}
-						});
-					})(i);
-				}
-				self.results_count = data.length;
-				self.trigger("search:complete");
-			});
+
 		};
 
 		// Model messages
-		self.on("search:loaded", function () {
-			if (veda) veda.trigger("search:loaded", self, container);
-		});
-		self.on("search:complete", function () {
-			if (veda) veda.trigger("search:complete", self, container);
-		});
-		self.trigger("search:loaded");
+		veda.trigger("search:loaded", self, container);
 		
 		// Search if params given
 		self.q = q;
