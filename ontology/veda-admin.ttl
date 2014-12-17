@@ -84,8 +84,8 @@ v-a:Event_1
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:script """
-var ticket = '';
-var ff = get_property_chain (ticket, '$document', 'v-s:author', 'v-s:employee');
+
+var ff = get_property_chain (ticket, document, 'v-s:author', 'v-s:employee');
 if (ff)
 {
     var employee_uri = getUri (ff['field']);
@@ -105,7 +105,7 @@ if (ff)
         'v-s:permissionObject' : [{data: doc_uri, type : _Uri}],
         'v-s:permissionSubject'  : [{data: employee_uri, type : _Uri}]
 	};
-	put_individual (ticket, new_permission, '-');
+	put_individual (ticket, new_permission, _event_id);
     }
     }
 }
@@ -121,20 +121,16 @@ v-a:Event_2
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:script """
-var ticket = '';
-        var doc;
-        ff = get_individual (ticket, '$document');
-if (ff)
-{
-// print ('@@1 =', toJson (ff));
-    var type = ff['rdf:type'];
+
+// print ('@@1 =', toJson (document));
+    var type = document['rdf:type'];
     if (type)
     {
 	if (type[0].data == 'v-s:Department' || type[0].data == 'v-s:Position' || 
 	    type[0].data == 'v-s:Appointment' || type[0].data == 'v-s:Person')
 	{
-	    var deleted = ff['v-s:deleted'];
-	    var doc_uri = ff['@'];	
+	    var deleted = document['v-s:deleted'];
+	    var doc_uri = document['@'];	
 	    var new_membership = 
 	    {
     	    '@' : guid (), 
@@ -149,12 +145,12 @@ if (ff)
 		//print ('IS DELETED');
 		new_membership['v-s:deleted'] = deleted;
 	    }
-	    var res = put_individual (ticket, new_membership, '-');
+	    var res = put_individual (ticket, new_membership, _event_id);
 	    if (res != 200 && res != 1022)
 		print ('res=', res, ' @@1 =', toJson (new_membership));		
 	}
     }
-}
+
 """ ;
   rdfs:comment "скрипт автоматической выдачи прав на чтение для оргструктуры + перенос атрибута v-s:deleted"@ru ;
   rdfs:label "Event_2"@en ;
@@ -167,19 +163,15 @@ v-a:Event_3
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:script """
-var ticket = '';
-        var doc;
-        ff = get_individual (ticket, '$document');
-if (ff)
-{
-    var type = ff['rdf:type'];
+
+    var type = document['rdf:type'];
     if (type)
     {
 	var prefix = type[0].data.split (':', 1);
 	if (prefix == 'owl' || prefix == 'rdf' || 
 	    prefix == 'rdfs')
 	{
-	    var doc_uri = ff['@'];	
+	    var doc_uri = document['@'];	
 	    var new_membership = 
 	    {
     	    '@' : guid (), 
@@ -189,10 +181,10 @@ if (ff)
     	    'rdfs:comment'  : [{data: "выдан v-a:Event_3", type : _String}]
 	    };
 
-	    put_individual (ticket, new_membership, '-');
+	    put_individual (ticket, new_membership, _event_id);
 	}
     }
-}
+
 """ ;
   rdfs:comment "скрипт автоматической выдачи прав на чтение для всех онтологий"@ru ;
   rdfs:label "Event_3"@en ;

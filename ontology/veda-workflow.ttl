@@ -485,14 +485,8 @@ v-wf:Event_df1
 	v-s:author v-a:VedaSystemAccount ;
 	v-s:script """
 
-var ticket = '';
-var document;
-document = get_individual (ticket, '$document');
-if (document)
-{
     if (is_exist (document, 'rdf:type', 'v-wf:StartForm') == true)
-               prepare_start_form (ticket, document, 'v-wf:Event_df1');
-}
+               prepare_start_form (ticket, document);
 
 """ ;
 	rdfs:label "триггер запуска маршрута из пользовательской формы"@ru ;
@@ -503,14 +497,8 @@ v-wf:Event_df2
 	v-s:author v-a:VedaSystemAccount ;
 	v-s:script """
 
-var ticket = '';
-var document;
-document = get_individual (ticket, '$document');
-if (document)
-{
     if (is_exist (document, 'rdf:type', 'v-wf:Process') == true)
-               prepare_process (ticket, document, 'v-wf:Event_df2');
-}
+               prepare_process (ticket, document);
 
 """ ;
 	rdfs:label "выполнения маршрута"@ru ;
