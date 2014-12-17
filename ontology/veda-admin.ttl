@@ -120,15 +120,14 @@ v-a:Event_2
   v-s:author v-a:VedaSystemAccount ;
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:filter v-s:Department ;
+  v-s:filter v-s:Position ;
+  v-s:filter v-s:Appointment ;
+  v-s:filter v-s:Person ;
+
   v-s:script """
 
 // print ('@@1 =', toJson (document));
-    var type = document['rdf:type'];
-    if (type)
-    {
-	if (type[0].data == 'v-s:Department' || type[0].data == 'v-s:Position' || 
-	    type[0].data == 'v-s:Appointment' || type[0].data == 'v-s:Person')
-	{
 	    var deleted = document['v-s:deleted'];
 	    var doc_uri = document['@'];	
 	    var new_membership = 
@@ -149,7 +148,6 @@ v-a:Event_2
 	    if (res != 200 && res != 1022)
 		print ('res=', res, ' @@1 =', toJson (new_membership));		
 	}
-    }
 
 """ ;
   rdfs:comment "скрипт автоматической выдачи прав на чтение для оргструктуры + перенос атрибута v-s:deleted"@ru ;

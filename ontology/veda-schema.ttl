@@ -416,6 +416,7 @@ v-s:previousVersion
   rdfs:label "предыдущая версия"@ru ;
   rdfs:range v-s:Versioned ;
 .
+
 v-s:published
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Document ;
@@ -423,6 +424,7 @@ v-s:published
   rdfs:label "дата публикации"@ru ;
   rdfs:range xsd:dateTime ;
 .
+
 v-s:query
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:SavedSearch ;
@@ -430,6 +432,7 @@ v-s:query
   rdfs:label "запрос"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:resource
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Membership ;
@@ -437,6 +440,7 @@ v-s:resource
   rdfs:label "ресурс"@ru ;
   rdfs:range rdfs:Resource ;
 .
+
 v-s:script
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Event ;
@@ -445,6 +449,15 @@ v-s:script
   rdfs:label "скрипт"@ru ;
   rdfs:range xsd:string ;
 .
+
+v-s:filter
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Event ;
+  rdfs:label "filter"@en ;
+  rdfs:label "фильтр"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+
 v-s:startTime
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:HRRecord ;
@@ -454,11 +467,13 @@ v-s:startTime
   rdfs:label "время начала"@ru ;
   rdfs:range xsd:dateTime ;
 .
+
 v-s:AllResourcesGroup
   rdf:type v-s:Group ;
   rdfs:label "All resources"@ru ;
   rdfs:label "Все ресурсы"@ru ;
 .
+
 v-s:attachment
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Document ;
@@ -466,6 +481,7 @@ v-s:attachment
   rdfs:label "вложение"@ru ;
   rdfs:range v-s:File ;
 .
+
 v-s:fileName
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:File ;
@@ -473,6 +489,7 @@ v-s:fileName
   rdfs:label "имя файла"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:fileSize
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:File ;
@@ -480,6 +497,7 @@ v-s:fileSize
   rdfs:label "размер файла"@ru ;
   rdfs:range xsd:integer ;
 .
+
 v-s:fileDescription
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:File ;
@@ -487,6 +505,7 @@ v-s:fileDescription
   rdfs:label "имя файла"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:fileThumbnail
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:File ;
@@ -494,6 +513,7 @@ v-s:fileThumbnail
   rdfs:label "миниатюра"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:fileURI
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:File ;
@@ -501,6 +521,7 @@ v-s:fileURI
   rdfs:label "URI файла"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:deprecatedId
   rdf:type owl:ObjectProperty ;
   rdfs:domain owl:Class ;

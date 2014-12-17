@@ -483,10 +483,10 @@ v-wf:localVariable
 v-wf:Event_df1
 	rdf:type v-s:Event ;
 	v-s:author v-a:VedaSystemAccount ;
+	v-s:filter v-wf:StartForm ;
 	v-s:script """
 
-    if (is_exist (document, 'rdf:type', 'v-wf:StartForm') == true)
-               prepare_start_form (ticket, document);
+        prepare_start_form (ticket, document);
 
 """ ;
 	rdfs:label "триггер запуска маршрута из пользовательской формы"@ru ;
@@ -495,10 +495,10 @@ v-wf:Event_df1
 v-wf:Event_df2
 	rdf:type v-s:Event ;
 	v-s:author v-a:VedaSystemAccount ;
+	v-s:filter v-wf:Process ;
 	v-s:script """
 
-    if (is_exist (document, 'rdf:type', 'v-wf:Process') == true)
-               prepare_process (ticket, document);
+	prepare_process (ticket, document);
 
 """ ;
 	rdfs:label "выполнения маршрута"@ru ;
