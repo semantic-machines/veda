@@ -3,7 +3,7 @@
 /*
     обработка процесса
 */
-function prepare_process (ticket, document, script_id)
+function prepare_process (ticket, document)
 {
 //    print ("### prepare_process");
 }
@@ -13,10 +13,9 @@ function prepare_process (ticket, document, script_id)
     Условие запуска процесса: в стартовой форме должно быть заполнено поле v-wf:isProcess, 
     но экземпляра в хранилище еще не должно быть.
 */
-function prepare_start_form (ticket, document, script_id)
+function prepare_start_form (ticket, document)
 {
-    var event_id = document['@'] + script_id;
-    print ("### prepare_start_form #B event_id=" + event_id);
+    print ("### prepare_start_form #B _event_id=" + _event_id);
 
     var new_process_uri = getUri (document['v-wf:isProcess']);	    
 
@@ -80,7 +79,7 @@ function prepare_start_form (ticket, document, script_id)
 
 	new_vars[variable_name] = new_process_variable ;
 
-       	put_individual (ticket, new_process_variable, event_id);
+       	put_individual (ticket, new_process_variable, _event_id);
 
 	process_input_vars.push ({data: new_uri, type : _Uri});
     }
@@ -106,17 +105,17 @@ function prepare_start_form (ticket, document, script_id)
        	'rdf:type' : [{data: 'v-wf:Variable', type : _Uri}],
 	'v-wf:variableName' : [{data: variable_name, type : _String}]
        	};
-       	put_individual (ticket, new_process_variable, event_id);
+       	put_individual (ticket, new_process_variable, _event_id);
 
 	process_local_vars.push ({data: new_uri, type : _Uri});
     }
     if (process_local_vars.length > 0)
 	new_process['v-wf:localVariable'] = process_local_vars;
 
-    put_individual (ticket, new_process, event_id);    
+    put_individual (ticket, new_process, _event_id);    
 
     document['v-wf:isProcess'] = [{data: new_process_uri, type : _Uri}];
-    put_individual (ticket, document, event_id);  
+    put_individual (ticket, document, _event_id);  
   
     print ("### prepare_start_form #E");
 }
