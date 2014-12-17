@@ -49,7 +49,7 @@
 			// Clear previous results 
 			self.results = {};
 			
-			/*var results = query(veda.ticket, self.q);
+			var results = query(veda.ticket, self.q);
 			for (var i in results) {
 				(function(i){
 					Object.defineProperty(self.results, i, {
@@ -62,8 +62,8 @@
 			}
 			self.results_count = results.length;
 			self.trigger("search:complete");
-			*/
-			query(veda.ticket, self.q, function (data) {
+			
+			/*query(veda.ticket, self.q, function (data) {
 				var results = data;
 				for (var i in results) {
 					(function(i){
@@ -77,7 +77,7 @@
 				}
 				self.results_count = data.length;
 				self.trigger("search:complete");
-			});
+			});*/
 		};
 
 		// Model messages

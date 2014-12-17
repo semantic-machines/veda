@@ -48,9 +48,7 @@ veda.Present(function Search(veda) { "use strict";
 			veda.trigger("search:complete", search, container);
 		});
 		
-		veda.trigger("search:rendered", search, container);
-		
-		container.fadeIn(250);	
+		container.show();	
 	});
 	
 	// Display search results
@@ -82,20 +80,19 @@ veda.Present(function Search(veda) { "use strict";
 		for (var i = currentPage * veda.user.displayedElements; i < (currentPage + 1) * veda.user.displayedElements && i < search.results_count; i++) {
 			(function (i) { 
 				setTimeout(function () {
+
 					var $li = $("<li/>").appendTo("#search-results-list");
-					
+
 					// Select search results 
 					var $select = $( $("#search-select-template").html() );
 					$("input[type='checkbox']", $select).on("click", function (e) {
 						search.toggleSelected(i);
 					});
-					if (search.results[i].id in search.selected) $("input", $select).attr("checked", "checked");
-					
 					$li.append( $select );
-					
-					
-					// Invoke search result presenter
-					veda.trigger("search_result:loaded", search.results[i], $li);
+
+					var search_result = new veda.SearchResultModel(search.results[i], $li);
+					if (search_result.id in search.selected) $("input", $select).attr("checked", "checked");
+
 				}, 0);
 			}(i));
 		}
@@ -103,20 +100,20 @@ veda.Present(function Search(veda) { "use strict";
 		// Show pager
 		var $pager = $("#pager", container);
 		for (var page = 0; page < Math.floor(search.results_count / veda.user.displayedElements) + 1 * (search.results_count % veda.user.displayedElements ? 1 : 0); page++) {
-			(function (page) {
-				var $page = $("<li/>")
-						.attr("class", page == currentPage ? "active" : "")
-						.appendTo($pager);
-				var $a = $("<a/>", { 
-					"text" : page + 1, 
-					"click": function (event) {
+			var $page = $("<li/>")
+				.attr("class", page == currentPage ? "active" : "")
+				.appendTo($pager);
+			var $a = $("<a/>", { 
+				"text" : page + 1, 
+				"click": (function (page) {
+					return function (event) {
 						event.preventDefault(); 
 						currentPage = page; 
 						veda.trigger('search:complete', search, container);
-					}, 
-					"href" : ""
-				}).appendTo($page);
-			}(page));
+					}
+				})(page), 
+				"href" : ""
+			}).appendTo($page);
 		}
 	
 	});
