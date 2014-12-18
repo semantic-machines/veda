@@ -17,4 +17,4 @@
 		return self;
 	};
 
-}(veda));
+})(veda);

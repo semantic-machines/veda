@@ -107,7 +107,7 @@
 						}
 					});
 					if (setter) setter(values[property_uri]);
-					/*self.trigger("individual:propertyChanged:" + property_uri, values[property_uri]);*/
+					self.trigger("individual:propertyModified:" + property_uri, values[property_uri]);
 				},
 				
 				configurable: true
@@ -212,4 +212,4 @@
 		return self;
 	};
 
-}(veda));
+})(veda);

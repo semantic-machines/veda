@@ -9,10 +9,10 @@
 			displayedElements : 10
 		};
 		
-		var self = individual instanceof veda.IndividualModel ? individual : new veda.IndividualModel(individual);
+		var self = new veda.IndividualModel(individual);
 		
 		try { 
-			self.preferences = new veda.IndividualModel(self["v-ui:hasPreferences"][0].id);
+			self.preferences = self["v-ui:hasPreferences"][0];
 
 			self.language = self.preferences["v-ui:preferredLanguage"].reduce( function (acc, lang) {
 				acc[lang["rdf:value"][0]] = veda.availableLanguages[lang["rdf:value"][0]];
@@ -24,6 +24,17 @@
 			self.language = defaults.language;
 			self.displayedElements = defaults.displayedElements;
 		}
+		
+		self.preferences.on("individual:propertyModified:v-ui:displayedElements", function (values) {
+			self.displayedElements = values[0];
+		});
+
+		self.preferences.on("individual:propertyModified:v-ui:preferredLanguage", function (values) {
+			self.language = values.reduce( function (acc, lang) {
+				acc[lang["rdf:value"][0]] = veda.availableLanguages[lang["rdf:value"][0]];
+				return acc;
+			}, {} );
+		});
 		
 		self.toggleLanguage = function(language_val) {
 			
@@ -42,4 +53,4 @@
 		return self;
 	};
 
-}(veda));
+})(veda);

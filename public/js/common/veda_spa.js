@@ -28,4 +28,4 @@ var veda = {};
 
 	});
 	
-}(veda));
+})(veda);

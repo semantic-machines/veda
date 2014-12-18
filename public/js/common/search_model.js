@@ -66,6 +66,10 @@
 		};
 
 		// Model messages
+		self.on("search:complete", function () {
+			veda.trigger("search:complete", self, container);
+		});
+		
 		veda.trigger("search:loaded", self, container);
 		
 		// Search if params given
@@ -75,4 +79,4 @@
 		return self;
 	};
 
-}(veda));
+})(veda);

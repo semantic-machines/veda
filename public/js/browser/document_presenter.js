@@ -2,11 +2,11 @@
 
 veda.Present(function Document(veda) { "use strict";
 	
-	//var cnt = 0;
+	var cnt = 0;
 	
 	veda.on("document:afterLoad", function (document, container_param, template_param, _mode) {
 		
-		//console.log("document presenter:", ++cnt, document.id, document);
+		console.log("document presenter:", ++cnt, document.id, document);
 		
 		var container = container_param || $("#main");
 		

@@ -18,7 +18,7 @@
 						self.trigger("property:changed", property, properties[property]);
 					}
 				});
-			}(property));
+			})(property);
 		}
 
 		// Define Model functions
@@ -48,4 +48,4 @@
 	
 	};
 	
-}(veda));
+})(veda);
