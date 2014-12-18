@@ -84,10 +84,10 @@ v-a:Event_1
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:script """
-
 var ff = get_property_chain (ticket, document, 'v-s:author', 'v-s:employee');
 if (ff)
 {
+//    print ('v-a:Event_1:author');
     var employee_uri = getUri (ff['field']);
     var first_doc = ff['first'];
     if (first_doc)
@@ -124,7 +124,6 @@ v-a:Event_2
   v-s:filter v-s:Position ;
   v-s:filter v-s:Appointment ;
   v-s:filter v-s:Person ;
-
   v-s:script """
 
 // print ('@@1 =', toJson (document));
@@ -146,8 +145,7 @@ v-a:Event_2
 	    }
 	    var res = put_individual (ticket, new_membership, _event_id);
 	    if (res != 200 && res != 1022)
-		print ('res=', res, ' @@1 =', toJson (new_membership));		
-	}
+		print ('res=', res, ' @@1 =', toJson (new_membership));			
 
 """ ;
   rdfs:comment "скрипт автоматической выдачи прав на чтение для оргструктуры + перенос атрибута v-s:deleted"@ru ;
