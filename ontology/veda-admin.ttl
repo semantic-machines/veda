@@ -158,15 +158,18 @@ v-a:Event_3
   v-s:author v-a:VedaSystemAccount ;
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:filter rdf:Property ;
+  v-s:filter rdfs:Class ;
+  v-s:filter rdfs:Datatype ;
+  v-s:filter owl:Class ;
+  v-s:filter owl:Ontology ;
+  v-s:filter owl:DatatypeProperty ;
+  v-s:filter owl:ObjectProperty ;
+  v-s:filter owl:Restriction ;
+  v-s:filter v-ui:ClassTemplate ;
+  v-s:filter v-ui:PropertySpecification ;
   v-s:script """
 
-    var type = document['rdf:type'];
-    if (type)
-    {
-	var prefix = type[0].data.split (':', 1);
-	if (prefix == 'owl' || prefix == 'rdf' || 
-	    prefix == 'rdfs')
-	{
 	    var doc_uri = document['@'];	
 	    var new_membership = 
 	    {
@@ -178,11 +181,9 @@ v-a:Event_3
 	    };
 
 	    put_individual (ticket, new_membership, _event_id);
-	}
-    }
 
 """ ;
-  rdfs:comment "скрипт автоматической выдачи прав на чтение для всех онтологий"@ru ;
+  rdfs:comment "скрипт автоматической выдачи прав на чтение для всех онтологий и UI настроек"@ru ;
   rdfs:label "Event_3"@en ;
   rdfs:label "Событие_3"@ru ;
 .
