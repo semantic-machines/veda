@@ -444,6 +444,7 @@ v-wf:startingMapping
 	rdfs:domain v-wf:Decomposition ;
 	rdfs:range v-wf:Mapping ;
 .
+
 # --------------------------- Process ---------------------------
 v-wf:Process
 	rdf:type rdfs:Class ;
@@ -479,6 +480,29 @@ v-wf:localVariable
 	rdfs:range v-wf:Variable ;
 .
 
+# --------------------------- WorkItem ---------------------------
+v-wf:WorkItem
+	rdf:type rdfs:Class ;
+	rdfs:label "выполняемая задача"@ru ;
+	rdfs:label "work item"@en ;
+.
+
+v-wf:forProcess
+	rdf:type rdf:Property ;
+	rdfs:label "относится к процессу"@ru ;
+	rdfs:label "for process"@en ;
+	rdfs:domain v-wf:WorkItem ;
+	rdfs:range v-wf:Process ;
+.
+
+v-wf:forNetElement
+	rdf:type rdf:Property ;
+	rdfs:label "относится к элементу сети"@ru ;
+	rdfs:label "for net element"@en ;
+	rdfs:domain v-wf:WorkItem ;
+	rdfs:range v-wf:NetElement ;
+.
+
 # --------------------------- обработка событий => docflow ---------------------------------------
 v-wf:Event_df1
 	rdf:type v-s:Event ;
@@ -501,7 +525,18 @@ v-wf:Event_df2
 	prepare_process (ticket, document);
 
 """ ;
-	rdfs:label "выполнения маршрута"@ru ;
+	rdfs:label "триггер выполнения маршрута"@ru ;
 .
 
+v-wf:Event_df3
+	rdf:type v-s:Event ;
+	v-s:author v-a:VedaSystemAccount ;
+	v-s:filter v-wf:WorkItem ;
+	v-s:script """
+
+	prepare_work_item (ticket, document);
+
+""" ;
+	rdfs:label "триггер выполнения элемента сети"@ru ;
+.
 

@@ -1,9 +1,9 @@
+veda-admin.ttl
 22-rdf-syntax-ns.ttl
 rdf-schema.ttl
 xsd.ttl
 owl.ttl
 veda-schema.ttl
-veda-admin.ttl
 veda-ui.ttl
 veda-workflow.ttl
 veda-index.ttl
