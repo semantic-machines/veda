@@ -834,4 +834,3 @@ mnd-d:ComplexRouteStartForm1
 	mnd-wf:ComplexRouteStartForm_reviewer mnd-d:ValeriyBushenev-Programmer1 ; 
 	mnd-wf:ComplexRouteStartForm_signer mnd-d:AndreyBychin-ExecutiveDirector ; 
 .
-#	v-wf:isProcess mnd-d:process2 ;

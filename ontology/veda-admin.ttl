@@ -168,6 +168,7 @@ v-a:Event_3
   v-s:filter owl:Restriction ;
   v-s:filter v-ui:ClassTemplate ;
   v-s:filter v-ui:PropertySpecification ;
+  v-s:filter v-ui:ClassTemplate ;
   v-s:script """
 
 	    var doc_uri = document['@'];	
