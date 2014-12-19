@@ -55,7 +55,7 @@ veda.Present(function Search(veda) { "use strict";
 	veda.on("search:complete", function (search, container_param) {
 		
 		if (search.results_count < currentPage * veda.user.displayedElements) 
-			currentPage = Math.floor(search.results_count / veda.user.displayedElements);
+			currentPage = Math.floor(search.results_count / veda.user.displayedElements) + 1 * (search.results_count % veda.user.displayedElements ? 1 : 0) - 1;
 		
 		var container = container_param || $("#main");
 		
