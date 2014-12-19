@@ -107,6 +107,7 @@
 						}
 					});
 					if (setter) setter(values[property_uri]);
+					self.trigger("individual:propertyModified", property_uri, values[property_uri]);
 					self.trigger("individual:propertyModified:" + property_uri, values[property_uri]);
 				},
 				
