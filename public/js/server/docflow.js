@@ -5,12 +5,63 @@
 */
 function prepare_work_item(ticket, document)
 {
-    print("### prepare_work_item:" + document['@']);
+    print("[WORKFLOW]: ### prepare_work_item:" + document['@']);
 
-    //    var fNet = document['v-wf:forProcess'];
-    //    var net = get_individual (ticket, getUri (fNet));
-    //    if (!net)
-    //	return;
+    var forProcess = getUri (document['v-wf:forProcess']);
+    var process = get_individual (ticket, forProcess);
+    if (!process)
+    	return;
+
+    print ("[WORKFLOW]:-------------------------------------------\r\n");
+    print ("[WORKFLOW]:Process:" + process['@']);
+
+    var forNetElement = document['v-wf:forNetElement'];
+    var netElement = get_individual (ticket, getUri (forNetElement));
+    if (!netElement)
+    	return;
+
+    print ("[WORKFLOW]:-------------------------------------------\r\n");
+    print ("[WORKFLOW]:NetElement:" + netElement['@']);
+
+    if (is_exist(netElement, 'rdf:type', 'v-wf:Task'))
+    {
+	print ("[WORKFLOW]:Is task");
+
+	// выполнить маппинг переменных	
+	var process_input_vars = create_and_mapping_input_variable (ticket, netElement, forProcess);
+
+//	    v-wf:inputVariable
+//    	    v-wf:startingMapping
+    }
+    else if (is_exist(netElement, 'rdf:type', 'v-wf:InputCondition'))
+    {
+	print ("[WORKFLOW]:Is input condition");
+	var hasFlows = netElement['v-wf:hasFlow'];
+
+	if (hasFlows)	
+	{
+	    for (var i = 0; i < hasFlows.length; i++)
+	    {
+		var flow = get_individual (ticket, hasFlows[i].data);
+		if (!flow)
+		    continue;
+
+		print ("[WORKFLOW]:-------------------------------------------\r\n");
+		print ("[WORKFLOW]:Flow: " + flow['@']);
+
+		var flowsInto = flow['v-wf:flowsInto'];
+		if (!flowsInto)
+		    continue;
+
+		var nextNetElement = get_individual (ticket, getUri (flowsInto));
+		
+		if (!nextNetElement)
+		    continue;
+
+		create_work_item (ticket, forProcess, nextNetElement['@'], _event_id);
+	    }
+	}
+    }
 
 }
 
@@ -19,7 +70,7 @@ function prepare_work_item(ticket, document)
 */
 function prepare_process(ticket, document)
 {
-    print("### prepare_process:" + document['@']);
+    print("[WORKFLOW]:### prepare_process:" + document['@']);
 
     //    var forNet = document['v-wf:instanceOf'];
     //var net = get_individual (ticket, getUri (forNet));
@@ -35,7 +86,7 @@ function prepare_process(ticket, document)
 */
 function prepare_start_form(ticket, document)
 {
-    print("### prepare_start_form #B _event_id=" + _event_id);
+    print("[WORKFLOW]:### prepare_start_form #B _event_id=" + _event_id);
 
     var new_process_uri = guid();
 
@@ -52,7 +103,7 @@ function prepare_start_form(ticket, document)
     if (!net)
         return;
 
-    var new_vars = [];
+//    var new_vars = [];
 
     var new_process = {
         '@': new_process_uri,
@@ -65,53 +116,8 @@ function prepare_start_form(ticket, document)
     };
 
     // сформируем входящие переменные
-    var process_input_vars = [];
-    var mapping = decomposition['v-wf:startingMapping'];
-    for (var i = 0; i < mapping.length; i++)
-    {
-        var map = get_individual(ticket, mapping[i].data);
-        var expression = getFirstValue(map['v-wf:mappingExpression']);
-        if (!expression)
-            continue;
+    var process_input_vars = create_and_mapping_input_variable (ticket, decomposition, new_process_uri);
 
-        var res = eval(expression);
-
-        var mapsTo = getUri(map['v-wf:mapsTo']);
-        if (!mapsTo)
-            continue;
-
-        var net_variable = get_individual(ticket, mapsTo);
-        if (!net_variable)
-            continue;
-
-        var variable_name = getFirstValue(net_variable['v-wf:variableName']);
-
-        var new_uri = guid();
-        var new_process_variable = {
-            '@': new_uri,
-            'rdf:type': [
-            {
-                data: 'v-wf:Variable',
-                type: _Uri
-            }],
-            'v-wf:variableName': [
-            {
-                data: variable_name,
-                type: _String
-            }],
-            'v-wf:variableValue': res
-        };
-
-        new_vars[variable_name] = new_process_variable;
-
-        put_individual(ticket, new_process_variable, _event_id);
-
-        process_input_vars.push(
-        {
-            data: new_uri,
-            type: _Uri
-        });
-    }
     if (process_input_vars.length > 0)
         new_process['v-wf:inputVariable'] = process_input_vars;
 
@@ -162,6 +168,7 @@ function prepare_start_form(ticket, document)
         type: _Uri
     }];
     put_individual(ticket, document, _event_id);
+    print("[WORKFLOW]:new_process:" + new_process['@']);
 
     var net_consistsOfz = net['v-wf:consistsOf'];
     if (net_consistsOfz)
@@ -174,33 +181,111 @@ function prepare_start_form(ticket, document)
 
             if (is_exist(net_consistsOf, 'rdf:type', 'v-wf:InputCondition'))
             {
-        	var new_uri = guid();
-        	var new_first_work_item = {
-                '@': new_uri,
-                'rdf:type': [
-                {
-                    data: 'v-wf:WorkItem',
-                    type: _Uri
-                }],
-                'v-wf:forProcess': [
-                {
-                    data: new_process_uri,
-                    type: _Uri
-                }],
-                'v-wf:forNetElement': [
-                {
-                    data: net_consistsOf['@'],
-                    type: _Uri
-                }]
-        	};
-
-                print("WORKFLOW:create work item:" + new_uri);
-
-		put_individual(ticket, new_first_work_item, _event_id);
+		create_work_item (ticket, new_process_uri, net_consistsOf['@'], _event_id);
 		break;
             }
         }
     }
-    print("### prepare_start_form #E");
+    print("[WORKFLOW]:### prepare_start_form #E");
 }
 
+function create_work_item (ticket, process_uri, net_element_uri, _event_id)
+{
+    var new_uri = guid();
+    var new_work_item = {
+        '@': new_uri,
+        'rdf:type': [
+        {
+            data: 'v-wf:WorkItem',
+            type: _Uri
+        }],
+        'v-wf:forProcess': [
+        {
+            data: process_uri,
+            type: _Uri
+        }],
+        'v-wf:forNetElement': [
+        {
+            data: net_element_uri,
+            type: _Uri
+        }]
+    };
+
+    print("[WORKFLOW]:create work item:" + new_uri);
+
+    put_individual(ticket, new_work_item, _event_id);
+}
+
+function create_and_mapping_input_variable (ticket, doc, process_uri)
+{
+    var process_input_vars = [];
+    var mapping = doc['v-wf:startingMapping'];
+    if (!mapping)
+	return [];
+
+    for (var i = 0; i < mapping.length; i++)
+    {
+        var map = get_individual(ticket, mapping[i].data);
+        var expression = getFirstValue(map['v-wf:mappingExpression']);
+        if (!expression)
+            continue;
+
+	
+	var net = new Net (process_uri);
+        var res = eval(expression);
+	
+	if (!res)
+	    continue;
+
+        var mapsTo = getUri(map['v-wf:mapsTo']);
+        if (!mapsTo)
+            continue;
+
+        var net_variable = get_individual(ticket, mapsTo);
+        if (!net_variable)
+            continue;
+
+        var variable_name = getFirstValue(net_variable['v-wf:variableName']);
+
+        var new_uri = guid();
+        var new_variable = {
+            '@': new_uri,
+            'rdf:type': [
+            {
+                data: 'v-wf:Variable',
+                type: _Uri
+            }],
+            'v-wf:variableName': [
+            {
+                data: variable_name,
+                type: _String
+            }],
+            'v-wf:variableValue': res
+        };
+
+//        new_vars[variable_name] = process_variable;
+
+        put_individual(ticket, new_variable, _event_id);
+
+	print ("[WORKFLOW]:create variable: " + new_uri);
+
+        process_input_vars.push(
+        {
+            data: new_uri,
+            type: _Uri
+        });
+    }
+
+    return process_input_vars;
+}
+
+function Net (_net_uri)
+{
+    this.net_uri = _net_uri;
+
+    this.getVariableValue = function (var_name)
+    {
+	print ("[WORKFLOW]:getVariableValue: process=" + this.net_uri + ", var_name=" + var_name);
+	return [ { data : 'test_value', type : _String}];        
+    }
+}
