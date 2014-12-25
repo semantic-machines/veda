@@ -28,7 +28,7 @@ function prepare_work_item(ticket, document)
 	print ("[WORKFLOW]:Is task");
 
 	// выполнить маппинг переменных	
-	var process_input_vars = create_and_mapping_input_variable (ticket, netElement, forProcess);
+	var process_input_vars = create_and_mapping_input_variable (ticket, netElement, process);
 
 //	    v-wf:inputVariable
 //    	    v-wf:startingMapping
@@ -116,7 +116,7 @@ function prepare_start_form(ticket, document)
     };
 
     // сформируем входящие переменные
-    var process_input_vars = create_and_mapping_input_variable (ticket, decomposition, new_process_uri);
+    var process_input_vars = create_and_mapping_input_variable (ticket, decomposition, new_process);
 
     if (process_input_vars.length > 0)
         new_process['v-wf:inputVariable'] = process_input_vars;
@@ -216,7 +216,7 @@ function create_work_item (ticket, process_uri, net_element_uri, _event_id)
     put_individual(ticket, new_work_item, _event_id);
 }
 
-function create_and_mapping_input_variable (ticket, doc, process_uri)
+function create_and_mapping_input_variable (ticket, doc, process)
 {
     var process_input_vars = [];
     var mapping = doc['v-wf:startingMapping'];
@@ -231,7 +231,7 @@ function create_and_mapping_input_variable (ticket, doc, process_uri)
             continue;
 
 	
-	var net = new Net (process_uri);
+	var net = new Net (process, ticket);
         var res = eval(expression);
 	
 	if (!res)
@@ -279,13 +279,32 @@ function create_and_mapping_input_variable (ticket, doc, process_uri)
     return process_input_vars;
 }
 
-function Net (_net_uri)
+function Net (_process, ticket)
 {
-    this.net_uri = _net_uri;
+    this.process = _process;
 
     this.getVariableValue = function (var_name)
     {
-	print ("[WORKFLOW]:getVariableValue: process=" + this.net_uri + ", var_name=" + var_name);
-	return [ { data : 'test_value', type : _String}];        
-    }
+        print ("[WORKFLOW]:getVariableValue: process=" + this.process['@'] + ", var_name=" + var_name);
+	var variables = this.process['v-wf:inputVariable'];
+	if (variables)
+	{
+    	    for (var i = 0; i < variables.length; i++)
+    	    {
+        	var variable = get_individual(ticket, variables[i].data);
+        	if (!variable)
+            	    continue;
+
+        	var variable_name = getFirstValue(variable['v-wf:variableName']);
+		if (variable_name == var_name)
+		{
+		    var val = variable['v-wf:variableValue'];
+
+		    print ("[WORKFLOW]:var found  getVariableValue: process=" + this.process['@'] + ", var_name=" + var_name + ", val=" + toJson (val));
+		    return val;        		    
+		}
+	    }
+
+	}
+    }    
 }

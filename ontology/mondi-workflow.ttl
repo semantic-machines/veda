@@ -140,7 +140,7 @@ mnd-wf:var_doc_id_t1
 mnd-wf:map_task_1_b
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t1 ;	
-	v-wf:mappingExpression	"net.getVariableValue ('doc_id')" ;
+	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
 .
 mnd-wf:f_t1_oc1
 	rdf:type v-wf:Flow ;
