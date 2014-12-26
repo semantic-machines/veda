@@ -27,11 +27,40 @@ function prepare_work_item(ticket, document)
     {
 	print ("[WORKFLOW]:Is task");
 
-	// выполнить маппинг переменных	
-	var process_input_vars = create_and_mapping_input_variable (ticket, netElement, process);
+	var executor_uri = getUri (netElement['v-wf:executor']);
+	if (!executor_uri)
+	    return;
 
-//	    v-wf:inputVariable
-//    	    v-wf:startingMapping
+	// выполнить маппинг переменных	
+	print ("task: mapping vars start");
+	var task_input_vars = create_and_mapping_input_variable (ticket, netElement, process);
+	print ("task: mapping vars end");
+        if (task_input_vars.length > 0)
+    	    document['v-wf:inputVariable'] = task_input_vars;
+
+	// взять исполнителя
+	var executor_uri = getUri (netElement['v-wf:executor']);
+
+	var executor = get_individual (ticket, executor_uri);
+	if (!executor)
+	    return;
+		
+	
+	if (is_exist(executor, 'rdf:type', 'v-s:Codelet'))
+	{
+	    print ("executor=" + executor_uri + ", is codelet");
+
+            var expression = getFirstValue(executor['v-s:script']);
+    	    if (!expression)
+        	return;
+
+    	    var task = new Context (document, ticket);
+
+    	    var res = eval(expression);
+	
+	    if (!res)
+		return;	    
+	}
     }
     else if (is_exist(netElement, 'rdf:type', 'v-wf:InputCondition'))
     {
@@ -115,13 +144,12 @@ function prepare_start_form(ticket, document)
         'v-wf:instanceOf': forNet
     };
 
-    // сформируем входящие переменные
+    // формируем входящие переменные
     var process_input_vars = create_and_mapping_input_variable (ticket, decomposition, new_process);
-
     if (process_input_vars.length > 0)
         new_process['v-wf:inputVariable'] = process_input_vars;
 
-    // сформируем локальные переменные	
+    // формируем локальные переменные	
     var process_local_vars = [];
     var net_local_variable = net['v-wf:localVariable'];
     if (net_local_variable)
@@ -216,10 +244,10 @@ function create_work_item (ticket, process_uri, net_element_uri, _event_id)
     put_individual(ticket, new_work_item, _event_id);
 }
 
-function create_and_mapping_input_variable (ticket, doc, process)
+function create_and_mapping_input_variable (ticket, mapping_src, work_item_with_variables)
 {
     var process_input_vars = [];
-    var mapping = doc['v-wf:startingMapping'];
+    var mapping = mapping_src['v-wf:startingMapping'];
     if (!mapping)
 	return [];
 
@@ -229,9 +257,9 @@ function create_and_mapping_input_variable (ticket, doc, process)
         var expression = getFirstValue(map['v-wf:mappingExpression']);
         if (!expression)
             continue;
-
 	
-	var net = new Net (process, ticket);
+	print ("[DOCFLOW]: expression=" + expression);
+	var net = new Context (work_item_with_variables, ticket);
         var res = eval(expression);
 	
 	if (!res)
@@ -279,19 +307,21 @@ function create_and_mapping_input_variable (ticket, doc, process)
     return process_input_vars;
 }
 
-function Net (_process, ticket)
+function Context (_work_item, _ticket)
 {
-    this.process = _process;
+    this.work_item = _work_item;
+    this.ticket = _ticket;
 
     this.getVariableValue = function (var_name)
     {
-        print ("[WORKFLOW]:getVariableValue: process=" + this.process['@'] + ", var_name=" + var_name);
-	var variables = this.process['v-wf:inputVariable'];
+//	print ("work_item=" + toJson (this.work_item));
+	var variables = this.work_item['v-wf:inputVariable'];
+	print ("variables=" + toJson (variables));
 	if (variables)
 	{
     	    for (var i = 0; i < variables.length; i++)
     	    {
-        	var variable = get_individual(ticket, variables[i].data);
+        	var variable = get_individual(this.ticket, variables[i].data);
         	if (!variable)
             	    continue;
 
@@ -300,11 +330,18 @@ function Net (_process, ticket)
 		{
 		    var val = variable['v-wf:variableValue'];
 
-		    print ("[WORKFLOW]:var found  getVariableValue: process=" + this.process['@'] + ", var_name=" + var_name + ", val=" + toJson (val));
+		    print ("[WORKFLOW]:getVariableValue: work_item=" + this.work_item['@'] + ", var_name=" + var_name + ", val=" + toJson (val));
 		    return val;        		    
 		}
 	    }
 
 	}
+        print ("[WORKFLOW]:getVariableValue: work_item=" + this.work_item['@'] + ", var_name=" + var_name + ", val=undefined");
     }    
 }
+
+function is_in_docflow (doc_id, ticket)
+{
+    print ("is_in_docflow, docId=", toJson (doc_id));
+}
+

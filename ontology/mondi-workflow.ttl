@@ -754,35 +754,12 @@ mnd-wf:net_agree
         rdfs:label "Маршрут подписание"@ru ;
 .
 
-# ------------------------------ CODELET : "запущен ли процесс" ------------------------------------- #
+# ------------------------------ CODELET : "запущен ли процесс по документу" ------------------------------------- #
 mnd-wf:codelet_is_run
 	rdf:type v-s:Codelet ;
-	rdfs:label "запущен ли процесс" ;
+	rdfs:label "запущен ли процесс по документу" ;
 	v-s:script """
-public Element execute(Element inData, List<YParameter> inParams, List<YParameter> outParams) throws CodeletExecutionException 
-{
-        // set the inputs passed in the base class
-        setInputs(inData, inParams, outParams);
-        
-        int max;
-        
-        try{
-            max = Integer.parseInt((String) getParameterValue("max"));
-        }
-        catch (ClassCastException cce) {
-            throw new CodeletExecutionException("Exception casting input values to " +
-                                                "int types.") ;
-        }
-                
-        //create a random number between 1 and max (input)
-        Random generator = new Random();
-        int r = generator.nextInt(max) + 1;
-        
-        //set the value for the output parameter
-        setParameterValue("r", String.valueOf(r));
-        
-        return getOutputData();
-};
+	is_in_docflow (task.getVariableValue ('docId'))	
 """ ;
 .
 	
