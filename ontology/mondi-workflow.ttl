@@ -146,13 +146,13 @@ mnd-wf:f_t1_oc1
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:oc1 ;
-	v-wf:predicate "true () ";
+	v-wf:predicate "res == true";
 .	
 mnd-wf:f_t1_t2
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t2 ;
-	v-wf:predicate "false ()" ;
+	v-wf:predicate "res == false" ;
 .	
 
 # ------------------------------- NET Complex Route : task "понизить права" ------------------------- #
@@ -759,7 +759,7 @@ mnd-wf:codelet_is_run
 	rdf:type v-s:Codelet ;
 	rdfs:label "запущен ли процесс по документу" ;
 	v-s:script """
-	is_in_docflow (task.getVariableValue ('docId'))	
+	is_in_docflow_and_set_if_true (net, task.getVariableValue ('docId'))	
 """ ;
 .
 	
