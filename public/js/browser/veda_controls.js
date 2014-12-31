@@ -117,11 +117,11 @@
 				.trigger("change");
 		});
 		
-		$("textarea", control)
+		/*$("textarea", control)
 			.autosize()
 			.on("focus", function (event) {
 				$(this).trigger("autosize.resize");
-			});
+			});*/
 
 		this.append(control);
 		return this;

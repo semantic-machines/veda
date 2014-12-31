@@ -16,7 +16,7 @@ var veda = {};
 
 			veda.AppModel.call(veda, arg);
 			
-			veda.RegisterModule(veda, veda);
+			//veda.RegisterModule(veda, veda);
 			
 			veda.on("ready", function() {
 				veda.Present.trigger("ready", veda);

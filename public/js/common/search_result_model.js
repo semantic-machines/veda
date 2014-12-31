@@ -2,19 +2,16 @@
 
 ;(function (veda) { "use strict";
 
-	veda.SearchResultModel = function (individual, container, template) {
+	veda.SearchResultModel = function (uri, container, template) {
 
-		var self = new veda.IndividualModel(individual);
-
-		self.off("*");
+		var individual = new veda.IndividualModel(uri);
 		
-		self.on("individual:loaded individual:reset individual:saved", function (event) {
-			veda.trigger("search_result:loaded", self, container, template);
-		});
+		var self = riot.observable( Object.create(individual) );
 		
 		veda.trigger("search_result:loaded", self, container, template);
 
 		return self;
+		
 	};
 
 })(veda);

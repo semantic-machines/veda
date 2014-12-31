@@ -58,6 +58,20 @@ veda.Present(function Document(veda) { "use strict";
 			templates = [ genericTemplate(document) ];
 		}
 		
+		/*templates.map(function (template) {
+			console.log(template);
+			template.on("DOMNodeRemoved", function (event) {
+				console.log(event.target, "removed");
+			});
+		});*/
+		
+		/*container.on("DOMNodeRemoved", function (event) {
+			console.log(event.target.toString(), "removed");
+			//event.target = null;
+			document.off("*");
+			document = null;
+		});*/
+		
 		// Clear previous handlers
 		document.off("view edit save cancel");
 
@@ -253,7 +267,9 @@ veda.Present(function Document(veda) { "use strict";
 					clone.append(clear);
 					clear.on("click", function () {
 						clone.fadeOut(250, function () { clone.remove() });
-						document[rel_uri] = document[rel_uri].filter(function (item) { return item != lnk });
+						document[rel_uri] = document[rel_uri].filter(function (item) { 
+							return item.id != lnk.id 
+						});
 						if (embedded.length) {
 							var index = embedded.indexOf(lnk);
 							if ( !(index<0) ) embedded.splice(index, 1);
