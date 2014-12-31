@@ -1,6 +1,6 @@
 // Search Presenter
 
-veda.Present(function Search(veda) { "use strict";
+veda.Module(function SearchPresenter(veda) { "use strict";
 
 	var template = $("#search-template").html();
 	var currentPage = 0;

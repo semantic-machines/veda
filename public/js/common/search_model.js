@@ -1,6 +1,6 @@
 // Search Model
 
-;(function (veda) { "use strict";
+veda.Module(function SearchModel(veda) { "use strict";
 
 	veda.SearchModel = function (q, container) {
 		var self = riot.observable(this);
@@ -79,4 +79,4 @@
 		return self;
 	};
 
-})(veda);
+});

@@ -1,6 +1,6 @@
 // Document Presenter
 
-veda.Present(function Document(veda) { "use strict";
+veda.Module(function DocumentPresenter(veda) { "use strict";
 	
 	var cnt = 0;
 	
@@ -267,9 +267,7 @@ veda.Present(function Document(veda) { "use strict";
 					clone.append(clear);
 					clear.on("click", function () {
 						clone.fadeOut(250, function () { clone.remove() });
-						document[rel_uri] = document[rel_uri].filter(function (item) { 
-							return item.id != lnk.id 
-						});
+						document[rel_uri] = document[rel_uri].filter(function (item) { return item.id != lnk.id });
 						if (embedded.length) {
 							var index = embedded.indexOf(lnk);
 							if ( !(index<0) ) embedded.splice(index, 1);

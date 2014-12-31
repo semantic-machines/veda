@@ -1,6 +1,6 @@
 // Module registrator
 
-;(function (veda) { "use strict";
+veda.Module(function (veda) { "use strict";
 
 	veda.RegisterModule = function (module, parent, name, params) {
 
@@ -18,4 +18,4 @@
 
 	};
 
-})(veda);
+});

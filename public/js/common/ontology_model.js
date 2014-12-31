@@ -1,6 +1,6 @@
 // Ontology Model
 
-;(function (veda) { "use strict";
+veda.Module(function OntologyModel(veda) { "use strict";
 
 	veda.OntologyModel = function () {
 
@@ -122,4 +122,4 @@
 			
 	};
 
-})(veda);
+});

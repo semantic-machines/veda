@@ -1,6 +1,6 @@
 // Console Model
 
-;(function (veda) { "use strict";
+veda.Module(function ConsoleModel(veda) { "use strict";
 	
 	veda.ConsoleModel = function () { 
 	
@@ -48,4 +48,4 @@
 	
 	};
 	
-})(veda);
+});

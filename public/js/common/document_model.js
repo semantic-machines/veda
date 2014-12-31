@@ -1,6 +1,6 @@
 // Document Model
 
-;(function (veda) { "use strict";
+veda.Module(function DocumentModel(veda) { "use strict";
 
 	veda.DocumentModel = function (uri, container, template, mode) {
 
@@ -21,4 +21,4 @@
 		return self;
 	};
 
-})(veda);
+});

@@ -1,6 +1,6 @@
 // Document Model
 
-;(function (veda) { "use strict";
+veda.Module(function IndividualModel(veda) { "use strict";
 
 	/* 
 	 * Параметр noCache используется для создания нового индивида, 
@@ -213,4 +213,4 @@
 		return self;
 	};
 
-})(veda);
+});

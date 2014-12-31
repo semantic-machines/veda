@@ -1,6 +1,6 @@
 // Search Result Presenter
 
-veda.Present(function SearchResult(veda) { "use strict";
+veda.Module(function SearchResultPresenter(veda) { "use strict";
 	
 	function renderIndividualProperty (veda, individual, property_uri, template, container) {
 		var label, uri, values;

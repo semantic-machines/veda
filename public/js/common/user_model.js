@@ -1,6 +1,6 @@
 // User Model
 
-;(function (veda) { "use strict";
+veda.Module(function UserModel(veda) { "use strict";
 
 	veda.UserModel = function (individual) {
 		
@@ -53,4 +53,4 @@
 		return self;
 	};
 
-})(veda);
+});

@@ -1,6 +1,6 @@
 // Veda application Presenter
 
-veda.Present(function App(veda) { "use strict";
+veda.Module(function AppPresenter(veda) { "use strict";
 
 	// Listen to logout click
 	$("#logout").on("click", function (e) {

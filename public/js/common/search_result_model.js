@@ -1,6 +1,6 @@
 // Search result Model
 
-;(function (veda) { "use strict";
+veda.Module(function SearchResultModel(veda) { "use strict";
 
 	veda.SearchResultModel = function (uri, container, template) {
 
@@ -14,4 +14,4 @@
 		
 	};
 
-})(veda);
+});

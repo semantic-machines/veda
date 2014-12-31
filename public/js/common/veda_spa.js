@@ -4,14 +4,14 @@
 var veda = {};
 
 ;(function (veda) { "use strict";
-	veda.Present = riot.observable(function(arg) {
+	veda.Module = riot.observable(function(arg) {
 		
-		// veda.Present(fn) --> add a new presenter
+		// veda.Module(fn) --> add a new module
 		if (typeof arg == 'function') {
 
-			veda.Present.on("ready", arg);
+			veda.Module.on("ready", arg);
 
-		// veda.Present(conf) --> initialize the application
+		// veda.Module(conf) --> initialize the application
 		} else {
 
 			veda.AppModel.call(veda, arg);
@@ -19,7 +19,7 @@ var veda = {};
 			//veda.RegisterModule(veda, veda);
 			
 			veda.on("ready", function() {
-				veda.Present.trigger("ready", veda);
+				veda.Module.trigger("ready", veda);
 			});
 
 			veda.trigger("ready");
