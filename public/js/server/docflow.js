@@ -12,8 +12,14 @@ function prepare_work_item(ticket, document)
     if (!process)
     	return;
 
+    var instanceOf = getUri (process['v-wf:instanceOf']);
+    var _net = get_individual (ticket, instanceOf);
+
+    if (!_net)
+    	return;
+
     print ("[WORKFLOW]:-------------------------------------------\r\n");
-    print ("[WORKFLOW]:Process:" + process['@']);
+    print ("[WORKFLOW]:Process=" + process['@'] + ", net=" + _net['@']);
 
     var forNetElement = document['v-wf:forNetElement'];
     var netElement = get_individual (ticket, getUri (forNetElement));
@@ -55,18 +61,60 @@ function prepare_work_item(ticket, document)
         	return;
 
     	    var task = new Context (document, ticket);
+    	    var net = new Context (_net, ticket);
 
     	    var res = eval(expression);
 	
-	    if (!res)
-		return;	    
+	    print ("res=" + toJson (res));
+
+//	    if (!res)
+//		return;	    
+
+	var hasFlows = netElement['v-wf:hasFlow'];
+	if (hasFlows)	
+	{
+	    for (var i = 0; i < hasFlows.length; i++)
+	    {
+		var flow = get_individual (ticket, hasFlows[i].data);
+		if (!flow)
+		    continue;
+
+		print ("[WORKFLOW]:-------------------------------------------\r\n");
+		print ("[WORKFLOW]:Flow: " + flow['@']);
+
+		var flowsInto = flow['v-wf:flowsInto'];
+		if (!flowsInto)
+		    continue;
+
+		var predicate = flow['v-wf:predicate'];
+
+		if (predicate)
+		{
+		    print ("predicate=" +  toJson (predicate));		
+        	    expression = getFirstValue(predicate);
+		    print ("expression=" +  toJson (expression));		
+    		    if (expression)
+		    {
+    			var res1 = eval(expression);
+			print ("res1=" +  res1);		
+			
+		    }
+		}
+//		var nextNetElement = get_individual (ticket, getUri (flowsInto));
+		
+//		if (!nextNetElement)
+//		    continue;
+
+//		create_work_item (ticket, forProcess, nextNetElement['@'], _event_id);
+	    }
+	}
+
 	}
     }
     else if (is_exist(netElement, 'rdf:type', 'v-wf:InputCondition'))
     {
 	print ("[WORKFLOW]:Is input condition");
 	var hasFlows = netElement['v-wf:hasFlow'];
-
 	if (hasFlows)	
 	{
 	    for (var i = 0; i < hasFlows.length; i++)
@@ -214,6 +262,7 @@ function prepare_start_form(ticket, document)
             }
         }
     }
+
     print("[WORKFLOW]:### prepare_start_form #E");
 }
 
@@ -251,6 +300,8 @@ function create_and_mapping_input_variable (ticket, mapping_src, work_item_with_
     if (!mapping)
 	return [];
 
+    var net = new Context (work_item_with_variables, ticket);
+
     for (var i = 0; i < mapping.length; i++)
     {
         var map = get_individual(ticket, mapping[i].data);
@@ -259,7 +310,6 @@ function create_and_mapping_input_variable (ticket, mapping_src, work_item_with_
             continue;
 	
 	print ("[DOCFLOW]: expression=" + expression);
-	var net = new Context (work_item_with_variables, ticket);
         var res = eval(expression);
 	
 	if (!res)
@@ -340,8 +390,25 @@ function Context (_work_item, _ticket)
     }    
 }
 
-function is_in_docflow (doc_id, ticket)
+function is_in_docflow_and_set_if_true (net, doc_id)
 {
-    print ("is_in_docflow, docId=", toJson (doc_id));
+    if (net && doc_id)
+    {
+	var net_doc_id = net.work_item['@'] + "_" + doc_id[0].data;
+	print ("is_in_docflow, find=", net_doc_id);
+
+    	var in_doc_flow = get_individual(net.ticket, net_doc_id);
+		
+	if (in_doc_flow)
+	    return true;
+	else
+	{
+    	    var new_doc = { '@': net_doc_id, 'rdf:type': [{data: 'v-wf:Variable',  type: _Uri }]};
+    	    put_individual(ticket, new_doc, _event_id);
+        }
+	    	
+    }
+    
+    return false;
 }
 
