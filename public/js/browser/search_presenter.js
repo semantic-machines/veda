@@ -10,7 +10,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		
 		var container = container_param || $("#main");
 		
-		container.hide();
+		container.empty().hide();
 		
 		// Get template
 		var rendered = riot.render(template, search);

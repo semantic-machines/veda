@@ -8,7 +8,7 @@ veda.Module(function UserPresenter(veda) { "use strict";
 	
 	veda.on("started", function () {
 
-		container.hide();
+		container.empty().hide();
 
 		// Render languages
 		var languages = ""
