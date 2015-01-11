@@ -43,7 +43,9 @@ function prepare_work_item(ticket, document) {
 		var executor = get_individual(ticket, executor_uri);
 		if (!executor) return;
 
+		var split = getUri(netElement['v-wf:split']);
 
+		// если исполнитель коделет
 		if (is_exist(executor, 'rdf:type', 'v-s:Codelet')) {
 			print("executor=" + executor_uri + ", is codelet");
 
@@ -55,11 +57,13 @@ function prepare_work_item(ticket, document) {
 
 			var res = eval(expression);
 
-			print("res=" + toJson(res));
+			print("eval res=" + toJson(res));
 
 			//	    if (!res)
 			//		return;	    
 
+			// определим переход на следующие задачи в зависимости от результата
+			// res должен быть использован при eval каждого из предикатов
 			var hasFlows = netElement['v-wf:hasFlow'];
 			if (hasFlows) {
 				for (var i = 0; i < hasFlows.length; i++) {
@@ -81,15 +85,19 @@ function prepare_work_item(ticket, document) {
 						if (expression) {
 							var res1 = eval(expression);
 							print("res1=" + res1);
+							if (res1 == true && split == 'v-wf:XOR')
+							{
+								// выполним переход по XOR условию								
+								var nextNetElement = get_individual (ticket, getUri (flowsInto));
 
+								if (nextNetElement)
+								{
+									print("create next work item for =" + nextNetElement['@']);
+									create_work_item (ticket, forProcess, nextNetElement['@'], _event_id);
+								}	
+							}	
 						}
 					}
-					//		var nextNetElement = get_individual (ticket, getUri (flowsInto));
-
-					//		if (!nextNetElement)
-					//		    continue;
-
-					//		create_work_item (ticket, forProcess, nextNetElement['@'], _event_id);
 				}
 			}
 
