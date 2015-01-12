@@ -146,13 +146,13 @@ mnd-wf:f_t1_oc1
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:oc1 ;
-	v-wf:predicate "res == true";
+	v-wf:predicate "result == true";
 .	
 mnd-wf:f_t1_t2
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t2 ;
-	v-wf:predicate "res == false" ;
+	v-wf:predicate "result == false" ;
 .	
 
 # ------------------------------- NET Complex Route : task "понизить права" ------------------------- #
@@ -185,7 +185,7 @@ mnd-wf:map_t2_b
 mnd-wf:map_t2_e
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_right_1 ;	
-	v-wf:mappingExpression	"context.getVariableValue ('rights')" ;
+	v-wf:mappingExpression	"result" ;
 .
 mnd-wf:f_t2_c1
 	rdf:type v-wf:Flow ;
