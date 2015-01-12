@@ -140,7 +140,7 @@ mnd-wf:var_doc_id_t1
 mnd-wf:map_task_1_b
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t1 ;	
-	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
+	v-wf:mappingExpression	"context.getVariableValue ('docId')" ;
 .
 mnd-wf:f_t1_oc1
 	rdf:type v-wf:Flow ;
@@ -180,12 +180,12 @@ mnd-wf:var_t2_rights
 mnd-wf:map_t2_b
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t2 ;	
-	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
+	v-wf:mappingExpression	"context.getVariableValue ('docId')" ;
 .
 mnd-wf:map_t2_e
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_right_1 ;	
-	v-wf:mappingExpression	"task.getVariableValue ('rights')" ;
+	v-wf:mappingExpression	"context.getVariableValue ('rights')" ;
 .
 mnd-wf:f_t2_c1
 	rdf:type v-wf:Flow ;
@@ -248,23 +248,23 @@ mnd-wf:var_t3_res
 mnd-wf:map_t3_b
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t3 ;	
-	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
+	v-wf:mappingExpression	"context.getVariableValue ('docId')" ;
 .
 mnd-wf:executor_def_1
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:script "net.getVariableValue ('coordinatorLevel1')" ;
+	v-s:script "context.getVariableValue ('coordinatorLevel1')" ;
 .
 mnd-wf:f_t3_c2
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c2 ;
-	v-wf:predicate "eval (net.result == false)";
+	v-wf:predicate "eval (result == false)";
 .	
 mnd-wf:f_t3_t4
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t4 ;
-	v-wf:predicate "eval (net.result == true)" ;
+	v-wf:predicate "eval (result == true)" ;
 .
 
 # ------------------------------- NET Complex Route : task "Согласование 2" ------------------------ #
@@ -294,23 +294,23 @@ mnd-wf:var_t4_res
 mnd-wf:map_t4_b
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t4 ;	
-	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
+	v-wf:mappingExpression	"context.getVariableValue ('docId')" ;
 .
 mnd-wf:executor_def_2
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:script "net.getVariableValue ('coordinatorLevel2')" ;
+	v-s:script "context.getVariableValue ('coordinatorLevel2')" ;
 .
 mnd-wf:f_t4_c2
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c2 ;
-	v-wf:predicate "eval (net.result == false)";
+	v-wf:predicate "eval (result == false)";
 .	
 mnd-wf:f_t4_t5
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t5 ;
-	v-wf:predicate "eval (net.result == true)" ;
+	v-wf:predicate "eval (result == true)" ;
 .
 
 # ------------------------------- NET Complex Route : task "Согласование 3" ------------------------ #
@@ -340,23 +340,23 @@ mnd-wf:var_t5_res
 mnd-wf:map_t5_b
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t5 ;	
-	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
+	v-wf:mappingExpression	"context.getVariableValue ('docId')" ;
 .
 mnd-wf:executor_def_3
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:script "net.getVariableValue ('coordinatorLevel3')" ;
+	v-s:script "context.getVariableValue ('coordinatorLevel3')" ;
 .
 mnd-wf:f_t5_c2
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c2 ;
-	v-wf:predicate "eval (net.result == false)";
+	v-wf:predicate "eval (result == false)";
 .	
 mnd-wf:f_t5_t6
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t6 ;
-	v-wf:predicate "eval (net.result == true)" ;
+	v-wf:predicate "eval (result == true)" ;
 .
 
 # ------------------------------- NET Complex Route : task "Подписание" ------------------------ #
@@ -386,23 +386,23 @@ mnd-wf:var_t6_res
 mnd-wf:map_t6_b
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t6 ;	
-	v-wf:mappingExpression	"net.getVariableValue (docId)" ;
+	v-wf:mappingExpression	"context.getVariableValue (docId)" ;
 .
 mnd-wf:executor_def_4
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:script "net.getVariableValue ('reviewer')" ;
+	v-s:script "context.getVariableValue ('reviewer')" ;
 .
 mnd-wf:f_t6_c2
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c2 ;
-	v-wf:predicate "eval (net.result == false)";
+	v-wf:predicate "eval (result == false)";
 .	
 mnd-wf:f_t6_t7
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t7 ;
-	v-wf:predicate "eval (net.result == true)" ;
+	v-wf:predicate "eval (result == true)" ;
 .
 
 # ------------------------------- NET Complex Route : task "Рассмотрение" ------------------------ #
@@ -432,23 +432,23 @@ mnd-wf:var_t7_res
 mnd-wf:map_t7_b
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t7 ;	
-	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
+	v-wf:mappingExpression	"context.getVariableValue ('docId')" ;
 .
 mnd-wf:executor_def_5
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:script "net.getVariableValue ('reviewer')" ;
+	v-s:script "context.getVariableValue ('reviewer')" ;
 .
 mnd-wf:f_t7_c2
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c2 ;
-	v-wf:predicate "eval (net.result == false)";
+	v-wf:predicate "eval (result == false)";
 .	
 mnd-wf:f_t7_c3
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c3 ;
-	v-wf:predicate "eval (net.result == true)" ;
+	v-wf:predicate "eval (result == true)" ;
 .
 
 # ------------------------------- NET Complex Route : task "Доработать" ------------------------ #
@@ -478,23 +478,23 @@ mnd-wf:var_t8_res
 mnd-wf:map_t8_b
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t8 ;	
-	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
+	v-wf:mappingExpression	"context.getVariableValue ('docId')" ;
 .
 mnd-wf:executor_def_6
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:script "net.getVariableValue ('initiator')" ;
+	v-s:script "context.getVariableValue ('initiator')" ;
 .
 mnd-wf:f_t8_c3
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c3 ;
-	v-wf:predicate "eval (net.result == false)" ;
+	v-wf:predicate "eval (result == false)" ;
 .	
 mnd-wf:f_t8_c1
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c1 ;
-	v-wf:predicate "eval (net.result == true)" ;
+	v-wf:predicate "eval (result == true)" ;
 .
 
 # ------------------------------- NET Complex Route : condition 3 ---------------------------------- #
@@ -537,12 +537,12 @@ mnd-wf:var_t9_right
 mnd-wf:map_t9_b1
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t9 ;	
-	v-wf:mappingExpression	"net.getVariableValue ('docId')" ;
+	v-wf:mappingExpression	"context.getVariableValue ('docId')" ;
 .
 mnd-wf:map_t9_b2
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_t9_right ;	
-	v-wf:mappingExpression	"net.getVariableValue ('originalRight')" ;
+	v-wf:mappingExpression	"context.getVariableValue ('originalRight')" ;
 .
 mnd-wf:f_t9_oc1
 	rdf:type v-wf:Flow ;
