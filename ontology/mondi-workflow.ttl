@@ -768,10 +768,7 @@ mnd-wf:codelet_down_right
 	rdf:type v-s:Codelet ;
 	rdfs:label "понизить права" ;
 	v-s:script """
-public Element execute(Element inData, List<YParameter> inParams, List<YParameter> outParams) throws CodeletExecutionException 
-{
-        return getOutputData();
-};
+	down_right_and_store (net, task.getVariableValue ('docId'))	
 """ ;
 .	
 
