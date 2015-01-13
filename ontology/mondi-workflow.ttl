@@ -140,7 +140,7 @@ mnd-wf:var_doc_id_t1
 mnd-wf:map_task_1_b
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t1 ;	
-	v-wf:mappingExpression	"context.getVariableValue ('docId')" ;
+	v-wf:mappingExpression	"process.getVariableValue ('docId')" ;
 .
 mnd-wf:f_t1_oc1
 	rdf:type v-wf:Flow ;
@@ -180,12 +180,12 @@ mnd-wf:var_t2_rights
 mnd-wf:map_t2_b
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t2 ;	
-	v-wf:mappingExpression	"context.getVariableValue ('docId')" ;
+	v-wf:mappingExpression	"process.getVariableValue ('docId')" ;
 .
 mnd-wf:map_t2_e
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_right_1 ;	
-	v-wf:mappingExpression	"result" ;
+	v-wf:mappingExpression	"task.getVariableValue ('right')";
 .
 mnd-wf:f_t2_c1
 	rdf:type v-wf:Flow ;
@@ -226,7 +226,6 @@ mnd-wf:t3
 	rdf:type v-wf:Task ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	rdfs:label "Согласование 1" ;
-	v-wf:executor mnd-wf:executor_def_1 ;
 	v-wf:subNet mnd-wf:net_agree;
 	v-wf:locationX "272"^^xsd:integer ;
 	v-wf:locationY "332"^^xsd:integer ;
@@ -234,37 +233,44 @@ mnd-wf:t3
 	v-wf:hasFlow mnd-wf:f_t3_t4 ;
 	v-wf:split v-wf:XOR ;	
 	v-wf:inputVariable mnd-wf:var_doc_id_t3 ;
+	v-wf:inputVariable mnd-wf:var_coordinator_t3 ;
 	v-wf:outputVariable mnd-wf:var_t3_res ;
-	v-wf:startingMapping mnd-wf:map_t3_b ;
+	v-wf:startingMapping mnd-wf:map_t3_b1 ;
+	v-wf:startingMapping mnd-wf:map_t3_b2 ;
 .
 mnd-wf:var_doc_id_t3
         rdf:type v-wf:Variable ;
 	v-wf:variableName "docId" ;
 .
+mnd-wf:var_doc_id_t3
+        rdf:type v-wf:Variable ;
+	v-wf:variableName "coordinator" ;
+.
 mnd-wf:var_t3_res
         rdf:type v-wf:Variable ;
 	v-wf:variableName "result" ;
 .
-mnd-wf:map_t3_b
+mnd-wf:map_t3_b1
 	rdf:type v-wf:Mapping ;
 	v-wf:mapsTo mnd-wf:var_doc_id_t3 ;	
-	v-wf:mappingExpression	"context.getVariableValue ('docId')" ;
+	v-wf:mappingExpression	"process.getVariableValue ('docId')" ;
 .
-mnd-wf:executor_def_1
-	rdf:type v-wf:ExecutorDefinition ;
-	v-s:script "process.getVariableValue ('coordinatorLevel1')" ;
+mnd-wf:map_t3_b2
+	rdf:type v-wf:Mapping ;
+	v-wf:mapsTo mnd-wf:var_coordinator_t3 ;	
+	v-wf:mappingExpression	"process.getVariableValue ('coordinatorLevel1')" ;
 .
 mnd-wf:f_t3_c2
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:c2 ;
-	v-wf:predicate "eval (result == false)";
+	v-wf:predicate "result == false";
 .	
 mnd-wf:f_t3_t4
 	rdf:type v-wf:Flow ;
 	v-wf:belongsTo mnd-wf:net_complex_route ;
 	v-wf:flowsInto mnd-wf:t4 ;
-	v-wf:predicate "eval (result == true)" ;
+	v-wf:predicate "result == true" ;
 .
 
 # ------------------------------- NET Complex Route : task "Согласование 2" ------------------------ #
@@ -759,7 +765,7 @@ mnd-wf:codelet_is_run
 	rdf:type v-s:Codelet ;
 	rdfs:label "запущен ли процесс по документу" ;
 	v-s:script """
-	is_in_docflow_and_set_if_true (net, task.getVariableValue ('docId'))	
+	is_in_docflow_and_set_if_true (process, task)	
 """ ;
 .
 	
@@ -768,7 +774,7 @@ mnd-wf:codelet_down_right
 	rdf:type v-s:Codelet ;
 	rdfs:label "понизить права" ;
 	v-s:script """
-	down_right_and_store (net, task.getVariableValue ('docId'))	
+	down_right_and_store (process, task)	
 """ ;
 .	
 

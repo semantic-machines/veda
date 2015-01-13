@@ -33,7 +33,7 @@ function prepare_work_item(ticket, document)
 
         // выполнить маппинг переменных	
         print("[WORKFLOW] task: start mapping vars");
-        var task_input_vars = create_and_mapping_variables(ticket, netElement['v-wf:startingMapping'], process, null);
+        var task_input_vars = create_and_mapping_variables(ticket, netElement['v-wf:startingMapping'], process, document, null);
         if (task_input_vars.length > 0) document['v-wf:inputVariable'] = task_input_vars;
 
         // взять исполнителя
@@ -53,12 +53,12 @@ function prepare_work_item(ticket, document)
             print("[WORKFLOW] expression=" + expression);
 
             var task = new Context(document, ticket);
-            var net = new Context(_net, ticket);
+            //var net = new Context(_net, ticket);
 
             var result = eval(expression);
 
             print("[WORKFLOW] task: complete mapping vars, eval result=", toJson(result));
-            var task_output_vars = create_and_mapping_variables(ticket, netElement['v-wf:completedMapping'], document, result, null);
+            var task_output_vars = create_and_mapping_variables(ticket, netElement['v-wf:completedMapping'], process, document, result);
             if (task_output_vars.length > 0) document['v-wf:outputVariable'] = task_output_vars;
 
             //	    if (!res)
@@ -139,7 +139,7 @@ function prepare_work_item(ticket, document)
             var task = new Context(document, ticket);
             //            var net = new Context(_net, ticket);
             var process = new Context(process, ticket);
-            var context = task;
+            //var context = task;
 
             var result = eval(expression);
 
@@ -251,7 +251,7 @@ function prepare_start_form(ticket, document)
     };
 
     // формируем входящие переменные
-    var process_input_vars = create_and_mapping_variables(ticket, decomposition['v-wf:startingMapping'], new_process);
+    var process_input_vars = create_and_mapping_variables(ticket, decomposition['v-wf:startingMapping'], new_process, null, null);
     if (process_input_vars.length > 0) new_process['v-wf:inputVariable'] = process_input_vars;
 
     // формируем локальные переменные	
@@ -382,12 +382,13 @@ function Context(_work_item, _ticket)
     }
 }
 
-function create_and_mapping_variables(ticket, mapping, work_item_with_variables, result)
+function create_and_mapping_variables(ticket, mapping, process, task, result)
 {
     var new_vars = [];
     if (!mapping) return [];
 
-    var context = new Context(work_item_with_variables, ticket);
+    var process = new Context(process, ticket);
+    var task = new Context(task, ticket);
 
     for (var i = 0; i < mapping.length; i++)
     {
@@ -402,10 +403,10 @@ function create_and_mapping_variables(ticket, mapping, work_item_with_variables,
         var mapsTo = getUri(map['v-wf:mapsTo']);
         if (!mapsTo) continue;
 
-        var net_variable = get_individual(ticket, mapsTo);
-        if (!net_variable) continue;
+        var dest_variable = get_individual(ticket, mapsTo);
+        if (!dest_variable) continue;
 
-        var variable_name = getFirstValue(net_variable['v-wf:variableName']);
+        var variable_name = getFirstValue(dest_variable['v-wf:variableName']);
 
         var new_uri = guid();
         var new_variable = {
@@ -438,33 +439,43 @@ function create_and_mapping_variables(ticket, mapping, work_item_with_variables,
 }
 
 
-function down_right_and_store(net, doc_id)
+function down_right_and_store(process, task)
 {
-    if (net && doc_id)
+    var doc_id = task.getVariableValue('docId');
+
+    if (doc_id)
     {
-        var net_doc_id = net.work_item['@'] + "_" + doc_id[0].data;
+        var instanceOf = getUri(process['v-wf:instanceOf']);
+
+        var net_doc_id = instanceOf + "_" + doc_id[0].data;
         print("[WORKFLOW] down_right_and_store, find=", net_doc_id);
-
-
 
     }
     return {
-        'test0': [
+        'right1': [
             {
-                data: 'test1',
+                data: 'acl1',
                 type: _String
                 }]
     };
 }
 
-function is_in_docflow_and_set_if_true(net, doc_id)
+function is_in_docflow_and_set_if_true(process, task)
 {
-    if (net && doc_id)
-    {
-        var net_doc_id = net.work_item['@'] + "_" + doc_id[0].data;
-        print("[WORKFLOW] is_in_docflow, find=", net_doc_id);
+    if (!task)
+        return false;
 
-        var in_doc_flow = get_individual(net.ticket, net_doc_id);
+    //	print ("Process="+toJson (process));
+
+    var doc_id = task.getVariableValue('docId');
+    if (doc_id)
+    {
+        var instanceOf = getUri(process['v-wf:instanceOf']);
+
+        var net_doc_id = instanceOf + "_" + doc_id[0].data;
+        print("[WORKFLOW] is_in_docflow_and_set_if_true, find=", net_doc_id);
+
+        var in_doc_flow = get_individual(process.ticket, net_doc_id);
 
         if (in_doc_flow) return true;
         else
@@ -477,7 +488,7 @@ function is_in_docflow_and_set_if_true(net, doc_id)
                         type: _Uri
                 }]
             };
-            put_individual(ticket, new_doc, _event_id);
+            put_individual(process.ticket, new_doc, _event_id);
         }
 
     }
