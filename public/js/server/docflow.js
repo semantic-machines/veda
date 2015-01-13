@@ -1,7 +1,10 @@
 "use strict";
 
 /*
-    обработка элемента сети
+*   обработка элемента сети
+* 
+*	TODO:	разделить обработку work_item на две части, (1) подготовка для executer или subnet данных и 
+* 			(2) обработка результатов, ветвление 
 */
 function prepare_work_item(ticket, document)
 {
@@ -28,9 +31,6 @@ function prepare_work_item(ticket, document)
     {
         print("[WORKFLOW]:Is task");
 
-        var executor_uri = getUri(netElement['v-wf:executor']);
-        if (!executor_uri) return;
-
         // выполнить маппинг переменных	
         print("[WORKFLOW] task: start mapping vars");
         var task_input_vars = create_and_mapping_variables(ticket, netElement['v-wf:startingMapping'], process, document, null);
@@ -40,7 +40,17 @@ function prepare_work_item(ticket, document)
         var executor_uri = getUri(netElement['v-wf:executor']);
 
         var executor = get_individual(ticket, executor_uri);
-        if (!executor) return;
+        if (!executor)
+        {
+            var subNet_uri = getUri(netElement['v-wf:subNet']);
+            if (subNet_uri)
+            {
+                // запустить подсеть
+                print("[WORKFLOW] is subNet=" + subNet_uri);
+            }
+            
+            return;
+        }
 
         // если исполнитель коделет
         if (is_exist(executor, 'rdf:type', 'v-s:Codelet'))
@@ -210,10 +220,10 @@ function prepare_process(ticket, document)
 {
     print("[WORKFLOW]:### prepare_process:" + document['@']);
 
-    //    var forNet = document['v-wf:instanceOf'];
-    //var net = get_individual (ticket, getUri (forNet));
-    //    if (!net)
-    //	return;
+    //		var forNet = document['v-wf:instanceOf'];
+    //		var net = get_individual (ticket, getUri (forNet));
+    //		if (!net)
+    //		return;
 }
 
 /*
