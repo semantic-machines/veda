@@ -2,14 +2,14 @@
 
 veda.Module(function UserModel(veda) { "use strict";
 
-	veda.UserModel = function (individual) {
+	veda.UserModel = function (uri) {
 		
 		var defaults = {
 			language : {"RU": veda.availableLanguages["RU"]},
 			displayedElements : 10
 		};
 		
-		var self = new veda.IndividualModel(individual);
+		var self = new veda.IndividualModel(uri);
 		
 		try { 
 			self.preferences = self["v-ui:hasPreferences"][0];

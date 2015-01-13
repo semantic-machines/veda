@@ -17,7 +17,7 @@ riot.observable = function(el) {
     }
     
     //Karpovr:DEBUG
-    el.handlers = callbacks;
+    el._events = callbacks;
     
     return el;
   };
@@ -34,6 +34,10 @@ riot.observable = function(el) {
         callbacks[name] = [];
       });
     }
+    
+    //Karpovr:DEBUG
+    el._events = callbacks;
+    
     return el;
   };
 
