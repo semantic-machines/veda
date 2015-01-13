@@ -4,6 +4,7 @@ veda.Module(function SearchModel(veda) { "use strict";
 
 	veda.SearchModel = function (q, container) {
 		var self = riot.observable(this);
+		var results_keys;
 
 		// Define Model data setters & getters
 		var properties = {q:undefined, results:{}, results_count:undefined, selected:{}};
@@ -21,20 +22,20 @@ veda.Module(function SearchModel(veda) { "use strict";
 		}
 
 		self.toggleSelected = function (i) {
-			if (!self.results[i]) return self.selected;
-			if (self.results[i].id in self.selected) {
-				delete self.selected[self.results[i].id];
+			if (!self.results[ results_keys[i] ]) return self.selected;
+			if (self.results[ results_keys[i] ].id in self.selected) {
+				delete self.selected[self.results[ results_keys[i] ].id];
 			} else {
-				self.selected[self.results[i].id] = self.results[i];
+				self.selected[self.results[ results_keys[i] ].id] = self.results[ results_keys[i] ];
 			}
-			self.trigger("search:selected", self.results[i], self.selected);
+			self.trigger("search:selected", self.results[ results_keys[i] ], self.selected);
 			return self.selected;
 		}
 
 		self.toggleAll = function () {
 			if (Object.keys(self.selected).length != self.results_count) {
 				for (var i=0; i < self.results_count; i++) {
-					self.selected[self.results[i].id] = self.results[i];
+					self.selected[self.results[ results_keys[i] ].id] = self.results[ results_keys[i] ];
 				}
 			} else {
 				self.selected = {};
@@ -52,15 +53,16 @@ veda.Module(function SearchModel(veda) { "use strict";
 			var results = query(veda.ticket, self.q);
 			for (var i in results) {
 				(function(i){
-					Object.defineProperty(self.results, i, {
+					Object.defineProperty(self.results, results[i], {
 						get: function () { 
 							if (typeof results[i] == 'object') return results[i];
-							return results[i] = new veda.SearchResultModel(results[i]);
+							return results[i] = new veda.IndividualModel(results[i]);
 						}
 					});
 				})(i);
 			}
 			self.results_count = results.length;
+			results_keys = Object.getOwnPropertyNames(self.results);
 			self.trigger("search:complete");
 
 		};

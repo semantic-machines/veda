@@ -80,6 +80,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		$("#pager", container).empty();
 		
 		// Show results
+		var keys = Object.getOwnPropertyNames(search.results);
 		for (var i = currentPage * veda.user.displayedElements; i < (currentPage + 1) * veda.user.displayedElements && i < search.results_count; i++) {
 			(function (i) { 
 				setTimeout(function () {
@@ -92,8 +93,8 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 						search.toggleSelected(i);
 					});
 					$li.append( $select );
-
-					var search_result = new veda.SearchResultModel(search.results[i], $li);
+					
+					var search_result = new veda.SearchResultModel(search.results[ keys[i] ], $li);
 					if (search_result.id in search.selected) $("input", $select).attr("checked", "checked");
 
 				}, 0);
