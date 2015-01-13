@@ -829,6 +829,7 @@ mnd-d:ComplexRouteStartForm1
 	v-wf:processInitiator mnd-d:RomanKarpov-Analyst1 ; 
 	v-wf:useDecomposition mnd-wf:decomposition1 ;
 	mnd-wf:ComplexRouteStartForm_coordinator1 mnd-d:RomanKarpov-Analyst1 ; 
+	mnd-wf:ComplexRouteStartForm_coordinator1 mnd-d:ValeriyBushenev-Programmer1 ; 
 	mnd-wf:ComplexRouteStartForm_coordinator2 mnd-d:ValeriyBushenev-Programmer1 ; 
 	mnd-wf:ComplexRouteStartForm_coordinator3 mnd-d:AndreyBychin-ExecutiveDirector ; 
 	mnd-wf:ComplexRouteStartForm_reviewer mnd-d:ValeriyBushenev-Programmer1 ; 

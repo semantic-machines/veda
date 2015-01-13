@@ -252,7 +252,7 @@ mnd-wf:map_t3_b
 .
 mnd-wf:executor_def_1
 	rdf:type v-wf:ExecutorDefinition ;
-	v-s:script "context.getVariableValue ('coordinatorLevel1')" ;
+	v-s:script "process.getVariableValue ('coordinatorLevel1')" ;
 .
 mnd-wf:f_t3_c2
 	rdf:type v-wf:Flow ;

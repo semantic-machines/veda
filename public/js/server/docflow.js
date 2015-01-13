@@ -33,7 +33,7 @@ function prepare_work_item(ticket, document)
 
         // выполнить маппинг переменных	
         print("[WORKFLOW] task: start mapping vars");
-        var task_input_vars = create_and_mapping_variables(ticket, netElement['v-wf:startingMapping'], process);
+        var task_input_vars = create_and_mapping_variables(ticket, netElement['v-wf:startingMapping'], process, null);
         if (task_input_vars.length > 0) document['v-wf:inputVariable'] = task_input_vars;
 
         // взять исполнителя
@@ -57,9 +57,9 @@ function prepare_work_item(ticket, document)
 
             var result = eval(expression);
 
-            print("[WORKFLOW] task: complete mapping vars, eval result=", result);
-            var task_output_vars = create_and_mapping_variables(ticket, netElement['v-wf:completedMapping'], document);
-			if (task_output_vars.length > 0) document['v-wf:outputVariable'] = task_output_vars;
+            print("[WORKFLOW] task: complete mapping vars, eval result=", toJson(result));
+            var task_output_vars = create_and_mapping_variables(ticket, netElement['v-wf:completedMapping'], document, result, null);
+            if (task_output_vars.length > 0) document['v-wf:outputVariable'] = task_output_vars;
 
             //	    if (!res)
             //		return;	    
@@ -126,6 +126,25 @@ function prepare_work_item(ticket, document)
             }
 
         } // end [is codelet]
+        else if (is_exist(executor, 'rdf:type', 'v-wf:ExecutorDefinition'))
+        {
+            // определение исполнителей посредством скрипта
+            print("[WORKFLOW] executor=" + executor_uri + ", not defined");
+
+            var expression = getFirstValue(executor['v-s:script']);
+            if (!expression) return;
+
+            print("[WORKFLOW] expression=" + expression);
+
+            var task = new Context(document, ticket);
+            //            var net = new Context(_net, ticket);
+            var process = new Context(process, ticket);
+            var context = task;
+
+            var result = eval(expression);
+
+            print("[WORKFLOW] task: cv-wf:ExecutorDefinition=", toJson(result));
+        }
         else
         {
             // is user task
@@ -346,14 +365,14 @@ function Context(_work_item, _ticket)
                 if (!variable) continue;
 
                 var variable_name = getFirstValue(variable['v-wf:variableName']);
-                
-                print("[WORKFLOW]:getVariableValue #0: work_item=" + this.work_item['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
-                
+
+                //print("[WORKFLOW]:getVariableValue #0: work_item=" + this.work_item['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
+
                 if (variable_name == var_name)
                 {
                     var val = variable['v-wf:variableValue'];
 
-                    print("[WORKFLOW]:getVariableValue #1: work_item=" + this.work_item['@'] + ", var_name=" + var_name + ", val=" + toJson(val));
+                    print("[WORKFLOW]:getVariableValue #1: work_item=" + this.work_item['@'] + ", var_name=" + var_name + ", val=" + toJson(val)); // + ", variable=" + toJson (variable));
                     return val;
                 }
             }
@@ -363,7 +382,7 @@ function Context(_work_item, _ticket)
     }
 }
 
-function create_and_mapping_variables(ticket, mapping, work_item_with_variables)
+function create_and_mapping_variables(ticket, mapping, work_item_with_variables, result)
 {
     var new_vars = [];
     if (!mapping) return [];
@@ -380,8 +399,6 @@ function create_and_mapping_variables(ticket, mapping, work_item_with_variables)
         var res1 = eval(expression);
         if (!res1) continue;
 
-        print("[DOCFLOW][create_and_mapping_variables]#1: expression=" + expression);
-        
         var mapsTo = getUri(map['v-wf:mapsTo']);
         if (!mapsTo) continue;
 
@@ -406,9 +423,9 @@ function create_and_mapping_variables(ticket, mapping, work_item_with_variables)
             'v-wf:variableValue': res1
         };
 
-        put_individual(ticket, new_variable, _event_id);
+        print("[WORKFLOW][create_and_mapping_variables]: new variable: " + toJson(new_variable));
 
-        print("[WORKFLOW][create_and_mapping_variables]: new variable: " + toJson (new_variable));
+        put_individual(ticket, new_variable, _event_id);
 
         new_vars.push(
         {
@@ -431,7 +448,13 @@ function down_right_and_store(net, doc_id)
 
 
     }
-    return "-2--4-";
+    return {
+        'test0': [
+            {
+                data: 'test1',
+                type: _String
+                }]
+    };
 }
 
 function is_in_docflow_and_set_if_true(net, doc_id)
