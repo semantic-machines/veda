@@ -190,6 +190,15 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			document[rel_uri].map( function (value) {renderValue (value, mode)} );
 		}
 		
+		// Re-render link if its' values were changed elsewhere
+		/*function rerenderLink (docRel_uri, docValues) {
+			if (docRel_uri === rel_uri) {
+				document.off("document:propertyModified", rerenderLink);
+				renderLink (document, rel_uri, relContainer, relTemplate, mode, embedded);
+			}
+		}
+		document.on("document:propertyModified", rerenderLink);*/
+		
 		var control = $( $("#link-control-template").html() );
 		if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
 			$(".add", control).on("click", function () {
@@ -300,7 +309,16 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			controlType, emptyVal;
 		
 		if ( !document[property_uri] ) document.defineProperty(property_uri);
-		var values = document[property_uri].filter(function(){return true});
+		var values = document[property_uri];//.filter(function(){return true}); // important!
+
+		// Re-render property if its' values were changed elsewhere
+		function rerenderProperty (docProperty_uri, docValues) {
+			if (docProperty_uri === property_uri) {
+				document.off("document:propertyModified", rerenderProperty);
+				renderProperty (document, property_uri, container, mode);
+			}
+		}
+		document.on("document:propertyModified", rerenderProperty);
 		
 		var range = property["rdfs:range"][0].id;
 		range == "xsd:boolean"  			? 	(controlType = $.fn.vedaBoolean,  emptyVal = new Boolean(false) ) :
@@ -317,16 +335,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			item.trigger(mode);
 		});
 		
-		// Re-render property if its' values were changed elsewhere
-		function rerender (docProperty_uri, docValues) {
-			if (docProperty_uri === property_uri && docValues !== values) {
-				document.off("document:propertyModified", rerender);
-				renderProperty (document, property_uri, container, mode);
-			}
-		}
-		document.on("document:propertyModified", rerender);
-		
-		document.on("view edit", function (mode) {
+		document.on("view edit", function (_mode) {
+			mode = _mode;
 			controls
 				.filter(function (item) {
 					return !!item;
@@ -350,8 +360,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					control.trigger("edit");
 				},
 				remove: function () {
-					values[index] = undefined;
-					controls[index] = undefined;
+					delete values[index];
+					delete controls[index];
 					document[property_uri] = values;
 				}
 			}
