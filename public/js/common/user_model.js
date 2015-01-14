@@ -25,17 +25,19 @@ veda.Module(function UserModel(veda) { "use strict";
 			self.displayedElements = defaults.displayedElements;
 		}
 
-		self.preferences.on("individual:propertyModified", function (property_uri, values) {
-			if (property_uri === "v-ui:displayedElements") {
-				self.displayedElements = values[0];
-			} 
-			if (property_uri === "v-ui:preferredLanguage") {
-				self.language = values.reduce( function (acc, lang) {
-					acc[lang["rdf:value"][0]] = veda.availableLanguages[lang["rdf:value"][0]];
-					return acc;
-				}, {} );
-			}
-		});
+		if (self.preferences) { 
+			self.preferences.on("individual:propertyModified", function (property_uri, values) {
+				if (property_uri === "v-ui:displayedElements") {
+					self.displayedElements = values[0];
+				} 
+				if (property_uri === "v-ui:preferredLanguage") {
+					self.language = values.reduce( function (acc, lang) {
+						acc[lang["rdf:value"][0]] = veda.availableLanguages[lang["rdf:value"][0]];
+						return acc;
+					}, {} );
+				}
+			});
+		}
 		
 		self.toggleLanguage = function(language_val) {
 			
