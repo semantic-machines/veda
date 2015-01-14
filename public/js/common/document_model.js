@@ -8,12 +8,28 @@ veda.Module(function DocumentModel(veda) { "use strict";
 		
 		var self = riot.observable( Object.create(individual) );
 		
-		individual.on("individual:afterReset", function (event) {
-			veda.trigger("document:loaded", self, container, template);
-		});
+		self.cancel = function () {
+			self.reset();
+			self.trigger("document:cleanup");
+			self = new veda.DocumentModel(uri, container, template, mode);
+		}
 
-		individual.on("individual:typeChanged", function (event) {
+		function typeChangedHandler () {
 			veda.trigger("document:loaded", self, container, template, mode);
+		}
+
+		function propertyModifiedHandler (property_uri, values) {
+			self.trigger("document:propertyModified", property_uri, values);
+		}
+		
+		individual.on("individual:propertyModified", propertyModifiedHandler);
+		individual.on("individual:typeChanged", typeChangedHandler);
+		
+		self.on("document:cleanup", function () {
+			individual.off("individual:propertyModified", propertyModifiedHandler);
+			individual.off("individual:typeChanged", typeChangedHandler);
+			self.off("*");
+			individual = self = null;
 		});
 		
 		veda.trigger("document:loaded", self, container, template, mode);

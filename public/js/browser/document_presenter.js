@@ -4,7 +4,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 	
 	var cnt = 0;
 	
-	veda.on("document:loaded", function (document, container_param, template_param, _mode) {
+	veda.on("document:loaded", function PresentDocument(document, container_param, template_param, _mode) {
 		
 		console.log("document presenter:", ++cnt, document.id, document);
 		
@@ -13,7 +13,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		var mode = _mode || "view";
 		
 		container.empty().hide();
-		
+
 		// Embedded templates list
 		var embedded = [];
 				
@@ -58,30 +58,21 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			templates = [ genericTemplate(document) ];
 		}
 		
-		/*templates.map(function (template) {
-			console.log(template);
-			template.on("DOMNodeRemoved", function (event) {
-				console.log(event.target, "removed");
+		// Cleanup memory
+		templates.map(function (template) {
+			template.on("remove", function (event) {
+				document.trigger("document:cleanup");
+				container = mode = document = container_param = template_param = _mode = null;
 			});
-		});*/
+		});
 		
-		/*container.on("DOMNodeRemoved", function (event) {
-			console.log(event.target.toString(), "removed");
-			//event.target = null;
-			document.off("*");
-			document = null;
-		});*/
-		
-		// Clear previous handlers
-		document.off("view edit save cancel");
-
 		// Trigger same events for embedded templates
 		document.on("view edit save", function (event) {
 			embedded.map(function (item) {
 				item.trigger(event);
 			});
 		});
-		
+
 		// Define handlers
 		document.on("save", function () {
 			document.save();
@@ -89,13 +80,14 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		});
 		
 		document.on("cancel", function () {
-			// Clear defined handlers
-			document.off("view edit save cancel");
-			document.reset();
+			embedded.map(function (item) {
+				item.reset();
+			});
+			document.cancel();
 		});
 
 		templates.map( function (classTemplate) {
-			
+
 			// Actions
 			var $edit = $("#edit", classTemplate),
 				$save = $("#save", classTemplate),
@@ -325,14 +317,14 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			item.trigger(mode);
 		});
 		
-		/*// Re-render property if its' values were changed elsewhere
-		function rerender (docValues) {
-			if (docValues !== values) {
-				document.off("property:changed:"+property_uri, rerender);
+		// Re-render property if its' values were changed elsewhere
+		function rerender (docProperty_uri, docValues) {
+			if (docProperty_uri === property_uri && docValues !== values) {
+				document.off("document:propertyModified", rerender);
 				renderProperty (document, property_uri, container, mode);
 			}
 		}
-		document.on("property:changed:"+property_uri, rerender);*/
+		document.on("document:propertyModified", rerender);
 		
 		document.on("view edit", function (mode) {
 			controls
