@@ -687,14 +687,14 @@ mnd-sa:tr_700
 # --------------------------------------------------------- 
 mnd-sa:tr_800
   rdf:type mnd-sa:Transform ;
-  mnd-sa:destClass SafetyAuditDoc1 ;
+  mnd-sa:destClass mnd-sa:SafetyAuditDoc1 ;
   mnd-sa:destProperty rdfs:label ;
   v-s:deprecatedClass "fc534b64efdb4dbe93f28c3a6f53240c" ;
   v-s:deprecatedProperty "Название" ;
 .    
 mnd-sa:tr_801
   rdf:type mnd-sa:Transform ;
-  mnd-sa:destClass SafetyAuditDoc1 ;
+  mnd-sa:destClass mnd-sa:SafetyAuditDoc1 ;
   mnd-sa:destProperty mnd-sa:registrationNumber ;
   v-s:deprecatedClass "fc534b64efdb4dbe93f28c3a6f53240c" ;
   v-s:deprecatedProperty "Шифр" ;
@@ -702,21 +702,21 @@ mnd-sa:tr_801
 # --------------------------------------------------------- 
 mnd-sa:tr_900
   rdf:type mnd-sa:Transform ;
-  mnd-sa:destClass SafetyAuditDir3 ;
+  mnd-sa:destClass mnd-sa:SafetyAuditDir3 ;
   mnd-sa:destProperty rdfs:label ;
   v-s:deprecatedClass "b1cadfae1ba041d8a88a9b8c935024a3" ;
   v-s:deprecatedProperty "value" ;
 .    
 mnd-sa:tr_901
   rdf:type mnd-sa:Transform ;
-  mnd-sa:destClass SafetyAuditDir3 ;
+  mnd-sa:destClass mnd-sa:SafetyAuditDir3 ;
   mnd-sa:destProperty rdfs:comment ;
   v-s:deprecatedClass "b1cadfae1ba041d8a88a9b8c935024a3" ;
   v-s:deprecatedProperty "key" ;
 .    
 mnd-sa:tr_902
   rdf:type mnd-sa:Transform ;
-  mnd-sa:destClass SafetyAuditDir3 ;
+  mnd-sa:destClass mnd-sa:SafetyAuditDir3 ;
   mnd-sa:destProperty mnd-sa:kind ;
   v-s:deprecatedClass "b1cadfae1ba041d8a88a9b8c935024a3" ;
   v-s:deprecatedProperty "kind" ;
