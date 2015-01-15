@@ -12,7 +12,10 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 		var mode = _mode || "view";
 		
-		container.empty().hide();
+		container
+			.empty().hide()
+			.attr("resource", document.id)
+			.attr("typeof", document["rdf:type"].map(function (item) { return item.id }).join(" ") );
 
 		// Embedded templates list
 		var embedded = [];
@@ -42,14 +45,12 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					var _class = veda.ontology.classes[item.id];//new veda.ClassModel(item);
 					if (_class.documentTemplate && _class.documentTemplate["v-ui:template"]) {
 						// Get template from class
-
 						templateStr = _class.documentTemplate["v-ui:template"][0].toString()
 						templateStr = templateStr.replace(/<script.*>((?:\s*?.*?\s*?)*)<\/script>/gi, function (m, script) {
 							scripts.push(script);
 							return "";
 						});
 						return $( templateStr );
-						
 					}
 					// Construct generic template
 					return genericTemplate(document, _class); 
@@ -84,6 +85,10 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				item.reset();
 			});
 			document.cancel();
+		});
+		
+		document.on("view edit", function (_mode) {
+			mode = _mode;
 		});
 
 		templates.map( function (classTemplate) {
@@ -147,6 +152,13 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				)
 				renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
 				
+				// Re-render link property if its' values were changed
+				document.on("document:propertyModified", function (doc_property_uri) {
+					if (doc_property_uri === rel_uri) {
+						renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
+					}
+				});
+				
 			});
 			
 			// Properties
@@ -157,6 +169,13 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					propertyTemplate = propertyContainer.attr("template");
 					
 				renderProperty(document, property_uri, propertyContainer, mode);
+				
+				// Re-render property if its' values were changed
+				document.on("document:propertyModified", function (doc_property_uri) {
+					if (doc_property_uri === property_uri) {
+						renderProperty (document, property_uri, propertyContainer, mode);
+					}
+				});
 				
 			});
 			
@@ -169,8 +188,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			
 			document.trigger(mode);
 			
-			container.fadeIn(250);
-
+			container.show();
+			
 			scripts.map( function (item) { 
 				var fun = new Function("veda", "document", item);
 				fun(veda, document);
@@ -182,32 +201,23 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 	
 	function renderLink (document, rel_uri, relContainer, relTemplate, mode, embedded) {
 		
-		relContainer.empty().hide();
+		relContainer.empty();
 		
 		if ( !document[rel_uri] ) document.defineProperty(rel_uri);
 		
 		if (document[rel_uri].length) {
 			document[rel_uri].map( function (value) {renderValue (value, mode)} );
-		}
-		
-		// Re-render link if its' values were changed elsewhere
-		/*function rerenderLink (docRel_uri, docValues) {
-			if (docRel_uri === rel_uri) {
-				document.off("document:propertyModified", rerenderLink);
-				renderLink (document, rel_uri, relContainer, relTemplate, mode, embedded);
-			}
-		}
-		document.on("document:propertyModified", rerenderLink);*/
+		} 
 		
 		var control = $( $("#link-control-template").html() );
 		if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
 			$(".add", control).on("click", function () {
-				var lnk = renderValue(undefined, "edit"); 
+				document[rel_uri] = document[rel_uri].concat(new veda.IndividualModel());
 			});
 		} else $(".add", control).hide();
 		
 		if (mode == "view") control.hide();
-		relContainer.after(control);
+		relContainer.append(control);
 		
 		document.on("edit", function () {
 			control.show();
@@ -236,12 +246,12 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					selected.push( search.selected[uri] );
 				}
 				document[rel_uri] = document[rel_uri].concat(selected);
-				selected.map( function (value) {renderValue (value, "edit")} );
 			});
 		});
 		
 		function renderValue(value, mode) {
-			var clone = relContainer.clone();
+			var clone = relContainer.clone().removeAttr("rel").removeAttr("template");
+			relContainer.attr("style", "position:relative");
 			var lnk;
 			if (value instanceof veda.IndividualModel || !value) {
 				setTimeout( function () {
@@ -254,7 +264,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 						lnk = new veda.DocumentModel(value, clone, relTemplate);
 					}
 					
-					clone.attr("style", "position:relative;");
+					//clone.attr("style", "position:relative;");
 					var clear = $( $("#link-clear-button-template").html() );
 					
 					if (mode == "view") { 
@@ -267,7 +277,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					
 					clone.append(clear);
 					clear.on("click", function () {
-						clone.fadeOut(250, function () { clone.remove() });
+						clone.remove();
 						document[rel_uri] = document[rel_uri].filter(function (item) { return item.id != lnk.id });
 						if (embedded.length) {
 							var index = embedded.indexOf(lnk);
@@ -288,7 +298,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				// External resources
 				clone.append( $("<a>", {href: value, text: value}) );
 			}
-			relContainer.before(clone.show());
+			relContainer.append(clone);
 			return lnk;
 		}
 		
@@ -309,17 +319,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			controlType, emptyVal;
 		
 		if ( !document[property_uri] ) document.defineProperty(property_uri);
-		var values = document[property_uri];//.filter(function(){return true}); // important!
+		var values = document[property_uri];
 
-		// Re-render property if its' values were changed elsewhere
-		function rerenderProperty (docProperty_uri, docValues) {
-			if (docProperty_uri === property_uri) {
-				document.off("document:propertyModified", rerenderProperty);
-				renderProperty (document, property_uri, container, mode);
-			}
-		}
-		document.on("document:propertyModified", rerenderProperty);
-		
 		var range = property["rdfs:range"][0].id;
 		range == "xsd:boolean"  			? 	(controlType = $.fn.vedaBoolean,  emptyVal = new Boolean(false) ) :
 		range == "xsd:integer"  			? 	(controlType = $.fn.vedaInteger,  emptyVal = undefined ) :
@@ -355,9 +356,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				},
 				add: function () {
 					values.push( emptyVal );
-					var control = renderControl(emptyVal, values.length-1);
-					controls.push(control);
-					control.trigger("edit");
+					document[property_uri] = values;
 				},
 				remove: function () {
 					delete values[index];
