@@ -522,12 +522,3 @@ v-s:fileURI
   rdfs:range xsd:string ;
 .
 
-v-s:deprecatedId
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain owl:Class ;
-  rdfs:domain rdfs:Class ;
-  rdfs:domain rdf:Property ;
-  rdfs:label "deprecated identifier"@en ;
-  rdfs:label "уcтаревший идентификатор"@ru ;
-  rdfs:range xsd:string ;
-.

@@ -95,7 +95,6 @@ mnd-s:Dossier
   rdfs:label "Досье контрагента"@ru ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
-  v-s:deprecatedId "6b0ea5c4957640c3bab5ab49b01eb01c" ;
 .
 
 mnd-s:Action
@@ -104,7 +103,6 @@ mnd-s:Action
   rdfs:label "Мероприятие"@ru ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
-  v-s:deprecatedId "6b0ea5c4957640c3bab5ab49b01eb01c" ;
 .
 
 # Не версионное, потому что простой справочник
@@ -113,7 +111,6 @@ mnd-s:Status
   rdfs:label "Status"@en ;
   rdfs:label "Статус"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
-  v-s:deprecatedId "b1cadfae1ba041d8a88a9b8c935024a3" ;
 .
 # Не версионное, потому что простой справочник
 mnd-s:Area
@@ -121,7 +118,6 @@ mnd-s:Area
   rdfs:label "Area"@en ;
   rdfs:label "Участок"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
-  v-s:deprecatedId "5c2ce098-66a1-471c-886f-addb170f98da" ;
 .
 # Не версионное, потому что простой справочник
 mnd-s:PositiveNegative
@@ -129,7 +125,6 @@ mnd-s:PositiveNegative
   rdfs:label "Positive. Negative"@en ;
   rdfs:label "Положительный. Отрицательный"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
-  v-s:deprecatedId "92dd9031f2bb49a08c847081988c0cac" ;
 .
 # Не версионное, потому что простой справочник
 mnd-s:ClassifierLevel
@@ -137,7 +132,6 @@ mnd-s:ClassifierLevel
   rdfs:label "Classifier of level"@en ;
   rdfs:label "Классификатор уровней"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
-  v-s:deprecatedId "6f121c4c4dc745e5a794c9b18c924ffa" ;
 .
 mnd-s:AddInfo
   rdf:type owl:Class ;
@@ -145,7 +139,6 @@ mnd-s:AddInfo
   rdfs:label "Доп информация"@ru ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
-  v-s:deprecatedId "a96be31d57d043539de3187ec9c320c5" ;
 .
 mnd-s:NormativeDocument
   rdf:type owl:Class ;
@@ -153,5 +146,96 @@ mnd-s:NormativeDocument
   rdfs:label "Нормативный документ"@ru ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
-  v-s:deprecatedId "fc534b64efdb4dbe93f28c3a6f53240c" ;
+.
+
+# ---------- KLADR
+
+mnd-s:AdministrativeTerritorialEntity
+  rdf:type owl:Class ;
+  rdfs:label "administrative-territorial entity"@en ;
+  rdfs:label "административно-территориальный объект"@ru ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
+.
+
+mnd-s:type    
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s:AdministrativeTerritorialEntity ;
+  rdfs:label "тип"@ru ;
+  rdfs:range mnd-s:AdministrativeTerritorialType ;
+.
+
+mnd-s:code    
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s:AdministrativeTerritorialEntity ;
+  rdfs:label "код"@ru ;
+  rdfs:range xsd:string ;
+.
+
+mnd-s:postIndex    
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s:AdministrativeTerritorialEntity ;
+  rdfs:label "почтовый индекс"@ru ;
+  rdfs:range xsd:string ;
+.
+
+mnd-s:gninmb
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s:AdministrativeTerritorialEntity ;
+  rdfs:label "GNINMB"@en ;
+  rdfs:label "Код ИФНС"@ru ;
+  rdfs:range xsd:string ;
+.
+
+mnd-s:uno
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s:AdministrativeTerritorialEntity ;
+  rdfs:label "GNINMB"@en ;
+  rdfs:label "Код территориального участка ИФНС"@ru ;
+  rdfs:range xsd:string ;
+.
+
+mnd-s:ocatd
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s:AdministrativeTerritorialEntity ;
+  rdfs:label "GNINMB"@en ;
+  rdfs:label "Код ОКАТО"@ru ;
+  rdfs:range xsd:string ;
+.
+
+mnd-s:status
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s:AdministrativeTerritorialEntity ;
+  rdfs:label "STATUS"@en ;
+  rdfs:label "Статус объекта"@ru ;
+  rdfs:range xsd:string ;
+.
+
+
+mnd-s:AdministrativeTerritorialType
+  rdf:type owl:Class ;
+  rdfs:label "type of administrative-territorial entity"@en ;
+  rdfs:label "типы административно-территориальный объектов"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+
+mnd-s:abbreviation    
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s:AdministrativeTerritorialType ;
+  rdfs:label "сокращенное название"@ru ;
+  rdfs:range xsd:string ;
+.
+
+mnd-s:level
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s:AdministrativeTerritorialType ;
+  rdfs:label "Уровень объекта данного типа"@ru ;
+  rdfs:range xsd:integer ;
+.
+
+mnd-s:codeOfType
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s:AdministrativeTerritorialType ;
+  rdfs:label "Код типа объекта"@ru ;
+  rdfs:range xsd:integer ;
 .

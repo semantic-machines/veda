@@ -96,7 +96,6 @@ mnd-sa:code
   rdfs:domain mnd-sa:KLADR ;
   rdfs:label "Код"@ru ;
   rdfs:range xsd:string ;
-  v-s:deprecatedId "Код" ;
 .
 # end---------------- mnd-sa:KLADR
 
