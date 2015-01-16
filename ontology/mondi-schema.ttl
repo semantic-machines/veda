@@ -240,11 +240,143 @@ mnd-s:codeOfType
   rdfs:range xsd:integer ;
 .
 
-mnd-sa:tr_1000
+# transform to KLADR
+
+mnd-s:tr_1000
   rdf:type mnd-sa:Transform ;
-  mnd-sa:destClass mnd-sa:SafetyStandardTheme ;
-  mnd-sa:destProperty rdfs:comment ;
-  v-s:srcClassName "19faf6e8-8843-4426-a905-ce2b0a1a07e0" ;
-  v-s:srcPropertyName "d53472e4-7838-47fe-8993-b8aa1d8c33aa_3" ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialEntity ;
+  mnd-sa:destProperty mnd-s:code ;
+  v-s:srcClassName "KLADR" ;
+  v-s:srcPropertyName "CODE" ;
+.    
+
+mnd-s:tr_1001
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialEntity ;
+  mnd-sa:destProperty rdfs:label ;
+  v-s:srcClassName "KLADR" ;
+  v-s:srcPropertyName "NAME" ;
+.    
+
+mnd-s:tr_1002
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialEntity ;
+  mnd-sa:destProperty mnd-s:postIndex ; 
+  v-s:srcClassName "KLADR" ;
+  v-s:srcPropertyName "INDEX" ;
+.    
+
+mnd-s:tr_1003
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialEntity ;
+  mnd-sa:destProperty mnd-s:gninmb ; 
+  v-s:srcClassName "KLADR" ;
+  v-s:srcPropertyName "GNINMB" ;
+.    
+
+mnd-s:tr_1004
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialEntity ;
+  mnd-sa:destProperty mnd-s:uno ;
+  v-s:srcClassName "KLADR" ;
+  v-s:srcPropertyName "UNO" ;
+.    
+
+mnd-s:tr_1005
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialEntity ;
+  mnd-sa:destProperty mnd-s:ocatd ;
+  v-s:srcClassName "KLADR" ;
+  v-s:srcPropertyName "OCATD" ;
+.    
+
+mnd-s:tr_1006
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialEntity ;
+  mnd-sa:destProperty mnd-s:status ;
+  v-s:srcClassName "KLADR" ;
+  v-s:srcPropertyName "STATUS" ;
+.    
+
+mnd-s:tr_1008
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialEntity ;
+  mnd-sa:destProperty mnd-s:type ;
+  v-s:srcClassName "KLADR" ;
+  v-s:srcPropertyName "SOCR" ;
+  mnd-sa:destLinkProperty mnd-s:abbreviation ;
+.    
+
+mnd-s:tr_1017
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialType ;
+  mnd-sa:destProperty mnd-s:abbreviation ;
+  v-s:srcClassName "SOCRBASE" ;
+  v-s:srcPropertyName "SCNAME" ;
+.    
+
+mnd-s:tr_1018
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialType ;
+  mnd-sa:destProperty rdfs:label ;
+  v-s:srcClassName "SOCRBASE" ;
+  v-s:srcPropertyName "SOCRNAME" ;
+.    
+
+mnd-s:tr_1019
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialType ;
+  mnd-sa:destProperty mnd-s:level ;
+  v-s:srcClassName "SOCRBASE" ;
+  v-s:srcPropertyName "LEVEL" ;
+.    
+
+mnd-s:tr_1102
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialEntity ;
+  mnd-sa:destProperty mnd-s:postIndex ; 
+  v-s:srcClassName "STREET" ;
+  v-s:srcPropertyName "INDEX" ;
+.    
+
+mnd-s:tr_1103
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialEntity ;
+  mnd-sa:destProperty mnd-s:gninmb ; 
+  v-s:srcClassName "STREET" ;
+  v-s:srcPropertyName "GNINMB" ;
+.    
+
+mnd-s:tr_1104
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialEntity ;
+  mnd-sa:destProperty mnd-s:uno ;
+  v-s:srcClassName "STREET" ;
+  v-s:srcPropertyName "UNO" ;
+.    
+
+mnd-s:tr_1105
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialEntity ;
+  mnd-sa:destProperty mnd-s:ocatd ;
+  v-s:srcClassName "STREET" ;
+  v-s:srcPropertyName "OCATD" ;
+.    
+
+mnd-s:tr_1106
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialEntity ;
+  mnd-sa:destProperty mnd-s:status ;
+  v-s:srcClassName "STREET" ;
+  v-s:srcPropertyName "STATUS" ;
+.    
+
+mnd-s:tr_1108
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-s:AdministrativeTerritorialEntity ;
+  mnd-sa:destProperty mnd-s:type ;
+  v-s:srcClassName "STREET" ;
+  v-s:srcPropertyName "SOCR" ;
+  mnd-sa:destLinkProperty mnd-s:abbreviation ;
 .    
 
