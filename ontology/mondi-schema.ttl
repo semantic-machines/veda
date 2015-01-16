@@ -239,3 +239,12 @@ mnd-s:codeOfType
   rdfs:label "Код типа объекта"@ru ;
   rdfs:range xsd:integer ;
 .
+
+mnd-sa:tr_1000
+  rdf:type mnd-sa:Transform ;
+  mnd-sa:destClass mnd-sa:SafetyStandardTheme ;
+  mnd-sa:destProperty rdfs:comment ;
+  v-s:srcClassName "19faf6e8-8843-4426-a905-ce2b0a1a07e0" ;
+  v-s:srcPropertyName "d53472e4-7838-47fe-8993-b8aa1d8c33aa_3" ;
+.    
+

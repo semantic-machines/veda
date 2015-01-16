@@ -352,269 +352,269 @@ mnd-sa:tr_1
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:KLADR ;
   mnd-sa:destProperty mnd-sa:registrationNumber ;
-  v-s:deprecatedClass "5c2ce098-66a1-471c-886f-addb170f98da" ;
-  v-s:deprecatedProperty "Шифр" ;
+  v-s:srcClassName "5c2ce098-66a1-471c-886f-addb170f98da" ;
+  v-s:srcPropertyName "Шифр" ;
 .    
 # --------------------------------------------------------- 
 mnd-sa:tr_112
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAudit ;
   mnd-sa:destProperty mnd-sa:registrationNumber ;
-  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
-  v-s:deprecatedProperty "№" ;
+  v-s:srcClassName "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:srcPropertyName "№" ;
 .    
 mnd-sa:tr_113
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAudit ;
   mnd-sa:destProperty mnd-sa:dateFrom ;
-  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
-  v-s:deprecatedProperty "Дата" ;
+  v-s:srcClassName "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:srcPropertyName "Дата" ;
 .    
 mnd-sa:tr_114
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAudit ;
   mnd-sa:destProperty mnd-sa:department ;
-  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
-  v-s:deprecatedProperty "Подразделение" ;
+  v-s:srcClassName "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:srcPropertyName "Подразделение" ;
 .    
 mnd-sa:tr_115
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAudit ;
   mnd-sa:destProperty mnd-sa:contractor ;
-  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
-  v-s:deprecatedProperty "contractor" ;
+  v-s:srcClassName "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:srcPropertyName "contractor" ;
 .    
 mnd-sa:tr_116
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAudit ;
   mnd-sa:destProperty mnd-sa:classifierWork ;
-  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
-  v-s:deprecatedProperty "Тема" ;
+  v-s:srcClassName "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:srcPropertyName "Тема" ;
 .    
 mnd-sa:tr_117
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAudit ;
   mnd-sa:destProperty mnd-sa:summary ;
-  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
-  v-s:deprecatedProperty "Вывод" ;
+  v-s:srcClassName "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:srcPropertyName "Вывод" ;
 .    
 mnd-sa:tr_118
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAudit ;
   mnd-sa:destProperty mnd-sa:comment ;
-  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
-  v-s:deprecatedProperty "Комментарий" ;
+  v-s:srcClassName "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:srcPropertyName "Комментарий" ;
 .    
 mnd-sa:tr_119
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAudit ;
   mnd-sa:destProperty mnd-sa:status ;
-  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
-  v-s:deprecatedProperty "status" ;
+  v-s:srcClassName "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:srcPropertyName "status" ;
 .    
 mnd-sa:tr_120
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAudit ;
   mnd-sa:destProperty mnd-sa:addDoc ;
-  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
-  v-s:deprecatedProperty "add_doc" ;
+  v-s:srcClassName "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:srcPropertyName "add_doc" ;
 .   
 mnd-sa:tr_121
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAudit ;
   mnd-sa:destProperty mnd-sa:theme ;
-  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
-  v-s:deprecatedProperty "Вид требования" ;
+  v-s:srcClassName "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:srcPropertyName "Вид требования" ;
 .    
 mnd-sa:tr_122
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAudit ;
   mnd-sa:destProperty mnd-sa:member ;
-  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
-  v-s:deprecatedProperty "Список участников" ;
+  v-s:srcClassName "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:srcPropertyName "Список участников" ;
 .    
 mnd-sa:tr_123
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAudit ;
   mnd-sa:destProperty mnd-sa:recipient ;
-  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
-  v-s:deprecatedProperty "Список рассылки" ;
+  v-s:srcClassName "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:srcPropertyName "Список рассылки" ;
 .    
 mnd-sa:tr_124
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAudit ;
   mnd-sa:destProperty mnd-sa:action ;
-  v-s:deprecatedClass "9fb73a44385d4b2c9db9b85da8ae2220" ;
-  v-s:deprecatedProperty "action" ;
+  v-s:srcClassName "9fb73a44385d4b2c9db9b85da8ae2220" ;
+  v-s:srcPropertyName "action" ;
 .    
 # --------------------------------------------------------- 
 mnd-sa:tr_200
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:registrationNumber ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "auto_num" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "auto_num" ;
 .    
 mnd-sa:tr_201
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:dateFrom ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "Дата" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "Дата" ;
 .    
 mnd-sa:tr_202
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:attachment ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "Вложение" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "Вложение" ;
 .    
 mnd-sa:tr_203
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:place ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "Место" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "Место" ;
 .    
 mnd-sa:tr_204
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:department ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "Подразделение" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "Подразделение" ;
 .    
 mnd-sa:tr_205
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:responsible ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "responsible" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "responsible" ;
 .    
 mnd-sa:tr_206
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:contractor ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "contractor" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "contractor" ;
 .    
 mnd-sa:tr_207
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:responsibleAdd ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "responsible_add" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "responsible_add" ;
 .    
 mnd-sa:tr_208
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:addToDoc ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "add_to_doc" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "add_to_doc" ;
 .    
 mnd-sa:tr_209
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:observation ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "Наблюдение" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "Наблюдение" ;
 .    
 mnd-sa:tr_210
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:requirement ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "Мероприятие незамедлительное" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "Мероприятие незамедлительное" ;
 .    
 mnd-sa:tr_211
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:recommendation ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "Мероприятие для предотвращения" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "Мероприятие для предотвращения" ;
 .    
 mnd-sa:tr_212
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:level ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "characteristic" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "characteristic" ;
 .    
 mnd-sa:tr_213
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:safetyAuditObservationKind ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "kind" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "kind" ;
 .    
 mnd-sa:tr_214
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:classifierLevel ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "risk" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "risk" ;
 .    
 mnd-sa:tr_215
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:dateTo ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "date_to" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "date_to" ;
 .    
 mnd-sa:tr_216
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:dateFact ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "date_fact" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "date_fact" ;
 .    
 mnd-sa:tr_217
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:theme ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "Вид требования" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "Вид требования" ;
 .    
 mnd-sa:tr_218
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:addInfo ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "add_info" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "add_info" ;
 .    
 mnd-sa:tr_219
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:comment ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "Комментарий" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "Комментарий" ;
 .    
 mnd-sa:tr_220
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:status ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "status" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "status" ;
 .    
 mnd-sa:tr_221
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:reason ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "Основание" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "Основание" ;
 .    
 mnd-sa:tr_222
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:reasonTxt ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "Основание текст" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "Основание текст" ;
 .    
 mnd-sa:tr_223
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservation ;
   mnd-sa:destProperty mnd-sa:reasonTxt ;
-  v-s:deprecatedClass "74eb8e54882545f3a35c1acae761500e" ;
-  v-s:deprecatedProperty "Основание текст" ;
+  v-s:srcClassName "74eb8e54882545f3a35c1acae761500e" ;
+  v-s:srcPropertyName "Основание текст" ;
 .    
 
 # --------------------------------------------------------- .
@@ -622,8 +622,8 @@ mnd-sa:tr_300
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyStandardSection ;
   mnd-sa:destProperty mnd-sa:registrationNumber ;
-  v-s:deprecatedClass "3366dfbe-f34b-4ca8-aff1-3d34200326e3" ;
-  v-s:deprecatedProperty "4ffe8da4-3e42-4061-a586-052d65f238bd_3" ;
+  v-s:srcClassName "3366dfbe-f34b-4ca8-aff1-3d34200326e3" ;
+  v-s:srcPropertyName "4ffe8da4-3e42-4061-a586-052d65f238bd_3" ;
 .    
 
 #  mnd-sa:destProperty mnd-sa:reasonTxt ;
@@ -631,23 +631,23 @@ mnd-sa:tr_301
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyStandardSection ;
   mnd-sa:destProperty rdfs:label ;
-  v-s:deprecatedClass "3366dfbe-f34b-4ca8-aff1-3d34200326e3" ;
-  v-s:deprecatedProperty "4ffe8da4-3e42-4061-a586-052d65f238bd_5" ;
+  v-s:srcClassName "3366dfbe-f34b-4ca8-aff1-3d34200326e3" ;
+  v-s:srcPropertyName "4ffe8da4-3e42-4061-a586-052d65f238bd_5" ;
 .    
 # --------------------------------------------------------- .
 mnd-sa:tr_400
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyStandardTheme ;
   mnd-sa:destProperty rdfs:label ;
-  v-s:deprecatedClass "19faf6e8-8843-4426-a905-ce2b0a1a07e0" ;
-  v-s:deprecatedProperty "name_short" ;
+  v-s:srcClassName "19faf6e8-8843-4426-a905-ce2b0a1a07e0" ;
+  v-s:srcPropertyName "name_short" ;
 .    
 mnd-sa:tr_401
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyStandardTheme ;
   mnd-sa:destProperty rdfs:comment ;
-  v-s:deprecatedClass "19faf6e8-8843-4426-a905-ce2b0a1a07e0" ;
-  v-s:deprecatedProperty "d53472e4-7838-47fe-8993-b8aa1d8c33aa_3" ;
+  v-s:srcClassName "19faf6e8-8843-4426-a905-ce2b0a1a07e0" ;
+  v-s:srcPropertyName "d53472e4-7838-47fe-8993-b8aa1d8c33aa_3" ;
 .    
 
 # --------------------------------------------------------- 
@@ -655,8 +655,8 @@ mnd-sa:tr_500
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditObservationKind ;
   mnd-sa:destProperty rdfs:label ;
-  v-s:deprecatedClass "13e63952889c4177b0dbaca23bdc4d5c" ;
-  v-s:deprecatedProperty "name" ;
+  v-s:srcClassName "13e63952889c4177b0dbaca23bdc4d5c" ;
+  v-s:srcPropertyName "name" ;
 .    
 
 # --------------------------------------------------------- 
@@ -664,15 +664,15 @@ mnd-sa:tr_600
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditDir1 ;
   mnd-sa:destProperty rdfs:label ;
-  v-s:deprecatedClass "6f121c4c4dc745e5a794c9b18c924ffa" ;
-  v-s:deprecatedProperty "title" ;
+  v-s:srcClassName "6f121c4c4dc745e5a794c9b18c924ffa" ;
+  v-s:srcPropertyName "title" ;
 .    
 mnd-sa:tr_601
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditDir1 ;
   mnd-sa:destProperty rdfs:comment ;
-  v-s:deprecatedClass "6f121c4c4dc745e5a794c9b18c924ffa" ;
-  v-s:deprecatedProperty "name" ;
+  v-s:srcClassName "6f121c4c4dc745e5a794c9b18c924ffa" ;
+  v-s:srcPropertyName "name" ;
 .    
 
 # --------------------------------------------------------- 
@@ -680,44 +680,44 @@ mnd-sa:tr_700
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditDir2 ;
   mnd-sa:destProperty rdfs:label ;
-  v-s:deprecatedClass "92dd9031f2bb49a08c847081988c0cac" ;
-  v-s:deprecatedProperty "value" ;
+  v-s:srcClassName "92dd9031f2bb49a08c847081988c0cac" ;
+  v-s:srcPropertyName "value" ;
 .    
 # --------------------------------------------------------- 
 mnd-sa:tr_800
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditDoc1 ;
   mnd-sa:destProperty rdfs:label ;
-  v-s:deprecatedClass "fc534b64efdb4dbe93f28c3a6f53240c" ;
-  v-s:deprecatedProperty "Название" ;
+  v-s:srcClassName "fc534b64efdb4dbe93f28c3a6f53240c" ;
+  v-s:srcPropertyName "Название" ;
 .    
 mnd-sa:tr_801
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditDoc1 ;
   mnd-sa:destProperty mnd-sa:registrationNumber ;
-  v-s:deprecatedClass "fc534b64efdb4dbe93f28c3a6f53240c" ;
-  v-s:deprecatedProperty "Шифр" ;
+  v-s:srcClassName "fc534b64efdb4dbe93f28c3a6f53240c" ;
+  v-s:srcPropertyName "Шифр" ;
 .    
 # --------------------------------------------------------- 
 mnd-sa:tr_900
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditDir3 ;
   mnd-sa:destProperty rdfs:label ;
-  v-s:deprecatedClass "b1cadfae1ba041d8a88a9b8c935024a3" ;
-  v-s:deprecatedProperty "value" ;
+  v-s:srcClassName "b1cadfae1ba041d8a88a9b8c935024a3" ;
+  v-s:srcPropertyName "value" ;
 .    
 mnd-sa:tr_901
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditDir3 ;
   mnd-sa:destProperty rdfs:comment ;
-  v-s:deprecatedClass "b1cadfae1ba041d8a88a9b8c935024a3" ;
-  v-s:deprecatedProperty "key" ;
+  v-s:srcClassName "b1cadfae1ba041d8a88a9b8c935024a3" ;
+  v-s:srcPropertyName "key" ;
 .    
 mnd-sa:tr_902
   rdf:type mnd-sa:Transform ;
   mnd-sa:destClass mnd-sa:SafetyAuditDir3 ;
   mnd-sa:destProperty mnd-sa:kind ;
-  v-s:deprecatedClass "b1cadfae1ba041d8a88a9b8c935024a3" ;
-  v-s:deprecatedProperty "kind" ;
+  v-s:srcClassName "b1cadfae1ba041d8a88a9b8c935024a3" ;
+  v-s:srcPropertyName "kind" ;
 .    
 
