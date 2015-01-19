@@ -503,6 +503,14 @@ v-wf:forNetElement
 	rdfs:range v-wf:NetElement ;
 .
 
+v-wf:isCompleted
+	rdf:type rdf:Property ;
+	rdfs:label "is completed"@en ;
+	rdfs:label "завершено"@ru ;
+	rdfs:domain v-wf:WorkItem ;
+	rdfs:range xsd:boolean ;
+.
+
 # --------------------------- обработка событий => docflow ---------------------------------------
 v-wf:Event_df1
 	rdf:type v-s:Event ;

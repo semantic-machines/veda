@@ -93,7 +93,6 @@ mnd-s:Dossier
   rdfs:label "Досье контрагента"@ru ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
-  v-s:deprecatedId "6b0ea5c4957640c3bab5ab49b01eb01c" ;
 .
 mnd-s:Action
   rdf:type owl:Class ;
@@ -101,6 +100,7 @@ mnd-s:Action
   rdfs:label "Мероприятие"@ru ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
+.
   v-s:deprecatedId "6b0ea5c4957640c3bab5ab49b01eb01c" ;
 .
 # Не версионное, потому что простой справочник
@@ -109,7 +109,6 @@ mnd-s:Area
   rdfs:label "Area"@en ;
   rdfs:label "Участок"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
-  v-s:deprecatedId "5c2ce098-66a1-471c-886f-addb170f98da" ;
 .
 # Не версионное, потому что простой справочник
 mnd-s:PositiveNegative
@@ -117,7 +116,6 @@ mnd-s:PositiveNegative
   rdfs:label "Positive. Negative"@en ;
   rdfs:label "Положительный. Отрицательный"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
-  v-s:deprecatedId "92dd9031f2bb49a08c847081988c0cac" ;
 .
 # Не версионное, потому что простой справочник
 mnd-s:ClassifierLevel
@@ -125,7 +123,6 @@ mnd-s:ClassifierLevel
   rdfs:label "Classifier of level"@en ;
   rdfs:label "Классификатор уровней"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
-  v-s:deprecatedId "6f121c4c4dc745e5a794c9b18c924ffa" ;
 .
 mnd-s:AddInfo
   rdf:type owl:Class ;
@@ -133,7 +130,6 @@ mnd-s:AddInfo
   rdfs:label "Доп информация"@ru ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
-  v-s:deprecatedId "a96be31d57d043539de3187ec9c320c5" ;
 .
 mnd-s:NormativeDocument
   rdf:type owl:Class ;
@@ -141,7 +137,6 @@ mnd-s:NormativeDocument
   rdfs:label "Нормативный документ"@ru ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
-  v-s:deprecatedId "fc534b64efdb4dbe93f28c3a6f53240c" ;
 .
 mnd-s:contractor
   rdf:type owl:ObjectProperty ;
