@@ -76,6 +76,25 @@ v-s:Dictionary
   rdfs:label "Словарь"@ru ;
   rdfs:subClassOf v-s:Document ;
 .
+# Не версионное, потому что простой справочник
+v-s:StatusWorkflow
+  rdf:type owl:Class ;
+  rdfs:label "StatusWorkflow"@en ;
+  rdfs:label "Статус документооборота"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+  v-s:deprecatedId "b1cadfae1ba041d8a88a9b8c935024a3" ;
+
+# BEGIN --- v-s:Dictionary
+
+veda-s:title
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Dictionary ;
+  rdfs:label "наименование"@ru ;
+  rdfs:label "name"@en ;
+  rdfs:range xsd:string ;
+
+# END --- v-s:Dictionary
+
 v-s:Document
   rdf:type owl:Class ;
   rdfs:comment "A document"@en ;
@@ -530,4 +549,59 @@ v-s:deprecatedId
   rdfs:label "deprecated identifier"@en ;
   rdfs:label "уcтаревший идентификатор"@ru ;
   rdfs:range xsd:string ;
+
+v-s:parentLink
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "родительский документ"@ru ;
+  rdfs:label "parent document"@en ;
+  rdfs:range rdfs:Resource ;
+
+v-s:comment
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "комментарий"@ru ;
+  rdfs:label "comment"@en ;
+  rdfs:range xsd:string ;
+
+v-s:registrationNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "регистрационный номер"@ru ;
+  rdfs:label "registration number"@en ;
+  rdfs:range xsd:string ;
+
+v-s:status
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "статус"@ru ;
+  rdfs:label "status"@en ;
+  rdfs:range rdfs:Resource ;
+
+v-s:hasStatusWorkflow
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "статус документооборота"@ru ;
+  rdfs:label "status workflow"@en ;
+  rdfs:range v-s:StatusWorkflow;
+  rdfs:subPropertyOf v-s:status ;
+.
+v-s:dateFrom
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "дата начала чего-либо"@ru ;
+  rdfs:label "date begin of something"@en ;
+  rdfs:range xsd:dateTime ;
+.
+v-s:summary
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "вывод"@ru ;
+  rdfs:label "summary"@en ;
+  rdfs:range xsd:string ;
+.
+v-s:addDoc
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "add document"@en ;
+  rdfs:label "связанные документы"@ru ;
+  rdfs:range v-s:Document ;
+.
+v-s:responsible
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "responsible"@en ;
+  rdfs:label "ответсвенное лицо"@ru ;
+  rdfs:range v-s:Document ;
 .

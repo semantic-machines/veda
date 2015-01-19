@@ -27,7 +27,6 @@ mnd-s:AdministrativeDocument
   rdfs:subClassOf v-s:Versioned ;
   rdfs:subClassOf mnd-s:AdministrativeDocumentRestriction ;
 .
-
 mnd-s:AdministrativeDocumentRestriction
   rdf:type owl:Restriction ;
   rdfs:label "AdministrativeDocumentRestriction"@en ;
@@ -88,7 +87,6 @@ mnd-s:signer
   rdfs:label "подписант"@ru ;
   rdfs:range v-s:Appointment ;
 .
-
 mnd-s:Dossier
   rdf:type owl:Class ;
   rdfs:label "Dossier"@en ;
@@ -97,7 +95,6 @@ mnd-s:Dossier
   rdfs:subClassOf v-s:Versioned ;
   v-s:deprecatedId "6b0ea5c4957640c3bab5ab49b01eb01c" ;
 .
-
 mnd-s:Action
   rdf:type owl:Class ;
   rdfs:label "Action"@en ;
@@ -105,15 +102,6 @@ mnd-s:Action
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
   v-s:deprecatedId "6b0ea5c4957640c3bab5ab49b01eb01c" ;
-.
-
-# Не версионное, потому что простой справочник
-mnd-s:Status
-  rdf:type owl:Class ;
-  rdfs:label "Status"@en ;
-  rdfs:label "Статус"@ru ;
-  rdfs:subClassOf v-s:Dictionary ;
-  v-s:deprecatedId "b1cadfae1ba041d8a88a9b8c935024a3" ;
 .
 # Не версионное, потому что простой справочник
 mnd-s:Area
@@ -155,3 +143,10 @@ mnd-s:NormativeDocument
   rdfs:subClassOf v-s:Versioned ;
   v-s:deprecatedId "fc534b64efdb4dbe93f28c3a6f53240c" ;
 .
+mnd-s:contractor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "подрядчик"@ru ;
+  rdfs:label "contractor"@ru ;
+  rdfs:range mnd-s:Dossier ;
+.
+
