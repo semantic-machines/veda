@@ -1,9 +1,12 @@
 # baseURI: http://semantic-machines.com/veda/mondi-data
 # imports: http://semantic-machines.com/veda/mondi-schema
+# imports: http://semantic-machines.com/veda/veda-schema
 
 # c14n-version: 3
 @prefix mnd-d: <http://semantic-machines.com/veda/mondi-data/> .
 @prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix mnd-wf: <http://semantic-machines.com/veda/mondi-workflow/> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -21,8 +24,8 @@
 .
 
 mnd-d:File_1
-    rdf:type vs:File ;
-    vs:fileURI "111.pdf" ;
+    rdf:type v-s:File ;
+    v-s:fileURI "111.pdf" ;
 .
 
 mnd-d:AdministrativeDocument_2

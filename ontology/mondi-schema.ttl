@@ -10,22 +10,35 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
 <http://semantic-machines.com/veda/mondi-schema>
   rdf:type owl:Ontology ;
+  rdfs:label "Mondi ontology"@en ;
+  rdfs:label "Онтология Монди"@ru ;
   owl:imports <http://semantic-machines.com/veda/veda-schema> ;
   owl:imports <http://semantic-machines.com/veda/veda-ui> ;
   owl:versionInfo "1.0" ;
-  rdfs:label "Mondi ontology"@en ;
-  rdfs:label "Онтология Монди"@ru ;
+.
+mnd-s:Action
+  rdf:type owl:Class ;
+  rdfs:label "Action"@en ;
+  rdfs:label "Мероприятие"@ru ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
+.
+mnd-s:AddInfo
+  rdf:type owl:Class ;
+  rdfs:label "Add Info"@en ;
+  rdfs:label "Доп информация"@ru ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
 .
 mnd-s:AdministrativeDocument
   rdf:type owl:Class ;
   rdfs:label "Administrative document"@en ;
   rdfs:label "Распорядительный документ"@ru ;
+  rdfs:subClassOf mnd-s:AdministrativeDocumentRestriction ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
-  rdfs:subClassOf mnd-s:AdministrativeDocumentRestriction ;
 .
 mnd-s:AdministrativeDocumentRestriction
   rdf:type owl:Restriction ;
@@ -41,11 +54,56 @@ mnd-s:AdministrativeDocumentType
   rdfs:label "Вид документа"@ru ;
   rdfs:subClassOf mnd-s:DocumentType ;
 .
+mnd-s:Area
+  rdf:type owl:Class ;
+  rdfs:label "Area"@en ;
+  rdfs:label "Участок"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s:ClassifierLevel
+  rdf:type owl:Class ;
+  rdfs:label "Classifier of level"@en ;
+  rdfs:label "Классификатор уровней"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
 mnd-s:DocumentType
   rdf:type owl:Class ;
   rdfs:label "Document type"@en ;
   rdfs:label "Вид документа"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s:Dossier
+  rdf:type owl:Class ;
+  rdfs:label "Dossier"@en ;
+  rdfs:label "Досье контрагента"@ru ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
+.
+mnd-s:NormativeDocument
+  rdf:type owl:Class ;
+  rdfs:label "Normative Document"@en ;
+  rdfs:label "Нормативный документ"@ru ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
+.
+mnd-s:Observation
+  rdf:type owl:Class ;
+  rdfs:label "Observation"@en ;
+  rdfs:label "Наблюдение"@ru ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
+.
+mnd-s:PositiveNegative
+  rdf:type owl:Class ;
+  rdfs:label "Positive. Negative"@en ;
+  rdfs:label "Положительный. Отрицательный"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s:RegistrationDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s:RegistrationRecord ;
+  rdfs:label "Дата регистрации"@ru ;
+  rdfs:range xsd:dateTime ;
 .
 mnd-s:RegistrationRecord
   rdf:type owl:Class ;
@@ -60,6 +118,12 @@ mnd-s:content
   rdfs:label "содержание"@ru ;
   rdfs:range xsd:string ;
 .
+mnd-s:contractor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "contractor"@ru ;
+  rdfs:label "подрядчик"@ru ;
+  rdfs:range mnd-s:Dossier ;
+.
 mnd-s:nomenclatureType
   rdf:type owl:ObjectProperty ;
   rdfs:domain mnd-s:AdministrativeDocument ;
@@ -67,12 +131,6 @@ mnd-s:nomenclatureType
   rdfs:label "document type"@en ;
   rdfs:label "вид документа"@ru ;
   rdfs:range mnd-s:DocumentType ;
-.
-mnd-s:RegistrationDate
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain mnd-s:RegistrationRecord ;
-  rdfs:label "Дата регистрации"@ru ;
-  rdfs:range xsd:dateTime ;
 .
 mnd-s:registrationNumber
   rdf:type owl:DatatypeProperty ;
@@ -87,61 +145,7 @@ mnd-s:signer
   rdfs:label "подписант"@ru ;
   rdfs:range v-s:Appointment ;
 .
-mnd-s:Dossier
-  rdf:type owl:Class ;
-  rdfs:label "Dossier"@en ;
-  rdfs:label "Досье контрагента"@ru ;
-  rdfs:subClassOf v-s:Document ;
-  rdfs:subClassOf v-s:Versioned ;
+v-s:description
+  rdfs:domain mnd-s:Action ;
+  rdfs:domain mnd-s:Observation ;
 .
-mnd-s:Action
-  rdf:type owl:Class ;
-  rdfs:label "Action"@en ;
-  rdfs:label "Мероприятие"@ru ;
-  rdfs:subClassOf v-s:Document ;
-  rdfs:subClassOf v-s:Versioned ;
-.
-  v-s:deprecatedId "6b0ea5c4957640c3bab5ab49b01eb01c" ;
-.
-# Не версионное, потому что простой справочник
-mnd-s:Area
-  rdf:type owl:Class ;
-  rdfs:label "Area"@en ;
-  rdfs:label "Участок"@ru ;
-  rdfs:subClassOf v-s:Dictionary ;
-.
-# Не версионное, потому что простой справочник
-mnd-s:PositiveNegative
-  rdf:type owl:Class ;
-  rdfs:label "Positive. Negative"@en ;
-  rdfs:label "Положительный. Отрицательный"@ru ;
-  rdfs:subClassOf v-s:Dictionary ;
-.
-# Не версионное, потому что простой справочник
-mnd-s:ClassifierLevel
-  rdf:type owl:Class ;
-  rdfs:label "Classifier of level"@en ;
-  rdfs:label "Классификатор уровней"@ru ;
-  rdfs:subClassOf v-s:Dictionary ;
-.
-mnd-s:AddInfo
-  rdf:type owl:Class ;
-  rdfs:label "Add Info"@en ;
-  rdfs:label "Доп информация"@ru ;
-  rdfs:subClassOf v-s:Document ;
-  rdfs:subClassOf v-s:Versioned ;
-.
-mnd-s:NormativeDocument
-  rdf:type owl:Class ;
-  rdfs:label "Normative Document"@en ;
-  rdfs:label "Нормативный документ"@ru ;
-  rdfs:subClassOf v-s:Document ;
-  rdfs:subClassOf v-s:Versioned ;
-.
-mnd-s:contractor
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "подрядчик"@ru ;
-  rdfs:label "contractor"@ru ;
-  rdfs:range mnd-s:Dossier ;
-.
-
