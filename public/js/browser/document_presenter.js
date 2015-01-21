@@ -2,11 +2,11 @@
 
 veda.Module(function DocumentPresenter(veda) { "use strict";
 	
-	var cnt = 0;
+	var c1 = 0, c2 = 0, c3 = 0;
 	
 	veda.on("document:loaded", function PresentDocument(document, container_param, template_param, _mode) {
 		
-		console.log("document presenter:", ++cnt, document.id, document);
+		//console.log("document presenter:", ++c1, document.id, document);
 		
 		var container = container_param || $("#main");
 		
@@ -383,22 +383,12 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			);
 		} else {
 			properties = document.properties;
-			if (!properties["rdf:type"]) {
-				$(".properties", template).append (
-					$("<div/>").append( 
-						$("<strong/>", {"about": "rdf:type", "property": "rdfs:label"}).addClass("text-muted"),
-						$("<div/>", {"rel": "rdf:type"}),
-						$("<hr/>").attr("style", "margin: 10px 0px")
-					)
-				);
-			}
 		}
 		
 		$(".properties", template).append (
 			Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
 				var property = veda.ontology[property_uri];
-				if (property_uri == "rdfs:label") return;
-				if (property_uri == "rdfs:class") return;
+				if (property_uri == "rdfs:label" || property_uri == "rdf:type") return;
 				
 				var result = $("<div/>").append( 
 					$("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")

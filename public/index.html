@@ -195,6 +195,11 @@
 									<button type="submit" id="search-submit" class="btn btn-primary" i18n="[Search]">Найти</button>
 								</span>
 							</div>
+							<div id="timing" class="text-right text-muted" style="position:absolute;">
+								<small>
+									<span>search query time / get count / get summary time / total render time : <span id="query_time" bound>{query_time}</span> ms / <span id="get_count"></span> / <span id="get_summary_time"></span> ms / <span id="render_time"></span> ms </span>
+								</small>
+							</div>				
 						</form>
 					</div>
 				</div>
@@ -218,7 +223,7 @@
 				</div>
 				<div class="alert alert-warning" id="not-found" style="display: none">
 					<strong i18n="[Empty!]">Пусто!</strong> <span i18n="[Nothing found]">По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
-				</div>				
+				</div>
 			</div>
 		</script>
 		
@@ -386,6 +391,9 @@
 						<div class="container-fluid properties">
 							<strong><span class="text-muted" about="rdfs:label" property="rdfs:label"></span></strong>
 							<h3 property="rdfs:label"></h3>
+							<strong about="rdf:type" property="rdfs:label" class="text-muted"></strong>
+							<div rel="rdf:type"/>
+							<hr style="margin: 10px 0px"/>
 						</div>
 					</div>
 					<div class="panel-footer">

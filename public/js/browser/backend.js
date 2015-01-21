@@ -164,7 +164,14 @@ function get_individuals(ticket, uris, callback) {
 		.done( function (data) { callback(data) } );
 }
 
+var get_count = 0, get_summary_time = 0;
+
 function get_individual(ticket, uri, callback) {
+	
+	var t1, t2;
+	t1 = Date.now();
+	get_count++;
+	
 	var params = {
 		type: "GET",
 		url: "get_individual",
@@ -173,6 +180,10 @@ function get_individual(ticket, uri, callback) {
 	if(!callback) {
 		params.async = false;
 		var result = $.ajax(params);
+		
+		t2 = Date.now();
+		get_summary_time += t2 - t1;
+		
 		if (result.status >= 400) throw {status: result.status, description: result.statusText };
 		return JSON.parse(result.responseText, function dateReviver (key, value) {
 			return key === "data" && this.type === "Datetime" ? new Date(value) : value;
