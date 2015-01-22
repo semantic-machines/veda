@@ -2,7 +2,7 @@
 
 veda.Module(function DocumentPresenter(veda) { "use strict";
 	
-	var c1 = 0, c2 = 0, c3 = 0;
+	var c1 = 0;
 	
 	veda.on("document:loaded", function PresentDocument(document, container_param, template_param, _mode) {
 		
@@ -250,6 +250,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		});
 		
 		function renderValue(value, mode) {
+			// Create the same tag container to preserve element layout
 			var clone = $("<" + relContainer.prop("tagName") + ">");
 			var lnk;
 			if (value instanceof veda.IndividualModel || !value) {
