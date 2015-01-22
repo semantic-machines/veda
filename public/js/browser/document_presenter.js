@@ -250,8 +250,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		});
 		
 		function renderValue(value, mode) {
-			var clone = relContainer.clone().removeAttr("rel").removeAttr("template");
-			relContainer.attr("style", "position:relative");
+			var clone = $("<" + relContainer.prop("tagName") + ">");
 			var lnk;
 			if (value instanceof veda.IndividualModel || !value) {
 				setTimeout( function () {
@@ -264,7 +263,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 						lnk = new veda.DocumentModel(value, clone, relTemplate);
 					}
 					
-					//clone.attr("style", "position:relative;");
+					clone.attr("style", "position:relative;");
 					var clear = $( $("#link-clear-button-template").html() );
 					
 					if (mode == "view") { 
