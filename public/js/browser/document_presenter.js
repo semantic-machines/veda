@@ -146,9 +146,9 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					new veda.IndividualModel(relTemplate) 
 				) : (
 					!document[rel_uri] || !document[rel_uri][0] || !document[rel_uri][0]["rdfs:label"] ? 
-						new veda.IndividualModel("mnd-d:ClassNameIdTemplate") 
+						new veda.IndividualModel("v-ui:ClassNameIdTemplate") 
 						: 
-						new veda.IndividualModel("mnd-d:ClassNameLabelTemplate")
+						new veda.IndividualModel("v-ui:ClassNameLabelTemplate")
 				)
 				renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
 				
