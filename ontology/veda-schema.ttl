@@ -186,7 +186,6 @@ v-s:SavedSearch
 .
 v-s:StatusWorkflow
   rdf:type owl:Class ;
-  v-s:deprecatedId "b1cadfae1ba041d8a88a9b8c935024a3" ;
   rdfs:label "StatusWorkflow"@en ;
   rdfs:label "Статус документооборота"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
