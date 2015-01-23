@@ -8,7 +8,11 @@ veda.Module(function IndividualModel(veda) { "use strict";
 	 * делается попытка извлечения объект из кэша.
 	 */
 	
+	//var cnt = 0;
+	
 	veda.IndividualModel = function (uri, noCache) {
+		
+		//console.log("individual model:", ++cnt, uri);
 		
 		var self = riot.observable(this);
 

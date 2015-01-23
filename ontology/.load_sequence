@@ -8,6 +8,7 @@ veda-ui.ttl
 veda-workflow.ttl
 veda-index.ttl
 mondi-schema.ttl
-mondi-schema-sa.ttl
+mondi-schema-safety-audit.ttl
 mondi-workflow.ttl
-mondi-data.ttl
+kladr.ttl
+test-data.ttl

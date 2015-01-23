@@ -53,6 +53,10 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 	
 	// Display search results
 	veda.on("search:complete", function (search, container_param) {
+		var rt1, rt2, render_time, gc1, gc2, _get_count, gst1, gst2, _get_summary_time;
+		rt1 = Date.now();
+		gc1 = get_count;
+		gst1 = get_summary_time;
 		
 		if (search.results_count < currentPage * veda.user.displayedElements) 
 			currentPage = Math.floor(search.results_count / veda.user.displayedElements) + 1 * (search.results_count % veda.user.displayedElements ? 1 : 0) - 1;
@@ -81,6 +85,9 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		
 		// Show results
 		var keys = Object.getOwnPropertyNames(search.results);
+		var $render_time = $("#render_time", container);
+		var $_get_count = $("#get_count", container);
+		var $_get_summary_time = $("#get_summary_time", container);
 		for (var i = currentPage * veda.user.displayedElements; i < (currentPage + 1) * veda.user.displayedElements && i < search.results_count; i++) {
 			(function (i) { 
 				setTimeout(function () {
@@ -96,7 +103,19 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 					
 					var search_result = new veda.SearchResultModel(search.results[ keys[i] ], $li);
 					if (search_result.id in search.selected) $("input", $select).attr("checked", "checked");
-
+				
+					if (i == search.results_count - 1 || i == (currentPage + 1) * veda.user.displayedElements - 1) {
+						rt2 = Date.now();
+						render_time = rt2 - rt1;
+						$render_time.html(render_time);
+						gc2 = get_count;
+						_get_count = gc2 - gc1;
+						$_get_count.html(_get_count);
+						gst2 = get_summary_time;
+						_get_summary_time = gst2 - gst1;
+						$_get_summary_time.html(_get_summary_time);
+					}
+					
 				}, 0);
 			}(i));
 		}
@@ -119,7 +138,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 				"href" : ""
 			}).appendTo($page);
 		}
-	
+		
 	});
 
 });

@@ -11,11 +11,11 @@ veda.Module(function DocumentModel(veda) { "use strict";
 		self.cancel = function () {
 			self.reset();
 			self.trigger("document:cleanup");
-			self = new veda.DocumentModel(uri, container, template, mode);
+			self = new veda.DocumentModel(uri, container, template, "view");
 		}
 
 		function typeChangedHandler () {
-			veda.trigger("document:loaded", self, container, template, mode);
+			self = new veda.DocumentModel(individual, container, template, mode);
 		}
 
 		function propertyModifiedHandler (property_uri, values) {
