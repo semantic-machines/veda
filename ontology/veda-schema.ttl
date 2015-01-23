@@ -21,6 +21,15 @@
   owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "1.0" ;
 .
+
+v-s:fullUrl
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:File ;
+  rdfs:label "full name"@en ;
+  rdfs:label "полное имя"@ru ;
+  rdfs:range xsd:string ;
+.
+
 v-s:Absence
   rdf:type owl:Class ;
   rdfs:label "Absence"@en ;
@@ -28,6 +37,7 @@ v-s:Absence
   rdfs:subClassOf v-s:HRRecord ;
   owl:disjointWith v-s:Appointment ;
 .
+
 v-s:Account
   rdf:type owl:Class ;
   rdfs:label "Account"@en ;
