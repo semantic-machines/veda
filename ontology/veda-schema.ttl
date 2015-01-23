@@ -262,12 +262,6 @@ v-s:childUnit
   rdfs:range v-s:OrganizationUnit ;
   owl:inverseOf v-s:parentUnit ;
 .
-v-s:comment
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "comment"@en ;
-  rdfs:label "комментарий"@ru ;
-  rdfs:range xsd:string ;
-.
 v-s:created
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Document ;
@@ -275,10 +269,22 @@ v-s:created
   rdfs:label "дата создания"@ru ;
   rdfs:range xsd:dateTime ;
 .
+v-s:dateFact
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "date of fact"@en ;
+  rdfs:label "дата фактическая"@ru ;
+  rdfs:range xsd:dateTime ;
+.
 v-s:dateFrom
   rdf:type owl:DatatypeProperty ;
   rdfs:label "date begin of something"@en ;
   rdfs:label "дата начала чего-либо"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+v-s:dateTo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "date end of something"@en ;
+  rdfs:label "дата окончания чего-либо"@ru ;
   rdfs:range xsd:dateTime ;
 .
 v-s:delegateTo
@@ -568,6 +574,12 @@ v-s:summary
   rdf:type owl:DatatypeProperty ;
   rdfs:label "summary"@en ;
   rdfs:label "вывод"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:theme
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "theme"@en ;
+  rdfs:label "тема"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:title

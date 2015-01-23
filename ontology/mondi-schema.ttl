@@ -79,6 +79,12 @@ mnd-s:Dossier
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
 .
+mnd-s:EmotionalCharacteristic
+  rdf:type owl:Class ;
+  rdfs:label "Positive. Negative"@en ;
+  rdfs:label "Положительный. Отрицательный"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
 mnd-s:NormativeDocument
   rdf:type owl:Class ;
   rdfs:label "Normative Document"@en ;
@@ -92,12 +98,6 @@ mnd-s:Observation
   rdfs:label "Наблюдение"@ru ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
-.
-mnd-s:PositiveNegative
-  rdf:type owl:Class ;
-  rdfs:label "Positive. Negative"@en ;
-  rdfs:label "Положительный. Отрицательный"@ru ;
-  rdfs:subClassOf v-s:Dictionary ;
 .
 mnd-s:RegistrationDate
   rdf:type owl:DatatypeProperty ;
@@ -123,6 +123,12 @@ mnd-s:contractor
   rdfs:label "contractor"@ru ;
   rdfs:label "подрядчик"@ru ;
   rdfs:range mnd-s:Dossier ;
+.
+mnd-s:hasAddInfo
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "has additional information"@en ;
+  rdfs:label "ссылка на дополнительную информацию"@ru ;
+  rdfs:range mnd-s:AddInfo ;
 .
 mnd-s:nomenclatureType
   rdf:type owl:ObjectProperty ;

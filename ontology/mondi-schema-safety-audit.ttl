@@ -75,6 +75,7 @@ mnd-s-sa:checkedDepartment
 mnd-s-sa:classifierWork
   rdf:type owl:ObjectProperty ;
   rdfs:domain mnd-s-sa:SafetyAudit ;
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
   rdfs:label "section of safety standard"@en ;
   rdfs:label "вид надзора"@ru ;
   rdfs:range mnd-s-sa:SafetyStandardSection ;
@@ -84,6 +85,20 @@ mnd-s-sa:contractor
   rdfs:domain mnd-s-sa:SafetyAudit ;
   rdfs:label "подрядчик"@ru ;
   rdfs:range mnd-s:Dossier ;
+.
+mnd-s-sa:hasEmotionalCharacteristic
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+  rdfs:label "сharacteristic of observation"@en ;
+  rdfs:label "характеристика замечания"@ru ;
+  rdfs:range mnd-s:EmotionalCharacteristic ;
+.
+mnd-s-sa:hasSafetyAuditObservationKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+  rdfs:label "observation kind"@en ;
+  rdfs:label "вид замечания"@ru ;
+  rdfs:range mnd-s-sa:SafetyAuditObservationKind ;
 .
 mnd-s-sa:member
   rdf:type owl:ObjectProperty ;
@@ -131,14 +146,41 @@ mnd-s-sa:responsibleSafetyAuditObservation
 mnd-s:contractor
   rdfs:domain mnd-s-sa:SafetyAuditObservation ;
 .
+mnd-s:futureAction
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+  rdfs:label "мероприятие для предотвращения в будущем"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:subPropertyOf v-s:description ;
+.
+mnd-s:hasAddInfo
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+.
+mnd-s:hasClassifierLevel
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+  rdfs:label "priority"@en ;
+  rdfs:label "приоритет"@ru ;
+  rdfs:range mnd-s:ClassifierLevel ;
+.
+mnd-s:nowAction
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+  rdfs:label "незамедлительное мероприятие"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:subPropertyOf v-s:description ;
+.
 v-s:addDoc
   rdfs:domain mnd-s-sa:SafetyAudit ;
 .
-v-s:comment
-  rdfs:domain mnd-s-sa:SafetyAudit ;
+v-s:dateFact
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
 .
 v-s:dateFrom
   rdfs:domain mnd-s-sa:SafetyAudit ;
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+.
+v-s:dateTo
   rdfs:domain mnd-s-sa:SafetyAuditObservation ;
 .
 v-s:description
@@ -147,12 +189,18 @@ v-s:description
 v-s:hasStatusWorkflow
   rdfs:domain mnd-s-sa:SafetyAudit ;
 .
+v-s:parentLink
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+.
 v-s:registrationNumber
   rdfs:domain mnd-s-sa:SafetyAudit ;
   rdfs:domain mnd-s-sa:SafetyAuditObservation ;
 .
 v-s:summary
   rdfs:domain mnd-s-sa:SafetyAudit ;
+.
+v-s:theme
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
 .
 v-s:title
   rdfs:domain mnd-s-sa:SafetyAuditObservationKind ;
