@@ -133,7 +133,7 @@ function query(ticket, query, callback) {
 	var params = {
 		type: "GET",
 		url: "query",
-		data: { "ticket": ticket, "query": query }
+		data: { "ticket": ticket, "query": query, "sort": null }
 	};
 	if(!callback) {
 		params.async = false;
