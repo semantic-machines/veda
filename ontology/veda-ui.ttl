@@ -287,7 +287,7 @@ v-ui:ClassNameLabelTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <div><a href="id"><span rel="rdf:type" template="td:LabelTemplate">Имя класса</span>: <span property="rdfs:label">наименование</span></a></div>
+  <div><a href="id"><span rel="rdf:type" template="v-ui:LabelTemplate">Имя класса</span>: <span property="rdfs:label">наименование</span></a></div>
   """ ;
 .
 
@@ -296,7 +296,7 @@ v-ui:ClassNameIdTemplate
   rdfs:label "Шаблон с именем класса, меткой и id"@ru ;
   rdfs:label "Template with class name, label and id"@en ;
   v-ui:template """
-  <div><a href="id"><span rel="rdf:type" template="td:LabelTemplate">Имя класса</span>: <span property="id">id</span></a></div>
+  <div><a href="id"><span rel="rdf:type" template="v-ui:LabelTemplate">Имя класса</span>: <span property="id">id</span></a></div>
   """ ;
 .
 

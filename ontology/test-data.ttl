@@ -617,8 +617,8 @@ td:AppointmentTemplate2
   v-ui:forClass v-s:Appointment ;
   v-ui:template """
 	<div>
-		<span rel="v-s:employee" template="td:LabelTemplate">Работник</span>, 
-		<span rel="v-s:occupation" template="td:LabelTemplate">Должность</span>
+		<span rel="v-s:employee" template="v-ui:LabelTemplate">Работник</span>, 
+		<span rel="v-s:occupation" template="v-ui:LabelTemplate">Должность</span>
 	</div>
   """ ;
 .
@@ -648,7 +648,7 @@ td:AccountTemplate1
         <div class="row">
             <div class="col-md-12">
                <strong class="text-muted" about="v-s:owner" property="rdfs:label">Владелец</strong>
-               <div rel="v-s:owner" template="td:LabelTemplate">td:LabelTemplate</div>
+               <div rel="v-s:owner" template="v-ui:LabelTemplate">v-ui:LabelTemplate</div>
             </div>
         </div>
         <br />
