@@ -628,7 +628,7 @@ mnd-wf:ComplexRouteStartForm_Template
         <div class="row">
             <div class="col-md-4">
                <strong class="text-muted" about="v-wf:processInitiator" property="rdfs:label">Инициатор</strong>
-               <div rel="v-wf:processInitiator" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+               <div rel="v-wf:processInitiator" template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
             </div>
             <div class="col-md-4">
                <strong class="text-muted" about="v-wf:processedDocument" property="rdfs:label">Документ</strong>
@@ -651,26 +651,26 @@ mnd-wf:ComplexRouteStartForm_Template
         <div class="row">
             <div class="col-md-4">
                <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_coordinator1" property="rdfs:label">Согласующие 1 уровня</strong>
-               <div rel="mnd-wf:ComplexRouteStartForm_coordinator1" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+               <div rel="mnd-wf:ComplexRouteStartForm_coordinator1" template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
             </div>
             <div class="col-md-4">
                <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_coordinator2" property="rdfs:label">Согласующие 2 уровня</strong>
-               <div rel="mnd-wf:ComplexRouteStartForm_coordinator2" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+               <div rel="mnd-wf:ComplexRouteStartForm_coordinator2" template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
             </div>
             <div class="col-md-4">
                <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_coordinator3" property="rdfs:label">Согласующие 3 уровня</strong>
-               <div rel="mnd-wf:ComplexRouteStartForm_coordinator3" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+               <div rel="mnd-wf:ComplexRouteStartForm_coordinator3" template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
             </div>
         </div>
         <hr />
         <div class="row">
             <div class="col-md-4">
                <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_reviewer" property="rdfs:label">Рассматривающий</strong>
-               <div rel="mnd-wf:ComplexRouteStartForm_reviewer" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+               <div rel="mnd-wf:ComplexRouteStartForm_reviewer" template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
             </div>
             <div class="col-md-4">
                <strong class="text-muted" about="mnd-wf:ComplexRouteStartForm_signer" property="rdfs:label">Подписывающий</strong>
-               <div rel="mnd-wf:ComplexRouteStartForm_signer" template="mnd-d:AppointmentTemplate2">mnd-d:AppointmentTemplate2</div>
+               <div rel="mnd-wf:ComplexRouteStartForm_signer" template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
             </div>
         </div>
       </div>
