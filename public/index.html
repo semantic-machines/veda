@@ -207,13 +207,13 @@
 					<h3 class="text-center"><span i18n="[Search results]">Результаты поиска</span>
 						(<span id="results_count" bound>{results_count}</span>)
 					</h3>
-					<ul class="no-marks">
-						<li>
-							<label class="checkbox-inline">
+					<div id="search-features" class="form-inline">
+						<div class="checkbox">
+							<label>
 								<input type="checkbox" id="select-all"> <span i18n="[Select all]">Выбрать все</span>
 							</label>
-						</li>
-					</ul>
+						</div>
+					</div>
 					<hr class="thin-margin"/>
 					<ol id="search-results-list"></ol>
 					<hr/>
@@ -232,6 +232,20 @@
 			<label class="checkbox-inline">
 				<input type="checkbox"> &nbsp;
 			</label>		
+		</script>
+
+		<!-- Sort button template -->
+		<script type="html/template" id="sort-button-template">
+			<button class="btn btn-success btn dropdown-toggle" data-toggle="popover">
+				<i class="glyphicon glyphicon-sort-by-attributes"></i>
+			</button>
+		</script>
+
+		<!-- Sort popover template -->
+		<script type="html/template" id="sort-popover-template">
+			<button class="btn btn-success btn dropdown-toggle" data-toggle="popover">
+				<i class="glyphicon glyphicon-sort-by-attributes"></i>
+			</button>
 		</script>
 
 		<!-- Search modal -->
@@ -439,6 +453,7 @@
 		<script type="text/javascript" src="/js/browser/document_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/saved_search_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/search_presenter.js"></script>
+		<script type="text/javascript" src="/js/browser/search_presenter_sort.js"></script>
 		<script type="text/javascript" src="/js/browser/search_result_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/user_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/app_presenter.js"></script>

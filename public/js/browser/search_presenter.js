@@ -6,11 +6,13 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 	var currentPage = 0;
 	
 	// Initialize search page
-	veda.on("search:loaded", function (search, container_param) {
+	veda.on("search:loaded", function (search, container_param, page) {
 		
 		var container = container_param || $("#main");
 		
 		container.empty().hide();
+		
+		currentPage = page || 0;
 		
 		// Get template
 		var rendered = riot.render(template, search);
@@ -45,23 +47,24 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		$("#select-all", container).on("click", function (e) {
 			search.toggleAll();
 			// Redraw current page
-			veda.trigger("search:complete", search, container);
+			veda.trigger("search:complete", search, container, page);
 		});
 		
 		container.show();	
 	});
 	
 	// Display search results
-	veda.on("search:complete", function (search, container_param) {
+	veda.on("search:complete", function (search, container_param, page) {
 		var rt1, rt2, render_time, gc1, gc2, _get_count, gst1, gst2, _get_summary_time;
 		rt1 = Date.now();
 		gc1 = get_count;
 		gst1 = get_summary_time;
 		
+		var container = container_param || $("#main");
+		
+		currentPage = page || 0;
 		if (search.results_count < currentPage * veda.user.displayedElements) 
 			currentPage = Math.floor(search.results_count / veda.user.displayedElements) + 1 * (search.results_count % veda.user.displayedElements ? 1 : 0) - 1;
-		
-		var container = container_param || $("#main");
 		
 		// Show/hide 'results' or 'not found'
 		$("#search-submit").removeClass("disabled");
@@ -131,8 +134,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 				"click": (function (page) {
 					return function (event) {
 						event.preventDefault(); 
-						currentPage = page; 
-						veda.trigger('search:complete', search, container);
+						veda.trigger('search:complete', search, container, page);
 					}
 				})(page), 
 				"href" : ""
