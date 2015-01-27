@@ -116,7 +116,35 @@ kladr:codeOfType
   rdfs:range xsd:integer ;
 .
 
-# transform from DBF KLADR
+# ---------------------------------- index to KLADR
+
+kladr:index_0
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass kladr:AdministrativeTerritorialEntity ;
+  vdi:forProperty kladr:parent ;
+  vdi:inherited_index kladr:index_3 ;
+.
+
+kladr:index_1
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass kladr:AdministrativeTerritorialEntity ;
+  vdi:forProperty kladr:type ;
+  vdi:inherited_index kladr:index_2 ;
+.
+
+kladr:index_2
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass kladr:AdministrativeTerritorialType ;
+  vdi:indexed_field kladr:level ;
+.
+
+kladr:index_3
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass kladr:AdministrativeTerritorialEntity ;
+  vdi:indexed_field rdfs:label ;
+.
+
+# ---------------------------------- transform from DBF KLADR
 
 kladr:tr_1000
   rdf:type v-s:Transform ;
@@ -205,6 +233,14 @@ kladr:tr_1019
   v-s:destProperty kladr:level ;
   v-s:srcClassName "SOCRBASE" ;
   v-s:srcPropertyName "LEVEL" ;
+.    
+
+kladr:tr_1020
+  rdf:type v-s:Transform ;
+  v-s:destClass kladr:AdministrativeTerritorialType ;
+  v-s:destProperty kladr:codeOfType ;
+  v-s:srcClassName "SOCRBASE" ;
+  v-s:srcPropertyName "KOD_T_ST" ;
 .    
 
 kladr:tr_1101
