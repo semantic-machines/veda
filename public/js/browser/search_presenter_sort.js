@@ -45,7 +45,9 @@ veda.Module(function SearchPresenterSort(veda) { "use strict";
 		var container = container_param || $("#main");
 		if (!$("#sort-property-container", $search_features).length) $search_features.append(sortPropertyContainer);
 		currentPage = page || 0;
+		
 		//if (visitedPages.indexOf(currentPage) >= 0) return;
+		
 		visitedPages.push(currentPage);
 		
 		for (var i = currentPage * veda.user.displayedElements; i < (currentPage + 1) * veda.user.displayedElements && i < search.results_count ; i++) {
@@ -58,7 +60,7 @@ veda.Module(function SearchPresenterSort(veda) { "use strict";
 		
 		$(".sort-property", sortPropertyContainer).remove();
 		
-		var limit = 10;
+		var limit = 5;
 		Object.keys(properties).map(function (property_uri) {
 			if (limit-- <= 0) return;
 			var $sortProperty = $(sortPropertyTemplate);
@@ -89,10 +91,12 @@ veda.Module(function SearchPresenterSort(veda) { "use strict";
 				e.preventDefault();
 				if ( orderBy[property_uri] == "asc" ) {
 					orderBy[property_uri] = "desc";
+					direction.addClass("glyphicon-sort-by-alphabet-alt").removeClass("glyphicon-sort-by-alphabet");
 					search.sort = sort = encodeSort();
 					search.search();
 				} else {
 					orderBy[property_uri] = "asc";
+					direction.addClass("glyphicon-sort-by-alphabet").removeClass("glyphicon-sort-by-alphabet-alt");
 					search.sort = sort = encodeSort();
 					search.search();
 				}

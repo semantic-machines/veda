@@ -50,7 +50,14 @@ veda.Module(function SearchModel(veda) { "use strict";
 			// Clear previous results 
 			self.results = {};
 			var t1 = Date.now();
-			var results = query(veda.ticket, self.q, self.sort);
+			
+			// Transform user input like "roman karpov" to "'*'=='roman' && '*'=='karpov'"
+			if (q.indexOf("==") < 0) {
+				q = q.trim().split(" ").map(function (t) { return "'*'=='" + t + "'"}).join("&&");
+			}
+			
+			var results = query(veda.ticket, q, self.sort);
+						
 			var t2 = Date.now();
 			self.query_time = t2 - t1;
 			for (var i in results) {
