@@ -18,6 +18,7 @@ veda.Module(function SearchPresenterSort(veda) { "use strict";
 	}
 
 	function decodeSort() {
+		if (sort === "") return {};
 		return sort.split(",").reduce(function (acc, item) {
 			var split = item.split(" "),
 				prop = split[0].replace(/'/g, ""),
