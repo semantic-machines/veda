@@ -190,8 +190,7 @@
 						<form method="GET" role="form" class="form-horizontal">
 							<div class="input-group">
 								<input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
-								<span class="input-group-btn">
-									<button class="btn btn-default" type="button" id="save-search"><i class="glyphicon glyphicon-star-empty"></i></button>
+								<span class="input-group-btn" id="q-actions">
 									<button type="submit" id="search-submit" class="btn btn-primary" i18n="[Search]">Найти</button>
 								</span>
 							</div>
@@ -233,7 +232,14 @@
 				<input type="checkbox"> &nbsp;
 			</label>		
 		</script>
-
+		
+		<!-- Save search button -->
+		<script type="html/template" id="save-search-template">
+			<button class="btn btn-default" type="button" id="save-search">
+				<i class="glyphicon glyphicon-star-empty"></i>
+			</button>
+		</script>
+		
 		<!-- Sort property template -->
 		<script type="html/template" id="sort-property-template">
 			<span class="form-inline" id="sort-property-container">

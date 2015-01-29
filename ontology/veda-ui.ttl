@@ -272,7 +272,6 @@ v-ui:displayedElements
   rdfs:label "display elements"@en ;
   rdfs:range xsd:nonNegativeInteger ;
 .
-
 v-ui:LabelTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с меткой"@ru ;
@@ -281,7 +280,6 @@ v-ui:LabelTemplate
   <span><span property="rdfs:label">наименование</span></span>
   """ ;
 .
-
 v-ui:ClassNameLabelTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
@@ -290,7 +288,6 @@ v-ui:ClassNameLabelTemplate
   <div><a href="id"><span rel="rdf:type" template="v-ui:LabelTemplate">Имя класса</span>: <span property="rdfs:label">наименование</span></a></div>
   """ ;
 .
-
 v-ui:ClassNameIdTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с именем класса, меткой и id"@ru ;
@@ -299,4 +296,25 @@ v-ui:ClassNameIdTemplate
   <div><a href="id"><span rel="rdf:type" template="v-ui:LabelTemplate">Имя класса</span>: <span property="id">id</span></a></div>
   """ ;
 .
-
+v-ui:SavedSearchTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Сохраненный запрос"@ru ;
+  rdfs:label "Template for Saved search class"@en ;
+  v-ui:forClass v-s:SavedSearch ;
+  v-ui:template """
+  <div>
+        <strong class="text-muted" about="rdfs:label" property="rdfs:label">Наименование</strong>
+        <h5 property="rdfs:label">Имя запроса</h5>
+        <div class="row">
+          <div class="col-md-12">
+               <strong class="text-muted" about="v-s:query" property="rdfs:label">Запрос</strong>
+               <div property="v-s:query">Текст запроса</div>
+          </div>
+        </div>
+        <br/>
+        <button type="button" class="action btn btn-sm btn-primary" id="edit">Редактировать</button>
+        <button type="button" class="action btn btn-sm btn-success" id="save">Сохранить</button>
+        <button type="button" class="action btn btn-sm btn-default" id="cancel">Отмена</button>
+  </div>
+  """ ;
+.

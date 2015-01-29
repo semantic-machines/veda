@@ -17,17 +17,36 @@ veda.Module(function DocumentModel(veda) { "use strict";
 		function typeChangedHandler () {
 			self = new veda.DocumentModel(individual, container, template, mode);
 		}
-
 		function propertyModifiedHandler (property_uri, values) {
 			self.trigger("document:propertyModified", property_uri, values);
 		}
-		
+		function beforeSaveHandler () {
+			self.trigger("document:beforeSave");
+		}
+		function afterSaveHandler () {
+			self.trigger("document:afterSave");
+		}
+		function beforeResetHandler () {
+			self.trigger("document:beforeSave");
+		}
+		function afterResetHandler () {
+			self.trigger("document:afterSave");
+		}
+
 		individual.on("individual:propertyModified", propertyModifiedHandler);
 		individual.on("individual:typeChanged", typeChangedHandler);
+		individual.on("individual:beforeSave", beforeSaveHandler);
+		individual.on("individual:afterSave", afterSaveHandler);
+		individual.on("individual:beforeReset", beforeResetHandler);
+		individual.on("individual:afterReset", afterResetHandler);
 		
 		self.on("document:cleanup", function () {
 			individual.off("individual:propertyModified", propertyModifiedHandler);
 			individual.off("individual:typeChanged", typeChangedHandler);
+			individual.off("individual:beforeSave", beforeSaveHandler);
+			individual.off("individual:afterSave", afterSaveHandler);
+			individual.off("individual:beforeReset", beforeResetHandler);
+			individual.off("individual:afterReset", afterResetHandler);
 			self.off("*");
 			individual = self = null;
 		});

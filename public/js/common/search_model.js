@@ -50,7 +50,8 @@ veda.Module(function SearchModel(veda) { "use strict";
 			// Clear previous results 
 			self.results = {};
 			var t1 = Date.now();
-			
+			q = self.q;
+
 			// Transform user input like "roman karpov" to "'*'=='roman' && '*'=='karpov'"
 			if (q.indexOf("==") < 0) {
 				q = q.trim().split(" ").map(function (t) { return "'*'=='" + t + "'"}).join("&&");

@@ -57,7 +57,12 @@
 					) : ( 
 						veda.RegisterModule(veda.SearchModel.apply(new Object(), params), self, "search", params)
 					);*/
-					veda.SearchModel.apply(new Object(), params);
+					if (self.search && ( params == self.search.params || params.length == 0) ) {
+						self.trigger("search:loaded", self.search) && self.trigger("search:complete", self.search);
+					} else {
+						self.search = veda.SearchModel.apply(new Object(), params);
+						self.search.params = params;
+					}
 					break
 				default: ""; break
 			}

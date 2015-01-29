@@ -51,6 +51,8 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		});
 		
 		container.show();	
+		
+		veda.trigger("search:rendered", search, container);
 	});
 	
 	// Display search results
