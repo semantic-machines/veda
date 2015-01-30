@@ -20,7 +20,13 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "2.0" ;
+  owl:versionInfo "3.0" ;
+.
+vdi:ClassIndex
+  rdf:type owl:Class ;
+  rdfs:label "Class index"@en ;
+  rdfs:label "Индекс класса"@ru ;
+  rdfs:subClassOf owl:Thing ;
 .
 vdi:forClass
   rdf:type owl:ObjectProperty ;
@@ -36,12 +42,6 @@ vdi:forProperty
   rdfs:label "для свойства"@ru ;
   rdfs:range owl:Class ;
 .
-vdi:ClassIndex
-  rdf:type owl:Class ;
-  rdfs:label "Class index"@en ;
-  rdfs:label "Индекс класса"@ru ;
-  rdfs:subClassOf owl:Thing ;
-.
 vdi:inherited_index
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vdi:ClassIndex ;
@@ -54,6 +54,12 @@ vdi:indexed_field
   rdfs:domain vdi:ClassIndex ;
   rdfs:label "indexed field"@en ;
   rdfs:label "индексируемое поле"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+vdi:indexed_field_as_fwildcard
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain vdi:ClassIndex ;
+  rdfs:label "для поиска вида [*xxx]"@ru ;
   rdfs:range rdfs:Resource ;
 .
 #---------------------------------------------

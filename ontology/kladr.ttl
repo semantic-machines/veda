@@ -12,7 +12,7 @@
 <http://semantic-machines.com/veda/kladr>
   rdf:type owl:Ontology ;
   owl:imports <http://semantic-machines.com/veda/veda-schema> ;
-  owl:versionInfo "1.0" ;
+  owl:versionInfo "16.0" ;
   rdfs:label "KLADR"@en ;
   rdfs:label "KLADR"@ru ;
 .
@@ -123,6 +123,13 @@ kladr:index_0
   vdi:forClass kladr:AdministrativeTerritorialEntity ;
   vdi:forProperty kladr:parent ;
   vdi:inherited_index kladr:index_3 ;
+.
+
+kladr:index_10
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass kladr:AdministrativeTerritorialEntity ;
+  vdi:forProperty kladr:ocatd ;
+  vdi:indexed_field_as_fwildcard kladr:ocatd ;
 .
 
 kladr:index_1
