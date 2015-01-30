@@ -611,4 +611,5 @@ owl:Thing a owl:Class ;
     rdfs:label "Thing"@en ;
     rdfs:label "Сущность"@ru ;
     rdfs:comment "The class of OWL individuals." ;
-    rdfs:isDefinedBy owl: .
+    rdfs:isDefinedBy owl: ;
+    rdfs:subClassOf rdfs:Resource .

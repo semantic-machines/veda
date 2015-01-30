@@ -7,11 +7,11 @@
 		<meta name="description" content=""/>
 		<meta name="author" content=""/>
 
-		<!--link href="/css/bootstrap.min.css" rel="stylesheet"/-->
+		<link href="/css/bootstrap.min.css" rel="stylesheet"/>
 		
 		<!-- Bootswatch themes -->
 		<!--link href="/css/amelia.bootstrap.min.css" rel="stylesheet"/-->
-		<link href="/css/cerulean.bootstrap.min.css" rel="stylesheet"/>
+		<!--link href="/css/cerulean.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/cosmo.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/cyborg.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/darkly.bootstrap.min.css" rel="stylesheet"/-->
@@ -237,6 +237,13 @@
 		<script type="html/template" id="save-search-template">
 			<button class="btn btn-default" type="button" id="save-search">
 				<i class="glyphicon glyphicon-star-empty"></i>
+			</button>
+		</script>
+
+		<!-- Saved search list button -->
+		<script type="html/template" id="saved-search-list-button-template">
+			<button class="btn btn-default" type="button" id="saved-search-list">
+				<i class="glyphicon glyphicon-menu-hamburger"></i>
 			</button>
 		</script>
 		
@@ -465,7 +472,8 @@
 		<script type="text/javascript" src="/js/browser/backend.js"></script>
 		<script type="text/javascript" src="/js/browser/console_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/document_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/saved_search_presenter.js"></script>
+		<script type="text/javascript" src="/js/browser/saved_search_list_presenter.js"></script>
+		<script type="text/javascript" src="/js/browser/save_search_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/search_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/search_presenter_sort.js"></script>
 		<script type="text/javascript" src="/js/browser/search_result_presenter.js"></script>

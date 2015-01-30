@@ -1,29 +1,30 @@
-// Saved Search Presenter
+// Save Search Presenter
 
-veda.Module(function SavedSearchPresenter(veda) { "use strict";
+veda.Module(function SaveSearchPresenter(veda) { "use strict";
 	
-	var saveSearchBtnTmpl = $("#save-search-template").html();
+	var template = $("#save-search-template").html();
 	
 	veda.on("search:rendered", function (search, container_param) {
 		
-		var saveSearchBtn = $( saveSearchBtnTmpl );
+		var btn = $( template );
 		var container = container_param || $("#main");
 		var qActions = $("#q-actions", container);
 		
 		$("#save-search", qActions).remove();
-		qActions.prepend(saveSearchBtn);
+		qActions.prepend(btn);
 		
-		saveSearchBtn.on("click", function () {
+		btn.on("click", function () {
 			if (search.q) {
 				
 				var that = $(this);
 				var ssContainer = $("<div/>");
-				var ss = new veda.DocumentModel(undefined, ssContainer, undefined, "edit");
+				var ss = new veda.IndividualModel();
 				ss["rdf:type"] = [new veda.IndividualModel("v-s:SavedSearch")];
 				ss["v-s:author"] = [veda.user];
 				ss["v-s:created"] = [new Date()];
 				ss["v-s:query"] = [search.q];
 				ss["rdfs:label"] = [search.q];
+				ss = new veda.DocumentModel(ss, ssContainer, undefined, "edit");
 
 				ss.on("document:afterSave document:afterReset", function () {
 					that.popover("destroy");

@@ -30,7 +30,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		
 		$("#search #search-submit", container).on("click", function(event) {
 			event.preventDefault();
-			$("#search-submit").addClass("disabled"); 
+			$("#search-submit", container).addClass("disabled"); 
 			currentPage = 0;
 			
 			if (!container_param) return riot.route("#/search/" + search.q, true);
@@ -69,7 +69,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 			currentPage = Math.floor(search.results_count / veda.user.displayedElements) + 1 * (search.results_count % veda.user.displayedElements ? 1 : 0) - 1;
 		
 		// Show/hide 'results' or 'not found'
-		$("#search-submit").removeClass("disabled");
+		$("#search-submit", container).removeClass("disabled");
 		if (!search.q) {
 			$("#q", container).focus();
 			$("#search-results", container).hide();
@@ -97,7 +97,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 			(function (i) { 
 				setTimeout(function () {
 
-					var $li = $("<li/>").appendTo("#search-results-list");
+					var $li = $("<li/>").appendTo( $("#search-results-list", container) );
 
 					// Select search results 
 					var $select = $( $("#search-select-template").html() );

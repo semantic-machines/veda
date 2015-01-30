@@ -2,8 +2,12 @@
   color: #333;
 }*/
 
+.navbar-right {
+  margin-right: inherit !important;
+}
+
 .popover {
-  min-width: 200px ! important;
+  min-width: 200px !important;
   max-width: 400px;
   width: auto;
 }
