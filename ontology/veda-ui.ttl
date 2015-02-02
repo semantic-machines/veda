@@ -304,7 +304,7 @@ v-ui:SavedSearchTemplate
   v-ui:template """
   <div>
         <strong class="text-muted" about="rdfs:label" property="rdfs:label">Наименование</strong>
-        <h5 property="rdfs:label">Имя запроса</h5>
+        <div property="rdfs:label">Наименование</div>
         <div class="row">
           <div class="col-md-12">
                <strong class="text-muted" about="v-s:query" property="rdfs:label">Запрос</strong>
@@ -316,5 +316,17 @@ v-ui:SavedSearchTemplate
         <button type="button" class="action btn btn-sm btn-success" id="save">Сохранить</button>
         <button type="button" class="action btn btn-sm btn-default" id="cancel">Отмена</button>
   </div>
+  """ ;
+.
+v-ui:SavedSearchInListTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Сохраненный запрос"@ru ;
+  rdfs:label "Template for Saved search class"@en ;
+  v-ui:forClass v-s:SavedSearch ;
+  v-ui:template """
+  <span>
+        <span property="rdfs:label">Имя запроса</span>
+        <button type="button" class="action btn btn-xs btn-danger" id="delete"><i class="glyphicon glyphicon-remove"></i></button>
+  </span>
   """ ;
 .

@@ -7,13 +7,20 @@
 }
 
 .popover {
-  min-width: 200px !important;
+  min-width: 300px !important;
   max-width: 400px;
   width: auto;
+  padding: 0px;
 }
 
 .no-margin {
   margin: 0px;
+}
+.no-padding {
+  padding: 0px;
+}
+.no-border {
+  border: none;
 }
 
 dl {

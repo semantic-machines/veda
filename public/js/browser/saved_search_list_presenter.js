@@ -15,29 +15,43 @@ veda.Module(function SaveSearchPresenter(veda) { "use strict";
 		$("#saved-search-list", qActions).remove();
 		qActions.prepend(btn);
 
-		var sContainer = $("<div/>");
+		var sContainer = $("<div/>", {text:"Данные отсутствуют"});
 		btn.popover({
 			html: true,
 			content: sContainer,
 			placement: "bottom",
-			container: "body"
+			container: qActions
 		});
 		
-		var ol = $("<ol>");
+		var l = $("<div>", {"class": "list-group no-margin"});
 		var tmpl = new veda.IndividualModel("v-ui:LabelTemplate");
 		btn.one("click", function () {
 			var tmp = $("<div>");
 			var s = new veda.SearchModel(q, tmp);
 			Object.getOwnPropertyNames(s.results).map( function (id) {
-				var li = $("<li>").appendTo(ol);
-				var d = new veda.DocumentModel(s.results[id], li, tmpl);
-				li.click(function () {
+				var a = $("<a>", {"class": "list-group-item no-border", "href": "", "style": "display: block"}).appendTo(l);
+				// Прогреваем тип индивида
+				s.results[id]["rdf:type"] = s.results[id]["rdf:type"];
+				
+				var d = new veda.DocumentModel(s.results[id], a, tmpl);
+				if (search.q == d["v-s:query"][0]) a.addClass("active");
+				a.click(function (e) {
+					e.preventDefault();
+					$("a", sContainer).removeClass("active");
 					search.q = d["v-s:query"][0];
 					search.search();
+					a.addClass("active");
+				});
+				var b = $("<span>", {"class": "badge"}).prependTo(a);
+				var i = $("<i>", {"class": "glyphicon glyphicon-remove"}).appendTo(b);
+				b.click(function (e) {
+					e.preventDefault();
+					d["v-s:deleted"] = [new Boolean(true)];
+					d.save();
+					a.remove();
 				});
 			});
-			sContainer.append(ol);
+			if (s.results_count) sContainer.html(l);
 		});
-
 	});
 });
