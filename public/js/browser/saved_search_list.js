@@ -1,6 +1,6 @@
 // Save Search Presenter
 
-veda.Module(function SaveSearchPresenter(veda) { "use strict";
+veda.Module(function SavedSearchList(veda) { "use strict";
 	
 	var template = $("#saved-search-list-button-template").html();
 	
@@ -30,7 +30,8 @@ veda.Module(function SaveSearchPresenter(veda) { "use strict";
 			var s = new veda.SearchModel(q, tmp);
 			Object.getOwnPropertyNames(s.results).map( function (id) {
 				var a = $("<a>", {"class": "list-group-item no-border", "href": "", "style": "display: block"}).appendTo(l);
-				// Прогреваем тип индивида
+				
+				// Init individual type
 				s.results[id]["rdf:type"] = s.results[id]["rdf:type"];
 				
 				var d = new veda.DocumentModel(s.results[id], a, tmpl);

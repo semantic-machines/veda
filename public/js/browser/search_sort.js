@@ -1,4 +1,4 @@
-veda.Module(function SearchPresenterSort(veda) { "use strict";
+veda.Module(function SearchSort(veda) { "use strict";
 
 	var	sortPropertyContainer = $( $("#sort-property-template").html() ),
 		sortPropertyTemplate = $(".sort-property", sortPropertyContainer)[0].outerHTML,

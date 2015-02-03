@@ -3,15 +3,14 @@
 veda.Module(function IndividualModel(veda) { "use strict";
 
 	/* 
-	 * Параметр noCache используется для создания нового индивида, 
+	 * Параметр noCache используется для извлечения индивида из базы данных,
 	 * если параметр отсутствует (чаще всего) либо равен false,
-	 * делается попытка извлечения объект из кэша.
+	 * делается попытка извлечения объект из кэша браузера.
 	 */
 	
 	//var cnt = 0;
 	
 	veda.IndividualModel = function (uri, noCache) {
-		
 		//console.log("individual model:", ++cnt, uri);
 		
 		var self = riot.observable(this);
