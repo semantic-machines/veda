@@ -34,7 +34,7 @@ veda.Module(function SaveSearchPresenter(veda) { "use strict";
 					html: true,
 					content: ssContainer,
 					placement: "auto",
-					container: "body"
+					container: qActions
 				}).popover("show").on('hidden.bs.popover', function () {
 					that.popover("destroy");
 				});
