@@ -1,6 +1,6 @@
 // Save Search Presenter
 
-veda.Module(function SaveSearchPresenter(veda) { "use strict";
+veda.Module(function SaveSearch(veda) { "use strict";
 	
 	var template = $("#save-search-template").html();
 	
