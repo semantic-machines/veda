@@ -12,7 +12,7 @@ veda.Module(function SavedSearchList(veda) { "use strict";
 		var container = container_param || $("#main");
 		var qActions = $("#q-actions", container);
 		
-		$("#saved-search-list", qActions).remove();
+		//$("#saved-search-list", qActions).remove();
 		qActions.prepend(btn);
 
 		var sContainer = $("<div/>", {text:"Данные отсутствуют"});
@@ -42,6 +42,7 @@ veda.Module(function SavedSearchList(veda) { "use strict";
 					search.q = d["v-s:query"][0];
 					search.search();
 					a.addClass("active");
+					btn.popover("hide");
 				});
 				var b = $("<span>", {"class": "badge"}).prependTo(a);
 				var i = $("<i>", {"class": "glyphicon glyphicon-remove"}).appendTo(b);
@@ -50,6 +51,7 @@ veda.Module(function SavedSearchList(veda) { "use strict";
 					d["v-s:deleted"] = [new Boolean(true)];
 					d.save();
 					a.remove();
+					if ( !$("a", qActions).length ) btn.popover("hide");
 				});
 			});
 			if (s.results_count) sContainer.html(l);

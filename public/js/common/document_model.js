@@ -13,7 +13,17 @@ veda.Module(function DocumentModel(veda) { "use strict";
 			self.trigger("document:cleanup");
 			self = new veda.DocumentModel(uri, container, template, "view");
 		}
+		
+		self.delete = function () {
+			self["v-s:deleted"] = [new Boolean(true)];
+			self.save();
+		}
 
+		self.recover = function () {
+			self["v-s:deleted"] = [];
+			self.save();
+		}
+		
 		function typeChangedHandler () {
 			self = new veda.DocumentModel(individual, container, template, mode);
 		}

@@ -147,6 +147,7 @@ veda.Module(function IndividualModel(veda) { "use strict";
 			Object.keys(individual).map(function (property_uri) {
 				if (property_uri == "@") return;
 				if (property_uri == "rdf:type") return;
+				if (property_uri == "v-s:deleted") return;
 				self.defineProperty(property_uri);
 			});
 			if (!noCache) veda.cache[self.id] = self;
@@ -190,6 +191,7 @@ veda.Module(function IndividualModel(veda) { "use strict";
 			original_individual = '{"@":"' + individual["@"] +'"}';
 		}
 		
+		// Special properties
 		Object.defineProperty(self, "id", {
 			get: function () { 
 				return individual["@"];
@@ -207,6 +209,9 @@ veda.Module(function IndividualModel(veda) { "use strict";
 			});
 			self.trigger("individual:typeChanged", classes);
 		});
+
+		self.defineProperty("v-s:deleted");
+
 		
 		// Load data 
 		if (uri) self.load(uri); 

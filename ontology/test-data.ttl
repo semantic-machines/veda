@@ -565,7 +565,8 @@ td:PersonTemplate1
         <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
         <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
         <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-        <button type="button" class="action btn btn-danger" id="delete" i18n="[Delete]">Удалить</button>
+        <button type="button" class="action btn btn-link" id="delete" i18n="[Delete]">Удалить</button>
+        <button type="button" class="action btn btn-link" id="recover" i18n="[Recover]">Восстановить</button>
       </div>
     </div>
   </div>

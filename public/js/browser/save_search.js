@@ -10,7 +10,7 @@ veda.Module(function SaveSearch(veda) { "use strict";
 		var container = container_param || $("#main");
 		var qActions = $("#q-actions", container);
 		
-		$("#save-search", qActions).remove();
+		//$("#save-search", qActions).remove();
 		qActions.prepend(btn);
 		
 		btn.on("click", function () {
