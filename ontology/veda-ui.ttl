@@ -315,6 +315,7 @@ v-ui:SavedSearchTemplate
         <button type="button" class="action btn btn-sm btn-primary" id="edit">Редактировать</button>
         <button type="button" class="action btn btn-sm btn-success" id="save">Сохранить</button>
         <button type="button" class="action btn btn-sm btn-default" id="cancel">Отмена</button>
+        <button type="button" class="action btn btn-sm btn-danger" id="delete" i18n="[Delete]">Удалить</button>
   </div>
   """ ;
 .

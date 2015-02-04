@@ -9,7 +9,6 @@ veda.Module(function IndividualModel(veda) { "use strict";
 	 */
 	
 	//var cnt = 0;
-	
 	veda.IndividualModel = function (uri, noCache) {
 		//console.log("individual model:", ++cnt, uri);
 		

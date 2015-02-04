@@ -562,9 +562,10 @@ td:PersonTemplate1
         </div>
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]" >Редактировать</button>
-        <button type="button" class="action btn btn-success" id="save" i18n="[Save]" >Сохранить</button>
-        <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]" >Отмена</button>
+        <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
+        <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
+        <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
+        <button type="button" class="action btn btn-danger" id="delete" i18n="[Delete]">Удалить</button>
       </div>
     </div>
   </div>
@@ -582,7 +583,7 @@ td:AppointmentTemplate1
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <span property="_class.rdfs:label">Имя класса</span>
+	        <span about="v-s:Appointment" property="rdfs:label">Имя класса</span>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
   	        <a href="id"><span property="id">ID</span></a>
@@ -604,6 +605,7 @@ td:AppointmentTemplate1
         <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
         <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
         <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
+        <button type="button" class="action btn btn-danger" id="delete" i18n="[Delete]">Удалить</button>
       </div>
     </div>
   </div>
@@ -674,6 +676,7 @@ td:AccountTemplate1
         <button type="button" class="action btn btn-sm btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
         <button type="button" class="action btn btn-sm btn-success" id="save" i18n="[Save]">Сохранить</button>
         <button type="button" class="action btn btn-sm btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
+        <button type="button" class="action btn btn-sm btn-danger" id="delete" i18n="[Delete]">Удалить</button>
       </div-->
     </div>
   </div>
@@ -719,6 +722,7 @@ td:PreferencesTemplate1
     <button type="button" class="action btn btn-sm btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
     <button type="button" class="action btn btn-sm btn-success" id="save" i18n="[Save]">Сохранить</button>
     <button type="button" class="action btn btn-sm btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
+    <button type="button" class="action btn bnt-sm btn-danger" id="delete" i18n="[Delete]">Удалить</button>
   </div-->
 </div>
 

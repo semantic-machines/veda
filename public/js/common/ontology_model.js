@@ -2,6 +2,28 @@
 
 veda.Module(function OntologyModel(veda) { "use strict";
 
+	/* owl:Thing && rdfs:Resource domain properties */
+	var stopList = [
+		//"v-s:deleted",
+		"owl:topObjectProperty",
+		"owl:bottomObjectProperty",
+		"owl:topDataProperty",
+		"owl:bottomDataProperty",
+		"rdf:value",
+		"rdfs:member",
+		"owl:differentFrom",
+		"owl:sameAs",
+		//"rdfs:comment",
+		//"rdfs:label",
+		"rdfs:seeAlso",
+		//"rdf:type",
+		"rdfs:isDefinedBy",
+		"owl:annotatedProperty",
+		"owl:annotatedSource",
+		"owl:annotatedTarget",
+		"owl:members"
+	];
+	
 	veda.OntologyModel = function () {
 
 		var self = this;
@@ -85,6 +107,7 @@ veda.Module(function OntologyModel(veda) { "use strict";
 		});
 
 		Object.keys(self.properties).map( function (uri) {
+			if (stopList.indexOf(uri) >= 0) return;
 			var property = self.properties[uri];
 			if (!property["rdfs:domain"]) return;
 			property["rdfs:domain"].map( function ( item ) {
