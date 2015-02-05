@@ -218,10 +218,27 @@ jsWorkflow.ready = jsPlumb.ready;
                 instance.makeSource(windows, {
                     filter: ".ep",
                     anchor: ["Continuous", { faces:[ "top", "left", "right" ] } ],
-                    connector: ["Bezier", {
-                    	curviness: 0,
-                        stub: 0
-                    }],
+                    connector: [
+						/*"Bezier", {
+                    	curviness: 50
+						}*/
+						"Straight", {
+                    	stub: 30,
+                        gap: 0
+						}
+						/*"Flowchart", {
+                    	alwaysRespectStubs: false,
+                        stub: 0,
+                        gap: 0,
+                        midpoint: 0.5,
+                        cornerRadius: 0
+						}*/
+						/*"StateMachine", {
+                    	margin: 5,
+                    	curviness: 20,
+                        proximityLimit: 100
+						}*/
+                    ],
                     connectorStyle: {
                         strokeStyle: "#666666",
                         lineWidth: 1,

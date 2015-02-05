@@ -3,6 +3,7 @@
 veda.Module(function DocumentPresenter(veda) { "use strict";
 	
 	//var c1 = 0;
+	var deletedAlertTmpl = $("#deleted-document-alert-template").html();
 	
 	veda.on("document:loaded", function PresentDocument(document, container_param, template_param, _mode) {
 		
@@ -16,6 +17,14 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			.empty().hide()
 			.attr("resource", document.id)
 			.attr("typeof", document["rdf:type"].map(function (item) { return item.id }).join(" ") );
+			
+		if (document["v-s:deleted"] && document["v-s:deleted"][0] == true) {
+			var deletedAlert = $( deletedAlertTmpl );
+			container.prepend(deletedAlert);
+			$("button", deletedAlert).click(function () {
+				document.trigger("recover");
+			});
+		}
 
 		// Embedded templates list
 		var embedded = [];
@@ -89,12 +98,12 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 
 		document.on("delete", function () {
 			document.delete();
-			document.trigger("view");
+			document.trigger("cancel");
 		});
 
 		document.on("recover", function () {
 			document.recover();
-			document.trigger("view");
+			document.trigger("cancel");
 		});
 		
 		document.on("view edit", function (_mode) {
@@ -107,19 +116,13 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			var $edit = $("#edit", classTemplate),
 				$save = $("#save", classTemplate),
 				$cancel = $("#cancel", classTemplate),
-				$delete = $("#delete", classTemplate),
-				$recover = $("#recover", classTemplate);
+				$delete = $("#delete", classTemplate);
 
 			$delete.on("click", function (e) {
 				document.trigger("delete");
 			});
 			if (document["v-s:deleted"][0] && document["v-s:deleted"][0] == true) $delete.hide();
 
-			$recover.on("click", function (e) {
-				document.trigger("recover");
-			});
-			if (!(document["v-s:deleted"][0] && document["v-s:deleted"][0] == true)) $recover.hide();
-			
 			$edit.on("click", function (e) {
 				document.trigger("edit");
 			});
