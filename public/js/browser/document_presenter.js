@@ -119,7 +119,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				$delete = $("#delete", classTemplate);
 
 			$delete.on("click", function (e) {
-				document.trigger("delete");
+				if ( confirm("Вы действительно хотите удалить документ?") ) document.trigger("delete");
 			});
 			if (document["v-s:deleted"][0] && document["v-s:deleted"][0] == true) $delete.hide();
 

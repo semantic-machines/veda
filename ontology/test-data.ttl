@@ -605,7 +605,7 @@ td:AppointmentTemplate1
         <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
         <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
         <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-        <button type="button" class="action btn btn-danger" id="delete" i18n="[Delete]">Удалить</button>
+        <button type="button" class="action btn btn-link" id="delete" i18n="[Delete]">Удалить</button>
       </div>
     </div>
   </div>
@@ -633,7 +633,7 @@ td:AccountTemplate1
   v-ui:embedded "true"^^xsd:boolean ;  
   v-ui:template """
   <div>
-    <div class="panel panel-default" resource="id" typeof="class">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
@@ -676,7 +676,7 @@ td:AccountTemplate1
         <button type="button" class="action btn btn-sm btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
         <button type="button" class="action btn btn-sm btn-success" id="save" i18n="[Save]">Сохранить</button>
         <button type="button" class="action btn btn-sm btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-        <button type="button" class="action btn btn-sm btn-danger" id="delete" i18n="[Delete]">Удалить</button>
+        <button type="button" class="action btn btn-sm btn-link" id="delete" i18n="[Delete]">Удалить</button>
       </div-->
     </div>
   </div>
@@ -713,16 +713,17 @@ td:PreferencesTemplate1
   </div>
   <div class="panel-body">
     <div>
-      <!--span property="document.v-s:owner">Владелец</span-->
-      <strong class="text-muted" about="v-ui:preferredLanguage" property="rdfs:label">Язык</strong>: <ul><li rel="v-ui:preferredLanguage">RU</li></ul>
-      <strong class="text-muted" about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</strong>: <span property="v-ui:displayedElements">999</span>
+      <strong class="text-muted" about="v-ui:preferredLanguage" property="rdfs:label">Язык</strong>:
+      <div rel="v-ui:preferredLanguage">RU</div>
+      <strong class="text-muted" about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</strong>: 
+      <span property="v-ui:displayedElements">999</span>
     </div>
   </div>
   <!--div class="panel-footer">
     <button type="button" class="action btn btn-sm btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
     <button type="button" class="action btn btn-sm btn-success" id="save" i18n="[Save]">Сохранить</button>
     <button type="button" class="action btn btn-sm btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-    <button type="button" class="action btn bnt-sm btn-danger" id="delete" i18n="[Delete]">Удалить</button>
+    <button type="button" class="action btn bnt-sm btn-link" id="delete" i18n="[Delete]">Удалить</button>
   </div-->
 </div>
 

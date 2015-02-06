@@ -679,7 +679,7 @@ mnd-wf:ComplexRouteStartForm_Template
         <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
         <button type="button" class="action btn btn-success" id="save_and_start_process" i18n="[StartProccess]">Запустить по маршруту</button>
         <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-        <button type="button" class="action btn btn-danger" id="delete" i18n="[Delete]">Удалить</button>
+        <button type="button" class="action btn btn-link" id="delete" i18n="[Delete]">Удалить</button>
       </div>
     </div>
   </div>
