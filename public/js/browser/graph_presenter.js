@@ -11,52 +11,54 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		
 		var uri = params.length ? params[0] : undefined;
 		
-		var nodes = [], edges = [];
+		var nodes = new vis.DataSet(), edges = new vis.DataSet();
 		
-		var individual = new veda.IndividualModel(uri);
-		nodes.push (
-			{
-				id: individual.id,
-				label: individual["rdfs:label"] && individual["rdfs:label"][0] ? individual["rdfs:label"][0] : individual.id
+		function expand (uri) {
+			var individual = new veda.IndividualModel(uri);
+			var a = nodes.get(uri);
+			if ( nodes.get(uri) === null ) {
+				nodes.add ([
+					{
+						id: individual.id,
+						label: individual["rdfs:label"] && individual["rdfs:label"][0] ? individual["rdfs:label"][0] : individual.id
+					}
+				]);
 			}
-		);
-		
-		Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
-			var values = individual[property_uri];
-			values.map(function (value) {
-				if (value instanceof veda.IndividualModel && value.id != individual.id) {
-					nodes.push (
-						{
-							id: value.id,
-							label: value["rdfs:label"] && value["rdfs:label"][0] ? value["rdfs:label"][0] : value.id
+			Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
+				var values = individual[property_uri];
+				values.map(function (value) {
+					if (value instanceof veda.IndividualModel && value.id != individual.id) {
+						if ( nodes.get(value.id) === null ) {
+							nodes.add ([
+								{
+									id: value.id,
+									label: value["rdfs:label"] && value["rdfs:label"][0] ? value["rdfs:label"][0] : value.id
+								}
+							]);
 						}
-					);
-					edges.push (
-						{
-							from: individual.id,
-							to: value.id
+						var options = {
+							filter: function (item) {
+								return  item.from == individual.id && 
+										item.to == value.id &&
+										item.label.toString() == veda.ontology[property_uri]["rdfs:label"][0].toString()
+							}
 						}
-					);
-				}
+						var a = edges.get(options);
+						if ( !edges.get(options).length ) {
+							edges.add ([
+								{
+									from: individual.id,
+									to: value.id,
+									label: veda.ontology[property_uri]["rdfs:label"][0]
+								}
+							]);
+						}
+					}
+				});
 			});
-		});
-	
-		/*var nodes = [
-			{id: 1, label: 'Node 1'},
-			{id: 2, label: 'Node 2'},
-			{id: 3, label: 'Node 3'},
-			{id: 4, label: 'Node 4'},
-			{id: 5, label: 'Node 5'}
-		];
-
-		// create an array with edges
-		var edges = [
-			{from: 1, to: 2},
-			{from: 1, to: 3},
-			{from: 2, to: 4},
-			{from: 2, to: 5}
-		];
-		*/
+		};
+		
+		expand(uri);
 		
 		// create a network
 		var data= {
@@ -64,11 +66,33 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 			edges: edges,
 		};
 		var options = {
-			width: '100%',
-			height: '800px'
+			width: "100%",
+			height: "800px",
+			nodes: {
+				shape: "box"
+			}, 
+			physics: {
+				barnesHut: {
+					enabled: true,
+					gravitationalConstant: -2000,
+					centralGravity: 0.1,
+					springLength: 150,
+					springConstant: 0.04,
+					damping: 0.09
+				},
+			},
 		};
 		
 		var network = new vis.Network(container.get(0), data, options);
+		
+		function onSelect (properties) {
+			properties.nodes.map( function (node) {
+				expand(node);
+			});
+		}
+
+		// add event listener
+		network.on("doubleClick", onSelect);
 		
 	});
 
