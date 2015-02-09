@@ -46,6 +46,9 @@
 							<li class="divider"></li>
 						</ul>
 					</li>
+					<li id="graph">	
+						<a i18n="[Graph]" href="#/graph">Граф</a>
+					</li>
 					<li id="console">	
 						<a i18n="[Console]" href="#/console">Консоль</a>
 					</li>
@@ -446,7 +449,6 @@
 			</div>
 		</script>
 
-
 		<!-- Javascript -->
 
 		<!-- Utils & UI -->
@@ -459,7 +461,9 @@
 		<script type="text/javascript" src="/js/browser/jquery.autosize.min.js"></script>
 		<script type="text/javascript" src="/js/browser/jsplumb.js"></script>
 		<script type="text/javascript" src="/js/browser/remote-list.js"></script>
-				
+		<script type="text/javascript" src="/js/browser/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/js/browser/vis.min.js"></script>
+		
 		<!-- Veda browser & server -->
 		<script type="text/javascript" src="/js/common/util.js"></script>
 		<script type="text/javascript" src="/js/common/riot.js"></script>
@@ -473,7 +477,7 @@
 		<script type="text/javascript" src="/js/common/user_model.js"></script>
 		<script type="text/javascript" src="/js/common/search_model.js"></script>
 		<script type="text/javascript" src="/js/common/ontology_model.js"></script>
-
+		
 		<!-- Veda browser only -->
 		<script type="text/javascript" src="/js/browser/backend.js"></script>
 		<script type="text/javascript" src="/js/browser/console_presenter.js"></script>
@@ -484,11 +488,11 @@
 		<script type="text/javascript" src="/js/browser/search_sort.js"></script>
 		<script type="text/javascript" src="/js/browser/search_result_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/user_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/app_presenter.js"></script>
+		<script type="text/javascript" src="/js/browser/graph_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/veda_controls.js"></script>
-		<script type="text/javascript" src="/js/browser/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="/js/browser/veda_net_editor.js"></script>
-		
+		<script type="text/javascript" src="/js/browser/app_presenter.js"></script>				
+
 		<script type="text/javascript">
 			$(function(){
 				veda.Module({/* configuration object */});

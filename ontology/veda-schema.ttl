@@ -19,12 +19,12 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "1.1" ;
+  owl:versionInfo "1.2" ;
 .
 
 v-s:fullUrl
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:File ;
+  rdfs:domain owl:Ontology ;
   rdfs:label "full URL"@en ;
   rdfs:label "полный URL"@ru ;
   rdfs:range xsd:string ;

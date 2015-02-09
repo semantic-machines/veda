@@ -9,6 +9,7 @@ var vocabulary_ru = {
 	'[Logout]' : 'Выйти',
 	'[Semantic machines]' : '© Смысловые машины, ООО.',
 	'[License]' : 'Лицензия',	
+	'[Graph]' : 'Граф',	
 
 //Document
 	'[Edit]' : 'Редактировать',	

@@ -64,6 +64,9 @@
 						self.search.params = params;
 					}
 					break
+				case "graph": 
+					self.trigger("load:graph", params);
+					break
 				default: ""; break
 			}
 		};

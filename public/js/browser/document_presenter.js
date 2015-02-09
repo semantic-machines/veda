@@ -372,6 +372,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		if ( !document[property_uri] ) document.defineProperty(property_uri);
 		var values = document[property_uri];
 
+		container.attr("content", values.join(", "));
+
 		var range = property["rdfs:range"][0].id;
 		range == "xsd:boolean"  			? 	(controlType = $.fn.vedaBoolean,  emptyVal = new Boolean(false) ) :
 		range == "xsd:integer"  			? 	(controlType = $.fn.vedaInteger,  emptyVal = undefined ) :

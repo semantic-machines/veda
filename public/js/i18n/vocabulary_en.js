@@ -5,6 +5,7 @@ var vocabulary_en = {
 	'[Document2]' : 'Document2',
 	'[Console]' : 'Console',
 	'[Search]' : 'Search',
+	'[Graph]' : 'Graph',	
 	'[Tests]' : 'Tests',
 	'[Logout]' : 'Logout',
 	'[Semantic machines]' : '© Semantic machines, LLC.',
