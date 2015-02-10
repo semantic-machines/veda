@@ -25,19 +25,22 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 				values.map(function (value) {
 					if (value instanceof veda.IndividualModel && value.id != individual.id) {
 						addNode(value);
+						var from = individual.id;
+						var to = value.id;
+						var label = veda.ontology[property_uri]["rdfs:label"][0].toString();
 						var options = {
 							filter: function (item) {
-								return  item.from == individual.id && 
-										item.to == value.id &&
-										item.label.toString() == veda.ontology[property_uri]["rdfs:label"][0].toString()
+								return  item.from == from && 
+										item.to == to &&
+										item.label.toString() == label
 							}
 						}
 						if ( !edges.get(options).length ) {
 							edges.add ([
 								{
-									from: individual.id,
-									to: value.id,
-									label: veda.ontology[property_uri]["rdfs:label"][0]
+									from: from,
+									to: to,
+									label: label
 								}
 							]);
 						}
@@ -122,7 +125,11 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 			height: "800px",
 			nodes: {
 				shape: "box"
-			}, 
+			},
+			edges: {
+				style: "arrow",
+				arrowScaleFactor: 0.7
+			},
 			physics: {
 				barnesHut: {
 					enabled: true,
@@ -138,7 +145,6 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 
 		// Add event listeners
 		network.on("doubleClick", onDoubleClick);
-		
 		network.on("select", onSelect);
 		
 	});
