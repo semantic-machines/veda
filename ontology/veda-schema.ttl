@@ -21,7 +21,6 @@
   owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "1.2" ;
 .
-
 v-s:fullUrl
   rdf:type owl:DatatypeProperty ;
   rdfs:domain owl:Ontology ;
@@ -29,7 +28,6 @@ v-s:fullUrl
   rdfs:label "полный URL"@ru ;
   rdfs:range xsd:string ;
 .
-
 v-s:Absence
   rdf:type owl:Class ;
   rdfs:label "Absence"@en ;
@@ -37,7 +35,6 @@ v-s:Absence
   rdfs:subClassOf v-s:HRRecord ;
   owl:disjointWith v-s:Appointment ;
 .
-
 v-s:Account
   rdf:type owl:Class ;
   rdfs:label "Account"@en ;
@@ -128,6 +125,12 @@ v-s:HRRecord
   rdfs:label "Кадровая запись"@ru ;
   rdfs:subClassOf v-s:Document ;
 .
+v-s:Level
+  rdf:type owl:Class ;
+  rdfs:label "Level"@en ;
+  rdfs:label "Уровень"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
 v-s:Membership
   rdf:type owl:Class ;
   rdfs:label "Membership"@en ;
@@ -190,6 +193,11 @@ v-s:StatusWorkflow
   rdfs:label "Статус документооборота"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
 .
+v-s:Transform
+  rdf:type owl:Class ;
+  rdfs:label "для переливки из старой системы"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
 v-s:Versioned
   rdf:type owl:Class ;
   rdfs:label "Versioned thing"@en ;
@@ -208,6 +216,13 @@ v-s:addDoc
   rdfs:label "add document"@en ;
   rdfs:label "связанные документы"@ru ;
   rdfs:range v-s:Document ;
+.
+v-s:alternativeTitle
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Level ;
+  rdfs:label "description"@en ;
+  rdfs:label "описание"@ru ;
+  rdfs:range xsd:string ;
 .
 v-s:attachment
   rdf:type owl:ObjectProperty ;
@@ -277,6 +292,18 @@ v-s:comment
   rdfs:label "комментарий"@ru ;
   rdfs:range xsd:string ;
 .
+v-s:contributor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "contributor"@en ;
+  rdfs:label "соучастник"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:controller
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "controller"@en ;
+  rdfs:label "контроллер"@ru ;
+  rdfs:range v-s:Appointment ;
+.
 v-s:created
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Document ;
@@ -284,10 +311,22 @@ v-s:created
   rdfs:label "дата создания"@ru ;
   rdfs:range xsd:dateTime ;
 .
+v-s:dateFact
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "date of fact"@en ;
+  rdfs:label "дата фактическая"@ru ;
+  rdfs:range xsd:dateTime ;
+.
 v-s:dateFrom
   rdf:type owl:DatatypeProperty ;
   rdfs:label "date begin of something"@en ;
   rdfs:label "дата начала чего-либо"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+v-s:dateTo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "date end of something"@en ;
+  rdfs:label "дата окончания чего-либо"@ru ;
   rdfs:range xsd:dateTime ;
 .
 v-s:delegateTo
@@ -315,6 +354,18 @@ v-s:description
   rdf:type owl:ObjectProperty ;
   rdfs:label "description"@en ;
   rdfs:label "описание"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:destClass
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Transform ;
+  rdfs:label "название класса, в который вписываем"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:destProperty
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Transform ;
+  rdfs:label "название свойства, в которое вписываем"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:employee
@@ -392,6 +443,36 @@ v-s:hasAccount
   rdfs:label "account"@en ;
   rdfs:label "учетная запись"@ru ;
   rdfs:range v-s:Account ;
+.
+v-s:hasHeadOfMember
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "head of member"@en ;
+  rdfs:label "руководитель группы участников"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:hasLevel
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "level"@en ;
+  rdfs:label "уровень"@ru ;
+  rdfs:range v-s:Level ;
+.
+v-s:hasMember
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "member"@en ;
+  rdfs:label "участники"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:hasParentLink
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "parent document"@en ;
+  rdfs:label "ссылка на родительский документ"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+v-s:hasRecipient
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "recipient"@en ;
+  rdfs:label "список рассылки"@ru ;
+  rdfs:range v-s:Appointment ;
 .
 v-s:hasStatusWorkflow
   rdf:type owl:ObjectProperty ;
@@ -471,12 +552,6 @@ v-s:owner
   rdfs:range v-s:OrganizationUnit ;
   rdfs:range v-s:Person ;
 .
-v-s:parentLink
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "parent document"@en ;
-  rdfs:label "родительский документ"@ru ;
-  rdfs:range rdfs:Resource ;
-.
 v-s:parentUnit
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
@@ -531,6 +606,12 @@ v-s:query
   rdfs:label "запрос"@ru ;
   rdfs:range xsd:string ;
 .
+v-s:registrationDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "registration date of document"@en ;
+  rdfs:label "дата составления или регистрации документа"@ru ;
+  rdfs:range xsd:dateTime ;
+.
 v-s:registrationNumber
   rdf:type owl:DatatypeProperty ;
   rdfs:label "registration number"@en ;
@@ -558,6 +639,18 @@ v-s:script
   rdfs:label "скрипт"@ru ;
   rdfs:range xsd:string ;
 .
+v-s:srcClassName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Transform ;
+  rdfs:label "id шаблона, из которого берем"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:srcPropertyName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Transform ;
+  rdfs:label "имя аттрибута, котторое берем"@ru ;
+  rdfs:range xsd:string ;
+.
 v-s:startTime
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:DelegationStatement ;
@@ -577,6 +670,12 @@ v-s:summary
   rdf:type owl:DatatypeProperty ;
   rdfs:label "summary"@en ;
   rdfs:label "вывод"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:theme
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "theme"@en ;
+  rdfs:label "тема"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:title

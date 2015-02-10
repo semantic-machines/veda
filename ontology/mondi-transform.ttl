@@ -1,0 +1,112 @@
+# baseURI: http://semantic-machines.com/veda/mondi-transform
+# imports: http://semantic-machines.com/veda/veda-schema
+
+# c14n-version: 3
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix mnd-tr: <http://semantic-machines.com/veda/mondi-transform/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+<http://semantic-machines.com/veda/mondi-transform-safety-audit>
+  rdf:type owl:Ontology ;
+  rdfs:label "Mapping реквизитов для бизнес области Аудиты безопасности"@ru ;
+  rdfs:label "mondi-transform-safety-audit"@en ;
+  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
+  owl:versionInfo "1.0" ;
+.
+
+
+# ---------- Action - Запланированное мероприятие
+mnd-tr:tr1
+  rdf:type v-s:Transform ;
+  v-s:destClass mnd-s:Action ;
+  v-s:destProperty "v-s:hasParentLink" ;
+  v-s:srcClassName "3e2bfcf5c85941aa9c03c86081bba4df" ;
+  v-s:srcPropertyName "add_to_doc" ;
+.
+mnd-tr:tr2
+  rdf:type v-s:Transform ;
+  v-s:destClass mnd-s:Action ;
+  v-s:destProperty "v-s:responsible" ;
+  v-s:srcClassName "3e2bfcf5c85941aa9c03c86081bba4df" ;
+  v-s:srcPropertyName "responsible" ;
+.
+mnd-tr:tr3
+  rdf:type v-s:Transform ;
+  v-s:destClass mnd-s:Action ;
+  v-s:destProperty "v-s:contributor" ;
+  v-s:srcClassName "3e2bfcf5c85941aa9c03c86081bba4df" ;
+  v-s:srcPropertyName "with_whom" ;
+.
+mnd-tr:tr4
+  rdf:type v-s:Transform ;
+  v-s:destClass mnd-s:Action ;
+  v-s:destProperty "v-s:controller" ;
+  v-s:srcClassName "3e2bfcf5c85941aa9c03c86081bba4df" ;
+  v-s:srcPropertyName "controller" ;
+.
+mnd-tr:tr5
+  rdf:type v-s:Transform ;
+  v-s:destClass mnd-s:Action ;
+  v-s:destProperty "v-s:description" ;
+  v-s:srcClassName "3e2bfcf5c85941aa9c03c86081bba4df" ;
+  v-s:srcPropertyName "event" ;
+.
+mnd-tr:tr6
+  rdf:type v-s:Transform ;
+  v-s:destClass mnd-s:Action ;
+  v-s:destProperty "v-s:dateFrom" ;
+  v-s:srcClassName "3e2bfcf5c85941aa9c03c86081bba4df" ;
+  v-s:srcPropertyName "date_from" ;
+.
+mnd-tr:tr7
+  rdf:type v-s:Transform ;
+  v-s:destClass mnd-s:Action ;
+  v-s:destProperty "v-s:dateTo" ;
+  v-s:srcClassName "3e2bfcf5c85941aa9c03c86081bba4df" ;
+  v-s:srcPropertyName "date_to" ;
+.
+mnd-tr:tr8
+  rdf:type v-s:Transform ;
+  v-s:destClass mnd-s:Action ;
+  v-s:destProperty "mnd-s:descriptionOfPlace" ;
+  v-s:srcClassName "3e2bfcf5c85941aa9c03c86081bba4df" ;
+  v-s:srcPropertyName "place" ;
+.
+mnd-tr:tr9
+  rdf:type v-s:Transform ;
+  v-s:destClass mnd-s:Action ;
+  v-s:destProperty "mnd-s:hasCheckedDepartment" ;
+  v-s:srcClassName "3e2bfcf5c85941aa9c03c86081bba4df" ;
+  v-s:srcPropertyName "department" ;
+.
+mnd-tr:tr10
+  rdf:type v-s:Transform ;
+  v-s:destClass mnd-s:Action ;
+  v-s:destProperty "v-s:dateFact" ;
+  v-s:srcClassName "3e2bfcf5c85941aa9c03c86081bba4df" ;
+  v-s:srcPropertyName "date_fact" ;
+.
+mnd-tr:tr11
+  rdf:type v-s:Transform ;
+  v-s:destClass mnd-s:Action ;
+  v-s:destProperty "mnd-s:hasAddInfo" ;
+  v-s:srcClassName "3e2bfcf5c85941aa9c03c86081bba4df" ;
+  v-s:srcPropertyName "add_info" ;
+.
+mnd-tr:tr12
+  rdf:type v-s:Transform ;
+  v-s:destClass mnd-s:Action ;
+  v-s:destProperty "mnd-s:hasStatusWorkflow" ;
+  v-s:srcClassName "3e2bfcf5c85941aa9c03c86081bba4df" ;
+  v-s:srcPropertyName "status" ;
+.
+mnd-tr:tr13
+  rdf:type v-s:Transform ;
+  v-s:destClass mnd-s:EmotionalCharacteristic ;
+  v-s:destProperty "v-s:title" ;
+  v-s:srcClassName "92dd9031f2bb49a08c847081988c0cac" ;
+  v-s:srcPropertyName "value" ;
+.

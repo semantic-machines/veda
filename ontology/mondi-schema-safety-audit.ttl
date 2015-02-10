@@ -21,11 +21,47 @@
   owl:imports <http://semantic-machines.com/veda/veda-ui> ;
   owl:versionInfo "1.0" ;
 .
+mnd-s-sa:AccidentAct
+  rdf:type owl:Class ;
+  rdfs:label "Accident act"@en ;
+  rdfs:label "Акт несчастного случая"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-sa:AccidentKind
+  rdf:type owl:Class ;
+  rdfs:label "Kind of accident"@en ;
+  rdfs:label "Вид инцидента"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-sa:DecisionOfIpmEliminationAct
+  rdf:type owl:Class ;
+  rdfs:label "Decision оf IPM elimination act"@en ;
+  rdfs:label "Вид решения по акту уничтожения СИЗ"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-sa:IncidentAudit
+  rdf:type owl:Class ;
+  rdfs:label "Incident audit"@en ;
+  rdfs:label "Аудит инцидент"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-sa:IpmEliminationAct
+  rdf:type owl:Class ;
+  rdfs:label "Individual Protection Means Elimination Act"@en ;
+  rdfs:label "Акт уничтожения средств индивидуальной защиты"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
 mnd-s-sa:ParentSafetyAuditObservationSection
   rdfs:domain mnd-s-sa:SafetyAuditObservationSection ;
   rdfs:label "ссылка на родителя справочника Вид надзора"@ru ;
   rdfs:range mnd-s-sa:ParentSafetyAuditObservationSection ;
-  rdfs:subPropertyOf v-s:parentLink ;
+  rdfs:subPropertyOf v-s:hasParentLink ;
+.
+mnd-s-sa:RatingOfSafetyAudit
+  rdf:type owl:Class ;
+  rdfs:label "Rating of safety audit"@en ;
+  rdfs:label "Оценка аудита безопасности"@ru ;
+  rdfs:subClassOf v-s:Document ;
 .
 mnd-s-sa:SafetyAudit
   rdf:type owl:Class ;
@@ -37,7 +73,6 @@ mnd-s-sa:SafetyAuditObservation
   rdf:type owl:Class ;
   rdfs:label "Observation of safety audit"@en ;
   rdfs:label "Замечание аудита безопасности"@ru ;
-  rdfs:subClassOf mnd-s:Action ;
   rdfs:subClassOf mnd-s:Observation ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
@@ -54,67 +89,100 @@ mnd-s-sa:SafetyStandardSection
   rdfs:label "Вид надзора"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
 .
-mnd-s-sa:addToDoc
+mnd-s-sa:dateOfIssueIpm
   rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-sa:IpmEliminationAct ;
+  rdfs:label "date of issue individual protection means"@en ;
+  rdfs:label "дата выдачи СИЗ"@ru ;
+  rdfs:range xsd:date ;
+.
+mnd-s-sa:descriptionOfCondition
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-sa:IpmEliminationAct ;
+  rdfs:label "description"@en ;
+  rdfs:label "описание"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-sa:descriptionOfDamage
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-sa:IpmEliminationAct ;
+  rdfs:label "description"@en ;
+  rdfs:label "описание"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-sa:descriptionOfWork
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-sa:IpmEliminationAct ;
+  rdfs:label "description"@en ;
+  rdfs:label "описание"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-sa:hasAccidentKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-sa:AccidentAct ;
+  rdfs:label "description"@en ;
+  rdfs:label "описание"@ru ;
+  rdfs:range mnd-s-sa:AccidentKind ;
+.
+mnd-s-sa:hasAddToSafetyAudit
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-sa:RatingOfSafetyAudit ;
   rdfs:domain mnd-s-sa:SafetyAuditObservation ;
   rdfs:label "Замечание в рамках Аудита"@ru ;
   rdfs:range mnd-s-sa:SafetyAudit ;
+  rdfs:subPropertyOf v-s:hasParentLink ;
 .
-mnd-s-sa:areaOfObservation
+mnd-s-sa:hasDecisionOfIpmEliminationAct
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-sa:IpmEliminationAct ;
+  rdfs:label "description"@en ;
+  rdfs:label "описание"@ru ;
+  rdfs:range mnd-s-sa:DecisionOfIpmEliminationAct ;
+.
+mnd-s-sa:hasEmotionalCharacteristic
   rdf:type owl:ObjectProperty ;
   rdfs:domain mnd-s-sa:SafetyAuditObservation ;
-  rdfs:label "участок"@ru ;
-  rdfs:range mnd-s:Area ;
+  rdfs:label "сharacteristic of observation"@en ;
+  rdfs:label "характеристика замечания"@ru ;
+  rdfs:range mnd-s:EmotionalCharacteristic ;
 .
-mnd-s-sa:checkedDepartment
+mnd-s-sa:hasObservationOfSafetyAudit
   rdf:type owl:ObjectProperty ;
-  rdfs:domain mnd-s-sa:SafetyAudit ;
-  rdfs:label "подразделение СЛПК"@ru ;
-  rdfs:range v-s:Department ;
-.
-mnd-s-sa:classifierWork
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain mnd-s-sa:SafetyAudit ;
-  rdfs:label "section of safety standard"@en ;
-  rdfs:label "вид надзора"@ru ;
-  rdfs:range mnd-s-sa:SafetyStandardSection ;
-.
-mnd-s-sa:contractor
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain mnd-s-sa:SafetyAudit ;
-  rdfs:label "подрядчик"@ru ;
-  rdfs:range mnd-s:Dossier ;
-.
-mnd-s-sa:member
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain mnd-s-sa:SafetyAudit ;
-  rdfs:label "список участников"@ru ;
-  rdfs:range v-s:Appointment ;
-.
-mnd-s-sa:observationDepartment
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
-  rdfs:label "подразделение замечания аудита"@ru ;
-  rdfs:range v-s:Department ;
-.
-mnd-s-sa:observationOfSafetyAudit
-  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-sa:IncidentAudit ;
   rdfs:domain mnd-s-sa:SafetyAudit ;
   rdfs:label "замечания аудита"@ru ;
   rdfs:range mnd-s-sa:SafetyAuditObservation ;
+.
+mnd-s-sa:hasOwnerIpm
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-sa:IpmEliminationAct ;
+  rdfs:label "owner of individual protection act"@en ;
+  rdfs:label "Сотрудник владелец СИЗ"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+mnd-s-sa:hasSafetyAuditObservationKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+  rdfs:label "observation kind"@en ;
+  rdfs:label "вид замечания"@ru ;
+  rdfs:range mnd-s-sa:SafetyAuditObservationKind ;
+.
+mnd-s-sa:hasSafetyStandardSection
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-sa:IncidentAudit ;
+  rdfs:domain mnd-s-sa:SafetyAudit ;
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+  rdfs:label "section of safety standard"@en ;
+  rdfs:label "вид надзора"@ru ;
+  rdfs:range mnd-s-sa:SafetyStandardSection ;
 .
 mnd-s-sa:placeOfObservation
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-s-sa:SafetyAuditObservation ;
   rdfs:label "place"@en ;
-  rdfs:label "место"@ru ;
+  rdfs:label "место замечания аудита безопасности"@ru ;
   rdfs:range xsd:string ;
-.
-mnd-s-sa:recipient
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain mnd-s-sa:SafetyAudit ;
-  rdfs:label "список рассылки"@ru ;
-  rdfs:range v-s:Appointment ;
+  rdfs:subPropertyOf mnd-s:descriptionOfPlace ;
 .
 mnd-s-sa:responsibleOfContractorSafetyAuditObservation
   rdf:type owl:ObjectProperty ;
@@ -122,37 +190,111 @@ mnd-s-sa:responsibleOfContractorSafetyAuditObservation
   rdfs:label "ответственное лицо подрядчика"@ru ;
   rdfs:range xsd:string ;
 .
-mnd-s-sa:responsibleSafetyAuditObservation
+mnd-s-sa:suffererCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-sa:AccidentAct ;
+  rdfs:label "sufferer count"@en ;
+  rdfs:label "количество пострадавших"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s:futureAction
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+  rdfs:label "мероприятие для предотвращения в будущем"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:subPropertyOf v-s:description ;
+.
+mnd-s:hasCheckedDepartment
+  rdfs:domain mnd-s-sa:IncidentAudit ;
+  rdfs:domain mnd-s-sa:SafetyAudit ;
+.
+mnd-s:hasClassifierLevel
   rdf:type owl:ObjectProperty ;
   rdfs:domain mnd-s-sa:SafetyAuditObservation ;
-  rdfs:label "ответственное лицо СЛПК"@ru ;
-  rdfs:range v-s:Appointment ;
+  rdfs:label "priority"@en ;
+  rdfs:label "приоритет"@ru ;
+  rdfs:range mnd-s:ClassifierLevel ;
 .
-mnd-s:contractor
+mnd-s:hasContractor
+  rdfs:domain mnd-s-sa:AccidentAct ;
+  rdfs:domain mnd-s-sa:IncidentAudit ;
+  rdfs:domain mnd-s-sa:SafetyAudit ;
   rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+.
+mnd-s:initiatorDepartment
+  rdfs:domain mnd-s-sa:IpmEliminationAct ;
+.
+mnd-s:nowAction
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+  rdfs:label "незамедлительное мероприятие"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:subPropertyOf v-s:description ;
 .
 v-s:addDoc
   rdfs:domain mnd-s-sa:SafetyAudit ;
 .
 v-s:comment
+  rdfs:domain mnd-s-sa:IncidentAudit ;
+  rdfs:domain mnd-s-sa:RatingOfSafetyAudit ;
   rdfs:domain mnd-s-sa:SafetyAudit ;
+.
+v-s:dateFact
+  rdfs:domain mnd-s:Observation ;
 .
 v-s:dateFrom
+  rdfs:domain mnd-s-sa:IncidentAudit ;
   rdfs:domain mnd-s-sa:SafetyAudit ;
-  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+.
+v-s:dateTo
+  rdfs:domain mnd-s:Observation ;
 .
 v-s:description
+  rdfs:domain mnd-s-sa:IpmEliminationAct ;
+  rdfs:domain [
+      rdf:type owl:Class ;
+      owl:unionOf (
+          mnd-s:Observation
+          mnd-s-sa:AccidentAct
+        ) ;
+    ] ;
+.
+v-s:hasHeadOfMember
+  rdfs:domain mnd-s-sa:IpmEliminationAct ;
+.
+v-s:hasLevel
+  rdfs:domain mnd-s-sa:RatingOfSafetyAudit ;
+.
+v-s:hasMember
+  rdfs:domain mnd-s-sa:IncidentAudit ;
+  rdfs:domain mnd-s-sa:IpmEliminationAct ;
+  rdfs:domain mnd-s-sa:SafetyAudit ;
+.
+v-s:hasParentLink
   rdfs:domain mnd-s:Observation ;
+.
+v-s:hasRecipient
+  rdfs:domain mnd-s-sa:IncidentAudit ;
+  rdfs:domain mnd-s-sa:SafetyAudit ;
 .
 v-s:hasStatusWorkflow
   rdfs:domain mnd-s-sa:SafetyAudit ;
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+.
+v-s:registrationDate
+  rdfs:domain mnd-s-sa:AccidentAct ;
+  rdfs:domain mnd-s-sa:IpmEliminationAct ;
 .
 v-s:registrationNumber
+  rdfs:domain mnd-s-sa:IncidentAudit ;
+  rdfs:domain mnd-s-sa:IpmEliminationAct ;
   rdfs:domain mnd-s-sa:SafetyAudit ;
-  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
 .
 v-s:summary
   rdfs:domain mnd-s-sa:SafetyAudit ;
+.
+v-s:theme
+  rdfs:domain mnd-s-sa:SafetyAuditObservation ;
 .
 v-s:title
   rdfs:domain mnd-s-sa:SafetyAuditObservationKind ;
