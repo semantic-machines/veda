@@ -100,9 +100,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		}
 
 		function onDoubleClick (selected) {
-			selected.nodes.map( function (node) {
-				addOutLinks(node);
-			});
+			addOutLinks(selected.nodes[0]);
 		}
 
 		container.empty();
