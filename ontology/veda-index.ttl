@@ -3,6 +3,7 @@
 # imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
 # imports: http://www.w3.org/2000/01/rdf-schema#
 # imports: http://www.w3.org/2002/07/owl
+# imports: http://semantic-machines.com/veda/mondi-schema-safety-audit
 
 # c14n-version: 3
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -10,6 +11,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
+@prefix mnd-s-sa: <http://semantic-machines.com/veda/mondi-schema-safety-audit/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://semantic-machines.com/veda/veda-index>
@@ -59,8 +61,8 @@ vdi:indexed_field
 #---------------------------------------------
 vdi:index_0
   rdf:type vdi:ClassIndex ;
-  vdi:forClass mnd-sa:SafetyAudit ;
-  vdi:forProperty mnd-sa:recipient ;
+  vdi:forClass mnd-s-sa:SafetyAudit ;
+  vdi:forProperty mnd-s-sa:recipient ;
   vdi:inherited_index vdi:index_2 ;
   vdi:inherited_index vdi:index_3 ;
 .

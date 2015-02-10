@@ -8,6 +8,8 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 
 <http://semantic-machines.com/veda/mondi-workflow>
   rdf:type owl:Ontology ;
@@ -53,7 +55,7 @@ mnd-wf:net_complex_route
 	v-wf:consistsOf mnd-wf:t6 ;
 	v-wf:consistsOf mnd-wf:f_t6_c2 ;
 	v-wf:consistsOf mnd-wf:f_t6_t7 ;
-	v-wf:consistsOf mnd-wf:t7 ;
+	v-wf:consistsOf mnd-wf:t7 ;	
 	v-wf:consistsOf mnd-wf:f_t7_c2 ;
 	v-wf:consistsOf mnd-wf:f_t7_c3 ;
 	v-wf:consistsOf mnd-wf:t8 ;

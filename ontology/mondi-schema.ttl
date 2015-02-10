@@ -118,17 +118,57 @@ mnd-s:content
   rdfs:label "содержание"@ru ;
   rdfs:range xsd:string ;
 .
-mnd-s:contractor
+mnd-s:descriptionOfPlace
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s:Action ;
+  rdfs:label "description of the place"@en ;
+  rdfs:label "место проведения чего-либо"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s:hasAddInfo
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain [
+      rdf:type owl:Class ;
+      owl:unionOf (
+          mnd-s:Action
+          mnd-s:Observation
+        ) ;
+    ] ;
+  rdfs:label "has additional information"@en ;
+  rdfs:label "ссылка на дополнительную информацию"@ru ;
+  rdfs:range mnd-s:AddInfo ;
+.
+mnd-s:hasAreaOfObservation
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s:Observation ;
+  rdfs:label "area of observation"@en ;
+  rdfs:label "участок наблюдения"@ru ;
+  rdfs:range mnd-s:Area ;
+.
+mnd-s:hasCheckedDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain [
+      rdf:type owl:Class ;
+      owl:unionOf (
+          mnd-s:Action
+          mnd-s:Observation
+        ) ;
+    ] ;
+  rdfs:label "cheked department"@en ;
+  rdfs:label "проверяемое подразделение"@ru ;
+  rdfs:range v-s:Department ;
+.
+mnd-s:hasContractor
   rdf:type owl:ObjectProperty ;
   rdfs:label "contractor"@ru ;
   rdfs:label "подрядчик"@ru ;
   rdfs:range mnd-s:Dossier ;
 .
-mnd-s:hasAddInfo
+mnd-s:initiatorDepartment
   rdf:type owl:ObjectProperty ;
-  rdfs:label "has additional information"@en ;
-  rdfs:label "ссылка на дополнительную информацию"@ru ;
-  rdfs:range mnd-s:AddInfo ;
+  rdfs:label "initiator department"@en ;
+  rdfs:label "подразделение инициатор"@ru ;
+  rdfs:range v-s:Department ;
 .
 mnd-s:nomenclatureType
   rdf:type owl:ObjectProperty ;
@@ -144,6 +184,13 @@ mnd-s:registrationNumber
   rdfs:label "Регистрационный номер"@ru ;
   rdfs:range xsd:string ;
 .
+mnd-s:responsibleOfObservation
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s:Observation ;
+  rdfs:label "responsible of observation"@en ;
+  rdfs:label "ответственное лицо замечания"@ru ;
+  rdfs:range v-s:Appointment ;
+.
 mnd-s:signer
   rdf:type owl:ObjectProperty ;
   rdfs:domain mnd-s:AdministrativeDocument ;
@@ -151,7 +198,41 @@ mnd-s:signer
   rdfs:label "подписант"@ru ;
   rdfs:range v-s:Appointment ;
 .
+v-s:comment
+  rdfs:domain mnd-s:Observation ;
+.
+v-s:contributor
+  rdfs:domain mnd-s:Action ;
+.
+v-s:controller
+  rdfs:domain mnd-s:Action ;
+.
+v-s:dateFact
+  rdfs:domain mnd-s:Action ;
+  rdfs:domain mnd-s:Observation ;
+.
+v-s:dateFrom
+  rdfs:domain mnd-s:Action ;
+.
+v-s:dateTo
+  rdfs:domain mnd-s:Action ;
+.
 v-s:description
   rdfs:domain mnd-s:Action ;
   rdfs:domain mnd-s:Observation ;
+.
+v-s:hasParentLink
+  rdfs:domain mnd-s:Action ;
+.
+v-s:hasStatusWorkflow
+  rdfs:domain mnd-s:Action ;
+.
+v-s:registrationDate
+  rdfs:domain mnd-s:Observation ;
+.
+v-s:registrationNumber
+  rdfs:domain mnd-s:Observation ;
+.
+v-s:responsible
+  rdfs:domain mnd-s:Action ;
 .
