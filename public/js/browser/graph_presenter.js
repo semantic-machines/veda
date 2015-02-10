@@ -20,7 +20,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 				nodes.add ([
 					{
 						id: individual.id,
-						label: individual["rdfs:label"] && individual["rdfs:label"][0] ? individual["rdfs:label"][0] : individual.id
+						label: individual["rdf:type"][0]["rdfs:label"][0] + ": \n" + (individual["rdfs:label"] && individual["rdfs:label"][0] ? individual["rdfs:label"][0] : individual.id)
 					}
 				]);
 			}
@@ -32,7 +32,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 							nodes.add ([
 								{
 									id: value.id,
-									label: value["rdfs:label"] && value["rdfs:label"][0] ? value["rdfs:label"][0] : value.id
+									label: value["rdf:type"][0]["rdfs:label"][0] + ": \n" + (value["rdfs:label"] && value["rdfs:label"][0] ? value["rdfs:label"][0] : value.id)
 								}
 							]);
 						}
@@ -85,14 +85,55 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		
 		var network = new vis.Network(container.get(0), data, options);
 		
-		function onSelect (properties) {
+		function onDoubleClick (properties) {
 			properties.nodes.map( function (node) {
 				expand(node);
 			});
 		}
+	
+		var body = $("body");
+		
+		function onSelect (properties) {
+			body.off("keydown");
+			body.on("keydown", function (e) {
+				//console.log(e.which);
+				if (e.which == 46) {
+					nodes.remove(properties.nodes);
+					edges.remove(properties.edges);
+				}
+				if (e.which == 73) {
+					var s = new veda.SearchModel("'*'=='" + properties.nodes[0] + "'", $("<div>"));
+					var results = [];
+					var addEdges = [];
+					Object.getOwnPropertyNames(s.results).map(function (uri) {
+						var result = s.results[uri];
+						var id = result["id"];
+						var label = result["rdf:type"][0]["rdfs:label"][0] + ": \n" + (result["rdfs:label"] && result["rdfs:label"][0] ? result["rdfs:label"][0] : id);
+						if (nodes.get(result.id) === null) { 
+							results.push({id: id, label: label});
+							var to = properties.nodes[0];
+							var from = id;
+							Object.getOwnPropertyNames(result.properties).map(function (property_uri) {
+								result[property_uri].map(function (item) {
+									if (item instanceof veda.IndividualModel && item.id == to) {
+										var label = veda.ontology[property_uri]["rdfs:label"][0];
+										addEdges.push({from: from, to: to, label: label});
+									}
+								}) 
+							});
+						}
+					});
+					nodes.add(results);
+					edges.add(addEdges);
+				}
+			});
+
+		}
 
 		// add event listener
-		network.on("doubleClick", onSelect);
+		network.on("doubleClick", onDoubleClick);
+		
+		network.on("select", onSelect);
 		
 	});
 
