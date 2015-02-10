@@ -7,11 +7,10 @@
 		<meta name="description" content=""/>
 		<meta name="author" content=""/>
 
-		<!--link href="/css/bootstrap.min.css" rel="stylesheet"/-->
+		<link href="/css/bootstrap.min.css" rel="stylesheet"/>
 		
 		<!-- Bootswatch themes -->
-		<!--link href="/css/amelia.bootstrap.min.css" rel="stylesheet"/-->
-		<link href="/css/cerulean.bootstrap.min.css" rel="stylesheet"/>
+		<!--link href="/css/cerulean.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/cosmo.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/cyborg.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/darkly.bootstrap.min.css" rel="stylesheet"/-->
@@ -47,6 +46,9 @@
 							<li class="divider"></li>
 						</ul>
 					</li>
+					<li id="graph">	
+						<a i18n="[Graph]" href="#/graph">Граф</a>
+					</li>
 					<li id="console">	
 						<a i18n="[Console]" href="#/console">Консоль</a>
 					</li>
@@ -65,7 +67,7 @@
 				</a>
 				<a class="btn btn-xs btn-danger navbar-btn navbar-right" id="logout">
 					<i class="glyphicon glyphicon-log-out"></i> <span i18n="[Logout]">Выйти</span>
-				</a>				
+				</a>
 				<div id="user-info" class="navbar-right"></div>
 			</div>
 		</nav>
@@ -190,8 +192,7 @@
 						<form method="GET" role="form" class="form-horizontal">
 							<div class="input-group">
 								<input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
-								<span class="input-group-btn">
-									<button class="btn btn-default" type="button" id="save-search"><i class="glyphicon glyphicon-star-empty"></i></button>
+								<span class="input-group-btn" id="q-actions">
 									<button type="submit" id="search-submit" class="btn btn-primary" i18n="[Search]">Найти</button>
 								</span>
 							</div>
@@ -207,13 +208,13 @@
 					<h3 class="text-center"><span i18n="[Search results]">Результаты поиска</span>
 						(<span id="results_count" bound>{results_count}</span>)
 					</h3>
-					<ul class="no-marks">
-						<li>
-							<label class="checkbox-inline">
+					<div id="search-features" class="form-inline">
+						<div class="checkbox">
+							<label>
 								<input type="checkbox" id="select-all"> <span i18n="[Select all]">Выбрать все</span>
 							</label>
-						</li>
-					</ul>
+						</div>
+					</div>
 					<hr class="thin-margin"/>
 					<ol id="search-results-list"></ol>
 					<hr/>
@@ -232,6 +233,42 @@
 			<label class="checkbox-inline">
 				<input type="checkbox"> &nbsp;
 			</label>		
+		</script>
+		
+		<!-- Save search button -->
+		<script type="html/template" id="save-search-template">
+			<button class="btn btn-default" type="button" id="save-search">
+				<i class="glyphicon glyphicon-star-empty"></i>
+			</button>
+		</script>
+
+		<!-- Saved search list button -->
+		<script type="html/template" id="saved-search-list-button-template">
+			<button class="btn btn-default" type="button" id="saved-search-list">
+				<i class="glyphicon glyphicon-menu-hamburger"></i>
+			</button>
+		</script>
+		
+		<!-- Sort property template -->
+		<script type="html/template" id="sort-property-template">
+			<span class="form-inline" id="sort-property-container">
+				<div class="form-group" style="margin-right:15px"></div>
+				<div class="checkbox">
+					<label>
+						<strong>Упорядочить: </strong>
+					</label>
+				</div>
+				<div class="form-group sort-property">
+					<div class="form-group" style="margin-right:15px"></div>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="order-by">
+							<span class="property-name">имя свойства</span>
+							<a href="" class="direction btn btn-xs disabled glyphicon glyphicon-sort-by-alphabet"></a>
+						</label>
+					</div>
+				</div>
+			</span>
 		</script>
 
 		<!-- Search modal -->
@@ -404,7 +441,13 @@
 				</div>
 			</div>
 		</script>
-
+		
+		<!-- Generic class template -->
+		<script type="html/template" id="deleted-document-alert-template">
+			<div class="alert alert-warning no-margin" role="alert">
+				<p>Документ удален.  <button class="btn btn-default btn-xs">Восстановить</button></p>
+			</div>
+		</script>
 
 		<!-- Javascript -->
 
@@ -418,7 +461,9 @@
 		<script type="text/javascript" src="/js/browser/jquery.autosize.min.js"></script>
 		<script type="text/javascript" src="/js/browser/jsplumb.js"></script>
 		<script type="text/javascript" src="/js/browser/remote-list.js"></script>
-				
+		<script type="text/javascript" src="/js/browser/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/js/browser/vis.min.js"></script>
+		
 		<!-- Veda browser & server -->
 		<script type="text/javascript" src="/js/common/util.js"></script>
 		<script type="text/javascript" src="/js/common/riot.js"></script>
@@ -432,20 +477,22 @@
 		<script type="text/javascript" src="/js/common/user_model.js"></script>
 		<script type="text/javascript" src="/js/common/search_model.js"></script>
 		<script type="text/javascript" src="/js/common/ontology_model.js"></script>
-
+		
 		<!-- Veda browser only -->
 		<script type="text/javascript" src="/js/browser/backend.js"></script>
 		<script type="text/javascript" src="/js/browser/console_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/document_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/saved_search_presenter.js"></script>
+		<script type="text/javascript" src="/js/browser/saved_search_list.js"></script>
+		<script type="text/javascript" src="/js/browser/save_search.js"></script>
 		<script type="text/javascript" src="/js/browser/search_presenter.js"></script>
+		<script type="text/javascript" src="/js/browser/search_sort.js"></script>
 		<script type="text/javascript" src="/js/browser/search_result_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/user_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/app_presenter.js"></script>
+		<script type="text/javascript" src="/js/browser/graph_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/veda_controls.js"></script>
-		<script type="text/javascript" src="/js/browser/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="/js/browser/veda_net_editor.js"></script>
-		
+		<script type="text/javascript" src="/js/browser/app_presenter.js"></script>				
+
 		<script type="text/javascript">
 			$(function(){
 				veda.Module({/* configuration object */});

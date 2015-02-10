@@ -91,7 +91,7 @@ interface VedaStorageRest_API {
     long count_individuals();
 
     @path("query") @method(HTTPMethod.GET)
-    string[] query(string ticket, string query);
+    string[] query(string ticket, string query, string sort);
 
     @path("get_individuals") @method(HTTPMethod.POST)
     Json[] get_individuals(string ticket, string uris[]);
@@ -306,14 +306,14 @@ class VedaStorageRest : VedaStorageRest_API
         return false;
     }
 
-    string[] query(string ticket, string query)
+    string[] query(string ticket, string query, string sort)
     {
-        Tid                 my_task = Task.getThis();
+        Tid my_task = Task.getThis();
 
         immutable(string)[] individuals_ids;
         if (my_task !is Tid.init)
         {
-            send(io_task, Command.Get, Function.IndividualsIdsToQuery, query, ticket, my_task);
+            send(io_task, Command.Get, Function.IndividualsIdsToQuery, query, sort, ticket, my_task);
 
             ResultCode rc;
             receive((immutable(string)[] _individuals_ids, ResultCode _rc) { individuals_ids = _individuals_ids; rc = _rc; });

@@ -19,7 +19,14 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "1.0" ;
+  owl:versionInfo "1.2" ;
+.
+v-s:fullUrl
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain owl:Ontology ;
+  rdfs:label "full URL"@en ;
+  rdfs:label "полный URL"@ru ;
+  rdfs:range xsd:string ;
 .
 v-s:Absence
   rdf:type owl:Class ;
@@ -182,7 +189,6 @@ v-s:SavedSearch
 .
 v-s:StatusWorkflow
   rdf:type owl:Class ;
-  v-s:deprecatedId "b1cadfae1ba041d8a88a9b8c935024a3" ;
   rdfs:label "StatusWorkflow"@en ;
   rdfs:label "Статус документооборота"@ru ;
   rdfs:subClassOf v-s:Dictionary ;

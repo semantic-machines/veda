@@ -121,9 +121,30 @@ class PacahonDriver {
                                                   }
                                               }
                                           },
-                                          // writeln("Tid=", cast(void *)tid);
-                                          (Command cmd, Function fn, string arg1, string arg2, Tid tid) {
-                                          // writeln("Tid=", cast(void *)tid);
+                                          (Command cmd, Function fn, string arg1, string arg2, string _ticket, Tid tid) 
+					  {
+                                              if (tid != Tid.init)
+                                              {
+                                                  if (cmd == Command.Get && fn == Function.IndividualsIdsToQuery)
+                                                  {
+                                                      Ticket *ticket = context.get_ticket(_ticket);
+
+                                                      if (ticket.result == ResultCode.OK)
+                                                      {
+                                                          immutable(string)[] uris = context.get_individuals_ids_via_query(ticket, arg1, arg2);
+                                                          send(tid, uris, ticket.result);
+                                                      }
+                                                      else
+                                                      {
+                                                          immutable(string)[] uris;
+                                                          send(tid, uris, ticket.result);
+                                                      }
+                                                  }
+
+					      }
+					  },
+                                          (Command cmd, Function fn, string arg1, string arg2, Tid tid) 
+					    {
                                               if (tid != Tid.init)
                                               {
                                                   if (cmd == Command.Get && fn == Function.Rights)
@@ -205,21 +226,6 @@ class PacahonDriver {
                                                       }
 
                                                       send(tid, individuals, rc);
-                                                  }
-                                                  else if (cmd == Command.Get && fn == Function.IndividualsIdsToQuery)
-                                                  {
-                                                      Ticket *ticket = context.get_ticket(arg2);
-
-                                                      if (ticket.result == ResultCode.OK)
-                                                      {
-                                                          immutable(string)[] uris = context.get_individuals_ids_via_query(ticket, arg1);
-                                                          send(tid, uris, ticket.result);
-                                                      }
-                                                      else
-                                                      {
-                                                          immutable(string)[] uris;
-                                                          send(tid, uris, ticket.result);
-                                                      }
                                                   }
                                               }
                                           },

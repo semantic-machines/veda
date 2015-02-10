@@ -20,7 +20,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "1.0" ;
+  owl:versionInfo "3.0" ;
 .
 v-ui:EN
   rdf:type v-ui:Language ;
@@ -271,4 +271,63 @@ v-ui:displayedElements
   rdfs:label "отображать элементов"@ru ;
   rdfs:label "display elements"@en ;
   rdfs:range xsd:nonNegativeInteger ;
+.
+v-ui:LabelTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с меткой"@ru ;
+  rdfs:label "Template with label"@en ;
+  v-ui:template """
+  <span><span property="rdfs:label">наименование</span></span>
+  """ ;
+.
+v-ui:ClassNameLabelTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с именем класса и меткой"@ru ;
+  rdfs:label "Template with class name and label"@en ;
+  v-ui:template """
+  <div><a href="id"><span rel="rdf:type" template="v-ui:LabelTemplate">Имя класса</span>: <span property="rdfs:label">наименование</span></a></div>
+  """ ;
+.
+v-ui:ClassNameIdTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с именем класса, меткой и id"@ru ;
+  rdfs:label "Template with class name, label and id"@en ;
+  v-ui:template """
+  <div><a href="id"><span rel="rdf:type" template="v-ui:LabelTemplate">Имя класса</span>: <span property="id">id</span></a></div>
+  """ ;
+.
+v-ui:SavedSearchTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Сохраненный запрос"@ru ;
+  rdfs:label "Template for Saved search class"@en ;
+  v-ui:forClass v-s:SavedSearch ;
+  v-ui:template """
+  <div>
+        <strong class="text-muted" about="rdfs:label" property="rdfs:label">Наименование</strong>
+        <div property="rdfs:label">Наименование</div>
+        <div class="row">
+          <div class="col-md-12">
+               <strong class="text-muted" about="v-s:query" property="rdfs:label">Запрос</strong>
+               <div property="v-s:query">Текст запроса</div>
+          </div>
+        </div>
+        <br/>
+        <button type="button" class="action btn btn-sm btn-primary" id="edit">Редактировать</button>
+        <button type="button" class="action btn btn-sm btn-success" id="save">Сохранить</button>
+        <button type="button" class="action btn btn-sm btn-default" id="cancel">Отмена</button>
+        <button type="button" class="action btn btn-sm btn-link" id="delete" i18n="[Delete]">Удалить</button>
+  </div>
+  """ ;
+.
+v-ui:SavedSearchInListTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Сохраненный запрос"@ru ;
+  rdfs:label "Template for Saved search class"@en ;
+  v-ui:forClass v-s:SavedSearch ;
+  v-ui:template """
+  <span>
+        <span property="rdfs:label">Имя запроса</span>
+        <button type="button" class="action btn btn-xs btn-danger" id="delete"><i class="glyphicon glyphicon-remove"></i></button>
+  </span>
+  """ ;
 .

@@ -7,7 +7,7 @@ veda.Module(function SearchModel(veda) { "use strict";
 		var results_keys;
 
 		// Define Model data setters & getters
-		var properties = {q:undefined, results:{}, results_count:undefined, selected:{}, query_time:undefined};
+		var properties = {q:"", sort:"", results:{}, results_count:undefined, selected:{}, query_time:undefined};
 		for (var property in properties) {
 			(function (property) {
 				Object.defineProperty(self, property, {
@@ -50,7 +50,15 @@ veda.Module(function SearchModel(veda) { "use strict";
 			// Clear previous results 
 			self.results = {};
 			var t1 = Date.now();
-			var results = query(veda.ticket, self.q);
+			q = self.q;
+
+			// Transform user input like "roman karpov" to "'*'=='roman' && '*'=='karpov'"
+			if (q.indexOf("==") < 0) {
+				q = q.trim().split(" ").map(function (t) { return "'*'=='" + t + "'"}).join("&&");
+			}
+			
+			var results = query(veda.ticket, q, self.sort);
+						
 			var t2 = Date.now();
 			self.query_time = t2 - t1;
 			for (var i in results) {

@@ -111,9 +111,9 @@ jsWorkflow.ready = jsPlumb.ready;
                 
                 properties.find('#workflow-item-id').val(transition.id);
                 properties.find('#workflow-item-type').val('flow');
-                properties.find('#workflow-item-label').val(transition.getLabel());
+                // properties.find('#workflow-item-label').val(transition.getLabel());
                 currentElement.addClass('w_active');                
-               	$('.task-buttons').hide();
+               	// $('.task-buttons').hide();
             });
             
             // Handle creating new flow event
@@ -163,7 +163,8 @@ jsWorkflow.ready = jsPlumb.ready;
                     $('#'+escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active'); // deactivate old selection
                     properties.find('#workflow-item-id').val(_this.id);
                     properties.find('#workflow-item-type').val('state');
-                    properties.find('#workflow-item-label').val(currentElement.find('.state-name').text());
+                    /*
+                    properties.find('#workflow-item-label').val(currentElement.find('.state-name').text());                    
 
                     ["no", "and", "or", "xor"].forEach(function(entry) {
                         if (currentElement.hasClass('split-'+entry)) {
@@ -174,18 +175,22 @@ jsWorkflow.ready = jsPlumb.ready;
                         	$('#workflow-join-buttons label').removeClass('active').find('input').attr("checked",false);                        	
                         	$('input[name=item-join-type][value='+entry+']').attr("checked",true).parent().addClass('active');
                         }
-                    });          
+                    });
+                    */          
+                    /*
                     if (currentElement.hasClass('state-condition')) {
                     	$('.task-buttons').hide();
                     } else {
                     	$('.task-buttons').show();
-                    }
+                    }*/
                     currentElement.addClass('w_active');
                 });
 
                 // Bind a click listener to each State elements. On double click, State elements are deleted.
                 windows.bind("dblclick", function() {
-
+                    var _this = this;
+                	riot.route("#/document/" + $(_this).attr('id')+"///edit", true);
+                	/*
                     var _this = this,
                             deleteState;
 
@@ -201,22 +206,39 @@ jsWorkflow.ready = jsPlumb.ready;
 
                     } else {
                         return false;
-                    }
+                    }*/
                 });
 
                 // Initialize State elements as draggable.  
                 instance.draggable(windows, {
-              	  containment:"parent"
+              	  /*containment:"parent"*/
             	});
 
                 // Initialize all State elements as Connection sources.
                 instance.makeSource(windows, {
                     filter: ".ep",
                     anchor: ["Continuous", { faces:[ "top", "left", "right" ] } ],
-                    connector: ["Bezier", {
-                    	curviness: 0,
-                        stub: 0
-                    }],
+                    connector: [
+						/*"Bezier", {
+                    	curviness: 50
+						}*/
+						"Straight", {
+                    	stub: 30,
+                        gap: 0
+						}
+						/*"Flowchart", {
+                    	alwaysRespectStubs: false,
+                        stub: 0,
+                        gap: 0,
+                        midpoint: 0.5,
+                        cornerRadius: 0
+						}*/
+						/*"StateMachine", {
+                    	margin: 5,
+                    	curviness: 20,
+                        proximityLimit: 100
+						}*/
+                    ],
                     connectorStyle: {
                         strokeStyle: "#666666",
                         lineWidth: 1,
@@ -385,8 +407,8 @@ jsWorkflow.ready = jsPlumb.ready;
     				break;
     			case 'v-wf:Task':
             		stateElement = '<div class="w state-task split-join '
-            			+ instance.getSplitJoinType('split', state['v-wf:split']!=null?state['v-wf:split'][0].id:null)
-            			+ instance.getSplitJoinType('join', state['v-wf:join']!=null?state['v-wf:join'][0].id:null)
+            			+ instance.getSplitJoinType('split', (state['v-wf:split']!=null && state['v-wf:split'].length>0)?state['v-wf:split'][0].id:null)
+            			+ instance.getSplitJoinType('join', (state['v-wf:join']!=null && state['v-wf:join'].length>0)?state['v-wf:join'][0].id:null)
             			+ '" id="' + state.id + '" style="left: ' 
             			+ state['v-wf:locationX'][0] + 'px; top: ' 
             			+ state['v-wf:locationY'][0] + 'px;"><div class="state-name">' + state['rdfs:label'][0] + '</div><div class="ep"></div></div>';
@@ -397,6 +419,12 @@ jsWorkflow.ready = jsPlumb.ready;
                 	bindStateEvents($('#' + escape4$(state.id)));
                 	updateSVGBackground($('#' + escape4$(state.id)));
             	}
+            }
+            
+            instance.deleteState = function(element) {
+            	instance.detachAllConnections(element);
+            	instance.remove(element);
+            	net['v-wf:consistsOf'] = net['v-wf:consistsOf'].filter(function (el) {if (el.id!=element.id) return el; });
             }
             
             instance.createFlow = function(state, flow) {
@@ -432,6 +460,8 @@ jsWorkflow.ready = jsPlumb.ready;
             }
             instance.createNet(net);
             
+            
+            /* NET MENU [BEGIN] */
             $('#workflow-save-button').on('click', function() {
             	net.save();
             	net['v-wf:consistsOf'].forEach(function(el) {
@@ -445,29 +475,13 @@ jsWorkflow.ready = jsPlumb.ready;
             	});
             });
             
+            $('.delete-state').on('click', function() {
+            	instance.deleteState(instance.getSelector('#'+escape4$($('#workflow-item-id').val()))[0]);
+            });
+            /* NET MENU [END] */
+            
             return instance;
         }
-        /**
-         *Create the workflow DOM from the given data.
-         *@method createWorkflowDOM
-         *@param {Object} workflowData A workflow object to render new workflow State elements in the DOM
-         */
-        /*
-        jsWorkflow.Instance.createWorkflowDOM = function(workflowData) {
-
-            var container = workflowData.container,
-                    names = workflowData.names,
-                    positions = workflowData.positions,
-                    elements = '';
-
-            for (var name in names) {
-                if (names.hasOwnProperty(name)) {
-                    elements += '<div class="w wwww state split-join" id=' + name + ' style="left: ' + positions[name]['left'] + 'px; top: ' + positions[name]['top'] + 'px;">' + names[name] + '<div class="ep"></div></div>';
-                }
-            }
-
-            $('#' + container).append(elements);
-        }*/
     });
 })();
 
@@ -501,6 +515,7 @@ function updateSVGBackground(item) {
 
 function applyNetEditorFunctions(workflow) {
   // Label
+	/*
   $("#workflow-item-label").change(function () {
 	var _this = this;
 	switch ($('#workflow-item-type').val()) {
@@ -535,5 +550,6 @@ function applyNetEditorFunctions(workflow) {
     item.addClass('join-' + $(this).val());
     updateSVGBackground(item);
   });
+  */
 }
 // [END] Block of element editor

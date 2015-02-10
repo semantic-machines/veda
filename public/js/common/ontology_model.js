@@ -2,6 +2,30 @@
 
 veda.Module(function OntologyModel(veda) { "use strict";
 
+	/* owl:Thing && rdfs:Resource domain properties */
+	var stopList = [
+		//"rdf:type",
+		//"rdfs:comment",
+		//"rdfs:label",
+		//"v-s:deleted",
+		"owl:annotatedProperty",
+		"owl:annotatedSource",
+		"owl:annotatedTarget",
+		"owl:bottomDataProperty",
+		"owl:bottomObjectProperty",
+		"owl:deprecated",
+		"owl:differentFrom",
+		"owl:members",
+		"owl:sameAs",
+		"owl:topObjectProperty",
+		"owl:topDataProperty",
+		"owl:versionInfo",
+		"rdf:value",
+		"rdfs:isDefinedBy",
+		"rdfs:member",
+		"rdfs:seeAlso"
+	];
+
 	veda.OntologyModel = function () {
 
 		var self = this;
@@ -14,10 +38,21 @@ veda.Module(function OntologyModel(veda) { "use strict";
 		
 		var storage = typeof localStorage != 'undefined' ? localStorage : undefined;
 		
-		var q = "'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'owl:Class' || 'rdf:type' == 'rdfs:Datatype' || 'rdf:type' == 'owl:Ontology' ||" + // Classes
-				"'rdf:type' == 'rdf:Property' || 'rdf:type' == 'owl:DatatypeProperty' || 'rdf:type' == 'owl:ObjectProperty' || " + // Properties
-				"'rdf:type' == 'v-ui:ClassTemplate' || " + // Templates
-				"'rdf:type' == 'v-ui:PropertySpecification'"; // Property specifications
+		var q = /* Classes */ 
+				"'rdf:type' == 'rdfs:Class' || " +
+				"'rdf:type' == 'owl:Class' || " +
+				"'rdf:type' == 'rdfs:Datatype' || " +
+				"'rdf:type' == 'owl:Ontology' || " +
+				/* Properties */
+				"'rdf:type' == 'rdf:Property' || " +
+				"'rdf:type' == 'owl:DatatypeProperty' || " +
+				"'rdf:type' == 'owl:ObjectProperty' || " +
+				"'rdf:type' == 'owl:OntologyProperty' || " +
+				"'rdf:type' == 'owl:AnnotationProperty' || " +
+				/* Templates */
+				"'rdf:type' == 'v-ui:ClassTemplate' || " +
+				/* Property specifications */
+				"'rdf:type' == 'v-ui:PropertySpecification'";
 		
 		var q_results = query(veda.ticket, q);
 		
@@ -61,6 +96,8 @@ veda.Module(function OntologyModel(veda) { "use strict";
 				case "rdf:Property" :
 				case "owl:DatatypeProperty" :
 				case "owl:ObjectProperty" :
+				case "owl:OntologyProperty" :
+				case "owl:AnnotationProperty" :
 					self.properties[individual.id] = individual;
 					break
 				case "v-ui:ClassTemplate" :
@@ -85,6 +122,7 @@ veda.Module(function OntologyModel(veda) { "use strict";
 		});
 
 		Object.keys(self.properties).map( function (uri) {
+			if (stopList.indexOf(uri) >= 0) return;
 			var property = self.properties[uri];
 			if (!property["rdfs:domain"]) return;
 			property["rdfs:domain"].map( function ( item ) {

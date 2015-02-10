@@ -32,7 +32,7 @@ veda.Module(function SearchResultPresenter(veda) { "use strict";
 	}
 	
 	// Get templates
-	var displayedPropertiesLimit = 5;
+	var displayedPropertiesLimit = 10;
 	var individual_template = $("#individual-template").html();
 	var individual_single_property_template = $("#individual-single-property-template").html();
 	var individual_label_template = $("#individual-label-template").html();

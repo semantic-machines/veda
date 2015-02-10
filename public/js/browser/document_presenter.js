@@ -2,7 +2,8 @@
 
 veda.Module(function DocumentPresenter(veda) { "use strict";
 	
-	var c1 = 0;
+	//var c1 = 0;
+	var deletedAlertTmpl = $("#deleted-document-alert-template").html();
 	
 	veda.on("document:loaded", function PresentDocument(document, container_param, template_param, _mode) {
 		
@@ -16,6 +17,14 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			.empty().hide()
 			.attr("resource", document.id)
 			.attr("typeof", document["rdf:type"].map(function (item) { return item.id }).join(" ") );
+			
+		if (document["v-s:deleted"] && document["v-s:deleted"][0] == true) {
+			var deletedAlert = $( deletedAlertTmpl );
+			container.prepend(deletedAlert);
+			$("button", deletedAlert).click(function () {
+				document.trigger("recover");
+			});
+		}
 
 		// Embedded templates list
 		var embedded = [];
@@ -42,7 +51,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					return item instanceof veda.IndividualModel;
 				})
 				.map( function (item) { 
-					var _class = veda.ontology.classes[item.id];//new veda.ClassModel(item);
+					var _class = veda.ontology.classes[item.id];
 					if (_class.documentTemplate && _class.documentTemplate["v-ui:template"]) {
 						// Get template from class
 						templateStr = _class.documentTemplate["v-ui:template"][0].toString()
@@ -68,7 +77,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		});
 		
 		// Trigger same events for embedded templates
-		document.on("view edit save", function (event) {
+		document.on("view edit save delete recover", function (event) {
 			embedded.map(function (item) {
 				item.trigger(event);
 			});
@@ -86,6 +95,16 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			});
 			document.cancel();
 		});
+
+		document.on("delete", function () {
+			document.delete();
+			document.trigger("cancel");
+		});
+
+		document.on("recover", function () {
+			document.recover();
+			document.trigger("cancel");
+		});
 		
 		document.on("view edit", function (_mode) {
 			mode = _mode;
@@ -96,8 +115,14 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			// Actions
 			var $edit = $("#edit", classTemplate),
 				$save = $("#save", classTemplate),
-				$cancel = $("#cancel", classTemplate);
-			
+				$cancel = $("#cancel", classTemplate),
+				$delete = $("#delete", classTemplate);
+
+			$delete.on("click", function (e) {
+				if ( confirm("Вы действительно хотите удалить документ?") ) document.trigger("delete");
+			});
+			if (document["v-s:deleted"][0] && document["v-s:deleted"][0] == true) $delete.hide();
+
 			$edit.on("click", function (e) {
 				document.trigger("edit");
 			});
@@ -146,9 +171,9 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					new veda.IndividualModel(relTemplate) 
 				) : (
 					!document[rel_uri] || !document[rel_uri][0] || !document[rel_uri][0]["rdfs:label"] ? 
-						new veda.IndividualModel("mnd-d:ClassNameIdTemplate") 
+						new veda.IndividualModel("v-ui:ClassNameIdTemplate") 
 						: 
-						new veda.IndividualModel("mnd-d:ClassNameLabelTemplate")
+						new veda.IndividualModel("v-ui:ClassNameLabelTemplate")
 				)
 				renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
 				
@@ -226,11 +251,37 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			control.hide();
 		});
 		
-		$(".typeahead", control).on("keypress", function (e) {
-			var input = $( this );
-			var pos = input.position();
-			var t = $("<div>").attr("style", "position:absolute; height:100px; width:" + input.width() + ";left:" + pos.left + "px;top:" + input.outerHeight() + "px; border:1px solid red" ).html("blah!");
-			input.after(t);
+		var typeAhead = $(".typeahead", control);
+		var cont = $("<div>").prop("class", "list-group");
+		var tmpl = new veda.IndividualModel("v-ui:LabelTemplate");
+		typeAhead.popover({
+			content: cont,
+			html: true,
+			container: "body",
+			placement: "auto",
+			trigger: "manual",
+		});
+		typeAhead.on("focusout", function (e) {
+			typeAhead.popover("hide");
+			typeAhead.on("focusin", function (e) {
+				if (this.value && $("a", cont).length) typeAhead.popover("show");
+			});
+		});
+		typeAhead.on("change", function (e) {
+			cont.empty();
+			var q = this.value;
+			var tmp = $("<div>");
+			var s = new veda.SearchModel(q, tmp);
+			Object.getOwnPropertyNames(s.results).map( function (id) {
+				var a = $("<a>", {"class": "list-group-item no-border", "href": "", "style": "display: block"}).appendTo(cont);
+				var d = new veda.DocumentModel(s.results[id], a, tmpl);
+				a.click(function (e) {
+					e.preventDefault();
+					typeAhead.popover("destroy");
+					document[rel_uri] = document[rel_uri].concat(d);
+				});
+			});
+			if (s.results_count) typeAhead.popover("show");
 		});
 		
 		// Search modal
@@ -320,6 +371,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 		if ( !document[property_uri] ) document.defineProperty(property_uri);
 		var values = document[property_uri];
+
+		container.attr("content", values.join(", "));
 
 		var range = property["rdfs:range"][0].id;
 		range == "xsd:boolean"  			? 	(controlType = $.fn.vedaBoolean,  emptyVal = new Boolean(false) ) :

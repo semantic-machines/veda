@@ -585,17 +585,17 @@ test(
 				'v-s:test_field' : [ {
 					data : test_data,
 					lang : 'NONE',
-					type : _String
+					type : _Uri
 				} ],
 				'v-s:test_fieldA' : [ {
 					data : 'BBB' + test_data_uid,
 					lang : 'NONE',
-					type : _String
+					type : _Uri
 				} ],
 				'v-s:test_fieldB' : [ {
 					data : 'CCC' + test_data_uid,
 					lang : 'NONE',
-					type : _String
+					type : _Uri
 				} ]
 			};
 
@@ -614,7 +614,7 @@ test(
 				'v-s:test_field' : [ {
 					data : test_data,
 					lang : 'NONE',
-					type : _String
+					type : _Uri
 				} ]
 			};
 
@@ -632,12 +632,12 @@ test(
 				'v-s:test_field' : [ {
 					data : test_data,
 					lang : 'NONE',
-					type : _String
+					type : _Uri
 				} ],
 				'v-s:test_fieldA' : [ {
 					data : 'BBB' + test_data_uid,
 					lang : 'NONE',
-					type : _String
+					type : _Uri
 				} ]
 			};
 
@@ -655,17 +655,17 @@ test(
 				'v-s:test_field' : [ {
 					data : 'AAA' + test_data_uid,
 					lang : 'NONE',
-					type : _String
+					type : _Uri
 				} ],
 				'v-s:test_fieldA' : [ {
 					data : 'BBB' + test_data_uid,
 					lang : 'NONE',
-					type : _String
+					type : _Uri
 				} ],
 				'v-s:test_fieldB' : [ {
 					data : 'CCC' + test_data_uid,
 					lang : 'NONE',
-					type : _String
+					type : _Uri
 				} ]
 			};
 
@@ -725,7 +725,7 @@ test(
 				'v-s:test_group' : [ {
 					data : test_group_uid,
 					lang : 'NONE',
-					type : _String
+					type : _Uri
 				} ],
 				'v-s:test_datetime0' : [ {
 				data : new Date ("2014-01-01"),
@@ -755,7 +755,7 @@ test(
 				'v-s:test_group' : [ {
 					data : test_group_uid,
 					lang : 'NONE',
-					type : _String
+					type : _Uri
 				} ],
 				'v-s:test_datetime0' : [ {
 				data : new Date ("2014-01-02"),
@@ -785,7 +785,7 @@ test(
 				'v-s:test_group' : [ {
 					data : test_group_uid,
 					lang : 'NONE',
-					type : _String
+					type : _Uri
 				} ],
 				'v-s:test_datetime0' : [ {
 				data : new Date ("2014-01-02"),
@@ -815,7 +815,7 @@ test(
 				'v-s:test_group' : [ {
 					data : test_group_uid,
 					lang : 'NONE',
-					type : _String
+					type : _Uri
 				} ],
 				'v-s:test_datetime0' : [ {
 				data : new Date ("2014-01-04"),

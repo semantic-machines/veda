@@ -3,15 +3,13 @@
 veda.Module(function IndividualModel(veda) { "use strict";
 
 	/* 
-	 * Параметр noCache используется для создания нового индивида, 
+	 * Параметр noCache используется для извлечения индивида из базы данных,
 	 * если параметр отсутствует (чаще всего) либо равен false,
-	 * делается попытка извлечения объект из кэша.
+	 * делается попытка извлечения объект из кэша браузера.
 	 */
 	
 	//var cnt = 0;
-	
 	veda.IndividualModel = function (uri, noCache) {
-		
 		//console.log("individual model:", ++cnt, uri);
 		
 		var self = riot.observable(this);
@@ -149,6 +147,7 @@ veda.Module(function IndividualModel(veda) { "use strict";
 			Object.keys(individual).map(function (property_uri) {
 				if (property_uri == "@") return;
 				if (property_uri == "rdf:type") return;
+				if (property_uri == "v-s:deleted") return;
 				self.defineProperty(property_uri);
 			});
 			if (!noCache) veda.cache[self.id] = self;
@@ -192,6 +191,7 @@ veda.Module(function IndividualModel(veda) { "use strict";
 			original_individual = '{"@":"' + individual["@"] +'"}';
 		}
 		
+		// Special properties
 		Object.defineProperty(self, "id", {
 			get: function () { 
 				return individual["@"];
@@ -209,6 +209,9 @@ veda.Module(function IndividualModel(veda) { "use strict";
 			});
 			self.trigger("individual:typeChanged", classes);
 		});
+
+		self.defineProperty("v-s:deleted");
+
 		
 		// Load data 
 		if (uri) self.load(uri); 

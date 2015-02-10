@@ -562,9 +562,10 @@ td:PersonTemplate1
         </div>
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]" >Редактировать</button>
-        <button type="button" class="action btn btn-success" id="save" i18n="[Save]" >Сохранить</button>
-        <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]" >Отмена</button>
+        <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
+        <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
+        <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
+        <button type="button" class="action btn btn-link" id="delete" i18n="[Delete]">Удалить</button>
       </div>
     </div>
   </div>
@@ -582,7 +583,7 @@ td:AppointmentTemplate1
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <span property="_class.rdfs:label">Имя класса</span>
+	        <span about="v-s:Appointment" property="rdfs:label">Имя класса</span>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
   	        <a href="id"><span property="id">ID</span></a>
@@ -604,6 +605,7 @@ td:AppointmentTemplate1
         <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
         <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
         <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
+        <button type="button" class="action btn btn-link" id="delete" i18n="[Delete]">Удалить</button>
       </div>
     </div>
   </div>
@@ -617,8 +619,8 @@ td:AppointmentTemplate2
   v-ui:forClass v-s:Appointment ;
   v-ui:template """
 	<div>
-		<span rel="v-s:employee" template="td:LabelTemplate">Работник</span>, 
-		<span rel="v-s:occupation" template="td:LabelTemplate">Должность</span>
+		<span rel="v-s:employee" template="v-ui:LabelTemplate">Работник</span>, 
+		<span rel="v-s:occupation" template="v-ui:LabelTemplate">Должность</span>
 	</div>
   """ ;
 .
@@ -631,7 +633,7 @@ td:AccountTemplate1
   v-ui:embedded "true"^^xsd:boolean ;  
   v-ui:template """
   <div>
-    <div class="panel panel-default" resource="id" typeof="class">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
@@ -648,7 +650,7 @@ td:AccountTemplate1
         <div class="row">
             <div class="col-md-12">
                <strong class="text-muted" about="v-s:owner" property="rdfs:label">Владелец</strong>
-               <div rel="v-s:owner" template="td:LabelTemplate">td:LabelTemplate</div>
+               <div rel="v-s:owner" template="v-ui:LabelTemplate">v-ui:LabelTemplate</div>
             </div>
         </div>
         <br />
@@ -674,6 +676,7 @@ td:AccountTemplate1
         <button type="button" class="action btn btn-sm btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
         <button type="button" class="action btn btn-sm btn-success" id="save" i18n="[Save]">Сохранить</button>
         <button type="button" class="action btn btn-sm btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
+        <button type="button" class="action btn btn-sm btn-link" id="delete" i18n="[Delete]">Удалить</button>
       </div-->
     </div>
   </div>
@@ -710,45 +713,20 @@ td:PreferencesTemplate1
   </div>
   <div class="panel-body">
     <div>
-      <!--span property="document.v-s:owner">Владелец</span-->
-      <strong class="text-muted" about="v-ui:preferredLanguage" property="rdfs:label">Язык</strong>: <ul><li rel="v-ui:preferredLanguage">RU</li></ul>
-      <strong class="text-muted" about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</strong>: <span property="v-ui:displayedElements">999</span>
+      <strong class="text-muted" about="v-ui:preferredLanguage" property="rdfs:label">Язык</strong>:
+      <div rel="v-ui:preferredLanguage">RU</div>
+      <strong class="text-muted" about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</strong>: 
+      <span property="v-ui:displayedElements">999</span>
     </div>
   </div>
   <!--div class="panel-footer">
     <button type="button" class="action btn btn-sm btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
     <button type="button" class="action btn btn-sm btn-success" id="save" i18n="[Save]">Сохранить</button>
     <button type="button" class="action btn btn-sm btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
+    <button type="button" class="action btn bnt-sm btn-link" id="delete" i18n="[Delete]">Удалить</button>
   </div-->
 </div>
 
-  """ ;
-.
-
-td:LabelTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с меткой"@ru ;
-  rdfs:label "Template with label"@en ;
-  v-ui:template """
-  <span><span property="rdfs:label">наименование</span></span>
-  """ ;
-.
-
-td:ClassNameLabelTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с именем класса и меткой"@ru ;
-  rdfs:label "Template with class name and label"@en ;
-  v-ui:template """
-  <div><a href="id"><span rel="rdf:type" template="td:LabelTemplate">Имя класса</span>: <span property="rdfs:label">наименование</span></a></div>
-  """ ;
-.
-
-td:ClassNameIdTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с именем класса, меткой и id"@ru ;
-  rdfs:label "Template with class name, label and id"@en ;
-  v-ui:template """
-  <div><a href="id"><span rel="rdf:type" template="td:LabelTemplate">Имя класса</span>: <span property="id">id</span></a></div>
   """ ;
 .
 

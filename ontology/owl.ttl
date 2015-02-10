@@ -604,11 +604,12 @@ owl:withRestrictions a rdf:Property ;
         <http://www.w3.org/TR/owl2-rdf-based-semantics/#table-axiomatic-properties> ;
     owl:imports <http://www.w3.org/2000/01/rdf-schema> ;
     owl:versionIRI <http://www.w3.org/2002/07/owl> ;
-    owl:versionInfo "$Date: 2009/11/15 10:54:12 $" ;
+    owl:versionInfo "1.0" ;
     grddl:namespaceTransformation <http://dev.w3.org/cvsweb/2009/owl-grddl/owx2rdf.xsl> .
 
 owl:Thing a owl:Class ;
     rdfs:label "Thing"@en ;
     rdfs:label "Сущность"@ru ;
     rdfs:comment "The class of OWL individuals." ;
-    rdfs:isDefinedBy owl: .
+    rdfs:isDefinedBy owl: ;
+    rdfs:subClassOf rdfs:Resource .

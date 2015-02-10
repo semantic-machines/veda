@@ -2,14 +2,29 @@
   color: #333;
 }*/
 
+.navbar-right {
+  margin-right: inherit !important;
+}
+
 .popover {
-  min-width: 200px ! important;
+  min-width: 300px !important;
   max-width: 400px;
   width: auto;
+  padding: 0px;
+}
+
+#user-info {
+  margin-right:5px !important;
 }
 
 .no-margin {
   margin: 0px;
+}
+.no-padding {
+  padding: 0px;
+}
+.no-border {
+  border: none;
 }
 
 dl {
@@ -170,8 +185,8 @@ path {
 }
 #workflow-canvas {
 	margin: 2px;
-	overflow-x:scroll;
-	overflow-y:scroll;
+	overflow-x:hidden;
+	overflow-y:hidden;
 	position: relative;
     height: 99%;
     border: 1px solid black;
