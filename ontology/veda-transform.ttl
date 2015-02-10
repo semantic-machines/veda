@@ -1,0 +1,35 @@
+# baseURI: http://semantic-machines.com/veda/veda-transform
+# imports: http://semantic-machines.com/veda/veda-schema
+
+# c14n-version: 3
+@prefix mnd-s-sa: <http://semantic-machines.com/veda/mondi-schema-safety-audit/> .
+@prefix mnd-tr-sa: <http://semantic-machines.com/veda/mondi-transform-safety-audit/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+<http://semantic-machines.com/veda/mondi-transform-safety-audit>
+  rdf:type owl:Ontology ;
+  rdfs:label "Mapping реквизитов для бизнес области Аудиты безопасности"@ru ;
+  rdfs:label "mondi-transform-safety-audit"@en ;
+  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
+  owl:versionInfo "1.0" ;
+.
+
+
+# ---------- dictionary Level
+v-tr:tr1
+  rdf:type v-s:Transform ;
+  v-s:destClass v-s:Level ;
+  v-s:destProperty "v-s:title" ;
+  v-s:srcClassName "6f121c4c4dc745e5a794c9b18c924ffa" ;
+  v-s:srcPropertyName "name" ;
+.
+v-tr:tr2
+  rdf:type v-s:Transform ;
+  v-s:destClass v-s:Level ;
+  v-s:destProperty "v-s:alternativeTitle" ;
+  v-s:srcClassName "6f121c4c4dc745e5a794c9b18c924ffa" ;
+  v-s:srcPropertyName "title" ;
+.
