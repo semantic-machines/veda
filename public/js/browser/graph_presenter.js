@@ -6,15 +6,15 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 	
 	veda.on("load:graph", function (params) {
 		
-		function addNode (individual) {
+		function addNode (individual, opts) {
 			if ( nodes.get(individual.id) === null ) {
-				nodes.add ([
-					{
-						id: individual.id,
-						label: individual["rdf:type"][0]["rdfs:label"][0] + ": \n" + (individual["rdfs:label"] && individual["rdfs:label"][0] ? individual["rdfs:label"][0] : individual.id),
-						individual: individual
-					}
-				]);
+				var node = {
+					id: individual.id,
+					label: individual["rdf:type"][0]["rdfs:label"][0] + ": \n" + (individual["rdfs:label"] && individual["rdfs:label"][0] ? individual["rdfs:label"][0] : individual.id),
+					individual: individual,
+				};
+				$.extend(node, opts);
+				nodes.add ([ node ]);
 			}
 		}
 		
@@ -112,7 +112,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		var nodes = new vis.DataSet(), edges = new vis.DataSet();
 		var body = $("body");
 		
-		addNode(root);
+		addNode(root, {group: "root"});
 		addOutLinks(root.id);
 		
 		// Create a network
@@ -131,14 +131,28 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 				arrowScaleFactor: 0.7
 			},
 			physics: {
-				barnesHut: {
+				/*barnesHut: {
 					enabled: true,
 					gravitationalConstant: -2000,
 					centralGravity: 0.1,
-					springLength: 150,
+					springLength: 95,
 					springConstant: 0.04,
 					damping: 0.09
-				},
+				},*/
+				/*repulsion: {
+					centralGravity: 0.1,
+					springLength: 50,
+					springConstant: 0.05,
+					nodeDistance: 100,
+					damping: 0.09
+				},*/
+				hierarchicalRepulsion: {
+					centralGravity: 0.5,
+					springLength: 150,
+					springConstant: 0.01,
+					nodeDistance: 300,
+					damping: 0.09
+				}
 			},
 		};
 		var network = new vis.Network(container.get(0), data, options);
