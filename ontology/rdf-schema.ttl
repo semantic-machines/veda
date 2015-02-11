@@ -6,8 +6,8 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 rdfs:Class a rdfs:Class ;
-    rdfs:label "RDF Class"@en ;
-    rdfs:label "RDF Класс"@ru ;
+    rdfs:label "RDFS Class"@en ;
+    rdfs:label "RDFS Класс"@ru ;
     rdfs:comment "The class of classes." ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:subClassOf rdfs:Resource .
@@ -121,5 +121,5 @@ rdfs: a owl:Ontology ;
     dc:title "The RDF Schema vocabulary (RDFS)" ;
     rdfs:label "The RDF Schema vocabulary (RDFS)"@en ;
     rdfs:label "Словарь RDF Schema (RDFS)"@ru ;
-    owl:versionInfo "1.0" ;
+    owl:versionInfo "1.1" ;
     rdfs:seeAlso <http://www.w3.org/2000/01/rdf-schema-more> .
