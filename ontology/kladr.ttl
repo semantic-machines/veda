@@ -125,11 +125,10 @@ kladr:index_0
   vdi:inherited_index kladr:index_3 ;
 .
 
-kladr:index_10
+kladr:index_3
   rdf:type vdi:ClassIndex ;
   vdi:forClass kladr:AdministrativeTerritorialEntity ;
-  vdi:forProperty kladr:ocatd ;
-  vdi:indexed_field_as_fwildcard kladr:ocatd ;
+  vdi:indexed_field rdfs:label ;
 .
 
 kladr:index_1
@@ -142,13 +141,14 @@ kladr:index_1
 kladr:index_2
   rdf:type vdi:ClassIndex ;
   vdi:forClass kladr:AdministrativeTerritorialType ;
-  vdi:indexed_field kladr:level ;
+  vdi:indexed_field rdfs:label ;
 .
 
-kladr:index_3
+kladr:index_10
   rdf:type vdi:ClassIndex ;
   vdi:forClass kladr:AdministrativeTerritorialEntity ;
-  vdi:indexed_field rdfs:label ;
+  vdi:forProperty kladr:ocatd ;
+  vdi:indexed_field_as_fwildcard kladr:ocatd ;
 .
 
 # ---------------------------------- transform from DBF KLADR
