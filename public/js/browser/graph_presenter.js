@@ -13,6 +13,33 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 					label: individual["rdf:type"][0]["rdfs:label"][0] + ": \n" + (individual["rdfs:label"] && individual["rdfs:label"][0] ? individual["rdfs:label"][0] : individual.id),
 					individual: individual,
 				};
+				if (individual["rdf:type"][0]) {
+					switch ( individual["rdf:type"][0].id ) {
+						case "rdfs:Class" :
+						case "owl:Class" :
+							node.group = "type";
+							break
+						case "rdf:Property" :
+						case "owl:DatatypeProperty" :
+						case "owl:ObjectProperty" :
+						case "owl:OntologyProperty" :
+						case "owl:AnnotationProperty" :
+							node.group = "property";
+							break
+						case "v-ui:ClassTemplate" :
+							node.group = "template";
+							break
+						case "v-ui:PropertySpecification" :
+							node.group = "specification";
+							break
+						case "owl:Ontology" :
+							node.group = "ontology";
+							break
+						default :
+							node.group = "individual";
+							break
+					}
+				}
 				$.extend(node, opts);
 				nodes.add ([ node ]);
 			}
@@ -51,17 +78,11 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 
 		function addInLinks (id) {
 			var s = new veda.SearchModel("'*'=='" + id + "'", $("<div>"));
-			var results = [];
-			var resultsEdges = [];
 			Object.getOwnPropertyNames(s.results).map(function (uri) {
 				var res = s.results[uri];
-				var res_id = res["id"];
-				var res_label = res["rdf:type"][0]["rdfs:label"][0] + ": \n" + (res["rdfs:label"] && res["rdfs:label"][0] ? res["rdfs:label"][0] : id);
-				if (nodes.get(res_id) === null) {
-					results.push({id: res_id, label: res_label, individual: res});
-				}
+				addNode(res);
 				var to = id; 
-				var from = res_id;
+				var from = res.id;
 				Object.getOwnPropertyNames(res.properties).map(function (property_uri) {
 					res[property_uri].map(function (item) {
 						if (item instanceof veda.IndividualModel && item.id == to) {
@@ -74,14 +95,12 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 								}
 							}
 							if ( !edges.get(options).length ) {
-								resultsEdges.push({from: from, to: to, label: label});
+								edges.add([{from: from, to: to, label: label}]);
 							}
 						}
 					}) 
 				});
 			});
-			nodes.add(results);
-			edges.add(resultsEdges);
 		}
 
 		// Event handlers
@@ -103,6 +122,12 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		}
 
 		function onDoubleClick (selected) {
+			/*var id = selected.nodes[0];
+			var modal = $("<div>").addClass("modal");
+			body.append( modal );
+			new veda.DocumentModel(id, modal);
+			modal.modal();*/
+			/*riot.route("#/document/" + selected.nodes[0]);*/
 			addOutLinks(selected.nodes[0]);
 		}
 
@@ -112,7 +137,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		var nodes = new vis.DataSet(), edges = new vis.DataSet();
 		var body = $("body");
 		
-		addNode(root, {group: "root"});
+		addNode(root);
 		addOutLinks(root.id);
 		
 		// Create a network
@@ -130,15 +155,69 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 				style: "arrow",
 				arrowScaleFactor: 0.7
 			},
+			groups: {
+				type: {
+					color: {
+						border: 'green',
+						background: 'lightgreen',
+						highlight: {
+							border: 'green',
+							background: 'lightgreen'
+						}
+					}
+				},
+				property: {
+					color: {
+						border: 'goldenrod',
+						background: 'gold',
+						highlight: {
+							border: 'goldenrod',
+							background: 'gold'
+						}
+					}
+				},
+				template: {
+					color: {
+						border: 'darkviolet',
+						background: 'violet',
+						highlight: {
+							border: 'darkviolet',
+							background: 'violet'
+						}
+					}
+				},
+				specification: {
+					color: {
+						border: 'darkorange',
+						background: 'orange',
+						highlight: {
+							border: 'darkorange',
+							background: 'orange'
+						}
+					}
+				},
+				ontology: {
+					color: {
+						border: 'darkgreen',
+						background: 'green',
+						highlight: {
+							border: 'darkgreen',
+							background: 'green'
+						}
+					},
+					fontColor: "white"
+				},
+
+			},
 			physics: {
-				/*barnesHut: {
+				barnesHut: {
 					enabled: true,
-					gravitationalConstant: -2000,
+					gravitationalConstant: -8000,
 					centralGravity: 0.1,
-					springLength: 95,
+					springLength: 200,
 					springConstant: 0.04,
 					damping: 0.09
-				},*/
+				},
 				/*repulsion: {
 					centralGravity: 0.1,
 					springLength: 50,
@@ -146,14 +225,15 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 					nodeDistance: 100,
 					damping: 0.09
 				},*/
-				hierarchicalRepulsion: {
+				/*hierarchicalRepulsion: {
 					centralGravity: 0.5,
 					springLength: 150,
 					springConstant: 0.01,
 					nodeDistance: 300,
 					damping: 0.09
-				}
+				}*/
 			},
+
 		};
 		var network = new vis.Network(container.get(0), data, options);
 
