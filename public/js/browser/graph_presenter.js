@@ -3,6 +3,7 @@
 veda.Module(function GraphPresenter(veda) { "use strict";
 
 	var container = $("#main");
+	var ctx = $( $("#graph-template").html() );
 	
 	veda.on("load:graph", function (params) {
 		
@@ -76,8 +77,10 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 			});
 		};
 
-		function addInLinks (id) {
-			var s = new veda.SearchModel("'*'=='" + id + "'", $("<div>"));
+		function addInLinks (id, query) {
+			var q = query || "'*'=='{id}'";
+			q = q.replace("{id}", id);
+			var s = new veda.SearchModel(q, $("<div>"));
 			Object.getOwnPropertyNames(s.results).map(function (uri) {
 				var res = s.results[uri];
 				addNode(res);
@@ -103,8 +106,40 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 			});
 		}
 
+		function deleteWithOutLinks (id) {
+			nodes.remove(id);
+			var nodesToRemove = [];
+			var edgesToRemove = edges.get({
+				filter: function (item) {
+					if (item.from == id) {
+						nodesToRemove.push(item.to);
+					}
+					return (item.from == id || item.to == id);
+				}
+			});
+			edges.remove(edgesToRemove);
+			nodes.remove(nodesToRemove);
+		}
+
+		function deleteWithInLinks (id) {
+			nodes.remove(id);
+			var nodesToRemove = [];
+			var edgesToRemove = edges.get({
+				filter: function (item) {
+					if (item.to == id) {
+						nodesToRemove.push(item.from);
+					}
+					return (item.from == id || item.to == id);
+				}
+			});
+			edges.remove(edgesToRemove);
+			nodes.remove(nodesToRemove);
+		}
+
+
 		// Event handlers
 		function onSelect (selected) {
+			select = selected;
 			body.off("keydown");
 			body.on("keydown", function (e) {
 				if (e.which == 46) {
@@ -122,6 +157,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		}
 
 		function onDoubleClick (selected) {
+			if (!selected.nodes.length) return;
 			/*var id = selected.nodes[0];
 			var modal = $("<div>").addClass("modal");
 			body.append( modal );
@@ -136,7 +172,8 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		var root = new veda.IndividualModel(uri);
 		var nodes = new vis.DataSet(), edges = new vis.DataSet();
 		var body = $("body");
-		
+		var select = {nodes: [], edges: []};
+				
 		addNode(root);
 		addOutLinks(root.id);
 		
@@ -212,7 +249,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 			physics: {
 				barnesHut: {
 					enabled: true,
-					gravitationalConstant: -8000,
+					gravitationalConstant: -4000,
 					centralGravity: 0.1,
 					springLength: 200,
 					springConstant: 0.04,
@@ -239,7 +276,52 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 
 		// Add event listeners
 		network.on("doubleClick", onDoubleClick);
+		
 		network.on("select", onSelect);
+		
+		container.append( ctx );
+		
+		container.contextmenu({
+			target: $("#individual-context-menu", container),
+			before: function (e, element) {
+				if (!select.nodes.length) return false;
+				var id = select.nodes[0];
+				var node = nodes.get(id);
+				switch (node.group) {
+					case "type": this.setMenu($("#class-context-menu", container)); break
+					case "ontology": this.setMenu($("#ontology-context-menu", container)); break
+					case "property": this.setMenu($("#property-context-menu", container)); break
+					case "template": this.setMenu($("#template-context-menu", container)); break
+					case "specification": this.setMenu($("#specification-context-menu", container)); break
+					default: this.setMenu($("#individual-context-menu", container)); break
+				}
+				return true;
+			},
+			onItem: function (context, e) {
+				var id = select.nodes[0];
+				switch (e.target.id) {
+					case "out-links" : addOutLinks( id ); break
+					case "in-links" : addInLinks( id ); break
+					case "delete" : 
+						nodes.remove(select.nodes); 
+						edges.remove(select.edges);
+						select.nodes = select.edges = [];
+					break
+					case "delete-with-out" : 
+						deleteWithOutLinks (id);
+						select.nodes = select.edges = [];
+					break
+					case "delete-with-in" : 
+						deleteWithInLinks (id);
+						select.nodes = select.edges = [];
+					break
+					case "class-individuals" : addInLinks( id, "'rdf:type'=='{id}'" ); break
+					case "class-properties" : addInLinks( id, "'rdfs:domain'=='{id}'"); break
+					case "class-templates" : addInLinks( id, "'rdf:type'=='v-ui:ClassTemplate'&&'v-ui:forClass'=='{id}'" ); break
+					case "class-specifications" : addInLinks( id, "'rdf:type'=='v-ui:PropertySpecification'&&'v-ui:forClass'=='{id}'" ); break
+				}
+			}
+		});
 		
 	});
 

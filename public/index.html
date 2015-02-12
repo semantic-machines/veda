@@ -442,10 +442,90 @@
 			</div>
 		</script>
 		
-		<!-- Generic class template -->
+		<!-- Deleted document alert -->
 		<script type="html/template" id="deleted-document-alert-template">
 			<div class="alert alert-warning no-margin" role="alert">
 				<p>Документ удален.  <button class="btn btn-default btn-xs">Восстановить</button></p>
+			</div>
+		</script>
+
+		<!-- Graph context menus -->
+		<script type="html/template" id="graph-template">
+			<div id="individual-context-menu">
+				<ul class="dropdown-menu" role="menu">
+					<li role="presentation" class="dropdown-header">Индивид</li>
+					<li role="presentation" class="divider"></li>
+					<li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
+					<li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
+					<li role="presentation" class="divider"></li>
+					<li><a tabindex="-1" id="delete">Удалить</a></li>
+					<li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
+					<li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
+				</ul>
+			</div>
+			<div id="class-context-menu">
+				<ul class="dropdown-menu" role="menu">
+					<li role="presentation" class="dropdown-header">Класс</li>
+					<li><a tabindex="-1" id="class-individuals">Все индивиды</a></li>
+					<li><a tabindex="-1" id="class-properties">Свойства класса</a></li>
+					<li><a tabindex="-1" id="class-templates">Шаблоны класса</a></li>
+					<li><a tabindex="-1" id="class-specifications">Спецификации класса</a></li>
+					<li role="presentation" class="divider"></li>
+					<li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
+					<li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
+					<li role="presentation" class="divider"></li>
+					<li><a tabindex="-1" id="delete">Удалить</a></li>
+					<li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
+					<li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
+				</ul>
+			</div>
+			<div id="property-context-menu">
+				<ul class="dropdown-menu" role="menu">
+					<li role="presentation" class="dropdown-header">Свойство</li>
+					<li role="presentation" class="divider"></li>
+					<li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
+					<li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
+					<li role="presentation" class="divider"></li>
+					<li><a tabindex="-1" id="delete">Удалить</a></li>
+					<li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
+					<li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
+				</ul>
+			</div>
+			<div id="ontology-context-menu">
+				<ul class="dropdown-menu" role="menu">
+					<li role="presentation" class="dropdown-header">Онтология</li>
+					<li role="presentation" class="divider"></li>
+					<li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
+					<li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
+					<li role="presentation" class="divider"></li>
+					<li><a tabindex="-1" id="delete">Удалить</a></li>
+					<li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
+					<li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
+				</ul>
+			</div>
+			<div id="template-context-menu">
+				<ul class="dropdown-menu" role="menu">
+					<li role="presentation" class="dropdown-header">Шаблон</li>
+					<li role="presentation" class="divider"></li>
+					<li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
+					<li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
+					<li role="presentation" class="divider"></li>
+					<li><a tabindex="-1" id="delete">Удалить</a></li>
+					<li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
+					<li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
+				</ul>
+			</div>
+			<div id="specification-context-menu">
+				<ul class="dropdown-menu" role="menu">
+					<li role="presentation" class="dropdown-header">Спецификация</li>
+					<li role="presentation" class="divider"></li>
+					<li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
+					<li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
+					<li role="presentation" class="divider"></li>
+					<li><a tabindex="-1" id="delete">Удалить</a></li>
+					<li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
+					<li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
+				</ul>
 			</div>
 		</script>
 
@@ -463,6 +543,7 @@
 		<script type="text/javascript" src="/js/browser/remote-list.js"></script>
 		<script type="text/javascript" src="/js/browser/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="/js/browser/vis.min.js"></script>
+		<script type="text/javascript" src="/js/browser/bootstrap-contextmenu.js"></script>
 		
 		<!-- Veda browser & server -->
 		<script type="text/javascript" src="/js/common/util.js"></script>
