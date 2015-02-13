@@ -185,7 +185,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 			var prefixes = {};
 			Object.getOwnPropertyNames(s.results).map( function (res_id) {
 				var res = s.results[res_id];
-				prefixes[res_id.substring(0,res_id.length-1)] = res["v-s:fullUrl"][0].toString() + "#";
+				prefixes[res_id.substring(0,res_id.length-1)] = res["v-s:fullUrl"][0].toString();
 			});
 			console.log(prefixes);
 			var writer = N3.Writer({ prefixes: prefixes });
