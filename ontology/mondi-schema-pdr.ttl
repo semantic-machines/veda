@@ -75,8 +75,8 @@ mnd-s-pdr:descriptionOfPdrResource
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
   rdfs:domain mnd-s-pdr:TraningOfPdr ;
-  rdfs:label "description"@en ;
-  rdfs:label "описание"@ru ;
+  rdfs:label "description of PDR resource"@en ;
+  rdfs:label "описание ресурсов"@ru ;
   rdfs:range xsd:string ;
 .
 mnd-s-pdr:developmentArea
@@ -153,8 +153,8 @@ mnd-s-pdr:hasPdrResource
   rdf:type owl:ObjectProperty ;
   rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
   rdfs:domain mnd-s-pdr:TraningOfPdr ;
-  rdfs:label "description"@en ;
-  rdfs:label "описание"@ru ;
+  rdfs:label "pdr resource"@en ;
+  rdfs:label "ресурсы и поддержка"@ru ;
   rdfs:range mnd-s-pdr:PdrResource ;
 .
 mnd-s-pdr:hasProffessionalObjective
@@ -167,8 +167,8 @@ mnd-s-pdr:hasProffessionalObjective
 mnd-s-pdr:hasRating
   rdf:type owl:ObjectProperty ;
   rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
-  rdfs:label "description"@en ;
-  rdfs:label "описание"@ru ;
+  rdfs:label "final rating"@en ;
+  rdfs:label "финальная оценка"@ru ;
   rdfs:range mnd-s-pdr:RatingOfPdr ;
 .
 mnd-s-pdr:hasSuccessor
@@ -216,8 +216,8 @@ mnd-s-pdr:managerStartDoing
 mnd-s-pdr:proccessOfObjectiveAchievment
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
-  rdfs:label "description"@en ;
-  rdfs:label "описание"@ru ;
+  rdfs:label "proccess of objective achievment"@en ;
+  rdfs:label "процесс достижения цели"@ru ;
   rdfs:range xsd:string ;
 .
 mnd-s-pdr:readyToNewPosition
@@ -244,9 +244,12 @@ mnd-s-pdr:totalCoverage
 mnd-s-pdr:unitOfMeasure
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
-  rdfs:label "description"@en ;
-  rdfs:label "описание"@ru ;
+  rdfs:label "unit of measure"@en ;
+  rdfs:label "единицы измерения"@ru ;
   rdfs:range xsd:string ;
+.
+mnd-s:hasCheckedDepartment
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
 .
 mnd-s:hasMobility
   rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
@@ -287,6 +290,9 @@ v-s:hasParentLink
   rdfs:domain mnd-s-pdr:PdrMethod ;
   rdfs:domain mnd-s-pdr:TraningOfPdr ;
 .
+v-s:hasStatusWorkflow
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+.
 v-s:responsible
   rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
   rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
@@ -296,11 +302,5 @@ v-s:summary
   rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
 .
 v-s:year
-  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
-.
-mnd-s:hasCheckedDepartment
-  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
-.
-v-s:hasStatusWorkflow
   rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
 .
