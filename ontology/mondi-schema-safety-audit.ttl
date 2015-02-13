@@ -204,6 +204,9 @@ mnd-s:futureAction
   rdfs:range xsd:string ;
   rdfs:subPropertyOf v-s:description ;
 .
+mnd-s:hasAddInfo
+  rdfs:domain mnd-s:Observation ;
+.
 mnd-s:hasCheckedDepartment
   rdfs:domain mnd-s-sa:IncidentAudit ;
   rdfs:domain mnd-s-sa:SafetyAudit ;
@@ -250,14 +253,9 @@ v-s:dateTo
   rdfs:domain mnd-s:Observation ;
 .
 v-s:description
+  rdfs:domain mnd-s-sa:AccidentAct ;
   rdfs:domain mnd-s-sa:IpmEliminationAct ;
-  rdfs:domain [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          mnd-s:Observation
-          mnd-s-sa:AccidentAct
-        ) ;
-    ] ;
+  rdfs:domain mnd-s:Observation ;
 .
 v-s:hasHeadOfMember
   rdfs:domain mnd-s-sa:IpmEliminationAct ;

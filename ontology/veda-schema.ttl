@@ -21,13 +21,6 @@
   owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "1.2" ;
 .
-v-s:fullUrl
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain owl:Ontology ;
-  rdfs:label "full URL"@en ;
-  rdfs:label "полный URL"@ru ;
-  rdfs:range xsd:string ;
-.
 v-s:Absence
   rdf:type owl:Class ;
   rdfs:label "Absence"@en ;
@@ -203,6 +196,12 @@ v-s:Versioned
   rdfs:label "Versioned thing"@en ;
   rdfs:label "Версионная сущность"@ru ;
   rdfs:subClassOf owl:Thing ;
+.
+v-s:YesNo
+  rdf:type owl:Class ;
+  rdfs:label "Yes No"@en ;
+  rdfs:label "Да Нет"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
 .
 v-s:actualVersion
   rdf:type owl:ObjectProperty ;
@@ -436,6 +435,13 @@ v-s:firstName
   rdfs:label "имя"@ru ;
   rdfs:range xsd:string ;
 .
+v-s:fullUrl
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain owl:Ontology ;
+  rdfs:label "full URL"@en ;
+  rdfs:label "полный URL"@ru ;
+  rdfs:range xsd:string ;
+.
 v-s:hasAccount
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
@@ -443,6 +449,18 @@ v-s:hasAccount
   rdfs:label "account"@en ;
   rdfs:label "учетная запись"@ru ;
   rdfs:range v-s:Account ;
+.
+v-s:hasChief
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "chief"@en ;
+  rdfs:label "непосредственный руководитель"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:hasFunctionalChief
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "functional chief"@en ;
+  rdfs:label "функциональный руководитель"@ru ;
+  rdfs:range v-s:Appointment ;
 .
 v-s:hasHeadOfMember
   rdf:type owl:ObjectProperty ;
@@ -691,4 +709,10 @@ v-s:valid
   rdfs:label "valid"@en ;
   rdfs:label "действительно"@ru ;
   rdfs:range xsd:boolean ;
+.
+v-s:year
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "year"@en ;
+  rdfs:label "год"@ru ;
+  rdfs:range xsd:integer ;
 .

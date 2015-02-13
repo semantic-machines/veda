@@ -85,6 +85,12 @@ mnd-s:EmotionalCharacteristic
   rdfs:label "Положительный. Отрицательный"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
 .
+mnd-s:Mobility
+  rdf:type owl:Class ;
+  rdfs:label "Mobility"@en ;
+  rdfs:label "Мобильность"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
 mnd-s:NormativeDocument
   rdf:type owl:Class ;
   rdfs:label "Normative Document"@en ;
@@ -127,13 +133,7 @@ mnd-s:descriptionOfPlace
 .
 mnd-s:hasAddInfo
   rdf:type owl:ObjectProperty ;
-  rdfs:domain [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          mnd-s:Action
-          mnd-s:Observation
-        ) ;
-    ] ;
+  rdfs:domain mnd-s:Action ;
   rdfs:label "has additional information"@en ;
   rdfs:label "ссылка на дополнительную информацию"@ru ;
   rdfs:range mnd-s:AddInfo ;
@@ -163,6 +163,12 @@ mnd-s:hasContractor
   rdfs:label "contractor"@ru ;
   rdfs:label "подрядчик"@ru ;
   rdfs:range mnd-s:Dossier ;
+.
+mnd-s:hasMobility
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "mobility"@en ;
+  rdfs:label "мобильность"@ru ;
+  rdfs:range mnd-s:Mobility ;
 .
 mnd-s:initiatorDepartment
   rdf:type owl:ObjectProperty ;
