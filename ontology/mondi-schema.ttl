@@ -32,6 +32,12 @@ mnd-s:AddInfo
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
 .
+mnd-s:AddInfoKind
+  rdf:type owl:Class ;
+  rdfs:label "Add information classifier"@en ;
+  rdfs:label "Классификатор видов дополнительной информации"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
 mnd-s:AdministrativeDocument
   rdf:type owl:Class ;
   rdfs:label "Administrative document"@en ;
@@ -85,6 +91,12 @@ mnd-s:EmotionalCharacteristic
   rdfs:label "Положительный. Отрицательный"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
 .
+mnd-s:Mobility
+  rdf:type owl:Class ;
+  rdfs:label "Mobility"@en ;
+  rdfs:label "Мобильность"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
 mnd-s:NormativeDocument
   rdf:type owl:Class ;
   rdfs:label "Normative Document"@en ;
@@ -127,16 +139,16 @@ mnd-s:descriptionOfPlace
 .
 mnd-s:hasAddInfo
   rdf:type owl:ObjectProperty ;
-  rdfs:domain [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          mnd-s:Action
-          mnd-s:Observation
-        ) ;
-    ] ;
+  rdfs:domain mnd-s:Action ;
   rdfs:label "has additional information"@en ;
   rdfs:label "ссылка на дополнительную информацию"@ru ;
   rdfs:range mnd-s:AddInfo ;
+.
+mnd-s:hasAddInfoKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "add iformation klassifier"@en ;
+  rdfs:label "виды дополнительной инфорамации"@ru ;
+  rdfs:range mnd-s:AddInfoKind ;
 .
 mnd-s:hasAreaOfObservation
   rdf:type owl:ObjectProperty ;
@@ -147,13 +159,8 @@ mnd-s:hasAreaOfObservation
 .
 mnd-s:hasCheckedDepartment
   rdf:type owl:ObjectProperty ;
-  rdfs:domain [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          mnd-s:Action
-          mnd-s:Observation
-        ) ;
-    ] ;
+  rdfs:domain mnd-s:Action ;
+  rdfs:domain mnd-s:Observation ;
   rdfs:label "cheked department"@en ;
   rdfs:label "проверяемое подразделение"@ru ;
   rdfs:range v-s:Department ;
@@ -163,6 +170,12 @@ mnd-s:hasContractor
   rdfs:label "contractor"@ru ;
   rdfs:label "подрядчик"@ru ;
   rdfs:range mnd-s:Dossier ;
+.
+mnd-s:hasMobility
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "mobility"@en ;
+  rdfs:label "мобильность"@ru ;
+  rdfs:range mnd-s:Mobility ;
 .
 mnd-s:initiatorDepartment
   rdf:type owl:ObjectProperty ;
@@ -190,6 +203,12 @@ mnd-s:responsibleOfObservation
   rdfs:label "responsible of observation"@en ;
   rdfs:label "ответственное лицо замечания"@ru ;
   rdfs:range v-s:Appointment ;
+.
+mnd-s:risk
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "risk"@en ;
+  rdfs:label "риск"@ru ;
+  rdfs:range xsd:integer ;
 .
 mnd-s:signer
   rdf:type owl:ObjectProperty ;

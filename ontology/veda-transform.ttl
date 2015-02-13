@@ -33,3 +33,13 @@ v-tr:tr2
   v-s:srcClassName "6f121c4c4dc745e5a794c9b18c924ffa" ;
   v-s:srcPropertyName "title" ;
 .
+
+
+# ---------- dictionary YesNo
+v-tr:tr3
+  rdf:type v-s:Transform ;
+  v-s:destClass v-s:YesNo ;
+  v-s:destProperty "v-s:title" ;
+  v-s:srcClassName "4ddb6eaf9d914c59a9c07e75d545908e" ;
+  v-s:srcPropertyName "name" ;
+.

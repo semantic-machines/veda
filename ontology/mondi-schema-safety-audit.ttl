@@ -128,6 +128,7 @@ mnd-s-sa:hasAddToSafetyAudit
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-s-sa:RatingOfSafetyAudit ;
   rdfs:domain mnd-s-sa:SafetyAuditObservation ;
+  rdfs:label "add to safety audit"@en ;
   rdfs:label "Замечание в рамках Аудита"@ru ;
   rdfs:range mnd-s-sa:SafetyAudit ;
   rdfs:subPropertyOf v-s:hasParentLink ;
@@ -150,6 +151,7 @@ mnd-s-sa:hasObservationOfSafetyAudit
   rdf:type owl:ObjectProperty ;
   rdfs:domain mnd-s-sa:IncidentAudit ;
   rdfs:domain mnd-s-sa:SafetyAudit ;
+  rdfs:label "observation of safety audit"@en ;
   rdfs:label "замечания аудита"@ru ;
   rdfs:range mnd-s-sa:SafetyAuditObservation ;
 .
@@ -204,6 +206,9 @@ mnd-s:futureAction
   rdfs:range xsd:string ;
   rdfs:subPropertyOf v-s:description ;
 .
+mnd-s:hasAddInfo
+  rdfs:domain mnd-s:Observation ;
+.
 mnd-s:hasCheckedDepartment
   rdfs:domain mnd-s-sa:IncidentAudit ;
   rdfs:domain mnd-s-sa:SafetyAudit ;
@@ -250,14 +255,9 @@ v-s:dateTo
   rdfs:domain mnd-s:Observation ;
 .
 v-s:description
+  rdfs:domain mnd-s-sa:AccidentAct ;
   rdfs:domain mnd-s-sa:IpmEliminationAct ;
-  rdfs:domain [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          mnd-s:Observation
-          mnd-s-sa:AccidentAct
-        ) ;
-    ] ;
+  rdfs:domain mnd-s:Observation ;
 .
 v-s:hasHeadOfMember
   rdfs:domain mnd-s-sa:IpmEliminationAct ;
