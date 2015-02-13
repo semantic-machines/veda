@@ -271,13 +271,8 @@ v-s:description
 .
 v-s:hasChief
   rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
-  rdfs:domain [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          mnd-s-pdr:TraningOfPdr
-          mnd-s-pdr:PerformanceDevelopmentReview
-        ) ;
-    ] ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:domain mnd-s-pdr:TraningOfPdr ;
 .
 v-s:hasFunctionalChief
   rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
