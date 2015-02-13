@@ -1,0 +1,306 @@
+# baseURI: http://semantic-machines.com/veda/mondi-schema-pdr
+# imports: http://semantic-machines.com/veda/mondi-schema
+# imports: http://semantic-machines.com/veda/veda-schema
+# imports: http://semantic-machines.com/veda/veda-ui
+
+# c14n-version: 3
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix mnd-s-pdr: <http://semantic-machines.com/veda/mondi-schema-pdr/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+<http://semantic-machines.com/veda/mondi-schema-pdr>
+  rdf:type owl:Ontology ;
+  rdfs:label "Mondi ontology. PDR"@en ;
+  rdfs:label "Онтология Монди. ПДР"@ru ;
+  owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
+  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
+  owl:imports <http://semantic-machines.com/veda/veda-ui> ;
+  owl:versionInfo "1.0" ;
+.
+mnd-s-pdr:ObjectiveOfPdr
+  rdf:type owl:Class ;
+  rdfs:label "Objective of PDR"@en ;
+  rdfs:label "Цели ПДР"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-pdr:PdrMethod
+  rdf:type owl:Class ;
+  rdfs:label "Pdr method"@en ;
+  rdfs:label "Методы развития"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-pdr:PdrResource
+  rdf:type owl:Class ;
+  rdfs:label "Pdr resource"@en ;
+  rdfs:label "Ресурсы и поддержка"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-pdr:PerformanceDevelopmentReview
+  rdf:type owl:Class ;
+  rdfs:label "Performance Development Review"@en ;
+  rdfs:label "Планирование и анализ достижения и развития"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-pdr:RatingOfPdr
+  rdf:type owl:Class ;
+  rdfs:label "Rating of pdr"@en ;
+  rdfs:label "Оценка ПДР"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-pdr:TraningOfPdr
+  rdf:type owl:Class ;
+  rdfs:label "Traning of PDR"@en ;
+  rdfs:label "Планирование обучения ПДР"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-pdr:additionalAchievment
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "additional achievment"@en ;
+  rdfs:label "дополнительные достижения"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:descriptionOfPdrMethod
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:TraningOfPdr ;
+  rdfs:label "description of pdr method"@en ;
+  rdfs:label "описание метода"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:descriptionOfPdrResource
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
+  rdfs:domain mnd-s-pdr:TraningOfPdr ;
+  rdfs:label "description"@en ;
+  rdfs:label "описание"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:developmentArea
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:TraningOfPdr ;
+  rdfs:label "development area"@en ;
+  rdfs:label "область развития"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:employeerAvoidDoing
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "employeer avoid doing"@en ;
+  rdfs:label "работнику стараться избегать"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:employeerKeepDoing
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "employeer keep doing"@en ;
+  rdfs:label "работнику продолжать делать"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:employeerStartDoing
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "employeer start doing"@en ;
+  rdfs:label "работнику начать делать"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:expectedResult
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:TraningOfPdr ;
+  rdfs:label "expected result"@en ;
+  rdfs:label "ожидаемый результат"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:feedback
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:TraningOfPdr ;
+  rdfs:label "feedback"@en ;
+  rdfs:label "обратная связь"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:hasAchieved
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pdr:TraningOfPdr ;
+  rdfs:label "traning achieved"@en ;
+  rdfs:label "выполнение планов по обучению"@ru ;
+  rdfs:range v-s:YesNo ;
+.
+mnd-s-pdr:hasFinalRating
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "final rating"@en ;
+  rdfs:label "итоговая оценка"@ru ;
+  rdfs:range mnd-s-pdr:ObjectiveOfPdr ;
+.
+mnd-s-pdr:hasLeaderObjective
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "leader objective"@en ;
+  rdfs:label "личный лидерские цели"@ru ;
+  rdfs:range mnd-s-pdr:ObjectiveOfPdr ;
+.
+mnd-s-pdr:hasPdrMethod
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pdr:TraningOfPdr ;
+  rdfs:label "method of pdr"@en ;
+  rdfs:label "метод развития"@ru ;
+  rdfs:range mnd-s-pdr:PdrMethod ;
+.
+mnd-s-pdr:hasPdrResource
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
+  rdfs:domain mnd-s-pdr:TraningOfPdr ;
+  rdfs:label "description"@en ;
+  rdfs:label "описание"@ru ;
+  rdfs:range mnd-s-pdr:PdrResource ;
+.
+mnd-s-pdr:hasProffessionalObjective
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "proffessional objective"@en ;
+  rdfs:label "личный проффессиональные цели"@ru ;
+  rdfs:range mnd-s-pdr:ObjectiveOfPdr ;
+.
+mnd-s-pdr:hasRating
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
+  rdfs:label "description"@en ;
+  rdfs:label "описание"@ru ;
+  rdfs:range mnd-s-pdr:RatingOfPdr ;
+.
+mnd-s-pdr:hasSuccessor
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "successor"@en ;
+  rdfs:label "преемник"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+mnd-s-pdr:hasTraningObjective
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "traning objective"@en ;
+  rdfs:label "планирование обучения"@ru ;
+  rdfs:range mnd-s-pdr:TraningOfPdr ;
+.
+mnd-s-pdr:longTermObjective
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "long term objective"@en ;
+  rdfs:label "долгосрочная цель"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:managerAvoidDoing
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "manager avoid doing"@en ;
+  rdfs:label "руководителю стараться избегать"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:managerKeepDoing
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "manager keep doing"@en ;
+  rdfs:label "руководителю продолжать делать"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:managerStartDoing
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "manager start doing"@en ;
+  rdfs:label "руководителю начать делать"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:proccessOfObjectiveAchievment
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
+  rdfs:label "description"@en ;
+  rdfs:label "описание"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:readyToNewPosition
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "ready to new position"@en ;
+  rdfs:label "готовность к новым обязанностям"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:shortTermObjective
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "short term objective"@en ;
+  rdfs:label "краткосрочная цель"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pdr:totalCoverage
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:label "total coverage"@en ;
+  rdfs:label "выполнение планов обучения"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-pdr:unitOfMeasure
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
+  rdfs:label "description"@en ;
+  rdfs:label "описание"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s:hasMobility
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+.
+v-s:comment
+  rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
+.
+v-s:dateFrom
+  rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:domain mnd-s-pdr:TraningOfPdr ;
+.
+v-s:dateTo
+  rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
+  rdfs:domain mnd-s-pdr:TraningOfPdr ;
+.
+v-s:description
+  rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
+.
+v-s:hasChief
+  rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
+  rdfs:domain [
+      rdf:type owl:Class ;
+      owl:unionOf (
+          mnd-s-pdr:TraningOfPdr
+          mnd-s-pdr:PerformanceDevelopmentReview
+        ) ;
+    ] ;
+.
+v-s:hasFunctionalChief
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+.
+v-s:hasLevel
+  rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
+.
+v-s:hasParentLink
+  rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
+  rdfs:domain mnd-s-pdr:PdrMethod ;
+  rdfs:domain mnd-s-pdr:TraningOfPdr ;
+.
+v-s:responsible
+  rdfs:domain mnd-s-pdr:ObjectiveOfPdr ;
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+  rdfs:domain mnd-s-pdr:TraningOfPdr ;
+.
+v-s:summary
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+.
+v-s:year
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+.
+mnd-s:hasCheckedDepartment
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+.
+v-s:hasStatusWorkflow
+  rdfs:domain mnd-s-pdr:PerformanceDevelopmentReview ;
+.
