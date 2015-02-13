@@ -32,6 +32,12 @@ mnd-s:AddInfo
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
 .
+mnd-s:AddInfoKind
+  rdf:type owl:Class ;
+  rdfs:label "Add information classifier"@en ;
+  rdfs:label "Классификатор видов дополнительной информации"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
 mnd-s:AdministrativeDocument
   rdf:type owl:Class ;
   rdfs:label "Administrative document"@en ;
@@ -138,6 +144,12 @@ mnd-s:hasAddInfo
   rdfs:label "ссылка на дополнительную информацию"@ru ;
   rdfs:range mnd-s:AddInfo ;
 .
+mnd-s:hasAddInfoKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "add iformation klassifier"@en ;
+  rdfs:label "виды дополнительной инфорамации"@ru ;
+  rdfs:range mnd-s:AddInfoKind ;
+.
 mnd-s:hasAreaOfObservation
   rdf:type owl:ObjectProperty ;
   rdfs:domain mnd-s:Observation ;
@@ -147,13 +159,8 @@ mnd-s:hasAreaOfObservation
 .
 mnd-s:hasCheckedDepartment
   rdf:type owl:ObjectProperty ;
-  rdfs:domain [
-      rdf:type owl:Class ;
-      owl:unionOf (
-          mnd-s:Action
-          mnd-s:Observation
-        ) ;
-    ] ;
+  rdfs:domain mnd-s:Action ;
+  rdfs:domain mnd-s:Observation ;
   rdfs:label "cheked department"@en ;
   rdfs:label "проверяемое подразделение"@ru ;
   rdfs:range v-s:Department ;
@@ -196,6 +203,12 @@ mnd-s:responsibleOfObservation
   rdfs:label "responsible of observation"@en ;
   rdfs:label "ответственное лицо замечания"@ru ;
   rdfs:range v-s:Appointment ;
+.
+mnd-s:risk
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "risk"@en ;
+  rdfs:label "риск"@ru ;
+  rdfs:range xsd:integer ;
 .
 mnd-s:signer
   rdf:type owl:ObjectProperty ;

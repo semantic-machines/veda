@@ -322,6 +322,12 @@ v-s:dateFrom
   rdfs:label "дата начала чего-либо"@ru ;
   rdfs:range xsd:dateTime ;
 .
+v-s:datePlan
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "date plan"@en ;
+  rdfs:label "плановая дата"@ru ;
+  rdfs:range xsd:date ;
+.
 v-s:dateTo
   rdf:type owl:DatatypeProperty ;
   rdfs:label "date end of something"@en ;
@@ -499,6 +505,12 @@ v-s:hasStatusWorkflow
   rdfs:range v-s:StatusWorkflow ;
   rdfs:subPropertyOf v-s:status ;
 .
+v-s:label
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "label"@en ;
+  rdfs:label "метка. сокращение"@ru ;
+  rdfs:range xsd:string ;
+.
 v-s:lastName
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "The last name of a person."@en ;
@@ -622,6 +634,12 @@ v-s:query
   rdfs:domain v-s:SavedSearch ;
   rdfs:label "query"@en ;
   rdfs:label "запрос"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:reason
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "reason"@en ;
+  rdfs:label "причина"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:registrationDate
