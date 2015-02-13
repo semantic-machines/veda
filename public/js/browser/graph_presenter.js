@@ -2,54 +2,73 @@
 
 veda.Module(function GraphPresenter(veda) { "use strict";
 
-	//Get template
 	var container = $("#main");
+	var ctx = $( $("#graph-template").html() );
 	
 	veda.on("load:graph", function (params) {
 		
-		container.empty();
-		
-		var uri = params.length ? params[0] : undefined;
-		
-		var nodes = new vis.DataSet(), edges = new vis.DataSet();
-		
-		function expand (uri) {
-			var individual = new veda.IndividualModel(uri);
-			var a = nodes.get(uri);
-			if ( nodes.get(uri) === null ) {
-				nodes.add ([
-					{
-						id: individual.id,
-						label: individual["rdfs:label"] && individual["rdfs:label"][0] ? individual["rdfs:label"][0] : individual.id
+		function addNode (individual, opts) {
+			if ( nodes.get(individual.id) === null ) {
+				var node = {
+					id: individual.id,
+					label: individual["rdf:type"][0]["rdfs:label"][0] + ": \n" + (individual["rdfs:label"] && individual["rdfs:label"][0] ? individual["rdfs:label"][0] : individual.id),
+					individual: individual,
+				};
+				if (individual["rdf:type"][0]) {
+					switch ( individual["rdf:type"][0].id ) {
+						case "rdfs:Class" :
+						case "owl:Class" :
+							node.group = "type";
+							break
+						case "rdf:Property" :
+						case "owl:DatatypeProperty" :
+						case "owl:ObjectProperty" :
+						case "owl:OntologyProperty" :
+						case "owl:AnnotationProperty" :
+							node.group = "property";
+							break
+						case "v-ui:ClassTemplate" :
+							node.group = "template";
+							break
+						case "v-ui:PropertySpecification" :
+							node.group = "specification";
+							break
+						case "owl:Ontology" :
+							node.group = "ontology";
+							break
+						default :
+							node.group = "individual";
+							break
 					}
-				]);
+				}
+				$.extend(node, opts);
+				nodes.add ([ node ]);
 			}
+		}
+		
+		function addOutLinks (id) {
+			var individual = nodes.get(id).individual;
 			Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
 				var values = individual[property_uri];
 				values.map(function (value) {
 					if (value instanceof veda.IndividualModel && value.id != individual.id) {
-						if ( nodes.get(value.id) === null ) {
-							nodes.add ([
-								{
-									id: value.id,
-									label: value["rdfs:label"] && value["rdfs:label"][0] ? value["rdfs:label"][0] : value.id
-								}
-							]);
-						}
+						addNode(value);
+						var from = individual.id;
+						var to = value.id;
+						var label = veda.ontology[property_uri]["rdfs:label"][0].toString();
 						var options = {
 							filter: function (item) {
-								return  item.from == individual.id && 
-										item.to == value.id &&
-										item.label.toString() == veda.ontology[property_uri]["rdfs:label"][0].toString()
+								return  item.from == from && 
+										item.to == to &&
+										item.label.toString() == label
 							}
 						}
-						var a = edges.get(options);
 						if ( !edges.get(options).length ) {
 							edges.add ([
 								{
-									from: individual.id,
-									to: value.id,
-									label: veda.ontology[property_uri]["rdfs:label"][0]
+									from: from,
+									to: to,
+									label: label
 								}
 							]);
 						}
@@ -57,11 +76,109 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 				});
 			});
 		};
+
+		function addInLinks (id, query) {
+			var q = query || "'*'=='{id}'";
+			q = q.replace("{id}", id);
+			var s = new veda.SearchModel(q, $("<div>"));
+			Object.getOwnPropertyNames(s.results).map(function (uri) {
+				var res = s.results[uri];
+				addNode(res);
+				var to = id; 
+				var from = res.id;
+				Object.getOwnPropertyNames(res.properties).map(function (property_uri) {
+					res[property_uri].map(function (item) {
+						if (item instanceof veda.IndividualModel && item.id == to) {
+							var label = veda.ontology[property_uri]["rdfs:label"][0];
+							var options = {
+								filter: function (item) {
+									return  item.from == from && 
+											item.to == to &&
+											item.label.toString() == label
+								}
+							}
+							if ( !edges.get(options).length ) {
+								edges.add([{from: from, to: to, label: label}]);
+							}
+						}
+					}) 
+				});
+			});
+		}
+
+		function deleteWithOutLinks (id) {
+			nodes.remove(id);
+			var nodesToRemove = [];
+			var edgesToRemove = edges.get({
+				filter: function (item) {
+					if (item.from == id) {
+						nodesToRemove.push(item.to);
+					}
+					return (item.from == id || item.to == id);
+				}
+			});
+			edges.remove(edgesToRemove);
+			nodes.remove(nodesToRemove);
+		}
+
+		function deleteWithInLinks (id) {
+			nodes.remove(id);
+			var nodesToRemove = [];
+			var edgesToRemove = edges.get({
+				filter: function (item) {
+					if (item.to == id) {
+						nodesToRemove.push(item.from);
+					}
+					return (item.from == id || item.to == id);
+				}
+			});
+			edges.remove(edgesToRemove);
+			nodes.remove(nodesToRemove);
+		}
+
+
+		// Event handlers
+		function onSelect (selected) {
+			select = selected;
+			body.off("keydown");
+			body.on("keydown", function (e) {
+				if (e.which == 46) {
+					nodes.remove(selected.nodes);
+					edges.remove(selected.edges);
+				}
+				if (e.which == 73) {
+					addInLinks(selected.nodes[0]);
+				}
+				if (e.which == 79) {
+					addOutLinks(selected.nodes[0]);
+				}
+				//console.log(e.which);
+			});
+		}
+
+		function onDoubleClick (selected) {
+			if (!selected.nodes.length) return;
+			/*var id = selected.nodes[0];
+			var modal = $("<div>").addClass("modal");
+			body.append( modal );
+			new veda.DocumentModel(id, modal);
+			modal.modal();*/
+			/*riot.route("#/document/" + selected.nodes[0]);*/
+			addOutLinks(selected.nodes[0]);
+		}
+
+		container.empty();
+		var uri = params.length ? params[0] : undefined;
+		var root = new veda.IndividualModel(uri);
+		var nodes = new vis.DataSet(), edges = new vis.DataSet();
+		var body = $("body");
+		var select = {nodes: [], edges: []};
+				
+		addNode(root);
+		addOutLinks(root.id);
 		
-		expand(uri);
-		
-		// create a network
-		var data= {
+		// Create a network
+		var data = {
 			nodes: nodes,
 			edges: edges,
 		};
@@ -70,29 +187,141 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 			height: "800px",
 			nodes: {
 				shape: "box"
-			}, 
+			},
+			edges: {
+				style: "arrow",
+				arrowScaleFactor: 0.7
+			},
+			groups: {
+				type: {
+					color: {
+						border: 'green',
+						background: 'lightgreen',
+						highlight: {
+							border: 'green',
+							background: 'lightgreen'
+						}
+					}
+				},
+				property: {
+					color: {
+						border: 'goldenrod',
+						background: 'gold',
+						highlight: {
+							border: 'goldenrod',
+							background: 'gold'
+						}
+					}
+				},
+				template: {
+					color: {
+						border: 'darkviolet',
+						background: 'violet',
+						highlight: {
+							border: 'darkviolet',
+							background: 'violet'
+						}
+					}
+				},
+				specification: {
+					color: {
+						border: 'darkorange',
+						background: 'orange',
+						highlight: {
+							border: 'darkorange',
+							background: 'orange'
+						}
+					}
+				},
+				ontology: {
+					color: {
+						border: 'darkgreen',
+						background: 'green',
+						highlight: {
+							border: 'darkgreen',
+							background: 'green'
+						}
+					},
+					fontColor: "white"
+				},
+
+			},
 			physics: {
 				barnesHut: {
 					enabled: true,
-					gravitationalConstant: -2000,
+					gravitationalConstant: -4000,
 					centralGravity: 0.1,
-					springLength: 150,
+					springLength: 200,
 					springConstant: 0.04,
 					damping: 0.09
 				},
+				/*repulsion: {
+					centralGravity: 0.1,
+					springLength: 50,
+					springConstant: 0.05,
+					nodeDistance: 100,
+					damping: 0.09
+				},*/
+				/*hierarchicalRepulsion: {
+					centralGravity: 0.5,
+					springLength: 150,
+					springConstant: 0.01,
+					nodeDistance: 300,
+					damping: 0.09
+				}*/
 			},
-		};
-		
-		var network = new vis.Network(container.get(0), data, options);
-		
-		function onSelect (properties) {
-			properties.nodes.map( function (node) {
-				expand(node);
-			});
-		}
 
-		// add event listener
-		network.on("doubleClick", onSelect);
+		};
+		var network = new vis.Network(container.get(0), data, options);
+
+		// Add event listeners
+		network.on("doubleClick", onDoubleClick);
+		
+		network.on("select", onSelect);
+		
+		container.append( ctx );
+		
+		container.contextmenu({
+			target: $("#individual-context-menu", container),
+			before: function (e, element) {
+				if (!select.nodes.length) return false;
+				var id = select.nodes[0];
+				var node = nodes.get(id);
+				switch (node.group) {
+					case "type": this.setMenu($("#class-context-menu", container)); break
+					case "ontology": this.setMenu($("#ontology-context-menu", container)); break
+					case "property": this.setMenu($("#property-context-menu", container)); break
+					case "template": this.setMenu($("#template-context-menu", container)); break
+					case "specification": this.setMenu($("#specification-context-menu", container)); break
+					default: this.setMenu($("#individual-context-menu", container)); break
+				}
+				return true;
+			},
+			onItem: function (context, e) {
+				var id = select.nodes[0];
+				switch (e.target.id) {
+					case "out-links" : addOutLinks( id ); break
+					case "in-links" : addInLinks( id ); break
+					case "delete" : 
+						nodes.remove(select.nodes); 
+						edges.remove(select.edges);
+						select.nodes = select.edges = [];
+					break
+					case "delete-with-out" : 
+						deleteWithOutLinks (id);
+						select.nodes = select.edges = [];
+					break
+					case "delete-with-in" : 
+						deleteWithInLinks (id);
+						select.nodes = select.edges = [];
+					break
+					case "class-individuals" : addInLinks( id, "'rdf:type'=='{id}'" ); break
+					case "class-properties" : addInLinks( id, "'rdfs:domain'=='{id}'"); break
+					case "class-templates" : addInLinks( id, "'rdf:type'=='v-ui:ClassTemplate'&&'v-ui:forClass'=='{id}'" ); break
+					case "class-specifications" : addInLinks( id, "'rdf:type'=='v-ui:PropertySpecification'&&'v-ui:forClass'=='{id}'" ); break
+				}
+			}
+		});
 		
 	});
 

@@ -56,8 +56,8 @@ owl:Axiom a rdfs:Class ;
     rdfs:subClassOf rdfs:Resource .
 
 owl:Class a rdfs:Class ;
-    rdfs:label "Class"@en ;
-    rdfs:label "Класс"@ru ;
+    rdfs:label "OWL Class"@en ;
+    rdfs:label "OWL Класс"@ru ;
     rdfs:comment "The class of OWL classes." ;
     rdfs:isDefinedBy owl: ;
     rdfs:subClassOf rdfs:Class .
@@ -70,7 +70,8 @@ owl:DataRange a rdfs:Class ;
     rdfs:subClassOf rdfs:Datatype .
 
 owl:DatatypeProperty a rdfs:Class ;
-    rdfs:label "DatatypeProperty" ;
+    rdfs:label "Литеральное свойство"@ru ;
+    rdfs:label "DatatypeProperty"@en ;
     rdfs:comment "The class of data properties." ;
     rdfs:isDefinedBy owl: ;
     rdfs:subClassOf rdf:Property .
@@ -604,7 +605,7 @@ owl:withRestrictions a rdf:Property ;
         <http://www.w3.org/TR/owl2-rdf-based-semantics/#table-axiomatic-properties> ;
     owl:imports <http://www.w3.org/2000/01/rdf-schema> ;
     owl:versionIRI <http://www.w3.org/2002/07/owl> ;
-    owl:versionInfo "1.0" ;
+    owl:versionInfo "1.2" ;
     grddl:namespaceTransformation <http://dev.w3.org/cvsweb/2009/owl-grddl/owx2rdf.xsl> .
 
 owl:Thing a owl:Class ;

@@ -211,7 +211,6 @@ veda.Module(function IndividualModel(veda) { "use strict";
 		});
 
 		self.defineProperty("v-s:deleted");
-
 		
 		// Load data 
 		if (uri) self.load(uri); 
