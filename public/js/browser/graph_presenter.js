@@ -192,7 +192,11 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 			nodes.get().map(function (node) {
 				var individual = node.individual;
 				var triple = {};
-				triple.subject = N3.Util.expandPrefixedName(individual.id, prefixes);
+				if (individual.id.indexOf(":") == individual.id.length-1) {
+					triple.subject = prefixes[individual.id.substring(0, individual.id.length - 1)];
+				} else {
+					triple.subject = N3.Util.expandPrefixedName(individual.id, prefixes);
+				}
 				Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
 					triple.predicate = N3.Util.expandPrefixedName(property_uri, prefixes);
 					individual[property_uri].map(function (value) {
