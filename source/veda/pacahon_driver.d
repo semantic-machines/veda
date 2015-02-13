@@ -53,7 +53,7 @@ class PacahonDriver {
     Context context;
     this() {
         init_core();
-        context = new PThreadContext(props_file_path, "vibe.app");
+        context = new PThreadContext(props_file_path, "veda" ~ text (std.uuid.randomUUID().toHash ())[0..5]);
     }
 
     void init()
