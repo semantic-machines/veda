@@ -51,6 +51,28 @@ mnd-s-ova:ExecutionReportOfAuditOvaRecommendation
   rdfs:label "Отчет о выполнении рекоммендации аудита ОВА"@ru ;
   rdfs:subClassOf v-s:Document ;
 .
+mnd-s-ova:RiskCategory
+  rdf:type owl:Class ;
+  rdfs:label "Risk category"@en ;
+  rdfs:label "Категория риска"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ova:attachmentReport
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ova:AuditOva ;
+  rdfs:label "attachment report"@en ;
+  rdfs:label "вложение отчет"@ru ;
+  rdfs:range v-s:File ;
+  rdfs:subPropertyOf v-s:attachment ;
+.
+mnd-s-ova:attachmentStandard
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ova:AuditOva ;
+  rdfs:label "attachment standard"@en ;
+  rdfs:label "вложение стандарты"@ru ;
+  rdfs:range v-s:File ;
+  rdfs:subPropertyOf v-s:attachment ;
+.
 mnd-s-ova:auditOvaNumber
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-s-ova:AuditOvaRecommendation ;
@@ -72,6 +94,13 @@ mnd-s-ova:businessUnit
   rdfs:label "business unit"@ru ;
   rdfs:range xsd:string ;
 .
+mnd-s-ova:chiefReply
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ova:AuditOvaRecommendation ;
+  rdfs:label "chief reply"@en ;
+  rdfs:label "ответ руководства"@ru ;
+  rdfs:range xsd:string ;
+.
 mnd-s-ova:cty
   rdf:type owl:DatatypeProperty ;
   rdfs:domain mnd-s-ova:AuditObject ;
@@ -81,10 +110,18 @@ mnd-s-ova:cty
 .
 mnd-s-ova:hasAuditObject
   rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ova:AuditOva ;
   rdfs:domain mnd-s-ova:AuditOvaRecommendation ;
   rdfs:label "audit object"@en ;
   rdfs:label "audit object"@ru ;
   rdfs:range mnd-s-ova:AuditObject ;
+.
+mnd-s-ova:hasAuditOvaKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ova:AuditOva ;
+  rdfs:label "audit OVA kind"@en ;
+  rdfs:label "вид аудита ОВА"@ru ;
+  rdfs:range mnd-s:EventKind ;
 .
 mnd-s-ova:hasAuditOvaProcess
   rdf:type owl:ObjectProperty ;
@@ -92,6 +129,12 @@ mnd-s-ova:hasAuditOvaProcess
   rdfs:label "audit OVA process"@en ;
   rdfs:label "процесс аудита ОВА"@ru ;
   rdfs:range mnd-s-ova:AuditOvaProcess ;
+.
+mnd-s-ova:hasAuditOvaRecommendation
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ova:AuditOva ;
+  rdfs:label "description"@en ;
+  rdfs:label "описание"@ru ;
 .
 mnd-s-ova:hasAuthorOfRecommendation
   rdf:type owl:ObjectProperty ;
@@ -106,6 +149,36 @@ mnd-s-ova:hasExecutionReport
   rdfs:label "execution report of recommendation OVA"@en ;
   rdfs:label "отчет о выполнении рекоммендации ОВА"@ru ;
   rdfs:range mnd-s-ova:ExecutionReportOfAuditOvaRecommendation ;
+.
+mnd-s-ova:hasRickCategory
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ova:AuditOvaRecommendation ;
+  rdfs:label "risk COSO category"@en ;
+  rdfs:label "категория риска COSO"@ru ;
+  rdfs:range mnd-s-ova:RiskCategory ;
+.
+mnd-s-ova:plannedDateOfNextAudit
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ova:AuditOva ;
+  rdfs:label "planned date of next audit"@en ;
+  rdfs:label "плановая дата следующего аудита"@ru ;
+  rdfs:range xsd:date ;
+.
+mnd-s-ova:riskOfQuality
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ova:AuditOva ;
+  rdfs:label "risk of quality"@en ;
+  rdfs:label "риск (качество)"@ru ;
+  rdfs:range xsd:integer ;
+  rdfs:subPropertyOf mnd-s:risk ;
+.
+mnd-s-ova:riskOfSize
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ova:AuditOva ;
+  rdfs:label "risk of size"@en ;
+  rdfs:label "риск (размер)"@ru ;
+  rdfs:range xsd:integer ;
+  rdfs:subPropertyOf mnd-s:risk ;
 .
 mnd-s-ova:services
   rdf:type owl:DatatypeProperty ;
@@ -124,7 +197,16 @@ mnd-s-ova:sumOfDamage
 mnd-s:hasAddInfoKind
   rdfs:domain mnd-s-ova:ExecutionReportOfAuditOvaRecommendation ;
 .
+mnd-s:hasAuditor
+  rdfs:domain mnd-s-ova:AuditOva ;
+.
 mnd-s:hasCheckedDepartment
+  rdfs:domain mnd-s-ova:AuditOvaRecommendation ;
+.
+mnd-s:hasLifeCycleStage
+  rdfs:domain mnd-s-ova:AuditOvaRecommendation ;
+.
+mnd-s:observation
   rdfs:domain mnd-s-ova:AuditOvaRecommendation ;
 .
 mnd-s:risk
@@ -147,12 +229,14 @@ v-s:controller
   rdfs:domain mnd-s-ova:AuditOvaRecommendation ;
 .
 v-s:dateFrom
+  rdfs:domain mnd-s-ova:AuditOva ;
   rdfs:domain mnd-s-ova:AuditOvaRecommendation ;
 .
 v-s:datePlan
   rdfs:domain mnd-s-ova:ExecutionReportOfAuditOvaRecommendation ;
 .
 v-s:dateTo
+  rdfs:domain mnd-s-ova:AuditOva ;
   rdfs:domain mnd-s-ova:AuditOvaRecommendation ;
 .
 v-s:description
@@ -166,6 +250,7 @@ v-s:reason
   rdfs:domain mnd-s-ova:AuditOvaRecommendation ;
 .
 v-s:registrationNumber
+  rdfs:domain mnd-s-ova:AuditOva ;
   rdfs:domain mnd-s-ova:AuditOvaRecommendation ;
 .
 v-s:responsible
@@ -173,5 +258,6 @@ v-s:responsible
   rdfs:domain mnd-s-ova:ExecutionReportOfAuditOvaRecommendation ;
 .
 v-s:title
+  rdfs:domain mnd-s-ova:AuditOva ;
   rdfs:domain mnd-s-ova:AuditOvaRecommendation ;
 .

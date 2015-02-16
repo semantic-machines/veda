@@ -91,6 +91,18 @@ mnd-s:EmotionalCharacteristic
   rdfs:label "Положительный. Отрицательный"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
 .
+mnd-s:EventKind
+  rdf:type owl:Class ;
+  rdfs:label "Event kind"@en ;
+  rdfs:label "Вид события"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s:LifeCycleStage
+  rdf:type owl:Class ;
+  rdfs:label "Life cycle stage"@en ;
+  rdfs:label "Стадия жизненного цикла"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
 mnd-s:Mobility
   rdf:type owl:Class ;
   rdfs:label "Mobility"@en ;
@@ -122,6 +134,12 @@ mnd-s:RegistrationRecord
   rdfs:label "Registration record"@en ;
   rdfs:label "Регистрационная запись"@ru ;
   rdfs:subClassOf v-s:Document ;
+.
+mnd-s:consequences
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "consequences"@en ;
+  rdfs:label "последствия"@ru ;
+  rdfs:range xsd:string ;
 .
 mnd-s:content
   rdf:type owl:DatatypeProperty ;
@@ -157,6 +175,12 @@ mnd-s:hasAreaOfObservation
   rdfs:label "участок наблюдения"@ru ;
   rdfs:range mnd-s:Area ;
 .
+mnd-s:hasAuditor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "auditor"@en ;
+  rdfs:label "аудитор"@ru ;
+  rdfs:range v-s:Appointment ;
+.
 mnd-s:hasCheckedDepartment
   rdf:type owl:ObjectProperty ;
   rdfs:domain mnd-s:Action ;
@@ -170,6 +194,12 @@ mnd-s:hasContractor
   rdfs:label "contractor"@ru ;
   rdfs:label "подрядчик"@ru ;
   rdfs:range mnd-s:Dossier ;
+.
+mnd-s:hasLifeCycleStage
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "life cycle stage"@en ;
+  rdfs:label "стадия жизненного цикла"@ru ;
+  rdfs:range mnd-s:LifeCycleStage ;
 .
 mnd-s:hasMobility
   rdf:type owl:ObjectProperty ;
@@ -190,6 +220,12 @@ mnd-s:nomenclatureType
   rdfs:label "document type"@en ;
   rdfs:label "вид документа"@ru ;
   rdfs:range mnd-s:DocumentType ;
+.
+mnd-s:observation
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "observation"@en ;
+  rdfs:label "замечание"@ru ;
+  rdfs:range xsd:string ;
 .
 mnd-s:registrationNumber
   rdf:type owl:DatatypeProperty ;
