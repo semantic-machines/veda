@@ -1,0 +1,23 @@
+# baseURI: http://semantic-machines.com/veda/mondi-schema-common
+# imports: http://semantic-machines.com/veda/mondi-schema
+# imports: http://semantic-machines.com/veda/veda-schema
+# imports: http://semantic-machines.com/veda/veda-ui
+
+# c14n-version: 3
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix mnd-s-cmn: <http://semantic-machines.com/veda/mondi-schema-common/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+<http://semantic-machines.com/veda/mondi-schema-common>
+  rdf:type owl:Ontology ;
+  rdfs:label "Mondi ontology. Common"@en ;
+  rdfs:label "Онтология Монди. Общего назначения"@ru ;
+  owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
+  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
+  owl:imports <http://semantic-machines.com/veda/veda-ui> ;
+  owl:versionInfo "1.0" ;
+.
