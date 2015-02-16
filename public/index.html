@@ -32,7 +32,7 @@
 		<meta http-equiv="pragma" content="no-cache" />
 		<meta http-equiv="cache-control" content="no-cache" />
 	</head>
-	<body style="padding: 0px 0px 30px;">
+	<body style="padding: 0px 0px 20px;">
 
 		<nav role="navigation" class="navbar navbar-inverse" id="navigation">
 			<div class="container-fluid" id="nav-container">
@@ -75,7 +75,6 @@
 		<!-- Main container -->
 		<div id="main" class="container-fluid"></div>
 		
-		<br />
 		<!-- Footer -->
 		<nav style="min-height:20px;" class="navbar navbar-fixed-bottom" id="copyright">
 			<footer>
@@ -451,6 +450,11 @@
 
 		<!-- Graph context menus -->
 		<script type="html/template" id="graph-template">
+
+			<button type="button" id="export-ttl" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i> Экспорт в ttl</button>
+			
+			<div id="graph"></div>
+			
 			<div id="individual-context-menu">
 				<ul class="dropdown-menu" role="menu">
 					<li role="presentation" class="dropdown-header">Индивид</li>
@@ -527,6 +531,19 @@
 					<li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
 				</ul>
 			</div>
+
+			<div class="modal" id="graph-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title"></h4>
+						</div>
+						<div class="modal-body"></div>
+					</div>
+				</div>
+			</div>
+
 		</script>
 
 		<!-- Javascript -->
@@ -544,6 +561,8 @@
 		<script type="text/javascript" src="/js/browser/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="/js/browser/vis.min.js"></script>
 		<script type="text/javascript" src="/js/browser/bootstrap-contextmenu.js"></script>
+		<script type="text/javascript" src="/js/browser/n3-browser.js"></script>
+		<script type="text/javascript" src="/js/browser/FileSaver.min.js"></script>
 		
 		<!-- Veda browser & server -->
 		<script type="text/javascript" src="/js/common/util.js"></script>
