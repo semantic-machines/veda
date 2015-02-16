@@ -183,11 +183,12 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		var exportBtn = $("#export-ttl", container).click(function () {
 			var s = new veda.SearchModel("'rdf:type'=='owl:Ontology'", $("<div>"));
 			var prefixes = {};
+			prefixes["dc"] = "http://purl.org/dc/elements/1.1/";
+			prefixes["grddl"] = "http://www.w3.org/2003/g/data-view#";
 			Object.getOwnPropertyNames(s.results).map( function (res_id) {
 				var res = s.results[res_id];
 				prefixes[res_id.substring(0,res_id.length-1)] = res["v-s:fullUrl"][0].toString();
 			});
-			console.log(prefixes);
 			var writer = N3.Writer({ prefixes: prefixes });
 			nodes.get().map(function (node) {
 				var individual = node.individual;
@@ -202,7 +203,6 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 					individual[property_uri].map(function (value) {
 						if (value instanceof Number || typeof value === "number" ) {
 							triple.object = isInteger(value.valueOf()) ? '"' + value.valueOf() + '"^^' + N3.Util.expandPrefixedName('xsd:integer', prefixes) : '"' + value.valueOf() + '"^^' + N3.Util.expandPrefixedName('xsd:decimal', prefixes);
-							console.log(triple.object);
 						} else if (value instanceof Boolean || typeof value === "boolean") {
 							triple.object = '"' + value.valueOf() + '"^^' + N3.Util.expandPrefixedName("xsd:boolean", prefixes);
 						} else if (value instanceof String || typeof value === "string") {
