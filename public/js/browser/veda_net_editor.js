@@ -483,39 +483,6 @@ jsWorkflow.ready = jsPlumb.ready;
             	});
             }
             
-            $("#workflow-canvas").swipe({            	
-           	  swipe:function(event, phase, direction, distance, duration, fingerCount) {
-              	//if (phase!="cancel" && phase!="end") {
-           		  /*
-            		$("#workflow-canvas").animate({
-            			'left': "-="+distance+"px"
-            		});
-            		*/
-            	//}
-           	  },
-             swipeStatus:function(event, phase, direction, distance, duration, fingerCount) {
-               	if (phase=="move") {              		
-                	if (direction=='left') {  
-                		$("#workflow-canvas").css({
-               			  'left': distance+"px"
-                		});
-                	} else if (direction=='right') {
-                		$("#workflow-canvas").css({
-                 		  'left': -distance+"px"
-                  		});
-                	} else if (direction=='up') {
-                		$("#workflow-canvas").css({
-               			  'top': distance+"px"
-                		});
-                	} else if (direction=='down') {
-                		$("#workflow-canvas").css({
-               			  'top': -distance+"px"
-                		});
-                	}
-         		}
-        	  }
-           	});
-            
             instance.createNet(net);
             
             
