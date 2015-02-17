@@ -104,7 +104,7 @@ veda.Module(function SearchSort(veda) { "use strict";
 			sortPropertyContainer.append($sortProperty);
 		});
 
-		console.log("query", query, "; sort", sort, "; orderBy", orderBy, "; visitedPages", visitedPages, "; properties", properties);
+		//console.log("query", query, "; sort", sort, "; orderBy", orderBy, "; visitedPages", visitedPages, "; properties", properties);
 
 	});
 });
