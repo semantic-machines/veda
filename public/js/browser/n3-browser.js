@@ -1195,7 +1195,7 @@ N3Writer.prototype = {
       }
       // Different subject; write the whole triple
       else
-        this._write((this._subject === null ? '' : '.\n') +
+        this._write((this._subject === null ? '' : '.\n\n') +
                     this._encodeSubject(this._subject = subject) + ' ' +
                     this._encodePredicate(this._predicate = predicate) + ' ' +
                     this._encodeObject(object), done);
