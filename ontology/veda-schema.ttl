@@ -4,13 +4,13 @@
 # imports: http://www.w3.org/2000/01/rdf-schema#
 # imports: http://www.w3.org/2002/07/owl
 
-# c14n-version: 3
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
 <http://semantic-machines.com/veda/veda-schema>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system ontology"@en ;
@@ -209,12 +209,6 @@ v-s:actualVersion
   rdfs:label "actual version"@en ;
   rdfs:label "актуальная версия"@ru ;
   rdfs:range v-s:Versioned ;
-.
-v-s:addDoc
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "add document"@en ;
-  rdfs:label "связанные документы"@ru ;
-  rdfs:range v-s:Document ;
 .
 v-s:alternativeTitle
   rdf:type owl:DatatypeProperty ;
@@ -455,6 +449,30 @@ v-s:hasAccount
   rdfs:label "account"@en ;
   rdfs:label "учетная запись"@ru ;
   rdfs:range v-s:Account ;
+.
+v-s:hasAddDoc
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "add document"@en ;
+  rdfs:label "связанные документы"@ru ;
+  rdfs:range v-s:Document ;
+.
+v-s:hasAppointmentCopy
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "appointment copy"@en ;
+  rdfs:label "в копию"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:hasAppointmentFrom
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "appointment from"@en ;
+  rdfs:label "от кого"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:hasAppointmentTo
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "appointment to"@en ;
+  rdfs:label "кому"@ru ;
+  rdfs:range v-s:Appointment ;
 .
 v-s:hasChief
   rdf:type owl:ObjectProperty ;
