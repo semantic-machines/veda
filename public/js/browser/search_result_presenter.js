@@ -46,7 +46,7 @@ veda.Module(function SearchResultPresenter(veda) { "use strict";
 		if (!container) return;
 		
 		container.append(individual_template);
-		//localize(container, veda.user.language);
+		//veda.Util.localize(container, veda.user.language);
 		
 		// Render document title		
 		$("#individual-label", container).append( 
@@ -80,10 +80,10 @@ veda.Module(function SearchResultPresenter(veda) { "use strict";
 		var uri = popover_element.attr("href");
 		uri = uri.substring(uri.indexOf("#/document/") + "#/document/".length);
 		var thisTimeout = setTimeout( function () {
-			if ($("#popover_"+escape4$(uri)).length) {
+			if ($("#popover_"+veda.Util.escape4$(uri)).length) {
 				
 				var popover = popover_element.popover({
-					content: $("#popover_"+escape4$(uri)).html(),
+					content: $("#popover_"+veda.Util.escape4$(uri)).html(),
 					html: true,
 					placement: "auto",
 					container: "body"

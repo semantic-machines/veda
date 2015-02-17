@@ -11,7 +11,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 			if ( nodes.get(individual.id) === null ) {
 				var node = {
 					id: individual.id,
-					label: individual["rdf:type"][0]["rdfs:label"][0] + ": \n" + (individual["rdfs:label"] && individual["rdfs:label"][0] ? individual["rdfs:label"][0] : individual.id),
+					label: (individual["rdf:type"].length ? individual["rdf:type"][0]["rdfs:label"][0] + ": \n" : "") + (individual["rdfs:label"] && individual["rdfs:label"][0] ? individual["rdfs:label"][0] : individual.id),
 					individual: individual,
 				};
 				if (individual["rdf:type"][0]) {
@@ -171,6 +171,9 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 
 		var uri = params.length ? params[0] : undefined;
 		var root = new veda.IndividualModel(uri);
+		
+		if (!uri) riot.route("#/graph/" + root.id, false);
+		
 		var nodes = new vis.DataSet(), edges = new vis.DataSet();
 		var body = $("body");
 		var select = {nodes: [], edges: []};
@@ -178,52 +181,9 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		container.prepend( tmpl );
 		var graph = $("#graph", container);
 		
-		function isInteger (n) { return n % 1 === 0; }
-		
 		var exportBtn = $("#export-ttl", container).click(function () {
-			var s = new veda.SearchModel("'rdf:type'=='owl:Ontology'", $("<div>"));
-			var prefixes = {};
-			prefixes["dc"] = "http://purl.org/dc/elements/1.1/";
-			prefixes["grddl"] = "http://www.w3.org/2003/g/data-view#";
-			Object.getOwnPropertyNames(s.results).map( function (res_id) {
-				var res = s.results[res_id];
-				prefixes[res_id.substring(0,res_id.length-1)] = res["v-s:fullUrl"][0].toString();
-			});
-			var writer = N3.Writer({ prefixes: prefixes });
-			nodes.get().map(function (node) {
-				var individual = node.individual;
-				var triple = {};
-				if (individual.id.indexOf(":") == individual.id.length-1) {
-					triple.subject = prefixes[individual.id.substring(0, individual.id.length - 1)];
-				} else {
-					triple.subject = N3.Util.expandPrefixedName(individual.id, prefixes);
-				}
-				Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
-					triple.predicate = N3.Util.expandPrefixedName(property_uri, prefixes);
-					individual[property_uri].map(function (value) {
-						if (value instanceof Number || typeof value === "number" ) {
-							triple.object = isInteger(value.valueOf()) ? '"' + value.valueOf() + '"^^' + N3.Util.expandPrefixedName('xsd:integer', prefixes) : '"' + value.valueOf() + '"^^' + N3.Util.expandPrefixedName('xsd:decimal', prefixes);
-						} else if (value instanceof Boolean || typeof value === "boolean") {
-							triple.object = '"' + value.valueOf() + '"^^' + N3.Util.expandPrefixedName("xsd:boolean", prefixes);
-						} else if (value instanceof String || typeof value === "string") {
-							triple.object = value.language ? '"' + value.valueOf() + '"@' + value.language.toLowerCase() : '"' + value.valueOf() + '"^^' + N3.Util.expandPrefixedName("xsd:string", prefixes);
-						} else if (value instanceof Date) {
-							triple.object = '"' + value.toISOString() + '"^^' + N3.Util.expandPrefixedName("xsd:dateTime", prefixes);
-						} else if (value instanceof veda.IndividualModel) {
-							if (value.id.indexOf(":") == value.id.length-1) {
-								triple.object = prefixes[value.id.substring(0, value.id.length - 1)];
-							} else {
-								triple.object = N3.Util.expandPrefixedName(value.id, prefixes);
-							}
-						}
-						writer.addTriple(triple);
-					});
-				});
-			});
-			writer.end(function (error, result) { 
-				var blob = new Blob([result], {type: "text/plain;charset=utf-8"});
-				saveAs(blob, "exported_graph.ttl");
-			});
+			var list = new veda.IndividualListModel( nodes.get().map(function (item) { return item.individual}) );
+			veda.Util.exportTTL(list);
 		});
 
 		graph.contextmenu({

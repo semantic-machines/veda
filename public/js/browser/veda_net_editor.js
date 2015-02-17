@@ -160,7 +160,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     var _this = this, currentElement = $(_this), properties, itemId;
                     properties = $('#workflow-selected-item');
                                         
-                    $('#'+escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active'); // deactivate old selection
+                    $('#'+veda.Util.escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active'); // deactivate old selection
                     properties.find('#workflow-item-id').val(_this.id);
                     properties.find('#workflow-item-type').val('state');
                     /*
@@ -416,8 +416,8 @@ jsWorkflow.ready = jsPlumb.ready;
     			}
             	if (stateElement!='') {
                 	$("#workflow-canvas").append(stateElement);
-                	bindStateEvents($('#' + escape4$(state.id)));
-                	updateSVGBackground($('#' + escape4$(state.id)));
+                	bindStateEvents($('#' + veda.Util.escape4$(state.id)));
+                	updateSVGBackground($('#' + veda.Util.escape4$(state.id)));
             	}
             }
             
@@ -467,7 +467,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	net['v-wf:consistsOf'].forEach(function(el) {
             		if (el['rdf:type'][0].id != 'v-wf:Flow') { // TODO refactor this
             			// update X/Y location      
-            			var element = $('#'+escape4$(el.id));
+            			var element = $('#'+veda.Util.escape4$(el.id));
             			el['v-wf:locationX'] = [new Number(Math.round(element.position().left+element.parent().scrollLeft()))];
             			el['v-wf:locationY'] = [new Number(Math.round(element.position().top+element.parent().scrollTop()))];
             		}
@@ -476,7 +476,7 @@ jsWorkflow.ready = jsPlumb.ready;
             });
             
             $('.delete-state').on('click', function() {
-            	instance.deleteState(instance.getSelector('#'+escape4$($('#workflow-item-id').val()))[0]);
+            	instance.deleteState(instance.getSelector('#'+veda.Util.escape4$($('#workflow-item-id').val()))[0]);
             });
             /* NET MENU [END] */
             
@@ -520,7 +520,7 @@ function applyNetEditorFunctions(workflow) {
 	var _this = this;
 	switch ($('#workflow-item-type').val()) {
 		case 'state':
-			var item = $('#' + escape4$($('#workflow-item-id').val()));
+			var item = $('#' + veda.Util.escape4$($('#workflow-item-id').val()));
 			item.find('.state-name').text($(this).val());
 			break;
 		case 'flow':			
@@ -537,7 +537,7 @@ function applyNetEditorFunctions(workflow) {
 	
   // Split type
   $("input[name=item-split-type]:radio").change(function () {
-    var item = $('#' + escape4$($('#workflow-item-id').val()));    
+    var item = $('#' + veda.Util.escape4$($('#workflow-item-id').val()));    
     item.removeClass('split-no split-and split-or split-xor');
     item.addClass('split-' + $(this).val());
     updateSVGBackground(item);
@@ -545,7 +545,7 @@ function applyNetEditorFunctions(workflow) {
 
   // Join type
   $("input[name=item-join-type]:radio").change(function () {
-    var item = $('#' + escape4$($('#workflow-item-id').val()));
+    var item = $('#' + veda.Util.escape4$($('#workflow-item-id').val()));
     item.removeClass('join-no join-and join-or join-xor');
     item.addClass('join-' + $(this).val());
     updateSVGBackground(item);
