@@ -328,6 +328,12 @@ v-s:datePlan
   rdfs:label "плановая дата"@ru ;
   rdfs:range xsd:date ;
 .
+v-s:datePublic
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "date of public"@en ;
+  rdfs:label "дата публикации"@ru ;
+  rdfs:range xsd:date ;
+.
 v-s:dateTo
   rdf:type owl:DatatypeProperty ;
   rdfs:label "date end of something"@en ;
