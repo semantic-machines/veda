@@ -4,13 +4,13 @@
 # imports: http://www.w3.org/2000/01/rdf-schema#
 # imports: http://www.w3.org/2002/07/owl
 
+# c14n-version: 3
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
 <http://semantic-machines.com/veda/veda-schema>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system ontology"@en ;
@@ -322,7 +322,7 @@ v-s:datePlan
   rdfs:label "плановая дата"@ru ;
   rdfs:range xsd:date ;
 .
-v-s:datePublic
+v-s:datePubliced
   rdf:type owl:DatatypeProperty ;
   rdfs:label "date of public"@en ;
   rdfs:label "дата публикации"@ru ;
@@ -439,6 +439,18 @@ v-s:firstName
   rdfs:isDefinedBy v-s: ;
   rdfs:label "firstName"@en ;
   rdfs:label "имя"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:foreignRegistrationDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "foreign registration date"@en ;
+  rdfs:label "чужая регистрационная дата"@ru ;
+  rdfs:range xsd:date ;
+.
+v-s:foreignRegistrationNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "foreign registration number"@en ;
+  rdfs:label "чужой регистрационный номер"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:fullUrl
