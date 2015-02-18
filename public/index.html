@@ -185,44 +185,61 @@
 
 		<!-- Search template -->
 		<script type="html/template" id="search-template">
-			<div id="search">
-				<div class="well no-margin">
-					<div class="container-fluid">
-						<form method="GET" role="form" class="form-horizontal">
-							<div class="input-group">
-								<input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
-								<span class="input-group-btn" id="q-actions">
-									<button type="submit" id="search-submit" class="btn btn-primary" i18n="[Search]">Найти</button>
-								</span>
+
+			<div role="tabpanel" id="search-tab-panel">
+				<!-- Nav tabs -->
+				<ul class="nav nav-pills" role="tablist">
+					<li role="presentation" class="active"><a href="#params" aria-controls="params" role="tab" data-toggle="tab">Параметры</a></li>
+					<li role="presentation"><a href="#results" aria-controls="results" role="tab" data-toggle="tab">Результаты <span class="badge" id="results_count" bound>{results_count}</span></a></li>
+				</ul>
+				<br />
+				<!-- Tab panes -->
+				<div class="tab-content">
+					<div role="tabpanel" class="tab-pane active" id="params">
+						<div id="search">
+							<div class="well no-margin">
+								<div class="container-fluid">
+									<form method="GET" role="form" class="form-horizontal">
+										<div class="input-group">
+											<input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
+											<span class="input-group-btn" id="q-actions">
+												<button type="submit" id="search-submit" class="btn btn-primary" i18n="[Search]">Найти</button>
+											</span>
+										</div>
+										<div id="timing" class="text-right text-muted" style="position:absolute;">
+											<small>
+												<span>search query time / get count / get summary time / total render time : <span id="query_time" bound>{query_time}</span> ms / <span id="get_count"></span> / <span id="get_summary_time"></span> ms / <span id="render_time"></span> ms </span>
+											</small>
+										</div>				
+									</form>
+								</div>
 							</div>
-							<div id="timing" class="text-right text-muted" style="position:absolute;">
-								<small>
-									<span>search query time / get count / get summary time / total render time : <span id="query_time" bound>{query_time}</span> ms / <span id="get_count"></span> / <span id="get_summary_time"></span> ms / <span id="render_time"></span> ms </span>
-								</small>
-							</div>				
-						</form>
-					</div>
-				</div>
-				<div class="container-fluid" id="search-results" style="display: none">
-					<h3 class="text-center"><span i18n="[Search results]">Результаты поиска</span>
-						(<span id="results_count" bound>{results_count}</span>)
-					</h3>
-					<div id="search-features" class="form-inline">
-						<div class="checkbox">
-							<label>
-								<input type="checkbox" id="select-all"> <span i18n="[Select all]">Выбрать все</span>
-							</label>
 						</div>
 					</div>
-					<hr class="thin-margin"/>
-					<ol id="search-results-list"></ol>
-					<hr/>
-					<div class="text-center">
-						<ul class="pagination" id="pager"></ul>
+					
+					<div role="tabpanel" class="tab-pane" id="results">
+						<div class="container-fluid" id="search-results" style="display: none">
+							<!--h3 class="text-center"><span i18n="[Search results]">Результаты поиска</span>
+								(<span id="results_count" bound>{results_count}</span>)
+							</h3-->
+							<div id="search-features" class="form-inline">
+								<div class="checkbox">
+									<label>
+										<input type="checkbox" id="select-all"> <span i18n="[Select all]">Выбрать все</span>
+									</label>
+								</div>
+							</div>
+							<hr class="thin-margin"/>
+							<ol id="search-results-list"></ol>
+							<hr/>
+							<div class="text-center">
+								<ul class="pagination" id="pager"></ul>
+							</div>
+						</div>
+						<div class="alert alert-warning" id="not-found" style="display: none">
+							<strong i18n="[Empty!]">Пусто!</strong> <span i18n="[Nothing found]">По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
+						</div>
 					</div>
-				</div>
-				<div class="alert alert-warning" id="not-found" style="display: none">
-					<strong i18n="[Empty!]">Пусто!</strong> <span i18n="[Nothing found]">По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 				</div>
 			</div>
 		</script>

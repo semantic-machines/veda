@@ -18,7 +18,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 					switch ( individual["rdf:type"][0].id ) {
 						case "rdfs:Class" :
 						case "owl:Class" :
-							node.group = "type";
+							node.group = "_class";
 							break
 						case "rdf:Property" :
 						case "owl:ObjectProperty" :
@@ -249,7 +249,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 				arrowScaleFactor: 0.7
 			},
 			groups: {
-				type: {
+				_class: {
 					color: {
 						border: 'green',
 						background: 'lightgreen',
@@ -345,7 +345,6 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		network.on("doubleClick", onDoubleClick);
 		
 		network.on("select", onSelect);
-		
 	});
 
 });

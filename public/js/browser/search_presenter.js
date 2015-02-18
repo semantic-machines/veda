@@ -24,11 +24,11 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		$("#search-results", container).hide();
 
 		// Listen View changes & update Model
-		$("#search [bound]", container).on("change", function() {
+		$("#search-tab-panel [bound]", container).on("change", function() {
 			search[this.id] = $(this).val();
 		});
 		
-		$("#search #search-submit", container).on("click", function(event) {
+		$("#search-tab-panel #search-submit", container).on("click", function(event) {
 			event.preventDefault();
 			$("#search-submit", container).addClass("disabled"); 
 			currentPage = 0;
@@ -39,7 +39,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 	
 		// Listen Model changes & update View
 		search.on("property:changed", function(property, value) {
-			var $el = $("#search #" + property + "[bound]", container);
+			var $el = $("#search-tab-panel #" + property + "[bound]", container);
 			if ($el.is("input, textarea, select")) $el.val( value );
 			else $el.html( value );
 		});
@@ -70,6 +70,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		
 		// Show/hide 'results' or 'not found'
 		$("#search-submit", container).removeClass("disabled");
+		$("#search-tab-panel a[href='#results']").tab("show");
 		if (!search.q) {
 			$("#q", container).focus();
 			$("#search-results", container).hide();
