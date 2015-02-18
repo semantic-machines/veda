@@ -40,7 +40,7 @@ veda.Module(function SearchModel(veda) { "use strict";
 			} else {
 				self.selected = {};
 			}
-			console.log(self.selected);
+			//console.log(self.selected);
 			return self.selected;
 		}
 

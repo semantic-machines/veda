@@ -292,7 +292,7 @@ v-wf:NetTemplate
 				<button id="workflow-save-button" type="button" class="btn btn-default">
 					<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
 				</button>
-				<button type="button" class="btn btn-default">
+				<button id="workflow-export-ttl" type="button" class="btn btn-default">
 					<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 				</button>
 			</div>
@@ -311,65 +311,6 @@ v-wf:NetTemplate
 				<input id="workflow-item-id" class="form-control" type="hidden" style="font-size: 8pt;" readonly/>
 				<input id="workflow-item-type" type="hidden"/> <!-- type of selected object: ['state'|'flow'] -->
 			</form>
-<!-- 			
-			<form id="workflow-selected-item" class="form-horizontal">
-				<div class="form-group">
-					<div class="col-sm-2" style="font-size: 8pt;">ID</div>
-					<div class="col-sm-10">
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-2">
-						<span class="glyphicon glyphicon-tag control-label"></span>
-					</div>
-					<div class="col-sm-10">
-						<input id="workflow-item-label" class="form-control" type="text" />
-					</div>
-				</div>
-				<div class="form-group task-buttons">
-					<div class="col-sm-2">
-						<span class="glyphicon glyphicon-log-out control-label"></span>
-					</div>
-					<div class="col-sm-10">
-						<div id="workflow-split-buttons" class="btn-group" data-toggle="buttons">
-							<label class="btn btn-default active"> 
-								<input type="radio" name="item-split-type" value="no" checked>NO
-							</label> 
-							<label class="btn btn-default"> 
-								<input type="radio" name="item-split-type" value="and">AND
-							</label> 
-							<label class="btn btn-default"> 
-								<input type="radio" name="item-split-type" value="xor">XOR
-							</label> 
-							<label class="btn btn-default"> 
-								<input type="radio" name="item-split-type" value="or">OR
-							</label>
-						</div>
-					</div>
-				</div>
-				<div class="form-group task-buttons">
-					<div class="col-sm-2">
-						<span class="glyphicon glyphicon-log-in control-label"></span>
-					</div>
-					<div class="col-sm-10">
-						<div id="workflow-join-buttons" class="btn-group" data-toggle="buttons">
-							<label class="btn btn-default active"> 
-								<input type="radio" name="item-join-type" value="no" checked>NO
-							</label> 
-							<label class="btn btn-default"> 
-								<input type="radio" name="item-join-type" value="and">AND
-							</label> 
-							<label class="btn btn-default"> 
-								<input type="radio" name="item-join-type" value="xor">XOR
-							</label> 
-							<label class="btn btn-default"> 
-								<input type="radio" name="item-join-type" value="or">OR
-							</label>
-						</div>
-					</div>
-				</div>
-			</form>
- -->			
 		  </div>
 	  	</div>
 	  </div>
@@ -384,8 +325,6 @@ jsWorkflow.ready(function () {
 
     // Initialize workflow1 with workflow container id
     var net = workflow.init('workflow-canvas', veda, document);
-    
-	applyNetEditorFunctions(net);
 });
 </script>
   """ ;

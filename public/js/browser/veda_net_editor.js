@@ -145,6 +145,30 @@ jsWorkflow.ready = jsPlumb.ready;
                 info.connection.id = individual.id;
             });
 
+            updateSVGBackground = function(item) {
+                var svgBackground = "";
+                if (item.hasClass('split-and')) {
+                    svgBackground += "<line x1='80' y1='25' x2='100' y2='0' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='80' y1='0' x2='80' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='80' y1='25' x2='100' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' />";
+                }
+                if (item.hasClass('split-or')) {
+                    svgBackground += "<line x1='100' y1='25' x2='90' y2='0' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='90' y1='0' x2='80' y2='25' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='80' y1='0' x2='80' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='100' y1='25' x2='90' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='90' y1='50' x2='80' y2='25' style='stroke:rgb(0,0,0); stroke-width:1' />";
+                }
+                if (item.hasClass('split-xor')) {
+                    svgBackground += "<line x1='100' y1='25' x2='80' y2='0' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='80' y1='0' x2='80' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='100' y1='25' x2='80' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' />";
+                }
+                if (item.hasClass('join-and')) {
+                    svgBackground += "<line x1='20' y1='25' x2='0' y2='0' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='20' y1='0' x2='20' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='20' y1='25' x2='0' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' />";
+                }
+                if (item.hasClass('join-or')) {
+                    svgBackground += "<line x1='0' y1='25' x2='10' y2='0' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='10' y1='0' x2='20' y2='25' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='20' y1='0' x2='20' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='0' y1='25' x2='10' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='10' y1='50' x2='20' y2='25' style='stroke:rgb(0,0,0); stroke-width:1' />";
+                }
+                if (item.hasClass('join-xor')) {
+                    svgBackground += "<line x1='0' y1='25' x2='20' y2='0' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='20' y1='0' x2='20' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='0' y1='25' x2='20' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' />";
+                }
+                svgBackground = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' preserveAspectRatio='none' viewBox='0 0 100 50'>" + svgBackground + "</svg>\")";
+                item.css('background', svgBackground);
+            }
+            
             /**
              *Bind required functionalities to State elements
              *@method bindStateEvents
@@ -160,7 +184,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     var _this = this, currentElement = $(_this), properties, itemId;
                     properties = $('#workflow-selected-item');
                                         
-                    $('#'+escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active'); // deactivate old selection
+                    $('#'+veda.Util.escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active'); // deactivate old selection
                     properties.find('#workflow-item-id').val(_this.id);
                     properties.find('#workflow-item-type').val('state');
                     /*
@@ -416,8 +440,8 @@ jsWorkflow.ready = jsPlumb.ready;
     			}
             	if (stateElement!='') {
                 	$("#workflow-canvas").append(stateElement);
-                	bindStateEvents($('#' + escape4$(state.id)));
-                	updateSVGBackground($('#' + escape4$(state.id)));
+                	bindStateEvents($('#' + veda.Util.escape4$(state.id)));
+                	updateSVGBackground($('#' + veda.Util.escape4$(state.id)));
             	}
             }
             
@@ -434,7 +458,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     target: flow['v-wf:flowsInto'][0].id
                 });
             }
-
+            
             /**
              *Create workflow Net by given Object (v-wf:Net individual).
              *@method createNet A public method
@@ -458,6 +482,7 @@ jsWorkflow.ready = jsPlumb.ready;
             		}
             	});
             }
+            
             instance.createNet(net);
             
             
@@ -467,16 +492,21 @@ jsWorkflow.ready = jsPlumb.ready;
             	net['v-wf:consistsOf'].forEach(function(el) {
             		if (el['rdf:type'][0].id != 'v-wf:Flow') { // TODO refactor this
             			// update X/Y location      
-            			var element = $('#'+escape4$(el.id));
+            			var element = $('#'+veda.Util.escape4$(el.id));
             			el['v-wf:locationX'] = [new Number(Math.round(element.position().left+element.parent().scrollLeft()))];
             			el['v-wf:locationY'] = [new Number(Math.round(element.position().top+element.parent().scrollTop()))];
             		}
             		el.save();
             	});
             });
+            $('#workflow-export-ttl').on('click', function() {
+           		var list = new veda.IndividualListModel(net, net['v-wf:consistsOf']);
+           		veda.Util.exportTTL(list);
+            });
+            
             
             $('.delete-state').on('click', function() {
-            	instance.deleteState(instance.getSelector('#'+escape4$($('#workflow-item-id').val()))[0]);
+            	instance.deleteState(instance.getSelector('#'+veda.Util.escape4$($('#workflow-item-id').val()))[0]);
             });
             /* NET MENU [END] */
             
@@ -486,70 +516,3 @@ jsWorkflow.ready = jsPlumb.ready;
 })();
 
 //[END] Block of net editor
-
-// [BEGIN] Block of element editor
-
-function updateSVGBackground(item) {
-    var svgBackground = "";
-    if (item.hasClass('split-and')) {
-        svgBackground += "<line x1='80' y1='25' x2='100' y2='0' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='80' y1='0' x2='80' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='80' y1='25' x2='100' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' />";
-    }
-    if (item.hasClass('split-or')) {
-        svgBackground += "<line x1='100' y1='25' x2='90' y2='0' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='90' y1='0' x2='80' y2='25' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='80' y1='0' x2='80' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='100' y1='25' x2='90' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='90' y1='50' x2='80' y2='25' style='stroke:rgb(0,0,0); stroke-width:1' />";
-    }
-    if (item.hasClass('split-xor')) {
-        svgBackground += "<line x1='100' y1='25' x2='80' y2='0' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='80' y1='0' x2='80' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='100' y1='25' x2='80' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' />";
-    }
-    if (item.hasClass('join-and')) {
-        svgBackground += "<line x1='20' y1='25' x2='0' y2='0' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='20' y1='0' x2='20' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='20' y1='25' x2='0' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' />";
-    }
-    if (item.hasClass('join-or')) {
-        svgBackground += "<line x1='0' y1='25' x2='10' y2='0' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='10' y1='0' x2='20' y2='25' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='20' y1='0' x2='20' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='0' y1='25' x2='10' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='10' y1='50' x2='20' y2='25' style='stroke:rgb(0,0,0); stroke-width:1' />";
-    }
-    if (item.hasClass('join-xor')) {
-        svgBackground += "<line x1='0' y1='25' x2='20' y2='0' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='20' y1='0' x2='20' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='0' y1='25' x2='20' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' />";
-    }
-    svgBackground = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' preserveAspectRatio='none' viewBox='0 0 100 50'>" + svgBackground + "</svg>\")";
-    item.css('background', svgBackground);
-}
-
-function applyNetEditorFunctions(workflow) {
-  // Label
-	/*
-  $("#workflow-item-label").change(function () {
-	var _this = this;
-	switch ($('#workflow-item-type').val()) {
-		case 'state':
-			var item = $('#' + escape4$($('#workflow-item-id').val()));
-			item.find('.state-name').text($(this).val());
-			break;
-		case 'flow':			
-			var id=$('#workflow-item-id').val();
-			workflow.getAllConnections().forEach(function (conn) {
-				if (conn.id == id) {
-					conn.setLabel($(_this).val());
-				}
-			});
-			
-			break;
-	}
-  });
-	
-  // Split type
-  $("input[name=item-split-type]:radio").change(function () {
-    var item = $('#' + escape4$($('#workflow-item-id').val()));    
-    item.removeClass('split-no split-and split-or split-xor');
-    item.addClass('split-' + $(this).val());
-    updateSVGBackground(item);
-  });
-
-  // Join type
-  $("input[name=item-join-type]:radio").change(function () {
-    var item = $('#' + escape4$($('#workflow-item-id').val()));
-    item.removeClass('join-no join-and join-or join-xor');
-    item.addClass('join-' + $(this).val());
-    updateSVGBackground(item);
-  });
-  */
-}
-// [END] Block of element editor

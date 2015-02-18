@@ -54,7 +54,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					var _class = veda.ontology.classes[item.id];
 					if (_class.documentTemplate && _class.documentTemplate["v-ui:template"]) {
 						// If _class.documentTemplate is embedded => construct generic template
-						if (_class.documentTemplate["v-ui:embedded"] && _class.documentTemplate["v-ui:embedded"][0]) {
+						if (_class.documentTemplate["v-ui:embedded"] && _class.documentTemplate["v-ui:embedded"][0] == true) {
 							return genericTemplate(document, _class); 
 						}
 						// Get template from class
