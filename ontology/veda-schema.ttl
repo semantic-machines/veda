@@ -441,6 +441,18 @@ v-s:firstName
   rdfs:label "имя"@ru ;
   rdfs:range xsd:string ;
 .
+v-s:foreignRegistrationDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "foreign registration date"@en ;
+  rdfs:label "чужая регистрационная дата"@ru ;
+  rdfs:range xsd:date ;
+.
+v-s:foreignRegistrationNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "foreign registration number"@en ;
+  rdfs:label "чужой регистрационный номер"@ru ;
+  rdfs:range xsd:string ;
+.
 v-s:fullUrl
   rdf:type owl:DatatypeProperty ;
   rdfs:domain owl:Ontology ;
