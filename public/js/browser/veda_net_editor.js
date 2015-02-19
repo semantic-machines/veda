@@ -226,28 +226,16 @@ jsWorkflow.ready = jsPlumb.ready;
                 windows.bind("dblclick", function() {
                     var _this = this;
                 	riot.route("#/document/" + $(_this).attr('id')+"///edit", true);
-                	/*
-                    var _this = this,
-                            deleteState;
-
-                    deleteState = confirm('Deleting State(' + $(_this).attr('id').toUpperCase() + ') ...');
-
-                    if (deleteState) {
-
-                        // remove all the connections of this State element.
-                        instance.detachAllConnections(_this);
-
-                        // remove the State element.
-                        $(_this).remove();
-
-                    } else {
-                        return false;
-                    }*/
                 });
 
                 // Initialize State elements as draggable.  
                 instance.draggable(windows, {
-              	  /*containment:"parent"*/
+                  drag: function (event, ui) { //gets called on every drag
+                      getSubIndividual(net, 'v-wf:consistsOf', event.target.id, function(el) {
+              			  el['v-wf:locationX'] = [new Number(Math.round(ui.position.left-canvasSizePx/2))];
+            			  el['v-wf:locationY'] = [new Number(Math.round(ui.position.top-canvasSizePx/2))];
+                      });
+                  }
             	});
 
                 // Initialize all State elements as Connection sources.
@@ -452,7 +440,7 @@ jsWorkflow.ready = jsPlumb.ready;
     			case 'v-wf:Condition':
     				stateElement = '<div class="w state-condition" id="' + state.id + '" style="left: ' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div class="state-name"></div><div class="ep"></div></div>';
     				break;
-    			case 'v-wf:Task':
+    			case 'v-wf:Task':    				
             		stateElement = '<div class="w state-task split-join '
             			+ instance.getSplitJoinType('split', (state['v-wf:split']!=null && state['v-wf:split'].length>0)?state['v-wf:split'][0].id:null)
             			+ instance.getSplitJoinType('join', (state['v-wf:join']!=null && state['v-wf:join'].length>0)?state['v-wf:join'][0].id:null)
@@ -512,12 +500,6 @@ jsWorkflow.ready = jsPlumb.ready;
             $('#workflow-save-button').on('click', function() {
             	net.save();
             	net['v-wf:consistsOf'].forEach(function(el) {
-            		if (el['rdf:type'][0].id != 'v-wf:Flow') { // TODO refactor this
-            			// update X/Y location      
-            			var element = $('#'+veda.Util.escape4$(el.id));
-            			el['v-wf:locationX'] = [new Number(Math.round((element.position().left+element.parent().scrollLeft())/currentScale-canvasSizePx/2))];
-            			el['v-wf:locationY'] = [new Number(Math.round((element.position().top+element.parent().scrollTop())/currentScale-canvasSizePx/2))];
-            		}
             		el.save();
             	});
             });
@@ -528,11 +510,14 @@ jsWorkflow.ready = jsPlumb.ready;
             });
             
             $('.delete-state').on('click', function() {
-            	instance.deleteState(instance.getSelector('#'+veda.Util.escape4$($('#workflow-item-id').val()))[0]);
+                deleteState = confirm('Deleting State(' + $('#workflow-item-id').val() + ') ...');
+
+                if (deleteState) {            	
+                	instance.deleteState(instance.getSelector('#'+veda.Util.escape4$($('#workflow-item-id').val()))[0]);
+                }
             });
             
             $('.zoom-in').on('click', function() {
-            /*	if (currentScale<0.1) return instance.changeScale(currentScale + 0.01);*/
             	if (currentScale<1) return instance.changeScale(currentScale + 0.1);
             	if (currentScale<2) return instance.changeScale(currentScale + 0.25);
             });
@@ -540,7 +525,6 @@ jsWorkflow.ready = jsPlumb.ready;
             $('.zoom-out').on('click', function() {
             	if (currentScale>1) return instance.changeScale(currentScale - 0.25);
             	if (currentScale>0.2) return instance.changeScale(currentScale - 0.1);
-/*            	if (currentScale>0.01) return instance.changeScale(currentScale - 0.01);*/
             });
             
             $('.zoom-default').on('click', function() {
