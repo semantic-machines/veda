@@ -23,17 +23,40 @@
   owl:versionInfo "1.0" ;
 .
 
+td:AdministrativeDocument
+  rdf:type owl:Class ;
+  rdfs:label "Administrative document"@en ;
+  rdfs:label "Распорядительный документ"@ru ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
+.
+
+td:content
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain td:AdministrativeDocument ;
+  rdfs:label "content"@en ;
+  rdfs:label "содержание"@ru ;
+  rdfs:range xsd:string ;
+.
+
+td:signer
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain td:AdministrativeDocument ;
+  rdfs:label "signer"@en ;
+  rdfs:label "подписант"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+
 td:File_1
     rdf:type v-s:File ;
     v-s:fileURI "111.pdf" ;
 .
 
 td:AdministrativeDocument_2
-  rdf:type mnd-s:AdministrativeDocument ;
-  mnd-s:content "To comply the federal law №135-FL issued 12.10.2012 I order..."@en ;
-  mnd-s:content "Во исполнение федерального закона №135-ФЗ от 12.10.2012 приказываю..."@ru ;
-  mnd-s:nomenclatureType td:RegulatoryOrder2013 ;
-  mnd-s:signer td:ValeriyBushenev-Programmer1 ;
+  rdf:type td:AdministrativeDocument ;
+  td:content "To comply the federal law №135-FL issued 12.10.2012 I order..."@en ;
+  td:content "Во исполнение федерального закона №135-ФЗ от 12.10.2012 приказываю..."@ru ;
+  td:signer td:ValeriyBushenev-Programmer1 ;
   v-s:actualVersion td:AdministrativeDocument_2 ;
   v-s:author td:RomanKarpov-Analyst1 ;
   v-s:created "2014-01-30T15:42:27"^^xsd:dateTime ;
@@ -44,11 +67,10 @@ td:AdministrativeDocument_2
 .
 
 td:AdministrativeDocument_1
-  rdf:type mnd-s:AdministrativeDocument ;
-  mnd-s:content "2 To comply the federal law №153-FL issued 12.10.2012 I order..."@en ;
-  mnd-s:content "2 Во исполнение федерального закона №153-ФЗ от 12.10.2012 приказываю..."@ru ;
-  mnd-s:nomenclatureType td:RegulatoryOrder2013 ;
-  mnd-s:signer td:ValeriyBushenev-Programmer1 ;
+  rdf:type td:AdministrativeDocument ;
+  td:content "2 To comply the federal law №153-FL issued 12.10.2012 I order..."@en ;
+  td:content "2 Во исполнение федерального закона №153-ФЗ от 12.10.2012 приказываю..."@ru ;
+  td:signer td:ValeriyBushenev-Programmer1 ;
   v-s:actualVersion td:AdministrativeDocument_2 ;
   v-s:author td:RomanKarpov-Analyst1 ;
   v-s:created "2014-01-30T15:42:27"^^xsd:dateTime ;
@@ -362,42 +384,6 @@ td:Programmer1
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
   rdfs:label "Programmer"@en ;
   rdfs:label "Программист"@ru ;
-.
-
-td:RegulatoryDisposal2013
-  rdf:type mnd-s:AdministrativeDocumentType ;
-  v-s:author td:RomanKarpov-Analyst1 ;
-  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Regulatory disposal. 2013"@en ;
-  rdfs:label "Распоряжение по основной деятельности. 2013"@ru ;
-.
-
-td:RegulatoryDisposal2014
-  rdf:type mnd-s:AdministrativeDocumentType ;
-  v-s:author td:RomanKarpov-Analyst1 ;
-  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Regulatory disposal. 2014"@en ;
-  rdfs:label "Распоряжение по основной деятельности. 2014"@ru ;
-.
-
-td:RegulatoryOrder2013
-  rdf:type mnd-s:AdministrativeDocumentType ;
-  v-s:author td:RomanKarpov-Analyst1 ;
-  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Regulatory order. 2013"@en ;
-  rdfs:label "Приказ по основной деятельности. 2013"@ru ;
-.
-
-td:RegulatoryOrder2014
-  rdf:type mnd-s:AdministrativeDocumentType ;
-  v-s:author td:RomanKarpov-Analyst1 ;
-  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Regulatory order. 2014"@en ;
-  rdfs:label "Приказ по основной деятельности. 2014"@ru ;
 .
 
 td:RomanKarpov

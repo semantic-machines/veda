@@ -12,7 +12,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		
 		container.empty().hide();
 		
-		currentPage = page || 0;
+		currentPage = typeof page === 'number' ? page : currentPage;
 		
 		// Get template
 		var rendered = riot.render(template, search);
@@ -20,7 +20,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		//veda.Util.localize(container, veda.user.language);
 		
 		$("#q", container).focus();
-		$("#not-found", container).hide();
+		$(".not-found", container).hide();
 		$("#search-results", container).hide();
 
 		// Listen View changes & update Model
@@ -33,7 +33,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 			$("#search-submit", container).addClass("disabled"); 
 			currentPage = 0;
 			
-			if (!container_param) return riot.route("#/search/" + search.q, true);
+			if (container.prop("id") === "main") riot.route("#/search/" + search.q, false);
 			search.search();
 		});
 	
@@ -49,8 +49,8 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 			// Redraw current page
 			veda.trigger("search:complete", search, container, page);
 		});
-		
-		container.show();	
+
+		container.show();
 		
 		veda.trigger("search:rendered", search, container);
 	});
@@ -64,25 +64,28 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		
 		var container = container_param || $("#main");
 		
-		currentPage = page || 0;
+		currentPage = typeof page === 'number' ? page : currentPage;
+		
 		if (search.results_count < currentPage * veda.user.displayedElements) 
 			currentPage = Math.floor(search.results_count / veda.user.displayedElements) + 1 * (search.results_count % veda.user.displayedElements ? 1 : 0) - 1;
 		
 		// Show/hide 'results' or 'not found'
 		$("#search-submit", container).removeClass("disabled");
-		$("#search-tab-panel a[href='#results']").tab("show");
+		
 		if (!search.q) {
 			$("#q", container).focus();
 			$("#search-results", container).hide();
-			$("#not-found", container).hide()
+			$(".not-found", container).hide()
 			return;
 		} else if (search.q && !search.results_count) {
 			$("#q", container).focus();
 			$("#search-results", container).hide();
-			$("#not-found", container).show();
+			$(".not-found", container).show();
 			return;
+		} else {
+			$("#search-tab-panel #results-link", container).tab("show");
 		}
-		$("#not-found", container).hide();
+		$(".not-found", container).hide();
 		$("#search-results", container).show();
 		$("#search-results-list", container)
 			.empty()
@@ -91,6 +94,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		
 		// Show results
 		var keys = Object.getOwnPropertyNames(search.results);
+		var $timing = $("#timing", container);
 		var $render_time = $("#render_time", container);
 		var $_get_count = $("#get_count", container);
 		var $_get_summary_time = $("#get_summary_time", container);
@@ -120,6 +124,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 						gst2 = get_summary_time;
 						_get_summary_time = gst2 - gst1;
 						$_get_summary_time.html(_get_summary_time);
+						$timing.show();
 					}
 					
 				}, 0);

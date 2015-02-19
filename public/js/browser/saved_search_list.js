@@ -27,7 +27,9 @@ veda.Module(function SavedSearchList(veda) { "use strict";
 		var tmpl = new veda.IndividualModel("v-ui:LabelTemplate");
 		btn.one("click", function () {
 			var tmp = $("<div>");
-			var s = new veda.SearchModel(q, tmp);
+			var s = new veda.SearchModel(undefined, tmp);
+			s.off("*"); // Prevent SearchPresenter events
+			s.search(q);
 			Object.getOwnPropertyNames(s.results).map( function (id) {
 				var a = $("<a>", {"class": "list-group-item no-border", "href": "", "style": "display: block"}).appendTo(l);
 				
@@ -40,6 +42,9 @@ veda.Module(function SavedSearchList(veda) { "use strict";
 					e.preventDefault();
 					$("a", sContainer).removeClass("active");
 					search.q = d["v-s:query"][0];
+					
+					if (container.prop("id") === "main") riot.route("#/search/" + search.q, false);
+					
 					search.search();
 					a.addClass("active");
 					btn.popover("hide");

@@ -189,15 +189,22 @@
 			<div role="tabpanel" id="search-tab-panel">
 				<!-- Nav tabs -->
 				<ul class="nav nav-pills" role="tablist">
-					<li role="presentation" class="active"><a href="#params" aria-controls="params" role="tab" data-toggle="tab">Параметры</a></li>
-					<li role="presentation"><a href="#results" aria-controls="results" role="tab" data-toggle="tab">Результаты <span class="badge" id="results_count" bound>{results_count}</span></a></li>
+					<li role="presentation" id="params-pill" class="active"><a href="#params" aria-controls="params" role="tab" data-toggle="tab">Параметры</a></li>
+					<li role="presentation" id="results-pill"><a href="#results" id="results-link" aria-controls="results" role="tab" data-toggle="tab">Результаты <span class="badge" id="results_count" bound>{results_count}</span></a></li>
+					<li role="presentation" id="timing-pill" class="disabled">
+						<a id="timing" style="display: none">
+							<small><small>
+								<span><strong>timing: </strong>search query time = <span id="query_time" bound>{query_time}</span> ms | get request count = <span id="get_count"></span> | get summary time = <span id="get_summary_time"></span> ms | total render time = <span id="render_time"></span> ms </span>
+							</small></small>
+						</a>
+					</li>
 				</ul>
 				<br />
 				<!-- Tab panes -->
 				<div class="tab-content">
 					<div role="tabpanel" class="tab-pane active" id="params">
 						<div id="search">
-							<div class="well no-margin">
+							<div class="well">
 								<div class="container-fluid">
 									<form method="GET" role="form" class="form-horizontal">
 										<div class="input-group">
@@ -206,14 +213,12 @@
 												<button type="submit" id="search-submit" class="btn btn-primary" i18n="[Search]">Найти</button>
 											</span>
 										</div>
-										<div id="timing" class="text-right text-muted" style="position:absolute;">
-											<small>
-												<span>search query time / get count / get summary time / total render time : <span id="query_time" bound>{query_time}</span> ms / <span id="get_count"></span> / <span id="get_summary_time"></span> ms / <span id="render_time"></span> ms </span>
-											</small>
-										</div>				
 									</form>
 								</div>
 							</div>
+						</div>
+						<div class="alert alert-warning not-found" style="display: none">
+							<strong i18n="[Empty!]">Пусто!</strong> <span i18n="[Nothing found]">По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 						</div>
 					</div>
 					
@@ -236,7 +241,7 @@
 								<ul class="pagination" id="pager"></ul>
 							</div>
 						</div>
-						<div class="alert alert-warning" id="not-found" style="display: none">
+						<div class="alert alert-warning not-found" style="display: none">
 							<strong i18n="[Empty!]">Пусто!</strong> <span i18n="[Nothing found]">По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 						</div>
 					</div>

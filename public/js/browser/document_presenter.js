@@ -146,7 +146,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				$cancel.hide();
 				$edit.show();
 				// Change location.hash if document was presented in #main container
-				if (!container_param) riot.route("#/document/" + document.id, false);
+				if (container.prop("id") === "main") riot.route("#/document/" + document.id, false);
 			});
 			
 			$cancel.hide().on("click", function (e) {

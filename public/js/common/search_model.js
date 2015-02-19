@@ -45,7 +45,8 @@ veda.Module(function SearchModel(veda) { "use strict";
 		}
 
 		// Define Model functions
-		self.search = function () {
+		self.search = function (qq) {
+			self.q = qq || self.q;
 			
 			// Clear previous results 
 			self.results = {};
@@ -82,7 +83,11 @@ veda.Module(function SearchModel(veda) { "use strict";
 			veda.trigger("search:complete", self, container);
 		});
 		
-		veda.trigger("search:loaded", self, container);
+		self.on("search:loaded", function () {
+			veda.trigger("search:loaded", self, container);
+		});
+		
+		self.trigger("search:loaded");
 		
 		// Search if params given
 		self.q = q;
