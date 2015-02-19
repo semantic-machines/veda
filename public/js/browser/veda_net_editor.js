@@ -48,11 +48,13 @@ jsWorkflow.ready = jsPlumb.ready;
          */
         jsWorkflow.Instance.prototype.init = function(workflowData, veda, net) {
 
-            var instance,
+            var 	instance,
                     windows,
                     addNewState,
                     bindStateEvents,
-                    workflow;
+                    workflow,
+                    canvasSizePx=10000,
+                    currentScale=1;
 
             if (typeof workflowData === 'object') {
                 workflow = workflowData.container;
@@ -60,6 +62,16 @@ jsWorkflow.ready = jsPlumb.ready;
             } else {
                 workflow = workflowData;
             }
+            
+            $('#'+workflowData).css({
+       			'height': canvasSizePx+'px',
+       			'width': canvasSizePx+'px',
+       			'left': -canvasSizePx/2+'px',
+       			'top': -canvasSizePx/2+'px',
+       		});
+        	$('body').css('height','100vh');
+        	$('#main').addClass('calculated-height');
+        	$('#'+workflowData).draggable(); // Ability to swipe
 
             instance = this.instance;
 
@@ -304,7 +316,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 individual['v-wf:locationX'] = [new Number(1)];
                 individual['v-wf:locationY'] = [new Number(1)];
                 
-                if ($("#workflow-canvas").find('#' + individual.id).length < 1) {
+                if ($('#'+workflowData).find('#' + individual.id).length < 1) {
 
                    	if ($(_this).hasClass('create-condition')) {
                    		individual["rdf:type"] = [veda.ontology["v-wf:Condition"]];
@@ -380,6 +392,17 @@ jsWorkflow.ready = jsPlumb.ready;
                 }
                 return workflowStatePosition;
             }
+            
+            instance.changeScale = function(scale) {
+            	currentScale = scale;
+            	instance.setZoom(currentScale);
+            	$('#'+workflowData).css({
+            		'-ms-transform': 'scale('+currentScale+','+currentScale+')', /* IE 9 */
+            		'-webkit-transform': 'scale('+currentScale+','+currentScale+')', /* Chrome, Safari, Opera */
+            		'transform': 'scale('+currentScale+','+currentScale+')'
+            	});
+            } 
+
 
             /**
              *Get the workflow Object
@@ -421,25 +444,25 @@ jsWorkflow.ready = jsPlumb.ready;
             	var stateElement = '';
             	switch (type) {
     			case 'v-wf:InputCondition':    				
-    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + state['v-wf:locationX'][0] + 'px; top: ' + state['v-wf:locationY'][0] + 'px;"><div><span class="glyphicon glyphicon-play" aria-hidden="true"></div><div class="ep"></div></div>';
+    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div><span class="glyphicon glyphicon-play" aria-hidden="true"></div><div class="ep"></div></div>';
     				break;
     			case 'v-wf:OutputCondition':
-    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + state['v-wf:locationX'][0] + 'px; top: ' + state['v-wf:locationY'][0] + 'px;"><div><span class="glyphicon glyphicon-stop" aria-hidden="true"></div></div>';
+    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div><span class="glyphicon glyphicon-stop" aria-hidden="true"></div></div>';
     				break;
     			case 'v-wf:Condition':
-    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="left: ' + state['v-wf:locationX'][0] + 'px; top: ' + state['v-wf:locationY'][0] + 'px;"><div class="state-name"></div><div class="ep"></div></div>';
+    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="left: ' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div class="state-name"></div><div class="ep"></div></div>';
     				break;
     			case 'v-wf:Task':
             		stateElement = '<div class="w state-task split-join '
             			+ instance.getSplitJoinType('split', (state['v-wf:split']!=null && state['v-wf:split'].length>0)?state['v-wf:split'][0].id:null)
             			+ instance.getSplitJoinType('join', (state['v-wf:join']!=null && state['v-wf:join'].length>0)?state['v-wf:join'][0].id:null)
             			+ '" id="' + state.id + '" style="left: ' 
-            			+ state['v-wf:locationX'][0] + 'px; top: ' 
-            			+ state['v-wf:locationY'][0] + 'px;"><div class="state-name">' + state['rdfs:label'][0] + '</div><div class="ep"></div></div>';
+            			+ (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' 
+            			+ (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div class="state-name">' + state['rdfs:label'][0] + '</div><div class="ep"></div></div>';
     				break;
     			}
             	if (stateElement!='') {
-                	$("#workflow-canvas").append(stateElement);
+                	$('#'+workflowData).append(stateElement);
                 	bindStateEvents($('#' + veda.Util.escape4$(state.id)));
                 	updateSVGBackground($('#' + veda.Util.escape4$(state.id)));
             	}
@@ -482,9 +505,8 @@ jsWorkflow.ready = jsPlumb.ready;
             		}
             	});
             }
-            
+
             instance.createNet(net);
-            
             
             /* NET MENU [BEGIN] */
             $('#workflow-save-button').on('click', function() {
@@ -493,21 +515,38 @@ jsWorkflow.ready = jsPlumb.ready;
             		if (el['rdf:type'][0].id != 'v-wf:Flow') { // TODO refactor this
             			// update X/Y location      
             			var element = $('#'+veda.Util.escape4$(el.id));
-            			el['v-wf:locationX'] = [new Number(Math.round(element.position().left+element.parent().scrollLeft()))];
-            			el['v-wf:locationY'] = [new Number(Math.round(element.position().top+element.parent().scrollTop()))];
+            			el['v-wf:locationX'] = [new Number(Math.round((element.position().left+element.parent().scrollLeft())/currentScale-canvasSizePx/2))];
+            			el['v-wf:locationY'] = [new Number(Math.round((element.position().top+element.parent().scrollTop())/currentScale-canvasSizePx/2))];
             		}
             		el.save();
             	});
             });
+            
             $('#workflow-export-ttl').on('click', function() {
            		var list = new veda.IndividualListModel(net, net['v-wf:consistsOf']);
            		veda.Util.exportTTL(list);
             });
             
-            
             $('.delete-state').on('click', function() {
             	instance.deleteState(instance.getSelector('#'+veda.Util.escape4$($('#workflow-item-id').val()))[0]);
             });
+            
+            $('.zoom-in').on('click', function() {
+            /*	if (currentScale<0.1) return instance.changeScale(currentScale + 0.01);*/
+            	if (currentScale<1) return instance.changeScale(currentScale + 0.1);
+            	if (currentScale<2) return instance.changeScale(currentScale + 0.25);
+            });
+
+            $('.zoom-out').on('click', function() {
+            	if (currentScale>1) return instance.changeScale(currentScale - 0.25);
+            	if (currentScale>0.2) return instance.changeScale(currentScale - 0.1);
+/*            	if (currentScale>0.01) return instance.changeScale(currentScale - 0.01);*/
+            });
+            
+            $('.zoom-default').on('click', function() {
+            	instance.changeScale(1);
+            });
+
             /* NET MENU [END] */
             
             return instance;
