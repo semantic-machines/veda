@@ -334,6 +334,12 @@ v-s:dateTo
   rdfs:label "дата окончания чего-либо"@ru ;
   rdfs:range xsd:dateTime ;
 .
+v-s:decision
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "decision"@en ;
+  rdfs:label "решение"@ru ;
+  rdfs:range xsd:string ;
+.
 v-s:delegateTo
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:DelegationStatement ;
