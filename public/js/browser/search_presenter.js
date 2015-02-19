@@ -28,8 +28,8 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 			search[this.id] = $(this).val();
 		});
 		
-		$("#search-tab-panel #search-submit", container).on("click", function(event) {
-			event.preventDefault();
+		$("#search-tab-panel #search-submit", container).on("click", function(e) {
+			e.preventDefault();
 			$("#search-submit", container).addClass("disabled"); 
 			currentPage = 0;
 			
