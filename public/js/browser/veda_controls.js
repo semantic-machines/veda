@@ -206,5 +206,20 @@
 			return value;
 		}
 	};
+	
+	// Object property control
+	$.fn.vedaLink = function( options ) {
+		var opts = $.extend( {}, $.fn.vedaLink.defaults, options ),
+			control;
+		this.append(control);
+		return this;
+	};
+	$.fn.vedaLink.defaults = {
+		template: $("#link-control-template").html(),
+		inputParser: function (input) {
+			var value = new Boolean(input == "true" ? true : false);
+			return value;
+		}
+	};
 
 })( jQuery );
