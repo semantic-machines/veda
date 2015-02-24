@@ -210,16 +210,82 @@
 	// Object property control
 	$.fn.vedaLink = function( options ) {
 		var opts = $.extend( {}, $.fn.vedaLink.defaults, options ),
-			control;
+			control = $(opts.template),
+			object = opts.object,
+			relation = opts.relation,
+			add = $(".add", control);
+		
+		if (!opts.add) {
+			add.remove();
+		} else {
+			add.click(opts.add);
+		}
+		
+		object.on("edit", function () {
+			control.show();
+		});
+		object.on("view", function () {
+			control.hide();
+		});
+		
+		var typeAhead = $(".typeahead", control);
+		var cont = $("<div>").prop("class", "list-group");
+		var tmpl = new veda.IndividualModel("v-ui:LabelTemplate");
+		typeAhead.popover({
+			content: cont,
+			html: true,
+			container: "body",
+			placement: "auto",
+			trigger: "manual",
+		});
+		typeAhead.on("focusout", function (e) {
+			typeAhead.popover("hide");
+			typeAhead.on("focusin", function (e) {
+				if (this.value && $("a", cont).length) typeAhead.popover("show");
+			});
+		});
+		typeAhead.on("change", function (e) {
+			cont.empty();
+			var q = this.value;
+			var tmp = $("<div>");
+			var s = new veda.SearchModel(q, tmp);
+			Object.getOwnPropertyNames(s.results).map( function (id) {
+				var a = $("<a>", {"class": "list-group-item no-border", "href": "", "style": "display: block"}).appendTo(cont);
+				var d = new veda.DocumentModel(s.results[id], a, tmpl);
+				a.click(function (e) {
+					e.preventDefault();
+					typeAhead.popover("destroy");
+					object[relation] = object[relation].concat(d);
+				});
+			});
+			if (s.results_count) typeAhead.popover("show");
+		});
+		
+		// Search modal
+		$(".search", control).on("click", function (e) {
+			var $modal = $("#search-modal");
+			var search = new veda.SearchModel(undefined, $(".modal-body", $modal) );
+			$modal.modal();
+			// Add found values
+			$("button#ok", $modal).on("click", function (e) {
+				$(this).off("click");
+				var selected = [];
+				for (var uri in search.selected) {
+					selected.push( search.selected[uri] );
+				}
+				object[relation] = object[relation].concat(selected);
+			});
+		});
+		
 		this.append(control);
 		return this;
 	};
 	$.fn.vedaLink.defaults = {
 		template: $("#link-control-template").html(),
-		inputParser: function (input) {
-			var value = new Boolean(input == "true" ? true : false);
-			return value;
-		}
+		//add: function () { alert("add") },
+		//change: function (value) { alert(value) },
+		//inputParser: function (input) {return input},
+		//value: undefined
 	};
 
 })( jQuery );

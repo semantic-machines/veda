@@ -236,74 +236,20 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 		if (document[rel_uri].length) {
 			document[rel_uri].map( function (value) {renderValue (value, mode)} );
-		} 
+		}
 		
-		var control = $( $("#link-control-template").html() );
+		var opts = {
+			object: document,
+			relation: rel_uri,
+		};
 		if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
-			$(".add", control).on("click", function () {
+			opts.add = function () {
 				document[rel_uri] = document[rel_uri].concat(new veda.IndividualModel());
-			});
-		} else $(".add", control).hide();
-		
-		if (mode == "view") control.hide();
+			}
+		}
+		var control = $("<span>").vedaLink(opts);
 		relContainer.append(control);
-		
-		document.on("edit", function () {
-			control.show();
-		});
-		document.on("view", function () {
-			control.hide();
-		});
-		
-		var typeAhead = $(".typeahead", control);
-		var cont = $("<div>").prop("class", "list-group");
-		var tmpl = new veda.IndividualModel("v-ui:LabelTemplate");
-		typeAhead.popover({
-			content: cont,
-			html: true,
-			container: "body",
-			placement: "auto",
-			trigger: "manual",
-		});
-		typeAhead.on("focusout", function (e) {
-			typeAhead.popover("hide");
-			typeAhead.on("focusin", function (e) {
-				if (this.value && $("a", cont).length) typeAhead.popover("show");
-			});
-		});
-		typeAhead.on("change", function (e) {
-			cont.empty();
-			var q = this.value;
-			var tmp = $("<div>");
-			var s = new veda.SearchModel(q, tmp);
-			Object.getOwnPropertyNames(s.results).map( function (id) {
-				var a = $("<a>", {"class": "list-group-item no-border", "href": "", "style": "display: block"}).appendTo(cont);
-				var d = new veda.DocumentModel(s.results[id], a, tmpl);
-				a.click(function (e) {
-					e.preventDefault();
-					typeAhead.popover("destroy");
-					document[rel_uri] = document[rel_uri].concat(d);
-				});
-			});
-			if (s.results_count) typeAhead.popover("show");
-		});
-		
-		// Search modal
-		$(".search", control).on("click", function (e) {
-			var $modal = $("#search-modal");
-			var search = new veda.SearchModel(undefined, $(".modal-body", $modal) );
-			$modal.modal();
-			// Add found values
-			$("button#ok", $modal).on("click", function (e) {
-				$(this).off("click");
-				var selected = [];
-				for (var uri in search.selected) {
-					selected.push( search.selected[uri] );
-				}
-				document[rel_uri] = document[rel_uri].concat(selected);
-			});
-		});
-		
+
 		function renderValue(value, mode) {
 			// Create the same tag container to preserve element layout
 			var clone = $("<" + relContainer.prop("tagName") + ">");
