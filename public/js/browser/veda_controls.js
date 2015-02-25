@@ -248,13 +248,9 @@
 				source: dataSource,
 				displayKey: function (individual) {
 					var result;
-					try {
-						result = riot.render("{rdf:type.0.rdfs:label}: {rdfs:label.0}", individual);
-					} catch (ex) {
-						result = individual.id;
-					} finally {
-						return result;
-					}
+					try { result = riot.render("{rdf:type.0.rdfs:label}: {rdfs:label}", individual); }
+					catch (ex) { result = individual.id; } 
+					return result;
 				}
 			}
 		);
