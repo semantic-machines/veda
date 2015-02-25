@@ -208,6 +208,16 @@
 	};
 	
 	// Object property control
+
+	function dataSource (q, cb) {
+		var tmp = $("<div>");
+		var s = new veda.SearchModel(q, tmp);
+		var results = Object.getOwnPropertyNames(s.results).map( function (uri) {
+			return s.results[uri];
+		});
+		cb(results);
+	}
+	
 	$.fn.vedaLink = function( options ) {
 		var opts = $.extend( {}, $.fn.vedaLink.defaults, options ),
 			control = $(opts.template),
@@ -227,38 +237,31 @@
 		object.on("view", function () {
 			control.hide();
 		});
+				
+		var typeAhead = $(".typeahead", control).typeahead (
+			{
+				minLength: 3,
+				highlight: true,
+			},
+			{
+				name: "my-dataset",
+				source: dataSource,
+				displayKey: function (individual) {
+					var result;
+					try {
+						result = riot.render("{rdf:type.0.rdfs:label}: {rdfs:label.0}", individual);
+					} catch (ex) {
+						result = individual.id;
+					} finally {
+						return result;
+					}
+				}
+			}
+		);
 		
-		var typeAhead = $(".typeahead", control);
-		var cont = $("<div>").prop("class", "list-group");
-		var tmpl = new veda.IndividualModel("v-ui:LabelTemplate");
-		typeAhead.popover({
-			content: cont,
-			html: true,
-			container: "body",
-			placement: "auto",
-			trigger: "manual",
-		});
-		typeAhead.on("focusout", function (e) {
-			typeAhead.popover("hide");
-			typeAhead.on("focusin", function (e) {
-				if (this.value && $("a", cont).length) typeAhead.popover("show");
-			});
-		});
-		typeAhead.on("change", function (e) {
-			cont.empty();
-			var q = this.value;
-			var tmp = $("<div>");
-			var s = new veda.SearchModel(q, tmp);
-			Object.getOwnPropertyNames(s.results).map( function (id) {
-				var a = $("<a>", {"class": "list-group-item no-border", "href": "", "style": "display: block"}).appendTo(cont);
-				var d = new veda.DocumentModel(s.results[id], a, tmpl);
-				a.click(function (e) {
-					e.preventDefault();
-					typeAhead.popover("destroy");
-					object[relation] = object[relation].concat(d);
-				});
-			});
-			if (s.results_count) typeAhead.popover("show");
+		typeAhead.on("typeahead:selected", function (e, selected) {
+			object[relation] = object[relation].concat(selected);
+			typeAhead.typeahead("destroy");
 		});
 		
 		// Search modal
@@ -281,11 +284,7 @@
 		return this;
 	};
 	$.fn.vedaLink.defaults = {
-		template: $("#link-control-template").html(),
-		//add: function () { alert("add") },
-		//change: function (value) { alert(value) },
-		//inputParser: function (input) {return input},
-		//value: undefined
+		template: $("#link-control-template").html()
 	};
 
 })( jQuery );
