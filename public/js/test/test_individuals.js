@@ -48,8 +48,23 @@ test(
 		"#002 Get individual 'owl:'",
 		function() {
 			var ticket = get_admin_ticket ();
-			var data = get_individual(ticket.id, "owl:");
-			ok(data["@"] == "owl:");
+			var res = get_individual(ticket.id, "owl:");
+			ok(res["@"] == "owl:");
+			
+			var labels = res["rdfs:label"];
+
+			var ee;
+			for (var key in labels)
+			{    
+			    if (labels[key].lang == "RU")
+			    {
+				ee = labels[key];
+				break;
+			    }
+			}
+
+			ok (ee != null);
+			ok (ee.data == "Словарь OWL 2 Schema (OWL 2)");
 		});
 
 test(
@@ -61,7 +76,7 @@ test(
 		});
 
 test(
-		"#004 Individual store user1 and no read user2",
+		"#004 Individual store user1 and no read user2, +lang",
 		function() {
 			var ticket_user1 = get_user1_ticket ();
 			ok(ticket_user1.id.length > 0);
@@ -82,7 +97,7 @@ test(
 				} ],
 				'v-s:test_field' : [ {
 					data : 'test data',
-					lang : 'NONE',
+					lang : 'EN',
 					type : _String
 				} ]
 			};
