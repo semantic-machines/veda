@@ -3,7 +3,7 @@
 veda.Module(function GraphPresenter(veda) { "use strict";
 
 	var container = $("#main");
-	var tmpl = $( $("#graph-template").html() );
+	var tmpl = $("#graph-template").html();
 	
 	veda.on("load:graph", function (params) {
 		
@@ -178,7 +178,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		var body = $("body");
 		var select = {nodes: [], edges: []};
 		container.empty();
-		container.prepend( tmpl );
+		container.prepend( $(tmpl) );
 		var graph = $("#graph", container);
 		
 		var exportBtn = $("#export-ttl", container).click(function () {
@@ -193,9 +193,11 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 				var id = select.nodes[0];
 				var node = nodes.get(id);
 				switch (node.group) {
-					case "type": this.setMenu($("#class-context-menu", container)); break
+					case "_class": this.setMenu($("#class-context-menu", container)); break
 					case "ontology": this.setMenu($("#ontology-context-menu", container)); break
-					case "property": this.setMenu($("#property-context-menu", container)); break
+					case "datatypeProperty": 
+					case "objectProperty": 
+						this.setMenu($("#property-context-menu", container)); break
 					case "template": this.setMenu($("#template-context-menu", container)); break
 					case "specification": this.setMenu($("#specification-context-menu", container)); break
 					default: this.setMenu($("#individual-context-menu", container)); break

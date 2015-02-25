@@ -210,7 +210,14 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			
 			// Specials
 			$("[href='id']", classTemplate).map( function () {
-				$( this ).attr("href", "#/document/" + document.id);
+				$( this )
+					.attr("href", "#/document/" + document.id)
+					.after( 
+						$("<a>", {href: "#/graph/" + document.id}).append( 
+							$("<i>").addClass("glyphicon glyphicon-link") 
+						) 
+					)
+					.after( "&nbsp;" );
 			});
 			
 			container.append(classTemplate);
@@ -376,6 +383,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 	
 	function genericTemplate (document, _class) {
 		// Construct generic template
+		var propTmpl = $("#generic-property-template").html();
 		var template = $("<div/>").append( $("#generic-class-template").html() );
 		var properties;
 
@@ -393,9 +401,10 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				var property = veda.ontology[property_uri];
 				if (property_uri == "rdfs:label" || property_uri == "rdf:type") return;
 				
-				var result = $("<div/>").append( 
+				var result = $("<div/>").append( propTmpl );
+				$(".name", result).append (
 					$("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
-				);
+				)
 				
 				switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
 					case "rdfs:Literal" : 
@@ -405,10 +414,14 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					case "xsd:integer" : 
 					case "xsd:decimal" : 
 					case "xsd:dateTime" :
-						result.append( $("<div/>", {"property": property_uri}) ); 
+						$(".value", result).append (
+							$("<div/>", {"property": property_uri})
+						);
 					break
 					default:
-						result.append( $("<div/>", {"rel": property_uri}) ); 
+						$(".value", result).append (
+							$("<div/>", {"rel": property_uri})
+						);
 					break
 				}
 				

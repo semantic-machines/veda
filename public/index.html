@@ -452,10 +452,22 @@
 					</div>
 					<div class="panel-body">
 						<div class="container-fluid properties">
-							<strong><span class="text-muted" about="rdfs:label" property="rdfs:label"></span></strong>
-							<h3 property="rdfs:label"></h3>
-							<strong about="rdf:type" property="rdfs:label" class="text-muted"></strong>
-							<div rel="rdf:type"/>
+							<div class="row">
+								<div class="col-md-3 col-xs-5 text-right">
+									<h3 class="text-muted" about="rdfs:label" property="rdfs:label"></h3>
+								</div>
+								<div class="col-md-9 col-xs-7">
+									<h3 property="rdfs:label"></h3>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-3 col-xs-5 text-right">
+									<strong about="rdf:type" property="rdfs:label" class="text-muted"></strong>
+								</div>
+								<div class="col-md-9 col-xs-7">
+									<div rel="rdf:type"/>
+								</div>
+							</div>
 							<hr style="margin: 10px 0px"/>
 						</div>
 					</div>
@@ -464,6 +476,14 @@
 						<button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
 						<button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
 					</div>
+				</div>
+			</div>
+		</script>
+		<script type="html/template" id="generic-property-template">
+			<div class="row">
+				<div class="col-md-3 col-xs-5 text-right name">
+				</div>
+				<div class="col-md-9 col-xs-7 value">
 				</div>
 			</div>
 		</script>
