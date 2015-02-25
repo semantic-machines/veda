@@ -71,7 +71,7 @@ span.twitter-typeahead .tt-dropdown-menu {
   float: left;
   min-width: 160px;
   padding: 5px 0;
-  margin: 3px 0 0;
+  margin: 3px 0 30px;
   list-style: none;
   font-size: 14px;
   text-align: left;
@@ -116,7 +116,7 @@ span.twitter-typeahead .tt-hint {
   color: transparent;
 }
 #scrollable-typeahead .tt-dropdown-menu {
-  max-height: 300px;
+  max-height: 400px;
   overflow-y: auto;
 }
 
