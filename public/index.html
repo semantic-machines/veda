@@ -313,12 +313,16 @@
 
 		<!-- Link control template -->
 		<script type="html/template" id="link-control-template">
-			<div class="edit input-group" style="display:table">
-				<span class="input-group-addon btn btn-default search"><i class="glyphicon glyphicon-search"></i></span>
-				<input type="text" class="form-control typeahead" />
-				<span class="input-group-addon btn btn-default add">
-					<i class="glyphicon glyphicon-plus"></i>
-				</span>
+			<div id="scrollable-typeahead">
+				<div class="edit input-group" style="display:table">
+					<span class="input-group-addon btn btn-default search">
+						<i class="glyphicon glyphicon-search"></i>
+					</span>
+					<input type="text" class="form-control typeahead" />
+					<span class="input-group-addon btn btn-default add">
+						<i class="glyphicon glyphicon-plus"></i>
+					</span>
+				</div>
 			</div>
 		</script>
 
