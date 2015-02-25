@@ -4,13 +4,13 @@
 # imports: http://www.w3.org/2000/01/rdf-schema#
 # imports: http://www.w3.org/2002/07/owl
 
-# c14n-version: 3
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
 <http://semantic-machines.com/veda/veda-schema>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system ontology"@en ;
@@ -279,6 +279,12 @@ v-s:childUnit
   rdfs:range v-s:OrganizationUnit ;
   owl:inverseOf v-s:parentUnit ;
 .
+v-s:city
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "city"@en ;
+  rdfs:label "город"@ru ;
+  rdfs:range xsd:string ;
+.
 v-s:comment
   rdf:type owl:DatatypeProperty ;
   rdfs:label "comment"@en ;
@@ -296,6 +302,12 @@ v-s:controller
   rdfs:label "controller"@en ;
   rdfs:label "контроллер"@ru ;
   rdfs:range v-s:Appointment ;
+.
+v-s:country
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "country"@en ;
+  rdfs:label "страна"@ru ;
+  rdfs:range xsd:string ;
 .
 v-s:created
   rdf:type owl:DatatypeProperty ;
@@ -378,6 +390,12 @@ v-s:destProperty
   rdfs:domain v-s:Transform ;
   rdfs:label "название свойства, в которое вписываем"@ru ;
   rdfs:range xsd:string ;
+.
+v-s:duration
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "duration"@en ;
+  rdfs:label "длительность"@ru ;
+  rdfs:range xsd:integer ;
 .
 v-s:employee
   rdf:type owl:ObjectProperty ;
