@@ -53,7 +53,7 @@ class PacahonDriver {
     Context context;
     this() {
         init_core();
-        context = new PThreadContext(props_file_path, "veda" ~ text (std.uuid.randomUUID().toHash ())[0..5]);
+        context = new PThreadContext(props_file_path, "veda" ~ text(std.uuid.randomUUID().toHash())[ 0..5 ]);
     }
 
     void init()
@@ -100,6 +100,10 @@ class PacahonDriver {
                                                   if (cmd == Command.Wait && fn == Function.PModule)
                                                   {
                                                       context.wait_thread(thread_id);
+                                                      if (thread_id == P_MODULE.fulltext_indexer)
+                                                      {
+                                                          context.reopen_ro_fulltext_indexer_db();
+                                                      }
                                                       send(tid, true);
                                                   }
                                               }
@@ -121,8 +125,8 @@ class PacahonDriver {
                                                   }
                                               }
                                           },
-                                          (Command cmd, Function fn, string arg1, string arg2, string _ticket, Tid tid) 
-					  {
+                                          (Command cmd, Function fn, string arg1, string arg2, string _ticket, Tid tid)
+                                          {
                                               if (tid != Tid.init)
                                               {
                                                   if (cmd == Command.Get && fn == Function.IndividualsIdsToQuery)
@@ -131,7 +135,8 @@ class PacahonDriver {
 
                                                       if (ticket.result == ResultCode.OK)
                                                       {
-                                                          immutable(string)[] uris = context.get_individuals_ids_via_query(ticket, arg1, arg2);
+                                                          immutable(string)[] uris =
+                                                              context.get_individuals_ids_via_query(ticket, arg1, arg2);
                                                           send(tid, uris, ticket.result);
                                                       }
                                                       else
@@ -140,11 +145,10 @@ class PacahonDriver {
                                                           send(tid, uris, ticket.result);
                                                       }
                                                   }
-
-					      }
-					  },
-                                          (Command cmd, Function fn, string arg1, string arg2, Tid tid) 
-					    {
+                                              }
+                                          },
+                                          (Command cmd, Function fn, string arg1, string arg2, Tid tid)
+                                          {
                                               if (tid != Tid.init)
                                               {
                                                   if (cmd == Command.Get && fn == Function.Rights)
