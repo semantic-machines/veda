@@ -201,27 +201,27 @@
 	};
 	
 	// Object property control
-
-	function dataSource (q, cb) {
-		var tmp = $("<div>");
-		var s = new veda.SearchModel(q, tmp);
-		var results = Object.getOwnPropertyNames(s.results).map( function (uri) {
-			return s.results[uri];
-		});
-		cb(results);
-	}
 	
 	$.fn.vedaLink = function( options ) {
 		var opts = $.extend( {}, $.fn.vedaLink.defaults, options ),
 			control = $(opts.template),
 			object = opts.object,
 			relation = opts.relation,
-			add = $(".add", control);
+			queryPrefix = opts.queryPrefix,
+			add = $(".add", control),
+			all = $(".all", control);
 		
 		if (!opts.add) {
 			add.remove();
 		} else {
 			add.click(opts.add);
+		}
+
+		if (!queryPrefix) {
+			all.remove();
+		} else {
+			all.click(function () {
+			});
 		}
 		
 		object.on("edit", function () {
@@ -230,24 +230,32 @@
 		object.on("view", function () {
 			control.hide();
 		});
-				
+
 		var typeAhead = $(".typeahead", control).typeahead (
 			{
-				minLength: 3,
+				//minLength: 3,
 				highlight: true,
 			},
 			{
-				name: "my-dataset",
-				source: dataSource,
+				name: "dataset",
+				source: function (q, cb) {
+					var tmp = $("<div>");
+					var query = queryPrefix + (q ? "&&'*'=='" + q + "*'" : "");
+					var s = new veda.SearchModel(query, tmp);
+					var results = Object.getOwnPropertyNames(s.results).map( function (uri) {
+						return s.results[uri];
+					});
+					cb(results);
+				},
 				displayKey: function (individual) {
 					var result;
 					try { result = riot.render("{rdf:type.0.rdfs:label}: {rdfs:label}", individual); }
-					catch (ex) { result = individual.id; } 
+					catch (ex) { result = individual.id; }
 					return result;
 				}
 			}
 		);
-		
+
 		typeAhead.on("typeahead:selected", function (e, selected) {
 			object[relation] = object[relation].concat(selected);
 			typeAhead.typeahead("destroy");
@@ -273,7 +281,8 @@
 		return this;
 	};
 	$.fn.vedaLink.defaults = {
-		template: $("#link-control-template").html()
+		template: $("#link-control-template").html(),
+		queryPrefix: ""
 	};
 
 })( jQuery );

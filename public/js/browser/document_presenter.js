@@ -248,6 +248,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		var opts = {
 			object: document,
 			relation: rel_uri,
+			queryPrefix: "('rdf:type'=='owl:Class'||'rdf:type'=='rdfs:Class')"
 		};
 		if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
 			opts.add = function () {
