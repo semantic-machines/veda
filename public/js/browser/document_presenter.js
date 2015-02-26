@@ -399,7 +399,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		$(".properties", template).append (
 			Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
 				var property = veda.ontology[property_uri];
-				if (property_uri == "rdfs:label" || property_uri == "rdf:type") return;
+				if (property_uri === "rdfs:label" || property_uri === "rdf:type" || property_uri === "v-s:deleted") return;
 				
 				var result = $("<div/>").append( propTmpl );
 				$(".name", result).append (

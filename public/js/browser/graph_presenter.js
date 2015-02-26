@@ -180,12 +180,18 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		container.empty();
 		container.prepend( $(tmpl) );
 		var graph = $("#graph", container);
-		
+
+		// Buttons
 		var exportBtn = $("#export-ttl", container).click(function () {
 			var list = new veda.IndividualListModel( nodes.get().map(function (item) { return item.individual}) );
 			veda.Util.exportTTL(list);
 		});
+		var freezeBtn = $("#freeze", container).click(function () {
+			network.freezeSimulation = !network.freezeSimulation;
+			$("i", this).toggleClass("glyphicon-pause glyphicon-play");
+		});
 
+		// Context menu for selected node
 		graph.contextmenu({
 			target: $("#individual-context-menu", container),
 			before: function (e, element) {
@@ -223,6 +229,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 						select.nodes = select.edges = [];
 					break
 					case "class-individuals" : addInLinks( id, "'rdf:type'=='{id}'" ); break
+					case "class-subclasses" : addInLinks( id, "('rdf:type'=='owl:Class'||'rdf:type'=='rdfs:Class')&&'rdfs:subClassOf'=='{id}'" ); break
 					case "class-properties" : addInLinks( id, "'rdfs:domain'=='{id}'"); break
 					case "class-templates" : addInLinks( id, "'rdf:type'=='v-ui:ClassTemplate'&&'v-ui:forClass'=='{id}'" ); break
 					case "class-specifications" : addInLinks( id, "'rdf:type'=='v-ui:PropertySpecification'&&'v-ui:forClass'=='{id}'" ); break

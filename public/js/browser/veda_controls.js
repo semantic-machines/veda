@@ -1,13 +1,6 @@
 // Veda controls implemented as JQuery plugins
 ;(function( $ ) { "use strict";
 
-	var render_escape = {'&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;'};
-	function escape(str) {
-		return str == null ? '' : (str+'').replace(/[&\"<>]/g, function(char) {
-			return render_escape[char];
-		});
-	}
-	
 	// Generic control behaviour
 	$.fn.vedaControl = function( $el, options ) {
 		var opts = $.extend( {}, $.fn.vedaControl.defaults, options ),

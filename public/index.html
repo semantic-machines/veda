@@ -475,6 +475,7 @@
 						<button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
 						<button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
 						<button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
+						<button type="button" class="action btn btn-link" id="delete" i18n="[Delete]">Удалить</button>
 					</div>
 				</div>
 			</div>
@@ -498,6 +499,7 @@
 		<!-- Graph context menus -->
 		<script type="html/template" id="graph-template">
 
+			<button type="button" id="freeze" class="btn btn-success"><i class="glyphicon glyphicon-pause"></i></button>
 			<button type="button" id="export-ttl" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i> Экспорт в ttl</button>
 			
 			<div id="graph"></div>
@@ -518,6 +520,7 @@
 				<ul class="dropdown-menu" role="menu">
 					<li role="presentation" class="dropdown-header">Класс</li>
 					<li><a tabindex="-1" id="class-individuals">Все индивиды</a></li>
+					<li><a tabindex="-1" id="class-subclasses">Все подклассы</a></li>
 					<li><a tabindex="-1" id="class-properties">Свойства класса</a></li>
 					<li><a tabindex="-1" id="class-templates">Шаблоны класса</a></li>
 					<li><a tabindex="-1" id="class-specifications">Спецификации класса</a></li>
