@@ -241,6 +241,8 @@ path {
 
 .workflow-wrapper {
 	height: 100%;
+	overflow-x:hidden;
+    overflow-y:hidden;
 }
 
 .workflow-toolbar {
@@ -261,8 +263,11 @@ path {
 #workflow-canvas {
 	background: #EEEEEE;
 	position: relative;
-	/*
-	overflow-x:visible;
-	overflow-y:visible;*/	
+}
+
+#workflow-context-menu {
+    position: absolute;
+    display:none;
+    z-index: 100;
 }
 /* [END] NET EDITOR */
