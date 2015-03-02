@@ -516,7 +516,7 @@ jsWorkflow.ready = jsPlumb.ready;
                         
             if (localStorage.getItem("workflow"+net.id+"-zoom")>0 && localStorage.getItem("workflow"+net.id+"-zoom")!=1) {
             	instance.changeScale(localStorage.getItem("workflow"+net.id+"-zoom"));	
-            }
+            }            
             
             /* CONTEXT MENU [BEGIN] */
             var $contextMenu = $("#workflow-context-menu");
@@ -528,14 +528,16 @@ jsWorkflow.ready = jsPlumb.ready;
             	getSubIndividual(net, 'v-wf:consistsOf', _this.id, function (el) {
             	   el['v-wf:startingMapping'].forEach(function(var_map) {
                 	   var varMap = new veda.IndividualModel(var_map.id);
-                 	   menu.append('<li><a href="#/document/'+varMap.id+'///edit">MAP : '+varMap.id+'</a></li>');
-            	       var found = false;
-            	       
+            	       var s = '<li>';
             	       varMap['v-wf:mapsTo'].forEach(function(var_var) {
            	    		   var variable = new veda.IndividualModel(var_var.id);
-           	    		   menu.append('<li><a href="#/document/'+var_var.id+'///edit">VAR : '+((variable['v-wf:variableName']!=null && variable['v-wf:variableName'].length>0)?variable['v-wf:variableName'][0]:var_var.id)+'</a></li>');
-           	    		   found = true;
+           	    		   s+='<a href="#/document/'+var_var.id+'///edit">'+((variable['v-wf:variableName']!=null && variable['v-wf:variableName'].length>0)?variable['v-wf:variableName'][0]:var_var.id)+'</a>=';           	    		   
         	    	   });
+            	       varMap['v-wf:mappingExpression'].forEach(function(map_exp) {
+                     	   s+='<a href="#/document/'+varMap.id+'///edit">MAP : '+map_exp+'</a>';
+            	       });
+            	       s+='</li>'
+            	       menu.append(s);
                    });
                    el['v-wf:executor'].forEach(function(el2) {
                 	   var variable = new veda.IndividualModel(el2.id);

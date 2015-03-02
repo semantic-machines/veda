@@ -331,7 +331,7 @@ v-wf:NetTemplate
 </div>
 
 <div id="workflow-context-menu" class="dropdown clearfix">
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;">
+    <ul class="workflow-context-menu-list" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;">
     </ul>
 </div>
 

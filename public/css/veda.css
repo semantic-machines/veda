@@ -270,4 +270,11 @@ path {
     display:none;
     z-index: 100;
 }
+
+.workflow-context-menu-list {
+	background-color: #fff; 
+	border: 1px solid #ccc; 
+	list-style-type: none; 
+	padding: 5px; 
+} 
 /* [END] NET EDITOR */
