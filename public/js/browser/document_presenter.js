@@ -246,9 +246,11 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		}
 		
 		var opts = {
-			object: document,
-			relation: rel_uri,
-			queryPrefix: "('rdf:type'=='owl:Class'||'rdf:type'=='rdfs:Class')"
+			limit: 20,
+			queryPrefix: "('rdf:type'=='owl:Class'||'rdf:type'=='rdfs:Class')",
+			select: function (selected) {
+				document[rel_uri] = document[rel_uri].concat(selected);
+			} 
 		};
 		if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
 			opts.add = function () {
@@ -256,6 +258,21 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			}
 		}
 		var control = $("<span>").vedaLink(opts);
+		
+		document.on("view edit", function (e) {
+			if (e == "edit") {
+				control.show();
+			} else {
+				control.hide();
+			}
+		});
+		
+		if (mode == "edit") {
+			control.show();
+		} else {
+			control.hide();
+		}
+		
 		relContainer.append(control);
 
 		function renderValue(value, mode) {

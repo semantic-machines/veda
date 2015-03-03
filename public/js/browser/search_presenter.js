@@ -72,12 +72,12 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		// Show/hide 'results' or 'not found'
 		$("#search-submit", container).removeClass("disabled");
 		
-		if (!search.q) {
+		if (!search.q && !search.queryPrefix) {
 			$("#q", container).focus();
 			$("#search-results", container).hide();
 			$(".not-found", container).hide()
 			return;
-		} else if (search.q && !search.results_count) {
+		} else if ((search.q || search.queryPrefix) && !search.results_count) {
 			$("#q", container).focus();
 			$("#search-results", container).hide();
 			$(".not-found", container).show();

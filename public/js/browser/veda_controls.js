@@ -201,12 +201,9 @@
 	};
 	
 	// Object property control
-	
 	$.fn.vedaLink = function( options ) {
 		var opts = $.extend( {}, $.fn.vedaLink.defaults, options ),
 			control = $(opts.template),
-			object = opts.object,
-			relation = opts.relation,
 			queryPrefix = opts.queryPrefix,
 			add = $(".add", control),
 			all = $(".all", control);
@@ -221,30 +218,27 @@
 			all.remove();
 		} else {
 			all.click(function () {
+				typeAhead.data().ttTypeahead.input.trigger("queryChanged", typeAhead.typeahead("val"));
+				typeAhead.focus();
 			});
 		}
-		
-		object.on("edit", function () {
-			control.show();
-		});
-		object.on("view", function () {
-			control.hide();
-		});
 
 		var typeAhead = $(".typeahead", control).typeahead (
 			{
-				//minLength: 3,
-				highlight: true,
+				minLength: 0,
+				highlight: true
 			},
 			{
 				name: "dataset",
 				source: function (q, cb) {
 					var tmp = $("<div>");
-					var query = queryPrefix + (q ? "&&'*'=='" + q + "*'" : "");
-					var s = new veda.SearchModel(query, tmp);
-					var results = Object.getOwnPropertyNames(s.results).map( function (uri) {
-						return s.results[uri];
-					});
+					var limit = opts.limit || -1;
+					var s = new veda.SearchModel(q, tmp, queryPrefix);
+					var results = [];
+					for (var uri in s.results) {
+						if (limit-- == 0) break;
+						results.push(s.results[uri]);
+					}
 					cb(results);
 				},
 				displayKey: function (individual) {
@@ -257,15 +251,15 @@
 		);
 
 		typeAhead.on("typeahead:selected", function (e, selected) {
-			object[relation] = object[relation].concat(selected);
+			opts.select(selected);
 			typeAhead.typeahead("destroy");
 		});
-		
+
 		// Search modal
 		$(".search", control).on("click", function (e) {
 			var $modal = $("#search-modal");
-			var search = new veda.SearchModel(undefined, $(".modal-body", $modal) );
 			$modal.modal();
+			var search = new veda.SearchModel(undefined, $(".modal-body", $modal), queryPrefix);
 			// Add found values
 			$("button#ok", $modal).on("click", function (e) {
 				$(this).off("click");
@@ -273,7 +267,7 @@
 				for (var uri in search.selected) {
 					selected.push( search.selected[uri] );
 				}
-				object[relation] = object[relation].concat(selected);
+				opts.select(selected);
 			});
 		});
 		

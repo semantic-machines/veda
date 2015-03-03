@@ -2,12 +2,12 @@
 
 veda.Module(function SearchModel(veda) { "use strict";
 
-	veda.SearchModel = function (q, container) {
+	veda.SearchModel = function (q, container, queryPrefix) {
 		var self = riot.observable(this);
 		var results_keys;
 
 		// Define Model data setters & getters
-		var properties = {q:"", sort:"", results:{}, results_count:undefined, selected:{}, query_time:undefined};
+		var properties = {q:"", queryPrefix:"", sort:"", results:{}, results_count:undefined, selected:{}, query_time:undefined};
 		for (var property in properties) {
 			(function (property) {
 				Object.defineProperty(self, property, {
@@ -54,9 +54,12 @@ veda.Module(function SearchModel(veda) { "use strict";
 			q = self.q;
 
 			// Transform user input like "roman karpov" to "'*'=='roman' && '*'=='karpov'"
-			if (q.indexOf("==") < 0) {
-				q = q.trim().split(" ").map(function (t) { return "'*'=='" + t + "'"}).join("&&");
+			if (q && q.indexOf("==") < 0) {
+				q = q.trim().split(" ").map(function (t) { return "'*'=='" + t + "*'"}).join("&&");
 			}
+			
+			// Prefix query if defined in constructor
+			q = (self.queryPrefix ? self.queryPrefix + "&&" : "") + (q ? q : "") ;
 			
 			var results = query(veda.ticket, q, self.sort);
 						
@@ -68,7 +71,8 @@ veda.Module(function SearchModel(veda) { "use strict";
 						get: function () { 
 							if (typeof results[i] == 'object') return results[i];
 							return results[i] = new veda.IndividualModel(results[i]);
-						}
+						},
+						enumerable: true
 					});
 				})(i);
 			}
@@ -90,8 +94,9 @@ veda.Module(function SearchModel(veda) { "use strict";
 		self.trigger("search:loaded");
 		
 		// Search if params given
-		self.q = q;
-		if (self.q) self.search();
+		self.q = q; 
+		self.queryPrefix = queryPrefix;
+		if (self.q || self.queryPrefix) self.search();
 		
 		return self;
 	};
