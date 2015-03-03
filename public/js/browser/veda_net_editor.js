@@ -62,16 +62,31 @@ jsWorkflow.ready = jsPlumb.ready;
             } else {
                 workflow = workflowData;
             }
+            net['offsetX'] = localStorage.getItem("workflow"+net.id+"-offsetX");
+            net['offsetY'] = localStorage.getItem("workflow"+net.id+"-offsetY");
+            
+            if (!net['offsetX']) {
+            	net['offsetX'] = 0;
+            }
+            if (!net['offsetY']) {
+            	net['offsetY'] = 0;
+            }
             
             $('#'+workflowData).css({
-       			'height': canvasSizePx+'px',
+       			'height': canvasSizePx +'px',
        			'width': canvasSizePx+'px',
-       			'left': -canvasSizePx/2+'px',
-       			'top': -canvasSizePx/2+'px',
+       			'left': (-net['offsetX']-canvasSizePx/2)+'px',
+       			'top': (-net['offsetY']-canvasSizePx/2)+'px',
        		});
         	$('body').css('height','100vh');
         	$('#main').addClass('calculated-height');
-        	$('#'+workflowData).draggable(); // Ability to swipe
+        	$('#'+workflowData).draggable({
+                drag: function (event, ui) {
+                  localStorage.setItem("workflow"+net.id+"-offsetX", -ui.position.left-canvasSizePx/2);
+                  localStorage.setItem("workflow"+net.id+"-offsetY", -ui.position.top-canvasSizePx/2); 
+              	  $("#workflow-context-menu").hide();
+                }
+            });
 
             instance = this.instance;
 
@@ -189,8 +204,8 @@ jsWorkflow.ready = jsPlumb.ready;
             bindStateEvents = function(windows) {
 
                 // По клику переходим на свойства объекта
-                windows.bind("click", function() {                	
-                	
+                windows.bind("click", function() {
+
                 	instance.repaintEverything();
                 	
                     var _this = this, currentElement = $(_this), properties, itemId;
@@ -231,6 +246,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 // Initialize State elements as draggable.  
                 instance.draggable(windows, {
                   drag: function (event, ui) { //gets called on every drag
+                	  $("#workflow-context-menu").hide();
                       getSubIndividual(net, 'v-wf:consistsOf', event.target.id, function(el) {
               			  el['v-wf:locationX'] = [new Number(Math.round(ui.position.left-canvasSizePx/2))];
             			  el['v-wf:locationY'] = [new Number(Math.round(ui.position.top-canvasSizePx/2))];
@@ -382,8 +398,10 @@ jsWorkflow.ready = jsPlumb.ready;
             }
             
             instance.changeScale = function(scale) {
+            	$("#workflow-context-menu").hide();
             	currentScale = scale;
             	instance.setZoom(currentScale);
+            	localStorage.setItem("workflow"+net.id+"-zoom", currentScale);
             	$('#'+workflowData).css({
             		'-ms-transform': 'scale('+currentScale+','+currentScale+')', /* IE 9 */
             		'-webkit-transform': 'scale('+currentScale+','+currentScale+')', /* Chrome, Safari, Opera */
@@ -495,6 +513,47 @@ jsWorkflow.ready = jsPlumb.ready;
             }
 
             instance.createNet(net);
+                        
+            if (localStorage.getItem("workflow"+net.id+"-zoom")>0 && localStorage.getItem("workflow"+net.id+"-zoom")!=1) {
+            	instance.changeScale(localStorage.getItem("workflow"+net.id+"-zoom"));	
+            }            
+            
+            /* CONTEXT MENU [BEGIN] */
+            var $contextMenu = $("#workflow-context-menu");
+            
+            $(".state-task").on("contextmenu", function(e) {
+            	var _this = this,
+            	    menu = $("#workflow-context-menu ul");
+            	menu.html('');
+            	getSubIndividual(net, 'v-wf:consistsOf', _this.id, function (el) {
+            	   el['v-wf:startingMapping'].forEach(function(var_map) {
+                	   var varMap = new veda.IndividualModel(var_map.id);
+            	       var s = '<li>';
+            	       varMap['v-wf:mapsTo'].forEach(function(var_var) {
+           	    		   var variable = new veda.IndividualModel(var_var.id);
+           	    		   s+='<a href="#/document/'+var_var.id+'///edit">'+((variable['v-wf:variableName']!=null && variable['v-wf:variableName'].length>0)?variable['v-wf:variableName'][0]:var_var.id)+'</a>=';           	    		   
+        	    	   });
+            	       varMap['v-wf:mappingExpression'].forEach(function(map_exp) {
+                     	   s+='<a href="#/document/'+varMap.id+'///edit">MAP : '+map_exp+'</a>';
+            	       });
+            	       s+='</li>'
+            	       menu.append(s);
+                   });
+                   el['v-wf:executor'].forEach(function(el2) {
+                	   var variable = new veda.IndividualModel(el2.id);
+                       menu.append('<li><a href="#/document/'+el2.id+'///edit">EXECUTOR : '+el2.id+'</a></li>');                       
+                   });                                      
+           	 	});
+            	// 
+            	   $contextMenu.css({
+            	      display: "block",
+            	      left: e.pageX-((e.pageX+$contextMenu.width()>$( document ).width())?$contextMenu.width():0),
+            	      top: e.pageY-((e.pageY+$contextMenu.height()>$( document ).height())?$contextMenu.height():0)
+            	   });
+            	   return false;
+            	});
+            
+            /* CONTEXT MENU [END]*/
             
             /* NET MENU [BEGIN] */
             $('#workflow-save-button').on('click', function() {
@@ -517,6 +576,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 }
             });
             
+            /* ZOOM [BEGIN] */
             $('.zoom-in').on('click', function() {
             	if (currentScale<1) return instance.changeScale(currentScale + 0.1);
             	if (currentScale<2) return instance.changeScale(currentScale + 0.25);
@@ -527,9 +587,20 @@ jsWorkflow.ready = jsPlumb.ready;
             	if (currentScale>0.2) return instance.changeScale(currentScale - 0.1);
             });
             
+            $('#'+workflowData).bind('mousewheel', function(e){
+            	if(e.originalEvent.wheelDelta > 0) {
+            		if (currentScale<1) return instance.changeScale(currentScale + 0.1);
+                   	if (currentScale<2) return instance.changeScale(currentScale + 0.25);
+                } else {
+                    if (currentScale>1) return instance.changeScale(currentScale - 0.25);
+                    if (currentScale>0.2) return instance.changeScale(currentScale - 0.1);
+                }
+            });
+            
             $('.zoom-default').on('click', function() {
             	instance.changeScale(1);
             });
+            /* ZOOM [END] */
 
             /* NET MENU [END] */
             

@@ -91,7 +91,7 @@ interface VedaStorageRest_API {
     long count_individuals();
 
     @path("query") @method(HTTPMethod.GET)
-    string[] query(string ticket, string query, string sort);
+    string[] query(string ticket, string query, string sort=null);
 
     @path("get_individuals") @method(HTTPMethod.POST)
     Json[] get_individuals(string ticket, string uris[]);
