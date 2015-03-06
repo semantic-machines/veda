@@ -5,9 +5,11 @@ veda.Module(function SearchModel(veda) { "use strict";
 	veda.SearchModel = function (q, container, queryPrefix) {
 		var self = riot.observable(this);
 		var results_keys;
-
+		
+		self.id = guid(); 
+		
 		// Define Model data setters & getters
-		var properties = {q:"", queryPrefix:"", sort:"", results:{}, results_count:undefined, selected:{}, query_time:undefined};
+		var properties = {q:"", queryPrefix:"", types:[], sort:"", results:{}, results_count:undefined, selected:{}, query_time:undefined};
 		for (var property in properties) {
 			(function (property) {
 				Object.defineProperty(self, property, {

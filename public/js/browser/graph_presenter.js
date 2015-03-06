@@ -82,7 +82,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		function addInLinks (id, query) {
 			var q = query || "'*'=='{id}'";
 			q = q.replace("{id}", id);
-			var s = new veda.SearchModel(q, $("<div>"));
+			var s = new veda.SearchModel(q, null);
 			Object.getOwnPropertyNames(s.results).map(function (uri) {
 				var res = s.results[uri];
 				addNode(res);

@@ -218,7 +218,7 @@
 			all.remove();
 		} else {
 			all.click(function () {
-				typeAhead.data().ttTypeahead.input.trigger("queryChanged", typeAhead.typeahead("val"));
+				typeAhead.data().ttTypeahead.input.trigger("queryChanged", "");
 				typeAhead.focus();
 			});
 		}
@@ -231,9 +231,8 @@
 			{
 				name: "dataset",
 				source: function (q, cb) {
-					var tmp = $("<div>");
 					var limit = opts.limit || -1;
-					var s = new veda.SearchModel(q, tmp, queryPrefix);
+					var s = new veda.SearchModel(q, null, queryPrefix);
 					var results = [];
 					for (var uri in s.results) {
 						if (limit-- == 0) break;
@@ -252,12 +251,14 @@
 
 		typeAhead.on("typeahead:selected", function (e, selected) {
 			opts.select(selected);
-			typeAhead.typeahead("destroy");
 		});
 
 		// Search modal
+		var tmpl = $("#search-modal-template").html();
+		
 		$(".search", control).on("click", function (e) {
-			var $modal = $("#search-modal");
+			var $modal = $(tmpl);
+			$("body").append($modal);
 			$modal.modal();
 			var search = new veda.SearchModel(undefined, $(".modal-body", $modal), queryPrefix);
 			// Add found values
@@ -268,6 +269,9 @@
 					selected.push( search.selected[uri] );
 				}
 				opts.select(selected);
+			});
+			$modal.on('hidden.bs.modal', function (e) {
+				$modal.remove();
 			});
 		});
 		

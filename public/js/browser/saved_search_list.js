@@ -26,8 +26,7 @@ veda.Module(function SavedSearchList(veda) { "use strict";
 		var l = $("<div>", {"class": "list-group no-margin"});
 		var tmpl = new veda.IndividualModel("v-ui:LabelTemplate");
 		btn.one("click", function () {
-			var tmp = $("<div>");
-			var s = new veda.SearchModel(undefined, tmp);
+			var s = new veda.SearchModel(undefined, null);
 			s.off("*"); // Prevent SearchPresenter events
 			s.search(q);
 			Object.getOwnPropertyNames(s.results).map( function (id) {

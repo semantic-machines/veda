@@ -29,7 +29,7 @@ veda.Module(function Util(veda) { "use strict";
 	function isInteger (n) { return n % 1 === 0; }
 	
 	veda.Util.exportTTL = function (individualList) {
-		var s = new veda.SearchModel("'rdf:type'=='owl:Ontology'", $("<div>"));
+		var s = new veda.SearchModel("'rdf:type'=='owl:Ontology'", null);
 		var prefixes = {};
 		prefixes["dc"] = "http://purl.org/dc/elements/1.1/";
 		prefixes["grddl"] = "http://www.w3.org/2003/g/data-view#";

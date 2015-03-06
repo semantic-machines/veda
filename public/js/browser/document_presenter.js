@@ -76,6 +76,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		templates.map(function (template) {
 			template.on("remove", function (event) {
 				document.trigger("document:cleanup");
+				$(".typeahead", container).typeahead("destroy");
 				container = mode = document = container_param = template_param = _mode = null;
 			});
 		});
@@ -246,8 +247,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		}
 		
 		var opts = {
-			limit: 20,
-			queryPrefix: "('rdf:type'=='owl:Class'||'rdf:type'=='rdfs:Class')",
+			limit: 30,
+			//queryPrefix: "('rdf:type'=='owl:Class')",
 			select: function (selected) {
 				document[rel_uri] = document[rel_uri].concat(selected);
 			} 

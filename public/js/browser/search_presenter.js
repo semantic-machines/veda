@@ -8,6 +8,8 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 	// Initialize search page
 	veda.on("search:loaded", function (search, container_param, page) {
 		
+		if (container_param === null) return;
+		
 		var container = container_param || $("#main");
 		
 		container.empty().hide();
@@ -24,11 +26,11 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		$("#search-results", container).hide();
 
 		// Listen View changes & update Model
-		$("#search-tab-panel [bound]", container).on("change", function() {
+		$("#search-tab-panel-" + search.id + " [bound]", container).on("change", function() {
 			search[this.id] = $(this).val();
 		});
 		
-		$("#search-tab-panel #search-submit", container).on("click", function(e) {
+		$("#search-tab-panel-" + search.id + " #search-submit", container).on("click", function(e) {
 			e.preventDefault();
 			$("#search-submit", container).addClass("disabled"); 
 			currentPage = 0;
@@ -39,7 +41,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 	
 		// Listen Model changes & update View
 		search.on("property:changed", function(property, value) {
-			var $el = $("#search-tab-panel #" + property + "[bound]", container);
+			var $el = $("#search-tab-panel-" + search.id + " #" + property + "[bound]", container);
 			if ($el.is("input, textarea, select")) $el.val( value );
 			else $el.html( value );
 		});
@@ -49,6 +51,18 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 			// Redraw current page
 			veda.trigger("search:complete", search, container, page);
 		});
+		
+		// Type selector
+		var opts = {
+			limit: -1,
+			queryPrefix: "('rdf:type'=='owl:Class'||'rdf:type'=='rdfs:Class')",
+			select: function (selected) {
+				search.types = search.types.concat(selected);
+			}
+		};
+		var control = $("<div>").vedaLink(opts);
+		
+		$("form", container).before(control);
 
 		container.show();
 		
@@ -57,6 +71,9 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 	
 	// Display search results
 	veda.on("search:complete", function (search, container_param, page) {
+		
+		if (container_param === null) return;
+		
 		var rt1, rt2, render_time, gc1, gc2, _get_count, gst1, gst2, _get_summary_time;
 		rt1 = Date.now();
 		gc1 = get_count;
@@ -83,7 +100,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 			$(".not-found", container).show();
 			return;
 		} else {
-			$("#search-tab-panel #results-link", container).tab("show");
+			$("#search-tab-panel-" + search.id + " #results-link-"+search.id, container).tab("show");
 		}
 		$(".not-found", container).hide();
 		$("#search-results", container).show();

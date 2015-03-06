@@ -186,13 +186,13 @@
 		<!-- Search template -->
 		<script type="html/template" id="search-template">
 
-			<div role="tabpanel" id="search-tab-panel">
+			<div role="tabpanel" id="search-tab-panel-{id}">
 				<!-- Nav tabs -->
 				<ul class="nav nav-pills" role="tablist">
-					<li role="presentation" id="params-pill" class="active"><a href="#params" aria-controls="params" role="tab" data-toggle="tab">Параметры</a></li>
-					<li role="presentation" id="results-pill"><a href="#results" id="results-link" aria-controls="results" role="tab" data-toggle="tab">Результаты <span class="badge" id="results_count" bound>{results_count}</span></a></li>
-					<li role="presentation" id="timing-pill" class="disabled">
-						<a id="timing" style="display: none">
+					<li role="presentation" id="params-pill-{id}" class="active"><a href="#params-{id}" aria-controls="params-{id}" role="tab" data-toggle="tab">Параметры</a></li>
+					<li role="presentation" id="results-pill-{id}"><a href="#results-{id}" id="results-link-{id}" aria-controls="results-{id}" role="tab" data-toggle="tab">Результаты <span class="badge" id="results_count" bound>{results_count}</span></a></li>
+					<li role="presentation" id="timing-pill-{id}" class="disabled">
+						<a id="timing-{id}" style="display: none">
 							<small><small>
 								<span><strong>timing: </strong>search query time = <span id="query_time" bound>{query_time}</span> ms | get request count = <span id="get_count"></span> | get summary time = <span id="get_summary_time"></span> ms | total render time = <span id="render_time"></span> ms </span>
 							</small></small>
@@ -202,11 +202,11 @@
 				<br />
 				<!-- Tab panes -->
 				<div class="tab-content">
-					<div role="tabpanel" class="tab-pane active" id="params">
+					<div role="tabpanel" class="tab-pane active" id="params-{id}">
 						<div id="search">
 							<div class="well">
 								<div class="container-fluid">
-									<form method="GET" role="form" class="form-horizontal">
+									<form role="form" class="form-horizontal">
 										<div class="input-group">
 											<input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
 											<span class="input-group-btn" id="q-actions">
@@ -222,11 +222,8 @@
 						</div>
 					</div>
 					
-					<div role="tabpanel" class="tab-pane" id="results">
+					<div role="tabpanel" class="tab-pane" id="results-{id}">
 						<div class="container-fluid" id="search-results" style="display: none">
-							<!--h3 class="text-center"><span i18n="[Search results]">Результаты поиска</span>
-								(<span id="results_count" bound>{results_count}</span>)
-							</h3-->
 							<div id="search-features" class="form-inline">
 								<div class="checkbox">
 									<label>
@@ -294,22 +291,24 @@
 		</script>
 
 		<!-- Search modal -->
-		<div class="modal" id="search-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-					<!--div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-						<h4 class="modal-title" id="myModalLabel">Поиск объекта</h4>
-					</div-->
-					<div class="modal-body">
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
-						<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Отмена</button>
+		<script type="html/template" id="search-modal-template">
+			<div class="modal" id="search-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<!--div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+							<h4 class="modal-title" id="myModalLabel">Поиск объекта</h4>
+						</div-->
+						<div class="modal-body">
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
+							<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Отмена</button>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</script>
 
 		<!-- Link control template -->
 		<script type="html/template" id="link-control-template">

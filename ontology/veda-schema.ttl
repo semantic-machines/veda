@@ -41,8 +41,8 @@ v-s:AllResourcesGroup
 .
 v-s:Appointment
   rdf:type owl:Class ;
-  rdfs:label "Appointment"@en ;
-  rdfs:label "Назначение"@ru ;
+  rdfs:label "Employee"@en ;
+  rdfs:label "Сотрудник"@ru ;
   rdfs:subClassOf v-s:HRRecord ;
   owl:disjointWith v-s:Absence ;
 .
