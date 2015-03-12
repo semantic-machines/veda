@@ -780,6 +780,12 @@ v-s:status
   rdfs:label "статус"@ru ;
   rdfs:range rdfs:Resource ;
 .
+v-s:sum
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "sum"@en ;
+  rdfs:label "сумма"@ru ;
+  rdfs:range xsd:integer ;
+.
 v-s:summary
   rdf:type owl:DatatypeProperty ;
   rdfs:label "summary"@en ;
