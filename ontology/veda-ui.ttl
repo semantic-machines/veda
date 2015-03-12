@@ -331,3 +331,92 @@ v-ui:SavedSearchInListTemplate
   </span>
   """ ;
 .
+v-ui:SearchRequestTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Поисковый запрос"@ru ;
+  rdfs:label "Template for Search request class"@en ;
+  v-ui:forClass v-s:SearchRequest ;
+  v-ui:template """
+	<div>
+		<h3>Поисковый запрос</h3>
+		<div class="row">
+			<div class="col-md-12">
+				<h4>Выберите тип:</h4>
+				<div rel="v-s:selectedType" template="v-ui:LabelTemplate">Выбранный тип</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<h4>Ограничения:</h4>
+				<div rel="v-s:restriction" template="v-ui:SearchRestrictionTemplate">Ограничения</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<h4>Сортировки:</h4>
+				<div rel="v-s:sort" template="v-ui:SortOrderTemplate">Сортировки</div>
+			</div>
+		</div>
+		<br/>
+		<button type="button" class="action btn btn-primary" id="search">Найти</button>
+		<button type="button" class="action btn btn-link pull-right" id="delete">Удалить</button>
+        <button type="button" class="action btn btn-default pull-right" id="cancel">Отмена</button>
+        <button type="button" class="action btn btn-success pull-right" id="save">Сохранить</button>
+        <button type="button" class="action btn btn-primary pull-right" id="edit">Редактировать</button>
+	</div>
+  """ ;
+.
+v-ui:SearchRestrictionTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Ограничение поиска"@ru ;
+  rdfs:label "Template for Search restriction class"@en ;
+  v-ui:forClass v-s:SearchRestriction ;
+  v-ui:embedded "true"^^xsd:boolean ;
+  v-ui:template """
+	<div class="panel panel-default">
+		<!--div class="panel-heading">
+		</div-->
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-md-5">
+					<span>Свойство:</span>
+					<div rel="v-s:onProperty" template="v-ui:LabelTemplate">Свойство</div>
+				</div>
+				<div class="col-md-5">
+					<span>Значения:</span>
+					<div property="v-s:soughtValues">Значения</div>
+				</div>
+				<div class="col-md-2">
+					<span>Оператор:</span>
+					<div rel="v-s:operator" template="v-ui:LabelTemplate">Оператор</div>
+				</div>
+			</div>			
+		</div>
+	</div>
+  """ ;
+.
+v-ui:SortOrderTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Порядок сортировки"@ru ;
+  rdfs:label "Template for Sort order class"@en ;
+  v-ui:forClass v-s:SortOrder ;
+  v-ui:embedded "true"^^xsd:boolean ;
+  v-ui:template """
+	<div class="panel panel-default">
+		<!--div class="panel-heading">
+		</div-->
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-md-8">
+					<span>Свойство:</span>
+					<div rel="v-s:orderBy" template="v-ui:LabelTemplate">Свойство:</div>
+				</div>
+				<div class="col-md-4">
+					<span>Направление:</span>
+					<div rel="v-s:direction" template="v-ui:LabelTemplate">Направление</div>
+				</div>
+			</div>
+		</div>
+	</div>
+  """ ;
+.

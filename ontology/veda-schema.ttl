@@ -180,6 +180,24 @@ v-s:SavedSearch
   rdfs:label "Сохраненный запрос"@ru ;
   rdfs:subClassOf v-s:Document ;
 .
+v-s:SearchRequest
+  rdf:type owl:Class ;
+  rdfs:label "Search request"@en ;
+  rdfs:label "Поисковый запрос"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+v-s:SearchRestriction
+  rdf:type owl:Class ;
+  rdfs:label "Search restriction"@en ;
+  rdfs:label "Ограничение поиска"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-s:SortOrder
+  rdf:type owl:Class ;
+  rdfs:label "Sort order"@en ;
+  rdfs:label "Порядок сортировки"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
 v-s:StatusWorkflow
   rdf:type owl:Class ;
   rdfs:label "StatusWorkflow"@en ;
@@ -793,4 +811,166 @@ v-s:year
   rdfs:label "year"@en ;
   rdfs:label "год"@ru ;
   rdfs:range xsd:integer ;
+.
+v-s:selectedType
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "selected type"@en ;
+  rdfs:label "выбранный тип"@ru ;
+  rdfs:range owl:Class ;
+  rdfs:range rdfs:Class ;
+  rdfs:domain v-s:SearchRequest ;
+.
+v-s:restriction
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "restriction"@en ;
+  rdfs:label "ограничение"@ru ;
+  rdfs:range v-s:SearchRestriction ;
+  rdfs:domain v-s:SearchRequest ;
+.
+v-s:sort
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "sort"@en ;
+  rdfs:label "сортировка"@ru ;
+  rdfs:range v-s:SortOrder ;
+  rdfs:domain v-s:SearchRequest ;
+.
+v-s:onProperty
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "on property"@en ;
+  rdfs:label "на свойство"@ru ;
+  rdfs:range owl:DatatypeProperty ;
+  rdfs:range owl:ObjectProperty ;
+  rdfs:domain v-s:SearchRestriction ;
+.
+v-s:soughtValues
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "sought values"@en ;
+  rdfs:label "искомые значения"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:SearchRestriction ;
+.
+v-s:operator
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "operator"@en ;
+  rdfs:label "оператор"@ru ;
+  rdfs:range v-s:LogicalOperator ;
+  rdfs:domain v-s:SearchRestriction ;
+.
+v-s:orderBy
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "orderBy"@en ;
+  rdfs:label "упорядочить"@ru ;
+  rdfs:range owl:DatatypeProperty ;
+  rdfs:range owl:ObjectProperty ;
+  rdfs:domain v-s:SortOrder ;
+.
+v-s:direction
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "orderBy"@en ;
+  rdfs:label "упорядочить"@ru ;
+  rdfs:range owl:DatatypeProperty ;
+  rdfs:range owl:ObjectProperty ;
+  rdfs:domain v-s:SortOrder ;
+.
+v-s:SortDirection
+  rdf:type owl:Class ;
+  rdfs:label "Sort direction"@en ;
+  rdfs:label "Направление сортировки"@ru ;
+.
+v-s:Ascending
+  rdf:type v-s:SortDirection ;
+  rdfs:label "Ascending"@en ;
+  rdfs:label "По возрастанию"@ru ;
+.
+v-s:Descending
+  rdf:type v-s:SortDirection ;
+  rdfs:label "Descending"@en ;
+  rdfs:label "По убыванию"@ru ;
+.
+v-s:LogicalOperator
+  rdf:type owl:Class ;
+  rdfs:label "Logical operator"@en ;
+  rdfs:label "Логический оператор"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-s:AND
+  rdf:type v-s:LogicalOperator ;
+  rdfs:label "AND"@en ;
+  rdfs:label "И"@ru ;
+.
+v-s:OR
+  rdf:type v-s:LogicalOperator ;
+  rdfs:label "OR"@en ;
+  rdfs:label "ИЛИ"@ru ;
+.
+v-s:NOT
+  rdf:type v-s:LogicalOperator ;
+  rdfs:label "NOT"@en ;
+  rdfs:label "НЕ"@ru ;
+.
+v-s:SpecialSearchValues
+  rdf:type owl:Class ;
+  rdfs:label "Logical operator"@en ;
+  rdfs:label "Логический оператор"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-s:Today
+  rdf:type v-s:SpecialSearchValues ;
+  rdfs:label "Today"@en ;
+  rdfs:label "Сегодня"@ru ;
+.
+v-s:ThisWeek
+  rdf:type v-s:SpecialSearchValues ;
+  rdfs:label "This week"@en ;
+  rdfs:label "Эта неделя"@ru ;
+.
+v-s:ThisMonth
+  rdf:type v-s:SpecialSearchValues ;
+  rdfs:label "This month"@en ;
+  rdfs:label "Этот месяц"@ru ;
+.
+v-s:ThisQuarter
+  rdf:type v-s:SpecialSearchValues ;
+  rdfs:label "This quarter"@en ;
+  rdfs:label "Этот квартал"@ru ;
+.
+v-s:ThisYear
+  rdf:type v-s:SpecialSearchValues ;
+  rdfs:label "This year"@en ;
+  rdfs:label "Этот год"@ru ;
+.
+v-s:Yesterday
+  rdf:type v-s:SpecialSearchValues ;
+  rdfs:label "Yesterday"@en ;
+  rdfs:label "Вчера"@ru ;
+.
+v-s:LastWeek
+  rdf:type v-s:SpecialSearchValues ;
+  rdfs:label "Last week"@en ;
+  rdfs:label "Прошлая неделя"@ru ;
+.
+v-s:LastMonth
+  rdf:type v-s:SpecialSearchValues ;
+  rdfs:label "Last month"@en ;
+  rdfs:label "Прошлый месяц"@ru ;
+.
+v-s:LastQuarter
+  rdf:type v-s:SpecialSearchValues ;
+  rdfs:label "Last quarter"@en ;
+  rdfs:label "Прошлый квартал"@ru ;
+.
+v-s:LastYear
+  rdf:type v-s:SpecialSearchValues ;
+  rdfs:label "Last year"@en ;
+  rdfs:label "Прошлый год"@ru ;
+.
+v-s:NotEmpty
+  rdf:type v-s:SpecialSearchValues ;
+  rdfs:label "Not empty"@en ;
+  rdfs:label "Не пусто"@ru ;
+.
+v-s:Empty
+  rdf:type v-s:SpecialSearchValues ;
+  rdfs:label "Empty"@en ;
+  rdfs:label "Пусто"@ru ;
 .

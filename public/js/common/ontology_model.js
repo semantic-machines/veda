@@ -52,7 +52,13 @@ veda.Module(function OntologyModel(veda) { "use strict";
 				/* Templates */
 				"'rdf:type' == 'v-ui:ClassTemplate' || " +
 				/* Property specifications */
-				"'rdf:type' == 'v-ui:PropertySpecification'";
+				"'rdf:type' == 'v-ui:PropertySpecification' || " +
+				"'rdf:type' == 'v-ui:IntegerPropertySpecification' || " + 
+				"'rdf:type' == 'v-ui:DecimalPropertySpecification' || " +
+				"'rdf:type' == 'v-ui:DatetimePropertySpecification' || " +
+				"'rdf:type' == 'v-ui:StringPropertySpecification' || " +
+				"'rdf:type' == 'v-ui:BooleanPropertySpecification' || " +
+				"'rdf:type' == 'v-ui:ObjectPropertySpecification'";
 		
 		var q_results = query(veda.ticket, q);
 		

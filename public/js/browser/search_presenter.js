@@ -50,19 +50,14 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 			// Redraw current page
 			veda.trigger("search:complete", search, container, page);
 		});
-		
-		// Type selector
-		var opts = {
-			limit: -1,
-			queryPrefix: "('rdf:type'=='owl:Class'||'rdf:type'=='rdfs:Class')",
-			select: function (selected) {
-				search.types = search.types.concat(selected);
-			}
-		};
-		var control = $("<div>").vedaLink(opts);
-		
-		$("form", container).before(control);
 
+		// Typed search request
+		var reqContainer = $("<div>").addClass("well");
+		var reqIndividual = new veda.IndividualModel();
+		reqIndividual["rdf:type"] = [new veda.IndividualModel("v-s:SearchRequest")];
+		var request = new veda.DocumentModel(reqIndividual, reqContainer, undefined, "edit");
+		$("#params-" + search.id, container).append(reqContainer);
+		
 		container.show();
 		
 		veda.trigger("search:rendered", search, container);
@@ -110,10 +105,10 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		
 		// Show results
 		var keys = Object.getOwnPropertyNames(search.results);
-		var $timing = $("#timing", container);
-		var $render_time = $("#render_time", container);
-		var $_get_count = $("#get_count", container);
-		var $_get_summary_time = $("#get_summary_time", container);
+		var $timing = $("#timing-" + search.id, container);
+		var $render_time = $("#render_time", $timing);
+		var $_get_count = $("#get_count", $timing);
+		var $_get_summary_time = $("#get_summary_time", $timing);
 		for (var i = search.currentPage * veda.user.displayedElements; i < (search.currentPage + 1) * veda.user.displayedElements && i < search.results_count; i++) {
 			(function (i) { 
 				setTimeout(function () {
