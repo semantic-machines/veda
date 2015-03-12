@@ -29,7 +29,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		// Embedded templates list
 		var embedded = [];
 				
-		var templates;
+		/*var templates;
 		
 		// Extracted scripts
 		var scripts = [];
@@ -80,11 +80,12 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				container = mode = document = container_param = template_param = _mode = null;
 			});
 		});
+		*/
 		
 		// Trigger same events for embedded templates
 		document.on("view edit save delete recover", function (event) {
 			embedded.map(function (item) {
-				item.trigger(event);
+				if (item.trigger) item.trigger(event);
 			});
 		});
 
@@ -96,7 +97,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 		document.on("cancel", function () {
 			embedded.map(function (item) {
-				item.reset();
+				if (item.reset) item.reset();
 			});
 			document.cancel();
 		});
@@ -115,125 +116,171 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			mode = _mode;
 		});
 
-		templates.map( function (classTemplate) {
+		//templates.map( function (classTemplate) {
+		
+		document["rdf:type"]
+			.filter( function (_class) {
+				return _class instanceof veda.IndividualModel;
+			})
+			.map( function (_class) {
 
-			// Actions
-			var $edit = $("#edit", classTemplate),
-				$save = $("#save", classTemplate),
-				$cancel = $("#cancel", classTemplate),
-				$delete = $("#delete", classTemplate);
-
-			$delete.on("click", function (e) {
-				if ( confirm("Вы действительно хотите удалить документ?") ) document.trigger("delete");
-			});
-			if (document["v-s:deleted"][0] && document["v-s:deleted"][0] == true) $delete.hide();
-
-			$edit.on("click", function (e) {
-				document.trigger("edit");
-			});
-
-			document.on("edit", function () {
-				$edit.hide();
-				$save.show();
-				$cancel.show();					
-			});
-			
-			$save.hide().on("click", function (e) {
-				document.trigger("save");
-			});
-						
-			document.on("save", function (e) {
-				$save.hide();
-				$cancel.hide();
-				$edit.show();
-				// Change location.hash if document was presented in #main container
-				if (container.prop("id") === "main") riot.route("#/document/" + document.id, false);
-			});
-			
-			$cancel.hide().on("click", function (e) {
-				document.trigger("cancel");
-			});
-			
-			// About
-			$("[about]", classTemplate).map( function () {
+				var classTemplate;
+				var templateStr;
+				var scripts = [];
 				
-				var propertyContainer = $( this ), 
-					about = new veda.IndividualModel(propertyContainer.attr("about")),
-					property_uri = propertyContainer.attr("property");
-				if (property_uri == "id") propertyContainer.html( about[property_uri] );
-				else propertyContainer.html( about[property_uri].join(", ") );
-				
-			});
-			
-			// Object links				
-			$("[rel]", classTemplate).map( function () {
-				
-				var relContainer = $(this), 
-					rel_uri = relContainer.attr("rel"),
-					relTemplate = relContainer.attr("template");
-				
-				relTemplate = relTemplate ? (
-					new veda.IndividualModel(relTemplate) 
-				) : (
-					!document[rel_uri] || !document[rel_uri][0] || !document[rel_uri][0]["rdfs:label"] ? 
-						new veda.IndividualModel("v-ui:ClassNameIdTemplate") 
-						: 
-						new veda.IndividualModel("v-ui:ClassNameLabelTemplate")
-				)
-				renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
-				
-				// Re-render link property if its' values were changed
-				document.on("document:propertyModified", function (doc_property_uri) {
-					if (doc_property_uri === rel_uri) {
-						renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
+				if (template_param) {
+					templateStr = template_param["v-ui:template"][0].toString();
+					templateStr = templateStr.replace(/<script.*>((?:\s*?.*?\s*?)*)<\/script>/gi, function (m, script) {
+						scripts.push(script);
+						return "";
+					});
+					classTemplate = $( templateStr );
+				} else if (_class.documentTemplate && _class.documentTemplate["v-ui:template"]) {
+					// If _class.documentTemplate is embedded => construct generic template
+					if (_class.documentTemplate["v-ui:embedded"] && _class.documentTemplate["v-ui:embedded"][0] == true) {
+						classTemplate = genericTemplate(document, _class); 
+					} else {
+						// Get template from class
+						templateStr = _class.documentTemplate["v-ui:template"][0].toString()
+						templateStr = templateStr.replace(/<script.*>((?:\s*?.*?\s*?)*)<\/script>/gi, function (m, script) {
+							scripts.push(script);
+							return "";
+						});
+						classTemplate = $( templateStr );
 					}
+				} else {
+					// Construct generic template
+					classTemplate = genericTemplate(document, _class);
+				}
+				
+				// Cleanup memory
+				classTemplate.on("remove", function (event) {
+					document.trigger("document:cleanup");
+					$(".typeahead", container).typeahead("destroy");
+					container = mode = document = container_param = template_param = _mode = null;
 				});
 				
-			});
-			
-			// Properties
-			$("[property]", classTemplate).not("[about]").map( function () {
+				// Actions
+				var $edit = $("#edit", classTemplate),
+					$save = $("#save", classTemplate),
+					$cancel = $("#cancel", classTemplate),
+					$delete = $("#delete", classTemplate);
+
+				$delete.on("click", function (e) {
+					if ( confirm("Вы действительно хотите удалить документ?") ) document.trigger("delete");
+				});
+				if (document["v-s:deleted"][0] && document["v-s:deleted"][0] == true) $delete.hide();
+
+				$edit.on("click", function (e) {
+					document.trigger("edit");
+				});
+
+				document.on("edit", function () {
+					$edit.hide();
+					$save.show();
+					$cancel.show();					
+				});
 				
-				var propertyContainer = $(this), 
-					property_uri = propertyContainer.attr("property"),
-					propertyTemplate = propertyContainer.attr("template");
+				$save.hide().on("click", function (e) {
+					document.trigger("save");
+				});
+							
+				document.on("save", function (e) {
+					$save.hide();
+					$cancel.hide();
+					$edit.show();
+					// Change location.hash if document was presented in #main container
+					if (container.prop("id") === "main") riot.route("#/document/" + document.id, false);
+				});
+				
+				$cancel.hide().on("click", function (e) {
+					document.trigger("cancel");
+				});
+				
+				// About
+				$("[about]", classTemplate).map( function () {
 					
-				renderProperty(document, property_uri, propertyContainer, mode);
-				
-				// Re-render property if its' values were changed
-				document.on("document:propertyModified", function (doc_property_uri) {
-					if (doc_property_uri === property_uri) {
-						renderProperty (document, property_uri, propertyContainer, mode);
-					}
+					var propertyContainer = $( this ), 
+						about = new veda.IndividualModel(propertyContainer.attr("about")),
+						property_uri = propertyContainer.attr("property");
+					if (property_uri == "id") propertyContainer.html( about[property_uri] );
+					else propertyContainer.html( about[property_uri].join(", ") );
+					
 				});
 				
-			});
-			
-			// Specials
-			$("[href='id']", classTemplate).map( function () {
-				$( this )
-					.attr("href", "#/document/" + document.id)
-					.after( 
-						$("<a>", {href: "#/graph/" + document.id}).append( 
-							$("<i>").addClass("glyphicon glyphicon-link") 
-						) 
+				// Object links				
+				$("[rel]", classTemplate).map( function () {
+					
+					var relContainer = $(this), 
+						rel_uri = relContainer.attr("rel"),
+						relTemplate = relContainer.attr("template");
+					
+					relTemplate = relTemplate ? (
+						new veda.IndividualModel(relTemplate) 
+					) : (
+						!document[rel_uri] || !document[rel_uri][0] || !document[rel_uri][0]["rdfs:label"] ? 
+							new veda.IndividualModel("v-ui:ClassNameIdTemplate") 
+							: 
+							new veda.IndividualModel("v-ui:ClassNameLabelTemplate")
 					)
-					.after( "&nbsp;" );
+					renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
+					
+					// Re-render link property if its' values were changed
+					document.on("document:propertyModified", function (doc_property_uri) {
+						if (doc_property_uri === rel_uri) {
+							renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
+						}
+					});
+					
+				});
+				
+				// Properties
+				$("[property]", classTemplate).not("[about]").map( function () {
+					
+					var propertyContainer = $(this), 
+						property_uri = propertyContainer.attr("property"),
+						propertyTemplate = propertyContainer.attr("template");
+						
+					renderProperty(document, property_uri, propertyContainer, mode);
+					
+					// Re-render property if its' values were changed
+					document.on("document:propertyModified", function (doc_property_uri) {
+						if (doc_property_uri === property_uri) {
+							renderProperty (document, property_uri, propertyContainer, mode);
+						}
+					});
+					
+				});
+				
+				// Specials
+				$("[href='id']", classTemplate).map( function () {
+					$( this )
+						.attr("href", "#/document/" + document.id)
+						.after( 
+							$("<a>", {href: "#/graph/" + document.id}).append( 
+								$("<i>").addClass("glyphicon glyphicon-link") 
+							) 
+						)
+						.after( "&nbsp;" );
+				});
+				
+				container.append(classTemplate);
+				
+				document.trigger(mode);
+				
+				container.show();
+				
+				scripts.map( function (item) { 
+					var fun = new Function("veda", "document", item);
+					fun(veda, document);
+				});
+			
 			});
-			
-			container.append(classTemplate);
-			
-			document.trigger(mode);
-			
-			container.show();
-			
-			scripts.map( function (item) { 
-				var fun = new Function("veda", "document", item);
-				fun(veda, document);
-			});
-			
-		});
 	});
+	
+	function renderTemplate (document, container, classTemplate, mode) {
+		
+	}
 	
 	
 	function renderLink (document, rel_uri, relContainer, relTemplate, mode, embedded) {
