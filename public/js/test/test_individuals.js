@@ -684,13 +684,13 @@ test(
 				} ]
 			};
 
-			put_individual(ticket_user1.id, new_test_doc1);
-			put_individual(ticket_user1.id, new_test_doc2);
-			put_individual(ticket_user1.id, new_test_doc3);
-			put_individual(ticket_user1.id, new_test_doc4);
+			put_individual(ticket_user1.id, new_test_doc1, true);
+			put_individual(ticket_user1.id, new_test_doc2, true);
+			put_individual(ticket_user1.id, new_test_doc3, true);
+			put_individual(ticket_user1.id, new_test_doc4, true);
 //			wait_pmodule(subject_manager);
 //			wait_pmodule(condition);
-			wait_pmodule(fulltext_indexer);
+//			wait_pmodule(fulltext_indexer);
 
 			var data = query(ticket_user1.id, test_data_uid);
 			ok(compare(data.length, 2));
@@ -842,12 +842,14 @@ test(
 				} ]
 			};
 
-			put_individual(ticket_user1.id, new_test_doc1);
-			put_individual(ticket_user1.id, new_test_doc2);
-			put_individual(ticket_user1.id, new_test_doc3);
-			put_individual(ticket_user1.id, new_test_doc4);
-			wait_pmodule(fulltext_indexer);
+			put_individual(ticket_user1.id, new_test_doc1, true);
+			put_individual(ticket_user1.id, new_test_doc2, true);
+			put_individual(ticket_user1.id, new_test_doc3, true);
+			put_individual(ticket_user1.id, new_test_doc4, true);
 
+			//wait_pmodule(fulltext_indexer);
+
+			query(ticket_user1.id, test_group_uid);
 			var data = query(ticket_user1.id, test_group_uid);
 			ok(compare(data.length, 4));
 
