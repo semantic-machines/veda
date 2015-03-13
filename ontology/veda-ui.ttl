@@ -206,13 +206,6 @@ v-ui:defaultStringValue
   rdfs:label "default string value"@en ;
   rdfs:range xsd:string ;
 .
-v-ui:predefinedStringValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:StringPropertySpecification ;
-  rdfs:label "предопределенное строковое значение"@ru ;
-  rdfs:label "predefined string value"@en ;
-  rdfs:range xsd:string ;
-.
 v-ui:BooleanPropertySpecification
   rdf:type owl:Class ;
   rdfs:subClassOf v-ui:PropertySpecification ;
@@ -239,11 +232,11 @@ v-ui:defaultObjectValue
   rdfs:label "default object value"@en ;
   rdfs:range rdfs:Resource ;
 .
-v-ui:dataSourceQuery
+v-ui:queryPrefix
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "запрос для источника данных"@ru ;
-  rdfs:label "data source query"@en ;
+  rdfs:label "префикс запроса"@ru ;
+  rdfs:label "query prefix"@en ;
   rdfs:range xsd:string ;
 .
 v-ui:Language

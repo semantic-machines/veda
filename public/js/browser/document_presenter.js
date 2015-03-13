@@ -26,7 +26,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			});
 		}
 
-		var classTemplate, templateStr, scripts = [];
+		var classTemplate, templateStr, specs = {}, scripts = [];
 		
 		if (template_param) {
 			templateStr = template_param["v-ui:template"][0].toString();
@@ -35,7 +35,17 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				return "";
 			});
 			classTemplate = $( templateStr );
-			renderTemplate (document, container, classTemplate, scripts, mode);
+			specs = $.extend.apply (this, [specs].concat(
+				document["rdf:type"]
+					.filter( function (_class) {
+						return _class instanceof veda.IndividualModel;
+					})
+					.map( function (_class) {
+						return _class.specsByProps;
+					})
+				)
+			);
+			renderTemplate (document, container, classTemplate, specs, scripts, mode);
 
 		} else if (
 			!document["rdf:type"]
@@ -60,16 +70,17 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 						// Construct generic template
 						classTemplate = genericTemplate(document, _class);
 					}
-					renderTemplate (document, container, classTemplate, scripts, mode);
+					specs = _class.specsByProps || {};
+					renderTemplate (document, container, classTemplate, specs, scripts, mode);
 				})
 				.length
 		) {
 			classTemplate = genericTemplate(document);
-			renderTemplate (document, container, classTemplate, scripts, mode);
+			renderTemplate (document, container, classTemplate, specs, scripts, mode);
 		}
 	});
 	
-	function renderTemplate (document, container, classTemplate, scripts, mode) {
+	function renderTemplate (document, container, classTemplate, specs, scripts, mode) {
 		
 		// Embedded templates list
 		var embedded = [];
@@ -168,7 +179,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
-				relTemplate = relContainer.attr("template");
+				relTemplate = relContainer.attr("template"),
+				spec = specs[rel_uri];
 			
 			relTemplate = relTemplate ? (
 				new veda.IndividualModel(relTemplate) 
@@ -178,12 +190,12 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					: 
 					new veda.IndividualModel("v-ui:ClassNameLabelTemplate")
 			)
-			renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
+			renderLink(document, rel_uri, relContainer, relTemplate, spec, mode, embedded);
 			
 			// Re-render link property if its' values were changed
 			document.on("document:propertyModified", function (doc_property_uri) {
 				if (doc_property_uri === rel_uri) {
-					renderLink(document, rel_uri, relContainer, relTemplate, mode, embedded);
+					renderLink(document, rel_uri, relContainer, relTemplate, spec, mode, embedded);
 				}
 			});
 			
@@ -194,14 +206,15 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			
 			var propertyContainer = $(this), 
 				property_uri = propertyContainer.attr("property"),
-				propertyTemplate = propertyContainer.attr("template");
+				propertyTemplate = propertyContainer.attr("template"),
+				spec = specs[property_uri];
 				
-			renderProperty(document, property_uri, propertyContainer, mode);
+			renderProperty(document, property_uri, propertyContainer, spec, mode);
 			
 			// Re-render property if its' values were changed
 			document.on("document:propertyModified", function (doc_property_uri) {
 				if (doc_property_uri === property_uri) {
-					renderProperty (document, property_uri, propertyContainer, mode);
+					renderProperty (document, property_uri, propertyContainer, spec, mode);
 				}
 			});
 			
@@ -232,7 +245,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 	}
 	
 	
-	function renderLink (document, rel_uri, relContainer, relTemplate, mode, embedded) {
+	function renderLink (document, rel_uri, relContainer, relTemplate, spec, mode, embedded) {
 		
 		relContainer.empty();
 		
@@ -327,7 +340,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 	}
 
-	function renderProperty (document, property_uri, container, mode) {
+	function renderProperty (document, property_uri, container, spec, mode) {
 		
 		if ( property_uri != 'id' && !veda.ontology[property_uri] ) return;
 		
