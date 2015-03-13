@@ -82,18 +82,25 @@ public void core_thread()
                     {
                         if (cmd == Command.Get && fn == Function.Individuals)
                         {
-                            immutable(Json)[] res = Json[].init;
+                            ResultCode rc = ResultCode.Internal_Server_Error;
 
-                            Ticket *ticket = context.get_ticket(arg2);
-                            if (ticket.result == ResultCode.OK)
+                            immutable(Json)[] res = Json[].init;
+                            try
                             {
-                                foreach (indv; context.get_individuals(ticket, arg1.dup))
+                                Ticket *ticket = context.get_ticket(arg2);
+                                rc = ticket.result;
+                                if (rc == ResultCode.OK)
                                 {
-                                    Json jj = individual_to_json(indv);
-                                    res ~= cast(immutable)jj;
+                                    foreach (indv; context.get_individuals(ticket, arg1.dup))
+                                    {
+                                        Json jj = individual_to_json(indv);
+                                        res ~= cast(immutable)jj;
+                                    }
                                 }
                             }
-                            send(tid, res, ticket.result, worker_id);
+                            catch (Exception ex) {writeln (ex.msg);}
+
+                            send(tid, res, rc, worker_id);
                         }
                     }
                 },
@@ -103,31 +110,35 @@ public void core_thread()
                     {
                         if (cmd == Command.Get && fn == Function.IndividualsIdsToQuery)
                         {
-                            //writeln ("@! ", thread_name);
-                            Ticket *ticket = context.get_ticket(_ticket);
+                            ResultCode rc = ResultCode.Internal_Server_Error;
+                            immutable(string)[] res;
 
-                            if (ticket.result == ResultCode.OK)
+                            try
                             {
-                                immutable(string)[] uris = context.get_individuals_ids_via_query(ticket, arg1, arg2);
-                                // writeln ("@!1", uris);
-                                send(tid, uris, ticket.result, worker_id);
+                                Ticket *ticket = context.get_ticket(_ticket);
+                                rc = ticket.result;
+                                if (rc == ResultCode.OK)
+                                {
+                                    res = context.get_individuals_ids_via_query(ticket, arg1, arg2);
+                                }
                             }
-                            else
-                            {
-                                immutable(string)[] uris;
-                                send(tid, uris, ticket.result, worker_id);
-                            }
+                            catch (Exception ex) {writeln (ex.msg);}
+                            send(tid, res, rc, worker_id);
                         }
 
                         else if (cmd == Command.Get && fn == Function.Individual)
                         {
+                            ResultCode rc = ResultCode.Internal_Server_Error;
+                        	
                             immutable(Json)[] res = Json[].init;
 
+                            try
+                            {
                             immutable(Individual)[ string ] onto_individuals =
                                 context.get_onto_as_map_individuals();
 
                             immutable(Individual) individual = onto_individuals.get(arg1, _empty_iIndividual);
-                            ResultCode rc;
+
                             if (individual != _empty_iIndividual)
                             {
                                 rc = ResultCode.OK;
@@ -146,7 +157,11 @@ public void core_thread()
                                         rc = ii.getStatus();
                                 }
                             }
+                            }
+                            catch (Exception ex) {writeln (ex.msg);}
+
                             send(tid, res, rc, worker_id);
+                            
                         }
                     }
                 },
