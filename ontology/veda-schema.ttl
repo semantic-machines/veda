@@ -19,7 +19,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "1.2" ;
+  owl:versionInfo "1.3" ;
 .
 v-s:Absence
   rdf:type owl:Class ;

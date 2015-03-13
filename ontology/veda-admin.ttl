@@ -169,6 +169,7 @@ v-a:Event_3
   v-s:filter v-ui:ClassTemplate ;
   v-s:filter v-ui:PropertySpecification ;
   v-s:filter v-ui:ClassTemplate ;
+  v-s:filter v-ui:Language ;
   v-s:script """
 
 	    var doc_uri = document['@'];	

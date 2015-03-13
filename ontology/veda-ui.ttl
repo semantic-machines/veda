@@ -20,7 +20,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "3.0" ;
+  owl:versionInfo "3.1" ;
 .
 v-ui:EN
   rdf:type v-ui:Language ;
