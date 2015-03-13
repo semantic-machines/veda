@@ -194,11 +194,11 @@ function get_individual(ticket, uri, callback) {
 		.done( function (data) { callback(data) } );
 }
 
-function put_individual(ticket, individual, callback) {
+function put_individual(ticket, individual, wait_for_indexing, callback) {
 	var params = {
 		type: "PUT",
 		url: "put_individual",
-		data: JSON.stringify({"ticket": ticket, "individual": individual}),
+		data: JSON.stringify({"ticket": ticket, "individual": individual, "wait_for_indexing" : wait_for_indexing || false }),
 		contentType: "application/json"
 	};
 	if(!callback) {

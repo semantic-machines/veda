@@ -1,7 +1,9 @@
 import std.conv, std.stdio, std.file;
 import vibe.d;
+import properd;
 import veda.pacahon_driver;
 import veda.storage_rest;
+
 
 void view_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
 {
@@ -52,14 +54,43 @@ void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
 
 shared static this()
 {
-    // initialize storage
-    auto pacahon = new PacahonDriver();
-    pacahon.init();
+    ushort http_port    = 8080;
+    int    count_thread = 10;
 
-    VedaStorageRest vsr = new VedaStorageRest();
+    string[ string ] properties;
+
+    try
+    {
+        properties = readProperties("./veda.properties");
+    }
+    catch (Exception ex)
+    {
+    }
+
+
+    http_port    = properties.as!(ushort)("http_port");
+    count_thread = properties.as!(int)("count_thread");
+
+
+    pacahon.server.init_core();
+
+    pacahon.context.Context context;
+    string                  thread_name = "veda" ~ text(std.uuid.randomUUID().toHash())[ 0..5 ];
+    core.thread.Thread.getThis().name   = thread_name;
+    context = new pacahon.thread_context.PThreadContext(pacahon.server.props_file_path, thread_name);
+
+    std.concurrency.Tid[] pool;
+
+    for (int i = 0; i < count_thread; i++)
+    {
+        pool ~= std.concurrency.spawn(&core_thread);
+        core.thread.Thread.sleep(dur!("msecs")(10));
+    }
+
+    VedaStorageRest vsr = new VedaStorageRest(pool, context, properties);
 
     auto            settings = new HTTPServerSettings;
-    settings.port           = 8080;
+    settings.port           = http_port;
     settings.maxRequestSize = 1024 * 1024 * 1000;
     //settings.bindAddresses = ["::1", "127.0.0.1", "172.17.35.148"];
     //settings.bindAddresses = ["127.0.0.1"];
@@ -105,5 +136,5 @@ shared static this()
     logInfo("===============================");
 
     listenHTTP(settings, router);
-    logInfo("Please open http://127.0.0.1:8080/ in your browser.");
+    logInfo("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
 }
