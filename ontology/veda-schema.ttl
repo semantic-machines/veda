@@ -321,6 +321,12 @@ v-s:controller
   rdfs:label "контроллер"@ru ;
   rdfs:range v-s:Appointment ;
 .
+v-s:count
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "count"@en ;
+  rdfs:label "количество"@ru ;
+  rdfs:range xsd:integer ;
+.
 v-s:country
   rdf:type owl:DatatypeProperty ;
   rdfs:label "country"@en ;
