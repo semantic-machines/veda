@@ -359,13 +359,32 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 
 		container.attr("content", values.join(", "));
 
-		var range = property["rdfs:range"][0].id;
-		range == "xsd:boolean"  			? 	(controlType = $.fn.vedaBoolean,  emptyVal = new Boolean(false) ) :
-		range == "xsd:integer"  			? 	(controlType = $.fn.vedaInteger,  emptyVal = undefined ) :
-		range == "xsd:nonNegativeInteger"   ? 	(controlType = $.fn.vedaInteger,  emptyVal = undefined ) :
-		range == "xsd:decimal"  			? 	(controlType = $.fn.vedaDecimal,  emptyVal = undefined ) :
-		range == "xsd:dateTime" 			? 	(controlType = $.fn.vedaDatetime, emptyVal = undefined ) :
-												(controlType = $.fn.vedaString,   emptyVal = new String("") ) ;
+		switch (property["rdfs:range"][0].id) {
+			case "xsd:boolean": 
+				controlType = $.fn.vedaBoolean; 
+				emptyVal = new Boolean(false); 
+				break
+			case "xsd:integer": 
+				controlType = $.fn.vedaInteger; 
+				emptyVal = undefined; 
+				break
+			case "xsd:nonNegativeInteger":
+				controlType = $.fn.vedaInteger; 
+				emptyVal = undefined; 
+				break
+			case "xsd:decimal":
+				controlType = $.fn.vedaDecimal; 
+				emptyVal = undefined; 
+				break
+			case "xsd:dateTime": 
+				controlType = $.fn.vedaDatetime; 
+				emptyVal = undefined; 
+				break
+			default: 
+				controlType = $.fn.vedaString; 
+				emptyVal = new String(""); 
+				break
+		}
 		
 		if (!values.length) values.push( emptyVal );
 		var controls = values.map( renderControl );

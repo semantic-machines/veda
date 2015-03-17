@@ -9,7 +9,10 @@
 			edit = $(".edit", control),
 			add = $(".add", control),
 			remove = $(".remove", control);
-			
+		
+		if (!opts.add) add.remove();
+		if (!opts.remove) remove.remove();
+		
 		$el
 			.on("view", function () {
 				view.show();
@@ -69,9 +72,9 @@
 		return control;
 	}
 	$.fn.vedaControl.defaults = {
-		add: function () { alert("add") },
+		/*add: function () { alert("add") },
 		remove: function () { alert("remove") },
-		change: function (value) { alert(value) },
+		change: function (value) { alert(value) },*/
 		inputParser: function (input) {return input},
 		value: undefined
 	}
@@ -122,7 +125,7 @@
 	$.fn.vedaString.defaults = {
 		value: new String(""),
 		template: $("#string-control-template").html(),
-		change: function (value) { alert(value + " : " + value.language) },
+		//change: function (value) { alert(value + " : " + value.language) },
 		inputParser: function (input, el) {
 			var value = new String(input);
 			value.language = $(el).data("language");
