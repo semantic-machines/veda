@@ -442,6 +442,12 @@ v-s:created
   rdfs:label "дата создания"@ru ;
   rdfs:range xsd:dateTime ;
 .
+v-s:dateBack
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "date back"@en ;
+  rdfs:label "дата возврата"@ru ;
+  rdfs:range xsd:dateTime ;
+.
 v-s:dateFact
   rdf:type owl:DatatypeProperty ;
   rdfs:label "date of fact"@en ;
