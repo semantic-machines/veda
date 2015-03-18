@@ -105,7 +105,7 @@ interface VedaStorageRest_API {
 //    int put_individuals(string ticket, Json[] individuals);
 
     @path("put_individual") @method(HTTPMethod.PUT)
-    int put_individual(string ticket, Json individual, bool wait_for_indexing);
+    int put_individual(string ticket, Json individual, bool wait_for_indexing = false);
 
 //    @path("get_property_values") @method(HTTPMethod.GET)
 //    Json[] get_property_values(string ticket, string uri, string property_uri);
@@ -119,8 +119,9 @@ struct Worker
 {
     std.concurrency.Tid tid;
     int                 id;
-    bool                ready    = true;
-    bool                complete = false;
+    bool                ready      = true;
+    bool                complete   = false;
+    int                 count_busy = 0;
 
     // worker result data
     ResultCode          rc;
@@ -150,7 +151,7 @@ class VedaStorageRest : VedaStorageRest_API
         context = _local_context;
         foreach (idx, tid; _pool)
         {
-            Worker *worker = new Worker(tid, cast(int)idx, true, false, ResultCode.No_Content);
+            Worker *worker = new Worker(tid, cast(int)idx, true, false, 0, ResultCode.No_Content);
             pool ~= worker;
         }
     }
@@ -200,7 +201,22 @@ class VedaStorageRest : VedaStorageRest_API
         {
             res = pool[ idx ];
             if (res.ready == true)
+            {
+                res.count_busy = 0;
                 return res;
+            }
+            res.count_busy++;
+            if (res.count_busy > 1000)
+            {
+                //core.thread.Thread.sleep(dur!("msecs")(100));
+                //writeln ("@allocate worker, count = ", count);
+
+                //string ppp;
+                //foreach (p ; pool)
+                //ppp ~= "[" ~ text (p.count_busy) ~ "]";
+
+                //writeln ("@pool= ", ppp);
+            }
         }
         //writeln ("--- ALL WORKERS BUSY ----");
         return null;
@@ -561,7 +577,7 @@ class VedaStorageRest : VedaStorageRest_API
         ResultCode rc;
         int        recv_worker_id;
 
-        if (count_thread > 0)
+        if (true)
         {
             Json[] res;
 
@@ -628,19 +644,21 @@ class VedaStorageRest : VedaStorageRest_API
         }
     }
 
-    int put_individual(string _ticket, Json individual_json, bool wait_for_indexing)
+    int put_individual(string _ticket, Json individual_json, bool wait_for_indexing = false)
     {
-        Individual indv = json_to_individual(individual_json);
-        ResultCode rc;
+        Individual indv    = json_to_individual(individual_json);
         Ticket     *ticket = context.get_ticket(_ticket);
 
-        if (ticket.result == ResultCode.OK)
+        ResultCode rc = ticket.result;
+
+        if (rc == ResultCode.OK)
         {
-            context.put_individual(ticket, indv.uri, indv, wait_for_indexing);
+            rc = context.put_individual(ticket, indv.uri, indv, wait_for_indexing);
         }
 
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc);
+
         return rc.to!int;
 
         //return ResultCode.Service_Unavailable.to!int;

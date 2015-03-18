@@ -98,7 +98,7 @@ public void core_thread()
                                     }
                                 }
                             }
-                            catch (Exception ex) {writeln (ex.msg);}
+                            catch (Exception ex) { writeln(ex.msg); }
 
                             send(tid, res, rc, worker_id);
                         }
@@ -122,46 +122,52 @@ public void core_thread()
                                     res = context.get_individuals_ids_via_query(ticket, arg1, arg2);
                                 }
                             }
-                            catch (Exception ex) {writeln (ex.msg);}
+                            catch (Exception ex) { writeln(ex.msg); }
                             send(tid, res, rc, worker_id);
                         }
 
                         else if (cmd == Command.Get && fn == Function.Individual)
                         {
                             ResultCode rc = ResultCode.Internal_Server_Error;
-                        	
+
                             immutable(Json)[] res = Json[].init;
 
                             try
                             {
-                            immutable(Individual)[ string ] onto_individuals =
-                                context.get_onto_as_map_individuals();
+                                immutable(Individual)[ string ] onto_individuals =
+                                    context.get_onto_as_map_individuals();
 
-                            immutable(Individual) individual = onto_individuals.get(arg1, _empty_iIndividual);
+                                immutable(Individual) individual = onto_individuals.get(arg1, _empty_iIndividual);
 
-                            if (individual != _empty_iIndividual)
-                            {
-                                rc = ResultCode.OK;
-                                res ~= cast(immutable)individual_to_json(individual);
-                            }
-                            else
-                            {
-                                Ticket *ticket = context.get_ticket(_ticket);
-                                rc = ticket.result;
-                                if (rc == ResultCode.OK)
+                                if (individual != _empty_iIndividual)
                                 {
-                                    Individual ii = context.get_individual(ticket, arg1);
-                                    if (ii.getStatus() == ResultCode.OK)
-                                        res ~= cast(immutable)individual_to_json(ii);
-                                    else
-                                        rc = ii.getStatus();
+                                    rc = ResultCode.OK;
+                                    res ~= cast(immutable)individual_to_json(individual);
+                                }
+                                else
+                                {
+                                    Ticket *ticket = context.get_ticket(_ticket);
+                                    rc = ticket.result;
+                                    if (rc == ResultCode.OK)
+                                    {
+                                        //Individual ii = context.get_individual(ticket, arg1);
+                                        string cb = context.get_individual_as_cbor(ticket, arg1, rc);
+                                        if (rc == ResultCode.OK)
+                                        {
+                                            Json rr = Json.emptyObject;
+                                            veda.cbor8json.cbor2json(&rr, cb);
+                                            res ~= cast(immutable)rr;
+                                        }
+                                        //if (ii.getStatus() == ResultCode.OK)
+                                        //    res ~= cast(immutable)individual_to_json(ii);
+                                        //else
+                                        //    rc = ii.getStatus();
+                                    }
                                 }
                             }
-                            }
-                            catch (Exception ex) {writeln (ex.msg);}
+                            catch (Exception ex) { writeln(ex.msg); }
 
                             send(tid, res, rc, worker_id);
-                            
                         }
                     }
                 },
