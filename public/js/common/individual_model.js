@@ -187,6 +187,10 @@ veda.Module(function IndividualModel(veda) { "use strict";
 			self.trigger("individual:afterReset");
 		};
 
+		self.hasValue = function (property_uri) {
+			return !!(self[property_uri] && self[property_uri].length);
+		};
+
 		if (!uri) { individual["@"] = guid();
 			original_individual = '{"@":"' + individual["@"] +'"}';
 		}

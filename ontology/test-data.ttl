@@ -740,7 +740,7 @@ td:PropertySpecification6
 .
 
 td:PropertySpecification1
-  rdf:type v-ui:PropertySpecification ;
+  rdf:type v-ui:DatetimePropertySpecification ;
   rdfs:label "Спецификация даты рождения для класса персона"@ru ;
   rdfs:label "Birthday property specification for Person class"@en ;
   v-ui:forClass v-s:Person ;
@@ -750,10 +750,11 @@ td:PropertySpecification1
   v-ui:tooltip "дата в формате 2001-01-01"@ru ;
   v-ui:tooltip "date in format 2001-01-01"@en ;
   v-ui:control "datetime"^^xsd:string ;
+  v-ui:defaultDatetimeValue "2000-01-01"^^xsd:dateTime ;
 .
 
 td:PropertySpecification2
-  rdf:type v-ui:PropertySpecification ;
+  rdf:type v-ui:StringPropertySpecification ;
   rdfs:label "Спецификация имени для класса персона"@ru ;
   rdfs:label "First name property specification for Person class"@en ;
   v-ui:forClass v-s:Person ;
@@ -761,10 +762,12 @@ td:PropertySpecification2
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:control "text"^^xsd:string ;
+  v-ui:minLength "2"^^xsd:integer ;
+  v-ui:maxLength "20"^^xsd:integer ;
 .
 
 td:PropertySpecification3
-  rdf:type v-ui:PropertySpecification ;
+  rdf:type v-ui:StringPropertySpecification ;
   rdfs:label "Спецификация фамилии для класса персона"@ru ;
   rdfs:label "Last name property specification for Person class"@en ;
   v-ui:forClass v-s:Person ;
@@ -772,10 +775,12 @@ td:PropertySpecification3
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:control "text"^^xsd:string ;
+  v-ui:minLength "2"^^xsd:integer ;
+  v-ui:maxLength "20"^^xsd:integer ;
 .
 
 td:PropertySpecification4
-  rdf:type v-ui:PropertySpecification ;
+  rdf:type v-ui:StringPropertySpecification ;
   rdfs:label "Спецификация отчества для класса персона"@ru ;
   rdfs:label "Middle name property specification for Person class"@en ;
   v-ui:forClass v-s:Person ;
@@ -783,6 +788,8 @@ td:PropertySpecification4
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:control "text"^^xsd:string ;
+  v-ui:minLength "2"^^xsd:integer ;
+  v-ui:maxLength "20"^^xsd:integer ;  
 .
 td:SearchRequest1
   rdf:type v-s:SearchRequest ;

@@ -110,6 +110,12 @@ veda.Module(function OntologyModel(veda) { "use strict";
 					self.templates[individual.id] = individual;
 					break
 				case "v-ui:PropertySpecification" :
+				case "v-ui:IntegerPropertySpecification" :
+				case "v-ui:DecimalPropertySpecification" :
+				case "v-ui:DatetimePropertySpecification" :
+				case "v-ui:StringPropertySpecification" :
+				case "v-ui:BooleanPropertySpecification" :
+				case "v-ui:ObjectPropertySpecification" :
 					self.specs[individual.id] = individual;
 					break
 				default :

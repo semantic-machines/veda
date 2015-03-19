@@ -132,10 +132,9 @@ v-ui:maxCardinality
 .
 v-ui:regexp
   rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:StringPropertySpecification ;
   rdfs:domain v-ui:IntegerPropertySpecification ;
   rdfs:domain v-ui:DecimalPropertySpecification ;
-  rdfs:domain v-ui:DatetimePropertySpecification ;
-  rdfs:domain v-ui:StringPropertySpecification ;
   rdfs:label "регулярное выражение"@ru ;
   rdfs:label "regular expression"@en ;
   rdfs:range xsd:string ;
@@ -160,6 +159,20 @@ v-ui:defaultIntegerValue
   rdfs:label "default integer value"@en ;
   rdfs:range xsd:integer ;
 .
+v-ui:minIntegerValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:IntegerPropertySpecification ;
+  rdfs:label "минимальное целочисленное значение"@ru ;
+  rdfs:label "minimal integer value"@en ;
+  rdfs:range xsd:integer ;
+.
+v-ui:maxIntegerValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:IntegerPropertySpecification ;
+  rdfs:label "максимальное целочисленное значение"@ru ;
+  rdfs:label "maximal integer value"@en ;
+  rdfs:range xsd:integer ;
+.
 v-ui:DecimalPropertySpecification
   rdf:type owl:Class ;
   rdfs:subClassOf v-ui:PropertySpecification ;
@@ -173,6 +186,20 @@ v-ui:defaultDecimalValue
   rdfs:label "default decimal value"@en ;
   rdfs:range xsd:decimal ;
 .
+v-ui:minDecimalValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:DecimalPropertySpecification ;
+  rdfs:label "минимальное десятичное значение"@ru ;
+  rdfs:label "minimal decimal value"@en ;
+  rdfs:range xsd:decimal ;
+.
+v-ui:maxDecimalValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:DecimalPropertySpecification ;
+  rdfs:label "максимальное десятичное значение"@ru ;
+  rdfs:label "maximal decimal value"@en ;
+  rdfs:range xsd:decimal ;
+.
 v-ui:DatetimePropertySpecification
   rdf:type owl:Class ;
   rdfs:subClassOf v-ui:PropertySpecification ;
@@ -184,6 +211,20 @@ v-ui:defaultDatetimeValue
   rdfs:domain v-ui:DatetimePropertySpecification ;
   rdfs:label "календарное значение по-умолчанию"@ru ;
   rdfs:label "default datetime value"@en ;
+  rdfs:range xsd:dateTime ;
+.
+v-ui:minDatetimeValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:DatetimePropertySpecification ;
+  rdfs:label "минимальное календарное значение"@ru ;
+  rdfs:label "minimal datetime value"@en ;
+  rdfs:range xsd:dateTime ;
+.
+v-ui:maxDatetimeValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:DatetimePropertySpecification ;
+  rdfs:label "максимальное календарное значение"@ru ;
+  rdfs:label "maximal datetime value"@en ;
   rdfs:range xsd:dateTime ;
 .
 v-ui:withTime
@@ -205,6 +246,20 @@ v-ui:defaultStringValue
   rdfs:label "строковое значение по-умолчанию"@ru ;
   rdfs:label "default string value"@en ;
   rdfs:range xsd:string ;
+.
+v-ui:minLength
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:StringPropertySpecification ;
+  rdfs:label "минимальная длина строки"@ru ;
+  rdfs:label "minimal string length"@en ;
+  rdfs:range xsd:integer ;
+.
+v-ui:maxLength
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:StringPropertySpecification ;
+  rdfs:label "максимальная длина строки"@ru ;
+  rdfs:label "maximal string length"@en ;
+  rdfs:range xsd:integer ;
 .
 v-ui:BooleanPropertySpecification
   rdf:type owl:Class ;

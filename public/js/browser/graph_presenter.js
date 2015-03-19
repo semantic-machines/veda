@@ -33,6 +33,12 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 							node.group = "template";
 							break
 						case "v-ui:PropertySpecification" :
+						case "v-ui:IntegerPropertySpecification" :
+						case "v-ui:DecimalPropertySpecification" :
+						case "v-ui:DatetimePropertySpecification" :
+						case "v-ui:StringPropertySpecification" :
+						case "v-ui:BooleanPropertySpecification" :
+						case "v-ui:ObjectPropertySpecification" :
 							node.group = "specification";
 							break
 						case "owl:Ontology" :
@@ -219,20 +225,39 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 						nodes.remove(select.nodes); 
 						edges.remove(select.edges);
 						select.nodes = select.edges = [];
-					break
+						break
 					case "delete-with-out" : 
 						deleteWithOutLinks (id);
 						select.nodes = select.edges = [];
-					break
+						break
 					case "delete-with-in" : 
 						deleteWithInLinks (id);
 						select.nodes = select.edges = [];
-					break
+						break
 					case "class-individuals" : addInLinks( id, "'rdf:type'=='{id}'" ); break
 					case "class-subclasses" : addInLinks( id, "('rdf:type'=='owl:Class'||'rdf:type'=='rdfs:Class')&&'rdfs:subClassOf'=='{id}'" ); break
 					case "class-properties" : addInLinks( id, "'rdfs:domain'=='{id}'"); break
 					case "class-templates" : addInLinks( id, "'rdf:type'=='v-ui:ClassTemplate'&&'v-ui:forClass'=='{id}'" ); break
-					case "class-specifications" : addInLinks( id, "'rdf:type'=='v-ui:PropertySpecification'&&'v-ui:forClass'=='{id}'" ); break
+					case "class-specifications" : 
+						addInLinks( id, "('rdf:type'=='v-ui:PropertySpecification'||" +
+										"'rdf:type'=='v-ui:IntegerPropertySpecification'||" +
+										"'rdf:type'=='v-ui:DecimalPropertySpecification'||" +
+										"'rdf:type'=='v-ui:DatetimePropertySpecification'||" +
+										"'rdf:type'=='v-ui:StringPropertySpecification'||" +
+										"'rdf:type'=='v-ui:BooleanPropertySpecification'||" +
+										"'rdf:type'=='v-ui:ObjectPropertySpecification'" +
+										")&&'v-ui:forClass'=='{id}'" );
+					break
+					case "property-specifications" : 
+						addInLinks( id, "('rdf:type'=='v-ui:PropertySpecification'||" +
+										"'rdf:type'=='v-ui:IntegerPropertySpecification'||" +
+										"'rdf:type'=='v-ui:DecimalPropertySpecification'||" +
+										"'rdf:type'=='v-ui:DatetimePropertySpecification'||" +
+										"'rdf:type'=='v-ui:StringPropertySpecification'||" +
+										"'rdf:type'=='v-ui:BooleanPropertySpecification'||" +
+										"'rdf:type'=='v-ui:ObjectPropertySpecification'" +
+										")&&'v-ui:forProperty'=='{id}'" );
+					break
 				}
 			}
 		});
