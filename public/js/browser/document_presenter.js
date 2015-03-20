@@ -3,6 +3,7 @@
 veda.Module(function DocumentPresenter(veda) { "use strict";
 	
 	//var c1 = 0;
+	
 	var deletedAlertTmpl = $("#deleted-document-alert-template").html();
 	
 	veda.on("document:loaded", function PresentDocument(document, container_param, template_param, _mode) {
@@ -150,6 +151,13 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		$save.hide().on("click", function (e) {
 			document.trigger("save");
 		});
+		
+		document.on("validation:complete", function (e) {
+			var res = Object.keys(document.isValid).reduce(function (acc, key) {
+				return acc && document.isValid[key];
+			}, true);
+			res ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
+		});
 					
 		document.on("save", function (e) {
 			$save.hide();
@@ -243,7 +251,6 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		});
 	}
 	
-	
 	function renderLink (document, rel_uri, relContainer, relTemplate, spec, mode, embedded) {
 		
 		relContainer.empty();
@@ -258,7 +265,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 		var opts = {
 			limit: 30,
-			//queryPrefix: "('rdf:type'=='owl:Class')",
+			queryPrefix: "('rdf:type'=='owl:Class')",
 			select: function (selected) {
 				document[rel_uri] = document[rel_uri].concat(selected);
 			} 
@@ -269,6 +276,16 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			}
 		}
 		var control = $("<span>").vedaLink(opts);
+		
+		// tooltip from spec
+		if (spec && spec.hasValue("v-ui:tooltip")) {
+			control.tooltip({
+				title: spec["v-ui:tooltip"].join(", "),
+				placement: "auto bottom",
+				container: control,
+				trigger: "focus"
+			});
+		}
 		
 		document.on("view edit", function (e) {
 			if (e == "edit") {
@@ -284,7 +301,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			control.hide();
 		}
 		
-		isValid(spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
+		isValid(document, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
 		
 		relContainer.append(control);
 
@@ -389,11 +406,19 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		if (!values.length) values.push( emptyVal );
 		var controls = values.map( renderControl );
 		
-		controls.map(function (item) {
-			item.trigger(mode);
+		controls.map(function (control) {
+			control.trigger(mode);
+			if (spec && spec.hasValue("v-ui:tooltip")) {
+				control.tooltip({
+					title: spec["v-ui:tooltip"].join(", "),
+					placement: "auto bottom",
+					container: control,
+					trigger: "focus"
+				});
+			}
 		});
 		
-		isValid(spec, values) ? controls.map( function(item) {item.addClass("has-success")} ) : controls.map( function(item) {item.addClass("has-error")} );
+		isValid(document, spec, values) ? controls.map( function(item) {item.addClass("has-success")} ) : controls.map( function(item) {item.addClass("has-error")} );
 		
 		document.on("view edit", function (_mode) {
 			mode = _mode;
@@ -431,7 +456,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 	}
 
-	function isValid (spec, values) {
+	function isValid (document, spec, values) {
 		var result = true;
 		if (!spec) return result;			
 		// cardinality check
@@ -481,6 +506,9 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			}
 			return result;
 		}, result);
+		document.isValid = document.isValid || {};
+		document.isValid[spec.id] = result;
+		document.trigger("validation:complete");
 		return result;
 	}
 	

@@ -741,6 +741,8 @@ td:PropertySpecification7
   v-ui:forProperty v-s:hasAccount ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Учетная запись."@ru ;
+  v-ui:tooltip "Required, single value. Link to instance of Account class"@en ;
 .
 td:PropertySpecification8
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -750,6 +752,8 @@ td:PropertySpecification8
   v-ui:forProperty v-ui:hasPreferences ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Предпочтения."@ru ;
+  v-ui:tooltip "Required, single value. Link to instance of Preferences class"@en ;
 .
 td:PropertySpecification1
   rdf:type v-ui:DatetimePropertySpecification ;
@@ -759,8 +763,8 @@ td:PropertySpecification1
   v-ui:forProperty v-s:birthday ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "дата в формате 2001-01-01"@ru ;
-  v-ui:tooltip "date in format 2001-01-01"@en ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
+  v-ui:tooltip "Required, single value. Format: 2011-08-19"@en ;
 .
 
 td:PropertySpecification2
@@ -773,6 +777,8 @@ td:PropertySpecification2
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:minLength "2"^^xsd:integer ;
   v-ui:maxLength "20"^^xsd:integer ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
+  v-ui:tooltip "Required, single value. More than 2 and less than 20 characters"@en ;
 .
 td:PropertySpecification3
   rdf:type v-ui:StringPropertySpecification ;
@@ -784,6 +790,8 @@ td:PropertySpecification3
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:minLength "2"^^xsd:integer ;
   v-ui:maxLength "20"^^xsd:integer ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
+  v-ui:tooltip "Required, single value. More than 2 and less than 20 characters"@en ;
 .
 td:PropertySpecification4
   rdf:type v-ui:StringPropertySpecification ;
@@ -795,6 +803,8 @@ td:PropertySpecification4
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:minLength "2"^^xsd:integer ;
   v-ui:maxLength "20"^^xsd:integer ;  
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
+  v-ui:tooltip "Required, single value. More than 2 and less than 20 characters"@en ;
 .
 td:SearchRequest1
   rdf:type v-s:SearchRequest ;
