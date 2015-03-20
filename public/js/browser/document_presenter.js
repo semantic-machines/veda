@@ -80,46 +80,6 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		}
 	});
 	
-	
-	function valueValidator (spec) {
-		var validator = function (value) {
-			var result = true;
-			
-			if (!spec) return result;
-			
-			// regexp check
-			if (spec.hasValue("v-ui:regexp")) { 
-				var regexp = new RegExp(spec["v-ui:regexp"][0]);
-				result = result && regexp.test(value.toString());
-			}
-			
-			// range check
-			switch (spec["rdf:type"][0].id) {
-				case "v-ui:PropertySpecification" :
-				case "v-ui:IntegerPropertySpecification" :
-					if (spec.hasValue("v-ui:minIntegerValue")) result = result && (value >= spec["v-ui:minIntegerValue"][0]);
-					if (spec.hasValue("v-ui:maxIntegerValue")) result = result && (value <= spec["v-ui:maxIntegerValue"][0]);
-					break
-				case "v-ui:DecimalPropertySpecification" :
-					if (spec.hasValue("v-ui:minDecimalValue")) result = result && (value >= spec["v-ui:minDecimalValue"][0]);
-					if (spec.hasValue("v-ui:maxDecimalValue")) result = result && (value <= spec["v-ui:maxDecimalValue"][0]);
-					break
-				case "v-ui:DatetimePropertySpecification" :
-					if (spec.hasValue("v-ui:minDatetimeValue")) result = result && (value >= spec["v-ui:minDatetimeValue"][0]);
-					if (spec.hasValue("v-ui:maxDatetimeValue")) result = result && (value <= spec["v-ui:maxDatetimeValue"][0]);
-					break
-				case "v-ui:StringPropertySpecification" :
-					if (spec.hasValue("v-ui:minLength")) result = result && (value.length >= spec["v-ui:minLength"][0]);
-					if (spec.hasValue("v-ui:maxLength")) result = result && (value.length <= spec["v-ui:maxLength"][0]);
-					break
-				case "v-ui:BooleanPropertySpecification" :
-				case "v-ui:ObjectPropertySpecification" :
-			}
-			return result;
-		}
-		return validator;
-	}
-	
 	function renderTemplate (document, container, classTemplate, specs, scripts, mode) {
 		
 		// Embedded templates list
@@ -211,10 +171,6 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				property_uri = propertyContainer.attr("property");
 			if (property_uri == "id") propertyContainer.html( about[property_uri] );
 			else propertyContainer.html( about[property_uri].join(", ") );
-			
-			if (specs[about.id] && specs[about.id]["v-ui:minCardinality"] && specs[about.id]["v-ui:minCardinality"][0] > 0)
-				propertyContainer.append( $("<span class='text-danger'> *</span>") );
-			
 		});
 		
 		// Object links				
@@ -294,6 +250,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 		if ( !document[rel_uri] ) document.defineProperty(rel_uri);
 		
+		var values = document[rel_uri];
+		
 		if (document[rel_uri].length) {
 			document[rel_uri].map( function (value) {renderValue (value, mode)} );
 		}
@@ -325,6 +283,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		} else {
 			control.hide();
 		}
+		
+		isValid(spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
 		
 		relContainer.append(control);
 
@@ -385,7 +345,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 
 	function renderProperty (document, property_uri, container, spec, mode) {
 		
-		if ( property_uri != 'id' && !veda.ontology[property_uri] ) return;
+		if ( property_uri != "id" && !veda.ontology[property_uri] ) return;
 		
 		container.empty();
 		
@@ -405,28 +365,26 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		switch (property["rdfs:range"][0].id) {
 			case "xsd:boolean": 
 				controlType = $.fn.vedaBoolean; 
-				emptyVal = spec && spec["v-ui:defaultBooleanValue"] && spec["v-ui:defaultBooleanValue"][0] ? spec["v-ui:defaultBooleanValue"][0] : new Boolean(false);
+				emptyVal = spec && spec.hasValue("v-ui:defaultBooleanValue") ? spec["v-ui:defaultBooleanValue"][0] : new Boolean(false);
 				break
 			case "xsd:integer": 
 			case "xsd:nonNegativeInteger":
 				controlType = $.fn.vedaInteger; 
-				emptyVal = spec && spec["v-ui:defaultIntegerValue"] && spec["v-ui:defaultIntegerValue"][0] ? spec["v-ui:defaultIntegerValue"][0] : undefined; 
+				emptyVal = spec && spec.hasValue("v-ui:defaultIntegerValue") ? spec["v-ui:defaultIntegerValue"][0] : undefined; 
 				break
 			case "xsd:decimal":
 				controlType = $.fn.vedaDecimal; 
-				emptyVal = spec && spec["v-ui:defaultDecimalValue"] && spec["v-ui:defaultDecimalValue"][0] ? spec["v-ui:defaultDecimalValue"][0] : undefined; 
+				emptyVal = spec && spec.hasValue("v-ui:defaultDecimalValue") ? spec["v-ui:defaultDecimalValue"][0] : undefined; 
 				break
 			case "xsd:dateTime": 
 				controlType = $.fn.vedaDatetime; 
-				emptyVal = spec && spec["v-ui:defaultDatetimeValue"] && spec["v-ui:defaultDatetimeValue"][0] ? spec["v-ui:defaultDatetimeValue"][0] : undefined; 
+				emptyVal = spec && spec.hasValue("v-ui:defaultDatetimeValue") ? spec["v-ui:defaultDatetimeValue"][0] : undefined; 
 				break
 			default: 
 				controlType = $.fn.vedaString; 
-				emptyVal = spec && spec["v-ui:defaultStringValue"] && spec["v-ui:defaultStringValue"][0] ? spec["v-ui:defaultStringValue"][0] : new String(""); 
+				emptyVal = spec && spec.hasValue("v-ui:defaultStringValue") ? spec["v-ui:defaultStringValue"][0] : new String(); 
 				break
 		}
-		
-		var validator = valueValidator(spec);
 		
 		if (!values.length) values.push( emptyVal );
 		var controls = values.map( renderControl );
@@ -434,6 +392,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		controls.map(function (item) {
 			item.trigger(mode);
 		});
+		
+		isValid(spec, values) ? controls.map( function(item) {item.addClass("has-success")} ) : controls.map( function(item) {item.addClass("has-error")} );
 		
 		document.on("view edit", function (_mode) {
 			mode = _mode;
@@ -450,13 +410,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			var opts = {
 				value: value,
 				change: function (value) {
-					if (validator(value)) {
-						control.addClass("has-success");
-						values[index] = value;
-						document[property_uri] = values;
-					} else {
-						control.addClass("has-error");
-					}
+					values[index] = value;
+					document[property_uri] = values;
 				},
 				add: function () {
 					values.push( emptyVal );
@@ -470,12 +425,63 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			}
 			var control = controlType.call( $("<span>"), opts );
 			
-			validator(value) ? control.addClass("has-success") : control.addClass("has-error");
-			
 			container.append(control);
 			return control;
 		}
 		
+	}
+
+	function isValid (spec, values) {
+		var result = true;
+		if (!spec) return result;			
+		// cardinality check
+		if (spec.hasValue("v-ui:minCardinality")) { 
+			result = result && (
+				values.length >= spec["v-ui:minCardinality"][0] && 
+				// filter empty values
+				values.length === values.filter(function(item){return !!item && !!item.valueOf()}).length
+			);
+		}
+		if (spec.hasValue("v-ui:maxCardinality")) { 
+			result = result && (
+				values.length <= spec["v-ui:maxCardinality"][0] && 
+				// filter empty values
+				values.length === values.filter(function(item){return !!item && !!item.valueOf()}).length
+			);
+		}
+		// check each value
+		result = result && values.reduce(function (result, value) {
+			// regexp check
+			if (spec.hasValue("v-ui:regexp")) { 
+				var regexp = new RegExp(spec["v-ui:regexp"][0]);
+				result = result && regexp.test(value.toString());
+			}
+			// range check
+			switch (spec["rdf:type"][0].id) {
+				case "v-ui:PropertySpecification" :
+				case "v-ui:IntegerPropertySpecification" :
+					if (spec.hasValue("v-ui:minIntegerValue")) result = result && (value >= spec["v-ui:minIntegerValue"][0]);
+					if (spec.hasValue("v-ui:maxIntegerValue")) result = result && (value <= spec["v-ui:maxIntegerValue"][0]);
+					break
+				case "v-ui:DecimalPropertySpecification" :
+					if (spec.hasValue("v-ui:minDecimalValue")) result = result && (value >= spec["v-ui:minDecimalValue"][0]);
+					if (spec.hasValue("v-ui:maxDecimalValue")) result = result && (value <= spec["v-ui:maxDecimalValue"][0]);
+					break
+				case "v-ui:DatetimePropertySpecification" :
+					if (spec.hasValue("v-ui:minDatetimeValue")) result = result && (value >= spec["v-ui:minDatetimeValue"][0]);
+					if (spec.hasValue("v-ui:maxDatetimeValue")) result = result && (value <= spec["v-ui:maxDatetimeValue"][0]);
+					break
+				case "v-ui:StringPropertySpecification" :
+					if (spec.hasValue("v-ui:minLength")) result = result && (value.length >= spec["v-ui:minLength"][0]);
+					if (spec.hasValue("v-ui:maxLength")) result = result && (value.length <= spec["v-ui:maxLength"][0]);
+					break
+				case "v-ui:BooleanPropertySpecification" :
+				case "v-ui:ObjectPropertySpecification" :
+					break
+			}
+			return result;
+		}, result);
+		return result;
 	}
 	
 	function genericTemplate (document, _class) {

@@ -76,19 +76,6 @@ v-ui:ClassTemplate
   rdfs:label "Шаблон документа"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
-v-ui:PropertyControl
-  rdf:type owl:Class ;
-  rdfs:label "Property control"@en ;
-  rdfs:label "Управляющий элемент"@ru ;
-  rdfs:subClassOf owl:Thing ;
-.
-v-ui:controlName
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:PropertyControl ;
-  rdfs:label "имя элемента управления"@ru ;
-  rdfs:label "control name"@en ;
-  rdfs:range xsd:string ;
-.
 v-ui:PropertySpecification
   rdf:type owl:Class ;
   rdfs:label "Property specification"@en ;
@@ -138,13 +125,6 @@ v-ui:regexp
   rdfs:label "регулярное выражение"@ru ;
   rdfs:label "regular expression"@en ;
   rdfs:range xsd:string ;
-.
-v-ui:control
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-ui:PropertySpecification ;
-  rdfs:label "элемент управления"@ru ;
-  rdfs:label "control"@en ;
-  rdfs:range v-ui:PropertyControl ;
 .
 v-ui:IntegerPropertySpecification
   rdf:type owl:Class ;

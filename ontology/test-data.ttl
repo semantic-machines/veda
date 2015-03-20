@@ -715,7 +715,6 @@ td:PreferencesTemplate1
 
   """ ;
 .
-
 td:PropertySpecification5
   rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация работника для класса Назначение"@ru ;
@@ -724,21 +723,34 @@ td:PropertySpecification5
   v-ui:forProperty v-s:employee ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:control "full-text search"^^xsd:string ;
 .
-
 td:PropertySpecification6
   rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация работника для класса Назначение"@ru ;
   rdfs:label "Employee property specification for Appointment class"@en ;
   v-ui:forClass v-s:Appointment ;
   v-ui:forProperty v-s:occupation ;
-  v-ui:index rdfs:label ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:control "full-text search"^^xsd:string ;
 .
-
+td:PropertySpecification7
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация учетной записи для класса Персона"@ru ;
+  rdfs:label "Account property specification for Person class"@en ;
+  v-ui:forClass v-s:Person ;
+  v-ui:forProperty v-s:hasAccount ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+.
+td:PropertySpecification8
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация предпочтений для класса Персона"@ru ;
+  rdfs:label "Preferences property specification for Person class"@en ;
+  v-ui:forClass v-s:Person ;
+  v-ui:forProperty v-ui:hasPreferences ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+.
 td:PropertySpecification1
   rdf:type v-ui:DatetimePropertySpecification ;
   rdfs:label "Спецификация даты рождения для класса персона"@ru ;
@@ -749,8 +761,6 @@ td:PropertySpecification1
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:tooltip "дата в формате 2001-01-01"@ru ;
   v-ui:tooltip "date in format 2001-01-01"@en ;
-  v-ui:control "datetime"^^xsd:string ;
-  v-ui:defaultDatetimeValue "2000-01-01"^^xsd:dateTime ;
 .
 
 td:PropertySpecification2
@@ -761,11 +771,9 @@ td:PropertySpecification2
   v-ui:forProperty v-s:firstName ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:control "text"^^xsd:string ;
   v-ui:minLength "2"^^xsd:integer ;
   v-ui:maxLength "20"^^xsd:integer ;
 .
-
 td:PropertySpecification3
   rdf:type v-ui:StringPropertySpecification ;
   rdfs:label "Спецификация фамилии для класса персона"@ru ;
@@ -774,11 +782,9 @@ td:PropertySpecification3
   v-ui:forProperty v-s:lastName ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:control "text"^^xsd:string ;
   v-ui:minLength "2"^^xsd:integer ;
   v-ui:maxLength "20"^^xsd:integer ;
 .
-
 td:PropertySpecification4
   rdf:type v-ui:StringPropertySpecification ;
   rdfs:label "Спецификация отчества для класса персона"@ru ;
@@ -787,7 +793,6 @@ td:PropertySpecification4
   v-ui:forProperty v-s:middleName ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:control "text"^^xsd:string ;
   v-ui:minLength "2"^^xsd:integer ;
   v-ui:maxLength "20"^^xsd:integer ;  
 .
