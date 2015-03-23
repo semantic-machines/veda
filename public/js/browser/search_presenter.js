@@ -53,9 +53,9 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 
 		// Typed search request
 		var reqContainer = $("<div>").addClass("well");
-		var reqIndividual = new veda.IndividualModel();
-		reqIndividual["rdf:type"] = [new veda.IndividualModel("v-s:SearchRequest")];
-		var request = new veda.DocumentModel(reqIndividual, reqContainer, undefined, "edit");
+		/*var reqIndividual = new veda.IndividualModel();
+		reqIndividual["rdf:type"] = [new veda.IndividualModel("v-s:SearchRequest")];*/
+		var request = new veda.DocumentModel("td:SearchRequest1", reqContainer, undefined, "edit");
 		$("#params-" + search.id, container).append(reqContainer);
 		
 		container.show();
