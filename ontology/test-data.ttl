@@ -807,6 +807,7 @@ td:SearchRequest1
   rdf:type v-s:SearchRequest ;
   rdfs:label "Поисковый запрос 1"@ru ;
   rdfs:label "Search request 1"@en ;
+  v-s:selectedType v-s:Person ;
   v-s:restriction td:SearchRestriction1 ;
   v-s:sort td:SortOrder1 ;
 .
@@ -815,9 +816,9 @@ td:SearchRestriction1
   rdfs:label "Поисковый запрос 1"@ru ;
   rdfs:label "Search restriction 1"@en ;
   v-s:onProperty rdfs:label ;
-  v-s:soughtValues "roman"^^xsd:string ;
-  v-s:soughtValues "andrey"^^xsd:string ;
-  v-s:soughtValues "valeriy"^^xsd:string ;
+  v-s:soughtValue "roman"^^xsd:string ;
+  v-s:soughtValue "andrey"^^xsd:string ;
+  v-s:soughtValue "valeriy"^^xsd:string ;
   v-s:operator v-s:OR ;
 .
 td:SortOrder1

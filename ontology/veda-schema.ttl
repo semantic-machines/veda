@@ -919,11 +919,11 @@ v-s:sort
   rdfs:label "сортировка"@ru ;
   rdfs:range v-s:SortOrder ;
 .
-v-s:soughtValues
+v-s:soughtValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:SearchRestriction ;
-  rdfs:label "sought values"@en ;
-  rdfs:label "искомые значения"@ru ;
+  rdfs:label "sought value"@en ;
+  rdfs:label "искомое значение"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:srcClassName

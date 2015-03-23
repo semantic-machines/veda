@@ -274,7 +274,11 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		}
 		if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
 			opts.add = function () {
-				document[rel_uri] = document[rel_uri].concat(new veda.IndividualModel());
+				var embedded = new veda.IndividualModel();
+				if (relTemplate.hasValue("v-ui:forClass")) {
+					embedded["rdf:type"] = [relTemplate["v-ui:forClass"][0]];
+				}
+				document[rel_uri] = document[rel_uri].concat(embedded);
 			}
 		}
 		var control = $("<span>").vedaLink(opts);
