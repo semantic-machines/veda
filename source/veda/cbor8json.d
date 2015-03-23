@@ -3,7 +3,7 @@
  */
 module veda.cbor8json;
 
-private import std.outbuffer, std.stdio, std.string, std.conv;
+private import std.outbuffer, std.stdio, std.string, std.conv, std.datetime;
 private import vibe.data.json;
 private import type;
 private import onto.resource;
@@ -153,7 +153,8 @@ private static int read_element(Json *individual, ubyte[] src, out string _key, 
         {
 //          writeln ("@p #read_element TAG.EPOCH_DATE_TIME value=", value);
             resource_json[ "type" ] = text(DataType.Datetime);
-            resource_json[ "data" ] = value;
+            SysTime st = SysTime(unixTimeToStdTime(value), UTC());
+            resource_json[ "data" ] = st.toISOExtString();
         }
         else
         {
@@ -175,7 +176,8 @@ private static int read_element(Json *individual, ubyte[] src, out string _key, 
         {
 //          writeln ("@p #read_element TAG.EPOCH_DATE_TIME value=", value);
             resource_json[ "type" ] = text(DataType.Datetime);
-            resource_json[ "data" ] = value;
+            SysTime st = SysTime(unixTimeToStdTime(value), UTC());
+            resource_json[ "data" ] = st.toISOExtString();
         }
         else
         {
