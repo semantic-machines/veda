@@ -265,11 +265,13 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 		var opts = {
 			limit: 30,
-			queryPrefix: "('rdf:type'=='owl:Class')",
 			select: function (selected) {
 				document[rel_uri] = document[rel_uri].concat(selected);
 			} 
 		};
+		if (spec && spec.hasValue("v-ui:queryPrefix")) {
+			opts.queryPrefix = spec["v-ui:queryPrefix"][0];
+		}
 		if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
 			opts.add = function () {
 				document[rel_uri] = document[rel_uri].concat(new veda.IndividualModel());

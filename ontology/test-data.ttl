@@ -743,6 +743,7 @@ td:PropertySpecification7
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Учетная запись."@ru ;
   v-ui:tooltip "Required, single value. Link to instance of Account class"@en ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Account')"^^xsd:string ;
 .
 td:PropertySpecification8
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -754,6 +755,7 @@ td:PropertySpecification8
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Предпочтения."@ru ;
   v-ui:tooltip "Required, single value. Link to instance of Preferences class"@en ;
+  v-ui:queryPrefix "('rdf:type'=='v-ui:Preferences')"^^xsd:string ;
 .
 td:PropertySpecification1
   rdf:type v-ui:DatetimePropertySpecification ;

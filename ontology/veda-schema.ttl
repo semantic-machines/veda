@@ -526,10 +526,9 @@ v-s:destProperty
 v-s:direction
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:SortOrder ;
-  rdfs:label "orderBy"@en ;
-  rdfs:label "упорядочить"@ru ;
-  rdfs:range owl:DatatypeProperty ;
-  rdfs:range owl:ObjectProperty ;
+  rdfs:label "sort direction"@en ;
+  rdfs:label "направление сортировки"@ru ;
+  rdfs:range v-s:SortDirection ;
 .
 v-s:duration
   rdf:type owl:DatatypeProperty ;
@@ -791,8 +790,8 @@ v-s:operator
 v-s:orderBy
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:SortOrder ;
-  rdfs:label "orderBy"@en ;
-  rdfs:label "упорядочить"@ru ;
+  rdfs:label "order by"@en ;
+  rdfs:label "упорядочить по"@ru ;
   rdfs:range owl:DatatypeProperty ;
   rdfs:range owl:ObjectProperty ;
 .

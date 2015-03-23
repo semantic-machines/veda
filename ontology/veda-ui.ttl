@@ -387,10 +387,10 @@ v-ui:SearchRequestTemplate
 		</div>
 		<br/>
 		<button type="button" class="action btn btn-primary" id="search">Найти</button>
-		<button type="button" class="action btn btn-link pull-right" id="delete">Удалить</button>
-        <button type="button" class="action btn btn-default pull-right" id="cancel">Отмена</button>
-        <button type="button" class="action btn btn-success pull-right" id="save">Сохранить</button>
-        <button type="button" class="action btn btn-primary pull-right" id="edit">Редактировать</button>
+        <button type="button" class="action btn btn-success" id="save">Сохранить</button>
+		<!--button type="button" class="action btn btn-link" id="delete">Удалить</button-->
+        <!--button type="button" class="action btn btn-default" id="cancel">Отмена</button-->
+        <!--button type="button" class="action btn btn-primary" id="edit">Редактировать</button-->
 	</div>
   """ ;
 .
@@ -447,4 +447,85 @@ v-ui:SortOrderTemplate
 		</div>
 	</div>
   """ ;
+.
+v-ui:SearchRequestSpec1
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация выбранного типа для класса Поисковый запрос"@ru ;
+  rdfs:label "Selected type specification for Search request class"@en ;
+  v-ui:forClass v-s:SearchRequest ;
+  v-ui:forProperty v-s:selectedType ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "Обязательно к заполнению, множество значений. Ссылка на класс искомого объекта."@ru ;
+  v-ui:tooltip "Required, maultiple values. Link to sought object class"@en ;
+  v-ui:queryPrefix "('rdf:type'=='owl:Class')"^^xsd:string ;
+.
+v-ui:SearchRequestSpec2
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация ограничения для класса Поисковый запрос"@ru ;
+  rdfs:label "Restriction specification for Search request class"@en ;
+  v-ui:forClass v-s:SearchRequest ;
+  v-ui:forProperty v-s:restriction ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "Обязательно к заполнению, множество значений. Вложенный объект типа Ограничение поиска."@ru ;
+  v-ui:tooltip "Required, multiple values. Embedded object of Search restriction class"@en ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:SearchRestriction')"^^xsd:string ;
+.
+v-ui:SearchRequestSpec3
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация сортировки для класса Поисковый запрос"@ru ;
+  rdfs:label "Sort specification for Search request class"@en ;
+  v-ui:forClass v-s:SearchRequest ;
+  v-ui:forProperty v-s:sort ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "Обязательно к заполнению, множество значений. Вложенный объект типа Порядок сортировки."@ru ;
+  v-ui:tooltip "Required, multiple values. Embedded object of Sort order class"@en ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:SortOrder')"^^xsd:string ;
+.
+v-ui:SortOrderSpec1
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация сортировки для класса Поисковый запрос"@ru ;
+  rdfs:label "Sort specification for Search request class"@en ;
+  v-ui:forClass v-s:SortOrder ;
+  v-ui:forProperty v-s:direction ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект типа Направление сортировки."@ru ;
+  v-ui:tooltip "Required, single value. Link to object of Sort direction class"@en ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:SortDirection')"^^xsd:string ;
+.
+v-ui:SortOrderSpec2
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация сортировки для класса Поисковый запрос"@ru ;
+  rdfs:label "Sort specification for Search request class"@en ;
+  v-ui:forClass v-s:SortOrder ;
+  v-ui:forProperty v-s:orderBy ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект типа Свойство."@ru ;
+  v-ui:tooltip "Required, single value. Link to object of Property class"@en ;
+  v-ui:queryPrefix "('rdf:type'=='rdf:Property'||'rdf:type'=='owl:DatatypeProperty'||'rdf:type'=='owl:ObjectProperty'||'rdf:type'=='owl:OntologyProperty'||'rdf:type'=='owl:AnnotationProperty')"^^xsd:string ;
+.
+v-ui:SearchSpecificationSpec1
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойства для класса Ограничения поиска"@ru ;
+  rdfs:label "Property specification for Search restriction class"@en ;
+  v-ui:forClass v-s:SearchRestriction ;
+  v-ui:forProperty v-s:onProperty ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект типа Свойство."@ru ;
+  v-ui:tooltip "Required, single value. Link to object of Property class"@en ;
+  v-ui:queryPrefix "('rdf:type'=='rdf:Property'||'rdf:type'=='owl:DatatypeProperty'||'rdf:type'=='owl:ObjectProperty'||'rdf:type'=='owl:OntologyProperty'||'rdf:type'=='owl:AnnotationProperty')"^^xsd:string ;
+.
+v-ui:SearchSpecificationSpec2
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация оператора для класса Ограничения поиска"@ru ;
+  rdfs:label "Operator specification for Search restriction class"@en ;
+  v-ui:forClass v-s:SearchRestriction ;
+  v-ui:forProperty v-s:operator ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект типа Логический оператор."@ru ;
+  v-ui:tooltip "Required, single value. Link to object of Logical operator class"@en ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:LogicalOperator')"^^xsd:string ;
 .
