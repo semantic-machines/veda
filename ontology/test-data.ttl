@@ -20,7 +20,7 @@
   rdfs:label "Mondi individuals ontology"@en ;
   rdfs:label "Онтология индивидов Монди"@ru ;
   owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
-  owl:versionInfo "1.0" ;
+  owl:versionInfo "1.2" ;
 .
 
 td:AdministrativeDocument
@@ -119,8 +119,8 @@ td:AndreyBychin-Analyst2
   v-s:official "true"^^xsd:boolean ;
   v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Appointment_6"@en ;
-  rdfs:label "Назначение_6"@ru ;
+  rdfs:label "Andrey Bychin : Analyst"@en ;
+  rdfs:label "Андрей Бычин : Аналитик"@ru ;
 .
 
 td:AndreyBychin-ExecutiveDirector
@@ -132,8 +132,7 @@ td:AndreyBychin-ExecutiveDirector
   v-s:official "true"^^xsd:boolean ;
   v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Appointment_5"@en ;
-  rdfs:label "Назначение_5"@ru ;
+  rdfs:label "Андрей Бычин : Исполнительный директор"@ru ;
 .
 
 td:ApplicationDevelopmentGroup
@@ -411,8 +410,7 @@ td:RomanKarpov-Analyst1
   v-s:official "true"^^xsd:boolean ;
   v-s:published "2014-01-30T15:22:33"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:22:33"^^xsd:dateTime ;
-  rdfs:label "Appointment_2"@en ;
-  rdfs:label "Назначение_2"@ru ;
+  rdfs:label "Роман Карпов : Аналитик"@ru ;
 .
 
 td:RomanKarpov-CommercialDirector
@@ -424,8 +422,7 @@ td:RomanKarpov-CommercialDirector
   v-s:official "true"^^xsd:boolean ;
   v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Appointment_4"@en ;
-  rdfs:label "Назначение_4"@ru ;
+  rdfs:label "Роман Карпов : Коммерческий директор"@ru ;
 .
 
 td:SemanticMachines
@@ -468,13 +465,12 @@ td:ValeriyBushenev-Programmer1
   v-s:official "true"^^xsd:boolean ;
   v-s:published "2014-01-30T15:12:15"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:12:15"^^xsd:dateTime ;
-  rdfs:label "Appointment_1"@en ;
-  rdfs:label "Назначение_1"@ru ;
+  rdfs:label "Валерий Бушенев : Программист"@ru ;
 .
 
 td:ValeriyBushenev-Programmer1
   rdf:type v-s:Appointment ;
-  rdfs:label "test add"@ru ;
+  rdfs:label " - test add - "@ru ;
 .
 
 td:ValeriyBushenev-TechnicalDirector
@@ -486,8 +482,7 @@ td:ValeriyBushenev-TechnicalDirector
   v-s:official "true"^^xsd:boolean ;
   v-s:published "2014-01-30T15:30:21"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:30:21"^^xsd:dateTime ;
-  rdfs:label "Appointment_3"@en ;
-  rdfs:label "Назначение_3"@ru ;
+  rdfs:label "Валерий Бушенев : Технический директор"@ru ;
 .
 
 td:SavedSearch1
@@ -850,3 +845,8 @@ td:ComplexRouteStartForm1
 	mnd-wf:ComplexRouteStartForm_reviewer td:ValeriyBushenev-Programmer1 ; 
 	mnd-wf:ComplexRouteStartForm_signer td:AndreyBychin-ExecutiveDirector ; 
 .
+<7b435740-f19e-7731-03ef-e7cb2203f8c4> a v-s:SavedSearch;
+    v-s:author td:RomanKarpov;
+    v-s:query "'rdf:type' == 'v-wf:Process'"^^xsd:string;
+    rdfs:label "экземпляры маршрута"^^xsd:string;
+    v-s:created "2015-03-23T13:27:18.000Z"^^xsd:dateTime.
