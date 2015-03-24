@@ -115,7 +115,7 @@ v-wf:variableValue
 	rdfs:label "variable value"@en ;
 	rdfs:label "значение переменной"@ru ;
 	rdfs:domain v-wf:Variable ;
-	rdfs:range rdf:Resource ;
+	rdfs:range rdfs:Resource ;
 .
 v-wf:locationX
 	rdf:type rdf:Property ;
