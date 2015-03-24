@@ -74,7 +74,8 @@ veda.Module(function SearchModel(veda) { "use strict";
 							if (typeof results[i] == 'object') return results[i];
 							return results[i] = new veda.IndividualModel(results[i]);
 						},
-						enumerable: true
+						enumerable: true,
+						writable: true
 					});
 				})(i);
 			}
