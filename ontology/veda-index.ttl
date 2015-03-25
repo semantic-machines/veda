@@ -11,6 +11,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix mnd-s-sa: <http://semantic-machines.com/veda/mondi-schema-safety-audit/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -64,7 +65,25 @@ vdi:indexed_field_as_fwildcard
   rdfs:label "для поиска вида [*xxx]"@ru ;
   rdfs:range rdfs:Resource ;
 .
+vdi:indexed_as_system
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain vdi:ClassIndex ;
+  rdfs:label "indexed as system"@en ;
+  rdfs:label "индексировать как системное"@ru ;
+  rdfs:range rdfs:Resource ;
+.
 #---------------------------------------------
+
+vdi:index_01
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:Membership ;
+  vdi:forClass v-s:PermissionStatement ;
+  vdi:forClass v-wf:Variable ;
+  vdi:forClass v-wf:Process ;
+  vdi:forClass v-wf:WorkItem ;
+  vdi:indexed_as_system true ;
+.
+
 vdi:index_0
   rdf:type vdi:ClassIndex ;
   vdi:forClass mnd-s-sa:SafetyAudit ;
