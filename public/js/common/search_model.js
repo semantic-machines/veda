@@ -9,7 +9,7 @@ veda.Module(function SearchModel(veda) { "use strict";
 		self.id = guid(); 
 		
 		// Define Model data setters & getters
-		var properties = {q:"", queryPrefix:"", sort:"", results:{}, results_count:undefined, selected:{}, query_time:undefined};
+		var properties = {selectedType:{}, q:"", queryPrefix:"", sort:"", results:{}, results_count:undefined, selected:{}, query_time:undefined};
 		for (var property in properties) {
 			(function (property) {
 				Object.defineProperty(self, property, {
@@ -57,7 +57,7 @@ veda.Module(function SearchModel(veda) { "use strict";
 
 			// Transform user input like "roman karpov" to "'*'=='roman' && '*'=='karpov'"
 			if (q && q.indexOf("==") < 0) {
-				q = q.trim().split(" ").map(function (t) { return "'*'=='" + t + "*'"}).join("&&");
+				q = "(" + q.trim().split(" ").map(function (t) { return "'*'=='" + t + "*'"}).join("&&") + ")";
 			}
 			
 			// Prefix query if defined in constructor

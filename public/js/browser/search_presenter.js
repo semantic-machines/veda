@@ -51,13 +51,78 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 			veda.trigger("search:complete", search, container, page);
 		});
 
+		var tmplContainer = $("<div>");
+		var typeSelector = $("<div>").vedaLink({
+			limit: -1,
+			queryPrefix: "('rdf:type'=='owl:Class')",
+			select: function (selected) {
+				search.selectedType = selected;
+				var ind = new veda.IndividualModel();
+				ind["rdf:type"] = [selected];
+				var doc = new veda.DocumentModel(ind, tmplContainer, undefined, "search");
+			}
+		});
+		$("#params-" + search.id, container).append(typeSelector, tmplContainer);
+		
+		
+
+/*
 		// Typed search request
 		var reqContainer = $("<div>").addClass("well");
-		/*var reqIndividual = new veda.IndividualModel();
-		reqIndividual["rdf:type"] = [new veda.IndividualModel("v-s:SearchRequest")];*/
-		var request = new veda.DocumentModel("td:SearchRequest1", reqContainer, undefined, "edit");
-		$("#params-" + search.id, container).append(reqContainer);
+		var reqIndividual = new veda.IndividualModel();
+		reqIndividual["rdf:type"] = [new veda.IndividualModel("v-s:SearchRequest")];
+		var request = new veda.DocumentModel(reqIndividual, reqContainer, undefined, "edit");
+		//var request = new veda.DocumentModel("td:SearchRequest1", reqContainer, undefined, "edit");
+		request.on("document:propertyModified", function (property_uri, types) {
+			if (property_uri == "v-s:selectedType") {
+				var specOnProperty = new veda.IndividualModel("v-ui:SearchRestrictionSpec1");
+				//var specOperator = new veda.IndividualModel("v-ui:SearchRestrictionSpec2");
+				//var specSoughtValues = new veda.IndividualModel("v-ui:SearchRestrictionSpec3");
+				var specOrderBy = new veda.IndividualModel("v-ui:SortOrderSpec2");
+				var properties = {}, 
+					typesCount = types.length,
+					queryPrefix = "";
+				types.map(function (type) {
+					if (type.domainProperties) {
+						Object.keys(type.domainProperties).map(function (domainPropertyUri) {
+							properties[domainPropertyUri] = ++properties[domainPropertyUri] || 1;
+						});
+					}
+				});
+				Object.keys(properties).map(function (domainPropertyUri) {
+					if (properties[domainPropertyUri] === typesCount) {
+						queryPrefix +=  (queryPrefix ? "||" : "") + "'@'=='" + domainPropertyUri + "'";
+					}
+				});
+				queryPrefix = queryPrefix ? "(" + queryPrefix + ")" : "";
+				if (queryPrefix) {
+					specOnProperty["v-ui:queryPrefix"] = [new String(queryPrefix)];
+					specOrderBy["v-ui:queryPrefix"] = [new String(queryPrefix)];
+				}
+			}
+		});
 		
+		var typedRequestBtn = $("<button class='btn btn-primary'>Найти2</button>")
+		reqContainer.append(typedRequestBtn);
+		
+		typedRequestBtn.click(function (e) {
+			var types = request["v-s:selectedType"].map(function (type) {
+				return "'rdf:type'=='" + type.id + "'";
+			});
+			var queryPrefix = "(" + types.join("||") + ")";
+			var allProps = request["v-s:restriction"].map(function (restriction) {
+				var oneProp = restriction["v-s:soughtValue"].map(function (value) {
+					return "'" + restriction["v-s:onProperty"][0].id + "'=='" + value + "'";
+				});
+				return "(" + oneProp.join("||") + ")";
+			});
+			queryPrefix += "&&(" + allProps.join("&&") + ")";
+			search.queryPrefix = queryPrefix;
+			search.search();
+		});
+		$("#params-" + search.id, container).append(reqContainer);
+*/
+
 		container.show();
 		
 		veda.trigger("search:rendered", search, container);
