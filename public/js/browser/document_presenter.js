@@ -264,7 +264,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		}
 		
 		var opts = {
-			limit: 30,
+			limit: 100,
 			select: function (selected) {
 				document[rel_uri] = document[rel_uri].concat(selected);
 			} 
@@ -293,21 +293,15 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			});
 		}
 		
-		document.on("view edit", function (e) {
-			if (e == "edit") {
+		document.on("view edit search", function (mode) {
+			if (mode === "edit" || mode === "search") {
 				control.show();
 			} else {
 				control.hide();
 			}
 		});
 		
-		if (mode == "edit") {
-			control.show();
-		} else {
-			control.hide();
-		}
-		
-		isValid(document, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
+		if (mode !== "search") isValid(document, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
 		
 		relContainer.append(control);
 
@@ -424,7 +418,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			}
 		});
 		
-		isValid(document, spec, values) ? controls.map( function(item) {item.addClass("has-success")} ) : controls.map( function(item) {item.addClass("has-error")} );
+		if (mode !== "search") isValid(document, spec, values) ? controls.map( function(item) {item.addClass("has-success")} ) : controls.map( function(item) {item.addClass("has-error")} );
 		
 		document.on("view edit", function (_mode) {
 			mode = _mode;
