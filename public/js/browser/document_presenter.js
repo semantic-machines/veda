@@ -97,6 +97,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		document.on("save", function () {
 			document.save();
 			document.trigger("view");
+			// Change location.hash if document was presented in #main container
+			if (container.prop("id") === "main") riot.route("#/document/" + document.id, false);
 		});
 		
 		document.on("cancel", function () {
@@ -116,7 +118,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			document.trigger("cancel");
 		});
 		
-		document.on("view edit", function (_mode) {
+		document.on("view edit search", function (_mode) {
 			mode = _mode;
 		});
 		
@@ -131,47 +133,49 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		var $edit = $("#edit", classTemplate),
 			$save = $("#save", classTemplate),
 			$cancel = $("#cancel", classTemplate),
-			$delete = $("#delete", classTemplate);
+			$delete = $("#delete", classTemplate),
+			$search = $("#search", classTemplate);
 
-		$delete.on("click", function (e) {
-			if ( confirm("Вы действительно хотите удалить документ?") ) document.trigger("delete");
+		document.on("view edit search", function (mode) {
+			mode === "view"   ? ( $edit.show(), $save.hide(), $cancel.hide(), $delete.show(), $search.hide() ) :
+			mode === "edit"   ? ( $edit.hide(), $save.show(), $cancel.show(), $delete.show(), $search.hide() ) :
+			mode === "search" ? ( $edit.hide(), $save.hide(), $cancel.hide(), $delete.hide(), $search.show() ) : 
+			true;
 		});
-		if (document["v-s:deleted"][0] && document["v-s:deleted"][0] == true) $delete.hide();
-
+		
+		// edit
 		$edit.on("click", function (e) {
 			document.trigger("edit");
 		});
-
-		document.on("edit", function () {
-			$edit.hide();
-			$save.show();
-			$cancel.show();					
-		});
-		
-		$save.hide().on("click", function (e) {
+		// save
+		$save.on("click", function (e) {
 			document.trigger("save");
 		});
-		
 		document.on("validation:complete", function (e) {
 			var res = Object.keys(document.isValid).reduce(function (acc, key) {
 				return acc && document.isValid[key];
 			}, true);
 			res ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
 		});
-					
-		document.on("save", function (e) {
-			$save.hide();
-			$cancel.hide();
-			$edit.show();
-			// Change location.hash if document was presented in #main container
-			if (container.prop("id") === "main") riot.route("#/document/" + document.id, false);
-		});
-		
-		$cancel.hide().on("click", function (e) {
+		//  cancel
+		$cancel.on("click", function (e) {
 			document.trigger("cancel");
 		});
+		//  delete
+		$delete.on("click", function (e) {
+			if ( confirm("Вы действительно хотите удалить документ?") ) document.trigger("delete");
+		});
+		if (document["v-s:deleted"][0] && document["v-s:deleted"][0] == true) $delete.hide();
+		// search
+		$search.on("click", function (e) {
+			var query = "";
+			Object.getOwnPropertyNames(document.properties).map(function (property_uri) {
+				
+			});
+		});
 		
-		// About
+		// Process RDFa compliant template
+		// About resources
 		$("[about]", classTemplate).map( function () {
 			
 			var propertyContainer = $( this ), 
@@ -181,7 +185,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			else propertyContainer.html( about[property_uri].join(", ") );
 		});
 		
-		// Object links				
+		// Related resources
 		$("[rel]", classTemplate).map( function () {
 			
 			var relContainer = $(this), 
@@ -227,7 +231,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			
 		});
 		
-		// Specials
+		// Specials (not RDFa)
 		$("[href='id']", classTemplate).map( function () {
 			$( this )
 				.attr("href", "#/document/" + document.id)
@@ -294,11 +298,10 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		}
 		
 		document.on("view edit search", function (mode) {
-			if (mode === "edit" || mode === "search") {
-				control.show();
-			} else {
-				control.hide();
-			}
+			mode === "view" ? control.hide() : 
+			mode === "edit" ? control.show() : 
+			mode === "edit" ? control.show() : 
+			true;
 		});
 		
 		if (mode !== "search") isValid(document, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
@@ -420,7 +423,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 		if (mode !== "search") isValid(document, spec, values) ? controls.map( function(item) {item.addClass("has-success")} ) : controls.map( function(item) {item.addClass("has-error")} );
 		
-		document.on("view edit", function (_mode) {
+		document.on("view edit search", function (_mode) {
 			mode = _mode;
 			controls
 				.filter(function (item) {

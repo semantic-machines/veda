@@ -543,10 +543,11 @@ td:PersonTemplate1
         </div>
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
-        <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
-        <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-        <button type="button" class="action btn btn-link" id="delete" i18n="[Delete]">Удалить</button>
+        <button type="button" class="action btn btn-primary" id="edit">Редактировать</button>
+        <button type="button" class="action btn btn-success" id="save">Сохранить</button>
+        <button type="button" class="action btn btn-default" id="cancel">Отмена</button>
+        <button type="button" class="action btn btn-link" id="delete">Удалить</button>
+        <button type="button" class="action btn btn-primary" id="search">Найти</button>
       </div>
     </div>
   </div>
@@ -583,10 +584,11 @@ td:AppointmentTemplate1
         </div>
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
-        <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
-        <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-        <button type="button" class="action btn btn-link" id="delete" i18n="[Delete]">Удалить</button>
+        <button type="button" class="action btn btn-primary" id="edit">Редактировать</button>
+        <button type="button" class="action btn btn-success" id="save">Сохранить</button>
+        <button type="button" class="action btn btn-default" id="cancel">Отмена</button>
+        <button type="button" class="action btn btn-link" id="delete">Удалить</button>
+        <button type="button" class="action btn btn-primary" id="search">Найти</button>
       </div>
     </div>
   </div>
@@ -654,10 +656,11 @@ td:AccountTemplate1
         </div>
       </div>
       <!--div class="panel-footer">
-        <button type="button" class="action btn btn-sm btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
-        <button type="button" class="action btn btn-sm btn-success" id="save" i18n="[Save]">Сохранить</button>
-        <button type="button" class="action btn btn-sm btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-        <button type="button" class="action btn btn-sm btn-link" id="delete" i18n="[Delete]">Удалить</button>
+        <button type="button" class="action btn btn-sm btn-primary" id="edit">Редактировать</button>
+        <button type="button" class="action btn btn-sm btn-success" id="save">Сохранить</button>
+        <button type="button" class="action btn btn-sm btn-default" id="cancel">Отмена</button>
+        <button type="button" class="action btn btn-sm btn-link" id="delete">Удалить</button>
+        <button type="button" class="action btn btn-sm btn-primary" id="search">Найти</button>
       </div-->
     </div>
   </div>
@@ -701,10 +704,11 @@ td:PreferencesTemplate1
     </div>
   </div>
   <!--div class="panel-footer">
-    <button type="button" class="action btn btn-sm btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
-    <button type="button" class="action btn btn-sm btn-success" id="save" i18n="[Save]">Сохранить</button>
-    <button type="button" class="action btn btn-sm btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-    <button type="button" class="action btn bnt-sm btn-link" id="delete" i18n="[Delete]">Удалить</button>
+    <button type="button" class="action btn btn-sm btn-primary" id="edit">Редактировать</button>
+    <button type="button" class="action btn btn-sm btn-success" id="save">Сохранить</button>
+    <button type="button" class="action btn btn-sm btn-default" id="cancel">Отмена</button>
+    <button type="button" class="action btn btn-sm btn-link" id="delete">Удалить</button>
+    <button type="button" class="action btn btn-sm btn-primary" id="search">Найти</button>
   </div-->
 </div>
 

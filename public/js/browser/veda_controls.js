@@ -6,30 +6,22 @@
 		var opts = $.extend( {}, $.fn.vedaControl.defaults, options ),
 			control = $(opts.template),
 			view = $(".view", control),
-			edit = $(".edit", control),
+			edit = $(".edit:not(.search)", control),
+			search = $(".search:not(.edit)", control),
+			edit_search = $(".edit.search", control),
 			add = $(".add", control),
-			remove = $(".remove", control);
+			remove = $(".remove", control),
+			mode = "";
 		
 		if (!opts.add) add.remove();
 		if (!opts.remove) remove.remove();
 		
 		$el
-			.on("view", function () {
-				view.show();
-				edit.hide();
-			})
-			.on("edit", function () {
-				view.hide();
-				edit.show();
-			})
-			.mouseenter(function () {
-				add.show();
-				remove.show();
-			})
-			.mouseleave(function () {
-				add.hide();
-				remove.hide();
-			})
+			.on("view", function () { mode="view"; view.show(); edit.hide(); search.hide(); edit_search.hide() })
+			.on("edit", function () { mode="edit"; view.hide(); edit.show(); search.hide(); edit_search.show() })
+			.on("search", function () { mode="search"; view.hide(); edit.hide(); search.show(); edit_search.show() })
+			.mouseenter( function () { add.show(); remove.show(); })
+			.mouseleave( function () { add.hide(); remove.hide(); })
 			.on("focusin", function () {
 				$el.off("mouseenter mouseleave");
 				add.show();
