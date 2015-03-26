@@ -105,7 +105,7 @@ interface VedaStorageRest_API {
 //    int put_individuals(string ticket, Json[] individuals);
 
     @path("put_individual") @method(HTTPMethod.PUT)
-    int put_individual(string ticket, Json individual, bool wait_for_indexing = false);
+    int put_individual(string ticket, Json individual, bool wait_for_indexing);
 
 //    @path("get_property_values") @method(HTTPMethod.GET)
 //    Json[] get_property_values(string ticket, string uri, string property_uri);
@@ -160,7 +160,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     private std.concurrency.Tid getFreeTid()
     {
-        writeln("#1");
+        writeln("#1 getFreeTid");
         Worker *res;
         last_used_tid++;
 
@@ -612,15 +612,15 @@ class VedaStorageRest : VedaStorageRest_API
         {
             Individual res;
 
-            immutable(Individual)[ string ] onto_individuals =
+            Individual[ string ] onto_individuals =
                 context.get_onto_as_map_individuals();
 
-            immutable(Individual) individual = onto_individuals.get(uri, immutable(Individual).init);
+            Individual individual = onto_individuals.get(uri, Individual.init);
 
-            if (individual != immutable(Individual).init)
+            if (individual != Individual.init)
             {
                 rc  = ResultCode.OK;
-                res = cast(Individual)individual;
+                res = individual;
             }
             else
             {
@@ -644,7 +644,7 @@ class VedaStorageRest : VedaStorageRest_API
         }
     }
 
-    int put_individual(string _ticket, Json individual_json, bool wait_for_indexing = false)
+    int put_individual(string _ticket, Json individual_json, bool wait_for_indexing)
     {
         Individual indv    = json_to_individual(individual_json);
         Ticket     *ticket = context.get_ticket(_ticket);
