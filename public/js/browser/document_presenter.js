@@ -168,10 +168,55 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		if (document["v-s:deleted"][0] && document["v-s:deleted"][0] == true) $delete.hide();
 		// search
 		$search.on("click", function (e) {
-			var query = "";
-			Object.getOwnPropertyNames(document.properties).map(function (property_uri) {
-				
-			});
+			// serialize document as search query
+			var query;
+			var allProps = Object.getOwnPropertyNames(document.properties)
+				.map(function (property_uri) {
+					var property = document.properties[property_uri];
+					var values = document[property_uri].filter(function(item){return !!item && !!item.valueOf()});
+					var oneProp;
+					switch (property["rdfs:range"][0].id) {
+						case "xsd:integer": 
+						case "xsd:nonNegativeInteger":
+						case "xsd:decimal":
+							oneProp =
+								values.length === 1 ? "'" + property_uri + "'==[" + document[property_uri][0] + "," + document[property_uri][0] + "]" :
+								values.length > 1 ? "'" + property_uri + "'==[" + document[property_uri][0] + "," + document[property_uri][1] + "]" :
+								undefined;
+							break
+						case "xsd:dateTime": 
+							oneProp =
+								values.length === 1 ? "'" + property_uri + "'==[" + document[property_uri][0].toISOString().substring(0,19) + "," + document[property_uri][0].toISOString().substring(0,19) + "]" :
+								values.length > 1 ? "'" + property_uri + "'==[" + document[property_uri][0].toISOString().substring(0,19) + "," + document[property_uri][1].toISOString().substring(0,19) + "]" :
+								undefined;
+							break
+						case "xsd:boolean": 
+						case "xsd:string": 
+						case "rdfs:Literal": 
+							oneProp = values
+								.filter(function(item){return !!item && !!item.valueOf()})
+								.map( function (value) {
+									return "'" + property_uri + "'=='" + value + "'";
+								})
+								.join("||");
+							break
+						default:
+							oneProp = values
+								.filter( function (value) {
+									return value instanceof veda.IndividualModel;
+								})
+								.map( function (value) {
+									return "'" + property_uri + "'=='" + value.id + "'";
+								})
+								.join("||");
+							break
+					}
+					return oneProp ? "(" + oneProp + ")" : undefined;
+				})
+				.filter(function(item){return !!item;})
+				.join("&&");
+			query = allProps ? "(" + allProps + ")" : undefined;
+			var search = new veda.SearchModel(undefined, undefined, query);
 		});
 		
 		// Process RDFa compliant template
