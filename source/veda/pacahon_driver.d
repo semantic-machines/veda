@@ -134,12 +134,12 @@ public void core_thread()
 
                             try
                             {
-                                immutable(Individual)[ string ] onto_individuals =
+                                Individual[ string ] onto_individuals =
                                     context.get_onto_as_map_individuals();
 
-                                immutable(Individual) individual = onto_individuals.get(arg1, _empty_iIndividual);
+                                Individual individual = onto_individuals.get(arg1, Individual.init);
 
-                                if (individual != _empty_iIndividual)
+                                if (individual != Individual.init)
                                 {
                                     rc = ResultCode.OK;
                                     res ~= cast(immutable)individual_to_json(individual);
