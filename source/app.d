@@ -54,6 +54,11 @@ void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
 
 shared static this()
 {
+    import etc.linux.memoryerror;
+    static if (is (typeof(registerMemoryErrorHandler)))
+        registerMemoryErrorHandler();
+
+
     ushort http_port    = 8080;
     int    count_thread = 10;
 
@@ -66,7 +71,6 @@ shared static this()
     catch (Exception ex)
     {
     }
-
 
     http_port    = properties.as!(ushort)("http_port");
     count_thread = properties.as!(int)("count_thread");
@@ -83,7 +87,7 @@ shared static this()
 
     for (int i = 0; i < count_thread; i++)
     {
-        pool ~= std.concurrency.spawn(&core_thread);
+        pool ~= std.concurrency.spawnLinked(&core_thread);
         core.thread.Thread.sleep(dur!("msecs")(10));
     }
 
@@ -95,6 +99,7 @@ shared static this()
     //settings.bindAddresses = ["::1", "127.0.0.1", "172.17.35.148"];
     //settings.bindAddresses = ["127.0.0.1"];
     settings.errorPageHandler = toDelegate(&view_error);
+    //settings.options = HTTPServerOption.parseURL|HTTPServerOption.distribute;
 
     auto router = new URLRouter;
     router.get("/files/*", &vsr.fileManager);
