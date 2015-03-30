@@ -76,6 +76,7 @@ vdi:indexed_as_system
 
 vdi:index_01
   rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:File ;
   vdi:forClass v-s:Membership ;
   vdi:forClass v-s:PermissionStatement ;
   vdi:forClass v-wf:Variable ;
