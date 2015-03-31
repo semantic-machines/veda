@@ -18,6 +18,12 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			.empty().hide()
 			.attr("resource", document.id)
 			.attr("typeof", document["rdf:type"].map(function (item) { return item.id }).join(" ") );
+
+		// Change location.hash if document was presented in #main container
+		/*if (container.prop("id") === "main") {
+			var hash = ["#/document", document.id, container_param || "", template_param || "", mode || ""].join("/");
+			riot.route(hash, false);
+		}*/
 			
 		if (document["v-s:deleted"] && document["v-s:deleted"][0] == true) {
 			var deletedAlert = $( deletedAlertTmpl );
@@ -136,18 +142,20 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			$delete = $("#delete", classTemplate),
 			$search = $("#search", classTemplate);
 
+		// Show / hide buttons in different modes
 		document.on("view edit search", function (mode) {
 			mode === "view"   ? ( $edit.show(), $save.hide(), $cancel.hide(), $delete.show(), $search.hide() ) :
 			mode === "edit"   ? ( $edit.hide(), $save.show(), $cancel.show(), $delete.show(), $search.hide() ) :
 			mode === "search" ? ( $edit.hide(), $save.hide(), $cancel.hide(), $delete.hide(), $search.show() ) : 
 			true;
 		});
-		
-		// edit
+
+		// Buttons handlers
+		// Edit
 		$edit.on("click", function (e) {
 			document.trigger("edit");
 		});
-		// save
+		// Save
 		$save.on("click", function (e) {
 			document.trigger("save");
 		});
@@ -157,16 +165,16 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			}, true);
 			res ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
 		});
-		//  cancel
+		//  Cancel
 		$cancel.on("click", function (e) {
 			document.trigger("cancel");
 		});
-		//  delete
+		//  Delete
 		$delete.on("click", function (e) {
 			if ( confirm("Вы действительно хотите удалить документ?") ) document.trigger("delete");
 		});
 		if (document["v-s:deleted"][0] && document["v-s:deleted"][0] == true) $delete.hide();
-		// search
+		// Search
 		$search.on("click", function (e) {
 			// serialize document as search query
 			var query;
@@ -295,8 +303,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		container.show();
 		
 		scripts.map( function (item) { 
-			var fun = new Function("veda", "document", item);
-			fun(veda, document);
+			var fun = new Function("veda", "document", "view", item);
+			fun(veda, document, classTemplate);
 		});
 	}
 	
@@ -345,7 +353,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		document.on("view edit search", function (mode) {
 			mode === "view" ? control.hide() : 
 			mode === "edit" ? control.show() : 
-			mode === "edit" ? control.show() : 
+			mode === "search" ? control.show() : 
 			true;
 		});
 		

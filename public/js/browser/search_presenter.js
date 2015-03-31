@@ -11,6 +11,12 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		
 		var container = container_param || $("#main");
 		
+		// Change location.hash if search was presented in #main container
+		/*if (container.prop("id") === "main") {
+			var hash = ["#/search", container_param || "", page || ""].join("/");
+			riot.route(hash, false);
+		}*/
+		
 		container.empty().hide();
 		
 		search.currentPage = (typeof page === 'number' ? page : search.currentPage) || 0;

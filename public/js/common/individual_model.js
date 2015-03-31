@@ -21,7 +21,7 @@ veda.Module(function IndividualModel(veda) { "use strict";
 		var values = {};
 		self.properties = {};
 
-		self.defineProperty = function (property_uri, getter, setter) {
+		self.defineProperty = function (property_uri, getterCB, setterCB) {
 			
 			//properties[property_uri] = undefined;
 			if (properties[property_uri]) return;
@@ -74,7 +74,7 @@ veda.Module(function IndividualModel(veda) { "use strict";
 					// Filter undefined values
 					values[property_uri] = values[property_uri].filter(function (item) { return item });
 					
-					if (getter) getter(values[property_uri]);
+					if (getterCB) getterCB(values[property_uri]);
 					
 					return values[property_uri];
 				},
@@ -108,7 +108,7 @@ veda.Module(function IndividualModel(veda) { "use strict";
 							return value;
 						}
 					});
-					if (setter) setter(values[property_uri]);
+					if (setterCB) setterCB(values[property_uri]);
 					self.trigger("individual:propertyModified", property_uri, values[property_uri]);
 				},
 				
@@ -193,6 +193,9 @@ veda.Module(function IndividualModel(veda) { "use strict";
 
 		if (!uri) { individual["@"] = guid();
 			original_individual = '{"@":"' + individual["@"] +'"}';
+			if (veda.cache && !noCache) {
+				veda.cache[uri] = self;
+			}
 		}
 		
 		// Special properties
