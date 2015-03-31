@@ -965,6 +965,12 @@ v-s:summary
   rdfs:label "вывод"@ru ;
   rdfs:range xsd:string ;
 .
+v-s:tags
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "tags"@en ;
+  rdfs:label "ключевые слова"@ru ;
+  rdfs:range xsd:string ;
+.
 v-s:theme
   rdf:type owl:DatatypeProperty ;
   rdfs:label "theme"@en ;
