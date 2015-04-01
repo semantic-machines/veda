@@ -474,6 +474,50 @@ jsWorkflow.ready = jsPlumb.ready;
             	}
             }
             
+            instance.addVarProperty = function(stateId) {
+                variableName = prompt("Enter the name of the variable");
+                
+                var individualV = new veda.IndividualModel(); // create individual (Variable) 
+                individualV.defineProperty("rdf:type");
+                individualV.defineProperty("v-wf:variableName");
+                
+           		individualV["rdf:type"] = [veda.ontology["v-wf:Variable"]];
+                individualV['v-wf:variableName'] = [new String(variableName.replace(/[^a-zA-Z0-9 ]/g, ''))];
+                
+                var individualM = new veda.IndividualModel(); // create individual (Mapping)
+                
+                individualM.defineProperty("rdf:type");
+                individualM.defineProperty("v-wf:mapsTo");
+                individualM.defineProperty("v-wf:mappingExpression");
+                
+           		individualM["rdf:type"] = [veda.ontology["v-wf:Mapping"]];
+           		individualM["v-wf:mapsTo"] = [individualV];
+                individualM['v-wf:mappingExpression'] = ["context.getVariableValue ('"+(new String(variableName.replace(/[^a-zA-Z0-9 ]/g, '')))+"')"];
+                
+                getSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
+                	state['v-wf:inputVariable'] = state['v-wf:inputVariable'].concat([individualV]); // <- Add new Varibale to State
+                	state['v-wf:startingMapping'] = state['v-wf:startingMapping'].concat([individualM]); // <- Add new Mapping to State
+                });
+                
+               	$('#'+stateId).trigger('contextmenu');
+            }
+            
+            // Remove from state, defined by stateId, variable `varId` and its mapping `mapId`
+            instance.removeVarProperty = function(stateId, varId, mapId) {
+            	getSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
+            		removeSubIndividual(state, 'v-wf:inputVariable', varId);
+            		removeSubIndividual(state, 'v-wf:startingMapping', mapId);
+            	});
+            	$('#'+stateId).trigger('contextmenu');
+            }
+            
+            instance.removeExecutorProperty = function(stateId, executorId) {
+            	getSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
+            		removeSubIndividual(state, 'v-wf:executor', executorId);
+            	});
+            	$('#'+stateId).trigger('contextmenu');
+            }
+            
             instance.deleteState = function(element) {
             	instance.detachAllConnections(element);
             	instance.remove(element);
@@ -528,22 +572,50 @@ jsWorkflow.ready = jsPlumb.ready;
             	getSubIndividual(net, 'v-wf:consistsOf', _this.id, function (el) {
             	   el['v-wf:startingMapping'].forEach(function(var_map) {
                 	   var varMap = new veda.IndividualModel(var_map.id);
-            	       var s = '<li>';
+                	   var $item = $("<li/>").appendTo(menu);
+            	       var varId = null;
             	       varMap['v-wf:mapsTo'].forEach(function(var_var) {
            	    		   var variable = new veda.IndividualModel(var_var.id);
-           	    		   s+='<a href="#/document/'+var_var.id+'///edit">'+((variable['v-wf:variableName']!=null && variable['v-wf:variableName'].length>0)?variable['v-wf:variableName'][0]:var_var.id)+'</a>=';           	    		   
+           	    		   varId = var_var.id;
+           	    		   $("<a/>", { 
+           	    			   "text" : ((variable['v-wf:variableName']!=null && variable['v-wf:variableName'].length>0)?variable['v-wf:variableName'][0]:var_var.id), 
+           	    			   "href" : "#/document/"+var_var.id+"///edit"
+           	    		   }).appendTo($item);
         	    	   });
             	       varMap['v-wf:mappingExpression'].forEach(function(map_exp) {
-                     	   s+='<a href="#/document/'+varMap.id+'///edit">MAP : '+map_exp+'</a>';
+            	    	   $("<a/>", { 
+           	    			   "text" : " = "+map_exp, 
+           	    			   "href" : "#/document/"+varMap.id+"///edit"
+           	    		   }).appendTo($item);
+            	    	   $("<span/>", {
+            					"click": (function (instance) {
+            						return function (event) {
+            							event.preventDefault();
+            							instance.removeVarProperty(_this.id, var_map.id, varId);
+            						}
+            					})(instance), 
+           	    			   "href" : ""
+           	    		   }).attr("class", "glyphicon glyphicon-remove button").appendTo($item);
             	       });
-            	       s+='</li>'
-            	       menu.append(s);
                    });
                    el['v-wf:executor'].forEach(function(el2) {
                 	   var variable = new veda.IndividualModel(el2.id);
-                       menu.append('<li><a href="#/document/'+el2.id+'///edit">EXECUTOR : '+el2.id+'</a></li>');                       
-                   });                                      
-           	 	});
+                       menu.append('<li><a href="#/document/'+el2.id+'///edit">EXECUTOR : '+el2.id+'</a> <span class="glyphicon glyphicon-remove workflow-remove-property" aria-hidden="true"></span></li>');                       
+                   });
+                   
+            	   var $item = $("<li/>").appendTo(menu);
+    	    	   $("<span/>", {
+    	    		"text" : "VAR",
+   					"click": (function (instance) {
+   						return function (event) {
+   							event.preventDefault();
+   							instance.addVarProperty(_this.id);
+   						}
+   					})(instance), 
+  	    			   "href" : ""
+  	    		   }).attr("class", "glyphicon glyphicon-plus button").appendTo($item);
+    	    	   
+           	 	});            	
             	// 
             	   $contextMenu.css({
             	      display: "block",
@@ -556,11 +628,23 @@ jsWorkflow.ready = jsPlumb.ready;
             /* CONTEXT MENU [END]*/
             
             /* NET MENU [BEGIN] */
-            $('#workflow-save-button').on('click', function() {
-            	net.save();
+            $('#workflow-save-button').on('click', function() {            	
+           	  net.save();
+        	  if (!(net['v-wf:consistsOf'] === undefined)) {
             	net['v-wf:consistsOf'].forEach(function(el) {
+            		if (!(el['v-wf:inputVariable'] === undefined)) {
+                		el['v-wf:inputVariable'].forEach(function(v) {
+                			v.save();
+                		});
+            		}
+            		if (!(el['v-wf:startingMapping'] === undefined)) {
+            			el['v-wf:startingMapping'].forEach(function(m) {
+            				m.save();
+            			});
+            		}
             		el.save();
             	});
+        	  }
             });
             
             $('#workflow-export-ttl').on('click', function() {
