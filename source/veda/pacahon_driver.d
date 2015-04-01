@@ -104,7 +104,7 @@ public void core_thread()
                         }
                     }
                 },
-                (Command cmd, Function fn, string arg1, string arg2, string _ticket, int worker_id, Tid tid)
+                (Command cmd, Function fn, string arg1, string arg2, string arg3, string _ticket, int worker_id, Tid tid)
                 {
                     if (tid != Tid.init)
                     {
@@ -119,14 +119,19 @@ public void core_thread()
                                 rc = ticket.result;
                                 if (rc == ResultCode.OK)
                                 {
-                                    res = context.get_individuals_ids_via_query(ticket, arg1, arg2);
+                                    res = context.get_individuals_ids_via_query(ticket, arg1, arg2, arg3);
                                 }
                             }
                             catch (Exception ex) { writeln(ex.msg); }
                             send(tid, res, rc, worker_id);
                         }
-
-                        else if (cmd == Command.Get && fn == Function.Individual)
+                	}
+                },    
+                (Command cmd, Function fn, string arg1, string arg2, string _ticket, int worker_id, Tid tid)
+                {
+                    if (tid != Tid.init)
+                    {
+                        if (cmd == Command.Get && fn == Function.Individual)
                         {
                             ResultCode rc = ResultCode.Internal_Server_Error;
 

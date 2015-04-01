@@ -93,7 +93,7 @@ interface VedaStorageRest_API {
     long count_individuals();
 
     @path("query") @method(HTTPMethod.GET)
-    string[] query(string ticket, string query, string sort = null);
+    string[] query(string ticket, string query, string sort, string databases = null);
 
     @path("get_individuals") @method(HTTPMethod.POST)
     Json[] get_individuals(string ticket, string[] uris);
@@ -508,7 +508,7 @@ class VedaStorageRest : VedaStorageRest_API
         return res;
     }
 
-    string[] query(string ticket, string query, string sort)
+    string[] query(string ticket, string query, string sort, string databases = null)
     {
         ResultCode rc;
         int        recv_worker_id;
@@ -517,7 +517,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         Worker     *worker = allocate_worker();
 
-        std.concurrency.send(worker.tid, Command.Get, Function.IndividualsIdsToQuery, query, sort, ticket, worker.id,
+        std.concurrency.send(worker.tid, Command.Get, Function.IndividualsIdsToQuery, query, sort, databases, ticket, worker.id,
                              std.concurrency.thisTid);
         yield();
 
