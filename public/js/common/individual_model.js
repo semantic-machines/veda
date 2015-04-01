@@ -194,7 +194,7 @@ veda.Module(function IndividualModel(veda) { "use strict";
 		if (!uri) { individual["@"] = guid();
 			original_individual = '{"@":"' + individual["@"] +'"}';
 			if (veda.cache && !noCache) {
-				veda.cache[uri] = self;
+				veda.cache[individual["@"]] = self;
 			}
 		}
 		
