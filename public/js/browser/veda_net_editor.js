@@ -539,7 +539,7 @@ jsWorkflow.ready = jsPlumb.ready;
             			+ (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' 
             			+ (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div class="state-name">' + state['rdfs:label'][0] + '</div><div class="ep"></div></div>';
     				break;
-    			}
+    			}            	
             	if (stateElement!='') {
                 	$('#'+workflowData).append(stateElement);
                 	bindStateEvents($('#' + veda.Util.escape4$(state.id)));
@@ -645,7 +645,46 @@ jsWorkflow.ready = jsPlumb.ready;
             		}
             	});
             }
+            
+            /**
+             * Optimize view of net: all elements must be visible and fit screen (through change scale and position of canvas)
+             */
+            instance.optimizeView = function() {
+            	var minx = undefined;
+            	var maxx = undefined;
+            	var miny = undefined;
+            	var maxy = undefined;
+            	var scaleh = undefined;
+            	var scalew = undefined;
+            	// read ranges
+            	net['v-wf:consistsOf'].forEach(function(state) {
+            		if (!(state['v-wf:locationX']===undefined) && state['v-wf:locationX'].length>0) {
+            			if (maxx === undefined || state['v-wf:locationX'][0]>maxx) maxx = state['v-wf:locationX'][0]; 
+            			if (minx === undefined || state['v-wf:locationX'][0]<minx) minx = state['v-wf:locationX'][0];
+            		}
+            		if (!(state['v-wf:locationY']===undefined) && state['v-wf:locationY'].length>0) {
+            			if (maxy === undefined || state['v-wf:locationY'][0]>maxy) maxy = state['v-wf:locationY'][0]; 
+            			if (miny === undefined || state['v-wf:locationY'][0]<miny) miny = state['v-wf:locationY'][0];
+            		}
+            	});
+            	// TODO update this from css;
+            	maxx+=100;
+            	maxy+=100;
+            	// read viewport div
+            	$(".workflow-canvas-wrapper").each(function() {
+            		scaleh = this.clientHeight/(maxy-miny);
+            		scalew = this.clientWidth/(maxx-minx);
+            	});
+            	// change scale and offset
+            	var s = Math.min(scaleh, scalew);
+                $('#'+workflowData).css({
+           			'left': (-minx*scalew-canvasSizePx/2)+'px',
+           			'top': (-miny*scaleh-canvasSizePx/2)+'px',
+           		});
+                instance.changeScale(s);
+            }
 
+            instance.optimizeView();
             instance.createNet(net);
                         
             if (localStorage.getItem("workflow"+net.id+"-zoom")>0 && localStorage.getItem("workflow"+net.id+"-zoom")!=1) {
@@ -717,8 +756,8 @@ jsWorkflow.ready = jsPlumb.ready;
                 }
             });
             
-            $('.zoom-default').on('click', function() {
-            	instance.changeScale(1);
+            $('.zoom-default').on('click', function() {            	
+            	instance.optimizeView();
             });
             /* ZOOM [END] */
 
