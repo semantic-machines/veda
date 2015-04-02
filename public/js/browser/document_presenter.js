@@ -60,13 +60,13 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					return _class instanceof veda.IndividualModel;
 				})
 				.map( function (_class) {
-					if (_class.documentTemplate && _class.documentTemplate["v-ui:template"]) {
-						// If _class.documentTemplate is embedded => construct generic template
-						if (_class.documentTemplate["v-ui:embedded"] && _class.documentTemplate["v-ui:embedded"][0] == true) {
+					if (_class.template && _class.template["v-ui:template"]) {
+						// If _class.template is embedded => construct generic template
+						if (_class.template["v-ui:embedded"] && _class.template["v-ui:embedded"][0] == true) {
 							classTemplate = genericTemplate(document, _class); 
 						} else {
 							// Get template from class
-							templateStr = _class.documentTemplate["v-ui:template"][0].toString()
+							templateStr = _class.template["v-ui:template"][0].toString()
 							templateStr = templateStr.replace(/<script.*>((?:\s*?.*?\s*?)*)<\/script>/gi, function (m, script) {
 								scripts.push(script);
 								return "";

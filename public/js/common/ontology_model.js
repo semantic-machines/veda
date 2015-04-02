@@ -32,8 +32,9 @@ veda.Module(function OntologyModel(veda) { "use strict";
 		
 		self.classes = {};
 		self.properties = {};
-		self.templates = {};
 		self.specs = {};
+		self.models = {};
+		self.templates = {};
 		self.other = {};
 		
 		var storage = typeof localStorage != 'undefined' ? localStorage : undefined;
@@ -49,6 +50,8 @@ veda.Module(function OntologyModel(veda) { "use strict";
 				"'rdf:type' == 'owl:ObjectProperty' || " +
 				"'rdf:type' == 'owl:OntologyProperty' || " +
 				"'rdf:type' == 'owl:AnnotationProperty' || " +
+				/* Models */
+				"'rdf:type' == 'v-s:ClassModel' || " +
 				/* Templates */
 				"'rdf:type' == 'v-ui:ClassTemplate' || " +
 				/* Property specifications */
@@ -106,9 +109,6 @@ veda.Module(function OntologyModel(veda) { "use strict";
 				case "owl:AnnotationProperty" :
 					self.properties[individual.id] = individual;
 					break
-				case "v-ui:ClassTemplate" :
-					self.templates[individual.id] = individual;
-					break
 				case "v-ui:PropertySpecification" :
 				case "v-ui:IntegerPropertySpecification" :
 				case "v-ui:DecimalPropertySpecification" :
@@ -117,6 +117,12 @@ veda.Module(function OntologyModel(veda) { "use strict";
 				case "v-ui:BooleanPropertySpecification" :
 				case "v-ui:ObjectPropertySpecification" :
 					self.specs[individual.id] = individual;
+					break
+				case "v-s:ClassModel" :
+					self.models[individual.id] = individual;
+					break
+				case "v-ui:ClassTemplate" :
+					self.templates[individual.id] = individual;
 					break
 				default :
 					self.other[individual.id] = individual;
@@ -150,21 +156,30 @@ veda.Module(function OntologyModel(veda) { "use strict";
 			});
 		});
 
-		Object.keys(self.templates).map( function (uri) {
-			var template = self.templates[uri];
-			if (!template["v-ui:forClass"]) return; 
-			template["v-ui:forClass"].map( function ( item ) {
-				item.documentTemplate = item.documentTemplate || {};
-				item.documentTemplate = template;
-			});
-		});
-
 		Object.keys(self.specs).map( function (uri) {
 			var spec = self.specs[uri];
 			if (!spec["v-ui:forClass"]) return;
 			spec["v-ui:forClass"].map( function ( item ) {
 				item.specsByProps = item.specsByProps || {};
 				item.specsByProps[spec["v-ui:forProperty"][0].id] = spec;
+			});
+		});
+
+		Object.keys(self.templates).map( function (uri) {
+			var template = self.templates[uri];
+			if (!template["v-ui:forClass"]) return; 
+			template["v-ui:forClass"].map( function ( item ) {
+				item.template = item.template || {};
+				item.template = template;
+			});
+		});
+
+		Object.keys(self.models).map( function (uri) {
+			var model = self.models[uri];
+			if (!model["v-ui:forClass"]) return; 
+			model["v-ui:forClass"].map( function ( item ) {
+				item.model = item.model || {};
+				item.model = model;
 			});
 		});
 
