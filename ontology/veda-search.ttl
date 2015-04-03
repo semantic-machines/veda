@@ -1,0 +1,75 @@
+# baseURI: http://semantic-machines.com/veda/veda-ui
+# imports: http://semantic-machines.com/veda/veda-schema
+# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+# imports: http://www.w3.org/2000/01/rdf-schema#
+# imports: http://www.w3.org/2002/07/owl
+
+# c14n-version: 3
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
+
+<http://semantic-machines.com/veda/veda-search>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system search function ontology"@en ;
+  rdfs:label "Онтология фукнции поиска системы Веда"@ru ;
+  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
+  owl:imports <http://semantic-machines.com/veda/veda-ui> ;
+  owl:imports rdf: ;
+  owl:imports rdfs: ;
+  owl:imports <http://www.w3.org/2002/07/owl> ;
+  owl:versionInfo "3.3" ;
+.
+v-fs:Search
+  rdf:type owl:Class ;
+  rdfs:label "Search"@en ;
+  rdfs:label "Поиск"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-fs:Search1
+  rdf:type v-fs:Search ;
+  rdfs:label "Search1"@en ;
+  rdfs:label "Поиск1"@ru ;
+  v-fs:q "test"^^xsd:string ;
+.
+v-fs:q
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "query"@en ;
+  rdfs:label "запрос"@ru ;
+  rdfs:domain v-fs:Search ;
+  rdfs:range xsd:string ;
+.
+v-fs:SearchModel
+  rdf:type v-s:ClassModel ;
+  rdfs:label "Search model"@en ;
+  rdfs:label "Модель Поиска"@ru ;
+  v-ui:forClass v-fs:Search ;
+  v-s:script """
+    individual.test = function () {
+      alert("model extention works! individual['v-fs:q']:" + individual["v-fs:q"].join(", "));
+    }
+  """
+.
+v-fs:SearchTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Search template"@en ;
+  rdfs:label "Шаблон поиска"@ru ;
+  v-ui:forClass v-fs:Search ;
+  v-ui:template """
+    <div>
+      <h2>Test</h2>
+      <span about="v-fs:q" property="rdfs:label"></span>
+      <div property="v-fs:q"></div>
+      <button id="test" class="btn btn-success">test</button>
+    </div>
+    <script type="text/javascript">
+      $("#test", container).click(function () {
+        document.test();
+      });
+    </script>
+  """
+.

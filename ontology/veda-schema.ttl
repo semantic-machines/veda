@@ -62,6 +62,11 @@ v-s:AuthorizationStatement
   rdfs:label "Запись авторизации"@ru ;
   rdfs:subClassOf v-s:Document ;
 .
+v-s:ClassModel
+  rdf:type owl:Class ;
+  rdfs:label "Class model"@en ;
+  rdfs:label "Модель класса"@ru ;
+.
 v-s:Codelet
   rdf:type owl:Class ;
   rdfs:label "Codelet"@en ;
@@ -899,6 +904,7 @@ v-s:restriction
 v-s:script
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Codelet ;
+  rdfs:domain v-s:ClassModel ;
   rdfs:domain v-s:Event ;
   rdfs:label "script"@en ;
   rdfs:label "скрипт"@ru ;
