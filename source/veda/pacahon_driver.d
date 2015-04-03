@@ -104,7 +104,7 @@ public void core_thread()
                         }
                     }
                 },
-                (Command cmd, Function fn, string arg1, string arg2, string arg3, string _ticket, int worker_id, Tid tid)
+                (Command cmd, Function fn, string arg1, string arg2, string arg3, string _ticket, bool reopen, int worker_id, Tid tid)
                 {
                     if (tid != Tid.init)
                     {
@@ -119,6 +119,8 @@ public void core_thread()
                                 rc = ticket.result;
                                 if (rc == ResultCode.OK)
                                 {
+                                	if (reopen)
+                                		context.reopen_ro_fulltext_indexer_db ();
                                     res = context.get_individuals_ids_via_query(ticket, arg1, arg2, arg3);
                                 }
                             }

@@ -4,6 +4,8 @@ import vibe.d;
 import veda.pacahon_driver;
 
 import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file;
+import core.vararg;
+import core.stdc.stdarg;
 import vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
 
@@ -93,7 +95,7 @@ interface VedaStorageRest_API {
     long count_individuals();
 
     @path("query") @method(HTTPMethod.GET)
-    string[] query(string ticket, string query, string sort, string databases = null);
+    string[] query(string ticket, string query, string sort = null, string databases = null, bool reopen = false);
 
     @path("get_individuals") @method(HTTPMethod.POST)
     Json[] get_individuals(string ticket, string[] uris);
@@ -508,7 +510,7 @@ class VedaStorageRest : VedaStorageRest_API
         return res;
     }
 
-    string[] query(string ticket, string query, string sort, string databases = null)
+    string[] query(string ticket, string _query, string sort = null, string databases = null, bool reopen = false)
     {
         ResultCode rc;
         int        recv_worker_id;
@@ -517,7 +519,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         Worker     *worker = allocate_worker();
 
-        std.concurrency.send(worker.tid, Command.Get, Function.IndividualsIdsToQuery, query, sort, databases, ticket, worker.id,
+        std.concurrency.send(worker.tid, Command.Get, Function.IndividualsIdsToQuery, _query, sort, databases, ticket, reopen, worker.id,
                              std.concurrency.thisTid);
         yield();
 
