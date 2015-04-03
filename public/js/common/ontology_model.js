@@ -169,7 +169,6 @@ veda.Module(function OntologyModel(veda) { "use strict";
 			var template = self.templates[uri];
 			if (!template["v-ui:forClass"]) return; 
 			template["v-ui:forClass"].map( function ( item ) {
-				item.template = item.template || {};
 				item.template = template;
 			});
 		});
@@ -178,9 +177,13 @@ veda.Module(function OntologyModel(veda) { "use strict";
 			var model = self.models[uri];
 			if (!model["v-ui:forClass"]) return; 
 			model["v-ui:forClass"].map( function ( item ) {
-				item.model = item.model || {};
 				item.model = model;
 			});
+		});
+
+		// Initialize ontology objects
+		q_results.map( function (uri) {
+			self[uri].init();
 		});
 
 		return self;

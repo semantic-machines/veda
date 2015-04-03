@@ -70,8 +70,6 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		});
 		$("#params-" + search.id, container).append(typeSelector, tmplContainer);
 		
-		
-
 /*
 		// Typed search request
 		var reqContainer = $("<div>").addClass("well");

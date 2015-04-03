@@ -198,6 +198,21 @@ veda.Module(function IndividualModel(veda) { "use strict";
 			}
 		}
 		
+		self.init = function () {
+			self["rdf:type"].map(function (_class) {
+				Object.keys(_class.domainProperties).map(function (property_uri) {
+					self.defineProperty(property_uri);
+				});
+				if (_class.model) {
+					var model = new Function (
+						"individual", 
+						_class.model["v-s:script"][0] + "//# sourceURL=" + _class.id + "Model.js"
+					);
+					model(self);
+				}
+			});
+		}
+
 		// Special properties
 		Object.defineProperty(self, "id", {
 			get: function () { 
@@ -209,11 +224,7 @@ veda.Module(function IndividualModel(veda) { "use strict";
 		});
 
 		self.defineProperty("rdf:type", undefined, function (classes) {
-			classes.map(function (_class) {
-				Object.keys(_class.domainProperties).map(function (property_uri) {
-					self.defineProperty(property_uri);
-				});
-			});
+			self.init();
 			self.trigger("individual:typeChanged", classes);
 		});
 

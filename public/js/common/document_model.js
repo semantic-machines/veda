@@ -5,6 +5,7 @@ veda.Module(function DocumentModel(veda) { "use strict";
 	veda.DocumentModel = function (uri, container, template, mode) {
 
 		var individual = new veda.IndividualModel(uri);
+		individual.init();
 		
 		var self = riot.observable( Object.create(individual) );
 		
