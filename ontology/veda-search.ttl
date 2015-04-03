@@ -24,6 +24,59 @@
   owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "3.3" ;
 .
+v-fs:Test
+  rdf:type owl:Class ;
+  rdfs:label "Test"@en ;
+  rdfs:label "Тест"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-fs:Test1
+  rdf:type v-fs:Test ;
+  rdfs:label "Test1"@en ;
+  rdfs:label "Тест1"@ru ;
+  v-fs:testProperty "test"^^xsd:string ;
+.
+v-fs:testProperty
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "test property"@en ;
+  rdfs:label "тестовое свойство"@ru ;
+  rdfs:domain v-fs:Test ;
+  rdfs:range xsd:string ;
+.
+v-fs:TestModel
+  rdf:type v-s:ClassModel ;
+  rdfs:label "Test model"@en ;
+  rdfs:label "Тестовая модель"@ru ;
+  v-ui:forClass v-fs:Test ;
+  v-s:script """
+    individual.test = function () {
+      alert("model extention works! individual['v-fs:testProperty']:" + individual["v-fs:testProperty"].join(", "));
+    }
+  """
+.
+v-fs:TestTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Test template"@en ;
+  rdfs:label "Тестовый шаблон"@ru ;
+  v-ui:forClass v-fs:Test ;
+  v-ui:template """
+    <div>
+      <h2>Test</h2>
+      <span about="v-fs:testProperty" property="rdfs:label"></span>
+      <div property="v-fs:testProperty"></div>
+      <button id="test" class="btn btn-success">test</button>
+    </div>
+    <script type="text/javascript">
+      $("#test", container).click(function () {
+        document.test();
+      });
+    </script>
+  """
+.
+
+
+########## SEARCH ###########
+
 v-fs:Search
   rdf:type owl:Class ;
   rdfs:label "Search"@en ;
@@ -43,33 +96,146 @@ v-fs:q
   rdfs:domain v-fs:Search ;
   rdfs:range xsd:string ;
 .
+v-fs:queryPrefix
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "query prefix"@en ;
+  rdfs:label "префикс запроса"@ru ;
+  rdfs:domain v-fs:Search ;
+  rdfs:range xsd:string ;
+.
+v-fs:sort
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "sort"@en ;
+  rdfs:label "упорядочить"@ru ;
+  rdfs:domain v-fs:Search ;
+  rdfs:range xsd:string ;
+.
+v-fs:results
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "results"@en ;
+  rdfs:label "результаты"@ru ;
+  rdfs:domain v-fs:Search ;
+  rdfs:range rdfs:Resource ;
+.
+v-fs:resultsCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "results count"@en ;
+  rdfs:label "количество результатов"@ru ;
+  rdfs:domain v-fs:Search ;
+  rdfs:range xsd:integer ;
+.
+v-fs:selected
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "selected"@en ;
+  rdfs:label "выбрано"@ru ;
+  rdfs:domain v-fs:Search ;
+  rdfs:range rdfs:Resource ;
+.
+v-fs:query_time
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "query time"@en ;
+  rdfs:label "время запроса"@ru ;
+  rdfs:domain v-fs:Search ;
+  rdfs:range xsd:integer ;
+.
+
 v-fs:SearchModel
   rdf:type v-s:ClassModel ;
-  rdfs:label "Search model"@en ;
-  rdfs:label "Модель Поиска"@ru ;
+  rdfs:label "Search class model"@en ;
+  rdfs:label "Модель класса Поиск"@ru ;
   v-ui:forClass v-fs:Search ;
   v-s:script """
-    individual.test = function () {
-      alert("model extention works! individual['v-fs:q']:" + individual["v-fs:q"].join(", "));
-    }
+	var self = individual;
+	
+	// Define Model functions
+	self.search = function (qq) {
+		self["v-fs:q"] = [ qq || self["v-fs:q"][0] ];
+		
+		// Clear previous results 
+		var t1 = Date.now();
+		
+		var results = query(veda.ticket, self["v-fs:q"][0]);
+					
+		var t2 = Date.now();
+		self["v-fs:query_time"] = [t2 - t1];
+		for (var i = 0; i < results.length; i++) {
+			if (i == results.length-1) { 
+				self["v-fs:results"] = self["v-fs:results"].concat( new veda.IndividualModel(results[i]) );
+			} else { 
+				self["v-fs:results"].push( new veda.IndividualModel(results[i]) );
+			}
+		}
+		self["v-fs:resultsCount"] = [ self["v-fs:resultsCount"].length ];
+
+		self.trigger("search:complete");
+	};
+
+	// Model messages
+	self.on("search:complete", function () {
+		//veda.trigger("search:complete", self, container);
+	});
+	
+	self.on("search:loaded", function () {
+		//veda.trigger("search:loaded", self, container);
+	});
+	
+	self.trigger("search:loaded");
+
   """
 .
 v-fs:SearchTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Search template"@en ;
-  rdfs:label "Шаблон поиска"@ru ;
+  rdfs:label "Search class template"@en ;
+  rdfs:label "Шаблон класса поиск"@ru ;
   v-ui:forClass v-fs:Search ;
   v-ui:template """
-    <div>
-      <h2>Test</h2>
-      <span about="v-fs:q" property="rdfs:label"></span>
-      <div property="v-fs:q"></div>
-      <button id="test" class="btn btn-success">test</button>
-    </div>
-    <script type="text/javascript">
-      $("#test", container).click(function () {
-        document.test();
-      });
-    </script>
+	<div role="tabpanel" id="search-tab-panel">
+		<!-- Nav tabs -->
+		<ul class="nav nav-pills" role="tablist">
+			<li role="presentation" id="params-pill" class="active"><a href="#params" aria-controls="params" role="tab" data-toggle="tab">Параметры</a></li>
+			<li role="presentation" id="results-pill"><a href="#results" id="results-link" aria-controls="results" role="tab" data-toggle="tab">Результаты <span class="badge" id="results_count" property="v-fs:resultsCount"></span></a></li>
+			<li role="presentation" id="timing-pill" class="disabled">
+				<a id="timing" style="display: none">
+					<small><small>
+						<span><strong>timing: </strong>search query time = <span property="v-fs:query_time"></span> ms</span>
+					</small></small>
+				</a>
+			</li>
+		</ul>
+		<br />
+		<!-- Tab panes -->
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="params">
+				<div id="search">
+					<div class="well">
+						<div class="container-fluid">
+							<div class="form-horizontal">
+								<div class="input-group">
+									<span property="v-fs:q"></span>
+									<span class="input-group-btn" id="q-actions">
+										<button id="search-submit" class="btn btn-primary">Найти</button>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="alert alert-warning not-found" style="display: none">
+					<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
+				</div>
+			</div>
+			<div role="tabpanel" class="tab-pane" id="results">
+				<div class="container-fluid" id="search-results" style="display: none">
+					<div rel="v-fs:results"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		$("#search-submit", container).click( function() {
+			document.search();
+		});
+	</script>
   """
 .
+
