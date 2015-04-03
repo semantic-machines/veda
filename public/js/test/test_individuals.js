@@ -684,33 +684,35 @@ test(
 				} ]
 			};
 
-			put_individual(ticket_user1.id, new_test_doc1, true);
-			put_individual(ticket_user1.id, new_test_doc2, true);
-			put_individual(ticket_user1.id, new_test_doc3, true);
-			put_individual(ticket_user1.id, new_test_doc4, true);
-//			wait_pmodule(subject_manager);
-//			wait_pmodule(condition);
-//			wait_pmodule(fulltext_indexer);
+			put_individual(ticket_user1.id, new_test_doc1, false);
+			put_individual(ticket_user1.id, new_test_doc2, false);
+			put_individual(ticket_user1.id, new_test_doc3, false);
+			put_individual(ticket_user1.id, new_test_doc4, false);
 
-			var data = query(ticket_user1.id, test_data_uid);
+			wait_pmodule(fulltext_indexer);
+			wait_pmodule(subject_manager);
+			wait_pmodule(acl_manager);
+			wait_pmodule(condition);			    
+
+			var data = query(ticket_user1.id, test_data_uid, undefined, undefined, true);
 			ok(compare(data.length, 2));
 
-			data = query(ticket_user2.id,  test_data_uid);
+			data = query(ticket_user2.id,  test_data_uid, undefined, undefined, true);
 			ok(compare(data.length, 0));
 
-			data = query(ticket_user1.id,  "'v-s:test_field' == '" + test_data_uid + "'");
+			data = query(ticket_user1.id,  "'v-s:test_field' == '" + test_data_uid + "'", undefined, undefined, true);
 			ok(compare(data.length, 2));
 			
-			data = query(ticket_user1.id,  "'v-s:test_field1' == '" + test_data_uid + "'");
+			data = query(ticket_user1.id,  "'v-s:test_field1' == '" + test_data_uid + "'", undefined, undefined, true);
 			ok(compare(data.length, 0));
 
-			data = query(ticket_user1.id,  "'v-s:test_field1' == '" + test_data_uid + " t1'");
+			data = query(ticket_user1.id,  "'v-s:test_field1' == '" + test_data_uid + " t1'", undefined, undefined, true);
 			ok(compare(data.length, 0));
 
-			data = query(ticket_user1.id,  "'v-s:test_field' == '" + test_data_uid + "' || 'v-s:test_field' == 'AAA" + test_data_uid + "'");
+			data = query(ticket_user1.id,  "'v-s:test_field' == '" + test_data_uid + "' || 'v-s:test_field' == 'AAA" + test_data_uid + "'", undefined, undefined, true);
 			ok(compare(data.length, 3));
 
-			data = query(ticket_user1.id,  "'v-s:test_fieldB' == 'CCC" + test_data_uid + "' && 'v-s:test_fieldA' == 'BBB" + test_data_uid + "'");
+			data = query(ticket_user1.id,  "'v-s:test_fieldB' == 'CCC" + test_data_uid + "' && 'v-s:test_fieldA' == 'BBB" + test_data_uid + "'", undefined, undefined, true);
 			ok(compare(data.length, 2));
 		});
 
@@ -842,29 +844,31 @@ test(
 				} ]
 			};
 
-			put_individual(ticket_user1.id, new_test_doc1, true);
-			put_individual(ticket_user1.id, new_test_doc2, true);
-			put_individual(ticket_user1.id, new_test_doc3, true);
-			put_individual(ticket_user1.id, new_test_doc4, true);
+			put_individual(ticket_user1.id, new_test_doc1, false);
+			put_individual(ticket_user1.id, new_test_doc2, false);
+			put_individual(ticket_user1.id, new_test_doc3, false);
+			put_individual(ticket_user1.id, new_test_doc4, false);
 
-			//wait_pmodule(fulltext_indexer);
+			wait_pmodule(fulltext_indexer);
+			wait_pmodule(subject_manager);
+			wait_pmodule(acl_manager);
+			wait_pmodule(condition);			    
 
-			query(ticket_user1.id, test_group_uid);
-			var data = query(ticket_user1.id, test_group_uid);
+			var data = query(ticket_user1.id, test_group_uid, undefined, undefined, true);
 			ok(compare(data.length, 4));
 
-			data = query(ticket_user1.id,  "'v-s:test_group' == '" + test_group_uid + "'");
+			data = query(ticket_user1.id,  "'v-s:test_group' == '" + test_group_uid + "'", undefined, undefined,true);
 			ok(compare(data.length, 4));
 			
 			data = query(ticket_user1.id,  
-				     "'v-s:test_datetime0' == [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'v-s:test_group' == '" + test_group_uid + "'");
+				     "'v-s:test_datetime0' == [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'v-s:test_group' == '" + test_group_uid + "'", undefined, undefined,true);
 			ok(compare(data.length, 3));
 			ok ((data[0] == new_test_doc1_uri || data[1] == new_test_doc1_uri || data[2] == new_test_doc1_uri) && 
 			    (data[0] == new_test_doc2_uri || data[1] == new_test_doc2_uri || data[2] == new_test_doc2_uri) && 
 			    (data[0] == new_test_doc3_uri || data[1] == new_test_doc3_uri || data[2] == new_test_doc3_uri));
 
 			data = query(ticket_user1.id,  
-				     "'v-s:test_datetime1' == [2014-04-01T00:00:00, 2014-06-03T00:00:00] && 'v-s:test_datetime0' == [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'v-s:test_group' == '" + test_group_uid + "'");
+				     "'v-s:test_datetime1' == [2014-04-01T00:00:00, 2014-06-03T00:00:00] && 'v-s:test_datetime0' == [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'v-s:test_group' == '" + test_group_uid + "'", undefined, undefined,true);
 			ok(compare(data.length, 2));
 			ok ((data[0] == new_test_doc1_uri || data[1] == new_test_doc1_uri) && (data[0] == new_test_doc2_uri || data[1] == new_test_doc2_uri));
 		});
