@@ -263,6 +263,7 @@ path {
 #workflow-canvas {
 	background: #EEEEEE;
 	position: relative;
+	cursor: move;
 }
 
 #workflow-context-menu {

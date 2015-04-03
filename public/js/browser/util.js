@@ -73,4 +73,19 @@ veda.Module(function Util(veda) { "use strict";
 		});
 	}
 	
+	veda.Util.forSubIndividual = function (net, property, id, func) {
+		if (net[property]===undefined) return;
+		net[property].forEach(function(el) {
+			if (el.id == id) {
+				func(el);
+			}
+		});
+	}
+
+	veda.Util.removeSubIndividual = function (net, property, id) {
+		if (net[property]===undefined) return undefined;
+		return net[property].filter( function (item) {
+			return item.id !== id; 
+		});
+	}
 });

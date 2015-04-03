@@ -3,24 +3,6 @@
  * 
  * Inspired by http://github.com/hemantsshetty/jsWorkflow
  */
-
-
-function getSubIndividual(net, property, id, func) {
-	if (net[property]===undefined) return;
-	net[property].forEach(function(el) {
-		if (el.id == id) {
-			func(el);
-		}
-	});
-}
-
-function removeSubIndividual(net, property, id) {
-	if (net[property]===undefined) return undefined;
-	return net[property].filter( function (item) {
-		return item.id !== id; 
-	});
-}
-
 //[BEGIN] Block of net editor
 
 var jsWorkflow = jsWorkflow || {};
@@ -88,6 +70,8 @@ jsWorkflow.ready = jsPlumb.ready;
                   localStorage.setItem("workflow"+net.id+"-offsetY", -ui.position.top-canvasSizePx/2); 
               	  $("#workflow-context-menu").hide();
                 }
+            }).on("click", function() {
+            	$("#workflow-context-menu").hide();
             });
 
             instance = this.instance;
@@ -121,7 +105,7 @@ jsWorkflow.ready = jsPlumb.ready;
             instance.bind("dblclick", function(transition) {            	 
                  if (confirm('Delete Flow?')) {
                 	 net['v-wf:consistsOf'] = removeSubIndividual(net, 'v-wf:consistsOf', transition.id);
-                	 getSubIndividual(net, 'v-wf:consistsOf', transition.sourceId, function (el) {
+                	 veda.Util.forSubIndividual(net, 'v-wf:consistsOf', transition.sourceId, function (el) {
                 		 el['v-wf:hasFlow'] = removeSubIndividual(el, 'v-wf:hasFlow', transition.id);
                 	 });
                 	 instance.detach(transition);
@@ -160,14 +144,14 @@ jsWorkflow.ready = jsPlumb.ready;
                 
                 net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]); // <- Add new Flow to Net
                 
-                getSubIndividual(net, 'v-wf:consistsOf', info.sourceId, function(el) {
+                veda.Util.forSubIndividual(net, 'v-wf:consistsOf', info.sourceId, function(el) {
                 	if (!('v-wf:hasFlow' in el)) {
         				el.defineProperty('v-wf:hasFlow');
         			}
         			el['v-wf:hasFlow'] = el['v-wf:hasFlow'].concat([individual]); // <- Add new Flow to State
                 });
                 
-                getSubIndividual(net, 'v-wf:consistsOf', info.targetId, function(el) {
+                veda.Util.forSubIndividual(net, 'v-wf:consistsOf', info.targetId, function(el) {
                 	 individual["v-wf:flowsInto"] = [el]; // setup Flow source
                 });
                 
@@ -223,7 +207,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 	var _this = this,
                 	    menu = $("#workflow-context-menu ul");
                 	menu.html('');
-                	getSubIndividual(net, 'v-wf:consistsOf', _this.id, function (el) {
+                	veda.Util.forSubIndividual(net, 'v-wf:consistsOf', _this.id, function (el) {
                 	  if (!(el['v-wf:startingMapping']===undefined)) {	
                 	     el['v-wf:startingMapping'].forEach(function(var_map) {
                     	   var $item = $("<li/>").appendTo(menu);
@@ -319,7 +303,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 instance.draggable(windows, {
                   drag: function (event, ui) { //gets called on every drag
                 	  $("#workflow-context-menu").hide();
-                      getSubIndividual(net, 'v-wf:consistsOf', event.target.id, function(el) {
+                      veda.Util.forSubIndividual(net, 'v-wf:consistsOf', event.target.id, function(el) {
               			  el['v-wf:locationX'] = [new Number(Math.round(ui.position.left-canvasSizePx/2))];
             			  el['v-wf:locationY'] = [new Number(Math.round(ui.position.top-canvasSizePx/2))];
                       });
@@ -560,7 +544,7 @@ jsWorkflow.ready = jsPlumb.ready;
            		individualE["rdf:type"] = [veda.ontology["v-wf:ExecutorDefinition"]];
                 individualE['rdfs:label'] = ['Executor `'+executorName+'`'];
                 
-                getSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
+                veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
                 	state['v-wf:executor'] = (state['v-wf:executor'] === undefined)?[individualE]:state['v-wf:executor'].concat([individualE]); // <- Add new Executor to State
                 });
             }
@@ -588,7 +572,7 @@ jsWorkflow.ready = jsPlumb.ready;
            		individualM["v-wf:mapsTo"] = [individualV];
                 individualM['v-wf:mappingExpression'] = ["context.getVariableValue ('"+variableName+"')"];
                 
-                getSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
+                veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
                		state['v-wf:inputVariable'] = (state['v-wf:inputVariable'] === undefined)?[individualV]:state['v-wf:inputVariable'].concat([individualV]); // <- Add new Varibale to State
                 	state['v-wf:startingMapping'] = (state['v-wf:startingMapping'] === undefined)?[individualM]:state['v-wf:startingMapping'].concat([individualM]); // <- Add new Mapping to State
                 });
@@ -596,14 +580,14 @@ jsWorkflow.ready = jsPlumb.ready;
             
             // Remove from state, defined by stateId, variable `varId` and its mapping `mapId`
             instance.removeVarProperty = function(stateId, varId, mapId) {
-            	getSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
+            	veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
             		state['v-wf:inputVariable'] = removeSubIndividual(state, 'v-wf:inputVariable', varId);
             		state['v-wf:startingMapping'] = removeSubIndividual(state, 'v-wf:startingMapping', mapId);
             	});
             }
             
             instance.removeExecutorProperty = function(stateId, executorId) {
-            	getSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
+            	veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
             		state['v-wf:executor'] = removeSubIndividual(state, 'v-wf:executor', executorId);
             	});
             }
@@ -611,7 +595,7 @@ jsWorkflow.ready = jsPlumb.ready;
             instance.deleteState = function(element) {
             	instance.detachAllConnections(element);
             	instance.remove(element);
-            	net['v-wf:consistsOf'] = net['v-wf:consistsOf'].filter(function (el) {if (el.id!=element.id) return el; });
+            	net['v-wf:consistsOf'] = removeSubIndividual(net, 'v-wf:consistsOf', element.id);
             }
             
             instance.createFlow = function(state, flow) {
