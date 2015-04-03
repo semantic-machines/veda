@@ -129,11 +129,11 @@ function set_trace(idx, state, callback) {
 		.done( function (data) { callback(data) } );
 }
 
-function query(ticket, query, sort, callback) {
+function query(ticket, query, sort, databases, reopen, callback) {
 	var params = {
 		type: "GET",
 		url: "query",
-		data: { "ticket": ticket, "query": query, "sort": sort || null }
+		data: { "ticket": ticket, "query": query, "sort": sort || null, "databases" : databases || null, "reopen" : reopen || false }
 	};
 	if(!callback) {
 		params.async = false;
