@@ -1,10 +1,12 @@
 /**
- * NET EDITOR
+ * @class jsWorkflow.Instance
  * 
- * Inspired by http://github.com/hemantsshetty/jsWorkflow
+ * Net editor. Used to create / modify / view workflow nets.
+ * 
+ * Inspired by [http://github.com/hemantsshetty/jsWorkflow][1]
+ * 
+ * [1]: http://github.com/hemantsshetty/jsWorkflow
  */
-//[BEGIN] Block of net editor
-
 var jsWorkflow = jsWorkflow || {};
 
 // Leveraging the ready function of jsPlumb.
@@ -12,6 +14,7 @@ jsWorkflow.ready = jsPlumb.ready;
 
 // Self execute this code
 (function() {
+	
     // No API call should be made until the DOM has been initialized.
     jsWorkflow.ready(function() {
         /**
@@ -23,11 +26,13 @@ jsWorkflow.ready = jsPlumb.ready;
             // Get a new instance of jsPlumb.
             this.instance = jsPlumb.getInstance();
         }
+        
         /**
          *Initialize the workflow instance.
          *@method init
          *@param {String} workflowData Id of an HTML container within which the worlflow is to be rendered
-         *@param {Object} workflowData A workflow object to render new workflow State elements in the DOM
+         *@param {Object} veda global "veda" instance
+         *@param {veda.IndividualModel} net individual of rdfs:type "v-wf:Net"
          *return {Object} instance Returns an initialized instance of the workflow object
          */
         jsWorkflow.Instance.prototype.init = function(workflowData, veda, net) {
@@ -315,25 +320,10 @@ jsWorkflow.ready = jsPlumb.ready;
                     filter: ".ep",
                     anchor: ["Continuous", { faces:[ "top", "left", "right" ] } ],
                     connector: [
-						/*"Bezier", {
-                    	curviness: 50
-						}*/
 						"Straight", {
                     	stub: 30,
                         gap: 0
 						}
-						/*"Flowchart", {
-                    	alwaysRespectStubs: false,
-                        stub: 0,
-                        gap: 0,
-                        midpoint: 0.5,
-                        cornerRadius: 0
-						}*/
-						/*"StateMachine", {
-                    	margin: 5,
-                    	curviness: 20,
-                        proximityLimit: 100
-						}*/
                     ],
                     connectorStyle: {
                         strokeStyle: "#666666",
@@ -380,10 +370,10 @@ jsWorkflow.ready = jsPlumb.ready;
 
                    	if ($(_this).hasClass('create-condition')) {
                    		individual["rdf:type"] = [veda.ontology["v-wf:Condition"]];
-                    	instance.createState('v-wf:Condition', individual);
+                    	instance.createState(individual);
                     } else { 
                         individual["rdf:type"] = [veda.ontology["v-wf:Task"]];
-                    	instance.createState('v-wf:Task', individual);
+                    	instance.createState(individual);
                     }
 
                    	net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]); // <- Add new State to Net	
@@ -393,66 +383,12 @@ jsWorkflow.ready = jsPlumb.ready;
                 }
                 $(this).blur();
             });
-
-            /**
-             *Get all State transitions
-             *@method getStateTransitions A public method
-             *@return {Object} workflowTransition List of all States and their transition (connection) with other States
-             */
-            instance.getStateTransitions = function() {
-                var plumbConnections = instance.getAllConnections(),
-                        connectionCount = plumbConnections.length,
-                        workflowTransition = {},
-                        sourceID,
-                        targetID;
-
-                for (var i = 0; i < connectionCount; i += 1) {
-
-                    sourceID = plumbConnections[i]['sourceId'];
-                    targetID = plumbConnections[i]['targetId'];
-
-                    workflowTransition[sourceID] = (workflowTransition[sourceID]) ?
-                            (workflowTransition[sourceID] + ',' + plumbConnections[i]['targetId']) :
-                            plumbConnections[i]['targetId'];
-                }
-                return workflowTransition;
-            }
-
-            /**
-             *Get all State names
-             *@method getStateNames A public method
-             *@return {Object} workflowStateName List of all State Element Ids with their respective names
-             */
-            instance.getStateNames = function() {
-                var stateCount = windows.length,
-                        workflowStateName = {};
-
-                for (var i = 0; i < stateCount; i += 1) {
-
-                    workflowStateName[$(windows[i]).attr('id')] = $(windows[i]).text().trim();
-                }
-                return workflowStateName;
-            }
-
-            /**
-             *Get all State position
-             *@method getStatePositions A public method
-             *@return {Object} workflowStatePosition List of all State Element Ids with their respective css positions (top and left)
-             */
-            instance.getStatePositions = function() {
-
-                // Get updates array of State elements.
-                windows = jsPlumb.getSelector("." + workflow + " .w");                
-                var stateCount = windows.length,
-                        workflowStatePosition = {};
-
-                for (var i = 0; i < stateCount; i += 1) {
-
-                    workflowStatePosition[$(windows[i]).attr('id')] = $(windows[i]).position();
-                }
-                return workflowStatePosition;
-            }
             
+            /**
+             * @method
+             * Change current scale.
+             * @param scale new scale
+             */
             instance.changeScale = function(scale) {
             	$("#workflow-context-menu").hide();
             	currentScale = scale;
@@ -463,47 +399,39 @@ jsWorkflow.ready = jsPlumb.ready;
             		'-webkit-transform': 'scale('+currentScale+','+currentScale+')', /* Chrome, Safari, Opera */
             		'transform': 'scale('+currentScale+','+currentScale+')'
             	});
-            } 
-
-
-            /**
-             *Get the workflow Object
-             *@method getWorkflow A public method
-             *@return {Object} workflow Current workflow object with details such as
-             /* State transitions, State names, State positions and workflow container Id
-             */
-            instance.getWorkflow = function() {
-
-                // Get updates array of State elements.
-                windows = jsPlumb.getSelector("." + workflow + " .w");
-
-                var workflowObject = {};
-
-                workflowObject['transitions'] = instance.getStateTransitions();
-                workflowObject['names'] = instance.getStateNames();
-                workflowObject['positions'] = instance.getStatePositions();
-                workflowObject['container'] = workflow;
-
-                return workflowObject;
             }
             
-            instance.getSplitJoinType = function(sj, type) {
+            /**
+             * @method getSplitJoinType
+             * Generate css class for state (split-[xor-or-and-none] or join-[xor-or-and-none])
+             * @param {String} sj `split` or `join`
+             * @param {veda.IndividualModel} state state
+             * @return css class name for this type of split/join  
+             */
+            instance.getSplitJoinType = function(sj, state) {
+            	if (!state.hasValue('v-wf:'+sj)) {
+            		return ' '+sj+'-no';
+            	}
+            	var type = state['v-wf:'+sj][0].id;
             	if (type == null || type == undefined || type == '') {
             		return ' '+sj+'-no';
             	}
-            	var res = 'no';
             	
             	if (type == 'v-wf:XOR')  return ' '+sj+'-xor';
             	if (type == 'v-wf:OR')   return ' '+sj+'-or';
             	if (type == 'v-wf:AND')  return ' '+sj+'-and';
             	if (type == 'v-wf:NONE') return ' '+sj+'-none';
             	
-            	return ' '+sj+'-'+res;
+            	return ' '+sj+'-no';
             }
             
-            // Add State to Workspace
-            instance.createState = function(type, state) {
-            	// TODO refactor
+            /**
+             * @method
+             * Apply state to canvas
+             */
+            instance.createState = function(state) {
+            	if (!state.hasValue('rdf:type')) return;
+            	var type = state['rdf:type'][0].id;
             	var stateElement = '';
             	switch (type) {
     			case 'v-wf:InputCondition':    				
@@ -517,8 +445,8 @@ jsWorkflow.ready = jsPlumb.ready;
     				break;
     			case 'v-wf:Task':    				
             		stateElement = '<div class="w state-task split-join '
-            			+ instance.getSplitJoinType('split', (state['v-wf:split']!=null && state['v-wf:split'].length>0)?state['v-wf:split'][0].id:null)
-            			+ instance.getSplitJoinType('join', (state['v-wf:join']!=null && state['v-wf:join'].length>0)?state['v-wf:join'][0].id:null)
+            			+ instance.getSplitJoinType('split', state)
+            			+ instance.getSplitJoinType('join', state)
             			+ '" id="' + state.id + '" style="left: ' 
             			+ (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' 
             			+ (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div class="state-name">' + state['rdfs:label'][0] + '</div><div class="ep"></div></div>';
@@ -616,7 +544,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	// Create States
             	net['v-wf:consistsOf'].forEach(function(el) {
             		el['rdf:type'].forEach(function (type) {
-            			instance.createState(type.id, el);
+            			instance.createState(el);
             		});
             	});
             	
@@ -630,16 +558,18 @@ jsWorkflow.ready = jsPlumb.ready;
             	});
             }
             
-            /**
+            /*
              * Optimize view of net: all elements must be visible and fit screen (through change scale and position of canvas)
+             * @returns 
              */
             instance.optimizeView = function() {
             	var minx = undefined;
             	var maxx = undefined;
             	var miny = undefined;
             	var maxy = undefined;
-            	var scaleh = undefined;
-            	var scalew = undefined;
+            	var scale = undefined;
+            	var offsetX = 0;
+            	var offsetY = 0;
             	// read ranges
             	net['v-wf:consistsOf'].forEach(function(state) {
             		if (!(state['v-wf:locationX']===undefined) && state['v-wf:locationX'].length>0) {
@@ -652,20 +582,29 @@ jsWorkflow.ready = jsPlumb.ready;
             		}
             	});
             	// TODO update this from css;
+            	miny-=25;
+            	minx-=25;
             	maxx+=100;
             	maxy+=100;
+            	
             	// read viewport div
             	$(".workflow-canvas-wrapper").each(function() {
-            		scaleh = this.clientHeight/(maxy-miny);
-            		scalew = this.clientWidth/(maxx-minx);
+            		var scaleX = this.clientWidth/(maxx-minx);
+            		var scaleY = this.clientHeight/(maxy-miny);
+            		scale = Math.min(scaleX, scaleY);
+            		if (scaleX>scaleY) {
+            			offsetX = (this.clientWidth - (maxx-minx)*scale) /2;
+            		} else {
+            			offsetY = (this.clientHeight - (maxy-miny)*scale) /2;
+//            			offsetY = (maxy-miny)*(scaleY - scaleX) /2;
+            		}
             	});
             	// change scale and offset
-            	var s = Math.min(scaleh, scalew);
                 $('#'+workflowData).css({
-           			'left': (-minx*scalew-canvasSizePx/2)+'px',
-           			'top': (-miny*scaleh-canvasSizePx/2)+'px',
+           			'left': (-minx*scale+offsetX-canvasSizePx/2)+'px',
+           			'top': (-miny*scale+offsetY-canvasSizePx/2)+'px',
            		});
-                instance.changeScale(s);
+                instance.changeScale(scale);
             }
 
             instance.optimizeView();
