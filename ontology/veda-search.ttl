@@ -165,7 +165,7 @@ v-fs:SearchModel
 				self["v-fs:results"].push( new veda.IndividualModel(results[i]) );
 			}
 		}
-		self["v-fs:resultsCount"] = [ self["v-fs:resultsCount"].length ];
+		self["v-fs:resultsCount"] = [ results.length ];
 
 		self.trigger("search:complete");
 	};
@@ -225,7 +225,7 @@ v-fs:SearchTemplate
 				</div>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="results">
-				<div class="container-fluid" id="search-results" style="display: none">
+				<div class="container-fluid" id="search-results">
 					<div rel="v-fs:results"></div>
 				</div>
 			</div>
