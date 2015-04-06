@@ -1,14 +1,16 @@
-// Document Model
-
+/**
+ * @class veda.IndividualModel 
+ * 
+ * This class is used to manipulate with individuals.
+ */
 veda.Module(function IndividualModel(veda) { "use strict";
 
-	/* 
-	 * Параметр noCache используется для извлечения индивида из базы данных,
-	 * если параметр отсутствует (чаще всего) либо равен false,
-	 * делается попытка извлечения объект из кэша браузера.
-	 */
-	
 	//var cnt = 0;
+	/**
+	 * @constructor
+	 * @param {String} uri URI of individual. If not specified, than id of individual will be generated automatically. 
+	 * @param {boolean} noCache turn cache off. If false or not set, than object will be return from browser cache. If true or individual not found in cache - than individual will be requested from database 
+	 */
 	veda.IndividualModel = function (uri, noCache) {
 		//console.log("individual model:", ++cnt, uri);
 		
@@ -21,6 +23,15 @@ veda.Module(function IndividualModel(veda) { "use strict";
 		var values = {};
 		self.properties = {};
 
+		/**
+		 * @method
+		 * 
+		 * You must define property in individual  
+		 * 
+		 * @param {String} property_uri name of property
+		 * @param {Function} getterCB callback function that called after get method executed
+		 * @param {Function} setterCB callback function that called after set method executed
+		 */
 		self.defineProperty = function (property_uri, getterCB, setterCB) {
 			
 			//properties[property_uri] = undefined;
@@ -120,6 +131,11 @@ veda.Module(function IndividualModel(veda) { "use strict";
 
 		function isInteger (n) { return n % 1 === 0; }
 		
+		/**
+		 * @method
+		 * Load individual specified by uri from database. If noCache parameter (from constructor) is not true, than try to load individual from browser cache first.
+		 * @param {String} uri individual uri
+		 */
 		self.load = function (uri) {
 			self.trigger("individual:beforeLoad");
 			if (typeof uri == "string") {
@@ -137,6 +153,7 @@ veda.Module(function IndividualModel(veda) { "use strict";
 					}
 				}
 			} else if (uri instanceof veda.IndividualModel) {
+				// TODO may be delete (this part of code is not clear)
 				self = uri;
 				self.trigger("individual:afterLoad");
 				return;
@@ -154,6 +171,10 @@ veda.Module(function IndividualModel(veda) { "use strict";
 			self.trigger("individual:afterLoad");
 		};
 
+		/**
+		 * @method
+		 * Save current individual to database
+		 */
 		self.save = function() {
 			self.trigger("individual:beforeSave");
 			Object.keys(individual).reduce(function (acc, property_uri) {
@@ -174,6 +195,10 @@ veda.Module(function IndividualModel(veda) { "use strict";
 			self.trigger("individual:afterSave", original_individual);
 		};
 
+		/**
+		 * @method
+		 * Reset current individual to database
+		 */
 		self.reset = function () {
 			self.trigger("individual:beforeReset");
 			individual = JSON.parse(original_individual);
@@ -187,6 +212,11 @@ veda.Module(function IndividualModel(veda) { "use strict";
 			self.trigger("individual:afterReset");
 		};
 
+		/**
+		 * @method
+		 * @param {String} property_uri property name
+		 * @return {boolean} is requested property exists in this individual
+		 */
 		self.hasValue = function (property_uri) {
 			return !!(self[property_uri] && self[property_uri].length);
 		};
