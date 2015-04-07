@@ -146,41 +146,83 @@ v-fs:SearchModel
   v-ui:forClass v-fs:Search ;
   v-s:script """
 	var self = individual;
+	var results_keys;	
+
+	self.selectedType = {};
+	self.q = "";
+	self.queryPrefix = "";
+	self.sort = "";
+	self.selected = {};
+	self.results = {};
+	self.results_count = undefined;
+	self.query_time = undefined;
 	
 	// Define Model functions
-	self.search = function (qq) {
-		self["v-fs:q"] = [ qq || self["v-fs:q"][0] ];
-		
-		// Clear previous results 
-		var t1 = Date.now();
-		
-		var results = query(veda.ticket, self["v-fs:q"][0]);
-					
-		var t2 = Date.now();
-		self["v-fs:query_time"] = [t2 - t1];
-		for (var i = 0; i < results.length; i++) {
-			if (i == results.length-1) { 
-				self["v-fs:results"] = self["v-fs:results"].concat( new veda.IndividualModel(results[i]) );
-			} else { 
-				self["v-fs:results"].push( new veda.IndividualModel(results[i]) );
-			}
+	self.toggleSelected = function (i) {
+		if (!self.results[ results_keys[i] ]) return self.selected;
+		if (self.results[ results_keys[i] ].id in self.selected) {
+			delete self.selected[self.results[ results_keys[i] ].id];
+		} else {
+			self.selected[self.results[ results_keys[i] ].id] = self.results[ results_keys[i] ];
 		}
-		self["v-fs:resultsCount"] = [ results.length ];
+		self.trigger("search:selected", self.results[ results_keys[i] ], self.selected);
+		return self.selected;
+	}
+
+	self.toggleAll = function () {
+		if (Object.keys(self.selected).length != self.results_count) {
+			for (var i=0; i < self.results_count; i++) {
+				self.selected[self.results[ results_keys[i] ].id] = self.results[ results_keys[i] ];
+			}
+		} else {
+			self.selected = {};
+		}
+		return self.selected;
+	}
+
+	self.search = function (q) {
+		self["v-fs:q"] = q ? [ q ] : self["v-fs:q"];
+		q = self["v-fs:q"][0];
+				
+		// Clear previous results 
+		self.results = {}; 
+		self.selected = {};
+		self.query_time = 0;
+		var t1 = Date.now();
+
+		// Transform user input like "roman karpov" to "'*'=='roman' && '*'=='karpov'"
+		if (q && q.indexOf("==") < 0) {
+			q = "(" + q.trim().split(" ").map(function (t) { return "'*'=='" + t + "*'"}).join("&&") + ")";
+		}
+
+		// Prefix query if defined
+		q = ( self.hasValue("v-fs:queryPrefix") ? self["v-fs:queryPrefix"][0] + "&&" : "") + (q ? q : "") ;
+
+		var results = query(veda.ticket, q, self.sort);
+
+		var t2 = Date.now();
+		self.query_time = t2 - t1;
+		for (var i in results) {
+			(function(i){
+				Object.defineProperty(self.results, results[i], {
+					get: function () { 
+						if (typeof results[i] == 'object') return results[i];
+						return results[i] = new veda.IndividualModel(results[i]);
+					},
+					enumerable: true,
+					configurable: true
+				});
+			})(i);
+		}
+		self.results_count = results.length;
+		results_keys = Object.getOwnPropertyNames(self.results);
 
 		self.trigger("search:complete");
 	};
-
-	// Model messages
-	self.on("search:complete", function () {
-		//veda.trigger("search:complete", self, container);
-	});
 	
-	self.on("search:loaded", function () {
-		//veda.trigger("search:loaded", self, container);
-	});
+	// Search if params given
+	if ( self.hasValue("v-fs:q") || self.hasValue("v-fs:queryPrefix") ) self.search();
 	
-	self.trigger("search:loaded");
-
   """
 .
 v-fs:SearchTemplate
@@ -189,15 +231,15 @@ v-fs:SearchTemplate
   rdfs:label "Шаблон класса поиск"@ru ;
   v-ui:forClass v-fs:Search ;
   v-ui:template """
-	<div role="tabpanel" id="search-tab-panel">
+	<div role="tabpanel" id="srch-tab-panel">
 		<!-- Nav tabs -->
 		<ul class="nav nav-pills" role="tablist">
-			<li role="presentation" id="params-pill" class="active"><a href="#params" aria-controls="params" role="tab" data-toggle="tab">Параметры</a></li>
-			<li role="presentation" id="results-pill"><a href="#results" id="results-link" aria-controls="results" role="tab" data-toggle="tab">Результаты <span class="badge" id="results_count" property="v-fs:resultsCount"></span></a></li>
-			<li role="presentation" id="timing-pill" class="disabled">
-				<a id="timing" style="display: none">
+			<li role="presentation" class="active"><a id="params-pill" href="#params" aria-controls="params" role="tab" data-toggle="tab">Параметры</a></li>
+			<li role="presentation"><a id="results-pill" href="#results" aria-controls="results" role="tab" data-toggle="tab">Результаты <span class="badge" property="v-fs:resultsCount"></span></a></li>
+			<li role="presentation" class="disabled">
+				<a id="timing-pill">
 					<small><small>
-						<span><strong>timing: </strong>search query time = <span property="v-fs:query_time"></span> ms</span>
+						<span><strong>timing: </strong>search query time = <span id="query-time" property="v-fs:query_time"></span> ms</span>
 					</small></small>
 				</a>
 			</li>
@@ -206,18 +248,16 @@ v-fs:SearchTemplate
 		<!-- Tab panes -->
 		<div class="tab-content">
 			<div role="tabpanel" class="tab-pane active" id="params">
-				<div id="search">
-					<div class="well">
-						<div class="container-fluid">
-							<div class="form-horizontal">
-								<div class="input-group">
-									<span property="v-fs:q"></span>
-									<span class="input-group-btn" id="q-actions">
-										<button id="search-submit" class="btn btn-primary">Найти</button>
-									</span>
-								</div>
+				<div class="well">
+					<div class="container-fluid">
+						<form role="form" class="form-horizontal">
+							<div class="input-group">
+								<input type="text" class="form-control" id="q"/>
+								<span class="input-group-btn" id="q-actions">
+									<button type="submit" id="srch-submit" class="btn btn-primary">Найти</button>
+								</span>
 							</div>
-						</div>
+						</form>
 					</div>
 				</div>
 				<div class="alert alert-warning not-found" style="display: none">
@@ -226,15 +266,137 @@ v-fs:SearchTemplate
 			</div>
 			<div role="tabpanel" class="tab-pane" id="results">
 				<div class="container-fluid" id="search-results">
-					<div rel="v-fs:results"></div>
+					<ol id="search-results-list"></ol>
+					<hr/>
+					<div class="text-center">
+						<ul class="pagination" id="pager"></ul>
+						<br />
+					</div>
+				</div>
+				<div class="alert alert-warning not-found" style="display: none">
+					<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 				</div>
 			</div>
 		</div>
 	</div>
 	<script>
-		$("#search-submit", container).click( function() {
-			document.search();
+		var self = document;
+		var q = $("#q", container);
+		var params = $("#params", container);
+		var results = $("#results", container);
+		var srchSubmit = $("#srch-submit", container);
+		var searchResults = $("#search-results", container);
+		var searchResultsList = $("#search-results-list", container);
+		var notFound = $(".not-found", container);
+		var paramsPill = $("#params-pill", container);
+		var resultsPill = $("#results-pill", container);
+		var timingPill = $("#timing-pill", container);
+		var $render_time = $("#render_time", container);
+		var $_get_count = $("#get_count", container);
+		var $_get_summary_time = $("#get_summary_time", container);
+		var pager = $("#pager", container);
+		
+		if (self.hasValue("v-fs:q")) {
+			q.val(self["v-fs:q"][0]);
+		}
+		q.change(function () {
+			self[property_uri] = [ q.val() ];
 		});
+		srchSubmit.click( function (e) {
+			e.preventDefault();
+			self.search();
+		});
+		
+		self.on("search:complete", function () {
+			
+			var rt1, rt2, render_time, gc1, gc2, _get_count, gst1, gst2, _get_summary_time;
+			rt1 = Date.now();
+			gc1 = get_count;
+			gst1 = get_summary_time;
+			
+			self.currentPage = (typeof page === 'number' ? page : self.currentPage) || 0;
+			
+			if (self.results_count < self.currentPage * veda.user.displayedElements) 
+				self.currentPage = Math.floor(self.results_count / veda.user.displayedElements) + 1 * (self.results_count % veda.user.displayedElements ? 1 : 0) - 1;
+			
+			// Show/hide 'results' or 'not found'
+			if (!self.hasValue("v-fs:q") && !self.hasValue("v-fs:queryPrefix")) {
+				q.focus();
+				paramsPill.tab("show");
+				notFound.hide();
+				return;
+			} else if ((self.q || self.queryPrefix) && !self.results_count) {
+				q.focus();
+				paramsPill.tab("show");
+				notFound.show();
+				return;
+			} else {
+				resultsPill.tab("show");
+			}
+			
+			notFound.hide();
+			resultsPill.tab("show");
+			searchResultsList
+				.empty()
+				.attr("start", self.currentPage * veda.user.displayedElements + 1);
+			pager.empty();
+			
+			
+			// Show results
+			var keys = Object.getOwnPropertyNames(self.results);
+			for (var i = self.currentPage * veda.user.displayedElements; i < (self.currentPage + 1) * veda.user.displayedElements && i < self.results_count; i++) {
+				(function (i) { 
+					setTimeout(function () {
+
+						var $li = $("<li/>").appendTo( searchResultsList );
+
+						// Select search results 
+						//var $select = $( $("#search-select-template").html() );
+						//$("input[type='checkbox']", $select).on("click", function (e) {
+						//	self.toggleSelected(i);
+						//});
+						//$li.append( $select );
+						
+						var search_result = new veda.SearchResultModel(self.results[ keys[i] ], $li);
+						//if (search_result.id in self.selected) $("input", $select).attr("checked", "checked");
+					
+						if (i == self.results_count - 1 || i == (self.currentPage + 1) * veda.user.displayedElements - 1) {
+							rt2 = Date.now();
+							render_time = rt2 - rt1;
+							$render_time.html(render_time);
+							gc2 = get_count;
+							_get_count = gc2 - gc1;
+							$_get_count.html(_get_count);
+							gst2 = get_summary_time;
+							_get_summary_time = gst2 - gst1;
+							$_get_summary_time.html(_get_summary_time);
+							timingPill.show();
+						}
+						
+					}, 0);
+				}(i));
+			}
+			
+			// Show pager
+			for (var page = 0; page < Math.floor(self.results_count / veda.user.displayedElements) + 1 * (self.results_count % veda.user.displayedElements ? 1 : 0); page++) {
+				var $page = $("<li/>")
+					.attr("class", page == self.currentPage ? "active" : "")
+					.appendTo(pager);
+				var $a = $("<a/>", {
+					"text" : page + 1, 
+					"click": (function (page) {
+						return function (event) {
+							event.preventDefault(); 
+							self.currentPage = page;
+							self.trigger("search:complete");
+						}
+					})(page), 
+					"href" : ""
+				}).appendTo($page);
+			}
+			
+		});
+		
 	</script>
   """
 .

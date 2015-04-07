@@ -270,7 +270,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			
 			var propertyContainer = $(this), 
 				property_uri = propertyContainer.attr("property"),
-				propertyTemplate = propertyContainer.attr("template"),
+				//propertyTemplate = propertyContainer.attr("template"),
 				spec = specs[property_uri];
 				
 			renderProperty(document, property_uri, propertyContainer, spec, mode);
@@ -432,8 +432,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 		if ( !document[property_uri] ) document.defineProperty(property_uri);
 		var values = document[property_uri];
-
-		container.attr("content", values.join(", "));
+		
+		container.attr("content", values.join(", "));		
 
 		switch (property["rdfs:range"][0].id) {
 			case "xsd:boolean": 
