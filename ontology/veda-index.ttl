@@ -82,6 +82,7 @@ vdi:index_01
   vdi:forClass v-wf:Variable ;
   vdi:forClass v-wf:Process ;
   vdi:forClass v-wf:WorkItem ;
+  vdi:forClass v-wf:WorkOrder ;
   vdi:indexed_to "system" ;
 .
 

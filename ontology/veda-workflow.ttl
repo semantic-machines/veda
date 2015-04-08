@@ -255,6 +255,7 @@ v-wf:executor
 	rdfs:label "executor"@en ;
 	rdfs:label "исполнитель"@ru ;
 	rdfs:domain v-wf:Task ;
+	rdfs:domain v-wf:WorkOrder ;
 	rdfs:range v-wf:ExecutorDefinition ;
 	rdfs:range v-s:Appointment ;
 	rdfs:range v-s:Codelet ;
@@ -435,6 +436,7 @@ v-wf:inputVariable
 	rdfs:label "input variable"@en ;
 	rdfs:label "входная переменная"@ru ;
 	rdfs:domain v-wf:Process ;
+	rdfs:domain v-wf:WorkItem ;
 	rdfs:range v-wf:Variable ;
 .
 v-wf:outputVariable
@@ -450,6 +452,20 @@ v-wf:localVariable
 	rdfs:label "локальная переменная"@ru ;
 	rdfs:domain v-wf:Process ;
 	rdfs:range v-wf:Variable ;
+.
+
+# --------------------------- WorkOrder --------------------------
+v-wf:WorkOrder
+	rdf:type owl:Class ;
+	rdfs:label "work order"@en ;
+	rdfs:label "рабочее задание"@ru ;
+.
+v-wf:forWorkItem
+	rdf:type rdf:Property ;
+	rdfs:label "относится к выполняемой задаче"@ru ;
+	rdfs:label "for work item"@en ;
+	rdfs:domain v-wf:WorkOrder ;
+	rdfs:range v-wf:WorkItem ;
 .
 
 # --------------------------- WorkItem ---------------------------
@@ -473,6 +489,14 @@ v-wf:forNetElement
 	rdfs:label "for net element"@en ;
 	rdfs:domain v-wf:WorkItem ;
 	rdfs:range v-wf:NetElement ;
+.
+
+v-wf:workOrderList
+	rdf:type rdf:Property ;
+	rdfs:label "список заданий для исполнителей"@ru ;
+	rdfs:label "list task for executor"@en ;
+	rdfs:domain v-wf:WorkItem ;
+	rdfs:range v-wf:WorkOrder ;
 .
 
 v-wf:isCompleted
