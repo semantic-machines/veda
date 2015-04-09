@@ -464,7 +464,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		}
 		
 		var controls = values.map( renderControl );
-		if (!values.length) controls.push( renderControl(emptyVal, 0) );
+		if (!controls.length) controls.push( renderControl(emptyVal, 0) );
 		
 		controls.map(function (control) {
 			control.trigger(mode);
