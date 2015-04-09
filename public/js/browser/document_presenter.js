@@ -136,11 +136,11 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		});
 		
 		// Actions
-		var $edit = $("#edit", classTemplate),
-			$save = $("#save", classTemplate),
-			$cancel = $("#cancel", classTemplate),
-			$delete = $("#delete", classTemplate),
-			$search = $("#search", classTemplate);
+		var $edit = $("#edit.action", classTemplate),
+			$save = $("#save.action", classTemplate),
+			$cancel = $("#cancel.action", classTemplate),
+			$delete = $("#delete.action", classTemplate),
+			$search = $("#search.action", classTemplate);
 
 		// Show / hide buttons in different modes
 		document.on("view edit search", function (mode) {
@@ -155,25 +155,29 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		$edit.on("click", function (e) {
 			document.trigger("edit");
 		});
+		
 		// Save
 		$save.on("click", function (e) {
 			document.trigger("save");
 		});
 		document.on("validation:complete", function (e) {
-			var res = Object.keys(document.isValid).reduce(function (acc, key) {
-				return acc && document.isValid[key];
+			var isValid = Object.keys(document.isValid).reduce(function (state, specId) {
+				return state && document.isValid[specId];
 			}, true);
-			res ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
+			isValid ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
 		});
+		
 		//  Cancel
 		$cancel.on("click", function (e) {
 			document.trigger("cancel");
 		});
+		
 		//  Delete
 		$delete.on("click", function (e) {
 			if ( confirm("Вы действительно хотите удалить документ?") ) document.trigger("delete");
 		});
 		if (document["v-s:deleted"][0] && document["v-s:deleted"][0] == true) $delete.hide();
+		
 		// Search
 		$search.on("click", function (e) {
 			// serialize document as search query
@@ -459,8 +463,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				break
 		}
 		
-		if (!values.length) values.push( emptyVal );
 		var controls = values.map( renderControl );
+		if (!values.length) controls.push( renderControl(emptyVal, 0) );
 		
 		controls.map(function (control) {
 			control.trigger(mode);
