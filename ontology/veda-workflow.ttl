@@ -444,6 +444,7 @@ v-wf:outputVariable
 	rdfs:label "output variable"@en ;
 	rdfs:label "выходная переменная"@ru ;
 	rdfs:domain v-wf:Process ;
+	rdfs:domain v-wf:WorkOrder ;
 	rdfs:range v-wf:Variable ;
 .
 v-wf:localVariable
@@ -542,5 +543,17 @@ v-wf:Event_df3
 
 """ ;
 	rdfs:label "триггер выполнения элемента сети"@ru ;
+.
+
+v-wf:Event_df4
+	rdf:type v-s:Event ;
+	v-s:author v-a:VedaSystemAccount ;
+	v-s:filter v-wf:WorkOrder ;
+	v-s:script """
+
+	prepare_work_order (ticket, document);
+
+""" ;
+	rdfs:label "триггер выполнения рабочего задания"@ru ;
 .
 
