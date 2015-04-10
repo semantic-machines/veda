@@ -236,6 +236,13 @@ v-wf:completedMapping
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Mapping ;
 .
+v-wf:wosResultsMapping
+	rdf:type rdf:Property ;
+	rdfs:label "work orders results mapping"@en ;
+	rdfs:label "преобразование результатов рабочих заданий"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:Mapping ;
+.
 v-wf:mapsTo
 	rdf:type rdf:Property ;
 	rdfs:label "maps to"@en ;
