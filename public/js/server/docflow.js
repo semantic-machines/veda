@@ -36,17 +36,19 @@ function prepare_work_order(ticket, document)
 
 
         var task = new Context(work_item, ticket);
-        var result = eval(expression);
+        var result0 = eval(expression);
 
-        print("[WORKFLOW][WO4] task: eval result=", toJson(result));
+        print("[WORKFLOW][WO4] task: eval result=", toJson(result0));
         
         if (!netElement['v-wf:completedMapping'])
         {
 			print("[WORKFLOW][WO W6] v-wf:completedMapping not defined=", toJson(netElement));			
 		}	
         
-        // сохраняем результаты
-        var task_output_vars = create_and_mapping_variables(ticket, netElement['v-wf:completedMapping'], process, work_item, result);
+        // сохраняем результаты в v-wf:outputVariable в обрабатываемом рабочем задании
+        var task_output_vars = create_and_mapping_variables(ticket, netElement['v-wf:completedMapping'], process, work_item, result0);
+			//print("[WORKFLOW][WO W6.1] task_output_vars=", toJson(task_output_vars));			
+        task_output_vars
         if (task_output_vars.length > 0)
         {
 			document['v-wf:outputVariable'] = task_output_vars;						
@@ -59,10 +61,60 @@ function prepare_work_order(ticket, document)
 		print("[WORKFLOW][WO20] executor=" + executor_uri + "");
 			
 	 }
+				
+		var is_goto_to_next_task = false;
 						
-        
-        // скрипт сборки результатов
-        
+        // begin //////////////// скрипт сборки результатов
+		var result = [];
+		
+        // найдем маппинг множественных результатов
+        var wosResultsMapping = netElement['v-wf:wosResultsMapping'];
+
+		//print("[WORKFLOW][WO30.0] workOrderList=" + toJson (workOrderList) + "");        
+		// проверяем есть ли результаты рабочих заданий
+        for (var i = 0; i < workOrderList.length; i++)
+        {
+			var workOrder;
+			if (workOrderList[i].data != document['@'])
+               workOrder = get_individual(ticket, workOrderList[i].data);
+            else
+               workOrder = document;
+
+		//print("[WORKFLOW][WO30.-] workOrder=" + toJson (workOrder) + "");        
+               
+            var outputVariable = workOrder['v-wf:outputVariable'];    
+            if (outputVariable)    
+            {
+				var _result = get_individual(ticket, outputVariable[i].data);
+		//print("[WORKFLOW][WO30.1] _result=" + toJson (_result) + "");        
+				if (_result)
+				{
+					if (wosResultsMapping)
+					{
+					}
+					else
+					{
+						// wosResultsMapping не указан, складываем все результаты в локальную переменную
+						var el = {};
+						var key = _result["v-wf:variableName"][0].data;
+						var val = _result["v-wf:variableValue"][0].data;
+						el[key] =  val;		
+										
+						result.push (el); 
+		//print("[WORKFLOW][WO30.2] result=" + toJson (result) + "");        
+					}
+				}					
+			}	
+			
+		}	
+		if (result.length == workOrderList.length) 
+			is_goto_to_next_task = true;
+		     				
+        // end //////////////// скрипт сборки результатов
+		print("[WORKFLOW][WO30] result=" + toJson (result) + "");        
+                
+        if (is_goto_to_next_task)
+        {
         // определим переход на следующие задачи в зависимости от результата
         // res должен быть использован при eval каждого из предикатов
         var hasFlows = netElement['v-wf:hasFlow'];
@@ -123,6 +175,7 @@ function prepare_work_order(ticket, document)
             }
                 // }
         }
+		}
 
 }
 
@@ -459,6 +512,8 @@ function Context(_src_data, _ticket)
 
     this.getLocalVariableValue = function (var_name)
     {
+		//print ("src_data=", toJson (this.src_data));
+		//print ("var_name=", var_name);
 		return this.src_data[var_name];
 	}	
 
@@ -577,7 +632,7 @@ function down_right_and_store(process, task)
 
     }
     return {
-        'right1': [
+        'right': [
             {
                 data: 'acl1',
                 type: _String
@@ -623,11 +678,11 @@ function is_in_docflow_and_set_if_true(process, task)
 	}
 	
    var res_out = {
-        'result': [
+        'res': 
             {
                 data: res,
                 type: _Bool
-                }]
+                }
     };	
 		
    return res_out;	
