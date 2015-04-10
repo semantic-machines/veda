@@ -15,7 +15,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		var mode = _mode || "view";
 		
 		container
-			.empty().hide()
+			.empty()//.hide()
 			.attr("resource", document.id)
 			.attr("typeof", document["rdf:type"].map(function (item) { return item.id }).join(" ") );
 
@@ -228,7 +228,9 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				.filter(function(item){return !!item;})
 				.join("&&");
 			query = allProps ? "(" + allProps + ")" : undefined;
-			var search = new veda.SearchModel(undefined, undefined, query);
+
+			var search = new veda.SearchModel(query);
+			new veda.DocumentModel(document.id, $("#params-" + search.id, search.view), undefined, "search");
 		});
 		
 		// Process RDFa compliant template
@@ -253,10 +255,10 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			relTemplate = relTemplate ? (
 				new veda.IndividualModel(relTemplate) 
 			) : (
-				!document[rel_uri] || !document[rel_uri][0] || !document[rel_uri][0]["rdfs:label"] ? 
-					new veda.IndividualModel("v-ui:ClassNameIdTemplate") 
-					: 
+				document.hasValue(rel_uri) && document[rel_uri][0].hasValue("rdfs:label") ? 
 					new veda.IndividualModel("v-ui:ClassNameLabelTemplate")
+					:
+					new veda.IndividualModel("v-ui:ClassNameIdTemplate")
 			)
 			renderLink(document, rel_uri, relContainer, relTemplate, spec, mode, embedded);
 			
@@ -304,7 +306,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 		document.trigger(mode);
 		
-		container.show();
+		//container.show();
 		
 		scripts.map( function (item) { 
 			var presenter = new Function("veda", "document", "container", item + "//# sourceURL=" + document["rdf:type"][0].id + "Presenter.js");
