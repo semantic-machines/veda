@@ -192,14 +192,14 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 						case "xsd:nonNegativeInteger":
 						case "xsd:decimal":
 							oneProp =
-								values.length === 1 ? "'" + property_uri + "'==[" + document[property_uri][0] + "," + document[property_uri][0] + "]" :
-								values.length > 1 ? "'" + property_uri + "'==[" + document[property_uri][0] + "," + document[property_uri][1] + "]" :
+								values.length === 1 ? "'" + property_uri + "'==[" + values[0] + "," + values[0] + "]" :
+								values.length > 1 ? "'" + property_uri + "'==[" + values[0] + "," + values[values.length-1] + "]" :
 								undefined;
 							break
 						case "xsd:dateTime": 
 							oneProp =
-								values.length === 1 ? "'" + property_uri + "'==[" + document[property_uri][0].toISOString().substring(0,19) + "," + document[property_uri][0].toISOString().substring(0,19) + "]" :
-								values.length > 1 ? "'" + property_uri + "'==[" + document[property_uri][0].toISOString().substring(0,19) + "," + document[property_uri][1].toISOString().substring(0,19) + "]" :
+								values.length === 1 ? "'" + property_uri + "'==[" + values[0].toISOString().substring(0,19) + "," + values[0].toISOString().substring(0,19) + "]" :
+								values.length > 1 ? "'" + property_uri + "'==[" + values[0].toISOString().substring(0,19) + "," + values[values.length-1].toISOString().substring(0,19) + "]" :
 								undefined;
 							break
 						case "xsd:boolean": 
@@ -228,8 +228,10 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				.filter(function(item){return !!item;})
 				.join("&&");
 			query = allProps ? "(" + allProps + ")" : undefined;
-
+			
+			// Open Search
 			var search = new veda.SearchModel(query);
+			// Place document to params tab in Search caontainer
 			new veda.DocumentModel(document.id, $("#params-" + search.id, search.view), undefined, "search");
 		});
 		
@@ -249,8 +251,11 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
+				containerParent = relContainer.parent(),
 				relTemplate = relContainer.attr("template"),
 				spec = specs[rel_uri];
+			
+			relContainer.empty().hide();
 			
 			relTemplate = relTemplate ? (
 				new veda.IndividualModel(relTemplate) 
@@ -260,12 +265,13 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					:
 					new veda.IndividualModel("v-ui:ClassNameIdTemplate")
 			)
-			renderLink(document, rel_uri, relContainer, relTemplate, spec, mode, embedded);
+			var rendered = renderLink(document, rel_uri, relContainer, containerParent, relTemplate, spec, mode, embedded);
 			
 			// Re-render link property if its' values were changed
 			document.on("document:propertyModified", function (doc_property_uri) {
 				if (doc_property_uri === rel_uri) {
-					renderLink(document, rel_uri, relContainer, relTemplate, spec, mode, embedded);
+					rendered.map( function (item) { item.remove(); } );
+					rendered = renderLink(document, rel_uri, relContainer, containerParent, relTemplate, spec, mode, embedded);
 				}
 			});
 			
@@ -274,7 +280,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		// Properties
 		$("[property]", classTemplate).not("[about]").map( function () {
 			
-			var propertyContainer = $(this), 
+			var propertyContainer = $(this),
 				property_uri = propertyContainer.attr("property"),
 				//propertyTemplate = propertyContainer.attr("template"),
 				spec = specs[property_uri];
@@ -314,16 +320,21 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		});
 	}
 	
-	function renderLink (document, rel_uri, relContainer, relTemplate, spec, mode, embedded) {
-		
-		relContainer.empty();
+	function renderLink (document, rel_uri, relContainer, containerParent, relTemplate, spec, mode, embedded) {
 		
 		if ( !document[rel_uri] ) document.defineProperty(rel_uri);
 		
 		var values = document[rel_uri];
 		
-		if (document[rel_uri].length) {
-			document[rel_uri].map( function (value) {renderValue (value, mode)} );
+		var renderedValues = document.hasValue(rel_uri) ? 
+			document[rel_uri].map( function (value) { return renderValue (value, mode)} ) : [];
+
+		var controlContainer;
+		if (renderedValues.length) {
+			controlContainer = renderedValues[0];
+		} else {
+			controlContainer = relContainer.clone();
+			relContainer.after(controlContainer);
 		}
 		
 		var opts = {
@@ -365,11 +376,15 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 		if (mode !== "search") isValid(document, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
 		
-		relContainer.append(control);
+		setTimeout( function () {
+			controlContainer.append(control).show();
+		}, 0);
+		
+		return [controlContainer].concat(renderedValues);
 
 		function renderValue(value, mode) {
 			// Create the same tag container to preserve element layout
-			var clone = $("<" + relContainer.prop("tagName") + ">");
+			var clone = relContainer.clone();
 			var lnk;
 			if (value instanceof veda.IndividualModel || !value) {
 				setTimeout( function () {
@@ -385,13 +400,19 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					clone.attr("style", "position:relative;");
 					var clear = $( $("#link-clear-button-template").html() );
 					
-					if (mode == "view") { 
-						clear.hide();
+					var clear;
+					if (clone.children(":first").css("display") === "inline") {
+						clear = $( $("#link-clear-inline-button-template").html() );
 					} else {
-						clear.hide();
-						clone.on("mouseenter", function () { clear.show(); clone.toggleClass("bg-danger"); });
-						clone.on("mouseleave", function () { clear.hide(); clone.toggleClass("bg-danger"); });
+						clear = $( $("#link-clear-block-button-template").html() );
 					}
+										
+					mode === "view" ? clear.hide() : clear.show() ;
+					document.on("view edit search", function (mode) {
+						mode === "view" ? clear.hide() :
+						mode === "edit" ? clear.show() :
+						clear.show();
+					});					
 					
 					clone.append(clear);
 					clear.on("click", function () {
@@ -402,22 +423,14 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 							if ( !(index<0) ) embedded.splice(index, 1);
 						}
 					});
-					document.on("edit", function () {
-						clone.on("mouseenter", function () { clear.show(); clone.toggleClass("bg-danger"); });
-						clone.on("mouseleave", function () { clear.hide(); clone.toggleClass("bg-danger"); });
-					});
-					document.on("view", function () {
-						clear.hide();
-						clone.off();
-					});
 					
 				}, 0);
 			} else {
 				// External resources
 				clone.append( $("<a>", {href: value, text: value}) );
 			}
-			relContainer.append(clone);
-			return lnk;
+			relContainer.after(clone);
+			return clone.show();
 		}
 		
 	}

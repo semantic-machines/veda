@@ -14,6 +14,7 @@
 @prefix v-a: <http://semantic-machines.com/veda/veda-admin/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
 
 <http://semantic-machines.com/veda/test-data>
   rdf:type owl:Ontology ;
@@ -399,6 +400,7 @@ td:RomanKarpov
   v-ui:hasPreferences td:Preferences_RomanKarpov ;
   rdfs:label "Roman Karpov"@en ;
   rdfs:label "Роман Карпов"@ru ;
+  v-s:test v-fs:Search1 ;
 .
 
 td:RomanKarpov-Analyst1
@@ -535,10 +537,15 @@ td:PersonTemplate1
         <hr />
         <div class="row">
           <div class="col-md-6">
-            <div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1">шаблон: td:PreferencesTemplate1</div>
+		    <div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1">шаблон: td:PreferencesTemplate1</div>
           </div>
           <div class="col-md-6">
             <div rel="v-s:hasAccount" template="td:AccountTemplate1">шаблон: td:AccountTemplate1</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div rel="v-s:test" template="v-fs:SearchTemplate">v-fs:SearchTemplate</div>
           </div>
         </div>
       </div>
@@ -698,7 +705,9 @@ td:PreferencesTemplate1
   <div class="panel-body">
     <div>
       <strong class="text-muted" about="v-ui:preferredLanguage" property="rdfs:label">Язык</strong>:
-      <div rel="v-ui:preferredLanguage">RU</div>
+      <ul>
+        <li rel="v-ui:preferredLanguage">RU</li>
+      </ul>
       <strong class="text-muted" about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</strong>: 
       <span property="v-ui:displayedElements">999</span>
     </div>
@@ -755,6 +764,18 @@ td:PropertySpecification8
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Предпочтения."@ru ;
   v-ui:tooltip "Required, single value. Link to instance of Preferences class"@en ;
   v-ui:queryPrefix "('rdf:type'=='v-ui:Preferences')"^^xsd:string ;
+.
+td:PropertySpecification9
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация тестового свойства для класса Персона"@ru ;
+  rdfs:label "Test property specification for Person class"@en ;
+  v-ui:forClass v-s:Person ;
+  v-ui:forProperty v-s:test ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Поиск."@ru ;
+  v-ui:tooltip "Required, single value. Link to instance of Preferences class"@en ;
+  v-ui:queryPrefix "('rdf:type'=='v-fs:Search')"^^xsd:string ;
 .
 td:PropertySpecification1
   rdf:type v-ui:DatetimePropertySpecification ;
