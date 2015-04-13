@@ -421,6 +421,7 @@ v-wf:VariableTemplate
 	    </div>
       </div>
       <div class="panel-body">
+        <strong class="text-muted" about="rdfs:label" property="rdfs:label"></strong>
         <h3 property="rdfs:label">Наименование</h3>
         <br />
         <div class="row">
