@@ -348,6 +348,97 @@ jsWorkflow.ready(function () {
   """ ;
 .
 
+v-wf:WorkOrderTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Рабочее задание"@ru ;
+  rdfs:label "Template for Work order class"@en ;
+  v-ui:forClass v-wf:WorkOrder ;
+  v-ui:embedded "false"^^xsd:boolean ;
+  v-ui:template """
+  <div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-6">
+	        <span about="v-wf:WorkOrder" property="rdfs:label">Имя класса</span>
+  	      </div>  
+          <div class="col-md-6 text-right text-muted">
+            <a href="id"><span property="id">ID</span></a>
+	      </div>  
+	    </div>
+      </div>
+      <div class="panel-body">
+        <strong class="text-muted" about="rdfs:label" property="rdfs:label"></strong>
+        <h3 property="rdfs:label">Наименование</h3>
+        <br />
+        <div class="row">
+          <div class="col-md-12">
+            <strong class="text-muted" about="v-wf:executor" property="rdfs:label">Исполнитель</strong>
+            <div rel="v-wf:executor">v-ui:LabelTemplate</div>
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col-md-6">
+            <strong class="text-muted" about="v-wf:forWorkItem" property="rdfs:label"></strong>
+            <div rel="v-wf:forWorkItem"></div>
+          </div>
+          <div class="col-md-6">
+            <strong class="text-muted" about="v-wf:outputVariable" property="rdfs:label"></strong>
+            <div rel="v-wf:outputVariable" template="v-wf:VariableTemplate"></div>
+	      </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button type="button" class="action btn btn-sm btn-primary" id="edit">Редактировать</button>
+        <button type="button" class="action btn btn-sm btn-success" id="save">Сохранить</button>
+        <button type="button" class="action btn btn-sm btn-default" id="cancel">Отмена</button>
+        <button type="button" class="action btn btn-sm btn-link" id="delete">Удалить</button>
+        <button type="button" class="action btn btn-sm btn-primary" id="search">Найти</button>
+      </div>
+    </div>
+  </div>
+  """ ;
+  .
+
+v-wf:VariableTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Рабочее задание"@ru ;
+  rdfs:label "Template for Work order class"@en ;
+  v-ui:forClass v-wf:Variable ;
+  v-ui:embedded "true"^^xsd:boolean ;
+  v-ui:template """
+  <div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-6">
+	        <span about="v-wf:Variable" property="rdfs:label">Имя класса</span>
+  	      </div>  
+          <div class="col-md-6 text-right text-muted">
+            <a href="id"><span property="id">ID</span></a>
+	      </div>
+	    </div>
+      </div>
+      <div class="panel-body">
+        <h3 property="rdfs:label">Наименование</h3>
+        <br />
+        <div class="row">
+          <div class="col-md-6">
+            <strong class="text-muted" about="v-wf:variableName" property="rdfs:label"></strong>
+            <div rel="v-wf:variableName"></div>
+          </div>
+          <div class="col-md-6">
+            <strong class="text-muted" about="v-wf:variableValue" property="rdfs:label"></strong>
+            <div rel="v-wf:variableValue"></div>
+	      </div>
+        </div>
+      </div>
+    </div>
+  </div>  
+  """ ;
+  .
+  
 # --------------------------- Start Form ---------------------------
 v-wf:StartForm
 	rdf:type rdfs:Class ;
