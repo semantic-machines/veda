@@ -366,10 +366,10 @@ v-wf:WorkOrderTemplate
     <div class="panel panel-default">
       <div class="panel-heading">
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-3">
 	        <span about="v-wf:WorkOrder" property="rdfs:label">Имя класса</span>
   	      </div>  
-          <div class="col-md-6 text-right text-muted">
+          <div class="col-md-9 text-right text-muted">
             <a href="id"><span property="id">ID</span></a>
 	      </div>  
 	    </div>
@@ -419,10 +419,10 @@ v-wf:VariableTemplate
     <div class="panel panel-default">
       <div class="panel-heading">
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-3">
 	        <span about="v-wf:Variable" property="rdfs:label">Имя класса</span>
   	      </div>  
-          <div class="col-md-6 text-right text-muted">
+          <div class="col-md-9 text-right text-muted">
             <a href="id"><span property="id">ID</span></a>
 	      </div>
 	    </div>
