@@ -439,25 +439,14 @@ v-wf:instanceOf
 	rdfs:range v-wf:Net ;
 .
 v-wf:inputVariable
-	rdf:type rdf:Property ;
-	rdfs:label "input variable"@en ;
-	rdfs:label "входная переменная"@ru ;
 	rdfs:domain v-wf:Process ;
 	rdfs:domain v-wf:WorkItem ;
-	rdfs:range v-wf:Variable ;
 .
 v-wf:outputVariable
-	rdf:type rdf:Property ;
-	rdfs:label "output variable"@en ;
-	rdfs:label "выходная переменная"@ru ;
 	rdfs:domain v-wf:Process ;
 	rdfs:domain v-wf:WorkOrder ;
-	rdfs:range v-wf:Variable ;
 .
 v-wf:localVariable
-	rdf:type rdf:Property ;
-	rdfs:label "local variable"@en ;
-	rdfs:label "локальная переменная"@ru ;
 	rdfs:domain v-wf:Process ;
 	rdfs:range v-wf:Variable ;
 .
