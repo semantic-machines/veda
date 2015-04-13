@@ -597,7 +597,7 @@ v-wf:isCompleted
 .
 
 # --------------------------- обработка событий => docflow ---------------------------------------
-v-wf:Event_df1
+v-wf:event_df1
 	rdf:type v-s:Event ;
 	v-s:author v-a:VedaSystemAccount ;
 	v-s:filter v-wf:StartForm ;
@@ -609,7 +609,7 @@ v-wf:Event_df1
 	rdfs:label "триггер запуска маршрута из пользовательской формы"@ru ;
 .
 
-v-wf:Event_df2
+v-wf:event_df2
 	rdf:type v-s:Event ;
 	v-s:author v-a:VedaSystemAccount ;
 	v-s:filter v-wf:Process ;
@@ -621,7 +621,7 @@ v-wf:Event_df2
 	rdfs:label "триггер выполнения маршрута"@ru ;
 .
 
-v-wf:Event_df3
+v-wf:event_df3
 	rdf:type v-s:Event ;
 	v-s:author v-a:VedaSystemAccount ;
 	v-s:filter v-wf:WorkItem ;
@@ -633,7 +633,7 @@ v-wf:Event_df3
 	rdfs:label "триггер выполнения элемента сети"@ru ;
 .
 
-v-wf:Event_df4
+v-wf:event_df4
 	rdf:type v-s:Event ;
 	v-s:author v-a:VedaSystemAccount ;
 	v-s:filter v-wf:WorkOrder ;
@@ -646,16 +646,17 @@ v-wf:Event_df4
 .
 
 v-wf:Decision
+	rdfs:subClassOf owl:Thing ;
 	rdf:type owl:Class ;
 	rdfs:label "decision"@en ;
 	rdfs:label "решение"@ru ;
 .
 
-v-wf:Decision_agred
+v-wf:decision_agreed
 	rdf:type v-wf:Decision;
 	rdfs:label "согласованно"@ru ;
 .	
-v-wf:Decision_rejected
+v-wf:decision_rejected
 	rdf:type v-wf:Decision;
 	rdfs:label "отклонено"@ru ;
 .	
