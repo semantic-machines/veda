@@ -9,7 +9,6 @@ function prepare_work_order(ticket, document)
     var executor_uri = getUri(document['v-wf:executor']);
 	var executor = get_individual(ticket, executor_uri);   
     if (!executor) return;
-	
 	var forWorkItem_uri = getUri(document['v-wf:forWorkItem']);
 	var work_item = get_individual(ticket, forWorkItem_uri);
     if (!work_item) return;
@@ -61,7 +60,7 @@ function prepare_work_order(ticket, document)
 		print("[WORKFLOW][WO20] executor=" + executor_uri + "");
 			
 	 }
-				
+	
 		var is_goto_to_next_task = false;
 						
         // begin //////////////// скрипт сборки результатов
@@ -70,23 +69,23 @@ function prepare_work_order(ticket, document)
         // найдем маппинг множественных результатов
         var wosResultsMapping = netElement['v-wf:wosResultsMapping'];
 
-		//print("[WORKFLOW][WO30.0] workOrderList=" + toJson (workOrderList) + "");        
 		// проверяем есть ли результаты рабочих заданий
         for (var i = 0; i < workOrderList.length; i++)
-        {
+        {			
+			print("[WORKFLOW][WO30.0] workOrder=" + toJson (workOrderList[i]) + "");        
 			var workOrder;
 			if (workOrderList[i].data != document['@'])
                workOrder = get_individual(ticket, workOrderList[i].data);
             else
                workOrder = document;
 
-		//print("[WORKFLOW][WO30.-] workOrder=" + toJson (workOrder) + "");        
+			print("[WORKFLOW][WO30.1] workOrder=" + toJson (workOrder) + "");        
                
             var outputVariable = workOrder['v-wf:outputVariable'];    
             if (outputVariable)    
             {
-				var _result = get_individual(ticket, outputVariable[i].data);
-		//print("[WORKFLOW][WO30.1] _result=" + toJson (_result) + "");        
+				var _result = get_individual(ticket, outputVariable[0].data);
+				print("[WORKFLOW][WO30.2] _result=" + toJson (_result) + "");        
 				if (_result)
 				{
 					if (wosResultsMapping)
@@ -96,22 +95,37 @@ function prepare_work_order(ticket, document)
 					{
 						// wosResultsMapping не указан, складываем все результаты в локальную переменную
 						var el = {};
-						var key = _result["v-wf:variableName"][0].data;
-						var val = _result["v-wf:variableValue"][0].data;
-						el[key] =  val;		
+						el['workOrder'] = workOrder['@'];						
+						var key = undefined, val = undefined;
+						var varName = _result["v-wf:variableName"];
+						if (varName)						
+							key = varName[0].data;
+						
+						var varValue = 	_result["v-wf:variableValue"];
+						if (varValue)
+							val = varValue[0].data;
+							
+						if (val != undefined && key != undefined)	
+						{
+							el[key] =  val;		
 										
-						result.push (el); 
-		//print("[WORKFLOW][WO30.2] result=" + toJson (result) + "");        
+							result.push (el); 
+						}
+						print("[WORKFLOW][WO30.3] result=" + toJson (result) + "");        
 					}
 				}					
 			}	
-			
+						
 		}	
+	    print("[WORKFLOW][WO1-20]");
+		
 		if (result.length == workOrderList.length) 
 			is_goto_to_next_task = true;
+		else	
+			print("[WORKFLOW][WO1-25] не все задания выполнены, bye.");
 		     				
         // end //////////////// скрипт сборки результатов
-		print("[WORKFLOW][WO30] result=" + toJson (result) + "");        
+		print("[WORKFLOW][WO30.e] result=" + toJson (result) + "");        
                 
         if (is_goto_to_next_task)
         {
@@ -138,11 +152,12 @@ function prepare_work_order(ticket, document)
                 var predicate = flow['v-wf:predicate'];
                 if (predicate)
                 {
-                    print("[WORKFLOW][WO7] eval res=" + toJson(res));
+                    //print("[WORKFLOW][WO7] eval res=" + toJson(res));
 
                     print("[WORKFLOW][WO8] predicate=" + toJson(predicate));
                     expression = getFirstValue(predicate);
                     print("[WORKFLOW][WO9] expression=" + toJson(expression));
+                    print("[WORKFLOW][WO9.1] result=" + toJson(result));
                     if (expression)
                     {
 						var res1 = eval(expression);
@@ -618,6 +633,27 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _local)
     return new_vars;
 }
 
+function is_all_executors_agreed (data)
+{
+   var count_agreed = 0;	
+   for (var i = 0; i < data.length; i++)
+   {
+	   print ("data[i].result=", data[i].result);
+	   if (data[i].result == 'v-wf:decision_agreed')
+	   {
+		   count_agreed ++;
+	   }	   
+   } 	
+   
+   if (count_agreed == data.length)
+   {
+		return true;
+   }	
+   else
+   {
+		return false;		
+   }	
+}
 
 function down_right_and_store(process, task)
 {
