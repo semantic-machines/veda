@@ -434,7 +434,7 @@ v-wf:VariableTemplate
         <div class="row">
           <div class="col-md-6">
             <strong class="text-muted" about="v-wf:variableName" property="rdfs:label"></strong>
-            <div rel="v-wf:variableName"></div>
+            <div property="v-wf:variableName"></div>
           </div>
           <div class="col-md-6">
             <strong class="text-muted" about="v-wf:variableValue" property="rdfs:label"></strong>
@@ -645,3 +645,17 @@ v-wf:Event_df4
 	rdfs:label "триггер выполнения рабочего задания"@ru ;
 .
 
+v-wf:Decision
+	rdf:type owl:Class ;
+	rdfs:label "decision"@en ;
+	rdfs:label "решение"@ru ;
+.
+
+v-wf:Decision_agred
+	rdf:type v-wf:Decision;
+	rdfs:label "согласованно"@ru ;
+.	
+v-wf:Decision_rejected
+	rdf:type v-wf:Decision;
+	rdfs:label "отклонено"@ru ;
+.	
