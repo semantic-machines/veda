@@ -129,6 +129,8 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 
 		container.show();
 		
+		search.view = container;
+		
 		veda.trigger("search:rendered", search, container);
 	});
 	

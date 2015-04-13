@@ -434,7 +434,7 @@ v-wf:VariableTemplate
         <div class="row">
           <div class="col-md-6">
             <strong class="text-muted" about="v-wf:variableName" property="rdfs:label"></strong>
-            <div rel="v-wf:variableName"></div>
+            <div property="v-wf:variableName"></div>
           </div>
           <div class="col-md-6">
             <strong class="text-muted" about="v-wf:variableValue" property="rdfs:label"></strong>
