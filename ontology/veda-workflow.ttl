@@ -659,27 +659,27 @@ v-wf:Decision
 	rdfs:label "решение"@ru ;
 .
 
-v-wf:decision_agreed
+v-wf:DecisionAgreed
 	rdf:type v-wf:Decision;
 	rdfs:label "согласованно"@ru ;
 .	
 
-v-wf:decision_sign
+v-wf:DecisionSign
 	rdf:type v-wf:Decision;
 	rdfs:label "подписанно"@ru ;
 .	
 
-v-wf:decision_review
+v-wf:DecisionReview
 	rdf:type v-wf:Decision;
 	rdfs:label "рассмотренно"@ru ;
 .	
 
-v-wf:decision_rejected
+v-wf:DecisionRejected
 	rdf:type v-wf:Decision;
 	rdfs:label "отклонено"@ru ;
 .	
 
-v-wf:decision_remake
+v-wf:DecisionRemake
 	rdf:type v-wf:Decision;
 	rdfs:label "доработать"@ru ;
 .	
