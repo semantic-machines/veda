@@ -76,11 +76,6 @@ v-wf:TransitionBehavior
 	rdfs:label "Transition behavior"@en ;
 	rdfs:label "Тип перехода"@ru ;
 .
-v-wf:Variable
-	rdf:type owl:Class ;
-	rdfs:label "Variable"@en ;
-	rdfs:label "Переменная"@ru ;
-.
 v-wf:belongsTo
 	rdf:type rdf:Property ;
 	rdfs:label "belongs to..."@en ;
@@ -103,20 +98,7 @@ v-wf:consistsOf
 	rdfs:range v-wf:NetElement ;
 	rdfs:range v-wf:Flow ;
 .
-v-wf:variableName
-	rdf:type rdf:Property ;
-	rdfs:label "variable name"@en ;
-	rdfs:label "имя переменной"@ru ;
-	rdfs:domain v-wf:Variable ;
-	rdfs:range xsd:string ;
-.
-v-wf:variableValue
-	rdf:type rdf:Property ;
-	rdfs:label "variable value"@en ;
-	rdfs:label "значение переменной"@ru ;
-	rdfs:domain v-wf:Variable ;
-	rdfs:range rdfs:Resource ;
-.
+
 v-wf:locationX
 	rdf:type rdf:Property ;
 	rdfs:label "location X"@en ;
@@ -274,6 +256,31 @@ v-wf:executorExpression
 	rdfs:domain v-wf:ExecutorDefinition ;
 	rdfs:range xsd:string ;
 .
+
+#------------------------------------------------------
+
+v-wf:Variable
+	rdf:type owl:Class ;
+	rdfs:label "Variable"@en ;
+	rdfs:label "Переменная"@ru ;
+.
+v-wf:variableName
+	rdf:type rdf:Property ;
+	rdfs:label "variable name"@en ;
+	rdfs:label "имя переменной"@ru ;
+	rdfs:domain v-wf:Variable ;
+	rdfs:range xsd:string ;
+.
+v-wf:variableValue
+	rdf:type rdf:Property ;
+	rdfs:label "variable value"@en ;
+	rdfs:label "значение переменной"@ru ;
+	rdfs:domain v-wf:Variable ;
+	rdfs:range rdfs:Resource ;
+.
+
+#------------------------------------------------------
+
 v-wf:NetTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Сеть"@ru ;
