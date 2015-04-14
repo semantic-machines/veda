@@ -42,8 +42,21 @@ jsWorkflow.ready = jsPlumb.ready;
                     addNewState,
                     bindStateEvents,
                     workflow,
-                    canvasSizePx=10000,
-                    currentScale=1;
+                    canvasSizePx=10000,                    
+                    currentScale=1,
+                    process,
+                    mode='view';
+            
+            if (net.hasValue('rdf:type')) {
+            	if (net['rdf:type'][0].id == 'v-wf:Net') {
+            		mode='edit';
+            	}
+            	if (net['rdf:type'][0].id == 'v-wf:Process') {
+            		mode='view';
+            		process = net;
+            		net = (net.hasValue('v-wf:instanceOf'))?net['v-wf:instanceOf'][0]:[];
+            	}
+            }
 
             if (typeof workflowData === 'object') {
                 workflow = workflowData.container;
@@ -108,7 +121,7 @@ jsWorkflow.ready = jsPlumb.ready;
 
             // Bind a click listener to each transition (connection). On double click, the transition is deleted.
             instance.bind("dblclick", function(transition) {            	 
-                 if (confirm('Delete Flow?')) {
+                 if (mode=='edit' && confirm('Delete Flow?')) {
                 	 net['v-wf:consistsOf'] = removeSubIndividual(net, 'v-wf:consistsOf', transition.id);
                 	 veda.Util.forSubIndividual(net, 'v-wf:consistsOf', transition.sourceId, function (el) {
                 		 el['v-wf:hasFlow'] = removeSubIndividual(el, 'v-wf:hasFlow', transition.id);
@@ -208,161 +221,191 @@ jsWorkflow.ready = jsPlumb.ready;
                     currentElement.addClass('w_active');
                 });
                 
-                windows.bind("contextmenu", function(e) {
-                	var _this = this,
-                	    menu = $("#workflow-context-menu ul");
-                	menu.html('');
-                	// Add starting mappings to context menu
-                	veda.Util.forSubIndividual(net, 'v-wf:consistsOf', _this.id, function (el) {
-                	  if (!(el['v-wf:startingMapping']===undefined)) {
-                	     el['v-wf:startingMapping'].forEach(function(var_map) {
-                    	   var $item = $("<li/>").appendTo(menu);
-                	       var varId = null;
-                	       var_map['v-wf:mapsTo'].forEach(function(var_var) {
-                	    	   varId = var_var.id;
-               	    		   $("<a/>", { 
-               	    			   "text" : ((var_var['v-wf:variableName']!=null && var_var['v-wf:variableName'].length>0)?var_var['v-wf:variableName'][0]:var_var.id), 
-               	    			   "href" : "#/document/"+var_var.id+"///edit"
-               	    		   }).appendTo($item);
-            	    	   });
-                	       $("<span/>", {"text": " <<< "}).appendTo($item);
-                	       var_map['v-wf:mappingExpression'].forEach(function(map_exp) {
-                	    	   $("<a/>", { 
-               	    			   "text" : map_exp, 
-               	    			   "href" : "#/document/"+var_map.id+"///edit"
-               	    		   }).appendTo($item);
-                	    	   $("<span/>", {
-                					"click": (function (instance) {
-                						return function (event) {
-                							event.preventDefault();
-                							instance.removeVarProperty(_this.id, varId, var_map.id);
-                							$(_this).trigger('contextmenu');
-                						}
-                					})(instance), 
-               	    			   "href" : ""
-               	    		   }).attr("class", "btn btn-default glyphicon glyphicon-remove button").attr("style", "padding: 3px;").appendTo($item);
-                	       });
-                        });
-                	  }
-                	  // Add completed mappings to context menu
-                	  if (!(el['v-wf:completedMapping']===undefined)) {
-                 	     el['v-wf:completedMapping'].forEach(function(var_map) {
-                     	   var $item = $("<li/>").appendTo(menu);
-                 	       var varId = null;
-                 	       var_map['v-wf:mappingExpression'].forEach(function(map_exp) {
-                 	    	   $("<a/>", { 
-                	    			   "text" : map_exp, 
-                	    			   "href" : "#/document/"+var_map.id+"///edit"
-                	    		   }).appendTo($item);
-                     	       $("<span/>", {"text": " >>> "}).appendTo($item);
-                     	       var_map['v-wf:mapsTo'].forEach(function(var_var) {
-                     	    	   varId = var_var.id;
-                    	    		   $("<a/>", { 
-                    	    			   "text" : ((var_var['v-wf:variableName']!=null && var_var['v-wf:variableName'].length>0)?var_var['v-wf:variableName'][0]:var_var.id), 
-                    	    			   "href" : "#/document/"+var_var.id+"///edit"
-                    	    		   }).appendTo($item);
-                 	    	   });
-                 	    	   $("<span/>", {
-                 					"click": (function (instance) {
-                 						return function (event) {
-                 							event.preventDefault();
-                 							instance.removeVarProperty(_this.id, varId, var_map.id);
-                 							$(_this).trigger('contextmenu');
-                 						}
-                 					})(instance), 
-                	    			   "href" : ""
-                	    		   }).attr("class", "btn btn-default glyphicon glyphicon-remove button").attr("style", "padding: 3px;").appendTo($item);
-                 	       });
-                         });
-                 	  }
-                	  // Add executors to context menu
-                	  if (!(el['v-wf:executor']===undefined)) {
-                       el['v-wf:executor'].forEach(function(el2) {
-                    	   var variable = new veda.IndividualModel(el2.id);
-                    	   var $item = $("<li/>").appendTo(menu);
-                    	   $("<a/>", {
-                    		   "text" : 'EXECUTOR : '+((el2['rdfs:label']!=null && el2['rdfs:label'].length>0)?el2['rdfs:label'][0]:el2.id), 
-           	    			   "href" : '#/document/'+el2.id+'///edit'
-                    	   }).appendTo($item);
-            	    	   $("<span/>", {
-           						"click": (function (instance) {
-           							return function (event) {
-           								event.preventDefault();
-           								instance.removeExecutorProperty(_this.id, el2.id);
-           								$(_this).trigger('contextmenu');
-           							}
-           						})(instance), 
-          	    			   "href" : ""
-          	    		   }).attr("class", "btn btn-default glyphicon glyphicon-remove button").attr("style", "padding: 3px;").appendTo($item);
-                       });
-                	  }
-               	 	});
-                    
-                	// Button for add new input variable to task
-             	    var $item = $("<li/>").appendTo(menu);
-     	    	    $("<span/>", {
-     	    	    	"text" : "IN VAR",
-    					"click": (function (instance) {
-    						return function (event) {
-    							event.preventDefault();
-    							instance.addVarProperty(_this.id, 'input');
-    							$(_this).trigger('contextmenu');
-    						}
-    					})(instance), 
-   	    			   "href" : ""
-   	    		    }).attr("class", "btn btn-default glyphicon glyphicon-plus").appendTo($item);
-     	    	    
-                	// Button for add new output variable to task
-     	    	    $("<span/>", {
-     	    	    	"text" : "OUT VAR",
-    					"click": (function (instance) {
-    						return function (event) {
-    							event.preventDefault();
-    							instance.addVarProperty(_this.id, 'output');
-    							$(_this).trigger('contextmenu');
-    						}
-    					})(instance), 
-   	    			   "href" : ""
-   	    		    }).attr("class", "btn btn-default glyphicon glyphicon-plus").appendTo($item);
-     	    	    
-                	// Button for add new executor to task
-    	    	    $("<span/>", {
-    	    	    	"text" : "EXECUTOR",
-    	    	    	"click": (function (instance) {
-    	    	    		return function (event) {
-    	    	    			event.preventDefault();
-    	    	    			instance.addExecutorProperty(_this.id);
-    	    	    			$(_this).trigger('contextmenu');
-    	    	    		}
-    	    	    	})(instance), 
-  	    			   "href" : ""
-  	    		    }).attr("class", "btn btn-default glyphicon glyphicon-plus").appendTo($item);
-                	
-                	// 
-                	$contextMenu.css({
-                	   display: "block",
-                	   left: e.pageX-((e.pageX+$contextMenu.width()>$( document ).width())?$contextMenu.width():0),
-                	   top: e.pageY-((e.pageY+$contextMenu.height()>$( document ).height())?$contextMenu.height():0)
-                	});
-                	return false;
-                });
-
-                // Bind a click listener to each State elements. On double click, State elements are deleted.
-                windows.bind("dblclick", function() {
-                    var _this = this;
-                	riot.route("#/document/" + $(_this).attr('id')+"///edit", true);
-                });
-
-                // Initialize State elements as draggable.  
-                instance.draggable(windows, {
-                  drag: function (event, ui) { //gets called on every drag
-                	  $("#workflow-context-menu").hide();
-                      veda.Util.forSubIndividual(net, 'v-wf:consistsOf', event.target.id, function(el) {
-              			  el['v-wf:locationX'] = [new Number(Math.round(ui.position.left-canvasSizePx/2))];
-            			  el['v-wf:locationY'] = [new Number(Math.round(ui.position.top-canvasSizePx/2))];
-                      });
-                  }
-            	});
+                if (mode=='view') {
+	                windows.bind("contextmenu", function(e) {
+	                	var _this = this,
+	                	    menu = $("#workflow-context-menu ul");
+	                	menu.html('');
+	                	
+	                	var s = new veda.IndividualModel();
+	                	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
+	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '6f60d7ef-399c-5451-79c1-c0a354b5814b' && 'v-wf:forNetElement'=='"+_this.id+"'");
+	                	for (var el in s.results) {
+	                	    if (s.results.hasOwnProperty(el)) {
+	                	       var wi =  new veda.IndividualModel(el);
+	                     	   var $item = $("<li/>").appendTo(menu);
+	                    	   $("<a/>", {
+	                    		   "text" : ((wi['rdfs:label']!=null && wi['rdfs:label'].length>0)?wi['rdfs:label'][0]:wi.id), 
+	           	    			   "href" : '#/document/'+wi.id
+	                    	   }).appendTo($item);	            	    	
+	                	    }
+	                	}
+	                	// 
+	                	$contextMenu.css({
+	                	   display: "block",
+	                	   left: e.pageX-((e.pageX+$contextMenu.width()>$( document ).width())?$contextMenu.width():0),
+	                	   top: e.pageY-((e.pageY+$contextMenu.height()>$( document ).height())?$contextMenu.height():0)
+	                	});
+	                	return false;
+	                });
+                }
+                if (mode=='edit') {
+	                windows.bind("contextmenu", function(e) {
+	                	var _this = this,
+	                	    menu = $("#workflow-context-menu ul");
+	                	menu.html('');
+	                	// Add starting mappings to context menu
+	                	veda.Util.forSubIndividual(net, 'v-wf:consistsOf', _this.id, function (el) {
+	                	  if (!(el['v-wf:startingMapping']===undefined)) {
+	                	     el['v-wf:startingMapping'].forEach(function(var_map) {
+	                    	   var $item = $("<li/>").appendTo(menu);
+	                	       var varId = null;
+	                	       var_map['v-wf:mapsTo'].forEach(function(var_var) {
+	                	    	   varId = var_var.id;
+	               	    		   $("<a/>", { 
+	               	    			   "text" : ((var_var['v-wf:variableName']!=null && var_var['v-wf:variableName'].length>0)?var_var['v-wf:variableName'][0]:var_var.id), 
+	               	    			   "href" : "#/document/"+var_var.id+"///edit"
+	               	    		   }).appendTo($item);
+	            	    	   });
+	                	       $("<span/>", {"text": " <<< "}).appendTo($item);
+	                	       var_map['v-wf:mappingExpression'].forEach(function(map_exp) {
+	                	    	   $("<a/>", { 
+	               	    			   "text" : map_exp, 
+	               	    			   "href" : "#/document/"+var_map.id+"///edit"
+	               	    		   }).appendTo($item);
+	                	    	   $("<span/>", {
+	                					"click": (function (instance) {
+	                						return function (event) {
+	                							event.preventDefault();
+	                							instance.removeVarProperty(_this.id, varId, var_map.id);
+	                							$(_this).trigger('contextmenu');
+	                						}
+	                					})(instance), 
+	               	    			   "href" : ""
+	               	    		   }).attr("class", "btn btn-default glyphicon glyphicon-remove button").attr("style", "padding: 3px;").appendTo($item);
+	                	       });
+	                        });
+	                	  }
+	                	  // Add completed mappings to context menu
+	                	  if (!(el['v-wf:completedMapping']===undefined)) {
+	                 	     el['v-wf:completedMapping'].forEach(function(var_map) {
+	                     	   var $item = $("<li/>").appendTo(menu);
+	                 	       var varId = null;
+	                 	       var_map['v-wf:mappingExpression'].forEach(function(map_exp) {
+	                 	    	   $("<a/>", { 
+	                	    			   "text" : map_exp, 
+	                	    			   "href" : "#/document/"+var_map.id+"///edit"
+	                	    		   }).appendTo($item);
+	                     	       $("<span/>", {"text": " >>> "}).appendTo($item);
+	                     	       var_map['v-wf:mapsTo'].forEach(function(var_var) {
+	                     	    	   varId = var_var.id;
+	                    	    		   $("<a/>", { 
+	                    	    			   "text" : ((var_var['v-wf:variableName']!=null && var_var['v-wf:variableName'].length>0)?var_var['v-wf:variableName'][0]:var_var.id), 
+	                    	    			   "href" : "#/document/"+var_var.id+"///edit"
+	                    	    		   }).appendTo($item);
+	                 	    	   });
+	                 	    	   $("<span/>", {
+	                 					"click": (function (instance) {
+	                 						return function (event) {
+	                 							event.preventDefault();
+	                 							instance.removeVarProperty(_this.id, varId, var_map.id);
+	                 							$(_this).trigger('contextmenu');
+	                 						}
+	                 					})(instance), 
+	                	    			   "href" : ""
+	                	    		   }).attr("class", "btn btn-default glyphicon glyphicon-remove button").attr("style", "padding: 3px;").appendTo($item);
+	                 	       });
+	                         });
+	                 	  }
+	                	  // Add executors to context menu
+	                	  if (!(el['v-wf:executor']===undefined)) {
+	                       el['v-wf:executor'].forEach(function(el2) {
+	                    	   var variable = new veda.IndividualModel(el2.id);
+	                    	   var $item = $("<li/>").appendTo(menu);
+	                    	   $("<a/>", {
+	                    		   "text" : 'EXECUTOR : '+((el2['rdfs:label']!=null && el2['rdfs:label'].length>0)?el2['rdfs:label'][0]:el2.id), 
+	           	    			   "href" : '#/document/'+el2.id+'///edit'
+	                    	   }).appendTo($item);
+	            	    	   $("<span/>", {
+	           						"click": (function (instance) {
+	           							return function (event) {
+	           								event.preventDefault();
+	           								instance.removeExecutorProperty(_this.id, el2.id);
+	           								$(_this).trigger('contextmenu');
+	           							}
+	           						})(instance), 
+	          	    			   "href" : ""
+	          	    		   }).attr("class", "btn btn-default glyphicon glyphicon-remove button").attr("style", "padding: 3px;").appendTo($item);
+	                       });
+	                	  }
+	               	 	});
+	                    
+	                	// Button for add new input variable to task
+	             	    var $item = $("<li/>").appendTo(menu);
+	     	    	    $("<span/>", {
+	     	    	    	"text" : "IN VAR",
+	    					"click": (function (instance) {
+	    						return function (event) {
+	    							event.preventDefault();
+	    							instance.addVarProperty(_this.id, 'input');
+	    							$(_this).trigger('contextmenu');
+	    						}
+	    					})(instance), 
+	   	    			   "href" : ""
+	   	    		    }).attr("class", "btn btn-default glyphicon glyphicon-plus").appendTo($item);
+	     	    	    
+	                	// Button for add new output variable to task
+	     	    	    $("<span/>", {
+	     	    	    	"text" : "OUT VAR",
+	    					"click": (function (instance) {
+	    						return function (event) {
+	    							event.preventDefault();
+	    							instance.addVarProperty(_this.id, 'output');
+	    							$(_this).trigger('contextmenu');
+	    						}
+	    					})(instance), 
+	   	    			   "href" : ""
+	   	    		    }).attr("class", "btn btn-default glyphicon glyphicon-plus").appendTo($item);
+	     	    	    
+	                	// Button for add new executor to task
+	    	    	    $("<span/>", {
+	    	    	    	"text" : "EXECUTOR",
+	    	    	    	"click": (function (instance) {
+	    	    	    		return function (event) {
+	    	    	    			event.preventDefault();
+	    	    	    			instance.addExecutorProperty(_this.id);
+	    	    	    			$(_this).trigger('contextmenu');
+	    	    	    		}
+	    	    	    	})(instance), 
+	  	    			   "href" : ""
+	  	    		    }).attr("class", "btn btn-default glyphicon glyphicon-plus").appendTo($item);
+	                	
+	                	// 
+	                	$contextMenu.css({
+	                	   display: "block",
+	                	   left: e.pageX-((e.pageX+$contextMenu.width()>$( document ).width())?$contextMenu.width():0),
+	                	   top: e.pageY-((e.pageY+$contextMenu.height()>$( document ).height())?$contextMenu.height():0)
+	                	});
+	                	return false;
+	                });
+	
+	                // Bind a click listener to each State elements. On double click, State elements are deleted.
+	                windows.bind("dblclick", function() {
+	                    var _this = this;
+	                	riot.route("#/document/" + $(_this).attr('id')+"///edit", true);
+	                });
+	
+	                // Initialize State elements as draggable.  
+	                instance.draggable(windows, {
+	                  drag: function (event, ui) { //gets called on every drag
+	                	  $("#workflow-context-menu").hide();
+	                      veda.Util.forSubIndividual(net, 'v-wf:consistsOf', event.target.id, function(el) {
+	              			  el['v-wf:locationX'] = [new Number(Math.round(ui.position.left-canvasSizePx/2))];
+	            			  el['v-wf:locationY'] = [new Number(Math.round(ui.position.top-canvasSizePx/2))];
+	                      });
+	                  }
+	            	});
+                }
 
                 // Initialize all State elements as Connection sources.
                 instance.makeSource(windows, {
@@ -484,13 +527,13 @@ jsWorkflow.ready = jsPlumb.ready;
             	var stateElement = '';
             	switch (type) {
     			case 'v-wf:InputCondition':    				
-    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div><span class="glyphicon glyphicon-play" aria-hidden="true"></div><div class="ep"></div></div>';
+    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div><span class="glyphicon glyphicon-play" aria-hidden="true"></div>'+(mode=='edit'?'<div class="ep">':'')+'</div></div>';
     				break;
     			case 'v-wf:OutputCondition':
     				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div><span class="glyphicon glyphicon-stop" aria-hidden="true"></div></div>';
     				break;
     			case 'v-wf:Condition':
-    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="left: ' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div class="state-name"></div><div class="ep"></div></div>';
+    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="left: ' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div class="state-name"></div>'+(mode=='edit'?'<div class="ep">':'')+'</div></div>';
     				break;
     			case 'v-wf:Task':    				
             		stateElement = '<div class="w state-task split-join '
@@ -498,7 +541,7 @@ jsWorkflow.ready = jsPlumb.ready;
             			+ instance.getSplitJoinType('join', state)
             			+ '" id="' + state.id + '" style="left: ' 
             			+ (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' 
-            			+ (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div class="state-name">' + state['rdfs:label'][0] + '</div><div class="ep"></div></div>';
+            			+ (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div class="state-name">' + state['rdfs:label'][0] + '</div>'+(mode=='edit'?'<div class="ep">':'')+'</div></div>';
     				break;
     			}            	
             	if (stateElement!='') {
@@ -593,10 +636,10 @@ jsWorkflow.ready = jsPlumb.ready;
             
             /**
              *Create workflow Net by given Object (v-wf:Net individual).
-             *@method createNet A public method
+             *@method createNetView A public method
              *@param {Object} workflowData A workflow object to create State transitions
              */
-            instance.createNet = function(net) {
+            instance.createNetView = function(net) {
             	$('#workflow-net-name').text(net['rdfs:label'][0]);
             	// Create States
             	net['v-wf:consistsOf'].forEach(function(el) {
@@ -620,6 +663,7 @@ jsWorkflow.ready = jsPlumb.ready;
              * @returns 
              */
             instance.optimizeView = function() {
+            	if (!net.hasValue('v-wf:consistsOf')) return;
             	var minx = undefined;
             	var maxx = undefined;
             	var miny = undefined;
@@ -663,42 +707,86 @@ jsWorkflow.ready = jsPlumb.ready;
            		});
                 instance.changeScale(scale);
             }
+            
+            instance.addProcessVariable = function(individualProperty, listId) {
+            	if (process.hasValue(individualProperty)) {
+                	$iv = $(listId);
+                	process[individualProperty].forEach(function(el) {
+                  	   var $item = $("<li/>").appendTo($iv);
+                	   $("<a/>", {
+                		   "text" : ((el['v-wf:variableName']!=null && el['v-wf:variableName'].length>0)?el['v-wf:variableName'][0]:el.id), 
+       	    			   "href" : '#/document/'+el.id
+                	   }).appendTo($item);	            	    	
+                	});
+            	}
+            }
+            
+            instance.createProcessView = function(process) {
+            	// Apply WorkItems to Net
+            	var s = new veda.IndividualModel();
+            	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
+            	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"'");
+            	for (var el in s.results) {
+            	    if (s.results.hasOwnProperty(el)) {
+            	    	var wi =  new veda.IndividualModel(el);
+                		if (wi.hasValue('v-wf:forNetElement')) {
+                			var state = $('#'+veda.Util.escape4$(wi['v-wf:forNetElement'][0].id));
+                			var wic = state.attr('work-items-count');
+                			if (wic>0) {
+                				state.attr('work-items-count', wic+1);
+                				if (wic<10) {
+                					state.css('background-color', '#FF'+(178-wic*20).toString(16)+'66');
+                				}
+                			} else {
+                				state.attr('work-items-count', 1);
+                    			state.css('background-color', '#FFB266');
+                			}                			
+                		}
+            	    }
+            	}
+            	// Add variables to lists
+            	instance.addProcessVariable('v-wf:inputVariable','#process-input-variables');
+            	instance.addProcessVariable('v-wf:localVariable','#process-local-variables');
+            	instance.addProcessVariable('v-wf:outputVariable','#process-output-variables');
+            }
 
             instance.optimizeView();
-            instance.createNet(net);
+            instance.createNetView(net);
+            if (mode='view') {
+            	instance.createProcessView(process);
+            }
                         
             if (localStorage.getItem("workflow"+net.id+"-zoom")>0 && localStorage.getItem("workflow"+net.id+"-zoom")!=1) {
             	instance.changeScale(localStorage.getItem("workflow"+net.id+"-zoom"));	
-            }            
+            }
             
             /* CONTEXT MENU [BEGIN] */
             var $contextMenu = $("#workflow-context-menu");
-            
             /* CONTEXT MENU [END]*/
             
             /* NET MENU [BEGIN] */
             $('#workflow-save-button').on('click', function() {
             	// TODO REFACTOR - recursive save (based on type checking)
            	  net.save();
-        	  if (!(net['v-wf:consistsOf'] === undefined)) {
-            	net['v-wf:consistsOf'].forEach(function(el) {
-            		if (!(el['v-wf:inputVariable'] === undefined)) {
+        	  if (net.hasValue('v-wf:consistsOf')) {
+        		  net['v-wf:consistsOf'].forEach(function(el) {
+            		if (el.hasValue('v-wf:inputVariable')) {
                 		el['v-wf:inputVariable'].forEach(function(v) {
                 			v.save();
                 		});
             		}
-            		if (!(el['v-wf:startingMapping'] === undefined)) {
+            		if (el.hasValue('v-wf:startingMapping')) {
             			el['v-wf:startingMapping'].forEach(function(m) {
             				m.save();
             			});
             		}
-            		if (!(el['v-wf:executor'] === undefined)) {
+            		if (el.hasValue('v-wf:executor')) {
             			el['v-wf:executor'].forEach(function(e) {
             				e.save();
             			});
             		}
             		el.save();
-            	});
+        		 });
         	  }
             });
             

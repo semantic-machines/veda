@@ -362,6 +362,88 @@ jsWorkflow.ready(function () {
   """ ;
 .
 
+v-wf:ProcessTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Процесс"@ru ;
+  rdfs:label "Template for Process"@en ;
+  v-ui:forClass v-wf:Process ;
+  v-ui:embedded "false"^^xsd:boolean ;
+  v-ui:template """
+<div class="workflow-wrapper" style="">
+	<div class="row workflow-toolbar">
+		<div class="col-md-4">
+		  <div class="btn-group" style="padding-top: 3px; display: inline-block;float:left;">
+		  	<div class="btn-group">
+  				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+    				<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> <span class="caret"></span>
+  				</button>
+  				<ul id="process-input-variables" class="dropdown-menu" role="menu">
+				    
+			  	</ul>
+			</div>				
+		  	<div class="btn-group">
+  				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+    				<span class="glyphicon glyphicon-expand" aria-hidden="true"></span> <span class="caret"></span>
+  				</button>
+  				<ul id="process-local-variables" class="dropdown-menu" role="menu">
+				    
+			  	</ul>
+			</div>				
+		  	<div class="btn-group">
+  				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+    				<span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> <span class="caret"></span>
+  				</button>
+  				<ul id="process-output-variables" class="dropdown-menu" role="menu">
+				    
+			  	</ul>
+			</div>				
+		  </div>								
+		</div>
+		
+		<div id="workflow-net-name" class="col-md-4" style="text-align: center;"></div>
+		 			
+		<div class="col-md-4"
+			style="padding-top: 3px;">				
+			<button type="button" class="btn btn-danger process-break" style="float:right;">
+				<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+			</button>
+			<button type="button" class="btn btn-default process-restart" style="float:right;">
+				<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+			</button>
+		</div>
+		
+		<form id="workflow-selected-item" hidden="true">
+			<input id="workflow-item-id" class="form-control" type="hidden" style="font-size: 8pt;" readonly/>
+			<input id="workflow-item-type" type="hidden"/> <!-- type of selected object: ['state'|'flow'] -->
+		</form>
+	</div>
+	<form id="workflow-selected-item" hidden="true">
+		<input id="workflow-item-id" class="form-control" type="hidden" style="font-size: 8pt;" readonly/>
+		<input id="workflow-item-type" type="hidden"/> <!-- type of selected object: ['state'|'flow'] -->
+	</form>
+	<div class="row workflow-canvas-wrapper">	
+	  <div id="workflow-canvas">
+	  </div>
+	</div>
+</div>
+
+<div id="workflow-context-menu" class="dropdown clearfix">
+    <ul class="workflow-context-menu-list" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;">
+    </ul>
+</div>
+
+<script type="text/javascript">
+jsWorkflow.ready(function () {
+    // Create a new workflow instance as workflow
+    var workflow = new jsWorkflow.Instance();
+
+    // Initialize workflow with workflow container id
+    var net = workflow.init('workflow-canvas', veda, document);
+});
+</script>
+  """ ;
+.
+
 v-wf:WorkOrderTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Рабочее задание"@ru ;
