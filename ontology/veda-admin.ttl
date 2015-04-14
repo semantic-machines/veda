@@ -193,8 +193,8 @@ v-a:Event_3
 # -------------------------------------------------------------------------------------------------
 
 v-a:VedaSystemAccount
-  v-s:author v-a:VedaSystem ;
   rdf:type v-s:Account ;
+  v-s:author v-a:VedaSystem ;
   v-s:login "veda"^^xsd:string ;
   v-s:mailbox "veda@semantic-machines.com"^^xsd:string ;
   v-s:owner v-a:VedaSystem ;
