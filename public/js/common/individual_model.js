@@ -228,11 +228,17 @@ veda.Module(function IndividualModel(veda) { "use strict";
 			}
 		}
 		
+		/**
+		 * @method
+		 * Initialize individual with class specific domain properties and methods
+		 */
 		self.init = function () {
 			self["rdf:type"].map(function (_class) {
-				Object.keys(_class.domainProperties).map(function (property_uri) {
-					self.defineProperty(property_uri);
-				});
+				if (_class.domainProperties) {
+					Object.keys(_class.domainProperties).map(function (property_uri) {
+						self.defineProperty(property_uri);
+					});
+				}
 				if (_class.model) {
 					var model = new Function (
 						"individual", 
@@ -256,6 +262,22 @@ veda.Module(function IndividualModel(veda) { "use strict";
 		self.defineProperty("rdf:type", undefined, function (classes) {
 			self.init();
 			self.trigger("individual:typeChanged", classes);
+		});
+
+		var rights;
+		Object.defineProperty(self, "rights", {
+			get: function () { 
+				if (rights) return rights;
+				try {
+					var rightsJSON = get_rights(veda.ticket, self.id);
+					rights = new veda.IndividualModel( rightsJSON );
+				} catch (e) {
+					rights = null;
+				} finally {
+					return rights;
+				}
+			},
+			configurable: false
 		});
 
 		self.defineProperty("v-s:deleted");

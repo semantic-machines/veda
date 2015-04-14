@@ -942,7 +942,7 @@ v-s:srcClassName
 v-s:srcPropertyName
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Transform ;
-  rdfs:label "имя аттрибута, котторое берем"@ru ;
+  rdfs:label "имя аттрибута, которое берем"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:startTime

@@ -331,7 +331,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 
 		var controlContainer;
 		if (renderedValues.length) {
-			controlContainer = renderedValues[0];
+			controlContainer = renderedValues[renderedValues.length-1];
 		} else {
 			controlContainer = relContainer.clone();
 			relContainer.after(controlContainer);
@@ -429,7 +429,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				// External resources
 				clone.append( $("<a>", {href: value, text: value}) );
 			}
-			relContainer.after(clone);
+			relContainer.before(clone);
 			return clone.show();
 		}
 		

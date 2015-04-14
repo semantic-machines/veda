@@ -13,11 +13,13 @@ function get_rights(ticket, uri, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.done( function (data) { done(data) } )
-		.fail( function (data, code) { fail(data, code) } );
+		.fail( function () { throw {status: result.status, description: result.statusText } } )
+		.done( function (data) { callback(data) } );
 }
 
 function get_rights_origin(ticket, uri, callback) {
@@ -28,41 +30,44 @@ function get_rights_origin(ticket, uri, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.done( function (data) { done(data) } )
-		.fail( function (data, code) { fail(data, code) } );
+		.fail( function () { throw {status: result.status, description: result.statusText } } )
+		.done( function (data) { callback(data) } );
 }
 
-function authenticate(login, password, done, fail) {
+function authenticate(login, password, callback) {
 	var params = {
 			type: "GET",
 			url: "authenticate",
 			data: { "login": login, "password": password }
 	};
-	if(!done) {
+	if(!callback) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.done( function (data) { done(data) } )
-		.fail( function (data, code) { fail(data, code) } );
+		.fail( function () { throw {status: result.status, description: result.statusText } } )
+		.done( function (data) { callback(data) } );
 }
 
-function is_ticket_valid(ticket, done, fail) {
+function is_ticket_valid(ticket, callback) {
 	var params = {
 		type: "GET",
 		url: "is_ticket_valid",
 		data: { "ticket": ticket }
 	};
-	if(!done) {
+	if(!callback) {
 		params.async = false;
-		return $.ajax(params).responseText; //JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return result.responseText;
 	}
-	$.ajax(params)
-		.done( function (data) { done(data) } )
-		.fail( function (data, code) { fail(data, code) } );
 }
 
 function wait_pmodule(pmodule_id, callback) {
@@ -73,10 +78,12 @@ function wait_pmodule(pmodule_id, callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { callback(false) } )
+		.fail( function () { throw {status: result.status, description: result.statusText } } )
 		.done( function (data) { callback(data) } );
 }
 
@@ -88,10 +95,12 @@ function backup(callback) {
 	};
 	if(!callback) {
 		params.async = false;
-		return JSON.parse($.ajax(params).responseText);
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { callback(false) } )
+		.fail( function () { throw {status: result.status, description: result.statusText } } )
 		.done( function (data) { callback(data) } );
 }
 
