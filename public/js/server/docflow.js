@@ -72,20 +72,20 @@ function prepare_work_order(ticket, document)
 		// проверяем есть ли результаты рабочих заданий
         for (var i = 0; i < workOrderList.length; i++)
         {			
-			print("[WORKFLOW][WO30.0] workOrder=" + toJson (workOrderList[i]) + "");        
+			//print("[WORKFLOW][WO30.0] workOrder=" + toJson (workOrderList[i]) + "");        
 			var workOrder;
 			if (workOrderList[i].data != document['@'])
                workOrder = get_individual(ticket, workOrderList[i].data);
             else
                workOrder = document;
 
-			print("[WORKFLOW][WO30.1] workOrder=" + toJson (workOrder) + "");        
+			//print("[WORKFLOW][WO30.1] workOrder=" + toJson (workOrder) + "");        
                
             var outputVariable = workOrder['v-wf:outputVariable'];    
             if (outputVariable)    
             {
 				var _result = get_individual(ticket, outputVariable[0].data);
-				print("[WORKFLOW][WO30.2] _result=" + toJson (_result) + "");        
+				//print("[WORKFLOW][WO30.2] _result=" + toJson (_result) + "");        
 				if (_result)
 				{
 					if (wosResultsMapping)
@@ -111,13 +111,13 @@ function prepare_work_order(ticket, document)
 										
 							result.push (el); 
 						}
-						print("[WORKFLOW][WO30.3] result=" + toJson (result) + "");        
+						//print("[WORKFLOW][WO30.3] result=" + toJson (result) + "");        
 					}
 				}					
 			}	
 						
 		}	
-	    print("[WORKFLOW][WO1-20]");
+	    //print("[WORKFLOW][WO1-20]");
 		
 		if (result.length == workOrderList.length) 
 			is_goto_to_next_task = true;
@@ -633,13 +633,13 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _local)
     return new_vars;
 }
 
-function is_all_executors_agreed (data)
+function is_all_executors_taken_decision (data, decision)
 {
    var count_agreed = 0;	
    for (var i = 0; i < data.length; i++)
    {
 	   print ("data[i].result=", data[i].result);
-	   if (data[i].result == 'v-wf:decision_agreed')
+	   if (data[i].result == decision)
 	   {
 		   count_agreed ++;
 	   }	   
@@ -674,6 +674,11 @@ function down_right_and_store(process, task)
                 type: _String
                 }]
     };
+}
+
+function restore_right(process, task)
+{
+	print ("[WORKFLOW] function RESTORE RIGHT IS NOT IMPLIMENTED");
 }
 
 function is_in_docflow_and_set_if_true(process, task)
