@@ -863,7 +863,7 @@ td:ComplexRouteStartForm1
 	v-wf:forNet mnd-wf:net_complex_route ;
 	v-wf:processedDocument td:SavedSearch1 ; 
 	v-wf:processInitiator td:RomanKarpov-Analyst1 ; 
-	v-wf:useDecomposition mnd-wf:decomposition1 ;
+	v-wf:useTransformation mnd-wf:transformation1 ;
 	mnd-wf:ComplexRouteStartForm_coordinator1 td:RomanKarpov-Analyst1 ; 
 	mnd-wf:ComplexRouteStartForm_coordinator1 td:ValeriyBushenev-Programmer1 ; 
 	mnd-wf:ComplexRouteStartForm_coordinator2 td:ValeriyBushenev-Programmer1 ; 

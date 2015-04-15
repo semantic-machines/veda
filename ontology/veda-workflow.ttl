@@ -453,6 +453,14 @@ v-wf:VariableTemplate
   </div>  
   """ ;
   .
+
+#---------------------------- Decision Form ------------------------
+
+v-wf:DecisionForm
+	rdf:type rdfs:Class ;
+	rdfs:label "форма решения"@ru ;
+	rdfs:label "decision form"@en ;
+.
   
 # --------------------------- Start Form ---------------------------
 v-wf:StartForm
@@ -488,39 +496,39 @@ v-wf:isProcess
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-wf:Process ;
 .
-v-wf:useDecomposition
+v-wf:useTransformation
 	rdf:type rdf:Property ;
 	rdfs:label "Использовать декомпозицию"@ru ;
-	rdfs:label "Use decomposition"@en ;
-	rdfs:domain v-wf:StartForm ;
+	rdfs:label "Use transformation"@en ;
+	rdfs:domain v-wf:StartForm, v-wf:DecisionForm ;
 	rdfs:range v-wf:Process ;
 .
 
-# --------------------------- Decomposition ---------------------------
-v-wf:Decomposition
+# --------------------------- Transformation ---------------------------
+v-wf:Transformation
 	rdf:type rdfs:Class ;
 	rdfs:label "Декомпозиция"@ru ;
-	rdfs:label "Decomposition"@en ;
+	rdfs:label "Transformation"@en ;
 .
 v-wf:forNet
 	rdf:type rdf:Property ;
 	rdfs:label "Для сети..."@ru ;
 	rdfs:label "For net..."@en ;
-	rdfs:domain v-wf:Decomposition ;
+	rdfs:domain v-wf:Transformation ;
 	rdfs:range v-wf:Net ;
 .
 v-wf:forFormClass
   	rdf:type owl:ObjectProperty ;
 	rdfs:label "Для сети..."@ru ;
 	rdfs:label "For net..."@en ;
-	rdfs:domain v-wf:Decomposition ;
+	rdfs:domain v-wf:Transformation ;
 	rdfs:range owl:Class ;
 .
 v-wf:startingMapping
 	rdf:type rdf:Property ;
 	rdfs:label "starting mapping"@en ;
 	rdfs:label "стартовое преобразование"@ru ;
-	rdfs:domain v-wf:Decomposition ;
+	rdfs:domain v-wf:Transformation ;
 	rdfs:range v-wf:Mapping ;
 .
 
@@ -684,9 +692,3 @@ v-wf:DecisionRemake
 	rdfs:label "доработать"@ru ;
 .	
 
-#-------------------------------------
-v-wf:DecisionForm
-	rdf:type rdfs:Class ;
-	rdfs:label "форма решения"@ru ;
-	rdfs:label "decision form"@en ;
-.
