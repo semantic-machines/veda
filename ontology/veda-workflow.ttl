@@ -685,6 +685,13 @@ v-wf:workOrderList
 	rdfs:range v-wf:WorkOrder ;
 .
 
+v-wf:previousWorkItem
+	rdf:type rdf:Property ;
+	rdfs:label "предыдущая выполняемая задача"@ru ;
+	rdfs:domain v-wf:WorkItem ;
+	rdfs:range v-wf:WorkItem ;
+.
+
 v-wf:isCompleted
 	rdf:type rdf:Property ;
 	rdfs:label "is completed"@en ;

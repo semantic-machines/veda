@@ -173,7 +173,7 @@ function prepare_work_order(ticket, document)
                             if (nextNetElement)
                             {
                                 print("[WORKFLOW][WO10] create next work item for =" + nextNetElement['@']);
-                                create_work_item(ticket, forProcess_uri, nextNetElement['@'], _event_id);
+                                create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id);
                             }
                         }
                     }
@@ -186,7 +186,7 @@ function prepare_work_order(ticket, document)
                     if (nextNetElement)
                     {
                         print("[WORKFLOW][WO11] create next work item for =" + nextNetElement['@']);
-                        create_work_item(ticket, forProcess_uri, nextNetElement['@'], _event_id);
+                        create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id);
                     }
                  }
 
@@ -348,7 +348,7 @@ function prepare_work_item(ticket, document)
 
                 if (!nextNetElement) continue;
 
-                create_work_item(ticket, forProcess, nextNetElement['@'], _event_id);
+                create_work_item(ticket, forProcess, nextNetElement['@'], document['@'], _event_id);
             }
         }
     } // end InputCondition
@@ -372,7 +372,7 @@ function prepare_work_item(ticket, document)
 
                 if (!nextNetElement) continue;
 
-                create_work_item(ticket, forProcess, nextNetElement['@'], _event_id);
+                create_work_item(ticket, forProcess, nextNetElement['@'], document['@'], _event_id);
             }
         }
     }
@@ -487,7 +487,7 @@ function prepare_start_form(ticket, document)
 
             if (is_exist(net_consistsOf, 'rdf:type', 'v-wf:InputCondition'))
             {
-                create_work_item(ticket, new_process_uri, net_consistsOf['@'], _event_id);
+                create_work_item(ticket, new_process_uri, net_consistsOf['@'], null, _event_id);
                 break;
             }
         }
@@ -496,7 +496,7 @@ function prepare_start_form(ticket, document)
     print("[WORKFLOW]:### prepare_start_form #E");
 }
 
-function create_work_item(ticket, process_uri, net_element_uri, _event_id)
+function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _event_id)
 {
     var new_uri = guid();
     var new_work_item = {
@@ -518,6 +518,15 @@ function create_work_item(ticket, process_uri, net_element_uri, _event_id)
         }]
     };
 
+	if (parent_uri != null)
+	{
+		new_work_item['v-wf:previousWorkItem'] = [
+            {
+                data: parent_uri,
+                type: _Uri
+			}];
+	}
+	
     print("[WORKFLOW]:create work item:" + new_uri);
 
     put_individual(ticket, new_work_item, _event_id);
