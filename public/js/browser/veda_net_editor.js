@@ -45,7 +45,8 @@ jsWorkflow.ready = jsPlumb.ready;
                     canvasSizePx=10000,                    
                     currentScale=1,
                     process,
-                    mode='view';
+                    mode='view',
+                    max_process_depth=0;
             
             if (net.hasValue('rdf:type')) {
             	if (net['rdf:type'][0].id == 'v-wf:Net') {
@@ -200,14 +201,19 @@ jsWorkflow.ready = jsPlumb.ready;
                 item.css('background', svgBackground);
             }
             
-            showProcessRunPath = function(workItem) {
+            showProcessRunPath = function(workItem, depth) {
             	if (workItem.hasValue('v-wf:previousWorkItem')) {
             		workItem['v-wf:previousWorkItem'].forEach(function(previousWorkItem) {
-            			if (workItem.hasValue('v-wf:forNetElement') && previousWorkItem.hasValue('v-wf:forNetElement')) {            			            			
-            				instance.select({target:workItem['v-wf:forNetElement'][0].id, source:previousWorkItem['v-wf:forNetElement'][0].id}).addClass('process-path-highlight');
-            				showProcessRunPath(previousWorkItem);
+            			if (workItem.hasValue('v-wf:forNetElement') && previousWorkItem.hasValue('v-wf:forNetElement')) {
+            				showProcessRunPath(previousWorkItem, depth+1);
+            				instance.select({target:workItem['v-wf:forNetElement'][0].id, source:previousWorkItem['v-wf:forNetElement'][0].id}).each(function(e) {
+            					e.addClass('process-path-highlight');
+            					e.setLabel(e.getLabel()+(max_process_depth-depth));
+            				});
             			}
             		});
+            	} else {
+            		max_process_depth = depth;
             	}
             }
             
@@ -232,13 +238,13 @@ jsWorkflow.ready = jsPlumb.ready;
                     
                 	// build run path
                     if (mode=='view') {
-                    	instance.select().removeClass('process-path-highlight');
+                    	instance.select().removeClass('process-path-highlight').setLabel('');
                     	var s = new veda.IndividualModel();
 	                	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
 	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"' && 'v-wf:forNetElement'=='"+_this.id+"'");
 	                	for (var el in s.results) {
 	                	    if (s.results.hasOwnProperty(el)) {
-	                	    	showProcessRunPath(new veda.IndividualModel(el));
+	                	    	showProcessRunPath(new veda.IndividualModel(el), 0);
 	                	    }
 	                	}
                     	//jsPlumb.select({source:"d1"}).removeAllOverlays();
