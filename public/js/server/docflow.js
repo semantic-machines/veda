@@ -597,10 +597,10 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _local)
 //        print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson (res1));
         if (!res1) continue;
 
-        var mapsTo = getUri(map['v-wf:mapsTo']);
-        if (!mapsTo) continue;
+        var mapToVariable = getUri(map['v-wf:mapToVariable']);
+        if (!mapToVariable) continue;
 
-        var dest_variable = get_individual(ticket, mapsTo);
+        var dest_variable = get_individual(ticket, mapToVariable);
         if (!dest_variable) continue;
 
         var variable_name = getFirstValue(dest_variable['v-wf:variableName']);
