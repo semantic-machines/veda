@@ -175,6 +175,7 @@ function prepare_work_order(ticket, document)
                                 print("[WORKFLOW][WO10] create next work item for =" + nextNetElement['@']);
                                 create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id);
                             }
+                            
                         }
                     }
                 }
@@ -188,11 +189,20 @@ function prepare_work_order(ticket, document)
                         print("[WORKFLOW][WO11] create next work item for =" + nextNetElement['@']);
                         create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id);
                     }
+                    
+                    
                  }
 
             }
                 // }
         }
+        
+        work_item ['v-wf:isCompleted'] = [{
+															data: true,
+															type: _Bool
+															}];
+		put_individual(ticket, work_item, _event_id);									
+        //print("[WORKFLOW][WO12] document=", toJson (document)); 
 		}
 
 }
@@ -205,7 +215,18 @@ function prepare_work_order(ticket, document)
 */
 function prepare_work_item(ticket, document)
 {
-    print("[WORKFLOW]: ### ---------------------------------  prepare_work_item:" + document['@']);
+    print("[WORKFLOW]:prepare_work_item ### --------------------------------- " + document['@']);
+
+	var isCompleted = document['v-wf:isCompleted'];
+
+	if (isCompleted)
+	{
+			if (isCompleted[0].data == true)
+			{
+				print("[WORKFLOW]:prepare_work_item, completed, exit");
+				return;
+			}		
+	}	
 
     var forProcess = getUri(document['v-wf:forProcess']);
     var process = get_individual(ticket, forProcess);
@@ -349,6 +370,14 @@ function prepare_work_item(ticket, document)
                 if (!nextNetElement) continue;
 
                 create_work_item(ticket, forProcess, nextNetElement['@'], document['@'], _event_id);
+                
+				document ['v-wf:isCompleted'] = [{
+															data: true,
+															type: _Bool
+															}];
+				put_individual(ticket, document, _event_id);									
+				print("[WORKFLOW][WO12] document=", toJson (document)); 
+                
             }
         }
     } // end InputCondition
@@ -373,6 +402,14 @@ function prepare_work_item(ticket, document)
                 if (!nextNetElement) continue;
 
                 create_work_item(ticket, forProcess, nextNetElement['@'], document['@'], _event_id);
+                
+				document ['v-wf:isCompleted'] = [{
+															data: true,
+															type: _Bool
+															}];
+				put_individual(ticket, document, _event_id);									
+				print("[WORKFLOW][WO12] document=", toJson (document)); 
+                
             }
         }
     }
