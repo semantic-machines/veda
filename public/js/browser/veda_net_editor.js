@@ -208,7 +208,7 @@ jsWorkflow.ready = jsPlumb.ready;
             				showProcessRunPath(previousWorkItem, depth+1);
             				instance.select({target:workItem['v-wf:forNetElement'][0].id, source:previousWorkItem['v-wf:forNetElement'][0].id}).each(function(e) {
             					e.addClass('process-path-highlight');
-            					e.setLabel(e.getLabel()+','+(max_process_depth-depth));
+            					e.setLabel(((e.getLabel()!='')?e.getLabel()+',':'')+(max_process_depth-depth));
             				});
             			}
             		});
