@@ -229,7 +229,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                	
 	                	var s = new veda.IndividualModel();
 	                	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
-	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '6f60d7ef-399c-5451-79c1-c0a354b5814b' && 'v-wf:forNetElement'=='"+_this.id+"'");
+	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"' && 'v-wf:forNetElement'=='"+_this.id+"'");
 	                	for (var el in s.results) {
 	                	    if (s.results.hasOwnProperty(el)) {
 	                	       var wi =  new veda.IndividualModel(el);
