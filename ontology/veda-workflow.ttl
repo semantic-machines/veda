@@ -225,7 +225,7 @@ v-wf:wosResultsMapping
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Mapping ;
 .
-v-wf:mapsTo
+v-wf:mapToVariable
 	rdf:type rdf:Property ;
 	rdfs:label "maps to"@en ;
 	rdfs:label "преобразуется в"@ru ;
