@@ -33,7 +33,6 @@ function prepare_work_order(ticket, document)
 
         print("[WORKFLOW][WO3] expression=" + expression);
 
-
         var task = new Context(work_item, ticket);
         var result0 = eval(expression);
 
@@ -47,7 +46,7 @@ function prepare_work_order(ticket, document)
         // сохраняем результаты в v-wf:outputVariable в обрабатываемом рабочем задании
         var task_output_vars = create_and_mapping_variables(ticket, netElement['v-wf:completedMapping'], process, work_item, result0);
 			//print("[WORKFLOW][WO W6.1] task_output_vars=", toJson(task_output_vars));			
-        task_output_vars
+        
         if (task_output_vars.length > 0)
         {
 			document['v-wf:outputVariable'] = task_output_vars;						
@@ -55,22 +54,26 @@ function prepare_work_order(ticket, document)
 		}
 			
      } // end [is codelet]        
-     else
+     else if (is_exist(executor, 'rdf:type', 'v-s:Appointment'))
      {
-		print("[WORKFLOW][WO20] executor=" + executor_uri + "");
+		print("[WORKFLOW][WO20] is USER, executor=" + executor_uri + "");
 			
 	 }
+	 else
+	 {
+		print("[WORKFLOW][WO21] executor=" + executor_uri + "");
+	 }	 
 	
-		var is_goto_to_next_task = false;
+	 var is_goto_to_next_task = false;
 						
-        // begin //////////////// скрипт сборки результатов
-		var result = [];
+     // begin //////////////// скрипт сборки результатов
+	 var result = [];
 		
-        // найдем маппинг множественных результатов
-        var wosResultsMapping = netElement['v-wf:wosResultsMapping'];
+     // найдем маппинг множественных результатов
+     var wosResultsMapping = netElement['v-wf:wosResultsMapping'];
 
-		// проверяем есть ли результаты рабочих заданий
-        for (var i = 0; i < workOrderList.length; i++)
+	 // проверяем есть ли результаты рабочих заданий
+     for (var i = 0; i < workOrderList.length; i++)
         {			
 			//print("[WORKFLOW][WO30.0] workOrder=" + toJson (workOrderList[i]) + "");        
 			var workOrder;
@@ -122,7 +125,7 @@ function prepare_work_order(ticket, document)
 		if (result.length == workOrderList.length) 
 			is_goto_to_next_task = true;
 		else	
-			print("[WORKFLOW][WO1-25] не все задания выполнены, bye.");
+			print("[WORKFLOW][WO1-25] не все задания выполнены, stop.");
 		     				
         // end //////////////// скрипт сборки результатов
 		print("[WORKFLOW][WO30.e] result=" + toJson (result) + "");        
@@ -401,11 +404,11 @@ function prepare_start_form(ticket, document)
 
     var new_process_uri = guid();
 
-    var decomposition_link = getUri(document['v-wf:useDecomposition']);
-    if (!decomposition_link) return;
+    var transformation_link = getUri(document['v-wf:useTransformation']);
+    if (!transformation_link) return;
 
-    var decomposition = get_individual(ticket, decomposition_link);
-    if (!decomposition) return;
+    var transformation = get_individual(ticket, transformation_link);
+    if (!transformation) return;
 
     var forNet = document['v-wf:forNet'];
     var net = get_individual(ticket, getUri(forNet));
@@ -424,7 +427,7 @@ function prepare_start_form(ticket, document)
     };
 
     // формируем входящие переменные
-    var process_input_vars = create_and_mapping_variables(ticket, decomposition['v-wf:startingMapping'], new_process, null, null);
+    var process_input_vars = create_and_mapping_variables(ticket, transformation['v-wf:startingMapping'], new_process, null, null);
     if (process_input_vars.length > 0) new_process['v-wf:inputVariable'] = process_input_vars;
 
     // формируем локальные переменные	
@@ -638,7 +641,7 @@ function is_all_executors_taken_decision (data, decision)
    var count_agreed = 0;	
    for (var i = 0; i < data.length; i++)
    {
-	   print ("data[i].result=", data[i].result);
+//	   print ("data[i].result=", data[i].result);
 	   if (data[i].result == decision)
 	   {
 		   count_agreed ++;
@@ -664,7 +667,7 @@ function down_right_and_store(process, task)
         var instanceOf = getUri(process['v-wf:instanceOf']);
 
         var net_doc_id = instanceOf + "_" + doc_id[0].data;
-        print("[WORKFLOW] down_right_and_store, find=", net_doc_id);
+        print("[WORKFLOW]:down_right_and_store, find=", net_doc_id);
 
     }
     return {
@@ -678,7 +681,9 @@ function down_right_and_store(process, task)
 
 function restore_right(process, task)
 {
-	print ("[WORKFLOW] function RESTORE RIGHT IS NOT IMPLIMENTED");
+	print ("[WORKFLOW]:restore_right function RESTORE RIGHT IS NOT IMPLIMENTED");
+	var right = process.getVariableValue('right');
+	print ("[WORKFLOW]:restore_right ", toJson (right)); 
 }
 
 function is_in_docflow_and_set_if_true(process, task)
@@ -693,7 +698,7 @@ function is_in_docflow_and_set_if_true(process, task)
 			var instanceOf = getUri(process['v-wf:instanceOf']);
 
 			var net_doc_id = instanceOf + "_" + doc_id[0].data;
-			print("[WORKFLOW] is_in_docflow_and_set_if_true, find=", net_doc_id);
+			print("[WORKFLOW]:is_in_docflow_and_set_if_true, find=", net_doc_id);
 
 			var in_doc_flow = get_individual(process.ticket, net_doc_id);
 
