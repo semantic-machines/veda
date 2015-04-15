@@ -10,10 +10,11 @@ port=8080
 #port=8087
 
 #query=/get_individual?uri=td%3ARomanKarpov
-query="/get_individual?uri=2904ec59-c56e-4652-a124-0790c01c60b9"
+#query="/get_individual?uri=2904ec59-c56e-4652-a124-0790c01c60b9"
 
 #Сложный типизированный запрос (результатов - 3)
-#query=/query?query=%27v-s%3AhasAppointmentTo%27%3D%3D%27ap%3Abd15f297-f1a0-4c1a-ae42-d0c06b22d8be%27+%26%26+%27mnd-s%3Acontent%27%3D%3D%27%D0%B1%D1%8B%D1%87%D0%B8%D0%BD*%27+%26%26+%27rdf%3Atype%27%3D%3D%27mnd-s-cmn%3ANote%27+%26%26+%27v-s%3Aauthor.rdfs%3Alabel%27%3D%3D%27%D0%BA%D0%BE%D1%80%D0%BE%D0%B1*%27
+#'v-s:hasAppointmentTo' == 'ap:bd15f297-f1a0-4c1a-ae42-d0c06b22d8be' && 'mnd-s:content'=='бычин*' && 'rdf:type'=='mnd-s-cmn:Note' && 'v-s:author.rdfs:label'=='короб*'
+query=/query?query=%27v-s%3AhasAppointmentTo%27%3D%3D%27ap%3Abd15f297-f1a0-4c1a-ae42-d0c06b22d8be%27+%26%26+%27mnd-s%3Acontent%27%3D%3D%27%D0%B1%D1%8B%D1%87%D0%B8%D0%BD*%27+%26%26+%27rdf%3Atype%27%3D%3D%27mnd-s-cmn%3ANote%27+%26%26+%27v-s%3Aauthor.rdfs%3Alabel%27%3D%3D%27%D0%BA%D0%BE%D1%80%D0%BE%D0%B1*%27
 
 #коробейников николай (результатов - 393)
 #query=/query?query=%27*%27%3D%3D%27%D0%BA%D0%BE%D1%80%D0%BE%D0%B1%D0%B5%D0%B9%D0%BD%D0%B8%D0%BA%D0%BE%D0%B2*%27%26%26%27*%27%3D%3D%27%D0%BD%D0%B8%D0%BA%D0%BE%D0%BB%D0%B0%D0%B9*%27
