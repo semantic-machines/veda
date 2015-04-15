@@ -685,6 +685,12 @@ v-s:hasLevel
   rdfs:label "уровень"@ru ;
   rdfs:range v-s:Level ;
 .
+v-s:hasManager
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "manager"@en ;
+  rdfs:label "лидер"@ru ;
+  rdfs:range v-s:Appointment ;
+.
 v-s:hasMember
   rdf:type owl:ObjectProperty ;
   rdfs:label "member"@en ;
@@ -692,7 +698,7 @@ v-s:hasMember
   rdfs:range v-s:Appointment ;
 .
 v-s:hasParentLink
-  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
   rdfs:label "parent document"@en ;
   rdfs:label "ссылка на родительский документ"@ru ;
   rdfs:range rdfs:Resource ;
