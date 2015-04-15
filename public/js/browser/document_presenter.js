@@ -142,6 +142,15 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			$delete = $("#delete.action", classTemplate),
 			$search = $("#search.action", classTemplate);
 
+		// Check rights to manage buttons		
+		// Update
+		if ($edit.length   && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0]) ) $edit.remove();
+		if ($save.length   && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0]) ) $save.remove();
+		if ($cancel.length && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0]) ) $cancel.remove();
+		if ($delete.length && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0]) ) $delete.remove();
+		// Delete
+		if ($delete.length && !(document.rights.hasValue("v-s:canDelete") && document.rights["v-s:canDelete"][0]) ) $delete.remove();
+
 		// Show / hide buttons in different modes
 		document.on("view edit search", function (mode) {
 			mode === "view"   ? ( $edit.show(), $save.hide(), $cancel.hide(), $delete.show(), $search.hide() ) :
@@ -176,7 +185,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		$delete.on("click", function (e) {
 			if ( confirm("Вы действительно хотите удалить документ?") ) document.trigger("delete");
 		});
-		if (document["v-s:deleted"][0] && document["v-s:deleted"][0] == true) $delete.hide();
+		if (document.hasValue("v-s:deleted") && document["v-s:deleted"][0]) $delete.hide();
 		
 		// Search
 		$search.on("click", function (e) {

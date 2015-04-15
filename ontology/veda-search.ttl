@@ -347,7 +347,8 @@ v-fs:SearchTemplate
 			gc1 = get_count;
 			gst1 = get_summary_time;
 			
-			self.currentPage = (typeof page === 'number' ? page : self.currentPage) || 0;
+			//self.currentPage = (typeof page === 'number' ? page : self.currentPage) || 0;
+			self.currentPage = self.currentPage || 0;
 			
 			if (self.results_count < self.currentPage * veda.user.displayedElements) 
 				self.currentPage = Math.floor(self.results_count / veda.user.displayedElements) + 1 * (self.results_count % veda.user.displayedElements ? 1 : 0) - 1;

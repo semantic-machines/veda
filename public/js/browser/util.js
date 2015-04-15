@@ -10,22 +10,6 @@ veda.Module(function Util(veda) { "use strict";
 		return str;
 	}
 
-	// Localize nodeSelector
-	veda.Util.localize = function (container, lang) {
-		/*$.ajax({
-			type: "GET",
-			dataType: "script",
-			url: "js/i18n/vocabulary_"+lang.toLowerCase()+".js",
-			async: false,
-			cache: true,
-		}).done(function( msg ) {
-			eval(msg);
-			$('[i18n]', container).each(function() {
-				$(this).text($.i18n._($(this).attr('i18n')));
-			});
-		});*/
-	}
-	
 	function isInteger (n) { return n % 1 === 0; }
 	
 	veda.Util.exportTTL = function (individualList) {

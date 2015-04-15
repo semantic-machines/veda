@@ -13,7 +13,6 @@ veda.Module(function ConsolePresenter(veda) { "use strict";
 		// Render View
 		var rendered = riot.render(template, console);
 		container.html( rendered );
-		//veda.Util.localize(container, veda.user.language);
 
 		$("#console #runat option").each( function() {
 			$(this).val() == console.runat ? $(this).attr("selected", "selected") : "";

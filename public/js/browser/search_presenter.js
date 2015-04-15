@@ -24,7 +24,6 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		// Get template
 		var rendered = riot.render(template, search);
 		container.html(rendered);
-		//veda.Util.localize(container, veda.user.language);
 		
 		$("#q", container).focus();
 		$(".not-found", container).hide();
