@@ -279,4 +279,10 @@ path {
 	padding: 5px; 
 	font-family: Lucida Console;
 }
+
+svg.process-path-highlight path
+{
+	stroke:red;
+	stroke-width:2;
+}
 /* [END] NET EDITOR */

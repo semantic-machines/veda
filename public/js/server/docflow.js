@@ -173,8 +173,9 @@ function prepare_work_order(ticket, document)
                             if (nextNetElement)
                             {
                                 print("[WORKFLOW][WO10] create next work item for =" + nextNetElement['@']);
-                                create_work_item(ticket, forProcess_uri, nextNetElement['@'], _event_id);
+                                create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id);
                             }
+                            
                         }
                     }
                 }
@@ -186,13 +187,22 @@ function prepare_work_order(ticket, document)
                     if (nextNetElement)
                     {
                         print("[WORKFLOW][WO11] create next work item for =" + nextNetElement['@']);
-                        create_work_item(ticket, forProcess_uri, nextNetElement['@'], _event_id);
+                        create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id);
                     }
+                    
+                    
                  }
 
             }
                 // }
         }
+        
+        work_item ['v-wf:isCompleted'] = [{
+															data: true,
+															type: _Bool
+															}];
+		put_individual(ticket, work_item, _event_id);									
+        //print("[WORKFLOW][WO12] document=", toJson (document)); 
 		}
 
 }
@@ -205,7 +215,18 @@ function prepare_work_order(ticket, document)
 */
 function prepare_work_item(ticket, document)
 {
-    print("[WORKFLOW]: ### ---------------------------------  prepare_work_item:" + document['@']);
+    print("[WORKFLOW]:prepare_work_item ### --------------------------------- " + document['@']);
+
+	var isCompleted = document['v-wf:isCompleted'];
+
+	if (isCompleted)
+	{
+			if (isCompleted[0].data == true)
+			{
+				print("[WORKFLOW]:prepare_work_item, completed, exit");
+				return;
+			}		
+	}	
 
     var forProcess = getUri(document['v-wf:forProcess']);
     var process = get_individual(ticket, forProcess);
@@ -348,7 +369,15 @@ function prepare_work_item(ticket, document)
 
                 if (!nextNetElement) continue;
 
-                create_work_item(ticket, forProcess, nextNetElement['@'], _event_id);
+                create_work_item(ticket, forProcess, nextNetElement['@'], document['@'], _event_id);
+                
+				document ['v-wf:isCompleted'] = [{
+															data: true,
+															type: _Bool
+															}];
+				put_individual(ticket, document, _event_id);									
+				print("[WORKFLOW][WO12] document=", toJson (document)); 
+                
             }
         }
     } // end InputCondition
@@ -372,7 +401,15 @@ function prepare_work_item(ticket, document)
 
                 if (!nextNetElement) continue;
 
-                create_work_item(ticket, forProcess, nextNetElement['@'], _event_id);
+                create_work_item(ticket, forProcess, nextNetElement['@'], document['@'], _event_id);
+                
+				document ['v-wf:isCompleted'] = [{
+															data: true,
+															type: _Bool
+															}];
+				put_individual(ticket, document, _event_id);									
+				print("[WORKFLOW][WO12] document=", toJson (document)); 
+                
             }
         }
     }
@@ -487,7 +524,7 @@ function prepare_start_form(ticket, document)
 
             if (is_exist(net_consistsOf, 'rdf:type', 'v-wf:InputCondition'))
             {
-                create_work_item(ticket, new_process_uri, net_consistsOf['@'], _event_id);
+                create_work_item(ticket, new_process_uri, net_consistsOf['@'], null, _event_id);
                 break;
             }
         }
@@ -496,7 +533,7 @@ function prepare_start_form(ticket, document)
     print("[WORKFLOW]:### prepare_start_form #E");
 }
 
-function create_work_item(ticket, process_uri, net_element_uri, _event_id)
+function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _event_id)
 {
     var new_uri = guid();
     var new_work_item = {
@@ -518,6 +555,15 @@ function create_work_item(ticket, process_uri, net_element_uri, _event_id)
         }]
     };
 
+	if (parent_uri != null)
+	{
+		new_work_item['v-wf:previousWorkItem'] = [
+            {
+                data: parent_uri,
+                type: _Uri
+			}];
+	}
+	
     print("[WORKFLOW]:create work item:" + new_uri);
 
     put_individual(ticket, new_work_item, _event_id);
@@ -597,10 +643,10 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _local)
 //        print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson (res1));
         if (!res1) continue;
 
-        var mapsTo = getUri(map['v-wf:mapsTo']);
-        if (!mapsTo) continue;
+        var mapToVariable = getUri(map['v-wf:mapToVariable']);
+        if (!mapToVariable) continue;
 
-        var dest_variable = get_individual(ticket, mapsTo);
+        var dest_variable = get_individual(ticket, mapToVariable);
         if (!dest_variable) continue;
 
         var variable_name = getFirstValue(dest_variable['v-wf:variableName']);
