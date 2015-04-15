@@ -200,14 +200,24 @@ jsWorkflow.ready = jsPlumb.ready;
                 item.css('background', svgBackground);
             }
             
+            showProcessRunPath = function(workItem) {
+            	if (workItem.hasValue('v-wf:previousWorkItem')) {
+            		workItem['v-wf:previousWorkItem'].forEach(function(previousWorkItem) {
+            			if (workItem.hasValue('v-wf:forNetElement') && previousWorkItem.hasValue('v-wf:forNetElement')) {            			            			
+            				instance.select({target:workItem['v-wf:forNetElement'][0].id, source:previousWorkItem['v-wf:forNetElement'][0].id}).addClass('process-path-highlight');
+            				showProcessRunPath(previousWorkItem);
+            			}
+            		});
+            	}
+            }
+            
             /**
-             *Bind required functionalities to State elements
+             *Bind required functional to State elements
              *@method bindStateEvents
              *@param {Object} windows List of all State elements
              */
             bindStateEvents = function(windows) {
 
-                // По клику переходим на свойства объекта
                 windows.bind("click", function() {
 
                 	instance.repaintEverything();
@@ -219,6 +229,20 @@ jsWorkflow.ready = jsPlumb.ready;
                     properties.find('#workflow-item-id').val(_this.id);
                     properties.find('#workflow-item-type').val('state');
                     currentElement.addClass('w_active');
+                    
+                	// build run path
+                    if (mode=='view') {
+                    	instance.select().removeClass('process-path-highlight');
+                    	var s = new veda.IndividualModel();
+	                	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
+	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"' && 'v-wf:forNetElement'=='"+_this.id+"'");
+	                	for (var el in s.results) {
+	                	    if (s.results.hasOwnProperty(el)) {
+	                	    	showProcessRunPath(new veda.IndividualModel(el));
+	                	    }
+	                	}
+                    	//jsPlumb.select({source:"d1"}).removeAllOverlays();
+                    }
                 });
                 
                 if (mode=='view') {
