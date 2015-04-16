@@ -144,12 +144,12 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 
 		// Check rights to manage buttons		
 		// Update
-		if ($edit.length   && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0]) ) $edit.remove();
-		if ($save.length   && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0]) ) $save.remove();
-		if ($cancel.length && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0]) ) $cancel.remove();
-		if ($delete.length && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0]) ) $delete.remove();
+		if ($edit.length   && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0] == false) ) $edit.remove();
+		if ($save.length   && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0] == false) ) $save.remove();
+		if ($cancel.length && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0] == false) ) $cancel.remove();
+		if ($delete.length && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0] == false) ) $delete.remove();
 		// Delete
-		if ($delete.length && !(document.rights.hasValue("v-s:canDelete") && document.rights["v-s:canDelete"][0]) ) $delete.remove();
+		if ($delete.length && !(document.rights.hasValue("v-s:canDelete") && document.rights["v-s:canDelete"][0] == false) ) $delete.remove();
 
 		// Show / hide buttons in different modes
 		document.on("view edit search", function (mode) {
