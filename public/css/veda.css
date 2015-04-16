@@ -178,6 +178,10 @@ span.twitter-typeahead .tt-hint {
 .aLabel._jsPlumb_hover, ._jsPlumb_source_hover, ._jsPlumb_target_hover {
 	color:blue;
 }
+._jsPlumb_overlay {
+	font-size: larger;
+	background-color: #EEEEEE;
+}
 
 .aLabel {
 	background-color:white;
