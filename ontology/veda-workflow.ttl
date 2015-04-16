@@ -61,11 +61,6 @@ v-wf:Flow
 	rdfs:label "Flow"@en ;
 	rdfs:label "Поток"@ru ;
 .
-v-wf:Mapping
-	rdf:type owl:Class ;
-	rdfs:label "Mapping"@en ;
-	rdfs:label "Преобразование"@ru ;
-.
 v-wf:ExecutorDefinition
 	rdf:type owl:Class ;
 	rdfs:label "Executor definition"@en ;
@@ -224,20 +219,6 @@ v-wf:wosResultsMapping
 	rdfs:label "преобразование результатов рабочих заданий"@ru ;
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Mapping ;
-.
-v-wf:mapToVariable
-	rdf:type rdf:Property ;
-	rdfs:label "maps to"@en ;
-	rdfs:label "преобразуется в"@ru ;
-	rdfs:domain v-wf:Mapping ;
-	rdfs:range v-wf:Variable ;
-.
-v-wf:mappingExpression
-	rdf:type rdf:Property ;
-	rdfs:label "mapping expression"@en ;
-	rdfs:label "выражение преобразования"@ru ;
-	rdfs:domain v-wf:Mapping ;
-	rdfs:range xsd:string ;
 .
 v-wf:executor
 	rdf:type rdf:Property ;
@@ -586,32 +567,73 @@ v-wf:useTransformation
 	rdfs:range v-wf:Process ;
 .
 
+# --------------------------- Mapping to variable ---------------------------
+
+v-wf:Mapping
+	rdf:type owl:Class ;
+	rdfs:label "Mapping"@en ;
+	rdfs:label "Преобразование"@ru ;
+.
+v-wf:mappingExpression
+        rdf:type rdf:Property ;
+        rdfs:label "mapping expression"@en ;
+        rdfs:label "выражение преобразования"@ru ;
+        rdfs:domain v-wf:Mapping ;
+        rdfs:range xsd:string ;
+.
+v-wf:mapToVariable
+        rdf:type rdf:Property ;
+        rdfs:label "maps to variable"@en ;
+        rdfs:label "преобразуется в переменную"@ru ;
+        rdfs:domain v-wf:Mapping ;
+        rdfs:range v-wf:Variable ;
+.
+
 # --------------------------- Transformation ---------------------------
-v-wf:Transformation
+
+v-wf:TransformIndividual
 	rdf:type rdfs:Class ;
-	rdfs:label "Декомпозиция"@ru ;
+	rdfs:label "Трансформация"@ru ;
 	rdfs:label "Transformation"@en ;
 .
-v-wf:forNet
-	rdf:type rdf:Property ;
-	rdfs:label "Для сети..."@ru ;
-	rdfs:label "For net..."@en ;
-	rdfs:domain v-wf:Transformation ;
-	rdfs:range v-wf:Net ;
+
+v-wf:transformRule
+        rdf:type rdf:Property ;
+        rdfs:label "правило преобразования"@ru ;
+	rdfs:domain v-wf:TransformIndividual ;
 .
-v-wf:forFormClass
-  	rdf:type owl:ObjectProperty ;
-	rdfs:label "Для сети..."@ru ;
-	rdfs:label "For net..."@en ;
-	rdfs:domain v-wf:Transformation ;
-	rdfs:range owl:Class ;
+
+v-wf:Rule
+	rdf:type rdfs:Class ;
+	rdfs:label "правило"@ru ;
 .
-v-wf:startingMapping
-	rdf:type rdf:Property ;
-	rdfs:label "starting mapping"@en ;
-	rdfs:label "стартовое преобразование"@ru ;
-	rdfs:domain v-wf:Transformation ;
-	rdfs:range v-wf:Mapping ;
+
+v-wf:locateExpression
+        rdf:type rdf:Property ;
+        rdfs:label "выражение для нахождения индивидуала"@ru ;
+	rdfs:domain v-wf:Rule ;
+        rdfs:range xsd:string ;
+.
+
+v-wf:transformationExpression
+        rdf:type rdf:Property ;
+        rdfs:label "выражение для преобразования индивидуала"@ru ;
+	rdfs:domain v-wf:Rule ;
+        rdfs:range xsd:string ;
+.
+
+v-wf:getDestExpression
+        rdf:type rdf:Property ;
+        rdfs:label "выражение для генерации Id"@ru ;
+	rdfs:domain v-wf:Rule ;
+        rdfs:range xsd:string ;
+.
+
+v-wf:destProperty
+        rdf:type rdf:Property ;
+        rdfs:label "в какое поле записывать значение"@ru ;
+	rdfs:domain v-wf:Rule ;
+        rdfs:range rdf:Property ;
 .
 
 # --------------------------- Process ---------------------------
