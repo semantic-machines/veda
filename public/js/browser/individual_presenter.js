@@ -1,49 +1,47 @@
-// Document Presenter
+// Individual Presenter
 
-veda.Module(function DocumentPresenter(veda) { "use strict";
+veda.Module(function IndividualPresenter(veda) { "use strict";
 	
-	//var c1 = 0;
+	var deletedAlertTmpl = $("#deleted-individual-alert-template").html();
 	
-	var deletedAlertTmpl = $("#deleted-document-alert-template").html();
-	
-	veda.on("document:loaded", function PresentDocument(document, container_param, template_param, _mode) {
+	veda.on("individual:loaded", function PresentIndividual(individual, container_param, template, mode) {
 		
-		//console.log("document presenter:", ++c1, document.id, document);
+		if (!container_param) return;
 		
-		var container = container_param || $("#main");
-		
-		var mode = _mode || "view";
+		var container = $(container_param);
+
+		mode = mode || "view";
 		
 		container
 			.empty()//.hide()
-			.attr("resource", document.id)
-			.attr("typeof", document["rdf:type"].map(function (item) { return item.id }).join(" ") );
+			.attr("resource", individual.id)
+			.attr("typeof", individual["rdf:type"].map(function (item) { return item.id }).join(" ") );
 
-		// Change location.hash if document was presented in #main container
-		/*if (container.prop("id") === "main") {
-			var hash = ["#/document", document.id, container_param || "", template_param || "", mode || ""].join("/");
+		// Change location.hash if individual was presented in #main container
+		if (container.prop("id") === "main") {
+			var hash = ["#/individual", individual.id, container_param || "", template || "", mode || ""].join("/");
 			riot.route(hash, false);
-		}*/
+		}
 			
-		if (document["v-s:deleted"] && document["v-s:deleted"][0] == true) {
+		if (individual["v-s:deleted"] && individual["v-s:deleted"][0] == true) {
 			var deletedAlert = $( deletedAlertTmpl );
 			container.prepend(deletedAlert);
 			$("button", deletedAlert).click(function () {
-				document.trigger("recover");
+				individual.trigger("recover");
 			});
 		}
 
 		var classTemplate, templateStr, specs = {}, scripts = [];
 		
-		if (template_param) {
-			templateStr = template_param["v-ui:template"][0].toString();
+		if (template) {
+			templateStr = template["v-ui:template"][0].toString();
 			templateStr = templateStr.replace(/<script.*>((?:\s*?.*?\s*?)*)<\/script>/gi, function (m, script) {
 				scripts.push(script);
 				return "";
 			});
 			classTemplate = $( templateStr );
 			specs = $.extend.apply (this, [specs].concat(
-				document["rdf:type"]
+				individual["rdf:type"]
 					.filter( function (_class) {
 						return _class instanceof veda.IndividualModel;
 					})
@@ -52,10 +50,10 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					})
 				)
 			);
-			renderTemplate (document, container, classTemplate, specs, scripts, mode);
+			renderTemplate (individual, container, classTemplate, specs, scripts, mode);
 
 		} else if (
-			!document["rdf:type"]
+			!individual["rdf:type"]
 				.filter( function (_class) {
 					return _class instanceof veda.IndividualModel;
 				})
@@ -63,7 +61,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					if (_class.template && _class.template["v-ui:template"]) {
 						// If _class.template is embedded => construct generic template
 						if (_class.template["v-ui:embedded"] && _class.template["v-ui:embedded"][0] == true) {
-							classTemplate = genericTemplate(document, _class); 
+							classTemplate = genericTemplate(individual, _class); 
 						} else {
 							// Get template from class
 							templateStr = _class.template["v-ui:template"][0].toString()
@@ -75,64 +73,64 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 						}
 					} else {
 						// Construct generic template
-						classTemplate = genericTemplate(document, _class);
+						classTemplate = genericTemplate(individual, _class);
 					}
 					specs = _class.specsByProps || {};
-					renderTemplate (document, container, classTemplate, specs, scripts, mode);
+					renderTemplate (individual, container, classTemplate, specs, scripts, mode);
 				})
 				.length
 		) {
-			classTemplate = genericTemplate(document);
-			renderTemplate (document, container, classTemplate, specs, scripts, mode);
+			classTemplate = genericTemplate(individual);
+			renderTemplate (individual, container, classTemplate, specs, scripts, mode);
 		}
 	});
 	
-	function renderTemplate (document, container, classTemplate, specs, scripts, mode) {
+	function renderTemplate (individual, container, classTemplate, specs, scripts, mode) {
 		
 		// Embedded templates list
 		var embedded = [];
 				
 		// Trigger same events for embedded templates
-		document.on("view edit save delete recover", function (event) {
+		individual.on("view edit save delete recover", function (event) {
 			embedded.map(function (item) {
 				if (item.trigger) item.trigger(event);
 			});
 		});
 
 		// Define handlers
-		document.on("save", function () {
-			document.save();
-			document.trigger("view");
-			// Change location.hash if document was presented in #main container
-			if (container.prop("id") === "main") riot.route("#/document/" + document.id, false);
+		individual.on("save", function () {
+			individual.save();
+			individual.trigger("view");
+			// Change location.hash if individual was presented in #main container
+			if (container.prop("id") === "main") riot.route("#/individual/" + individual.id, false);
 		});
 		
-		document.on("cancel", function () {
+		individual.on("cancel", function () {
 			embedded.map(function (item) {
 				if (item.reset) item.reset();
 			});
-			document.cancel();
+			individual.reset();
 		});
 
-		document.on("delete", function () {
-			document.delete();
-			document.trigger("cancel");
+		individual.on("delete", function () {
+			/*individual.delete();
+			individual.trigger("cancel");*/
 		});
 
-		document.on("recover", function () {
-			document.recover();
-			document.trigger("cancel");
+		individual.on("recover", function () {
+			/*individual.recover();
+			individual.trigger("cancel");*/
 		});
 		
-		document.on("view edit search", function (_mode) {
+		individual.on("view edit search", function (_mode) {
 			mode = _mode;
 		});
 		
 		// Cleanup memory
 		classTemplate.on("remove", function (event) {
-			document.trigger("document:cleanup");
+			individual.trigger("individual:cleanup");
 			$(".typeahead", container).typeahead("destroy");
-			container = mode = document = container_param = template_param = _mode = null;
+			container = mode = individual = container = template = null;
 		});
 		
 		// Actions
@@ -144,15 +142,15 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 
 		// Check rights to manage buttons		
 		// Update
-		if ($edit.length   && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0] == true) ) $edit.remove();
-		if ($save.length   && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0] == true) ) $save.remove();
-		if ($cancel.length && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0] == true) ) $cancel.remove();
-		if ($delete.length && !(document.rights.hasValue("v-s:canUpdate") && document.rights["v-s:canUpdate"][0] == true) ) $delete.remove();
+		if ($edit.length   && !(individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $edit.remove();
+		if ($save.length   && !(individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $save.remove();
+		if ($cancel.length && !(individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $cancel.remove();
+		if ($delete.length && !(individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $delete.remove();
 		// Delete
-		if ($delete.length && !(document.rights.hasValue("v-s:canDelete") && document.rights["v-s:canDelete"][0] == true) ) $delete.remove();
+		if ($delete.length && !(individual.rights.hasValue("v-s:canDelete") && individual.rights["v-s:canDelete"][0] == true) ) $delete.remove();
 
 		// Show / hide buttons in different modes
-		document.on("view edit search", function (mode) {
+		individual.on("view edit search", function (mode) {
 			mode === "view"   ? ( $edit.show(), $save.hide(), $cancel.hide(), $delete.show(), $search.hide() ) :
 			mode === "edit"   ? ( $edit.hide(), $save.show(), $cancel.show(), $delete.show(), $search.hide() ) :
 			mode === "search" ? ( $edit.hide(), $save.hide(), $cancel.hide(), $delete.hide(), $search.show() ) : 
@@ -162,39 +160,39 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		// Buttons handlers
 		// Edit
 		$edit.on("click", function (e) {
-			document.trigger("edit");
+			individual.trigger("edit");
 		});
 		
 		// Save
 		$save.on("click", function (e) {
-			document.trigger("save");
+			individual.trigger("save");
 		});
-		document.on("validation:complete", function (e) {
-			var isValid = Object.keys(document.isValid).reduce(function (state, specId) {
-				return state && document.isValid[specId];
+		individual.on("validation:complete", function (e) {
+			var isValid = Object.keys(individual.isValid).reduce(function (state, specId) {
+				return state && individual.isValid[specId];
 			}, true);
 			isValid ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
 		});
 		
 		//  Cancel
 		$cancel.on("click", function (e) {
-			document.trigger("cancel");
+			individual.trigger("cancel");
 		});
 		
 		//  Delete
 		$delete.on("click", function (e) {
-			if ( confirm("Вы действительно хотите удалить документ?") ) document.trigger("delete");
+			if ( confirm("Вы действительно хотите удалить документ?") ) individual.trigger("delete");
 		});
-		if (document.hasValue("v-s:deleted") && document["v-s:deleted"][0]) $delete.hide();
+		if (individual.hasValue("v-s:deleted") && individual["v-s:deleted"][0]) $delete.hide();
 		
 		// Search
 		$search.on("click", function (e) {
-			// serialize document as search query
+			// serialize individual as search query
 			var query;
-			var allProps = Object.getOwnPropertyNames(document.properties)
+			var allProps = Object.getOwnPropertyNames(individual.properties)
 				.map(function (property_uri) {
-					var property = document.properties[property_uri];
-					var values = document[property_uri].filter(function(item){return !!item && !!item.valueOf()});
+					var property = individual.properties[property_uri];
+					var values = individual[property_uri].filter(function(item){return !!item && !!item.valueOf()});
 					var oneProp;
 					switch (property["rdfs:range"][0].id) {
 						case "xsd:integer": 
@@ -240,8 +238,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			
 			// Open Search
 			var search = new veda.SearchModel(query);
-			// Place document to params tab in Search caontainer
-			new veda.DocumentModel(document.id, $("#params-" + search.id, search.view), undefined, "search");
+			// Place individual to params tab in Search caontainer
+			new veda.DocumentModel(individual.id, $("#params-" + search.id, search.view), undefined, "search");
 		});
 		
 		// Process RDFa compliant template
@@ -269,18 +267,18 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			relTemplate = relTemplate ? (
 				new veda.IndividualModel(relTemplate) 
 			) : (
-				document.hasValue(rel_uri) && document[rel_uri][0].hasValue("rdfs:label") ? 
+				individual.hasValue(rel_uri) && individual[rel_uri][0].hasValue("rdfs:label") ? 
 					new veda.IndividualModel("v-ui:ClassNameLabelTemplate")
 					:
 					new veda.IndividualModel("v-ui:ClassNameIdTemplate")
 			)
-			var rendered = renderLink(document, rel_uri, relContainer, containerParent, relTemplate, spec, mode, embedded);
+			var rendered = renderLink(individual, rel_uri, relContainer, containerParent, relTemplate, spec, mode, embedded);
 			
 			// Re-render link property if its' values were changed
-			document.on("document:propertyModified", function (doc_property_uri) {
+			individual.on("individual:propertyModified", function (doc_property_uri) {
 				if (doc_property_uri === rel_uri) {
 					rendered.map( function (item) { item.remove(); } );
-					rendered = renderLink(document, rel_uri, relContainer, containerParent, relTemplate, spec, mode, embedded);
+					rendered = renderLink(individual, rel_uri, relContainer, containerParent, relTemplate, spec, mode, embedded);
 				}
 			});
 			
@@ -294,12 +292,12 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				//propertyTemplate = propertyContainer.attr("template"),
 				spec = specs[property_uri];
 				
-			renderProperty(document, property_uri, propertyContainer, spec, mode);
+			renderProperty(individual, property_uri, propertyContainer, spec, mode);
 			
 			// Re-render property if its' values were changed
-			document.on("document:propertyModified", function (doc_property_uri) {
+			individual.on("individual:propertyModified", function (doc_property_uri) {
 				if (doc_property_uri === property_uri) {
-					renderProperty (document, property_uri, propertyContainer, spec, mode);
+					renderProperty (individual, property_uri, propertyContainer, spec, mode);
 				}
 			});
 			
@@ -308,9 +306,9 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		// Specials (not RDFa)
 		$("[href='id']", classTemplate).map( function () {
 			$( this )
-				.attr("href", "#/document/" + document.id)
+				.attr("href", "#/individual/" + individual.id)
 				.after( 
-					$("<a>", {href: "#/graph/" + document.id}).append( 
+					$("<a>", {href: "#/graph/" + individual.id}).append( 
 						$("<i>").addClass("glyphicon glyphicon-link") 
 					) 
 				)
@@ -319,24 +317,24 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 		container.append(classTemplate);
 		
-		document.trigger(mode);
+		individual.trigger(mode);
 		
 		//container.show();
 		
 		scripts.map( function (item) { 
-			var presenter = new Function("veda", "document", "container", item + "//# sourceURL=" + document["rdf:type"][0].id + "Presenter.js");
-			presenter(veda, document, classTemplate);
+			var presenter = new Function("veda", "individual", "container", item + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js");
+			presenter(veda, individual, classTemplate);
 		});
 	}
 	
-	function renderLink (document, rel_uri, relContainer, containerParent, relTemplate, spec, mode, embedded) {
+	function renderLink (individual, rel_uri, relContainer, containerParent, relTemplate, spec, mode, embedded) {
 		
-		if ( !document[rel_uri] ) document.defineProperty(rel_uri);
+		if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
 		
-		var values = document[rel_uri];
+		var values = individual[rel_uri];
 		
-		var renderedValues = document.hasValue(rel_uri) ? 
-			document[rel_uri].map( function (value) { return renderValue (value, mode)} ) : [];
+		var renderedValues = individual.hasValue(rel_uri) ? 
+			individual[rel_uri].map( function (value) { return renderValue (value, mode)} ) : [];
 
 		var controlContainer;
 		if (renderedValues.length) {
@@ -349,7 +347,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		var opts = {
 			limit: 100,
 			select: function (selected) {
-				document[rel_uri] = document[rel_uri].concat(selected);
+				individual[rel_uri] = individual[rel_uri].concat(selected);
 			} 
 		};
 		if (spec && spec.hasValue("v-ui:queryPrefix")) {
@@ -361,7 +359,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				if (relTemplate.hasValue("v-ui:forClass")) {
 					embedded["rdf:type"] = [relTemplate["v-ui:forClass"][0]];
 				}
-				document[rel_uri] = document[rel_uri].concat(embedded);
+				individual[rel_uri] = individual[rel_uri].concat(embedded);
 			}
 		}
 		var control = $("<span>").vedaLink(opts);
@@ -376,14 +374,14 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			});
 		}
 		
-		document.on("view edit search", function (mode) {
+		individual.on("view edit search", function (mode) {
 			mode === "view" ? control.hide() : 
 			mode === "edit" ? control.show() : 
 			mode === "search" ? control.show() : 
 			true;
 		});
 		
-		if (mode !== "search") isValid(document, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
+		if (mode !== "search") isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
 		
 		setTimeout( function () {
 			controlContainer.append(control).show();
@@ -401,7 +399,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 						lnk = new veda.DocumentModel(value, clone, relTemplate, mode);
 						embedded.push(lnk);
 						// New instance
-						if (!value) document[rel_uri] = document[rel_uri].concat(lnk);
+						if (!value) individual[rel_uri] = individual[rel_uri].concat(lnk);
 					} else {
 						lnk = new veda.DocumentModel(value, clone, relTemplate);
 					}
@@ -417,7 +415,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					}
 										
 					mode === "view" ? clear.hide() : clear.show() ;
-					document.on("view edit search", function (mode) {
+					individual.on("view edit search", function (mode) {
 						mode === "view" ? clear.hide() :
 						mode === "edit" ? clear.show() :
 						clear.show();
@@ -426,7 +424,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 					clone.append(clear);
 					clear.on("click", function () {
 						clone.remove();
-						document[rel_uri] = document[rel_uri].filter(function (item) { return item.id != lnk.id });
+						individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id != lnk.id });
 						if (embedded.length) {
 							var index = embedded.indexOf(lnk);
 							if ( !(index<0) ) embedded.splice(index, 1);
@@ -444,22 +442,22 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 	}
 
-	function renderProperty (document, property_uri, container, spec, mode) {
+	function renderProperty (individual, property_uri, container, spec, mode) {
 		
 		if ( property_uri != "id" && !veda.ontology[property_uri] ) return;
 		
 		container.empty();
 		
 		if (property_uri == "id") { 
-			container.val(document[property_uri]).html(document[property_uri]); 
+			container.val(individual[property_uri]).html(individual[property_uri]); 
 			return;
 		}
 		
 		var property = veda.ontology[property_uri],
 			controlType, emptyVal, defaultValue;
 		
-		if ( !document[property_uri] ) document.defineProperty(property_uri);
-		var values = document[property_uri];
+		if ( !individual[property_uri] ) individual.defineProperty(property_uri);
+		var values = individual[property_uri];
 		
 		container.attr("content", values.join(", "));		
 
@@ -502,9 +500,9 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			}
 		});
 		
-		if (mode !== "search") isValid(document, spec, values) ? controls.map( function(item) {item.addClass("has-success")} ) : controls.map( function(item) {item.addClass("has-error")} );
+		if (mode !== "search") isValid(individual, spec, values) ? controls.map( function(item) {item.addClass("has-success")} ) : controls.map( function(item) {item.addClass("has-error")} );
 		
-		document.on("view edit search", function (_mode) {
+		individual.on("view edit search", function (_mode) {
 			mode = _mode;
 			controls
 				.filter(function (item) {
@@ -520,16 +518,16 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				value: value,
 				change: function (value) {
 					values[index] = value;
-					document[property_uri] = values;
+					individual[property_uri] = values;
 				},
 				add: function () {
 					values.push( emptyVal );
-					document[property_uri] = values;
+					individual[property_uri] = values;
 				},
 				remove: function () {
 					values.splice(index, 1);
 					controls.splice(index, 1);
-					document[property_uri] = values;
+					individual[property_uri] = values;
 				}
 			}
 			var control = controlType.call( $("<span>"), opts );
@@ -540,7 +538,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		
 	}
 
-	function isValid (document, spec, values) {
+	function isValid (individual, spec, values) {
 		var result = true;
 		if (!spec) return result;			
 		// cardinality check
@@ -590,13 +588,13 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 			}
 			return result;
 		}, result);
-		document.isValid = document.isValid || {};
-		document.isValid[spec.id] = result;
-		document.trigger("validation:complete");
+		individual.isValid = individual.isValid || {};
+		individual.isValid[spec.id] = result;
+		individual.trigger("validation:complete");
 		return result;
 	}
 	
-	function genericTemplate (document, _class) {
+	function genericTemplate (individual, _class) {
 		// Construct generic template
 		var propTmpl = $("#generic-property-template").html();
 		var template = $("<div/>").append( $("#generic-class-template").html() );
@@ -608,7 +606,7 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 				$("<span/>", {"about": _class.id, "property": "rdfs:label"})
 			);
 		} else {
-			properties = document.properties;
+			properties = individual.properties;
 		}
 		
 		$(".properties", template).append (

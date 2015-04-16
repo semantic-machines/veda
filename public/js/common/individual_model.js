@@ -10,7 +10,7 @@ veda.Module(function (veda) { "use strict";
 	 * @param {String} uri URI of individual. If not specified, than id of individual will be generated automatically. 
 	 * @param {boolean} noCache turn cache off. If false or not set, than object will be return from browser cache. If true or individual not found in cache - than individual will be requested from database 
 	 */
-	veda.IndividualModel = function (uri, noCache) {
+	veda.IndividualModel = function (uri, noCache, container, template, mode) {
 	
 		var self = riot.observable(this);
 		
@@ -66,8 +66,12 @@ veda.Module(function (veda) { "use strict";
 
 		self.defineProperty("v-s:deleted");
 		
+		self.on("individual:afterLoad", function (individual) {
+			veda.trigger("individual:loaded", individual, container, template, mode);
+		});
+		
 		// Load data 
-		if (uri) self = self.load(uri); 
+		if (uri) self = self.load(uri);
 
 		return self;
 	}
@@ -192,7 +196,7 @@ veda.Module(function (veda) { "use strict";
 		self.trigger("individual:beforeLoad");
 		if (typeof uri === "string") {
 			if (veda.cache[uri] && !self._.noCache) {
-				self.trigger("individual:afterLoad");
+				self.trigger("individual:afterLoad", veda.cache[uri]);
 				return veda.cache[uri]; 
 			}
 			try {
@@ -205,7 +209,7 @@ veda.Module(function (veda) { "use strict";
 				}
 			}
 		} else if (uri instanceof veda.IndividualModel) {
-			self.trigger("individual:afterLoad");
+			self.trigger("individual:afterLoad", uri);
 			return uri;
 		} else {
 			self._.individual = uri;
@@ -218,7 +222,7 @@ veda.Module(function (veda) { "use strict";
 			self.defineProperty(property_uri);
 		});
 		if (!self._.noCache) veda.cache[self.id] = self;
-		self.trigger("individual:afterLoad");
+		self.trigger("individual:afterLoad", self);
 		return self;
 	};
 
