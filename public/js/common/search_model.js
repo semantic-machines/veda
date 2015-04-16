@@ -1,6 +1,6 @@
 // Search Model
 
-veda.Module(function SearchModel(veda) { "use strict";
+veda.Module(function (veda) { "use strict";
 
 	veda.SearchModel = function (q, container, queryPrefix) {
 		var self = riot.observable(this);

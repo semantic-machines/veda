@@ -1,6 +1,6 @@
 // Console Model
 
-veda.Module(function ConsoleModel(veda) { "use strict";
+veda.Module(function (veda) { "use strict";
 	
 	veda.ConsoleModel = function () { 
 	

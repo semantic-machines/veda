@@ -1,6 +1,6 @@
 // Ontology Model
 
-veda.Module(function OntologyModel(veda) { "use strict";
+veda.Module(function (veda) { "use strict";
 
 	/* owl:Thing && rdfs:Resource domain properties */
 	var stopList = [

@@ -1,6 +1,6 @@
 // Veda application Model
 
-;(function AppModel(veda) { "use strict";
+;(function (veda) { "use strict";
 
 	veda.AppModel = function (config) {
 

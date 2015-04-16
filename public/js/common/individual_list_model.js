@@ -1,6 +1,6 @@
 // Document Model
 
-veda.Module(function IndividualListModel(veda) { "use strict";
+veda.Module(function (veda) { "use strict";
 
 	veda.IndividualListModel = function () {
 		

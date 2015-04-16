@@ -1,6 +1,6 @@
 // User Model
 
-veda.Module(function UserModel(veda) { "use strict";
+veda.Module(function (veda) { "use strict";
 
 	veda.UserModel = function (uri) {
 		
