@@ -123,9 +123,9 @@ jsWorkflow.ready = jsPlumb.ready;
             // Bind a click listener to each transition (connection). On double click, the transition is deleted.
             instance.bind("dblclick", function(transition) {            	 
                  if (mode=='edit' && confirm('Delete Flow?')) {
-                	 net['v-wf:consistsOf'] = removeSubIndividual(net, 'v-wf:consistsOf', transition.id);
+                	 net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', transition.id);
                 	 veda.Util.forSubIndividual(net, 'v-wf:consistsOf', transition.sourceId, function (el) {
-                		 el['v-wf:hasFlow'] = removeSubIndividual(el, 'v-wf:hasFlow', transition.id);
+                		 el['v-wf:hasFlow'] = veda.Util.removeSubIndividual(el, 'v-wf:hasFlow', transition.id);
                 	 });
                 	 instance.detach(transition);
                  }
@@ -464,8 +464,8 @@ jsWorkflow.ready = jsPlumb.ready;
                 instance.makeTarget(windows, {
                     dropOptions: {
                         hoverClass: "dragHover"
-                    }
-                	,anchor: ["Continuous", { faces:[ "top", "left", "right" ] } ]
+                    },
+                    anchor: ["Continuous", { faces:[ "top", "left", "right" ] } ]
                 });
             };
 
@@ -557,21 +557,39 @@ jsWorkflow.ready = jsPlumb.ready;
             	var stateElement = '';
             	switch (type) {
     			case 'v-wf:InputCondition':    				
-    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div><span class="glyphicon glyphicon-play" aria-hidden="true"></div>'+(mode=='edit'?'<div class="ep">':'')+'</div></div>';
+    				stateElement = '<div class="w state-condition" ' + 
+    				    'id="' + state.id + '" ' + 
+    				    'style="font-size:20px;padding-top:10px;'+ 
+    				    'left:' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px;' +
+    				    'top:' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;">' +
+					    '<div><span class="glyphicon glyphicon-play" aria-hidden="true"></div>' +
+					    (mode=='edit'?'<div class="ep">':'')+'</div></div>';
     				break;
     			case 'v-wf:OutputCondition':
-    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="font-size:20px;padding-top:10px;left: ' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div><span class="glyphicon glyphicon-stop" aria-hidden="true"></div></div>';
+    				stateElement = '<div class="w state-condition" ' +
+    				    'id="' + state.id + '" ' +
+    				    'style="font-size:20px;padding-top:10px;' +
+    				    'left:' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px;' + 
+    				    'top: ' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;">' +
+					    '<div><span class="glyphicon glyphicon-stop" aria-hidden="true"></div></div>';
     				break;
     			case 'v-wf:Condition':
-    				stateElement = '<div class="w state-condition" id="' + state.id + '" style="left: ' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div class="state-name"></div>'+(mode=='edit'?'<div class="ep">':'')+'</div></div>';
+    				stateElement = '<div class="w state-condition" ' +
+    				    'id="' + state.id + '" ' + 
+    				    'style="left:' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px;' + 
+    				    'top:' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;">' +
+    				    '<div class="state-name"></div>' + 
+    				    (mode=='edit'?'<div class="ep">':'')+'</div></div>';
     				break;
     			case 'v-wf:Task':    				
-            		stateElement = '<div class="w state-task split-join '
-            			+ instance.getSplitJoinType('split', state)
-            			+ instance.getSplitJoinType('join', state)
-            			+ '" id="' + state.id + '" style="left: ' 
-            			+ (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; top: ' 
-            			+ (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div class="state-name">' + state['rdfs:label'][0] + '</div>'+(mode=='edit'?'<div class="ep">':'')+'</div></div>';
+            		stateElement = '<div class="w state-task split-join ' +
+					    instance.getSplitJoinType('split', state) +
+					    instance.getSplitJoinType('join', state) + '" '+
+					    'id="' + state.id + '" ' +
+					    'style="left:' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px; ' + 
+					    'top: ' + (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;">' + 
+					    '<div class="state-name">' + state['rdfs:label'][0] + '</div>' +
+					    (mode=='edit'?'<div class="ep">':'')+'</div></div>';
     				break;
     			}            	
             	if (stateElement!=='') {
@@ -639,21 +657,21 @@ jsWorkflow.ready = jsPlumb.ready;
             // Remove from state, defined by stateId, variable `varId` and its mapping `mapId`
             instance.removeVarProperty = function(stateId, varId, mapId) {
             	veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
-            		state['v-wf:inputVariable'] = removeSubIndividual(state, 'v-wf:inputVariable', varId);
-            		state['v-wf:startingMapping'] = removeSubIndividual(state, 'v-wf:startingMapping', mapId);
+            		state['v-wf:inputVariable'] = veda.Util.removeSubIndividual(state, 'v-wf:inputVariable', varId);
+            		state['v-wf:startingMapping'] = veda.Util.removeSubIndividual(state, 'v-wf:startingMapping', mapId);
             	});
             };
             
             instance.removeExecutorProperty = function(stateId, executorId) {
             	veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
-            		state['v-wf:executor'] = removeSubIndividual(state, 'v-wf:executor', executorId);
+            		state['v-wf:executor'] = veda.Util.removeSubIndividual(state, 'v-wf:executor', executorId);
             	});
             };
             
             instance.deleteState = function(element) {
             	instance.detachAllConnections(element);
             	instance.remove(element);
-            	net['v-wf:consistsOf'] = removeSubIndividual(net, 'v-wf:consistsOf', element.id);
+            	net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', element.id);
             };
             
             instance.createFlow = function(state, flow) {
