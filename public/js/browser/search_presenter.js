@@ -5,7 +5,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 	var template = $("#search-template").html();
 	
 	// Initialize search page
-	veda.on("search:loaded", function (search, container_param, page) {
+	veda.on("search:loaded", function (search, container_param, page_param) {
 		
 		if (container_param === null) return;
 		
@@ -13,13 +13,13 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		
 		// Change location.hash if search was presented in #main container
 		/*if (container.prop("id") === "main") {
-			var hash = ["#/search", container_param || "", page || ""].join("/");
+			var hash = ["#/search", container_param || "", page_param || ""].join("/");
 			riot.route(hash, false);
 		}*/
 		
 		container.empty().hide();
 		
-		search.currentPage = (typeof page === 'number' ? page : search.currentPage) || 0;
+		search.currentPage = (typeof page_param === 'number' ? page_param : search.currentPage) || 0;
 		
 		// Get template
 		var rendered = riot.render(template, search);
@@ -53,7 +53,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		$("#select-all", container).on("click", function (e) {
 			search.toggleAll();
 			// Redraw current page
-			veda.trigger("search:complete", search, container, page);
+			veda.trigger("search:complete", search, container, search.currentPage);
 		});
 
 		var tmplContainer = $("<div>");
@@ -134,7 +134,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 	});
 	
 	// Display search results
-	veda.on("search:complete", function (search, container_param, page) {
+	veda.on("search:complete", function (search, container_param, page_param) {
 		
 		if (container_param === null) return;
 		
@@ -145,7 +145,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		
 		var container = container_param || $("#main");
 		
-		search.currentPage = (typeof page === 'number' ? page : search.currentPage) || 0;
+		search.currentPage = (typeof page_param === 'number' ? page_param : search.currentPage) || 0;
 		
 		if (search.results_count < search.currentPage * veda.user.displayedElements) 
 			search.currentPage = Math.floor(search.results_count / veda.user.displayedElements) + 1 * (search.results_count % veda.user.displayedElements ? 1 : 0) - 1;
@@ -156,7 +156,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		if (!search.q && !search.queryPrefix) {
 			$("#q", container).focus();
 			$("#search-results", container).hide();
-			$(".not-found", container).hide()
+			$(".not-found", container).hide();
 			return;
 		} else if ((search.q || search.queryPrefix) && !search.results_count) {
 			$("#q", container).focus();
@@ -224,7 +224,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 					return function (event) {
 						event.preventDefault(); 
 						veda.trigger('search:complete', search, container, page);
-					}
+					};
 				})(page), 
 				"href" : ""
 			}).appendTo($page);

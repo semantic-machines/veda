@@ -15,7 +15,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		container
 			.empty()//.hide()
 			.attr("resource", individual.id)
-			.attr("typeof", individual["rdf:type"].map(function (item) { return item.id }).join(" ") );
+			.attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") );
 
 		// Change location.hash if individual was presented in #main container
 		if (container.prop("id") === "main") {
@@ -64,7 +64,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 							classTemplate = genericTemplate(individual, _class); 
 						} else {
 							// Get template from class
-							templateStr = _class.template["v-ui:template"][0].toString()
+							templateStr = _class.template["v-ui:template"][0].toString();
 							templateStr = templateStr.replace(/<script.*>((?:\s*?.*?\s*?)*)<\/script>/gi, function (m, script) {
 								scripts.push(script);
 								return "";
@@ -192,7 +192,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var allProps = Object.getOwnPropertyNames(individual.properties)
 				.map(function (property_uri) {
 					var property = individual.properties[property_uri];
-					var values = individual[property_uri].filter(function(item){return !!item && !!item.valueOf()});
+					var values = individual[property_uri].filter(function(item){return !!item && !!item.valueOf();});
 					var oneProp;
 					switch (property["rdfs:range"][0].id) {
 						case "xsd:integer": 
@@ -202,23 +202,23 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 								values.length === 1 ? "'" + property_uri + "'==[" + values[0] + "," + values[0] + "]" :
 								values.length > 1 ? "'" + property_uri + "'==[" + values[0] + "," + values[values.length-1] + "]" :
 								undefined;
-							break
+							break;
 						case "xsd:dateTime": 
 							oneProp =
 								values.length === 1 ? "'" + property_uri + "'==[" + values[0].toISOString().substring(0,19) + "," + values[0].toISOString().substring(0,19) + "]" :
 								values.length > 1 ? "'" + property_uri + "'==[" + values[0].toISOString().substring(0,19) + "," + values[values.length-1].toISOString().substring(0,19) + "]" :
 								undefined;
-							break
+							break;
 						case "xsd:boolean": 
 						case "xsd:string": 
 						case "rdfs:Literal": 
 							oneProp = values
-								.filter(function(item){return !!item && !!item.valueOf()})
+								.filter(function(item){return !!item && !!item.valueOf();})
 								.map( function (value) {
 									return "'" + property_uri + "'=='" + value + "'";
 								})
 								.join("||");
-							break
+							break;
 						default:
 							oneProp = values
 								.filter( function (value) {
@@ -228,7 +228,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 									return "'" + property_uri + "'=='" + value.id + "'";
 								})
 								.join("||");
-							break
+							break;
 					}
 					return oneProp ? "(" + oneProp + ")" : undefined;
 				})
@@ -239,7 +239,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			// Open Search
 			var search = new veda.SearchModel(query);
 			// Place individual to params tab in Search caontainer
-			new veda.DocumentModel(individual.id, $("#params-" + search.id, search.view), undefined, "search");
+			var params = new veda.DocumentModel(individual.id, $("#params-" + search.id, search.view), undefined, "search");
 		});
 		
 		// Process RDFa compliant template
@@ -271,7 +271,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					new veda.IndividualModel("v-ui:ClassNameLabelTemplate")
 					:
 					new veda.IndividualModel("v-ui:ClassNameIdTemplate")
-			)
+			);
 			var rendered = renderLink(individual, rel_uri, relContainer, containerParent, relTemplate, spec, mode, embedded);
 			
 			// Re-render link property if its' values were changed
@@ -334,7 +334,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		var values = individual[rel_uri];
 		
 		var renderedValues = individual.hasValue(rel_uri) ? 
-			individual[rel_uri].map( function (value) { return renderValue (value, mode)} ) : [];
+			individual[rel_uri].map( function (value) { return renderValue (value, mode);} ) : [];
 
 		var controlContainer;
 		if (renderedValues.length) {
@@ -360,7 +360,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					embedded["rdf:type"] = [relTemplate["v-ui:forClass"][0]];
 				}
 				individual[rel_uri] = individual[rel_uri].concat(embedded);
-			}
+			};
 		}
 		var control = $("<span>").vedaLink(opts);
 		
@@ -407,7 +407,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					clone.attr("style", "position:relative;");
 					var clear = $( $("#link-clear-button-template").html() );
 					
-					var clear;
 					if (clone.children(":first").css("display") === "inline") {
 						clear = $( $("#link-clear-inline-button-template").html() );
 					} else {
@@ -424,10 +423,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					clone.append(clear);
 					clear.on("click", function () {
 						clone.remove();
-						individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id != lnk.id });
+						individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id != lnk.id; });
 						if (embedded.length) {
 							var index = embedded.indexOf(lnk);
-							if ( !(index<0) ) embedded.splice(index, 1);
+							if ( index >= 0 ) embedded.splice(index, 1);
 						}
 					});
 					
@@ -465,24 +464,24 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			case "xsd:boolean": 
 				controlType = $.fn.vedaBoolean; 
 				emptyVal = spec && spec.hasValue("v-ui:defaultBooleanValue") ? spec["v-ui:defaultBooleanValue"][0] : new Boolean(false);
-				break
+				break;
 			case "xsd:integer": 
 			case "xsd:nonNegativeInteger":
 				controlType = $.fn.vedaInteger; 
 				emptyVal = spec && spec.hasValue("v-ui:defaultIntegerValue") ? spec["v-ui:defaultIntegerValue"][0] : undefined; 
-				break
+				break;
 			case "xsd:decimal":
 				controlType = $.fn.vedaDecimal; 
 				emptyVal = spec && spec.hasValue("v-ui:defaultDecimalValue") ? spec["v-ui:defaultDecimalValue"][0] : undefined; 
-				break
+				break;
 			case "xsd:dateTime": 
 				controlType = $.fn.vedaDatetime; 
 				emptyVal = spec && spec.hasValue("v-ui:defaultDatetimeValue") ? spec["v-ui:defaultDatetimeValue"][0] : undefined; 
-				break
+				break;
 			default: 
 				controlType = $.fn.vedaString; 
 				emptyVal = spec && spec.hasValue("v-ui:defaultStringValue") ? spec["v-ui:defaultStringValue"][0] : new String(); 
-				break
+				break;
 		}
 		
 		var controls = values.map( renderControl );
@@ -500,7 +499,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 		});
 		
-		if (mode !== "search") isValid(individual, spec, values) ? controls.map( function(item) {item.addClass("has-success")} ) : controls.map( function(item) {item.addClass("has-error")} );
+		if (mode !== "search") isValid(individual, spec, values) ? controls.map( function(item) {item.addClass("has-success");} ) : controls.map( function(item) {item.addClass("has-error");} );
 		
 		individual.on("view edit search", function (_mode) {
 			mode = _mode;
@@ -529,7 +528,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					controls.splice(index, 1);
 					individual[property_uri] = values;
 				}
-			}
+			};
 			var control = controlType.call( $("<span>"), opts );
 			
 			container.append(control);
@@ -546,14 +545,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			result = result && (
 				values.length >= spec["v-ui:minCardinality"][0] && 
 				// filter empty values
-				values.length === values.filter(function(item){return !!item && !!item.valueOf()}).length
+				values.length === values.filter(function(item){return !!item && !!item.valueOf();}).length
 			);
 		}
 		if (spec.hasValue("v-ui:maxCardinality")) { 
 			result = result && (
 				values.length <= spec["v-ui:maxCardinality"][0] && 
 				// filter empty values
-				values.length === values.filter(function(item){return !!item && !!item.valueOf()}).length
+				values.length === values.filter(function(item){return !!item && !!item.valueOf();}).length
 			);
 		}
 		// check each value
@@ -569,22 +568,22 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				case "v-ui:IntegerPropertySpecification" :
 					if (spec.hasValue("v-ui:minIntegerValue")) result = result && (value >= spec["v-ui:minIntegerValue"][0]);
 					if (spec.hasValue("v-ui:maxIntegerValue")) result = result && (value <= spec["v-ui:maxIntegerValue"][0]);
-					break
+					break;
 				case "v-ui:DecimalPropertySpecification" :
 					if (spec.hasValue("v-ui:minDecimalValue")) result = result && (value >= spec["v-ui:minDecimalValue"][0]);
 					if (spec.hasValue("v-ui:maxDecimalValue")) result = result && (value <= spec["v-ui:maxDecimalValue"][0]);
-					break
+					break;
 				case "v-ui:DatetimePropertySpecification" :
 					if (spec.hasValue("v-ui:minDatetimeValue")) result = result && (value >= spec["v-ui:minDatetimeValue"][0]);
 					if (spec.hasValue("v-ui:maxDatetimeValue")) result = result && (value <= spec["v-ui:maxDatetimeValue"][0]);
-					break
+					break;
 				case "v-ui:StringPropertySpecification" :
 					if (spec.hasValue("v-ui:minLength")) result = result && (value.length >= spec["v-ui:minLength"][0]);
 					if (spec.hasValue("v-ui:maxLength")) result = result && (value.length <= spec["v-ui:maxLength"][0]);
-					break
+					break;
 				case "v-ui:BooleanPropertySpecification" :
 				case "v-ui:ObjectPropertySpecification" :
-					break
+					break;
 			}
 			return result;
 		}, result);
@@ -617,7 +616,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				var result = $("<div/>").append( propTmpl );
 				$(".name", result).append (
 					$("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
-				)
+				);
 				
 				switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
 					case "rdfs:Literal" : 
@@ -630,12 +629,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						$(".value", result).append (
 							$("<div/>", {"property": property_uri})
 						);
-					break
+					break;
 					default:
 						$(".value", result).append (
 							$("<div/>", {"rel": property_uri})
 						);
-					break
+					break;
 				}
 				
 				if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") );

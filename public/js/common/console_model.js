@@ -34,13 +34,13 @@ veda.Module(function (veda) { "use strict";
 				self.result = res;
 				self.time = new Date().getTime() - start;
 			}
-		}
+		};
 		self.reset = function() {
 			self.script = "";
 			self.result = "";
 			self.runat = "";
 			self.time = "";
-		}
+		};
 		
 		if (veda) veda.trigger("console:loaded", self);
 		

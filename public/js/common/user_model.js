@@ -51,7 +51,7 @@ veda.Module(function (veda) { "use strict";
 
 			self.preferences.save();
 			veda.trigger("language:changed");
-		}
+		};
 			
 		return self;
 	};

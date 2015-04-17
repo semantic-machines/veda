@@ -25,7 +25,7 @@ jsWorkflow.ready = jsPlumb.ready;
 
             // Get a new instance of jsPlumb.
             this.instance = jsPlumb.getInstance();
-        }
+        };
         
         /**
          *Initialize the workflow instance.
@@ -199,7 +199,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 }
                 svgBackground = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' preserveAspectRatio='none' viewBox='0 0 100 50'>" + svgBackground + "</svg>\")";
                 item.css('background', svgBackground);
-            }
+            };
             
             showProcessRunPath = function(workItem, depth) {
             	if (workItem.hasValue('v-wf:previousWorkItem')) {
@@ -215,7 +215,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	} else {
             		max_process_depth = depth;
             	}
-            }
+            };
             
             /**
              *Bind required functional to State elements
@@ -265,7 +265,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                	       var wi =  new veda.IndividualModel(el);
 	                     	   var $item = $("<li/>").appendTo(menu);
 	                    	   $("<a/>", {
-	                    		   "text" : ((wi['rdfs:label']!=null && wi['rdfs:label'].length>0)?wi['rdfs:label'][0]:wi.id), 
+	                    		   "text" : (wi.hasValue('rdfs:label')?wi['rdfs:label'][0]:wi.id), 
 	           	    			   "href" : '#/document/'+wi.id
 	                    	   }).appendTo($item);	            	    	
 	                	    }
@@ -286,14 +286,14 @@ jsWorkflow.ready = jsPlumb.ready;
 	                	menu.html('');
 	                	// Add starting mappings to context menu
 	                	veda.Util.forSubIndividual(net, 'v-wf:consistsOf', _this.id, function (el) {
-	                	  if (!(el['v-wf:startingMapping']===undefined)) {
+	                	  if (el.hasValue('v-wf:startingMapping')) {
 	                	     el['v-wf:startingMapping'].forEach(function(var_map) {
 	                    	   var $item = $("<li/>").appendTo(menu);
 	                	       var varId = null;
 	                	       var_map['v-wf:mapsTo'].forEach(function(var_var) {
 	                	    	   varId = var_var.id;
 	               	    		   $("<a/>", { 
-	               	    			   "text" : ((var_var['v-wf:variableName']!=null && var_var['v-wf:variableName'].length>0)?var_var['v-wf:variableName'][0]:var_var.id), 
+	               	    			   "text" : (var_var.hasValue('v-wf:variableName')?var_var['v-wf:variableName'][0]:var_var.id), 
 	               	    			   "href" : "#/document/"+var_var.id+"///edit"
 	               	    		   }).appendTo($item);
 	            	    	   });
@@ -309,7 +309,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                							event.preventDefault();
 	                							instance.removeVarProperty(_this.id, varId, var_map.id);
 	                							$(_this).trigger('contextmenu');
-	                						}
+	                						};
 	                					})(instance), 
 	               	    			   "href" : ""
 	               	    		   }).attr("class", "btn btn-default glyphicon glyphicon-remove button").attr("style", "padding: 3px;").appendTo($item);
@@ -317,7 +317,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                        });
 	                	  }
 	                	  // Add completed mappings to context menu
-	                	  if (!(el['v-wf:completedMapping']===undefined)) {
+	                	  if (el.hasValue('v-wf:completedMapping')) {
 	                 	     el['v-wf:completedMapping'].forEach(function(var_map) {
 	                     	   var $item = $("<li/>").appendTo(menu);
 	                 	       var varId = null;
@@ -330,7 +330,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                     	       var_map['v-wf:mapsTo'].forEach(function(var_var) {
 	                     	    	   varId = var_var.id;
 	                    	    		   $("<a/>", { 
-	                    	    			   "text" : ((var_var['v-wf:variableName']!=null && var_var['v-wf:variableName'].length>0)?var_var['v-wf:variableName'][0]:var_var.id), 
+	                    	    			   "text" : (var_var.hasValue('v-wf:variableName')?var_var['v-wf:variableName'][0]:var_var.id), 
 	                    	    			   "href" : "#/document/"+var_var.id+"///edit"
 	                    	    		   }).appendTo($item);
 	                 	    	   });
@@ -340,7 +340,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                 							event.preventDefault();
 	                 							instance.removeVarProperty(_this.id, varId, var_map.id);
 	                 							$(_this).trigger('contextmenu');
-	                 						}
+	                 						};
 	                 					})(instance), 
 	                	    			   "href" : ""
 	                	    		   }).attr("class", "btn btn-default glyphicon glyphicon-remove button").attr("style", "padding: 3px;").appendTo($item);
@@ -348,12 +348,12 @@ jsWorkflow.ready = jsPlumb.ready;
 	                         });
 	                 	  }
 	                	  // Add executors to context menu
-	                	  if (!(el['v-wf:executor']===undefined)) {
+	                	  if (el.hasValue('v-wf:executor')) {
 	                       el['v-wf:executor'].forEach(function(el2) {
 	                    	   var variable = new veda.IndividualModel(el2.id);
 	                    	   var $item = $("<li/>").appendTo(menu);
 	                    	   $("<a/>", {
-	                    		   "text" : 'EXECUTOR : '+((el2['rdfs:label']!=null && el2['rdfs:label'].length>0)?el2['rdfs:label'][0]:el2.id), 
+	                    		   "text" : 'EXECUTOR : '+(el2.hasValue('rdfs:label')?el2['rdfs:label'][0]:el2.id), 
 	           	    			   "href" : '#/document/'+el2.id+'///edit'
 	                    	   }).appendTo($item);
 	            	    	   $("<span/>", {
@@ -362,7 +362,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	           								event.preventDefault();
 	           								instance.removeExecutorProperty(_this.id, el2.id);
 	           								$(_this).trigger('contextmenu');
-	           							}
+	           							};
 	           						})(instance), 
 	          	    			   "href" : ""
 	          	    		   }).attr("class", "btn btn-default glyphicon glyphicon-remove button").attr("style", "padding: 3px;").appendTo($item);
@@ -379,7 +379,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	    							event.preventDefault();
 	    							instance.addVarProperty(_this.id, 'input');
 	    							$(_this).trigger('contextmenu');
-	    						}
+	    						};
 	    					})(instance), 
 	   	    			   "href" : ""
 	   	    		    }).attr("class", "btn btn-default glyphicon glyphicon-plus").appendTo($item);
@@ -392,7 +392,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	    							event.preventDefault();
 	    							instance.addVarProperty(_this.id, 'output');
 	    							$(_this).trigger('contextmenu');
-	    						}
+	    						};
 	    					})(instance), 
 	   	    			   "href" : ""
 	   	    		    }).attr("class", "btn btn-default glyphicon glyphicon-plus").appendTo($item);
@@ -405,7 +405,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	    	    	    			event.preventDefault();
 	    	    	    			instance.addExecutorProperty(_this.id);
 	    	    	    			$(_this).trigger('contextmenu');
-	    	    	    		}
+	    	    	    		};
 	    	    	    	})(instance), 
 	  	    			   "href" : ""
 	  	    		    }).attr("class", "btn btn-default glyphicon glyphicon-plus").appendTo($item);
@@ -521,7 +521,7 @@ jsWorkflow.ready = jsPlumb.ready;
             		'-webkit-transform': 'scale('+currentScale+','+currentScale+')', /* Chrome, Safari, Opera */
             		'transform': 'scale('+currentScale+','+currentScale+')'
             	});
-            }
+            };
             
             /**
              * @method getSplitJoinType
@@ -535,7 +535,7 @@ jsWorkflow.ready = jsPlumb.ready;
             		return ' '+sj+'-no';
             	}
             	var type = state['v-wf:'+sj][0].id;
-            	if (type == null || type == undefined || type == '') {
+            	if (type === null || type === undefined || type === '') {
             		return ' '+sj+'-no';
             	}
             	
@@ -545,7 +545,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	if (type == 'v-wf:NONE') return ' '+sj+'-none';
             	
             	return ' '+sj+'-no';
-            }
+            };
             
             /**
              * @method
@@ -574,17 +574,17 @@ jsWorkflow.ready = jsPlumb.ready;
             			+ (canvasSizePx/2+state['v-wf:locationY'][0]) + 'px;"><div class="state-name">' + state['rdfs:label'][0] + '</div>'+(mode=='edit'?'<div class="ep">':'')+'</div></div>';
     				break;
     			}            	
-            	if (stateElement!='') {
+            	if (stateElement!=='') {
                 	$('#'+workflowData).append(stateElement);
                 	bindStateEvents($('#' + veda.Util.escape4$(state.id)));
                 	updateSVGBackground($('#' + veda.Util.escape4$(state.id)));
             	}
-            }
+            };
             
             instance.addExecutorProperty = function(stateId) {
             	
                 executorName = prompt("Enter name of the executor");
-                executorName = new String(executorName.replace(/[^a-zA-Z0-9 ]/g, ''))
+                executorName = new String(executorName.replace(/[^a-zA-Z0-9 ]/g, ''));
                 
                 var individualE = new veda.IndividualModel(); // create individual (Executor) 
                 individualE.defineProperty("rdf:type");
@@ -597,11 +597,11 @@ jsWorkflow.ready = jsPlumb.ready;
                 veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
                 	state['v-wf:executor'] = (state['v-wf:executor'] === undefined)?[individualE]:state['v-wf:executor'].concat([individualE]); // <- Add new Executor to State
                 });
-            }
+            };
             
             instance.addVarProperty = function(stateId, type) {            
                 variableName = prompt("Enter name of the variable");
-                variableName = new String(variableName.replace(/[^a-zA-Z0-9 ]/g, ''))
+                variableName = new String(variableName.replace(/[^a-zA-Z0-9 ]/g, ''));
                 
                 var individualV = new veda.IndividualModel(); // create individual (Variable) 
                 individualV.defineProperty("rdf:type");
@@ -634,7 +634,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 		state['v-wf:completedMapping'] = (state['v-wf:completedMapping'] === undefined)?[individualM]:state['v-wf:completedMapping'].concat([individualM]); // <- Add new Mapping to State
                 	});
                 }
-            }
+            };
             
             // Remove from state, defined by stateId, variable `varId` and its mapping `mapId`
             instance.removeVarProperty = function(stateId, varId, mapId) {
@@ -642,19 +642,19 @@ jsWorkflow.ready = jsPlumb.ready;
             		state['v-wf:inputVariable'] = removeSubIndividual(state, 'v-wf:inputVariable', varId);
             		state['v-wf:startingMapping'] = removeSubIndividual(state, 'v-wf:startingMapping', mapId);
             	});
-            }
+            };
             
             instance.removeExecutorProperty = function(stateId, executorId) {
             	veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
             		state['v-wf:executor'] = removeSubIndividual(state, 'v-wf:executor', executorId);
             	});
-            }
+            };
             
             instance.deleteState = function(element) {
             	instance.detachAllConnections(element);
             	instance.remove(element);
             	net['v-wf:consistsOf'] = removeSubIndividual(net, 'v-wf:consistsOf', element.id);
-            }
+            };
             
             instance.createFlow = function(state, flow) {
             	var connector = instance.connect({
@@ -662,7 +662,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     source: state.id,
                     target: flow['v-wf:flowsInto'][0].id
                 });
-            }
+            };
             
             /**
              *Create workflow Net by given Object (v-wf:Net individual).
@@ -680,13 +680,13 @@ jsWorkflow.ready = jsPlumb.ready;
             	
             	// Create Flows
             	net['v-wf:consistsOf'].forEach(function(el) {
-            		if (undefined != el['v-wf:hasFlow']) {
+            		if (undefined !== el['v-wf:hasFlow']) {
             			el['v-wf:hasFlow'].forEach(function (flow) {
             				instance.createFlow(el, flow);
             			});
             		}
             	});
-            }
+            };
             
             /*
              * Optimize view of net: all elements must be visible and fit screen (through change scale and position of canvas)
@@ -694,20 +694,15 @@ jsWorkflow.ready = jsPlumb.ready;
              */
             instance.optimizeView = function() {
             	if (!net.hasValue('v-wf:consistsOf')) return;
-            	var minx = undefined;
-            	var maxx = undefined;
-            	var miny = undefined;
-            	var maxy = undefined;
-            	var scale = undefined;
-            	var offsetX = 0;
-            	var offsetY = 0;
+            	var minx, maxx, miny, maxy, scale, 
+                  offsetX = 0, offsetY = 0;
             	// read ranges
             	net['v-wf:consistsOf'].forEach(function(state) {
-            		if (!(state['v-wf:locationX']===undefined) && state['v-wf:locationX'].length>0) {
+            		if (state.hasValue('v-wf:locationX')) {
             			if (maxx === undefined || state['v-wf:locationX'][0]>maxx) maxx = state['v-wf:locationX'][0]; 
             			if (minx === undefined || state['v-wf:locationX'][0]<minx) minx = state['v-wf:locationX'][0];
             		}
-            		if (!(state['v-wf:locationY']===undefined) && state['v-wf:locationY'].length>0) {
+            		if (state.hasValue('v-wf:locationY')) {
             			if (maxy === undefined || state['v-wf:locationY'][0]>maxy) maxy = state['v-wf:locationY'][0]; 
             			if (miny === undefined || state['v-wf:locationY'][0]<miny) miny = state['v-wf:locationY'][0];
             		}
@@ -736,7 +731,7 @@ jsWorkflow.ready = jsPlumb.ready;
            			'top': (-miny*scale+offsetY-canvasSizePx/2)+'px',
            		});
                 instance.changeScale(scale);
-            }
+            };
             
             instance.addProcessVariable = function(individualProperty, listId) {
             	if (process.hasValue(individualProperty)) {
@@ -744,12 +739,12 @@ jsWorkflow.ready = jsPlumb.ready;
                 	process[individualProperty].forEach(function(el) {
                   	   var $item = $("<li/>").appendTo($iv);
                 	   $("<a/>", {
-                		   "text" : ((el['v-wf:variableName']!=null && el['v-wf:variableName'].length>0)?el['v-wf:variableName'][0]:el.id), 
+                		   "text" : (el.hasValue('v-wf:variableName')?el['v-wf:variableName'][0]:el.id), 
        	    			   "href" : '#/document/'+el.id
                 	   }).appendTo($item);	            	    	
                 	});
             	}
-            }
+            };
             
             instance.createProcessView = function(process) {
             	// Apply WorkItems to Net
@@ -778,11 +773,11 @@ jsWorkflow.ready = jsPlumb.ready;
             	instance.addProcessVariable('v-wf:inputVariable','#process-input-variables');
             	instance.addProcessVariable('v-wf:localVariable','#process-local-variables');
             	instance.addProcessVariable('v-wf:outputVariable','#process-output-variables');
-            }
+            };
 
             instance.optimizeView();
             instance.createNetView(net);
-            if (mode='view') {
+            if (mode=='view') {
             	instance.createProcessView(process);
             }
                         
@@ -862,7 +857,7 @@ jsWorkflow.ready = jsPlumb.ready;
             /* NET MENU [END] */
             
             return instance;
-        }
+        };
     });
 })();
 

@@ -108,7 +108,7 @@ function get_property_chain (ticket, first, rest)
 
 	var res = {};
 
-	if (field != undefined)
+	if (field !== undefined)
 	{
 	    res.field = field;
 	    res.first = doc_first;

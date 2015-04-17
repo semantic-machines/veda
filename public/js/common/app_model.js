@@ -7,7 +7,7 @@
 		var self = riot.observable(this);
 		
 		self.config = config;
-		self.user_uri = self.ticket = self.end_time = ""
+		self.user_uri = self.ticket = self.end_time = "";
 		self.cache = {};
 		self.ontology = {};
 
@@ -23,13 +23,13 @@
 				ticket: self.ticket, 
 				user_uri: self.user_uri, 
 				end_time: self.end_time
-			}
+			};
 		};
 		
 		self.logout = function() {
 			self.off("*");
 			self = undefined;
-			Veda(config);
+			veda = new Veda(config);
 		};
 		
 		// Invoke existing or create new module
@@ -41,33 +41,33 @@
 					) : (
 						veda.RegisterModule(veda.ConsoleModel.apply(new Object(), params), self, "console")
 					);*/
-					veda.ConsoleModel.apply(new Object(), params);
-					break
+          veda.ConsoleModel.apply({}, params);
+					break;
 				case "document": 
 					/*self.document && ( (self.document._params == params) || params.length == 0 ) ? (
 						self.trigger("document:loaded", self.document) 
 					) : ( 
 						veda.RegisterModule(veda.DocumentModel.apply(new Object(), params), self, "document")
 					);*/
-					veda.DocumentModel.apply(new Object(), params);
-					break
+        veda.DocumentModel.apply({}, params);
+					break;
 				case "search": 
 					/*self.search && ( (self.search._params == params) || params.length == 0 ) ? (
 						self.trigger("search:loaded", self.search) && self.trigger("search:complete", self.search) 
 					) : ( 
 						veda.RegisterModule(veda.SearchModel.apply(new Object(), params), self, "search", params)
 					);*/
-					if (self.search && ( params == self.search.params || params.length == 0) ) {
-						self.trigger("search:loaded", self.search) && self.trigger("search:complete", self.search);
+					if (self.search && ( params == self.search.params || params.length === 0) ) {
+						self.trigger("search:loaded", self.search);
+            self.trigger("search:complete", self.search);
 					} else {
-						self.search = veda.SearchModel.apply(new Object(), params);
+            self.search = veda.SearchModel.apply({}, params);
 						self.search.params = params;
 					}
-					break
+					break;
 				case "graph": 
 					self.trigger("load:graph", params);
-					break
-				default: ""; break
+					break;
 			}
 		};
 		
@@ -83,9 +83,9 @@
 			self.user = new veda.UserModel(self.user_uri);
 			self.ontology = new veda.OntologyModel();
 			self.trigger("started");
-		}
+		};
 		
 		return self;
-	}
+	};
 	
 })(veda);

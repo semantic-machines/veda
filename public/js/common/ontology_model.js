@@ -101,14 +101,14 @@ veda.Module(function (veda) { "use strict";
 				case "rdfs:Class" :
 				case "owl:Class" :
 					self.classes[individual.id] = individual;
-					break
+					break;
 				case "rdf:Property" :
 				case "owl:DatatypeProperty" :
 				case "owl:ObjectProperty" :
 				case "owl:OntologyProperty" :
 				case "owl:AnnotationProperty" :
 					self.properties[individual.id] = individual;
-					break
+					break;
 				case "v-ui:PropertySpecification" :
 				case "v-ui:IntegerPropertySpecification" :
 				case "v-ui:DecimalPropertySpecification" :
@@ -117,16 +117,16 @@ veda.Module(function (veda) { "use strict";
 				case "v-ui:BooleanPropertySpecification" :
 				case "v-ui:ObjectPropertySpecification" :
 					self.specs[individual.id] = individual;
-					break
+					break;
 				case "v-s:ClassModel" :
 					self.models[individual.id] = individual;
-					break
+					break;
 				case "v-ui:ClassTemplate" :
 					self.templates[individual.id] = individual;
-					break
+					break;
 				default :
 					self.other[individual.id] = individual;
-					break
+					break;
 			}
 		});
 

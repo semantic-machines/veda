@@ -1,4 +1,4 @@
-// Document Model
+// Individual list Model
 
 veda.Module(function (veda) { "use strict";
 
@@ -27,14 +27,14 @@ veda.Module(function (veda) { "use strict";
 				case typeof item == "string" :
 					keys.push(item);
 					Object.defineProperty(self, item, {
-						get: function () { return new veda.IndividualModel(item) },
+						get: function () { return new veda.IndividualModel(item); },
 						configurable: true
 					});
 					break;
 				case item instanceof veda.IndividualModel :
 					keys.push(item.id);
 					Object.defineProperty(self, item.id, {
-						get: function () { return item },
+						get: function () { return item; },
 						configurable: true
 					});
 					break;
@@ -44,7 +44,7 @@ veda.Module(function (veda) { "use strict";
 						var value = item[key];
 						(function (val) {
 							Object.defineProperty(self, key, {
-								get: function () { return val },
+								get: function () { return val; },
 								configurable: true
 							});
 						})(value);
@@ -58,22 +58,22 @@ veda.Module(function (veda) { "use strict";
 				callback(self[key], key, index);
 			});
 			return self;
-		}
+		};
 
 		self.add = function (individual) {
 			keys.push(individual.id);
 			Object.defineProperty(self, individual.id, {
-				get: function () { return individual },
+				get: function () { return individual; },
 				configurable: true
 			});
 			return self;
-		}
+		};
 		
 		self.remove = function (id) {
 			keys.splice(keys.indexOf(id), 1);
 			delete self[id];
 			return self;
-		}
+		};
 
 		return self;
 	};

@@ -14,12 +14,12 @@ function get_rights(ticket, uri, callback) {
 	if(!callback) {
 		params.async = false;
 		var result = $.ajax(params);
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
 		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { throw {status: result.status, description: result.statusText } } )
-		.done( function (data) { callback(data) } );
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
 }
 
 function get_rights_origin(ticket, uri, callback) {
@@ -31,12 +31,12 @@ function get_rights_origin(ticket, uri, callback) {
 	if(!callback) {
 		params.async = false;
 		var result = $.ajax(params);
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
 		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { throw {status: result.status, description: result.statusText } } )
-		.done( function (data) { callback(data) } );
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
 }
 
 function authenticate(login, password, callback) {
@@ -48,12 +48,12 @@ function authenticate(login, password, callback) {
 	if(!callback) {
 		params.async = false;
 		var result = $.ajax(params);
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
 		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { throw {status: result.status, description: result.statusText } } )
-		.done( function (data) { callback(data) } );
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
 }
 
 function is_ticket_valid(ticket, callback) {
@@ -65,7 +65,7 @@ function is_ticket_valid(ticket, callback) {
 	if(!callback) {
 		params.async = false;
 		var result = $.ajax(params);
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
 		return result.responseText;
 	}
 }
@@ -79,12 +79,12 @@ function wait_pmodule(pmodule_id, callback) {
 	if(!callback) {
 		params.async = false;
 		var result = $.ajax(params);
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
 		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { throw {status: result.status, description: result.statusText } } )
-		.done( function (data) { callback(data) } );
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
 }
 
 function backup(callback) {
@@ -96,12 +96,12 @@ function backup(callback) {
 	if(!callback) {
 		params.async = false;
 		var result = $.ajax(params);
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
 		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { throw {status: result.status, description: result.statusText } } )
-		.done( function (data) { callback(data) } );
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
 }
 
 function count_individuals(callback) {
@@ -113,12 +113,12 @@ function count_individuals(callback) {
 	if(!callback) {
 		params.async = false;
 		var result = $.ajax(params);
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
 		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { throw {status: result.status, description: result.statusText } } )
-		.done( function (data) { callback(data) } );
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
 }
 
 function set_trace(idx, state, callback) {
@@ -130,29 +130,29 @@ function set_trace(idx, state, callback) {
 	if(!callback) {
 		params.async = false;
 		var result = $.ajax(params);
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
 		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { throw {status: result.status, description: result.statusText } } )
-		.done( function (data) { callback(data) } );
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
 }
 
-function query(ticket, query, sort, databases, reopen, callback) {
+function query(ticket, q, sort, databases, reopen, callback) {
 	var params = {
 		type: "GET",
 		url: "query",
-		data: { "ticket": ticket, "query": query, "sort": sort || null, "databases" : databases || null, "reopen" : reopen || false }
+		data: { "ticket": ticket, "query": q, "sort": sort || null, "databases" : databases || null, "reopen" : reopen || false }
 	};
 	if(!callback) {
 		params.async = false;
 		var result = $.ajax(params);
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
 		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { throw {status: result.status, description: result.statusText } } )
-		.done( function (data) { callback(data) } );
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
 }
 
 function get_individuals(ticket, uris, callback) {
@@ -165,12 +165,12 @@ function get_individuals(ticket, uris, callback) {
 	if(!callback) {
 		params.async = false;
 		var result = $.ajax(params);
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
 		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { throw {status: result.status, description: result.statusText } } )
-		.done( function (data) { callback(data) } );
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
 }
 
 var get_count = 0, get_summary_time = 0;
@@ -193,14 +193,14 @@ function get_individual(ticket, uri, callback) {
 		t2 = Date.now();
 		get_summary_time += t2 - t1;
 		
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
 		return JSON.parse(result.responseText, function dateReviver (key, value) {
 			return key === "data" && this.type === "Datetime" ? new Date(value) : value;
 		});
 	}
 	$.ajax(params)
-		.fail( function () { throw {status: result.status, description: result.statusText } } )
-		.done( function (data) { callback(data) } );
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
 }
 
 function put_individual(ticket, individual, wait_for_indexing, callback) {
@@ -213,12 +213,12 @@ function put_individual(ticket, individual, wait_for_indexing, callback) {
 	if(!callback) {
 		params.async = false;
 		var result = $.ajax(params);
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
 		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { throw {status: result.status, description: result.statusText } } )
-		.done( function (data) { callback(data) } );
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
 }
 
 function get_property_value(ticket, uri, property_uri, callback) {
@@ -230,12 +230,12 @@ function get_property_value(ticket, uri, property_uri, callback) {
 	if(!callback) {
 		params.async = false;
 		var result = $.ajax(params);
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
 		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { throw {status: result.status, description: result.statusText } } )
-		.done( function (data) { callback(data) } );
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
 }
 
 function execute_script(script, callback) {
@@ -248,10 +248,10 @@ function execute_script(script, callback) {
 	if(!callback) {
 		params.async = false;
 		var result = $.ajax(params);
-		if (result.status >= 400) throw {status: result.status, description: result.statusText };
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
 		return JSON.parse(result.responseText);
 	}
 	$.ajax(params)
-		.fail( function () { throw {status: result.status, description: result.statusText } } )
-		.done( function (data) { callback(data) } );
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
 }

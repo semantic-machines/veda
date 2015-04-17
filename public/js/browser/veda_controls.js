@@ -17,9 +17,9 @@
 		if (!opts.remove) remove.remove();
 		
 		$el
-			.on("view", function () { mode="view"; view.show(); edit.hide(); search.hide(); edit_search.hide() })
-			.on("edit", function () { mode="edit"; view.hide(); edit.show(); search.hide(); edit_search.show() })
-			.on("search", function () { mode="search"; view.hide(); edit.hide(); search.show(); edit_search.show() })
+			.on("view", function () { mode="view"; view.show(); edit.hide(); search.hide(); edit_search.hide(); })
+			.on("edit", function () { mode="edit"; view.hide(); edit.show(); search.hide(); edit_search.show(); })
+			.on("search", function () { mode="search"; view.hide(); edit.hide(); search.show(); edit_search.show(); })
 			.mouseenter( function () { add.show(); remove.show(); })
 			.mouseleave( function () { add.hide(); remove.hide(); })
 			.on("focusin", function () {
@@ -62,14 +62,14 @@
 			});	
 		
 		return control;
-	}
+	};
 	$.fn.vedaControl.defaults = {
 		/*add: function () { alert("add") },
 		remove: function () { alert("remove") },
 		change: function (value) { alert(value) },*/
-		inputParser: function (input) {return input},
+		inputParser: function (input) { return input; },
 		value: undefined
-	}
+	};
 
 	// String control
 	$.fn.vedaString = function( options ) {
@@ -154,7 +154,7 @@
 		inputParser: function (input) {
 			var value = "", 
 				int = parseInt(input, 10);
-			if ( isNaN(int) == false ) value = new Number(int);
+			if ( isNaN(int) === false ) value = new Number(int);
 			return value;
 		}
 	};
@@ -172,7 +172,7 @@
 		inputParser: function (input) {
 			var value = "", 
 				float = parseFloat(input);
-			if ( isNaN(float) == false ) value = new Number(float);
+			if ( isNaN(float) === false ) value = new Number(float);
 			return value;
 		}
 	};
@@ -190,7 +190,7 @@
 		inputParser: function (input) {
 			var value = "", 
 				timestamp = Date.parse(input);
-			if ( isNaN(timestamp) == false ) value = new Date(timestamp);
+			if ( isNaN(timestamp) === false ) value = new Date(timestamp);
 			return value;
 		}
 	};
@@ -230,7 +230,7 @@
 					var s = new veda.SearchModel(q, null, queryPrefix);
 					var results = [];
 					for (var uri in s.results) {
-						if (limit-- == 0) break;
+						if (limit-- === 0) break;
 						results.push(s.results[uri]);
 					}
 					cb(results);

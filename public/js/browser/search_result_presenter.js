@@ -12,7 +12,7 @@ veda.Module(function SearchResultPresenter(veda) { "use strict";
 					.map( function (item) {
 						if (item instanceof String)
 							// Check if string starts with http:// or ftp://
-							return item.search(/^.{3,5}:\/\//) == 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
+							return item.search(/^.{3,5}:\/\//) === 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
 						else if (item instanceof veda.IndividualModel)
 							return "<a data-toggle='popover' href='#/document/" + item.id + "'>" + 
 								(item["rdfs:label"] && item["rdfs:label"].length ? item["rdfs:label"].join(", ") : item.id) + "</a>";

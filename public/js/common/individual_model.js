@@ -74,7 +74,7 @@ veda.Module(function (veda) { "use strict";
 		if (uri) self = self.load(uri);
 
 		return self;
-	}
+	};
 
 	var proto = veda.IndividualModel.prototype;
 
@@ -119,7 +119,7 @@ veda.Module(function (veda) { "use strict";
 					if (value.type == "String") {
 						var string = new String(value.data);
 						string.language = value.lang == "NONE" ? undefined : value.lang;
-						return (string.language == undefined || string.language in veda.user.language) ? (
+						return (string.language === undefined || string.language in veda.user.language) ? (
 							string
 						) : (
 							filteredStrings.push(string),
@@ -127,7 +127,7 @@ veda.Module(function (veda) { "use strict";
 						);
 					} 
 					else if (value.type == "Uri") {
-						if (value.data.search(/^.{3,5}:\/\//) == 0) return new String(value.data);
+						if (value.data.search(/^.{3,5}:\/\//) === 0) return new String(value.data);
 						return new veda.IndividualModel(value.data);
 					} 
 					else if (value.type == "Datetime") return new Date(Date.parse(value.data));
@@ -137,7 +137,7 @@ veda.Module(function (veda) { "use strict";
 					else throw ("Unsupported type of property value");
 				});
 				// Filter undefined values
-				self._.values[property_uri] = self._.values[property_uri].filter(function (item) { return item });
+				self._.values[property_uri] = self._.values[property_uri].filter(function (item) { return item; });
 				
 				if (getterCB) getterCB(self._.values[property_uri]);
 				
@@ -182,7 +182,7 @@ veda.Module(function (veda) { "use strict";
 		
 		});
 		
-	}
+	};
 
 	function isInteger (n) { return n % 1 === 0; }
 		
@@ -206,7 +206,7 @@ veda.Module(function (veda) { "use strict";
 				self._.individual = {
 					"@": uri,
 					"rdfs:label": [{type: "String", data: uri, lang: "NONE"}]
-				}
+				};
 			}
 		} else if (uri instanceof veda.IndividualModel) {
 			self.trigger("individual:afterLoad", uri);
@@ -302,6 +302,6 @@ veda.Module(function (veda) { "use strict";
 				model(self);
 			}
 		});
-	}
+	};
 
 });

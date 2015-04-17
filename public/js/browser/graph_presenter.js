@@ -1,4 +1,4 @@
-// Console Presenter
+// Graph Presenter
 
 veda.Module(function GraphPresenter(veda) { "use strict";
 
@@ -19,19 +19,19 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 						case "rdfs:Class" :
 						case "owl:Class" :
 							node.group = "_class";
-							break
+							break;
 						case "rdf:Property" :
 						case "owl:ObjectProperty" :
 							node.group = "objectProperty";
-							break
+							break;
 						case "owl:DatatypeProperty" :
 						case "owl:OntologyProperty" :
 						case "owl:AnnotationProperty" :
 							node.group = "datatypeProperty";
-							break
+							break;
 						case "v-ui:ClassTemplate" :
 							node.group = "template";
-							break
+							break;
 						case "v-ui:PropertySpecification" :
 						case "v-ui:IntegerPropertySpecification" :
 						case "v-ui:DecimalPropertySpecification" :
@@ -40,13 +40,13 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 						case "v-ui:BooleanPropertySpecification" :
 						case "v-ui:ObjectPropertySpecification" :
 							node.group = "specification";
-							break
+							break;
 						case "owl:Ontology" :
 							node.group = "ontology";
-							break
+							break;
 						default :
 							node.group = "individual";
-							break
+							break;
 					}
 				}
 				$.extend(node, opts);
@@ -68,9 +68,9 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 							filter: function (item) {
 								return  item.from == from && 
 										item.to == to &&
-										item.label.toString() == label
+										item.label.toString() == label;
 							}
-						}
+						};
 						if ( !edges.get(options).length ) {
 							edges.add ([
 								{
@@ -83,7 +83,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 					}
 				});
 			});
-		};
+		}
 
 		function addInLinks (id, query) {
 			var q = query || "'*'=='{id}'";
@@ -102,14 +102,14 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 								filter: function (item) {
 									return  item.from == from && 
 											item.to == to &&
-											item.label.toString() == label
+											item.label.toString() == label;
 								}
-							}
+							};
 							if ( !edges.get(options).length ) {
 								edges.add([{from: from, to: to, label: label}]);
 							}
 						}
-					}) 
+					});
 				});
 			});
 		}
@@ -170,7 +170,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 			var modalBody = $(".modal-body", modal);
 			var modalTitle = $(".modal-title", modal);
 			modalTitle.text(nodes.get(id).label);
-			new veda.DocumentModel(id, modalBody);
+			var doc = new veda.DocumentModel(id, modalBody);
 			/*riot.route("#/document/" + selected.nodes[0]);*/
 			//addOutLinks(selected.nodes[0]);
 		}
@@ -189,7 +189,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 
 		// Buttons
 		var exportBtn = $("#export-ttl", container).click(function () {
-			var list = new veda.IndividualListModel( nodes.get().map(function (item) { return item.individual}) );
+			var list = new veda.IndividualListModel( nodes.get().map(function (item) { return item.individual; }) );
 			veda.Util.exportTTL(list);
 		});
 		var freezeBtn = $("#freeze", container).click(function () {
@@ -205,39 +205,39 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 				var id = select.nodes[0];
 				var node = nodes.get(id);
 				switch (node.group) {
-					case "_class": this.setMenu($("#class-context-menu", container)); break
-					case "ontology": this.setMenu($("#ontology-context-menu", container)); break
+					case "_class": this.setMenu($("#class-context-menu", container)); break;
+					case "ontology": this.setMenu($("#ontology-context-menu", container)); break;
 					case "datatypeProperty": 
 					case "objectProperty": 
-						this.setMenu($("#property-context-menu", container)); break
-					case "template": this.setMenu($("#template-context-menu", container)); break
-					case "specification": this.setMenu($("#specification-context-menu", container)); break
-					default: this.setMenu($("#individual-context-menu", container)); break
+						this.setMenu($("#property-context-menu", container)); break;
+					case "template": this.setMenu($("#template-context-menu", container)); break;
+					case "specification": this.setMenu($("#specification-context-menu", container)); break;
+					default: this.setMenu($("#individual-context-menu", container)); break;
 				}
 				return true;
 			},
 			onItem: function (context, e) {
 				var id = select.nodes[0];
 				switch (e.target.id) {
-					case "out-links" : addOutLinks( id ); break
-					case "in-links" : addInLinks( id ); break
+					case "out-links" : addOutLinks( id ); break;
+					case "in-links" : addInLinks( id ); break;
 					case "delete" : 
 						nodes.remove(select.nodes); 
 						edges.remove(select.edges);
 						select.nodes = select.edges = [];
-						break
+						break;
 					case "delete-with-out" : 
 						deleteWithOutLinks (id);
 						select.nodes = select.edges = [];
-						break
+						break;
 					case "delete-with-in" : 
 						deleteWithInLinks (id);
 						select.nodes = select.edges = [];
-						break
-					case "class-individuals" : addInLinks( id, "'rdf:type'=='{id}'" ); break
-					case "class-subclasses" : addInLinks( id, "('rdf:type'=='owl:Class'||'rdf:type'=='rdfs:Class')&&'rdfs:subClassOf'=='{id}'" ); break
-					case "class-properties" : addInLinks( id, "'rdfs:domain'=='{id}'"); break
-					case "class-templates" : addInLinks( id, "'rdf:type'=='v-ui:ClassTemplate'&&'v-ui:forClass'=='{id}'" ); break
+						break;
+					case "class-individuals" : addInLinks( id, "'rdf:type'=='{id}'" ); break;
+					case "class-subclasses" : addInLinks( id, "('rdf:type'=='owl:Class'||'rdf:type'=='rdfs:Class')&&'rdfs:subClassOf'=='{id}'" ); break;
+					case "class-properties" : addInLinks( id, "'rdfs:domain'=='{id}'"); break;
+					case "class-templates" : addInLinks( id, "'rdf:type'=='v-ui:ClassTemplate'&&'v-ui:forClass'=='{id}'" ); break;
 					case "class-specifications" : 
 						addInLinks( id, "('rdf:type'=='v-ui:PropertySpecification'||" +
 										"'rdf:type'=='v-ui:IntegerPropertySpecification'||" +
@@ -247,7 +247,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 										"'rdf:type'=='v-ui:BooleanPropertySpecification'||" +
 										"'rdf:type'=='v-ui:ObjectPropertySpecification'" +
 										")&&'v-ui:forClass'=='{id}'" );
-					break
+					break;
 					case "property-specifications" : 
 						addInLinks( id, "('rdf:type'=='v-ui:PropertySpecification'||" +
 										"'rdf:type'=='v-ui:IntegerPropertySpecification'||" +
@@ -257,7 +257,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 										"'rdf:type'=='v-ui:BooleanPropertySpecification'||" +
 										"'rdf:type'=='v-ui:ObjectPropertySpecification'" +
 										")&&'v-ui:forProperty'=='{id}'" );
-					break
+					break;
 				}
 			}
 		});

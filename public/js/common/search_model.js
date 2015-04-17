@@ -32,7 +32,7 @@ veda.Module(function (veda) { "use strict";
 			}
 			self.trigger("search:selected", self.results[ results_keys[i] ], self.selected);
 			return self.selected;
-		}
+		};
 
 		self.toggleAll = function () {
 			if (Object.keys(self.selected).length != self.results_count) {
@@ -44,7 +44,7 @@ veda.Module(function (veda) { "use strict";
 			}
 			//console.log(self.selected);
 			return self.selected;
-		}
+		};
 
 		// Define Model functions
 		self.search = function (qq) {
@@ -57,7 +57,7 @@ veda.Module(function (veda) { "use strict";
 
 			// Transform user input like "roman karpov" to "'*'=='roman' && '*'=='karpov'"
 			if (q && q.indexOf("==") < 0) {
-				q = "(" + q.trim().split(" ").map(function (t) { return "'*'=='" + t + "*'"}).join("&&") + ")";
+				q = "(" + q.trim().split(" ").map(function (t) { return "'*'=='" + t + "*'";}).join("&&") + ")";
 			}
 			
 			// Prefix query if defined in constructor

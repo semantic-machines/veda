@@ -47,7 +47,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			var hash_tokens = hash.slice(2).split("/");
 			var page = hash_tokens[0];
 			var params = hash_tokens.slice(1);
-			if (page != "") {
+			if (page !== "") {
 				$("#menu > li").removeClass("active");
 				$("#menu > li#" + page).addClass("active");
 				veda.load(page, params);
@@ -112,4 +112,3 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	}
 	
 });
-

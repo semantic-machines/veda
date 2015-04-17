@@ -8,7 +8,7 @@ veda.Module(function Util(veda) { "use strict";
 	veda.Util.escape4$ = function (str) {
 		if (str) return str.replace(/([ #;?%&,.+*~\':"!^$[\]()=>|\/@])/g,'\\$1');
 		return str;
-	}
+	};
 
 	function isInteger (n) { return n % 1 === 0; }
 	
@@ -55,7 +55,7 @@ veda.Module(function Util(veda) { "use strict";
 			var blob = new Blob([result], {type: "text/plain;charset=utf-8"});
 			saveAs(blob, "exported_graph.ttl");
 		});
-	}
+	};
 	
 	veda.Util.forSubIndividual = function (net, property, id, func) {
 		if (net[property]===undefined) return;
@@ -64,12 +64,12 @@ veda.Module(function Util(veda) { "use strict";
 				func(el);
 			}
 		});
-	}
+	};
 
 	veda.Util.removeSubIndividual = function (net, property, id) {
 		if (net[property]===undefined) return undefined;
 		return net[property].filter( function (item) {
 			return item.id !== id; 
 		});
-	}
+	};
 });
