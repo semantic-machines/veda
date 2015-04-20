@@ -4,18 +4,26 @@ veda.Module(function (veda) { "use strict";
 
 	veda.UserModel = function (uri) {
 		
+		var self = new veda.IndividualModel(uri);
+		
+		var langs = query(veda.ticket, "'rdf:type' == 'v-ui:Language'");
+		self.availableLanguages = langs.reduce ( 
+			function (acc, language_uri) {
+				var lang = new veda.IndividualModel(language_uri);
+				acc[lang["rdf:value"][0]] = lang;  
+				return acc;
+			}, {});
+		
 		var defaults = {
-			language : {"RU": veda.availableLanguages["RU"]},
+			language : {"RU": self.availableLanguages["RU"]},
 			displayedElements : 10
 		};
-		
-		var self = new veda.IndividualModel(uri);
 		
 		try { 
 			self.preferences = self["v-ui:hasPreferences"][0];
 
 			self.language = self.preferences["v-ui:preferredLanguage"].reduce( function (acc, lang) {
-				acc[lang["rdf:value"][0]] = veda.availableLanguages[lang["rdf:value"][0]];
+				acc[lang["rdf:value"][0]] = self.availableLanguages[lang["rdf:value"][0]];
 				return acc;
 			}, {} );
 
@@ -32,7 +40,7 @@ veda.Module(function (veda) { "use strict";
 				} 
 				if (property_uri === "v-ui:preferredLanguage") {
 					self.language = values.reduce( function (acc, lang) {
-						acc[lang["rdf:value"][0]] = veda.availableLanguages[lang["rdf:value"][0]];
+						acc[lang["rdf:value"][0]] = self.availableLanguages[lang["rdf:value"][0]];
 						return acc;
 					}, {} );
 				}
@@ -43,7 +51,7 @@ veda.Module(function (veda) { "use strict";
 			
 			if (language_val in self.language && Object.keys(self.language).length == 1) return;
 					
-			language_val in self.language ? delete self.language[language_val] : self.language[language_val] = veda.availableLanguages[language_val];
+			language_val in self.language ? delete self.language[language_val] : self.language[language_val] = self.availableLanguages[language_val];
 			
 			self.preferences["v-ui:preferredLanguage"] = Object.keys(self.language).map ( function (language_val) {
 				return self.language[language_val];

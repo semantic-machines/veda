@@ -102,7 +102,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			individual.save();
 			individual.trigger("view");
 			// Change location.hash if individual was presented in #main container
-			if (container.prop("id") === "main") riot.route("#/individual/" + individual.id, false);
+			if (container.prop("id") === "main") {
+				var hash = ["#/individual", individual.id, container_param || "", template || "", mode || ""].join("/");
+				riot.route(hash, false);
+			}
 		});
 		
 		individual.on("cancel", function () {
@@ -239,7 +242,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			// Open Search
 			var search = new veda.SearchModel(query);
 			// Place individual to params tab in Search caontainer
-			var params = new veda.DocumentModel(individual.id, $("#params-" + search.id, search.view), undefined, "search");
+			var params = new veda.IndividualModel(individual.id, $("#params-" + search.id, search.view), undefined, "search");
 		});
 		
 		// Process RDFa compliant template
@@ -396,12 +399,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			if (value instanceof veda.IndividualModel || !value) {
 				setTimeout( function () {
 					if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
-						lnk = new veda.DocumentModel(value, clone, relTemplate, mode);
+						lnk = new veda.IndividualModel(value, clone, relTemplate, mode);
 						embedded.push(lnk);
 						// New instance
 						if (!value) individual[rel_uri] = individual[rel_uri].concat(lnk);
 					} else {
-						lnk = new veda.DocumentModel(value, clone, relTemplate);
+						lnk = new veda.IndividualModel(value, clone, relTemplate);
 					}
 					
 					clone.attr("style", "position:relative;");

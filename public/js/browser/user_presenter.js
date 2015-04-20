@@ -12,8 +12,8 @@ veda.Module(function UserPresenter(veda) { "use strict";
 
 		// Render languages
 		var languages = "";
-		Object.keys(veda.availableLanguages).map ( function (language_uri) {
-			languages += riot.render(languageTemplate, veda.availableLanguages[language_uri]);
+		Object.keys(veda.user.availableLanguages).map ( function (language_uri) {
+			languages += riot.render(languageTemplate, veda.user.availableLanguages[language_uri]);
 		});
 		
 		// Render user

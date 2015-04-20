@@ -10,6 +10,14 @@ veda.Module(function Util(veda) { "use strict";
 		return str;
 	};
 
+	veda.Util.construct = function (constr, args) {
+		function F() {
+			return constr.apply(this, args);
+		}
+		F.prototype = constr.prototype;
+		return new F();
+	}
+	
 	function isInteger (n) { return n % 1 === 0; }
 	
 	veda.Util.exportTTL = function (individualList) {

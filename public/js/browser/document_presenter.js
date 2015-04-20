@@ -324,8 +324,8 @@ veda.Module(function DocumentPresenter(veda) { "use strict";
 		//container.show();
 		
 		scripts.map( function (item) { 
-			var presenter = new Function("veda", "document", "container", item + "//# sourceURL=" + document["rdf:type"][0].id + "Presenter.js");
-			presenter(veda, document, classTemplate);
+			var presenter = new Function("veda", "individual", "document", "container", item + "//# sourceURL=" + document["rdf:type"][0].id + "Presenter.js");
+			presenter(veda, document, document, classTemplate);
 		});
 	}
 	

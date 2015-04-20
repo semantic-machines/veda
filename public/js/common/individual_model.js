@@ -10,7 +10,7 @@ veda.Module(function (veda) { "use strict";
 	 * @param {String} uri URI of individual. If not specified, than id of individual will be generated automatically. 
 	 * @param {boolean} noCache turn cache off. If false or not set, than object will be return from browser cache. If true or individual not found in cache - than individual will be requested from database 
 	 */
-	veda.IndividualModel = function (uri, noCache, container, template, mode) {
+	veda.IndividualModel = function (uri, container, template, mode, noCache) {
 	
 		var self = riot.observable(this);
 		
@@ -116,24 +116,24 @@ veda.Module(function (veda) { "use strict";
 				if (self._.values[property_uri]) return self._.values[property_uri];
 				if (!self._.individual[property_uri]) self._.individual[property_uri] = [];
 				self._.values[property_uri] = self._.individual[property_uri].map( function (value) {
-					if (value.type == "String") {
+					if (value.type === "String") {
 						var string = new String(value.data);
-						string.language = value.lang == "NONE" ? undefined : value.lang;
-						return (string.language === undefined || string.language in veda.user.language) ? (
+						string.language = value.lang === "NONE" ? undefined : value.lang;
+						return (string.language === undefined || (veda.user && veda.user.language && string.language in veda.user.language)) ? (
 							string
 						) : (
 							filteredStrings.push(string),
 							undefined
 						);
 					} 
-					else if (value.type == "Uri") {
+					else if (value.type === "Uri") {
 						if (value.data.search(/^.{3,5}:\/\//) === 0) return new String(value.data);
 						return new veda.IndividualModel(value.data);
 					} 
-					else if (value.type == "Datetime") return new Date(Date.parse(value.data));
-					else if (value.type == "Decimal") return new Number(value.data);
-					else if (value.type == "Integer") return new Number(value.data);
-					else if (value.type == "Boolean") return new Boolean(value.data);
+					else if (value.type === "Datetime") return new Date(Date.parse(value.data));
+					else if (value.type === "Decimal") return new Number(value.data);
+					else if (value.type === "Integer") return new Number(value.data);
+					else if (value.type === "Boolean") return new Boolean(value.data);
 					else throw ("Unsupported type of property value");
 				});
 				// Filter undefined values
@@ -216,12 +216,13 @@ veda.Module(function (veda) { "use strict";
 		}
 		self._.original_individual = JSON.stringify(self._.individual);
 		Object.keys(self._.individual).map(function (property_uri) {
-			if (property_uri == "@") return;
-			if (property_uri == "rdf:type") return;
-			if (property_uri == "v-s:deleted") return;
+			if (property_uri === "@") return;
+			if (property_uri === "rdf:type") return;
+			if (property_uri === "v-s:deleted") return;
 			self.defineProperty(property_uri);
 		});
 		if (!self._.noCache) veda.cache[self.id] = self;
+		self.init();
 		self.trigger("individual:afterLoad", self);
 		return self;
 	};
@@ -236,7 +237,7 @@ veda.Module(function (veda) { "use strict";
 		self.trigger("individual:beforeSave");
 		Object.keys(self._.individual).reduce(function (acc, property_uri) {
 			self[property_uri];
-			if (property_uri == "@") return acc;
+			if (property_uri === "@") return acc;
 			acc[property_uri] = self._.individual[property_uri].filter(function (item) {
 				return item && item.data !== "";
 			});
@@ -265,7 +266,7 @@ veda.Module(function (veda) { "use strict";
 		self.properties = {};
 		self._.values = {};
 		Object.keys(self._.individual).map(function (property_uri) {
-			if (property_uri == "@") return;
+			if (property_uri === "@") return;
 			self.defineProperty(property_uri);
 		});
 		self._.sync = true;

@@ -285,7 +285,7 @@ v-fs:SearchTemplate
 		</div>
 	</div>
 	<script>
-		var self = document;
+		var self = individual;
 		var q = $("#q", container);
 		var save = $("#save", container);
 		var saveAs = $("#save-as", container);
