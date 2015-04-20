@@ -197,9 +197,9 @@ function prepare_work_order(ticket, document)
         }
 
         work_item['v-wf:isCompleted'] = [
-        {
-            data: true,
-            type: _Bool
+            {
+                data: true,
+                type: _Bool
                }];
         put_individual(ticket, work_item, _event_id);
         //print("[WORKFLOW][WO12] document=", toJson (document)); 
@@ -372,9 +372,9 @@ function prepare_work_item(ticket, document)
                 create_work_item(ticket, forProcess, nextNetElement['@'], document['@'], _event_id);
 
                 document['v-wf:isCompleted'] = [
-                {
-                    data: true,
-                    type: _Bool
+                    {
+                        data: true,
+                        type: _Bool
                }];
                 put_individual(ticket, document, _event_id);
                 print("[WORKFLOW][WO12] document=", toJson(document));
@@ -405,9 +405,9 @@ function prepare_work_item(ticket, document)
                 create_work_item(ticket, forProcess, nextNetElement['@'], document['@'], _event_id);
 
                 document['v-wf:isCompleted'] = [
-                {
-                    data: true,
-                    type: _Bool
+                    {
+                        data: true,
+                        type: _Bool
                }];
                 put_individual(ticket, document, _event_id);
                 print("[WORKFLOW][WO12] document=", toJson(document));
@@ -443,12 +443,6 @@ function prepare_start_form(ticket, document)
 
     var new_process_uri = guid();
 
-    var transformation_link = getUri(document['v-wf:useTransformation']);
-    if (!transformation_link) return;
-
-    var transformation = get_individual(ticket, transformation_link);
-    if (!transformation) return;
-
     var forNet = document['v-wf:forNet'];
     var net = get_individual(ticket, getUri(forNet));
     if (!net) return;
@@ -465,47 +459,70 @@ function prepare_start_form(ticket, document)
         'v-wf:instanceOf': forNet
     };
 
+    var transform_link = getUri(document['v-wf:useTransformation']);
+    if (!transform_link) return;
+
+    var transform = get_individual(ticket, transform_link);
+    if (!transform) return;
+
     // формируем входящие переменные
-    var process_input_vars = create_and_mapping_variables(ticket, transformation['v-wf:startingMapping'], new_process, null, null);
-    if (process_input_vars.length > 0) new_process['v-wf:inputVariable'] = process_input_vars;
-
-    // формируем локальные переменные	
-    var process_local_vars = [];
-    var net_local_variable = net['v-wf:localVariable'];
-    if (net_local_variable)
+    var process_input_vars = transformation(ticket, document, transform);
+    var new_vars = [];
+    for (var i = 0; i < process_input_vars.length; i++)
     {
-        for (var i = 0; i < net_local_variable.length; i++)
+        put_individual(ticket, process_input_vars[i], _event_id);
+        new_vars.push(
         {
-            var net_variable = get_individual(ticket, net_local_variable[i].data);
-            if (!net_variable) continue;
-
-            var variable_name = getFirstValue(net_variable['v-wf:variableName']);
-
-            var new_uri = guid();
-            var new_process_variable = {
-                '@': new_uri,
-                'rdf:type': [
-                    {
-                        data: 'v-wf:Variable',
-                        type: _Uri
-                }],
-                'v-wf:variableName': [
-                    {
-                        data: variable_name,
-                        type: _String
-                }]
-            };
-            put_individual(ticket, new_process_variable, _event_id);
-
-            process_local_vars.push(
-            {
-                data: new_uri,
-                type: _Uri
-            });
-        }
-        if (process_local_vars.length > 0) new_process['v-wf:localVariable'] = process_local_vars;
+            data: process_input_vars[i]['@'],
+            type: _Uri
+        });
     }
+    if (process_input_vars.length > 0) new_process['v-wf:inputVariable'] = new_vars;
 
+    print("new_process=", toJson(new_process));
+
+    /*
+        // формируем входящие переменные
+        var process_input_vars = create_and_mapping_variables(ticket, transformation['v-wf:startingMapping'], new_process, null, null);
+        if (process_input_vars.length > 0) new_process['v-wf:inputVariable'] = process_input_vars;
+
+        // формируем локальные переменные	
+        var process_local_vars = [];
+        var net_local_variable = net['v-wf:localVariable'];
+        if (net_local_variable)
+        {
+            for (var i = 0; i < net_local_variable.length; i++)
+            {
+                var net_variable = get_individual(ticket, net_local_variable[i].data);
+                if (!net_variable) continue;
+
+                var variable_name = getFirstValue(net_variable['v-wf:variableName']);
+
+                var new_uri = guid();
+                var new_process_variable = {
+                    '@': new_uri,
+                    'rdf:type': [
+                        {
+                            data: 'v-wf:Variable',
+                            type: _Uri
+                    }],
+                    'v-wf:variableName': [
+                        {
+                            data: variable_name,
+                            type: _String
+                    }]
+                };
+                put_individual(ticket, new_process_variable, _event_id);
+
+                process_local_vars.push(
+                {
+                    data: new_uri,
+                    type: _Uri
+                });
+            }
+            if (process_local_vars.length > 0) new_process['v-wf:localVariable'] = process_local_vars;
+        }
+    */
     put_individual(ticket, new_process, _event_id);
 
     document['v-wf:isProcess'] = [
@@ -780,4 +797,127 @@ function is_in_docflow_and_set_if_true(process, task)
     };
 
     return res_out;
+}
+
+function transformation(ticket, _in_data, rule)
+{
+    var in_data = [];
+    var out_data0 = [];
+
+    if (Array.isArray(_in_data) === true)
+        in_data = _in_data;
+    else
+        in_data.push(_in_data);
+
+    var transformRule = rule['v-wf:transformRule'];
+
+    if (!transformRule)
+        return;
+
+    var rules = [];
+
+    for (var i = 0; i < transformRule.length; i++)
+    {
+        var rr = get_individual(ticket, transformRule[i].data);
+        if (rr)
+            rules.push(rr);
+    }
+
+    //print ("#6 in_data=", toJson (in_data));
+    var out_data0_el = {};
+
+    for (var i = 0; i < in_data.length; i++)
+    {
+        var obj = in_data[i];
+
+        for (var key in obj)
+        {
+            var element = obj[key];
+
+            var isName = (function ()
+            {
+                return function (name)
+                {
+                    if (key == name)
+                        return true;
+                    else
+                        return false;
+                }
+            })();
+
+            // выполняем все rules
+            for (var i1 = 0; i1 < rules.length; i1++)
+            {
+                // 1. v-wf:segregateElement
+                var segregateElement = rules[i1]['v-wf:segregateElement'];
+                var grouping = rules[i1]['v-wf:grouping'];
+
+                var res = eval(segregateElement[0].data);
+
+                if (res == false)
+                    continue;
+
+                var putElement = (function ()
+                {
+                    return function (name)
+                    {
+                        out_data0_el[name] = element;
+                    }
+                })();
+                var putUri = (function ()
+                {
+                    return function (name, value)
+                    {
+                        out_data0_el[name] = [
+                        {
+                            data: value,
+                            type: _Uri
+                        }];
+                    }
+                })();
+                var putString = (function ()
+                {
+                    return function (name, value)
+                    {
+                        out_data0_el[name] = [
+                        {
+                            data: value,
+                            type: _String
+                        }];
+                    }
+                })();
+
+
+                //print ("#7 key=", key);
+                //print ("#7 element=", toJson (element));
+
+                //print ("#9 segregateElement=", segregateElement[0].data);
+                // 2. v-wf:agregate
+                if (!grouping)
+                {
+                    out_data0_el = {};
+                    out_data0_el['@'] = guid();
+                }
+                var agregate = rules[i1]['v-wf:agregate'];
+                for (var i2 = 0; i2 < agregate.length; i2++)
+                {
+                    eval(agregate[i2].data);
+                }
+                if (!grouping)
+                    out_data0.push(out_data0_el);
+            }
+
+
+        }
+
+
+
+    }
+
+    //for (var i = 0; i < out_data0.length; i++)
+    //{
+    //	print ("out_data0[", i, "]=", toJson (out_data0[i]));	
+    //}	
+
+    return out_data0;
 }
