@@ -8,25 +8,27 @@ veda.Module(function (veda) { "use strict";
 	/**
 	 * @constructor
 	 * @param {String} uri URI of individual. If not specified, than id of individual will be generated automatically. 
-	 * @param {boolean} noCache turn cache off. If false or not set, than object will be return from browser cache. If true or individual not found in cache - than individual will be requested from database 
+	 * @param {boolean} cache turn cache on / off. If true or not set, then object will be return from browser cache. If false or individual not found in cache - than individual will be requested from database 
+	 * @param {boolean} init individual with class model at load. If true or not set, then individual will be initialized with class specific model upon load.
 	 */
-	veda.IndividualModel = function (uri, container, template, mode, noCache) {
+	veda.IndividualModel = function (uri, container, template, mode, cache, init) {
 	
 		var self = riot.observable(this);
 		
 		// Define Model functions
 		self._ = {};
+		self._.cache = typeof cache !== "undefined" ? cache : true;
+		self._.init = typeof init !== "undefined" ? init : true;
 		self._.individual = {};
 		self._.original_individual = "{}";
 		self._.properties = {};
-		self._.values = {};
-		self._.noCache = noCache;
+		self._.values = {};		
 		self._.sync = false;
 		self.properties = {};
 		
 		if (!uri) { self._.individual["@"] = guid();
 			self._.original_individual = '{"@":"' + self._.individual["@"] +'"}';
-			if (veda.cache && !noCache) {
+			if (self._.cache && veda.cache) {
 				veda.cache[self._.individual["@"]] = self;
 			}
 		}
@@ -188,14 +190,14 @@ veda.Module(function (veda) { "use strict";
 		
 	/**
 	 * @method
-	 * Load individual specified by uri from database. If noCache parameter (from constructor) is not true, than try to load individual from browser cache first.
+	 * Load individual specified by uri from database. If cache parameter (from constructor) is true, than try to load individual from browser cache first.
 	 * @param {String} uri individual uri
 	 */
 	proto.load = function (uri) {
 		var self = this;
 		self.trigger("individual:beforeLoad");
 		if (typeof uri === "string") {
-			if (veda.cache[uri] && !self._.noCache) {
+			if (self._.cache && veda.cache[uri]) {
 				self.trigger("individual:afterLoad", veda.cache[uri]);
 				return veda.cache[uri]; 
 			}
@@ -221,8 +223,8 @@ veda.Module(function (veda) { "use strict";
 			if (property_uri === "v-s:deleted") return;
 			self.defineProperty(property_uri);
 		});
-		if (!self._.noCache) veda.cache[self.id] = self;
-		self.init();
+		if (self._.cache) veda.cache[self.id] = self;
+		if (self._.init) self.init();
 		self.trigger("individual:afterLoad", self);
 		return self;
 	};

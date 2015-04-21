@@ -70,7 +70,7 @@ veda.Module(function (veda) { "use strict";
 				if ( !storage[item] ) { 
 					acc.push(item);
 				} else { 
-					var individual = new veda.IndividualModel( JSON.parse(storage[item]) );
+					var individual = new veda.IndividualModel( JSON.parse(storage[item]), undefined, undefined, undefined, true, true );
 					self[item] = individual;
 				}
 				return acc;
@@ -79,13 +79,13 @@ veda.Module(function (veda) { "use strict";
 			var unstored = unstored_uris.length ? get_individuals(veda.ticket, unstored_uris) : [];
 			unstored.map( function (item) {
 				storage[ item["@"] ] = JSON.stringify(item);
-				var individual = new veda.IndividualModel( item );
+				var individual = new veda.IndividualModel( item, undefined, undefined, undefined, true, true );
 				self[ item["@"] ] = individual;
 			});
 
 		} else {
 			get_individuals(veda.ticket, q_results).map( function (item) {
-				self[ item["@"] ] = new veda.IndividualModel( item );
+				self[ item["@"] ] = new veda.IndividualModel( item, undefined, undefined, undefined, true, true );
 			});
 		}
 		
