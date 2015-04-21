@@ -71,13 +71,15 @@ v-wf:TransitionBehavior
 	rdfs:label "Transition behavior"@en ;
 	rdfs:label "Тип перехода"@ru ;
 .
+
 v-wf:belongsTo
 	rdf:type rdf:Property ;
 	rdfs:label "belongs to..."@en ;
 	rdfs:label "принадлежит к..."@ru ;
 	rdfs:domain v-wf:NetElement ;
-	rdfs:range v-wf:Net ;
-.
+	rdfs:range v-wf:Net .
+
+
 v-wf:hasFlow
 	rdf:type rdf:Property ;
 	rdfs:label "has flow"@en ;
@@ -156,6 +158,30 @@ v-wf:localVariable
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Variable ;
 .
+v-wf:expectedResultType
+	rdf:type rdf:Property ;
+	rdfs:label "expected result type"@en ;
+	rdfs:label "ожидаемый тип результата"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range owl:Class ;
+.
+
+v-wf:startResultTransform
+	rdf:type rdf:Property ;
+	rdfs:label "start result transform"@en ;
+	rdfs:label "начальная трансформация для результата "@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:Transform ;
+.
+
+v-wf:completeResultTransform
+	rdf:type rdf:Property ;
+	rdfs:label "start result transform"@en ;
+	rdfs:label "начальная трансформация для результата "@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:Transform ;
+.
+
 v-wf:inputOutputVariable
 	rdf:type rdf:Property ;
 	rdfs:label "input/output variable"@en ;
@@ -561,9 +587,9 @@ v-wf:isProcess
 .
 v-wf:useTransformation
 	rdf:type rdf:Property ;
-	rdfs:label "Использовать декомпозицию"@ru ;
+	rdfs:label "Использовать преобразование"@ru ;
 	rdfs:label "Use transformation"@en ;
-	rdfs:domain v-wf:StartForm, v-wf:DecisionForm ;
+	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-wf:Process ;
 .
 
