@@ -42,12 +42,6 @@ veda.Module(function (veda) { "use strict";
 			}
 		});
 
-		self.defineProperty("rdf:type", undefined, function (classes) {
-			self._.sync = false;
-			self.init();
-			self.trigger("individual:typeChanged", classes);
-		});
-
 		var rights;
 		Object.defineProperty(self, "rights", {
 			get: function () { 
@@ -62,6 +56,12 @@ veda.Module(function (veda) { "use strict";
 				}
 			},
 			configurable: false
+		});
+
+		self.defineProperty("rdf:type", undefined, function (classes) {
+			self._.sync = false;
+			self.init();
+			self.trigger("individual:typeChanged", classes);
 		});
 
 		self.defineProperty("v-s:deleted");
@@ -267,10 +267,44 @@ veda.Module(function (veda) { "use strict";
 		self._.values = {};
 		Object.keys(self._.individual).map(function (property_uri) {
 			if (property_uri === "@") return;
+			if (property_uri === "rdf:type") return;
+			if (property_uri === "v-s:deleted") return;
 			self.defineProperty(property_uri);
 		});
+
+		self.defineProperty("rdf:type", undefined, function (classes) {
+			self._.sync = false;
+			self.init();
+			self.trigger("individual:typeChanged", classes);
+		});
+		self.defineProperty("v-s:deleted");
+		self.init();
 		self._.sync = true;
 		self.trigger("individual:afterReset");
+	};
+
+	/**
+	 * @method
+	 * Mark current individual as deleted in database (add v-s:deleted property)
+	 */
+	proto.delete = function () {
+		var self = this;
+		self.trigger("individual:beforeDelete");
+		self["v-s:deleted"] = [new Boolean(true)];
+		self.save();
+		self.trigger("individual:afterDelete");
+	};
+
+	/**
+	 * @method
+	 * Recover current individual in database (remove v-s:deleted property)
+	 */
+	proto.recover = function () {
+		var self = this;
+		self.trigger("individual:beforeRestore");
+		self["v-s:deleted"] = [];
+		self.save();
+		self.trigger("individual:afterRestore");
 	};
 
 	/**
@@ -282,7 +316,6 @@ veda.Module(function (veda) { "use strict";
 		return !!(this[property_uri] && this[property_uri].length);
 	};
 
-		
 	/**
 	 * @method
 	 * Initialize individual with class specific domain properties and methods
@@ -292,6 +325,8 @@ veda.Module(function (veda) { "use strict";
 		self["rdf:type"].map(function (_class) {
 			if (_class.domainProperties) {
 				Object.keys(_class.domainProperties).map(function (property_uri) {
+					if (property_uri === "rdf:type") return;
+					if (property_uri === "v-s:deleted") return;
 					self.defineProperty(property_uri);
 				});
 			}
