@@ -542,13 +542,23 @@ v-wf:VariableTemplate
   </div>  
   """ ;
   .
+  
+v-wf:DecisionFormTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Форма решения"@ru ;
+  rdfs:label "Template for Decision form class"@en ;
+  rdfs:comment "Пустой шаблон сделан специально, поскольку индивиды этого класса не должны вводиться пользователями"@ru ;
+  v-ui:forClass v-wf:DecisionForm ;
+  v-ui:template """
+  """ ;
+  .
 
 #---------------------------- Decision Form ------------------------
 
 v-wf:DecisionForm
 	rdf:type rdfs:Class ;
-	rdfs:label "форма решения"@ru ;
-	rdfs:label "decision form"@en ;
+	rdfs:label "Форма решения"@ru ;
+	rdfs:label "Decision form"@en ;
 .
   
 # --------------------------- Start Form ---------------------------
@@ -818,17 +828,17 @@ v-wf:Decision
 
 v-wf:DecisionAgreed
 	rdf:type v-wf:Decision;
-	rdfs:label "согласованно"@ru ;
+	rdfs:label "согласовано"@ru ;
 .	
 
 v-wf:DecisionSign
 	rdf:type v-wf:Decision;
-	rdfs:label "подписанно"@ru ;
+	rdfs:label "подписано"@ru ;
 .	
 
 v-wf:DecisionReview
 	rdf:type v-wf:Decision;
-	rdfs:label "рассмотренно"@ru ;
+	rdfs:label "рассмотрено"@ru ;
 .	
 
 v-wf:DecisionRejected
