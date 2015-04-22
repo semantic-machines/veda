@@ -283,10 +283,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				.join("&&");
 			query = allProps ? "(" + allProps + ")" : undefined;
 			
+			var individual_uri = individual.id;
 			// Open Search
 			var search = new veda.SearchModel(query);
-			// Place individual to params tab in Search caontainer
-			var params = new veda.IndividualModel(individual.id, $("#params-" + search.id, search.view), undefined, "search");
+			// Place individual to params tab in Search container
+			var params = new veda.IndividualModel(individual_uri, $("#params-" + search.id, search.view), undefined, "search");
 		});
 		
 		// Process RDFa compliant template
@@ -386,6 +387,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		
 		if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
 		
+		function insDefObjVal () {
+			individual[rel_uri] = [ spec["v-ui:defaultObjectValue"][0] ];
+		}
+		if ( spec && spec.hasValue("v-ui:defaultObjectValue") && !individual.hasValue(rel_uri) ) {
+			individual.on("edit", insDefObjVal);
+			individual.one("individual:cleanup", function () {
+				individual.off("edit", insDefObjVal);
+			});
+		}
+		
 		var immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true;
 
 		var values = individual[rel_uri];
@@ -401,57 +412,60 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			relContainer.after(controlContainer);
 		}
 		
-		// Render control if object property is not immutable
-		if (!immutable) {
-			var opts = {
-				limit: 100,
-				select: function (selected) {
-					individual[rel_uri] = individual[rel_uri].concat(selected);
-				} 
+		var opts = {
+			limit: 100,
+			select: function (selected) {
+				individual[rel_uri] = individual[rel_uri].concat(selected);
+			} 
+		};
+		if (spec && spec.hasValue("v-ui:queryPrefix")) {
+			opts.queryPrefix = spec["v-ui:queryPrefix"][0];
+		}
+		if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
+			opts.add = function () {
+				var embedded = new veda.IndividualModel();
+				if (relTemplate.hasValue("v-ui:forClass")) {
+					embedded["rdf:type"] = [relTemplate["v-ui:forClass"][0]];
+				}
+				individual[rel_uri] = individual[rel_uri].concat(embedded);
 			};
-			if (spec && spec.hasValue("v-ui:queryPrefix")) {
-				opts.queryPrefix = spec["v-ui:queryPrefix"][0];
-			}
-			if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
-				opts.add = function () {
-					var embedded = new veda.IndividualModel();
-					if (relTemplate.hasValue("v-ui:forClass")) {
-						embedded["rdf:type"] = [relTemplate["v-ui:forClass"][0]];
-					}
-					individual[rel_uri] = individual[rel_uri].concat(embedded);
-				};
-			}
-			var control = $("<span>").vedaLink(opts);
-			
-			// tooltip from spec
-			if (spec && spec.hasValue("v-ui:tooltip")) {
-				control.tooltip({
-					title: spec["v-ui:tooltip"].join(", "),
-					placement: "auto bottom",
-					container: control,
-					trigger: "focus"
-				});
-			}
-			
-			if (mode !== "search") isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
-			
-			setTimeout( function () {
-				controlContainer.append(control).show();
-			}, 0);
+		}
+		var control = $("<span>").vedaLink(opts);
+
+		if (mode === "view") control.hide();
+		if (mode === "edit" && immutable) control.hide();
+		
+		// tooltip from spec
+		if (spec && spec.hasValue("v-ui:tooltip")) {
+			control.tooltip({
+				title: spec["v-ui:tooltip"].join(", "),
+				placement: "auto bottom",
+				container: control,
+				trigger: "focus"
+			});
 		}
 		
+		if (mode !== "search" && !immutable) isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
+		
+		setTimeout( function () {
+			controlContainer.append(control).show();
+		}, 0);
+
 		function modeHandler (mode) {
-			if (control) {
-				mode === "view" ? control.hide() : 
-				mode === "edit" ? control.show() : 
-				mode === "search" ? control.show() : 
-				true;
-			}
+			mode === "view" ? control.hide() : 
+			mode === "edit" ? control.show() : 
+			mode === "search" ? control.show() : 
+			true;
 		}
-		individual.on("view edit search", modeHandler);
+		if (!immutable) {
+			individual.on("edit", modeHandler);
+			individual.one("individual:cleanup", function () {
+				individual.off("edit", modeHandler);
+			});
+		}
+		individual.on("view search", modeHandler);
 		individual.one("individual:cleanup", function () {
 			individual.off("view", modeHandler);
-			individual.off("edit", modeHandler);
 			individual.off("search", modeHandler);
 		});
 		
@@ -472,40 +486,43 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						lnk = new veda.IndividualModel(value, clone, relTemplate);
 					}
 					
-					if (!immutable) {
-						clone.attr("style", "position:relative;");
-						var clear = $( $("#link-clear-button-template").html() );
-						
-						if (clone.children(":first").css("display") === "inline") {
-							clear = $( $("#link-clear-inline-button-template").html() );
-						} else {
-							clear = $( $("#link-clear-block-button-template").html() );
+					clone.attr("style", "position:relative;");
+					var clear = $( $("#link-clear-button-template").html() );
+					
+					if (clone.children(":first").css("display") === "inline") {
+						clear = $( $("#link-clear-inline-button-template").html() );
+					} else {
+						clear = $( $("#link-clear-block-button-template").html() );
+					}
+										
+					if (mode === "view") clear.hide();
+					if (mode === "edit" && immutable) clear.hide();
+					
+					clone.append(clear);
+					clear.on("click", function () {
+						clone.remove();
+						individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id != lnk.id; });
+						if (embedded.length) {
+							var index = embedded.indexOf(lnk);
+							if ( index >= 0 ) embedded.splice(index, 1);
 						}
-											
-						mode === "view" ? clear.hide() : clear.show() ;
-						
-						clone.append(clear);
-						clear.on("click", function () {
-							clone.remove();
-							individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id != lnk.id; });
-							if (embedded.length) {
-								var index = embedded.indexOf(lnk);
-								if ( index >= 0 ) embedded.splice(index, 1);
-							}
+					});
+
+					function modeHandler (mode) {
+						mode === "view" ? clear.hide() :
+						mode === "edit" ? clear.show() :
+						mode === "search" ? clear.show() :
+						true;
+					}
+					if (!immutable) {
+						individual.on("edit", modeHandler);
+						individual.one("individual:cleanup", function () {
+							individual.off("edit", modeHandler);
 						});
 					}
-					function modeHandler (mode) {
-						if (clear) {
-							mode === "view" ? clear.hide() :
-							mode === "edit" ? clear.show() :
-							mode === "search" ? clear.show() :
-							true;
-						}
-					}
-					individual.on("view edit search", modeHandler);
+					individual.on("view search", modeHandler);
 					individual.one("individual:cleanup", function () {
 						individual.off("view", modeHandler);
-						individual.off("edit", modeHandler);
 						individual.off("search", modeHandler);
 					});
 					
@@ -523,6 +540,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 	function renderProperty (individual, property_uri, container, spec, mode) {
 		
 		if ( property_uri != "id" && !veda.ontology[property_uri] ) return;
+		
+		var immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true;
+		
+		if (immutable && mode === "edit") mode = "view";
 		
 		container.empty();
 		
@@ -578,7 +599,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 		});
 		
-		if (mode !== "search") isValid(individual, spec, values) ? controls.map( function(item) {item.addClass("has-success");} ) : controls.map( function(item) {item.addClass("has-error");} );
+		if (mode !== "search" && !immutable) isValid(individual, spec, values) ? controls.map( function(item) {item.addClass("has-success");} ) : controls.map( function(item) {item.addClass("has-error");} );
 		
 		function modeHandler (_mode) {
 			mode = _mode;
@@ -590,10 +611,15 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					item.trigger(mode);
 				});
 		}
-		individual.on("view edit search", modeHandler);
+		if (!immutable) {
+			individual.on("edit", modeHandler);
+			individual.one("individual:cleanup", function () {
+				individual.off("edit", modeHandler);
+			});
+		}
+		individual.on("view search", modeHandler);
 		individual.one("individual:cleanup", function () {
 			individual.off("view", modeHandler);
-			individual.off("edit", modeHandler);
 			individual.off("search", modeHandler);
 		});
 		
