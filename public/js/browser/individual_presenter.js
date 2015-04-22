@@ -19,7 +19,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		// Change location.hash if individual was presented in #main container
 		if (container.prop("id") === "main") {
-			var hash = ["#/individual", individual.id, container_param || "", template || "", mode || ""].join("/");
+			var hash = ["#/individual", individual.id, "#main"].join("/");
 			riot.route(hash, false);
 		}
 			
@@ -118,7 +118,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			individual.trigger("view");
 			// Change location.hash if individual was presented in #main container
 			if (container.prop("id") === "main") {
-				var hash = ["#/individual", individual.id, container_param || "", template || "", mode || ""].join("/");
+				var hash = ["#/individual", individual.id, "#main"].join("/");
 				riot.route(hash, false);
 			}
 		}
@@ -397,54 +397,59 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			relContainer.after(controlContainer);
 		}
 		
-		var opts = {
-			limit: 100,
-			select: function (selected) {
-				individual[rel_uri] = individual[rel_uri].concat(selected);
-			} 
-		};
-		if (spec && spec.hasValue("v-ui:queryPrefix")) {
-			opts.queryPrefix = spec["v-ui:queryPrefix"][0];
-		}
-		if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
-			opts.add = function () {
-				var embedded = new veda.IndividualModel();
-				if (relTemplate.hasValue("v-ui:forClass")) {
-					embedded["rdf:type"] = [relTemplate["v-ui:forClass"][0]];
-				}
-				individual[rel_uri] = individual[rel_uri].concat(embedded);
+		// Render control if object property is not immutable
+		var immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"] == true;
+		
+		if (!immutable) {
+			var opts = {
+				limit: 100,
+				select: function (selected) {
+					individual[rel_uri] = individual[rel_uri].concat(selected);
+				} 
 			};
-		}
-		var control = $("<span>").vedaLink(opts);
-		
-		// tooltip from spec
-		if (spec && spec.hasValue("v-ui:tooltip")) {
-			control.tooltip({
-				title: spec["v-ui:tooltip"].join(", "),
-				placement: "auto bottom",
-				container: control,
-				trigger: "focus"
+			if (spec && spec.hasValue("v-ui:queryPrefix")) {
+				opts.queryPrefix = spec["v-ui:queryPrefix"][0];
+			}
+			if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0]) {
+				opts.add = function () {
+					var embedded = new veda.IndividualModel();
+					if (relTemplate.hasValue("v-ui:forClass")) {
+						embedded["rdf:type"] = [relTemplate["v-ui:forClass"][0]];
+					}
+					individual[rel_uri] = individual[rel_uri].concat(embedded);
+				};
+			}
+			var control = $("<span>").vedaLink(opts);
+			
+			// tooltip from spec
+			if (spec && spec.hasValue("v-ui:tooltip")) {
+				control.tooltip({
+					title: spec["v-ui:tooltip"].join(", "),
+					placement: "auto bottom",
+					container: control,
+					trigger: "focus"
+				});
+			}
+			
+			function modeHandler (mode) {
+				mode === "view" ? control.hide() : 
+				mode === "edit" ? control.show() : 
+				mode === "search" ? control.show() : 
+				true;
+			}
+			individual.on("view edit search", modeHandler);
+			individual.one("individual:cleanup", function () {
+				individual.off("view", modeHandler);
+				individual.off("edit", modeHandler);
+				individual.off("search", modeHandler);
 			});
+			
+			if (mode !== "search") isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
+			
+			setTimeout( function () {
+				controlContainer.append(control).show();
+			}, 0);
 		}
-		
-		function modeHandler (mode) {
-			mode === "view" ? control.hide() : 
-			mode === "edit" ? control.show() : 
-			mode === "search" ? control.show() : 
-			true;
-		}
-		individual.on("view edit search", modeHandler);
-		individual.one("individual:cleanup", function () {
-			individual.off("view", modeHandler);
-			individual.off("edit", modeHandler);
-			individual.off("search", modeHandler);
-		});
-		
-		if (mode !== "search") isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
-		
-		setTimeout( function () {
-			controlContainer.append(control).show();
-		}, 0);
 		
 		return [controlContainer].concat(renderedValues);
 

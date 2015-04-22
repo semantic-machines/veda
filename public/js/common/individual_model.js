@@ -26,7 +26,8 @@ veda.Module(function (veda) { "use strict";
 		self._.sync = false;
 		self.properties = {};
 		
-		if (!uri) { self._.individual["@"] = guid();
+		if (!uri) { 
+			self._.individual["@"] = guid();
 			self._.original_individual = '{"@":"' + self._.individual["@"] +'"}';
 			if (self._.cache && veda.cache) {
 				veda.cache[self._.individual["@"]] = self;
@@ -74,6 +75,7 @@ veda.Module(function (veda) { "use strict";
 		
 		// Load data 
 		if (uri) self = self.load(uri);
+		else self.trigger("individual:afterLoad", self);
 
 		return self;
 	};
@@ -238,7 +240,7 @@ veda.Module(function (veda) { "use strict";
 		if (self._.sync) return;
 		self.trigger("individual:beforeSave");
 		Object.keys(self._.individual).reduce(function (acc, property_uri) {
-			self[property_uri];
+			//self[property_uri]; // To be removed???
 			if (property_uri === "@") return acc;
 			acc[property_uri] = self._.individual[property_uri].filter(function (item) {
 				return item && item.data !== "";

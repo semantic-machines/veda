@@ -70,7 +70,7 @@ veda.Module(function (veda) { "use strict";
 				if ( !storage[item] ) { 
 					acc.push(item);
 				} else { 
-					var individual = new veda.IndividualModel( JSON.parse(storage[item]), undefined, undefined, undefined, true, true );
+					var individual = new veda.IndividualModel( JSON.parse(storage[item]), undefined, undefined, undefined, true, false );
 					self[item] = individual;
 				}
 				return acc;
@@ -79,13 +79,13 @@ veda.Module(function (veda) { "use strict";
 			var unstored = unstored_uris.length ? get_individuals(veda.ticket, unstored_uris) : [];
 			unstored.map( function (item) {
 				storage[ item["@"] ] = JSON.stringify(item);
-				var individual = new veda.IndividualModel( item, undefined, undefined, undefined, true, true );
+				var individual = new veda.IndividualModel( item, undefined, undefined, undefined, true, false );
 				self[ item["@"] ] = individual;
 			});
 
 		} else {
 			get_individuals(veda.ticket, q_results).map( function (item) {
-				self[ item["@"] ] = new veda.IndividualModel( item, undefined, undefined, undefined, true, true );
+				self[ item["@"] ] = new veda.IndividualModel( item, undefined, undefined, undefined, true, false );
 			});
 		}
 		
@@ -132,7 +132,13 @@ veda.Module(function (veda) { "use strict";
 
 		Object.keys(self.classes).map( function (uri) {
 			var _class = self.classes[uri];
-			if (!_class["rdfs:subClassOf"]) return;
+			// rdfs:Resource is a top level class
+			if ( _class.id === "rdfs:Resource" ) return;
+			// If class is not a subclass of another then make it a subclass of rdfs:Resource
+			if ( !_class.hasValue("rdfs:subClassOf") ) {
+				_class.defineProperty("rdfs:subClassOf");
+				_class["rdfs:subClassOf"] = [ self["rdfs:Resource"] ];
+			}
 			_class["rdfs:subClassOf"].map( function ( item ) {
 				item.subClasses = item.subClasses || {};
 				item.subClasses[_class.id] = _class;
