@@ -652,7 +652,7 @@ td:AccountTemplate1
           <div class="col-md-6">
                <strong class="text-muted" about="v-s:login" property="rdfs:label">Логин</strong>
                <div property="v-s:login">IvanovI</div>
-	  </div>
+	      </div>
         </div>
         <br />
         <div class="row">

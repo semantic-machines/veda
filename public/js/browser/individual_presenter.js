@@ -91,7 +91,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		// Cleanup memory
 		classTemplate.on("remove", function (event) {
-			individual.trigger("individual:cleanup");
+			individual.trigger("cleanup");
 			$(".typeahead", container).typeahead("destroy");
 			individual = embedded = container = classTemplate = specs = scripts = mode = null;
 		});
@@ -106,7 +106,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 		}
 		individual.on("view edit save delete recover", syncEmbedded);
-		individual.one("individual:cleanup", function () {
+		individual.one("cleanup", function () {
 			individual.off("view", syncEmbedded);
 			individual.off("edit", syncEmbedded);
 			individual.off("save", syncEmbedded);
@@ -125,7 +125,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 		}
 		individual.on("save", saveHandler);
-		individual.one("individual:cleanup", function () {
+		individual.one("cleanup", function () {
 			individual.off("save", saveHandler);
 		});
 
@@ -137,7 +137,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			veda.trigger("individual:loaded", individual, container/*, classTemplate*/);
 		}
 		individual.on("cancel", cancelHandler);
-		individual.one("individual:cleanup", function () {
+		individual.one("cleanup", function () {
 			individual.off("cancel", cancelHandler);
 		});
 		
@@ -146,7 +146,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			individual.trigger("cancel");
 		}
 		individual.on("delete", deleteHandler);
-		individual.one("individual:cleanup", function () {
+		individual.one("cleanup", function () {
 			individual.off("delete", deleteHandler);
 		});
 
@@ -155,7 +155,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			individual.trigger("cancel");
 		}
 		individual.on("recover", recoverHandler);
-		individual.one("individual:cleanup", function () {
+		individual.one("cleanup", function () {
 			individual.off("recover", recoverHandler);
 		});
 
@@ -163,7 +163,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			veda.trigger("individual:loaded", individual, container/*, classTemplate*/);
 		}
 		individual.on("individual:typeChanged", typeChangeHandler);
-		individual.one("individual:cleanup", function () {
+		individual.one("cleanup", function () {
 			individual.off("individual:typeChanged", typeChangeHandler);
 		});
 		
@@ -192,7 +192,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			true;
 		}
 		individual.on("view edit search", modeHandler);
-		individual.one("individual:cleanup", function () {
+		individual.one("cleanup", function () {
 			individual.off("view", modeHandler);
 			individual.off("edit", modeHandler);
 			individual.off("search", modeHandler);
@@ -216,7 +216,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			isValid ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
 		}
 		individual.on("validation:complete", validationHandler);
-		individual.one("individual:cleanup", function () {
+		individual.one("cleanup", function () {
 			individual.off("validation:complete", validationHandler);
 		});
 
@@ -306,7 +306,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
-				containerParent = relContainer.parent(),
 				relTemplate = relContainer.attr("template"),
 				spec = specs[rel_uri];
 			
@@ -320,17 +319,17 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					:
 					new veda.IndividualModel("v-ui:ClassNameIdTemplate")
 			);
-			var rendered = renderLink(individual, rel_uri, relContainer, containerParent, relTemplate, spec, mode, embedded);
+			var rendered = renderLink(individual, rel_uri, relContainer, relTemplate, spec, mode, embedded);
 			
 			// Re-render link property if its' values were changed
 			function propModHandler (doc_property_uri) {
 				if (doc_property_uri === rel_uri) {
 					rendered.map( function (item) { item.remove(); } );
-					rendered = renderLink(individual, rel_uri, relContainer, containerParent, relTemplate, spec, mode, embedded);
+					rendered = renderLink(individual, rel_uri, relContainer, relTemplate, spec, mode, embedded);
 				}
 			}
 			individual.on("individual:propertyModified", propModHandler);
-			individual.one("individual:cleanup", function () {
+			individual.one("cleanup", function () {
 				individual.off("individual:propertyModified", propModHandler);
 			});
 
@@ -353,7 +352,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				}
 			}
 			individual.on("individual:propertyModified", propModHandler);
-			individual.one("individual:cleanup", function () {
+			individual.one("cleanup", function () {
 				individual.off("individual:propertyModified", propModHandler);
 			});
 			
@@ -383,7 +382,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 	}
 	
-	function renderLink (individual, rel_uri, relContainer, containerParent, relTemplate, spec, mode, embedded) {
+	function renderLink (individual, rel_uri, relContainer, relTemplate, spec, mode, embedded) {
 		
 		if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
 		
@@ -392,7 +391,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		if ( spec && spec.hasValue("v-ui:defaultObjectValue") && !individual.hasValue(rel_uri) ) {
 			individual.on("edit", insDefObjVal);
-			individual.one("individual:cleanup", function () {
+			individual.one("cleanup", function () {
 				individual.off("edit", insDefObjVal);
 			});
 		}
@@ -459,12 +458,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		if (!immutable) {
 			individual.on("edit", modeHandler);
-			individual.one("individual:cleanup", function () {
+			individual.one("cleanup", function () {
 				individual.off("edit", modeHandler);
 			});
 		}
 		individual.on("view search", modeHandler);
-		individual.one("individual:cleanup", function () {
+		individual.one("cleanup", function () {
 			individual.off("view", modeHandler);
 			individual.off("search", modeHandler);
 		});
@@ -516,12 +515,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					}
 					if (!immutable) {
 						individual.on("edit", modeHandler);
-						individual.one("individual:cleanup", function () {
+						individual.one("cleanup", function () {
 							individual.off("edit", modeHandler);
 						});
 					}
 					individual.on("view search", modeHandler);
-					individual.one("individual:cleanup", function () {
+					individual.one("cleanup", function () {
 						individual.off("view", modeHandler);
 						individual.off("search", modeHandler);
 					});
@@ -613,12 +612,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		if (!immutable) {
 			individual.on("edit", modeHandler);
-			individual.one("individual:cleanup", function () {
+			individual.one("cleanup", function () {
 				individual.off("edit", modeHandler);
 			});
 		}
 		individual.on("view search", modeHandler);
-		individual.one("individual:cleanup", function () {
+		individual.one("cleanup", function () {
 			individual.off("view", modeHandler);
 			individual.off("search", modeHandler);
 		});
