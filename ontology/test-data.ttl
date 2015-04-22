@@ -776,6 +776,7 @@ td:PropertySpecification9
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Поиск."@ru ;
   v-ui:tooltip "Required, single value. Link to instance of Preferences class"@en ;
   v-ui:queryPrefix "('rdf:type'=='v-fs:Search')"^^xsd:string ;
+  v-ui:immutable "true"^^xsd:boolean ;
 .
 td:PropertySpecification1
   rdf:type v-ui:DatetimePropertySpecification ;

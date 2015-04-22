@@ -10,6 +10,16 @@ veda.Module(function Util(veda) { "use strict";
 		return str;
 	};
 
+	veda.Util.guid = function () {
+	  function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000)
+				   .toString(16)
+				   .substring(1);
+	  }
+	  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+			 s4() + '-' + s4() + s4() + s4();
+	}
+
 	veda.Util.construct = function (constr, args) {
 		function F() {
 			return constr.apply(this, args);

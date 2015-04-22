@@ -8,6 +8,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		
 		if (!container_param) return;
 		
+		var uid = veda.Util.guid();
+		
 		var container = $(container_param);
 
 		mode = mode || "view";
@@ -384,6 +386,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		
 		if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
 		
+		var immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true;
+
 		var values = individual[rel_uri];
 		
 		var renderedValues = individual.hasValue(rel_uri) ? 
@@ -398,8 +402,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		
 		// Render control if object property is not immutable
-		var immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"] == true;
-		
 		if (!immutable) {
 			var opts = {
 				limit: 100,
@@ -431,25 +433,27 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				});
 			}
 			
-			function modeHandler (mode) {
-				mode === "view" ? control.hide() : 
-				mode === "edit" ? control.show() : 
-				mode === "search" ? control.show() : 
-				true;
-			}
-			individual.on("view edit search", modeHandler);
-			individual.one("individual:cleanup", function () {
-				individual.off("view", modeHandler);
-				individual.off("edit", modeHandler);
-				individual.off("search", modeHandler);
-			});
-			
 			if (mode !== "search") isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
 			
 			setTimeout( function () {
 				controlContainer.append(control).show();
 			}, 0);
 		}
+		
+		function modeHandler (mode) {
+			if (control) {
+				mode === "view" ? control.hide() : 
+				mode === "edit" ? control.show() : 
+				mode === "search" ? control.show() : 
+				true;
+			}
+		}
+		individual.on("view edit search", modeHandler);
+		individual.one("individual:cleanup", function () {
+			individual.off("view", modeHandler);
+			individual.off("edit", modeHandler);
+			individual.off("search", modeHandler);
+		});
 		
 		return [controlContainer].concat(renderedValues);
 
@@ -468,37 +472,41 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						lnk = new veda.IndividualModel(value, clone, relTemplate);
 					}
 					
-					clone.attr("style", "position:relative;");
-					var clear = $( $("#link-clear-button-template").html() );
-					
-					if (clone.children(":first").css("display") === "inline") {
-						clear = $( $("#link-clear-inline-button-template").html() );
-					} else {
-						clear = $( $("#link-clear-block-button-template").html() );
+					if (!immutable) {
+						clone.attr("style", "position:relative;");
+						var clear = $( $("#link-clear-button-template").html() );
+						
+						if (clone.children(":first").css("display") === "inline") {
+							clear = $( $("#link-clear-inline-button-template").html() );
+						} else {
+							clear = $( $("#link-clear-block-button-template").html() );
+						}
+											
+						mode === "view" ? clear.hide() : clear.show() ;
+						
+						clone.append(clear);
+						clear.on("click", function () {
+							clone.remove();
+							individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id != lnk.id; });
+							if (embedded.length) {
+								var index = embedded.indexOf(lnk);
+								if ( index >= 0 ) embedded.splice(index, 1);
+							}
+						});
 					}
-										
-					mode === "view" ? clear.hide() : clear.show() ;
-					
 					function modeHandler (mode) {
-						mode === "view" ? clear.hide() :
-						mode === "edit" ? clear.show() :
-						clear.show();
+						if (clear) {
+							mode === "view" ? clear.hide() :
+							mode === "edit" ? clear.show() :
+							mode === "search" ? clear.show() :
+							true;
+						}
 					}
 					individual.on("view edit search", modeHandler);
 					individual.one("individual:cleanup", function () {
 						individual.off("view", modeHandler);
 						individual.off("edit", modeHandler);
 						individual.off("search", modeHandler);
-					});
-
-					clone.append(clear);
-					clear.on("click", function () {
-						clone.remove();
-						individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id != lnk.id; });
-						if (embedded.length) {
-							var index = embedded.indexOf(lnk);
-							if ( index >= 0 ) embedded.splice(index, 1);
-						}
 					});
 					
 				}, 0);
