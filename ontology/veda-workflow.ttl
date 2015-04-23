@@ -560,6 +560,14 @@ v-wf:DecisionForm
 	rdfs:label "Форма решения"@ru ;
 	rdfs:label "Decision form"@en ;
 .
+
+v-wf:to
+        rdf:type owl:ObjectProperty ;
+        rdfs:label "кому"@ru ;
+        rdfs:domain v-wf:DecisionForm ;
+        rdfs:range v-s:Appointment ;
+.
+
   
 # --------------------------- Start Form ---------------------------
 v-wf:StartForm
@@ -636,7 +644,8 @@ v-wf:Transform
 v-wf:transformRule
         rdf:type rdf:Property ;
         rdfs:label "правило преобразования"@ru ;
-	rdfs:domain v-wf:TransformIndividual ;
+	rdfs:domain v-wf:Transform ;
+        rdfs:range v-wf:Rule ;
 .
 
 v-wf:Rule

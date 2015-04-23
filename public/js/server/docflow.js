@@ -84,7 +84,17 @@ function prepare_work_order(ticket, document)
         var transform_result = transformation(ticket, work_item_inputVariable, transform, executor_uri);
         
         for (var i = 0; i < transform_result.length; i++)
+        {
 			put_individual(ticket, transform_result[i], _event_id);
+			// выдадим права отвечающему на эту форму
+			var employee = executor['v-s:employee'];
+			if (employee)
+			{
+				print("[WORKFLOW][WO20.3] employee=" + toJson(employee));
+				
+				addRight (ticket, [can_read, can_update], employee[0].data, transform_result[i]['@']);
+			}	
+		}	
         
         print("[WORKFLOW][WO20.2] transform_result=" + toJson(transform_result));
     }

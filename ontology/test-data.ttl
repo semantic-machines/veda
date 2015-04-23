@@ -879,3 +879,9 @@ td:ComplexRouteStartForm1
     v-s:query "'rdf:type' == 'v-wf:Process'"^^xsd:string;
     rdfs:label "экземпляры маршрута"^^xsd:string;
     v-s:created "2015-03-23T13:27:18.000Z"^^xsd:dateTime.
+
+<7b435740-119e-1731-13ef-e7cb2203f8c4> a v-s:SavedSearch;
+    v-s:author td:RomanKarpov;
+    v-s:query "'rdf:type' == 'v-wf:DecisionForm'"^^xsd:string;
+    rdfs:label "общий инбокс"^^xsd:string;
+    v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
