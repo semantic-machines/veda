@@ -10,16 +10,19 @@
 			search = $(".search:not(.edit)", control),
 			edit_search = $(".edit.search", control),
 			add = $(".add", control),
-			remove = $(".remove", control),
-			mode = "";
+			remove = $(".remove", control);
 		
 		if (!opts.add) add.remove();
 		if (!opts.remove) remove.remove();
 		
 		$el
-			.on("view", function () { mode="view"; view.show(); edit.hide(); search.hide(); edit_search.hide(); })
-			.on("edit", function () { mode="edit"; view.hide(); edit.show(); search.hide(); edit_search.show(); })
-			.on("search", function () { mode="search"; view.hide(); edit.hide(); search.show(); edit_search.show(); })
+			.on("view edit search", function (e) { 
+				e.stopPropagation();
+				e.type === "view"   ? ( view.show(), edit.hide(), search.hide(), edit_search.hide() ) : 
+				e.type === "edit"   ? ( view.hide(), edit.show(), search.hide(), edit_search.show() ) : 
+				e.type === "search" ? ( view.hide(), edit.hide(), search.show(), edit_search.show() ) :
+				true;
+			})
 			.mouseenter( function () { add.show(); remove.show(); })
 			.mouseleave( function () { add.hide(); remove.hide(); })
 			.on("focusin", function () {
