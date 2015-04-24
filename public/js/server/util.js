@@ -36,6 +36,11 @@ function newDocument (type, fields)
     
 }
 
+function newUri (uri)
+{
+	return [{data:uri, type:_Uri}];
+}	
+
 function getUri (field)
 {
     if (field && field.length > 0)

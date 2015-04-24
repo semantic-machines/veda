@@ -1,6 +1,49 @@
 "use strict";
 
 /*
+ *   обработка формы решения пользователя
+ */
+function prepare_decision_form (ticket, document)
+{	
+   	print("[WORKFLOW][DF1].0");
+	var takenDecision = document['v-wf:takenDecision'];
+	if (!takenDecision)
+		return;
+		
+	print("[WORKFLOW][DF1] : ### ---------------------------- prepare_decision_form:" + document['@']);
+	
+	var onWorkOrder = document['v-wf:onWorkOrder'];
+	var work_order = get_individual(ticket, getUri(onWorkOrder));
+    if (!work_order) return;
+    
+   	print("[WORKFLOW][DF1].1");
+    
+    var forWorkItem_uri = getUri(work_order['v-wf:forWorkItem']);
+    var work_item = get_individual(ticket, forWorkItem_uri);
+    if (!work_item) return;
+
+   	print("[WORKFLOW][DF1].2");
+    
+    var forNetElement = work_item['v-wf:forNetElement'];
+    var netElement = get_individual(ticket, getUri(forNetElement));
+    if (!netElement) return;
+
+   	print("[WORKFLOW][DF1].3");
+    
+     var transform_link = getUri(netElement['v-wf:completeResultTransform']);
+     if (!transform_link) return;
+     var transform = get_individual(ticket, transform_link);
+     if (!transform) return;
+
+   	print("[WORKFLOW][DF1].4");
+
+     var transform_result = transformation(ticket, document, transform, null, onWorkOrder);
+
+   	print("[WORKFLOW][DF1].5");    
+}
+
+
+/*
  *   обработка рабочего задания
  */
 function prepare_work_order(ticket, document)
@@ -81,7 +124,7 @@ function prepare_work_order(ticket, document)
         var transform = get_individual(ticket, transform_link);
         if (!transform) return;
 
-        var transform_result = transformation(ticket, work_item_inputVariable, transform, executor_uri);
+        var transform_result = transformation(ticket, work_item_inputVariable, transform, executor_uri, newUri (document['@']));
         
         for (var i = 0; i < transform_result.length; i++)
         {
@@ -505,7 +548,7 @@ function prepare_start_form(ticket, document)
     if (!transform) return;
 
     // формируем входящие переменные
-    var process_input_vars = transformation(ticket, document, transform, null);
+    var process_input_vars = transformation(ticket, document, transform, null, null);
     var new_vars = [];
     for (var i = 0; i < process_input_vars.length; i++)
     {
@@ -834,7 +877,7 @@ function is_in_docflow_and_set_if_true(process, task)
     return res_out;
 }
 
-function transformation(ticket, _in_data, rule, executor)
+function transformation(ticket, _in_data, rule, executor, work_order)
 {
     var in_data = [];
     var out_data0 = {};
@@ -956,11 +999,20 @@ function transformation(ticket, _in_data, rule, executor)
                         }];
                     }
                 })();
+                
                 var putExecutor = (function ()
                 {
                     return function (name)
                     {
                         out_data0_el[name] = [executor];
+                    }
+                })();
+                
+                var putWorkOrder = (function ()
+                {
+                    return function (name)
+                    {
+                        out_data0_el[name] = [work_order];
                     }
                 })();
 

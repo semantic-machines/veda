@@ -177,7 +177,7 @@ v-wf:startResultTransform
 v-wf:completeResultTransform
 	rdf:type rdf:Property ;
 	rdfs:label "start result transform"@en ;
-	rdfs:label "начальная трансформация для результата "@ru ;
+	rdfs:label "конечная трансформация для результата "@ru ;
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Transform ;
 .
@@ -568,6 +568,20 @@ v-wf:to
         rdfs:range v-s:Appointment ;
 .
 
+v-wf:onWorkOrder
+        rdf:type owl:ObjectProperty ;
+        rdfs:label "on work order"@ru ;
+        rdfs:domain v-wf:DecisionForm ;
+        rdfs:range v-s:WorkOrder ;
+.
+
+v-wf:takenDecision
+        rdf:type owl:ObjectProperty ;
+        rdfs:label "решение"@ru ;
+        rdfs:domain v-wf:DecisionForm ;
+        rdfs:range v-wf:Decision ;
+.
+
   
 # --------------------------- Start Form ---------------------------
 v-wf:StartForm
@@ -826,6 +840,18 @@ v-wf:event_df4
 
 """ ;
 	rdfs:label "триггер выполнения рабочего задания"@ru ;
+.
+
+v-wf:event_df5
+	rdf:type v-s:Event ;
+	v-s:author v-a:VedaSystemAccount ;
+	v-s:filter v-wf:DecisionForm ;
+	v-s:script """
+
+	prepare_decision_form (ticket, document);
+
+""" ;
+	rdfs:label "триггер обработки решения пользователя"@ru ;
 .
 
 v-wf:Decision
