@@ -35,11 +35,26 @@ function prepare_decision_form (ticket, document)
      var transform = get_individual(ticket, transform_link);
      if (!transform) return;
 
-   	print("[WORKFLOW][DF1].4");
+   	print("[WORKFLOW][DF1].4 document=", toJson (document));   	
+   	print("[WORKFLOW][DF1].4 transform=", toJson (transform));
+   	print("[WORKFLOW][DF1].4 work_order=", toJson (work_order));   	
 
-     var transform_result = transformation(ticket, document, transform, null, onWorkOrder);
+    var process_output_vars = transformation(ticket, document, transform, null, onWorkOrder);
 
-   	print("[WORKFLOW][DF1].5");    
+   	print("[WORKFLOW][DF1].5 transform_result=", toJson (process_output_vars));    
+    var new_vars = [];
+    for (var i = 0; i < process_output_vars.length; i++)
+    {
+        put_individual(ticket, process_output_vars[i], _event_id);
+        new_vars.push(
+        {
+            data: process_output_vars[i]['@'],
+            type: _Uri
+        });
+    }
+    if (process_output_vars.length > 0) work_order['v-wf:outputVariable'] = new_vars;
+   	
+   	put_individual(ticket, work_order, _event_id);
 }
 
 
@@ -69,8 +84,10 @@ function prepare_work_order(ticket, document)
     var netElement = get_individual(ticket, getUri(forNetElement));
     if (!netElement) return;
 
-    var workOrderList = work_item['v-wf:workOrderList'];
+    var local_outputVariable = document['v-wf:outputVariable'];
 
+	if (!local_outputVariable)
+	{
     // если исполнитель коделет
     if (is_exist(executor, 'rdf:type', 'v-s:Codelet'))
     {
@@ -145,7 +162,8 @@ function prepare_work_order(ticket, document)
     {
         print("[WORKFLOW][WO21] executor=" + getUri(executor_uri) + "");
     }
-
+	}
+	
     var is_goto_to_next_task = false;
 
     // begin //////////////// скрипт сборки результатов
@@ -154,6 +172,7 @@ function prepare_work_order(ticket, document)
     // найдем маппинг множественных результатов
     var wosResultsMapping = netElement['v-wf:wosResultsMapping'];
 
+    var workOrderList = work_item['v-wf:workOrderList'];
     // проверяем есть ли результаты рабочих заданий
     for (var i = 0; i < workOrderList.length; i++)
     {
