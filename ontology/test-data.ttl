@@ -785,7 +785,6 @@ td:PropertySpecification1
   rdfs:label "Birthday property specification for Person class"@en ;
   v-ui:forClass v-s:Person ;
   v-ui:forProperty v-s:birthday ;
-  v-ui:immutable "true"^^xsd:boolean ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;

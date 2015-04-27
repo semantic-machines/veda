@@ -10,7 +10,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		
 		//console.log(individual.id, "presenter count:", ++c);
 		
-		container = $(container);
+		if (typeof container === "string") container = $(container);
 	
 		container
 			.empty()
@@ -190,7 +190,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		template.on("recover", recoverHandler);
 
 		function typeChangeHandler () {
-			veda.trigger("individual:loaded", individual, container);
+			veda.trigger("individual:loaded", individual, container, undefined, mode);
 		}
 		individual.on("individual:typeChanged", typeChangeHandler);
 		template.one("remove", function () {
@@ -470,7 +470,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		template.on("view edit search", modeHandler);
 
-		if (mode !== "search" && !immutable) isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
+		if (mode !== "search") isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
 		
 		return [controlContainer].concat(renderedValues);
 
@@ -607,7 +607,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		template.on("view edit search", modeHandler);
 
-		if (mode !== "search" && !immutable) isValid(individual, spec, values) ? controls.map( function(item) {item.addClass("has-success");} ) : controls.map( function(item) {item.addClass("has-error");} );
+		if (mode !== "search") isValid(individual, spec, values) ? controls.map( function(item) {item.addClass("has-success");} ) : controls.map( function(item) {item.addClass("has-error");} );
 
 		function renderControl (value, index) {
 			var opts = {
