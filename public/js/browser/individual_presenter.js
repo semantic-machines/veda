@@ -112,7 +112,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				});
 			}, 0);
 		});
-	
+		
 	});
 	
 	function renderTemplate (individual, container, template, specs) {
@@ -397,13 +397,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		var renderedValues = individual.hasValue(rel_uri) ? 
 			individual[rel_uri].map( function (value) { return renderValue (value); } ) : [];
 
-		var controlContainer;
-		if (renderedValues.length) {
-			controlContainer = renderedValues[renderedValues.length-1];
-		} else {
-			controlContainer = relContainer.clone();
-			relContainer.after(controlContainer);
-		}
+		var controlContainer = relContainer.clone();
+		relContainer.after(controlContainer);
 		
 		var opts = {
 			limit: 100,
@@ -424,7 +419,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				individual[rel_uri] = individual[rel_uri].concat(embeddedIndividual);
 			};
 		}
-		var control = $("<span>").vedaLink(opts);
+		
+		var control = controlContainer.css("display") === "inline" ? 
+			$("<span>").vedaLink(opts) : $("<div>").vedaLink(opts);
 
 		// tooltip from spec
 		if (spec && spec.hasValue("v-ui:tooltip")) {
@@ -436,16 +433,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 		}
 		
-		setTimeout( function () {
-			controlContainer.append(control).show();
-		}, 0);
+		controlContainer.append(control).show();
 
 		isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
 
 		function modeHandler (e) {
-			e.type === "view" ? control.hide() : 
-			e.type === "edit" ? control.show() : 
-			e.type === "search" ? control.show() : 
+			e.type === "view" ? controlContainer.hide() : 
+			e.type === "edit" ? controlContainer.show() : 
+			e.type === "search" ? controlContainer.show() : 
 			true;
 			e.stopPropagation();
 		}
@@ -472,14 +467,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					} else {
 						lnk = new veda.IndividualModel(value, clone, relTemplate);
 					}
-					
+				
 					clone.attr("style", "position:relative;");
-					var clear = $( $("#link-clear-button-template").html() );
 					
 					if (clone.children(":first").css("display") === "inline") {
-						clear = $( $("#link-clear-inline-button-template").html() );
+						var clear = $( $("#link-clear-inline-button-template").html() );
 					} else {
-						clear = $( $("#link-clear-block-button-template").html() );
+						var clear = $( $("#link-clear-block-button-template").html() );
 					}
 										
 					clone.append(clear);
