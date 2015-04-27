@@ -221,7 +221,7 @@ v-fs:SearchModel
 	};
 	
 	// Search if params given
-	//if ( self.hasValue("v-fs:q") || self.hasValue("v-fs:queryPrefix") ) self.search();
+	if ( self.hasValue("v-fs:q") || self.hasValue("v-fs:queryPrefix") ) self.search();
 	
   """
 .
@@ -338,7 +338,7 @@ v-fs:SearchTemplate
 		
 		self.on("search:complete", searchCompleteHandler);
 		
-		if ( self.hasValue("v-fs:q") || self.hasValue("v-fs:queryPrefix") ) self.search();
+		if ( self.results_count ) self.trigger("search:complete");
 		
 		function searchCompleteHandler() {
 			
