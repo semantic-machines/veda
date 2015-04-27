@@ -305,10 +305,10 @@ veda.Module(function (veda) { "use strict";
 	 */
 	proto.recover = function () {
 		var self = this;
-		self.trigger("individual:beforeRestore");
+		self.trigger("individual:beforeRecover");
 		self["v-s:deleted"] = [];
 		self.save();
-		self.trigger("individual:afterRestore");
+		self.trigger("individual:afterRecover");
 	};
 
 	/**

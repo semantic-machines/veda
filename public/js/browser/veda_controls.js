@@ -5,10 +5,9 @@
 	$.fn.vedaControl = function( $el, options ) {
 		var opts = $.extend( {}, $.fn.vedaControl.defaults, options ),
 			control = $(opts.template),
+			immutable = opts.immutable,
 			view = $(".view", control),
-			edit = $(".edit:not(.search)", control),
-			search = $(".search:not(.edit)", control),
-			edit_search = $(".edit.search", control),
+			edit = $(".edit", control),
 			add = $(".add", control),
 			remove = $(".remove", control);
 		
@@ -18,9 +17,10 @@
 		$el
 			.on("view edit search", function (e) { 
 				e.stopPropagation();
-				e.type === "view"   ? ( view.show(), edit.hide(), search.hide(), edit_search.hide() ) : 
-				e.type === "edit"   ? ( view.hide(), edit.show(), search.hide(), edit_search.show() ) : 
-				e.type === "search" ? ( view.hide(), edit.hide(), search.show(), edit_search.show() ) :
+				e.type === "view"   ? ( view.show(), edit.hide() ) : 
+				e.type === "edit" && !immutable ? ( view.hide(), edit.show() ) : 
+				e.type === "edit" && immutable ? ( view.show(), edit.hide() ) : 
+				e.type === "search" ? ( view.hide(), edit.show() ) :
 				true;
 			})
 			.mouseenter( function () { add.show(); remove.show(); })
