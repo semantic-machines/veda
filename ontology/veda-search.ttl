@@ -231,7 +231,7 @@ v-fs:SearchTemplate
   rdfs:label "Шаблон класса поиск"@ru ;
   v-ui:forClass v-fs:Search ;
   v-ui:template """
-	<div role="tabpanel" id="srch-tab-panel" class="panel panel-default">
+     <div role="tabpanel" id="srch-tab-panel" class="panel panel-default">
 		<div class="panel-body">
 			<!-- Nav tabs -->
 			<ul class="nav nav-pills" role="tablist">

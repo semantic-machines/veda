@@ -324,13 +324,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					:
 					new veda.IndividualModel("v-ui:ClassNameIdTemplate")
 			);
-			var rendered = renderLink(individual, rel_uri, relContainer, relTemplate, spec, embedded, template);
+			var rendered = renderRelation(individual, rel_uri, relContainer, relTemplate, spec, embedded, template);
 			
 			// Re-render link property if its' values were changed
 			function propertyModifiedHandler (doc_property_uri) {
 				if (doc_property_uri === rel_uri) {
 					rendered.map( function (item) { item.remove(); } );
-					rendered = renderLink(individual, rel_uri, relContainer, relTemplate, spec, embedded, template);
+					rendered = renderRelation(individual, rel_uri, relContainer, relTemplate, spec, embedded, template);
 				}
 			}
 			individual.on("individual:propertyModified", propertyModifiedHandler);
@@ -378,7 +378,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		return template;
 	}
 	
-	function renderLink (individual, rel_uri, relContainer, relTemplate, spec, embedded, template) {
+	function renderRelation (individual, rel_uri, relContainer, relTemplate, spec, embedded, template) {
 		
 		if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
 		
@@ -409,7 +409,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			limit: 100,
 			select: function (selected) {
 				individual[rel_uri] = individual[rel_uri].concat(selected);
-			} 
+			}
 		};
 		if (spec && spec.hasValue("v-ui:queryPrefix")) {
 			opts.queryPrefix = spec["v-ui:queryPrefix"][0];
@@ -436,9 +436,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 		}
 		
-		//setTimeout( function () {
+		setTimeout( function () {
 			controlContainer.append(control).show();
-		//}, 0);
+		}, 0);
 
 		isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
 
@@ -464,7 +464,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			if (value instanceof veda.IndividualModel || !value) {
 				setTimeout( function () {
 					if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0] == true) {
-						embeddedTemplate = $("<div>").append( relTemplate["v-ui:template"][0].toString() );
+						embeddedTemplate = $( relTemplate["v-ui:template"][0].toString() );
 						lnk = new veda.IndividualModel(value, clone, embeddedTemplate);
 						embedded.push(embeddedTemplate);
 						// New instance

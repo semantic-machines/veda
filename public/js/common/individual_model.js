@@ -70,7 +70,7 @@ veda.Module(function (veda) { "use strict";
 		self.defineProperty("v-s:deleted");
 		
 		self.on("individual:afterLoad", function (individual) {
-			veda.trigger("individual:loaded", individual, container, template, mode);
+			if (container) veda.trigger("individual:loaded", individual, container, template, mode);
 		});
 		
 		// Load data 
