@@ -11,9 +11,9 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 
-<http://semantic-machines.com/veda/veda-search>
+<http://semantic-machines.com/veda/veda-function-search>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system search function ontology"@en ;
   rdfs:label "Онтология фукнции поиска системы Веда"@ru ;
@@ -24,58 +24,8 @@
   owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "3.9" ;
 .
-v-fs:Test
-  rdf:type owl:Class ;
-  rdfs:label "Test"@en ;
-  rdfs:label "Тест"@ru ;
-  rdfs:subClassOf owl:Thing ;
-.
-v-fs:Test1
-  rdf:type v-fs:Test ;
-  rdfs:label "Test1"@en ;
-  rdfs:label "Тест1"@ru ;
-  v-fs:testProperty "test"^^xsd:string ;
-.
-v-fs:testProperty
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "test property"@en ;
-  rdfs:label "тестовое свойство"@ru ;
-  rdfs:domain v-fs:Test ;
-  rdfs:range xsd:string ;
-.
-v-fs:TestModel
-  rdf:type v-s:ClassModel ;
-  rdfs:label "Test model"@en ;
-  rdfs:label "Тестовая модель"@ru ;
-  v-ui:forClass v-fs:Test ;
-  v-s:script """
-    individual.test = function () {
-      alert("model extention works! individual['v-fs:testProperty']:" + individual["v-fs:testProperty"].join(", "));
-    }
-  """
-.
-v-fs:TestTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Test template"@en ;
-  rdfs:label "Тестовый шаблон"@ru ;
-  v-ui:forClass v-fs:Test ;
-  v-ui:template """
-    <div>
-      <h2>Test</h2>
-      <span about="v-fs:testProperty" property="rdfs:label"></span>
-      <div property="v-fs:testProperty"></div>
-      <button id="test" class="btn btn-success">test</button>
-    </div>
-    <script type="text/javascript">
-      $("#test", container).click(function () {
-        document.test();
-      });
-    </script>
-  """
-.
 
-
-########## SEARCH ###########
+########## SEARCH FUNCTION ###########
 
 v-fs:Search
   rdf:type owl:Class ;
