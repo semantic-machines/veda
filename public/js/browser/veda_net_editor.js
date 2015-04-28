@@ -43,7 +43,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     bindStateEvents,
                     workflow,
                     canvasSizePx=10000,                    
-                    currentScale=1,
+                    currentScale=1.0,
                     process,
                     mode='view',
                     max_process_depth=0;
@@ -224,7 +224,7 @@ jsWorkflow.ready = jsPlumb.ready;
              */
             bindStateEvents = function(windows) {
 
-                windows.bind("click", function() {
+                windows.bind("click", function(e) {
 
                 	instance.repaintEverything();
                 	
@@ -238,21 +238,26 @@ jsWorkflow.ready = jsPlumb.ready;
                     
                 	// build run path
                     if (mode=='view') {
-                    	instance.select().removeClass('process-path-highlight').setLabel('');
-                    	var s = new veda.IndividualModel();
-	                	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
-	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"' && 'v-wf:forNetElement'=='"+_this.id+"'");
-	                	for (var el in s.results) {
-	                	    if (s.results.hasOwnProperty(el)) {
-	                	    	showProcessRunPath(new veda.IndividualModel(el), 0);
-	                	    }
-	                	}
-                    	//jsPlumb.select({source:"d1"}).removeAllOverlays();
+                		instance.select().removeClass('process-path-highlight').setLabel('');
+                		// If we have more then one WorkItem - we must choose among them 
+                    	if (currentElement.attr('work-items-count')>1) {
+                    		e.type = 'contextmenu';
+                    		currentElement.trigger(e, 'leftmousebutton');
+                    	} else { 
+                        	var s = new veda.IndividualModel();
+    	                	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
+    	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"' && 'v-wf:forNetElement'=='"+_this.id+"'");
+    	                	for (var el in s.results) {
+    	                	    if (s.results.hasOwnProperty(el)) {
+    	                	    	showProcessRunPath(new veda.IndividualModel(el), 0);
+    	                	    }
+    	                	}
+                    	}
                     }
                 });
                 
                 if (mode=='view') {
-	                windows.bind("contextmenu", function(e) {
+	                windows.bind("contextmenu", function(e, extra) {
 	                	var _this = this,
 	                	    menu = $("#workflow-context-menu ul");
 	                	menu.html('');
@@ -264,13 +269,27 @@ jsWorkflow.ready = jsPlumb.ready;
 	                	    if (s.results.hasOwnProperty(el)) {
 	                	       var wi =  new veda.IndividualModel(el);
 	                     	   var $item = $("<li/>").appendTo(menu);
-	                    	   $("<a/>", {
-	                    		   "text" : (wi.hasValue('rdfs:label')?wi['rdfs:label'][0]:wi.id), 
-	           	    			   "href" : '#/document/'+wi.id
-	                    	   }).appendTo($item);	            	    	
+	                     	   if (extra === undefined) {
+	                     		   $("<a/>", {
+	                     			   "text" : (wi.hasValue('rdfs:label')?wi['rdfs:label'][0]:wi.id), 
+	                     			   "href" : '#/document/'+wi.id
+	                     		   }).appendTo($item);
+	                     	   } else {
+	                     		  $("<a/>", {
+	                     			   "text" : (wi.hasValue('rdfs:label')?wi['rdfs:label'][0]:wi.id), 
+	                     			   "href" : '#',
+	                     			   "click" : (function (wi) {
+	                						return function (event) {
+	                							event.preventDefault();
+	                							$("#workflow-context-menu").hide();
+	                							showProcessRunPath(new veda.IndividualModel(''+wi.id), 0);
+	                						};
+	                					})(wi)
+	                     		   }).appendTo($item);
+	                     	   }
 	                	    }
 	                	}
-	                	// 
+	                	// 	                	
 	                	$contextMenu.css({
 	                	   display: "block",
 	                	   left: e.pageX-((e.pageX+$contextMenu.width()>$( document ).width())?$contextMenu.width():0),
@@ -513,7 +532,7 @@ jsWorkflow.ready = jsPlumb.ready;
              */
             instance.changeScale = function(scale) {
             	$("#workflow-context-menu").hide();
-            	currentScale = scale;
+            	currentScale = parseFloat(scale);
             	instance.setZoom(currentScale);
             	localStorage.setItem("workflow"+net.id+"-zoom", currentScale);
             	$('#'+workflowData).css({
@@ -775,10 +794,14 @@ jsWorkflow.ready = jsPlumb.ready;
                 		if (wi.hasValue('v-wf:forNetElement')) {
                 			var state = $('#'+veda.Util.escape4$(wi['v-wf:forNetElement'][0].id));
                 			var wic = state.attr('work-items-count');
-                			if (wic>0) {
+                			if (wic>0) {                				
                 				state.attr('work-items-count', wic+1);
-                				if (wic<10) {
-                					state.css('background-color', '#FF'+(178-wic*20).toString(16)+'66');
+                				if (wic = 1) {
+                					$("<span/>", {
+                             		   "text" : 'x2'
+                             	   }).appendTo(state);	 
+                				} else {
+                					$('.counter', state).text('x'+(wic+1));
                 				}
                 			} else {
                 				state.attr('work-items-count', 1);
@@ -859,11 +882,11 @@ jsWorkflow.ready = jsPlumb.ready;
             
             $('#'+workflowData).bind('mousewheel', function(e){
             	if(e.originalEvent.wheelDelta > 0) {
-            		if (currentScale<1) return instance.changeScale(currentScale + 0.1);
-                   	if (currentScale<2) return instance.changeScale(currentScale + 0.25);
+            		if (currentScale<1) { return instance.changeScale(currentScale + 0.1); }
+            			else if (currentScale<2) return instance.changeScale(currentScale + 0.25);
                 } else {
-                    if (currentScale>1) return instance.changeScale(currentScale - 0.25);
-                    if (currentScale>0.2) return instance.changeScale(currentScale - 0.1);
+                    if (currentScale>1) { return instance.changeScale(currentScale - 0.25) }
+                    	else if (currentScale>0.2) return instance.changeScale(currentScale - 0.1);
                 }
             });
             
