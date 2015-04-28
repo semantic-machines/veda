@@ -8,7 +8,10 @@ veda.Module(function (veda) { "use strict";
 	/**
 	 * @constructor
 	 * @param {String} uri URI of individual. If not specified, than id of individual will be generated automatically. 
-	 * @param {boolean} cache turn cache on / off. If true or not set, then object will be return from browser cache. If false or individual not found in cache - than individual will be requested from database 
+	 * @param {String/jQuery} container Container to render individual in. If passed as String, then must be a valid css selector. If passed as jQuery, then is used as is. If not specified, than individual will not be presented.
+	 * @param {String/jQuery/veda.IndividualModel} template Template to render individual with.
+	 * @param {String} mode Initial mode for individual presenter. Expected values: "view", "edit", "search".
+	 * @param {boolean} cache Use cache true / false. If true or not set, then object will be return from application cache (veda.cache). If false or individual not found in application cache - than individual will be loaded from database 
 	 * @param {boolean} init individual with class model at load. If true or not set, then individual will be initialized with class specific model upon load.
 	 */
 	veda.IndividualModel = function (uri, container, template, mode, cache, init) {
@@ -344,4 +347,20 @@ veda.Module(function (veda) { "use strict";
 		});
 	};
 
+	/**
+	 * @method
+	 * Clone individual with different (generated) id
+	 */
+	proto.clone = function () {
+		var self = this;
+		var clone = new veda.IndividualModel();
+		Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
+			if (property_uri === "rdf:type") return;
+			clone.defineProperty(property_uri);
+			clone[property_uri] = self[property_uri].slice(0);
+		});
+		clone["rdf:type"] = self["rdf:type"].slice(0);
+		return clone;
+	};
+	
 });

@@ -22,7 +22,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "3.3" ;
+  owl:versionInfo "3.9" ;
 .
 v-fs:Test
   rdf:type owl:Class ;
@@ -320,19 +320,15 @@ v-fs:SearchTemplate
 		});
 		saveAs.click(function () {
 			var name = window.prompt("Введите имя запроса");
-			name === null ? null : 
-			name === "" ? alert("Ошибка, не задано имя запроса") : 
-			( self["rdfs:label"] = [name], self.id = guid(), self.save() );
-
-			/*if (name === null) { 
+			if (name === null) { 
 				return;
 			} else if (!name) {
 				alert("Ошибка, не задано имя запроса");
 			} else {
-				self["rdfs:label"] = [name];
-				self.id = guid();
-				self.save(); 
-			}*/
+				var clone = new veda.IndividualModel(self.clone(), container);
+				clone["rdfs:label"] = [name];
+				clone.save();
+			}
 		});
 
 		

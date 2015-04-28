@@ -36,13 +36,13 @@
 		self.load = function (page, params) {
 			switch (page) {
 				case "console": 
-					self.Util.construct(veda.ConsoleModel, params);
+					veda.Util.construct(veda.ConsoleModel, params);
 					break;
 				case "document": 
-					self.Util.construct(veda.DocumentModel, params);
+					veda.Util.construct(veda.DocumentModel, params);
 					break;
 				case "individual": 
-					self.Util.construct(veda.IndividualModel, params);
+					veda.Util.construct(veda.IndividualModel, params);
 					break;
 				case "search": 
 					if (self.search && ( params == self.search.params || params.length === 0) ) {
