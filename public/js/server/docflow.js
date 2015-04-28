@@ -5,6 +5,9 @@
  */
 function prepare_decision_form (ticket, document)
 {	
+	if (document['v-wf:isCompleted'])	
+		return;
+		
    	print("[WORKFLOW][DF1].0");
 	var takenDecision = document['v-wf:takenDecision'];
 	if (!takenDecision)
@@ -52,9 +55,19 @@ function prepare_decision_form (ticket, document)
             type: _Uri
         });
     }
-    if (process_output_vars.length > 0) work_order['v-wf:outputVariable'] = new_vars;
-   	
-   	put_individual(ticket, work_order, _event_id);
+    if (process_output_vars.length > 0) 
+    {    
+		work_order['v-wf:outputVariable'] = new_vars;   	
+		put_individual(ticket, work_order, _event_id);
+		
+		document['v-wf:isCompleted'] = [
+            {
+                data: true,
+                type: _Bool
+               }];
+               
+		put_individual(ticket, document, _event_id);               
+	}	
 }
 
 
