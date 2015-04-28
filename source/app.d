@@ -74,9 +74,12 @@ shared static this()
 
     http_port    = properties.as!(ushort)("http_port");
     count_thread = properties.as!(int)("count_thread");
+    int checktime_onto_files = properties.as!(int)("checktime_onto_files");
 
+	if (checktime_onto_files < 1)
+		checktime_onto_files = 30;
 
-    pacahon.server.init_core();
+    pacahon.server.init_core(checktime_onto_files);
 
     pacahon.context.Context context;
     string                  thread_name = "veda" ~ text(std.uuid.randomUUID().toHash())[ 0..5 ];
