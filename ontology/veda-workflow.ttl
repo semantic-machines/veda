@@ -581,6 +581,27 @@ v-wf:takenDecision
         rdfs:domain v-wf:DecisionForm ;
         rdfs:range v-wf:Decision ;
 .
+v-wf:onDocument
+        rdf:type owl:ObjectProperty ;
+        rdfs:label "по документу"@ru ;
+        rdfs:domain v-wf:DecisionForm ;
+        rdfs:range rdfs:Resource ;
+.
+        
+v-wf:from
+        rdf:type owl:ObjectProperty ;
+        rdfs:label "от кого"@ru ;
+        rdfs:domain v-wf:DecisionForm ;
+        rdfs:range v-s:Appointment ;
+.
+
+v-wf:dateGiven
+        rdf:type owl:DatatypeProperty ;
+        rdfs:label "когда"@ru ;
+        rdfs:domain v-wf:DecisionForm ;
+        rdfs:range xsd:dateTime ;
+.
+
 
   
 # --------------------------- Start Form ---------------------------
@@ -885,5 +906,10 @@ v-wf:DecisionRejected
 v-wf:DecisionRemake
 	rdf:type v-wf:Decision;
 	rdfs:label "доработать"@ru ;
+.	
+
+v-wf:DecisionBreak
+	rdf:type v-wf:Decision;
+	rdfs:label "прервать маршрут"@ru ;
 .	
 

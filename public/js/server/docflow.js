@@ -553,8 +553,14 @@ function prepare_process(ticket, document)
 */
 function prepare_start_form(ticket, document)
 {
-    print("[WORKFLOW]:### prepare_start_form #B _event_id=" + _event_id);
+    print("[WORKFLOW]:prepare_start_form #B, doc_id=" + document['@']);
 
+	if (document['v-wf:isProcess'])
+	{		
+		print("[WORKFLOW]:prepare_start_form, already started.");
+		return;
+	}	
+		
     var new_process_uri = guid();
 
     var forNet = document['v-wf:forNet'];
