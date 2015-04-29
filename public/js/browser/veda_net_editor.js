@@ -309,7 +309,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                	     el['v-wf:startingMapping'].forEach(function(var_map) {
 	                    	   var $item = $("<li/>").appendTo(menu);
 	                	       var varId = null;
-	                	       var_map['v-wf:mapsTo'].forEach(function(var_var) {
+	                	       var_map['v-wf:mapToVariable'].forEach(function(var_var) {
 	                	    	   varId = var_var.id;
 	               	    		   $("<a/>", { 
 	               	    			   "text" : (var_var.hasValue('v-wf:variableName')?var_var['v-wf:variableName'][0]:var_var.id), 
@@ -346,7 +346,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                	    			   "href" : "#/individual/"+var_map.id+"/#main//edit"
 	                	    		   }).appendTo($item);
 	                     	       $("<span/>", {"text": " >>> "}).appendTo($item);
-	                     	       var_map['v-wf:mapsTo'].forEach(function(var_var) {
+	                     	       var_map['v-wf:mapToVariable'].forEach(function(var_var) {
 	                     	    	   varId = var_var.id;
 	                    	    		   $("<a/>", { 
 	                    	    			   "text" : (var_var.hasValue('v-wf:variableName')?var_var['v-wf:variableName'][0]:var_var.id), 
@@ -652,11 +652,11 @@ jsWorkflow.ready = jsPlumb.ready;
                 var individualM = new veda.IndividualModel(); // create individual (Mapping)
                 
                 individualM.defineProperty("rdf:type");
-                individualM.defineProperty("v-wf:mapsTo");
+                individualM.defineProperty("v-wf:mapToVariable");
                 individualM.defineProperty("v-wf:mappingExpression");
                 
            		individualM["rdf:type"] = [veda.ontology["v-wf:Mapping"]];
-           		individualM["v-wf:mapsTo"] = [individualV];
+           		individualM["v-wf:mapToVariable"] = [individualV];
                 individualM['v-wf:mappingExpression'] = ["context.getVariableValue ('"+variableName+"')"];
                 
                 if (type=='input') {
