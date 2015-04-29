@@ -62,7 +62,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			e.preventDefault();
 			var forced, 
 				hash = $(this).attr("href");
-			forced = (hash == location.hash ? false : true);
+			forced = (hash === location.hash ? false : true);
 			return riot.route(hash, forced);
 		});
 		

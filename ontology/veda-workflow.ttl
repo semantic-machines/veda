@@ -20,7 +20,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports owl: ;
-  owl:versionInfo "1.0" ;
+  owl:versionInfo "1.1" ;
 .
 v-wf:Net
 	rdf:type owl:Class ;
@@ -363,7 +363,7 @@ jsWorkflow.ready(function () {
     var workflow = new jsWorkflow.Instance();
 
     // Initialize workflow with workflow container id
-    var net = workflow.init('workflow-canvas', veda, document);
+    var net = workflow.init('workflow-canvas', veda, individual);
 });
 </script>
   """ ;
@@ -445,7 +445,7 @@ jsWorkflow.ready(function () {
     var workflow = new jsWorkflow.Instance();
 
     // Initialize workflow with workflow container id
-    var net = workflow.init('workflow-canvas', veda, document);
+    var net = workflow.init('workflow-canvas', veda, individual);
 });
 </script>
   """ ;

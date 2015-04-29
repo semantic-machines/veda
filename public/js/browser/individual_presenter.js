@@ -21,8 +21,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		// Change location.hash if individual was presented in #main container
 		if (container.prop("id") === "main") {
-			var hash = ["#/individual", individual.id, "#main"].join("/");
-			riot.route(hash, false);
+			var hash = ["#", "individual", individual.id, "#main"].join("/");
+			if (hash !== location.hash) riot.route(hash, false);
 		}
 
 		var specs = $.extend.apply (this, [].concat(
@@ -142,8 +142,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			template.trigger("view");
 			// Change location.hash if individual was presented in #main container
 			if (container.prop("id") === "main") {
-				var hash = ["#/individual", individual.id, "#main"].join("/");
-				riot.route(hash, false);
+				var hash = ["#", "individual", individual.id, "#main"].join("/");
+				if (hash !== location.hash) riot.route(hash, false);
 			}
 			e.stopPropagation();
 		}
@@ -338,7 +338,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Specials (not RDFa)
 		$("[href='id']", template).map( function () {
 			$(this)
-				.attr("href", "#/individual/" + individual.id)
+				.attr("href", "#/individual/" + individual.id + "/#main")
 				.after( 
 					$("<a>", {href: "#/graph/" + individual.id}).append( 
 						$("<i>").addClass("glyphicon glyphicon-link") 

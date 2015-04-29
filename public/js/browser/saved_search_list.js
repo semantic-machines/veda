@@ -35,7 +35,7 @@ veda.Module(function SavedSearchList(veda) { "use strict";
 				// Init individual type
 				s.results[id]["rdf:type"] = s.results[id]["rdf:type"];
 				
-				var d = new veda.DocumentModel(s.results[id], a, tmpl);
+				var d = new veda.IndividualModel(s.results[id], a, tmpl);
 				if (search.q == d["v-s:query"][0]) a.addClass("active");
 				a.click(function (e) {
 					e.preventDefault();

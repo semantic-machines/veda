@@ -10,13 +10,12 @@ veda.Module(function SaveSearch(veda) { "use strict";
 		var container = container_param || $("#main");
 		var qActions = $("#q-actions", container);
 		
-		//$("#save-search", qActions).remove();
 		qActions.prepend(btn);
 		
 		btn.on("click", function () {
 			if (search.q) {
 				
-				var that = $(this);
+				var self = $(this);
 				var ssContainer = $("<div/>");
 				var ss = new veda.IndividualModel();
 				ss["rdf:type"] = [new veda.IndividualModel("v-s:SavedSearch")];
@@ -24,19 +23,19 @@ veda.Module(function SaveSearch(veda) { "use strict";
 				ss["v-s:created"] = [new Date()];
 				ss["v-s:query"] = [search.q];
 				ss["rdfs:label"] = [search.q];
-				ss = new veda.DocumentModel(ss, ssContainer, undefined, "edit");
+				ss = new veda.IndividualModel(ss, ssContainer, undefined, "edit");
 
-				ss.on("document:afterSave document:afterReset", function () {
-					that.popover("destroy");
+				ss.on("individual:afterSave individual:afterReset", function () {
+					self.popover("destroy");
 				});
 				
-				that.popover({
+				self.popover({
 					html: true,
 					content: ssContainer,
 					placement: "auto",
 					container: qActions
 				}).popover("show").on('hidden.bs.popover', function () {
-					that.popover("destroy");
+					self.popover("destroy");
 				});
 				
 			}

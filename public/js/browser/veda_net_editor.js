@@ -272,7 +272,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                     	   if (extra === undefined) {
 	                     		   $("<a/>", {
 	                     			   "text" : (wi.hasValue('rdfs:label')?wi['rdfs:label'][0]:wi.id), 
-	                     			   "href" : '#/document/'+wi.id
+	                     			   "href" : '#/individual/'+wi.id+'/#main'
 	                     		   }).appendTo($item);
 	                     	   } else {
 	                     		  $("<a/>", {
@@ -313,14 +313,14 @@ jsWorkflow.ready = jsPlumb.ready;
 	                	    	   varId = var_var.id;
 	               	    		   $("<a/>", { 
 	               	    			   "text" : (var_var.hasValue('v-wf:variableName')?var_var['v-wf:variableName'][0]:var_var.id), 
-	               	    			   "href" : "#/document/"+var_var.id+"///edit"
+	               	    			   "href" : "#/individual/"+var_var.id+"/#main//edit"
 	               	    		   }).appendTo($item);
 	            	    	   });
 	                	       $("<span/>", {"text": " <<< "}).appendTo($item);
 	                	       var_map['v-wf:mappingExpression'].forEach(function(map_exp) {
 	                	    	   $("<a/>", { 
 	               	    			   "text" : map_exp, 
-	               	    			   "href" : "#/document/"+var_map.id+"///edit"
+	               	    			   "href" : "#/individual/"+var_map.id+"/#main//edit"
 	               	    		   }).appendTo($item);
 	                	    	   $("<span/>", {
 	                					"click": (function (instance) {
@@ -343,14 +343,14 @@ jsWorkflow.ready = jsPlumb.ready;
 	                 	       var_map['v-wf:mappingExpression'].forEach(function(map_exp) {
 	                 	    	   $("<a/>", { 
 	                	    			   "text" : map_exp, 
-	                	    			   "href" : "#/document/"+var_map.id+"///edit"
+	                	    			   "href" : "#/individual/"+var_map.id+"/#main//edit"
 	                	    		   }).appendTo($item);
 	                     	       $("<span/>", {"text": " >>> "}).appendTo($item);
 	                     	       var_map['v-wf:mapsTo'].forEach(function(var_var) {
 	                     	    	   varId = var_var.id;
 	                    	    		   $("<a/>", { 
 	                    	    			   "text" : (var_var.hasValue('v-wf:variableName')?var_var['v-wf:variableName'][0]:var_var.id), 
-	                    	    			   "href" : "#/document/"+var_var.id+"///edit"
+	                    	    			   "href" : "#/individual/"+var_var.id+"/#main//edit"
 	                    	    		   }).appendTo($item);
 	                 	    	   });
 	                 	    	   $("<span/>", {
@@ -373,7 +373,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                    	   var $item = $("<li/>").appendTo(menu);
 	                    	   $("<a/>", {
 	                    		   "text" : 'EXECUTOR : '+(el2.hasValue('rdfs:label')?el2['rdfs:label'][0]:el2.id), 
-	           	    			   "href" : '#/document/'+el2.id+'///edit'
+	           	    			   "href" : '#/individual/'+el2.id+'/#main//edit'
 	                    	   }).appendTo($item);
 	            	    	   $("<span/>", {
 	           						"click": (function (instance) {
@@ -441,7 +441,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                // Bind a click listener to each State elements. On double click, State elements are deleted.
 	                windows.bind("dblclick", function() {
 	                    var _this = this;
-	                	riot.route("#/document/" + $(_this).attr('id')+"///edit", true);
+	                	riot.route("#/individual/" + $(_this).attr('id')+"/#main//edit", true);
 	                });
 	
 	                // Initialize State elements as draggable.  
@@ -777,7 +777,7 @@ jsWorkflow.ready = jsPlumb.ready;
                   	   var $item = $("<li/>").appendTo($iv);
                 	   $("<a/>", {
                 		   "text" : (el.hasValue('v-wf:variableName')?el['v-wf:variableName'][0]:el.id), 
-       	    			   "href" : '#/document/'+el.id
+       	    			   "href" : '#/individual/'+el.id+'/#main'
                 	   }).appendTo($item);	            	    	
                 	});
             	}

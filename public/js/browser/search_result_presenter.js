@@ -14,7 +14,7 @@ veda.Module(function SearchResultPresenter(veda) { "use strict";
 							// Check if string starts with http:// or ftp://
 							return item.search(/^.{3,5}:\/\//) === 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
 						else if (item instanceof veda.IndividualModel)
-							return "<a data-toggle='popover' href='#/document/" + item.id + "'>" + 
+							return "<a href='#/individual/" + item.id + "/#main'>" + 
 								(item["rdfs:label"] && item["rdfs:label"].length ? item["rdfs:label"].join(", ") : item.id) + "</a>";
 						else return item;
 					})
@@ -47,7 +47,7 @@ veda.Module(function SearchResultPresenter(veda) { "use strict";
 		
 		container.append(individual_template);
 		
-		// Render document title		
+		// Render individual title		
 		$("#individual-label", container).append( 
 			riot.render(
 				individual_label_template,
@@ -58,7 +58,7 @@ veda.Module(function SearchResultPresenter(veda) { "use strict";
 			)
 		);
 		
-		// Render document properties
+		// Render individual properties
 		Object.getOwnPropertyNames(individual.properties).reduce ( function (limit, property_uri) {
 			if (limit <= 0) return limit;
 			try {
@@ -70,46 +70,3 @@ veda.Module(function SearchResultPresenter(veda) { "use strict";
 	});
 
 });
-
-/*
-// Individual popover
-(function () {
-	$("body").on("mouseenter", "[data-toggle='popover']", function () {
-		var popover_element = $( this );
-		var uri = popover_element.attr("href");
-		uri = uri.substring(uri.indexOf("#/document/") + "#/document/".length);
-		var thisTimeout = setTimeout( function () {
-			if ($("#popover_"+veda.Util.escape4$(uri)).length) {
-				
-				var popover = popover_element.popover({
-					content: $("#popover_"+veda.Util.escape4$(uri)).html(),
-					html: true,
-					placement: "auto",
-					container: "body"
-				}).popover("show");
-				
-			} else {
-				
-				var container = $("<div/>", {
-					id: "popover_" + uri,
-					class: "hide",
-				}).appendTo("body");
-				
-				new veda.IndividualModel(uri, container);
-				
-				var popover = popover_element.popover({
-					content: container.html(),
-					html: true,
-					placement: "auto",
-					container: "body"
-				}).popover("show");
-				
-			}
-		}, 700);
-		popover_element.mouseleave ( function () {
-			clearTimeout(thisTimeout);
-			popover_element.popover("destroy");
-		});
-	});
-})();
-*/

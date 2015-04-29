@@ -32,29 +32,19 @@
 			veda = new Veda(config);
 		};
 		
-		// Invoke existing or create new module
 		self.load = function (page, params) {
 			switch (page) {
-				case "console": 
-					veda.Util.construct(veda.ConsoleModel, params);
-					break;
-				case "document": 
-					veda.Util.construct(veda.DocumentModel, params);
-					break;
-				case "individual": 
+				case "individual":
 					veda.Util.construct(veda.IndividualModel, params);
 					break;
-				case "search": 
-					if (self.search && ( params == self.search.params || params.length === 0) ) {
-						self.trigger("search:loaded", self.search);
-						self.trigger("search:complete", self.search);
-					} else {
-						self.search = veda.SearchModel.apply({}, params);
-						self.search.params = params;
-					}
+				case "console":
+					veda.Util.construct(veda.ConsoleModel, params);
 					break;
-				case "graph": 
-					self.trigger("load:graph", params);
+				case "search":
+					veda.Util.construct(veda.SearchModel, params);
+					break;
+				case "graph":
+					self.trigger.apply(self, ["load:graph"].concat(params));
 					break;
 			}
 		};

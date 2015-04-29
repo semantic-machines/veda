@@ -5,7 +5,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 	var container = $("#main");
 	var tmpl = $("#graph-template").html();
 	
-	veda.on("load:graph", function (params) {
+	veda.on("load:graph", function (uri) {
 		
 		function addNode (individual, opts) {
 			if ( nodes.get(individual.id) === null ) {
@@ -170,12 +170,13 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 			var modalBody = $(".modal-body", modal);
 			var modalTitle = $(".modal-title", modal);
 			modalTitle.text(nodes.get(id).label);
-			var doc = new veda.DocumentModel(id, modalBody);
-			/*riot.route("#/document/" + selected.nodes[0]);*/
-			//addOutLinks(selected.nodes[0]);
+			var doc = new veda.IndividualModel(id, modalBody);
+			// Bootstrap bug: page remains faded even if modal element was removed
+			modal.on("remove", function () {
+				modal.modal("hide");
+			});
 		}
 
-		var uri = params.length ? params[0] : undefined;
 		var root = new veda.IndividualModel(uri);
 		
 		if (!uri) riot.route("#/graph/" + root.id, false);

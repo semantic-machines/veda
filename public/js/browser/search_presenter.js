@@ -64,7 +64,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 				search.selectedType = selected;
 				var ind = new veda.IndividualModel();
 				ind["rdf:type"] = [selected];
-				var doc = new veda.DocumentModel(ind, tmplContainer, undefined, "search");
+				var doc = new veda.IndividualModel(ind, tmplContainer, undefined, "search");
 			}
 		});
 		$("#params-" + search.id, container).append(typeSelector, tmplContainer);
@@ -74,9 +74,9 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		var reqContainer = $("<div>").addClass("well");
 		var reqIndividual = new veda.IndividualModel();
 		reqIndividual["rdf:type"] = [new veda.IndividualModel("v-s:SearchRequest")];
-		var request = new veda.DocumentModel(reqIndividual, reqContainer, undefined, "edit");
-		//var request = new veda.DocumentModel("td:SearchRequest1", reqContainer, undefined, "edit");
-		request.on("document:propertyModified", function (property_uri, types) {
+		var request = new veda.IndividualModel(reqIndividual, reqContainer, undefined, "edit");
+		//var request = new veda.IndividualModel("td:SearchRequest1", reqContainer, undefined, "edit");
+		request.on("individual:propertyModified", function (property_uri, types) {
 			if (property_uri == "v-s:selectedType") {
 				var specOnProperty = new veda.IndividualModel("v-ui:SearchRestrictionSpec1");
 				//var specOperator = new veda.IndividualModel("v-ui:SearchRestrictionSpec2");

@@ -39,11 +39,11 @@
 				<a href="#/" class="navbar-brand"><img src="/img/veda-logo.png" style="position:relative; top:-3px"/></a>
 				<!--a href="#/" class="navbar-brand"><strong>veda</strong></a-->
 				<ul class="nav navbar-nav navbar-left" id="menu">
-					<li class="dropdown" id="document">
+					<li class="dropdown" id="individual">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Документ <span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
-							<li><a href="#/document////edit">Создать</a></li>
-							<li><a href="#/document////search">Найти</a></li>
+							<li><a href="#/individual//#main//edit">Создать</a></li>
+							<li><a href="#/individual//#main//search">Найти</a></li>
 							<!--li class="divider"></li-->
 						</ul>
 					</li>
@@ -159,7 +159,7 @@
 		
 		<!-- Individual label template -->
 		<script type="html/template" id="individual-label-template">
-			<a data-toggle="popover" href="#/document/{uri}"><strong>{label}</strong></a>
+			<a href="#/individual/{uri}/#main"><strong>{label}</strong></a>
 		</script>
 
 		<!-- Individual single property template -->
@@ -171,7 +171,7 @@
 		<!-- Current user template -->
 		<script type="html/template" id="current-user-template">
 			<p class="navbar-text navbar-right">
-				<a href="#/document/{user.id}" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {user.rdfs:label}</a>
+				<a href="#/individual/{user.id}/#main" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {user.rdfs:label}</a>
 			</p>
 			<div class="navbar-right btn-group" id="preferred-language">
 				{languages}
@@ -500,13 +500,6 @@
 			</div>
 		</script>
 		
-		<!-- Deleted document alert -->
-		<script type="html/template" id="deleted-document-alert-template">
-			<div class="alert alert-warning no-margin" role="alert">
-				<p>Документ удален.  <button class="btn btn-default btn-xs">Восстановить</button></p>
-			</div>
-		</script>
-
 		<!-- Deleted individual alert -->
 		<script type="html/template" id="deleted-individual-alert-template">
 			<div class="alert alert-warning no-margin" role="alert">
@@ -642,7 +635,6 @@
 		<script type="text/javascript" src="/js/common/individual_model.js"></script>
 		<script type="text/javascript" src="/js/common/individual_list_model.js"></script>
 		<script type="text/javascript" src="/js/common/search_result_model.js"></script>
-		<script type="text/javascript" src="/js/common/document_model.js"></script>
 		<script type="text/javascript" src="/js/common/user_model.js"></script>
 		<script type="text/javascript" src="/js/common/search_model.js"></script>
 		<script type="text/javascript" src="/js/common/ontology_model.js"></script>
@@ -651,7 +643,6 @@
 		<script type="text/javascript" src="/js/browser/backend.js"></script>
 		<script type="text/javascript" src="/js/browser/util.js"></script>
 		<script type="text/javascript" src="/js/browser/console_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/document_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/individual_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/saved_search_list.js"></script>
 		<script type="text/javascript" src="/js/browser/save_search.js"></script>
