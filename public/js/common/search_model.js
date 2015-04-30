@@ -47,7 +47,8 @@ veda.Module(function (veda) { "use strict";
 		};
 
 		// Define Model functions
-		self.search = function (qq) {
+		self.search = function (qq, databases, reopen) {
+			reopen = !!reopen;
 			self.q = qq || self.q;
 			
 			// Clear previous results 
@@ -63,7 +64,7 @@ veda.Module(function (veda) { "use strict";
 			// Prefix query if defined in constructor
 			q = (self.queryPrefix ? self.queryPrefix + "&&" : "") + (q ? q : "") ;
 			
-			var results = query(veda.ticket, q, self.sort);
+			var results = query(veda.ticket, q, self.sort, databases, reopen);
 						
 			var t2 = Date.now();
 			self.query_time = t2 - t1;

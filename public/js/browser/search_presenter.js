@@ -19,7 +19,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		
 		container.empty().hide();
 		
-		search.currentPage = (typeof page_param === 'number' ? page_param : search.currentPage) || 0;
+		search.currentPage = (typeof page_param === "number" ? page_param : search.currentPage) || 0;
 		
 		// Get template
 		var rendered = riot.render(template, search);
@@ -145,7 +145,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		
 		var container = container_param || $("#main");
 		
-		search.currentPage = (typeof page_param === 'number' ? page_param : search.currentPage) || 0;
+		search.currentPage = (typeof page_param === "number" ? page_param : search.currentPage) || 0;
 		
 		if (search.results_count < search.currentPage * veda.user.displayedElements) 
 			search.currentPage = Math.floor(search.results_count / veda.user.displayedElements) + 1 * (search.results_count % veda.user.displayedElements ? 1 : 0) - 1;
@@ -223,7 +223,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 				"click": (function (page) {
 					return function (event) {
 						event.preventDefault(); 
-						veda.trigger('search:complete', search, container, page);
+						veda.trigger("search:complete", search, container, page);
 					};
 				})(page), 
 				"href" : ""

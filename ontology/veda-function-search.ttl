@@ -129,8 +129,9 @@ v-fs:SearchModel
 		}
 		return self.selected;
 	}
-
-	self.search = function (q) {
+	
+	self.search = function (q, databases, reopen) {
+		reopen = !!reopen;
 		self["v-fs:q"] = q ? [ q ] : self["v-fs:q"];
 		q = self["v-fs:q"][0];
 				
@@ -148,7 +149,7 @@ v-fs:SearchModel
 		// Prefix query if defined
 		q = ( self.hasValue("v-fs:queryPrefix") ? self["v-fs:queryPrefix"][0] + "&&" : "") + (q ? q : "") ;
 
-		var results = query(veda.ticket, q, self.sort);
+		var results = query(veda.ticket, q, self.sort, databases, reopen);
 
 		var t2 = Date.now();
 		self.query_time = t2 - t1;
