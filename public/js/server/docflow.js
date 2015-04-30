@@ -1000,6 +1000,14 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                 if (res == false)
                     continue;
 
+                var getElement = (function ()
+                {
+                    return function ()
+                    {
+                        return element;
+                    }
+                })();
+
                 var putElement = (function ()
                 {
                     return function (name)

@@ -581,6 +581,12 @@ v-wf:takenDecision
         rdfs:domain v-wf:DecisionForm ;
         rdfs:range v-wf:Decision ;
 .
+v-wf:possibleDecision
+        rdf:type owl:ObjectProperty ;
+        rdfs:label "возможные варианты решения"@ru ;
+        rdfs:domain v-wf:DecisionForm ;
+        rdfs:range v-wf:Decision ;
+.
 v-wf:onDocument
         rdf:type owl:ObjectProperty ;
         rdfs:label "по документу"@ru ;
