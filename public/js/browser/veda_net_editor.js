@@ -805,8 +805,12 @@ jsWorkflow.ready = jsPlumb.ready;
                 				}
                 			} else {
                 				state.attr('work-items-count', 1);
+                			}
+            				if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted']=='true') {
+                    			state.css('background-color', '#88B288');
+            				} else {
                     			state.css('background-color', '#FFB266');
-                			}                			
+            				}
                 		}
             	    }
             	}
