@@ -27,6 +27,7 @@
 		<!--link href="/css/united.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/yeti.bootstrap.min.css" rel="stylesheet"/-->
 
+		<link href="/css/codemirror.css" rel="stylesheet"/>
 		<link href="/css/veda.css" rel="stylesheet"/>
 
 		<meta http-equiv="pragma" content="no-cache" />
@@ -625,6 +626,14 @@
 		<script type="text/javascript" src="/js/browser/lib/typeahead.jquery.min.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/cookie.js"></script>
 		
+		<!-- CodeMirror -->
+		<script type="text/javascript" src="/js/browser/lib/codemirror/codemirror.js"></script>
+		<script type="text/javascript" src="/js/browser/lib/codemirror/mode/xml/xml.js"></script>
+		<script type="text/javascript" src="/js/browser/lib/codemirror/mode/javascript/javascript.js"></script>
+		<script type="text/javascript" src="/js/browser/lib/codemirror/mode/css/css.js"></script>
+		<script type="text/javascript" src="/js/browser/lib/codemirror/mode/turtle/turtle.js"></script>
+		<script type="text/javascript" src="/js/browser/lib/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+
 		<!-- Veda browser & server -->
 		<script type="text/javascript" src="/js/common/lib/riot.js"></script>
 		<script type="text/javascript" src="/js/common/util.js"></script>
@@ -660,6 +669,27 @@
 				veda.Module({/* configuration object */});
 			});
 		</script>
-		
+
+
+		<style type="text/css" media="screen">
+			#codemirror-editor { 
+				font-size: 12px;
+			}
+		</style>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-12">
+					<div id="codemirror-editor" class="panel panel-default"></div>
+				</div>
+			</div>
+		</div>
+		<script>
+			var codeMirrorEditor = CodeMirror(document.getElementById("codemirror-editor"), {
+				value: "function foo(items) {\n  var x = 'All this is syntax highlighted';\n  return x;\n}",
+				mode:  "javascript",
+				lineNumbers: true
+			});
+		</script>
+	
 	</body>
 </html>
