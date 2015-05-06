@@ -16,8 +16,7 @@ function guid() {
                .toString(16)
                .substring(1);
   }
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-         s4() + '-' + s4() + s4() + s4();
+  return 'd' + s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
 }
 
 function compare (a, b) {

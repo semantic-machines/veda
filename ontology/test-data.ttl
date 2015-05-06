@@ -3,6 +3,7 @@
 # imports: http://semantic-machines.com/veda/veda-schema
 
 # c14n-version: 3
+@prefix : <http://semantic-machines.com/veda/test-data/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 @prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
 @prefix mnd-wf: <http://semantic-machines.com/veda/mondi-workflow/> .
@@ -873,13 +874,13 @@ td:ComplexRouteStartForm1
 	mnd-wf:ComplexRouteStartForm_reviewer td:ValeriyBushenev-Programmer1 ; 
 	mnd-wf:ComplexRouteStartForm_signer td:AndreyBychin-ExecutiveDirector ; 
 .
-<7b435740-f19e-7731-03ef-e7cb2203f8c4> a v-s:SavedSearch;
+:b435740-f19e-7731-03ef-e7cb2203f8c4 a v-s:SavedSearch;
     v-s:author td:RomanKarpov;
     v-s:query "'rdf:type' == 'v-wf:Process'"^^xsd:string;
     rdfs:label "экземпляры маршрута"^^xsd:string;
     v-s:created "2015-03-23T13:27:18.000Z"^^xsd:dateTime.
 
-<7b435740-119e-1731-13ef-e7cb2203f8c4> a v-s:SavedSearch;
+:b435740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
     v-s:author td:RomanKarpov;
     v-s:query "'rdf:type' == 'v-wf:DecisionForm'"^^xsd:string;
     rdfs:label "общий инбокс"^^xsd:string;

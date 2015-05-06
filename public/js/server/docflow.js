@@ -144,9 +144,58 @@ function prepare_work_order(ticket, document)
             var indv = get_individual(ticket, work_item_inputVariable_uri[i].data);
             work_item_inputVariable.push(indv);
         }
+        
+        var prev_task;
+        var i_work_item = work_item;
+        
+        while (!prev_task)
+        {			
+			var previousWorkItem_uri = getUri(i_work_item ['v-wf:previousWorkItem']);
+			if (!previousWorkItem_uri)
+				break;
+			
+			var previous_work_item = get_individual(ticket, previousWorkItem_uri);
+			if (!previous_work_item)
+				break;
 
+			var prev_forNetElement_uri = getUri(previous_work_item['v-wf:forNetElement']);
+			if (!prev_forNetElement_uri)
+				break;
+				
+			var prev_forNetElement = get_individual(ticket, prev_forNetElement_uri);
+			if (!prev_forNetElement)
+				break;
+
+			if (prev_forNetElement['rdf:type'][0].data == 'v-wf:Task')
+			{
+				prev_task = previous_work_item['v-wf:forNetElement'];
+				break;
+			}		
+			i_work_item = previous_work_item;
+		}
+                
+		if (prev_task)
+		{
+				// ++ work_item_inputVariable: prev task id
+                var var_ctid = {
+                    '@': '-',
+                    'rdf:type': [
+                        {
+                            data: 'v-wf:Variable',
+                            type: _Uri
+                    }],
+                    'v-wf:variableName': [
+                        {
+                            data: "prevTask",
+                            type: _String
+                    }],
+                    'v-wf:variableValue': prev_task
+                };
+            work_item_inputVariable.push(var_ctid);
+		}
+		
         //print("[WORKFLOW][WO20.0] transform_link=" + toJson(netElement['v-wf:startResultTransform']));
-        //print("[WORKFLOW][WO20.1] work_item_inputVariable=" + toJson(work_item_inputVariable));
+        print("[WORKFLOW][WO20.1] work_item_inputVariable=" + toJson(work_item_inputVariable));
 
 
         var transform_link = getUri(netElement['v-wf:startResultTransform']);
@@ -995,6 +1044,22 @@ function transformation(ticket, _in_data, rule, executor, work_order)
 					if (res == false)
 						continue;
 				}
+
+        var el_contentStrValue = (function ()
+        {
+            return function (name, value)
+            {
+				if (key !== name)
+					return false;
+                //print("obj[name]=", toJson(obj[name]));
+                var str = element[0].data;
+                //print("str=", str);
+                if (str == value)
+                    return true;
+                else
+                    return false;
+            }
+        })();
 				
                 res = eval(segregateElement[0].data);
                 if (res == false)
