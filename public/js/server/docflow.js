@@ -57,7 +57,7 @@ function prepare_decision_form(ticket, document)
     }
     if (process_output_vars.length > 0)
     {
-        work_order['v-wf:outputVariable'] = new_vars;
+        work_order['v-wf:outVars'] = new_vars;
         put_individual(ticket, work_order, _event_id);
 
         document['v-wf:isCompleted'] = [
@@ -85,21 +85,21 @@ function prepare_work_order(ticket, document)
     var work_item = get_individual(ticket, forWorkItem_uri);
     if (!work_item) return;
 
-    var work_item_inputVariable_uri = work_item['v-wf:inputVariable'];
+    var work_item_inVars_uri = work_item['v-wf:inVars'];
 
     var forProcess_uri = getUri(work_item['v-wf:forProcess']);
     var process = get_individual(ticket, forProcess_uri);
     if (!process) return;
 
-    var process_inputVariable_uri = process['v-wf:inputVariable'];
+    var process_inVars_uri = process['v-wf:inVars'];
 
     var forNetElement = work_item['v-wf:forNetElement'];
     var netElement = get_individual(ticket, getUri(forNetElement));
     if (!netElement) return;
 
-    var local_outputVariable = document['v-wf:outputVariable'];
+    var local_outVars = document['v-wf:outVars'];
 	// берем только необработанные рабочие задания
-    if (!local_outputVariable)
+    if (!local_outVars)
     {
 		// если исполнитель коделет
         if (is_exist(executor, 'rdf:type', 'v-s:Codelet'))
@@ -116,35 +116,44 @@ function prepare_work_order(ticket, document)
 
             print("[WORKFLOW][WO4] task: eval result=", toJson(result0));
 
+			var task_output_vars = [];
+			
             if (!netElement['v-wf:completedMapping'])
             {
-                print("[WORKFLOW][WO W6] v-wf:completedMapping not defined=", toJson(netElement));
+                print("[WORKFLOW][WO W6] v-wf:completedMapping not defined=", netElement['@']);
+				task_output_vars.push (
+					{
+					data: 'v-wf:complete',
+					type: _Uri
+					}
+				);
             }
 			else
 			{
-				// сохраняем результаты в v-wf:outputVariable в обрабатываемом рабочем задании
-				var task_output_vars = create_and_mapping_variables(ticket, netElement['v-wf:completedMapping'], process, work_item, result0);
+				// сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
+				task_output_vars = create_and_mapping_variables(ticket, netElement['v-wf:completedMapping'], process, work_item, result0);
 				//print("[WORKFLOW][WO W6.1] task_output_vars=", toJson(task_output_vars));						
-
-				if (task_output_vars.length > 0)
-				{	
-					document['v-wf:outputVariable'] = task_output_vars;
-					put_individual(ticket, document, _event_id);
-				}
 			}
+			
+			if (task_output_vars.length > 0)
+			{	
+				document['v-wf:outVars'] = task_output_vars;
+				put_individual(ticket, document, _event_id);
+			}
+			
 
         } // end [is codelet]        
         else if (is_exist(executor, 'rdf:type', 'v-s:Appointment'))
         {
             print("[WORKFLOW][WO20] is USER, executor=" + getUri(executor_uri) + "");
-            //print("work_item.inputVariable=", toJson(work_item_inputVariable_uri));
-            //print("process.inputVariable=", toJson(process_inputVariable_uri));
+            //print("work_item.inVars=", toJson(work_item_inVars_uri));
+            //print("process.inVars=", toJson(process_inVars_uri));
 
-            var work_item_inputVariable = [];
-            for (var i = 0; i < work_item_inputVariable_uri.length; i++)
+            var work_item_inVars = [];
+            for (var i = 0; i < work_item_inVars_uri.length; i++)
             {
-                var indv = get_individual(ticket, work_item_inputVariable_uri[i].data);
-                work_item_inputVariable.push(indv);
+                var indv = get_individual(ticket, work_item_inVars_uri[i].data);
+                work_item_inVars.push(indv);
             }
 
             var prev_task;
@@ -178,7 +187,7 @@ function prepare_work_order(ticket, document)
 
             if (prev_task)
             {
-                // ++ work_item_inputVariable: prev task id
+                // ++ work_item_inVars: prev task id
                 var var_ctid = {
                     '@': '-',
                     'rdf:type': [
@@ -193,11 +202,11 @@ function prepare_work_order(ticket, document)
                     }],
                     'v-wf:variableValue': prev_task
                 };
-                work_item_inputVariable.push(var_ctid);
+                work_item_inVars.push(var_ctid);
             }
 
             //print("[WORKFLOW][WO20.0] transform_link=" + toJson(netElement['v-wf:startResultTransform']));
-            print("[WORKFLOW][WO20.1] work_item_inputVariable=" + toJson(work_item_inputVariable));
+            print("[WORKFLOW][WO20.1] work_item_inVars=" + toJson(work_item_inVars));
 
 
             var transform_link = getUri(netElement['v-wf:startResultTransform']);
@@ -205,7 +214,7 @@ function prepare_work_order(ticket, document)
             var transform = get_individual(ticket, transform_link);
             if (!transform) return;
 
-            var transform_result = transformation(ticket, work_item_inputVariable, transform, executor_uri, newUri(document['@']));
+            var transform_result = transformation(ticket, work_item_inVars, transform, executor_uri, newUri(document['@']));
 
             for (var i = 0; i < transform_result.length; i++)
             {
@@ -240,20 +249,20 @@ function prepare_work_order(ticket, document)
     // проверяем есть ли результаты рабочих заданий
     for (var i = 0; i < workOrderList.length; i++)
     {
-        //print("[WORKFLOW][WO30.0] workOrder=" + toJson (workOrderList[i]) + "");        
+        print("[WORKFLOW][WO30.0] workOrder=" + toJson (workOrderList[i]) + "");        
         var workOrder;
         if (workOrderList[i].data != document['@'])
             workOrder = get_individual(ticket, workOrderList[i].data);
         else
             workOrder = document;
 
-        //print("[WORKFLOW][WO30.1] workOrder=" + toJson (workOrder) + "");        
+        print("[WORKFLOW][WO30.1] workOrder=" + toJson (workOrder) + "");        
 
-        var outputVariable = workOrder['v-wf:outputVariable'];
-        if (outputVariable)
+        var outVars = workOrder['v-wf:outVars'];
+        if (outVars)
         {
-            var _result = get_individual(ticket, outputVariable[0].data);
-            //print("[WORKFLOW][WO30.2] _result=" + toJson (_result) + "");        
+            var _result = get_individual(ticket, outVars[0].data);
+            print("[WORKFLOW][WO30.2] _result=" + toJson (_result) + "");        
             if (_result)
             {
                 if (wosResultsMapping)
@@ -278,13 +287,13 @@ function prepare_work_order(ticket, document)
 
                         result.push(el);
                     }
-                    //print("[WORKFLOW][WO30.3] result=" + toJson (result) + "");        
+                    print("[WORKFLOW][WO30.3] result=" + toJson (result) + "");        
                 }
             }
         }
 
     }
-    //print("[WORKFLOW][WO1-20]");
+    print("[WORKFLOW][WO1-20]");
 
     if (result.length == workOrderList.length)
         is_goto_to_next_task = true;
@@ -416,9 +425,9 @@ function prepare_work_item(ticket, document)
 
         // выполнить маппинг переменных	
         print("[WORKFLOW] task: start mapping vars");
-        var task_input_vars = create_and_mapping_variables(ticket, netElement['v-wf:startingMapping'], process, document, null);
-        if (task_input_vars.length > 0) document['v-wf:inputVariable'] = task_input_vars;
-        print("task_input_vars=", toJson(task_input_vars));
+        var work__item_inVars = create_and_mapping_variables(ticket, netElement['v-wf:startingMapping'], process, document, null);
+        if (work__item_inVars.length > 0) document['v-wf:inVars'] = work__item_inVars;
+        print("work__item_inVars=", toJson(work__item_inVars));
         // сформировать список исполнителей
         var executor_list = [];
         var executor_uris = netElement['v-wf:executor'];
@@ -589,9 +598,9 @@ function prepare_work_item(ticket, document)
 function prepare_process(ticket, document)
 {
     print("[WORKFLOW]:### prepare_process:" + document['@']);
-    var localVariable = document['v-wf:localVariable'];
-    if (!localVariable)
-        localVariable = [];
+    var inVars = document['v-wf:inVars'];
+    if (!inVars)
+        inVars = [];
 
     var instanceOf = document['v-wf:instanceOf'];
     var net = get_individual(ticket, getUri(instanceOf));
@@ -615,7 +624,7 @@ function prepare_process(ticket, document)
                 if (new_variable)
                 {
                     put_individual(ticket, new_variable, _event_id);
-                    localVariable.push(
+                    inVars.push(
                     {
                         data: new_variable['@'],
                         type: _Uri
@@ -625,9 +634,9 @@ function prepare_process(ticket, document)
 
         }
 
-        if (localVariable.length > 0)
+        if (inVars.length > 0)
         {
-            document['v-wf:localVariable'] = localVariable;
+            document['v-wf:inVars'] = inVars;
             put_individual(ticket, document, _event_id);
         }
     }
@@ -674,18 +683,18 @@ function prepare_start_form(ticket, document)
     if (!transform) return;
 
     // формируем входящие переменные
-    var process_input_vars = transformation(ticket, document, transform, null, null);
+    var process_inVars = transformation(ticket, document, transform, null, null);
     var new_vars = [];
-    for (var i = 0; i < process_input_vars.length; i++)
+    for (var i = 0; i < process_inVars.length; i++)
     {
-        put_individual(ticket, process_input_vars[i], _event_id);
+        put_individual(ticket, process_inVars[i], _event_id);
         new_vars.push(
         {
-            data: process_input_vars[i]['@'],
+            data: process_inVars[i]['@'],
             type: _Uri
         });
     }
-    if (process_input_vars.length > 0) new_process['v-wf:inputVariable'] = new_vars;
+    if (process_inVars.length > 0) new_process['v-wf:inVars'] = new_vars;
 
     print("new_process=", toJson(new_process));
 
@@ -772,7 +781,7 @@ function Context(_src_data, _ticket)
     this.getVariableValue = function (var_name)
     {
         //	print ("src_data=" + toJson (this.src_data));
-        var variables = this.src_data['v-wf:inputVariable'];
+        var variables = this.src_data['v-wf:inVars'];
 
         if (variables)
         {
@@ -834,7 +843,7 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
         {
 			// найдем среди локальных переменных процесса, такую переменную
 			// если нашли, то новая переменная должна перезаписать переменную процесса
-			var local_vars = _process['v-wf:localVariable'];
+			var local_vars = _process['v-wf:inVars'];
 			if (local_vars)
 			{
 				var find_local_var;
