@@ -265,6 +265,26 @@ v-wf:executorExpression
 .
 
 #------------------------------------------------------
+v-wf:VarDefine
+	rdf:type owl:Class ;
+	rdfs:label "Variable"@en ;
+	rdfs:label "Определение переменой"@ru ;
+.
+v-wf:varDefineName
+	rdf:type rdf:Property ;
+	rdfs:label "variable name"@en ;
+	rdfs:label "имя определяемой переменной"@ru ;
+	rdfs:domain v-wf:VarDefine ;
+	rdfs:range xsd:string ;
+.
+v-wf:varDefineScope
+	rdf:type rdf:Property ;
+	rdfs:label "определяемая область видимости"@ru ;
+	rdfs:domain v-wf:VarDefine ;
+        rdfs:range v-wf:Net ;
+        rdfs:range v-wf:Task ;
+.
+
 
 v-wf:Variable
 	rdf:type owl:Class ;
@@ -284,6 +304,13 @@ v-wf:variableValue
 	rdfs:label "значение переменной"@ru ;
 	rdfs:domain v-wf:Variable ;
 	rdfs:range rdfs:Resource ;
+.
+v-wf:variableScope
+	rdf:type rdf:Property ;
+	rdfs:label "область видимости"@ru ;
+	rdfs:domain v-wf:Variable ;
+        rdfs:range v-wf:Process ;
+        rdfs:range v-wf:WorkItem ;
 .
 
 #------------------------------------------------------
