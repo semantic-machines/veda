@@ -5,7 +5,7 @@
  */
 function prepare_decision_form(ticket, document)
 {
-    if (document['v-wf:isCompleted'])
+    if (document['v-wf:isCompleted'] && document['v-wf:isCompleted'][0].data == true)
         return;
 
     print("[WORKFLOW][DF1].0");
@@ -1183,6 +1183,17 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                             {
                                 data: value,
                                 type: _String
+                        }];
+                    }
+                })();
+                var putBoolean = (function ()
+                {
+                    return function (name, value)
+                    {
+                        out_data0_el[name] = [
+                            {
+                                data: value,
+                                type: _Bool
                         }];
                     }
                 })();
