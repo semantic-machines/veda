@@ -798,7 +798,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	}
             	for (var el in s.results) {
             	    if (s.results.hasOwnProperty(el)) {
-            	    	var wi =  new veda.IndividualModel(el);
+            	    	var wi = s.results[el];
                 		if (wi.hasValue('v-wf:forNetElement')) {
                 			var state = $('#'+veda.Util.escape4$(wi['v-wf:forNetElement'][0].id));
                 			var wic = parseInt(state.attr('work-items-count'));
@@ -815,7 +815,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 			} else {
                 				state.attr('work-items-count', 1);
                 			}
-            				if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted']=='true') {
+            				if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true) {
                     			state.css('background-color', '#88B288');
             				} else {
                     			state.css('background-color', '#FFB266');
