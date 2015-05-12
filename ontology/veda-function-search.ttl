@@ -158,7 +158,8 @@ v-fs:SearchModel
 				Object.defineProperty(self.results, results[i], {
 					get: function () { 
 						if (typeof results[i] == 'object') return results[i];
-						return results[i] = new veda.IndividualModel(results[i]);
+						var cache = !reopen;
+						return results[i] = new veda.IndividualModel(results[i], undefined, undefined, undefined, cache);
 					},
 					enumerable: true,
 					configurable: true
