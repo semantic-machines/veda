@@ -792,7 +792,6 @@ jsWorkflow.ready = jsPlumb.ready;
             		$('.w').each(function(index) {
             			$( this ).text('').css('background-color', 'white');
             		});
-            		alert('s');
             	} else {
             		s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"'");
             	}
