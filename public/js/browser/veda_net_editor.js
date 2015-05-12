@@ -790,7 +790,8 @@ jsWorkflow.ready = jsPlumb.ready;
             	if (reload) {            		
             		s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"'", undefined, true);
             		$('.w').each(function(index) {
-            			$( this ).text('').css('background-color', 'white').attr('work-items-count',0);
+            			$("span", this ).text('');
+            			$( this ).css('background-color', 'white').attr('work-items-count',0);
             		});
             	} else {
             		s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"'");
