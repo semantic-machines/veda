@@ -237,24 +237,24 @@ v-fs:SearchTemplate
 	</div>
 	<script>
 		var self = individual;
-		var q = $("#q", container);
-		var save = $("#save", container);
-		var saveAs = $("#save-as", container);
-		var params = $("#params", container);
-		var results = $("#results", container);
-		var srchSubmit = $("#srch-submit", container);
-		var searchResults = $("#search-results", container);
-		var searchResultsList = $("#search-results-list", container);
-		var notFound = $(".not-found", container);
-		var paramsPill = $("#params-pill", container);
-		var resultsPill = $("#results-pill", container);
-		var resultsCount = $("#results-count", container);
-		var timingPill = $("#timing-pill", container);
-		var $query_time = $("#query_time", container);
-		var $render_time = $("#render_time", container);
-		var $_get_count = $("#get_count", container);
-		var $_get_summary_time = $("#get_summary_time", container);
-		var pager = $("#pager", container);
+		var q = $("#q", template);
+		var save = $("#save", template);
+		var saveAs = $("#save-as", template);
+		var params = $("#params", template);
+		var results = $("#results", template);
+		var srchSubmit = $("#srch-submit", template);
+		var searchResults = $("#search-results", template);
+		var searchResultsList = $("#search-results-list", template);
+		var notFound = $(".not-found", template);
+		var paramsPill = $("#params-pill", template);
+		var resultsPill = $("#results-pill", template);
+		var resultsCount = $("#results-count", template);
+		var timingPill = $("#timing-pill", template);
+		var $query_time = $("#query_time", template);
+		var $render_time = $("#render_time", template);
+		var $_get_count = $("#get_count", template);
+		var $_get_summary_time = $("#get_summary_time", template);
+		var pager = $("#pager", template);
 		
 		if (self.hasValue("v-fs:q")) {
 			q.val(self["v-fs:q"][0]);

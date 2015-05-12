@@ -108,8 +108,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				view.template.trigger(mode);	
 				container.prepend(view.template);
 				view.scripts.map( function (script) { 
-					var presenter = new Function("veda", "individual", "container", script + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js");
-					presenter(veda, individual, view.template);
+					var presenter = new Function("veda", "individual", "template", "container", script + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js");
+					presenter(veda, individual, view.template, container);
 				});
 			}, 0);
 		});
