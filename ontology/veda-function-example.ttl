@@ -68,7 +68,7 @@ v-fe:FunctionExampleTemplate
       <button id="press-me" class="btn btn-success">Press me</button>
     </div>
     <script type="text/javascript">
-      $("#press-me", container).click(function () {
+      $("#press-me", template).click(function () {
         individual.press();
       });
     </script>
