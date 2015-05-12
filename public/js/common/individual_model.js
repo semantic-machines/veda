@@ -350,6 +350,7 @@ veda.Module(function (veda) { "use strict";
 	/**
 	 * @method
 	 * Clone individual with different (generated) id
+	 * @return {veda.IndividualModel} clone of this individual with different id.
 	 */
 	proto.clone = function () {
 		var self = this;
@@ -360,7 +361,17 @@ veda.Module(function (veda) { "use strict";
 			clone[property_uri] = self[property_uri].slice(0);
 		});
 		clone["rdf:type"] = self["rdf:type"].slice(0);
+		clone._.sync = false;
 		return clone;
+	};
+
+	/**
+	 * @method
+	 * Check whether individual is synchronized with db
+	 * @return {boolean}
+	 */
+	proto.isSync = function () {
+		return self._.sync;
 	};
 	
 });
