@@ -32,9 +32,6 @@ veda.Module(function SavedSearchList(veda) { "use strict";
 			Object.getOwnPropertyNames(s.results).map( function (id) {
 				var a = $("<a>", {"class": "list-group-item no-border", "href": "", "style": "display: block"}).appendTo(l);
 				
-				// Init individual type
-				s.results[id]["rdf:type"] = s.results[id]["rdf:type"];
-				
 				var d = new veda.IndividualModel(s.results[id], a, tmpl);
 				if (search.q == d["v-s:query"][0]) a.addClass("active");
 				a.click(function (e) {
