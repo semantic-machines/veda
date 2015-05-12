@@ -20,7 +20,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports owl: ;
-  owl:versionInfo "1.1" ;
+  owl:versionInfo "1.2" ;
 .
 v-wf:Net
 	rdf:type owl:Class ;
@@ -449,6 +449,9 @@ v-wf:ProcessTemplate
 				<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 			</button>
 			<button type="button" class="btn btn-default process-restart" style="float:right;">
+				<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+			</button>
+			<button type="button" class="btn btn-default process-refresh" style="float:right;">
 				<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
 			</button>
 		</div>
