@@ -783,11 +783,19 @@ jsWorkflow.ready = jsPlumb.ready;
             	}
             };
             
-            instance.createProcessView = function(process) {
+            instance.createProcessView = function(process, reload) {            	
             	// Apply WorkItems to Net
             	var s = new veda.IndividualModel();
             	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
-            	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"'");
+            	if (reload) {            		
+            		s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"'", undefined, true);
+            		$('.w').each(function(index) {
+            			$( this ).text('').css('background-color', 'white');
+            		});
+            		alert('s');
+            	} else {
+            		s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"'");
+            	}
             	for (var el in s.results) {
             	    if (s.results.hasOwnProperty(el)) {
             	    	var wi =  new veda.IndividualModel(el);
@@ -798,9 +806,9 @@ jsWorkflow.ready = jsPlumb.ready;
                 				state.attr('work-items-count', wic+1);
                 				if (wic == 1) {
                 					$("<span/>", {
-					   "class" : "counter",    
+					   				   "class" : "counter",    
                              		   "text" : 'x2'
-                             	   }).appendTo(state);	 
+                             	   }).appendTo(state);
                 				} else {
                 					$('.counter', state).text('x'+(wic+1));
                 				}
@@ -874,6 +882,10 @@ jsWorkflow.ready = jsPlumb.ready;
                 }
             });
             
+            $('.process-refresh').on('click', function() {
+            	instance.createProcessView(process, true);
+            });
+            
             /* ZOOM [BEGIN] */
             $('.zoom-in').on('click', function() {
             	if (currentScale<1) return instance.changeScale(currentScale + 0.1);
@@ -897,7 +909,7 @@ jsWorkflow.ready = jsPlumb.ready;
             
             $('.zoom-default').on('click', function() {            	
             	instance.optimizeView();
-            });
+            });            
             /* ZOOM [END] */
 
             /* NET MENU [END] */
