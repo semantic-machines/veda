@@ -22,7 +22,7 @@
   rdfs:label "Mondi individuals ontology"@en ;
   rdfs:label "Онтология индивидов Монди"@ru ;
   owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
-  owl:versionInfo "1.2" ;
+  owl:versionInfo "1.3" ;
 .
 
 td:AdministrativeDocument
@@ -882,6 +882,12 @@ td:ComplexRouteStartForm1
 
 :b435740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
     v-s:author td:RomanKarpov;
-    v-s:query "'rdf:type' == 'v-wf:DecisionForm'"^^xsd:string;
-    rdfs:label "общий инбокс"^^xsd:string;
+    v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false "^^xsd:string;
+    rdfs:label "общий инбокс: новые задачи"^^xsd:string;
+    v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
+
+:b555740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
+    v-s:author td:RomanKarpov;
+    v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true "^^xsd:string;
+    rdfs:label "общий инбокс: выполненые задачи"^^xsd:string;
     v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
