@@ -793,11 +793,12 @@ jsWorkflow.ready = jsPlumb.ready;
             	    	var wi =  new veda.IndividualModel(el);
                 		if (wi.hasValue('v-wf:forNetElement')) {
                 			var state = $('#'+veda.Util.escape4$(wi['v-wf:forNetElement'][0].id));
-                			var wic = state.attr('work-items-count');
+                			var wic = parseInt(state.attr('work-items-count'));
                 			if (wic>0) {                				
                 				state.attr('work-items-count', wic+1);
-                				if (wic = 1) {
+                				if (wic == 1) {
                 					$("<span/>", {
+					   "class" : "counter",    
                              		   "text" : 'x2'
                              	   }).appendTo(state);	 
                 				} else {
