@@ -185,10 +185,28 @@ function prepare_work_order(ticket, document)
                 i_work_item = previous_work_item;
             }
 
+// ? или сделать curTask и prevTask только для трансформации ?
+                // ++ work_item_inVars: cur task id
+                var var_ctid = {
+                    '@': '-',
+                    'rdf:type': [
+                        {
+                            data: 'v-wf:Variable',
+                            type: _Uri
+                    }],
+                    'v-wf:variableName': [
+                        {
+                            data: "curTask",
+                            type: _String
+                    }],
+                    'v-wf:variableValue': forNetElement
+                };
+                work_item_inVars.push(var_ctid);
+
             if (prev_task)
             {
                 // ++ work_item_inVars: prev task id
-                var var_ctid = {
+                var_ctid = {
                     '@': '-',
                     'rdf:type': [
                         {
@@ -1152,9 +1170,19 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                 {
                     return function (name)
                     {
-                        out_data0_el[name] = element;
+                        var out_data0_el_arr;
+
+                        out_data0_el_arr = out_data0_el[name];
+
+                        if (!out_data0_el_arr)
+                            out_data0_el_arr = [];
+                            
+                        out_data0_el_arr.push(element);
+                        
+                        out_data0_el[name] = out_data0_el_arr;                        
                     }
                 })();
+                
                 var putUri = (function ()
                 {
                     return function (name, value)
@@ -1175,26 +1203,46 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                         out_data0_el[name] = out_data0_el_arr;
                     }
                 })();
+                
                 var putString = (function ()
                 {
                     return function (name, value)
                     {
-                        out_data0_el[name] = [
-                            {
-                                data: value,
-                                type: _String
-                        }];
+                        var out_data0_el_arr;
+
+                        out_data0_el_arr = out_data0_el[name];
+
+                        if (!out_data0_el_arr)
+                            out_data0_el_arr = [];
+
+                        out_data0_el_arr.push(
+                        {
+                            data: value,
+                            type: _String
+                        });
+
+                        out_data0_el[name] = out_data0_el_arr;
                     }
                 })();
+                
                 var putBoolean = (function ()
                 {
                     return function (name, value)
                     {
-                        out_data0_el[name] = [
-                            {
-                                data: value,
-                                type: _Bool
-                        }];
+                        var out_data0_el_arr;
+
+                        out_data0_el_arr = out_data0_el[name];
+
+                        if (!out_data0_el_arr)
+                            out_data0_el_arr = [];
+
+                        out_data0_el_arr.push(
+                        {
+                            data: value,
+                            type: _Bool
+                        });
+
+                        out_data0_el[name] = out_data0_el_arr;
                     }
                 })();
 
