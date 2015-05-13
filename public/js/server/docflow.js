@@ -1166,6 +1166,26 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                     }
                 })();
 
+                var putTypeOfElement = (function ()
+                {
+                    return function (name)
+                    {
+                        var rr = get_individual(ticket, getUri (element));
+						if (!rr)
+							return;							
+						
+                        var out_data0_el_arr;
+
+                        out_data0_el_arr = out_data0_el[name];
+
+                        if (!out_data0_el_arr)
+                            out_data0_el_arr = [];
+                                                        
+                        out_data0_el_arr.push(rr['rdf:type']);
+                        
+                        out_data0_el[name] = out_data0_el_arr;                        
+                    }
+                })();
                 var putElement = (function ()
                 {
                     return function (name)

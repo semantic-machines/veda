@@ -616,13 +616,13 @@ v-wf:takenDecision
         rdf:type owl:ObjectProperty ;
         rdfs:label "решение"@ru ;
         rdfs:domain v-wf:DecisionForm ;
-        rdfs:range v-wf:Decision ;
+        rdfs:range rdfs:Resource ;
 .
 v-wf:possibleDecision
         rdf:type owl:ObjectProperty ;
         rdfs:label "возможные варианты решения"@ru ;
         rdfs:domain v-wf:DecisionForm ;
-        rdfs:range v-wf:Decision ;
+        rdfs:range owl:Class ;
 .
 v-wf:onDocument
         rdf:type owl:ObjectProperty ;
@@ -931,32 +931,38 @@ v-wf:Decision
 .
 
 v-wf:DecisionAgreed
-	rdf:type v-wf:Decision;
+	rdfs:subClassOf v-wf:Decision ;
+	rdf:type owl:Class ;
 	rdfs:label "согласовано"@ru ;
 .	
 
 v-wf:DecisionSign
-	rdf:type v-wf:Decision;
+	rdfs:subClassOf v-wf:Decision ;
+	rdf:type owl:Class ;
 	rdfs:label "подписано"@ru ;
 .	
 
 v-wf:DecisionReview
-	rdf:type v-wf:Decision;
+	rdfs:subClassOf v-wf:Decision ;
+	rdf:type owl:Class ;
 	rdfs:label "рассмотрено"@ru ;
 .	
 
 v-wf:DecisionRejected
-	rdf:type v-wf:Decision;
+	rdfs:subClassOf v-wf:Decision ;
+	rdf:type owl:Class ;
 	rdfs:label "отклонено"@ru ;
 .	
 
 v-wf:DecisionRemake
-	rdf:type v-wf:Decision;
+	rdfs:subClassOf v-wf:Decision ;
+	rdf:type owl:Class ;
 	rdfs:label "доработать"@ru ;
 .	
 
 v-wf:DecisionBreak
-	rdf:type v-wf:Decision;
+	rdfs:subClassOf v-wf:Decision ;
+	rdf:type owl:Class ;
 	rdfs:label "прервать маршрут"@ru ;
 .	
 
