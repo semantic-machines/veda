@@ -804,18 +804,16 @@ jsWorkflow.ready = jsPlumb.ready;
                 			var wic = parseInt(state.attr('work-items-count'));
                 			if (wic>0) {                				
                 				state.attr('work-items-count', wic+1);
-                				if (wic == 1) {
-                					$("<span/>", {
-					   				   "class" : "counter",    
-                             		   "text" : 'x2'
+						$(".counter", state).remove();
+                				$("<span/>", {
+					   			   "class" : "counter",    
+                             		   "text" : 'x'+(wic+1)
                              	   }).appendTo(state);
-                				} else {
-                					$('.counter', state).text('x'+(wic+1));
-                				}
+                				
                 			} else {
                 				state.attr('work-items-count', 1);
                 			}
-            				if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true) {
+            				if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true && state.css('background-color')!='#FFB266') {
                     			state.css('background-color', '#88B288');
             				} else {
                     			state.css('background-color', '#FFB266');
