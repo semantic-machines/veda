@@ -120,6 +120,21 @@ span.twitter-typeahead .tt-hint {
   overflow-y: auto;
 }
 
+/* Codemirror editor */
+.codemirror-editor { 
+  font-size: 12px;
+}
+
+.has-success .panel {
+  color: #3c763d;
+  border-color: #3c763d;
+}
+
+.has-error .panel {
+  color: #a94442;
+  border-color: #a94442;
+}
+
 /* [BEGIN] NET EDITOR */
 
 .w {

@@ -181,7 +181,7 @@
 	};
 
 	// Datetime control
-	$.fn.vedaDatetime = function( options ) {
+	$.fn.vedaDatetime = function (options) {
 		var opts = $.extend( {}, $.fn.vedaDatetime.defaults, options ),
 			control = $.fn.vedaControl(this, opts);
 		this.append(control);
@@ -194,6 +194,46 @@
 			var value = "", 
 				timestamp = Date.parse(input);
 			if ( isNaN(timestamp) === false ) value = new Date(timestamp);
+			return value;
+		}
+	};
+
+	// Source code control
+	$.fn.vedaSource = function (options) {
+		var opts = $.extend( {}, $.fn.vedaSource.defaults, options ),
+			immutable = opts.immutable,
+			control = $(opts.template),
+			editorEl = control.get(0),
+			editor = CodeMirror(editorEl, {
+			value: opts.value.toString(),
+			mode: opts.mode,
+			lineNumbers: true
+		});
+		setTimeout( function () {
+			editor.refresh();
+		}, 100);
+		this.on("view edit search", function (e) { 
+			e.stopPropagation();
+			editor.refresh();
+			e.type === "view"   ? ( editor.setOption("readOnly", "nocursor") ) : 
+			e.type === "edit" && !immutable ? ( editor.setOption("readOnly", false) ) : 
+			e.type === "edit" && immutable ? ( editor.setOption("readOnly", "nocursor") ) : 
+			e.type === "search" ? ( editor.setOption("readOnly", false) ) :
+			true;
+		});
+		editor.on("change", function () {
+			var value = opts.inputParser( editor.doc.getValue() );
+			opts.change(value);
+		});
+		this.append(control);
+		return this;
+	}
+	$.fn.vedaSource.defaults = {
+		value: new String(""),
+		template: $("#source-control-template").html(),
+		mode: "javascript", 
+		inputParser: function (input) {
+			var value = new String(input);
 			return value;
 		}
 	};

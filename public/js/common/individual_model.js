@@ -361,7 +361,6 @@ veda.Module(function (veda) { "use strict";
 			clone[property_uri] = self[property_uri].slice(0);
 		});
 		clone["rdf:type"] = self["rdf:type"].slice(0);
-		clone._.sync = false;
 		return clone;
 	};
 

@@ -418,11 +418,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			e.type === "edit" && immutable ? controlContainer.hide() : 
 			e.type === "search" ? controlContainer.show() : 
 			true;
+			if (e.type === "edit") isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
 			e.stopPropagation();
 		}
 		template.on("view edit search", modeHandler);
 
-		if (mode !== "search") isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
+		if (mode === "edit") isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
 		
 		return [controlContainer].concat(renderedValues);
 
@@ -454,7 +455,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						clone.remove();
 						individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id != lnk.id; });
 						if (embedded.length) {
-							var index = embedded.indexOf(embeddedTemplate);
+							var index = embedded.indexOf(lnkTemplate);
 							if ( index >= 0 ) embedded.splice(index, 1);
 						}
 					});
@@ -555,12 +556,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				.map(function (item) {
 					item.trigger(e.type);
 				});
+			if (e.type === "edit") isValid(individual, spec, values) ? controls.map( function(item) {item.addClass("has-success");} ) : controls.map( function(item) {item.addClass("has-error");} );
 			e.stopPropagation();				
 		}
 		template.on("view edit search", modeHandler);
 
-		if (mode !== "search") isValid(individual, spec, values) ? controls.map( function(item) {item.addClass("has-success");} ) : controls.map( function(item) {item.addClass("has-error");} );
-
+		if (mode === "edit") isValid(individual, spec, values) ? controls.map( function(item) {item.addClass("has-success");} ) : controls.map( function(item) {item.addClass("has-error");} );
+		
 		function renderControl (value, index) {
 			var opts = {
 				immutable: immutable,
@@ -579,6 +581,17 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					individual[property_uri] = values;
 				}
 			};
+			if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
+				controlType = $.fn.vedaSource;
+				opts.change = function (value) {
+					individual.prevent("individual:propertyModified", function () {
+						individual[property_uri] = [value];
+					});
+				}
+				if (property_uri === "v-s:script") opts.mode = "javascript";
+				if (property_uri === "v-ui:template") opts.mode = "htmlmixed";
+			}
+			
 			var control = controlType.call( $("<span>"), opts );
 			
 			container.append(control);
