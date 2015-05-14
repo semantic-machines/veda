@@ -7,10 +7,10 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
 
 <http://semantic-machines.com/veda/veda-schema>
   rdf:type owl:Ontology ;
@@ -667,6 +667,12 @@ v-s:hasChief
   rdfs:label "непосредственный руководитель"@ru ;
   rdfs:range v-s:Appointment ;
 .
+v-s:hasDeveloper
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "developer"@en ;
+  rdfs:label "разработчик"@ru ;
+  rdfs:range v-s:Appointment ;
+.
 v-s:hasFunctionalChief
   rdf:type owl:ObjectProperty ;
   rdfs:label "functional chief"@en ;
@@ -715,6 +721,12 @@ v-s:hasStatusWorkflow
   rdfs:label "статус документооборота"@ru ;
   rdfs:range v-s:StatusWorkflow ;
   rdfs:subPropertyOf v-s:status ;
+.
+v-s:hasYesNo
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "yes no"@en ;
+  rdfs:label "да нет"@ru ;
+  rdfs:range v-s:YesNo ;
 .
 v-s:label
   rdf:type owl:DatatypeProperty ;
@@ -910,8 +922,8 @@ v-s:restriction
 .
 v-s:script
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Codelet ;
   rdfs:domain v-s:ClassModel ;
+  rdfs:domain v-s:Codelet ;
   rdfs:domain v-s:Event ;
   rdfs:label "script"@en ;
   rdfs:label "скрипт"@ru ;
@@ -984,6 +996,13 @@ v-s:tags
   rdfs:label "ключевые слова"@ru ;
   rdfs:range xsd:string ;
 .
+v-s:test
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Person ;
+  rdfs:label "test"@en ;
+  rdfs:label "test"@ru ;
+  rdfs:range v-fs:Search ;
+.
 v-s:theme
   rdf:type owl:DatatypeProperty ;
   rdfs:label "theme"@en ;
@@ -1015,11 +1034,4 @@ v-s:year
   rdfs:label "year"@en ;
   rdfs:label "год"@ru ;
   rdfs:range xsd:integer ;
-.
-v-s:test
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Person ;
-  rdfs:label "test"@en ;
-  rdfs:label "test"@ru ;
-  rdfs:range v-fs:Search ;
 .
