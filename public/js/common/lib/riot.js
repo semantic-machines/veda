@@ -63,16 +63,6 @@ riot.observable = function(el) {
     return el;
   };
   
-  el.prevent = function(name, cb) {
-    var fns = callbacks[name] ? callbacks[name].slice(0) : [];
-    el.off(name);
-	if (typeof cb === "function") { cb.apply(el); }
-	for (var i = 0, fn; (fn = fns[i]); ++i) {
-  	  el.on(name, fn);
-	}
-    return el;
-  };
-
   return el;
 
 };

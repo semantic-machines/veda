@@ -296,13 +296,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					:
 					new veda.IndividualModel("v-ui:ClassNameIdTemplate")
 			);
-			var rendered = renderRelation(individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode);
+			var rendered = renderRelation(individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, propertyModifiedHandler);
 			
 			// Re-render link property if its' values were changed
 			function propertyModifiedHandler (doc_property_uri) {
 				if (doc_property_uri === rel_uri) {
 					rendered.map( function (item) { item.remove(); } );
-					rendered = renderRelation(individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode);
+					rendered = renderRelation(individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, propertyModifiedHandler);
 				}
 			}
 			individual.on("individual:propertyModified", propertyModifiedHandler);
@@ -320,12 +320,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				//propertyTemplate = propertyContainer.attr("template"),
 				spec = specs[property_uri];
 				
-			renderProperty(individual, property_uri, propertyContainer, spec, template, mode);
+			renderProperty(individual, property_uri, propertyContainer, spec, template, mode, propertyModifiedHandler);
 			
 			// Re-render property if its' values were changed
 			function propertyModifiedHandler (doc_property_uri) {
 				if (doc_property_uri === property_uri) {
-					renderProperty (individual, property_uri, propertyContainer, spec, template, mode);
+					renderProperty (individual, property_uri, propertyContainer, spec, template, mode, propertyModifiedHandler);
 				}
 			}
 			individual.on("individual:propertyModified", propertyModifiedHandler);
@@ -350,7 +350,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		return template;
 	}
 	
-	function renderRelation (individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode) {
+	function renderRelation (individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, handler) {
 		
 		if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
 		
@@ -487,7 +487,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		
 	}
 
-	function renderProperty (individual, property_uri, container, spec, template, mode) {
+	function renderProperty (individual, property_uri, container, spec, template, mode, handler) {
 		
 		if ( property_uri != "id" && !veda.ontology[property_uri] ) return;
 		
@@ -584,9 +584,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
 				controlType = $.fn.vedaSource;
 				opts.change = function (value) {
-					individual.prevent("individual:propertyModified", function () {
-						individual[property_uri] = [value];
-					});
+					individual.off("individual:propertyModified", handler);
+					individual[property_uri] = [value];
+					individual.on("individual:propertyModified", handler);
 				}
 				if (property_uri === "v-s:script") opts.mode = "javascript";
 				if (property_uri === "v-ui:template") opts.mode = "htmlmixed";
