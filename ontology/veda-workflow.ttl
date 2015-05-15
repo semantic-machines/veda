@@ -190,6 +190,7 @@ v-wf:inputOutputVariable
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:VarDefine ;
 .
+
 v-wf:split
 	rdf:type rdf:Property ;
 	rdfs:label "split"@en ;
@@ -197,6 +198,7 @@ v-wf:split
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:TransitionBehavior ;
 .
+
 v-wf:join
 	rdf:type rdf:Property ;
 	rdfs:label "join"@en ;
@@ -204,6 +206,7 @@ v-wf:join
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:TransitionBehavior ;
 .
+
 v-wf:flowsInto
 	rdf:type rdf:Property ;
 	rdfs:label "flows into"@en ;
@@ -211,6 +214,7 @@ v-wf:flowsInto
 	rdfs:domain v-wf:Flow ;
 	rdfs:range v-wf:NetElement ;
 .
+
 v-wf:predicate
 	rdf:type rdf:Property ;
 	rdfs:label "flow predicate"@en ;
@@ -218,6 +222,7 @@ v-wf:predicate
 	rdfs:domain v-wf:Flow ;
 	rdfs:range xsd:string ;
 .
+
 v-wf:curviness
 	rdf:type rdf:Property ;
 	rdfs:label "curviness"@en ;
@@ -225,6 +230,7 @@ v-wf:curviness
 	rdfs:domain v-wf:Flow ;
 	rdfs:range xsd:integer ;
 .
+
 v-wf:startingMapping
 	rdf:type rdf:Property ;
 	rdfs:label "starting mapping"@en ;
@@ -232,6 +238,7 @@ v-wf:startingMapping
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Mapping ;
 .
+
 v-wf:completedMapping
 	rdf:type rdf:Property ;
 	rdfs:label "completed mapping"@en ;
@@ -239,6 +246,7 @@ v-wf:completedMapping
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Mapping ;
 .
+
 v-wf:wosResultsMapping
 	rdf:type rdf:Property ;
 	rdfs:label "work orders results mapping"@en ;
@@ -246,6 +254,7 @@ v-wf:wosResultsMapping
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Mapping ;
 .
+
 v-wf:executor
 	rdf:type rdf:Property ;
 	rdfs:label "executor"@en ;
@@ -256,6 +265,7 @@ v-wf:executor
 	rdfs:range v-s:Appointment ;
 	rdfs:range v-s:Codelet ;
 .
+
 v-wf:executorExpression
 	rdf:type rdf:Property ;
 	rdfs:label "executor choice expression"@en ;
@@ -270,6 +280,7 @@ v-wf:VarDefine
 	rdfs:label "Variable"@en ;
 	rdfs:label "Определение переменой"@ru ;
 .
+
 v-wf:varDefineName
 	rdf:type rdf:Property ;
 	rdfs:label "variable name"@en ;
@@ -277,6 +288,7 @@ v-wf:varDefineName
 	rdfs:domain v-wf:VarDefine ;
 	rdfs:range xsd:string ;
 .
+
 v-wf:varDefineScope
 	rdf:type rdf:Property ;
 	rdfs:label "определяемая область видимости"@ru ;
@@ -291,6 +303,7 @@ v-wf:Variable
 	rdfs:label "Variable"@en ;
 	rdfs:label "Переменная"@ru ;
 .
+
 v-wf:variableName
 	rdf:type rdf:Property ;
 	rdfs:label "variable name"@en ;
@@ -298,6 +311,7 @@ v-wf:variableName
 	rdfs:domain v-wf:Variable ;
 	rdfs:range xsd:string ;
 .
+
 v-wf:variableValue
 	rdf:type rdf:Property ;
 	rdfs:label "variable value"@en ;
@@ -305,6 +319,7 @@ v-wf:variableValue
 	rdfs:domain v-wf:Variable ;
 	rdfs:range rdfs:Resource ;
 .
+
 v-wf:variableScope
 	rdf:type rdf:Property ;
 	rdfs:label "область видимости"@ru ;
@@ -844,6 +859,14 @@ v-wf:workOrderList
 	rdfs:label "list task for executor"@en ;
 	rdfs:domain v-wf:WorkItem ;
 	rdfs:range v-wf:WorkOrder ;
+.
+
+v-wf:workItemList
+	rdf:type rdf:Property ;
+	rdfs:label "список порожденных заданий"@ru ;
+	rdfs:domain v-wf:Process ;
+	rdfs:domain v-wf:WorkItem ;
+	rdfs:range v-wf:WorkItem ;
 .
 
 v-wf:previousWorkItem

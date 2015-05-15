@@ -34,6 +34,8 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
     print("[WORKFLOW]:create work item:" + new_uri);
 
     put_individual(ticket, new_work_item, _event_id);
+    
+    return new_uri;
 }
 
 
