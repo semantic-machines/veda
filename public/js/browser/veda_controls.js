@@ -205,10 +205,14 @@
 			control = $(opts.template),
 			editorEl = control.get(0),
 			editor = CodeMirror(editorEl, {
-			value: opts.value.toString(),
-			mode: opts.mode,
-			lineNumbers: true
-		});
+				value: opts.value.toString(),
+				mode: opts.mode,
+				matchBrackets: true,
+				autoCloseBrackets: true,
+				matchTags: true,
+				autoCloseTags: true,
+				lineNumbers: true
+			});
 		setTimeout( function () {
 			editor.refresh();
 		}, 100);
