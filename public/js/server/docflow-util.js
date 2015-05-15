@@ -34,7 +34,7 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
     print("[WORKFLOW]:create work item:" + new_uri);
 
     put_individual(ticket, new_work_item, _event_id);
-    
+
     return new_uri;
 }
 
@@ -114,31 +114,31 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
 
         if (scope)
         {
-			// найдем среди локальных переменных процесса, такую переменную
-			// если нашли, то новая переменная должна перезаписать переменную процесса
-			var local_vars = _process['v-wf:inVars'];
-			if (local_vars)
-			{
-				var find_local_var;
-				for (var i = 0; i < local_vars.length; i++)
-				{
-					var local_var = get_individual(ticket, local_vars[i].data);
-					if (!local_var) continue;
-					
-					var var_name = getFirstValue (local_var['v-wf:variableName']);
-					if (!var_name) continue;							
-					
-					if (var_name == variable_name)
-					{
-						find_local_var = local_var;
-						break;
-					}	
-				}
-				
-				if (find_local_var)
-					new_variable['@'] = find_local_var['@'];
-			}		
-			
+            // найдем среди локальных переменных процесса, такую переменную
+            // если нашли, то новая переменная должна перезаписать переменную процесса
+            var local_vars = _process['v-wf:inVars'];
+            if (local_vars)
+            {
+                var find_local_var;
+                for (var i = 0; i < local_vars.length; i++)
+                {
+                    var local_var = get_individual(ticket, local_vars[i].data);
+                    if (!local_var) continue;
+
+                    var var_name = getFirstValue(local_var['v-wf:variableName']);
+                    if (!var_name) continue;
+
+                    if (var_name == variable_name)
+                    {
+                        find_local_var = local_var;
+                        break;
+                    }
+                }
+
+                if (find_local_var)
+                    new_variable['@'] = find_local_var['@'];
+            }
+
             new_variable['v-wf:variableScope'] = [
                 {
                     data: scope,
@@ -342,20 +342,20 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                 {
                     return function (name)
                     {
-                        var rr = get_individual(ticket, getUri (element));
-						if (!rr)
-							return;							
-						
+                        var rr = get_individual(ticket, getUri(element));
+                        if (!rr)
+                            return;
+
                         var out_data0_el_arr;
 
                         out_data0_el_arr = out_data0_el[name];
 
                         if (!out_data0_el_arr)
                             out_data0_el_arr = [];
-                                                        
+
                         out_data0_el_arr.push(rr['rdf:type']);
-                        
-                        out_data0_el[name] = out_data0_el_arr;                        
+
+                        out_data0_el[name] = out_data0_el_arr;
                     }
                 })();
                 var putElement = (function ()
@@ -368,13 +368,13 @@ function transformation(ticket, _in_data, rule, executor, work_order)
 
                         if (!out_data0_el_arr)
                             out_data0_el_arr = [];
-                            
+
                         out_data0_el_arr.push(element);
-                        
-                        out_data0_el[name] = out_data0_el_arr;                        
+
+                        out_data0_el[name] = out_data0_el_arr;
                     }
                 })();
-                
+
                 var putUri = (function ()
                 {
                     return function (name, value)
@@ -395,7 +395,7 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                         out_data0_el[name] = out_data0_el_arr;
                     }
                 })();
-                
+
                 var putString = (function ()
                 {
                     return function (name, value)
@@ -416,7 +416,7 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                         out_data0_el[name] = out_data0_el_arr;
                     }
                 })();
-                
+
                 var putBoolean = (function ()
                 {
                     return function (name, value)

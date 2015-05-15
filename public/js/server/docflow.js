@@ -320,7 +320,7 @@ function prepare_work_order(ticket, document)
     // end //////////////// скрипт сборки результатов
     //print("[WORKFLOW][WO30.e] result=" + toJson(result) + "");
 
-	var workItemList = [];
+    var workItemList = [];
 
     if (is_goto_to_next_task)
     {
@@ -366,12 +366,12 @@ function prepare_work_order(ticket, document)
                             {
                                 //print("[WORKFLOW][WO10] create next work item for =" + nextNetElement['@']);
                                 var work_item_uri = create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id);
-								workItemList.push(
-								{
-									data: work_item_uri,
-									type: _Uri
-								});                            
-							}
+                                workItemList.push(
+                                {
+                                    data: work_item_uri,
+                                    type: _Uri
+                                });
+                            }
 
                         }
                     }
@@ -385,11 +385,11 @@ function prepare_work_order(ticket, document)
                     {
                         //print("[WORKFLOW][WO11] create next work item for =" + nextNetElement['@']);
                         var work_item_uri = create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id);
-						workItemList.push(
-						{
-							data: work_item_uri,
-							type: _Uri
-						});                            
+                        workItemList.push(
+                        {
+                            data: work_item_uri,
+                            type: _Uri
+                        });
                     }
 
 
@@ -404,10 +404,10 @@ function prepare_work_order(ticket, document)
                 data: true,
                 type: _Bool
                }];
-               
-		if (workItemList.length > 0)
-			work_item['v-wf:workItemList'] = workItemList;
-               
+
+        if (workItemList.length > 0)
+            work_item['v-wf:workItemList'] = workItemList;
+
         put_individual(ticket, work_item, _event_id);
         //print("[WORKFLOW][WO12] document=", toJson (document)); 
     }
@@ -452,9 +452,9 @@ function prepare_work_item(ticket, document)
 
     print("\r\n[WORKFLOW]:-- NetElement:" + netElement['@'] + ' --');
 
-	var is_completed = false;
-	var workItemList = [];
-	
+    var is_completed = false;
+    var workItemList = [];
+
     if (is_exist(netElement, 'rdf:type', 'v-wf:Task'))
     {
         print("[WORKFLOW]:Is task");
@@ -530,12 +530,12 @@ function prepare_work_item(ticket, document)
                     {
                         data: 'v-wf:WorkOrder',
                         type: _Uri
-					}],
+     }],
                 'v-wf:forWorkItem': [
                     {
                         data: document['@'],
                         type: _Uri
-					}],
+     }],
                 'v-wf:executor': executor_list[i]
             };
 
@@ -578,7 +578,7 @@ function prepare_work_item(ticket, document)
                 if (!nextNetElement) continue;
 
                 var work_item_uri = create_work_item(ticket, forProcess, nextNetElement['@'], document['@'], _event_id);
-				workItemList.push(
+                workItemList.push(
                 {
                     data: work_item_uri,
                     type: _Uri
@@ -588,9 +588,9 @@ function prepare_work_item(ticket, document)
                         data: true,
                         type: _Bool
                }];
-               is_completed = true;
-               
-               print("[WORKFLOW][WO12] document=", toJson(document));
+                is_completed = true;
+
+                print("[WORKFLOW][WO12] document=", toJson(document));
             }
         }
     } // end [InputCondition]
@@ -614,7 +614,7 @@ function prepare_work_item(ticket, document)
                 if (!nextNetElement) continue;
 
                 var work_item_uri = create_work_item(ticket, forProcess, nextNetElement['@'], document['@'], _event_id);
-				workItemList.push(
+                workItemList.push(
                 {
                     data: work_item_uri,
                     type: _Uri
@@ -623,7 +623,7 @@ function prepare_work_item(ticket, document)
                     {
                         data: true,
                         type: _Bool
-					}];
+     }];
                 is_completed = true;
                 print("[WORKFLOW][WO12] document=", toJson(document));
 
@@ -632,12 +632,12 @@ function prepare_work_item(ticket, document)
     }
 
     if (workItemList.length > 0)
-		document['v-wf:workItemList'] = workItemList;
+        document['v-wf:workItemList'] = workItemList;
 
-	if (is_completed == true || workItemList.length > 0)
-	{
-		put_individual(ticket, document, _event_id);		
-	}	
+    if (is_completed == true || workItemList.length > 0)
+    {
+        put_individual(ticket, document, _event_id);
+    }
 
 }
 
@@ -683,9 +683,9 @@ function prepare_process(ticket, document)
 
         }
     }
-    
+
     var workItemList = [];
-    
+
     var net_consistsOfz = net['v-wf:consistsOf'];
     if (net_consistsOfz)
     {
@@ -697,24 +697,24 @@ function prepare_process(ticket, document)
             if (is_exist(net_consistsOf, 'rdf:type', 'v-wf:InputCondition'))
             {
                 var work_item_uri = create_work_item(ticket, document['@'], net_consistsOf['@'], null, _event_id);
-                
+
                 workItemList.push(
                 {
                     data: work_item_uri,
                     type: _Uri
                 });
-                
+
                 break;
             }
         }
-        
+
     }
-    
+
     if (inVars.length > 0)
-		document['v-wf:inVars'] = inVars;
-    
+        document['v-wf:inVars'] = inVars;
+
     if (workItemList.length > 0)
-		document['v-wf:workItemList'] = workItemList;
+        document['v-wf:workItemList'] = workItemList;
 
     if (inVars.length > 0 || workItemList.length > 0)
         put_individual(ticket, document, _event_id);
