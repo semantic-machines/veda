@@ -633,7 +633,7 @@ v-wf:takenDecision
         rdfs:domain v-wf:DecisionForm ;
         rdfs:range rdfs:Resource ;
 .
-v-wf:possibleDecision
+v-wf:possibleDecisionClass
         rdf:type owl:ObjectProperty ;
         rdfs:label "возможные варианты решения"@ru ;
         rdfs:domain v-wf:DecisionForm ;

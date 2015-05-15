@@ -189,13 +189,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		template.on("recover", recoverHandler);
 
-		function typeChangeHandler () {
+		/*function typeChangeHandler () {
 			veda.trigger("individual:loaded", individual, container, undefined, mode);
 		}
 		individual.on("individual:typeChanged", typeChangeHandler);
 		template.one("remove", function () {
 			individual.off("individual:typeChanged", typeChangeHandler);
-		});
+		});*/
 		
 		// Actions
 		var $edit = $("#edit.action", template),
