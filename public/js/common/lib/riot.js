@@ -52,12 +52,12 @@ riot.observable = function(el) {
       fns = callbacks[name] || [];
 
     for (var i = 0, fn; (fn = fns[i]); ++i) {
-      if (!fn.busy) {
-        fn.busy = true;
+      //if (!fn.busy) {
+        //fn.busy = true;
         fn.apply(el, fn.typed ? [name].concat(args) : args);
         if (fn.one) { fns.splice(i, 1); i--; }
-        fn.busy = false;
-      }
+        //fn.busy = false;
+      //}
     }
 
     return el;

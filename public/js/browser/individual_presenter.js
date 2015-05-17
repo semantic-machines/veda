@@ -104,14 +104,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		
 		rendered.map( function (view) {
-			setTimeout(function () {
+			//setTimeout(function () {
 				view.template.trigger(mode);	
 				container.prepend(view.template);
 				view.scripts.map( function (script) { 
 					var presenter = new Function("veda", "individual", "template", "container", script + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js");
 					presenter(veda, individual, view.template, container);
 				});
-			}, 0);
+			//}, 0);
 		});
 		
 	});
@@ -188,14 +188,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			e.stopPropagation();
 		}
 		template.on("recover", recoverHandler);
-
-		/*function typeChangeHandler () {
-			veda.trigger("individual:loaded", individual, container, undefined, mode);
-		}
-		individual.on("individual:typeChanged", typeChangeHandler);
-		template.one("remove", function () {
-			individual.off("individual:typeChanged", typeChangeHandler);
-		});*/
 		
 		// Actions
 		var $edit = $("#edit.action", template),
@@ -360,6 +352,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		if ( spec && spec.hasValue("v-ui:defaultObjectValue") && !individual.hasValue(rel_uri) ) {
 			template.on("edit", assignDefaultObjectValue);
+			if (mode === "edit") individual[rel_uri] = [ spec["v-ui:defaultObjectValue"][0] ];
 		}
 		
 		var immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true;
@@ -407,17 +400,17 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		
 		controlContainer.append(control);
 		
-		mode === "view" ? controlContainer.hide() :
-		mode === "edit" ? controlContainer.show() :
-		mode === "search" ? controlContainer.show() : true;
-
+		mode === "view" ? controlContainer.hide() : 
+		mode === "edit" && !immutable ? controlContainer.show() :
+		mode === "edit" && immutable ? controlContainer.hide() : 
+        mode === "search" ? controlContainer.show() : true;
+        
 		function modeHandler (e) {
 			mode = e.type;
 			e.type === "view" ? controlContainer.hide() : 
 			e.type === "edit" && !immutable ? controlContainer.show() : 
 			e.type === "edit" && immutable ? controlContainer.hide() : 
-			e.type === "search" ? controlContainer.show() : 
-			true;
+			e.type === "search" ? controlContainer.show() : true;
 			if (e.type === "edit") isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
 			e.stopPropagation();
 		}
@@ -504,6 +497,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			controlType, emptyVal, defaultValue;
 		
 		if ( !individual[property_uri] ) individual.defineProperty(property_uri);
+		
 		var values = individual[property_uri];
 		
 		container.attr("content", values.join(", "));

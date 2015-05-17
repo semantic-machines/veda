@@ -76,6 +76,10 @@ veda.Module(function (veda) { "use strict";
 			if (container) veda.trigger("individual:loaded", individual, container, template, mode);
 		});
 		
+		self.on("individual:typeChanged", function () {
+			if (container) veda.trigger("individual:loaded", self, container, template, mode);
+		});
+		
 		// Load data 
 		if (uri) self = self.load(uri);
 		else self.trigger("individual:afterLoad", self);
