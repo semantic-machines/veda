@@ -104,14 +104,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		
 		rendered.map( function (view) {
-			//setTimeout(function () {
-				view.template.trigger(mode);	
-				container.prepend(view.template);
-				view.scripts.map( function (script) { 
-					var presenter = new Function("veda", "individual", "template", "container", script + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js");
-					presenter(veda, individual, view.template, container);
-				});
-			//}, 0);
+			view.template.trigger(mode);	
+			container.prepend(view.template);
+			view.scripts.map( function (script) { 
+				var presenter = new Function("veda", "individual", "template", "container", script + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js");
+				presenter(veda, individual, view.template, container);
+			});
 		});
 		
 	});
@@ -425,8 +423,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var clone = relContainer.clone();
 			var lnk;
 			var lnkTemplate;
-			//if (value instanceof veda.IndividualModel || !value) {
-				//setTimeout( function () {
+			if (value instanceof veda.IndividualModel || !value) {
+				setTimeout( function () {
 					lnkTemplate = $("<span>").append( $( relTemplate["v-ui:template"][0].toString() ) );
 					if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0] == true) {
 						lnk = new veda.IndividualModel(value, clone, lnkTemplate, mode);
@@ -469,11 +467,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 					clone.append(clear);
 					
-				//}, 0);
-			//} else {
+				}, 0);
+			} else {
 				// External resources
-				//clone.append( $("<a>", {href: value, text: value}) );
-			//}
+				clone.append( $("<a>", {href: value, text: value}) );
+			}
 			relContainer.before(clone);
 			return clone.show();
 		}
