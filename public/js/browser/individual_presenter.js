@@ -270,40 +270,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			else propertyContainer.html( about[property_uri].join(", ") );
 		});
 		
-		// Related resources
-		$("[rel]", template).map( function () {
-			
-			var relContainer = $(this), 
-				rel_uri = relContainer.attr("rel"),
-				relTemplate = relContainer.attr("template"),
-				spec = specs[rel_uri];
-			
-			relContainer.empty().hide();
-			
-			relTemplate = relTemplate ? (
-				new veda.IndividualModel(relTemplate) 
-			) : (
-				individual.hasValue(rel_uri) && individual[rel_uri][0].hasValue("rdfs:label") ? 
-					new veda.IndividualModel("v-ui:ClassNameLabelTemplate")
-					:
-					new veda.IndividualModel("v-ui:ClassNameIdTemplate")
-			);
-			var rendered = renderRelation(individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, propertyModifiedHandler);
-			
-			// Re-render link property if its' values were changed
-			function propertyModifiedHandler (doc_property_uri) {
-				if (doc_property_uri === rel_uri) {
-					rendered.map( function (item) { item.remove(); } );
-					rendered = renderRelation(individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, propertyModifiedHandler);
-				}
-			}
-			individual.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				individual.off("individual:propertyModified", propertyModifiedHandler);
-			});
-
-		});
-		
 		// Properties
 		$("[property]", template).not("[about]").map( function () {
 			
@@ -338,6 +304,40 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				)
 				.after( "&nbsp;" );
 		});
+		
+		// Related resources
+		$("[rel]", template).map( function () {
+			
+			var relContainer = $(this), 
+				rel_uri = relContainer.attr("rel"),
+				relTemplate = relContainer.attr("template"),
+				spec = specs[rel_uri];
+			
+			relContainer.empty().hide();
+			
+			relTemplate = relTemplate ? (
+				new veda.IndividualModel(relTemplate) 
+			) : (
+				individual.hasValue(rel_uri) && individual[rel_uri][0].hasValue("rdfs:label") ? 
+					new veda.IndividualModel("v-ui:ClassNameLabelTemplate")
+					:
+					new veda.IndividualModel("v-ui:ClassNameIdTemplate")
+			);
+			var rendered = renderRelation(individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, propertyModifiedHandler);
+			
+			// Re-render link property if its' values were changed
+			function propertyModifiedHandler (doc_property_uri) {
+				if (doc_property_uri === rel_uri) {
+					rendered.map( function (item) { item.remove(); } );
+					rendered = renderRelation(individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, propertyModifiedHandler);
+				}
+			}
+			individual.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				individual.off("individual:propertyModified", propertyModifiedHandler);
+			});
+
+		});		
 		
 		return template;
 	}
@@ -425,8 +425,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var clone = relContainer.clone();
 			var lnk;
 			var lnkTemplate;
-			if (value instanceof veda.IndividualModel || !value) {
-				setTimeout( function () {
+			//if (value instanceof veda.IndividualModel || !value) {
+				//setTimeout( function () {
 					lnkTemplate = $("<span>").append( $( relTemplate["v-ui:template"][0].toString() ) );
 					if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0] == true) {
 						lnk = new veda.IndividualModel(value, clone, lnkTemplate, mode);
@@ -469,11 +469,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 					clone.append(clear);
 					
-				}, 0);
-			} else {
+				//}, 0);
+			//} else {
 				// External resources
-				clone.append( $("<a>", {href: value, text: value}) );
-			}
+				//clone.append( $("<a>", {href: value, text: value}) );
+			//}
 			relContainer.before(clone);
 			return clone.show();
 		}
