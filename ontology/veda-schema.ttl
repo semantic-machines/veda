@@ -417,6 +417,12 @@ v-s:comment
   rdfs:label "комментарий"@ru ;
   rdfs:range xsd:string ;
 .
+v-s:contactInfo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "contact info"@en ;
+  rdfs:label "контактные данные"@ru ;
+  rdfs:range xsd:string ;
+.
 v-s:contributor
   rdf:type owl:ObjectProperty ;
   rdfs:label "contributor"@en ;
@@ -744,6 +750,12 @@ v-s:lastName
   rdfs:label "фамилия"@ru ;
   rdfs:range xsd:string ;
 .
+v-s:legalAddress
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "legal address"@en ;
+  rdfs:label "юридический адрес"@ru ;
+  rdfs:range xsd:string ;
+.
 v-s:login
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Account ;
@@ -860,6 +872,12 @@ v-s:permissionSubject
   rdfs:label "permission subject"@en ;
   rdfs:label "субъект полномочий"@ru ;
   rdfs:range rdfs:Resource ;
+.
+v-s:postalAddress
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "postal address"@en ;
+  rdfs:label "почтовый адрес"@ru ;
+  rdfs:range xsd:string ;
 .
 v-s:previousVersion
   rdf:type owl:ObjectProperty ;
