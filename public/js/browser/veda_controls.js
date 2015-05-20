@@ -200,9 +200,11 @@
 
 	// Source code control
 	$.fn.vedaSource = function (options) {
-		var opts = $.extend( {}, $.fn.vedaSource.defaults, options ),
+		var self = this,
+			opts = $.extend( {}, $.fn.vedaSource.defaults, options ),
 			immutable = opts.immutable,
 			control = $(opts.template),
+			fscreen = $("#full-screen", control),
 			editorEl = control.get(0),
 			editor = CodeMirror(editorEl, {
 				value: opts.value.toString(),
@@ -228,6 +230,30 @@
 		editor.on("change", function () {
 			var value = opts.inputParser( editor.doc.getValue() );
 			opts.change(value);
+		});
+		fscreen.click(function () {
+			var body = $("body"),
+			    all = $("body > *"),
+				parent = control.parent(),
+				wrapper = $("<div class='fs-wrapper'></div>"),
+				cm = $(".CodeMirror", control);
+			if ( !parent.hasClass("fs-wrapper") ) {
+				control.wrap( wrapper );
+				cm.addClass("CodeMirror-fs");
+				parent = control.parent();
+				parent.detach();
+				all.hide();
+				body.append(parent);
+			} else {
+				parent.detach();
+				cm.removeClass("CodeMirror-fs");
+				self.append(parent);
+				control.unwrap();
+				all.show();
+			}
+			control.toggleClass("fs");
+			fscreen.toggleClass("glyphicon-resize-full glyphicon-resize-small");
+			editor.refresh();
 		});
 		this.append(control);
 		return this;

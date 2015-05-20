@@ -22,7 +22,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "3.9" ;
+  owl:versionInfo "0.1" ;
 .
 
 ########## SEARCH FUNCTION ###########
@@ -60,33 +60,27 @@ v-fs:sort
   rdfs:domain v-fs:Search ;
   rdfs:range xsd:string ;
 .
-v-fs:results
+
+v-fs:selectedType
   rdf:type owl:ObjectProperty ;
-  rdfs:label "results"@en ;
-  rdfs:label "результаты"@ru ;
+  rdfs:label "выбранный тип"@ru ;
+  rdfs:label "selected type"@en ;
   rdfs:domain v-fs:Search ;
-  rdfs:range rdfs:Resource ;
+  rdfs:range owl:Class ;
 .
-v-fs:resultsCount
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "results count"@en ;
-  rdfs:label "количество результатов"@ru ;
-  rdfs:domain v-fs:Search ;
-  rdfs:range xsd:integer ;
-.
-v-fs:selected
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "selected"@en ;
-  rdfs:label "выбрано"@ru ;
-  rdfs:domain v-fs:Search ;
-  rdfs:range rdfs:Resource ;
-.
-v-fs:query_time
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "query time"@en ;
-  rdfs:label "время запроса"@ru ;
-  rdfs:domain v-fs:Search ;
-  rdfs:range xsd:integer ;
+
+v-fs:SelectedTypeSpec
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойства v-fs:selectedType для класса v-fs:Search"@ru ;
+  rdfs:label "v-fs:selectedType property specification for class v-fs:Search"@en ;
+  v-ui:forClass v-fs:Search ;
+  v-ui:forProperty v-fs:selectedType ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Класс."@ru ;
+  v-ui:tooltip "Required, single value. Link to instance of Class class"@en ;
+  v-ui:queryPrefix "('rdf:type'=='owl:Class')"^^xsd:string ;
+  v-ui:immutable "false"^^xsd:boolean ;
 .
 
 v-fs:SearchModel
@@ -182,6 +176,7 @@ v-fs:SearchTemplate
   rdfs:label "Search class template"@en ;
   rdfs:label "Шаблон класса поиск"@ru ;
   v-ui:forClass v-fs:Search ;
+  v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
      <div role="tabpanel" id="srch-tab-panel" class="panel panel-default">
 		<div class="panel-body">
@@ -212,6 +207,8 @@ v-fs:SearchTemplate
 									</span>
 								</div>
 							</form>
+							<span about="v-fs:selectedType" property="rdfs:label"></span>
+							<div rel="v-fs:selectedType"></div>
 						</div>
 					</div>
 					<div class="alert alert-warning not-found" style="display: none">
