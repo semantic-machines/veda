@@ -801,7 +801,7 @@ v-wf:instanceOf
 .
 v-wf:inVars
 	rdf:type rdf:Property ;
-	rdfs:label "переменные"@ru ;
+	rdfs:label "входящие переменные"@ru ;
 	rdfs:domain v-wf:Process ;
 	rdfs:domain v-wf:WorkItem ;
 	rdfs:range v-wf:Variable ;
@@ -809,19 +809,33 @@ v-wf:inVars
 
 v-wf:outVars
 	rdf:type rdf:Property ;
-	rdfs:label "переменные"@ru ;
+	rdfs:label "исходящие переменные"@ru ;
 	rdfs:domain v-wf:Process ;
 	rdfs:domain v-wf:WorkItem ;
 	rdfs:domain v-wf:WorkOrder ;
 	rdfs:range v-wf:Variable ;
 .
 
+v-wf:parentWorkOrder
+	rdf:type rdf:Property ;
+	rdfs:label "относится к рабочему заданию"@ru ;
+	rdfs:domain v-wf:Process ;
+	rdfs:range v-wf:WorkOrder ;
+.
+
+v-wf:forExecutor
+	rdf:type rdf:Property ;
+	rdfs:label "указан исполнитель"@ru ;
+	rdfs:domain v-wf:Process ;
+	rdfs:range v-s:Appointment ;
+.
 # --------------------------- WorkOrder --------------------------
 v-wf:WorkOrder
 	rdf:type owl:Class ;
 	rdfs:label "work order"@en ;
 	rdfs:label "рабочее задание"@ru ;
 .
+
 v-wf:forWorkItem
 	rdf:type rdf:Property ;
 	rdfs:label "относится к выполняемой задаче"@ru ;
@@ -830,6 +844,12 @@ v-wf:forWorkItem
 	rdfs:range v-wf:WorkItem ;
 .
 
+v-wf:useSubNet
+	rdf:type rdf:Property ;
+	rdfs:label "использовать подсеть"@ru ;
+	rdfs:domain v-wf:WorkOrder ;
+	rdfs:range v-wf:Net ;
+.
 # --------------------------- WorkItem ---------------------------
 v-wf:WorkItem
 	rdf:type rdfs:Class ;

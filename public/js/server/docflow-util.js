@@ -31,7 +31,7 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
    }];
     }
 
-    print("[WORKFLOW]:create work item:" + new_uri);
+    //print("[WORKFLOW]:create work item:" + new_uri);
 
     put_individual(ticket, new_work_item, _event_id);
 
@@ -44,6 +44,42 @@ function Context(_src_data, _ticket)
     this.src_data = _src_data;
     this.ticket = _ticket;
 
+    this.getExecutor = function ()
+    {
+		return this.src_data['v-wf:forExecutor'];
+	};
+	
+    this.if_all_executors_taken_decision = function (true_decision, false_decision)
+    {
+        print("Context.src_data=", toJson(this.src_data));
+        var count_agreed = 0;
+        for (var i = 0; i < this.src_data.length; i++)
+        {
+            //	   print ("data[i].result=", data[i].result);
+            if (this.src_data[i].result == true_decision)
+            {
+                count_agreed++;
+            }
+        }
+
+        if (count_agreed == this.src_data.length)
+        {
+            return [
+            {
+                'data': true_decision,
+                'type': _Uri
+            }];
+        }
+        else
+        {
+            return [
+            {
+                'data': false_decision,
+                'type': _Uri
+            }];
+        }
+    };
+
     this.getLocalVariableValue = function (var_name)
     {
         //print ("src_data=", toJson (this.src_data));
@@ -53,8 +89,18 @@ function Context(_src_data, _ticket)
 
     this.getVariableValue = function (var_name)
     {
+        return this.getVariableValueIO(var_name, 'v-wf:inVars');
+    }
+
+    this.getOutVariableValue = function (var_name)
+    {
+        return this.getVariableValueIO(var_name, 'v-wf:outVars');
+    }
+
+    this.getVariableValueIO = function (var_name, io)
+    {
         //	print ("src_data=" + toJson (this.src_data));
-        var variables = this.src_data['v-wf:inVars'];
+        var variables = this.src_data[io];
 
         if (variables)
         {
@@ -65,7 +111,7 @@ function Context(_src_data, _ticket)
 
                 var variable_name = getFirstValue(variable['v-wf:variableName']);
 
-                //print("[WORKFLOW]:getVariableValue #0: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
+                //print("[WORKFLOW]:getVariableIO #0: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
 
                 if (variable_name == var_name)
                 {
@@ -79,13 +125,32 @@ function Context(_src_data, _ticket)
         }
         //print("[WORKFLOW]:getVariableValue: work_item=" + this.src_data['@'] + ", var_name=" + var_name + ", val=undefined");
     };
+
+    this.print_variables = function (io)
+    {
+        var variables = this.src_data[io];
+
+        if (variables)
+        {
+            for (var i = 0; i < variables.length; i++)
+            {
+                var variable = get_individual(this.ticket, variables[i].data);
+                if (!variable) continue;
+
+                var variable_name = getFirstValue(variable['v-wf:variableName']);
+
+                print("[WORKFLOW]:print_variable: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
+            }
+
+        }
+    };
 }
 
 function generate_variable(ticket, def_variable, value, _process, _task, _local)
 {
     var variable_name = getFirstValue(def_variable['v-wf:varDefineName']);
 
-    print("[WORKFLOW][generate_variable]: variable_define_name=" + variable_name);
+    //print("[WORKFLOW][generate_variable]: variable_define_name=" + variable_name);
 
     var new_uri = guid();
     var new_variable = {
@@ -153,58 +218,58 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
 }
 
 function create_and_mapping_variables(ticket, mapping, _process, _task, _local)
-{
-    //print("[WORKFLOW][create_and_mapping_variables]: data=" + toJson (result));
-    print("[WORKFLOW][create_and_mapping_variables]: mapping=" + toJson(mapping));
-    var new_vars = [];
-    if (!mapping) return [];
-
-    var process;
-    var task;
-    var local;
-
-    if (_process)
-        process = new Context(_process, ticket);
-
-    if (_task)
-        task = new Context(_task, ticket);
-
-    if (_local)
-        local = new Context(_local, ticket);
-
-    for (var i = 0; i < mapping.length; i++)
     {
-        var map = get_individual(ticket, mapping[i].data);
-        print("[WORKFLOW][create_and_mapping_variables]: map=" + toJson(map));
-        var expression = getFirstValue(map['v-wf:mappingExpression']);
-        if (!expression) continue;
+        print("[WORKFLOW][create_and_mapping_variables]: mapping=" + toJson(mapping));
+        var new_vars = [];
+        if (!mapping) return [];
 
-        print("[WORKFLOW][create_and_mapping_variables]: expression=" + expression);
-        var res1 = eval(expression);
-        print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson(res1));
-        if (!res1) continue;
+        var process;
+        var task;
+        var local;
 
-        var mapToVariable_uri = getUri(map['v-wf:mapToVariable']);
-        if (!mapToVariable_uri) continue;
+        if (_process)
+            process = new Context(_process, ticket);
 
-        var def_variable = get_individual(ticket, mapToVariable_uri);
-        if (!def_variable) continue;
+        if (_task)
+            task = new Context(_task, ticket);
 
-        var new_variable = generate_variable(ticket, def_variable, res1, _process, _task, _local);
-        if (new_variable)
+        if (_local)
+            local = new Context(_local, ticket);
+
+        for (var i = 0; i < mapping.length; i++)
         {
-            put_individual(ticket, new_variable, _event_id);
+            var map = get_individual(ticket, mapping[i].data);
+            print("[WORKFLOW][create_and_mapping_variables]: map=" + toJson(map));
+            var expression = getFirstValue(map['v-wf:mappingExpression']);
+            if (!expression) continue;
 
-            new_vars.push(
+            print("[WORKFLOW][create_and_mapping_variables]: expression=" + expression);
+            var res1 = eval(expression);
+            print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson(res1));
+            if (!res1) continue;
+
+            var mapToVariable_uri = getUri(map['v-wf:mapToVariable']);
+            if (!mapToVariable_uri) continue;
+
+            var def_variable = get_individual(ticket, mapToVariable_uri);
+            if (!def_variable) continue;
+
+            var new_variable = generate_variable(ticket, def_variable, res1, _process, _task, _local);
+            if (new_variable)
             {
-                data: new_variable['@'],
-                type: _Uri
-            });
-        }
-    }
+                put_individual(ticket, new_variable, _event_id);
 
-    return new_vars;
-}
+                new_vars.push(
+                {
+                    data: new_variable['@'],
+                    type: _Uri
+                });
+            }
+        }
+
+        return new_vars;
+    }
+    //////////////////////////////////////////////////////////////////////////
 
 function is_all_executors_taken_decision(data, decision)
 {
@@ -228,6 +293,21 @@ function is_all_executors_taken_decision(data, decision)
     }
 }
 
+function is_some_executor_taken_decision(data, decision)
+{
+    for (var i = 0; i < data.length; i++)
+    {
+        //	   print ("data[i].result=", data[i].result);
+        if (data[i].result == decision)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+//////////////////////////////////////////////////////////////////////////
 
 function transformation(ticket, _in_data, rule, executor, work_order)
 {
@@ -493,12 +573,7 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                     out_data0[group_key] = out_data0_el;
                 }
             }
-
-
         }
-
-
-
     }
 
     var out_data = [];

@@ -14,6 +14,7 @@
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix mnd-s-sa: <http://semantic-machines.com/veda/mondi-schema-safety-audit/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix mnd-wf: <http://semantic-machines.com/veda/mondi-workflow/> .
 
 <http://semantic-machines.com/veda/veda-index>
   rdf:type owl:Ontology ;
@@ -23,7 +24,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "3.1" ;
+  owl:versionInfo "3.7" ;
 .
 vdi:ClassIndex
   rdf:type owl:Class ;
@@ -77,14 +78,20 @@ vdi:indexed_to
 vdi:index_01
   rdf:type vdi:ClassIndex ;
   vdi:forClass v-s:File ;
-  vdi:forClass v-s:Membership ;
-  vdi:forClass v-s:PermissionStatement ;
-  vdi:forClass v-wf:Variable ;
   vdi:forClass v-wf:Process ;
-  vdi:forClass v-wf:WorkItem ;
-  vdi:forClass v-wf:WorkOrder ;
   vdi:forClass v-wf:DecisionForm ;
+  vdi:forClass v-wf:WorkOrder ;
+  vdi:forClass v-wf:WorkItem ;
   vdi:indexed_to "system" ;
+.
+
+vdi:index_02
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:Membership ;
+  vdi:forClass v-wf:Variable ;
+  vdi:forClass v-s:PermissionStatement ;
+  vdi:forClass mnd-wf:ComplexRouteStartForm ;
+  vdi:indexed_to "not-indexed" ;
 .
 
 vdi:index_0

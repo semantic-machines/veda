@@ -188,7 +188,7 @@ html, body {
 }
 
 .w:hover {
-	color:red;
+	color:blue;
 }
 
 .state-task {	
@@ -213,6 +213,7 @@ html, body {
 
 .w_active {
 	color: #FF0000;
+	border:1px solid #FF0000;
 }
 
 .aLabel {
