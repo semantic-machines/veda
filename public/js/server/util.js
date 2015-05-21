@@ -38,9 +38,9 @@ function newDocument(type, fields)
 function newUri(uri)
 {
     return [
-    {
-        data: uri,
-        type: _Uri
+        {
+            data: uri,
+            type: _Uri
     }];
 }
 
@@ -82,37 +82,37 @@ function addRight(ticket, rights, subj_uri, obj_uri)
     var new_permission = {
         '@': guid(),
         'rdf:type': [
-        {
-            data: 'v-s:PermissionStatement',
-            type: _Uri
+            {
+                data: 'v-s:PermissionStatement',
+                type: _Uri
         }],
         'v-s:canDelete': [
-        {
-            data: d,
-            type: _Bool
+            {
+                data: d,
+                type: _Bool
         }],
         'v-s:canRead': [
-        {
-            data: r,
-            type: _Bool
+            {
+                data: r,
+                type: _Bool
         }],
         'v-s:canUpdate': [
-        {
-            data: u,
-            type: _Bool
+            {
+                data: u,
+                type: _Bool
         }],
         'v-s:permissionObject': [
-        {
-            data: obj_uri,
-            type: _Uri
+            {
+                data: obj_uri,
+                type: _Uri
         }],
         'v-s:permissionSubject': [
-        {
-            data: subj_uri,
-            type: _Uri
+            {
+                data: subj_uri,
+                type: _Uri
         }]
     };
     put_individual(ticket, new_permission, _event_id);
 
-    print("ADD RIGHT:", toJson(new_permission));
+    //print("ADD RIGHT:", toJson(new_permission));
 }
