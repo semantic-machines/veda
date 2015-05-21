@@ -802,6 +802,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 		if (wi.hasValue('v-wf:forNetElement')) {
                 			var state = $('#'+veda.Util.escape4$(wi['v-wf:forNetElement'][0].id));
                 			var wic = parseInt(state.attr('work-items-count'));
+					var red = state.attr('colored-to')=='red';    
                 			if (wic>0) {                				
                 				state.attr('work-items-count', wic+1);
 						$(".counter", state).remove();
@@ -813,10 +814,12 @@ jsWorkflow.ready = jsPlumb.ready;
                 			} else {
                 				state.attr('work-items-count', 1);
                 			}
-            				if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true && state.css('background-color')!='#FFB266') {
+            				if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true && !red) {
                     			state.css('background-color', '#88B288');
+					state.attr('colored-to', 'green');
             				} else {
                     			state.css('background-color', '#FFB266');
+					state.attr('colored-to', 'red');
             				}
                 		}
             	    }
