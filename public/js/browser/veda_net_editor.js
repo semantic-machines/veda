@@ -791,7 +791,7 @@ jsWorkflow.ready = jsPlumb.ready;
             		s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"'", undefined, true);
             		$('.w').each(function(index) {
             			$("span", this ).text('');
-            			$( this ).css('background-color', 'white').attr('work-items-count',0);
+            			$( this ).css('background-color', 'white').attr('work-items-count',0).attr('colored-to','');
             		});
             	} else {
             		s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"'");
