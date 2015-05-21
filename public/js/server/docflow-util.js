@@ -44,6 +44,11 @@ function Context(_src_data, _ticket)
     this.src_data = _src_data;
     this.ticket = _ticket;
 
+    this.getExecutor = function ()
+    {
+		return this.src_data['v-wf:forExecutor'];
+	};
+	
     this.if_all_executors_taken_decision = function (true_decision, false_decision)
     {
         print("Context.src_data=", toJson(this.src_data));
@@ -73,7 +78,7 @@ function Context(_src_data, _ticket)
                 'type': _Uri
             }];
         }
-    }
+    };
 
     this.getLocalVariableValue = function (var_name)
     {

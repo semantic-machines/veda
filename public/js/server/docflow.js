@@ -5,30 +5,32 @@
  */
 function prepare_decision_form(ticket, document)
 {
-    if (document['v-wf:isCompleted'] && document['v-wf:isCompleted'][0].data == true)
+    print("[WORKFLOW][DF1] : ### ---------------------------- prepare_decision_form:" + document['@']);
+
+	var decision_form = document;
+	
+    if (decision_form['v-wf:isCompleted'] && decision_form['v-wf:isCompleted'][0].data == true)
         return;
 
     //print("[WORKFLOW][DF1].0");
-    var takenDecision = document['v-wf:takenDecision'];
-    if (!takenDecision)
+    var f_takenDecision = decision_form['v-wf:takenDecision'];
+    if (!f_takenDecision)
         return;
 
-    //print("[WORKFLOW][DF1] : ### ---------------------------- prepare_decision_form:" + document['@']);
-
-    var onWorkOrder = document['v-wf:onWorkOrder'];
-    var work_order = get_individual(ticket, getUri(onWorkOrder));
+    var f_onWorkOrder = document['v-wf:onWorkOrder'];
+    var work_order = get_individual(ticket, getUri(f_onWorkOrder));
     if (!work_order) return;
 
     //print("[WORKFLOW][DF1].1");
 
-    var forWorkItem_uri = getUri(work_order['v-wf:forWorkItem']);
-    var work_item = get_individual(ticket, forWorkItem_uri);
+    var f_forWorkItem = work_order['v-wf:forWorkItem'];
+    var work_item = get_individual(ticket, getUri(f_forWorkItem));
     if (!work_item) return;
 
     //print("[WORKFLOW][DF1].2");
 
-    var forNetElement = work_item['v-wf:forNetElement'];
-    var netElement = get_individual(ticket, getUri(forNetElement));
+    var f_forNetElement = work_item['v-wf:forNetElement'];
+    var netElement = get_individual(ticket, getUri(f_forNetElement));
     if (!netElement) return;
 
     //print("[WORKFLOW][DF1].3");
@@ -42,7 +44,7 @@ function prepare_decision_form(ticket, document)
     //print("[WORKFLOW][DF1].4 transform=", toJson(transform));
     //print("[WORKFLOW][DF1].4 work_order=", toJson(work_order));
 
-    var process_output_vars = transformation(ticket, document, transform, null, onWorkOrder);
+    var process_output_vars = transformation(ticket, decision_form, transform, null, f_onWorkOrder);
 
     //print("[WORKFLOW][DF1].5 transform_result=", toJson(process_output_vars));
     var new_vars = [];
@@ -99,6 +101,8 @@ function prepare_work_order(ticket, document)
 
     var local_outVars = document['v-wf:outVars'];
 	var task_output_vars = [];
+
+	var f_useSubNet = document['v-wf:useSubNet'];
 
     // берем только необработанные рабочие задания
     if (!local_outVars)
@@ -168,9 +172,9 @@ function prepare_work_order(ticket, document)
 
 
         } // end [is codelet]        
-        else if (is_exist(executor, 'rdf:type', 'v-s:Appointment'))
+        else if (is_exist(executor, 'rdf:type', 'v-s:Appointment') && !f_useSubNet)
         {
-            print("[WORKFLOW][WO20] is USER, executor=" + getUri(f_executor) + "");
+            print("[WORKFLOW][WO20] is USER, executor=" + getUri(f_executor));
             //            print("work_item.inVars=", toJson(f_inVars));
             //            print("process.inVars=", toJson(process_inVars_uri));
 
@@ -274,14 +278,21 @@ function prepare_work_order(ticket, document)
 
             print("[WORKFLOW][WO20.2] transform_result=" + toJson(transform_result));
         }
-        else if (is_exist(executor, 'rdf:type', 'v-wf:Net'))
+        
+        if (is_exist(executor, 'rdf:type', 'v-wf:Net') || f_useSubNet)
         {
-            print("[WORKFLOW][WO21] executor is Net :" + getUri(f_executor) + "");
+			var use_net;
+			
+			if (f_useSubNet)
+				use_net = f_useSubNet;
+			else
+				use_net = f_executor;
+				
+			print("[WORKFLOW][WO21] executor= " + getUri(f_executor) + " used net= " + getUri(use_net));
 
             //var ctx = new Context(work_item, ticket);
             //ctx.print_variables ('v-wf:inVars');
-            var _started_net = get_individual(ticket, getUri(f_executor));
-
+            var _started_net = get_individual(ticket, getUri(use_net));
             if (_started_net)
             {
                 var new_process_uri = guid();
@@ -292,32 +303,37 @@ function prepare_work_order(ticket, document)
                         {
                             data: 'v-wf:Process',
                             type: _Uri
-       }],
-                    'v-wf:instanceOf': f_executor,
+						}],
+                    'v-wf:instanceOf': use_net,
                     'v-wf:parentWorkOrder': [
                         {
                             data: document['@'],
                             type: _Uri
-       }]
+						}]
                 };
+                
+                var msg = "экземпляр маршрута :" + getFirstValue(_started_net['rdfs:label']) + ", запущен из " + getFirstValue(netElement['rdfs:label'])
+                
+				if (f_useSubNet)
+					msg += ", для " + getUri(f_executor);
 
                 new_process['rdfs:label'] = [
                     {
-                        data: "экземпляр маршрута :" + getFirstValue(_started_net['rdfs:label']) + ", запущен из " + getFirstValue(netElement['rdfs:label']),
+                        data: msg,
                         type: _String
                   }];
 
                 // возьмем входные переменные WorkItem	и добавим их процессу
                 if (f_inVars)
                     new_process['v-wf:inVars'] = f_inVars;
+                    
+       			if (f_useSubNet)
+					new_process['v-wf:forExecutor'] = f_executor;    
 
                 //print("new_process=", toJson(new_process));
                 put_individual(ticket, new_process, _event_id);
             }
-        }
-        else
-        {
-            print("[WORKFLOW][WO22] executor not defined :" + getUri(f_executor) + "");
+            //print("[WORKFLOW][WO21-1]");
         }
     }
 
@@ -514,7 +530,7 @@ function prepare_work_item(ticket, document)
     {
         if (isCompleted[0].data === true)
         {
-            print("[WORKFLOW]:prepare_work_item, completed, exit");
+            print("[WORKFLOW][PWI]:prepare_work_item, completed, exit");
             return;
         }
     }
@@ -533,7 +549,7 @@ function prepare_work_item(ticket, document)
     var netElement = get_individual(ticket, getUri(forNetElement));
     if (!netElement) return;
 
-    print("\r\n[WORKFLOW]:-- NetElement:" + netElement['@'] + ' --');
+    print("\r\n[WORKFLOW][PWI00]:-- NetElement:" + netElement['@'] + ' --');
 
     var is_completed = false;
     var workItemList = [];
@@ -545,8 +561,8 @@ function prepare_work_item(ticket, document)
     {
         //print("[WORKFLOW]:Is task");
 
-        // выполнить маппинг переменных	
-        print("[WORKFLOW][PWI1] task: start mapping vars");
+        //* выполнить маппинг переменных	
+        print("[WORKFLOW][PWI01] task: start mapping vars");
         var work_item__inVars = [];
         if (netElement['v-wf:startingMapping'])
         {
@@ -559,20 +575,22 @@ function prepare_work_item(ticket, document)
         }
 
         //print("work_item__inVars=", toJson(work_item__inVars));
-        // сформировать список исполнителей
+        
+        //* сформировать список исполнителей
         var executor_list = [];
-        var executor_uris = netElement['v-wf:executor'];
-
-        if (executor_uris)
+        
+        var f_subNet = netElement['v-wf:subNet'];
+        var f_executor = netElement['v-wf:executor'];
+        if (f_executor)
         {
-            for (var i = 0; i < executor_uris.length; i++)
+            for (var i = 0; i < f_executor.length; i++)
             {
-                var executor = get_individual(ticket, executor_uris[i].data);
+                var executor = get_individual(ticket, f_executor[i].data);
 
                 if (is_exist(executor, 'rdf:type', 'v-wf:ExecutorDefinition'))
                 {
                     // определение исполнителей посредством скрипта
-                    //print("[WORKFLOW] executor=" + executor_uris[i].data + ", script defined");
+                    //print("[WORKFLOW] executor=" + f_executor[i].data + ", script defined");
 
                     var expression = getFirstValue(executor['v-s:script']);
                     if (!expression) return;
@@ -598,26 +616,27 @@ function prepare_work_item(ticket, document)
                 }
                 else
                 {
-                    executor_list.push(executor_uris[i]);
+                    executor_list.push(f_executor[i]);
                 }
             }
         }
         else
         {
-            var subNet_uri = netElement['v-wf:subNet'];
-            if (subNet_uri)
-                executor_list.push(subNet_uri[0]);
+            if (f_subNet)
+                executor_list.push(f_subNet[0]);
         }
 
+		//* если не найдено ни одного исполнителя, то добавим null, 
+		//* 	как индикатор для создания проходного(пустого) задания
         if (executor_list.length == 0)
             executor_list.push(null);
 
-        print("[WORKFLOW] executor list =" + toJson(executor_list));
+        print("[WORKFLOW][PWI02] executor list =" + toJson(executor_list));
 
         var work_order_list = [];
         var work_order_uri_list = [];
 
-        // сформировать задания для исполнителей
+        //* сформировать задания для исполнителей
         for (var i = 0; i < executor_list.length; i++)
         {
             var new_work_order_uri = guid();
@@ -628,14 +647,17 @@ function prepare_work_item(ticket, document)
                     {
                         data: 'v-wf:WorkOrder',
                         type: _Uri
-       }],
+					}],
                 'v-wf:forWorkItem': [
                     {
                         data: document['@'],
                         type: _Uri
-       }],
+					}]
             };
 
+			if (f_subNet)
+				new_work_order['v-wf:useSubNet'] = f_subNet;
+			
             if (executor_list[i] != null)
                 new_work_order['v-wf:executor'] = executor_list[i];
 
