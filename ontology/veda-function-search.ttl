@@ -22,7 +22,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "0.1" ;
+  owl:versionInfo "0.2" ;
 .
 
 ########## SEARCH FUNCTION ###########
@@ -75,10 +75,8 @@ v-fs:SelectedTypeSpec
   rdfs:label "v-fs:selectedType property specification for class v-fs:Search"@en ;
   v-ui:forClass v-fs:Search ;
   v-ui:forProperty v-fs:selectedType ;
-  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Класс."@ru ;
-  v-ui:tooltip "Required, single value. Link to instance of Class class"@en ;
+  v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
+  v-ui:tooltip "Link to instance of Class class"@en ;
   v-ui:queryPrefix "('rdf:type'=='owl:Class')"^^xsd:string ;
   v-ui:immutable "false"^^xsd:boolean ;
 .
@@ -176,13 +174,13 @@ v-fs:SearchTemplate
   rdfs:label "Search class template"@en ;
   rdfs:label "Шаблон класса поиск"@ru ;
   v-ui:forClass v-fs:Search ;
-  v-ui:embedded "true"^^xsd:boolean ;
+  v-ui:embedded "false"^^xsd:boolean ;
   v-ui:template """
      <div role="tabpanel" id="srch-tab-panel" class="panel panel-default">
 		<div class="panel-body">
 			<!-- Nav tabs -->
 			<ul class="nav nav-pills" role="tablist">
-				<li role="presentation" class="disabled"><a property="rdfs:label"></a></li>
+				<li role="presentation" class="disabled"><a about="@" property="rdfs:label"></a></li>
 				<li role="presentation" class="active"><a id="params-pill" href="#params" aria-controls="params" role="tab" data-toggle="tab">Параметры</a></li>
 				<li role="presentation"><a id="results-pill" href="#results" aria-controls="results" role="tab" data-toggle="tab">Результаты <span class="badge" id="results-count">0</span></a></li>
 				<li role="presentation" class="disabled">
@@ -207,13 +205,13 @@ v-fs:SearchTemplate
 									</span>
 								</div>
 							</form>
-							<span about="v-fs:selectedType" property="rdfs:label"></span>
-							<div rel="v-fs:selectedType"></div>
 						</div>
 					</div>
 					<div class="alert alert-warning not-found" style="display: none">
 						<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 					</div>
+					<strong about="v-fs:selectedType" property="rdfs:label"></strong>
+					<div rel="v-fs:selectedType"></div>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="results">
 					<div class="container-fluid" id="search-results">

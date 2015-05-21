@@ -45,6 +45,7 @@ veda.Module(function (veda) { "use strict";
 			set: function (value) { 
 				self._.sync = false;
 				self._.individual["@"] = value;
+				self.trigger("individual:idChanged", value);
 			}
 		});
 

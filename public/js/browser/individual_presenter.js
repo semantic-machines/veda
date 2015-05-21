@@ -260,12 +260,38 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Process RDFa compliant template
 		// About resources
 		$("[about]", template).map( function () {
-			
 			var propertyContainer = $(this), 
-				about = new veda.IndividualModel(propertyContainer.attr("about")),
-				property_uri = propertyContainer.attr("property");
-			if (property_uri == "id") propertyContainer.html( about[property_uri] );
-			else propertyContainer.html( about[property_uri].join(", ") );
+				property_uri = propertyContainer.attr("property"),
+				about;
+			if (propertyContainer.attr("about") === "@") {
+				about = individual;
+				propertyContainer.attr("about", about.id);
+			} else {
+				about = new veda.IndividualModel(propertyContainer.attr("about"));
+			}
+			propertyModifiedHandler(property_uri);
+			function propertyModifiedHandler(doc_property_uri) {
+				if (doc_property_uri === property_uri) {
+					if (property_uri === "id") propertyContainer.html( about[property_uri] );
+					else propertyContainer.html( about[property_uri].join(", ") );
+				}
+			}
+			individual.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				individual.off("individual:propertyModified", propertyModifiedHandler);
+			});
+		});
+		
+		// Specials (not RDFa)
+		$("[href='id']", template).map( function () {
+			$(this)
+				.attr("href", "#/individual/" + individual.id + "/#main")
+				.after( 
+					$("<a>", {href: "#/graph/" + individual.id}).append( 
+						$("<i>").addClass("glyphicon glyphicon-link") 
+					) 
+				)
+				.after( "&nbsp;" );
 		});
 		
 		// Properties
@@ -289,18 +315,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				individual.off("individual:propertyModified", propertyModifiedHandler);
 			});
 			
-		});
-		
-		// Specials (not RDFa)
-		$("[href='id']", template).map( function () {
-			$(this)
-				.attr("href", "#/individual/" + individual.id + "/#main")
-				.after( 
-					$("<a>", {href: "#/graph/" + individual.id}).append( 
-						$("<i>").addClass("glyphicon glyphicon-link") 
-					) 
-				)
-				.after( "&nbsp;" );
 		});
 		
 		// Related resources
