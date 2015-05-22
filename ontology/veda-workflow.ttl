@@ -985,6 +985,12 @@ v-wf:DecisionSign
 	rdfs:label "подписано"@ru ;
 .	
 
+v-wf:DecisionApprove
+	rdfs:subClassOf v-wf:Decision ;
+	rdf:type owl:Class ;
+	rdfs:label "утверждено"@ru ;
+.	
+
 v-wf:DecisionReview
 	rdfs:subClassOf v-wf:Decision ;
 	rdf:type owl:Class ;
