@@ -501,7 +501,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 individual.defineProperty("v-wf:locationX");
                 individual.defineProperty("v-wf:locationY");
 
-                stateName = prompt("Enter name of the state");
+                var stateName = prompt("Enter name of the state");
                 
                 individual['rdfs:label'] = [new String(stateName.replace(/[^a-zA-Z0-9 ]/g, ''))];
                 individual['v-wf:locationX'] = [new Number(1)];
