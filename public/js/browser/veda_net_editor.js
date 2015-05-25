@@ -124,9 +124,8 @@ jsWorkflow.ready = jsPlumb.ready;
             instance.bind("dblclick", function(transition) {            	 
                  if (mode=='edit' && confirm('Delete Flow?')) {
                 	 net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', transition.id);
-                	 veda.Util.forSubIndividual(net, 'v-wf:consistsOf', transition.sourceId, function (el) {
-                		 el['v-wf:hasFlow'] = veda.Util.removeSubIndividual(el, 'v-wf:hasFlow', transition.id);
-                	 });
+                	 var source = new veda.IndividualModel(transition.sourceId);
+            		 source['v-wf:hasFlow'] = veda.Util.removeSubIndividual(source, 'v-wf:hasFlow', transition.id);
                 	 instance.detach(transition);
                  }
             });
@@ -151,9 +150,8 @@ jsWorkflow.ready = jsPlumb.ready;
             // Handle creating new flow event
             instance.bind("connection", function(info) {
             	if (info.connection.id.indexOf('con')==-1) {
-           	    	veda.Util.forSubIndividual(new veda.IndividualModel(info.sourceId), 'v-wf:hasFlow', info.connection.id, function (flow) {
-           	    		flow["v-wf:flowsInto"] = [new veda.IndividualModel(info.targetId)]; // setup Flow target
-           	    	});
+            		var flow = new veda.IndividualModel(info.connection.id);
+          	    	flow["v-wf:flowsInto"] = [new veda.IndividualModel(info.targetId)]; // setup Flow target
             		return; // Don't use logic when we work with flows that already exists
             	}
                 var individual = new veda.IndividualModel(); // create individual (Task / Condition) 
@@ -304,9 +302,9 @@ jsWorkflow.ready = jsPlumb.ready;
 	                	    menu = $("#workflow-context-menu ul");
 	                	menu.html('');
 	                	// Add starting mappings to context menu
-	                	veda.Util.forSubIndividual(net, 'v-wf:consistsOf', _this.id, function (el) {
-	                	  if (el.hasValue('v-wf:startingMapping')) {
-	                	     el['v-wf:startingMapping'].forEach(function(var_map) {
+	                	var state = new veda.IndividualModel(_this.id);
+	                	  if (state.hasValue('v-wf:startingMapping')) {
+	                	     state['v-wf:startingMapping'].forEach(function(var_map) {
 	                    	   var $item = $("<li/>").appendTo(menu);
 	                	       var varId = null;
 	                	       var_map['v-wf:mapToVariable'].forEach(function(var_var) {
@@ -336,8 +334,8 @@ jsWorkflow.ready = jsPlumb.ready;
 	                        });
 	                	  }
 	                	  // Add completed mappings to context menu
-	                	  if (el.hasValue('v-wf:completedMapping')) {
-	                 	     el['v-wf:completedMapping'].forEach(function(var_map) {
+	                	  if (state.hasValue('v-wf:completedMapping')) {
+	                 	     state['v-wf:completedMapping'].forEach(function(var_map) {
 	                     	   var $item = $("<li/>").appendTo(menu);
 	                 	       var varId = null;
 	                 	       var_map['v-wf:mappingExpression'].forEach(function(map_exp) {
@@ -367,8 +365,8 @@ jsWorkflow.ready = jsPlumb.ready;
 	                         });
 	                 	  }
 	                	  // Add executors to context menu
-	                	  if (el.hasValue('v-wf:executor')) {
-	                       el['v-wf:executor'].forEach(function(el2) {
+	                	  if (state.hasValue('v-wf:executor')) {
+	                       state['v-wf:executor'].forEach(function(el2) {
 	                    	   var variable = new veda.IndividualModel(el2.id);
 	                    	   var $item = $("<li/>").appendTo(menu);
 	                    	   $("<a/>", {
@@ -387,7 +385,6 @@ jsWorkflow.ready = jsPlumb.ready;
 	          	    		   }).attr("class", "btn btn-default glyphicon glyphicon-remove button").attr("style", "padding: 3px;").appendTo($item);
 	                       });
 	                	  }
-	               	 	});
 	                    
 	                	// Button for add new input variable to task
 	             	    var $item = $("<li/>").appendTo(menu);
@@ -448,10 +445,9 @@ jsWorkflow.ready = jsPlumb.ready;
 	                instance.draggable(windows, {
 	                  drag: function (event, ui) { //gets called on every drag
 	                	  $("#workflow-context-menu").hide();
-	                      veda.Util.forSubIndividual(net, 'v-wf:consistsOf', event.target.id, function(el) {
-	              			  el['v-wf:locationX'] = [new Number(Math.round(ui.position.left-canvasSizePx/2))];
-	            			  el['v-wf:locationY'] = [new Number(Math.round(ui.position.top-canvasSizePx/2))];
-	                      });
+	                	  var target = new veda.IndividualModel(event.target.id);
+	                   	  target['v-wf:locationX'] = [new Number(Math.round(ui.position.left-canvasSizePx/2))];
+	                   	  target['v-wf:locationY'] = [new Number(Math.round(ui.position.top-canvasSizePx/2))];
 	                  }
 	            	});
                 }
@@ -631,9 +627,8 @@ jsWorkflow.ready = jsPlumb.ready;
            		individualE["rdf:type"] = [veda.ontology["v-wf:ExecutorDefinition"]];
                 individualE['rdfs:label'] = ['Executor `'+executorName+'`'];
                 
-                veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
-                	state['v-wf:executor'] = (state['v-wf:executor'] === undefined)?[individualE]:state['v-wf:executor'].concat([individualE]); // <- Add new Executor to State
-                });
+                var state = veda.IndividualModel(stateId);
+               	state['v-wf:executor'] = (state['v-wf:executor'] === undefined)?[individualE]:state['v-wf:executor'].concat([individualE]); // <- Add new Executor to State
             };
             
             instance.addVarProperty = function(stateId, type) {            
@@ -660,31 +655,27 @@ jsWorkflow.ready = jsPlumb.ready;
                 individualM['v-wf:mappingExpression'] = ["context.getVariableValue ('"+variableName+"')"];
                 
                 if (type=='input') {
-                	veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
-                		state['v-wf:inputVariable'] = (state['v-wf:inputVariable'] === undefined)?[individualV]:state['v-wf:inputVariable'].concat([individualV]); // <- Add new Varibale to State
-                		state['v-wf:startingMapping'] = (state['v-wf:startingMapping'] === undefined)?[individualM]:state['v-wf:startingMapping'].concat([individualM]); // <- Add new Mapping to State
-                	});
+                	var state = veda.IndividualModel(stateId);
+               		state['v-wf:inputVariable'] = (state['v-wf:inputVariable'] === undefined)?[individualV]:state['v-wf:inputVariable'].concat([individualV]); // <- Add new Varibale to State
+               		state['v-wf:startingMapping'] = (state['v-wf:startingMapping'] === undefined)?[individualM]:state['v-wf:startingMapping'].concat([individualM]); // <- Add new Mapping to State
                 }
                 if (type=='output') {
-                	veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
-                		state['v-wf:outputVariable'] = (state['v-wf:outputVariable'] === undefined)?[individualV]:state['v-wf:outputVariable'].concat([individualV]); // <- Add new Varibale to State
-                		state['v-wf:completedMapping'] = (state['v-wf:completedMapping'] === undefined)?[individualM]:state['v-wf:completedMapping'].concat([individualM]); // <- Add new Mapping to State
-                	});
+                	var state = veda.IndividualModel(stateId);
+               		state['v-wf:outputVariable'] = (state['v-wf:outputVariable'] === undefined)?[individualV]:state['v-wf:outputVariable'].concat([individualV]); // <- Add new Varibale to State
+               		state['v-wf:completedMapping'] = (state['v-wf:completedMapping'] === undefined)?[individualM]:state['v-wf:completedMapping'].concat([individualM]); // <- Add new Mapping to State
                 }
             };
             
             // Remove from state, defined by stateId, variable `varId` and its mapping `mapId`
             instance.removeVarProperty = function(stateId, varId, mapId) {
-            	veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
-            		state['v-wf:inputVariable'] = veda.Util.removeSubIndividual(state, 'v-wf:inputVariable', varId);
-            		state['v-wf:startingMapping'] = veda.Util.removeSubIndividual(state, 'v-wf:startingMapping', mapId);
-            	});
+            	var state = veda.IndividualModel(stateId);
+           		state['v-wf:inputVariable'] = veda.Util.removeSubIndividual(state, 'v-wf:inputVariable', varId);
+           		state['v-wf:startingMapping'] = veda.Util.removeSubIndividual(state, 'v-wf:startingMapping', mapId);
             };
             
             instance.removeExecutorProperty = function(stateId, executorId) {
-            	veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
-            		state['v-wf:executor'] = veda.Util.removeSubIndividual(state, 'v-wf:executor', executorId);
-            	});
+            	var state = veda.IndividualModel(stateId);   
+           		state['v-wf:executor'] = veda.Util.removeSubIndividual(state, 'v-wf:executor', executorId);
             };
             
             instance.deleteState = function(element) {
