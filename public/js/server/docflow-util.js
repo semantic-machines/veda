@@ -139,7 +139,7 @@ function Context(_src_data, _ticket)
 
                 var variable_name = getFirstValue(variable['v-wf:variableName']);
 
-                print("[WORKFLOW]:print_variable: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
+                //print("[WORKFLOW]:print_variable: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
             }
 
         }
@@ -212,14 +212,14 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
         }
     }
 
-    print("[WORKFLOW][generate_variable]: new variable: " + toJson(new_variable));
+    //print("[WORKFLOW][generate_variable]: new variable: " + toJson(new_variable));
 
     return new_variable;
 }
 
 function create_and_mapping_variables(ticket, mapping, _process, _task, _local)
     {
-        print("[WORKFLOW][create_and_mapping_variables]: mapping=" + toJson(mapping));
+        //print("[WORKFLOW][create_and_mapping_variables]: mapping=" + toJson(mapping));
         var new_vars = [];
         if (!mapping) return [];
 
@@ -239,13 +239,13 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _local)
         for (var i = 0; i < mapping.length; i++)
         {
             var map = get_individual(ticket, mapping[i].data);
-            print("[WORKFLOW][create_and_mapping_variables]: map=" + toJson(map));
+            //print("[WORKFLOW][create_and_mapping_variables]: map=" + toJson(map));
             var expression = getFirstValue(map['v-wf:mappingExpression']);
             if (!expression) continue;
 
-            print("[WORKFLOW][create_and_mapping_variables]: expression=" + expression);
+            //print("[WORKFLOW][create_and_mapping_variables]: expression=" + expression);
             var res1 = eval(expression);
-            print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson(res1));
+            //print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson(res1));
             if (!res1) continue;
 
             var mapToVariable_uri = getUri(map['v-wf:mapToVariable']);
@@ -585,3 +585,38 @@ function transformation(ticket, _in_data, rule, executor, work_order)
 
     return out_data;
 }
+
+function find_in_work_item_tree (ticket, _process, compare_field, compare_value)
+{
+	var res = [];
+	
+	var f_workItemList = _process['v-wf:workItemList'];
+	
+	if (f_workItemList)
+		rsffiwit (ticket, f_workItemList, compare_field, compare_value, res, _process);
+	
+	return res;
+}	
+
+function rsffiwit (ticket, work_item_list, compare_field, compare_value, res, _parent)
+{
+	for (var idx = 0; idx < work_item_list.length; idx++)
+	{
+		var i_work_item = get_individual(ticket, work_item_list[idx].data);
+		if (i_work_item)
+		{
+			var ov = i_work_item[compare_field];
+			var isCompleted = i_work_item['v-wf:isCompleted'];
+
+			if (ov && getUri (ov) == compare_value && !isCompleted)
+				res.push ({parent: _parent, work_item : i_work_item});
+
+			var f_workItemList = i_work_item['v-wf:workItemList'];
+
+			if (f_workItemList)			
+				rsffiwit (ticket, f_workItemList, compare_field, compare_value, res, i_work_item);								
+		}
+		
+	}
+	
+}	 

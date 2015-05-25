@@ -829,27 +829,7 @@ v-wf:forExecutor
 	rdfs:domain v-wf:Process ;
 	rdfs:range v-s:Appointment ;
 .
-# --------------------------- WorkOrder --------------------------
-v-wf:WorkOrder
-	rdf:type owl:Class ;
-	rdfs:label "work order"@en ;
-	rdfs:label "рабочее задание"@ru ;
-.
 
-v-wf:forWorkItem
-	rdf:type rdf:Property ;
-	rdfs:label "относится к выполняемой задаче"@ru ;
-	rdfs:label "for work item"@en ;
-	rdfs:domain v-wf:WorkOrder ;
-	rdfs:range v-wf:WorkItem ;
-.
-
-v-wf:useSubNet
-	rdf:type rdf:Property ;
-	rdfs:label "использовать подсеть"@ru ;
-	rdfs:domain v-wf:WorkOrder ;
-	rdfs:range v-wf:Net ;
-.
 # --------------------------- WorkItem ---------------------------
 v-wf:WorkItem
 	rdf:type rdfs:Class ;
@@ -886,6 +866,7 @@ v-wf:workItemList
 	rdfs:label "список порожденных заданий"@ru ;
 	rdfs:domain v-wf:Process ;
 	rdfs:domain v-wf:WorkItem ;
+	rdfs:domain v-wf:Process ;
 	rdfs:range v-wf:WorkItem ;
 .
 
@@ -903,6 +884,28 @@ v-wf:isCompleted
 	rdfs:domain v-wf:WorkItem ;
 	rdfs:domain v-wf:DecisionForm ;
 	rdfs:range xsd:boolean ;
+.
+
+# --------------------------- WorkOrder --------------------------
+v-wf:WorkOrder
+	rdf:type owl:Class ;
+	rdfs:label "work order"@en ;
+	rdfs:label "рабочее задание"@ru ;
+.
+
+v-wf:forWorkItem
+	rdf:type rdf:Property ;
+	rdfs:label "относится к выполняемой задаче"@ru ;
+	rdfs:label "for work item"@en ;
+	rdfs:domain v-wf:WorkOrder ;
+	rdfs:range v-wf:WorkItem ;
+.
+
+v-wf:useSubNet
+	rdf:type rdf:Property ;
+	rdfs:label "использовать подсеть"@ru ;
+	rdfs:domain v-wf:WorkOrder ;
+	rdfs:range v-wf:Net ;
 .
 
 # --------------------------- обработка событий => docflow ---------------------------------------
