@@ -484,43 +484,6 @@ jsWorkflow.ready = jsPlumb.ready;
                 });
             };
 
-            // Add new State event.
-            jsPlumb.getSelector(".create-state").bind("click", function() {
-                var _this = this,
-                        stateName,
-                        stateId,
-                        stateElement, 
-                        individual = new veda.IndividualModel(); // create individual (Task / Condition) 
-                                
-                individual.defineProperty("rdf:type");
-                individual.defineProperty("rdfs:label");
-                individual.defineProperty("v-wf:locationX");
-                individual.defineProperty("v-wf:locationY");
-
-                var stateName = prompt("Enter name of the state");
-                
-                individual['rdfs:label'] = [new String(stateName.replace(/[^a-zA-Z0-9 ]/g, ''))];
-                individual['v-wf:locationX'] = [new Number(1)];
-                individual['v-wf:locationY'] = [new Number(1)];
-                
-                if ($('#'+workflowData).find('#' + individual.id).length < 1) {
-
-                   	if ($(_this).hasClass('create-condition')) {
-                   		individual["rdf:type"] = [veda.ontology["v-wf:Condition"]];
-                    	instance.createState(individual);
-                    } else { 
-                        individual["rdf:type"] = [veda.ontology["v-wf:Task"]];
-                    	instance.createState(individual);
-                    }
-
-                   	net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]); // <- Add new State to Net	
-                    $('#' + individual.id).click();
-                } else {
-                    alert('This state is already present.');
-                }
-                $(this).blur();
-            });
-            
             /**
              * @method
              * Change current scale.
@@ -870,7 +833,44 @@ jsWorkflow.ready = jsPlumb.ready;
            		var list = new veda.IndividualListModel(net, net['v-wf:consistsOf']);
            		veda.Util.exportTTL(list);
             });
-            
+
+            // Add new State event.
+            $(".create-state").bind("click", function() {
+                var _this = this,
+                        stateName,
+                        stateId,
+                        stateElement, 
+                        individual = new veda.IndividualModel(); // create individual (Task / Condition) 
+                                
+                individual.defineProperty("rdf:type");
+                individual.defineProperty("rdfs:label");
+                individual.defineProperty("v-wf:locationX");
+                individual.defineProperty("v-wf:locationY");
+
+                stateName = prompt("Enter name of the state");
+                
+                individual['rdfs:label'] = [new String(stateName.replace(/[^a-zA-Z0-9 ]/g, ''))];
+                individual['v-wf:locationX'] = [new Number(1)];
+                individual['v-wf:locationY'] = [new Number(1)];
+                
+                if ($('#'+workflowData).find('#' + individual.id).length < 1) {
+
+                   	if ($(_this).hasClass('create-condition')) {
+                   		individual["rdf:type"] = [veda.ontology["v-wf:Condition"]];
+                    	instance.createState(individual);
+                    } else { 
+                        individual["rdf:type"] = [veda.ontology["v-wf:Task"]];
+                    	instance.createState(individual);
+                    }
+
+                   	net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]); // <- Add new State to Net	
+                    $('#' + individual.id).click();
+                } else {
+                    alert('This state is already present.');
+                }
+                $(this).blur();
+            });
+
             $('.delete-state').on('click', function() {
                 deleteState = confirm('Deleting State(' + $('#workflow-item-id').val() + ') ...');
 
