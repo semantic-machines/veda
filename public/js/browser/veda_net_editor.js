@@ -97,9 +97,7 @@ jsWorkflow.ready = jsPlumb.ready;
 
             // Import all the given defaults into this instance.
             instance.importDefaults({
-                Endpoint: ["Dot", {
-                        radius: 3
-                    }],
+                Endpoint: "Dot",
                 HoverPaintStyle: {
                     strokeStyle: "#6699FF",
                     lineWidth: 2
@@ -109,6 +107,7 @@ jsWorkflow.ready = jsPlumb.ready;
                             location: 1,
                             id: "arrow",
                             length: 14,
+                            width: 10,
                             foldback: 0.8
                         }],
                     ["Label", {
@@ -121,12 +120,12 @@ jsWorkflow.ready = jsPlumb.ready;
             });
 
             // Bind a click listener to each transition (connection). On double click, the transition is deleted.
-            instance.bind("dblclick", function(transition) {            	 
+            instance.bind("dblclick", function(transition) {
                  if (mode=='edit' && confirm('Delete Flow?')) {
                 	 net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', transition.id);
                 	 var source = new veda.IndividualModel(transition.sourceId);
             		 source['v-wf:hasFlow'] = veda.Util.removeSubIndividual(source, 'v-wf:hasFlow', transition.id);
-                	 instance.detach(transition);
+                	 instance.detach(transition, {fireEvent:false});
                  }
             });
             
@@ -134,7 +133,8 @@ jsWorkflow.ready = jsPlumb.ready;
             instance.bind("click", function(transition) {
             	var _this = this, currentElement = $(_this), properties;
                 properties = $('#workflow-selected-item');
-                $('#'+properties.find('#workflow-item-id').val()).removeClass('w_active');
+                $('#'+veda.Util.escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active');
+                //$('#'+properties.find('#workflow-item-id').val()).removeClass('w_active');
                 
                 if (transition.id == '__label') {
                 	transition = transition.component;
@@ -145,6 +145,16 @@ jsWorkflow.ready = jsPlumb.ready;
                 // properties.find('#workflow-item-label').val(transition.getLabel());
                 currentElement.addClass('w_active');                
                	// $('.task-buttons').hide();
+            });
+            
+            /*
+            instance.bind("beforeDrop", function(info) {
+            	alert(info.dropEndpoint);
+            	if (info.dropEndpoint==null) return false; // prevent D&D detaching
+            });*/
+            
+            instance.bind("beforeDetach", function(connection) {
+           		return connection.targetId.indexOf('jsPlumb') === 0;
             });
             
             // Handle creating new flow event
@@ -165,10 +175,10 @@ jsWorkflow.ready = jsPlumb.ready;
                 net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]); // <- Add new Flow to Net
                 
                 var source = new veda.IndividualModel(info.sourceId);
-                if (!soure.hasOwnProperty('v-wf:hasFlow')) {
-                	soure.defineProperty('v-wf:hasFlow');
+                if (!source.hasOwnProperty('v-wf:hasFlow')) {
+                	source.defineProperty('v-wf:hasFlow');
     			}
-                soure['v-wf:hasFlow'] = soure['v-wf:hasFlow'].concat([individual]);
+                source['v-wf:hasFlow'] = soure['v-wf:hasFlow'].concat([individual]);
                 
               	individual["v-wf:flowsInto"] = [new veda.IndividualModel(info.targetId)]; // setup Flow target
                 
@@ -453,15 +463,47 @@ jsWorkflow.ready = jsPlumb.ready;
                 }
 
                 // Initialize all State elements as Connection sources.
+                var possibleInAnchors = [[0, 0.1,-1, 0],
+                                        [0, 0.3,-1, 0],
+                                        [0, 0.5,-1, 0],
+                                        [0, 0.7,-1, 0],
+                                        [0, 0.9,-1, 0],
+                                        [1, 0.1, 1, 0],
+                                        [1, 0.3, 1, 0],
+                                        [1, 0.5, 1, 0],
+                                        [1, 0.7, 1, 0],
+                                        [1, 0.9, 1, 0],
+                                        [0.1, 0, 0,-1],
+                                        [0.3, 0, 0,-1],
+                                        [0.5, 0, 0,-1],
+                                        [0.7, 0, 0,-1],
+                                        [0.9, 0, 0,-1]];
+                var possibleOutAnchors = [[0, 0.2,-1, 0],
+                                       [0, 0.4,-1, 0],
+                                       [0, 0.6,-1, 0],
+                                       [0, 0.8,-1, 0],
+                                       [1, 0.2, 1, 0],
+                                       [1, 0.4, 1, 0],
+                                       [1, 0.6, 1, 0],
+                                       [1, 0.8, 1, 0],
+                                       [0.2, 0, 0,-1],
+                                       [0.4, 0, 0,-1],
+                                       [0.6, 0, 0,-1],
+                                       [0.8, 0, 0,-1]];
                 instance.makeSource(windows, {
                     filter: ".ep",
-                    anchor: ["Continuous", { faces:[ "top", "left", "right" ] } ],
+                    anchor: possibleOutAnchors,
                     connector: [
 						"Straight", {
                     	stub: 30,
                         gap: 0
 						}
-                    ],
+                    ],paintStyle:{ 
+                        strokeStyle:"#225588",
+                        fillStyle:"transparent",
+                        radius:4,
+                        lineWidth:1 
+                    },
                     connectorStyle: {
                         strokeStyle: "#666666",
                         lineWidth: 1,
@@ -480,7 +522,13 @@ jsWorkflow.ready = jsPlumb.ready;
                     dropOptions: {
                         hoverClass: "dragHover"
                     },
-                    anchor: ["Continuous", { faces:[ "top", "left", "right" ] } ]
+                    anchor: possibleInAnchors,
+                    paintStyle:{ 
+                        strokeStyle:"#225588",
+                        fillStyle:"transparent",
+                        radius:4,
+                        lineWidth:1 
+                    }
                 });
             };
 
@@ -652,11 +700,7 @@ jsWorkflow.ready = jsPlumb.ready;
             		id: flow.id,
                     source: state.id,
                     target: flow['v-wf:flowsInto'][0].id,
-                    /*
-            		endpoint: ["Dot", {
-            			radius: 3
-            		}],*/
-                    reattach:true
+                    detachable:true
                 });
             };
             
