@@ -98,7 +98,7 @@ jsWorkflow.ready = jsPlumb.ready;
             // Import all the given defaults into this instance.
             instance.importDefaults({
                 Endpoint: ["Dot", {
-                        radius: 0.1
+                        radius: 3
                     }],
                 HoverPaintStyle: {
                     strokeStyle: "#6699FF",
@@ -151,6 +151,9 @@ jsWorkflow.ready = jsPlumb.ready;
             // Handle creating new flow event
             instance.bind("connection", function(info) {
             	if (info.connection.id.indexOf('con')==-1) {
+           	    	veda.Util.forSubIndividual(new veda.IndividualModel(info.sourceId), 'v-wf:hasFlow', info.connection.id, function (flow) {
+           	    		flow["v-wf:flowsInto"] = [new veda.IndividualModel(info.targetId)]; // setup Flow target
+           	    	});
             		return; // Don't use logic when we work with flows that already exists
             	}
                 var individual = new veda.IndividualModel(); // create individual (Task / Condition) 
@@ -163,16 +166,13 @@ jsWorkflow.ready = jsPlumb.ready;
                 
                 net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]); // <- Add new Flow to Net
                 
-                veda.Util.forSubIndividual(net, 'v-wf:consistsOf', info.sourceId, function(el) {
-                	if (!('v-wf:hasFlow' in el)) {
-        				el.defineProperty('v-wf:hasFlow');
-        			}
-        			el['v-wf:hasFlow'] = el['v-wf:hasFlow'].concat([individual]); // <- Add new Flow to State
-                });
+                var source = new veda.IndividualModel(info.sourceId);
+                if (!soure.hasOwnProperty('v-wf:hasFlow')) {
+                	soure.defineProperty('v-wf:hasFlow');
+    			}
+                soure['v-wf:hasFlow'] = soure['v-wf:hasFlow'].concat([individual]);
                 
-                veda.Util.forSubIndividual(net, 'v-wf:consistsOf', info.targetId, function(el) {
-                	 individual["v-wf:flowsInto"] = [el]; // setup Flow source
-                });
+              	individual["v-wf:flowsInto"] = [new veda.IndividualModel(info.targetId)]; // setup Flow target
                 
                 info.connection.id = individual.id;
             });
@@ -697,7 +697,12 @@ jsWorkflow.ready = jsPlumb.ready;
             	var connector = instance.connect({
             		id: flow.id,
                     source: state.id,
-                    target: flow['v-wf:flowsInto'][0].id
+                    target: flow['v-wf:flowsInto'][0].id,
+                    /*
+            		endpoint: ["Dot", {
+            			radius: 3
+            		}],*/
+                    reattach:true
                 });
             };
             
