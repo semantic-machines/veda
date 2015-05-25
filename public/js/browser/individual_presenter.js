@@ -203,31 +203,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Delete
 		if ($delete.length && !(individual.rights.hasValue("v-s:canDelete") && individual.rights["v-s:canDelete"][0] == true) ) $delete.remove();
 
-		var view = $(".view", template),
-			edit = $(".edit", template),
-			search = $(".search", template);
-
-		// Show / hide buttons in different modes
-		function modeHandler (e) {
-			mode = e.type;
-			switch (e.type) {
-				case "view": 
-					$edit.show(); $save.hide(); $cancel.hide(); $delete.show(); $search.hide();
-					view.show(); edit.hide(); search.hide();
-					break;
-				case "edit": 
-					$edit.hide(); $save.show(); $cancel.show(); $delete.show(); $search.hide();
-					view.show(); edit.show(); search.hide();
-					break;
-				case "search": 
-					$edit.hide(); $save.hide(); $cancel.hide(); $delete.hide(); $search.show();
-					view.show(); edit.hide(); search.show();
-					break;
-			}
-			e.stopPropagation();
-		}
-		template.on("view edit search", modeHandler);
-
 		// Buttons handlers
 		// Edit
 		$edit.on("click", function (e) {
@@ -270,6 +245,23 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			// Place individual to params tab in Search container
 			var params = new veda.IndividualModel(individual_uri, $("#params-" + search.id, search.view), undefined, "search");
 		});
+
+		var view = $(".view", template),
+			edit = $(".edit", template),
+			search = $(".search", template),
+			notView = $(".-view", template),
+			notEdit = $(".-edit", template),
+			notSearch = $(".-search", template);
+			
+		// Show / hide buttons in different modes
+		function modeHandler (e) {
+			mode = e.type;
+			mode === "view" ? view.show() && notView.hide() : 
+			mode === "edit" ? edit.show() && notEdit.hide() : 
+			mode === "search" ? search.show() && notSearch.hide() : true;
+			e.stopPropagation();
+		}
+		template.on("view edit search", modeHandler);
 		
 		// Process RDFa compliant template
 		// About resources
@@ -309,7 +301,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		
 		// Properties
-		$("[property]", template).not("[about]").map( function () {
+		$("[property]", template).not("veda-control").not("[about]").map( function () {
 			
 			var propertyContainer = $(this).hide().css("position", "relative"),
 				property_uri = propertyContainer.attr("property");
@@ -324,17 +316,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			function renderPropertyValues() {
 				return individual[property_uri].map( function (value, i) {
 					var result = propertyContainer.clone().show().insertBefore(propertyContainer),
-						btn = $("<button class='btn btn-danger btn-xs glyphicon glyphicon-remove edit search'></button>");
-					result.text(value.toString());
-					result.append( btn );
-					if (result.css("display") === "block") { 
-						btn.css({
-							"position": "absolute",
-							"top": "0px", 
-							"right": "0px",
-							"z-index": "100"
-						});
-					}
+						btn = $("<button class='btn btn-danger btn-xs glyphicon glyphicon-remove -view edit search' style='margin-left:10px'></button>");
+					mode === "view" ? btn.hide() : btn.show();
+					notView = notView.add(btn); edit = edit.add(btn); search = search.add(btn);
+					result.prepend( btn );
+					result.prepend($("<span>").text(value.toString()));
+					//if (result.css("display") === "block") { btn.css({ "position": "absolute", "top": "0px", "right": "0px", "z-index": "100"}); }
 					btn.click(function () {
 						individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
 					});
@@ -354,9 +341,51 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 			
 		});
-		
+
+		// Controls
+		$("veda-control[property]", template).map( function () {
+			var control = $(this),
+				property_uri = control.attr("property"),
+				type = control.attr("type") || veda.ontology[property_uri]["rdfs:range"][0].id,
+				controlType;
+			switch (type) {
+				case "xsd:boolean": 
+					controlType = $.fn.vedaBoolean2; 
+					break;
+				case "xsd:integer": 
+				case "xsd:nonNegativeInteger":
+					controlType = $.fn.vedaInteger2; 
+					break;
+				case "xsd:decimal":
+					controlType = $.fn.vedaDecimal2; 
+					break;
+				case "xsd:dateTime": 
+					controlType = $.fn.vedaDatetime2; 
+					break;
+				default: 
+					controlType = $.fn.vedaString2; 
+					break;
+			}
+			var opts = {
+				change: function (value) {
+					individual[property_uri] = individual[property_uri].concat(value);
+				},
+			};
+			if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
+				controlType = $.fn.vedaSource2;
+				opts.change = function (value) {
+					individual.off("individual:propertyModified", handler);
+					individual[property_uri] = [value];
+					individual.on("individual:propertyModified", handler);
+				}
+				if (property_uri === "v-s:script") opts.mode = "javascript";
+				if (property_uri === "v-ui:template") opts.mode = "htmlmixed";
+			}
+			controlType.call(control, opts);
+		});
+
 		// Related resources
-		$("[rel]", template).map( function () {
+		$("[rel]", template).not("veda-control").map( function () {
 			
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
@@ -807,8 +836,8 @@ function queryFromIndividual(individual) {
 	return query;
 }
 
-
 */
+
 
 
 
@@ -1117,7 +1146,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		
 		// Properties
-		$("[property]", template).not("[about]").map( function () {
+		$("[property]", template).not("veda-control").not("[about]").map( function () {
 			
 			var propertyContainer = $(this),
 				property_uri = propertyContainer.attr("property"),
@@ -1140,7 +1169,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		
 		// Related resources
-		$("[rel]", template).map( function () {
+		$("[rel]", template).not("veda-control").map( function () {
 			
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
@@ -1590,3 +1619,4 @@ function queryFromIndividual(individual) {
 	query = allProps ? "(" + allProps + ")" : undefined;
 	return query;
 }
+

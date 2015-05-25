@@ -22,7 +22,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "0.2" ;
+  owl:versionInfo2 "0.2" ;
 .
 
 ########## SEARCH FUNCTION ###########
@@ -212,6 +212,7 @@ v-fs:SearchTemplate
 					</div>
 					<strong about="v-fs:selectedType" property="rdfs:label"></strong>
 					<div rel="v-fs:selectedType"></div>
+					<br />
 				</div>
 				<div role="tabpanel" class="tab-pane" id="results">
 					<div class="container-fluid" id="search-results">

@@ -22,7 +22,7 @@
   rdfs:label "Mondi individuals ontology"@en ;
   rdfs:label "Онтология индивидов Монди"@ru ;
   owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
-  owl:versionInfo "1.3" ;
+# owl:versionInfo "1.3" ;
 .
 
 td:AdministrativeDocument
@@ -516,46 +516,56 @@ td:PersonTemplate1
 	    </div>
       </div>
       <div class="panel-body">
-        <h3 property="rdfs:label">Персона</h3>
+        <h3>
+  		  <span property="rdfs:label"><br></span>
+		  <veda-control type="xsd:string" property="rdfs:label" class="-view edit search" />
+		</h3>
         <div class="row">
           <div class="col-md-3">
             <strong class="text-muted" about="v-s:lastName" property="rdfs:label">Фамилия</strong>
-            <div property="v-s:lastName">Иванов</div>
+            <div property="v-s:lastName"><br></div>
+            <veda-control type="xsd:string" property="v-s:lastName" class="-view edit search" />
           </div>
           <div class="col-md-3">
             <strong class="text-muted" about="v-s:firstName" property="rdfs:label">Имя</strong>
-            <div property="v-s:firstName">Иван</div>
+            <div property="v-s:firstName"><br></div>
+            <veda-control type="xsd:string" property="v-s:firstName" class="-view edit search" />
           </div>
           <div class="col-md-3">
             <strong class="text-muted" about="v-s:middleName" property="rdfs:label">Отчество</strong>
-            <div property="v-s:middleName">Иванович</div>
+            <div property="v-s:middleName"><br></div>
+            <veda-control type="xsd:string" property="v-s:middleName" class="-view edit search" />
           </div>
           <div class="col-md-3">
             <strong class="text-muted" about="v-s:birthday" property="rdfs:label">День рождения</strong>
-            <div property="v-s:birthday">1980-01-01</div>
+            <div property="v-s:birthday"><br></div>
+            <veda-control type="xsd:dateTime" property="v-s:birthday" class="-view edit search" />
           </div>
 	    </div>
         <hr />
         <div class="row">
           <div class="col-md-6">
 		    <div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1">шаблон: td:PreferencesTemplate1</div>
+		    <veda-control rel="v-ui:hasPreferences" class="-view edit search" />
           </div>
           <div class="col-md-6">
             <div rel="v-s:hasAccount" template="td:AccountTemplate1">шаблон: td:AccountTemplate1</div>
+            <veda-control rel="v-s:hasAccount" class="-view edit search" />
           </div>
         </div>
         <div class="row">
           <div class="col-md-6">
             <div rel="v-s:test" template="v-fs:SearchTemplate">v-fs:SearchTemplate</div>
+            <veda-control rel="v-s:test" class="-view edit search" />
           </div>
         </div>
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-primary" id="edit">Редактировать</button>
-        <button type="button" class="action btn btn-success" id="save">Сохранить</button>
-        <button type="button" class="action btn btn-default" id="cancel">Отмена</button>
-        <button type="button" class="action btn btn-link" id="delete">Удалить</button>
-        <button type="button" class="action btn btn-primary" id="search">Найти</button>
+        <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
+        <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+        <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+        <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+        <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
       </div>
     </div>
   </div>
@@ -582,21 +592,24 @@ td:AppointmentTemplate1
       </div>
       <div class="panel-body">
         <h3 property="rdfs:label">Наменование</h3>
+        <veda-control type="xsd:string" property="rdfs:label" class="-view edit search" />
         <div class="row">
           <div class="col-md-6">
             <div rel="v-s:employee">Работник</div>
+            <veda-control rel="v-s:employee" class="-view edit search" />
           </div>
           <div class="col-md-6">
             <div rel="v-s:occupation">Должность</div>
+            <veda-control rel="v-s:occupation" class="-view edit search" />
           </div>
         </div>
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-primary" id="edit">Редактировать</button>
-        <button type="button" class="action btn btn-success" id="save">Сохранить</button>
-        <button type="button" class="action btn btn-default" id="cancel">Отмена</button>
-        <button type="button" class="action btn btn-link" id="delete">Удалить</button>
-        <button type="button" class="action btn btn-primary" id="search">Найти</button>
+        <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
+        <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+        <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+        <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+        <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
       </div>
     </div>
   </div>
@@ -637,38 +650,43 @@ td:AccountTemplate1
       </div>
       <div class="panel-body">
         <h3 property="rdfs:label">Наименование</h3>
+        <veda-control type="xsd:string" property="rdfs:label" class="-view edit search" />
         <br />
         <div class="row">
             <div class="col-md-12">
                <strong class="text-muted" about="v-s:owner" property="rdfs:label">Владелец</strong>
                <div rel="v-s:owner" template="v-ui:LabelTemplate">v-ui:LabelTemplate</div>
+               <veda-control rel="v-s:owner" class="-view edit search" />
             </div>
         </div>
         <br />
         <div class="row">
           <div class="col-md-6">
                <strong class="text-muted" about="v-s:mailbox" property="rdfs:label">E-mail</strong>
-               <div property="v-s:mailbox">address@example.com</div>
+               <div property="v-s:mailbox"><br></div>
+               <veda-control type="xsd:string" property="v-s:mailbox" class="-view edit search" />
           </div>
           <div class="col-md-6">
                <strong class="text-muted" about="v-s:login" property="rdfs:label">Логин</strong>
-               <div property="v-s:login">IvanovI</div>
+               <div property="v-s:login"><br></div>
+               <veda-control type="xsd:string" property="v-s:login" class="-view edit search" />
 	      </div>
         </div>
         <br />
         <div class="row">
           <div class="col-md-12">
                <strong class="text-muted" about="v-s:password" property="rdfs:label">Пароль</strong>
-               <div property="v-s:password">PaSsWoRd</div>
+               <div property="v-s:password"><br></div>
+               <veda-control type="xsd:string" property="v-s:password" class="-view edit search" />
           </div>
         </div>
       </div>
       <!--div class="panel-footer">
-        <button type="button" class="action btn btn-sm btn-primary" id="edit">Редактировать</button>
-        <button type="button" class="action btn btn-sm btn-success" id="save">Сохранить</button>
-        <button type="button" class="action btn btn-sm btn-default" id="cancel">Отмена</button>
-        <button type="button" class="action btn btn-sm btn-link" id="delete">Удалить</button>
-        <button type="button" class="action btn btn-sm btn-primary" id="search">Найти</button>
+        <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
+        <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+        <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+        <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+        <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
       </div-->
     </div>
   </div>
@@ -707,18 +725,20 @@ td:PreferencesTemplate1
     <div>
       <strong class="text-muted" about="v-ui:preferredLanguage" property="rdfs:label">Язык</strong>:
       <ul>
-        <li rel="v-ui:preferredLanguage">RU</li>
+        <li rel="v-ui:preferredLanguage"></li>
       </ul>
+      <veda-control rel="v-ui:preferredLanguage" class="-view edit search" />
       <strong class="text-muted" about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</strong>: 
-      <span property="v-ui:displayedElements">999</span>
+      <div property="v-ui:displayedElements"></div>
+      <veda-control type="xsd:integer" property="rdfs:label" class="-view edit search" />
     </div>
   </div>
   <!--div class="panel-footer">
-    <button type="button" class="action btn btn-sm btn-primary" id="edit">Редактировать</button>
-    <button type="button" class="action btn btn-sm btn-success" id="save">Сохранить</button>
-    <button type="button" class="action btn btn-sm btn-default" id="cancel">Отмена</button>
-    <button type="button" class="action btn btn-sm btn-link" id="delete">Удалить</button>
-    <button type="button" class="action btn btn-sm btn-primary" id="search">Найти</button>
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
+    <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+    <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+    <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
   </div-->
 </div>
 
