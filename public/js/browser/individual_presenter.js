@@ -1,4 +1,4 @@
-/*// Individual Presenter
+// Individual Presenter
 
 veda.Module(function IndividualPresenter(veda) { "use strict";
 	
@@ -264,7 +264,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		template.on("view edit search", modeHandler);
 		
 		// Process RDFa compliant template
-		// About resources
+		// About resource
 		$("[about]", template).map( function () {
 			var propertyContainer = $(this), 
 				property_uri = propertyContainer.attr("property"),
@@ -288,7 +288,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 		});
 		
-		// Specials (not RDFa)
+		// Special (not RDFa)
 		$("[href='id']", template).map( function () {
 			$(this)
 				.attr("href", "#/individual/" + individual.id + "/#main")
@@ -300,13 +300,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				.after( "&nbsp;" );
 		});
 		
-		// Properties
+		var propertyControls = $("veda-control[property]", template);
+		
+		// Property value
 		$("[property]", template).not("veda-control").not("[about]").map( function () {
 			
-			var propertyContainer = $(this).hide().css("position", "relative"),
-				property_uri = propertyContainer.attr("property");
+			var propertyContainer = $(this).hide(),
+				property_uri = propertyContainer.attr("property"),
+				spec = specs[property_uri],
+				immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true;
 			
-			if (property_uri === "id") return;
+			if (property_uri == "id") { 
+				propertyContainer.show().text(individual[property_uri]); 
+				return;
+			}
 
 			if (!individual.hasValue(property_uri)) {
 				individual.defineProperty(property_uri);
@@ -315,16 +322,28 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 			function renderPropertyValues() {
 				return individual[property_uri].map( function (value, i) {
-					var result = propertyContainer.clone().show().insertBefore(propertyContainer),
-						btn = $("<button class='btn btn-danger btn-xs glyphicon glyphicon-remove -view edit search' style='margin-left:10px'></button>");
-					mode === "view" ? btn.hide() : btn.show();
+					var result = propertyContainer.clone().show().insertBefore(propertyContainer);
+					
+					var btn = $("<button class='btn btn-link btn-xs -view edit search'><i class='glyphicon glyphicon-remove text-danger'></i></button>");
+					if (mode === "view") btn.hide();
 					notView = notView.add(btn); edit = edit.add(btn); search = search.add(btn);
-					result.prepend( btn );
-					result.prepend($("<span>").text(value.toString()));
-					//if (result.css("display") === "block") { btn.css({ "position": "absolute", "top": "0px", "right": "0px", "z-index": "100"}); }
+					if (immutable) {
+						notEdit = notEdit.add(btn); 
+						if (mode === "edit") btn.hide(); 
+					}
 					btn.click(function () {
 						individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
 					});
+					var valueHolder = $("<span>");
+					/*valueHolder.on("click", function () {
+						propertyControls.map( function () {
+							var control = $(this);
+							if (control.attr("property") !== property_uri) return;
+							$("input,textarea", control).val( value.toString() );
+						});
+					});*/
+					result.prepend(valueHolder.text(value.toString()));
+					valueHolder.after( btn );
 					return result;
 				});
 			}
@@ -342,12 +361,21 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 		});
 
-		// Controls
+		// Property control
 		$("veda-control[property]", template).map( function () {
 			var control = $(this),
 				property_uri = control.attr("property"),
+				property = veda.ontology[property_uri],
 				type = control.attr("type") || veda.ontology[property_uri]["rdfs:range"][0].id,
+				spec = specs[property_uri],
+				immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true,
 				controlType;
+			
+			if (immutable) {
+				notEdit = notEdit.add(control); 
+				if (mode === "edit") control.hide(); 
+			}
+			
 			switch (type) {
 				case "xsd:boolean": 
 					controlType = $.fn.vedaBoolean2; 
@@ -369,8 +397,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var opts = {
 				change: function (value) {
 					individual[property_uri] = individual[property_uri].concat(value);
-				},
+				}
 			};
+			
 			if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
 				controlType = $.fn.vedaSource2;
 				opts.change = function (value) {
@@ -381,34 +410,81 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				if (property_uri === "v-s:script") opts.mode = "javascript";
 				if (property_uri === "v-ui:template") opts.mode = "htmlmixed";
 			}
+			
 			controlType.call(control, opts);
+			
+			function modeHandler() {
+				isValid(individual, spec, individual[property_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
+				return false;
+			}
+			template.on("edit", modeHandler);
+			
+			function propertyModifiedHandler(doc_property_uri) {
+				if (doc_property_uri === property_uri && mode === "edit") {
+					isValid(individual, specs[property_uri], individual[property_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
+				}
+			}
+			individual.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				individual.off("individual:propertyModified", propertyModifiedHandler);
+			});
+			
+			if (spec && spec.hasValue("v-ui:tooltip")) {
+				control.tooltip({
+					title: spec["v-ui:tooltip"].join(", "),
+					placement: "bottom",
+					container: control,
+					trigger: "focus"
+				});
+			}
+			
+			function assignDefaultValue (e) {
+				var defaultValue;
+				switch (property["rdfs:range"][0].id) {
+					case "xsd:boolean": 
+						defaultValue = spec && spec.hasValue("v-ui:defaultBooleanValue") ? spec["v-ui:defaultBooleanValue"][0] : new Boolean(false);
+						break;
+					case "xsd:integer": 
+					case "xsd:nonNegativeInteger":
+						defaultValue = spec && spec.hasValue("v-ui:defaultIntegerValue") ? spec["v-ui:defaultIntegerValue"][0] : undefined; 
+						break;
+					case "xsd:decimal":
+						defaultValue = spec && spec.hasValue("v-ui:defaultDecimalValue") ? spec["v-ui:defaultDecimalValue"][0] : undefined; 
+						break;
+					case "xsd:dateTime": 
+						defaultValue = spec && spec.hasValue("v-ui:defaultDatetimeValue") ? spec["v-ui:defaultDatetimeValue"][0] : undefined; 
+						break;
+					default: 
+						defaultValue = spec && spec.hasValue("v-ui:defaultStringValue") ? spec["v-ui:defaultStringValue"][0] : new String(); 
+						break;
+				}
+				
+				individual[property_uri] = [ defaultValue ];
+				return false;
+			}
+			if ( spec && !individual.hasValue(property_uri) ) {
+				template.on("edit", assignDefaultValue);
+				if ( mode === "edit" ) assignDefaultValue();
+			}
 		});
 
-		// Related resources
+		// Relation value
 		$("[rel]", template).not("veda-control").map( function () {
 			
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
-				relTemplate = relContainer.attr("template"),
+				relTemplate = relContainer.attr("template") ? new veda.IndividualModel( relContainer.attr("template") ) : new veda.IndividualModel("v-ui:ClassNameLabelTemplate"),
 				spec = specs[rel_uri];
 			
 			relContainer.empty().hide();
 			
-			relTemplate = relTemplate ? (
-				new veda.IndividualModel(relTemplate) 
-			) : (
-				individual.hasValue(rel_uri) && individual[rel_uri][0].hasValue("rdfs:label") ? 
-					new veda.IndividualModel("v-ui:ClassNameLabelTemplate")
-					:
-					new veda.IndividualModel("v-ui:ClassNameIdTemplate")
-			);
-			var rendered = renderRelation(individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, propertyModifiedHandler);
+			var rendered = renderRelationValues(individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, propertyModifiedHandler);
 			
 			// Re-render link property if its' values were changed
 			function propertyModifiedHandler (doc_property_uri) {
 				if (doc_property_uri === rel_uri) {
 					rendered.map( function (item) { item.remove(); } );
-					rendered = renderRelation(individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, propertyModifiedHandler);
+					rendered = renderRelationValues(individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, propertyModifiedHandler);
 				}
 			}
 			individual.on("individual:propertyModified", propertyModifiedHandler);
@@ -416,90 +492,90 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				individual.off("individual:propertyModified", propertyModifiedHandler);
 			});
 
-		});		
+		});
 		
+		// Relation control
+		$("veda-control[rel]", template).map( function () {
+			
+			var control = $(this), 
+				rel_uri = control.attr("rel"),
+				spec = specs[rel_uri],
+				rel = veda.ontology[rel_uri],
+				relTemplate = control.attr("template") ? new veda.IndividualModel( control.attr("template") ) : new veda.IndividualModel("v-ui:ClassNameLabelTemplate") ,
+				immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true;
+				
+			if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
+			
+			var opts = {
+				limit: 100,
+				select: function (selected) {
+					individual[rel_uri] = individual[rel_uri].concat(selected);
+				},
+				queryPrefix: spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : undefined
+			};
+			
+			if (relTemplate.hasValue("v-ui:embedded") && relTemplate["v-ui:embedded"][0] == true) {
+				opts.add = function () {
+					var embeddedIndividual = new veda.IndividualModel();
+					if (relTemplate.hasValue("v-ui:forClass")) {
+						embeddedIndividual["rdf:type"] = [relTemplate["v-ui:forClass"][0]];
+					}
+					individual[rel_uri] = individual[rel_uri].concat(embeddedIndividual);
+				};
+			}
+			
+			control.vedaLink(opts);
+
+			function modeHandler() {
+				isValid(individual, spec, individual[rel_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
+				return false;
+			}
+			template.on("edit", modeHandler);
+			
+			function propertyModifiedHandler(doc_rel_uri) {
+				if (doc_rel_uri === rel_uri && mode === "edit") {
+					isValid(individual, spec, individual[rel_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
+				}
+			}
+			individual.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				individual.off("individual:propertyModified", propertyModifiedHandler);
+			});
+			
+			function assignDefaultObjectValue (e) {
+				individual[rel_uri] = [ spec["v-ui:defaultObjectValue"][0] ];
+				return false;
+			}
+			if ( spec && spec.hasValue("v-ui:defaultObjectValue") && !individual.hasValue(rel_uri) ) {
+				template.on("edit", assignDefaultObjectValue);
+				if (mode === "edit") individual[rel_uri] = [ spec["v-ui:defaultObjectValue"][0] ];
+			}
+			
+			// tooltip from spec
+			if (spec && spec.hasValue("v-ui:tooltip")) {
+				control.tooltip({
+					title: spec["v-ui:tooltip"].join(", "),
+					placement: "top",
+					container: control,
+					trigger: "focus"
+				});
+			}
+						
+			if (immutable) {
+				notEdit = notEdit.add(control); 
+				if (mode === "edit") control.hide(); 
+			}
+			
+		});
+
 		return template;
 	}
 	
-	function renderRelation (individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, handler) {
-		
+	function renderRelationValues (individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, handler) {
 		if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
-		
-		function assignDefaultObjectValue (e) {
-			individual[rel_uri] = [ spec["v-ui:defaultObjectValue"][0] ];
-			e.stopPropagation();
-		}
-		if ( spec && spec.hasValue("v-ui:defaultObjectValue") && !individual.hasValue(rel_uri) ) {
-			template.on("edit", assignDefaultObjectValue);
-			if (mode === "edit") individual[rel_uri] = [ spec["v-ui:defaultObjectValue"][0] ];
-		}
-		
 		var immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true;
-		
 		var values = individual[rel_uri];
-		
-		var renderedValues = individual.hasValue(rel_uri) ? 
-			individual[rel_uri].map( function (value) { return renderValue (value); } ) : [];
-
-		var controlContainer = relContainer.clone();
-		relContainer.after(controlContainer);
-		
-		var opts = {
-			limit: 100,
-			select: function (selected) {
-				individual[rel_uri] = individual[rel_uri].concat(selected);
-			}
-		};
-		if (spec && spec.hasValue("v-ui:queryPrefix")) {
-			opts.queryPrefix = spec["v-ui:queryPrefix"][0];
-		}
-		if (relTemplate.hasValue("v-ui:embedded") && relTemplate["v-ui:embedded"][0] == true) {
-			
-			opts.add = function () {
-				var embeddedIndividual = new veda.IndividualModel();
-				if (relTemplate.hasValue("v-ui:forClass")) {
-					embeddedIndividual["rdf:type"] = [relTemplate["v-ui:forClass"][0]];
-				}
-				individual[rel_uri] = individual[rel_uri].concat(embeddedIndividual);
-			};
-		}
-		
-		var control = controlContainer.css("display") === "inline" ? 
-			$("<span>").vedaLink(opts) : $("<div>").vedaLink(opts);
-
-		// tooltip from spec
-		if (spec && spec.hasValue("v-ui:tooltip")) {
-			control.tooltip({
-				title: spec["v-ui:tooltip"].join(", "),
-				placement: "auto bottom",
-				container: control,
-				trigger: "focus"
-			});
-		}
-		
-		controlContainer.append(control);
-		
-		mode === "view" ? controlContainer.hide() : 
-		mode === "edit" && !immutable ? controlContainer.show() :
-		mode === "edit" && immutable ? controlContainer.hide() : 
-        mode === "search" ? controlContainer.show() : true;
-        
-		function modeHandler (e) {
-			mode = e.type;
-			e.type === "view" ? controlContainer.hide() : 
-			e.type === "edit" && !immutable ? controlContainer.show() : 
-			e.type === "edit" && immutable ? controlContainer.hide() : 
-			e.type === "search" ? controlContainer.show() : true;
-			if (e.type === "edit") isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
-			e.stopPropagation();
-		}
-		template.on("view edit search", modeHandler);
-
-		if (mode === "edit") isValid(individual, spec, values) ? control.addClass("has-success") : control.addClass("has-error") ;
-		
-		return [controlContainer].concat(renderedValues);
-
-		function renderValue(value) {
+		var renderedValues = individual[rel_uri].map( function (value) { 
 			// Create the same tag container to preserve element layout
 			var clone = relContainer.clone();
 			var lnk;
@@ -555,122 +631,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			relContainer.before(clone);
 			return clone.show();
-		}
-		
-	}
-
-	function renderProperty (individual, property_uri, container, spec, template, mode, handler) {
-		
-		if ( property_uri != "id" && !veda.ontology[property_uri] ) return;
-		
-		var immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true;
-		
-		container.empty();
-		
-		if (property_uri == "id") { 
-			container.val(individual[property_uri]).html(individual[property_uri]); 
-			return;
-		}
-		
-		var property = veda.ontology[property_uri],
-			controlType, emptyVal, defaultValue;
-		
-		if ( !individual[property_uri] ) individual.defineProperty(property_uri);
-		
-		var values = individual[property_uri];
-		
-		container.attr("content", values.join(", "));
-
-		switch (property["rdfs:range"][0].id) {
-			case "xsd:boolean": 
-				controlType = $.fn.vedaBoolean; 
-				emptyVal = spec && spec.hasValue("v-ui:defaultBooleanValue") ? spec["v-ui:defaultBooleanValue"][0] : new Boolean(false);
-				break;
-			case "xsd:integer": 
-			case "xsd:nonNegativeInteger":
-				controlType = $.fn.vedaInteger; 
-				emptyVal = spec && spec.hasValue("v-ui:defaultIntegerValue") ? spec["v-ui:defaultIntegerValue"][0] : undefined; 
-				break;
-			case "xsd:decimal":
-				controlType = $.fn.vedaDecimal; 
-				emptyVal = spec && spec.hasValue("v-ui:defaultDecimalValue") ? spec["v-ui:defaultDecimalValue"][0] : undefined; 
-				break;
-			case "xsd:dateTime": 
-				controlType = $.fn.vedaDatetime; 
-				emptyVal = spec && spec.hasValue("v-ui:defaultDatetimeValue") ? spec["v-ui:defaultDatetimeValue"][0] : undefined; 
-				break;
-			default: 
-				controlType = $.fn.vedaString; 
-				emptyVal = spec && spec.hasValue("v-ui:defaultStringValue") ? spec["v-ui:defaultStringValue"][0] : new String(); 
-				break;
-		}
-		
-		var controls = values.map( renderControl );
-		if (!controls.length) controls.push( renderControl(emptyVal, 0) );
-		
-		controls.map(function (control) {
-			control.trigger(mode);
-			if (spec && spec.hasValue("v-ui:tooltip")) {
-				control.tooltip({
-					title: spec["v-ui:tooltip"].join(", "),
-					placement: "auto bottom",
-					container: control,
-					trigger: "focus"
-				});
-			}
 		});
-	
-		function modeHandler (e) {
-			mode = e.type;
-			controls
-				.filter(function (item) {
-					return !!item;
-				})
-				.map(function (item) {
-					item.trigger(e.type);
-				});
-			if (e.type === "edit") isValid(individual, spec, values) ? controls.map( function(item) {item.addClass("has-success");} ) : controls.map( function(item) {item.addClass("has-error");} );
-			e.stopPropagation();				
-		}
-		template.on("view edit search", modeHandler);
-
-		if (mode === "edit") isValid(individual, spec, values) ? controls.map( function(item) {item.addClass("has-success");} ) : controls.map( function(item) {item.addClass("has-error");} );
-		
-		function renderControl (value, index) {
-			var opts = {
-				immutable: immutable,
-				value: value,
-				change: function (value) {
-					values[index] = value;
-					individual[property_uri] = values;
-				},
-				add: function () {
-					values.push( emptyVal );
-					individual[property_uri] = values;
-				},
-				remove: function () {
-					values.splice(index, 1);
-					controls.splice(index, 1);
-					individual[property_uri] = values;
-				}
-			};
-			if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
-				controlType = $.fn.vedaSource;
-				opts.change = function (value) {
-					individual.off("individual:propertyModified", handler);
-					individual[property_uri] = [value];
-					individual.on("individual:propertyModified", handler);
-				}
-				if (property_uri === "v-s:script") opts.mode = "javascript";
-				if (property_uri === "v-ui:template") opts.mode = "htmlmixed";
-			}
-			
-			var control = controlType.call( $("<span>"), opts );
-			
-			container.append(control);
-			return control;
-		}
-		
+		return renderedValues;
 	}
 
 	function isValid (individual, spec, values) {
@@ -754,7 +716,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					$("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
 				);
 				
-				switch( property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal" ) {
+				var range = property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal";
+				switch( range ) {
 					case "rdfs:Literal" : 
 					case "xsd:string" : 
 					case "xsd:boolean" : 
@@ -763,12 +726,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					case "xsd:decimal" : 
 					case "xsd:dateTime" :
 						$(".value", result).append (
-							$("<div/>", {"property": property_uri})
+							$("<div/>").attr("property", property_uri),
+							$("<veda-control class='-view edit search'></veda-control>").attr("property", property_uri).attr("type", range)
 						);
 					break;
 					default:
 						$(".value", result).append (
-							$("<div/>", {"rel": property_uri})
+							$("<div/>", {"rel": property_uri}),
+							$("<veda-control class='-view edit search'></veda-control>").attr("rel", property_uri)
 						);
 					break;
 				}
@@ -836,7 +801,6 @@ function queryFromIndividual(individual) {
 	return query;
 }
 
-*/
 
 
 
@@ -849,6 +813,7 @@ function queryFromIndividual(individual) {
 
 
 
+/*
 // Individual Presenter
 
 veda.Module(function IndividualPresenter(veda) { "use strict";
@@ -1620,3 +1585,4 @@ function queryFromIndividual(individual) {
 	return query;
 }
 
+*/

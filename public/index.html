@@ -542,6 +542,7 @@
 								</div>
 								<div class="col-md-9 col-xs-7">
 									<h3 property="rdfs:label"></h3>
+									<veda-control type="xsd:string" property="rdfs:label" class='-view edit search'></veda-control>
 								</div>
 							</div>
 							<div class="row">
@@ -550,17 +551,18 @@
 								</div>
 								<div class="col-md-9 col-xs-7">
 									<div rel="rdf:type"/>
+									<veda-control rel="rdfs:label" class='-view edit search'></veda-control>
 								</div>
 							</div>
 							<hr style="margin: 10px 0px"/>
 						</div>
 					</div>
 					<div class="panel-footer">
-						<button type="button" class="action btn btn-primary" id="edit">Редактировать</button>
-						<button type="button" class="action btn btn-success" id="save">Сохранить</button>
-						<button type="button" class="action btn btn-default" id="cancel">Отмена</button>
-						<button type="button" class="action btn btn-link" id="delete">Удалить</button>
-						<button type="button" class="action btn btn-primary" id="search">Найти</button>
+						<button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
+						<button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+						<button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+						<button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+						<button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
 					</div>
 				</div>
 			</div>

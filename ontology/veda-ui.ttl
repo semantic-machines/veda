@@ -306,7 +306,7 @@ v-ui:LabelTemplate
   rdfs:label "Шаблон с меткой"@ru ;
   rdfs:label "Template with label"@en ;
   v-ui:template """
-  <span><span property="rdfs:label">наименование</span></span>
+  <span><span property="rdfs:label"></span></span>
   """ ;
 .
 v-ui:ClassNameLabelTemplate
@@ -314,7 +314,7 @@ v-ui:ClassNameLabelTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <span><a href="id"><span rel="rdf:type" template="v-ui:LabelTemplate">Имя класса</span>: <span property="rdfs:label">наименование</span></a></span>
+  <span><a href="id"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span property="rdfs:label"></span></a></span>
   """ ;
 .
 v-ui:ClassNameIdTemplate
@@ -322,7 +322,7 @@ v-ui:ClassNameIdTemplate
   rdfs:label "Шаблон с именем класса, меткой и id"@ru ;
   rdfs:label "Template with class name, label and id"@en ;
   v-ui:template """
-  <span><a href="id"><span rel="rdf:type" template="v-ui:LabelTemplate">Имя класса</span>: <span property="id">id</span></a></span>
+  <span><a href="id"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span property="id"></span></a></span>
   """ ;
 .
 v-ui:SavedSearchTemplate
