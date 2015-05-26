@@ -73,6 +73,10 @@ v-s:Codelet
   rdfs:label "Codelet"@en ;
   rdfs:label "Исполняемый Код"@ru ;
 .
+v-s:Container
+  rdf:type owl:Class ;
+  rdfs:label "Контейнер"@ru ;
+.
 v-s:DelegationStatement
   rdf:type owl:Class ;
   rdfs:label "Delegation record"@en ;
@@ -921,6 +925,7 @@ v-s:registrationNumber
 v-s:resource
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Membership ;
+  rdfs:domain v-s:Container ;
   rdfs:label "resource"@en ;
   rdfs:label "ресурс"@ru ;
   rdfs:range rdfs:Resource ;

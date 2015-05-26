@@ -43,7 +43,6 @@ jsWorkflow.ready = jsPlumb.ready;
                     bindStateEvents,
                     workflow,
                     canvasSizePx=10000,                    
-                    currentScale=1.0,
                     process,
                     mode='view',
                     max_process_depth=0;
@@ -67,6 +66,8 @@ jsWorkflow.ready = jsPlumb.ready;
             }
             net['offsetX'] = localStorage.getItem("workflow"+net.id+"-offsetX");
             net['offsetY'] = localStorage.getItem("workflow"+net.id+"-offsetY");
+            net['currentScale'] = localStorage.getItem("workflow"+net.id+"-zoom");
+            if (net['currentScale']==null) net['currentScale'] = 1.0;
             
             if (!net['offsetX']) {
             	net['offsetX'] = 0;
@@ -85,8 +86,7 @@ jsWorkflow.ready = jsPlumb.ready;
         	$('#main').addClass('calculated-height');
         	$('#'+workflowData).draggable({
                 drag: function (event, ui) {
-                  localStorage.setItem("workflow"+net.id+"-offsetX", -ui.position.left-canvasSizePx/2);
-                  localStorage.setItem("workflow"+net.id+"-offsetY", -ui.position.top-canvasSizePx/2); 
+                  instance.moveCanvas((-ui.position.left-canvasSizePx/2)/net['currentScale'], (-ui.position.top-canvasSizePx/2)/net['currentScale']);	
               	  $("#workflow-context-menu").hide();
                 }
             }).on("click", function() {
@@ -118,6 +118,11 @@ jsWorkflow.ready = jsPlumb.ready;
                 ],
                 Container: workflow // Id of the workflow container.
             });
+            
+            instance.moveCanvas = function (newXoffset, newYoffset) {
+                localStorage.setItem("workflow"+net.id+"-offsetX", newXoffset);
+                localStorage.setItem("workflow"+net.id+"-offsetY", newYoffset);
+            }
 
             // Bind a click listener to each transition (connection). On double click, the transition is deleted.
             instance.bind("dblclick", function(transition) {
@@ -178,7 +183,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 if (!source.hasOwnProperty('v-wf:hasFlow')) {
                 	source.defineProperty('v-wf:hasFlow');
     			}
-                source['v-wf:hasFlow'] = soure['v-wf:hasFlow'].concat([individual]);
+                source['v-wf:hasFlow'] = source['v-wf:hasFlow'].concat([individual]);
                 
               	individual["v-wf:flowsInto"] = [new veda.IndividualModel(info.targetId)]; // setup Flow target
                 
@@ -539,13 +544,15 @@ jsWorkflow.ready = jsPlumb.ready;
              */
             instance.changeScale = function(scale) {
             	$("#workflow-context-menu").hide();
-            	currentScale = parseFloat(scale);
-            	instance.setZoom(currentScale);
-            	localStorage.setItem("workflow"+net.id+"-zoom", currentScale);
+            	
+            	net['currentScale'] = parseFloat(scale);
+            	localStorage.setItem("workflow"+net.id+"-zoom", net['currentScale']);
+            	
+            	instance.setZoom(net['currentScale']);
             	$('#'+workflowData).css({
-            		'-ms-transform': 'scale('+currentScale+','+currentScale+')', /* IE 9 */
-            		'-webkit-transform': 'scale('+currentScale+','+currentScale+')', /* Chrome, Safari, Opera */
-            		'transform': 'scale('+currentScale+','+currentScale+')'
+            		'-ms-transform': 'scale('+net['currentScale']+','+net['currentScale']+')', /* IE 9 */
+            		'-webkit-transform': 'scale('+net['currentScale']+','+net['currentScale']+')', /* Chrome, Safari, Opera */
+            		'transform': 'scale('+net['currentScale']+','+net['currentScale']+')'
             	});
             };
             
@@ -628,7 +635,7 @@ jsWorkflow.ready = jsPlumb.ready;
             instance.addExecutorProperty = function(stateId) {
             	
                 executorName = prompt("Enter name of the executor");
-                executorName = new String(executorName.replace(/[^a-zA-Z0-9 ]/g, ''));
+                if (executorName==null) return;
                 
                 var individualE = new veda.IndividualModel(); // create individual (Executor) 
                 individualE.defineProperty("rdf:type");
@@ -644,7 +651,7 @@ jsWorkflow.ready = jsPlumb.ready;
             
             instance.addVarProperty = function(stateId, type) {            
                 variableName = prompt("Enter name of the variable");
-                variableName = new String(variableName.replace(/[^a-zA-Z0-9 ]/g, ''));
+                if (variableName==null) return;
                 
                 var individualV = new veda.IndividualModel(); // create individual (Variable) 
                 individualV.defineProperty("rdf:type");
@@ -747,12 +754,14 @@ jsWorkflow.ready = jsPlumb.ready;
             			if (miny === undefined || state['v-wf:locationY'][0]<miny) miny = state['v-wf:locationY'][0];
             		}
             	});
+
             	// TODO update this from css;
             	miny-=25;
             	minx-=25;
             	maxx+=100;
             	maxy+=100;
             	
+                
             	// read viewport div
             	$(".workflow-canvas-wrapper").each(function() {
             		var scaleX = this.clientWidth/(maxx-minx);
@@ -762,9 +771,10 @@ jsWorkflow.ready = jsPlumb.ready;
             			offsetX = (this.clientWidth - (maxx-minx)*scale) /2;
             		} else {
             			offsetY = (this.clientHeight - (maxy-miny)*scale) /2;
-//            			offsetY = (maxy-miny)*(scaleY - scaleX) /2;
             		}
             	});
+                instance.moveCanvas(minx-150-offsetX, miny - offsetY);
+                
             	// change scale and offset
                 $('#'+workflowData).css({
            			'left': (-minx*scale+offsetX-canvasSizePx/2)+'px',
@@ -881,21 +891,20 @@ jsWorkflow.ready = jsPlumb.ready;
             // Add new State event.
             $(".create-state").bind("click", function() {
                 var _this = this,
-                        stateName,
                         stateId,
                         stateElement, 
-                        individual = new veda.IndividualModel(); // create individual (Task / Condition) 
+                        stateName = prompt("Enter name of the state");
+                if (stateName==null) return;
+                var individual = new veda.IndividualModel(); // create individual (Task / Condition) 
                                 
                 individual.defineProperty("rdf:type");
                 individual.defineProperty("rdfs:label");
                 individual.defineProperty("v-wf:locationX");
                 individual.defineProperty("v-wf:locationY");
 
-                stateName = prompt("Enter name of the state");
-                
-                individual['rdfs:label'] = [new String(stateName.replace(/[^a-zA-Z0-9 ]/g, ''))];
-                individual['v-wf:locationX'] = [new Number(1)];
-                individual['v-wf:locationY'] = [new Number(1)];
+                individual['rdfs:label'] = [stateName, ''];
+                individual['v-wf:locationX'] = [new Number(localStorage.getItem("workflow"+net.id+"-offsetX"))];
+                individual['v-wf:locationY'] = [new Number(localStorage.getItem("workflow"+net.id+"-offsetY"))];
                 
                 if ($('#'+workflowData).find('#' + individual.id).length < 1) {
 
@@ -929,22 +938,22 @@ jsWorkflow.ready = jsPlumb.ready;
             
             /* ZOOM [BEGIN] */
             $('.zoom-in').on('click', function() {
-            	if (currentScale<1) return instance.changeScale(currentScale + 0.1);
-            	if (currentScale<2) return instance.changeScale(currentScale + 0.25);
+            	if (net['currentScale']<1) return instance.changeScale(net['currentScale'] + 0.1);
+            	if (net['currentScale']<2) return instance.changeScale(net['currentScale'] + 0.25);
             });
 
             $('.zoom-out').on('click', function() {
-            	if (currentScale>1) return instance.changeScale(currentScale - 0.25);
-            	if (currentScale>0.2) return instance.changeScale(currentScale - 0.1);
+            	if (net['currentScale']>1) return instance.changeScale(net['currentScale'] - 0.25);
+            	if (net['currentScale']>0.2) return instance.changeScale(net['currentScale'] - 0.1);
             });
             
             $('#'+workflowData).bind('mousewheel', function(e){
             	if(e.originalEvent.wheelDelta > 0) {
-            		if (currentScale<1) { return instance.changeScale(currentScale + 0.1); }
-            			else if (currentScale<2) return instance.changeScale(currentScale + 0.25);
+            		if (net['currentScale']<1) { return instance.changeScale(net['currentScale'] + 0.1); }
+            			else if (net['currentScale']<2) return instance.changeScale(net['currentScale'] + 0.25);
                 } else {
-                    if (currentScale>1) { return instance.changeScale(currentScale - 0.25) }
-                    	else if (currentScale>0.2) return instance.changeScale(currentScale - 0.1);
+                    if (net['currentScale']>1) { return instance.changeScale(net['currentScale'] - 0.25) }
+                    	else if (net['currentScale']>0.2) return instance.changeScale(net['currentScale'] - 0.1);
                 }
             });
             
