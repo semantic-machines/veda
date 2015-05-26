@@ -78,15 +78,13 @@ jsWorkflow.ready = jsPlumb.ready;
             
             $('#'+workflowData).css({
        			'height': canvasSizePx +'px',
-       			'width': canvasSizePx+'px',
-       			'left': (-net['offsetX']-canvasSizePx/2)+'px',
-       			'top': (-net['offsetY']-canvasSizePx/2)+'px',
+       			'width': canvasSizePx+'px'
        		});
         	$('body').css('height','100vh');
         	$('#main').addClass('calculated-height');
         	$('#'+workflowData).draggable({
                 drag: function (event, ui) {
-                  instance.moveCanvas((-ui.position.left-canvasSizePx/2)/net['currentScale'], (-ui.position.top-canvasSizePx/2)/net['currentScale']);	
+                  instance.moveCanvas(ui.position.left, ui.position.top);	
               	  $("#workflow-context-menu").hide();
                 }
             }).on("click", function() {
@@ -119,9 +117,23 @@ jsWorkflow.ready = jsPlumb.ready;
                 Container: workflow // Id of the workflow container.
             });
             
-            instance.moveCanvas = function (newXoffset, newYoffset) {
-                localStorage.setItem("workflow"+net.id+"-offsetX", newXoffset);
-                localStorage.setItem("workflow"+net.id+"-offsetY", newYoffset);
+            instance.moveCanvas = function (newLeft, newTop) {
+            	//DEBUG $('#workflow-net-name').text(newLeft+" / "+newTop); 
+            	
+            	// change scale and offset
+                $('#'+workflowData).css({
+           			'left': (newLeft)+'px',
+           			'top': (newTop)+'px',
+           		});
+                localStorage.setItem("workflow"+net.id+"-offsetX", newLeft);
+                localStorage.setItem("workflow"+net.id+"-offsetY", newTop);
+                net['offsetX'] = newLeft;
+                net['offsetY'] = newTop;
+            }
+            if (net['offsetX']!=null) {
+                instance.moveCanvas(net['offsetX'], net['offsetY']);
+            } else {
+                instance.moveCanvas(-canvasSizePx/2, -canvasSizePx/2);
             }
 
             // Bind a click listener to each transition (connection). On double click, the transition is deleted.
@@ -139,24 +151,15 @@ jsWorkflow.ready = jsPlumb.ready;
             	var _this = this, currentElement = $(_this), properties;
                 properties = $('#workflow-selected-item');
                 $('#'+veda.Util.escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active');
-                //$('#'+properties.find('#workflow-item-id').val()).removeClass('w_active');
-                
+
                 if (transition.id == '__label') {
                 	transition = transition.component;
                 }
                 
                 properties.find('#workflow-item-id').val(transition.id);
                 properties.find('#workflow-item-type').val('flow');
-                // properties.find('#workflow-item-label').val(transition.getLabel());
                 currentElement.addClass('w_active');                
-               	// $('.task-buttons').hide();
             });
-            
-            /*
-            instance.bind("beforeDrop", function(info) {
-            	alert(info.dropEndpoint);
-            	if (info.dropEndpoint==null) return false; // prevent D&D detaching
-            });*/
             
             instance.bind("beforeDetach", function(connection) {
            		return connection.targetId.indexOf('jsPlumb') === 0;
@@ -506,7 +509,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     ],paintStyle:{ 
                         strokeStyle:"#225588",
                         fillStyle:"transparent",
-                        radius:4,
+                        radius:mode=='edit'?4:1,
                         lineWidth:1 
                     },
                     connectorStyle: {
@@ -531,7 +534,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     paintStyle:{ 
                         strokeStyle:"#225588",
                         fillStyle:"transparent",
-                        radius:4,
+                        radius:mode=='edit'?4:1,
                         lineWidth:1 
                     }
                 });
@@ -707,7 +710,7 @@ jsWorkflow.ready = jsPlumb.ready;
             		id: flow.id,
                     source: state.id,
                     target: flow['v-wf:flowsInto'][0].id,
-                    detachable:true
+                    detachable:(mode=='edit')
                 });
             };
             
@@ -773,14 +776,8 @@ jsWorkflow.ready = jsPlumb.ready;
             			offsetY = (this.clientHeight - (maxy-miny)*scale) /2;
             		}
             	});
-                instance.moveCanvas(minx-150-offsetX, miny - offsetY);
-                
-            	// change scale and offset
-                $('#'+workflowData).css({
-           			'left': (-minx*scale+offsetX-canvasSizePx/2)+'px',
-           			'top': (-miny*scale+offsetY-canvasSizePx/2)+'px',
-           		});
                 instance.changeScale(scale);
+                instance.moveCanvas(-minx*scale+offsetX-canvasSizePx/2, -miny*scale+offsetY-canvasSizePx/2);
             };
             
             instance.addProcessVariable = function(individualProperty, listId) {
@@ -843,15 +840,16 @@ jsWorkflow.ready = jsPlumb.ready;
             	instance.addProcessVariable('v-wf:outputVariable','#process-output-variables');
             };
 
-            instance.optimizeView();
             instance.createNetView(net);
             if (mode=='view') {
             	instance.createProcessView(process);
             }
-                        
-            if (localStorage.getItem("workflow"+net.id+"-zoom")>0 && localStorage.getItem("workflow"+net.id+"-zoom")!=1) {
-            	instance.changeScale(localStorage.getItem("workflow"+net.id+"-zoom"));	
-            }
+            
+            if (net['currentScale']==null) {
+            	instance.optimizeView();
+            } else {
+            	instance.changeScale(net['currentScale']);
+            }            	
             
             /* CONTEXT MENU [BEGIN] */
             var $contextMenu = $("#workflow-context-menu");
@@ -903,8 +901,8 @@ jsWorkflow.ready = jsPlumb.ready;
                 individual.defineProperty("v-wf:locationY");
 
                 individual['rdfs:label'] = [stateName, ''];
-                individual['v-wf:locationX'] = [new Number(localStorage.getItem("workflow"+net.id+"-offsetX"))];
-                individual['v-wf:locationY'] = [new Number(localStorage.getItem("workflow"+net.id+"-offsetY"))];
+                individual['v-wf:locationX'] = [new Number((-canvasSizePx/2-net['offsetX'])/net['currentScale'])];
+                individual['v-wf:locationY'] = [new Number((-canvasSizePx/2-net['offsetY'])/net['currentScale'])];
                 
                 if ($('#'+workflowData).find('#' + individual.id).length < 1) {
 
