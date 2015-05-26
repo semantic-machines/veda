@@ -773,15 +773,14 @@ jsWorkflow.ready = jsPlumb.ready;
             			offsetY = (this.clientHeight - (maxy-miny)*scale) /2;
             		}
             	});
+                instance.moveCanvas(minx-150-offsetX, miny - offsetY);
+                
             	// change scale and offset
                 $('#'+workflowData).css({
            			'left': (-minx*scale+offsetX-canvasSizePx/2)+'px',
            			'top': (-miny*scale+offsetY-canvasSizePx/2)+'px',
            		});
-                //alert((-$('#'+workflowData).position().left/scale-canvasSizePx/2)+" / "+(-$('#'+workflowData).position().top/scale-canvasSizePx/2));
                 instance.changeScale(scale);
-                localStorage.setItem("workflow"+net.id+"-offsetX", (-$('#'+workflowData).position().left-canvasSizePx/2));
-                localStorage.setItem("workflow"+net.id+"-offsetY", (-$('#'+workflowData).position().top-canvasSizePx/2)); 
             };
             
             instance.addProcessVariable = function(individualProperty, listId) {
@@ -903,8 +902,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 individual.defineProperty("v-wf:locationX");
                 individual.defineProperty("v-wf:locationY");
 
-                
-                individual['rdfs:label'] = stateName;
+                individual['rdfs:label'] = [stateName, ''];
                 individual['v-wf:locationX'] = [new Number(localStorage.getItem("workflow"+net.id+"-offsetX"))];
                 individual['v-wf:locationY'] = [new Number(localStorage.getItem("workflow"+net.id+"-offsetY"))];
                 
