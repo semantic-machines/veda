@@ -101,7 +101,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 Endpoint: "Dot",
                 HoverPaintStyle: {
                     strokeStyle: "#6699FF",
-                    lineWidth: 2
+                    lineWidth: 1
                 },
                 ConnectionOverlays: [
                     ["Arrow", {
@@ -210,6 +210,18 @@ jsWorkflow.ready = jsPlumb.ready;
                 info.connection.id = individual.id;
             });
 
+            subNetViewButton = function(state, $state) {
+            	if (!state.hasValue('v-wf:subNet')) {
+            		return;
+            	}
+            	$("<span/>", {
+            		"click": (function (instance) {
+            	    	riot.route('#/individual/'+state['v-wf:subNet'][0].id+'/#main//edit', true);
+            		 }),
+            		 "class" : "glyphicon glyphicon-search subnet-link"
+             	}).appendTo($state);
+            };
+            
             updateSVGBackground = function(item) {
                 var svgBackground = "";
                 if (item.hasClass('split-and')) {
@@ -653,8 +665,10 @@ jsWorkflow.ready = jsPlumb.ready;
     			}            	
             	if (stateElement!=='') {
                 	$('#'+workflowData).append(stateElement);
-                	bindStateEvents($('#' + veda.Util.escape4$(state.id)));
-                	updateSVGBackground($('#' + veda.Util.escape4$(state.id)));
+                	var $state = $('#' + veda.Util.escape4$(state.id));
+                	bindStateEvents($state);
+                	if (mode=='edit') subNetViewButton(state, $state);
+                	updateSVGBackground($state);
             	}
             };
             
@@ -849,17 +863,19 @@ jsWorkflow.ready = jsPlumb.ready;
                 				$("<span/>", {
 					   			   "class" : "counter",    
                              		   "text" : 'x'+(wic+1)
-                             	   }).appendTo(state);
-                				
+                             	   }).appendTo(state);                				
                 			} else {
                 				state.attr('work-items-count', 1);
                 			}
-            				if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true && !red) {
+            				if (!wi.hasValue('v-wf:workOrderList')) {
+                    			state.css('background-color', '#FF3333');
+                    			state.attr('colored-to', 'red');
+            				} else if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true && !red) {
                     			state.css('background-color', '#88B288');
-					state.attr('colored-to', 'green');
-            				} else {
+                    			state.attr('colored-to', 'green');
+            				} else if (!red) {
                     			state.css('background-color', '#FFB266');
-					state.attr('colored-to', 'red');
+                    			state.attr('colored-to', 'red');
             				}
                 		}
             	    }

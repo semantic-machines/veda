@@ -51,7 +51,7 @@ function Context(_src_data, _ticket)
 	
     this.if_all_executors_taken_decision = function (true_decision, false_decision)
     {
-        print("Context.src_data=", toJson(this.src_data));
+        //print("Context.src_data=", toJson(this.src_data));
         var count_agreed = 0;
         for (var i = 0; i < this.src_data.length; i++)
         {

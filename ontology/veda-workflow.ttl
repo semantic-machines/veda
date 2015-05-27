@@ -20,7 +20,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports owl: ;
-#  owl:versionInfo "1.2" ;
+  owl:DversionInfo "1.2" ;
 .
 v-wf:Net
 	rdf:type owl:Class ;
@@ -747,11 +747,12 @@ v-wf:forNet
 	rdfs:range v-wf:Net ;
 .
 v-wf:isProcess
-	rdf:type rdf:Property ;
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Запущен процесс"@ru ;
 	rdfs:label "Started process"@en ;
 	rdfs:domain v-wf:StartForm ;
+	rdfs:domain v-wf:WorkOrder ;
 	rdfs:range v-wf:Process ;
 .
 v-wf:useTransformation
@@ -1118,4 +1119,34 @@ v-wf:DecisionBreak
 	rdf:type owl:Class ;
 	rdfs:label "прервать маршрут"@ru ;
 .	
+
+v-wf:DecisionExamined
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "ознакомлен"@ru ;
+.	
+
+v-wf:DecisionAchieved
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "выполнено"@ru ;
+.	
+
+v-wf:DecisionNotPerformed
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "не выполнено"@ru ;
+.	
+
+v-wf:DecisionRedirect
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "перенаправить другому"@ru ;
+.	
+
+
 

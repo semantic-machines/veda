@@ -83,3 +83,7 @@ function is_in_docflow_and_set_if_true(process, task)
 
     return res_out;
 }
+
+function distribution(process, task)
+{
+}
