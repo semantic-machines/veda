@@ -847,17 +847,19 @@ jsWorkflow.ready = jsPlumb.ready;
                 				$("<span/>", {
 					   			   "class" : "counter",    
                              		   "text" : 'x'+(wic+1)
-                             	   }).appendTo(state);
-                				
+                             	   }).appendTo(state);                				
                 			} else {
                 				state.attr('work-items-count', 1);
                 			}
-            				if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true && !red) {
+            				if (!wi.hasValue('v-wf:workOrderList') && !red) {
+                    			state.css('background-color', '#FFFFFF');
+                    			state.attr('colored-to', 'red');
+            				} else if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true && !red) {
                     			state.css('background-color', '#88B288');
-					state.attr('colored-to', 'green');
+                    			state.attr('colored-to', 'green');
             				} else {
                     			state.css('background-color', '#FFB266');
-					state.attr('colored-to', 'red');
+                    			state.attr('colored-to', 'red');
             				}
                 		}
             	    }
