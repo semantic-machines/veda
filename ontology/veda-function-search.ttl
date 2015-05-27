@@ -176,211 +176,213 @@ v-fs:SearchTemplate
   v-ui:forClass v-fs:Search ;
   v-ui:embedded "false"^^xsd:boolean ;
   v-ui:template """
-     <div role="tabpanel" id="srch-tab-panel" class="panel panel-default">
-		<div class="panel-body">
-			<!-- Nav tabs -->
-			<ul class="nav nav-pills" role="tablist">
-				<li role="presentation" class="disabled"><a about="@" property="rdfs:label"></a></li>
-				<li role="presentation" class="active"><a id="params-pill" href="#params" aria-controls="params" role="tab" data-toggle="tab">Параметры</a></li>
-				<li role="presentation"><a id="results-pill" href="#results" aria-controls="results" role="tab" data-toggle="tab">Результаты <span class="badge" id="results-count">0</span></a></li>
-				<li role="presentation" class="disabled">
-					<a id="timing-pill" style="display:none">
-						<small><small>
-							<span><strong>timing: </strong>search query time = <span id="query_time"></span> ms | get request count = <span id="get_count"></span> | get summary time = <span id="get_summary_time"></span> ms | total render time = <span id="render_time"></span> ms </span>
-						</small></small>
-					</a>
-				</li>
-			</ul>
-			<br />
-			<!-- Tab panes -->
-			<div class="tab-content">
-				<div role="tabpanel" class="tab-pane active" id="params">
-					<div class="well">
-						<div class="container-fluid">
-							<form role="form" class="form-horizontal">
-								<div class="input-group">
-									<input type="text" class="form-control" id="q"/>
-									<span class="input-group-btn" id="q-actions">
-										<button type="submit" id="srch-submit" class="btn btn-primary">Найти</button>
-									</span>
-								</div>
-							</form>
+     <div>
+		 <div role="tabpanel" id="srch-tab-panel" class="panel panel-default">
+			<div class="panel-body">
+				<!-- Nav tabs -->
+				<ul class="nav nav-pills" role="tablist">
+					<li role="presentation" class="disabled"><a about="@" property="rdfs:label"></a></li>
+					<li role="presentation" class="active"><a id="params-pill" href="#params" aria-controls="params" role="tab" data-toggle="tab">Параметры</a></li>
+					<li role="presentation"><a id="results-pill" href="#results" aria-controls="results" role="tab" data-toggle="tab">Результаты <span class="badge" id="results-count">0</span></a></li>
+					<li role="presentation" class="disabled">
+						<a id="timing-pill" style="display:none">
+							<small><small>
+								<span><strong>timing: </strong>search query time = <span id="query_time"></span> ms | get request count = <span id="get_count"></span> | get summary time = <span id="get_summary_time"></span> ms | total render time = <span id="render_time"></span> ms </span>
+							</small></small>
+						</a>
+					</li>
+				</ul>
+				<br />
+				<!-- Tab panes -->
+				<div class="tab-content">
+					<div role="tabpanel" class="tab-pane active" id="params">
+						<div class="well">
+							<div class="container-fluid">
+								<form role="form" class="form-horizontal">
+									<div class="input-group">
+										<input type="text" class="form-control" id="q"/>
+										<span class="input-group-btn" id="q-actions">
+											<button type="submit" id="srch-submit" class="btn btn-primary">Найти</button>
+										</span>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="alert alert-warning not-found" style="display: none">
+							<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
+						</div>
+						<strong about="v-fs:selectedType" property="rdfs:label"></strong>
+						<div rel="v-fs:selectedType"></div>
+						<br />
+					</div>
+					<div role="tabpanel" class="tab-pane" id="results">
+						<div class="container-fluid" id="search-results">
+							<ol id="search-results-list"></ol>
+							<hr/>
+							<div class="text-center">
+								<ul class="pagination" id="pager"></ul>
+								<br />
+							</div>
+						</div>
+						<div class="alert alert-warning not-found" style="display: none">
+							<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 						</div>
 					</div>
-					<div class="alert alert-warning not-found" style="display: none">
-						<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
-					</div>
-					<strong about="v-fs:selectedType" property="rdfs:label"></strong>
-					<div rel="v-fs:selectedType"></div>
-					<br />
 				</div>
-				<div role="tabpanel" class="tab-pane" id="results">
-					<div class="container-fluid" id="search-results">
-						<ol id="search-results-list"></ol>
-						<hr/>
-						<div class="text-center">
-							<ul class="pagination" id="pager"></ul>
-							<br />
-						</div>
-					</div>
-					<div class="alert alert-warning not-found" style="display: none">
-						<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
-					</div>
-				</div>
+				<button id="save" class="btn btn-success">Сохранить</button>
+				<button id="save-as" class="btn btn-success">Сохранить как...</button>
 			</div>
-			<button id="save" class="btn btn-success">Сохранить</button>
-			<button id="save-as" class="btn btn-success">Сохранить как...</button>
 		</div>
-	</div>
-	<script>
-		var self = individual;
-		var q = $("#q", template);
-		var save = $("#save", template);
-		var saveAs = $("#save-as", template);
-		var params = $("#params", template);
-		var results = $("#results", template);
-		var srchSubmit = $("#srch-submit", template);
-		var searchResults = $("#search-results", template);
-		var searchResultsList = $("#search-results-list", template);
-		var notFound = $(".not-found", template);
-		var paramsPill = $("#params-pill", template);
-		var resultsPill = $("#results-pill", template);
-		var resultsCount = $("#results-count", template);
-		var timingPill = $("#timing-pill", template);
-		var $query_time = $("#query_time", template);
-		var $render_time = $("#render_time", template);
-		var $_get_count = $("#get_count", template);
-		var $_get_summary_time = $("#get_summary_time", template);
-		var pager = $("#pager", template);
-		
-		if (self.hasValue("v-fs:q")) {
-			q.val(self["v-fs:q"][0]);
-		}
-		q.change(function () {
-			self["v-fs:q"] = [ q.val() ];
-		});
-		srchSubmit.click( function (e) {
-			e.preventDefault();
-			self.search();
-		});
-		save.click(function () {
-			self.save();
-		});
-		saveAs.click(function () {
-			var name = window.prompt("Введите имя запроса");
-			if (name === null) { 
-				return;
-			} else if (!name) {
-				alert("Ошибка, не задано имя запроса");
-			} else {
-				var clone = new veda.IndividualModel(self.clone(), container);
-				clone["rdfs:label"] = [name];
-				clone.save();
+		<script>
+			var self = individual;
+			var q = $("#q", template);
+			var save = $("#save", template);
+			var saveAs = $("#save-as", template);
+			var params = $("#params", template);
+			var results = $("#results", template);
+			var srchSubmit = $("#srch-submit", template);
+			var searchResults = $("#search-results", template);
+			var searchResultsList = $("#search-results-list", template);
+			var notFound = $(".not-found", template);
+			var paramsPill = $("#params-pill", template);
+			var resultsPill = $("#results-pill", template);
+			var resultsCount = $("#results-count", template);
+			var timingPill = $("#timing-pill", template);
+			var $query_time = $("#query_time", template);
+			var $render_time = $("#render_time", template);
+			var $_get_count = $("#get_count", template);
+			var $_get_summary_time = $("#get_summary_time", template);
+			var pager = $("#pager", template);
+			
+			if (self.hasValue("v-fs:q")) {
+				q.val(self["v-fs:q"][0]);
 			}
-		});
+			q.change(function () {
+				self["v-fs:q"] = [ q.val() ];
+			});
+			srchSubmit.click( function (e) {
+				e.preventDefault();
+				self.search();
+			});
+			save.click(function () {
+				self.save();
+			});
+			saveAs.click(function () {
+				var name = window.prompt("Введите имя запроса");
+				if (name === null) { 
+					return;
+				} else if (!name) {
+					alert("Ошибка, не задано имя запроса");
+				} else {
+					var clone = new veda.IndividualModel(self.clone(), container);
+					clone["rdfs:label"] = [name];
+					clone.save();
+				}
+			});
 
-		
-		self.on("search:complete", searchCompleteHandler);
-		template.on("remove", function () {
-			self.off("search:complete", searchCompleteHandler);
-		});
-		
-		if ( self.results_count ) self.trigger("search:complete");
-		
-		function searchCompleteHandler() {
 			
-			var rt1, rt2, render_time, gc1, gc2, _get_count, gst1, gst2, _get_summary_time;
-			rt1 = Date.now();
-			gc1 = get_count;
-			gst1 = get_summary_time;
+			self.on("search:complete", searchCompleteHandler);
+			template.on("remove", function () {
+				self.off("search:complete", searchCompleteHandler);
+			});
 			
-			//self.currentPage = (typeof page === 'number' ? page : self.currentPage) || 0;
-			self.currentPage = self.currentPage || 0;
+			if ( self.results_count ) self.trigger("search:complete");
 			
-			if (self.results_count < self.currentPage * veda.user.displayedElements) 
-				self.currentPage = Math.floor(self.results_count / veda.user.displayedElements) + 1 * (self.results_count % veda.user.displayedElements ? 1 : 0) - 1;
-			
-			// Show/hide 'results' or 'not found'
-			if (!self.hasValue("v-fs:q") && !self.hasValue("v-fs:queryPrefix")) {
-				q.focus();
-				paramsPill.tab("show");
+			function searchCompleteHandler() {
+				
+				var rt1, rt2, render_time, gc1, gc2, _get_count, gst1, gst2, _get_summary_time;
+				rt1 = Date.now();
+				gc1 = get_count;
+				gst1 = get_summary_time;
+				
+				//self.currentPage = (typeof page === 'number' ? page : self.currentPage) || 0;
+				self.currentPage = self.currentPage || 0;
+				
+				if (self.results_count < self.currentPage * veda.user.displayedElements) 
+					self.currentPage = Math.floor(self.results_count / veda.user.displayedElements) + 1 * (self.results_count % veda.user.displayedElements ? 1 : 0) - 1;
+				
+				// Show/hide 'results' or 'not found'
+				if (!self.hasValue("v-fs:q") && !self.hasValue("v-fs:queryPrefix")) {
+					q.focus();
+					paramsPill.tab("show");
+					notFound.hide();
+					return;
+				} else if ((self.q || self.queryPrefix) && !self.results_count) {
+					q.focus();
+					paramsPill.tab("show");
+					notFound.show();
+					return;
+				} else {
+					resultsPill.tab("show");
+					resultsCount.html(self.results_count);
+				}
+				
 				notFound.hide();
-				return;
-			} else if ((self.q || self.queryPrefix) && !self.results_count) {
-				q.focus();
-				paramsPill.tab("show");
-				notFound.show();
-				return;
-			} else {
 				resultsPill.tab("show");
-				resultsCount.html(self.results_count);
-			}
-			
-			notFound.hide();
-			resultsPill.tab("show");
-			searchResultsList
-				.empty()
-				.attr("start", self.currentPage * veda.user.displayedElements + 1);
-			pager.empty();
-			
-			
-			// Show results
-			var keys = Object.getOwnPropertyNames(self.results);
-			for (var i = self.currentPage * veda.user.displayedElements; i < (self.currentPage + 1) * veda.user.displayedElements && i < self.results_count; i++) {
-				(function (i) { 
-					setTimeout(function () {
+				searchResultsList
+					.empty()
+					.attr("start", self.currentPage * veda.user.displayedElements + 1);
+				pager.empty();
+				
+				
+				// Show results
+				var keys = Object.getOwnPropertyNames(self.results);
+				for (var i = self.currentPage * veda.user.displayedElements; i < (self.currentPage + 1) * veda.user.displayedElements && i < self.results_count; i++) {
+					(function (i) { 
+						setTimeout(function () {
 
-						var $li = $("<li/>").appendTo( searchResultsList );
+							var $li = $("<li/>").appendTo( searchResultsList );
 
-						// Select search results 
-						//var $select = $( $("#search-select-template").html() );
-						//$("input[type='checkbox']", $select).on("click", function (e) {
-						//	self.toggleSelected(i);
-						//});
-						//$li.append( $select );
+							// Select search results 
+							//var $select = $( $("#search-select-template").html() );
+							//$("input[type='checkbox']", $select).on("click", function (e) {
+							//	self.toggleSelected(i);
+							//});
+							//$li.append( $select );
+							
+							var search_result = new veda.SearchResultModel(self.results[ keys[i] ], $li);
+							//if (search_result.id in self.selected) $("input", $select).attr("checked", "checked");
 						
-						var search_result = new veda.SearchResultModel(self.results[ keys[i] ], $li);
-						//if (search_result.id in self.selected) $("input", $select).attr("checked", "checked");
-					
-						if (i == self.results_count - 1 || i == (self.currentPage + 1) * veda.user.displayedElements - 1) {
-							$query_time.text(self.query_time);
-							rt2 = Date.now();
-							render_time = rt2 - rt1;
-							$render_time.text(render_time);
-							gc2 = get_count;
-							_get_count = gc2 - gc1;
-							$_get_count.text(_get_count);
-							gst2 = get_summary_time;
-							_get_summary_time = gst2 - gst1;
-							$_get_summary_time.text(_get_summary_time);
-							timingPill.show();
-						}
-						
-					}, 0);
-				}(i));
+							if (i == self.results_count - 1 || i == (self.currentPage + 1) * veda.user.displayedElements - 1) {
+								$query_time.text(self.query_time);
+								rt2 = Date.now();
+								render_time = rt2 - rt1;
+								$render_time.text(render_time);
+								gc2 = get_count;
+								_get_count = gc2 - gc1;
+								$_get_count.text(_get_count);
+								gst2 = get_summary_time;
+								_get_summary_time = gst2 - gst1;
+								$_get_summary_time.text(_get_summary_time);
+								timingPill.show();
+							}
+							
+						}, 0);
+					}(i));
+				}
+				
+				// Show pager
+				for (var page = 0; page < Math.floor(self.results_count / veda.user.displayedElements) + 1 * (self.results_count % veda.user.displayedElements ? 1 : 0); page++) {
+					var $page = $("<li/>")
+						.attr("class", page == self.currentPage ? "active" : "")
+						.appendTo(pager);
+					var $a = $("<a/>", {
+						"text" : page + 1, 
+						"click": (function (page) {
+							if (page == self.currentPage) return $.noop;
+							return function (event) {
+								event.preventDefault(); 
+								self.currentPage = page;
+								self.trigger("search:complete");
+							}
+						})(page), 
+						"href" : ""
+					}).appendTo($page);
+				}
+				
 			}
-			
-			// Show pager
-			for (var page = 0; page < Math.floor(self.results_count / veda.user.displayedElements) + 1 * (self.results_count % veda.user.displayedElements ? 1 : 0); page++) {
-				var $page = $("<li/>")
-					.attr("class", page == self.currentPage ? "active" : "")
-					.appendTo(pager);
-				var $a = $("<a/>", {
-					"text" : page + 1, 
-					"click": (function (page) {
-						if (page == self.currentPage) return $.noop;
-						return function (event) {
-							event.preventDefault(); 
-							self.currentPage = page;
-							self.trigger("search:complete");
-						}
-					})(page), 
-					"href" : ""
-				}).appendTo($page);
-			}
-			
-		}
-	</script>
+		</script>
+	</div>
   """
 .
 

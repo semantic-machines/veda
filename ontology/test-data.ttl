@@ -591,15 +591,15 @@ td:AppointmentTemplate1
 	    </div>
       </div>
       <div class="panel-body">
-        <h3 property="rdfs:label">Наменование</h3>
+        <h3 property="rdfs:label"></h3>
         <veda-control type="xsd:string" property="rdfs:label" class="-view edit search"></veda-control>
         <div class="row">
           <div class="col-md-6">
-            <div rel="v-s:employee">Работник</div>
+            <div rel="v-s:employee"></div>
             <veda-control rel="v-s:employee" class="-view edit search"></veda-control>
           </div>
           <div class="col-md-6">
-            <div rel="v-s:occupation">Должность</div>
+            <div rel="v-s:occupation"></div>
             <veda-control rel="v-s:occupation" class="-view edit search"></veda-control>
           </div>
         </div>

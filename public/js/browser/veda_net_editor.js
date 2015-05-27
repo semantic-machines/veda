@@ -35,7 +35,7 @@ jsWorkflow.ready = jsPlumb.ready;
          *@param {veda.IndividualModel} net individual of rdfs:type "v-wf:Net"
          *return {Object} instance Returns an initialized instance of the workflow object
          */
-        jsWorkflow.Instance.prototype.init = function(workflowData, veda, net) {
+        jsWorkflow.Instance.prototype.init = function(workflowData, veda, net, template, container) {
 
             var 	instance,
                     windows,
@@ -258,7 +258,8 @@ jsWorkflow.ready = jsPlumb.ready;
             bindStateEvents = function(windows) {
 
                 windows.bind("click", function(e) {
-
+					var props = $("#props", template);
+					props.empty();
                 	instance.repaintEverything();
                 	
                     var _this = this, currentElement = $(_this), properties, itemId;
@@ -286,9 +287,10 @@ jsWorkflow.ready = jsPlumb.ready;
     	                	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
     	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"' && 'v-wf:forNetElement'=='"+_this.id+"'");
     	                	for (var el in s.results) {
-    	                	    if (s.results.hasOwnProperty(el)) {
-    	                	    	showProcessRunPath(new veda.IndividualModel(el), 0);
-    	                	    }
+   	                	    	showProcessRunPath(s.results[el], 0);
+   	                	    	var holder = $("<div>");
+   	                	    	new veda.IndividualModel(s.results[el], holder);
+   	                	    	props.append(holder);
     	                	}
                     	}
                     }

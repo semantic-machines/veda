@@ -582,7 +582,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var lnkTemplate;
 			if (value instanceof veda.IndividualModel || !value) {
 				setTimeout( function () {
-					lnkTemplate = $("<span>").append( $( relTemplate["v-ui:template"][0].toString() ) );
+					//lnkTemplate = $("<span>").append( $( relTemplate["v-ui:template"][0].toString() ) );
+					lnkTemplate = $( relTemplate["v-ui:template"][0].toString() );
 					if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0] == true) {
 						lnk = new veda.IndividualModel(value, clone, lnkTemplate, mode);
 						embedded.push(lnkTemplate);

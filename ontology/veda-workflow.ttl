@@ -434,9 +434,12 @@ v-wf:NetTemplate
 			<form id="workflow-selected-item" hidden="true">
 				<input id="workflow-item-id" class="form-control" type="hidden" style="font-size: 8pt;" readonly/>
 				<input id="workflow-item-type" type="hidden"/> <!-- type of selected object: ['state'|'flow'] -->
-				<input id="workflow-item-source" type="hidden"/> <!-- stateId - source of selected flow -->
 			</form>
 	</div>
+	<!-- 
+    <div id="workflow-canvas">
+	</div>
+	 -->
 	<div class="row workflow-canvas-wrapper">	
 	  <div id="workflow-canvas">
 	  </div>
@@ -468,69 +471,74 @@ v-wf:ProcessTemplate
   v-ui:forClass v-wf:Process ;
   v-ui:embedded "false"^^xsd:boolean ;
   v-ui:template """
-<div class="workflow-wrapper" style="">
-	<div class="row workflow-toolbar">
-		<div class="col-md-4">
-		  <div class="btn-group" style="padding-top: 3px; display: inline-block;float:left;">
-		  	<div class="btn-group">
-  				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-    				<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> <span class="caret"></span>
-  				</button>
-  				<ul id="process-input-variables" class="dropdown-menu" role="menu">
-				    
-			  	</ul>
-			</div>				
-		  	<div class="btn-group">
-  				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-    				<span class="glyphicon glyphicon-expand" aria-hidden="true"></span> <span class="caret"></span>
-  				</button>
-  				<ul id="process-local-variables" class="dropdown-menu" role="menu">
-				    
-			  	</ul>
-			</div>				
-		  	<div class="btn-group">
-  				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-    				<span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> <span class="caret"></span>
-  				</button>
-  				<ul id="process-output-variables" class="dropdown-menu" role="menu">
-				    
-			  	</ul>
-			</div>				
-		  </div>								
-		</div>
-		
-		<div id="workflow-net-name" class="col-md-4" style="text-align: center;"></div>
-		 			
-		<div class="col-md-4"
-			style="padding-top: 3px;">				
-			<button type="button" class="btn btn-danger process-break" style="float:right;">
-				<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-			</button>
-			<button type="button" class="btn btn-default process-restart" style="float:right;">
-				<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
-			</button>
-			<button type="button" class="btn btn-default process-refresh" style="float:right;">
-				<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
-			</button>
-		</div>
-	</div>
+<div class="workflow-wrapper">
 	<form id="workflow-selected-item" hidden="true">
 		<input id="workflow-item-id" class="form-control" type="hidden" style="font-size: 8pt;" readonly/>
 		<input id="workflow-item-type" type="hidden"/> <!-- type of selected object: ['state'|'flow'] -->
-		<input id="workflow-item-source" type="hidden"/> <!-- stateId - source of selected flow -->
 	</form>
-	
 	<div class="row">
-		<div class="col-md-3">
-		</div>
-		<div class="col-md-9">
+		<div id="schema" class="col-md-9">
 			<div class="workflow-canvas-wrapper">
+				<div class="row" id="workflow-toolbar">
+					<div class="col-md-4">
+						<h4 id="workflow-net-name" style="margin-left:10px"></h4>
+					</div>
+					<div class="col-md-8">
+						<div class="btn-toolbar pull-right">
+						  <div class="btn-group">
+							<div class="btn-group">
+								<button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+									<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> <span class="caret"></span>
+								</button>
+								<ul id="process-input-variables" class="dropdown-menu" role="menu">
+									
+								</ul>
+							</div>				
+							<div class="btn-group">
+								<button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+									<span class="glyphicon glyphicon-expand" aria-hidden="true"></span> <span class="caret"></span>
+								</button>
+								<ul id="process-local-variables" class="dropdown-menu" role="menu">
+									
+								</ul>
+							</div>				
+							<div class="btn-group">
+								<button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+									<span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> <span class="caret"></span>
+								</button>
+								<ul id="process-output-variables" class="dropdown-menu" role="menu">
+									
+								</ul>
+							</div>
+						  </div>
+						  <div class="btn-group">
+							  <button type="button" class="btn btn-sm btn-default process-refresh">
+								  <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+							  </button>
+							  <!--button type="button" class="btn btn-sm btn-default process-restart">
+								  <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+							  </button>
+							  <button type="button" class="btn btn-sm btn-danger process-break">
+								  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+							  </button-->
+						  </div>
+						  <div class="btn-group">
+							  <button id="full-width" class="btn btn-sm btn-default">
+								<span class=" glyphicon glyphicon-resize-full" aria-hidden="true"></span>
+							  </button>
+						  </div>
+						</div>
+					</div>
+				</div>
 				<div id="workflow-canvas">
 				</div>
 			</div>
 		</div>
+		<div id="props-col" class="col-md-3">
+			<h4>Свойства</h4><hr class="no-margin"/><br/>
+			<div id="props"></div>
+		</div>
 	</div>
-	
 </div>
 
 <div id="workflow-context-menu" class="dropdown clearfix">
@@ -539,111 +547,95 @@ v-wf:ProcessTemplate
 </div>
 
 <script type="text/javascript">
-var wrapper = $(".workflow-canvas-wrapper", template);
-var height = ( $("#copyright").offset().top - wrapper.offset().top - 10 ) + "px";
+var wrapper = $(".workflow-canvas-wrapper", template),
+	height = ( $("#copyright").offset().top - wrapper.offset().top - 10 ) + "px",
+	fullWidth = $("#full-width", template),
+	icon = $("span", fullWidth),
+	propsCol = $("#props-col", template),
+	schema = $("#schema", template);
 wrapper.css("height", height);
+propsCol.css("height", height);
+fullWidth.click(function () {
+	propsCol.toggle();
+	icon.toggleClass("glyphicon-resize-full glyphicon-resize-small");
+	schema.toggleClass("col-md-9 col-md-12");
+});
 jsWorkflow.ready(function () {
     // Create a new workflow instance as workflow
     var workflow = new jsWorkflow.Instance();
 
     // Initialize workflow with workflow container id
-    var net = workflow.init('workflow-canvas', veda, individual);
+    var net = workflow.init('workflow-canvas', veda, individual, template, container);
 });
 </script>
   """ ;
 .
 
-v-wf:WorkOrderTemplate
+v-wf:WorkItemTemplate
   rdf:type v-ui:ClassTemplate ;
-	rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Шаблон для класса Рабочее задание"@ru ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса -Рабочее задание-"@ru ;
   rdfs:label "Template for Work order class"@en ;
-  v-ui:forClass v-wf:WorkOrder ;
-  v-ui:embedded "false"^^xsd:boolean ;
+  v-ui:forClass v-wf:WorkItem ;
   v-ui:template """
-  <div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="row">
-          <div class="col-md-3">
-	        <span about="v-wf:WorkOrder" property="rdfs:label">Имя класса</span>
-  	      </div>  
-          <div class="col-md-9 text-right text-muted">
-            <a href="id"><span property="id">ID</span></a>
-	      </div>  
-	    </div>
-      </div>
-      <div class="panel-body">
-        <strong class="text-muted" about="rdfs:label" property="rdfs:label"></strong>
-        <h3 property="rdfs:label">Наименование</h3>
-        <br />
-        <div class="row">
-          <div class="col-md-12">
-            <strong class="text-muted" about="v-wf:executor" property="rdfs:label">Исполнитель</strong>
-            <div rel="v-wf:executor">v-ui:LabelTemplate</div>
-          </div>
-        </div>
-        <br />
-        <div class="row">
-          <div class="col-md-6">
-            <strong class="text-muted" about="v-wf:forWorkItem" property="rdfs:label"></strong>
-            <div rel="v-wf:forWorkItem"></div>
-          </div>
-          <div class="col-md-6">
-            <strong class="text-muted" about="v-wf:outputVariable" property="rdfs:label"></strong>
-            <div rel="v-wf:outputVariable" template="v-wf:VariableTemplate"></div>
-	      </div>
-        </div>
-      </div>
-      <div class="panel-footer">
-        <button type="button" class="action btn btn-primary" id="edit">Редактировать</button>
-        <button type="button" class="action btn btn-success" id="save">Сохранить</button>
-        <button type="button" class="action btn btn-default" id="cancel">Отмена</button>
-        <button type="button" class="action btn btn-link" id="delete">Удалить</button>
-        <button type="button" class="action btn btn-primary" id="search">Найти</button>
-      </div>
-    </div>
-  </div>
+<div>
+	<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
+	<ul>
+		<li rel="v-wf:inVars" template="v-wf:VariableTemplate">
+	</ul>
+	<hr>
+	<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
+	<ul>
+		<li rel="v-wf:outVars" template="v-wf:VariableTemplate">
+	</ul>
+	<hr>
+	<em><h5 about="v-wf:workOrderList" property="rdfs:label"></h5></em>
+	<ol>
+		<li rel="v-wf:workOrderList" template="v-wf:WorkOrderTemplate"></li>
+	</ol>
+</div>
   """ ;
   .
 
 v-wf:VariableTemplate
   rdf:type v-ui:ClassTemplate ;
-	rdfs:isDefinedBy v-wf: ;
+  rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса Переменная"@ru ;
-  rdfs:label "Template for Work order class"@en ;
+  rdfs:label "Template for Variable class"@en ;
   v-ui:forClass v-wf:Variable ;
   v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
-  <div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="row">
-          <div class="col-md-3">
-	        <span about="v-wf:Variable" property="rdfs:label">Имя класса</span>
-  	      </div>  
-          <div class="col-md-9 text-right text-muted">
-            <a href="id"><span property="id">ID</span></a>
-	      </div>
-	    </div>
-      </div>
-      <div class="panel-body">
-        <strong class="text-muted" about="rdfs:label" property="rdfs:label"></strong>
-        <h3 property="rdfs:label">Наименование</h3>
-        <br />
-        <div class="row">
-          <div class="col-md-6">
-            <strong class="text-muted" about="v-wf:variableName" property="rdfs:label"></strong>
-            <div property="v-wf:variableName"></div>
-          </div>
-          <div class="col-md-6">
-            <strong class="text-muted" about="v-wf:variableValue" property="rdfs:label"></strong>
-            <div rel="v-wf:variableValue"></div>
-	      </div>
-        </div>
-      </div>
-    </div>
-  </div>  
+<span>
+	<strong property="v-wf:variableName"></strong> = <span id="values"></span>
+	:: <span rel="v-wf:variableScope"></span>
+	<script type="text/javascript">
+		var valHolder = $("#values", template);
+		individual["v-wf:variableValue"].map( function (value) {
+			var el = $("<span>");
+			if (value instanceof veda.IndividualModel) {
+				new veda.IndividualModel(value, el, new veda.IndividualModel("v-ui:ClassNameLabelTemplate"));
+			} else {
+				el.text(value.toString());
+			}
+			valHolder.append(el, "; <br>");
+		});
+	</script
+</span>
+  """ ;
+  .
+
+v-wf:WorkOrderTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Рабочее задание"@ru ;
+  rdfs:label "Template for Work Order"@en ;
+  v-ui:forClass v-wf:WorkOrder ;
+  v-ui:embedded "true"^^xsd:boolean ;
+  v-ui:template """
+<div>
+	<strong rel="v-wf:executor" template="v-ui:LabelTemplate"></strong>
+	<div rel="v-wf:outVars" template="v-wf:VariableTemplate"></div>
+</div>
   """ ;
   .
   

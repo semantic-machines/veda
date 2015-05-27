@@ -296,23 +296,30 @@ path {
     overflow-y:hidden;
 }
 
-.workflow-toolbar {
-	 height:40px;
-}
-
 .workflow-canvas-wrapper {	
     height: -moz-calc(100% - 45px);
     height: -webkit-calc(100% - 45px);
     height: calc(100% - 45px);
-	margin: 2px;
-	border: 1px solid black;
-    border-radius: 8px;	
+	border: 1px solid #ddd;
+    border-radius: 5px;	
 	overflow-x:hidden;
 	overflow-y:hidden;
+	position: relative;
+}
+
+.workflow-wrapper #props-col {
+	overflow-x:auto;
+	overflow-y:auto;
+	font-size:13px;
+}
+
+.workflow-wrapper #workflow-toolbar {
+	position:relative;
+	z-index:998;
 }
 
 #workflow-canvas {
-	background: #EEEEEE;
+	background: #f8f8f8;
 	position: relative;
 	cursor: move;
 }
@@ -336,4 +343,5 @@ svg.process-path-highlight path
 	stroke:red;
 	stroke-width:2;
 }
+
 /* [END] NET EDITOR */
