@@ -42,7 +42,8 @@ jsWorkflow.ready = jsPlumb.ready;
                     addNewState,
                     bindStateEvents,
                     workflow,
-                    canvasSizePx=10000,                    
+                    canvasSizePx=10000,
+                    elementId,
                     process,
                     mode='view',
                     max_process_depth=0;
@@ -50,11 +51,13 @@ jsWorkflow.ready = jsPlumb.ready;
             if (net.hasValue('rdf:type')) {
             	if (net['rdf:type'][0].id == 'v-wf:Net') {
             		mode='edit';
+            		elementId = net.id;
             	}
             	if (net['rdf:type'][0].id == 'v-wf:Process') {
             		mode='view';
             		process = net;
-            		net = (net.hasValue('v-wf:instanceOf'))?net['v-wf:instanceOf'][0]:[];
+            		elementId = process.id;
+            		net = (net.hasValue('v-wf:instanceOf'))?net['v-wf:instanceOf'][0]:[];            		
             	}
             }
 
@@ -64,9 +67,9 @@ jsWorkflow.ready = jsPlumb.ready;
             } else {
                 workflow = workflowData;
             }
-            net['offsetX'] = localStorage.getItem("workflow"+net.id+"-offsetX");
-            net['offsetY'] = localStorage.getItem("workflow"+net.id+"-offsetY");
-            net['currentScale'] = localStorage.getItem("workflow"+net.id+"-zoom");
+            net['offsetX'] = localStorage.getItem("workflow"+elementId+"-offsetX");
+            net['offsetY'] = localStorage.getItem("workflow"+elementId+"-offsetY");
+            net['currentScale'] = localStorage.getItem("workflow"+elementId+"-zoom");
             if (net['currentScale']==null) net['currentScale'] = 1.0;
             
             if (!net['offsetX']) {
@@ -125,32 +128,46 @@ jsWorkflow.ready = jsPlumb.ready;
            			'left': (newLeft)+'px',
            			'top': (newTop)+'px',
            		});
-                localStorage.setItem("workflow"+net.id+"-offsetX", newLeft);
-                localStorage.setItem("workflow"+net.id+"-offsetY", newTop);
+                localStorage.setItem("workflow"+elementId+"-offsetX", newLeft);
+                localStorage.setItem("workflow"+elementId+"-offsetY", newTop);
                 net['offsetX'] = newLeft;
                 net['offsetY'] = newTop;
             }
-            if (net['offsetX']!=null) {
-                instance.moveCanvas(net['offsetX'], net['offsetY']);
+            if (net['offsetX']!=null && net['offsetX']!=0) {
+            	instance.moveCanvas(net['offsetX'], net['offsetY']);
             } else {
                 instance.moveCanvas(-canvasSizePx/2, -canvasSizePx/2);
             }
 
             // Bind a click listener to each transition (connection). On double click, the transition is deleted.
-            instance.bind("dblclick", function(transition) {
-                 if (mode=='edit' && confirm('Delete Flow?')) {
-                	 net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', transition.id);
-                	 var source = new veda.IndividualModel(transition.sourceId);
-            		 source['v-wf:hasFlow'] = veda.Util.removeSubIndividual(source, 'v-wf:hasFlow', transition.id);
-                	 instance.detach(transition, {fireEvent:false});
-                 }
-            });
+            if (mode=='edit') {
+	            instance.bind("dblclick", function(transition) {
+	                var _this = this;
+	            	riot.route("#/individual/" + transition.id + "/#main//edit", true);
+	/*
+	                 if (mode=='edit' && confirm('Delete Flow?')) {
+	                	 net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', transition.id);
+	                	 var source = new veda.IndividualModel(transition.sourceId);
+	            		 source['v-wf:hasFlow'] = veda.Util.removeSubIndividual(source, 'v-wf:hasFlow', transition.id);
+	                	 instance.detach(transition, {fireEvent:false});
+	                 }
+	                 */
+	            });
+            }
             
             // Fill info panel on flow click
             instance.bind("click", function(transition) {
             	var _this = this, currentElement = $(_this), properties;
                 properties = $('#workflow-selected-item');
+                
                 $('#'+veda.Util.escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active');
+                if (properties.find('#workflow-item-source').val()!=null) {
+                	instance.select({source:properties.find('#workflow-item-source').val()}).each(function(e) {
+                        e.setPaintStyle({strokeStyle: "#666666"});
+                	});
+                };
+                
+                transition.setPaintStyle({strokeStyle: "#FF0000"});
 
                 if (transition.id == '__label') {
                 	transition = transition.component;
@@ -158,7 +175,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 
                 properties.find('#workflow-item-id').val(transition.id);
                 properties.find('#workflow-item-type').val('flow');
-                currentElement.addClass('w_active');                
+                properties.find('#workflow-item-source').val(transition.sourceId);
             });
             
             instance.bind("beforeDetach", function(connection) {
@@ -246,7 +263,12 @@ jsWorkflow.ready = jsPlumb.ready;
                 	
                     var _this = this, currentElement = $(_this), properties, itemId;
                     properties = $('#workflow-selected-item');
-                                        
+
+                    if (properties.find('#workflow-item-source').val()!=null) {
+                    	instance.select({source:properties.find('#workflow-item-source').val()}).each(function(e) {
+                            e.setPaintStyle({strokeStyle: "#666666"});
+                    	});
+                    };
                     $('#'+veda.Util.escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active'); // deactivate old selection
                     properties.find('#workflow-item-id').val(_this.id);
                     properties.find('#workflow-item-type').val('state');
@@ -453,7 +475,6 @@ jsWorkflow.ready = jsPlumb.ready;
 	                	return false;
 	                });
 	
-	                // Bind a click listener to each State elements. On double click, State elements are deleted.
 	                windows.bind("dblclick", function() {
 	                    var _this = this;
 	                	riot.route("#/individual/" + $(_this).attr('id')+"/#main//edit", true);
@@ -549,7 +570,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	$("#workflow-context-menu").hide();
             	
             	net['currentScale'] = parseFloat(scale);
-            	localStorage.setItem("workflow"+net.id+"-zoom", net['currentScale']);
+            	localStorage.setItem("workflow"+elementId+"-zoom", net['currentScale']);
             	
             	instance.setZoom(net['currentScale']);
             	$('#'+workflowData).css({
@@ -714,6 +735,13 @@ jsWorkflow.ready = jsPlumb.ready;
                 });
             };
             
+            instance.deleteFlow = function(flow, source) {
+	          	net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', flow.id);
+	           	var source = new veda.IndividualModel(source.id);
+	       		source['v-wf:hasFlow'] = veda.Util.removeSubIndividual(source, 'v-wf:hasFlow', flow.id);
+	           	instance.detach(flow, {fireEvent:false});
+            }
+            
             /**
              *Create workflow Net by given Object (v-wf:Net individual).
              *@method createNetView A public method
@@ -786,14 +814,14 @@ jsWorkflow.ready = jsPlumb.ready;
                 	process[individualProperty].forEach(function(el) {
                   	   var $item = $("<li/>").appendTo($iv);
                 	   $("<a/>", {
-                		   "text" : (el.hasValue('v-wf:variableName')?el['v-wf:variableName'][0]:el.id), 
+                		   "text" : (el.hasValue('v-wf:variableName')?el['v-wf:variableName'][0]:el.id),
        	    			   "href" : '#/individual/'+el.id+'/#main'
-                	   }).appendTo($item);	            	    	
+                	   }).appendTo($item);
                 	});
             	}
             };
             
-            instance.createProcessView = function(process, reload) {            	
+            instance.createProcessView = function(process, reload) {
             	// Apply WorkItems to Net
             	var s = new veda.IndividualModel();
             	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
@@ -845,7 +873,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	instance.createProcessView(process);
             }
             
-            if (net['currentScale']==null) {
+            if (net['currentScale']==1.0) {
             	instance.optimizeView();
             } else {
             	instance.changeScale(net['currentScale']);
@@ -923,10 +951,15 @@ jsWorkflow.ready = jsPlumb.ready;
             });
 
             $('.delete-state').on('click', function() {
-                deleteState = confirm('Deleting State(' + $('#workflow-item-id').val() + ') ...');
-
-                if (deleteState) {            	
-                	instance.deleteState(instance.getSelector('#'+veda.Util.escape4$($('#workflow-item-id').val()))[0]);
+                if ($('#workflow-item-type').val()=='state') {
+	                if (confirm('Delete state ' + $('#workflow-item-id').val() + ' ?')) {
+	                	instance.deleteState(instance.getSelector('#'+veda.Util.escape4$($('#workflow-item-id').val()))[0]);
+	                }
+                }
+                if ($('#workflow-item-type').val()=='flow') {
+	                if (confirm('Delete flow ' + $('#workflow-item-id').val() + ' ?')) {
+	                	instance.deleteFlow(instance.getSelector('#'+veda.Util.escape4$($('#workflow-item-id').val()))[0]);
+	                }
                 }
             });
             
