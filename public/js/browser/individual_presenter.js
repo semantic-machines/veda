@@ -378,20 +378,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			switch (type) {
 				case "xsd:boolean": 
-					controlType = $.fn.vedaBoolean2; 
+					controlType = $.fn.vedaBoolean; 
 					break;
 				case "xsd:integer": 
 				case "xsd:nonNegativeInteger":
-					controlType = $.fn.vedaInteger2; 
+					controlType = $.fn.vedaInteger; 
 					break;
 				case "xsd:decimal":
-					controlType = $.fn.vedaDecimal2; 
+					controlType = $.fn.vedaDecimal; 
 					break;
 				case "xsd:dateTime": 
-					controlType = $.fn.vedaDatetime2; 
+					controlType = $.fn.vedaDatetime; 
 					break;
 				default: 
-					controlType = $.fn.vedaString2; 
+					controlType = $.fn.vedaString; 
 					break;
 			}
 			var opts = {
@@ -401,7 +401,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			};
 			
 			if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
-				controlType = $.fn.vedaSource2;
+				controlType = $.fn.vedaSource;
 				opts.change = function (value) {
 					individual.off("individual:propertyModified", handler);
 					individual[property_uri] = [value];
