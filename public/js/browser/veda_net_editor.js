@@ -873,7 +873,6 @@ jsWorkflow.ready = jsPlumb.ready;
             	instance.createProcessView(process);
             }
             
-            alert(net['offsetX']+" / "+net['offsetY']+" / "+net['currentScale']);
             if (net['currentScale']==1.0) {
             	instance.optimizeView();
             } else {
