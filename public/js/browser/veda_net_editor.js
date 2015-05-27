@@ -101,7 +101,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 Endpoint: "Dot",
                 HoverPaintStyle: {
                     strokeStyle: "#6699FF",
-                    lineWidth: 2
+                    lineWidth: 1
                 },
                 ConnectionOverlays: [
                     ["Arrow", {
