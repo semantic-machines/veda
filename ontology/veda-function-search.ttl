@@ -281,6 +281,9 @@ v-fs:SearchTemplate
 
 		
 		self.on("search:complete", searchCompleteHandler);
+		template.on("remove", function () {
+			self.off("search:complete", searchCompleteHandler);
+		});
 		
 		if ( self.results_count ) self.trigger("search:complete");
 		

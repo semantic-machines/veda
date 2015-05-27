@@ -20,7 +20,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports owl: ;
-  owl:versionInfo "1.2" ;
+#  owl:versionInfo "1.2" ;
 .
 v-wf:Net
 	rdf:type owl:Class ;
@@ -526,10 +526,18 @@ v-wf:ProcessTemplate
 		<input id="workflow-item-id" class="form-control" type="hidden" style="font-size: 8pt;" readonly/>
 		<input id="workflow-item-type" type="hidden"/> <!-- type of selected object: ['state'|'flow'] -->
 	</form>
-	<div class="row workflow-canvas-wrapper">	
-	  <div id="workflow-canvas">
-	  </div>
+	
+	<div class="row">
+		<div class="col-md-3">
+		</div>
+		<div class="col-md-9">
+			<div class="workflow-canvas-wrapper">
+				<div id="workflow-canvas">
+				</div>
+			</div>
+		</div>
 	</div>
+	
 </div>
 
 <div id="workflow-context-menu" class="dropdown clearfix">
@@ -538,6 +546,9 @@ v-wf:ProcessTemplate
 </div>
 
 <script type="text/javascript">
+var wrapper = $(".workflow-canvas-wrapper", template);
+var height = ( $("#copyright").offset().top - wrapper.offset().top - 10 ) + "px";
+wrapper.css("height", height);
 jsWorkflow.ready(function () {
     // Create a new workflow instance as workflow
     var workflow = new jsWorkflow.Instance();
