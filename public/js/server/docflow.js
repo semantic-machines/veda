@@ -332,6 +332,14 @@ function prepare_work_order(ticket, document)
 
                     //print("new_process=", toJson(new_process));
                     put_individual(ticket, new_process, _event_id);
+                    
+                    document['v-wf:isProcess'] = [
+					{
+						data: new_process_uri,
+						type: _Uri
+					}];
+                    put_individual(ticket, document, _event_id);
+
                 }
                 //print("[WORKFLOW][WO21-1]");
             }
