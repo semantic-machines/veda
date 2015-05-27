@@ -434,12 +434,9 @@ v-wf:NetTemplate
 			<form id="workflow-selected-item" hidden="true">
 				<input id="workflow-item-id" class="form-control" type="hidden" style="font-size: 8pt;" readonly/>
 				<input id="workflow-item-type" type="hidden"/> <!-- type of selected object: ['state'|'flow'] -->
+				<input id="workflow-item-source" type="hidden"/> <!-- stateId - source of selected flow -->
 			</form>
 	</div>
-	<!-- 
-    <div id="workflow-canvas">
-	</div>
-	 -->
 	<div class="row workflow-canvas-wrapper">	
 	  <div id="workflow-canvas">
 	  </div>
@@ -520,6 +517,7 @@ v-wf:ProcessTemplate
 		<form id="workflow-selected-item" hidden="true">
 			<input id="workflow-item-id" class="form-control" type="hidden" style="font-size: 8pt;" readonly/>
 			<input id="workflow-item-type" type="hidden"/> <!-- type of selected object: ['state'|'flow'] -->
+			<input id="workflow-item-source" type="hidden"/> <!-- stateId - source of selected flow -->
 		</form>
 	</div>
 	<form id="workflow-selected-item" hidden="true">
