@@ -755,7 +755,7 @@ v-wf:forNet
 	rdfs:range v-wf:Net ;
 .
 v-wf:isProcess
-	rdf:type rdf:Property ;
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Запущен процесс"@ru ;
 	rdfs:label "Started process"@en ;
