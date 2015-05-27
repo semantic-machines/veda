@@ -210,6 +210,18 @@ jsWorkflow.ready = jsPlumb.ready;
                 info.connection.id = individual.id;
             });
 
+            subNetViewButton = function(state, $state) {
+            	if (!state.hasValue('v-wf:subNet')) {
+            		return;
+            	}
+            	$("<span/>", {
+            		"click": (function (instance) {
+            	    	riot.route('#/individual/'+state['v-wf:subNet'][0].id+'/#main//edit', true);
+            		 }),
+            		 "class" : "glyphicon glyphicon-search subnet-link"
+             	}).appendTo($state);
+            };
+            
             updateSVGBackground = function(item) {
                 var svgBackground = "";
                 if (item.hasClass('split-and')) {
@@ -651,8 +663,10 @@ jsWorkflow.ready = jsPlumb.ready;
     			}            	
             	if (stateElement!=='') {
                 	$('#'+workflowData).append(stateElement);
-                	bindStateEvents($('#' + veda.Util.escape4$(state.id)));
-                	updateSVGBackground($('#' + veda.Util.escape4$(state.id)));
+                	var $state = $('#' + veda.Util.escape4$(state.id));
+                	bindStateEvents($state);
+                	if (mode=='edit') subNetViewButton(state, $state);
+                	updateSVGBackground($state);
             	}
             };
             

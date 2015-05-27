@@ -269,6 +269,10 @@ path {
 	cursor:pointer; 
 }
 
+.subnet-link {
+	cursor: pointer;
+}
+
 .aLabel {
 	display: none;
 }
