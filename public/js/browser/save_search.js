@@ -23,7 +23,7 @@ veda.Module(function SaveSearch(veda) { "use strict";
 				ss["v-s:created"] = [new Date()];
 				ss["v-s:query"] = [search.q];
 				ss["rdfs:label"] = [search.q];
-				ss = new veda.IndividualModel(ss, ssContainer, undefined, "edit");
+				ss.present(ssContainer, undefined, "edit");
 
 				ss.on("individual:afterSave individual:afterReset", function () {
 					self.popover("destroy");

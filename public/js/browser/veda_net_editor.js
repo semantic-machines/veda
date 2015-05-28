@@ -301,7 +301,7 @@ jsWorkflow.ready = jsPlumb.ready;
     	                	for (var el in s.results) {
    	                	    	showProcessRunPath(s.results[el], 0);
    	                	    	var holder = $("<div>");
-   	                	    	new veda.IndividualModel(s.results[el], holder);
+   	                	    	s.results[el].present(holder);
    	                	    	props.append(holder);
     	                	}
                     	}

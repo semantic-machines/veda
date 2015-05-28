@@ -64,7 +64,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 				search.selectedType = selected;
 				var ind = new veda.IndividualModel();
 				ind["rdf:type"] = [selected];
-				var doc = new veda.IndividualModel(ind, tmplContainer, undefined, "search");
+				var doc = ind.present(tmplContainer, undefined, "search");
 			}
 		});
 		$("#params-" + search.id, container).append(typeSelector, tmplContainer);

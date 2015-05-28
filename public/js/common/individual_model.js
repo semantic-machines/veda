@@ -74,11 +74,11 @@ veda.Module(function (veda) { "use strict";
 		self.defineProperty("v-s:deleted");
 		
 		self.on("individual:afterLoad", function (individual) {
-			if (container) veda.trigger("individual:loaded", individual, container, template, mode);
+			self.present.call(individual, container, template, mode);
 		});
 		
 		self.on("individual:typeChanged", function () {
-			if (container) veda.trigger("individual:loaded", self, container, template, mode);
+			self.present(container, template, mode);
 		});
 		
 		// Load data 
@@ -101,7 +101,7 @@ veda.Module(function (veda) { "use strict";
 	 */
 	proto.defineProperty = function (property_uri, getterCB, setterCB) {
 		var self = this;
-		if (self._.properties[property_uri]) return;
+		if (self._.properties[property_uri]) return this;
 		
 		Object.defineProperty(self.properties, property_uri, {
 			get: function () { 
@@ -193,7 +193,7 @@ veda.Module(function (veda) { "use strict";
 			configurable: true
 		
 		});
-		
+		return this;
 	};
 
 	function isInteger (n) { return n % 1 === 0; }
@@ -236,7 +236,7 @@ veda.Module(function (veda) { "use strict";
 		if (self._.cache) veda.cache[self.id] = self;
 		if (self._.init) self.init();
 		self.trigger("individual:afterLoad", self);
-		return self;
+		return this;
 	};
 
 	/**
@@ -264,6 +264,7 @@ veda.Module(function (veda) { "use strict";
 		} catch (e) {
 			alert("Error: " + e.status + "\n" + "description: " + e.description);
 		}
+		return this;
 	};
 
 	/**
@@ -293,6 +294,7 @@ veda.Module(function (veda) { "use strict";
 		self.init();
 		self._.sync = true;
 		self.trigger("individual:afterReset");
+		return this;
 	};
 
 	/**
@@ -300,11 +302,11 @@ veda.Module(function (veda) { "use strict";
 	 * Mark current individual as deleted in database (add v-s:deleted property)
 	 */
 	proto.delete = function () {
-		var self = this;
-		self.trigger("individual:beforeDelete");
-		self["v-s:deleted"] = [new Boolean(true)];
-		self.save();
-		self.trigger("individual:afterDelete");
+		this.trigger("individual:beforeDelete");
+		this["v-s:deleted"] = [new Boolean(true)];
+		this.save();
+		this.trigger("individual:afterDelete");
+		return this;
 	};
 
 	/**
@@ -312,11 +314,11 @@ veda.Module(function (veda) { "use strict";
 	 * Recover current individual in database (remove v-s:deleted property)
 	 */
 	proto.recover = function () {
-		var self = this;
-		self.trigger("individual:beforeRecover");
-		self["v-s:deleted"] = [];
-		self.save();
-		self.trigger("individual:afterRecover");
+		this.trigger("individual:beforeRecover");
+		this["v-s:deleted"] = [];
+		this.save();
+		this.trigger("individual:afterRecover");
+		return this;
 	};
 
 	/**
@@ -350,6 +352,7 @@ veda.Module(function (veda) { "use strict";
 				model(self);
 			}
 		});
+		return this;
 	};
 
 	/**
@@ -376,6 +379,18 @@ veda.Module(function (veda) { "use strict";
 	 */
 	proto.isSync = function () {
 		return self._.sync;
+	};
+
+	/**
+	 * @method
+	 * Call indivdual presenter
+	 * @param {String/jQuery} container Container to render individual in. If passed as String, then must be a valid css selector. If passed as jQuery, then is used as is. If not specified, than individual will not be presented.
+	 * @param {String/jQuery/veda.IndividualModel} template Template to render individual with.
+	 * @param {String} mode Initial mode for individual presenter. Expected values: "view", "edit", "search".
+	 */
+	proto.present = function (container, template, mode) {
+		if (container) veda.trigger("individual:loaded", this, container, template, mode);
+		return this;
 	};
 	
 });

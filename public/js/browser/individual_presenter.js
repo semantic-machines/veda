@@ -239,11 +239,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Search
 		$search.on("click", function (e) {
 			var query = queryFromIndividual(individual);
-			var individual_uri = individual.id;
+			var params = individual;
 			// Create Search instance
 			var search = new veda.SearchModel(query);
 			// Place individual to params tab in Search container
-			var params = new veda.IndividualModel(individual_uri, $("#params-" + search.id, search.view), undefined, "search");
+			params.present($("#params-" + search.id, search.view), undefined, "search");
 		});
 
 		var view = $(".view", template),
@@ -442,7 +442,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				var defaultValue;
 				switch (property["rdfs:range"][0].id) {
 					case "xsd:boolean": 
-						defaultValue = spec && spec.hasValue("v-ui:defaultBooleanValue") ? spec["v-ui:defaultBooleanValue"][0] : new Boolean(false);
+						defaultValue = spec && spec.hasValue("v-ui:defaultBooleanValue") ? spec["v-ui:defaultBooleanValue"][0] : undefined;
 						break;
 					case "xsd:integer": 
 					case "xsd:nonNegativeInteger":
@@ -452,14 +452,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						defaultValue = spec && spec.hasValue("v-ui:defaultDecimalValue") ? spec["v-ui:defaultDecimalValue"][0] : undefined; 
 						break;
 					case "xsd:dateTime": 
-						defaultValue = spec && spec.hasValue("v-ui:defaultDatetimeValue") ? spec["v-ui:defaultDatetimeValue"][0] : undefined; 
+						defaultValue = spec && spec.hasValue("v-ui:defaultDatetimeValue") ? spec["v-ui:defaultDatetimeValue"][0] : undefined;
 						break;
 					default: 
-						defaultValue = spec && spec.hasValue("v-ui:defaultStringValue") ? spec["v-ui:defaultStringValue"][0] : new String(); 
+						defaultValue = spec && spec.hasValue("v-ui:defaultStringValue") ? spec["v-ui:defaultStringValue"][0] : undefined;
 						break;
 				}
 				
-				individual[property_uri] = [ defaultValue ];
+				if (defaultValue) individual[property_uri] = [ defaultValue ];
 				return false;
 			}
 			if ( spec && !individual.hasValue(property_uri) ) {
@@ -610,9 +610,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					});
 
 					mode === "view" ? clear.hide() :
-					mode === "edit" ? clear.show() :
-					mode === "search" ? clear.show() : true;
-
+					mode === "edit" && !immutable ? clear.show() :
+					mode === "edit" && immutable ? clear.hide() :
+                    mode === "search" ? clear.show() : true;
+                    
 					function modeHandler (e) {
 						e.type === "view" ? clear.hide() :
 						e.type === "edit" && !immutable ? clear.show() :
