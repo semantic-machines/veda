@@ -671,6 +671,12 @@ v-s:hasAppointmentTo
   rdfs:label "кому"@ru ;
   rdfs:range v-s:Appointment ;
 .
+v-s:hasBaseDoc
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "base doc"@en ;
+  rdfs:label "документ основание"@ru ;
+  rdfs:range v-s:Document ;
+.
 v-s:hasChief
   rdf:type owl:ObjectProperty ;
   rdfs:label "chief"@en ;
