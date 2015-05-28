@@ -553,6 +553,7 @@ td:PersonTemplate1
             <veda-control rel="v-s:hasAccount" template="td:AccountTemplate1" class="-view edit search"></veda-control>
           </div>
         </div>
+        <hr />
         <div class="row">
           <div class="col-md-6">
             <div rel="v-s:test" template="v-fs:SearchTemplate">v-fs:SearchTemplate</div>
