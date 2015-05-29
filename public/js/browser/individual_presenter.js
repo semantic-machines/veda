@@ -278,7 +278,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			propertyModifiedHandler(property_uri);
 			function propertyModifiedHandler(doc_property_uri) {
 				if (doc_property_uri === property_uri) {
-					if (property_uri === "id") propertyContainer.html( about[property_uri] );
+					if (property_uri === "id") propertyContainer.prepend( about.id );
 					else propertyContainer.html( about[property_uri].join(", ") );
 				}
 			}
@@ -292,12 +292,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		$("[href='id']", template).map( function () {
 			$(this)
 				.attr("href", "#/individual/" + individual.id + "/#main")
-				.after( 
+				/*.after( 
 					$("<a>", {href: "#/graph/" + individual.id}).append( 
 						$("<i>").addClass("glyphicon glyphicon-link") 
 					) 
 				)
-				.after( "&nbsp;" );
+				.after( "&nbsp;" );*/
 		});
 		
 		var propertyControls = $("veda-control[property]", template);

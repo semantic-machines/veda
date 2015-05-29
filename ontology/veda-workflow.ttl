@@ -477,7 +477,7 @@ v-wf:ProcessTemplate
 		<input id="workflow-item-type" type="hidden"/> <!-- type of selected object: ['state'|'flow'] -->
 	</form>
 	<div class="row">
-		<div id="schema" class="col-md-9">
+		<div id="schema" class="col-md-8">
 			<div class="workflow-canvas-wrapper">
 				<div class="row" id="workflow-toolbar">
 					<div class="col-md-4">
@@ -534,7 +534,7 @@ v-wf:ProcessTemplate
 				</div>
 			</div>
 		</div>
-		<div id="props-col" class="col-md-3">
+		<div id="props-col" class="col-md-4">
 			<h4>Свойства</h4><hr class="no-margin"/><br/>
 			<div id="props"></div>
 		</div>
@@ -558,7 +558,7 @@ propsCol.css("height", height);
 fullWidth.click(function () {
 	propsCol.toggle();
 	icon.toggleClass("glyphicon-resize-full glyphicon-resize-small");
-	schema.toggleClass("col-md-9 col-md-12");
+	schema.toggleClass("col-md-8 col-md-12");
 });
 jsWorkflow.ready(function () {
     // Create a new workflow instance as workflow
@@ -581,7 +581,7 @@ v-wf:WorkItemTemplate
   v-ui:template """
 <div>
 	<h4><span about="v-wf:WorkItem" property="rdfs:label"></span></h4>
-	<em><h5>id: <span about="@" property="id"></span></h5></em>
+	<h5><strong>id: <span about="@" property="id"></span> <a href="id"><i class='glyphicon glyphicon-share-alt'></i></a></strong></h5>
 	<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
 	<ul>
 		<li rel="v-wf:inVars" template="v-wf:VariableTemplate">
@@ -609,7 +609,7 @@ v-wf:VariableTemplate
   v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
 <span>
-	<strong property="v-wf:variableName"></strong> = <span id="values"></span>
+	<span property="v-wf:variableName"></span> = <span id="values"></span>
 	:: <span rel="v-wf:variableScope"></span>
 	<script type="text/javascript">
 		var valHolder = $("#values", template);
@@ -636,10 +636,20 @@ v-wf:WorkOrderTemplate
   v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
 <div>
-	<strong rel="v-wf:executor" template="v-ui:LabelTemplate"></strong>
-	<div rel="v-wf:outVars" template="v-wf:VariableTemplate"></div>
-	<strong about="v-wf:isProcess" property="rdfs:label"></strong>
-	<div rel="v-wf:isProcess" template="v-ui:ClassNameLabelTemplate"></div>
+	<strong>id: <span about="@" property="id"></span> <a href="id"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
+	<div>
+		<em about="v-wf:executor" property="rdfs:label"></em>
+		<ul><li rel="v-wf:executor" template="v-ui:LabelTemplate"></li></ul>
+	</div>
+	<div>
+		<em about="v-wf:outVars" property="rdfs:label"></em>
+		<ul><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ul>
+	</div>
+	<div>
+		<em about="v-wf:isProcess" property="rdfs:label"></em>
+		<ul><li rel="v-wf:isProcess" template="v-ui:ClassNameLabelTemplate"></li></ul>
+	</div>
+	<br/>
 </div>
   """ ;
   .
