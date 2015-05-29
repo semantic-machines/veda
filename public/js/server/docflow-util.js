@@ -46,7 +46,7 @@ function Context(_src_data, _ticket)
 
     this.getExecutor = function ()
     {
-		return this.src_data['v-wf:forExecutor'];
+		return this.src_data['v-wf:executor'];
 	};
 	
     this.if_all_executors_taken_decision = function (true_decision, false_decision)

@@ -296,6 +296,7 @@ v-wf:executor
 	rdfs:label "исполнитель"@ru ;
 	rdfs:domain v-wf:Task ;
 	rdfs:domain v-wf:WorkOrder ;
+	rdfs:domain v-wf:Process ;
 	rdfs:range v-wf:ExecutorDefinition ;
 	rdfs:range v-s:Appointment ;
 	rdfs:range v-s:Codelet ;
@@ -960,14 +961,6 @@ v-wf:parentWorkOrder
 	rdfs:label "относится к рабочему заданию"@ru ;
 	rdfs:domain v-wf:Process ;
 	rdfs:range v-wf:WorkOrder ;
-.
-
-v-wf:forExecutor
-	rdf:type rdf:Property ;
-	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "указан исполнитель"@ru ;
-	rdfs:domain v-wf:Process ;
-	rdfs:range v-s:Appointment ;
 .
 
 # --------------------------- WorkItem ---------------------------

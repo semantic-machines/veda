@@ -328,7 +328,7 @@ function prepare_work_order(ticket, document)
                         new_process['v-wf:inVars'] = f_inVars;
 
                     if (f_useSubNet)
-                        new_process['v-wf:forExecutor'] = f_executor;
+                        new_process['v-wf:executor'] = f_executor;
 
                     //print("new_process=", toJson(new_process));
                     put_individual(ticket, new_process, _event_id);
