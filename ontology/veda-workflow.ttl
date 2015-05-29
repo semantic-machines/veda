@@ -535,7 +535,7 @@ v-wf:ProcessTemplate
 			</div>
 		</div>
 		<div id="props-col" class="col-md-4">
-			<h4>Элемент: <span id="props-head"></span></h4><hr class="no-margin"/><br/>
+			<h4>Элемент: <span id="props-head" property="rdfs:label"></span></h4><hr class="no-margin"/><br/>
 			<div id="props"></div>
 		</div>
 	</div>
@@ -571,6 +571,36 @@ jsWorkflow.ready(function () {
   """ ;
 .
 
+v-wf:ProcessPropsTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса -Рабочее задание-"@ru ;
+  rdfs:label "Template for Work order class"@en ;
+  v-ui:embedded "true"^^xsd:boolean ;
+  v-ui:template """
+<div>
+	<div id="localVariable">
+		<em><h5 about="v-wf:localVariable" property="rdfs:label"></h5></em>
+		<ol><li rel="v-wf:localVariable" template="v-wf:VariableTemplate"></li></ol>
+		<hr>
+	</div>
+	<div id="inVars">
+		<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
+		<ol><li rel="v-wf:inVars" template="v-wf:VariableTemplate"></li></ol>
+		<hr>
+	</div>
+	<div id="outVars">
+		<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
+		<ol><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ol>
+	</div>
+	<script>
+		if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
+		if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
+		if (!individual.hasValue("v-wf:localVariable")) $("#localVariable", template).remove();
+	</script>
+</div>
+  """
+
 v-wf:WorkItemTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -585,16 +615,17 @@ v-wf:WorkItemTemplate
 	<div id="inVars">
 		<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
 		<ol><li rel="v-wf:inVars" template="v-wf:VariableTemplate"></li></ol>
+		<hr>
 	</div>
 	<div id="outVars">
-		<hr>
 		<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
 		<ol><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ol>
+		<hr>
 	</div>
 	<div id="workOrderList">
-		<hr>
 		<em><h5 about="v-wf:workOrderList" property="rdfs:label"></h5></em>
 		<ol><li rel="v-wf:workOrderList" template="v-wf:WorkOrderTemplate"></li></ol>
+		<hr>		
 	</div>
 	<script>
 		if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();

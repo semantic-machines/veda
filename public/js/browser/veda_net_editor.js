@@ -46,7 +46,10 @@ jsWorkflow.ready = jsPlumb.ready;
                     elementId,
                     process,
                     mode='view',
-                    max_process_depth=0;
+                    max_process_depth=0,
+                    
+           			props = $("#props", template),
+					propsHead = $("#props-head", template);
             
             if (net.hasValue('rdf:type')) {
             	if (net['rdf:type'][0].id == 'v-wf:Net') {
@@ -79,6 +82,13 @@ jsWorkflow.ready = jsPlumb.ready;
             	net['offsetY'] = 0;
             }
             
+            if (mode === "view") {
+				var holder = $("<div>");
+				propsHead.text(net["rdfs:label"].join(", "));
+				process.present(holder, new veda.IndividualModel("v-wf:ProcessPropsTemplate"));
+				props.empty().append(holder);
+			}
+            
             $('#'+workflowData).css({
        			'height': canvasSizePx +'px',
        			'width': canvasSizePx+'px'
@@ -92,6 +102,12 @@ jsWorkflow.ready = jsPlumb.ready;
                 }
             }).on("click", function() {
             	$("#workflow-context-menu").hide();
+            	if (mode === "view") {
+					var holder = $("<div>");
+					propsHead.text(net["rdfs:label"].join(", "));
+					process.present(holder, new veda.IndividualModel("v-wf:ProcessPropsTemplate"));
+					props.empty().append(holder);
+				}
             });
 
             instance = this.instance;
@@ -268,8 +284,6 @@ jsWorkflow.ready = jsPlumb.ready;
              *@param {Object} windows List of all State elements
              */
             bindStateEvents = function(windows) {
-				var props = $("#props", template);
-				var propsHead = $("#props-head", template);
                 
                 windows.bind("click", function(e) {
                 	instance.repaintEverything();
@@ -298,6 +312,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     		e.type = 'contextmenu';
                     		currentElement.trigger(e);
                     	} else { 
+                        	e.stopPropagation();
                         	var s = new veda.IndividualModel();
     	                	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
     	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"' && 'v-wf:forNetElement'=='"+_this.id+"'");
