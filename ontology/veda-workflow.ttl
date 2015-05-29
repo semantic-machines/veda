@@ -582,20 +582,25 @@ v-wf:WorkItemTemplate
 <div>
 	<h4><span about="v-wf:WorkItem" property="rdfs:label"></span></h4>
 	<h5><strong>id: <span about="@" property="id"></span> <a href="id"><i class='glyphicon glyphicon-share-alt'></i></a></strong></h5>
-	<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
-	<ul>
-		<li rel="v-wf:inVars" template="v-wf:VariableTemplate">
-	</ul>
-	<hr>
-	<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
-	<ul>
-		<li rel="v-wf:outVars" template="v-wf:VariableTemplate">
-	</ul>
-	<hr>
-	<em><h5 about="v-wf:workOrderList" property="rdfs:label"></h5></em>
-	<ol>
-		<li rel="v-wf:workOrderList" template="v-wf:WorkOrderTemplate"></li>
-	</ol>
+	<div id="inVars">
+		<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
+		<ul><li rel="v-wf:inVars" template="v-wf:VariableTemplate"></li></ul>
+	</div>
+	<div id="outVars">
+		<hr>
+		<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
+		<ul><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ul>
+	</div>
+	<div id="workOrderList">
+		<hr>
+		<em><h5 about="v-wf:workOrderList" property="rdfs:label"></h5></em>
+		<ol><li rel="v-wf:workOrderList" template="v-wf:WorkOrderTemplate"></li></ol>
+	</div>
+	<script>
+		if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
+		if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
+		if (!individual.hasValue("v-wf:workOrderList")) $("#workOrderList", template).remove();
+	</script>
 </div>
   """ ;
   .
@@ -637,19 +642,24 @@ v-wf:WorkOrderTemplate
   v-ui:template """
 <div>
 	<strong>id: <span about="@" property="id"></span> <a href="id"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
-	<div>
+	<div id="executor">
 		<em about="v-wf:executor" property="rdfs:label"></em>
 		<ul><li rel="v-wf:executor" template="v-ui:LabelTemplate"></li></ul>
 	</div>
-	<div>
+	<div id="outVars">
 		<em about="v-wf:outVars" property="rdfs:label"></em>
 		<ul><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ul>
 	</div>
-	<div>
+	<div id="isProcess">
 		<em about="v-wf:isProcess" property="rdfs:label"></em>
 		<ul><li rel="v-wf:isProcess" template="v-ui:ClassNameLabelTemplate"></li></ul>
 	</div>
 	<br/>
+	<script>
+		if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
+		if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
+		if (!individual.hasValue("v-wf:isProcess")) $("#isProcess", template).remove();
+	</script>
 </div>
   """ ;
   .
