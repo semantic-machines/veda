@@ -581,15 +581,15 @@ v-wf:WorkItemTemplate
   v-ui:template """
 <div>
 	<h4><span about="v-wf:WorkItem" property="rdfs:label"></span></h4>
-	<h5><strong>id: <span about="@" property="id"></span> <a href="id"><i class='glyphicon glyphicon-share-alt'></i></a></strong></h5>
+	<h5><strong><span about="@" property="id"></span> <a href="id"><i class='glyphicon glyphicon-share-alt'></i></a></strong></h5>
 	<div id="inVars">
 		<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
-		<ul><li rel="v-wf:inVars" template="v-wf:VariableTemplate"></li></ul>
+		<ol><li rel="v-wf:inVars" template="v-wf:VariableTemplate"></li></ol>
 	</div>
 	<div id="outVars">
 		<hr>
 		<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
-		<ul><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ul>
+		<ol><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ol>
 	</div>
 	<div id="workOrderList">
 		<hr>
@@ -614,18 +614,26 @@ v-wf:VariableTemplate
   v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
 <span>
-	<span property="v-wf:variableName"></span> = <span id="values"></span>
-	:: <span rel="v-wf:variableScope"></span>
+	<strong property="v-wf:variableName"></strong>
+	<div>
+		<em about="v-wf:variableValue" property="rdfs:label"></em>
+		<ul id="values"></ul>
+	</div>
+	<div id="variableScope">
+		<em about="v-wf:variableScope" property="rdfs:label"></em>
+		<ul><li rel="v-wf:variableScope"></li></ul>
+	</div>
 	<script type="text/javascript">
+		if (!individual.hasValue("v-fw:variableScope")) $("#variableScope", template).remove();
 		var valHolder = $("#values", template);
 		individual["v-wf:variableValue"].map( function (value) {
-			var el = $("<span>");
+			var el = $("<li>");
 			if (value instanceof veda.IndividualModel) {
 				new veda.IndividualModel(value, el, new veda.IndividualModel("v-ui:ClassNameLabelTemplate"));
 			} else {
 				el.text(value.toString());
 			}
-			valHolder.append(el, "; <br>");
+			valHolder.append(el);
 		});
 	</script
 </span>
@@ -641,7 +649,7 @@ v-wf:WorkOrderTemplate
   v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
 <div>
-	<strong>id: <span about="@" property="id"></span> <a href="id"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
+	<strong><span about="@" property="id"></span> <a href="id"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
 	<div id="executor">
 		<em about="v-wf:executor" property="rdfs:label"></em>
 		<ul><li rel="v-wf:executor" template="v-ui:LabelTemplate"></li></ul>
