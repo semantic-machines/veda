@@ -269,6 +269,7 @@ jsWorkflow.ready = jsPlumb.ready;
              */
             bindStateEvents = function(windows) {
 				var props = $("#props", template);
+				var propsHead = $("#props-head", template);
                 
                 windows.bind("click", function(e) {
                 	instance.repaintEverything();
@@ -285,6 +286,9 @@ jsWorkflow.ready = jsPlumb.ready;
                     properties.find('#workflow-item-id').val(_this.id);
                     properties.find('#workflow-item-type').val('state');
                     currentElement.addClass('w_active');
+                    var about = new veda.IndividualModel(_this.id);
+                    propsHead.text(about["rdfs:label"].join(", "));
+                    props.empty();
                     
                 	// build run path
                     if (mode=='view') {
@@ -294,7 +298,6 @@ jsWorkflow.ready = jsPlumb.ready;
                     		e.type = 'contextmenu';
                     		currentElement.trigger(e);
                     	} else { 
-							props.empty();
                         	var s = new veda.IndividualModel();
     	                	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
     	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"' && 'v-wf:forNetElement'=='"+_this.id+"'");

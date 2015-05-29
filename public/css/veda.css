@@ -311,7 +311,7 @@ path {
 	position: relative;
 }
 
-.workflow-wrapper #props-col {
+.workflow-wrapper #props-col, .workflow-wrapper #props {
 	overflow-x:auto;
 	overflow-y:auto;
 	font-size:13px;

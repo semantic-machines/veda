@@ -535,7 +535,7 @@ v-wf:ProcessTemplate
 			</div>
 		</div>
 		<div id="props-col" class="col-md-4">
-			<h4>Свойства</h4><hr class="no-margin"/><br/>
+			<h4>Элемент: <span id="props-head"></span></h4><hr class="no-margin"/><br/>
 			<div id="props"></div>
 		</div>
 	</div>
@@ -614,11 +614,8 @@ v-wf:VariableTemplate
   v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
 <span>
-	<strong property="v-wf:variableName"></strong>
-	<div>
-		<em about="v-wf:variableValue" property="rdfs:label"></em>
-		<ul id="values"></ul>
-	</div>
+	<strong><span property="v-wf:variableName"></span> =</strong>
+	<ul id="values"></ul>
 	<div id="variableScope">
 		<em about="v-wf:variableScope" property="rdfs:label"></em>
 		<ul><li rel="v-wf:variableScope"></li></ul>
@@ -652,7 +649,7 @@ v-wf:WorkOrderTemplate
 	<strong><span about="@" property="id"></span> <a href="id"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
 	<div id="executor">
 		<em about="v-wf:executor" property="rdfs:label"></em>
-		<ul><li rel="v-wf:executor" template="v-ui:LabelTemplate"></li></ul>
+		<ul><li rel="v-wf:executor" template="v-ui:ClassNameLabelTemplate"></li></ul>
 	</div>
 	<div id="outVars">
 		<em about="v-wf:outVars" property="rdfs:label"></em>
