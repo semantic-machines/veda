@@ -577,8 +577,11 @@ v-wf:WorkItemTemplate
   rdfs:label "Шаблон для класса -Рабочее задание-"@ru ;
   rdfs:label "Template for Work order class"@en ;
   v-ui:forClass v-wf:WorkItem ;
+  v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
 <div>
+	<h4><span about="v-wf:WorkItem" property="rdfs:label"></span></h4>
+	<em><h5>id: <span about="@" property="id"></span></h5></em>
 	<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
 	<ul>
 		<li rel="v-wf:inVars" template="v-wf:VariableTemplate">
@@ -635,6 +638,8 @@ v-wf:WorkOrderTemplate
 <div>
 	<strong rel="v-wf:executor" template="v-ui:LabelTemplate"></strong>
 	<div rel="v-wf:outVars" template="v-wf:VariableTemplate"></div>
+	<strong about="v-wf:isProcess" property="rdfs:label"></strong>
+	<div rel="v-wf:isProcess" template="v-ui:ClassNameLabelTemplate"></div>
 </div>
   """ ;
   .

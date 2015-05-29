@@ -268,10 +268,9 @@ jsWorkflow.ready = jsPlumb.ready;
              *@param {Object} windows List of all State elements
              */
             bindStateEvents = function(windows) {
-
+				var props = $("#props", template);
+                
                 windows.bind("click", function(e) {
-					var props = $("#props", template);
-					props.empty();
                 	instance.repaintEverything();
                 	
                     var _this = this, currentElement = $(_this), properties, itemId;
@@ -293,15 +292,16 @@ jsWorkflow.ready = jsPlumb.ready;
                 		// If we have more then one WorkItem - we must choose among them 
                     	if (currentElement.attr('work-items-count')>1) {
                     		e.type = 'contextmenu';
-                    		currentElement.trigger(e, 'leftmousebutton');
+                    		currentElement.trigger(e);
                     	} else { 
+							props.empty();
                         	var s = new veda.IndividualModel();
     	                	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
     	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"' && 'v-wf:forNetElement'=='"+_this.id+"'");
     	                	for (var el in s.results) {
    	                	    	showProcessRunPath(s.results[el], 0);
    	                	    	var holder = $("<div>");
-   	                	    	s.results[el].present(holder);
+   	                	    	s.results[el].present(holder, new veda.IndividualModel("v-wf:WorkItemTemplate"));
    	                	    	props.append(holder);
     	                	}
                     	}
@@ -318,28 +318,23 @@ jsWorkflow.ready = jsPlumb.ready;
 	                	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
 	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"' && 'v-wf:forNetElement'=='"+_this.id+"'");
 	                	for (var el in s.results) {
-	                	    if (s.results.hasOwnProperty(el)) {
-	                	       var wi =  new veda.IndividualModel(el);
-	                     	   var $item = $("<li/>").appendTo(menu);
-	                     	   if (extra === undefined) {
-	                     		   $("<a/>", {
-	                     			   "text" : (wi.hasValue('rdfs:label')?wi['rdfs:label'][0]:wi.id), 
-	                     			   "href" : '#/individual/'+wi.id+'/#main'
-	                     		   }).appendTo($item);
-	                     	   } else {
-	                     		  $("<a/>", {
-	                     			   "text" : (wi.hasValue('rdfs:label')?wi['rdfs:label'][0]:wi.id), 
-	                     			   "href" : '#',
-	                     			   "click" : (function (wi) {
-	                						return function (event) {
-	                							event.preventDefault();
-	                							$("#workflow-context-menu").hide();
-	                							showProcessRunPath(new veda.IndividualModel(''+wi.id), 0);
-	                						};
-	                					})(wi)
-	                     		   }).appendTo($item);
-	                     	   }
-	                	    }
+						  var wi = s.results[el];
+						  var $item = $("<li/>").appendTo(menu);
+						  $("<a/>", {
+							   "text" : (wi.hasValue('rdfs:label')?wi['rdfs:label'][0]:wi.id), 
+							   "href" : '#',
+							   "click" : (function (wi) {
+									return function (event) {
+										event.preventDefault();
+										props.empty();
+										$("#workflow-context-menu").hide();
+										showProcessRunPath(wi, 0);
+										var holder = $("<div>");
+										wi.present(holder, new veda.IndividualModel("v-wf:WorkItemTemplate"));
+										props.append(holder);
+									};
+								})(wi)
+						  }).appendTo($item);
 	                	}
 	                	// 	                	
 	                	$contextMenu.css({
