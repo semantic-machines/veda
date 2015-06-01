@@ -44,6 +44,9 @@ jsWorkflow.ready = jsPlumb.ready;
                     workflow,
                     canvasSizePx=10000,
                     elementId,
+                    selectedElementId,
+                    selectedElementType,
+                    selectedElementSourceId,                    
                     process,
                     mode='view',
                     max_process_depth=0,
@@ -160,25 +163,16 @@ jsWorkflow.ready = jsPlumb.ready;
 	            instance.bind("dblclick", function(transition) {
 	                var _this = this;
 	            	riot.route("#/individual/" + transition.id + "/#main//edit", true);
-	/*
-	                 if (mode=='edit' && confirm('Delete Flow?')) {
-	                	 net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', transition.id);
-	                	 var source = new veda.IndividualModel(transition.sourceId);
-	            		 source['v-wf:hasFlow'] = veda.Util.removeSubIndividual(source, 'v-wf:hasFlow', transition.id);
-	                	 instance.detach(transition, {fireEvent:false});
-	                 }
-	                 */
 	            });
             }
             
             // Fill info panel on flow click
             instance.bind("click", function(transition) {
-            	var _this = this, currentElement = $(_this), properties;
-                properties = $('#workflow-selected-item');
+            	var _this = this, currentElement = $(_this);
                 
-                $('#'+veda.Util.escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active');
-                if (properties.find('#workflow-item-source').val()!=null) {
-                	instance.select({source:properties.find('#workflow-item-source').val()}).each(function(e) {
+                $('#'+veda.Util.escape4$(selectedElementId)).removeClass('w_active');
+                if (selectedElementSourceId!=null) {
+                	instance.select({source:selectedElementSourceId}).each(function(e) {
                         e.setPaintStyle({strokeStyle: "#666666"});
                 	});
                 };
@@ -189,9 +183,9 @@ jsWorkflow.ready = jsPlumb.ready;
                 	transition = transition.component;
                 }
                 
-                properties.find('#workflow-item-id').val(transition.id);
-                properties.find('#workflow-item-type').val('flow');
-                properties.find('#workflow-item-source').val(transition.sourceId);
+                selectedElementId =  transition.id;
+                selectedElementType = 'flow';
+                selectedElementSourceId = transition.sourceId;
             });
             
             instance.bind("beforeDetach", function(connection) {
@@ -286,23 +280,27 @@ jsWorkflow.ready = jsPlumb.ready;
             bindStateEvents = function(windows) {
                 
                 windows.bind("click", function(e) {
+                	props.empty();
                 	instance.repaintEverything();
                 	
-                    var _this = this, currentElement = $(_this), properties, itemId;
-                    properties = $('#workflow-selected-item');
+                    var _this = this, currentElement = $(_this);
 
-                    if (properties.find('#workflow-item-source').val()!=null) {
-                    	instance.select({source:properties.find('#workflow-item-source').val()}).each(function(e) {
+                    if (selectedElementSourceId!=null) {
+                    	instance.select({source:selectedElementSourceId}).each(function(e) {
                             e.setPaintStyle({strokeStyle: "#666666"});
                     	});
                     };
-                    $('#'+veda.Util.escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active'); // deactivate old selection
-                    properties.find('#workflow-item-id').val(_this.id);
-                    properties.find('#workflow-item-type').val('state');
+                    $('#'+veda.Util.escape4$(selectedElementId)).removeClass('w_active'); // deactivate old selection
+                    selectedElementId = _this.id;
+                	selectedElementType = 'state';
                     currentElement.addClass('w_active');
-                    var about = new veda.IndividualModel(_this.id);
-                    propsHead.text(about["rdfs:label"].join(", "));
-                    props.empty();
+                    if (mode=='edit') {
+                    	var about = new veda.IndividualModel(_this.id);
+                    	var holder = $("<div>");
+                    	about.present(holder, undefined, "edit");
+                    	props.append(holder);
+                    	propsHead.text(about["rdfs:label"].join(", "));
+                    }
                     
                 	// build run path
                     if (mode=='view') {
@@ -837,66 +835,54 @@ jsWorkflow.ready = jsPlumb.ready;
                 instance.moveCanvas(-minx*scale+offsetX-canvasSizePx/2, -miny*scale+offsetY-canvasSizePx/2);
             };
             
-            instance.addProcessVariable = function(individualProperty, listId) {
-            	if (process.hasValue(individualProperty)) {
-                	$iv = $(listId);
-                	process[individualProperty].forEach(function(el) {
-                  	   var $item = $("<li/>").appendTo($iv);
-                	   $("<a/>", {
-                		   "text" : (el.hasValue('v-wf:variableName')?el['v-wf:variableName'][0]:el.id),
-       	    			   "href" : '#/individual/'+el.id+'/#main'
-                	   }).appendTo($item);
-                	});
+            instance.loadProcessWorkItems = function(process, wis, usecache) {
+            	if (process.hasValue('v-wf:workItemList')) {
+            		process['v-wf:workItemList'].forEach(function(wi) {
+            			wis.push(new veda.IndividualModel(wi.id, null, null, 'view', usecache));
+            			instance.loadProcessWorkItems(wi, wis, usecache);
+            		});
             	}
-            };
+            }
             
             instance.createProcessView = function(process, reload) {
             	// Apply WorkItems to Net
-            	var s = new veda.IndividualModel();
-            	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
-            	if (reload) {            		
-            		s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"'", undefined, true);
+    			var wis = [];
+            	if (reload) {
+            		instance.loadProcessWorkItems(process, wis, false);
             		$('.w').each(function(index) {
             			$("span", this ).text('');
             			$( this ).css('background-color', 'white').attr('work-items-count',0).attr('colored-to','');
             		});
             	} else {
-            		s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"'");
+            		instance.loadProcessWorkItems(process, wis, true);
             	}
-            	for (var el in s.results) {
-            	    if (s.results.hasOwnProperty(el)) {
-            	    	var wi = s.results[el];
-                		if (wi.hasValue('v-wf:forNetElement')) {
-                			var state = $('#'+veda.Util.escape4$(wi['v-wf:forNetElement'][0].id));
-                			var wic = parseInt(state.attr('work-items-count'));
-					var red = state.attr('colored-to')=='red';    
-                			if (wic>0) {                				
-                				state.attr('work-items-count', wic+1);
-						$(".counter", state).remove();
-                				$("<span/>", {
-					   			   "class" : "counter",    
-                             		   "text" : 'x'+(wic+1)
-                             	   }).appendTo(state);                				
-                			} else {
-                				state.attr('work-items-count', 1);
-                			}
-            				if (!wi.hasValue('v-wf:workOrderList')) {
-                    			state.css('background-color', '#FF3333');
-                    			state.attr('colored-to', 'red');
-            				} else if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true && !red) {
-                    			state.css('background-color', '#88B288');
-                    			state.attr('colored-to', 'green');
-            				} else if (!red) {
-                    			state.css('background-color', '#FFB266');
-                    			state.attr('colored-to', 'red');
-            				}
-                		}
-            	    }
-            	}
-            	// Add variables to lists
-            	instance.addProcessVariable('v-wf:inputVariable','#process-input-variables');
-            	instance.addProcessVariable('v-wf:localVariable','#process-local-variables');
-            	instance.addProcessVariable('v-wf:outputVariable','#process-output-variables');
+            	wis.forEach(function(wi) {
+            		if (wi.hasValue('v-wf:forNetElement')) {
+            			var state = $('#'+veda.Util.escape4$(wi['v-wf:forNetElement'][0].id));
+            			var wic = parseInt(state.attr('work-items-count'));
+            			var red = state.attr('colored-to')=='red';    
+            			if (wic>0) {                				
+            				state.attr('work-items-count', wic+1);
+            				$(".counter", state).remove();
+            				$("<span/>", {
+				   			   "class" : "counter",    
+                         		   "text" : 'x'+(wic+1)
+                         	   }).appendTo(state);                				
+            			} else {
+            				state.attr('work-items-count', 1);
+            			}
+        				if (!wi.hasValue('v-wf:workOrderList')) {
+                			state.css('background-color', '#FF3333');
+                			state.attr('colored-to', 'red');
+        				} else if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true && !red) {
+                			state.css('background-color', '#88B288');
+                			state.attr('colored-to', 'green');
+        				} else if (!red) {
+                			state.css('background-color', '#FFB266');
+                			state.attr('colored-to', 'red');
+        				}
+            		}
+            	});            
             };
 
             instance.createNetView(net);
@@ -982,14 +968,14 @@ jsWorkflow.ready = jsPlumb.ready;
             });
 
             $('.delete-state').on('click', function() {
-                if ($('#workflow-item-type').val()=='state') {
-	                if (confirm('Delete state ' + $('#workflow-item-id').val() + ' ?')) {
-	                	instance.deleteState(instance.getSelector('#'+veda.Util.escape4$($('#workflow-item-id').val()))[0]);
+                if (selectedElementType == 'state') {
+	                if (confirm('Delete state ' + selectedElementId + ' ?')) {
+	                	instance.deleteState(instance.getSelector('#'+veda.Util.escape4$(selectedElementId))[0]);
 	                }
                 }
-                if ($('#workflow-item-type').val()=='flow') {
-	                if (confirm('Delete flow ' + $('#workflow-item-id').val() + ' ?')) {
-	                	instance.deleteFlow(instance.getSelector('#'+veda.Util.escape4$($('#workflow-item-id').val()))[0]);
+                if (selectedElementType == 'flow') {
+	                if (confirm('Delete flow ' + selectedElementId + ' ?')) {
+	                	instance.deleteFlow(instance.getSelector('#'+veda.Util.escape4$(selectedElementId))[0]);
 	                }
                 }
             });
