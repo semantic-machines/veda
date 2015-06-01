@@ -294,11 +294,13 @@ jsWorkflow.ready = jsPlumb.ready;
                     selectedElementId = _this.id;
                 	selectedElementType = 'state';
                     currentElement.addClass('w_active');
-                    var about = new veda.IndividualModel(_this.id);
-                    var holder = $("<div>");
-                    about.present(holder, undefined, "edit");
-                    props.append(holder);
-                    propsHead.text(about["rdfs:label"].join(", "));
+                    if (mode=='edit') {
+                    	var about = new veda.IndividualModel(_this.id);
+                    	var holder = $("<div>");
+                    	about.present(holder, undefined, "edit");
+                    	props.append(holder);
+                    	propsHead.text(about["rdfs:label"].join(", "));
+                    }
                     
                 	// build run path
                     if (mode=='view') {
