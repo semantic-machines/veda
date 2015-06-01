@@ -613,6 +613,7 @@ v-wf:WorkItemTemplate
 <div>
 	<h4><span about="v-wf:WorkItem" property="rdfs:label"></span></h4>
 	<h5><strong><span about="@" property="id"></span> <a href="id"><i class='glyphicon glyphicon-share-alt'></i></a></strong></h5>
+	<hr>
 	<div id="inVars">
 		<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
 		<ol><li rel="v-wf:inVars" template="v-wf:VariableTemplate"></li></ol>
