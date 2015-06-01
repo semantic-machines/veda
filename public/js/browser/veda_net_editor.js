@@ -44,6 +44,9 @@ jsWorkflow.ready = jsPlumb.ready;
                     workflow,
                     canvasSizePx=10000,
                     elementId,
+                    selectedElementId,
+                    selectedElementType,
+                    selectedElementSourceId,                    
                     process,
                     mode='view',
                     max_process_depth=0,
@@ -160,25 +163,16 @@ jsWorkflow.ready = jsPlumb.ready;
 	            instance.bind("dblclick", function(transition) {
 	                var _this = this;
 	            	riot.route("#/individual/" + transition.id + "/#main//edit", true);
-	/*
-	                 if (mode=='edit' && confirm('Delete Flow?')) {
-	                	 net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', transition.id);
-	                	 var source = new veda.IndividualModel(transition.sourceId);
-	            		 source['v-wf:hasFlow'] = veda.Util.removeSubIndividual(source, 'v-wf:hasFlow', transition.id);
-	                	 instance.detach(transition, {fireEvent:false});
-	                 }
-	                 */
 	            });
             }
             
             // Fill info panel on flow click
             instance.bind("click", function(transition) {
-            	var _this = this, currentElement = $(_this), properties;
-                properties = $('#workflow-selected-item');
+            	var _this = this, currentElement = $(_this);
                 
-                $('#'+veda.Util.escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active');
-                if (properties.find('#workflow-item-source').val()!=null) {
-                	instance.select({source:properties.find('#workflow-item-source').val()}).each(function(e) {
+                $('#'+veda.Util.escape4$(selectedElementId)).removeClass('w_active');
+                if (selectedElementSourceId!=null) {
+                	instance.select({source:selectedElementSourceId}).each(function(e) {
                         e.setPaintStyle({strokeStyle: "#666666"});
                 	});
                 };
@@ -189,9 +183,9 @@ jsWorkflow.ready = jsPlumb.ready;
                 	transition = transition.component;
                 }
                 
-                properties.find('#workflow-item-id').val(transition.id);
-                properties.find('#workflow-item-type').val('flow');
-                properties.find('#workflow-item-source').val(transition.sourceId);
+                selectedElementId =  transition.id;
+                selectedElementType = 'flow';
+                selectedElementSourceId = transition.sourceId;
             });
             
             instance.bind("beforeDetach", function(connection) {
@@ -286,23 +280,25 @@ jsWorkflow.ready = jsPlumb.ready;
             bindStateEvents = function(windows) {
                 
                 windows.bind("click", function(e) {
+                	props.empty();
                 	instance.repaintEverything();
                 	
-                    var _this = this, currentElement = $(_this), properties, itemId;
-                    properties = $('#workflow-selected-item');
+                    var _this = this, currentElement = $(_this);
 
-                    if (properties.find('#workflow-item-source').val()!=null) {
-                    	instance.select({source:properties.find('#workflow-item-source').val()}).each(function(e) {
+                    if (selectedElementSourceId!=null) {
+                    	instance.select({source:selectedElementSourceId}).each(function(e) {
                             e.setPaintStyle({strokeStyle: "#666666"});
                     	});
                     };
-                    $('#'+veda.Util.escape4$(properties.find('#workflow-item-id').val())).removeClass('w_active'); // deactivate old selection
-                    properties.find('#workflow-item-id').val(_this.id);
-                    properties.find('#workflow-item-type').val('state');
+                    $('#'+veda.Util.escape4$(selectedElementId)).removeClass('w_active'); // deactivate old selection
+                    selectedElementId = _this.id;
+                	selectedElementType = 'state';
                     currentElement.addClass('w_active');
                     var about = new veda.IndividualModel(_this.id);
+                    var holder = $("<div>");
+                    about.present(holder, undefined, "edit");
+                    props.append(holder);
                     propsHead.text(about["rdfs:label"].join(", "));
-                    props.empty();
                     
                 	// build run path
                     if (mode=='view') {
@@ -982,14 +978,14 @@ jsWorkflow.ready = jsPlumb.ready;
             });
 
             $('.delete-state').on('click', function() {
-                if ($('#workflow-item-type').val()=='state') {
-	                if (confirm('Delete state ' + $('#workflow-item-id').val() + ' ?')) {
-	                	instance.deleteState(instance.getSelector('#'+veda.Util.escape4$($('#workflow-item-id').val()))[0]);
+                if (selectedElementType == 'state') {
+	                if (confirm('Delete state ' + selectedElementId + ' ?')) {
+	                	instance.deleteState(instance.getSelector('#'+veda.Util.escape4$(selectedElementId))[0]);
 	                }
                 }
-                if ($('#workflow-item-type').val()=='flow') {
-	                if (confirm('Delete flow ' + $('#workflow-item-id').val() + ' ?')) {
-	                	instance.deleteFlow(instance.getSelector('#'+veda.Util.escape4$($('#workflow-item-id').val()))[0]);
+                if (selectedElementType == 'flow') {
+	                if (confirm('Delete flow ' + selectedElementId + ' ?')) {
+	                	instance.deleteFlow(instance.getSelector('#'+veda.Util.escape4$(selectedElementId))[0]);
 	                }
                 }
             });
