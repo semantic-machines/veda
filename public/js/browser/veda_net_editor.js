@@ -833,66 +833,54 @@ jsWorkflow.ready = jsPlumb.ready;
                 instance.moveCanvas(-minx*scale+offsetX-canvasSizePx/2, -miny*scale+offsetY-canvasSizePx/2);
             };
             
-            instance.addProcessVariable = function(individualProperty, listId) {
-            	if (process.hasValue(individualProperty)) {
-                	$iv = $(listId);
-                	process[individualProperty].forEach(function(el) {
-                  	   var $item = $("<li/>").appendTo($iv);
-                	   $("<a/>", {
-                		   "text" : (el.hasValue('v-wf:variableName')?el['v-wf:variableName'][0]:el.id),
-       	    			   "href" : '#/individual/'+el.id+'/#main'
-                	   }).appendTo($item);
-                	});
+            instance.loadProcessWorkItems = function(process, wis, usecache) {
+            	if (process.hasValue('v-wf:workItemList')) {
+            		process['v-wf:workItemList'].forEach(function(wi) {
+            			wis.push(new veda.IndividualModel(wi.id, null, null, 'view', usecache));
+            			instance.loadProcessWorkItems(wi, wis, usecache);
+            		});
             	}
-            };
+            }
             
             instance.createProcessView = function(process, reload) {
             	// Apply WorkItems to Net
-            	var s = new veda.IndividualModel();
-            	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
-            	if (reload) {            		
-            		s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"'", undefined, true);
+    			var wis = [];
+            	if (reload) {
+            		instance.loadProcessWorkItems(process, wis, false);
             		$('.w').each(function(index) {
             			$("span", this ).text('');
             			$( this ).css('background-color', 'white').attr('work-items-count',0).attr('colored-to','');
             		});
             	} else {
-            		s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"'");
+            		instance.loadProcessWorkItems(process, wis, true);
             	}
-            	for (var el in s.results) {
-            	    if (s.results.hasOwnProperty(el)) {
-            	    	var wi = s.results[el];
-                		if (wi.hasValue('v-wf:forNetElement')) {
-                			var state = $('#'+veda.Util.escape4$(wi['v-wf:forNetElement'][0].id));
-                			var wic = parseInt(state.attr('work-items-count'));
-					var red = state.attr('colored-to')=='red';    
-                			if (wic>0) {                				
-                				state.attr('work-items-count', wic+1);
-						$(".counter", state).remove();
-                				$("<span/>", {
-					   			   "class" : "counter",    
-                             		   "text" : 'x'+(wic+1)
-                             	   }).appendTo(state);                				
-                			} else {
-                				state.attr('work-items-count', 1);
-                			}
-            				if (!wi.hasValue('v-wf:workOrderList')) {
-                    			state.css('background-color', '#FF3333');
-                    			state.attr('colored-to', 'red');
-            				} else if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true && !red) {
-                    			state.css('background-color', '#88B288');
-                    			state.attr('colored-to', 'green');
-            				} else if (!red) {
-                    			state.css('background-color', '#FFB266');
-                    			state.attr('colored-to', 'red');
-            				}
-                		}
-            	    }
-            	}
-            	// Add variables to lists
-            	instance.addProcessVariable('v-wf:inputVariable','#process-input-variables');
-            	instance.addProcessVariable('v-wf:localVariable','#process-local-variables');
-            	instance.addProcessVariable('v-wf:outputVariable','#process-output-variables');
+            	wis.forEach(function(wi) {
+            		if (wi.hasValue('v-wf:forNetElement')) {
+            			var state = $('#'+veda.Util.escape4$(wi['v-wf:forNetElement'][0].id));
+            			var wic = parseInt(state.attr('work-items-count'));
+            			var red = state.attr('colored-to')=='red';    
+            			if (wic>0) {                				
+            				state.attr('work-items-count', wic+1);
+            				$(".counter", state).remove();
+            				$("<span/>", {
+				   			   "class" : "counter",    
+                         		   "text" : 'x'+(wic+1)
+                         	   }).appendTo(state);                				
+            			} else {
+            				state.attr('work-items-count', 1);
+            			}
+        				if (!wi.hasValue('v-wf:workOrderList')) {
+                			state.css('background-color', '#FF3333');
+                			state.attr('colored-to', 'red');
+        				} else if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true && !red) {
+                			state.css('background-color', '#88B288');
+                			state.attr('colored-to', 'green');
+        				} else if (!red) {
+                			state.css('background-color', '#FFB266');
+                			state.attr('colored-to', 'red');
+        				}
+            		}
+            	});            
             };
 
             instance.createNetView(net);
