@@ -244,11 +244,22 @@
 						<div class="alert alert-warning not-found" style="display: none">
 							<strong i18n="[Empty!]">Пусто!</strong> <span i18n="[Nothing found]">По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 						</div>
+						<div id="selected-actions-{id}">
+						</div>
 					</div>
 				</div>
 			</div>
 		</script>
 		
+		<!-- Selected actions -->
+		<script type="html/template" id="selected-actions-template">
+			<div class="well well-sm" id="selected-actions">
+				<button id="export-ttl" class="btn btn-success">Экспорт в ttl</button>
+				<button id="delete" class="btn btn-link">Удалить</button>
+			</div>
+			<br>
+		</script>
+				
 		<!-- Checkbox for search -->
 		<script type="html/template" id="search-select-template">
 			<label class="checkbox-inline">
@@ -620,8 +631,9 @@
 		<script type="text/javascript" src="/js/browser/saved_search_list.js"></script>
 		<script type="text/javascript" src="/js/browser/save_search.js"></script>
 		<script type="text/javascript" src="/js/browser/search_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/search_sort.js"></script>
 		<script type="text/javascript" src="/js/browser/search_result_presenter.js"></script>
+		<script type="text/javascript" src="/js/browser/search_sort.js"></script>
+		<script type="text/javascript" src="/js/browser/search_selected_actions.js"></script>
 		<script type="text/javascript" src="/js/browser/user_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/graph_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/veda_controls.js"></script>

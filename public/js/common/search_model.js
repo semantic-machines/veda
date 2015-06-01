@@ -30,8 +30,8 @@ veda.Module(function (veda) { "use strict";
 			} else {
 				self.selected[self.results[ results_keys[i] ].id] = self.results[ results_keys[i] ];
 			}
-			self.trigger("search:selected", self.results[ results_keys[i] ], self.selected);
-			return self.selected;
+			self.trigger("search:selected");
+			return self;
 		};
 
 		self.toggleAll = function () {
@@ -42,8 +42,8 @@ veda.Module(function (veda) { "use strict";
 			} else {
 				self.selected = {};
 			}
-			//console.log(self.selected);
-			return self.selected;
+			self.trigger("search:selected");
+			return self;
 		};
 
 		// Define Model functions
@@ -84,7 +84,7 @@ veda.Module(function (veda) { "use strict";
 			self.results_count = results.length;
 			results_keys = Object.getOwnPropertyNames(self.results);
 			self.trigger("search:complete");
-
+			return self;
 		};
 
 		// Model messages
