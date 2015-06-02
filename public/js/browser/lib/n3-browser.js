@@ -1164,6 +1164,8 @@ function N3Writer(outputStream, options) {
   }
 }
 
+var obj_wr_line = "";
+
 N3Writer.prototype = {
   // ## Private methods
 
@@ -1185,13 +1187,19 @@ N3Writer.prototype = {
       // Don't repeat the subject if it's the same
       if (this._subject === subject) {
         // Don't repeat the predicate if it's the same
-        if (this._predicate === predicate)
+        if (this._predicate === predicate && object[0] !== '"' && obj_wr_line.length < 90)
+	{
           this._write(', ' + this._encodeObject(object), done);
-        // Same subject, different predicate
+	  obj_wr_line += ', ' + this._encodeObject(object);
+	}
+        // Same subject, different predicate    
         else
+	{
           this._write(';\n    ' +
                       this._encodePredicate(this._predicate = predicate) + ' ' +
                       this._encodeObject(object), done);
+	  obj_wr_line = "";
+	}
       }
       // Different subject; write the whole triple
       else
