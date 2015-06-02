@@ -709,6 +709,7 @@ v-wf:to
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "кому"@ru ;
         rdfs:domain v-wf:DecisionForm ;
+	rdfs:domain v-wf:DecisionRedirect ;
         rdfs:range v-s:Appointment ;
 .
 
