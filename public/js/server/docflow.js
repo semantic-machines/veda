@@ -332,12 +332,12 @@ function prepare_work_order(ticket, document)
 
                     //print("new_process=", toJson(new_process));
                     put_individual(ticket, new_process, _event_id);
-                    
+
                     document['v-wf:isProcess'] = [
-					{
-						data: new_process_uri,
-						type: _Uri
-					}];
+                        {
+                            data: new_process_uri,
+                            type: _Uri
+     }];
                     put_individual(ticket, document, _event_id);
 
                 }
@@ -370,37 +370,43 @@ function prepare_work_order(ticket, document)
         var outVars = workOrder['v-wf:outVars'];
         if (outVars)
         {
-            var _result = get_individual(ticket, outVars[0].data);
-            //print("[WORKFLOW][WO3.2] _result=" + toJson(_result) + "");
-            if (_result)
+            var el = {};
+            el['workOrder'] = workOrder['@'];
+
+            var f_set = false;
+            for (var i1 = 0; i1 < outVars.length; i1++)
             {
-                //if (wosResultsMapping)
-                //{
-                // wosResultsMapping указан 
-                //}
-                //else
+                var _result = get_individual(ticket, outVars[i1].data);
+                //print("[WORKFLOW][WO3.2] _result=" + toJson(_result) + "");
+                if (_result)
                 {
-                    // складываем все результаты в локальную переменную					
-                    var el = {};
-                    el['workOrder'] = workOrder['@'];
-                    var key, val;
-                    var varName = _result["v-wf:variableName"];
-                    if (varName)
-                        key = varName[0].data;
-
-                    var varValue = _result["v-wf:variableValue"];
-                    if (varValue)
-                        val = varValue[0].data;
-
-                    if (val !== undefined && key !== undefined)
+                    //if (wosResultsMapping)
+                    //{
+                    // wosResultsMapping указан 
+                    //}
+                    //else
                     {
-                        el[key] = val;
+                        // складываем все результаты в локальную переменную					
+                        var key, val;
+                        var varName = _result["v-wf:variableName"];
+                        if (varName)
+                            key = varName[0].data;
 
-                        result.push(el);
+                        var varValue = _result["v-wf:variableValue"];
+                        if (varValue)
+                            val = varValue[0].data;
+
+                        if (val !== undefined && key !== undefined)
+                        {
+                            el[key] = val;
+                            f_set = true;
+                        }
+                        //print("[WORKFLOW][WO3.3] result=" + toJson(result) + "");
                     }
-                    //print("[WORKFLOW][WO3.3] result=" + toJson(result) + "");
                 }
             }
+            if (f_set) result.push(el);
+
         }
 
     }

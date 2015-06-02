@@ -46,9 +46,14 @@ function Context(_src_data, _ticket)
 
     this.getExecutor = function ()
     {
-		return this.src_data['v-wf:executor'];
-	};
-	
+        return this.src_data['v-wf:executor'];
+    };
+
+    this.get_results = function ()
+    {
+        return this.src_data;
+    };
+
     this.if_all_executors_taken_decision = function (true_decision, false_decision)
     {
         //print("Context.src_data=", toJson(this.src_data));
@@ -65,17 +70,17 @@ function Context(_src_data, _ticket)
         if (count_agreed == this.src_data.length)
         {
             return [
-            {
-                'data': true_decision,
-                'type': _Uri
+                {
+                    'data': true_decision,
+                    'type': _Uri
             }];
         }
         else
         {
             return [
-            {
-                'data': false_decision,
-                'type': _Uri
+                {
+                    'data': false_decision,
+                    'type': _Uri
             }];
         }
     };
@@ -139,9 +144,25 @@ function Context(_src_data, _ticket)
 
                 var variable_name = getFirstValue(variable['v-wf:variableName']);
 
-                //print("[WORKFLOW]:print_variable: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
+                print("[WORKFLOW]:print_variable: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
             }
 
+        }
+    };
+
+    this.get_result_value = function (field1, type1)
+    {
+        if (this.src_data && this.src_data.length > 0)
+        {
+            var rr = this.src_data[0][field1];
+            if (rr)
+                return [
+                {
+                    'data': rr,
+                    'type': type1
+                }];
+            else
+                return null;
         }
     };
 }
@@ -218,58 +239,58 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
 }
 
 function create_and_mapping_variables(ticket, mapping, _process, _task, _local)
+{
+    //print("[WORKFLOW][create_and_mapping_variables]: mapping=" + toJson(mapping));
+    var new_vars = [];
+    if (!mapping) return [];
+
+    var process;
+    var task;
+    var local;
+
+    if (_process)
+        process = new Context(_process, ticket);
+
+    if (_task)
+        task = new Context(_task, ticket);
+
+    if (_local)
+        local = new Context(_local, ticket);
+
+    for (var i = 0; i < mapping.length; i++)
     {
-        //print("[WORKFLOW][create_and_mapping_variables]: mapping=" + toJson(mapping));
-        var new_vars = [];
-        if (!mapping) return [];
+        var map = get_individual(ticket, mapping[i].data);
+        //print("[WORKFLOW][create_and_mapping_variables]: map=" + toJson(map));
+        var expression = getFirstValue(map['v-wf:mappingExpression']);
+        if (!expression) continue;
 
-        var process;
-        var task;
-        var local;
+        //print("[WORKFLOW][create_and_mapping_variables]: expression=" + expression);
+        var res1 = eval(expression);
+        //print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson(res1));
+        if (!res1) continue;
 
-        if (_process)
-            process = new Context(_process, ticket);
+        var mapToVariable_uri = getUri(map['v-wf:mapToVariable']);
+        if (!mapToVariable_uri) continue;
 
-        if (_task)
-            task = new Context(_task, ticket);
+        var def_variable = get_individual(ticket, mapToVariable_uri);
+        if (!def_variable) continue;
 
-        if (_local)
-            local = new Context(_local, ticket);
-
-        for (var i = 0; i < mapping.length; i++)
+        var new_variable = generate_variable(ticket, def_variable, res1, _process, _task, _local);
+        if (new_variable)
         {
-            var map = get_individual(ticket, mapping[i].data);
-            //print("[WORKFLOW][create_and_mapping_variables]: map=" + toJson(map));
-            var expression = getFirstValue(map['v-wf:mappingExpression']);
-            if (!expression) continue;
+            put_individual(ticket, new_variable, _event_id);
 
-            //print("[WORKFLOW][create_and_mapping_variables]: expression=" + expression);
-            var res1 = eval(expression);
-            //print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson(res1));
-            if (!res1) continue;
-
-            var mapToVariable_uri = getUri(map['v-wf:mapToVariable']);
-            if (!mapToVariable_uri) continue;
-
-            var def_variable = get_individual(ticket, mapToVariable_uri);
-            if (!def_variable) continue;
-
-            var new_variable = generate_variable(ticket, def_variable, res1, _process, _task, _local);
-            if (new_variable)
+            new_vars.push(
             {
-                put_individual(ticket, new_variable, _event_id);
-
-                new_vars.push(
-                {
-                    data: new_variable['@'],
-                    type: _Uri
-                });
-            }
+                data: new_variable['@'],
+                type: _Uri
+            });
         }
-
-        return new_vars;
     }
-    //////////////////////////////////////////////////////////////////////////
+
+    return new_vars;
+}
+//////////////////////////////////////////////////////////////////////////
 
 function is_all_executors_taken_decision(data, decision)
 {
@@ -354,8 +375,6 @@ function transformation(ticket, _in_data, rule, executor, work_order)
             }
         })();
 
-
-
         for (var key in obj)
         {
             var element = obj[key];
@@ -418,9 +437,9 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                     }
                 })();
 
-                var putTypeOfElement = (function ()
+                var putFieldOfElement = (function ()
                 {
-                    return function (name)
+                    return function (name, field)
                     {
                         var rr = get_individual(ticket, getUri(element));
                         if (!rr)
@@ -433,7 +452,7 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                         if (!out_data0_el_arr)
                             out_data0_el_arr = [];
 
-                        out_data0_el_arr.push(rr['rdf:type']);
+                        out_data0_el_arr.push(rr[field]);
 
                         out_data0_el[name] = out_data0_el_arr;
                     }
@@ -534,7 +553,6 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                     }
                 })();
 
-
                 //print("#7 key=", key);
                 //print("#7 element=", toJson(element));
 
@@ -579,44 +597,49 @@ function transformation(ticket, _in_data, rule, executor, work_order)
     var out_data = [];
     for (var key in out_data0)
     {
-        //print("out_data0[", key, "]=", toJson(out_data0[key]));
         out_data.push(out_data0[key]);
     }
+
+    //print ("#8 out_data=", toJson (out_data));
 
     return out_data;
 }
 
-function find_in_work_item_tree (ticket, _process, compare_field, compare_value)
+function find_in_work_item_tree(ticket, _process, compare_field, compare_value)
 {
-	var res = [];
-	
-	var f_workItemList = _process['v-wf:workItemList'];
-	
-	if (f_workItemList)
-		rsffiwit (ticket, f_workItemList, compare_field, compare_value, res, _process);
-	
-	return res;
-}	
+    var res = [];
 
-function rsffiwit (ticket, work_item_list, compare_field, compare_value, res, _parent)
+    var f_workItemList = _process['v-wf:workItemList'];
+
+    if (f_workItemList)
+        rsffiwit(ticket, f_workItemList, compare_field, compare_value, res, _process);
+
+    return res;
+}
+
+function rsffiwit(ticket, work_item_list, compare_field, compare_value, res, _parent)
 {
-	for (var idx = 0; idx < work_item_list.length; idx++)
-	{
-		var i_work_item = get_individual(ticket, work_item_list[idx].data);
-		if (i_work_item)
-		{
-			var ov = i_work_item[compare_field];
-			var isCompleted = i_work_item['v-wf:isCompleted'];
+    for (var idx = 0; idx < work_item_list.length; idx++)
+    {
+        var i_work_item = get_individual(ticket, work_item_list[idx].data);
+        if (i_work_item)
+        {
+            var ov = i_work_item[compare_field];
+            var isCompleted = i_work_item['v-wf:isCompleted'];
 
-			if (ov && getUri (ov) == compare_value && !isCompleted)
-				res.push ({parent: _parent, work_item : i_work_item});
+            if (ov && getUri(ov) == compare_value && !isCompleted)
+                res.push(
+                {
+                    parent: _parent,
+                    work_item: i_work_item
+                });
 
-			var f_workItemList = i_work_item['v-wf:workItemList'];
+            var f_workItemList = i_work_item['v-wf:workItemList'];
 
-			if (f_workItemList)			
-				rsffiwit (ticket, f_workItemList, compare_field, compare_value, res, i_work_item);								
-		}
-		
-	}
-	
-}	 
+            if (f_workItemList)
+                rsffiwit(ticket, f_workItemList, compare_field, compare_value, res, i_work_item);
+        }
+
+    }
+
+}
