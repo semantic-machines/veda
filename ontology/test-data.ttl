@@ -545,12 +545,12 @@ td:PersonTemplate1
         <hr />
         <div class="row">
           <div class="col-md-6">
-		    <div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1">шаблон: td:PreferencesTemplate1</div>
-		    <veda-control rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" class="-view edit search"></veda-control>
+		    <div rel="v-ui:hasPreferences" embedded="true" template="td:PreferencesTemplate1">шаблон: td:PreferencesTemplate1</div>
+		    <veda-control rel="v-ui:hasPreferences" class="-view edit search"></veda-control>
           </div>
           <div class="col-md-6">
-            <div rel="v-s:hasAccount" template="td:AccountTemplate1">шаблон: td:AccountTemplate1</div>
-            <veda-control rel="v-s:hasAccount" template="td:AccountTemplate1" class="-view edit search"></veda-control>
+            <div rel="v-s:hasAccount" template="td:AccountTemplate1" embedded="true">шаблон: td:AccountTemplate1</div>
+            <veda-control rel="v-s:hasAccount" class="-view edit search"></veda-control>
           </div>
         </div>
         <hr />
@@ -596,11 +596,11 @@ td:AppointmentTemplate1
         <veda-control type="xsd:string" property="rdfs:label" class="-view edit search"></veda-control>
         <div class="row">
           <div class="col-md-6">
-            <div rel="v-s:employee"></div>
+            <div rel="v-s:employee" template="v-ui:LabelTemplate"></div>
             <veda-control rel="v-s:employee" class="-view edit search"></veda-control>
           </div>
           <div class="col-md-6">
-            <div rel="v-s:occupation"></div>
+            <div rel="v-s:occupation" template="v-ui:LabelTemplate"></div>
             <veda-control rel="v-s:occupation" class="-view edit search"></veda-control>
           </div>
         </div>
@@ -621,7 +621,6 @@ td:AppointmentTemplate2
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон Назначения 2"@ru ;
   rdfs:label "Appointment template 2"@en ;
-  v-ui:forClass v-s:Appointment ;
   v-ui:template """
 	<div>
 		<span rel="v-s:employee" template="v-ui:LabelTemplate">Работник</span>, 
@@ -635,7 +634,6 @@ td:AccountTemplate1
   rdfs:label "Шаблон Учетной записи"@ru ;
   rdfs:label "Account template"@en ;
   v-ui:forClass v-s:Account ;
-  v-ui:embedded "true"^^xsd:boolean ;  
   v-ui:template """
   <div>
     <div class="panel panel-default">
@@ -656,7 +654,7 @@ td:AccountTemplate1
             <div class="col-md-12">
                <strong class="text-muted" about="v-s:owner" property="rdfs:label">Владелец</strong>
                <div rel="v-s:owner" template="v-ui:LabelTemplate">v-ui:LabelTemplate</div>
-               <veda-control rel="v-s:owner" template="v-ui:LabelTemplate" class="-view edit search"></veda-control>
+               <veda-control rel="v-s:owner" class="-view edit search"></veda-control>
             </div>
         </div>
         <br />
@@ -681,13 +679,13 @@ td:AccountTemplate1
           </div>
         </div>
       </div>
-      <!--div class="panel-footer">
+      <div class="panel-footer">
         <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
         <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
         <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
         <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
         <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
-      </div-->
+      </div>
     </div>
   </div>
   """ ;
@@ -708,7 +706,6 @@ td:PreferencesTemplate1
   rdfs:label "Шаблон для класса Предпочтения"@ru ;
   rdfs:label "Template for Preferences class"@en ;
   v-ui:forClass v-ui:Preferences ;
-  v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
 <div class="panel panel-default">
   <div class="panel-heading">
@@ -725,7 +722,7 @@ td:PreferencesTemplate1
     <div>
       <strong class="text-muted" about="v-ui:preferredLanguage" property="rdfs:label">Язык</strong>:
       <ul>
-        <li rel="v-ui:preferredLanguage"></li>
+        <li rel="v-ui:preferredLanguage" template="v-ui:LabelTemplate"></li>
       </ul>
       <veda-control rel="v-ui:preferredLanguage" class="-view edit search"></veda-control>
       <strong class="text-muted" about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</strong>: 

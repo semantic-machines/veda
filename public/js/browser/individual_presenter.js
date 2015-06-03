@@ -40,6 +40,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		if (template) {
 			if ( template instanceof jQuery ) {
 				var $scripts = $("script", template);
+				//var $scripts = template.filter("script");
 				$scripts.map(function () { scripts.push( $(this).text() );});
 				$scripts.remove();
 			}
@@ -71,18 +72,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				.map( function (_class) {
 					var template, scripts = [], specs;
 					if (_class.template && _class.template["v-ui:template"]) {
-						// If _class.template is embedded => construct generic template
-						if (_class.template["v-ui:embedded"] && _class.template["v-ui:embedded"][0] == true) {
-							template = genericTemplate(individual, _class);
-						} else {
-							// Get template from class
-							template = _class.template["v-ui:template"][0].toString();
-							template = template.replace(/<script.*>((.|\n)*?)<\/script>/gi, function (m, script) {
-								scripts.push(script);
-								return "";
-							});
-							template = $(template);
-						}
+						// Get template from class
+						template = _class.template["v-ui:template"][0].toString();
+						template = template.replace(/<script.*>((.|\n)*?)<\/script>/gi, function (m, script) {
+							scripts.push(script);
+							return "";
+						});
+						template = $(template);
 					} else {
 						// Construct generic template
 						template = genericTemplate(individual, _class);
@@ -469,18 +465,19 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
-				relTemplate = relContainer.attr("template") ? new veda.IndividualModel( relContainer.attr("template") ) : new veda.IndividualModel("v-ui:ClassNameLabelTemplate"),
+				relTemplate = relContainer.attr("template") ? new veda.IndividualModel( relContainer.attr("template") ) : undefined,
+				isEmbedded = relContainer.attr("embedded"),
 				spec = specs[rel_uri];
 			
 			relContainer.empty().hide();
 			
-			var rendered = renderRelationValues(individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, propertyModifiedHandler);
+			var rendered = renderRelationValues(individual, rel_uri, relContainer, relTemplate, isEmbedded, spec, embedded, template, mode, propertyModifiedHandler);
 			
 			// Re-render link property if its' values were changed
 			function propertyModifiedHandler (doc_property_uri) {
 				if (doc_property_uri === rel_uri) {
 					rendered.map( function (item) { item.remove(); } );
-					rendered = renderRelationValues(individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, propertyModifiedHandler);
+					rendered = renderRelationValues(individual, rel_uri, relContainer, relTemplate, isEmbedded, spec, embedded, template, mode, propertyModifiedHandler);
 				}
 			}
 			individual.on("individual:propertyModified", propertyModifiedHandler);
@@ -497,7 +494,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				rel_uri = control.attr("rel"),
 				spec = specs[rel_uri],
 				rel = veda.ontology[rel_uri],
-				relTemplate = control.attr("template") ? new veda.IndividualModel( control.attr("template") ) : new veda.IndividualModel("v-ui:ClassNameLabelTemplate") ,
 				immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true;
 				
 			if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
@@ -507,18 +503,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				select: function (selected) {
 					individual[rel_uri] = individual[rel_uri].concat(selected);
 				},
-				queryPrefix: spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : undefined
+				queryPrefix: spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : undefined,
+				add: function () {
+					var newVal = new veda.IndividualModel();
+					newVal["rdf:type"] = veda.ontology[rel_uri]["rdfs:range"];
+					individual[rel_uri] = individual[rel_uri].concat(newVal);
+				}
 			};
-			
-			if (relTemplate.hasValue("v-ui:embedded") && relTemplate["v-ui:embedded"][0] == true) {
-				opts.add = function () {
-					var embeddedIndividual = new veda.IndividualModel();
-					if (relTemplate.hasValue("v-ui:forClass")) {
-						embeddedIndividual["rdf:type"] = [relTemplate["v-ui:forClass"][0]];
-					}
-					individual[rel_uri] = individual[rel_uri].concat(embeddedIndividual);
-				};
-			}
 			
 			control.vedaLink(opts);
 
@@ -567,66 +558,70 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		return template;
 	}
 	
-	function renderRelationValues (individual, rel_uri, relContainer, relTemplate, spec, embedded, template, mode, handler) {
+	function renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, spec, embedded, template, mode, handler) {
 		if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
 		var immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true;
 		var values = individual[rel_uri];
 		var renderedValues = individual[rel_uri].map( function (value) { 
 			// Create the same tag container to preserve element layout
 			var clone = relContainer.clone();
-			var lnk;
-			var lnkTemplate;
-			if (value instanceof veda.IndividualModel || !value) {
-				setTimeout( function () {
-					//lnkTemplate = $("<span>").append( $( relTemplate["v-ui:template"][0].toString() ) );
-					lnkTemplate = $( relTemplate["v-ui:template"][0].toString() );
-					if (relTemplate["v-ui:embedded"] && relTemplate["v-ui:embedded"][0] == true) {
-						lnk = new veda.IndividualModel(value, clone, lnkTemplate, mode);
-						embedded.push(lnkTemplate);
+			var valTemplate;
+			setTimeout( function () {
+				if (isEmbedded) {
+					if (relTemplate) {
+						valTemplate = $( relTemplate["v-ui:template"][0].toString() );
+						value.present(clone, valTemplate, mode);
 					} else {
-						lnk = new veda.IndividualModel(value, clone, lnkTemplate);
+						value.present(clone, undefined, mode);
+						valTemplate = clone.children();
 					}
-					
-					clone.attr("style", "position:relative;");
-					
-					var clear;
-					if (lnkTemplate.children(":first").prop("tagName") === "SPAN") {
-						clear = $( $("#link-clear-inline-button-template").html() );
+					embedded.push(valTemplate);
+				} else {
+					if (relTemplate) {
+						valTemplate = $( relTemplate["v-ui:template"][0].toString() );
+						value.present(clone, valTemplate);
 					} else {
-						clear = $( $("#link-clear-block-button-template").html() );
+						value.present(clone);
+						valTemplate = clone.children();
 					}
-										
-					clear.on("click", function () {
-						clone.remove();
-						individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id != lnk.id; });
-						if (embedded.length) {
-							var index = embedded.indexOf(lnkTemplate);
-							if ( index >= 0 ) embedded.splice(index, 1);
-						}
-					});
+				}
 
-					mode === "view" ? clear.hide() :
-					mode === "edit" && !immutable ? clear.show() :
-					mode === "edit" && immutable ? clear.hide() :
-                    mode === "search" ? clear.show() : true;
-                    
-					function modeHandler (e) {
-						e.type === "view" ? clear.hide() :
-						e.type === "edit" && !immutable ? clear.show() :
-						e.type === "edit" && immutable ? clear.hide() :
-						e.type === "search" ? clear.show() :
-						true;
-						e.stopPropagation();						
+				clone.attr("style", "position:relative;");
+
+				var clear;
+				if (valTemplate.children(":first").prop("tagName") === "SPAN") {
+					clear = $( $("#link-clear-inline-button-template").html() );
+				} else {
+					clear = $( $("#link-clear-block-button-template").html() );
+				}
+									
+				clear.on("click", function () {
+					clone.remove();
+					individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id != value.id; });
+					if (embedded.length) {
+						var index = embedded.indexOf(valTemplate);
+						if ( index >= 0 ) embedded.splice(index, 1);
 					}
-					template.on("view edit search", modeHandler);
+				});
 
-					clone.append(clear);
-					
-				}, 0);
-			} else {
-				// External resources
-				clone.append( $("<a>", {href: value, text: value}) );
-			}
+				mode === "view" ? clear.hide() :
+				mode === "edit" && !immutable ? clear.show() :
+				mode === "edit" && immutable ? clear.hide() :
+				mode === "search" ? clear.show() : true;
+				
+				function modeHandler (e) {
+					e.type === "view" ? clear.hide() :
+					e.type === "edit" && !immutable ? clear.show() :
+					e.type === "edit" && immutable ? clear.hide() :
+					e.type === "search" ? clear.show() :
+					true;
+					e.stopPropagation();						
+				}
+				template.on("view edit search", modeHandler);
+
+				clone.append(clear);
+				
+			}, 0);
 			relContainer.before(clone);
 			return clone.show();
 		});
@@ -730,7 +725,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					break;
 					default:
 						$(".value", result).append (
-							$("<div/>", {"rel": property_uri}),
+							$("<div/>", {"rel": property_uri, "template": "v-ui:ClassNameLabelTemplate"}),
 							$("<veda-control class='-view edit search'></veda-control>").attr("rel", property_uri)
 						);
 					break;

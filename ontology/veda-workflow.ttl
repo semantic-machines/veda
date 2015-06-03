@@ -388,7 +388,6 @@ v-wf:NetTemplate
   rdfs:label "Шаблон для класса Сеть"@ru ;
   rdfs:label "Template for Net class"@en ;
   v-ui:forClass v-wf:Net ;
-  v-ui:embedded "false"^^xsd:boolean ;
   v-ui:template """
 <div class="workflow-wrapper">
 	<div class="row">
@@ -488,7 +487,6 @@ v-wf:ProcessTemplate
   rdfs:label "Шаблон для класса Процесс"@ru ;
   rdfs:label "Template for Process"@en ;
   v-ui:forClass v-wf:Process ;
-  v-ui:embedded "false"^^xsd:boolean ;
   v-ui:template """
 <div class="workflow-wrapper">
 	<div class="row">
@@ -559,7 +557,6 @@ v-wf:ProcessPropsTemplate
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса -Рабочее задание-"@ru ;
   rdfs:label "Template for Work order class"@en ;
-  v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
 <div>
 	<div id="localVariable">
@@ -583,14 +580,13 @@ v-wf:ProcessPropsTemplate
 	</script>
 </div>
   """
-
+.
 v-wf:WorkItemTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса -Рабочее задание-"@ru ;
   rdfs:label "Template for Work order class"@en ;
   v-ui:forClass v-wf:WorkItem ;
-  v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
 <div>
 	<h4><span about="v-wf:WorkItem" property="rdfs:label"></span></h4>
@@ -626,14 +622,13 @@ v-wf:VariableTemplate
   rdfs:label "Шаблон для класса Переменная"@ru ;
   rdfs:label "Template for Variable class"@en ;
   v-ui:forClass v-wf:Variable ;
-  v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
 <span>
 	<strong><span property="v-wf:variableName"></span> =</strong>
 	<ul id="values"></ul>
 	<div id="variableScope">
 		<em about="v-wf:variableScope" property="rdfs:label"></em>
-		<ul><li rel="v-wf:variableScope"></li></ul>
+		<ul><li rel="v-wf:variableScope" template="v-ui:ClassNameLabelTemplate"></li></ul>
 	</div>
 	<script type="text/javascript">
 		if (!individual.hasValue("v-fw:variableScope")) $("#variableScope", template).remove();
@@ -658,7 +653,6 @@ v-wf:WorkOrderTemplate
   rdfs:label "Шаблон для класса Рабочее задание"@ru ;
   rdfs:label "Template for Work Order"@en ;
   v-ui:forClass v-wf:WorkOrder ;
-  v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
 <div>
 	<strong><span about="@" property="id"></span> <a href="id"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
@@ -1186,5 +1180,21 @@ v-wf:DecisionRedirect
 	rdfs:label "перенаправить другому"@ru ;
 .	
 
-
-
+v-wf:DecisionRedirectTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса -Перенаправить другому-"@ru ;
+  rdfs:label "Template for -Decision Redirect- class"@en ;
+  v-ui:forClass v-wf:DecisionRedirect ;
+  v-ui:template """
+<div>
+	<span about="v-wf:to" property="rdfs:label"></span>
+	<!--div rel="v-wf:to" template="v-ui:LabelTemplate"></div-->
+	<veda-control rel="v-wf:to"></veda-control>
+	<br>
+	<span about="rdfs:comment" property="rdfs:label"></span>
+	<div property="rdfs:comment"></div>
+	<veda-control property="rdfs:comment" type="xsd:string"></veda-control>
+</div>
+  """ ;
+  .

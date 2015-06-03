@@ -22,7 +22,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo2 "0.2" ;
+#  owl:versionInfo "0.2" ;
 .
 
 ########## SEARCH FUNCTION ###########
@@ -174,10 +174,9 @@ v-fs:SearchTemplate
   rdfs:label "Search class template"@en ;
   rdfs:label "Шаблон класса поиск"@ru ;
   v-ui:forClass v-fs:Search ;
-  v-ui:embedded "false"^^xsd:boolean ;
   v-ui:template """
-     <div>
-		 <div role="tabpanel" id="srch-tab-panel" class="panel panel-default">
+	<div>
+		<div role="tabpanel" id="srch-tab-panel" class="panel panel-default">
 			<div class="panel-body">
 				<!-- Nav tabs -->
 				<ul class="nav nav-pills" role="tablist">
@@ -212,7 +211,7 @@ v-fs:SearchTemplate
 							<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 						</div>
 						<strong about="v-fs:selectedType" property="rdfs:label"></strong>
-						<div rel="v-fs:selectedType"></div>
+						<div rel="v-fs:selectedType" template="v-ui:ClassNameLabelTemplate"></div>
 						<br />
 					</div>
 					<div role="tabpanel" class="tab-pane" id="results">

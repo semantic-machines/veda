@@ -150,9 +150,7 @@ veda.Module(function (veda) { "use strict";
 				});
 				// Filter undefined values
 				self._.values[property_uri] = self._.values[property_uri].filter(function (item) { return item; });
-				
 				if (getterCB) getterCB(self._.values[property_uri]);
-				
 				return self._.values[property_uri];
 			},
 			
@@ -248,7 +246,6 @@ veda.Module(function (veda) { "use strict";
 		if (self._.sync) return;
 		self.trigger("individual:beforeSave");
 		Object.keys(self._.individual).reduce(function (acc, property_uri) {
-			//self[property_uri]; // To be removed???
 			if (property_uri === "@") return acc;
 			acc[property_uri] = self._.individual[property_uri].filter(function (item) {
 				return item && item.data !== "";

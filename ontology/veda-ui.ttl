@@ -20,7 +20,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "3.3" ;
+#  owl:versionInfo "3.4" ;
 .
 v-ui:EN
   rdf:type v-ui:Language ;
@@ -63,13 +63,6 @@ v-ui:template
   rdfs:label "template"@en ;
   rdfs:label "шаблон"@ru ;
   rdfs:range xsd:string ;
-.
-v-ui:embedded
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:ClassTemplate ;
-  rdfs:label "embedded"@en ;
-  rdfs:label "встроенный"@ru ;
-  rdfs:range xsd:boolean ;
 .
 v-ui:ClassTemplate
   rdf:type owl:Class ;
@@ -317,14 +310,6 @@ v-ui:ClassNameLabelTemplate
   <span><a href="id"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span property="rdfs:label"></span></a></span>
   """ ;
 .
-v-ui:ClassNameIdTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с именем класса, меткой и id"@ru ;
-  rdfs:label "Template with class name, label and id"@en ;
-  v-ui:template """
-  <span><a href="id"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span property="id"></span></a></span>
-  """ ;
-.
 v-ui:SavedSearchTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Сохраненный запрос"@ru ;
@@ -341,10 +326,10 @@ v-ui:SavedSearchTemplate
           </div>
         </div>
         <br/>
-        <button type="button" class="action btn btn-sm btn-primary" id="edit">Редактировать</button>
-        <button type="button" class="action btn btn-sm btn-success" id="save">Сохранить</button>
-        <button type="button" class="action btn btn-sm btn-default" id="cancel">Отмена</button>
-        <button type="button" class="action btn btn-sm btn-link" id="delete" i18n="[Delete]">Удалить</button>
+        <button type="button" class="action btn btn-sm btn-primary view -edit -search" id="edit">Редактировать</button>
+        <button type="button" class="action btn btn-sm btn-success -view edit -search" id="save">Сохранить</button>
+        <button type="button" class="action btn btn-sm btn-default -view edit -search" id="cancel">Отмена</button>
+        <button type="button" class="action btn btn-sm btn-link view edit -search" id="delete" i18n="[Delete]">Удалить</button>
   </div>
   """ ;
 .
@@ -352,7 +337,6 @@ v-ui:SavedSearchInListTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Сохраненный запрос"@ru ;
   rdfs:label "Template for Saved search class"@en ;
-  v-ui:forClass v-s:SavedSearch ;
   v-ui:template """
   <span>
         <span property="rdfs:label">Имя запроса</span>
@@ -410,7 +394,6 @@ v-ui:SearchRestrictionTemplate
   rdfs:label "Шаблон для класса Ограничение поиска"@ru ;
   rdfs:label "Template for Search restriction class"@en ;
   v-ui:forClass v-s:SearchRestriction ;
-  v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
 	<div class="panel panel-default">
 		<!--div class="panel-heading">
@@ -439,7 +422,6 @@ v-ui:SortOrderTemplate
   rdfs:label "Шаблон для класса Порядок сортировки"@ru ;
   rdfs:label "Template for Sort order class"@en ;
   v-ui:forClass v-s:SortOrder ;
-  v-ui:embedded "true"^^xsd:boolean ;
   v-ui:template """
 	<div class="panel panel-default">
 		<!--div class="panel-heading">
