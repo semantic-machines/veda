@@ -39,10 +39,15 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		
 		if (template) {
 			if ( template instanceof jQuery ) {
-				var $scripts = $("script", template);
-				//var $scripts = template.filter("script");
-				$scripts.map(function () { scripts.push( $(this).text() );});
-				$scripts.remove();
+				if (template.length > 1) {
+					var $scripts = template.filter("script");
+					$scripts.map(function () { scripts.push( $(this).text() );});
+					template = template.first();
+				} else {
+					var $scripts = $("script", template);
+					$scripts.map(function () { scripts.push( $(this).text() );});
+					$scripts.remove();
+				}
 			}
 			if (template instanceof veda.IndividualModel) {
 				template = template["v-ui:template"][0].toString();
@@ -98,7 +103,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				scripts: scripts
 			});
 		}
-		
+		console.log(scripts[0]);
 		rendered.map( function (view) {
 			view.template.trigger(mode);	
 			container.prepend(view.template);

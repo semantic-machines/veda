@@ -573,12 +573,12 @@ v-wf:ProcessPropsTemplate
 		<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
 		<ol><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ol>
 	</div>
-	<script>
-		if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
-		if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
-		if (!individual.hasValue("v-wf:localVariable")) $("#localVariable", template).remove();
-	</script>
 </div>
+<script>
+	if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
+	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
+	if (!individual.hasValue("v-wf:localVariable")) $("#localVariable", template).remove();
+</script>
   """
 .
 v-wf:WorkItemTemplate
@@ -607,12 +607,12 @@ v-wf:WorkItemTemplate
 		<ol><li rel="v-wf:workOrderList" template="v-wf:WorkOrderTemplate"></li></ol>
 		<hr>		
 	</div>
-	<script>
-		if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
-		if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
-		if (!individual.hasValue("v-wf:workOrderList")) $("#workOrderList", template).remove();
-	</script>
 </div>
+<script>
+	if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
+	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
+	if (!individual.hasValue("v-wf:workOrderList")) $("#workOrderList", template).remove();
+</script>
   """ ;
   .
 
@@ -630,20 +630,20 @@ v-wf:VariableTemplate
 		<em about="v-wf:variableScope" property="rdfs:label"></em>
 		<ul><li rel="v-wf:variableScope" template="v-ui:ClassNameLabelTemplate"></li></ul>
 	</div>
-	<script type="text/javascript">
-		if (!individual.hasValue("v-fw:variableScope")) $("#variableScope", template).remove();
-		var valHolder = $("#values", template);
-		individual["v-wf:variableValue"].map( function (value) {
-			var el = $("<li>");
-			if (value instanceof veda.IndividualModel) {
-				new veda.IndividualModel(value, el, new veda.IndividualModel("v-ui:ClassNameLabelTemplate"));
-			} else {
-				el.text(value.toString());
-			}
-			valHolder.append(el);
-		});
-	</script
 </span>
+<script type="text/javascript">
+	if (!individual.hasValue("v-fw:variableScope")) $("#variableScope", template).remove();
+	var valHolder = $("#values", template);
+	individual["v-wf:variableValue"].map( function (value) {
+		var el = $("<li>");
+		if (value instanceof veda.IndividualModel) {
+			new veda.IndividualModel(value, el, new veda.IndividualModel("v-ui:ClassNameLabelTemplate"));
+		} else {
+			el.text(value.toString());
+		}
+		valHolder.append(el);
+	});
+</script>
   """ ;
   .
 
@@ -669,12 +669,12 @@ v-wf:WorkOrderTemplate
 		<ul><li rel="v-wf:isProcess" template="v-ui:ClassNameLabelTemplate"></li></ul>
 	</div>
 	<br/>
-	<script>
-		if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
-		if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
-		if (!individual.hasValue("v-wf:isProcess")) $("#isProcess", template).remove();
-	</script>
 </div>
+<script>
+	if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
+	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
+	if (!individual.hasValue("v-wf:isProcess")) $("#isProcess", template).remove();
+</script>
   """ ;
   .
   
