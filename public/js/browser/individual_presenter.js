@@ -103,7 +103,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				scripts: scripts
 			});
 		}
-		console.log(scripts[0]);
 		rendered.map( function (view) {
 			view.template.trigger(mode);	
 			container.prepend(view.template);
