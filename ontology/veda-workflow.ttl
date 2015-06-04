@@ -559,6 +559,11 @@ v-wf:ProcessPropsTemplate
   rdfs:label "Template for Work order class"@en ;
   v-ui:template """
 <div>
+	<div id="executor">
+		<em><h5 about="v-wf:executor" property="rdfs:label"></h5></em>
+		<ol><li rel="v-wf:executor" template="v-ui:ClassNameLabelTemplate"></li></ol>
+		<hr>
+	</div>
 	<div id="localVariable">
 		<em><h5 about="v-wf:localVariable" property="rdfs:label"></h5></em>
 		<ol><li rel="v-wf:localVariable" template="v-wf:VariableTemplate"></li></ol>
@@ -578,6 +583,7 @@ v-wf:ProcessPropsTemplate
 	if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
 	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
 	if (!individual.hasValue("v-wf:localVariable")) $("#localVariable", template).remove();
+	if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
 </script>
   """
 .
