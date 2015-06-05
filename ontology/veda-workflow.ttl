@@ -192,17 +192,15 @@ v-wf:expectedResultType
 v-wf:startResultTransform
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "start result transform"@en ;
 	rdfs:label "начальная трансформация для результата "@ru ;
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Transform ;
 .
 
-v-wf:completeResultTransform
+v-wf:completeDecisionTransform
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "start result transform"@en ;
-	rdfs:label "конечная трансформация для результата "@ru ;
+	rdfs:label "конечная трансформация для формы решения"@ru ;
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Transform ;
 .

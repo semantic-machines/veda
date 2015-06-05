@@ -35,7 +35,7 @@ function prepare_decision_form(ticket, document)
 
     //print("[WORKFLOW][DF1].3");
 
-    var transform_link = getUri(net_element['v-wf:completeResultTransform']);
+    var transform_link = getUri(net_element['v-wf:completeDecisionTransform']);
     if (!transform_link) return;
     var transform = get_individual(ticket, transform_link);
     if (!transform) return;
@@ -253,10 +253,10 @@ function prepare_work_order(ticket, document)
                     work_item_inVars.push(var_ctid);
                 }
 
-                //print("[WORKFLOW][WO2.0] transform_link=" + toJson(net_element['v-wf:startResultTransform']));
+                //print("[WORKFLOW][WO2.0] transform_link=" + toJson(net_element['v-wf:startDecisionTransform']));
                 //print("[WORKFLOW][WO2.1] work_item_inVars=" + toJson(work_item_inVars));
 
-                var transform_link = getUri(net_element['v-wf:startResultTransform']);
+                var transform_link = getUri(net_element['v-wf:startDecisionTransform']);
                 if (!transform_link) return;
                 var transform = get_individual(ticket, transform_link);
                 if (!transform) return;

@@ -572,7 +572,7 @@ v-s:fileDescription
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:File ;
   rdfs:label "file name"@en ;
-  rdfs:label "имя файла"@ru ;
+  rdfs:label "описание файла"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:fileName
