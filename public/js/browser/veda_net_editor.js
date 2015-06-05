@@ -104,7 +104,7 @@ jsWorkflow.ready = jsPlumb.ready;
               	  $("#workflow-context-menu").hide();
                 }
             }).on("click", function() {
-            	$("#workflow-context-menu").hide();
+            	instance.defocus();
             	if (mode === "view") {
 					var holder = $("<div>");
 					propsHead.text(net["rdfs:label"].join(", "));
@@ -168,14 +168,9 @@ jsWorkflow.ready = jsPlumb.ready;
             
             // Fill info panel on flow click
             instance.bind("click", function(transition) {
-            	var _this = this, currentElement = $(_this);
-                
-                $('#'+veda.Util.escape4$(selectedElementId)).removeClass('w_active');
-                if (selectedElementSourceId!=null) {
-                	instance.select({source:selectedElementSourceId}).each(function(e) {
-                        e.setPaintStyle({strokeStyle: "#666666"});
-                	});
-                };
+            	var _this = this;
+            	
+            	instance.defocus();
                 
                 transition.setPaintStyle({strokeStyle: "#FF0000"});
 
@@ -280,17 +275,10 @@ jsWorkflow.ready = jsPlumb.ready;
             bindStateEvents = function(windows) {
                 
                 windows.bind("click", function(e) {
-                	props.empty();
-                	instance.repaintEverything();
+                    instance.defocus();
                 	
                     var _this = this, currentElement = $(_this);
-
-                    if (selectedElementSourceId!=null) {
-                    	instance.select({source:selectedElementSourceId}).each(function(e) {
-                            e.setPaintStyle({strokeStyle: "#666666"});
-                    	});
-                    };
-                    $('#'+veda.Util.escape4$(selectedElementId)).removeClass('w_active'); // deactivate old selection
+                    
                     selectedElementId = _this.id;
                 	selectedElementType = 'state';
                     currentElement.addClass('w_active');
@@ -301,6 +289,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     	props.append(holder);
                     	if ( about.hasValue("rdfs:label") ) propsHead.text(about["rdfs:label"].join(", "));
                     	else propsHead.text(about.id);
+                    	e.stopPropagation();
                     }
                     
                 	// build run path
@@ -838,6 +827,21 @@ jsWorkflow.ready = jsPlumb.ready;
             	});
                 instance.changeScale(scale);
                 instance.moveCanvas(-minx*scale+offsetX-canvasSizePx/2, -miny*scale+offsetY-canvasSizePx/2);
+            };
+            
+            instance.defocus = function() {
+            	props.empty();
+            	$("#workflow-context-menu").hide();
+            	instance.select().removeClass('process-path-highlight').setLabel('');
+                $('#'+veda.Util.escape4$(selectedElementId)).removeClass('w_active');
+                if (selectedElementSourceId!=null) {
+                	instance.select({source:selectedElementSourceId}).each(function(e) {
+                        e.setPaintStyle({strokeStyle: "#666666"});
+                	});
+                };
+                selectedElementId = null;
+                selectedElementType = null;
+                selectedElementSourceId = null;
             };
             
             instance.loadProcessWorkItems = function(process, wis, usecache) {

@@ -482,12 +482,15 @@ v-s:datePlan
   rdfs:label "плановая дата"@ru ;
   rdfs:range xsd:date ;
 .
-v-s:datePubliced
+
+v-s:published
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "date of public"@en ;
+  rdfs:domain v-s:Document ;
+  rdfs:label "date published"@en ;
   rdfs:label "дата публикации"@ru ;
-  rdfs:range xsd:date ;
+  rdfs:range xsd:dateTime ;
 .
+
 v-s:dateTo
   rdf:type owl:DatatypeProperty ;
   rdfs:label "date end of something"@en ;
@@ -572,7 +575,7 @@ v-s:fileDescription
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:File ;
   rdfs:label "file name"@en ;
-  rdfs:label "имя файла"@ru ;
+  rdfs:label "описание файла"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:fileName
@@ -896,13 +899,6 @@ v-s:previousVersion
   rdfs:label "предыдущая версия"@ru ;
   rdfs:range v-s:Versioned ;
 .
-v-s:published
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Document ;
-  rdfs:label "date published"@en ;
-  rdfs:label "дата публикации"@ru ;
-  rdfs:range xsd:dateTime ;
-.
 v-s:query
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:SavedSearch ;
@@ -1064,3 +1060,46 @@ v-s:year
   rdfs:label "год"@ru ;
   rdfs:range xsd:integer ;
 .
+
+v-s:Journal
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:comment "A journal"@en ;
+  rdfs:comment "Журнал"@ru ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Journal"@en ;
+  rdfs:label "Журнал"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-s:childRecord
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:domain v-s:Journal ;
+  rdfs:label "ссылка на запись журнала"@ru ;
+  rdfs:range v-s:JournalRecord ;
+.
+v-s:JournalRecord
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Запись в журнале"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-s:parentJournal
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:domain v-s:JournalRecord ;
+  rdfs:label "ссылка на журнал"@ru ;
+  rdfs:range v-s:Journal ;
+.
+v-s:onDocument
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:domain v-s:JournalRecord ;
+  rdfs:label "on document"@en ;
+  rdfs:label "к документу"@ru ;
+  rdfs:range v-s:Document ;
+.
+v-s:created
+  rdfs:domain v-s:Journal, v-s:JournalRecord ;
+.
+
