@@ -722,7 +722,13 @@ td:PreferencesTemplate1
     <div>
       <strong class="text-muted" about="v-ui:preferredLanguage" property="rdfs:label">Язык</strong>:
       <ul>
-        <li rel="v-ui:preferredLanguage" template="v-ui:LabelTemplate"></li>
+        <!--li rel="v-ui:preferredLanguage" template="v-ui:LabelTemplate"></li-->
+        <li rel="v-ui:preferredLanguage" embedded="true">
+          <div>
+			  <span property="rdfs:label"></span>
+			  <veda-control type="xsd:string" property="rdfs:label" class="-view edit search"></veda-control>
+		  </div>
+        </li>
       </ul>
       <veda-control rel="v-ui:preferredLanguage" class="-view edit search"></veda-control>
       <strong class="text-muted" about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</strong>: 

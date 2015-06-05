@@ -123,11 +123,12 @@ span.twitter-typeahead .tt-hint {
 /* Codemirror editor */
 .codemirror-editor { 
   font-size: 12px;
+  position: relative;
 }
 
 .codemirror-editor > button { 
   font-size: 14px;
-  position:absolute;top:0px;right:15px;z-index:999  
+  position:absolute;right:0px;z-index:999;
 }
 
 .has-success .panel {

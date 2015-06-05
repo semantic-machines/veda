@@ -294,6 +294,49 @@ v-ui:displayedElements
   rdfs:label "display elements"@en ;
   rdfs:range xsd:nonNegativeInteger ;
 .
+v-ui:ClassTemplateTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса -Шаблон класса-"@ru ;
+  rdfs:label "Template for -Class template- class"@en ;
+  v-ui:forClass v-ui:ClassTemplate ;
+  v-ui:template """
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <div class="row">
+      <div class="col-md-4">
+        <span about="v-ui:ClassTemplate" property="rdfs:label"></span>
+      </div>
+      <div class="col-md-8 text-right text-muted">
+        <a href="id"><span property="id"></span></a>
+      </div>  
+    </div>
+  </div>
+  <div class="panel-body">
+    <strong class="text-muted -view edit search" about="rdfs:label" property="rdfs:label"></strong>
+    <h3 property="rdfs:label"></h3>
+    <veda-control type="xsd:string" property="rdfs:label" class="-view edit search"></veda-control>
+	<br class="-view edit search">
+    <strong class="text-muted -view edit search" about="rdfs:comment" property="rdfs:label"></strong>
+    <div><em property="rdfs:comment"></em></div>
+    <veda-control type="xsd:string" property="rdfs:comment" class="-view edit search"></veda-control>
+    <br class="-view edit search">
+	<strong class="text-muted" about="v-ui:forClass" property="rdfs:label"></strong>
+	<div rel="v-ui:forClass" template="v-ui:ClassNameLabelTemplate"></div>
+	<veda-control rel="v-ui:forClass" class="-view edit search"></veda-control>
+	<br>
+	<veda-control type="xsd:string" property="v-ui:template"></veda-control>
+  </div>
+  <div class="panel-footer">
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
+    <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+    <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+    <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
+  </div>
+</div>
+  """ ;
+.
+
 v-ui:LabelTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с меткой"@ru ;
@@ -331,17 +374,6 @@ v-ui:SavedSearchTemplate
         <button type="button" class="action btn btn-sm btn-default -view edit -search" id="cancel">Отмена</button>
         <button type="button" class="action btn btn-sm btn-link view edit -search" id="delete" i18n="[Delete]">Удалить</button>
   </div>
-  """ ;
-.
-v-ui:SavedSearchInListTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса Сохраненный запрос"@ru ;
-  rdfs:label "Template for Saved search class"@en ;
-  v-ui:template """
-  <span>
-        <span property="rdfs:label">Имя запроса</span>
-        <button type="button" class="action btn btn-xs btn-danger" id="delete"><i class="glyphicon glyphicon-remove"></i></button>
-  </span>
   """ ;
 .
 v-ui:SearchRequestTemplate

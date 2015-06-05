@@ -12,7 +12,7 @@
 			.on("change", function ( e ) {
 				var value = opts.inputParser( this.value, this );
 				if (value !== null) opts.change(value);
-				this.value = null;
+				if (!opts.holdValue) this.value = null;
 			});	
 		
 		return control;

@@ -299,15 +299,17 @@ jsWorkflow.ready = jsPlumb.ready;
                     	var holder = $("<div>");
                     	about.present(holder, undefined, "edit");
                     	props.append(holder);
-                    	propsHead.text(about["rdfs:label"].join(", "));
+                    	if ( about.hasValue("rdfs:label") ) propsHead.text(about["rdfs:label"].join(", "));
+                    	else propsHead.text(about.id);
                     }
                     
                 	// build run path
                     if (mode=='view') {
                 		instance.select().removeClass('process-path-highlight').setLabel('');
                     	var about = new veda.IndividualModel(_this.id);
-                    	var holder = $("<div>");
-                		propsHead.text(about["rdfs:label"].join(", "));
+                		if ( about.hasValue("rdfs:label") ) propsHead.text(about["rdfs:label"].join(", "));
+                    	else propsHead.text(about.id);
+
                 		// If we have more then one WorkItem - we must choose among them 
                     	if (currentElement.attr('work-items-count')>1) {
                     		e.type = 'contextmenu';

@@ -373,6 +373,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				type = control.attr("type") || veda.ontology[property_uri]["rdfs:range"][0].id,
 				spec = specs[property_uri],
 				immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true,
+				holdValue = control.hasClass("hold-value"),
 				controlType;
 			
 			if (immutable) {
@@ -401,18 +402,26 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var opts = {
 				change: function (value) {
 					individual[property_uri] = individual[property_uri].concat(value);
-				}
+				},
+				holdValue: holdValue
 			};
+			
+			if (holdValue) opts.value = individual[property_uri][0];
 			
 			if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
 				controlType = $.fn.vedaSource;
+				opts.value = individual[property_uri][0],
 				opts.change = function (value) {
-					individual.off("individual:propertyModified", handler);
+					individual.off("individual:propertyModified", propertyModifiedHandler);
 					individual[property_uri] = [value];
-					individual.on("individual:propertyModified", handler);
+					individual.on("individual:propertyModified", propertyModifiedHandler);
 				}
 				if (property_uri === "v-s:script") opts.mode = "javascript";
 				if (property_uri === "v-ui:template") opts.mode = "htmlmixed";
+				template.on("view edit search", function (e) {
+					e.stopPropagation();
+					control.trigger(e.type);
+				});
 			}
 			
 			controlType.call(control, opts);
@@ -574,7 +583,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				clone.attr("style", "position:relative;");
 				
 				var clear;
-				if (valTemplate.children(":first").prop("tagName") === "SPAN") {
+				if (valTemplate.prop("tagName") === "SPAN") {
 					clear = $( $("#link-clear-inline-button-template").html() );
 				} else {
 					clear = $( $("#link-clear-block-button-template").html() );
