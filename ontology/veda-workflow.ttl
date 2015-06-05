@@ -14,6 +14,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://semantic-machines.com/veda/veda-workflow>
+	rdfs:isDefinedBy v-wf: ;
   rdf:type owl:Ontology ;
   rdfs:label "Veda system workflow ontology"@en ;
   rdfs:label "Онтология потоков работ системы Veda"@ru ;
@@ -189,10 +190,10 @@ v-wf:expectedResultType
 	rdfs:range owl:Class ;
 .
 
-v-wf:startResultTransform
+v-wf:startDecisionTransform
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "начальная трансформация для результата "@ru ;
+	rdfs:label "трансформация для создания формы решения"@ru ;
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Transform ;
 .
@@ -200,7 +201,7 @@ v-wf:startResultTransform
 v-wf:completeDecisionTransform
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "конечная трансформация для формы решения"@ru ;
+	rdfs:label "трансформация преобразования формы решения"@ru ;
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Transform ;
 .
@@ -812,7 +813,6 @@ v-wf:useTransformation
 
 v-wf:Mapping
 	rdf:type owl:Class ;
-	rdfs:isDefinedBy v-wf: ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Mapping"@en ;
 	rdfs:label "Преобразование"@ru ;
