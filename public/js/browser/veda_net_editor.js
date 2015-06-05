@@ -305,6 +305,9 @@ jsWorkflow.ready = jsPlumb.ready;
                 	// build run path
                     if (mode=='view') {
                 		instance.select().removeClass('process-path-highlight').setLabel('');
+                    	var about = new veda.IndividualModel(_this.id);
+                    	var holder = $("<div>");
+                		propsHead.text(about["rdfs:label"].join(", "));
                 		// If we have more then one WorkItem - we must choose among them 
                     	if (currentElement.attr('work-items-count')>1) {
                     		e.type = 'contextmenu';
