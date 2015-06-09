@@ -1202,3 +1202,29 @@ v-wf:DecisionRedirectTemplate
 </div>
   """ ;
   .
+
+v-wf:startMapToJournal
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "начальное преобразование для журнала"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:Mapping ;
+.
+
+v-wf:completeMapToJournal
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "конечное преобразование для журнала"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:Mapping ;
+.
+
+v-wf:onProcess
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:domain v-s:JournalRecord ;
+  rdfs:label "on process"@en ;
+  rdfs:label "к процессу"@ru ;
+  rdfs:range v-wf:Process ;
+.
+
