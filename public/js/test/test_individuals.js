@@ -111,7 +111,7 @@ test(
 
 			try { read_individual = get_individual(ticket_user2.id, new_test_doc1_uri); }
 			catch (e) { read_individual = {}; }
-			ok(compare(new_test_doc1, read_individual) == false);
+			ok(compare(new_test_doc1, read_individual) == false);			
 			
 		});
 
@@ -873,4 +873,118 @@ test(
 			ok ((data[0] == new_test_doc1_uri || data[1] == new_test_doc1_uri) && (data[0] == new_test_doc2_uri || data[1] == new_test_doc2_uri));
 		});
 
+
+test(
+		"#014 Individual store, add_to_individual, set_in_individual test",
+		function() {
+			var ticket_user1 = get_user1_ticket ();
+			ok(ticket_user1.id.length > 0);
+
+			var new_test_doc1_uri = "test14:" + guid();
+			var new_test_doc1 = {
+				'@' : new_test_doc1_uri,
+				'rdf:type' : [ {
+					data : 'v-s:Document',
+					type : _Uri
+				} ],
+				'v-s:author' : [ {
+					data : 'td:ValeriyBushenev-Programmer1',
+					type : _Uri
+				} ],
+				'v-s:test_field' : [ {
+					data : 'test data',
+					lang : 'EN',
+					type : _String
+				} ]
+			};
+
+			put_individual(ticket_user1.id, new_test_doc1);
+			wait_pmodule(condition);
+			wait_pmodule(acl_manager);
+
+			var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
+			ok(compare(new_test_doc1, read_individual));
+
+			var new_test_add1 = {
+				'@' : new_test_doc1_uri,
+				'v-s:author' : [ {
+					data : 'td:ValeriyBushenev-Programmer2',
+					type : _Uri
+				}, 
+				{
+					data : 'td:test-q',
+					type : _Uri
+				} ]
+			};
+
+			add_to_individual(ticket_user1.id, new_test_add1);
+			wait_pmodule(condition);
+			wait_pmodule(acl_manager);
+
+			var new_test_doc1_add1 = {
+				'@' : new_test_doc1_uri,
+				'rdf:type' : [ {
+					data : 'v-s:Document',
+					type : _Uri
+				} ],
+				'v-s:author' : [ {
+					data : 'td:ValeriyBushenev-Programmer1',
+					type : _Uri
+				},
+				{
+					data : 'td:ValeriyBushenev-Programmer2',
+					type : _Uri
+				},
+				{
+					data : 'td:test-q',
+					type : _Uri
+				}
+				 ],
+				'v-s:test_field' : [ {
+					data : 'test data',
+					lang : 'EN',
+					type : _String
+				} ]
+			};
+
+			read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
+			ok(compare(new_test_doc1_add1, read_individual));
+
+			var new_test_set1 = {
+				'@' : new_test_doc1_uri,
+				'v-s:author' : [ 
+				{
+					data : 'td:test-e',
+					type : _Uri
+				} ]
+			};
+
+			set_in_individual(ticket_user1.id, new_test_set1);
+			wait_pmodule(condition);
+			wait_pmodule(acl_manager);
+
+			var new_test_doc1_set1 = {
+				'@' : new_test_doc1_uri,
+				'rdf:type' : [ {
+					data : 'v-s:Document',
+					type : _Uri
+				} ],
+				'v-s:author' : [ 
+				{
+					data : 'td:test-e',
+					type : _Uri
+				}
+				 ],
+				'v-s:test_field' : [ {
+					data : 'test data',
+					lang : 'EN',
+					type : _String
+				} ]
+			};
+
+			read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
+			ok(compare(new_test_doc1_set1, read_individual));
+		});
+
 }
+

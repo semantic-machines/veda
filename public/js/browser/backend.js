@@ -221,6 +221,64 @@ function put_individual(ticket, individual, wait_for_indexing, callback) {
 		.done( function (data) { callback(data); } );
 }
 
+function add_to_individual(ticket, individual, wait_for_indexing, callback) {
+	var params = {
+		type: "PUT",
+		url: "add_to_individual",
+		data: JSON.stringify({"ticket": ticket, "individual": individual, "wait_for_indexing" : wait_for_indexing || false }),
+		contentType: "application/json"
+	};
+	if(!callback) {
+		params.async = false;
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
+		return JSON.parse(result.responseText);
+	}
+	$.ajax(params)
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
+}
+
+function set_in_individual(ticket, individual, wait_for_indexing, callback) {
+	var params = {
+		type: "PUT",
+		url: "set_in_individual",
+		data: JSON.stringify({"ticket": ticket, "individual": individual, "wait_for_indexing" : wait_for_indexing || false }),
+		contentType: "application/json"
+	};
+	if(!callback) {
+		params.async = false;
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
+		return JSON.parse(result.responseText);
+	}
+	$.ajax(params)
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
+}
+
+function remove_from_individual(ticket, individual, wait_for_indexing, callback) {
+	var params = {
+		type: "PUT",
+		url: "remove_from_individual",
+		data: JSON.stringify({"ticket": ticket, "individual": individual, "wait_for_indexing" : wait_for_indexing || false }),
+		contentType: "application/json"
+	};
+	if(!callback) {
+		params.async = false;
+		var result = $.ajax(params);
+		if (result.status >= 400) throw {status: result.status, description: result.statusText};
+		return JSON.parse(result.responseText);
+	}
+	$.ajax(params)
+		.fail( function () { throw {status: result.status, description: result.statusText}; } )
+		.done( function (data) { callback(data); } );
+}
+
+
+
+
+
 function get_property_value(ticket, uri, property_uri, callback) {
 	var params = {
 		type: "GET",

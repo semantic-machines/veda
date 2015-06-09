@@ -20,7 +20,6 @@ enum Command
     Get     = 1,
     Is      = 2,
     Put     = 3,
-    Set     = 3,
     Execute = 4,
     Wait    = 5
 }

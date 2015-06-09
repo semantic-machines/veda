@@ -103,17 +103,17 @@ interface VedaStorageRest_API {
     @path("get_individual") @method(HTTPMethod.GET)
     Json get_individual(string ticket, string uri);
 
-//    @path("put_individuals") @method(HTTPMethod.PUT)
-//    int put_individuals(string ticket, Json[] individuals);
-
     @path("put_individual") @method(HTTPMethod.PUT)
     int put_individual(string ticket, Json individual, bool wait_for_indexing);
 
-//    @path("get_property_values") @method(HTTPMethod.GET)
-//    Json[] get_property_values(string ticket, string uri, string property_uri);
+    @path("remove_from_individual") @method(HTTPMethod.PUT)
+    int remove_from_individual(string ticket, Json individual, bool wait_for_indexing);
 
-//    @path("execute_script") @method(HTTPMethod.POST)
-//    string[ 2 ] execute_script(string script);
+    @path("set_in_individual") @method(HTTPMethod.PUT)
+    int set_in_individual(string ticket, Json individual, bool wait_for_indexing);
+
+    @path("add_to_individual") @method(HTTPMethod.PUT)
+    int add_to_individual(string ticket, Json individual, bool wait_for_indexing);
 }
 
 
@@ -662,47 +662,60 @@ class VedaStorageRest : VedaStorageRest_API
             throw new HTTPStatusException(rc);
 
         return rc.to!int;
-
-        //return ResultCode.Service_Unavailable.to!int;
     }
 
-//    int put_individuals(string ticket, Json[] individuals_json)
-//    {
-//    //Tid my_task = Task.getThis();
-//    //if (my_task !is Tid.init) {
-//        immutable(Individual)[] ind;
-//        ind ~= individual.idup;
-//        std.concurrency.send(getFreeTid (), Command.Put, Function.Individuals, ticket, uri, ind, std.concurrency.thisTid);
-//        ResultCode res = std.concurrency.receiveOnly!(ResultCode);
-//        return res;
-//    }
-//        return ResultCode.Service_Unavailable.to!int;
-//    }
+    int add_to_individual(string _ticket, Json individual_json, bool wait_for_indexing)
+    {
+        Individual indv    = json_to_individual(individual_json);
+        Ticket     *ticket = context.get_ticket(_ticket);
 
-//    Json[] get_property_values(string ticket, string uri, string property_uri)
-//    {
-//    //Tid my_task = Task.getThis();
-//        string res;
+        ResultCode rc = ticket.result;
 
-//    //if (my_task !is Tid.init) {
-//        std.concurrency.send(getFreeTid (), Command.Get, Function.PropertyOfIndividual, uri, property_uri, lang, std.concurrency.thisTid);
-//        res = std.concurrency.receiveOnly!(string);
-//    }
-//    return res;
-//        return Json[].init;
-//    }
+        if (rc == ResultCode.OK)
+        {
+            rc = context.add_to_individual(ticket, indv.uri, indv, wait_for_indexing);
+        }
 
-//    string[ 2 ] execute_script(string script)
-//    {
-//        string[ 2 ] res;
-//        //Tid my_task = Task.getThis();
-//        //if (my_task !is Tid.init)
-//        {
-//            std.concurrency.send(getFreeTid(), Command.Execute, Function.Script, script, std.concurrency.thisTid);
-//            //yield();
-//            res = std.concurrency.receiveOnly!(string[ 2 ]);
-//        }
-//
-//        return res;
-//    }
+        if (rc != ResultCode.OK)
+            throw new HTTPStatusException(rc);
+
+        return rc.to!int;
+    }
+
+    int set_in_individual(string _ticket, Json individual_json, bool wait_for_indexing)
+    {
+        Individual indv    = json_to_individual(individual_json);
+        Ticket     *ticket = context.get_ticket(_ticket);
+
+        ResultCode rc = ticket.result;
+
+        if (rc == ResultCode.OK)
+        {
+            rc = context.set_in_individual(ticket, indv.uri, indv, wait_for_indexing);
+        }
+
+        if (rc != ResultCode.OK)
+            throw new HTTPStatusException(rc);
+
+        return rc.to!int;
+    }
+
+    int remove_from_individual(string _ticket, Json individual_json, bool wait_for_indexing)
+    {
+        Individual indv    = json_to_individual(individual_json);
+        Ticket     *ticket = context.get_ticket(_ticket);
+
+        ResultCode rc = ticket.result;
+
+        if (rc == ResultCode.OK)
+        {
+            rc = context.remove_from_individual(ticket, indv.uri, indv, wait_for_indexing);
+        }
+
+        if (rc != ResultCode.OK)
+            throw new HTTPStatusException(rc);
+
+        return rc.to!int;
+    }
+
 }
