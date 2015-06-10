@@ -1203,7 +1203,7 @@ v-wf:DecisionRedirectTemplate
   """ ;
   .
 
-v-wf:startMapToJournal
+v-wf:startingJournalMap
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "начальное преобразование для журнала"@ru ;
@@ -1211,7 +1211,7 @@ v-wf:startMapToJournal
 	rdfs:range v-wf:Mapping ;
 .
 
-v-wf:completeMapToJournal
+v-wf:completedJournalMap
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "конечное преобразование для журнала"@ru ;
@@ -1221,10 +1221,18 @@ v-wf:completeMapToJournal
 
 v-wf:onProcess
   rdf:type owl:ObjectProperty ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:domain v-s:JournalRecord ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:domain v-s:JournalRecord, v-s:Journal ;
   rdfs:label "on process"@en ;
   rdfs:label "к процессу"@ru ;
   rdfs:range v-wf:Process ;
+.
+
+v-wf:initiator
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:domain v-s:JournalRecord ;
+  rdfs:label "инициатор"@ru ;
+  rdfs:range v-s:Appointment ;
 .
 
