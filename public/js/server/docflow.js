@@ -78,6 +78,7 @@ function prepare_decision_form(ticket, document)
  */
 function prepare_work_order(ticket, document)
 {
+    var _work_order = document;
     //print("[WORKFLOW][WO.1] : ### ---------------------------- prepare_work_order:" + document['@']);
     var f_executor = document['v-wf:executor'];
     var executor = get_individual(ticket, getUri(f_executor));
@@ -124,7 +125,7 @@ function prepare_work_order(ticket, document)
             else
             {
                 // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
-                task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, true);
+                task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, null, true);
                 //print("[WORKFLOW][WO.2] task_output_vars=", toJson(task_output_vars));
             }
 
@@ -165,7 +166,7 @@ function prepare_work_order(ticket, document)
                 else
                 {
                     // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
-                    task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, result0, true);
+                    task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, result0, true);
                     //print("[WORKFLOW][WO W6.1] task_output_vars=", toJson(task_output_vars));
                 }
 
@@ -258,7 +259,8 @@ function prepare_work_order(ticket, document)
                 }
 
                 //print("[WORKFLOW][WO2.0] transform_link=" + toJson(net_element['v-wf:startDecisionTransform']));
-                //print("[WORKFLOW][WO2.1] work_item_inVars=" + toJson(work_item_inVars));
+                //print("[WORKFLOW][WO2.1] work_item_inVars=" + toJson(work_item_inVars));                
+                mapToJournal(net_element['v-wf:startingExecutorJournalMap'], ticket, _process, work_item, _work_order);
 
                 var transform_link = getUri(net_element['v-wf:startDecisionTransform']);
                 if (!transform_link) return;
@@ -336,6 +338,27 @@ function prepare_work_order(ticket, document)
 
                     //print("new_process=", toJson(new_process));
                     put_individual(ticket, new_process, _event_id);
+
+                    create_new_journal(ticket, new_process_uri, _started_net['rdfs:label']);
+
+                    var journal_uri = getJournalUri(_process['@']);
+                    var new_journal_record = newJournalRecord(journal_uri);
+                    new_journal_record['v-wf:isProcess'] = [
+                        {
+                            data: new_process_uri,
+                            type: _Uri
+     }];
+                    new_journal_record['rdfs:label'] = [
+                        {
+                            data: 'запущен подпроцесс',
+                            type: _String
+     }];
+                    new_journal_record['v-s:subJournal'] = [
+                        {
+                            data: getJournalUri(new_process_uri),
+                            type: _Uri
+     }];
+                    logToJournal(ticket, journal_uri, new_journal_record);
 
                     document['v-wf:isProcess'] = [
                         {
@@ -433,7 +456,7 @@ function prepare_work_order(ticket, document)
         if (net_element['v-wf:completedMapping'])
         {
             // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
-            task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, result, true);
+            task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, result, true);
             //print("[WORKFLOW][WO6] task_output_vars=", toJson(task_output_vars));
         }
 
@@ -653,7 +676,7 @@ function prepare_work_item(ticket, document)
         var work_item__inVars = [];
         if (netElement['v-wf:startingMapping'])
         {
-            work_item__inVars = create_and_mapping_variables(ticket, netElement['v-wf:startingMapping'], _process, document, null, true);
+            work_item__inVars = create_and_mapping_variables(ticket, netElement['v-wf:startingMapping'], _process, document, null, null, true);
             if (work_item__inVars.length > 0)
                 document['v-wf:inVars'] = work_item__inVars;
 
@@ -800,7 +823,7 @@ function prepare_work_item(ticket, document)
                 {
                     // print("[PWI] #7");
                     // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
-                    task_output_vars = create_and_mapping_variables(ticket, _net['v-wf:completedMapping'], _process, work_item, null, true);
+                    task_output_vars = create_and_mapping_variables(ticket, _net['v-wf:completedMapping'], _process, work_item, null, null, true);
                 }
 
                 if (task_output_vars.length > 0)
@@ -1025,22 +1048,7 @@ function prepare_start_form(ticket, document)
     put_individual(ticket, new_process, _event_id);
     //print("new_process=", toJson(new_process));
 
-    var new_journal_uri = getJournalUri(new_process_uri);
-    var new_journal = {
-        '@': new_journal_uri,
-        'rdf:type': [
-            {
-                data: 'v-s:Journal',
-                type: _Uri
-          }],
-        'v-wf:onProcess': [
-            {
-                data: new_process_uri,
-                type: _Uri
-          }]
-    };
-    put_individual(ticket, new_journal, _event_id);
-
+    create_new_journal(ticket, new_process_uri, _net['rdfs:label']);
 
     document['v-wf:isProcess'] = [
         {

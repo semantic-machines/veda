@@ -44,6 +44,15 @@ function newUri(uri)
     }];
 }
 
+function newStr(_data)
+{
+    return [
+        {
+            data: _data,
+            type: _String
+    }];
+}
+
 function getUri(field)
 {
     if (field && field.length > 0)

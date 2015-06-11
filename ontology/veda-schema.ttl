@@ -1102,4 +1102,11 @@ v-s:onDocument
 v-s:created
   rdfs:domain v-s:Journal, v-s:JournalRecord ;
 .
+v-s:subJournal
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:domain v-s:JournalRecord ;
+  rdfs:label "ссылка на под-журнал"@ru ;
+  rdfs:range v-s:Record ;
+.
 

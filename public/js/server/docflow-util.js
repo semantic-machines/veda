@@ -238,7 +238,7 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
     return new_variable;
 }
 
-function create_and_mapping_variables(ticket, mapping, _process, _task, _local, f_store)
+function create_and_mapping_variables(ticket, mapping, _process, _task, _order, _local, f_store)
 {
     //print("[WORKFLOW][create_and_mapping_variables]: mapping=" + toJson(mapping));
     var new_vars = [];
@@ -246,6 +246,7 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _local, 
 
     var process;
     var task;
+    var order;
     var local;
 
     if (_process)
@@ -253,6 +254,9 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _local, 
 
     if (_task)
         task = new Context(_task, ticket);
+
+    if (_order)
+        order = new Context(_order, ticket);
 
     if (_local)
         local = new Context(_local, ticket);
@@ -651,30 +655,83 @@ function rsffiwit(ticket, work_item_list, compare_field, compare_value, res, _pa
 
 }
 
-function mapToJournal(map_container, ticket, _process, _element)
+///////////////////////////////////////////// JOURNAL //////////////////////////////////////////////////
+
+function create_new_journal(ticket, process_uri, label)
 {
+    var new_journal_uri = getJournalUri(process_uri);
+    var new_journal = {
+        '@': new_journal_uri,
+        'rdf:type': [
+            {
+                data: 'v-s:Journal',
+                type: _Uri
+          }],
+        'v-wf:onProcess': [
+            {
+                data: process_uri,
+                type: _Uri
+          }]
+    };
+
+    if (label)
+        new_journal['rdfs:label'] = label;
+
+    put_individual(ticket, new_journal, _event_id);
+
+}
+
+function newJournalRecord(jornal_uri)
+{
+    var new_journal_record_uri = guid();
+
+    var new_journal_record = {
+        '@': new_journal_record_uri,
+        'rdf:type': [
+            {
+                data: 'v-s:JournalRecord',
+                type: _Uri
+    }],
+        'v-s:parentJournal': [
+            {
+                data: jornal_uri,
+                type: _Uri
+    }]
+    };
+    return new_journal_record;
+}
+
+function logToJournal(ticket, jornal_uri, journal_record)
+{
+    //print("new_journal_record=" + toJson(new_journal_record));
+    put_individual(ticket, journal_record, _event_id);
+
+    var add_to_journal = {
+        '@': jornal_uri,
+        'v-s:childRecord': [
+            {
+                data: journal_record['@'],
+                type: _Uri
+    }]
+    };
+
+    add_to_individual(ticket, add_to_journal, _event_id);
+
+}
+
+function mapToJournal(map_container, ticket, _process, _task, _order)
+{
+    //print ("--- 1");
     if (map_container)
     {
         //* выполнить маппинг для журнала 
         var journalVars = [];
-        journalVars = create_and_mapping_variables(ticket, map_container, _process, _element, null, false);
+
+        journalVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false);
         if (journalVars)
         {
             var jornal_uri = getJournalUri(_process['@']);
-            var new_journal_record_uri = guid();
-            var new_journal_record = {
-                '@': new_journal_record_uri,
-                'rdf:type': [
-                    {
-                        data: 'v-s:JournalRecord',
-                        type: _Uri
-    }],
-                'v-s:parentJournal': [
-                    {
-                        data: jornal_uri,
-                        type: _Uri
-    }]
-            };
+            var new_journal_record = newJournalRecord(jornal_uri);
 
             for (var idx = 0; idx < journalVars.length; idx++)
             {
@@ -682,23 +739,10 @@ function mapToJournal(map_container, ticket, _process, _element)
                 var name = getFirstValue(jvar['v-wf:variableName']);
                 var value = jvar['v-wf:variableValue'];
 
-                print("@ name=" + name + ", value=" + toJson(value));
+                //print("@ name=" + name + ", value=" + toJson(value));
                 new_journal_record[name] = value;
             }
-
-            //print("new_journal_record=" + toJson(new_journal_record));
-            put_individual(ticket, new_journal_record, _event_id);
-
-            var add_to_journal = {
-                '@': jornal_uri,
-                'v-s:childRecord': [
-                    {
-                        data: new_journal_record_uri,
-                        type: _Uri
-   }]
-            };
-
-            add_to_individual(ticket, add_to_journal, _event_id);
+            logToJournal(ticket, jornal_uri, new_journal_record);
         }
     }
 }

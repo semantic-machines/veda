@@ -703,15 +703,6 @@ v-wf:DecisionForm
 	rdfs:label "Decision form"@en ;
 .
 
-v-wf:to
-        rdf:type owl:ObjectProperty ;
-	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "кому"@ru ;
-        rdfs:domain v-wf:DecisionForm ;
-	rdfs:domain v-wf:DecisionRedirect ;
-        rdfs:range v-s:Appointment ;
-.
-
 v-wf:onWorkOrder
         rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
@@ -791,15 +782,7 @@ v-wf:forNet
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-wf:Net ;
 .
-v-wf:isProcess
-	rdf:type owl:ObjectProperty ;
-	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "Запущен процесс"@ru ;
-	rdfs:label "Started process"@en ;
-	rdfs:domain v-wf:StartForm ;
-	rdfs:domain v-wf:WorkOrder ;
-	rdfs:range v-wf:Process ;
-.
+
 v-wf:useTransformation
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1219,6 +1202,22 @@ v-wf:completedJournalMap
 	rdfs:range v-wf:Mapping ;
 .
 
+v-wf:startingExecutorJournalMap
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "начальное преобразование данных исполнителя для журнала"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:Mapping ;
+.
+
+v-wf:completedExecutorJournalMap
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "конечное преобразование данных исполнителя для журнала"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:Mapping ;
+.
+
 v-wf:onProcess
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
@@ -1234,5 +1233,26 @@ v-wf:initiator
   rdfs:domain v-s:JournalRecord ;
   rdfs:label "инициатор"@ru ;
   rdfs:range v-s:Appointment ;
+.
+
+v-wf:to
+        rdf:type owl:ObjectProperty ;
+	rdfs:isDefinedBy v-wf: ;
+        rdfs:label "кому"@ru ;
+        rdfs:domain v-wf:DecisionForm ;
+	rdfs:domain v-wf:DecisionRedirect ;
+	rdfs:domain v-s:JournalRecord ;
+        rdfs:range v-s:Appointment ;
+.
+
+v-wf:isProcess
+	rdf:type owl:ObjectProperty ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "Запущен процесс"@ru ;
+	rdfs:label "Started process"@en ;
+	rdfs:domain v-wf:StartForm ;
+	rdfs:domain v-wf:WorkOrder ;
+	rdfs:domain v-s:JournalRecord ;
+	rdfs:range v-wf:Process ;
 .
 
