@@ -250,6 +250,7 @@ v-s:SavedSearch
   rdfs:label "Saved search"@en ;
   rdfs:label "Сохраненный запрос"@ru ;
   rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Journaling ;
 .
 v-s:SearchRequest
   rdf:type owl:Class ;
@@ -1095,6 +1096,7 @@ v-s:onDocument
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-s: ;
   rdfs:domain v-s:JournalRecord ;
+  rdfs:domain v-s:Journal ;
   rdfs:label "on document"@en ;
   rdfs:label "к документу"@ru ;
   rdfs:range v-s:Document ;
@@ -1108,5 +1110,10 @@ v-s:subJournal
   rdfs:domain v-s:JournalRecord ;
   rdfs:label "ссылка на под-журнал"@ru ;
   rdfs:range v-s:Record ;
+.
+v-s:Journaling
+  rdf:type owl:Class ;
+  rdfs:label "Журналируемая сущность"@ru ;
+  rdfs:subClassOf owl:Thing ;
 .
 
