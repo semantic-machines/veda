@@ -1,33 +1,50 @@
 // Veda controls implemented as JQuery plugins
 ;(function( $ ) { "use strict";
 
-// Generic control behaviour
-	$.fn.vedaControl = function( $el, options ) {
-		var opts = $.extend( {}, $.fn.vedaControl.defaults, options ),
+	// Generic control behaviour
+	$.fn.veda_control = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_control.defaults, options ),
 			control = $(opts.template),
-			immutable = opts.immutable;
+			spec = opts.spec;
 
 		$("[bound]", control)
 			.val(opts.value)
 			.on("change", function ( e ) {
 				var value = opts.inputParser( this.value, this );
 				if (value !== null) opts.change(value);
-				if (!opts.holdValue) this.value = null;
 			});	
 		
 		return control;
 	};
-	$.fn.vedaControl.defaults = {
+	$.fn.veda_control.defaults = {
 		change: function (value) { alert(value) },
 		inputParser: function (input) { return input; },
 		value: undefined
 	};
 
 	// String control
-	$.fn.vedaString = function( options ) {
-		var opts = $.extend( {}, $.fn.vedaString.defaults, options ),
-			control = $.fn.vedaControl(this, opts);
-
+	$.fn.veda_string = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_string.defaults, options ),
+			control = $.fn.veda_control(opts);
+		
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_string.defaults = {
+		value: new String(""),
+		template: $("#string-control-template").html(),
+		change: function (value) { alert(value + " : " + value.language) },
+		inputParser: function (input, el) {
+			var value = new String(input);
+			return value != "" ? value : null;
+		}
+	};
+	
+	// Multilingual string control
+	$.fn.veda_multilingualString = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_multilingualString.defaults, options ),
+			control = $.fn.veda_control(opts);
+		
 		$("[bound]", control).data("language", opts.value.language);
 
 		$(".language-selector", control).prepend(opts.value.language);
@@ -52,23 +69,18 @@
 				.append($(this).data("language"), " <span class='caret'></span>");
 			$(".language-list li", control).removeClass("active");
 			$(this).parent().addClass("active");
-			$("textarea", control)
+			$("input", control)
 				.data("language", $(this).data("language") )
 				.trigger("change");
 		});
 		
-		/*$("textarea", control)
-			.autosize()
-			.on("focus", function (event) {
-				$(this).trigger("autosize.resize");
-			});*/
-
 		this.append(control);
 		return this;
 	};
-	$.fn.vedaString.defaults = {
+	$.fn.veda_multilingualString.defaults = {
+		values: [],
 		value: new String(""),
-		template: $("#string-control-template").html(),
+		template: $("#multilingual-string-control-template").html(),
 		change: function (value) { alert(value + " : " + value.language) },
 		inputParser: function (input, el) {
 			var value = new String(input);
@@ -78,13 +90,13 @@
 	};
 	
 	// Boolean control	
-	$.fn.vedaBoolean = function( options ) {
-		var opts = $.extend( {}, $.fn.vedaBoolean.defaults, options ),
-			control = $.fn.vedaControl(this, opts);
+	$.fn.veda_boolean = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_boolean.defaults, options ),
+			control = $.fn.veda_control(opts);
 		this.append(control);
 		return this;
 	};
-	$.fn.vedaBoolean.defaults = {
+	$.fn.veda_boolean.defaults = {
 		value: new Boolean(false),
 		template: $("#boolean-control-template").html(),
 		inputParser: function (input) {
@@ -93,13 +105,13 @@
 	};	
 
 	// Integer control
-	$.fn.vedaInteger = function( options ) {
-		var opts = $.extend( {}, $.fn.vedaInteger.defaults, options ),
-			control = $.fn.vedaControl(this, opts);
+	$.fn.veda_integer = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_integer.defaults, options ),
+			control = $.fn.veda_control(opts);
 		this.append(control);
 		return this;
 	};
-	$.fn.vedaInteger.defaults = {
+	$.fn.veda_integer.defaults = {
 		value: undefined,
 		template: $("#integer-control-template").html(),
 		inputParser: function (input) {
@@ -109,13 +121,13 @@
 	};
 
 	// Decimal control
-	$.fn.vedaDecimal = function( options ) {
-		var opts = $.extend( {}, $.fn.vedaDecimal.defaults, options ),
-			control = $.fn.vedaControl(this, opts);
+	$.fn.veda_decimal = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_decimal.defaults, options ),
+			control = $.fn.veda_control(opts);
 		this.append(control);
 		return this;
 	};
-	$.fn.vedaDecimal.defaults = {
+	$.fn.veda_decimal.defaults = {
 		value: undefined,
 		template: $("#decimal-control-template").html(),
 		inputParser: function (input) {
@@ -125,13 +137,13 @@
 	};
 
 	// Datetime control
-	$.fn.vedaDatetime = function (options) {
-		var opts = $.extend( {}, $.fn.vedaDatetime.defaults, options ),
-			control = $.fn.vedaControl(this, opts);
+	$.fn.veda_dateTime = function (options) {
+		var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
+			control = $.fn.veda_control(opts);
 		this.append(control);
 		return this;
 	};
-	$.fn.vedaDatetime.defaults = {
+	$.fn.veda_dateTime.defaults = {
 		value: undefined,
 		template: $("#datetime-control-template").html(),
 		inputParser: function (input) {
@@ -141,9 +153,9 @@
 	};
 
 	// Source code control
-	$.fn.vedaSource = function (options) {
+	$.fn.veda_source = function (options) {
 		var self = this,
-			opts = $.extend( {}, $.fn.vedaSource.defaults, options ),
+			opts = $.extend( {}, $.fn.veda_source.defaults, options ),
 			immutable = opts.immutable,
 			control = $(opts.template),
 			fscreen = $("#full-screen", control),
@@ -200,7 +212,7 @@
 		this.append(control);
 		return this;
 	}
-	$.fn.vedaSource.defaults = {
+	$.fn.veda_source.defaults = {
 		value: new String(""),
 		template: $("#source-control-template").html(),
 		mode: "javascript", 
@@ -210,8 +222,8 @@
 	};
 	
 	// Object property control
-	$.fn.vedaLink = function( options ) {
-		var opts = $.extend( {}, $.fn.vedaLink.defaults, options ),
+	$.fn.veda_link = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_link.defaults, options ),
 			control = $(opts.template),
 			queryPrefix = opts.queryPrefix,
 			add = $(".add", control),
@@ -287,10 +299,9 @@
 		this.append(control);
 		return this;
 	};
-	$.fn.vedaLink.defaults = {
+	$.fn.veda_link.defaults = {
 		template: $("#link-control-template").html(),
 		queryPrefix: ""
 	};
-
 
 })( jQuery );

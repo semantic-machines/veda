@@ -373,7 +373,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				type = control.attr("type") || veda.ontology[property_uri]["rdfs:range"][0].id,
 				spec = specs[property_uri],
 				immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true,
-				holdValue = control.hasClass("hold-value"),
 				controlType;
 			
 			if (immutable) {
@@ -382,34 +381,45 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			
 			switch (type) {
+				case "rdfs:Literal": 
+				case "xsd:string": 
+					controlType = $.fn.veda_string;
+					break;
 				case "xsd:boolean": 
-					controlType = $.fn.vedaBoolean; 
+					controlType = $.fn.veda_boolean; 
 					break;
 				case "xsd:integer": 
 				case "xsd:nonNegativeInteger":
-					controlType = $.fn.vedaInteger; 
+					controlType = $.fn.veda_integer; 
 					break;
 				case "xsd:decimal":
-					controlType = $.fn.vedaDecimal; 
+					controlType = $.fn.veda_decimal; 
 					break;
 				case "xsd:dateTime": 
-					controlType = $.fn.vedaDatetime; 
+					controlType = $.fn.veda_dateTime; 
 					break;
 				default: 
-					controlType = $.fn.vedaString; 
+					controlType = $.fn["veda_" + type];
 					break;
 			}
+			
 			var opts = {
 				change: function (value) {
 					individual[property_uri] = individual[property_uri].concat(value);
 				},
-				holdValue: holdValue
+				spec: spec,
+				mode: mode
 			};
 			
-			if (holdValue) opts.value = individual[property_uri][0];
+			if (spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1) {
+				opts.change = function (value) {
+					individual[property_uri] = [value];
+				};
+				opts.value = individual[property_uri][0];
+			}
 			
 			if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
-				controlType = $.fn.vedaSource;
+				controlType = $.fn.veda_source;
 				opts.value = individual[property_uri][0],
 				opts.change = function (value) {
 					individual.off("individual:propertyModified", propertyModifiedHandler);
@@ -434,6 +444,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			function propertyModifiedHandler(doc_property_uri) {
 				if (doc_property_uri === property_uri && mode === "edit") {
+					
+					// Redraw control with new property value(s)
+					control.empty();
+					opts.value = individual.hasValue(property_uri) ? individual[property_uri][0] : undefined;
+					opts.values = individual[property_uri];
+					controlType.call(control, opts);
+					
+					// Check values validity
 					isValid(individual, specs[property_uri], individual[property_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
 				}
 			}
@@ -505,7 +523,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				}
 			};
 			
-			control.vedaLink(opts);
+			control.veda_link(opts);
 
 			function modeHandler() {
 				isValid(individual, spec, individual[rel_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");

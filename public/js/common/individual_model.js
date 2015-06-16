@@ -149,7 +149,7 @@ veda.Module(function (veda) { "use strict";
 					else throw ("Unsupported type of property value");
 				});
 				// Filter undefined values
-				self._.values[property_uri] = self._.values[property_uri].filter(function (item) { return item; });
+				self._.values[property_uri] = self._.values[property_uri].filter(function (i) { return !!i; });
 				if (getterCB) getterCB(self._.values[property_uri]);
 				return self._.values[property_uri];
 			},

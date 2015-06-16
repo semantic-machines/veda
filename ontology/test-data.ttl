@@ -518,28 +518,28 @@ td:PersonTemplate1
       <div class="panel-body">
         <h3>
   		  <span property="rdfs:label"><br></span>
-		  <veda-control type="xsd:string" property="rdfs:label" class="-view edit search"></veda-control>
+		  <veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
 		</h3>
         <div class="row">
           <div class="col-md-3">
             <strong class="text-muted" about="v-s:lastName" property="rdfs:label">Фамилия</strong>
             <div property="v-s:lastName"><br></div>
-            <veda-control type="xsd:string" property="v-s:lastName" class="-view edit search"></veda-control>
+            <veda-control type="string" property="v-s:lastName" class="-view edit search"></veda-control>
           </div>
           <div class="col-md-3">
             <strong class="text-muted" about="v-s:firstName" property="rdfs:label">Имя</strong>
             <div property="v-s:firstName"><br></div>
-            <veda-control type="xsd:string" property="v-s:firstName" class="-view edit search"></veda-control>
+            <veda-control type="string" property="v-s:firstName" class="-view edit search"></veda-control>
           </div>
           <div class="col-md-3">
             <strong class="text-muted" about="v-s:middleName" property="rdfs:label">Отчество</strong>
             <div property="v-s:middleName"><br></div>
-            <veda-control type="xsd:string" property="v-s:middleName" class="-view edit search"></veda-control>
+            <veda-control type="string" property="v-s:middleName" class="-view edit search"></veda-control>
           </div>
           <div class="col-md-3">
             <strong class="text-muted" about="v-s:birthday" property="rdfs:label">День рождения</strong>
             <div property="v-s:birthday"><br></div>
-            <veda-control type="xsd:dateTime" property="v-s:birthday" class="-view edit search"></veda-control>
+            <veda-control type="dateTime" property="v-s:birthday" class="-view edit search"></veda-control>
           </div>
 	    </div>
         <hr />
@@ -593,7 +593,7 @@ td:AppointmentTemplate1
       </div>
       <div class="panel-body">
         <h3 property="rdfs:label"></h3>
-        <veda-control type="xsd:string" property="rdfs:label" class="-view edit search"></veda-control>
+        <veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
         <div class="row">
           <div class="col-md-6">
             <div rel="v-s:employee" template="v-ui:LabelTemplate"></div>
@@ -649,7 +649,7 @@ td:AccountTemplate1
       </div>
       <div class="panel-body">
         <h3 property="rdfs:label"><br></h3>
-        <veda-control type="xsd:string" property="rdfs:label" class="-view edit search"></veda-control>
+        <veda-control type="multilingualString" property="rdfs:label" class="-view edit search"></veda-control>
         <div class="row">
             <div class="col-md-12">
                <strong class="text-muted" about="v-s:owner" property="rdfs:label">Владелец</strong>
@@ -662,12 +662,12 @@ td:AccountTemplate1
           <div class="col-md-6">
                <strong class="text-muted" about="v-s:mailbox" property="rdfs:label">E-mail</strong>
                <div property="v-s:mailbox"><br></div>
-               <veda-control type="xsd:string" property="v-s:mailbox" class="-view edit search"></veda-control>
+               <veda-control type="string" property="v-s:mailbox" class="-view edit search"></veda-control>
           </div>
           <div class="col-md-6">
                <strong class="text-muted" about="v-s:login" property="rdfs:label">Логин</strong>
                <div property="v-s:login"><br></div>
-               <veda-control type="xsd:string" property="v-s:login" class="-view edit search"></veda-control>
+               <veda-control type="string" property="v-s:login" class="-view edit search"></veda-control>
 	      </div>
         </div>
         <br />
@@ -675,7 +675,7 @@ td:AccountTemplate1
           <div class="col-md-12">
                <strong class="text-muted" about="v-s:password" property="rdfs:label">Пароль</strong>
                <div property="v-s:password"><br></div>
-               <veda-control type="xsd:string" property="v-s:password" class="-view edit search"></veda-control>
+               <veda-control type="string" property="v-s:password" class="-view edit search"></veda-control>
           </div>
         </div>
       </div>
@@ -726,14 +726,14 @@ td:PreferencesTemplate1
         <li rel="v-ui:preferredLanguage" embedded="true">
           <div>
 			  <span property="rdfs:label"></span>
-			  <veda-control type="xsd:string" property="rdfs:label" class="-view edit search"></veda-control>
+			  <veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
 		  </div>
         </li>
       </ul>
       <veda-control rel="v-ui:preferredLanguage" class="-view edit search"></veda-control>
       <strong class="text-muted" about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</strong>: 
       <span property="v-ui:displayedElements"></span>
-      <veda-control type="xsd:integer" property="v-ui:displayedElements" class="-view edit search"></veda-control>
+      <veda-control type="integer" property="v-ui:displayedElements" class="-view edit search"></veda-control>
     </div>
   </div>
   <!--div class="panel-footer">
