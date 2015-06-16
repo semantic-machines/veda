@@ -1,40 +1,76 @@
 // Veda controls implemented as JQuery plugins
 ;(function( $ ) { "use strict";
 
-	// Generic control behaviour
-	$.fn.veda_control = function( options ) {
-		var opts = $.extend( {}, $.fn.veda_control.defaults, options ),
+	// Generic literal property control behaviour
+	var veda_control = function( options ) {
+		var opts = $.extend( {}, veda_control.defaults, options ),
 			control = $(opts.template),
-			spec = opts.spec;
+			spec = opts.spec,
+			property_uri = opts.property_uri,
+			individual = opts.individual,
+			inputEl = $("[bound]", control);
+	
+		var singleValueHandler = function (doc_property_uri, values) {
+			if (doc_property_uri === property_uri) {
+				inputEl.val( values[0] );
+			}
+		}
+		
+		var change = function (value) { 
+			individual[property_uri] = individual[property_uri].concat(value);
+			inputEl.val("");
+		}
+		
+		if (spec) {
+			if (spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1) {
+				change = function (value) {
+					individual[property_uri] = [value];
+				};
+				inputEl.val(individual[property_uri][0]);
+				individual.on("individual:propertyModified", singleValueHandler);
+				control.one("remove", function () {
+					individual.off("individual:propertyModified", singleValueHandler);
+				});
+			}
+			
+			if (spec.hasValue("v-ui:tooltip")) {
+				control.tooltip({
+					title: spec["v-ui:tooltip"].join(", "),
+					placement: "bottom",
+					container: control,
+					trigger: "focus"
+				});
+			}
+		}
 
-		$("[bound]", control)
-			.val(opts.value)
-			.on("change", function ( e ) {
-				var value = opts.inputParser( this.value, this );
-				if (value !== null) opts.change(value);
-			});	
+		inputEl.on("change", function ( e ) {
+			var value = opts.parser( this.value, this );
+			change(value);
+		});
+		
+		this.on("view edit search", function (e) {
+			e.stopPropagation();
+		});
 		
 		return control;
 	};
-	$.fn.veda_control.defaults = {
-		change: function (value) { alert(value) },
-		inputParser: function (input) { return input; },
+	veda_control.defaults = {
+		parser: function (input) { return input; },
 		value: undefined
 	};
 
 	// String control
 	$.fn.veda_string = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_string.defaults, options ),
-			control = $.fn.veda_control(opts);
-		
+			control = veda_control.call(this, opts);
+	
 		this.append(control);
 		return this;
 	};
 	$.fn.veda_string.defaults = {
 		value: new String(""),
 		template: $("#string-control-template").html(),
-		change: function (value) { alert(value + " : " + value.language) },
-		inputParser: function (input, el) {
+		parser: function (input, el) {
 			var value = new String(input);
 			return value != "" ? value : null;
 		}
@@ -43,7 +79,7 @@
 	// Multilingual string control
 	$.fn.veda_multilingualString = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_multilingualString.defaults, options ),
-			control = $.fn.veda_control(opts);
+			control = veda_control.call(this, opts);
 		
 		$("[bound]", control).data("language", opts.value.language);
 
@@ -81,8 +117,7 @@
 		values: [],
 		value: new String(""),
 		template: $("#multilingual-string-control-template").html(),
-		change: function (value) { alert(value + " : " + value.language) },
-		inputParser: function (input, el) {
+		parser: function (input, el) {
 			var value = new String(input);
 			value.language = $(el).data("language");
 			return value != "" ? value : null;
@@ -92,14 +127,14 @@
 	// Boolean control	
 	$.fn.veda_boolean = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_boolean.defaults, options ),
-			control = $.fn.veda_control(opts);
+			control = veda_control.call(this, opts);
 		this.append(control);
 		return this;
 	};
 	$.fn.veda_boolean.defaults = {
 		value: new Boolean(false),
 		template: $("#boolean-control-template").html(),
-		inputParser: function (input) {
+		parser: function (input) {
 			return new Boolean(input == "true" ? true : false);
 		}
 	};	
@@ -107,14 +142,14 @@
 	// Integer control
 	$.fn.veda_integer = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_integer.defaults, options ),
-			control = $.fn.veda_control(opts);
+			control = veda_control.call(this, opts);
 		this.append(control);
 		return this;
 	};
 	$.fn.veda_integer.defaults = {
 		value: undefined,
 		template: $("#integer-control-template").html(),
-		inputParser: function (input) {
+		parser: function (input) {
 			var int = parseInt(input, 10);
 			return !isNaN(int) ? new Number(int) : null;
 		}
@@ -123,14 +158,14 @@
 	// Decimal control
 	$.fn.veda_decimal = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_decimal.defaults, options ),
-			control = $.fn.veda_control(opts);
+			control = veda_control.call(this, opts);
 		this.append(control);
 		return this;
 	};
 	$.fn.veda_decimal.defaults = {
 		value: undefined,
 		template: $("#decimal-control-template").html(),
-		inputParser: function (input) {
+		parser: function (input) {
 			var float = parseFloat(input);
 			return !isNaN(float) ? new Number(float) : null;
 		}
@@ -139,14 +174,14 @@
 	// Datetime control
 	$.fn.veda_dateTime = function (options) {
 		var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
-			control = $.fn.veda_control(opts);
+			control = veda_control.call(this, opts);
 		this.append(control);
 		return this;
 	};
 	$.fn.veda_dateTime.defaults = {
 		value: undefined,
 		template: $("#datetime-control-template").html(),
-		inputParser: function (input) {
+		parser: function (input) {
 			var timestamp = Date.parse(input);
 			return !isNaN(timestamp) ? new Date(timestamp) : null;
 		}
@@ -156,19 +191,28 @@
 	$.fn.veda_source = function (options) {
 		var self = this,
 			opts = $.extend( {}, $.fn.veda_source.defaults, options ),
-			immutable = opts.immutable,
 			control = $(opts.template),
+			individual = opts.individual,
+			property_uri = opts.property_uri,
 			fscreen = $("#full-screen", control),
-			editorEl = control.get(0),
-			editor = CodeMirror(editorEl, {
-				value: opts.value.toString(),
-				mode: opts.mode,
-				matchBrackets: true,
-				autoCloseBrackets: true,
-				matchTags: true,
-				autoCloseTags: true,
-				lineNumbers: true
-			});
+			editorEl = control.get(0);
+
+		opts.value = individual[property_uri][0],
+		opts.change = function (value) {
+			individual[property_uri] = [value];
+		}
+		if (property_uri === "v-s:script") opts.sourceMode = "javascript";
+		if (property_uri === "v-ui:template") opts.sourceMode = "htmlmixed";
+		var	editor = CodeMirror(editorEl, {
+			value: opts.value.toString(),
+			mode: opts.sourceMode,
+			matchBrackets: true,
+			autoCloseBrackets: true,
+			matchTags: true,
+			autoCloseTags: true,
+			lineNumbers: true
+		});
+
 		setTimeout( function () {
 			editor.refresh();
 		}, 100);
@@ -176,13 +220,12 @@
 			e.stopPropagation();
 			editor.refresh();
 			e.type === "view"   ? ( editor.setOption("readOnly", "nocursor") ) : 
-			e.type === "edit" && !immutable ? ( editor.setOption("readOnly", false) ) : 
-			e.type === "edit" && immutable ? ( editor.setOption("readOnly", "nocursor") ) : 
+			e.type === "edit"   ? ( editor.setOption("readOnly", false) ) : 
 			e.type === "search" ? ( editor.setOption("readOnly", false) ) :
 			true;
 		});
 		editor.on("change", function () {
-			var value = opts.inputParser( editor.doc.getValue() );
+			var value = opts.parser( editor.doc.getValue() );
 			opts.change(value);
 		});
 		fscreen.click(function () {
@@ -216,7 +259,7 @@
 		value: new String(""),
 		template: $("#source-control-template").html(),
 		mode: "javascript", 
-		inputParser: function (input) {
+		parser: function (input) {
 			return new String(input);
 		}
 	};

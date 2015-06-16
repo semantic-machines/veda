@@ -28,6 +28,7 @@
 		<!--link href="/css/yeti.bootstrap.min.css" rel="stylesheet"/-->
 
 		<link href="/css/codemirror.css" rel="stylesheet"/>
+		<link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet"/>
 		<link href="/css/veda.css" rel="stylesheet"/>
 
 		<meta http-equiv="pragma" content="no-cache" />
@@ -324,6 +325,8 @@
 			</div>
 		</script>
 
+<!-- BEGIN VEDA-CONTROLS -->
+
 		<!-- Link control template -->
 		<script type="html/template" id="link-control-template">
 			<div id="scrollable-typeahead">
@@ -342,8 +345,6 @@
 			</div>
 		</script>
 
-<!-- BEGIN VEDA-CONTROLS -->
-
 		<!-- Link clear block button -->
 		<script type="html/template" id="link-clear-block-button-template">
 			<button class="btn btn-danger btn-xs" style="position:absolute; top:0px; right:0px; z-index:100">
@@ -360,11 +361,18 @@
 
 		<!-- String control template -->
 		<script type="html/template" id="string-control-template">
+			<div>
+				<input type="text" class="form-control" bound />
+			</div>
+		</script>
+
+		<!-- Multilingual String control template -->
+		<script type="html/template" id="multilingual-string-control-template">
 			<span class="input-group" style="display:table">
 				<span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown"> <span class="caret"></span></span>
 				<ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
 				</ul>
-				<textarea class="form-control" bound rows="1"></textarea>
+				<input class="form-control" bound />
 			</span>
 		</script>
 
@@ -596,6 +604,9 @@
 		<script type="text/javascript" src="/js/browser/lib/FileSaver.min.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/typeahead.jquery.min.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/cookie.js"></script>
+		<script type="text/javascript" src="/js/browser/lib/moment/moment.min.js"></script>
+		<script type="text/javascript" src="/js/browser/lib/moment/all.locales.min.js"></script>
+		<script type="text/javascript" src="/js/browser/lib/bootstrap-datetimepicker.min.js"></script>
 		
 		<!-- CodeMirror -->
 		<script type="text/javascript" src="/js/browser/lib/codemirror/codemirror.js"></script>

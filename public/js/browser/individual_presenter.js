@@ -372,13 +372,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				property = veda.ontology[property_uri],
 				type = control.attr("type") || veda.ontology[property_uri]["rdfs:range"][0].id,
 				spec = specs[property_uri],
-				immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true,
 				controlType;
-			
-			if (immutable) {
-				notEdit = notEdit.add(control); 
-				if (mode === "edit") control.hide(); 
-			}
 			
 			switch (type) {
 				case "rdfs:Literal": 
@@ -402,55 +396,30 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					controlType = $.fn["veda_" + type];
 					break;
 			}
-			
+
 			var opts = {
-				change: function (value) {
-					individual[property_uri] = individual[property_uri].concat(value);
-				},
+				individual: individual,
+				property_uri: property_uri,
 				spec: spec,
 				mode: mode
 			};
-			
-			if (spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1) {
-				opts.change = function (value) {
-					individual[property_uri] = [value];
-				};
-				opts.value = individual[property_uri][0];
-			}
-			
+
 			if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
 				controlType = $.fn.veda_source;
-				opts.value = individual[property_uri][0],
-				opts.change = function (value) {
-					individual.off("individual:propertyModified", propertyModifiedHandler);
-					individual[property_uri] = [value];
-					individual.on("individual:propertyModified", propertyModifiedHandler);
-				}
-				if (property_uri === "v-s:script") opts.mode = "javascript";
-				if (property_uri === "v-ui:template") opts.mode = "htmlmixed";
-				template.on("view edit search", function (e) {
-					e.stopPropagation();
-					control.trigger(e.type);
-				});
 			}
-			
+
 			controlType.call(control, opts);
 			
-			function modeHandler() {
-				isValid(individual, spec, individual[property_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
-				return false;
-			}
-			template.on("edit", modeHandler);
+			template.on("view edit search", function (e) {
+				control.trigger(e.type);
+				e.type === "view" ?    control.removeClass("has-error has-success") :
+				e.type === "edit" ?    isValid(individual, spec, individual[property_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success") :
+				e.type === "search" ?  control.removeClass("has-error has-success") : true;
+				e.stopPropagation();
+			});
 			
 			function propertyModifiedHandler(doc_property_uri) {
 				if (doc_property_uri === property_uri && mode === "edit") {
-					
-					// Redraw control with new property value(s)
-					control.empty();
-					opts.value = individual.hasValue(property_uri) ? individual[property_uri][0] : undefined;
-					opts.values = individual[property_uri];
-					controlType.call(control, opts);
-					
 					// Check values validity
 					isValid(individual, specs[property_uri], individual[property_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
 				}
@@ -459,15 +428,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			template.one("remove", function () {
 				individual.off("individual:propertyModified", propertyModifiedHandler);
 			});
-			
-			if (spec && spec.hasValue("v-ui:tooltip")) {
-				control.tooltip({
-					title: spec["v-ui:tooltip"].join(", "),
-					placement: "bottom",
-					container: control,
-					trigger: "focus"
-				});
-			}
 			
 			function assignDefaultValue (e) {
 				var defaultValue;

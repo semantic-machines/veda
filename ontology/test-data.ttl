@@ -524,7 +524,7 @@ td:PersonTemplate1
           <div class="col-md-3">
             <strong class="text-muted" about="v-s:lastName" property="rdfs:label">Фамилия</strong>
             <div property="v-s:lastName"><br></div>
-            <veda-control type="string" property="v-s:lastName" class="-view edit search"></veda-control>
+            <veda-control type="multilingualString" property="v-s:lastName" class="-view edit search"></veda-control>
           </div>
           <div class="col-md-3">
             <strong class="text-muted" about="v-s:firstName" property="rdfs:label">Имя</strong>
@@ -649,7 +649,7 @@ td:AccountTemplate1
       </div>
       <div class="panel-body">
         <h3 property="rdfs:label"><br></h3>
-        <veda-control type="multilingualString" property="rdfs:label" class="-view edit search"></veda-control>
+        <veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
         <div class="row">
             <div class="col-md-12">
                <strong class="text-muted" about="v-s:owner" property="rdfs:label">Владелец</strong>

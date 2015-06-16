@@ -57,7 +57,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		});
 
 		var tmplContainer = $("<div>");
-		var typeSelector = $("<div>").vedaLink({
+		var typeSelector = $("<div>").veda_link({
 			limit: -1,
 			queryPrefix: "('rdf:type'=='owl:Class')",
 			select: function (selected) {

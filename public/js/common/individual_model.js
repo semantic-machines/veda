@@ -156,7 +156,7 @@ veda.Module(function (veda) { "use strict";
 			
 			set: function (value) { 
 				self._.sync = false;
-				self._.values[property_uri] = value;
+				self._.values[property_uri] = value.filter(function (i) { return !!i; });
 				self._.individual[property_uri] = self._.values[property_uri].concat(filteredStrings).map( function (value) {
 					var result = {};
 					if (value instanceof Number || typeof value === "number" ) {
