@@ -49,7 +49,7 @@ public void core_thread()
 
     core.thread.Thread.getThis().name = thread_name;
 
-    context = new PThreadContext(props_file_path, thread_name);
+    context = new PThreadContext(props_file_path, thread_name, P_MODULE.nop);
 
     writeln("--- START VEDA STORAGE THREAD LISTENER --- " ~ thread_name);
 

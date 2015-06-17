@@ -125,3 +125,48 @@ function addRight(ticket, rights, subj_uri, obj_uri)
 
     //print("ADD RIGHT:", toJson(new_permission));
 }
+
+// JOURNAL
+
+function getJournalUri(object_uri)
+{
+    return object_uri + "j";
+}
+
+function newJournalRecord(journal_uri)
+{
+    var new_journal_record_uri = guid();
+
+    var new_journal_record = {
+        '@': new_journal_record_uri,
+        'rdf:type': [
+            {
+                data: 'v-s:JournalRecord',
+                type: _Uri
+    }],
+        'v-s:parentJournal': [
+            {
+                data: journal_uri,
+                type: _Uri
+    }]
+    };
+    return new_journal_record;
+}
+
+function logToJournal(ticket, journal_uri, journal_record)
+{
+    //print("new_journal_record=" + toJson(new_journal_record));
+    put_individual(ticket, journal_record, _event_id);
+
+    var add_to_journal = {
+        '@': journal_uri,
+        'v-s:childRecord': [
+            {
+                data: journal_record['@'],
+                type: _Uri
+    }]
+    };
+
+    add_to_individual(ticket, add_to_journal, _event_id);
+
+}

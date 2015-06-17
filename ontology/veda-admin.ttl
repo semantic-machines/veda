@@ -115,6 +115,101 @@ if (ff)
   rdfs:label "Событие_1"@ru ;
 .
 
+# --------------------------- обработка событий => создание Журнала документа ------------------------------
+v-a:Event_1_1
+  rdf:type v-s:Event ;
+  v-s:author v-a:VedaSystemAccount ;
+  v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:filter v-s:Journaling ;
+  v-s:script """
+        print('v-a:Event_1_1:journal');
+
+var ff = get_property_chain(ticket, document, 'v-s:author', 'v-s:employee');
+if (ff)
+{
+    var employee_uri = getUri(ff['field']);
+    if (employee_uri)
+    {
+        var journal_uri = getJournalUri(document['@']);
+        print('v-a:Event_1_1:journal journal_uri=' + journal_uri);
+        var exist_journal = get_individual(ticket, journal_uri);
+        if (exist_journal)
+        {
+            // UPDATE DOCUMENT
+
+	    var journal_record = newJournalRecord(journal_uri);
+
+	    journal_record['rdfs:label'] = [
+                        {
+                            data: 'обновлен документ',
+                            type: _String
+     			}];	    	
+	
+	    logToJournal(ticket, journal_uri, journal_record);
+        }
+        else
+        {
+            // CREATE DOCUMENT		
+            var new_journal = {
+                '@': journal_uri,
+                'rdf:type': [
+                    {
+                        data: 'v-s:Journal',
+                        type: _Uri
+                }],
+                'v-s:onDocument': [
+                    {
+                        data: document['@'],
+                        type: _Uri
+                }]
+            };
+            put_individual(ticket, new_journal, _event_id);
+
+            var new_journal_permission = {
+                '@': guid(),
+                'rdf:type': [
+                    {
+                        data: 'v-s:PermissionStatement',
+                        type: _Uri
+                }],
+                'v-s:canDelete': [
+                    {
+                        data: true,
+                        type: _Bool
+                }],
+                'v-s:canRead': [
+                    {
+                        data: true,
+                        type: _Bool
+                }],
+                'v-s:canUpdate': [
+                    {
+                        data: true,
+                        type: _Bool
+                }],
+                'v-s:permissionObject': [
+                    {
+                        data: journal_uri,
+                        type: _Uri
+                }],
+                'v-s:permissionSubject': [
+                    {
+                        data: employee_uri,
+                        type: _Uri
+                }]
+            };
+            put_individual(ticket, new_journal_permission, _event_id);
+        }
+
+    }
+}
+""" ;
+  rdfs:comment "скрипт автоматической выдачи прав авторам"@ru ;
+  rdfs:label "Event_1"@en ;
+  rdfs:label "Событие_1"@ru ;
+.
+
 v-a:Event_2
   rdf:type v-s:Event ;
   v-s:author v-a:VedaSystemAccount ;

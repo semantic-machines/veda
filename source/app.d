@@ -84,7 +84,7 @@ shared static this()
     pacahon.context.Context context;
     string                  thread_name = "veda" ~ text(std.uuid.randomUUID().toHash())[ 0..5 ];
     core.thread.Thread.getThis().name   = thread_name;
-    context = new pacahon.thread_context.PThreadContext(pacahon.server.props_file_path, thread_name);
+    context = new pacahon.thread_context.PThreadContext(pacahon.server.props_file_path, thread_name, pacahon.context.P_MODULE.nop);
 
     std.concurrency.Tid[] pool;
 
