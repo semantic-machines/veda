@@ -1117,3 +1117,9 @@ v-s:Journaling
   rdfs:subClassOf owl:Thing ;
 .
 
+v-s:actor
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Journal, v-s:JournalRecord ;
+  rdfs:label "действующее лицо"@ru ;
+  rdfs:range v-s:Person ;
+.

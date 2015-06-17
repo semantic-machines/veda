@@ -123,6 +123,7 @@ v-a:Event_1_1
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:filter v-s:Journaling ;
   v-s:script """
+	print ('user_uri=', user_uri);	
         print('v-a:Event_1_1:journal');
 
 var ff = get_property_chain(ticket, document, 'v-s:author', 'v-s:employee');
@@ -144,7 +145,14 @@ if (ff)
                         {
                             data: 'обновлен документ',
                             type: _String
-     			}];	    	
+     			}];
+
+	    journal_record['v-s:actor'] = [
+                        {
+                            data: user_uri,
+                            type: _Uri
+     			}];
+			    	
 	
 	    logToJournal(ticket, journal_uri, journal_record);
         }
@@ -162,7 +170,12 @@ if (ff)
                     {
                         data: document['@'],
                         type: _Uri
-                }]
+                }],
+	    	'v-s:actor': [
+                        {
+                            data: user_uri,
+                            type: _Uri
+     			}]		
             };
             put_individual(ticket, new_journal, _event_id);
 
