@@ -681,44 +681,6 @@ function create_new_journal(ticket, process_uri, label)
 
 }
 
-function newJournalRecord(jornal_uri)
-{
-    var new_journal_record_uri = guid();
-
-    var new_journal_record = {
-        '@': new_journal_record_uri,
-        'rdf:type': [
-            {
-                data: 'v-s:JournalRecord',
-                type: _Uri
-    }],
-        'v-s:parentJournal': [
-            {
-                data: jornal_uri,
-                type: _Uri
-    }]
-    };
-    return new_journal_record;
-}
-
-function logToJournal(ticket, jornal_uri, journal_record)
-{
-    //print("new_journal_record=" + toJson(new_journal_record));
-    put_individual(ticket, journal_record, _event_id);
-
-    var add_to_journal = {
-        '@': jornal_uri,
-        'v-s:childRecord': [
-            {
-                data: journal_record['@'],
-                type: _Uri
-    }]
-    };
-
-    add_to_individual(ticket, add_to_journal, _event_id);
-
-}
-
 function mapToJournal(map_container, ticket, _process, _task, _order)
 {
     //print ("--- 1");
@@ -745,9 +707,4 @@ function mapToJournal(map_container, ticket, _process, _task, _order)
             logToJournal(ticket, jornal_uri, new_journal_record);
         }
     }
-}
-
-function getJournalUri(process_uri)
-{
-    return "j" + process_uri.substring(1, process_uri.length);
 }
