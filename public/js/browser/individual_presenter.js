@@ -412,9 +412,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			template.on("view edit search", function (e) {
 				control.trigger(e.type);
-				e.type === "view" ?    control.removeClass("has-error has-success") :
-				e.type === "edit" ?    isValid(individual, spec, individual[property_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success") :
-				e.type === "search" ?  control.removeClass("has-error has-success") : true;
+				e.type === "edit" ? 
+					isValid(individual, spec, individual[property_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success") 
+					:
+					control.removeClass("has-error has-success");
 				e.stopPropagation();
 			});
 			

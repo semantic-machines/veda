@@ -366,13 +366,30 @@
 			</div>
 		</script>
 
-		<!-- Multilingual String control template -->
+		<!-- Text control template -->
+		<script type="html/template" id="text-control-template">
+			<div>
+				<textarea class="form-control" rows="5" bound />
+			</div>
+		</script>
+
+		<!-- Multilingual string control template -->
 		<script type="html/template" id="multilingual-string-control-template">
 			<span class="input-group" style="display:table">
 				<span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown"> <span class="caret"></span></span>
 				<ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
 				</ul>
-				<input class="form-control" bound />
+				<input type="text" class="form-control" bound />
+			</span>
+		</script>
+
+		<!-- Multilingual text control template -->
+		<script type="html/template" id="multilingual-text-control-template">
+			<span class="input-group" style="display:table">
+				<span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown"> <span class="caret"></span></span>
+				<ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
+				</ul>
+				<textarea class="form-control" rows="5" bound />
 			</span>
 		</script>
 
@@ -395,7 +412,7 @@
 		<script type="html/template" id="integer-control-template">
 			<span class="input-group" style="display:table">
 				<span class="input-group-addon btn btn-default"><strong>#</strong></span>
-				<input type="text" class="form-control" bound />
+				<input type="number" class="form-control" bound />
 			</span>
 		</script>
 
@@ -403,7 +420,7 @@
 		<script type="html/template" id="decimal-control-template">
 			<span class="input-group" style="display:table">
 				<span class="input-group-addon btn btn-default"><strong>#.#</strong></span>
-				<input type="text" class="form-control" bound />
+				<input type="number" class="form-control" bound />
 			</span>
 		</script>
 
@@ -413,6 +430,27 @@
 				<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-ok"></i></span>
 				<input type="text" class="form-control" bound />
 			</span>
+		</script>
+
+		<!-- Boolean checkbox control template -->
+		<script type="html/template" id="boolean-checkbox-control-template">
+			<!--div class="checkbox">
+				<label>
+					<input type="checkbox" bound />
+				</label>
+			</div-->
+			<span>
+				<input type="checkbox" bound />
+			</span>
+		</script>
+
+		<!-- Allowed select control template -->
+		<script type="html/template" id="allowed-select-control-template">
+			<div>
+				<select class="form-control" bound>
+					<option></option>
+				</select>
+			</div>
 		</script>
 
 		<!-- File control template -->

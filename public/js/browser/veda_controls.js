@@ -75,15 +75,40 @@
 			return value != "" ? value : null;
 		}
 	};
+
+	// Text control
+	$.fn.veda_text = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_text.defaults, options ),
+			control = veda_control.call(this, opts);
+	
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_text.defaults = {
+		value: new String(""),
+		template: $("#text-control-template").html(),
+		parser: function (input, el) {
+			var value = new String(input);
+			return value != "" ? value : null;
+		}
+	};
 	
 	// Multilingual string control
 	$.fn.veda_multilingualString = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_multilingualString.defaults, options ),
-			control = veda_control.call(this, opts);
-		
-		$("[bound]", control).data("language", opts.value.language);
+			control = veda_control.call(this, opts),
+			language;
 
-		$(".language-selector", control).prepend(opts.value.language);
+		if (opts.spec && opts.spec.hasValue("v-ui:maxCardinality") && 
+			opts.spec["v-ui:maxCardinality"][0] == 1 && 
+			opts.individual.hasValue(opts.property_uri)) 
+		{
+			language = opts.individual[opts.property_uri][0].language;
+		}
+		
+		$("[bound]", control).data("language", language);
+
+		$(".language-selector", control).prepend(language);
 
 		var first = $("<li>").append( $("<a>", {href: "#", "data-language": "", text: "-"}).addClass("language") );
 		if (!opts.value.language) first.addClass("active");
@@ -123,8 +148,64 @@
 			return value != "" ? value : null;
 		}
 	};
+
+	// Multilingual text control
+	$.fn.veda_multilingualText = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_multilingualText.defaults, options ),
+			control = veda_control.call(this, opts),
+			language;
+
+		if (opts.spec && opts.spec.hasValue("v-ui:maxCardinality") && 
+			opts.spec["v-ui:maxCardinality"][0] == 1 && 
+			opts.individual.hasValue(opts.property_uri)) 
+		{
+			language = opts.individual[opts.property_uri][0].language;
+		}
+		
+		$("[bound]", control).data("language", language);
+
+		$(".language-selector", control).prepend(language);
+
+		var first = $("<li>").append( $("<a>", {href: "#", "data-language": "", text: "-"}).addClass("language") );
+		if (!opts.value.language) first.addClass("active");
+		$(".language-list", control).append(
+			first,
+			Object.keys(veda.user.availableLanguages).map(function (language_name) {
+				var li = $("<li>"), 
+					a = $("<a>", {href: "#", "data-language": language_name, text: language_name}).addClass("language");
+				li.append(a);
+				if (opts.value.language == language_name) li.addClass("active");
+				return li;
+			})
+		);
+		
+		$(".language", control).on("click", function ( e ) {
+			e.preventDefault();
+			$(".language-selector", control)
+				.empty()
+				.append($(this).data("language"), " <span class='caret'></span>");
+			$(".language-list li", control).removeClass("active");
+			$(this).parent().addClass("active");
+			$("[bound]", control)
+				.data("language", $(this).data("language") )
+				.trigger("change");
+		});
+		
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_multilingualText.defaults = {
+		values: [],
+		value: new String(""),
+		template: $("#multilingual-text-control-template").html(),
+		parser: function (input, el) {
+			var value = new String(input);
+			value.language = $(el).data("language");
+			return value != "" ? value : null;
+		}
+	};
 	
-	// Boolean control	
+	// Boolean text control	
 	$.fn.veda_boolean = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_boolean.defaults, options ),
 			control = veda_control.call(this, opts);
@@ -137,6 +218,43 @@
 		parser: function (input) {
 			return new Boolean(input == "true" ? true : false);
 		}
+	};
+
+	// Boolean checkbox control	
+	$.fn.veda_booleanCheckbox = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_booleanCheckbox.defaults, options ),
+			control = $( opts.template ),
+			input = $("[bound]", control),
+			individual = opts.individual,
+			property_uri = opts.property_uri,
+			spec = opts.spec;
+
+		function handler (doc_property_uri) {
+			if (doc_property_uri === property_uri) {
+				individual.hasValue(property_uri) && individual[property_uri][0] == true ? input.attr("checked", "checked") : input.removeAttr("checked");
+			}
+		}
+		
+		handler(property_uri);
+		
+		individual.on("individual:propertyModified", handler);
+		this.on("remove", function () {
+			individual.off("individual:propertyModified", handler);
+		});
+		
+		input.on("change", function () {
+			individual[property_uri] = [ new Boolean(input.is(":checked")) ];
+		});
+		
+		this.on("view edit search", function (e) {
+			e.stopPropagation();
+			e.type === "view" ? input.attr("disabled", "disabled") : input.removeAttr("disabled");
+		});
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_booleanCheckbox.defaults = {
+		template: $("#boolean-checkbox-control-template").html(),
 	};	
 
 	// Integer control
@@ -166,7 +284,7 @@
 		value: undefined,
 		template: $("#decimal-control-template").html(),
 		parser: function (input) {
-			var float = parseFloat(input);
+			var float = parseFloat(input.replace(",", "."));
 			return !isNaN(float) ? new Number(float) : null;
 		}
 	};
@@ -185,6 +303,52 @@
 			var timestamp = Date.parse(input);
 			return !isNaN(timestamp) ? new Date(timestamp) : null;
 		}
+	};
+
+	// Allowed list control
+	$.fn.veda_allowedIntegerSelect = function (options) {
+		var opts = $.extend( {}, $.fn.veda_allowedIntegerSelect.defaults, options ),
+			control = $(opts.template),
+			select = $("select", control);
+		
+		function populate() {
+			if (opts.spec && opts.spec.hasValue("v-ui:allowedIntegerValue")) {
+				var prev_opt = $("option", control).removeAttr("selected").remove();
+				opts.spec["v-ui:allowedIntegerValue"].map(function (value) {
+					var opt = prev_opt.first().clone().text(value).appendTo(select);
+					if (opts.individual.hasValue(opts.property_uri) && opts.individual[opts.property_uri][0].toString() === value.toString()) {
+						opt.attr("selected", "true");
+					}
+				});
+			}
+		}
+		
+		populate();
+		
+		select.change(function () {
+			opts.individual[opts.property_uri] = [ select.val() ];
+		});
+		
+		function handler(doc_property_uri) {
+			if (doc_property_uri === opts.property_uri) {
+				populate();
+			}
+		}
+		opts.individual.on("individual:propertyModified", handler);
+		this.on("remove", function () {
+			opts.individual.off("individual:propertyModified", handler);
+		});
+		
+		this.on("view edit search", function (e) {
+			e.stopPropagation();
+		});
+		
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_allowedIntegerSelect.defaults = {
+		value: undefined,
+		template: $("#allowed-select-control-template").html(),
 	};
 
 	// Source code control

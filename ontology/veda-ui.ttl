@@ -10,6 +10,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix td: <http://semantic-machines.com/veda/test-data/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://semantic-machines.com/veda/veda-ui>
@@ -76,13 +77,6 @@ v-ui:PropertySpecification
   rdfs:label "Спецификация свойства"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
-v-ui:displayName
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:PropertySpecification ;
-  rdfs:label "отображаемое имя"@ru ;
-  rdfs:label "display name"@en ;
-  rdfs:range xsd:string ;
-.
 v-ui:immutable
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:PropertySpecification ;
@@ -133,6 +127,13 @@ v-ui:defaultIntegerValue
   rdfs:label "default integer value"@en ;
   rdfs:range xsd:integer ;
 .
+v-ui:allowedIntegerValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:IntegerPropertySpecification ;
+  rdfs:label "допустимое целочисленное значение"@ru ;
+  rdfs:label "allowed integer value"@en ;
+  rdfs:range xsd:integer ;
+.
 v-ui:minIntegerValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:IntegerPropertySpecification ;
@@ -159,6 +160,13 @@ v-ui:defaultDecimalValue
   rdfs:label "десятичное значение по-умолчанию"@ru ;
   rdfs:label "default decimal value"@en ;
   rdfs:range xsd:decimal ;
+.
+v-ui:allowedDecimalValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:DecimalPropertySpecification ;
+  rdfs:label "допустимое десятичное значение"@ru ;
+  rdfs:label "allowed decimal value"@en ;
+  rdfs:range xsd:integer ;
 .
 v-ui:minDecimalValue
   rdf:type owl:DatatypeProperty ;
@@ -187,6 +195,13 @@ v-ui:defaultDatetimeValue
   rdfs:label "default datetime value"@en ;
   rdfs:range xsd:dateTime ;
 .
+v-ui:allowedDatetimeValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:DatetimePropertySpecification ;
+  rdfs:label "допустимое календарное значение"@ru ;
+  rdfs:label "allowed datetime value"@en ;
+  rdfs:range xsd:dateTime ;
+.
 v-ui:minDatetimeValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:DatetimePropertySpecification ;
@@ -201,13 +216,6 @@ v-ui:maxDatetimeValue
   rdfs:label "maximal datetime value"@en ;
   rdfs:range xsd:dateTime ;
 .
-v-ui:withTime
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:DatetimePropertySpecification ;
-  rdfs:label "с временем"@ru ;
-  rdfs:label "with time"@en ;
-  rdfs:range xsd:boolean ;
-.
 v-ui:StringPropertySpecification
   rdf:type owl:Class ;
   rdfs:subClassOf v-ui:PropertySpecification ;
@@ -219,6 +227,13 @@ v-ui:defaultStringValue
   rdfs:domain v-ui:StringPropertySpecification ;
   rdfs:label "строковое значение по-умолчанию"@ru ;
   rdfs:label "default string value"@en ;
+  rdfs:range xsd:string ;
+.
+v-ui:allowedStringValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:StringPropertySpecification ;
+  rdfs:label "допустимое строковое значение"@ru ;
+  rdfs:label "allowed string value"@en ;
   rdfs:range xsd:string ;
 .
 v-ui:minLength
@@ -259,6 +274,13 @@ v-ui:defaultObjectValue
   rdfs:domain v-ui:ObjectPropertySpecification ;
   rdfs:label "объектное значение по-умолчанию"@ru ;
   rdfs:label "default object value"@en ;
+  rdfs:range rdfs:Resource ;
+.
+v-ui:allowedObjectValue
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:label "допустимое объектное значение"@ru ;
+  rdfs:label "allowed object value"@en ;
   rdfs:range rdfs:Resource ;
 .
 v-ui:queryPrefix
@@ -574,4 +596,192 @@ v-ui:SearchRestrictionSpec3
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:tooltip "Обязательно к заполнению, множественные значения."@ru ;
   v-ui:tooltip "Required, multiple values."@en ;
+.
+
+####### TEST UI #######
+
+v-ui:TestUIClass
+  rdf:type owl:Class ;
+  rdfs:label "Класс для тестирования интерфейса"@ru ;
+  rdfs:label "Test UI class"@en ;
+.
+
+v-ui:testBoolean
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Тестовое булево свойство"@ru ;
+  rdfs:label "Test boolean property"@en ;
+  rdfs:domain v-ui:TestUIClass ;
+  rdfs:range xsd:boolean ;
+.
+v-ui:testInteger
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Тестовое целочисленное свойство"@ru ;
+  rdfs:label "Test integer property"@en ;
+  rdfs:domain v-ui:TestUIClass ;
+  rdfs:range xsd:integer ;
+.
+v-ui:testDecimal
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Тестовое десятичное свойство"@ru ;
+  rdfs:label "Test decimal property"@en ;
+  rdfs:domain v-ui:TestUIClass ;
+  rdfs:range xsd:decimal ;
+.
+v-ui:testString
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Тестовое текстовое свойство"@ru ;
+  rdfs:label "Test string property"@en ;
+  rdfs:domain v-ui:TestUIClass ;
+  rdfs:range xsd:string ;
+.
+v-ui:testDatetime
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Тестовое календарное свойство"@ru ;
+  rdfs:label "Test datetime property"@en ;
+  rdfs:domain v-ui:TestUIClass ;
+  rdfs:range xsd:dateTime ;
+.
+v-ui:testLink
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Тестовое объектное свойство"@ru ;
+  rdfs:label "Test object property"@en ;
+  rdfs:domain v-ui:TestUIClass ;
+  rdfs:range rdfs:Resource ;
+.
+
+v-ui:SpecTestBoolean
+  rdf:type v-ui:BooleanPropertySpecification ;
+  rdfs:label "Спецификация тестового булева свойства"@ru ;
+  rdfs:label "Specification for test boolean property"@en ;
+  v-ui:forClass v-ui:TestUIClass ;
+  v-ui:forProperty v-ui:testBoolean ;
+.
+v-ui:SpecTestInteger
+  rdf:type v-ui:IntegerPropertySpecification ;
+  rdfs:label "Спецификация тестового целочисленного свойства"@ru ;
+  rdfs:label "Specification for test integer property"@en ;
+  v-ui:forClass v-ui:TestUIClass ;
+  v-ui:forProperty v-ui:testInteger ;
+  v-ui:allowedIntegerValue "1"^^xsd:integer ;
+  v-ui:allowedIntegerValue "2"^^xsd:integer ;
+  v-ui:allowedIntegerValue "3"^^xsd:integer ;
+.
+v-ui:SpecTestDecimal
+  rdf:type v-ui:DecimalPropertySpecification ;
+  rdfs:label "Спецификация тестового десятичного свойства"@ru ;
+  rdfs:label "Specification for test decimal property"@en ;
+  v-ui:forClass v-ui:TestUIClass ;
+  v-ui:forProperty v-ui:testDecimal ;
+.
+v-ui:SpecTestString
+  rdf:type v-ui:StringPropertySpecification ;
+  rdfs:label "Спецификация тестового текстового свойства"@ru ;
+  rdfs:label "Specification for test string property"@en ;
+  v-ui:forClass v-ui:TestUIClass ;
+  v-ui:forProperty v-ui:testString ;
+  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+.
+v-ui:SpecTestDatetime
+  rdf:type v-ui:DatetimePropertySpecification ;
+  rdfs:label "Спецификация тестового календарного свойства"@ru ;
+  rdfs:label "Specification for test datetime property"@en ;
+  v-ui:forClass v-ui:TestUIClass ;
+  v-ui:forProperty v-ui:testDatetime ;
+.
+v-ui:SpecTestLink
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация тестового объектного свойства"@ru ;
+  rdfs:label "Specification for test link property"@en ;
+  v-ui:forClass v-ui:TestUIClass ;
+  v-ui:forProperty v-ui:testLink ;
+.
+
+v-ui:TestUITemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Тестовый шаблон"@ru ;
+  rdfs:label "Test UI template"@en ;
+  v-ui:forClass v-ui:TestUIClass ;
+  v-ui:template """
+<div class="panel panel-warning">
+  <div class="panel-heading">
+    <div class="row">
+      <div class="col-md-4">
+        <span about="v-ui:TestUIClass" property="rdfs:label"></span>
+      </div>
+      <div class="col-md-8 text-right text-muted">
+        <a href="id"><span property="id"></span></a>
+      </div>  
+    </div>
+  </div>
+  <div class="panel-body">
+    <strong class="text-muted -view edit search" about="rdfs:label" property="rdfs:label"></strong>
+    <h3 property="rdfs:label"></h3>
+    <veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
+	<br class="-view edit search">
+    <strong class="text-muted -view edit search" about="rdfs:comment" property="rdfs:label"></strong>
+    <div><em property="rdfs:comment"></em></div>
+    <veda-control type="string" property="rdfs:comment" class="-view edit search"></veda-control>
+    <br class="-view edit search">
+	
+	<div class="checkbox">
+		<label>
+			<veda-control type="booleanCheckbox" property="v-ui:testBoolean"></veda-control>
+			<strong class="text-muted" about="v-ui:testBoolean" property="rdfs:label"></strong>
+		</label>
+	</div>
+	<!--strong class="text-muted" about="v-ui:testBoolean" property="rdfs:label"></strong>
+	<veda-control type="booleanCheckbox" property="v-ui:testBoolean"></veda-control-->
+    <hr>
+
+	<strong class="text-muted" about="v-ui:testString" property="rdfs:label"></strong>
+    <div property="v-ui:testString"></div>
+	<veda-control type="string" property="v-ui:testString" class="-view edit search"></veda-control>
+	<veda-control type="multilingualString" property="v-ui:testString" class="-view edit search"></veda-control>
+	<veda-control type="text" property="v-ui:testString" class="-view edit search"></veda-control>
+	<veda-control type="multilingualText" property="v-ui:testString" class="-view edit search"></veda-control>
+    <hr>
+
+	<strong class="text-muted" about="v-ui:testInteger" property="rdfs:label"></strong>
+    <div property="v-ui:testInteger"></div>
+	<veda-control type="integer" property="v-ui:testInteger" class="-view edit search"></veda-control>
+	<veda-control type="allowedIntegerSelect" property="v-ui:testInteger" class="-view edit search"></veda-control>
+    <hr>
+
+	<strong class="text-muted" about="v-ui:testDecimal" property="rdfs:label"></strong>
+    <div property="v-ui:testDecimal"></div>
+	<veda-control type="decimal" property="v-ui:testDecimal" class="-view edit search"></veda-control>
+    <hr>
+
+	<strong class="text-muted" about="v-ui:testDatetime" property="rdfs:label"></strong>
+    <div property="v-ui:testDatetime"></div>
+    <veda-control type="dateTime" property="v-ui:testDatetime" class="-view edit search"></veda-control>
+    <hr>
+
+	<strong class="text-muted" about="v-ui:testLink" property="rdfs:label"></strong>
+	<div rel="v-ui:testLink" template="v-ui:ClassNameLabelTemplate"></div>
+	<veda-control type="link" rel="v-ui:testLink" class="-view edit search"></veda-control>
+
+  </div>
+  <div class="panel-footer">
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
+    <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+    <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+    <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
+  </div>
+</div>
+  """ ;
+.
+v-ui:TestUI
+  rdf:type v-ui:TestUIClass ;
+  rdfs:label "Индивид для тестирования интерфейса"@ru ;
+  rdfs:label "Test UI individual"@en ;
+  v-ui:testBoolean   "true"^^xsd:boolean ;
+  v-ui:testString   "Тестовое значение строкового свойства"@ru ;
+  v-ui:testString   "Test string property value"@en ;  
+  v-ui:testInteger  "999"^^xsd:integer ;
+#  v-ui:testDecimal  "3.1415926"^^xsd:decimal ;
+  v-ui:testDatetime "1945-05-09T21:00:00"^^xsd:dateTime ;
+  v-ui:testLink     td:RomanKarpov ;
 .
