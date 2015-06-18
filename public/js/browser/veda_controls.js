@@ -157,50 +157,61 @@
 			control = veda_literal_input.call(this, opts),
 			individual = opts.individual,
 			property_uri = opts.property_uri,
-			spec = opts.spec;
+			spec = opts.spec,
+			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+			undef = $("li", control),
+			langTag = $(".language-tag", control),
+			language;
+
+		if (isSingle && individual.hasValue(property_uri)) {
+			language = individual[property_uri][0].language;
+		}
+
+		$("[bound]", control).data("language", language);
+		langTag.text(language);
+
+		language ? undef.removeClass("active") : undef.addClass("active");
 		
-		var undef = $("li", control);
-		
-		handler(property_uri);
-		
+		$(".language-list", control).append(
+			Object.keys(veda.user.availableLanguages).map(function (language_name) {
+				var li = undef.clone();
+				$(".language", li).data("language", language_name).text(language_name).appendTo(li);
+				language == language_name ? li.addClass("active") : li.removeClass("active");
+				return li;
+			})
+		);
+
+		$(".language", control).on("click", function ( e ) {
+			e.preventDefault();
+			var $this = $(this);
+			var lng = $this.data("language");
+			$("[bound]", control)
+				.data("language", $this.data("language") || null)
+				.trigger("change");
+		});
+
 		function handler(doc_property_uri) {
 			if (doc_property_uri === property_uri) {
-				var language;
-				if (spec && spec.hasValue("v-ui:maxCardinality") && 
-					spec["v-ui:maxCardinality"][0] == 1 && 
-					individual.hasValue(property_uri)) 
-				{
+				if ( isSingle && individual.hasValue(property_uri)) {
 					language = individual[property_uri][0].language;
 				}
-				$("[bound]", control).data("language", language);
-				$(".language-tag", control).text(language);
-				language ? undef.removeClass("active") : undef.addClass("active");
-				$(".language-list", control).empty().append(
-					undef,
-					Object.keys(veda.user.availableLanguages).map(function (language_name) {
-						var li = undef.clone();
-						$(".language", li).data("language", language_name).text(language_name).appendTo(li);
-						language === language_name ? li.addClass("active") : li.removeClass("active");
-						return li;
-					})
-				);
-				$(".language", control).on("click", function ( e ) {
-					e.preventDefault();
-					$(".language-selector", control)
-						.empty()
-						.append($(this).data("language"), " <span class='caret'></span>");
-					$(".language-list li", control).removeClass("active");
-					$(this).parent().addClass("active");
-					$("[bound]", control)
-						.data("language", $(this).data("language") )
-						.trigger("change");
+				$(".language", control).map( function () {
+					var $this = $(this);
+					if ($this.data("language") == language) { 
+						$this.parent().addClass("active");
+						langTag.text(language || "");
+					} else {
+						$this.parent().removeClass("active");
+					}
 				});
 			}
 		}
-		individual.on("individual:propertyModified", handler);
-		this.one("remove", function () {
-			individual.off("individual:propertyModified", handler);
-		});
+		if (isSingle) {
+			individual.on("individual:propertyModified", handler);
+			this.one("remove", function () {
+				individual.off("individual:propertyModified", handler);
+			});
+		}
 
 		this.append(control);
 		return this;
@@ -220,50 +231,61 @@
 			control = veda_literal_input.call(this, opts),
 			individual = opts.individual,
 			property_uri = opts.property_uri,
-			spec = opts.spec;
+			spec = opts.spec,
+			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+			undef = $("li", control),
+			langTag = $(".language-tag", control),
+			language;
+
+		if (isSingle && individual.hasValue(property_uri)) {
+			language = individual[property_uri][0].language;
+		}
+
+		$("[bound]", control).data("language", language);
+		langTag.text(language);
+
+		language ? undef.removeClass("active") : undef.addClass("active");
 		
-		var undef = $("li", control);
-		
-		handler(property_uri);
-		
+		$(".language-list", control).append(
+			Object.keys(veda.user.availableLanguages).map(function (language_name) {
+				var li = undef.clone();
+				$(".language", li).data("language", language_name).text(language_name).appendTo(li);
+				language == language_name ? li.addClass("active") : li.removeClass("active");
+				return li;
+			})
+		);
+
+		$(".language", control).on("click", function ( e ) {
+			e.preventDefault();
+			var $this = $(this);
+			var lng = $this.data("language");
+			$("[bound]", control)
+				.data("language", $this.data("language") || null)
+				.trigger("change");
+		});
+
 		function handler(doc_property_uri) {
 			if (doc_property_uri === property_uri) {
-				var language;
-				if (spec && spec.hasValue("v-ui:maxCardinality") && 
-					spec["v-ui:maxCardinality"][0] == 1 && 
-					individual.hasValue(property_uri)) 
-				{
+				if ( isSingle && individual.hasValue(property_uri)) {
 					language = individual[property_uri][0].language;
 				}
-				$("[bound]", control).data("language", language);
-				$(".language-tag", control).text(language);
-				language ? undef.removeClass("active") : undef.addClass("active");
-				$(".language-list", control).empty().append(
-					undef,
-					Object.keys(veda.user.availableLanguages).map(function (language_name) {
-						var li = undef.clone();
-						$(".language", li).data("language", language_name).text(language_name).appendTo(li);
-						language === language_name ? li.addClass("active") : li.removeClass("active");
-						return li;
-					})
-				);
-				$(".language", control).on("click", function ( e ) {
-					e.preventDefault();
-					$(".language-selector", control)
-						.empty()
-						.append($(this).data("language"), " <span class='caret'></span>");
-					$(".language-list li", control).removeClass("active");
-					$(this).parent().addClass("active");
-					$("[bound]", control)
-						.data("language", $(this).data("language") )
-						.trigger("change");
+				$(".language", control).map( function () {
+					var $this = $(this);
+					if ($this.data("language") == language) { 
+						$this.parent().addClass("active");
+						langTag.text(language || "");
+					} else {
+						$this.parent().removeClass("active");
+					}
 				});
 			}
 		}
-		individual.on("individual:propertyModified", handler);
-		this.one("remove", function () {
-			individual.off("individual:propertyModified", handler);
-		});
+		if (isSingle) {
+			individual.on("individual:propertyModified", handler);
+			this.one("remove", function () {
+				individual.off("individual:propertyModified", handler);
+			});
+		}
 
 		this.append(control);
 		return this;
@@ -272,7 +294,7 @@
 		template: $("#multilingual-text-control-template").html(),
 		parser: function (input, el) {
 			var value = new String(input);
-			value.language = $(el).data("language");
+			value.language = $(el).data("language") || undefined;
 			return value != "" ? value : null;
 		}
 	};
