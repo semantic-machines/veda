@@ -395,12 +395,13 @@
 	$.fn.veda_selectDatetime.defaults = {
 		optionProperty: "v-ui:optionDatetimeValue",
 		parser: function (input) {
-			var int = parseInt(input, 10);
-			return !isNaN(int) ? new Number(int) : null;
+			var timestamp = Date.parse(input);
+			return !isNaN(timestamp) ? new Date(timestamp) : null;
 		}
 	};
 
 	// SOURCE CODE CONTROL
+	// supports only one-way binding (editor -> individual) except initial value
 	$.fn.veda_source = function (options) {
 		var self = this,
 			opts = $.extend( {}, $.fn.veda_source.defaults, options ),
@@ -410,14 +411,14 @@
 			fscreen = $("#full-screen", control),
 			editorEl = control.get(0);
 
-		opts.value = individual[property_uri][0],
+		opts.value = individual.hasValue(property_uri) ? individual[property_uri][0].toString() : "";
 		opts.change = function (value) {
 			individual[property_uri] = [value];
 		}
 		if (property_uri === "v-s:script") opts.sourceMode = "javascript";
 		if (property_uri === "v-ui:template") opts.sourceMode = "htmlmixed";
 		var	editor = CodeMirror(editorEl, {
-			value: opts.value.toString(),
+			value: opts.value,
 			mode: opts.sourceMode,
 			matchBrackets: true,
 			autoCloseBrackets: true,
@@ -425,7 +426,6 @@
 			autoCloseTags: true,
 			lineNumbers: true
 		});
-
 		setTimeout( function () {
 			editor.refresh();
 		}, 100);
@@ -437,10 +437,12 @@
 			e.type === "search" ? ( editor.setOption("readOnly", false) ) :
 			true;
 		});
+		
 		editor.on("change", function () {
 			var value = opts.parser( editor.doc.getValue() );
 			opts.change(value);
 		});
+		
 		fscreen.click(function () {
 			var body = $("body"),
 			    all = $("body > *"),

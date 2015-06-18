@@ -231,7 +231,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			notEdit = $(".-edit", template),
 			notSearch = $(".-search", template);
 			
-		// Show / hide buttons in different modes
+		// Show/hide elements with special classes in different modes
 		function modeHandler (e) {
 			mode = e.type;
 			mode === "view" ? view.show() && notView.hide() : 
