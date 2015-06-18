@@ -157,45 +157,51 @@
 			control = veda_literal_input.call(this, opts),
 			individual = opts.individual,
 			property_uri = opts.property_uri,
-			spec = opts.spec,
-			language;
-
-		if (spec && spec.hasValue("v-ui:maxCardinality") && 
-			spec["v-ui:maxCardinality"][0] == 1 && 
-			individual.hasValue(property_uri)) 
-		{
-			language = individual[property_uri][0].language;
+			spec = opts.spec;
+		
+		var undef = $("li", control);
+		
+		handler(property_uri);
+		
+		function handler(doc_property_uri) {
+			if (doc_property_uri === property_uri) {
+				var language;
+				if (spec && spec.hasValue("v-ui:maxCardinality") && 
+					spec["v-ui:maxCardinality"][0] == 1 && 
+					individual.hasValue(property_uri)) 
+				{
+					language = individual[property_uri][0].language;
+				}
+				$("[bound]", control).data("language", language);
+				$(".language-tag", control).text(language);
+				language ? undef.removeClass("active") : undef.addClass("active");
+				$(".language-list", control).empty().append(
+					undef,
+					Object.keys(veda.user.availableLanguages).map(function (language_name) {
+						var li = undef.clone();
+						$(".language", li).data("language", language_name).text(language_name).appendTo(li);
+						language === language_name ? li.addClass("active") : li.removeClass("active");
+						return li;
+					})
+				);
+				$(".language", control).on("click", function ( e ) {
+					e.preventDefault();
+					$(".language-selector", control)
+						.empty()
+						.append($(this).data("language"), " <span class='caret'></span>");
+					$(".language-list li", control).removeClass("active");
+					$(this).parent().addClass("active");
+					$("[bound]", control)
+						.data("language", $(this).data("language") )
+						.trigger("change");
+				});
+			}
 		}
-		
-		$("[bound]", control).data("language", language);
-
-		$(".language-selector", control).prepend(language);
-
-		var first = $("<li>").append( $("<a>", {href: "#", "data-language": "", text: "-"}).addClass("language") );
-		if (!language) first.addClass("active");
-		$(".language-list", control).append(
-			first,
-			Object.keys(veda.user.availableLanguages).map(function (language_name) {
-				var li = $("<li>"), 
-					a = $("<a>", {href: "#", "data-language": language_name, text: language_name}).addClass("language");
-				li.append(a);
-				if (language == language_name) li.addClass("active");
-				return li;
-			})
-		);
-		
-		$(".language", control).on("click", function ( e ) {
-			e.preventDefault();
-			$(".language-selector", control)
-				.empty()
-				.append($(this).data("language"), " <span class='caret'></span>");
-			$(".language-list li", control).removeClass("active");
-			$(this).parent().addClass("active");
-			$("[bound]", control)
-				.data("language", $(this).data("language") )
-				.trigger("change");
+		individual.on("individual:propertyModified", handler);
+		this.one("remove", function () {
+			individual.off("individual:propertyModified", handler);
 		});
-		
+
 		this.append(control);
 		return this;
 	};
@@ -214,45 +220,51 @@
 			control = veda_literal_input.call(this, opts),
 			individual = opts.individual,
 			property_uri = opts.property_uri,
-			spec = opts.spec,
-			language;
-
-		if (spec && spec.hasValue("v-ui:maxCardinality") && 
-			spec["v-ui:maxCardinality"][0] == 1 && 
-			individual.hasValue(property_uri)) 
-		{
-			language = individual[property_uri][0].language;
+			spec = opts.spec;
+		
+		var undef = $("li", control);
+		
+		handler(property_uri);
+		
+		function handler(doc_property_uri) {
+			if (doc_property_uri === property_uri) {
+				var language;
+				if (spec && spec.hasValue("v-ui:maxCardinality") && 
+					spec["v-ui:maxCardinality"][0] == 1 && 
+					individual.hasValue(property_uri)) 
+				{
+					language = individual[property_uri][0].language;
+				}
+				$("[bound]", control).data("language", language);
+				$(".language-tag", control).text(language);
+				language ? undef.removeClass("active") : undef.addClass("active");
+				$(".language-list", control).empty().append(
+					undef,
+					Object.keys(veda.user.availableLanguages).map(function (language_name) {
+						var li = undef.clone();
+						$(".language", li).data("language", language_name).text(language_name).appendTo(li);
+						language === language_name ? li.addClass("active") : li.removeClass("active");
+						return li;
+					})
+				);
+				$(".language", control).on("click", function ( e ) {
+					e.preventDefault();
+					$(".language-selector", control)
+						.empty()
+						.append($(this).data("language"), " <span class='caret'></span>");
+					$(".language-list li", control).removeClass("active");
+					$(this).parent().addClass("active");
+					$("[bound]", control)
+						.data("language", $(this).data("language") )
+						.trigger("change");
+				});
+			}
 		}
-		
-		$("[bound]", control).data("language", language);
-
-		$(".language-selector", control).prepend(language);
-
-		var first = $("<li>").append( $("<a>", {href: "#", "data-language": "", text: "-"}).addClass("language") );
-		if (!language) first.addClass("active");
-		$(".language-list", control).append(
-			first,
-			Object.keys(veda.user.availableLanguages).map(function (language_name) {
-				var li = $("<li>"), 
-					a = $("<a>", {href: "#", "data-language": language_name, text: language_name}).addClass("language");
-				li.append(a);
-				if (language == language_name) li.addClass("active");
-				return li;
-			})
-		);
-		
-		$(".language", control).on("click", function ( e ) {
-			e.preventDefault();
-			$(".language-selector", control)
-				.empty()
-				.append($(this).data("language"), " <span class='caret'></span>");
-			$(".language-list li", control).removeClass("active");
-			$(this).parent().addClass("active");
-			$("[bound]", control)
-				.data("language", $(this).data("language") )
-				.trigger("change");
+		individual.on("individual:propertyModified", handler);
+		this.one("remove", function () {
+			individual.off("individual:propertyModified", handler);
 		});
-		
+
 		this.append(control);
 		return this;
 	};
@@ -283,7 +295,7 @@
 		handler(property_uri);
 		
 		individual.on("individual:propertyModified", handler);
-		this.on("remove", function () {
+		this.one("remove", function () {
 			individual.off("individual:propertyModified", handler);
 		});
 		
@@ -347,7 +359,7 @@
 			}
 		}
 		individual.on("individual:propertyModified", handler);
-		this.on("remove", function () {
+		this.one("remove", function () {
 			individual.off("individual:propertyModified", handler);
 		});
 		
