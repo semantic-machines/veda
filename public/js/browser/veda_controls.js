@@ -151,9 +151,11 @@
 		}
 	};
 
-	// Multilingual string input
-	$.fn.veda_multilingualString = function( options ) {
-		var opts = $.extend( {}, $.fn.veda_multilingualString.defaults, options ),
+	// MULTILINGUAL INPUT CONTROLS
+	
+	// Generic multilingual input behaviour
+	var veda_multilingual = function( options ) {
+		var opts = $.extend( {}, veda_multilingual.defaults, options ),
 			control = veda_literal_input.call(this, opts),
 			individual = opts.individual,
 			property_uri = opts.property_uri,
@@ -213,90 +215,36 @@
 			});
 		}
 
-		this.append(control);
-		return this;
+		return control;
 	};
-	$.fn.veda_multilingualString.defaults = {
-		template: $("#multilingual-string-control-template").html(),
-		parser: function (input, el) {
-			var value = new String(input);
-			value.language = $(el).data("language");
-			return value != "" ? value : null;
-		}
-	};
-
-	// Multilingual text input
-	$.fn.veda_multilingualText = function( options ) {
-		var opts = $.extend( {}, $.fn.veda_multilingualText.defaults, options ),
-			control = veda_literal_input.call(this, opts),
-			individual = opts.individual,
-			property_uri = opts.property_uri,
-			spec = opts.spec,
-			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
-			undef = $("li", control),
-			langTag = $(".language-tag", control),
-			language;
-
-		if (isSingle && individual.hasValue(property_uri)) {
-			language = individual[property_uri][0].language;
-		}
-
-		$("[bound]", control).data("language", language);
-		langTag.text(language);
-
-		language ? undef.removeClass("active") : undef.addClass("active");
-		
-		$(".language-list", control).append(
-			Object.keys(veda.user.availableLanguages).map(function (language_name) {
-				var li = undef.clone();
-				$(".language", li).data("language", language_name).text(language_name).appendTo(li);
-				language == language_name ? li.addClass("active") : li.removeClass("active");
-				return li;
-			})
-		);
-
-		$(".language", control).on("click", function ( e ) {
-			e.preventDefault();
-			var $this = $(this);
-			var lng = $this.data("language");
-			$("[bound]", control)
-				.data("language", $this.data("language") || null)
-				.trigger("change");
-		});
-
-		function handler(doc_property_uri) {
-			if (doc_property_uri === property_uri) {
-				if ( isSingle && individual.hasValue(property_uri)) {
-					language = individual[property_uri][0].language;
-				}
-				$(".language", control).map( function () {
-					var $this = $(this);
-					if ($this.data("language") == language) { 
-						$this.parent().addClass("active");
-						langTag.text(language || "");
-					} else {
-						$this.parent().removeClass("active");
-					}
-				});
-			}
-		}
-		if (isSingle) {
-			individual.on("individual:propertyModified", handler);
-			this.one("remove", function () {
-				individual.off("individual:propertyModified", handler);
-			});
-		}
-
-		this.append(control);
-		return this;
-	};
-	$.fn.veda_multilingualText.defaults = {
-		template: $("#multilingual-text-control-template").html(),
+	veda_multilingual.defaults = {
 		parser: function (input, el) {
 			var value = new String(input);
 			value.language = $(el).data("language") || undefined;
 			return value != "" ? value : null;
 		}
+	};
+
+	// Multilingual string control
+	$.fn.veda_multilingualString = function (options) {
+		var opts = $.extend( {}, $.fn.veda_multilingualString.defaults, options ),
+			control = veda_multilingual.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_multilingualString.defaults = {
+		template: $("#multilingual-string-control-template").html(),
+	};
+
+	// Multilingual text control
+	$.fn.veda_multilingualText = function (options) {
+		var opts = $.extend( {}, $.fn.veda_multilingualText.defaults, options ),
+			control = veda_multilingual.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_multilingualText.defaults = {
+		template: $("#multilingual-text-control-template").html(),
 	};
 
 	// BOOLEAN CHECKBOX CONTROL
