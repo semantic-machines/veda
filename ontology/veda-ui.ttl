@@ -647,7 +647,12 @@ v-ui:testLink
   rdfs:domain v-ui:TestUIClass ;
   rdfs:range rdfs:Resource ;
 .
-
+v-ui:template
+  rdfs:domain v-ui:TestUIClass ;
+.
+v-s:script
+  rdfs:domain v-ui:TestUIClass ;
+.
 v-ui:SpecTestBoolean
   rdf:type v-ui:BooleanPropertySpecification ;
   rdfs:label "Спецификация тестового булева свойства"@ru ;
@@ -673,6 +678,9 @@ v-ui:SpecTestDecimal
   rdfs:label "Specification for test decimal property"@en ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:forProperty v-ui:testDecimal ;
+  v-ui:optionDecimalValue "1.1"^^xsd:string ;
+  v-ui:optionDecimalValue "2.2"^^xsd:string ;
+  v-ui:optionDecimalValue "3.3"^^xsd:string ;
 .
 v-ui:SpecTestString
   rdf:type v-ui:StringPropertySpecification ;
@@ -680,6 +688,9 @@ v-ui:SpecTestString
   rdfs:label "Specification for test string property"@en ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:forProperty v-ui:testString ;
+  v-ui:optionStringValue "Предопределенное значение 1"^^xsd:string ;
+  v-ui:optionStringValue "Предопределенное значение 2"^^xsd:string ;
+  v-ui:optionStringValue "Предопределенное значение 3"^^xsd:string ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
 .
@@ -689,6 +700,9 @@ v-ui:SpecTestDatetime
   rdfs:label "Specification for test datetime property"@en ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:forProperty v-ui:testDatetime ;
+  v-ui:optionDatetimeValue "2011-01-02"^^xsd:dateTime ;
+  v-ui:optionDatetimeValue "2012-03-04"^^xsd:dateTime ;
+  v-ui:optionDatetimeValue "2013-05-06"^^xsd:dateTime ;
 .
 v-ui:SpecTestLink
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -741,6 +755,7 @@ v-ui:TestUITemplate
 	<veda-control type="multilingualString" property="v-ui:testString" class="-view edit search"></veda-control>
 	<veda-control type="text" property="v-ui:testString" class="-view edit search"></veda-control>
 	<veda-control type="multilingualText" property="v-ui:testString" class="-view edit search"></veda-control>
+	<veda-control type="selectString" property="v-ui:testString" class="-view edit search"></veda-control>
     <hr>
 
 	<strong class="text-muted" about="v-ui:testInteger" property="rdfs:label"></strong>
@@ -752,17 +767,26 @@ v-ui:TestUITemplate
 	<strong class="text-muted" about="v-ui:testDecimal" property="rdfs:label"></strong>
     <div property="v-ui:testDecimal"></div>
 	<veda-control type="decimal" property="v-ui:testDecimal" class="-view edit search"></veda-control>
+	<veda-control type="selectDecimal" property="v-ui:testDecimal" class="-view edit search"></veda-control>
     <hr>
 
 	<strong class="text-muted" about="v-ui:testDatetime" property="rdfs:label"></strong>
-    <div property="v-ui:testDatetime"></div>
+    <div property="v-ui:testDatetime" class="-view -edit -search"></div>
     <veda-control type="dateTime" property="v-ui:testDatetime" class="-view edit search"></veda-control>
+    <veda-control type="selectDatetime" property="v-ui:testDatetime" class="-view edit search"></veda-control>
     <hr>
 
 	<strong class="text-muted" about="v-ui:testLink" property="rdfs:label"></strong>
 	<div rel="v-ui:testLink" template="v-ui:ClassNameLabelTemplate"></div>
 	<veda-control type="link" rel="v-ui:testLink" class="-view edit search"></veda-control>
+	<!--hr>
 
+	<strong class="text-muted" about="v-ui:template" property="rdfs:label"></strong>
+	<veda-control type="source" property="v-ui:template"></veda-control>
+	<hr>
+
+	<strong class="text-muted" about="v-s:script" property="rdfs:label"></strong>	
+	<veda-control type="source" property="v-s:script"></veda-control-->
   </div>
   <div class="panel-footer">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
@@ -780,9 +804,11 @@ v-ui:TestUI
   rdfs:label "Test UI individual"@en ;
   v-ui:testBoolean   "true"^^xsd:boolean ;
   v-ui:testString   "Тестовое значение строкового свойства"@ru ;
-  v-ui:testString   "Test string property value"@en ;  
+  v-ui:testString   "Test string property value"@en ;
   v-ui:testInteger  "999"^^xsd:integer ;
-#  v-ui:testDecimal  "3.1415926"^^xsd:decimal ;
+  v-ui:testDecimal  "3.1415926"^^xsd:string ;
   v-ui:testDatetime "1945-05-09T21:00:00"^^xsd:dateTime ;
   v-ui:testLink     v-ui:TestUIClass ;
+  v-ui:template """<div class="well well-sm">I'm here!</div>""" ;
+  v-s:script """alert("I'm here too!")""" ;
 .
