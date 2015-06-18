@@ -127,11 +127,11 @@ v-ui:defaultIntegerValue
   rdfs:label "default integer value"@en ;
   rdfs:range xsd:integer ;
 .
-v-ui:allowedIntegerValue
+v-ui:optionIntegerValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:IntegerPropertySpecification ;
   rdfs:label "допустимое целочисленное значение"@ru ;
-  rdfs:label "allowed integer value"@en ;
+  rdfs:label "option integer value"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:minIntegerValue
@@ -161,11 +161,11 @@ v-ui:defaultDecimalValue
   rdfs:label "default decimal value"@en ;
   rdfs:range xsd:decimal ;
 .
-v-ui:allowedDecimalValue
+v-ui:optionDecimalValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:DecimalPropertySpecification ;
   rdfs:label "допустимое десятичное значение"@ru ;
-  rdfs:label "allowed decimal value"@en ;
+  rdfs:label "option decimal value"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:minDecimalValue
@@ -195,11 +195,11 @@ v-ui:defaultDatetimeValue
   rdfs:label "default datetime value"@en ;
   rdfs:range xsd:dateTime ;
 .
-v-ui:allowedDatetimeValue
+v-ui:optionDatetimeValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:DatetimePropertySpecification ;
   rdfs:label "допустимое календарное значение"@ru ;
-  rdfs:label "allowed datetime value"@en ;
+  rdfs:label "option datetime value"@en ;
   rdfs:range xsd:dateTime ;
 .
 v-ui:minDatetimeValue
@@ -229,11 +229,11 @@ v-ui:defaultStringValue
   rdfs:label "default string value"@en ;
   rdfs:range xsd:string ;
 .
-v-ui:allowedStringValue
+v-ui:optionStringValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:StringPropertySpecification ;
   rdfs:label "допустимое строковое значение"@ru ;
-  rdfs:label "allowed string value"@en ;
+  rdfs:label "option string value"@en ;
   rdfs:range xsd:string ;
 .
 v-ui:minLength
@@ -276,11 +276,11 @@ v-ui:defaultObjectValue
   rdfs:label "default object value"@en ;
   rdfs:range rdfs:Resource ;
 .
-v-ui:allowedObjectValue
+v-ui:optionObjectValue
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
   rdfs:label "допустимое объектное значение"@ru ;
-  rdfs:label "allowed object value"@en ;
+  rdfs:label "option object value"@en ;
   rdfs:range rdfs:Resource ;
 .
 v-ui:queryPrefix
@@ -662,9 +662,11 @@ v-ui:SpecTestInteger
   rdfs:label "Specification for test integer property"@en ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:forProperty v-ui:testInteger ;
-  v-ui:allowedIntegerValue "1"^^xsd:integer ;
-  v-ui:allowedIntegerValue "2"^^xsd:integer ;
-  v-ui:allowedIntegerValue "3"^^xsd:integer ;
+  v-ui:optionIntegerValue "1"^^xsd:integer ;
+  v-ui:optionIntegerValue "2"^^xsd:integer ;
+  v-ui:optionIntegerValue "3"^^xsd:integer ;
+  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
 .
 v-ui:SpecTestDecimal
   rdf:type v-ui:DecimalPropertySpecification ;
@@ -745,7 +747,7 @@ v-ui:TestUITemplate
 	<strong class="text-muted" about="v-ui:testInteger" property="rdfs:label"></strong>
     <div property="v-ui:testInteger"></div>
 	<veda-control type="integer" property="v-ui:testInteger" class="-view edit search"></veda-control>
-	<veda-control type="allowedIntegerSelect" property="v-ui:testInteger" class="-view edit search"></veda-control>
+	<veda-control type="selectInteger" property="v-ui:testInteger" class="-view edit search"></veda-control>
     <hr>
 
 	<strong class="text-muted" about="v-ui:testDecimal" property="rdfs:label"></strong>

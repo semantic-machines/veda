@@ -1,9 +1,11 @@
 // Veda controls implemented as JQuery plugins
 ;(function( $ ) { "use strict";
 
-	// Generic literal property control behaviour
-	var veda_control = function( options ) {
-		var opts = $.extend( {}, veda_control.defaults, options ),
+	// INPUT CONTROLS
+
+	// Generic literal input behaviour
+	var veda_literal_input = function( options ) {
+		var opts = $.extend( {}, veda_literal_input.defaults, options ),
 			control = $(opts.template),
 			spec = opts.spec,
 			property_uri = opts.property_uri,
@@ -54,21 +56,19 @@
 		
 		return control;
 	};
-	veda_control.defaults = {
+	veda_literal_input.defaults = {
 		parser: function (input) { return input; },
-		value: undefined
 	};
 
-	// String control
+	// String input
 	$.fn.veda_string = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_string.defaults, options ),
-			control = veda_control.call(this, opts);
+			control = veda_literal_input.call(this, opts);
 	
 		this.append(control);
 		return this;
 	};
 	$.fn.veda_string.defaults = {
-		value: new String(""),
 		template: $("#string-control-template").html(),
 		parser: function (input, el) {
 			var value = new String(input);
@@ -76,16 +76,15 @@
 		}
 	};
 
-	// Text control
+	// Text input
 	$.fn.veda_text = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_text.defaults, options ),
-			control = veda_control.call(this, opts);
+			control = veda_literal_input.call(this, opts);
 	
 		this.append(control);
 		return this;
 	};
 	$.fn.veda_text.defaults = {
-		value: new String(""),
 		template: $("#text-control-template").html(),
 		parser: function (input, el) {
 			var value = new String(input);
@@ -93,17 +92,79 @@
 		}
 	};
 	
-	// Multilingual string control
+	// Boolean text control	
+	$.fn.veda_boolean = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_boolean.defaults, options ),
+			control = veda_literal_input.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_boolean.defaults = {
+		template: $("#boolean-control-template").html(),
+		parser: function (input) {
+			return new Boolean(input == "true" ? true : false);
+		}
+	};
+
+	// Integer control
+	$.fn.veda_integer = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_integer.defaults, options ),
+			control = veda_literal_input.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_integer.defaults = {
+		template: $("#integer-control-template").html(),
+		parser: function (input) {
+			var int = parseInt(input, 10);
+			return !isNaN(int) ? new Number(int) : null;
+		}
+	};
+
+	// Decimal control
+	$.fn.veda_decimal = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_decimal.defaults, options ),
+			control = veda_literal_input.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_decimal.defaults = {
+		template: $("#decimal-control-template").html(),
+		parser: function (input) {
+			var float = parseFloat(input.replace(",", "."));
+			return !isNaN(float) ? new Number(float) : null;
+		}
+	};
+
+	// Datetime control
+	$.fn.veda_dateTime = function (options) {
+		var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
+			control = veda_literal_input.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_dateTime.defaults = {
+		template: $("#datetime-control-template").html(),
+		parser: function (input) {
+			var timestamp = Date.parse(input);
+			return !isNaN(timestamp) ? new Date(timestamp) : null;
+		}
+	};
+
+	// Multilingual string input
 	$.fn.veda_multilingualString = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_multilingualString.defaults, options ),
-			control = veda_control.call(this, opts),
+			control = veda_literal_input.call(this, opts),
+			individual = opts.individual,
+			property_uri = opts.property_uri,
+			spec = opts.spec,
 			language;
 
-		if (opts.spec && opts.spec.hasValue("v-ui:maxCardinality") && 
-			opts.spec["v-ui:maxCardinality"][0] == 1 && 
-			opts.individual.hasValue(opts.property_uri)) 
+		if (spec && spec.hasValue("v-ui:maxCardinality") && 
+			spec["v-ui:maxCardinality"][0] == 1 && 
+			individual.hasValue(property_uri)) 
 		{
-			language = opts.individual[opts.property_uri][0].language;
+			language = individual[property_uri][0].language;
 		}
 		
 		$("[bound]", control).data("language", language);
@@ -111,14 +172,14 @@
 		$(".language-selector", control).prepend(language);
 
 		var first = $("<li>").append( $("<a>", {href: "#", "data-language": "", text: "-"}).addClass("language") );
-		if (!opts.value.language) first.addClass("active");
+		if (!language) first.addClass("active");
 		$(".language-list", control).append(
 			first,
 			Object.keys(veda.user.availableLanguages).map(function (language_name) {
 				var li = $("<li>"), 
 					a = $("<a>", {href: "#", "data-language": language_name, text: language_name}).addClass("language");
 				li.append(a);
-				if (opts.value.language == language_name) li.addClass("active");
+				if (language == language_name) li.addClass("active");
 				return li;
 			})
 		);
@@ -130,7 +191,7 @@
 				.append($(this).data("language"), " <span class='caret'></span>");
 			$(".language-list li", control).removeClass("active");
 			$(this).parent().addClass("active");
-			$("input", control)
+			$("[bound]", control)
 				.data("language", $(this).data("language") )
 				.trigger("change");
 		});
@@ -139,8 +200,6 @@
 		return this;
 	};
 	$.fn.veda_multilingualString.defaults = {
-		values: [],
-		value: new String(""),
 		template: $("#multilingual-string-control-template").html(),
 		parser: function (input, el) {
 			var value = new String(input);
@@ -149,17 +208,20 @@
 		}
 	};
 
-	// Multilingual text control
+	// Multilingual text input
 	$.fn.veda_multilingualText = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_multilingualText.defaults, options ),
-			control = veda_control.call(this, opts),
+			control = veda_literal_input.call(this, opts),
+			individual = opts.individual,
+			property_uri = opts.property_uri,
+			spec = opts.spec,
 			language;
 
-		if (opts.spec && opts.spec.hasValue("v-ui:maxCardinality") && 
-			opts.spec["v-ui:maxCardinality"][0] == 1 && 
-			opts.individual.hasValue(opts.property_uri)) 
+		if (spec && spec.hasValue("v-ui:maxCardinality") && 
+			spec["v-ui:maxCardinality"][0] == 1 && 
+			individual.hasValue(property_uri)) 
 		{
-			language = opts.individual[opts.property_uri][0].language;
+			language = individual[property_uri][0].language;
 		}
 		
 		$("[bound]", control).data("language", language);
@@ -167,14 +229,14 @@
 		$(".language-selector", control).prepend(language);
 
 		var first = $("<li>").append( $("<a>", {href: "#", "data-language": "", text: "-"}).addClass("language") );
-		if (!opts.value.language) first.addClass("active");
+		if (!language) first.addClass("active");
 		$(".language-list", control).append(
 			first,
 			Object.keys(veda.user.availableLanguages).map(function (language_name) {
 				var li = $("<li>"), 
 					a = $("<a>", {href: "#", "data-language": language_name, text: language_name}).addClass("language");
 				li.append(a);
-				if (opts.value.language == language_name) li.addClass("active");
+				if (language == language_name) li.addClass("active");
 				return li;
 			})
 		);
@@ -195,8 +257,6 @@
 		return this;
 	};
 	$.fn.veda_multilingualText.defaults = {
-		values: [],
-		value: new String(""),
 		template: $("#multilingual-text-control-template").html(),
 		parser: function (input, el) {
 			var value = new String(input);
@@ -204,23 +264,8 @@
 			return value != "" ? value : null;
 		}
 	};
-	
-	// Boolean text control	
-	$.fn.veda_boolean = function( options ) {
-		var opts = $.extend( {}, $.fn.veda_boolean.defaults, options ),
-			control = veda_control.call(this, opts);
-		this.append(control);
-		return this;
-	};
-	$.fn.veda_boolean.defaults = {
-		value: new Boolean(false),
-		template: $("#boolean-control-template").html(),
-		parser: function (input) {
-			return new Boolean(input == "true" ? true : false);
-		}
-	};
 
-	// Boolean checkbox control	
+	// BOOLEAN CHECKBOX CONTROL
 	$.fn.veda_booleanCheckbox = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_booleanCheckbox.defaults, options ),
 			control = $( opts.template ),
@@ -257,66 +302,27 @@
 		template: $("#boolean-checkbox-control-template").html(),
 	};	
 
-	// Integer control
-	$.fn.veda_integer = function( options ) {
-		var opts = $.extend( {}, $.fn.veda_integer.defaults, options ),
-			control = veda_control.call(this, opts);
-		this.append(control);
-		return this;
-	};
-	$.fn.veda_integer.defaults = {
-		value: undefined,
-		template: $("#integer-control-template").html(),
-		parser: function (input) {
-			var int = parseInt(input, 10);
-			return !isNaN(int) ? new Number(int) : null;
-		}
-	};
-
-	// Decimal control
-	$.fn.veda_decimal = function( options ) {
-		var opts = $.extend( {}, $.fn.veda_decimal.defaults, options ),
-			control = veda_control.call(this, opts);
-		this.append(control);
-		return this;
-	};
-	$.fn.veda_decimal.defaults = {
-		value: undefined,
-		template: $("#decimal-control-template").html(),
-		parser: function (input) {
-			var float = parseFloat(input.replace(",", "."));
-			return !isNaN(float) ? new Number(float) : null;
-		}
-	};
-
-	// Datetime control
-	$.fn.veda_dateTime = function (options) {
-		var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
-			control = veda_control.call(this, opts);
-		this.append(control);
-		return this;
-	};
-	$.fn.veda_dateTime.defaults = {
-		value: undefined,
-		template: $("#datetime-control-template").html(),
-		parser: function (input) {
-			var timestamp = Date.parse(input);
-			return !isNaN(timestamp) ? new Date(timestamp) : null;
-		}
-	};
-
-	// Allowed list control
-	$.fn.veda_allowedIntegerSelect = function (options) {
-		var opts = $.extend( {}, $.fn.veda_allowedIntegerSelect.defaults, options ),
+	// LITERAL SELECT CONTROLS
+	
+	// Generic literal select behaviour
+	var veda_selectLiteral = function (options) {
+		var opts = $.extend( {}, veda_selectLiteral.defaults, options ),
 			control = $(opts.template),
-			select = $("select", control);
+			individual = opts.individual,
+			property_uri = opts.property_uri,
+			parser = opts.parser,
+			spec = opts.spec,
+			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1, 
+			optionProperty = opts.optionProperty,
+			select = $("select", control),
+			first_opt = $("option", control);
 		
 		function populate() {
-			if (opts.spec && opts.spec.hasValue("v-ui:allowedIntegerValue")) {
-				var prev_opt = $("option", control).removeAttr("selected").remove();
-				opts.spec["v-ui:allowedIntegerValue"].map(function (value) {
-					var opt = prev_opt.first().clone().text(value).appendTo(select);
-					if (opts.individual.hasValue(opts.property_uri) && opts.individual[opts.property_uri][0].toString() === value.toString()) {
+			if (spec && spec.hasValue(optionProperty)) {
+				select.empty().append(first_opt);
+				spec[optionProperty].map(function (value) {
+					var opt = first_opt.clone().text(value).val(value).appendTo(select);
+					if (isSingle && individual.hasValue(property_uri) && individual[property_uri][0].toString() === value.toString()) {
 						opt.attr("selected", "true");
 					}
 				});
@@ -325,33 +331,94 @@
 		
 		populate();
 		
-		select.change(function () {
-			opts.individual[opts.property_uri] = [ select.val() ];
-		});
+		if (isSingle) {
+			select.change(function () {
+				individual[property_uri] = [ parser(select.val()) ];
+			});
+		} else {
+			select.change(function () {
+				individual[property_uri] = individual[property_uri].concat( parser(select.val()) );
+			});
+		}
 		
 		function handler(doc_property_uri) {
-			if (doc_property_uri === opts.property_uri) {
+			if (doc_property_uri === property_uri) {
 				populate();
 			}
 		}
-		opts.individual.on("individual:propertyModified", handler);
+		individual.on("individual:propertyModified", handler);
 		this.on("remove", function () {
-			opts.individual.off("individual:propertyModified", handler);
+			individual.off("individual:propertyModified", handler);
 		});
 		
 		this.on("view edit search", function (e) {
 			e.stopPropagation();
 		});
 		
+		return control;
+	};
+	veda_selectLiteral.defaults = {
+		template: $("#select-control-template").html(),
+	}
+
+	// Integer select control
+	$.fn.veda_selectInteger = function (options) {
+		var opts = $.extend( {}, $.fn.veda_selectInteger.defaults, options ),
+			control = veda_selectLiteral.call(this, opts);
 		this.append(control);
 		return this;
 	};
-	$.fn.veda_allowedIntegerSelect.defaults = {
-		value: undefined,
-		template: $("#allowed-select-control-template").html(),
+	$.fn.veda_selectInteger.defaults = {
+		optionProperty: "v-ui:optionIntegerValue",
+		parser: function (input) {
+			var int = parseInt(input, 10);
+			return !isNaN(int) ? new Number(int) : null;
+		}
+	};
+	// Decimal select control
+	$.fn.veda_selectDecimal = function (options) {
+		var opts = $.extend( {}, $.fn.veda_selectDecimal.defaults, options ),
+			control = veda_selectLiteral.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_selectDecimal.defaults = {
+		optionProperty: "v-ui:optionDecimalValue",
+		parser: function (input) {
+			var float = parseFloat(input.replace(",", "."));
+			return !isNaN(float) ? new Number(float) : null;
+		}
+	};
+	// String select control
+	$.fn.veda_selectString = function (options) {
+		var opts = $.extend( {}, $.fn.veda_selectString.defaults, options ),
+			control = veda_selectLiteral.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_selectString.defaults = {
+		optionProperty: "v-ui:optionStringValue",
+		parser: function (input, el) {
+			var value = new String(input);
+			return value != "" ? value : null;
+		}
+	};
+	// Datetime select control
+	$.fn.veda_selectDatetime = function (options) {
+		var opts = $.extend( {}, $.fn.veda_selectDatetime.defaults, options ),
+			control = veda_selectLiteral.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_selectDatetime.defaults = {
+		optionProperty: "v-ui:optionDatetimeValue",
+		parser: function (input) {
+			var int = parseInt(input, 10);
+			return !isNaN(int) ? new Number(int) : null;
+		}
 	};
 
-	// Source code control
+	// SOURCE CODE CONTROL
 	$.fn.veda_source = function (options) {
 		var self = this,
 			opts = $.extend( {}, $.fn.veda_source.defaults, options ),
@@ -428,7 +495,7 @@
 		}
 	};
 	
-	// Object property control
+	// OBJECT PROPERTY CONTROL
 	$.fn.veda_link = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_link.defaults, options ),
 			control = $(opts.template),
