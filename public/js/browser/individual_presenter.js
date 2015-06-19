@@ -333,13 +333,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					var valueHolder = $("<span>");
 					result.prepend(valueHolder.text(value.toString()));
 
-					var btn = $("<button class='btn btn-link btn-xs -view edit search' id='remove'><i class='glyphicon glyphicon-remove text-danger'></i></button>");
-					if (mode === "view") btn.hide();
-					notView = notView.add(btn); edit = edit.add(btn); search = search.add(btn);
-					btn.click(function () {
+					var btnRemove = $("<button class='btn btn-link btn-xs -view edit search' id='value-remove'><i class='glyphicon glyphicon-remove text-danger'></i></button>");
+					var btnEdit = $("<button class='btn btn-link btn-xs -view edit search' id='value-edit'><i class='glyphicon glyphicon-edit text-primary'></i></button>");
+					if (mode === "view") {
+						btnRemove.hide();
+						btnEdit.hide();
+					}
+					notView = notView.add(btnRemove).add(btnEdit); edit = edit.add(btnRemove).add(btnEdit); search = search.add(btnRemove).add(btnEdit);
+					btnRemove.click(function () {
 						individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
 					});
-					valueHolder.after( btn );
+					btnEdit.click(function () {
+						individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
+					});
+					valueHolder.after( btnEdit, btnRemove );
 					
 					return result;
 				});

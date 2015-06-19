@@ -54,6 +54,10 @@
 			e.stopPropagation();
 		});
 		
+		this.val = function (value) {
+			if (!value) return inputEl.val();
+			return inputEl.val(value);
+		}
 		return control;
 	};
 	veda_literal_input.defaults = {
@@ -186,7 +190,6 @@
 		$(".language", control).on("click", function ( e ) {
 			e.preventDefault();
 			var $this = $(this);
-			var lng = $this.data("language");
 			$("[bound]", control)
 				.data("language", $this.data("language") || null)
 				.trigger("change");
@@ -215,6 +218,10 @@
 			});
 		}
 
+		this.val = function (value) {
+			if (!value) return $("[bound]", this).val();
+			return $("[bound]", this).val(value);
+		}
 		return control;
 	};
 	veda_multilingual.defaults = {
