@@ -78,7 +78,6 @@ v-fs:SelectedTypeSpec
   v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
   v-ui:tooltip "Link to instance of Class class"@en ;
   v-ui:queryPrefix "('rdf:type'=='owl:Class')"^^xsd:string ;
-  v-ui:immutable "false"^^xsd:boolean ;
 .
 
 v-fs:SearchModel

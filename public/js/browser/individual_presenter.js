@@ -315,8 +315,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			var propertyContainer = $(this).hide(),
 				property_uri = propertyContainer.attr("property"),
-				spec = specs[property_uri],
-				immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true;
+				spec = specs[property_uri];
 			
 			if (property_uri == "id") { 
 				propertyContainer.show().text(individual[property_uri]); 
@@ -334,19 +333,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					var valueHolder = $("<span>");
 					result.prepend(valueHolder.text(value.toString()));
 
-					if ( !result.hasClass("immutable") ) {
-						var btn = $("<button class='btn btn-link btn-xs -view edit search' id='remove'><i class='glyphicon glyphicon-remove text-danger'></i></button>");
-						if (mode === "view") btn.hide();
-						notView = notView.add(btn); edit = edit.add(btn); search = search.add(btn);
-						if (immutable) {
-							notEdit = notEdit.add(btn); 
-							if (mode === "edit") btn.hide(); 
-						}
-						btn.click(function () {
-							individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
-						});
-						valueHolder.after( btn );
-					}
+					var btn = $("<button class='btn btn-link btn-xs -view edit search' id='remove'><i class='glyphicon glyphicon-remove text-danger'></i></button>");
+					if (mode === "view") btn.hide();
+					notView = notView.add(btn); edit = edit.add(btn); search = search.add(btn);
+					btn.click(function () {
+						individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
+					});
+					valueHolder.after( btn );
 					
 					return result;
 				});
@@ -466,8 +459,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var control = $(this), 
 				rel_uri = control.attr("rel"),
 				spec = specs[rel_uri],
-				rel = veda.ontology[rel_uri],
-				immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true;
+				rel = veda.ontology[rel_uri];
 				
 			if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
 			
@@ -520,11 +512,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					trigger: "focus"
 				});
 			}
-						
-			if (immutable) {
-				notEdit = notEdit.add(control); 
-				if (mode === "edit") control.hide(); 
-			}
 			
 		});
 
@@ -533,7 +520,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 	
 	function renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, spec, embedded, template, mode) {
 		if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
-		var immutable = spec && spec.hasValue("v-ui:immutable") && spec["v-ui:immutable"][0] == true;
 		var values = individual[rel_uri];
 		var renderedValues = individual[rel_uri].map( function (value) { 
 			// Create the same tag container to preserve element layout
@@ -578,14 +564,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				});
 
 				mode === "view" ? clear.hide() :
-				mode === "edit" && !immutable ? clear.show() :
-				mode === "edit" && immutable ? clear.hide() :
+				mode === "edit" ? clear.show() :
 				mode === "search" ? clear.show() : true;
 				
 				function modeHandler (e) {
 					e.type === "view" ? clear.hide() :
-					e.type === "edit" && !immutable ? clear.show() :
-					e.type === "edit" && immutable ? clear.hide() :
+					e.type === "edit" ? clear.show() :
 					e.type === "search" ? clear.show() :
 					true;
 					e.stopPropagation();						

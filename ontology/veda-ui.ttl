@@ -76,13 +76,6 @@ v-ui:PropertySpecification
   rdfs:label "Спецификация свойства"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
-v-ui:immutable
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:PropertySpecification ;
-  rdfs:label "неизменяемое свойство"@ru ;
-  rdfs:label "immutable property"@en ;
-  rdfs:range xsd:boolean ;
-.
 v-ui:tooltip
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:PropertySpecification ;
@@ -802,7 +795,7 @@ v-ui:TestUI
   rdf:type v-ui:TestUIClass ;
   rdfs:label "Индивид для тестирования интерфейса"@ru ;
   rdfs:label "Test UI individual"@en ;
-  v-ui:testBoolean   "true"^^xsd:boolean ;
+  v-ui:testBoolean  "true"^^xsd:boolean ;
   v-ui:testString   "Тестовое значение строкового свойства"@ru ;
   v-ui:testString   "Test string property value"@en ;
   v-ui:testInteger  "999"^^xsd:integer ;
