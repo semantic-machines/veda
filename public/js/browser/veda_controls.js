@@ -344,6 +344,10 @@
 			e.stopPropagation();
 		});
 		
+		this.val = function (value) {
+			if (!value) return $("[bound]", this).val();
+			return $("[bound]", this).val( value.toString() );
+		}
 		return control;
 	};
 	veda_selectLiteral.defaults = {
@@ -406,6 +410,22 @@
 			return !isNaN(timestamp) ? new Date(timestamp) : null;
 		}
 	};
+
+	// CHECKBOX GROUP CONTROL
+	
+	// Checkbox group control
+	$.fn.veda_checkboxGroup = function (options) {
+		var opts = $.extend( {}, $.fn.veda_checkboxGroup.defaults, options ),
+			control = veda_selectLiteral.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_checkboxGroup.defaults = {
+		parser: function (input) { 
+			return input;
+		}
+	};
+
 
 	// SOURCE CODE CONTROL
 	// supports only one-way binding (editor -> individual) except initial value

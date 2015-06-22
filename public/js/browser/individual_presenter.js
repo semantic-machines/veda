@@ -268,8 +268,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		
 		// Special (not RDFa)
 		$("[href='id']", template).map( function () {
-			$(this)
-				.attr("href", "#/individual/" + individual.id + "/#main")
+			$(this).attr("href", "#/individual/" + individual.id + "/#main")
 				//.after( 
 				//	$("<a>", {href: "#/graph/" + individual.id}).append( 
 				//		$("<i>").addClass("glyphicon glyphicon-link") 
@@ -333,20 +332,31 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					var valueHolder = $("<span>");
 					result.prepend(valueHolder.text(value.toString()));
 
-					var btnRemove = $("<button class='btn btn-link btn-xs -view edit search' id='value-remove'><i class='glyphicon glyphicon-remove text-danger'></i></button>");
-					var btnEdit = $("<button class='btn btn-link btn-xs -view edit search' id='value-edit'><i class='glyphicon glyphicon-edit text-primary'></i></button>");
+					var wrapper = $("<div class='btn-group btn-group-xs -view edit search' role='group' style='margin:5px 5px 5px'></div>");
+					var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
+					var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
+					wrapper.append(btnEdit, btnRemove);
 					if (mode === "view") {
-						btnRemove.hide();
-						btnEdit.hide();
+						wrapper.hide();
 					}
-					notView = notView.add(btnRemove).add(btnEdit); edit = edit.add(btnRemove).add(btnEdit); search = search.add(btnRemove).add(btnEdit);
+					notView = notView.add(wrapper); edit = edit.add(wrapper); search = search.add(wrapper);
 					btnRemove.click(function () {
 						individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
 					});
 					btnEdit.click(function () {
-						individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
+						var val;
+						individual[property_uri] = individual[property_uri].filter(function (_, j) {
+							var test = j !== i;
+							if (!test) val = individual[property_uri][j];
+							return test;
+						});
+						props_ctrls.map(function (item) {
+							if (item.attr("property") === property_uri) {
+								item.val(val);
+							}
+						});
 					});
-					valueHolder.after( btnEdit, btnRemove );
+					valueHolder.after( wrapper );
 					
 					return result;
 				});
@@ -364,6 +374,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 			
 		});
+		
+		var props_ctrls = [];
 		
 		// Property control
 		$("veda-control[property]", template).map( function () {
@@ -409,6 +421,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 
 			controlType.call(control, opts);
+			
+			props_ctrls.push(control);
 			
 			template.on("view edit search", function (e) {
 				control.trigger(e.type);
@@ -553,15 +567,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				}
 				
 				clone.attr("style", "position:relative;");
+
+				var btnRemove = $("<button class='btn btn-xs btn-default' style='margin: 0px 0px 5px 5px;'><span class='glyphicon glyphicon-remove'></span></button>");
 				
-				var clear;
-				if (valTemplate.prop("tagName") === "SPAN") {
-					clear = $( $("#link-clear-inline-button-template").html() );
-				} else {
-					clear = $( $("#link-clear-block-button-template").html() );
+				if (valTemplate.prop("tagName") !== "SPAN") {
+					btnRemove.attr("style", btnRemove.attr("style") + "position:absolute; top:0px; right:0px; z-index:100;");
 				}
 									
-				clear.on("click", function () {
+				btnRemove.on("click", function () {
 					clone.remove();
 					individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id != value.id; });
 					if (embedded.length) {
@@ -570,20 +583,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					}
 				});
 
-				mode === "view" ? clear.hide() :
-				mode === "edit" ? clear.show() :
-				mode === "search" ? clear.show() : true;
+				mode === "view" ? btnRemove.hide() :
+				mode === "edit" ? btnRemove.show() :
+				mode === "search" ? btnRemove.show() : true;
 				
 				function modeHandler (e) {
-					e.type === "view" ? clear.hide() :
-					e.type === "edit" ? clear.show() :
-					e.type === "search" ? clear.show() :
+					e.type === "view" ? btnRemove.hide() :
+					e.type === "edit" ? btnRemove.show() :
+					e.type === "search" ? btnRemove.show() :
 					true;
 					e.stopPropagation();						
 				}
 				template.on("view edit search", modeHandler);
 
-				clone.append(clear);
+				clone.append(btnRemove);
 				
 			}, 0);
 			relContainer.before(clone);
