@@ -350,11 +350,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 							if (!test) val = individual[property_uri][j];
 							return test;
 						});
-						props_ctrls.map(function (item) {
-							if (item.attr("property") === property_uri) {
+						if ( props_ctrls[property_uri] ) {
+							props_ctrls[property_uri].map(function (item) {
 								item.val(val);
-							}
-						});
+							});
+						}
 					});
 					valueHolder.after( wrapper );
 					
@@ -375,10 +375,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 		});
 		
-		var props_ctrls = [];
+		var props_ctrls = {};
 		
 		// Property control
 		$("veda-control[property]", template).map( function () {
+			
 			var control = $(this),
 				property_uri = control.attr("property"),
 				property = veda.ontology[property_uri],
@@ -422,7 +423,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 			controlType.call(control, opts);
 			
-			props_ctrls.push(control);
+			props_ctrls[property_uri] ? props_ctrls[property_uri].push(control) : props_ctrls[property_uri] = [ control ];
 			
 			template.on("view edit search", function (e) {
 				control.trigger(e.type);
