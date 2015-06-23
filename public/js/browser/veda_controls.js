@@ -540,6 +540,9 @@
 		}
 	};
 
+	// RADIO GROUP CONTROL
+	
+	// Generic radio group behaviour
 
 	var veda_radio = function (options) {
 		var opts = $.extend( {}, veda_radio.defaults, options ),
@@ -820,6 +823,10 @@
 			});
 		});
 		
+		this.on("view edit search", function (e) {
+			e.stopPropagation();
+		});
+		
 		this.append(control);
 		return this;
 	};
@@ -827,5 +834,169 @@
 		template: $("#link-control-template").html(),
 		queryPrefix: ""
 	};
+
+	// OBJECT CHECKBOX GROUP CONTROL
+	$.fn.veda_objectCheckbox = function (options) {
+		var opts = $.extend( {}, $.fn.veda_objectCheckbox.defaults, options ),
+			control = $(opts.template),
+			individual = opts.individual,
+			rel_uri = opts.rel_uri,
+			parser = opts.parser,
+			spec = opts.spec,
+			optionProperty = opts.optionProperty,
+			holder = $(".checkbox", control),
+			template = new veda.IndividualModel( this.attr("template") || "v-ui:LabelTemplate" );
+		
+		function populate() {
+			if (spec && spec.hasValue(optionProperty)) {
+				control.empty();
+				spec[optionProperty].map(function (value) {
+					var hld = holder.clone().appendTo(control);
+					var lbl = $("label", hld);
+					var cont = $("<span>").appendTo(lbl);
+					//setTimeout (function () {
+						value.present(cont, template, "view");
+					//}, 0);
+					var chk = $("input", lbl).val(value.id);
+					var test = individual.hasValue(rel_uri) && individual[rel_uri].filter( function (i) { return i.id === value.id }).length;
+					if (test) {
+						chk.attr("checked", "true");
+					}
+					chk.change(function () {
+						if ( chk.is(":checked") ) {
+							individual[rel_uri] = individual[rel_uri].concat( parser( chk.val() ) );
+						} else {
+							individual[rel_uri] = individual[rel_uri].filter( function (i) {
+								return i.id !== chk.val();
+							});
+						}
+					})
+				});
+			}
+		}
+		
+		populate();
+		
+		function handler(doc_rel_uri) {
+			if (doc_rel_uri === rel_uri) {
+				populate();
+			}
+		}
+		individual.on("individual:propertyModified", handler);
+		this.one("remove", function () {
+			individual.off("individual:propertyModified", handler);
+		});
+		
+		this.on("view edit search", function (e) {
+			e.stopPropagation();
+			if (e.type === "view") { 
+				$("div.checkbox", control).addClass("disabled");
+				$("input", control).attr("disabled", "true");
+			} else {
+				$("div.checkbox", control).removeClass("disabled");
+				$("input", control).removeAttr("disabled");
+			}
+		});
+		
+		this.val = function (value) {
+			if (!value) return $("input", this).map(function () { 
+				if (this.value) return new veda.IndividualModel(this.value);
+			});
+			populate();
+			return this;
+		}
+		
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_objectCheckbox.defaults = {
+		template: $("#checkbox-control-template").html(),
+		optionProperty: "v-ui:optionObjectValue",
+		parser: function (value) { 
+			return new veda.IndividualModel(value); 
+		}
+	}
+
+	// OBJECT RADIO GROUP CONTROL
+	$.fn.veda_objectRadio = function (options) {
+		var opts = $.extend( {}, $.fn.veda_objectRadio.defaults, options ),
+			control = $(opts.template),
+			individual = opts.individual,
+			rel_uri = opts.rel_uri,
+			parser = opts.parser,
+			spec = opts.spec,
+			optionProperty = opts.optionProperty,
+			holder = $(".radio", control),
+			template = new veda.IndividualModel( this.attr("template") || "v-ui:LabelTemplate" );
+		
+		function populate() {
+			if (spec && spec.hasValue(optionProperty)) {
+				control.empty();
+				spec[optionProperty].map(function (value) {
+					var hld = holder.clone().appendTo(control);
+					var lbl = $("label", hld);
+					var cont = $("<span>").appendTo(lbl);
+					//setTimeout (function () {
+						value.present(cont, template, "view");
+					//}, 0);
+					var chk = $("input", lbl).val(value.id);
+					var test = individual.hasValue(rel_uri) && individual[rel_uri].filter( function (i) { return i.id === value.id }).length;
+					if (test) {
+						chk.attr("checked", "true");
+					}
+					chk.change(function () {
+						if ( chk.is(":checked") ) {
+							individual[rel_uri] = [ parser( chk.val() ) ];
+						} else {
+							individual[rel_uri] = individual[rel_uri].filter( function (i) {
+								return i.id !== chk.val();
+							});
+						}
+					})
+				});
+			}
+		}
+		
+		populate();
+		
+		function handler(doc_rel_uri) {
+			if (doc_rel_uri === rel_uri) {
+				populate();
+			}
+		}
+		individual.on("individual:propertyModified", handler);
+		this.one("remove", function () {
+			individual.off("individual:propertyModified", handler);
+		});
+		
+		this.on("view edit search", function (e) {
+			e.stopPropagation();
+			if (e.type === "view") { 
+				$("div.radio", control).addClass("disabled");
+				$("input", control).attr("disabled", "true");
+			} else {
+				$("div.radio", control).removeClass("disabled");
+				$("input", control).removeAttr("disabled");
+			}
+		});
+		
+		this.val = function (value) {
+			if (!value) return $("input", this).map(function () { 
+				if (this.value) return new veda.IndividualModel(this.value);
+			});
+			populate();
+			return this;
+		}
+		
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_objectRadio.defaults = {
+		template: $("#radio-control-template").html(),
+		optionProperty: "v-ui:optionObjectValue",
+		parser: function (value) { 
+			return new veda.IndividualModel(value); 
+		}
+	}
 
 })( jQuery );

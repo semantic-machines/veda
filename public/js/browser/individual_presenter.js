@@ -481,7 +481,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var control = $(this), 
 				rel_uri = control.attr("rel"),
 				spec = specs[rel_uri],
-				rel = veda.ontology[rel_uri];
+				rel = veda.ontology[rel_uri],
+				controlType = control.attr("type") ? $.fn["veda_" + control.attr("type")] : $.fn.veda_link;
 				
 			if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
 			
@@ -495,16 +496,24 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					var newVal = new veda.IndividualModel();
 					newVal["rdf:type"] = veda.ontology[rel_uri]["rdfs:range"];
 					individual[rel_uri] = individual[rel_uri].concat(newVal);
-				}
+				},
+				individual: individual,
+				rel_uri: rel_uri,
+				spec: spec,
+				mode: mode
 			};
 			
-			control.veda_link(opts);
+			controlType.call(control, opts);
 
-			function modeHandler() {
-				isValid(individual, spec, individual[rel_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
-				return false;
+			function modeHandler(e) {
+				e.stopPropagation();
+				e.type === "edit" ? 
+					isValid(individual, spec, individual[rel_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success") 
+					:
+					control.removeClass("has-error has-success");
+				control.trigger(e.type);
 			}
-			template.on("edit", modeHandler);
+			template.on("view edit search", modeHandler);
 			
 			function propertyModifiedHandler(doc_rel_uri) {
 				if (doc_rel_uri === rel_uri && mode === "edit") {
