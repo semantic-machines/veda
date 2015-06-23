@@ -355,13 +355,13 @@
 	}
 
 	// Integer select control
-	$.fn.veda_selectInteger = function (options) {
-		var opts = $.extend( {}, $.fn.veda_selectInteger.defaults, options ),
+	$.fn.veda_integerSelect = function (options) {
+		var opts = $.extend( {}, $.fn.veda_integerSelect.defaults, options ),
 			control = veda_selectLiteral.call(this, opts);
 		this.append(control);
 		return this;
 	};
-	$.fn.veda_selectInteger.defaults = {
+	$.fn.veda_integerSelect.defaults = {
 		optionProperty: "v-ui:optionIntegerValue",
 		parser: function (input) {
 			var int = parseInt(input, 10);
@@ -369,13 +369,13 @@
 		}
 	};
 	// Decimal select control
-	$.fn.veda_selectDecimal = function (options) {
-		var opts = $.extend( {}, $.fn.veda_selectDecimal.defaults, options ),
+	$.fn.veda_decimalSelect = function (options) {
+		var opts = $.extend( {}, $.fn.veda_decimalSelect.defaults, options ),
 			control = veda_selectLiteral.call(this, opts);
 		this.append(control);
 		return this;
 	};
-	$.fn.veda_selectDecimal.defaults = {
+	$.fn.veda_decimalSelect.defaults = {
 		optionProperty: "v-ui:optionDecimalValue",
 		parser: function (input) {
 			var float = parseFloat(input.replace(",", "."));
@@ -383,13 +383,13 @@
 		}
 	};
 	// String select control
-	$.fn.veda_selectString = function (options) {
-		var opts = $.extend( {}, $.fn.veda_selectString.defaults, options ),
+	$.fn.veda_stringSelect = function (options) {
+		var opts = $.extend( {}, $.fn.veda_stringSelect.defaults, options ),
 			control = veda_selectLiteral.call(this, opts);
 		this.append(control);
 		return this;
 	};
-	$.fn.veda_selectString.defaults = {
+	$.fn.veda_stringSelect.defaults = {
 		optionProperty: "v-ui:optionStringValue",
 		parser: function (input, el) {
 			var value = new String(input);
@@ -397,13 +397,13 @@
 		}
 	};
 	// Datetime select control
-	$.fn.veda_selectDatetime = function (options) {
-		var opts = $.extend( {}, $.fn.veda_selectDatetime.defaults, options ),
+	$.fn.veda_datetimeSelect = function (options) {
+		var opts = $.extend( {}, $.fn.veda_datetimeSelect.defaults, options ),
 			control = veda_selectLiteral.call(this, opts);
 		this.append(control);
 		return this;
 	};
-	$.fn.veda_selectDatetime.defaults = {
+	$.fn.veda_datetimeSelect.defaults = {
 		optionProperty: "v-ui:optionDatetimeValue",
 		parser: function (input) {
 			var timestamp = Date.parse(input);
@@ -413,20 +413,259 @@
 
 	// CHECKBOX GROUP CONTROL
 	
-	// Checkbox group control
-	$.fn.veda_checkboxGroup = function (options) {
-		var opts = $.extend( {}, $.fn.veda_checkboxGroup.defaults, options ),
-			control = veda_selectLiteral.call(this, opts);
+	// Generic checkbox group behaviour
+	
+	var veda_checkbox = function (options) {
+		var opts = $.extend( {}, veda_checkbox.defaults, options ),
+			control = $(opts.template),
+			individual = opts.individual,
+			property_uri = opts.property_uri,
+			parser = opts.parser,
+			spec = opts.spec,
+			optionProperty = opts.optionProperty,
+			holder = $(".checkbox", control);
+		
+		function populate() {
+			if (spec && spec.hasValue(optionProperty)) {
+				control.empty();
+				spec[optionProperty].map(function (value) {
+					var hld = holder.clone().appendTo(control);
+					var lbl = $("label", hld).append(value);
+					var chk = $("input", lbl).val(value);
+					var test = individual.hasValue(property_uri) && individual[property_uri].filter( function (i) { return i.toString() === value.toString() }).length;
+					if (test) {
+						chk.attr("checked", "true");
+					}
+					chk.change(function () {
+						if ( chk.is(":checked") ) {
+							individual[property_uri] = individual[property_uri].concat( parser( chk.val() ) );
+						} else {
+							individual[property_uri] = individual[property_uri].filter( function (i) {
+								return i.toString() !== chk.val();
+							});
+						}
+					})
+				});
+			}
+		}
+		
+		populate();
+		
+		function handler(doc_property_uri) {
+			if (doc_property_uri === property_uri) {
+				populate();
+			}
+		}
+		individual.on("individual:propertyModified", handler);
+		this.one("remove", function () {
+			individual.off("individual:propertyModified", handler);
+		});
+		
+		this.on("view edit search", function (e) {
+			e.stopPropagation();
+			if (e.type === "view") { 
+				$("div.checkbox", control).addClass("disabled");
+				$("input", control).attr("disabled", "true");
+			} else {
+				$("div.checkbox", control).removeClass("disabled");
+				$("input", control).removeAttr("disabled");
+			}
+		});
+		
+		this.val = function (value) {
+			if (!value) return $("input", this).map(function () { return this.value });
+			populate();
+			return this;
+		}
+		return control;
+	};
+	veda_checkbox.defaults = {
+		template: $("#checkbox-control-template").html(),
+	}
+
+	// Integer checkbox group control
+	$.fn.veda_integerCheckbox = function (options) {
+		var opts = $.extend( {}, $.fn.veda_integerCheckbox.defaults, options ),
+			control = veda_checkbox.call(this, opts);
 		this.append(control);
 		return this;
 	};
-	$.fn.veda_checkboxGroup.defaults = {
-		parser: function (input) { 
-			return input;
+	$.fn.veda_integerCheckbox.defaults = {
+		optionProperty: "v-ui:optionIntegerValue",
+		parser: function (input) {
+			var int = parseInt(input, 10);
+			return !isNaN(int) ? new Number(int) : null;
+		}
+	};
+	// Decimal checkbox group control
+	$.fn.veda_decimalCheckbox = function (options) {
+		var opts = $.extend( {}, $.fn.veda_decimalCheckbox.defaults, options ),
+			control = veda_checkbox.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_decimalCheckbox.defaults = {
+		optionProperty: "v-ui:optionDecimalValue",
+		parser: function (input) {
+			var float = parseFloat(input.replace(",", "."));
+			return !isNaN(float) ? new Number(float) : null;
+		}
+	};
+	// String checkbox group control
+	$.fn.veda_stringCheckbox = function (options) {
+		var opts = $.extend( {}, $.fn.veda_stringCheckbox.defaults, options ),
+			control = veda_checkbox.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_stringCheckbox.defaults = {
+		optionProperty: "v-ui:optionStringValue",
+		parser: function (input, el) {
+			var value = new String(input);
+			return value != "" ? value : null;
+		}
+	};
+	// Detetime checkbox group control
+	$.fn.veda_datetimeCheckbox = function (options) {
+		var opts = $.extend( {}, $.fn.veda_datetimeCheckbox.defaults, options ),
+			control = veda_checkbox.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_datetimeCheckbox.defaults = {
+		optionProperty: "v-ui:optionDatetimeValue",
+		parser: function (input) {
+			var timestamp = Date.parse(input);
+			return !isNaN(timestamp) ? new Date(timestamp) : null;
 		}
 	};
 
 
+	var veda_radio = function (options) {
+		var opts = $.extend( {}, veda_radio.defaults, options ),
+			control = $(opts.template),
+			individual = opts.individual,
+			property_uri = opts.property_uri,
+			parser = opts.parser,
+			spec = opts.spec,
+			optionProperty = opts.optionProperty,
+			holder = $(".radio", control).attr("name", individual.id + "_" + property_uri);
+		
+		function populate() {
+			if (spec && spec.hasValue(optionProperty)) {
+				control.empty();
+				spec[optionProperty].map(function (value) {
+					var hld = holder.clone().appendTo(control);
+					var lbl = $("label", hld).append(value);
+					var chk = $("input", lbl).val(value);
+					var test = individual.hasValue(property_uri) && individual[property_uri].filter( function (i) { return i.toString() === value.toString() }).length;
+					if (test) {
+						chk.attr("checked", "true");
+					}
+					chk.change(function () {
+						if ( chk.is(":checked") ) {
+							individual[property_uri] = [ parser( chk.val() ) ];
+						} else {
+							individual[property_uri] = individual[property_uri].filter( function (i) {
+								return i.toString() !== chk.val();
+							});
+						}
+					})
+				});
+			}
+		}
+		
+		populate();
+		
+		function handler(doc_property_uri) {
+			if (doc_property_uri === property_uri) {
+				populate();
+			}
+		}
+		individual.on("individual:propertyModified", handler);
+		this.one("remove", function () {
+			individual.off("individual:propertyModified", handler);
+		});
+		
+		this.on("view edit search", function (e) {
+			e.stopPropagation();
+			if (e.type === "view") { 
+				$("div.checkbox", control).addClass("disabled");
+				$("input", control).attr("disabled", "true");
+			} else {
+				$("div.checkbox", control).removeClass("disabled");
+				$("input", control).removeAttr("disabled");
+			}
+		});
+		
+		this.val = function (value) {
+			if (!value) return $("input", this).map(function () { return this.value });
+			populate();
+			return this;
+		}
+		return control;
+	};
+	veda_radio.defaults = {
+		template: $("#radio-control-template").html(),
+	}
+	
+	// Integer radio group control
+	$.fn.veda_integerRadio = function (options) {
+		var opts = $.extend( {}, $.fn.veda_integerRadio.defaults, options ),
+			control = veda_radio.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_integerRadio.defaults = {
+		optionProperty: "v-ui:optionIntegerValue",
+		parser: function (input) {
+			var int = parseInt(input, 10);
+			return !isNaN(int) ? new Number(int) : null;
+		}
+	};
+	// Decimal radio group control
+	$.fn.veda_decimalRadio = function (options) {
+		var opts = $.extend( {}, $.fn.veda_decimalRadio.defaults, options ),
+			control = veda_radio.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_decimalRadio.defaults = {
+		optionProperty: "v-ui:optionDecimalValue",
+		parser: function (input) {
+			var float = parseFloat(input.replace(",", "."));
+			return !isNaN(float) ? new Number(float) : null;
+		}
+	};
+	// String radio group control
+	$.fn.veda_stringRadio = function (options) {
+		var opts = $.extend( {}, $.fn.veda_stringRadio.defaults, options ),
+			control = veda_radio.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_stringRadio.defaults = {
+		optionProperty: "v-ui:optionStringValue",
+		parser: function (input, el) {
+			var value = new String(input);
+			return value != "" ? value : null;
+		}
+	};
+	// Detetime radio group control
+	$.fn.veda_datetimeRadio = function (options) {
+		var opts = $.extend( {}, $.fn.veda_datetimeRadio.defaults, options ),
+			control = veda_radio.call(this, opts);
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_datetimeRadio.defaults = {
+		optionProperty: "v-ui:optionDatetimeValue",
+		parser: function (input) {
+			var timestamp = Date.parse(input);
+			return !isNaN(timestamp) ? new Date(timestamp) : null;
+		}
+	};
+	
 	// SOURCE CODE CONTROL
 	// supports only one-way binding (editor -> individual) except initial value
 	$.fn.veda_source = function (options) {

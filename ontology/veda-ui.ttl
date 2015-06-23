@@ -748,25 +748,27 @@ v-ui:TestUITemplate
 	<veda-control type="multilingualString" property="v-ui:testString" class="-view edit search"></veda-control>
 	<veda-control type="text" property="v-ui:testString" class="-view edit search"></veda-control>
 	<veda-control type="multilingualText" property="v-ui:testString" class="-view edit search"></veda-control>
-	<veda-control type="selectString" property="v-ui:testString" class="-view edit search"></veda-control>
+	<veda-control type="stringSelect" property="v-ui:testString" class="-view edit search"></veda-control>
     <hr>
 
 	<strong class="text-muted" about="v-ui:testInteger" property="rdfs:label"></strong>
     <div property="v-ui:testInteger"></div>
 	<veda-control type="integer" property="v-ui:testInteger" class="-view edit search"></veda-control>
-	<veda-control type="selectInteger" property="v-ui:testInteger" class="-view edit search"></veda-control>
+	<veda-control type="integerSelect" property="v-ui:testInteger" class="-view edit search"></veda-control>
+	<veda-control type="integerCheckbox" property="v-ui:testInteger"></veda-control>
+	<veda-control type="integerRadio" property="v-ui:testInteger"></veda-control>
     <hr>
 
 	<strong class="text-muted" about="v-ui:testDecimal" property="rdfs:label"></strong>
     <div property="v-ui:testDecimal"></div>
 	<veda-control type="decimal" property="v-ui:testDecimal" class="-view edit search"></veda-control>
-	<veda-control type="selectDecimal" property="v-ui:testDecimal" class="-view edit search"></veda-control>
+	<veda-control type="decimalSelect" property="v-ui:testDecimal" class="-view edit search"></veda-control>
     <hr>
 
 	<strong class="text-muted" about="v-ui:testDatetime" property="rdfs:label"></strong>
     <div property="v-ui:testDatetime" class="-view -edit -search"></div>
     <veda-control type="dateTime" property="v-ui:testDatetime" class="-view edit search"></veda-control>
-    <veda-control type="selectDatetime" property="v-ui:testDatetime" class="-view edit search"></veda-control>
+    <veda-control type="datetimeSelect" property="v-ui:testDatetime" class="-view edit search"></veda-control>
     <hr>
 
 	<strong class="text-muted" about="v-ui:testLink" property="rdfs:label"></strong>
