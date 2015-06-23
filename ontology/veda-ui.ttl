@@ -703,6 +703,8 @@ v-ui:SpecTestLink
   rdfs:label "Specification for test link property"@en ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:forProperty v-ui:testLink ;
+  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:optionObjectValue v-ui:SpecTestLink ;
   v-ui:optionObjectValue v-ui:SpecTestDatetime ;
   v-ui:optionObjectValue v-ui:SpecTestString ;
@@ -778,6 +780,7 @@ v-ui:TestUITemplate
 	<veda-control type="link" rel="v-ui:testLink" class="-view edit search"></veda-control>
 	<veda-control type="objectCheckbox" rel="v-ui:testLink" template="v-ui:LabelTemplate"></veda-control>
 	<veda-control type="objectRadio" rel="v-ui:testLink" template="v-ui:LabelTemplate"></veda-control>
+	<veda-control type="objectSelect" rel="v-ui:testLink" class="-view edit search" template="v-ui:ClassNameLabelTemplate"></veda-control>
 	<!--hr>
 
 	<strong class="text-muted" about="v-ui:template" property="rdfs:label"></strong>

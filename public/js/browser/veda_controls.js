@@ -135,7 +135,7 @@
 	$.fn.veda_decimal.defaults = {
 		template: $("#decimal-control-template").html(),
 		parser: function (input) {
-			var float = parseFloat(input.replace(",", "."));
+			var float = parseFloat( input.replace(",", ".") );
 			return !isNaN(float) ? new Number(float) : null;
 		}
 	};
@@ -994,6 +994,78 @@
 	$.fn.veda_objectRadio.defaults = {
 		template: $("#radio-control-template").html(),
 		optionProperty: "v-ui:optionObjectValue",
+		parser: function (value) { 
+			return new veda.IndividualModel(value); 
+		}
+	}
+
+	// OBJECT SELECT CONTROL
+	$.fn.veda_objectSelect = function (options) {
+		var opts = $.extend( {}, $.fn.veda_objectSelect.defaults, options ),
+			control = $(opts.template),
+			individual = opts.individual,
+			rel_uri = opts.rel_uri,
+			parser = opts.parser,
+			spec = opts.spec,
+			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1, 
+			optionProperty = opts.optionProperty,
+			select = $("select", control),
+			first_opt = $("option", control),
+			template = new veda.IndividualModel( this.attr("template") || "v-ui:LabelTemplate" );
+		
+		function populate() {
+			if (spec && spec.hasValue(optionProperty)) {
+				select.empty().append(first_opt);
+				spec[optionProperty].map(function (value) {
+					var opt = first_opt.clone().val(value.id).appendTo(select);
+					value.present(opt, template, "view");
+					if (isSingle && individual.hasValue(rel_uri) && individual[rel_uri][0].id === value.id) {
+						opt.attr("selected", "true");
+					}
+				});
+			}
+		}
+		
+		populate();
+		
+		if (isSingle) {
+			select.change(function () {
+				var value = select.val();
+				if (value) individual[rel_uri] = [ parser( select.val() ) ];
+			});
+		} else {
+			select.change(function () {
+				var value = select.val();
+				if (value) individual[rel_uri] = individual[rel_uri].concat( parser(value) );
+			});
+		}
+		
+		function handler(doc_rel_uri) {
+			if (doc_rel_uri === rel_uri) {
+				populate();
+			}
+		}
+		individual.on("individual:propertyModified", handler);
+		this.one("remove", function () {
+			individual.off("individual:propertyModified", handler);
+		});
+		
+		this.on("view edit search", function (e) {
+			e.stopPropagation();
+		});
+		
+		this.val = function (value) {
+			if (!value) return $("[bound]", this).val();
+			populate();
+			return this;
+		}
+		
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_objectSelect.defaults = {
+		template: $("#select-control-template").html(),
+		optionProperty: "v-ui:optionObjectValue",		
 		parser: function (value) { 
 			return new veda.IndividualModel(value); 
 		}
