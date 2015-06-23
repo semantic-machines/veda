@@ -255,7 +255,7 @@ test("#007 Individual store and read, test datatype", function() {
 			type : _Uri
 		} ],
 		'v-s:test_integer' : [ {
-			data : 12745784850035,
+			data : 9223372036854775295,
 			type : _Integer
 		} ],
 		'v-s:test_negative_integer' : [ {
@@ -263,11 +263,11 @@ test("#007 Individual store and read, test datatype", function() {
 			type : _Integer
 		} ],
 		'v-s:test_decimal' : [ {
-			data : 127.0035,
+			data : 12.12345678912345,
 			type : _Decimal
 		} ],
 		'v-s:test_negative_decimal' : [ {
-			data : -54.89,
+			data : -54.89764,
 			type : _Decimal
 		} ],
 		'v-s:created' : [ {
