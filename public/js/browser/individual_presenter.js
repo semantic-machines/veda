@@ -134,17 +134,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		// Deleted alert
 		var deletedAlert = $( deletedAlertTmpl );
-		$("button", deletedAlert).click(function () {
-			template.trigger("recover");
-		});
+		var recoverBtn = $("button", deletedAlert);
 		if (individual.hasValue("v-s:deleted") && individual["v-s:deleted"][0] == true) {
 			afterDeleteHandler();
 		}
 		function afterRecoverHandler() {
-			deletedAlert.detach();
+			deletedAlert.remove();
 		}
 		function afterDeleteHandler() {
 			template.prepend(deletedAlert);
+			recoverBtn.click(function () {
+				template.trigger("recover");
+			});
 		}
 		individual.on("individual:afterRecover", afterRecoverHandler);
 		individual.on("individual:afterDelete", afterDeleteHandler);
@@ -240,7 +241,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			e.stopPropagation();
 		}
 		template.on("view edit search", modeHandler);
-		
+
 		// Process RDFa compliant template
 		// About resource
 		$("[about]", template).map( function () {
@@ -444,7 +445,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			template.one("remove", function () {
 				individual.off("individual:propertyModified", propertyModifiedHandler);
 			});
-			
+
 			function assignDefaultValue (e) {
 				var defaultValue;
 				switch (property["rdfs:range"][0].id) {
@@ -524,7 +525,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			template.one("remove", function () {
 				individual.off("individual:propertyModified", propertyModifiedHandler);
 			});
-			
+
 			function assignDefaultObjectValue (e) {
 				individual[rel_uri] = [ spec["v-ui:defaultObjectValue"][0] ];
 				return false;
