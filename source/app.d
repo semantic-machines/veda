@@ -19,9 +19,11 @@ void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
     enforce(pf !is null, "No file uploaded!");
 
     auto pt = "path" in req.form;
-    if (pt !is null)
+    auto nm = "name" in req.form;
+    if (pt !is null && nm !is null)
     {
         string   pts = cast(string)*pt;
+	string filename = cast(string)*nm;
 
         string[] ptspc = pts.split('/');
 
@@ -38,7 +40,7 @@ void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
             }
         }
 
-        auto path = Path("data/files/" ~ pts ~ "/") ~pf.filename;
+        auto path = Path("data/files/" ~ pts ~ "/") ~ filename;
 
         try moveFile(pf.tempPath, path);
         catch (Exception e) {

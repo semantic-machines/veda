@@ -323,30 +323,20 @@ class VedaStorageRest : VedaStorageRest_API
 
         writeln("@v uri=", uri);
 
-        string ticket = req.cookies.get("ticket", "");
+        string _ticket = req.cookies.get("ticket", "");
 
-        writeln("@v ticket=", ticket);
+        writeln("@v ticket=", _ticket);
 
-        if (uri.length > 3 && ticket !is null)
+        if (uri.length > 3 && _ticket !is null)
         {
-            //Tid my_task = Task.getThis();
+	   Ticket     *ticket = context.get_ticket(_ticket);
 
-            //if (my_task is Tid.init)
-            //    return;
+	   Individual file_info;
 
-            immutable(Individual)[] individual;
-            std.concurrency.send(getFreeTid(), Command.Get, Function.Individual, uri, ticket, std.concurrency.thisTid);
-            //yield();
-            ResultCode rc;
-            std.concurrency.receive((immutable(Individual)[] _individuals, ResultCode _rc) { individual = _individuals; rc = _rc; });
-
-            if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc);
-
-            if (individual.length == 0)
-                return;
-
-            Individual file_info = cast(Individual)individual[ 0 ];
+           ResultCode rc = ticket.result;
+           if (rc == ResultCode.OK)
+           {
+           	file_info = context.get_individual(ticket, uri);           
 
             writeln("@v file_info=", file_info);
             auto fileServerSettings = new HTTPFileServerSettings;
@@ -365,6 +355,7 @@ class VedaStorageRest : VedaStorageRest_API
 
             res.contentType = getMimeTypeForFile(originFileName);
             dg(req, res);
+	   }
         }
     }
 
