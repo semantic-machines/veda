@@ -747,6 +747,69 @@
 			return new String(input);
 		}
 	};
+
+	function uploadFile(file, cb) {
+		var url = "/upload";
+		var xhr = new XMLHttpRequest();
+		var fd = new FormData();
+		xhr.open("POST", url, true);
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4 && xhr.status == 200) {
+				cb(file, path, name);
+			}
+		};
+		var d = new Date();
+		var path = ["", d.getFullYear(), d.getMonth() + 1, d.getDate()].join("/");
+		var name = veda.Util.guid();
+		fd.append("file", file);
+		fd.append("path", path);
+		fd.append("name", name);
+		xhr.send(fd);
+	}
+
+	$.fn.veda_file = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_file.defaults, options ),
+			control = $(opts.template),
+			spec = opts.spec,
+			individual = opts.individual,
+			rel_uri = opts.rel_uri,
+			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1;
+		var chosen = $("div#chosen", control).hide();
+		var li = $("li.item", control).remove();
+		var ol = $("ol", control);
+		var fileInput = $("<input type='file'/>").hide().appendTo(control);
+		if (!isSingle) fileInput.attr("multiple", "multiple");
+		var btn = $("button", control);
+		btn.click(function (e) {
+			e.preventDefault();
+			fileInput.click();
+		});
+		fileInput.change(function () {
+		    chosen.show();
+		    ol.empty();
+		    for (var i = 0, file; (file = this.files && this.files[i]); i++) {
+				var item = li.clone().appendTo(ol);
+				item.children("strong#name").text(file.name);
+				item.children("span#size").text((file.size / (1024 * 1024)).toFixed(2) + " Mb");
+			}
+		});
+		this.on("view edit search", function (e) {
+			e.stopPropagation();
+		});
+		this.append(control);
+		return this;
+		
+		function uploaded(file, path, name) {
+			var f = new veda.IndividualModel();
+			f["rdf:type"] = [ veda.ontology["v-s:File"] ];
+			f["v-s:fileName"] = [ name ];
+			f["v-s:filePath"] = [ path ];
+		}
+	}
+	$.fn.veda_file.defaults = {
+		template: $("#file-control-template").html()
+	};
+
 	
 	// OBJECT PROPERTY CONTROL
 	$.fn.veda_link = function( options ) {

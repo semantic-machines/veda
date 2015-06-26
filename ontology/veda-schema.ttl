@@ -600,7 +600,14 @@ v-s:fileThumbnail
   rdfs:label "миниатюра"@ru ;
   rdfs:range xsd:string ;
 .
-v-s:fileURI
+v-s:filePath
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:File ;
+  rdfs:label "URI файла"@ru ;
+  rdfs:label "file URI"@en ;
+  rdfs:range xsd:string ;
+.
+v-s:fileUri
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:File ;
   rdfs:label "URI файла"@ru ;

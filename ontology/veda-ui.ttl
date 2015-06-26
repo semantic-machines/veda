@@ -640,6 +640,13 @@ v-ui:testLink
   rdfs:domain v-ui:TestUIClass ;
   rdfs:range rdfs:Resource ;
 .
+v-ui:testFile
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Тестовое файловое свойство"@ru ;
+  rdfs:label "Test file property"@en ;
+  rdfs:domain v-ui:TestUIClass ;
+  rdfs:range v-s:File ;
+.
 v-ui:template
   rdfs:domain v-ui:TestUIClass ;
 .
@@ -781,14 +788,18 @@ v-ui:TestUITemplate
 	<veda-control type="objectCheckbox" rel="v-ui:testLink" template="v-ui:LabelTemplate"></veda-control>
 	<veda-control type="objectRadio" rel="v-ui:testLink" template="v-ui:LabelTemplate"></veda-control>
 	<veda-control type="objectSelect" rel="v-ui:testLink" class="-view edit search" template="v-ui:ClassNameLabelTemplate"></veda-control>
+	
 	<!--hr>
-
 	<strong class="text-muted" about="v-ui:template" property="rdfs:label"></strong>
 	<veda-control type="source" property="v-ui:template"></veda-control>
 	<hr>
-
 	<strong class="text-muted" about="v-s:script" property="rdfs:label"></strong>	
 	<veda-control type="source" property="v-s:script"></veda-control-->
+	
+	<hr>
+	<strong class="text-muted" about="v-ui:testFile" property="rdfs:label"></strong>	
+	<div rel="v-ui:testFile" template="v-ui:FileTemplate"></div>
+	<veda-control type="file" property="v-ui:testFile"></veda-control>
   </div>
   <div class="panel-footer">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
