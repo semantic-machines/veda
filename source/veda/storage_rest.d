@@ -329,33 +329,40 @@ class VedaStorageRest : VedaStorageRest_API
 
         if (uri.length > 3 && _ticket !is null)
         {
-	   Ticket     *ticket = context.get_ticket(_ticket);
+            Ticket     *ticket = context.get_ticket(_ticket);
 
-	   Individual file_info;
+            Individual file_info;
 
-           ResultCode rc = ticket.result;
-           if (rc == ResultCode.OK)
-           {
-           	file_info = context.get_individual(ticket, uri);           
+            ResultCode rc = ticket.result;
+            if (rc == ResultCode.OK)
+            {
+                file_info = context.get_individual(ticket, uri);
 
-            writeln("@v file_info=", file_info);
-            auto fileServerSettings = new HTTPFileServerSettings;
-            fileServerSettings.encodingFileExtension = [ "jpeg":".JPG" ];
+                writeln("@v file_info=", file_info);
+                auto fileServerSettings = new HTTPFileServerSettings;
+                fileServerSettings.encodingFileExtension = [ "jpeg":".JPG" ];
 
-            HTTPServerRequestDelegate dg =
-                serveStaticFile(attachments_db_path ~ "/" ~ file_info.getFirstResource(veda_schema__fileURI).get!string,
-                                fileServerSettings);
-            string originFileName = file_info.getFirstResource(veda_schema__fileName).get!string;
+                string path     = file_info.getFirstResource("v-s:filePath").get!string;
+                string file_uri = file_info.getFirstResource("v-s:fileUri").get!string;
 
-            writeln("@v originFileName=", originFileName);
-            writeln("@v getMimeTypeForFile(originFileName)=", getMimeTypeForFile(originFileName));
+                if (path !is null && file_uri !is null && file_uri.length > 0)
+                {
+                    if (path.length > 0)
+                        path = path ~ "/";
 
-            res.headers[ "Content-Disposition" ] = "Content-Disposition: attachment; filename=\"" ~ originFileName ~ "\"";
+                    HTTPServerRequestDelegate dg =
+                        serveStaticFile(attachments_db_path ~ "/" ~ path ~ file_uri, fileServerSettings);
+                    string                    originFileName = file_info.getFirstResource(veda_schema__fileName).get!string;
 
+                    writeln("@v originFileName=", originFileName);
+                    writeln("@v getMimeTypeForFile(originFileName)=", getMimeTypeForFile(originFileName));
 
-            res.contentType = getMimeTypeForFile(originFileName);
-            dg(req, res);
-	   }
+                    res.headers[ "Content-Disposition" ] = "Content-Disposition: attachment; filename=\"" ~ originFileName ~ "\"";
+
+                    res.contentType = getMimeTypeForFile(originFileName);
+                    dg(req, res);
+                }
+            }
         }
     }
 
@@ -516,8 +523,9 @@ class VedaStorageRest : VedaStorageRest_API
 
         std.concurrency.receive((immutable(
                                            string)[] _individuals_ids, ResultCode _rc, int _recv_worker_id) { individuals_ids =
-                                                                                                                  cast(string[])_individuals_ids; rc = _rc; recv_worker_id = _recv_worker_id;
-                                });
+                                                                                                                  cast(string[])_individuals_ids;
+                                                                                                              rc = _rc; recv_worker_id =
+                                                                                                                  _recv_worker_id; });
 
         if (recv_worker_id == worker.id)
         {
@@ -546,8 +554,8 @@ class VedaStorageRest : VedaStorageRest_API
         std.concurrency.send(worker.tid, Command.Get, Function.Individuals, uris.idup, ticket, worker.id, std.concurrency.thisTid);
         yield();
         std.concurrency.receive((immutable(
-                                           Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc; recv_worker_id = _recv_worker_id;
-                                });
+                                           Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc; recv_worker_id =
+                                                                                                    _recv_worker_id; });
 
         if (recv_worker_id == worker.id)
         {
@@ -579,8 +587,8 @@ class VedaStorageRest : VedaStorageRest_API
             std.concurrency.send(worker.tid, Command.Get, Function.Individual, uri, "", _ticket, worker.id, std.concurrency.thisTid);
             yield();
             std.concurrency.receive((immutable(
-                                               Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc; recv_worker_id = _recv_worker_id;
-                                    });
+                                               Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;
+                                                                                                    recv_worker_id = _recv_worker_id; });
 
             if (recv_worker_id == worker.id)
             {
@@ -708,5 +716,4 @@ class VedaStorageRest : VedaStorageRest_API
 
         return rc.to!int;
     }
-
 }
