@@ -2,13 +2,3 @@ nav.navbar.navbar-inverse(role="navigation")
 	.container-fluid
 		a.navbar-brand(href="/#/")
 			img(src="/img/veda-logo.png", style="position:relative; top:-3px")
-		ul.nav.navbar-nav.navbar-left
-
-			li
-				a(href="/#/document/mondi-data:") Документ / Document
-			li
-				a(href="/#/console") Консоль / Console
-			li
-				a(href="/#/search") Поиск / Search
-			li
-				a(href="/tests", title="Search") Тесты / Tests
