@@ -821,10 +821,11 @@ v-ui:FileTemplate
   v-ui:forClass v-s:File ;
   v-ui:template """
 <div>
-	<a><span property="v-s:fileName"></span>, <span property="v-s:fileSize"></span></a>
+	<a><span property="v-s:fileName"></span>, <span id="fileSize"></span></a>
 </div>
 <script>
 	$("a", template).attr("href", "/files/" + individual.id);
+	$("span#fileSize", template).text( (individual["v-s:fileSize"][0] / 1024 / 1024).toFixed(2) + " Mb");
 </script>
   """ ;
 .

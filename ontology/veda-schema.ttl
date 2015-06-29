@@ -20,7 +20,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "1.3" ;
+#  owl:versionInfo "1.3" ;
 .
 v-s:AND
   rdf:type v-s:LogicalOperator ;
@@ -573,21 +573,21 @@ v-s:endTime
   rdfs:range xsd:dateTime ;
 .
 v-s:fileDescription
-  rdf:type owl:ObjectProperty ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:File ;
   rdfs:label "file name"@en ;
   rdfs:label "описание файла"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:fileName
-  rdf:type owl:ObjectProperty ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:File ;
   rdfs:label "file name"@en ;
   rdfs:label "имя файла"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:fileSize
-  rdf:type owl:ObjectProperty ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:File ;
   rdfs:label "file size"@en ;
   rdfs:label "размер файла"@ru ;
@@ -598,17 +598,17 @@ v-s:fileThumbnail
   rdfs:domain v-s:File ;
   rdfs:label "thumbnail"@en ;
   rdfs:label "миниатюра"@ru ;
-  rdfs:range xsd:string ;
+  rdfs:range v-s:File ;
 .
 v-s:filePath
-  rdf:type owl:ObjectProperty ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:File ;
-  rdfs:label "URI файла"@ru ;
-  rdfs:label "file URI"@en ;
+  rdfs:label "Путь файла"@ru ;
+  rdfs:label "file path"@en ;
   rdfs:range xsd:string ;
 .
 v-s:fileUri
-  rdf:type owl:ObjectProperty ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:File ;
   rdfs:label "URI файла"@ru ;
   rdfs:label "file URI"@en ;

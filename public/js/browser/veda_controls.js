@@ -795,7 +795,7 @@
 			var f = new veda.IndividualModel();
 			f["rdf:type"] = [ veda.ontology["v-s:File"] ];
 			f["v-s:fileName"] = [ file.name ];
-			f["v-s:fileSize"] = [ (file.size / (1024 * 1024)).toFixed(2) + " Mb" ];
+			f["v-s:fileSize"] = [ file.size ];
 			f["v-s:fileUri"] = [ name ];
 			f["v-s:filePath"] = [ path ];
 			f.save();
