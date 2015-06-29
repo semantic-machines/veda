@@ -798,8 +798,11 @@ v-ui:TestUITemplate
 	
 	<hr>
 	<strong class="text-muted" about="v-ui:testFile" property="rdfs:label"></strong>	
-	<div rel="v-ui:testFile" template="v-ui:FileTemplate"></div>
-	<veda-control type="file" property="v-ui:testFile"></veda-control>
+	<ol>
+		<li rel="v-ui:testFile" template="v-ui:FileTemplate" class="view edit -search"></li>
+	</ol>
+	<div rel="v-ui:testFile" template="v-ui:FileTemplate" class="view edit -search"></div>
+	<veda-control type="file" rel="v-ui:testFile" class="-view edit -search"></veda-control>
   </div>
   <div class="panel-footer">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
@@ -809,6 +812,20 @@ v-ui:TestUITemplate
     <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
   </div>
 </div>
+  """ ;
+.
+v-ui:FileTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для файла"@ru ;
+  rdfs:label "File template"@en ;
+  v-ui:forClass v-s:File ;
+  v-ui:template """
+<div>
+	<a><span property="v-s:fileName"></span>, <span property="v-s:fileSize"></span></a>
+</div>
+<script>
+	$("a", template).attr("href", "/files/" + individual.id);
+</script>
   """ ;
 .
 v-ui:TestUI

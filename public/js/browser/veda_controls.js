@@ -774,23 +774,15 @@
 			individual = opts.individual,
 			rel_uri = opts.rel_uri,
 			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1;
-		var chosen = $("div#chosen", control).hide();
-		var li = $("li.item", control).remove();
-		var ol = $("ol", control);
-		var fileInput = $("<input type='file'/>").hide().appendTo(control);
+		var fileInput = $("<input type='file'/>");
 		if (!isSingle) fileInput.attr("multiple", "multiple");
 		var btn = $("button", control);
 		btn.click(function (e) {
-			e.preventDefault();
 			fileInput.click();
 		});
 		fileInput.change(function () {
-		    chosen.show();
-		    ol.empty();
 		    for (var i = 0, file; (file = this.files && this.files[i]); i++) {
-				var item = li.clone().appendTo(ol);
-				item.children("strong#name").text(file.name);
-				item.children("span#size").text((file.size / (1024 * 1024)).toFixed(2) + " Mb");
+				uploadFile(file, uploaded);
 			}
 		});
 		this.on("view edit search", function (e) {
@@ -802,8 +794,12 @@
 		function uploaded(file, path, name) {
 			var f = new veda.IndividualModel();
 			f["rdf:type"] = [ veda.ontology["v-s:File"] ];
-			f["v-s:fileName"] = [ name ];
+			f["v-s:fileName"] = [ file.name ];
+			f["v-s:fileSize"] = [ (file.size / (1024 * 1024)).toFixed(2) + " Mb" ];
+			f["v-s:fileUri"] = [ name ];
 			f["v-s:filePath"] = [ path ];
+			f.save();
+			individual[rel_uri] = individual[rel_uri].concat(f);
 		}
 	}
 	$.fn.veda_file.defaults = {
