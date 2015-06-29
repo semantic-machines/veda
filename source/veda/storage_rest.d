@@ -350,9 +350,14 @@ class VedaStorageRest : VedaStorageRest_API
                     if (path.length > 0)
                         path = path ~ "/";
 
+                    string full_path = attachments_db_path ~ "/" ~ path ~ file_uri;
+
+                    enforce(exists(full_path), "No file found!");
+
                     HTTPServerRequestDelegate dg =
-                        serveStaticFile(attachments_db_path ~ "/" ~ path ~ file_uri, fileServerSettings);
-                    string                    originFileName = file_info.getFirstResource(veda_schema__fileName).get!string;
+                        serveStaticFile(full_path, fileServerSettings);
+
+                    string originFileName = file_info.getFirstResource(veda_schema__fileName).get!string;
 
                     writeln("@v originFileName=", originFileName);
                     writeln("@v getMimeTypeForFile(originFileName)=", getMimeTypeForFile(originFileName));
@@ -523,7 +528,8 @@ class VedaStorageRest : VedaStorageRest_API
 
         std.concurrency.receive((immutable(
                                            string)[] _individuals_ids, ResultCode _rc, int _recv_worker_id) { individuals_ids =
-                                                                                                                  cast(string[])_individuals_ids;
+                                                                                                                  cast(string[])
+                                                                                                                  _individuals_ids;
                                                                                                               rc = _rc; recv_worker_id =
                                                                                                                   _recv_worker_id; });
 
@@ -554,7 +560,8 @@ class VedaStorageRest : VedaStorageRest_API
         std.concurrency.send(worker.tid, Command.Get, Function.Individuals, uris.idup, ticket, worker.id, std.concurrency.thisTid);
         yield();
         std.concurrency.receive((immutable(
-                                           Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc; recv_worker_id =
+                                           Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;
+                                                                                                recv_worker_id =
                                                                                                     _recv_worker_id; });
 
         if (recv_worker_id == worker.id)

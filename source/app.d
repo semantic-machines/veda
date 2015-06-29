@@ -19,11 +19,11 @@ void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
     enforce(pf !is null, "No file uploaded!");
 
     auto pt = "path" in req.form;
-    auto nm = "name" in req.form;
+    auto nm = "uri" in req.form;
     if (pt !is null && nm !is null)
     {
-        string   pts = cast(string)*pt;
-	string filename = cast(string)*nm;
+        string   pts      = cast(string)*pt;
+        string   filename = cast(string)*nm;
 
         string[] ptspc = pts.split('/');
 
@@ -40,7 +40,7 @@ void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
             }
         }
 
-        auto path = Path("data/files/" ~ pts ~ "/") ~ filename;
+        auto path = Path("data/files/" ~ pts ~ "/") ~filename;
 
         try moveFile(pf.tempPath, path);
         catch (Exception e) {
@@ -78,14 +78,14 @@ shared static this()
     count_thread = properties.as!(int)("count_thread");
     int checktime_onto_files = properties.as!(int)("checktime_onto_files");
 
-	if (checktime_onto_files < 1)
-		checktime_onto_files = 30;
+    if (checktime_onto_files < 1)
+        checktime_onto_files = 30;
 
     pacahon.server.init_core(checktime_onto_files);
 
-    pacahon.context.Context context;
-    string                  thread_name = "veda" ~ text(std.uuid.randomUUID().toHash())[ 0..5 ];
-    core.thread.Thread.getThis().name   = thread_name;
+    pacahon.context.Context      context;
+    string                       thread_name = "veda" ~ text(std.uuid.randomUUID().toHash())[ 0..5 ];
+    core.thread.Thread.getThis().name        = thread_name;
     context = new pacahon.thread_context.PThreadContext(pacahon.server.props_file_path, thread_name, pacahon.context.P_MODULE.nop);
 
     std.concurrency.Tid[] pool;
@@ -111,8 +111,7 @@ shared static this()
     router.get("*", serveStaticFiles("public"));
     router.get("/", serveStaticFile("public/index.html"));
     router.get("/tests", serveStaticFile("public/tests.html"));
-    router.get("/upload-form", staticTemplate !"upload_form.dt");
-    router.post("/upload", &uploadFile);
+    router.post("/files", &uploadFile);
 
     registerRestInterface(router, vsr);
 
