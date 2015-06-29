@@ -798,10 +798,8 @@ v-ui:TestUITemplate
 	
 	<hr>
 	<strong class="text-muted" about="v-ui:testFile" property="rdfs:label"></strong>	
-	<ol>
-		<li rel="v-ui:testFile" template="v-ui:FileTemplate" class="view edit -search"></li>
-	</ol>
 	<div rel="v-ui:testFile" template="v-ui:FileTemplate" class="view edit -search"></div>
+	<br>
 	<veda-control type="file" rel="v-ui:testFile" class="-view edit -search"></veda-control>
   </div>
   <div class="panel-footer">
@@ -820,12 +818,21 @@ v-ui:FileTemplate
   rdfs:label "File template"@en ;
   v-ui:forClass v-s:File ;
   v-ui:template """
-<div>
-	<a><span property="v-s:fileName"></span>, <span id="fileSize"></span></a>
-</div>
+<span>
+	<a><span id="icon" class="label label-primary"></span> <span property="v-s:fileName" class="view -edit -search"></span>, <span id="fileSize"></span></a>
+</span>
 <script>
 	$("a", template).attr("href", "/files/" + individual.id);
-	$("span#fileSize", template).text( (individual["v-s:fileSize"][0] / 1024 / 1024).toFixed(2) + " Mb");
+	var fs = individual["v-s:fileSize"][0], 
+		fn = individual["v-s:fileName"][0], 
+		idx = fn.lastIndexOf("."), 
+		ext = fn.substr(idx + 1);
+	fs = fs >= 1073741824 ? (fs / 1073741824).toFixed(1) + " Gb" :
+	     fs >= 1048576 ? (fs / 1048576).toFixed(1) + " Mb" :
+	     fs >= 1024 ? (fs / 1024).toFixed(1) + " Kb" :
+	     fs + " bytes";
+	$("span#fileSize", template).text(fs);
+	$("span#icon", template).text(ext);
 </script>
   """ ;
 .

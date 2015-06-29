@@ -749,21 +749,21 @@
 	};
 
 	function uploadFile(file, cb) {
-		var url = "/upload";
+		var url = "/files";
 		var xhr = new XMLHttpRequest();
 		var fd = new FormData();
 		xhr.open("POST", url, true);
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == 4 && xhr.status == 200) {
-				cb(file, path, name);
+				cb(file, path, uri);
 			}
 		};
 		var d = new Date();
 		var path = ["", d.getFullYear(), d.getMonth() + 1, d.getDate()].join("/");
-		var name = veda.Util.guid();
+		var uri = veda.Util.guid();
 		fd.append("file", file);
 		fd.append("path", path);
-		fd.append("name", name);
+		fd.append("uri", uri);
 		xhr.send(fd);
 	}
 
@@ -791,12 +791,12 @@
 		this.append(control);
 		return this;
 		
-		function uploaded(file, path, name) {
+		function uploaded(file, path, uri) {
 			var f = new veda.IndividualModel();
 			f["rdf:type"] = [ veda.ontology["v-s:File"] ];
 			f["v-s:fileName"] = [ file.name ];
 			f["v-s:fileSize"] = [ file.size ];
-			f["v-s:fileUri"] = [ name ];
+			f["v-s:fileUri"] = [ uri ];
 			f["v-s:filePath"] = [ path ];
 			f.save();
 			individual[rel_uri] = individual[rel_uri].concat(f);
