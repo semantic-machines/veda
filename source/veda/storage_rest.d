@@ -357,7 +357,7 @@ class VedaStorageRest : VedaStorageRest_API
                     writeln("@v originFileName=", originFileName);
                     writeln("@v getMimeTypeForFile(originFileName)=", getMimeTypeForFile(originFileName));
 
-                    res.headers[ "Content-Disposition" ] = "Content-Disposition: attachment; filename=\"" ~ originFileName ~ "\"";
+                    res.headers[ "Content-Disposition" ] = "attachment; filename=\"" ~ originFileName ~ "\"";
 
                     res.contentType = getMimeTypeForFile(originFileName);
                     dg(req, res);
