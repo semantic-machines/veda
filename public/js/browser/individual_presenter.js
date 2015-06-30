@@ -228,9 +228,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Apply mode class to template to show/hide elements in different modes
 		function modeHandler (e) {
 			mode = e.type;
-			mode === "view" ? template.addClass("view-mode").removeClass("edit-mode").removeClass("search-mode") :
-			mode === "edit" ? template.removeClass("view-mode").addClass("edit-mode").removeClass("search-mode") :
-			mode === "search" ? template.removeClass("view-mode").removeClass("edit-mode").addClass("search-mode") : true;
+			mode === "view" ? template.addClass("view-mode").removeClass("edit-mode search-mode") :
+			mode === "edit" ? template.addClass("edit-mode").removeClass("view-mode search-mode") :
+			mode === "search" ? template.addClass("search-mode").removeClass("view-mode edit-mode") : 
+			true;
 			e.stopPropagation();
 		}
 		template.on("view edit search", modeHandler);

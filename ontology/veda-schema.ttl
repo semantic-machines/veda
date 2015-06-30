@@ -115,6 +115,7 @@ v-s:Document
   rdfs:label "Document"@en ;
   rdfs:label "Документ"@ru ;
   rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Journaling ;
 .
 v-s:Empty
   rdf:type v-s:SpecialSearchValues ;

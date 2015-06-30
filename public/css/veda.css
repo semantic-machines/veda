@@ -171,11 +171,15 @@ veda-control {
 }
 
 /* Template elements visibility in different modes */
-.view-mode .view, .edit-mode .edit, .search-mode .search {
-  display: unset;
-}
-.view-mode .-view, .edit-mode .-edit, .search-mode .-search {
+.view-mode .-view,
+.edit-mode .-edit, 
+.search-mode .-search {
   display: none;
+}
+.view-mode .view, 
+.edit-mode .edit, 
+.search-mode .search {
+  display: initial;
 }
 
 

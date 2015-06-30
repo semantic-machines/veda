@@ -754,18 +754,18 @@
 	};
 
 	function uploadFile(file, cb) {
-		var url = "/files";
-		var xhr = new XMLHttpRequest();
-		var fd = new FormData();
+		var url = "/files",
+			xhr = new XMLHttpRequest(),
+			d = new Date(),
+			path = ["", d.getFullYear(), d.getMonth() + 1, d.getDate()].join("/"),
+			uri = veda.Util.guid(),
+			fd = new FormData();
 		xhr.open("POST", url, true);
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == 4 && xhr.status == 200) {
 				cb(file, path, uri);
 			}
 		};
-		var d = new Date();
-		var path = ["", d.getFullYear(), d.getMonth() + 1, d.getDate()].join("/");
-		var uri = veda.Util.guid();
 		fd.append("file", file);
 		fd.append("path", path);
 		fd.append("uri", uri);

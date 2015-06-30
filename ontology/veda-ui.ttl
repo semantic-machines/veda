@@ -819,7 +819,7 @@ v-ui:FileTemplate
   v-ui:forClass v-s:File ;
   v-ui:template """
 <span>
-	<a><span id="icon" class="label label-primary"></span> <span property="v-s:fileName" class="view -edit -search"></span>, <span id="fileSize"></span></a>
+	<a><span id="icon" class="label label-primary"></span> <span property="v-s:fileName" class="view -edit search"></span>, <span id="fileSize"></span></a>
 </span>
 <script>
 	$("a", template).attr("href", "/files/" + individual.id);
