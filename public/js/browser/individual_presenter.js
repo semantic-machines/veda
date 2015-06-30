@@ -225,19 +225,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			params.present($("#params-" + search.id, search.view), undefined, "search");
 		});
 
-		var view = $(".view", template),
-			edit = $(".edit", template),
-			search = $(".search", template),
-			notView = $(".-view", template),
-			notEdit = $(".-edit", template),
-			notSearch = $(".-search", template);
-			
-		// Show/hide elements with special classes in different modes
+		// Apply mode class to template to show/hide elements in different modes
 		function modeHandler (e) {
 			mode = e.type;
-			mode === "view" ? view.show() && notView.hide() : 
-			mode === "edit" ? edit.show() && notEdit.hide() : 
-			mode === "search" ? search.show() && notSearch.hide() : true;
+			mode === "view" ? template.addClass("view-mode").removeClass("edit-mode").removeClass("search-mode") :
+			mode === "edit" ? template.removeClass("view-mode").addClass("edit-mode").removeClass("search-mode") :
+			mode === "search" ? template.removeClass("view-mode").removeClass("edit-mode").addClass("search-mode") : true;
 			e.stopPropagation();
 		}
 		template.on("view edit search", modeHandler);
@@ -295,7 +288,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				relTemplate = rel_inline_template.clone();
 			}
 			//rel_inline_template.remove();
-			relContainer.empty().hide();
+			relContainer.empty().css("display", "none");
 			var rendered = renderRelationValues(individual, rel_uri, relContainer, relTemplate, isEmbedded, spec, embedded, template, mode);
 			// Re-render link property if its' values were changed
 			function propertyModifiedHandler (doc_property_uri) {
@@ -313,12 +306,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Property value
 		$("[property]", template).not("veda-control").not("[about]").map( function () {
 			
-			var propertyContainer = $(this).hide(),
+			var propertyContainer = $(this).css("display", "none"),
 				property_uri = propertyContainer.attr("property"),
 				spec = specs[property_uri];
 			
 			if (property_uri == "id") { 
-				propertyContainer.show().text(individual[property_uri]); 
+				propertyContainer.text(individual[property_uri]).css("display", "unset");
 				return;
 			}
 
@@ -329,18 +322,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 			function renderPropertyValues() {
 				return individual[property_uri].map( function (value, i) {
-					var result = propertyContainer.clone().show().insertBefore(propertyContainer);
+					var result = propertyContainer.clone().insertBefore(propertyContainer).css("display", "unset");
 					var valueHolder = $("<span>");
 					result.prepend(valueHolder.text(value.toString()));
 
-					var wrapper = $("<div class='btn-group btn-group-xs -view edit search' role='group' style='margin:5px 5px 5px'></div>");
+					var wrapper = $("<div class='btn-group btn-group-xs -view edit search' role='group' style='margin:5px 5px 5px;'></div>");
 					var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
 					var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
 					wrapper.append(btnEdit, btnRemove);
-					if (mode === "view") {
-						wrapper.hide();
-					}
-					notView = notView.add(wrapper); edit = edit.add(wrapper); search = search.add(wrapper);
 					btnRemove.click(function () {
 						individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
 					});
@@ -352,8 +341,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 							return test;
 						});
 						if ( props_ctrls[property_uri] ) {
-							props_ctrls[property_uri].map(function (item) {
+							props_ctrls[property_uri].map(function (item, i) {
 								item.val(val);
+								if (i === 0) item.trigger("veda_focus");
 							});
 						}
 					});
@@ -579,7 +569,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				
 				clone.attr("style", "position:relative;");
 
-				var btnRemove = $("<button class='btn btn-xs btn-default' style='margin: 0px 0px 5px 5px;'><span class='glyphicon glyphicon-remove'></span></button>");
+				var btnRemove = $("<button class='btn btn-xs btn-default -view edit search' style='margin: 0px 0px 5px 5px;'><span class='glyphicon glyphicon-remove'></span></button>");
 				
 				if (valTemplate.prop("tagName") !== "SPAN") {
 					btnRemove.attr("style", btnRemove.attr("style") + "position:absolute; top:0px; right:0px; z-index:100;");
@@ -594,24 +584,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					}
 				});
 
-				mode === "view" ? btnRemove.hide() :
-				mode === "edit" ? btnRemove.show() :
-				mode === "search" ? btnRemove.show() : true;
-				
-				function modeHandler (e) {
-					e.type === "view" ? btnRemove.hide() :
-					e.type === "edit" ? btnRemove.show() :
-					e.type === "search" ? btnRemove.show() :
-					true;
-					e.stopPropagation();						
-				}
-				template.on("view edit search", modeHandler);
-
 				clone.append(btnRemove);
 				
 			}, 0);
 			relContainer.before(clone);
-			return clone.show();
+			return clone.css("display", "unset");
 		});
 		return renderedValues;
 	}

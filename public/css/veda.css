@@ -166,6 +166,18 @@ html, body {
   height: 100%!important;
 }
 
+veda-control {
+  display: block;
+}
+
+/* Template elements visibility in different modes */
+.view-mode .view, .edit-mode .edit, .search-mode .search {
+  display: unset;
+}
+.view-mode .-view, .edit-mode .-edit, .search-mode .-search {
+  display: none;
+}
+
 
 /* [BEGIN] NET EDITOR */
 

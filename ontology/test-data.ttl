@@ -523,7 +523,7 @@ td:PersonTemplate1
         <div class="row">
           <div class="col-md-3">
             <strong class="text-muted" about="v-s:lastName" property="rdfs:label">Фамилия</strong>
-            <div property="v-s:lastName"><br></div>
+            <div property="v-s:lastName" class="view -edit -search"><br></div>
             <veda-control type="multilingualString" property="v-s:lastName" class="-view edit search"></veda-control>
           </div>
           <div class="col-md-3">
@@ -545,7 +545,7 @@ td:PersonTemplate1
         <hr />
         <div class="row">
           <div class="col-md-6">
-		    <div rel="v-ui:hasPreferences" embedded="true" template="td:PreferencesTemplate1">шаблон: td:PreferencesTemplate1</div>
+		    <div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1">шаблон: td:PreferencesTemplate1</div>
 		    <veda-control rel="v-ui:hasPreferences" class="-view edit search"></veda-control>
           </div>
           <div class="col-md-6">

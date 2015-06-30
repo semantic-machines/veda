@@ -10,17 +10,17 @@
 			spec = opts.spec,
 			property_uri = opts.property_uri,
 			individual = opts.individual,
-			inputEl = $("[bound]", control);
+			input = $("[bound]", control);
 	
 		var singleValueHandler = function (doc_property_uri, values) {
 			if (doc_property_uri === property_uri) {
-				inputEl.val( values[0] );
+				input.val( values[0] );
 			}
 		}
 		
 		var change = function (value) { 
 			individual[property_uri] = individual[property_uri].concat(value);
-			inputEl.val("");
+			input.val("");
 		}
 		
 		if (spec) {
@@ -28,7 +28,7 @@
 				change = function (value) {
 					individual[property_uri] = [value];
 				};
-				inputEl.val(individual[property_uri][0]);
+				input.val(individual[property_uri][0]);
 				individual.on("individual:propertyModified", singleValueHandler);
 				control.one("remove", function () {
 					individual.off("individual:propertyModified", singleValueHandler);
@@ -45,9 +45,14 @@
 			}
 		}
 
-		inputEl.on("change", function ( e ) {
+		input.on("change focusout", function () {
 			var value = opts.parser( this.value, this );
 			change(value);
+		});
+		
+		this.on("veda_focus", function (e) {
+			input.trigger("focus");
+			e.stopPropagation();
 		});
 		
 		this.on("view edit search", function (e) {
@@ -55,8 +60,8 @@
 		});
 		
 		this.val = function (value) {
-			if (!value) return inputEl.val();
-			return inputEl.val(value);
+			if (!value) return input.val();
+			return input.val(value);
 		}
 		return control;
 	};

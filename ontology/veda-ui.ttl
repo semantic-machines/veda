@@ -777,7 +777,7 @@ v-ui:TestUITemplate
     <hr>
 
 	<strong class="text-muted" about="v-ui:testDatetime" property="rdfs:label"></strong>
-    <div property="v-ui:testDatetime" class="-view -edit -search"></div>
+    <div property="v-ui:testDatetime" class="view edit -search"></div>
     <veda-control type="dateTime" property="v-ui:testDatetime" class="-view edit search"></veda-control>
     <veda-control type="datetimeSelect" property="v-ui:testDatetime" class="-view edit search"></veda-control>
     <hr>
