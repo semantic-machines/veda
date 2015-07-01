@@ -817,8 +817,8 @@
 		var opts = $.extend( {}, $.fn.veda_link.defaults, options ),
 			control = $(opts.template),
 			queryPrefix = opts.queryPrefix,
-			add = $(".add", control),
-			all = $(".all", control);
+			add = $(".add-btn", control),
+			all = $(".all-btn", control);
 		
 		if (!opts.add) {
 			add.remove();
@@ -868,7 +868,7 @@
 		// Search modal
 		var tmpl = $("#search-modal-template").html();
 		
-		$(".search", control).on("click", function (e) {
+		$(".search-btn", control).on("click", function (e) {
 			var $modal = $(tmpl);
 			$("body").append($modal);
 			$modal.modal();

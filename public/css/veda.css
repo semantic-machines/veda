@@ -167,21 +167,100 @@ html, body {
 }
 
 veda-control {
+  display: table;
+}
+
+/* Template elements visibility in different modes. Works up to 5 levels deep for embedded templates */
+
+.mode-view .view, 
+.mode-edit .edit, 
+.mode-search .search {
+  display: inline-block;
+}
+
+.mode-view veda-control.view, 
+.mode-edit veda-control.edit, 
+.mode-search veda-control.search {
   display: block;
 }
 
-/* Template elements visibility in different modes */
-.view-mode .-view,
-.edit-mode .-edit, 
-.search-mode .-search {
+.mode-view .-view,
+.mode-edit .-edit, 
+.mode-search .-search {
   display: none;
 }
-.view-mode .view, 
-.edit-mode .edit, 
-.search-mode .search {
-  display: initial;
+
+[class*="mode-"] .mode-view .view, 
+[class*="mode-"] .mode-edit .edit, 
+[class*="mode-"] .mode-search .search {
+  display: inline-block;
 }
 
+[class*="mode-"] [class*="mode-"] .mode-view .view, 
+[class*="mode-"] [class*="mode-"] .mode-edit .edit, 
+[class*="mode-"] [class*="mode-"] .mode-search .search {
+  display: inline-block;
+}
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search {
+  display: inline-block;
+}
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search {
+  display: inline-block;
+}
+
+[class*="mode-"] .mode-view veda-control.view, 
+[class*="mode-"] .mode-edit veda-control.edit, 
+[class*="mode-"] .mode-search veda-control.search {
+  display: block;
+}
+
+[class*="mode-"] [class*="mode-"] .mode-view veda-control.view, 
+[class*="mode-"] [class*="mode-"] .mode-edit veda-control.edit, 
+[class*="mode-"] [class*="mode-"] .mode-search veda-control.search {
+  display: block;
+}
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view veda-control.view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit veda-control.edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search veda-control.search {
+  display: block;
+}
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view veda-control.view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit veda-control.edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search veda-control.search {
+  display: block;
+}
+
+[class*="mode-"] .mode-view .-view, 
+[class*="mode-"] .mode-edit .-edit, 
+[class*="mode-"] .mode-search .-search {
+  display: none;
+}
+
+[class*="mode-"] [class*="mode-"] .mode-view .-view, 
+[class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
+[class*="mode-"] [class*="mode-"] .mode-search .-search {
+  display: none;
+}
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search {
+  display: none;
+}
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search {
+  display: none;
+}
 
 /* [BEGIN] NET EDITOR */
 

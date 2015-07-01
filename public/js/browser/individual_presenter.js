@@ -228,9 +228,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Apply mode class to template to show/hide elements in different modes
 		function modeHandler (e) {
 			mode = e.type;
-			mode === "view" ? template.addClass("view-mode").removeClass("edit-mode search-mode") :
-			mode === "edit" ? template.addClass("edit-mode").removeClass("view-mode search-mode") :
-			mode === "search" ? template.addClass("search-mode").removeClass("view-mode edit-mode") : 
+			mode === "view" ? template.addClass("mode-view").removeClass("mode-edit mode-search") :
+			mode === "edit" ? template.addClass("mode-edit").removeClass("mode-view mode-search") :
+			mode === "search" ? template.addClass("mode-search").removeClass("mode-view mode-edit") : 
 			true;
 			e.stopPropagation();
 		}
@@ -289,7 +289,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				relTemplate = rel_inline_template.clone();
 			}
 			//rel_inline_template.remove();
-			relContainer.empty().css("display", "none");
+			relContainer.empty().hide();
 			var rendered = renderRelationValues(individual, rel_uri, relContainer, relTemplate, isEmbedded, spec, embedded, template, mode);
 			// Re-render link property if its' values were changed
 			function propertyModifiedHandler (doc_property_uri) {
@@ -307,12 +307,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Property value
 		$("[property]", template).not("veda-control").not("[about]").map( function () {
 			
-			var propertyContainer = $(this).css("display", "none"),
+			var propertyContainer = $(this).hide(),
 				property_uri = propertyContainer.attr("property"),
 				spec = specs[property_uri];
 			
 			if (property_uri == "id") { 
-				propertyContainer.text(individual[property_uri]).css("display", "unset");
+				propertyContainer.text(individual[property_uri]).show();
 				return;
 			}
 
@@ -323,7 +323,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 			function renderPropertyValues() {
 				return individual[property_uri].map( function (value, i) {
-					var result = propertyContainer.clone().insertBefore(propertyContainer).css("display", "unset");
+					var result = propertyContainer.clone().insertBefore(propertyContainer).show();
 					var valueHolder = $("<span>");
 					result.prepend(valueHolder.text(value.toString()));
 
@@ -589,7 +589,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				
 			}, 0);
 			relContainer.before(clone);
-			return clone.css("display", "unset");
+			return clone.show();
 		});
 		return renderedValues;
 	}
