@@ -850,3 +850,92 @@ v-ui:TestUI
   v-ui:template """<div class="well well-sm">I'm here!</div>""" ;
   v-s:script """alert("I'm here too!")""" ;
 .
+
+v-ui:JournalTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон журнала"@ru ;
+  rdfs:label "Journal template"@en ;
+  v-ui:forClass v-s:Journal ;
+  v-ui:template """
+<div class="container-fluid">
+    <h2 about="v-s:Journal" property="rdfs:label"></h2>
+    <h4 id="docLnk">
+      <span about="v-wf:onDocument" property="rdfs:label"></span>: 
+      <span rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate"></span>
+    </h4>
+    <h4 id="procLnk">
+      <span about="v-wf:onProcess" property="rdfs:label"></span>: 
+      <span rel="v-wf:onProcess" template="v-ui:ClassNameLabelTemplate"></span>
+    </h4>
+    <div class="panel panel-default">
+		<div class="panel-heading"><strong>Записи журнала</strong></div>
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-md-3">
+					<strong about="v-s:eventType" property="rdfs:label"></strong>
+				</div>
+				<div class="col-md-6">
+					<strong about="v-s:description" property="rdfs:label"></strong>
+				</div>
+				<div class="col-md-3">
+					<strong about="v-s:created" property="rdfs:label"></strong>
+				</div>
+			</div>
+			<hr class="margin-sm">
+			<div rel="v-s:childRecord" template="v-ui:JournalRecordTemplate"></div>
+		</div>
+	</div>
+</div>
+<script>
+  if (!individual.hasValue("v-wf:onProcess")) $("#procLnk").remove();
+  if (!individual.hasValue("v-wf:onDocument")) $("#docLnk").remove();
+</script>
+  """ ;
+.
+
+v-ui:SubJournalTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон поджурнала"@ru ;
+  rdfs:label "Subjournal template"@en ;
+  v-ui:template """
+<div>
+	<div rel="v-s:childRecord" template="v-ui:JournalRecordTemplate"></div>
+</div>
+  """ ;
+.
+
+v-ui:JournalRecordTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон записи журнала"@ru ;
+  rdfs:label "Journal record template"@en ;
+  v-ui:forClass v-s:JournalRecord ;
+  v-ui:template """
+<div>
+	<div class="row">
+		<div class="col-md-3">
+			<span rel="v-s:eventType" template="v-ui:LabelTemplate"></span>
+		</div>
+		<div class="col-md-6">
+			<div property="rdfs:label"></div>
+			<div rel="v-s:actor" template="v-ui:LabelTemplate"></div>
+			<div rel="v-wf:initiator" template="v-ui:LabelTemplate"></div>
+			<div rel="v-wf:to" template="v-ui:LabelTemplate"></div>
+			<div rel="v-s:subJournal" template="v-ui:ClassNameLabelTemplate"></div>
+		</div>
+		<div class="col-md-3">
+			<span property="v-s:created"></span>
+		</div>
+	</div>
+	<hr class="margin-sm">
+</div>
+<script>
+  if ( individual["v-s:eventType"][0].id === "v-wf:JETSubProcessStarted") {
+    var subJrnl = individual["v-s:subJournal"][0], 
+		subTmpl = veda.ontology.templates["v-ui:SubJournalTemplate"],
+		subCont = $("<div></div>");
+    subJrnl.present(subCont, subTmpl);
+    template.after(subCont);
+  }
+</script>
+  """ ;
+.

@@ -1167,3 +1167,4 @@ v-s:JETDocumentDeleted
   rdfs:label "Документ удален"@ru ;
   rdfs:label "Document deleted"@en ;
 .
+

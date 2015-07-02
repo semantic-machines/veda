@@ -20,6 +20,10 @@
 .no-margin {
   margin: 0px;
 }
+.margin-sm {
+  margin: 5px 0px;
+}
+
 .no-padding {
   padding: 0px;
 }
