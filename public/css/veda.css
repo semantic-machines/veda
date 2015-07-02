@@ -167,99 +167,97 @@ html, body {
 }
 
 veda-control {
-  display: table;
+  display: block;
 }
 
-/* Template elements visibility in different modes. Works up to 5 levels deep for embedded templates */
+/* Template elements visibility in different modes. Works up to 10 levels deep for embedded templates */
 
 .mode-view .view, 
 .mode-edit .edit, 
-.mode-search .search {
-  display: inline-block;
-}
+.mode-search .search,
 
-.mode-view veda-control.view, 
-.mode-edit veda-control.edit, 
-.mode-search veda-control.search {
-  display: block;
+[class*="mode-"] .mode-view .view, 
+[class*="mode-"] .mode-edit .edit, 
+[class*="mode-"] .mode-search .search,
+
+[class*="mode-"] [class*="mode-"] .mode-view .view, 
+[class*="mode-"] [class*="mode-"] .mode-edit .edit, 
+[class*="mode-"] [class*="mode-"] .mode-search .search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search
+{
+  visibility: visible;
+  position: static;
 }
 
 .mode-view .-view,
 .mode-edit .-edit, 
-.mode-search .-search {
-  display: none;
-}
-
-[class*="mode-"] .mode-view .view, 
-[class*="mode-"] .mode-edit .edit, 
-[class*="mode-"] .mode-search .search {
-  display: inline-block;
-}
-
-[class*="mode-"] [class*="mode-"] .mode-view .view, 
-[class*="mode-"] [class*="mode-"] .mode-edit .edit, 
-[class*="mode-"] [class*="mode-"] .mode-search .search {
-  display: inline-block;
-}
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search {
-  display: inline-block;
-}
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search {
-  display: inline-block;
-}
-
-[class*="mode-"] .mode-view veda-control.view, 
-[class*="mode-"] .mode-edit veda-control.edit, 
-[class*="mode-"] .mode-search veda-control.search {
-  display: block;
-}
-
-[class*="mode-"] [class*="mode-"] .mode-view veda-control.view, 
-[class*="mode-"] [class*="mode-"] .mode-edit veda-control.edit, 
-[class*="mode-"] [class*="mode-"] .mode-search veda-control.search {
-  display: block;
-}
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view veda-control.view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit veda-control.edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search veda-control.search {
-  display: block;
-}
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view veda-control.view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit veda-control.edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search veda-control.search {
-  display: block;
-}
+.mode-search .-search ,
 
 [class*="mode-"] .mode-view .-view, 
 [class*="mode-"] .mode-edit .-edit, 
-[class*="mode-"] .mode-search .-search {
-  display: none;
-}
+[class*="mode-"] .mode-search .-search ,
 
 [class*="mode-"] [class*="mode-"] .mode-view .-view, 
 [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
-[class*="mode-"] [class*="mode-"] .mode-search .-search {
-  display: none;
-}
+[class*="mode-"] [class*="mode-"] .mode-search .-search ,
 
 [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
 [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search {
-  display: none;
-}
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search ,
 
 [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
 [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search {
-  display: none;
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search
+{
+  visibility: hidden;
+  position: absolute;
 }
 
 /* [BEGIN] NET EDITOR */
