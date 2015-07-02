@@ -1263,6 +1263,13 @@ v-wf:JETProcessStarted
   rdfs:label "Process started"@en ;
 .
 
+v-wf:JETSubProcessStarted
+  rdf:type v-s:JournalEventType ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Подпроцесс запущен"@ru ;
+  rdfs:label "Subprocess started"@en ;
+.
+
 v-wf:JETProcessCompleted
   rdf:type v-s:JournalEventType ;
   rdfs:isDefinedBy v-wf: ;
