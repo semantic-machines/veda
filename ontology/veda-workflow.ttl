@@ -1256,3 +1256,30 @@ v-wf:isProcess
 	rdfs:range v-wf:Process ;
 .
 
+v-wf:JETProcessStarted
+  rdf:type v-s:JournalEventType ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Процесс запущен"@ru ;
+  rdfs:label "Process started"@en ;
+.
+
+v-wf:JETProcessCompleted
+  rdf:type v-s:JournalEventType ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Процесс завершен"@ru ;
+  rdfs:label "Process completed"@en ;
+.
+
+v-wf:JETTaskGiven
+  rdf:type v-s:JournalEventType ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Выдана задача"@ru ;
+  rdfs:label "Task given"@en ;
+.
+
+v-wf:JETTaskCompleted
+  rdf:type v-s:JournalEventType ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Задача выполнена"@ru ;
+  rdfs:label "Task completed"@en ;
+.

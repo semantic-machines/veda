@@ -1131,3 +1131,39 @@ v-s:actor
   rdfs:label "действующее лицо"@ru ;
   rdfs:range v-s:Person ;
 .
+
+v-s:eventType
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:JournalRecord ;
+  rdfs:label "тип события"@ru ;
+  rdfs:label "event type"@en ;
+  rdfs:range v-s:JournalEventType ;
+.
+
+v-s:JournalEventType
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Тип события журнала"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+
+v-s:JETDocumentCreated
+  rdf:type v-s:JournalEventType ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Документ создан"@ru ;
+  rdfs:label "Document created"@en ;
+.
+
+v-s:JETDocumentUpdated
+  rdf:type v-s:JournalEventType ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Документ изменен"@ru ;
+  rdfs:label "Document updated"@en ;
+.
+
+v-s:JETDocumentDeleted
+  rdf:type v-s:JournalEventType ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Документ удален"@ru ;
+  rdfs:label "Document deleted"@en ;
+.
