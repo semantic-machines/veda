@@ -871,13 +871,13 @@ v-ui:JournalTemplate
 		<div class="panel-heading"><strong>Записи журнала</strong></div>
 		<div class="panel-body">
 			<div class="row">
-				<div class="col-md-3">
+				<div class="col-md-4">
 					<strong about="v-s:eventType" property="rdfs:label"></strong>
 				</div>
 				<div class="col-md-6">
 					<strong about="v-s:description" property="rdfs:label"></strong>
 				</div>
-				<div class="col-md-3">
+				<div class="col-md-2">
 					<strong about="v-s:created" property="rdfs:label"></strong>
 				</div>
 			</div>
@@ -898,8 +898,10 @@ v-ui:SubJournalTemplate
   rdfs:label "Шаблон поджурнала"@ru ;
   rdfs:label "Subjournal template"@en ;
   v-ui:template """
-<div>
-	<div rel="v-s:childRecord" template="v-ui:JournalRecordTemplate"></div>
+<div class="container-fluid">
+	<div class="container-fluid">
+		<div rel="v-s:childRecord" template="v-ui:JournalRecordTemplate"></div>
+	</div>
 </div>
   """ ;
 .
@@ -912,17 +914,18 @@ v-ui:JournalRecordTemplate
   v-ui:template """
 <div>
 	<div class="row">
-		<div class="col-md-3">
+		<div class="col-md-4">
 			<span rel="v-s:eventType" template="v-ui:LabelTemplate"></span>
 		</div>
 		<div class="col-md-6">
 			<div property="rdfs:label"></div>
-			<div rel="v-s:actor" template="v-ui:LabelTemplate"></div>
-			<div rel="v-wf:initiator" template="v-ui:LabelTemplate"></div>
-			<div rel="v-wf:to" template="v-ui:LabelTemplate"></div>
-			<div rel="v-s:subJournal" template="v-ui:ClassNameLabelTemplate"></div>
+			<strong about="v-s:actor" property="rdfs:label"></strong>: 
+			<span rel="v-s:actor" template="v-ui:LabelTemplate"></span>
+			<span rel="v-wf:initiator" template="v-ui:LabelTemplate"></span>
+			<span rel="v-wf:to" template="v-ui:LabelTemplate"></span>
+			<!--div rel="v-s:subJournal" template="v-ui:ClassNameLabelTemplate"></div-->
 		</div>
-		<div class="col-md-3">
+		<div class="col-md-2">
 			<span property="v-s:created"></span>
 		</div>
 	</div>
@@ -934,7 +937,7 @@ v-ui:JournalRecordTemplate
 		subTmpl = veda.ontology.templates["v-ui:SubJournalTemplate"],
 		subCont = $("<div></div>");
     subJrnl.present(subCont, subTmpl);
-    template.after(subCont);
+    $("hr", template).after(subCont);
   }
 </script>
   """ ;
