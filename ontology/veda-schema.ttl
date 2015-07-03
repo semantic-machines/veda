@@ -1117,7 +1117,7 @@ v-s:subJournal
   rdfs:isDefinedBy v-s: ;
   rdfs:domain v-s:JournalRecord ;
   rdfs:label "ссылка на под-журнал"@ru ;
-  rdfs:range v-s:Record ;
+  rdfs:range v-s:Journal ;
 .
 v-s:Journaling
   rdf:type owl:Class ;
@@ -1127,7 +1127,7 @@ v-s:Journaling
 
 v-s:actor
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Journal, v-s:JournalRecord ;
+  rdfs:domain v-s:JournalRecord ;
   rdfs:label "действующее лицо"@ru ;
   rdfs:range v-s:Person ;
 .
