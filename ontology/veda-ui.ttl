@@ -858,6 +858,10 @@ v-ui:JournalTemplate
   v-ui:forClass v-s:Journal ;
   v-ui:template """
 <div class="container-fluid">
+    <style>
+      div[rel="v-s:childRecord"]:first-child > div.journal-record > hr {display:none;}
+      div.sub-journal {margin-top: 10px;}
+    </style>
     <h2 about="v-s:Journal" property="rdfs:label"></h2>
     <h4 id="docLnk">
       <span about="v-wf:onDocument" property="rdfs:label"></span>: 
@@ -882,7 +886,9 @@ v-ui:JournalTemplate
 				</div>
 			</div>
 			<hr class="margin-sm">
-			<div rel="v-s:childRecord" template="v-ui:JournalRecordTemplate"></div>
+			<div id="records">
+				<div rel="v-s:childRecord" template="v-ui:JournalRecordTemplate"></div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -898,8 +904,8 @@ v-ui:SubJournalTemplate
   rdfs:label "Шаблон поджурнала"@ru ;
   rdfs:label "Subjournal template"@en ;
   v-ui:template """
-<div class="container-fluid">
-	<div class="container-fluid">
+<div class="container-fluid sub-journal">
+	<div class="container-fluid" style="border-left: 5px solid #eee">
 		<div rel="v-s:childRecord" template="v-ui:JournalRecordTemplate"></div>
 	</div>
 </div>
@@ -912,32 +918,45 @@ v-ui:JournalRecordTemplate
   rdfs:label "Journal record template"@en ;
   v-ui:forClass v-s:JournalRecord ;
   v-ui:template """
-<div>
+<div class="journal-record">
+	<hr class="margin-sm">
 	<div class="row">
-		<div class="col-md-4">
+		<div class="col-md-4 event-type">
 			<span rel="v-s:eventType" template="v-ui:LabelTemplate"></span>
 		</div>
-		<div class="col-md-6">
+		<div class="col-md-6 event-desc">
 			<div property="rdfs:label"></div>
-			<strong about="v-s:actor" property="rdfs:label"></strong>: 
-			<span rel="v-s:actor" template="v-ui:LabelTemplate"></span>
-			<span rel="v-wf:initiator" template="v-ui:LabelTemplate"></span>
-			<span rel="v-wf:to" template="v-ui:LabelTemplate"></span>
-			<!--div rel="v-s:subJournal" template="v-ui:ClassNameLabelTemplate"></div-->
+			<span id="who"></span>
+			<em rel="v-s:actor" template="v-ui:LabelTemplate"></em>
+			<em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
+			<em rel="v-wf:to" template="v-ui:LabelTemplate"></em>
 		</div>
-		<div class="col-md-2">
+		<div class="col-md-2 event-date">
 			<span property="v-s:created"></span>
 		</div>
 	</div>
-	<hr class="margin-sm">
 </div>
 <script>
+  var who = $("#who", template), text;
+  if ( individual.hasValue("v-s:actor") ) {
+	  text = veda.ontology["v-s:actor"]["rdfs:label"].join(", ");
+  } else if ( individual.hasValue("v-wf:initiator") ) {
+	  text = veda.ontology["v-wf:initiator"]["rdfs:label"].join(", ");
+  } else if ( individual.hasValue("v-wf:to") ) {
+	  text = veda.ontology["v-wf:to"]["rdfs:label"].join(", ");
+  }
+  who.text(text ? text + ": " : "");
+  if ( individual["v-s:eventType"][0].id === "v-wf:JETProcessStarted") {
+    $(".event-type", template).wrap("<strong>");
+  }
   if ( individual["v-s:eventType"][0].id === "v-wf:JETSubProcessStarted") {
+    $(".event-desc, event-date", template).remove();
+    $(".event-type", template).wrap("<strong>");
     var subJrnl = individual["v-s:subJournal"][0], 
 		subTmpl = veda.ontology.templates["v-ui:SubJournalTemplate"],
 		subCont = $("<div></div>");
     subJrnl.present(subCont, subTmpl);
-    $("hr", template).after(subCont);
+    $("div.row", template).after(subCont);
   }
 </script>
   """ ;
