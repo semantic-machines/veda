@@ -1217,7 +1217,6 @@ v-wf:completedExecutorJournalMap
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Mapping ;
 .
-
 v-wf:onProcess
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
@@ -1226,66 +1225,72 @@ v-wf:onProcess
   rdfs:label "к процессу"@ru ;
   rdfs:range v-wf:Process ;
 .
-
 v-wf:initiator
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:domain v-s:JournalRecord ;
+  rdfs:domain v-wf:ProcessStarted, v-wf:SubProcessStarted ;
   rdfs:label "инициатор"@ru ;
+  rdfs:label "initiator"@en ;
   rdfs:range v-s:Appointment ;
 .
-
+v-wf:executor
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:domain v-wf:TaskGiven, v-wf:TaskCompleted ;
+  rdfs:label "исполнитель"@ru ;
+  rdfs:label "executor"@en ;
+  rdfs:range v-s:Appointment ;
+.
 v-wf:to
-        rdf:type owl:ObjectProperty ;
-	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "кому"@ru ;
-        rdfs:domain v-wf:DecisionForm ;
-	rdfs:domain v-wf:DecisionRedirect ;
-	rdfs:domain v-s:JournalRecord ;
-        rdfs:range v-s:Appointment ;
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "кому"@ru ;
+  rdfs:label "whom"@en ;
+  rdfs:domain v-wf:DecisionForm ;
+  rdfs:domain v-wf:DecisionRedirect ;
+  rdfs:domain v-s:JournalRecord ;
+  rdfs:range v-s:Appointment ;
 .
-
 v-wf:isProcess
-	rdf:type owl:ObjectProperty ;
-	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "Запущен процесс"@ru ;
-	rdfs:label "Started process"@en ;
-	rdfs:domain v-wf:StartForm ;
-	rdfs:domain v-wf:WorkOrder ;
-	rdfs:domain v-s:JournalRecord ;
-	rdfs:range v-wf:Process ;
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Запущен процесс"@ru ;
+  rdfs:label "Started process"@en ;
+  rdfs:domain v-wf:StartForm ;
+  rdfs:domain v-wf:WorkOrder ;
+  rdfs:range v-wf:Process ;
 .
-
-v-wf:JETProcessStarted
-  rdf:type v-s:JournalEventType ;
+v-wf:ProcessStarted
+  rdf:type owl:Class ;
+  rdf:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущен процесс"@ru ;
   rdfs:label "Process started"@en ;
 .
-
-v-wf:JETSubProcessStarted
-  rdf:type v-s:JournalEventType ;
+v-wf:SubProcessStarted
+  rdf:type owl:Class ;
+  rdf:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущен подпроцесс"@ru ;
   rdfs:label "Subprocess started"@en ;
 .
-
-v-wf:JETProcessCompleted
-  rdf:type v-s:JournalEventType ;
+v-wf:ProcessCompleted
+  rdf:type owl:Class ;
+  rdf:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Завершен процесс"@ru ;
   rdfs:label "Process completed"@en ;
 .
-
-v-wf:JETTaskGiven
-  rdf:type v-s:JournalEventType ;
+v-wf:TaskGiven
+  rdf:type owl:Class ;
+  rdf:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Выдана задача"@ru ;
   rdfs:label "Task given"@en ;
 .
-
-v-wf:JETTaskCompleted
-  rdf:type v-s:JournalEventType ;
+v-wf:TaskCompleted
+  rdf:type owl:Class ;
+  rdf:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Задача выполнена"@ru ;
   rdfs:label "Task completed"@en ;

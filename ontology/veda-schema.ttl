@@ -1069,7 +1069,6 @@ v-s:year
   rdfs:label "год"@ru ;
   rdfs:range xsd:integer ;
 .
-
 v-s:Journal
   rdf:type owl:Class ;
   rdfs:isDefinedBy v-s: ;
@@ -1124,47 +1123,30 @@ v-s:Journaling
   rdfs:label "Журналируемая сущность"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
-
 v-s:actor
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:JournalRecord ;
+  rdfs:domain v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted ;
   rdfs:label "действующее лицо"@ru ;
   rdfs:range v-s:Person ;
 .
-
-v-s:eventType
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:JournalRecord ;
-  rdfs:label "тип события"@ru ;
-  rdfs:label "event type"@en ;
-  rdfs:range v-s:JournalEventType ;
-.
-
-v-s:JournalEventType
+v-s:DocumentCreated
   rdf:type owl:Class ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Тип события журнала"@ru ;
-  rdfs:subClassOf v-s:Dictionary ;
-.
-
-v-s:JETDocumentCreated
-  rdf:type v-s:JournalEventType ;
+  rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Документ создан"@ru ;
   rdfs:label "Document created"@en ;
 .
-
-v-s:JETDocumentUpdated
-  rdf:type v-s:JournalEventType ;
+v-s:DocumentUpdated
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Документ изменен"@ru ;
   rdfs:label "Document updated"@en ;
 .
-
-v-s:JETDocumentDeleted
-  rdf:type v-s:JournalEventType ;
+v-s:DocumentDeleted
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Документ удален"@ru ;
   rdfs:label "Document deleted"@en ;
 .
-
