@@ -148,7 +148,12 @@ function newJournalRecord(journal_uri)
             {
                 data: journal_uri,
                 type: _Uri
-    }]
+    }],
+        'v-s:created': [
+            {
+                data: new Date (),
+                type: _Datetime
+    }]	
     };
     return new_journal_record;
 }
