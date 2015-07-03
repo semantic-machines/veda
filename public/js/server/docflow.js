@@ -344,7 +344,7 @@ function prepare_work_order(ticket, document)
                     var journal_uri = getJournalUri(_process['@']);
                     var new_journal_record = newJournalRecord(journal_uri);
 
-                    new_journal_record['v-s:eventType'] = [
+                    new_journal_record['rdf:type'] = [
                         {
                             data: 'v-wf:SubProcessStarted',
                             type: _Uri
