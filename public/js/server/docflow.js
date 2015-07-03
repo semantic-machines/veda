@@ -346,12 +346,7 @@ function prepare_work_order(ticket, document)
 
                     new_journal_record['v-s:eventType'] = [
                         {
-                            data: 'v-wf:JETSubProcessStarted',
-                            type: _Uri
-     }];
-                    new_journal_record['v-wf:isProcess'] = [
-                        {
-                            data: new_process_uri,
+                            data: 'v-wf:SubProcessStarted',
                             type: _Uri
      }];
                     new_journal_record['rdfs:label'] = [
