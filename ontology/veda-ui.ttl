@@ -950,7 +950,7 @@ v-ui:JournalRecordTemplate
     $(".event-type", template).wrap("<strong>");
   }
   if ( individual["v-s:eventType"][0].id === "v-wf:JETSubProcessStarted") {
-    $(".event-desc, event-date", template).remove();
+    $(".event-desc, event-date", template).empty();
     $(".event-type", template).wrap("<strong>");
     var subJrnl = individual["v-s:subJournal"][0], 
 		subTmpl = veda.ontology.templates["v-ui:SubJournalTemplate"],
