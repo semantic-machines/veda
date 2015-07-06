@@ -28,7 +28,27 @@ veda.Module(function Util(veda) { "use strict";
 		return new F();
 	}
 	
-	function isInteger (n) { return n % 1 === 0; }
+	function isInteger(n) { return n % 1 === 0; }
+	
+	function zeroPref(n) {
+		return n > 9 ? n : "0" + n;
+	}
+	
+	veda.Util.formatDate = function (date) {
+		var day = date.getDate(),
+			month = date.getMonth() + 1,
+			year = date.getFullYear(),
+			hours = date.getHours(),
+			mins = date.getMinutes(), 
+			secs = date.getSeconds(),
+			fdate, ftime;
+		month = zeroPref(month); day = zeroPref(day);
+		hours = zeroPref(hours); mins = zeroPref(mins); secs = zeroPref(secs);
+		fdate = [day, month, year].join(".");
+		ftime = [hours, mins, secs].join(":");
+		if (ftime === "00:00:00") return fdate;
+		return [fdate, ftime].join(" ");
+	};
 	
 	veda.Util.exportTTL = function (individualList) {
 		var s = new veda.SearchModel("'rdf:type'=='owl:Ontology'", null);

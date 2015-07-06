@@ -325,8 +325,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				return individual[property_uri].map( function (value, i) {
 					var result = propertyContainer.clone().insertBefore(propertyContainer).show();
 					var valueHolder = $("<span>");
-					result.prepend(valueHolder.text(value.toString()));
-
+					if (value instanceof Date) {result.prepend(valueHolder.text( veda.Util.formatDate(value) ));}
+					else { result.prepend(valueHolder.text(value.toString())); }
 					var wrapper = $("<div class='btn-group btn-group-xs -view edit search' role='group' style='margin:5px 5px 5px;'></div>");
 					var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
 					var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");

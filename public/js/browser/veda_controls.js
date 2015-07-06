@@ -818,7 +818,9 @@
 			control = $(opts.template),
 			queryPrefix = opts.queryPrefix,
 			add = $(".add-btn", control),
-			all = $(".all-btn", control);
+			all = $(".all-btn", control),
+			spec = opts.spec,
+			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1;
 		
 		if (!opts.add) {
 			add.remove();
@@ -862,6 +864,7 @@
 		);
 
 		typeAhead.on("typeahead:selected", function (e, selected) {
+			if (isSingle) typeAhead.val("");
 			opts.select(selected);
 		});
 
