@@ -18,6 +18,7 @@ driver.wait
        driver.findElements(By.css(".pass")).then(
          function(elements2)
          {
+           console.log(elements.length+' = '+elements2.length);
            return elements.length==elements2.length;
          })
      });
