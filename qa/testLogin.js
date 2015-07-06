@@ -9,7 +9,7 @@ basic.login(driver);
 
 driver.wait
 (
-  until.elementTextContains(driver.findElement(By.id('main')),'Добро пожаловать в Veda!'),
+  until.elementTextContains(driver.findElement(By.id('main')),'123Добро пожаловать в Veda!'),
   1000
 ).then
 (
@@ -17,6 +17,7 @@ driver.wait
   function(err)
   {
     console.trace(err);
+    process.exit(1);
   }
 );
 driver.quit();

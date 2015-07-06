@@ -24,13 +24,14 @@ driver.wait
     return false;
   })
   ,
-  1000
+  60000
 ).then
 (
   null,
   function(err)
   {
     console.trace(err);
+    process.exit(1);
   }
 );
 driver.quit();

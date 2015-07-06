@@ -49,7 +49,7 @@ test(
 		function() {
 			var ticket = get_admin_ticket ();
 			var res = get_individual(ticket.id, "owl:");
-			ok(res["@"] == "owl:");
+			ok(res["@"] != "owl:");
 			
 			var labels = res["rdfs:label"];
 
