@@ -1,4 +1,4 @@
-var webdriver = require('selenium-webdriver')
+var webdriver = require('selenium-webdriver');
 module.exports = {
     driver :  new webdriver.Builder().usingServer('http://localhost:4445/wd/hub').withCapabilities({
                                                                           browserName: 'chrome',
