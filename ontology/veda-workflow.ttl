@@ -289,7 +289,7 @@ v-wf:wosResultsMapping
 .
 
 v-wf:executor
-	rdf:type rdf:Property ;
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "executor"@en ;
 	rdfs:label "исполнитель"@ru ;
@@ -1234,12 +1234,7 @@ v-wf:initiator
   rdfs:range v-s:Appointment ;
 .
 v-wf:executor
-  rdf:type owl:ObjectProperty ;
-  rdfs:isDefinedBy v-wf: ;
   rdfs:domain v-wf:TaskGiven, v-wf:TaskCompleted ;
-  rdfs:label "исполнитель"@ru ;
-  rdfs:label "executor"@en ;
-  rdfs:range v-s:Appointment ;
 .
 v-wf:to
   rdf:type owl:ObjectProperty ;

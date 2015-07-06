@@ -10,6 +10,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://semantic-machines.com/veda/veda-ui>
@@ -872,11 +873,10 @@ v-ui:JournalTemplate
       <span rel="v-wf:onProcess" template="v-ui:ClassNameLabelTemplate"></span>
     </h4>
     <div class="panel panel-default">
-		<div class="panel-heading"><strong>Записи журнала</strong></div>
-		<div class="panel-body">
+		<div class="panel-heading">
 			<div class="row">
 				<div class="col-md-4">
-					<strong about="v-s:eventType" property="rdfs:label"></strong>
+					<strong about="v-s:JournalRecord" property="rdfs:label"></strong>
 				</div>
 				<div class="col-md-6">
 					<strong about="v-s:description" property="rdfs:label"></strong>
@@ -885,9 +885,10 @@ v-ui:JournalTemplate
 					<strong about="v-s:created" property="rdfs:label"></strong>
 				</div>
 			</div>
-			<hr class="margin-sm">
+		</div>
+		<div class="panel-body">
 			<div id="records">
-				<div rel="v-s:childRecord" template="v-ui:JournalRecordTemplate"></div>
+				<div rel="v-s:childRecord"></div>
 			</div>
 		</div>
 	</div>
@@ -898,66 +899,115 @@ v-ui:JournalTemplate
 </script>
   """ ;
 .
-
 v-ui:SubJournalTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон поджурнала"@ru ;
   rdfs:label "Subjournal template"@en ;
   v-ui:template """
 <div class="container-fluid sub-journal">
-	<div class="container-fluid" style="border-left: 5px solid #eee">
-		<div rel="v-s:childRecord" template="v-ui:JournalRecordTemplate"></div>
-	</div>
+  <div class="container-fluid" style="border-left: 5px solid #eee">
+    <div rel="v-s:childRecord"></div>
+  </div>
 </div>
   """ ;
 .
-
-v-ui:JournalRecordTemplate
+v-ui:DocumentEventTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон записи журнала"@ru ;
-  rdfs:label "Journal record template"@en ;
-  v-ui:forClass v-s:JournalRecord ;
+  rdfs:label "Шаблон события документа"@ru ;
+  rdfs:label "Document event template"@en ;
+  v-ui:forClass v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted ;
   v-ui:template """
 <div class="journal-record">
-	<hr class="margin-sm">
-	<div class="row">
-		<div class="col-md-4 event-type">
-			<span rel="v-s:eventType" template="v-ui:LabelTemplate"></span>
-		</div>
-		<div class="col-md-6 event-desc">
-			<div property="rdfs:label"></div>
-			<span id="who"></span>
-			<em rel="v-s:actor" template="v-ui:LabelTemplate"></em>
-			<em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
-			<em rel="v-wf:to" template="v-ui:LabelTemplate"></em>
-		</div>
-		<div class="col-md-2 event-date">
-			<span property="v-s:created"></span>
-		</div>
+  <hr class="margin-sm">
+  <div class="row">
+	<div class="col-md-4 event-type">
+	  <span rel="rdf:type" template="v-ui:LabelTemplate"></span>
 	</div>
+	<div class="col-md-6 event-desc">
+	  <div property="rdfs:label"></div>
+        <span about="v-s:actor" property="rdfs:label"></span>: 
+		<em rel="v-s:actor" template="v-ui:LabelTemplate"></em>
+	  </div>
+	  <div class="col-md-2 event-date">
+		<span property="v-s:created"></span>
+	  </div>
+	</div>
+  </div>
 </div>
-<script>
-  var who = $("#who", template), text;
-  if ( individual.hasValue("v-s:actor") ) {
-	  text = veda.ontology["v-s:actor"]["rdfs:label"].join(", ");
-  } else if ( individual.hasValue("v-wf:initiator") ) {
-	  text = veda.ontology["v-wf:initiator"]["rdfs:label"].join(", ");
-  } else if ( individual.hasValue("v-wf:to") ) {
-	  text = veda.ontology["v-wf:to"]["rdfs:label"].join(", ");
-  }
-  who.text(text ? text + ": " : "");
-  if ( individual["v-s:eventType"][0].id === "v-wf:JETProcessStarted") {
-    $(".event-type", template).wrap("<strong>");
-  }
-  if ( individual["v-s:eventType"][0].id === "v-wf:JETSubProcessStarted") {
-    $(".event-desc, event-date", template).empty();
-    $(".event-type", template).wrap("<strong>");
-    var subJrnl = individual["v-s:subJournal"][0], 
-		subTmpl = veda.ontology.templates["v-ui:SubJournalTemplate"],
-		subCont = $("<div></div>");
-    subJrnl.present(subCont, subTmpl);
-    $("div.row", template).after(subCont);
-  }
-</script>
+  """ ;
+.
+v-ui:TaskEventTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон события по задаче"@ru ;
+  rdfs:label "Task event template"@en ;
+  v-ui:forClass v-wf:TaskGiven, v-wf:TaskCompleted ;
+  v-ui:template """
+<div class="journal-record">
+  <hr class="margin-sm">
+  <div class="row">
+	<div class="col-md-4 event-type">
+	  <span rel="rdf:type" template="v-ui:LabelTemplate"></span>
+	</div>
+	<div class="col-md-6 event-desc">
+	  <div property="rdfs:label"></div>
+        <span about="v-wf:executor" property="rdfs:label"></span>: 
+		<em rel="v-wf:executor" template="v-ui:LabelTemplate"></em>
+	  </div>
+	  <div class="col-md-2 event-date">
+		<span property="v-s:created"></span>
+	  </div>
+	</div>
+  </div>
+</div>
+  """ ;
+.
+v-ui:ProcessEventTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон события процесса"@ru ;
+  rdfs:label "Process event template"@en ;
+  v-ui:forClass v-wf:ProcessStarted, v-wf:SubProcessStarted, v-wf:ProcessCompleted ;
+  v-ui:template """
+<div class="journal-record">
+  <hr class="margin-sm">
+  <div class="row">
+	<div class="col-md-4 event-type">
+	  <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong>
+	</div>
+	<div class="col-md-6 event-desc">
+	  <div property="rdfs:label"></div>
+        <span about="v-wf:initiator" property="rdfs:label"></span>: 
+		<em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
+	  </div>
+	  <div class="col-md-2 event-date">
+		<span property="v-s:created"></span>
+	  </div>
+	</div>
+  </div>
+</div>
+  """ ;
+.
+v-ui:SubProcessStartedEventTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон события запуска подпроцесса"@ru ;
+  rdfs:label "Subprocess start event template"@en ;
+  v-ui:forClass v-wf:SubProcessStarted ;
+  v-ui:template """
+<div class="journal-record" id="sps">
+  <hr class="margin-sm">
+  <div class="row">
+	<div class="col-md-4 event-type">
+	  <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong>
+	</div>
+	<div class="col-md-6 event-desc">
+	  <div property="rdfs:label"></div>
+      <span about="v-wf:initiator" property="rdfs:label"></span>: 
+	  <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
+	</div>
+	<div class="col-md-2 event-date">
+	  <span property="v-s:created"></span>
+	</div>
+  </div>
+  <div class="sub-journal" rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
+</div>
   """ ;
 .
