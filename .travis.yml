@@ -1,0 +1,47 @@
+addons:
+  sauce_connect:
+    username: xupyprmv
+    access_key: f19d1c49-74e5-4e7a-b340-70bac7948b1a
+
+env:
+  global:
+    - secure: c2+p9By24JcoEMvB8g7OkKbEotcGF0GQdogtfZCBC+V0saW514ldPj3FUaUCNvZelMdzwckp91R9vQX5AO4qVSTNW2gyia5mzK5mLDccHSoq3OVLn2NJbRhguNvYeG4AFmClI56cACxBo8WuMaAsWkwMU+sE/1Yd3Sj0pr8UZgKo7lIulpn2+zd0oTHFRrE1YJ95Ap328VR8DwmA4dgIy4qIAeCzSyKIWHhXYfOSXOxuQu2TdpMNltx9IACN6/XtT9aVtgjTZjwOma6GamweMoEHF3kvVaZ6KxNkiW6vaGv9yU3xYDL8bUhSh3yrpjxQnX2y8uzsXmpzBLpYsOdBBnLHZjdG+dpyOr3lNNK7k0/DI1BXmkIFeYXa5g2EMvFu8iYujitRVrnrrjgGVrAXbM6d1HpL/4oNZdJyeqCdg9TtfvLGw9BlFs6x9KokL/j8qL03Y5CY1ZHfNtlU2YG/fyGcPUJ+zaFgEfqTOd58nnhFOz79L7bYxWQFKBY0jyWBBTwmH+aibL3j6vir6H5FxcYuHAeZkLqJ5+FPJ+gs1Mia/sXuYyIGOs1eVZ007EDLnytnVMLMFLAivWaJw9euXmun/NIwvVvNqB9+KZRV+BbVUH0V4P5LNfBscKHB9v9LiSJD7V2A+YJTo4T7gbIoz0dhSjsj/jD5nWnkYlfkFkY=
+    - secure: tHVrSkL8KAgEQi5leVQfuaKPHkqjOKqAxmHaySfAxChKAvKDSWT55SJA+JOIc/ji0d7wxfBQLjMZQH/ukQUjAqTQXEnpXBov0fcdA4413wdmO0cX/grd1OeubBZXDR1lSmRpprKAyLPtQyP7STSSO3cMP1AJjrX58cB4AYISW79M6SVokNIG/7c23oeV/xPn7WMivEl2pMreSODNUwNzuLZxk+v1Y7MjhrqDN3KxuHbp1bsrLuXyEANyRb12gbeA2YfQEoGs1gNCPBhRmYtFLiCA+a1dJ8LEgiUl3QPxyou/gEJn2yTSl5G5gXcHlwP7Z6QwtPFPyei+IpQWGUNk+RjbRcs20PihCLT42fkcn3ayPQ4/EU5Ns3FME36srvgWkxZ86njejXCDXX/DyvpADkwUZdlgdBbj7YES+4BHWj1xoLZSfStOvIOAtFljV/akPjhmqJKYer/bYjoND/Elw3KGDF1pyRvaQTATDv1Uj4YfvjiHKRnuFcKdo4AUrQNaRTlOtH54jqH6nz7OshKujY0n7QImLQR7ZS4sa/HlbBzhZnbD1RsMUTeblHlKSP17IVwzKhZg0mkGbMaHDI+yJNMVylr3IzDukoOYQDhyn+Gh2ebSJUisRwdq5OpHtt62662MjcLOozOlN0sVgmUDbawKkjJrFZ5PK/6j4U04zmE=
+
+language: d
+d:
+ - dmd
+
+# Load all dependencies
+# Compile vibe-d before main project to prevent OutOfMemory issue
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install libzmq3-dev
+  - sudo apt-get install libevent-pthreads-2.0-5
+  - sudo apt-get install libraptor2-dev
+  - sudo apt-get install -y libraptor2-dev
+  - sudo cp ./qa/install/concurrency.d ${HOME}/dmd2/src/phobos/std/concurrency.d
+  - dub -v fetch vibe-d
+  - npm install selenium-webdriver
+
+# Build
+install:
+  - dub build --build=debug
+
+# Run service as daemon and GUI
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
+  - start-stop-daemon --start --verbose --chdir $PWD --make-pidfile --pidfile $PWD/veda-pid --background --startas /bin/bash -- -c "exec ./veda.app >> $PWD/veda.log 2>&1"
+  - sleep 10  # give Web server some time to bind to sockets, load startup data, etc
+
+# Run API & integration test
+script:
+  - node ./qa/testAPI.js
+  - node ./qa/testLogin.js
+
+# Stop deamon and show log
+after_script:
+  - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda.app
+  - cat $PWD/veda.log

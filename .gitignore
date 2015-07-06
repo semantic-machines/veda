@@ -11,3 +11,4 @@ m.sh
 backup
 dub.selections.json
 /docs/
+/node_modules/
