@@ -18,14 +18,18 @@ function prepare_decision_form(ticket, document)
         return;
 
     var f_onWorkOrder = document['v-wf:onWorkOrder'];
-    var work_order = get_individual(ticket, getUri(f_onWorkOrder));
-    if (!work_order) return;
+    var _work_order = get_individual(ticket, getUri(f_onWorkOrder));
+    if (!_work_order) return;
 
     //print("[WORKFLOW][DF1].1");
 
-    var f_forWorkItem = work_order['v-wf:forWorkItem'];
+    var f_forWorkItem = _work_order['v-wf:forWorkItem'];
     var work_item = get_individual(ticket, getUri(f_forWorkItem));
     if (!work_item) return;
+
+    var forProcess_uri = getUri(work_item['v-wf:forProcess']);
+    var _process = get_individual(ticket, forProcess_uri);
+    if (!_process) return;
 
     //print("[WORKFLOW][DF1].2");
 
@@ -42,7 +46,7 @@ function prepare_decision_form(ticket, document)
 
     //print("[WORKFLOW][DF1].4 document=", toJson(document));
     //print("[WORKFLOW][DF1].4 transform=", toJson(transform));
-    //print("[WORKFLOW][DF1].4 work_order=", toJson(work_order));
+    //print("[WORKFLOW][DF1].4 _work_order=", toJson(_work_order));
 
     var process_output_vars = transformation(ticket, decision_form, transform, null, f_onWorkOrder);
 
@@ -59,16 +63,19 @@ function prepare_decision_form(ticket, document)
     }
     if (process_output_vars.length > 0)
     {
-        work_order['v-wf:outVars'] = new_vars;
-        put_individual(ticket, work_order, _event_id);
+        _work_order['v-wf:outVars'] = new_vars;
+        put_individual(ticket, _work_order, _event_id);
 
         document['v-wf:isCompleted'] = [
             {
                 data: true,
                 type: _Bool
                  }];
-
         put_individual(ticket, document, _event_id);
+
+    //print("[WORKFLOW][DF1].5 completedExecutorJournalMap");
+        mapToJournal(net_element['v-wf:completedExecutorJournalMap'], ticket, _process, work_item, _work_order);
+    //print("[WORKFLOW][DF1].6 completedExecutorJournalMap");
     }
 }
 

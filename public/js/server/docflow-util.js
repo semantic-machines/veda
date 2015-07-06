@@ -99,12 +99,13 @@ function Context(_src_data, _ticket)
 
     this.getOutVariableValue = function (var_name)
     {
+	//print ("CONTEXT::get out vars, var_name=", var_name);
         return this.getVariableValueIO(var_name, 'v-wf:outVars');
     }
 
     this.getVariableValueIO = function (var_name, io)
     {
-        //	print ("src_data=" + toJson (this.src_data));
+//        	print ("CONTEXT::getVariableValueIO src_data=" + toJson (this.src_data));
         var variables = this.src_data[io];
 
         if (variables)
@@ -113,6 +114,7 @@ function Context(_src_data, _ticket)
             {
                 var variable = get_individual(this.ticket, variables[i].data);
                 if (!variable) continue;
+        	//print ("CONTEXT::getVariableValueIO var=" + toJson (variable));
 
                 var variable_name = getFirstValue(variable['v-wf:variableName']);
 
@@ -683,7 +685,7 @@ function create_new_journal(ticket, process_uri, label)
 
 function mapToJournal(map_container, ticket, _process, _task, _order)
 {
-    //print ("--- 1");
+    //print ("@mapToJournal.1");
     if (map_container)
     {
         //* выполнить маппинг для журнала 
@@ -701,7 +703,7 @@ function mapToJournal(map_container, ticket, _process, _task, _order)
                 var name = getFirstValue(jvar['v-wf:variableName']);
                 var value = jvar['v-wf:variableValue'];
 
-                //print("@ name=" + name + ", value=" + toJson(value));
+                //print("@mapToJournal.2 name=" + name + ", value=" + toJson(value));
                 new_journal_record[name] = value;
             }
             logToJournal(ticket, jornal_uri, new_journal_record);
