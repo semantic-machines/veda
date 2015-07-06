@@ -4,8 +4,15 @@ var connection = require('./connection.js'),
     until = require('selenium-webdriver').until,
     By = require('selenium-webdriver').By;
 
-function compareCounts() {
-  driver.findElements(By.css("#qunit-tests>li")).then(
+
+
+driver.get('http://127.0.0.1:8080/tests');
+
+driver.wait
+(
+  new until.Condition('all API tests execution', function compareCounts(wd) 
+  {
+    driver.findElements(By.css("#qunit-tests>li")).then(
      function(elements)
      {
        driver.findElements(By.css(".pass")).then(
@@ -14,16 +21,9 @@ function compareCounts() {
            return elements.length==elements2.length;
          })
      });
-  return false;
-}
-
-driver.get('http://127.0.0.1:8080/tests');
-
-console.log(driver.findElements(By.css("#qunit-tests>li")));
-
-driver.wait
-(
-  compareCounts(),
+    return false;
+  })
+  ,
   1000
 ).then
 (
