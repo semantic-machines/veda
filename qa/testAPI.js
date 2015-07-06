@@ -8,7 +8,7 @@ function compareCounts() {
   driver.findElements(By.css("#qunit-tests>li")).then(
      function(elements)
      {
-       driver.findElements({class:'pass'}).then(
+       driver.findElements(By.css(".pass")).then(
          function(elements2)
          {
            return elements.length==elements2.length;
