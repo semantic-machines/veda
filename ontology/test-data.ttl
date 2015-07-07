@@ -545,7 +545,7 @@ td:PersonTemplate1
         <hr />
         <div class="row">
           <div class="col-md-6">
-		    <div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1">шаблон: td:PreferencesTemplate1</div>
+		    <div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" embedded="true">шаблон: td:PreferencesTemplate1</div>
 		    <veda-control rel="v-ui:hasPreferences" class="-view edit search"></veda-control>
           </div>
           <div class="col-md-6">
@@ -732,7 +732,7 @@ td:PreferencesTemplate1
       <strong class="text-muted" about="v-ui:preferredLanguage" property="rdfs:label">Язык</strong>:
       <ul>
         <!--li rel="v-ui:preferredLanguage" template="v-ui:LabelTemplate"></li-->
-        <li rel="v-ui:preferredLanguage" embedded="true">
+        <li rel="v-ui:preferredLanguage">
           <div>
 			  <span property="rdfs:label"></span>
 			  <veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
@@ -810,6 +810,18 @@ td:PropertySpecification9
   v-ui:tooltip "Required, single value. Link to instance of Preferences class"@en ;
   v-ui:queryPrefix "('rdf:type'=='v-fs:Search')"^^xsd:string ;
   v-ui:defaultObjectValue v-fs:Search1 ;
+.
+td:PropertySpecification10
+  rdf:type v-ui:IntegerPropertySpecification ;
+  rdfs:label "Спецификация тестового свойства для класса Предпочтения"@ru ;
+  rdfs:label "Test property specification for Preferences class"@en ;
+  v-ui:forClass v-ui:Preferences ;
+  v-ui:forProperty v-ui:displayedElements ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "Обязательно к заполнению, единичное целочисленное значение."@ru ;
+  v-ui:tooltip "Required, single integer value."@en ;
+  v-ui:defaultIntegerValue "10"^^xsd:integer ;
 .
 td:PropertySpecification1
   rdf:type v-ui:DatetimePropertySpecification ;
