@@ -816,17 +816,29 @@
 	$.fn.veda_link = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_link.defaults, options ),
 			control = $(opts.template),
-			queryPrefix = opts.queryPrefix,
 			add = $(".add-btn", control),
 			all = $(".all-btn", control),
+			individual = opts.individual,
 			spec = opts.spec,
+			queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : undefined,
+			rel_uri = opts.rel_uri,
 			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1;
 		
-		if (!opts.add) {
-			add.remove();
-		} else {
-			add.click(opts.add);
+		function select(selected) {
+			if (isSingle) {
+				individual[rel_uri] = selected instanceof Array ? [ selected[0] ] : [ selected ];
+			} else {
+				individual[rel_uri] = individual[rel_uri].concat(selected);
+			}
 		}
+
+		function addNew() {
+			var newVal = new veda.IndividualModel();
+			newVal["rdf:type"] = veda.ontology[rel_uri]["rdfs:range"];
+			select(newVal);
+		}
+
+		add.click(addNew);
 
 		if (!queryPrefix) {
 			all.remove();
@@ -864,8 +876,8 @@
 		);
 
 		typeAhead.on("typeahead:selected", function (e, selected) {
-			if (isSingle) typeAhead.val("");
-			opts.select(selected);
+			if (!isSingle) typeAhead.val("");
+			select(selected);
 		});
 
 		// Search modal
@@ -883,7 +895,7 @@
 				for (var uri in search.selected) {
 					selected.push( search.selected[uri] );
 				}
-				opts.select(selected);
+				select(selected);
 			});
 			$modal.on('hidden.bs.modal', function (e) {
 				$modal.remove();
@@ -899,7 +911,7 @@
 	};
 	$.fn.veda_link.defaults = {
 		template: $("#link-control-template").html(),
-		queryPrefix: ""
+		limit: 100
 	};
 
 	// OBJECT CHECKBOX GROUP CONTROL

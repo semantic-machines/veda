@@ -197,6 +197,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var isValid = Object.keys(individual.isValid).reduce(function (state, specId) {
 				return state && individual.isValid[specId];
 			}, true);
+			//use css class to store validity ?!
+			//isValid = isValid && embedded.reduce(function (state, template) {
+			//	return state && (template.isValid === undefined || template.isValid);
+			//}, true);
+			//(template.isValid = isValid) ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");*/
 			isValid ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
 		}
 		individual.on("validation:complete", validationHandler);
@@ -327,7 +332,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					var valueHolder = $("<span>");
 					if (value instanceof Date) {result.prepend(valueHolder.text( veda.Util.formatDate(value) ));}
 					else { result.prepend(valueHolder.text(value.toString())); }
-					var wrapper = $("<div class='btn-group btn-group-xs -view edit search' role='group' style='margin:5px 5px 5px;'></div>");
+					var wrapper = $("<div id='val-actions' class='btn-group btn-group-xs -view edit search' role='group' style='margin:5px 5px 5px;'></div>");
 					var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
 					var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
 					wrapper.append(btnEdit, btnRemove);
@@ -479,16 +484,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
 			
 			var opts = {
-				limit: 100,
-				select: function (selected) {
-					individual[rel_uri] = individual[rel_uri].concat(selected);
-				},
-				queryPrefix: spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : undefined,
-				add: function () {
-					var newVal = new veda.IndividualModel();
-					newVal["rdf:type"] = veda.ontology[rel_uri]["rdfs:range"];
-					individual[rel_uri] = individual[rel_uri].concat(newVal);
-				},
 				individual: individual,
 				rel_uri: rel_uri,
 				spec: spec,
@@ -567,10 +562,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						valTemplate = clone.children();
 					}
 				}
-				
-				clone.attr("style", "position:relative;");
 
-				var btnRemove = $("<button class='btn btn-xs btn-default -view edit search' style='margin: 0px 0px 5px 5px;'><span class='glyphicon glyphicon-remove'></span></button>");
+				var btnRemove = $("<button id='val-remove' class='btn btn-xs btn-default -view edit search' style='margin: 0px 0px 5px 5px;'><span class='glyphicon glyphicon-remove'></span></button>");
 				
 				if (valTemplate.prop("tagName") !== "SPAN") {
 					btnRemove.attr("style", btnRemove.attr("style") + "position:absolute; top:0px; right:0px; z-index:100;");
@@ -596,7 +589,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 	function isValid (individual, spec, values) {
 		var result = true;
-		if (!spec) return result;			
+		individual.isValid = individual.isValid || {};
+		if (!spec) { 
+			individual.trigger("validation:complete");
+			return result;
+		}
 		// cardinality check
 		if (spec.hasValue("v-ui:minCardinality")) { 
 			result = result && (
@@ -644,7 +641,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			return result;
 		}, result);
-		individual.isValid = individual.isValid || {};
 		individual.isValid[spec.id] = result;
 		individual.trigger("validation:complete");
 		return result;
