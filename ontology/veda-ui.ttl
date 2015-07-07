@@ -858,11 +858,12 @@ v-ui:JournalTemplate
   rdfs:label "Journal template"@en ;
   v-ui:forClass v-s:Journal ;
   v-ui:template """
-<div class="container-fluid">
+<div class="container-fluid journal">
     <style>
       div[rel="v-s:childRecord"]:first-child > div.journal-record > hr {display:none;}
       div.sub-journal {margin-top: 10px;}
-      .journal-record .sub-journal {margin-left: 20px; padding-left: 20px; border-left: 5px solid #eee;}
+      .journal-record > div > .sub-journal {margin-left: 20px; padding-left: 20px; border-left: 5px solid #eee;}
+      .journal hr.margin-sm {margin: 10px 0px;}
     </style>
     <h2 about="v-s:Journal" property="rdfs:label"></h2>
     <h4 id="docLnk">
