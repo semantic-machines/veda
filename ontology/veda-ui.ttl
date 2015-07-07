@@ -877,13 +877,13 @@ v-ui:JournalTemplate
     <div class="panel panel-default">
 		<div class="panel-heading">
 			<div class="row">
-				<div class="col-md-4">
+				<div class="col-md-3 col-sm-3">
 					<strong about="v-s:JournalRecord" property="rdfs:label"></strong>
 				</div>
-				<div class="col-md-6">
+				<div class="col-md-7 col-sm-6">
 					<strong about="v-s:description" property="rdfs:label"></strong>
 				</div>
-				<div class="col-md-2 text-right">
+				<div class="col-md-2 col-sm-3 text-right">
 					<strong about="v-s:created" property="rdfs:label"></strong>
 				</div>
 			</div>
@@ -920,17 +920,17 @@ v-ui:DocumentEventTemplate
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
-	<div class="col-md-4 event-type">
+	<div class="col-md-3 col-sm-3 event-type">
 	  <span rel="rdf:type" template="v-ui:LabelTemplate"></span>
 	</div>
-	<div class="col-md-6 event-desc">
+	<div class="col-md-7 col-sm-6 event-desc">
 	  <div property="rdfs:label"></div>
       <span class="actor">
         <span about="v-s:actor" property="rdfs:label"></span>: 
 	    <em rel="v-s:actor" template="v-ui:LabelTemplate"></em>
 	  </span>
 	</div>
-	<div class="col-md-2 event-date text-right">
+	<div class="col-md-2 col-sm-3 event-date text-right">
 	  <span property="v-s:created"></span>
 	</div>
   </div>
@@ -949,17 +949,17 @@ v-ui:TaskGivenTemplate
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
-	<div class="col-md-4 event-type">
+	<div class="col-md-3 col-sm-3 event-type">
 	  <span rel="rdf:type" template="v-ui:LabelTemplate"></span>
 	</div>
-	<div class="col-md-6 event-desc">
+	<div class="col-md-7 col-sm-6 event-desc">
 	  <div property="rdfs:label"></div>
       <span id="executor">
         <span about="v-wf:executor" property="rdfs:label"></span>: 
 	    <em rel="v-wf:executor" template="v-ui:LabelTemplate"></em>
 	  </span>
 	</div>
-	<div class="col-md-2 event-date text-right">
+	<div class="col-md-2 col-sm-3 event-date text-right">
 	  <span property="v-s:created"></span>
 	</div>
   </div>
@@ -978,10 +978,10 @@ v-ui:TaskCompletedTemplate
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
-	<div class="col-md-4 event-type">
+	<div class="col-md-3 col-sm-3 event-type">
 	  <span rel="rdf:type" template="v-ui:LabelTemplate"></span>
 	</div>
-	<div class="col-md-6 event-desc">
+	<div class="col-md-7 col-sm-6 event-desc">
 	  <div property="rdfs:label"></div>
       <span id="executor">
         <span about="v-wf:executor" property="rdfs:label"></span>: 
@@ -996,7 +996,7 @@ v-ui:TaskCompletedTemplate
 	    </em>
 	  </div>
 	</div>
-	<div class="col-md-2 event-date text-right">
+	<div class="col-md-2 col-sm-3 event-date text-right">
 	  <span property="v-s:created"></span>
 	</div>
   </div>
@@ -1016,17 +1016,17 @@ v-ui:ProcessEventTemplate
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
-	<div class="col-md-4 event-type">
+	<div class="col-md-3 col-sm-3 event-type">
 	  <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong>
 	</div>
-	<div class="col-md-6 event-desc">
+	<div class="col-md-7 col-sm-6 event-desc">
 	  <div property="rdfs:label"></div>
       <span id="initiator">
         <span about="v-wf:initiator" property="rdfs:label"></span>: 
 	    <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
 	  </span>
 	</div>
-	<div class="col-md-2 event-date text-right">
+	<div class="col-md-2 col-sm-3 event-date text-right">
 	  <span property="v-s:created"></span>
 	</div>
   </div>
@@ -1045,17 +1045,17 @@ v-ui:SubProcessStartedEventTemplate
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
-	<div class="col-md-4 event-type">
+	<div class="col-md-3 col-sm-3 event-type">
 	  <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong>
 	</div>
-	<div class="col-md-6 event-desc">
+	<div class="col-md-7 col-sm-6 event-desc">
 	  <div property="rdfs:label"></div>
 	  <span id="initiator">
         <span about="v-wf:initiator" property="rdfs:label"></span>: 
 	    <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
 	  </span>
 	</div>
-	<div class="col-md-2 event-date text-right">
+	<div class="col-md-2 col-sm-3 event-date text-right">
 	  <span property="v-s:created"></span>
 	</div>
   </div>
