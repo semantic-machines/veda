@@ -174,7 +174,15 @@ veda-control {
   display: block;
 }
 
+[rel], [property] {
+  position: relative;
+}
+
 /* Template elements visibility in different modes. Works up to 10 levels deep for embedded templates */
+
+.immutable[rel] > #val-remove, .immutable[property] > #val-actions {
+  display:none;
+}
 
 .mode-view .view, 
 .mode-edit .edit, 
