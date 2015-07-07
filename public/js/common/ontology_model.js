@@ -165,9 +165,11 @@ veda.Module(function (veda) { "use strict";
 		Object.keys(self.specs).map( function (uri) {
 			var spec = self.specs[uri];
 			if (!spec["v-ui:forClass"]) return;
-			spec["v-ui:forClass"].map( function ( item ) {
-				item.specsByProps = item.specsByProps || {};
-				item.specsByProps[spec["v-ui:forProperty"][0].id] = spec;
+			spec["v-ui:forClass"].map( function ( _class ) {
+				_class.specsByProps = _class.specsByProps || {};
+				spec["v-ui:forProperty"].map( function (prop) {
+					_class.specsByProps[prop.id] = spec;
+				});
 			});
 		});
 
