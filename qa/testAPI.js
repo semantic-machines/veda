@@ -15,7 +15,7 @@ driver.wait
     driver.findElements(By.css("#qunit-tests>li")).then(
      function(elements)
      {
-       driver.findElements(By.css(".pass")).then(
+       driver.findElements(By.css("#qunit-tests>.pass")).then(
          function(elements2)
          {
            console.log(elements.length+' = '+elements2.length);
