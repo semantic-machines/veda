@@ -862,7 +862,7 @@ v-ui:JournalTemplate
     <style>
       div[rel="v-s:childRecord"]:first-child > div.journal-record > hr {display:none;}
       div.sub-journal {margin-top: 10px;}
-      .journal-record > div > .sub-journal {margin-left: 20px; padding-left: 20px; border-left: 5px solid #eee;}
+      .journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
       .journal hr.margin-sm {margin: 10px 0px;}
     </style>
     <h2 about="v-s:Journal" property="rdfs:label"></h2>
@@ -1046,7 +1046,7 @@ v-ui:SubProcessStartedEventTemplate
   <hr class="margin-sm">
   <div class="row">
 	<div class="col-md-4 event-type">
-	  <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong>
+	  <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong>
 	</div>
 	<div class="col-md-6 event-desc">
 	  <div property="rdfs:label"></div>
@@ -1063,6 +1063,11 @@ v-ui:SubProcessStartedEventTemplate
 </div>
 <script>
   if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
+  $("#exp", template).click(function (e) {
+    e.preventDefault();
+    $("div[rel='v-s:subJournal']", template).toggle();
+    $(this).children().toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+  });
 </script>
   """ ;
 .
