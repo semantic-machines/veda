@@ -1287,7 +1287,7 @@ v-wf:TaskCompleted
   rdf:type owl:Class ;
   rdf:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Задача выполнена"@ru ;
+  rdfs:label "Выполнена задача"@ru ;
   rdfs:label "Task completed"@en ;
 .
 v-wf:takenDecision

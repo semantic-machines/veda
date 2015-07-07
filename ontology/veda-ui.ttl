@@ -1046,7 +1046,7 @@ v-ui:SubProcessStartedEventTemplate
   <hr class="margin-sm">
   <div class="row">
 	<div class="col-md-3 col-sm-3 event-type">
-	  <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong>
+	  <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
 	</div>
 	<div class="col-md-7 col-sm-6 event-desc">
 	  <div property="rdfs:label"></div>
@@ -1066,7 +1066,7 @@ v-ui:SubProcessStartedEventTemplate
   $("#exp", template).click(function (e) {
     e.preventDefault();
     $("div[rel='v-s:subJournal']", template).toggle();
-    $(this).children().toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
 </script>
   """ ;
