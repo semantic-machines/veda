@@ -10,7 +10,7 @@ basic.login(driver);
 driver.wait
 (
   until.elementTextContains(driver.findElement(By.id('main')),'Добро пожаловать в Veda!'),
-  1000
+  2000
 ).then
 (
   null,

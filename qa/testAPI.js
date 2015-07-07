@@ -10,22 +10,17 @@ driver.get('http://127.0.0.1:8080/tests');
 
 driver.wait
 (
-  new until.Condition('all API tests execution', function compareCounts(wd) 
+  new until.Condition('all API tests execution', function () 
   {
-    var count1 = 0;
-    var count2 = -1;
-    driver.findElements(By.css("#qunit-tests>li")).then(
+    return driver.findElements(By.css("#qunit-tests>li")).then(
      function(elements)
      {
-       driver.findElements(By.css("#qunit-tests>.pass")).then(
+       return driver.findElements(By.css("#qunit-tests>.pass")).then(
          function(elements2)
          {
-	   count1 = elements.length;
-	   count2 = elements2.length;
-           console.log(elements.length+' = '+elements2.length);
+           return (elements.length == elements2.length);
          })
      });
-    return count1==count2;
   })
   ,
   60000

@@ -38,8 +38,8 @@ before_script:
 
 # Run API & integration test
 script:
-  - node ./qa/testLogin.js
   - node ./qa/testAPI.js
+  - node ./qa/testLogin.js
 
 # Stop deamon and show log
 after_script:
