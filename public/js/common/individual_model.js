@@ -127,29 +127,19 @@ veda.Module(function (veda) { "use strict";
 			get: function () { 
 				if (self._.values[property_uri]) return self._.values[property_uri];
 				if (!self._.individual[property_uri]) self._.individual[property_uri] = [];
-				self._.values[property_uri] = self._.individual[property_uri].map( function (value) {
-					if (value.type === "String") {
-						var string = new String(value.data);
-						string.language = value.lang === "NONE" ? undefined : value.lang;
+				self._.values[property_uri] = self._.individual[property_uri].map( parser );
+				// Filter undesired language tagged strings && undefined values
+				self._.values[property_uri] = self._.values[property_uri]
+					.filter(function (i) { return !!i; })
+					.filter(function (string) {
+						if (! (string instanceof String) ) return true;
 						return (string.language === undefined || (veda.user && veda.user.language && string.language in veda.user.language)) ? (
-							string
+							true
 						) : (
 							filteredStrings.push(string),
-							undefined
+							false
 						);
-					} 
-					else if (value.type === "Uri") {
-						if (value.data.search(/^.{3,5}:\/\//) === 0) return new String(value.data);
-						return new veda.IndividualModel(value.data);
-					} 
-					else if (value.type === "Datetime") return new Date(Date.parse(value.data));
-					else if (value.type === "Decimal") return new Number(value.data);
-					else if (value.type === "Integer") return new Number(value.data);
-					else if (value.type === "Boolean") return new Boolean(value.data);
-					else throw ("Unsupported type of property value");
-				});
-				// Filter undefined values
-				self._.values[property_uri] = self._.values[property_uri].filter(function (i) { return !!i; });
+					});
 				if (getterCB) getterCB(self._.values[property_uri]);
 				return self._.values[property_uri];
 			},
@@ -157,33 +147,7 @@ veda.Module(function (veda) { "use strict";
 			set: function (value) { 
 				self._.sync = false;
 				self._.values[property_uri] = value.filter(function (i) { return !!i; });
-				self._.individual[property_uri] = self._.values[property_uri].concat(filteredStrings).map( function (value) {
-					var result = {};
-					if (value instanceof Number || typeof value === "number" ) {
-						result.type = isInteger(value.valueOf()) ? "Integer" : "Decimal";
-						result.data = value.valueOf();
-						return result;
-					} else if (value instanceof Boolean || typeof value === "boolean") {
-						result.type = "Boolean";
-						result.data = value.valueOf();
-						return result;
-					} else if (value instanceof String || typeof value === "string") {
-						result.type = "String";
-						result.data = value.valueOf();
-						result.lang = value.language || "NONE";
-						return result;
-					} else if (value instanceof Date) {
-						result.type = "Datetime";
-						result.data = value.toISOString();
-						return result;
-					} else if (value instanceof veda.IndividualModel) {
-						result.type = "Uri";
-						result.data = value.id;
-						return result;
-					} else {
-						return value;
-					}
-				});
+				self._.individual[property_uri] = self._.values[property_uri].concat(filteredStrings).map( serializer );
 				if (setterCB) setterCB(self._.values[property_uri]);
 				self.trigger("individual:propertyModified", property_uri, self._.values[property_uri]);
 			},
@@ -193,6 +157,51 @@ veda.Module(function (veda) { "use strict";
 		});
 		return this;
 	};
+
+	function parser(value) {
+		if (value.type === "String") {
+			var string = new String(value.data);
+			string.language = value.lang === "NONE" ? undefined : value.lang;
+			return string;
+		} 
+		else if (value.type === "Uri") {
+			if (value.data.search(/^.{3,5}:\/\//) === 0) return new String(value.data);
+			return new veda.IndividualModel(value.data);
+		} 
+		else if (value.type === "Datetime") return new Date(Date.parse(value.data));
+		else if (value.type === "Decimal") return new Number(value.data);
+		else if (value.type === "Integer") return new Number(value.data);
+		else if (value.type === "Boolean") return new Boolean(value.data);
+		else throw ("Unsupported type of property value");
+	}
+	
+	function serializer (value) {
+		var result = {};
+		if (value instanceof Number || typeof value === "number" ) {
+			result.type = isInteger(value.valueOf()) ? "Integer" : "Decimal";
+			result.data = value.valueOf();
+			return result;
+		} else if (value instanceof Boolean || typeof value === "boolean") {
+			result.type = "Boolean";
+			result.data = value.valueOf();
+			return result;
+		} else if (value instanceof String || typeof value === "string") {
+			result.type = "String";
+			result.data = value.valueOf();
+			result.lang = value.language || "NONE";
+			return result;
+		} else if (value instanceof Date) {
+			result.type = "Datetime";
+			result.data = value.toISOString();
+			return result;
+		} else if (value instanceof veda.IndividualModel) {
+			result.type = "Uri";
+			result.data = value.id;
+			return result;
+		} else {
+			return value;
+		}
+	}	
 
 	function isInteger (n) { return n % 1 === 0; }
 		
@@ -268,6 +277,32 @@ veda.Module(function (veda) { "use strict";
 	 * @method
 	 * Reset current individual to database
 	 */
+/*	proto.reset = function () {
+		var self = this;
+		self.trigger("individual:beforeReset");
+		self._.individual = JSON.parse(self._.original_individual);
+		self._.properties = {};
+		self.properties = {};
+		self._.values = {};
+		Object.keys(self._.individual).map(function (property_uri) {
+			if (property_uri === "@") return;
+			if (property_uri === "rdf:type") return;
+			if (property_uri === "v-s:deleted") return;
+			self.defineProperty(property_uri);
+		});
+
+		self.defineProperty("rdf:type", undefined, function (classes) {
+			self._.sync = false;
+			self.init();
+			self.trigger("individual:typeChanged", classes);
+		});
+		self.defineProperty("v-s:deleted");
+		self.init();
+		self._.sync = true;
+		self.trigger("individual:afterReset");
+		return this;
+	};
+*/
 	proto.reset = function () {
 		var self = this;
 		self.trigger("individual:beforeReset");
