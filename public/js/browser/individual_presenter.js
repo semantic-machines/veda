@@ -242,8 +242,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		template.on("view edit search", modeHandler);
 
 		// Process RDFa compliant template
-		// About resource
-		$("[about]", template).map( function () {
+		// About resource property
+		$("[about][property]", template).map( function () {
 			var propertyContainer = $(this), 
 				property_uri = propertyContainer.attr("property"),
 				about;
@@ -260,11 +260,36 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					else propertyContainer.html( about[property_uri].join(", ") );
 				}
 			}
-			individual.on("individual:propertyModified", propertyModifiedHandler);
+			about.on("individual:propertyModified", propertyModifiedHandler);
 			template.one("remove", function () {
-				individual.off("individual:propertyModified", propertyModifiedHandler);
+				about.off("individual:propertyModified", propertyModifiedHandler);
 			});
 		});
+		
+/*		// About resource relation
+		$("[about][rel]", template).map( function () {
+			var relContainer = $(this), 
+				rel_uri = relContainer.attr("rel"),
+				template = relContainer.attr("template"),
+				about;
+			if (propertyContainer.attr("about") === "@") {
+				about = individual;
+				relContainer.attr("about", about.id);
+			} else {
+				about = new veda.IndividualModel(relContainer.attr("about"));
+			}
+			propertyModifiedHandler(rel_uri);
+			function propertyModifiedHandler(doc_rel_uri) {
+				if (doc_rel_uri === rel_uri) {
+					
+				}
+			}
+			about.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				about.off("individual:propertyModified", propertyModifiedHandler);
+			});
+		});
+*/
 		
 		// Special (not RDFa)
 		$("[href='id']", template).map( function () {
@@ -278,7 +303,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		
 		// Relation value
-		$("[rel]", template).not("veda-control").map( function () {
+		$("[rel]", template).not("veda-control").not("[about]").map( function () {
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
 				isEmbedded = relContainer.attr("embedded"),
