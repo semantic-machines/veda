@@ -225,7 +225,7 @@ veda-control {
 [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search
 {
   visibility: visible;
-  position: static;
+  position: relative;
 }
 
 .mode-view .-view,
@@ -270,8 +270,88 @@ veda-control {
 {
   visibility: hidden;
   position: absolute;
-  top: -9999px;
 }
+
+.mode-view   [class*="mode-"] > #rel-actions.view, 
+.mode-edit   [class*="mode-"] > #rel-actions.edit, 
+.mode-search [class*="mode-"] > #rel-actions.search,
+
+[class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
+[class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
+[class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search,
+
+[class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
+[class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
+[class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search
+{
+  visibility: visible;
+  position: relative;
+}
+
+.mode-view   [class*="mode-"] > #rel-actions.-view, 
+.mode-edit   [class*="mode-"] > #rel-actions.-edit, 
+.mode-search [class*="mode-"] > #rel-actions.-search,
+
+[class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
+[class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
+[class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search,
+
+[class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
+[class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
+[class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search,
+
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
+[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search
+{
+  visibility: hidden;
+  position: absolute;
+}
+
 
 /* [BEGIN] NET EDITOR */
 

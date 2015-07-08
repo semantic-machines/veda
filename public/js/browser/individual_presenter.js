@@ -10,13 +10,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		
 		//console.log(individual.id, "presenter count:", ++c);
 		
-		if (typeof container === "string") container = $(container);
-	
-		container
-			.empty()
-			.attr("resource", individual.id)
-			.attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") );
-
+		if (typeof container === "string") { 
+			container = $(container).empty();
+		}
 		mode = mode || "view";
 
 		// Change location.hash if individual was presented in #main container
@@ -83,7 +79,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		rendered.map( function (view) {
 			view.template.trigger(mode);	
-			container.prepend(view.template);
+			view.template.attr("resource", individual.id).attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") );
+			container.append(view.template);
 			view.scripts.map( function (script) { 
 				var presenter = new Function("veda", "individual", "container", "template", "mode", script + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js");
 				presenter(veda, individual, container, view.template, mode);
@@ -127,7 +124,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		function cancelHandler (e) {
 			individual.reset();
-			veda.trigger("individual:loaded", individual, container);
+			//veda.trigger("individual:loaded", individual, container);
 			e.stopPropagation();
 		}
 		template.on("cancel", cancelHandler);
@@ -306,7 +303,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		$("[rel]", template).not("veda-control").not("[about]").map( function () {
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
-				isEmbedded = relContainer.attr("embedded"),
+				isEmbedded = relContainer.attr("embedded") === "true" ? true : false,
 				spec = specs[rel_uri],
 				rel_inline_template = relContainer.children(),
 				rel_template_uri = relContainer.attr("template"),
@@ -316,16 +313,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
 			}
 			if ( rel_inline_template.length ) {
-				relTemplate = rel_inline_template.clone();
+				relTemplate = rel_inline_template.remove();
 			}
-			//rel_inline_template.remove();
-			relContainer.empty().hide();
-			var rendered = renderRelationValues(individual, rel_uri, relContainer, relTemplate, isEmbedded, spec, embedded, template, mode);
+			propertyModifiedHandler(rel_uri);
 			// Re-render link property if its' values were changed
 			function propertyModifiedHandler (doc_property_uri) {
 				if (doc_property_uri === rel_uri) {
-					rendered.map( function (item) { item.remove(); } );
-					rendered = renderRelationValues(individual, rel_uri, relContainer, relTemplate, isEmbedded, spec, embedded, template, mode);
+					relContainer.empty();
+					renderRelationValues(individual, rel_uri, relContainer, relTemplate, isEmbedded, spec, embedded, template, mode);
 				}
 			}
 			individual.on("individual:propertyModified", propertyModifiedHandler);
@@ -357,7 +352,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					var valueHolder = $("<span>");
 					if (value instanceof Date) {result.prepend(valueHolder.text( veda.Util.formatDate(value) ));}
 					else { result.prepend(valueHolder.text(value.toString())); }
-					var wrapper = $("<div id='val-actions' class='btn-group btn-group-xs -view edit search' role='group' style='margin:5px 5px 5px;'></div>");
+					var wrapper = $("<div id='prop-actions' class='btn-group btn-group-xs -view edit search' role='group' style='margin:5px 5px 5px;'></div>");
 					var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
 					var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
 					wrapper.append(btnEdit, btnRemove);
@@ -564,52 +559,49 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 	function renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, spec, embedded, template, mode) {
 		if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
 		var values = individual[rel_uri];
-		var renderedValues = individual[rel_uri].map( function (value) { 
+		individual[rel_uri].map( function (value) { 
 			// Create the same tag container to preserve element layout
-			var clone = relContainer.clone(),
-				valTemplate;
+			var valTemplate;
 			setTimeout( function () {
 				if (isEmbedded) {
 					if (relTemplate) {
 						valTemplate = relTemplate.clone();
-						value.present(clone, valTemplate, mode);
+						value.present(relContainer, valTemplate, mode);
 					} else {
-						value.present(clone, undefined, mode);
-						valTemplate = clone.children();
+						value.present(relContainer, undefined, mode);
+						valTemplate = relContainer.children();
 					}
 					embedded.push(valTemplate);
 				} else {
 					if (relTemplate) {
 						valTemplate = relTemplate.clone();
-						value.present(clone, valTemplate);
+						value.present(relContainer, valTemplate);
 					} else {
-						value.present(clone);
-						valTemplate = clone.children();
+						value.present(relContainer);
+						valTemplate = relContainer.children();
 					}
 				}
 
-				var btnRemove = $("<button id='val-remove' class='btn btn-xs btn-default -view edit search' style='margin: 0px 0px 5px 5px;'><span class='glyphicon glyphicon-remove'></span></button>");
+				var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group' style='margin:5px 5px 5px;'></div>");
+				var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
+				wrapper.append(btnRemove);
 				
 				if (valTemplate.prop("tagName") !== "SPAN") {
-					btnRemove.attr("style", btnRemove.attr("style") + "position:absolute; top:0px; right:0px; z-index:100;");
+					wrapper.attr("style", wrapper.attr("style") + "position:absolute; top:0px; right:0px; z-index:100;");
 				}
 									
 				btnRemove.on("click", function () {
-					clone.remove();
+					valTemplate.remove();
 					individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id != value.id; });
 					if (embedded.length) {
 						var index = embedded.indexOf(valTemplate);
 						if ( index >= 0 ) embedded.splice(index, 1);
 					}
 				});
-
-				clone.append(btnRemove);
-				
+				valTemplate.css("position", "relative");
+				valTemplate.append(wrapper);
 			}, 0);
-			relContainer.before(clone);
-			return clone.show();
 		});
-		return renderedValues;
 	}
 
 	function isValid (individual, spec, values) {
