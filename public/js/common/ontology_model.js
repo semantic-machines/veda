@@ -192,6 +192,7 @@ veda.Module(function (veda) { "use strict";
 
 		// Initialize ontology objects
 		q_results.map( function (uri) {
+			if (!self[uri]) return;
 			self[uri].init();
 		});
 
