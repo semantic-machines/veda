@@ -91,6 +91,7 @@ veda.Module(function (veda) { "use strict";
 		
 		q_results.map( function (uri) {
 			var individual = self[uri];
+			if (!individual) return;
 			
 			// Update localStorage after individual was saved
 			individual.on("individual:afterSave", function (data) {
