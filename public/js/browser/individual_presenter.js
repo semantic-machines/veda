@@ -94,7 +94,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Cleanup memory
 		template.on("remove", function (event) {
 			$(".typeahead", template).typeahead("destroy");
-			//individual = embedded = template = specs = null;
 		});
 		
 		// Embedded templates list
@@ -123,8 +122,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		template.on("save", saveHandler);
 
 		function cancelHandler (e) {
+			template.trigger("view");
 			individual.reset();
-			//veda.trigger("individual:loaded", individual, container);
 			e.stopPropagation();
 		}
 		template.on("cancel", cancelHandler);

@@ -879,7 +879,11 @@
 			if (!isSingle) typeAhead.val("");
 			select(selected);
 		});
-
+		
+/*		control.on("remove", function () {
+			typeAhead.typeahead("destroy");
+		});
+*/
 		// Search modal
 		var tmpl = $("#search-modal-template").html();
 		

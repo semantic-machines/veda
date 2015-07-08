@@ -306,24 +306,12 @@ veda.Module(function (veda) { "use strict";
 	proto.reset = function () {
 		var self = this;
 		self.trigger("individual:beforeReset");
-		self._.individual = JSON.parse(self._.original_individual);
-		self._.properties = {};
-		self.properties = {};
-		self._.values = {};
-		Object.keys(self._.individual).map(function (property_uri) {
+		var original = JSON.parse(self._.original_individual);
+		Object.keys(original).map(function (property_uri) {
 			if (property_uri === "@") return;
 			if (property_uri === "rdf:type") return;
-			if (property_uri === "v-s:deleted") return;
-			self.defineProperty(property_uri);
+			self[property_uri] = original[property_uri].map( parser );
 		});
-
-		self.defineProperty("rdf:type", undefined, function (classes) {
-			self._.sync = false;
-			self.init();
-			self.trigger("individual:typeChanged", classes);
-		});
-		self.defineProperty("v-s:deleted");
-		self.init();
 		self._.sync = true;
 		self.trigger("individual:afterReset");
 		return this;
