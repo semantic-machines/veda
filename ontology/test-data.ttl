@@ -511,7 +511,8 @@ td:PersonTemplate1
 	        <span about="v-s:Person" property="rdfs:label">Персона</span>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
-  	        <a href="id"><span property="id">ID</span></a>
+  	        <a href="#/individual/@/#main"><span property="@">ID</span></a>
+  	        <a href="#/graph/@"><span class="glyphicon glyphicon-link"></span></a>
 	      </div>  
 	    </div>
       </div>
@@ -587,7 +588,7 @@ td:AppointmentTemplate1
 	        <span about="v-s:Appointment" property="rdfs:label">Имя класса</span>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
-  	        <a href="id"><span property="id">ID</span></a>
+  	        <a href="#/individual/@/#main"><span property="@">ID</span></a>
 	      </div>  
 	    </div>
       </div>
@@ -643,7 +644,7 @@ td:AccountTemplate1
 	        <span about="v-s:Account" property="rdfs:label">Имя класса</span>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
-            <a href="id"><span property="id">ID</span></a>
+            <a href="#/individual/@/#main"><span property="@">ID</span></a>
 	      </div>  
 	    </div>
       </div>
@@ -665,6 +666,10 @@ td:AccountTemplate1
                </div>
                <div rel="v-s:owner" template="v-ui:LabelTemplate"></div>
                <veda-control rel="v-s:owner" class="-view edit search"></veda-control>
+               <div about="@" rel="v-s:owner" template="v-ui:LabelTemplate"></div>
+               <div about="@" rel="v-s:owner">
+			       <span><span property="v-s:firstName"></span> <span property="v-s:middleName"></span></span>
+               </div>
             </div>
         </div>
         <br />
@@ -724,7 +729,7 @@ td:PreferencesTemplate1
         <span about="v-ui:Preferences" property="rdfs:label">Предпочтения</span>
       </div>
       <div class="col-md-8 text-right text-muted">
-        <a href="id"><span property="id">ID</span></a>
+        <a href="#/individual/@/#main"><span property="@">ID</span></a>
       </div>  
     </div>
   </div>

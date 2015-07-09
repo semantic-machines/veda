@@ -595,7 +595,7 @@ v-wf:WorkItemTemplate
   v-ui:template """
 <div>
 	<h4><span about="v-wf:WorkItem" property="rdfs:label"></span></h4>
-	<h5><strong><span about="@" property="id"></span> <a href="id"><i class='glyphicon glyphicon-share-alt'></i></a></strong></h5>
+	<h5><strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong></h5>
 	<hr>
 	<div id="inVars">
 		<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
@@ -660,7 +660,7 @@ v-wf:WorkOrderTemplate
   v-ui:forClass v-wf:WorkOrder ;
   v-ui:template """
 <div>
-	<strong><span about="@" property="id"></span> <a href="id"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
+	<strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
 	<div id="executor">
 		<em about="v-wf:executor" property="rdfs:label"></em>
 		<ul><li rel="v-wf:executor" template="v-ui:ClassNameLabelTemplate"></li></ul>

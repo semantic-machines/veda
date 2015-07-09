@@ -238,68 +238,15 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		template.on("view edit search", modeHandler);
 
 		// Process RDFa compliant template
-		// About resource property
-		$("[about][property]", template).map( function () {
-			var propertyContainer = $(this), 
-				property_uri = propertyContainer.attr("property"),
-				about;
-			if (propertyContainer.attr("about") === "@") {
-				about = individual;
-				propertyContainer.attr("about", about.id);
-			} else {
-				about = new veda.IndividualModel(propertyContainer.attr("about"));
-			}
-			propertyModifiedHandler(property_uri);
-			function propertyModifiedHandler(doc_property_uri) {
-				if (doc_property_uri === property_uri) {
-					if (property_uri === "id") propertyContainer.prepend( about.id );
-					else propertyContainer.html( about[property_uri].join(", ") );
-				}
-			}
-			about.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				about.off("individual:propertyModified", propertyModifiedHandler);
-			});
-		});
-		
-/*		// About resource relation
-		$("[about][rel]", template).map( function () {
-			var relContainer = $(this), 
-				rel_uri = relContainer.attr("rel"),
-				template = relContainer.attr("template"),
-				about;
-			if (propertyContainer.attr("about") === "@") {
-				about = individual;
-				relContainer.attr("about", about.id);
-			} else {
-				about = new veda.IndividualModel(relContainer.attr("about"));
-			}
-			propertyModifiedHandler(rel_uri);
-			function propertyModifiedHandler(doc_rel_uri) {
-				if (doc_rel_uri === rel_uri) {
-					
-				}
-			}
-			about.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				about.off("individual:propertyModified", propertyModifiedHandler);
-			});
-		});
-*/
-		
 		// Special (not RDFa)
-		$("[href='id']", template).map( function () {
-			$(this).attr("href", "#/individual/" + individual.id + "/#main")
-				//.after( 
-				//	$("<a>", {href: "#/graph/" + individual.id}).append( 
-				//		$("<i>").addClass("glyphicon glyphicon-link") 
-				//	) 
-				//)
-				//.after( "&nbsp;" );
+		$("a[href*='@']", template).map( function () {
+			var self = $(this);
+			var str = self.attr("href");
+			self.attr("href", str.replace("@", individual.id));
 		});
 		
 		// Relation value
-		$("[rel]", template).not("veda-control").not("[about]").map( function () {
+		$("[rel]", template).not("veda-control").not("[about], [about] *").map( function () {
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
 				isEmbedded = relContainer.attr("embedded") === "true" ? true : false,
@@ -335,8 +282,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				property_uri = propertyContainer.attr("property"),
 				spec = specs[property_uri];
 			
-			if (property_uri == "id") { 
-				propertyContainer.text(individual[property_uri]).show();
+			if (property_uri == "@") { 
+				propertyContainer.text(individual.id).show();
 				return;
 			}
 
@@ -391,6 +338,67 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 		});
 		
+		// About resource property
+		$("[about][property]", template).map( function () {
+			var propertyContainer = $(this), 
+				property_uri = propertyContainer.attr("property"),
+				about;
+			if (propertyContainer.attr("about") === "@") {
+				about = individual;
+				propertyContainer.attr("about", about.id);
+			} else {
+				about = new veda.IndividualModel(propertyContainer.attr("about"));
+			}
+			propertyModifiedHandler(property_uri);
+			function propertyModifiedHandler(doc_property_uri) {
+				if (doc_property_uri === property_uri) {
+					if (property_uri === "@") propertyContainer.text( about.id );
+					else propertyContainer.text( about[property_uri].join(", ") );
+				}
+			}
+			about.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				about.off("individual:propertyModified", propertyModifiedHandler);
+			});
+		});
+		
+		// About resource relation
+		$("[about][rel]", template).map( function () {
+			var relContainer = $(this), 
+				rel_uri = relContainer.attr("rel"),
+				rel_template_uri = relContainer.attr("template"),
+				rel_inline_template = relContainer.children(),
+				about, relTemplate;
+			if ( rel_template_uri ) {
+				var templateIndividual = new veda.IndividualModel( rel_template_uri );
+				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
+			}
+			if ( rel_inline_template.length ) {
+				relTemplate = rel_inline_template.remove();
+			}
+			if (relContainer.attr("about") === "@") {
+				about = individual;
+				relContainer.attr("about", about.id);
+			} else {
+				about = new veda.IndividualModel(relContainer.attr("about"));
+			}
+			propertyModifiedHandler(rel_uri);
+			function propertyModifiedHandler(doc_rel_uri) {
+				if (doc_rel_uri === rel_uri) {
+					relContainer.empty();
+					if ( about.hasValue(rel_uri) ) {
+						about[rel_uri].map( function (item) {
+							item.present(relContainer, relTemplate);
+						});
+					}
+				}
+			}
+			about.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				about.off("individual:propertyModified", propertyModifiedHandler);
+			});
+		});
+		
 		var props_ctrls = {};
 		
 		// Property control
@@ -406,7 +414,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			switch (type) {
 				case "rdfs:Literal": 
 				case "xsd:string": 
-					controlType = $.fn.veda_string;
+					controlType = $.fn.veda_multilingualString;
 					break;
 				case "xsd:boolean": 
 					controlType = $.fn.veda_boolean; 

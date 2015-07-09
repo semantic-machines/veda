@@ -322,7 +322,7 @@ v-ui:ClassTemplateTemplate
         <span about="v-ui:ClassTemplate" property="rdfs:label"></span>
       </div>
       <div class="col-md-8 text-right text-muted">
-        <a href="id"><span property="id"></span></a>
+        <a href="#/individual/@/#main"><span property="@"></span></a>
       </div>  
     </div>
   </div>
@@ -365,7 +365,7 @@ v-ui:ClassNameLabelTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <span><a href="id"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span property="rdfs:label"></span></a></span>
+  <span><a href="#/individual/@/#main"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span property="rdfs:label"></span></a></span>
   """ ;
 .
 v-ui:SavedSearchTemplate
@@ -730,7 +730,7 @@ v-ui:TestUITemplate
         <span about="v-ui:TestUIClass" property="rdfs:label"></span>
       </div>
       <div class="col-md-8 text-right text-muted">
-        <a href="id"><span property="id"></span></a>
+        <a href="#/individual/@/#main"><span property="@"></span></a>
       </div>  
     </div>
   </div>
