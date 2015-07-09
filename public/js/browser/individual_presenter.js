@@ -620,7 +620,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 				valTemplate.css("position", "relative");
 				// It is important to append buttons to the first element in template!
-				valTemplate.first().append(wrapper);
+				valTemplate.not("script").append(wrapper);
 
 			}, 0);
 		});
