@@ -14,7 +14,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			container = $(container).empty();
 		}
 		mode = mode || "view";
-
+		
 		// Change location.hash if individual was presented in #main container
 		if (container.prop("id") === "main") {
 			var hash = ["#", "individual", individual.id, "#main"].join("/");
@@ -580,8 +580,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		relContainer.empty();
 		individual[rel_uri].map( function (value) { 
 			// Create the same tag container to preserve element layout
-			var valTemplate;
 			setTimeout( function () {
+				var valTemplate;
 				if (isEmbedded) {
 					if (relTemplate) {
 						valTemplate = relTemplate.clone();
@@ -600,7 +600,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						valTemplate = relContainer.children();
 					}
 				}
-
+				
 				var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
 				var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
 				wrapper.append(btnRemove);
@@ -617,8 +617,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						if ( index >= 0 ) embedded.splice(index, 1);
 					}
 				});
+
 				valTemplate.css("position", "relative");
-				valTemplate.append(wrapper);
+				// It is important to append buttons to the first element in template!
+				valTemplate.first().append(wrapper);
+
 			}, 0);
 		});
 	}
