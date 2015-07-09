@@ -170,6 +170,8 @@ html, body {
   height: 100%!important;
 }
 
+/* Controls & values */
+
 veda-control {
   display: block;
 }
@@ -178,11 +180,26 @@ veda-control {
   position: relative;
 }
 
-/* Template elements visibility in different modes. Works up to 10 levels deep for embedded templates */
-
-.immutable[rel] > #val-remove, .immutable[property] > #val-actions {
-  display:none;
+.value-holder {
+  margin-right: 5px;
 }
+
+#prop-actions {
+  margin: 5px 0px 5px;
+}
+
+#rel-actions {
+  margin: 5px 5px 5px 0px;
+}
+
+#rel-actions.block {
+  position:absolute !important;
+  top:0px; 
+  right:0px; 
+  z-index:100;
+}
+
+/* Template elements visibility in different modes. Works up to 10 levels deep for embedded templates */
 
 .mode-view .view, 
 .mode-edit .edit, 

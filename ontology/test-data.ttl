@@ -668,7 +668,7 @@ td:AccountTemplate1
                <veda-control rel="v-s:owner" class="-view edit search"></veda-control>
                <div about="@" rel="v-s:owner" template="v-ui:LabelTemplate"></div>
                <div about="@" rel="v-s:owner">
-			       <span><span property="v-s:firstName"></span> <span property="v-s:middleName"></span></span>
+			       <span><span property="v-s:firstName"></span><span property="v-s:middleName"></span></span>
                </div>
             </div>
         </div>
@@ -739,10 +739,10 @@ td:PreferencesTemplate1
       <ul>
         <!--li rel="v-ui:preferredLanguage" template="v-ui:LabelTemplate"></li-->
         <li rel="v-ui:preferredLanguage">
-          <div>
+          <span>
 			  <span property="rdfs:label"></span>
 			  <veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
-		  </div>
+		  </span>
         </li>
       </ul>
       <veda-control rel="v-ui:preferredLanguage" class="-view edit search"></veda-control>

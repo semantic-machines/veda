@@ -261,24 +261,27 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			if ( rel_inline_template.length ) {
 				relTemplate = rel_inline_template.remove();
 			}
-			propertyModifiedHandler(rel_uri);
+			if ( !individual.hasValue(rel_uri) ) {
+				individual.defineProperty(rel_uri);
+			}
+			renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, embedded, mode);
 			// Re-render link property if its' values were changed
 			function propertyModifiedHandler (doc_property_uri) {
 				if (doc_property_uri === rel_uri) {
-					relContainer.empty();
-					renderRelationValues(individual, rel_uri, relContainer, relTemplate, isEmbedded, spec, embedded, template, mode);
+					renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, embedded, mode);
 				}
 			}
 			individual.on("individual:propertyModified", propertyModifiedHandler);
 			template.one("remove", function () {
 				individual.off("individual:propertyModified", propertyModifiedHandler);
+				relTemplate.remove();
 			});
 		});		
 		
 		// Property value
 		$("[property]", template).not("veda-control").not("[about]").map( function () {
 			
-			var propertyContainer = $(this).hide(),
+			var propertyContainer = $(this),
 				property_uri = propertyContainer.attr("property"),
 				spec = specs[property_uri];
 			
@@ -290,45 +293,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			if (!individual.hasValue(property_uri)) {
 				individual.defineProperty(property_uri);
 			}
-			var rendered = renderPropertyValues();
-
-			function renderPropertyValues() {
-				return individual[property_uri].map( function (value, i) {
-					var result = propertyContainer.clone().insertBefore(propertyContainer).show();
-					var valueHolder = $("<span>");
-					if (value instanceof Date) {result.prepend(valueHolder.text( veda.Util.formatDate(value) ));}
-					else { result.prepend(valueHolder.text(value.toString())); }
-					var wrapper = $("<div id='prop-actions' class='btn-group btn-group-xs -view edit search' role='group' style='margin:5px 5px 5px;'></div>");
-					var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
-					var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
-					wrapper.append(btnEdit, btnRemove);
-					btnRemove.click(function () {
-						individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
-					});
-					btnEdit.click(function () {
-						var val;
-						individual[property_uri] = individual[property_uri].filter(function (_, j) {
-							var test = j !== i;
-							if (!test) val = individual[property_uri][j];
-							return test;
-						});
-						if ( props_ctrls[property_uri] ) {
-							props_ctrls[property_uri].map(function (item, i) {
-								item.val(val);
-								if (i === 0) item.trigger("veda_focus");
-							});
-						}
-					});
-					valueHolder.after( wrapper );
-					
-					return result;
-				});
-			}
+			renderPropertyValues(individual, property_uri, propertyContainer);
 			
 			function propertyModifiedHandler(doc_property_uri) {
 				if (doc_property_uri === property_uri) {
-					rendered.map(function (item) { item.remove() });
-					rendered = renderPropertyValues();
+					renderPropertyValues(individual, property_uri, propertyContainer);
 				}
 			}
 			individual.on("individual:propertyModified", propertyModifiedHandler);
@@ -388,7 +357,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					relContainer.empty();
 					if ( about.hasValue(rel_uri) ) {
 						about[rel_uri].map( function (item) {
-							item.present(relContainer, relTemplate);
+							item.present(relContainer, relTemplate.clone());
 						});
 					}
 				}
@@ -396,6 +365,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			about.on("individual:propertyModified", propertyModifiedHandler);
 			template.one("remove", function () {
 				about.off("individual:propertyModified", propertyModifiedHandler);
+				relTemplate.remove();
 			});
 		});
 		
@@ -562,10 +532,40 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		return template;
 	}
+
+	function renderPropertyValues(individual, property_uri, propertyContainer) {
+		propertyContainer.empty();
+		individual[property_uri].map( function (value, i) {
+			var valueHolder = $("<span class='value-holder'/>");
+			if (value instanceof Date) {propertyContainer.append(valueHolder.text( veda.Util.formatDate(value) ));}
+			else { propertyContainer.append(valueHolder.text(value.toString())); }
+			var wrapper = $("<div id='prop-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
+			var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
+			var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
+			wrapper.append(btnEdit, btnRemove);
+			btnRemove.click(function () {
+				individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
+			});
+			btnEdit.click(function () {
+				var val;
+				individual[property_uri] = individual[property_uri].filter(function (_, j) {
+					var test = j !== i;
+					if (!test) val = individual[property_uri][j];
+					return test;
+				});
+				if ( props_ctrls[property_uri] ) {
+					props_ctrls[property_uri].map(function (item, i) {
+						item.val(val);
+						if (i === 0) item.trigger("veda_focus");
+					});
+				}
+			});
+			valueHolder.after( wrapper );
+		});
+	}
 	
-	function renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, spec, embedded, template, mode) {
-		if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
-		var values = individual[rel_uri];
+	function renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, embedded, mode) {
+		relContainer.empty();
 		individual[rel_uri].map( function (value) { 
 			// Create the same tag container to preserve element layout
 			var valTemplate;
@@ -589,12 +589,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					}
 				}
 
-				var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group' style='margin:5px 5px 5px;'></div>");
+				var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
 				var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
 				wrapper.append(btnRemove);
 				
 				if (valTemplate.prop("tagName") !== "SPAN") {
-					wrapper.attr("style", wrapper.attr("style") + "position:absolute; top:0px; right:0px; z-index:100;");
+					wrapper.addClass("block");
 				}
 									
 				btnRemove.on("click", function () {
