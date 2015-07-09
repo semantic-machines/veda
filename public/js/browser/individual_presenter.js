@@ -246,7 +246,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		
 		// Relation value
-		$("[rel]", template).not("veda-control").not("[about], [about] *").map( function () {
+		$("[rel]", template).not("veda-control, [about], [about] *").map( function () {
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
 				isEmbedded = relContainer.attr("embedded") === "true" ? true : false,
@@ -259,11 +259,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
 			}
 			if ( rel_inline_template.length ) {
-				relTemplate = rel_inline_template.remove();
+				relTemplate = rel_inline_template.clone();
+				rel_inline_template.remove();
 			}
-			if ( !individual.hasValue(rel_uri) ) {
+			if ( !individual[rel_uri] ) {
 				individual.defineProperty(rel_uri);
 			}
+			
 			renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, embedded, mode);
 			// Re-render link property if its' values were changed
 			function propertyModifiedHandler (doc_property_uri) {
@@ -279,7 +281,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});		
 		
 		// Property value
-		$("[property]", template).not("veda-control").not("[about], [about] *").map( function () {
+		$("[property]", template).not("veda-control, [about], [about] *").map( function () {
 			
 			var propertyContainer = $(this),
 				property_uri = propertyContainer.attr("property"),
@@ -290,7 +292,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				return;
 			}
 
-			if (!individual.hasValue(property_uri)) {
+			if (!individual[property_uri]) {
 				individual.defineProperty(property_uri);
 			}
 			renderPropertyValues(individual, property_uri, propertyContainer);
@@ -380,6 +382,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				type = control.attr("type") || veda.ontology[property_uri]["rdfs:range"][0].id,
 				spec = specs[property_uri],
 				controlType;
+			
+			if ( !individual[property_uri] ) { 
+				individual.defineProperty(property_uri);
+			}
+
+			control.removeAttr("property");
 			
 			switch (type) {
 				case "rdfs:Literal": 
@@ -477,8 +485,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				spec = specs[rel_uri],
 				rel = veda.ontology[rel_uri],
 				controlType = control.attr("type") ? $.fn["veda_" + control.attr("type")] : $.fn.veda_link;
+			
+			control.removeAttr("property");
 				
-			if ( !individual[rel_uri] ) individual.defineProperty(rel_uri);
+			if ( !individual[rel_uri] ) { 
+				individual.defineProperty(rel_uri);
+			}
 			
 			var opts = {
 				individual: individual,
