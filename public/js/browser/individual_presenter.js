@@ -279,7 +279,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});		
 		
 		// Property value
-		$("[property]", template).not("veda-control").not("[about]").map( function () {
+		$("[property]", template).not("veda-control").not("[about], [about] *").map( function () {
 			
 			var propertyContainer = $(this),
 				property_uri = propertyContainer.attr("property"),
@@ -308,7 +308,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		
 		// About resource property
-		$("[about][property]", template).map( function () {
+		$("[about][property]", template).not("[rel] *").map( function () {
 			var propertyContainer = $(this), 
 				property_uri = propertyContainer.attr("property"),
 				about;
@@ -332,7 +332,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		
 		// About resource relation
-		$("[about][rel]", template).map( function () {
+		$("[about][rel]", template).not("[rel] *").map( function () {
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
 				rel_template_uri = relContainer.attr("template"),
