@@ -299,21 +299,22 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			props_ctrls[property_uri] ? props_ctrls[property_uri].push(control) : props_ctrls[property_uri] = [ control ];
 			
-			isValid(individual, spec, individual[property_uri]);
+			var state;
 			
 			template.on("view edit search", function (e) {
+				e.stopPropagation();
 				control.trigger(e.type);
+				state = isValid(individual, spec, individual[property_uri]);
 				e.type === "edit" ? 
-					isValid(individual, spec, individual[property_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success") 
+					state ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success") 
 					:
 					control.removeClass("has-error has-success");
-				e.stopPropagation();
 			});
 			
 			function propertyModifiedHandler(doc_property_uri) {
 				if (doc_property_uri === property_uri && mode === "edit") {
 					// Check values validity
-					isValid(individual, specs[property_uri], individual[property_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
+					( state = isValid(individual, specs[property_uri], individual[property_uri]) ) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
 				}
 			}
 			individual.on("individual:propertyModified", propertyModifiedHandler);
@@ -377,10 +378,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 			isValid(individual, spec, individual[rel_uri]);
 			
+			var state;
+			
 			function modeHandler(e) {
+				state = isValid(individual, spec, individual[rel_uri]);
 				e.stopPropagation();
 				e.type === "edit" ? 
-					isValid(individual, spec, individual[rel_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success") 
+					state ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success") 
 					:
 					control.removeClass("has-error has-success");
 				control.trigger(e.type);
@@ -389,7 +393,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			function propertyModifiedHandler(doc_rel_uri) {
 				if (doc_rel_uri === rel_uri && mode === "edit") {
-					isValid(individual, spec, individual[rel_uri]) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
+					( state = isValid(individual, spec, individual[rel_uri]) ) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
 				}
 			}
 			individual.on("individual:propertyModified", propertyModifiedHandler);
