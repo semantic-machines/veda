@@ -560,6 +560,10 @@ td:PersonTemplate1
             <div rel="v-s:test" template="v-fs:SearchTemplate">v-fs:SearchTemplate</div>
             <veda-control rel="v-s:test" class="-view edit search"></veda-control>
           </div>
+          <div class="col-md-6">
+            <div rel="v-wf:to"></div>
+            <veda-control rel="v-wf:to" class="-view edit search"></veda-control>
+          </div>
         </div>
       </div>
       <div class="panel-footer">
@@ -810,8 +814,6 @@ td:PropertySpecification9
   rdfs:label "Test property specification for Person class"@en ;
   v-ui:forClass v-s:Person ;
   v-ui:forProperty v-s:test ;
-  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Поиск."@ru ;
   v-ui:tooltip "Required, single value. Link to instance of Preferences class"@en ;
   v-ui:queryPrefix "('rdf:type'=='v-fs:Search')"^^xsd:string ;

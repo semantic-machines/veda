@@ -39,6 +39,12 @@ v-fs:Search1
   rdfs:label "Поиск1"@ru ;
   v-fs:q "'rdf:type'=='v-s:Person'"^^xsd:string ;
 .
+v-fs:Search2
+  rdf:type v-fs:Search ;
+  rdfs:label "Search2"@en ;
+  rdfs:label "Поиск2"@ru ;
+  v-fs:q "'rdf:type'=='v-ui:Preferences'"^^xsd:string ;
+.
 v-fs:q
   rdf:type owl:DatatypeProperty ;
   rdfs:label "query"@en ;

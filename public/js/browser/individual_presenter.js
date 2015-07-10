@@ -246,7 +246,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		
 		// Relation value
-		$("[rel]", template).not("veda-control, [about], [about] *").map( function () {
+		$("[rel]:not(veda-control, [about], [about] *)", template).map( function () {
+			if ( $(this).attr("rel") === "v-wf:to" ) {
+				var t;
+			}
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
 				isEmbedded = relContainer.attr("embedded") === "true" ? true : false,
@@ -259,9 +262,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
 			}
 			if ( rel_inline_template.length ) {
-				relTemplate = rel_inline_template.clone();
-				rel_inline_template.remove();
+				relTemplate = rel_inline_template.remove();
 			}
+			rel_inline_template = null;
 			if ( !individual[rel_uri] ) {
 				individual.defineProperty(rel_uri);
 			}
@@ -276,12 +279,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			individual.on("individual:propertyModified", propertyModifiedHandler);
 			template.one("remove", function () {
 				individual.off("individual:propertyModified", propertyModifiedHandler);
-				relTemplate.remove();
 			});
 		});		
 		
 		// Property value
-		$("[property]", template).not("veda-control, [about], [about] *").map( function () {
+		$("[property]:not(veda-control, [about], [about] *)", template).map( function () {
 			
 			var propertyContainer = $(this),
 				property_uri = propertyContainer.attr("property"),
@@ -310,7 +312,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		
 		// About resource property
-		$("[about][property]", template).not("[rel] *").map( function () {
+		$("[about][property]:not([rel] *)", template).map( function () {
 			var propertyContainer = $(this), 
 				property_uri = propertyContainer.attr("property"),
 				about;
@@ -334,7 +336,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		
 		// About resource relation
-		$("[about][rel]", template).not("[rel] *").map( function () {
+		$("[about][rel]:not([rel] *)", template).map( function () {
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
 				rel_template_uri = relContainer.attr("template"),
@@ -367,7 +369,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			about.on("individual:propertyModified", propertyModifiedHandler);
 			template.one("remove", function () {
 				about.off("individual:propertyModified", propertyModifiedHandler);
-				relTemplate.remove();
 			});
 		});
 		
@@ -621,7 +622,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				valTemplate.css("position", "relative");
 				// It is important to append buttons to the first element in template!
 				valTemplate.not("script").append(wrapper);
-
 			}, 0);
 		});
 	}
