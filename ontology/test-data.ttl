@@ -831,6 +831,17 @@ td:PropertySpecification10
   v-ui:tooltip "Required, single integer value."@en ;
   v-ui:defaultIntegerValue "10"^^xsd:integer ;
 .
+td:PropertySpecification11
+  rdf:type v-ui:IntegerPropertySpecification ;
+  rdfs:label "Спецификация тестового свойства для класса Предпочтения"@ru ;
+  rdfs:label "Test property specification for Preferences class"@en ;
+  v-ui:forClass v-s:Account ;
+  v-ui:forProperty v-s:login, v-s:password ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "Обязательно к заполнению, единичное строковое значение."@ru ;
+  v-ui:tooltip "Required, single string value."@en ;
+.
 td:PropertySpecification1
   rdf:type v-ui:DatetimePropertySpecification ;
   rdfs:label "Спецификация даты рождения для класса персона"@ru ;

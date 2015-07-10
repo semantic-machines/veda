@@ -193,17 +193,21 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var isValid = Object.keys(individual.isValid).reduce(function (state, specId) {
 				return state && individual.isValid[specId];
 			}, true);
-			//use css class to store validity ?!
-			//isValid = isValid && embedded.reduce(function (state, template) {
-			//	return state && (template.isValid === undefined || template.isValid);
-			//}, true);
-			//(template.isValid = isValid) ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");*/
+
+			isValid = isValid && embedded.reduce(function (state, template) {
+				return state && (!template.attr("valid") === undefined || template.attr("valid")==="true");
+			}, true);
+			
 			isValid ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
+			template.attr("valid", isValid.toString());
+			template.parent().trigger("validate");
+			return false;
 		}
 		individual.on("validation:complete", validationHandler);
 		template.one("remove", function () {
 			individual.off("validation:complete", validationHandler);
 		});
+		template.on("validate", validationHandler);
 		
 		//  Cancel
 		$cancel.on("click", function (e) {
@@ -238,140 +242,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		template.on("view edit search", modeHandler);
 
 		// Process RDFa compliant template
-		// Special (not RDFa)
-		$("a[href*='@']", template).map( function () {
-			var self = $(this);
-			var str = self.attr("href");
-			self.attr("href", str.replace("@", individual.id));
-		});
-		
-		// Relation value
-		$("[rel]:not(veda-control, [about], [about] *)", template).map( function () {
-			if ( $(this).attr("rel") === "v-wf:to" ) {
-				var t;
-			}
-			var relContainer = $(this), 
-				rel_uri = relContainer.attr("rel"),
-				isEmbedded = relContainer.attr("embedded") === "true" ? true : false,
-				spec = specs[rel_uri],
-				rel_inline_template = relContainer.children(),
-				rel_template_uri = relContainer.attr("template"),
-				relTemplate;
-			if ( rel_template_uri ) {
-				var templateIndividual = new veda.IndividualModel( rel_template_uri );
-				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
-			}
-			if ( rel_inline_template.length ) {
-				relTemplate = rel_inline_template.remove();
-			}
-			rel_inline_template = null;
-			if ( !individual[rel_uri] ) {
-				individual.defineProperty(rel_uri);
-			}
-			
-			renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, embedded, mode);
-			// Re-render link property if its' values were changed
-			function propertyModifiedHandler (doc_property_uri) {
-				if (doc_property_uri === rel_uri) {
-					renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, embedded, mode);
-				}
-			}
-			individual.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				individual.off("individual:propertyModified", propertyModifiedHandler);
-			});
-		});		
-		
-		// Property value
-		$("[property]:not(veda-control, [about], [about] *)", template).map( function () {
-			
-			var propertyContainer = $(this),
-				property_uri = propertyContainer.attr("property"),
-				spec = specs[property_uri];
-			
-			if (property_uri == "@") { 
-				propertyContainer.text(individual.id).show();
-				return;
-			}
 
-			if (!individual[property_uri]) {
-				individual.defineProperty(property_uri);
-			}
-			renderPropertyValues(individual, property_uri, propertyContainer);
-			
-			function propertyModifiedHandler(doc_property_uri) {
-				if (doc_property_uri === property_uri) {
-					renderPropertyValues(individual, property_uri, propertyContainer);
-				}
-			}
-			individual.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				individual.off("individual:propertyModified", propertyModifiedHandler);
-			});
-			
-		});
-		
-		// About resource property
-		$("[about][property]:not([rel] *)", template).map( function () {
-			var propertyContainer = $(this), 
-				property_uri = propertyContainer.attr("property"),
-				about;
-			if (propertyContainer.attr("about") === "@") {
-				about = individual;
-				propertyContainer.attr("about", about.id);
-			} else {
-				about = new veda.IndividualModel(propertyContainer.attr("about"));
-			}
-			propertyModifiedHandler(property_uri);
-			function propertyModifiedHandler(doc_property_uri) {
-				if (doc_property_uri === property_uri) {
-					if (property_uri === "@") propertyContainer.text( about.id );
-					else propertyContainer.text( about[property_uri].join(", ") );
-				}
-			}
-			about.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				about.off("individual:propertyModified", propertyModifiedHandler);
-			});
-		});
-		
-		// About resource relation
-		$("[about][rel]:not([rel] *)", template).map( function () {
-			var relContainer = $(this), 
-				rel_uri = relContainer.attr("rel"),
-				rel_template_uri = relContainer.attr("template"),
-				rel_inline_template = relContainer.children(),
-				about, relTemplate;
-			if ( rel_template_uri ) {
-				var templateIndividual = new veda.IndividualModel( rel_template_uri );
-				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
-			}
-			if ( rel_inline_template.length ) {
-				relTemplate = rel_inline_template.remove();
-			}
-			if (relContainer.attr("about") === "@") {
-				about = individual;
-				relContainer.attr("about", about.id);
-			} else {
-				about = new veda.IndividualModel(relContainer.attr("about"));
-			}
-			propertyModifiedHandler(rel_uri);
-			function propertyModifiedHandler(doc_rel_uri) {
-				if (doc_rel_uri === rel_uri) {
-					relContainer.empty();
-					if ( about.hasValue(rel_uri) ) {
-						about[rel_uri].map( function (item) {
-							item.present(relContainer, relTemplate.clone());
-						});
-					}
-				}
-			}
-			about.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				about.off("individual:propertyModified", propertyModifiedHandler);
-			});
-		});
-		
 		var props_ctrls = {};
 		
 		// Property control
@@ -427,6 +298,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			controlType.call(control, opts);
 			
 			props_ctrls[property_uri] ? props_ctrls[property_uri].push(control) : props_ctrls[property_uri] = [ control ];
+			
+			isValid(individual, spec, individual[property_uri]);
 			
 			template.on("view edit search", function (e) {
 				control.trigger(e.type);
@@ -502,6 +375,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			controlType.call(control, opts);
 
+			isValid(individual, spec, individual[rel_uri]);
+			
 			function modeHandler(e) {
 				e.stopPropagation();
 				e.type === "edit" ? 
@@ -541,6 +416,140 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				});
 			}
 			
+		});
+
+		// Special (not RDFa)
+		$("a[href*='@']:not([rel] *, [about] *)", template).map( function () {
+			var self = $(this);
+			var str = self.attr("href");
+			self.attr("href", str.replace("@", individual.id));
+		});
+		
+		// Relation value
+		$("[rel]:not(veda-control, [rel] *, [about], [about] *)", template).map( function () {
+			if ( $(this).attr("rel") === "v-wf:to" ) {
+				var t;
+			}
+			var relContainer = $(this), 
+				rel_uri = relContainer.attr("rel"),
+				isEmbedded = relContainer.attr("embedded") === "true" ? true : false,
+				spec = specs[rel_uri],
+				rel_inline_template = relContainer.children(),
+				rel_template_uri = relContainer.attr("template"),
+				relTemplate;
+			if ( rel_template_uri ) {
+				var templateIndividual = new veda.IndividualModel( rel_template_uri );
+				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
+			}
+			if ( rel_inline_template.length ) {
+				relTemplate = rel_inline_template.remove();
+			}
+			rel_inline_template = null;
+			if ( !individual[rel_uri] ) {
+				individual.defineProperty(rel_uri);
+			}
+			
+			renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, embedded, mode);
+			// Re-render link property if its' values were changed
+			function propertyModifiedHandler (doc_property_uri) {
+				if (doc_property_uri === rel_uri) {
+					renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, embedded, mode);
+				}
+			}
+			individual.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				individual.off("individual:propertyModified", propertyModifiedHandler);
+			});
+		});		
+		
+		// Property value
+		$("[property]:not(veda-control, [rel] *, [about], [about] *)", template).map( function () {
+			
+			var propertyContainer = $(this),
+				property_uri = propertyContainer.attr("property"),
+				spec = specs[property_uri];
+			
+			if (property_uri == "@") { 
+				propertyContainer.text(individual.id).show();
+				return;
+			}
+
+			if (!individual[property_uri]) {
+				individual.defineProperty(property_uri);
+			}
+			renderPropertyValues(individual, property_uri, propertyContainer);
+			
+			function propertyModifiedHandler(doc_property_uri) {
+				if (doc_property_uri === property_uri) {
+					renderPropertyValues(individual, property_uri, propertyContainer);
+				}
+			}
+			individual.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				individual.off("individual:propertyModified", propertyModifiedHandler);
+			});
+			
+		});
+		
+		// About resource property
+		$("[about][property]:not([rel] *, [about] *)", template).map( function () {
+			var propertyContainer = $(this), 
+				property_uri = propertyContainer.attr("property"),
+				about;
+			if (propertyContainer.attr("about") === "@") {
+				about = individual;
+				propertyContainer.attr("about", about.id);
+			} else {
+				about = new veda.IndividualModel(propertyContainer.attr("about"));
+			}
+			propertyModifiedHandler(property_uri);
+			function propertyModifiedHandler(doc_property_uri) {
+				if (doc_property_uri === property_uri) {
+					if (property_uri === "@") propertyContainer.text( about.id );
+					else propertyContainer.text( about[property_uri].join(", ") );
+				}
+			}
+			about.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				about.off("individual:propertyModified", propertyModifiedHandler);
+			});
+		});
+		
+		// About resource relation
+		$("[about][rel]:not([rel] *, [about] *)", template).map( function () {
+			var relContainer = $(this), 
+				rel_uri = relContainer.attr("rel"),
+				rel_template_uri = relContainer.attr("template"),
+				rel_inline_template = relContainer.children(),
+				about, relTemplate;
+			if ( rel_template_uri ) {
+				var templateIndividual = new veda.IndividualModel( rel_template_uri );
+				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
+			}
+			if ( rel_inline_template.length ) {
+				relTemplate = rel_inline_template.remove();
+			}
+			if (relContainer.attr("about") === "@") {
+				about = individual;
+				relContainer.attr("about", about.id);
+			} else {
+				about = new veda.IndividualModel(relContainer.attr("about"));
+			}
+			propertyModifiedHandler(rel_uri);
+			function propertyModifiedHandler(doc_rel_uri) {
+				if (doc_rel_uri === rel_uri) {
+					relContainer.empty();
+					if ( about.hasValue(rel_uri) ) {
+						about[rel_uri].map( function (item) {
+							item.present(relContainer, relTemplate.clone());
+						});
+					}
+				}
+			}
+			about.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				about.off("individual:propertyModified", propertyModifiedHandler);
+			});
 		});
 
 		return template;
@@ -630,7 +639,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		var result = true;
 		individual.isValid = individual.isValid || {};
 		if (!spec) { 
-			individual.trigger("validation:complete");
 			return result;
 		}
 		// cardinality check
