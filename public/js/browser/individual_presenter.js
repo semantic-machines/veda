@@ -189,26 +189,19 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			template.trigger("save");
 		});
 
+		// Validation with support of embedded templates
 		function validationHandler () {
-			var isValid = Object.keys(individual.isValid).reduce(function (state, specId) {
-				return state && individual.isValid[specId];
-			}, true);
-
+			var isValid = template.data("valid").state;
 			isValid = isValid && embedded.reduce(function (state, template) {
-				return state && (!template.attr("valid") === undefined || template.attr("valid")==="true");
+				return state && template.data("valid").state;
 			}, true);
-			
 			isValid ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
-			template.attr("valid", isValid.toString());
-			template.parent().trigger("validate");
-			return false;
+			// "validate" event bubbles up to be handled by parent templates
 		}
-		individual.on("validation:complete", validationHandler);
-		template.one("remove", function () {
-			individual.off("validation:complete", validationHandler);
-		});
 		template.on("validate", validationHandler);
-		
+		// Initial validation state
+		template.data("valid", {state: true});
+				
 		//  Cancel
 		$cancel.on("click", function (e) {
 			template.trigger("cancel");
@@ -299,12 +292,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			props_ctrls[property_uri] ? props_ctrls[property_uri].push(control) : props_ctrls[property_uri] = [ control ];
 			
-			var state;
+			var state = true;
 			
 			template.on("view edit search", function (e) {
 				e.stopPropagation();
 				control.trigger(e.type);
-				state = state || isValid(individual, spec, individual[property_uri]);
+				if (spec) state = validate(template, spec, individual[property_uri]);
 				e.type === "edit" ? 
 					state ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success") 
 					:
@@ -313,7 +306,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			function propertyModifiedHandler(doc_property_uri) {
 				if (doc_property_uri === property_uri) {
-					state = isValid(individual, specs[property_uri], individual[property_uri]);
+					if (spec) state = validate(template, spec, individual[property_uri]);
 					if (mode === "edit") {
 						state ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
 					}
@@ -378,10 +371,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			controlType.call(control, opts);
 
-			var state;
+			var state = true;
 			
 			function modeHandler(e) {
-				state = state || isValid(individual, spec, individual[rel_uri]);
+				if (spec) state = validate(template, spec, individual[rel_uri]);
 				e.stopPropagation();
 				e.type === "edit" ? 
 					state ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success") 
@@ -393,7 +386,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			function propertyModifiedHandler(doc_rel_uri) {
 				if (doc_rel_uri === rel_uri) {
-					state = isValid(individual, spec, individual[rel_uri]);
+					if (spec) state = validate(template, spec, individual[rel_uri]);
 					if (mode === "edit") {
 						state ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
 					}
@@ -642,12 +635,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 	}
 
-	function isValid (individual, spec, values) {
+	function validate(template, spec, values) {
+		var valid = template.data("valid");
 		var result = true;
-		individual.isValid = individual.isValid || {};
-		if (!spec) { 
-			return result;
-		}
 		// cardinality check
 		if (spec.hasValue("v-ui:minCardinality")) { 
 			result = result && (
@@ -695,8 +685,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			return result;
 		}, result);
-		individual.isValid[spec.id] = result;
-		individual.trigger("validation:complete");
+		valid[spec.id] = result;
+		valid.state = Object.keys(valid).reduce( function (acc, key) { return key === "state" ? acc : acc && valid[key]; }, true);
+		template.trigger("validate");
 		return result;
 	}
 	
