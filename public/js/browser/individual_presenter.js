@@ -246,7 +246,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		var props_ctrls = {};
 		
 		// Property control
-		$("veda-control[property]", template).map( function () {
+		$("veda-control[property]:not([rel] *, [about] *)", template).map( function () {
 			
 			var control = $(this),
 				property_uri = control.attr("property"),
@@ -353,7 +353,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		
 		// Relation control
-		$("veda-control[rel]", template).map( function () {
+		$("veda-control[rel]:not([rel] *, [about] *)", template).map( function () {
 			
 			var control = $(this), 
 				rel_uri = control.attr("rel"),
@@ -361,7 +361,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				rel = veda.ontology[rel_uri],
 				controlType = control.attr("type") ? $.fn["veda_" + control.attr("type")] : $.fn.veda_link;
 			
-			control.removeAttr("property");
+			control.removeAttr("rel");
 				
 			if ( !individual[rel_uri] ) { 
 				individual.defineProperty(rel_uri);
