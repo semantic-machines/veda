@@ -432,7 +432,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			var relContainer = $(this), 
 				rel_uri = relContainer.attr("rel"),
-				isEmbedded = relContainer.attr("embedded") === "true" ? true : false,
+				isEmbedded = relContainer.attr("embedded") === "true",
 				spec = specs[rel_uri],
 				rel_inline_template = relContainer.children(),
 				rel_template_uri = relContainer.attr("template"),
@@ -601,6 +601,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						valTemplate = relContainer.children();
 					}
 					embedded.push(valTemplate);
+					valTemplate.on("remove", function () {
+						embedded = embedded.filter(function (template) { template !== valTemplate});
+					});
 				} else {
 					if (relTemplate) {
 						valTemplate = relTemplate.clone();
