@@ -304,7 +304,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			template.on("view edit search", function (e) {
 				e.stopPropagation();
 				control.trigger(e.type);
-				state = isValid(individual, spec, individual[property_uri]);
+				state = state || isValid(individual, spec, individual[property_uri]);
 				e.type === "edit" ? 
 					state ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success") 
 					:
@@ -312,9 +312,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 			
 			function propertyModifiedHandler(doc_property_uri) {
-				if (doc_property_uri === property_uri && mode === "edit") {
-					// Check values validity
-					( state = isValid(individual, specs[property_uri], individual[property_uri]) ) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
+				if (doc_property_uri === property_uri) {
+					state = isValid(individual, specs[property_uri], individual[property_uri]);
+					if (mode === "edit") {
+						state ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
+					}
 				}
 			}
 			individual.on("individual:propertyModified", propertyModifiedHandler);
@@ -376,12 +378,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			controlType.call(control, opts);
 
-			isValid(individual, spec, individual[rel_uri]);
-			
 			var state;
 			
 			function modeHandler(e) {
-				state = isValid(individual, spec, individual[rel_uri]);
+				state = state || isValid(individual, spec, individual[rel_uri]);
 				e.stopPropagation();
 				e.type === "edit" ? 
 					state ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success") 
@@ -392,8 +392,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			template.on("view edit search", modeHandler);
 			
 			function propertyModifiedHandler(doc_rel_uri) {
-				if (doc_rel_uri === rel_uri && mode === "edit") {
-					( state = isValid(individual, spec, individual[rel_uri]) ) ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
+				if (doc_rel_uri === rel_uri) {
+					state = isValid(individual, spec, individual[rel_uri]);
+					if (mode === "edit") {
+						state ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
+					}
 				}
 			}
 			individual.on("individual:propertyModified", propertyModifiedHandler);
