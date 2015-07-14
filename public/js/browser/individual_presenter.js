@@ -602,7 +602,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					}
 					embedded.push(valTemplate);
 					valTemplate.on("remove", function () {
-						embedded = embedded.filter(function (template) { template !== valTemplate});
+						if (embedded.length) {
+							var index = embedded.indexOf(valTemplate);
+							if ( index >= 0 ) embedded.splice(index, 1);
+						}
 					});
 				} else {
 					if (relTemplate) {
@@ -625,10 +628,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				btnRemove.on("click", function () {
 					valTemplate.remove();
 					individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id != value.id; });
-					if (embedded.length) {
-						var index = embedded.indexOf(valTemplate);
-						if ( index >= 0 ) embedded.splice(index, 1);
-					}
 				});
 
 				valTemplate.css("position", "relative");
