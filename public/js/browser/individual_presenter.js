@@ -78,9 +78,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 		}
 		rendered.map( function (view) {
-			view.template.trigger(mode);	
-			view.template.attr("resource", individual.id).attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") );
 			container.append(view.template);
+			view.template.attr("resource", individual.id).attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") );
+			view.template.trigger(mode);
 			view.scripts.map( function (script) { 
 				var presenter = new Function("veda", "individual", "container", "template", "mode", script + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js");
 				presenter(veda, individual, container, view.template, mode);
@@ -96,8 +96,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			$(".typeahead", template).typeahead("destroy");
 		});
 		
-		// Embedded templates list
-		var embedded = [];
+		// Embedded templates list & property controls
+		var embedded = [], 
+			props_ctrls = {};
 
 		// Trigger same events for embedded templates
 		function syncEmbedded (e) {
@@ -189,19 +190,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			template.trigger("save");
 		});
 
-		// Validation with support of embedded templates
-		function validationHandler () {
-			var isValid = template.data("valid").state;
-			isValid = isValid && embedded.reduce(function (state, template) {
-				return state && template.data("valid").state;
-			}, true);
-			isValid ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
-			// "validate" event bubbles up to be handled by parent templates
-		}
-		template.on("validate", validationHandler);
-		// Initial validation state
-		template.data("valid", {state: true});
-				
 		//  Cancel
 		$cancel.on("click", function (e) {
 			template.trigger("cancel");
@@ -234,10 +222,180 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		template.on("view edit search", modeHandler);
 
+		// Validation with support of embedded templates
+		function validationHandler () {
+			// Timeout to compensate embedded template rendering timeout
+			setTimeout (function () {
+				var isValid = template.data("valid").state;
+				isValid = isValid && embedded.reduce(function (state, template) {
+					return state && template.data("valid").state;
+				}, true);
+				isValid ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
+				// "validate" event bubbles up to be handled by parent templates
+			}, 0);
+		}
+		template.on("validate", validationHandler);
+		// Initial validation state
+		template.data("valid", {state: true});
+
 		// Process RDFa compliant template
 
-		var props_ctrls = {};
+		// Special (not RDFa)
+		$("a[href*='@']:not([rel] *, [about] *)", template).map( function () {
+			var self = $(this);
+			var str = self.attr("href");
+			self.attr("href", str.replace("@", individual.id));
+		});
+
+		// Property value
+		$("[property]:not(veda-control, [rel] *, [about], [about] *)", template).map( function () {
+			
+			var propertyContainer = $(this),
+				property_uri = propertyContainer.attr("property"),
+				spec = specs[property_uri];
+			
+			if (property_uri == "@") { 
+				propertyContainer.text(individual.id).show();
+				return;
+			}
+
+			if (!individual[property_uri]) {
+				individual.defineProperty(property_uri);
+			}
+			renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls);
+			
+			function propertyModifiedHandler(doc_property_uri) {
+				if (doc_property_uri === property_uri) {
+					renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls);
+				}
+			}
+			individual.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				individual.off("individual:propertyModified", propertyModifiedHandler);
+			});
+			
+		});
 		
+		// Relation value
+		$("[rel]:not(veda-control, [rel] *, [about], [about] *)", template).map( function () {
+			var relContainer = $(this), 
+				rel_uri = relContainer.attr("rel"),
+				isEmbedded = relContainer.attr("embedded") === "true",
+				spec = specs[rel_uri],
+				rel_inline_template = relContainer.children(),
+				rel_template_uri = relContainer.attr("template"),
+				relTemplate;
+			if ( rel_template_uri ) {
+				var templateIndividual = new veda.IndividualModel( rel_template_uri );
+				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
+			}
+			if ( rel_inline_template.length ) {
+				relTemplate = rel_inline_template.remove();
+			}
+			rel_inline_template = null;
+			if ( !individual[rel_uri] ) {
+				individual.defineProperty(rel_uri);
+			}
+			
+			var values = individual[rel_uri], rendered = {}, counter = 0;
+			
+			relContainer.empty();
+			
+			propertyModifiedHandler(rel_uri, values);
+
+			// Re-render link property if its' values were changed
+			function propertyModifiedHandler (doc_rel_uri, values) {
+				if (doc_rel_uri === rel_uri) {
+					++counter;
+					if (values.length) {
+						values.map(function (value) {
+							if (value.id in rendered) {
+								rendered[value.id].cnt = counter;
+								return;
+							}
+							setTimeout (function () {
+								var renderedTmpl = renderRelationValue (individual, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, mode);
+								rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
+							}, 0);
+						});
+					} else {
+						relContainer.empty();
+					}
+					// Remove rendered templates for removed values
+					for (var i in rendered) {
+						if (rendered[i].cnt === counter) continue; 
+						rendered[i].tmpl.remove();
+						delete rendered[i];
+					}
+				}
+			}
+			individual.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				individual.off("individual:propertyModified", propertyModifiedHandler);
+			});
+		});		
+		
+		// About resource property
+		$("[about][property]:not([rel] *, [about] *)", template).map( function () {
+			var propertyContainer = $(this), 
+				property_uri = propertyContainer.attr("property"),
+				about;
+			if (propertyContainer.attr("about") === "@") {
+				about = individual;
+				propertyContainer.attr("about", about.id);
+			} else {
+				about = new veda.IndividualModel(propertyContainer.attr("about"));
+			}
+			propertyModifiedHandler(property_uri);
+			function propertyModifiedHandler(doc_property_uri) {
+				if (doc_property_uri === property_uri) {
+					if (property_uri === "@") propertyContainer.text( about.id );
+					else propertyContainer.text( about[property_uri].join(", ") );
+				}
+			}
+			about.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				about.off("individual:propertyModified", propertyModifiedHandler);
+			});
+		});
+		
+		// About resource relation
+		$("[about][rel]:not([rel] *, [about] *)", template).map( function () {
+			var relContainer = $(this), 
+				rel_uri = relContainer.attr("rel"),
+				rel_template_uri = relContainer.attr("template"),
+				rel_inline_template = relContainer.children(),
+				about, relTemplate;
+			if ( rel_template_uri ) {
+				var templateIndividual = new veda.IndividualModel( rel_template_uri );
+				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
+			}
+			if ( rel_inline_template.length ) {
+				relTemplate = rel_inline_template.remove();
+			}
+			if (relContainer.attr("about") === "@") {
+				about = individual;
+				relContainer.attr("about", about.id);
+			} else {
+				about = new veda.IndividualModel(relContainer.attr("about"));
+			}
+			propertyModifiedHandler(rel_uri);
+			function propertyModifiedHandler(doc_rel_uri) {
+				if (doc_rel_uri === rel_uri) {
+					relContainer.empty();
+					if ( about.hasValue(rel_uri) ) {
+						about[rel_uri].map( function (item) {
+							item.present(relContainer, relTemplate.clone());
+						});
+					}
+				}
+			}
+			about.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				about.off("individual:propertyModified", propertyModifiedHandler);
+			});
+		});
+
 		// Property control
 		$("veda-control[property]:not([rel] *, [about] *)", template).map( function () {
 			
@@ -418,144 +576,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 		});
 
-		// Special (not RDFa)
-		$("a[href*='@']:not([rel] *, [about] *)", template).map( function () {
-			var self = $(this);
-			var str = self.attr("href");
-			self.attr("href", str.replace("@", individual.id));
-		});
-		
-		// Relation value
-		$("[rel]:not(veda-control, [rel] *, [about], [about] *)", template).map( function () {
-			if ( $(this).attr("rel") === "v-wf:to" ) {
-				var t;
-			}
-			var relContainer = $(this), 
-				rel_uri = relContainer.attr("rel"),
-				isEmbedded = relContainer.attr("embedded") === "true",
-				spec = specs[rel_uri],
-				rel_inline_template = relContainer.children(),
-				rel_template_uri = relContainer.attr("template"),
-				relTemplate;
-			if ( rel_template_uri ) {
-				var templateIndividual = new veda.IndividualModel( rel_template_uri );
-				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
-			}
-			if ( rel_inline_template.length ) {
-				relTemplate = rel_inline_template.remove();
-			}
-			rel_inline_template = null;
-			if ( !individual[rel_uri] ) {
-				individual.defineProperty(rel_uri);
-			}
-			
-			renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, embedded, mode);
-			// Re-render link property if its' values were changed
-			function propertyModifiedHandler (doc_property_uri) {
-				if (doc_property_uri === rel_uri) {
-					renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, embedded, mode);
-				}
-			}
-			individual.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				individual.off("individual:propertyModified", propertyModifiedHandler);
-			});
-		});		
-		
-		// Property value
-		$("[property]:not(veda-control, [rel] *, [about], [about] *)", template).map( function () {
-			
-			var propertyContainer = $(this),
-				property_uri = propertyContainer.attr("property"),
-				spec = specs[property_uri];
-			
-			if (property_uri == "@") { 
-				propertyContainer.text(individual.id).show();
-				return;
-			}
-
-			if (!individual[property_uri]) {
-				individual.defineProperty(property_uri);
-			}
-			renderPropertyValues(individual, property_uri, propertyContainer);
-			
-			function propertyModifiedHandler(doc_property_uri) {
-				if (doc_property_uri === property_uri) {
-					renderPropertyValues(individual, property_uri, propertyContainer);
-				}
-			}
-			individual.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				individual.off("individual:propertyModified", propertyModifiedHandler);
-			});
-			
-		});
-		
-		// About resource property
-		$("[about][property]:not([rel] *, [about] *)", template).map( function () {
-			var propertyContainer = $(this), 
-				property_uri = propertyContainer.attr("property"),
-				about;
-			if (propertyContainer.attr("about") === "@") {
-				about = individual;
-				propertyContainer.attr("about", about.id);
-			} else {
-				about = new veda.IndividualModel(propertyContainer.attr("about"));
-			}
-			propertyModifiedHandler(property_uri);
-			function propertyModifiedHandler(doc_property_uri) {
-				if (doc_property_uri === property_uri) {
-					if (property_uri === "@") propertyContainer.text( about.id );
-					else propertyContainer.text( about[property_uri].join(", ") );
-				}
-			}
-			about.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				about.off("individual:propertyModified", propertyModifiedHandler);
-			});
-		});
-		
-		// About resource relation
-		$("[about][rel]:not([rel] *, [about] *)", template).map( function () {
-			var relContainer = $(this), 
-				rel_uri = relContainer.attr("rel"),
-				rel_template_uri = relContainer.attr("template"),
-				rel_inline_template = relContainer.children(),
-				about, relTemplate;
-			if ( rel_template_uri ) {
-				var templateIndividual = new veda.IndividualModel( rel_template_uri );
-				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
-			}
-			if ( rel_inline_template.length ) {
-				relTemplate = rel_inline_template.remove();
-			}
-			if (relContainer.attr("about") === "@") {
-				about = individual;
-				relContainer.attr("about", about.id);
-			} else {
-				about = new veda.IndividualModel(relContainer.attr("about"));
-			}
-			propertyModifiedHandler(rel_uri);
-			function propertyModifiedHandler(doc_rel_uri) {
-				if (doc_rel_uri === rel_uri) {
-					relContainer.empty();
-					if ( about.hasValue(rel_uri) ) {
-						about[rel_uri].map( function (item) {
-							item.present(relContainer, relTemplate.clone());
-						});
-					}
-				}
-			}
-			about.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				about.off("individual:propertyModified", propertyModifiedHandler);
-			});
-		});
-
 		return template;
 	}
 
-	function renderPropertyValues(individual, property_uri, propertyContainer) {
+	function renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls) {
 		propertyContainer.empty();
 		individual[property_uri].map( function (value, i) {
 			var valueHolder = $("<span class='value-holder'/>");
@@ -586,55 +610,48 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 	}
 	
-	function renderRelationValues (individual, rel_uri, relContainer, relTemplate, isEmbedded, embedded, mode) {
-		relContainer.empty();
-		individual[rel_uri].map( function (value) { 
-			// Create the same tag container to preserve element layout
-			setTimeout( function () {
-				var valTemplate;
-				if (isEmbedded) {
-					if (relTemplate) {
-						valTemplate = relTemplate.clone();
-						value.present(relContainer, valTemplate, mode);
-					} else {
-						value.present(relContainer, undefined, mode);
-						valTemplate = relContainer.children();
-					}
-					embedded.push(valTemplate);
-					valTemplate.on("remove", function () {
-						if (embedded.length) {
-							var index = embedded.indexOf(valTemplate);
-							if ( index >= 0 ) embedded.splice(index, 1);
-						}
-					});
-				} else {
-					if (relTemplate) {
-						valTemplate = relTemplate.clone();
-						value.present(relContainer, valTemplate);
-					} else {
-						value.present(relContainer);
-						valTemplate = relContainer.children();
-					}
+	function renderRelationValue(individual, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, mode) {
+		var valTemplate;
+		if (isEmbedded) {
+			if (relTemplate) {
+				valTemplate = relTemplate.clone();
+				value.present(relContainer, valTemplate, mode);
+			} else {
+				value.present(relContainer, undefined, mode);
+				valTemplate = relContainer.children();
+			}
+			embedded.push(valTemplate);
+			valTemplate.on("remove", function () {
+				if (embedded.length) {
+					var index = embedded.indexOf(valTemplate);
+					if ( index >= 0 ) embedded.splice(index, 1);
 				}
-				
-				var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
-				var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
-				wrapper.append(btnRemove);
-				
-				if (valTemplate.prop("tagName") !== "SPAN") {
-					wrapper.addClass("block");
-				}
-									
-				btnRemove.on("click", function () {
-					valTemplate.remove();
-					individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id != value.id; });
-				});
-
-				valTemplate.css("position", "relative");
-				// It is important to append buttons to the first element in template!
-				valTemplate.not("script").append(wrapper);
-			}, 0);
+			});
+		} else {
+			if (relTemplate) {
+				valTemplate = relTemplate.clone();
+				value.present(relContainer, valTemplate);
+			} else {
+				value.present(relContainer);
+				valTemplate = relContainer.children();
+			}
+		}
+		var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
+		var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
+		wrapper.append(btnRemove);
+		
+		if (valTemplate.prop("tagName") !== "SPAN") {
+			wrapper.addClass("block");
+		}
+							
+		btnRemove.on("click", function () {
+			individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id !== value.id; });
 		});
+
+		valTemplate.css("position", "relative");
+		// It is important to append buttons to skip script element in template!
+		valTemplate.not("script").append(wrapper);
+		return valTemplate;
 	}
 
 	function validate(template, spec, values) {
