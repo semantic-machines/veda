@@ -77,16 +77,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				scripts: scripts
 			});
 		}
-		rendered.map( function (view) {
-			container.append(view.template);
-			view.template.attr("resource", individual.id).attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") );
-			view.template.trigger(mode);
-			view.scripts.map( function (script) { 
-				var presenter = new Function("veda", "individual", "container", "template", "mode", script + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js");
-				presenter(veda, individual, container, view.template, mode);
+		// Timeout to wait all related individuals to render
+		setTimeout(function () {
+			rendered.map( function (view) {
+				container.append(view.template);
+				view.template.attr("resource", individual.id).attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") );
+				view.template.trigger(mode);	
+				view.scripts.map( function (script) { 
+					var presenter = new Function("veda", "individual", "container", "template", "mode", script + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js");
+					presenter(veda, individual, container, view.template, mode);
+				});
 			});
-		});
-		
+		}, 0);
 	});
 	
 	function renderTemplate (individual, container, template, specs, mode) {
@@ -222,17 +224,15 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		template.on("view edit search", modeHandler);
 
-		// Validation with support of embedded templates
+		// Validation with support of embedded templates (arbitrary depth)
 		function validationHandler () {
-			// Timeout to compensate embedded template rendering timeout
-			setTimeout (function () {
-				var isValid = template.data("valid").state;
-				isValid = isValid && embedded.reduce(function (state, template) {
-					return state && template.data("valid").state;
-				}, true);
-				isValid ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
-				// "validate" event bubbles up to be handled by parent templates
-			}, 0);
+			var isValid = checkState(template);
+			isValid = isValid && embedded.reduce(function (state, template) {
+				return state && template.data("valid").state;
+			}, true);
+			template.data("valid").state = isValid;
+			isValid ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
+			// "validate" event bubbles up to be handled by parent templates
 		}
 		template.on("validate", validationHandler);
 		// Initial validation state
@@ -654,6 +654,15 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		return valTemplate;
 	}
 
+	// Check validity state of a template 
+	function checkState (template) {
+		var valid = template.data("valid");
+		return Object.keys(valid).reduce(function (acc, i) {
+			return (i === "state" ? acc : acc && valid[i]);
+		}, true);
+	}
+
+	// Property validation according to specification
 	function validate(template, spec, values) {
 		var valid = template.data("valid");
 		var result = true;
@@ -705,7 +714,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			return result;
 		}, result);
 		valid[spec.id] = result;
-		valid.state = Object.keys(valid).reduce( function (acc, key) { return key === "state" ? acc : acc && valid[key]; }, true);
 		template.trigger("validate");
 		return result;
 	}
