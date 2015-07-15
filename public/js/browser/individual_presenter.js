@@ -77,18 +77,21 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				scripts: scripts
 			});
 		}
-		// Timeout to wait all related individuals to render
-		setTimeout(function () {
-			rendered.map( function (view) {
-				container.append(view.template);
-				view.template.attr("resource", individual.id).attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") );
-				view.template.trigger(mode);	
+
+		rendered.map( function (view) {
+			view.template.hide();
+			container.append(view.template);
+			view.template.attr("resource", individual.id).attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") );
+			// Timeout to wait all related individuals to render
+			setTimeout(function () {
+				view.template.trigger(mode);
+				view.template.show();
 				view.scripts.map( function (script) { 
 					var presenter = new Function("veda", "individual", "container", "template", "mode", script + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js");
 					presenter(veda, individual, container, view.template, mode);
 				});
-			});
-		}, 0);
+			}, 0);
+		});
 	});
 	
 	function renderTemplate (individual, container, template, specs, mode) {
