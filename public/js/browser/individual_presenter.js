@@ -249,21 +249,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		// Property value
 		$("[property]:not(veda-control, [rel] *, [about], [about] *)", template).map( function () {
-			
 			var propertyContainer = $(this),
 				property_uri = propertyContainer.attr("property"),
 				spec = specs[property_uri];
-			
-			if (property_uri == "@") { 
-				propertyContainer.text(individual.id).show();
+			if (property_uri === "@") { 
+				propertyContainer.text(individual.id);
 				return;
 			}
-
 			if (!individual[property_uri]) {
 				individual.defineProperty(property_uri);
 			}
-			renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls);
-			
+			propertyModifiedHandler(property_uri);
+			// Re-render all property values at propertyModified event from model
 			function propertyModifiedHandler(doc_property_uri) {
 				if (doc_property_uri === property_uri) {
 					renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls);
@@ -273,7 +270,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			template.one("remove", function () {
 				individual.off("individual:propertyModified", propertyModifiedHandler);
 			});
-			
 		});
 		
 		// Relation value
