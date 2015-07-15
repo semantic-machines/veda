@@ -176,12 +176,10 @@
 
 		if (isSingle && individual.hasValue(property_uri)) {
 			language = individual[property_uri][0].language;
+			$("[bound]", control).data("language", language);
+			langTag.text(language);
+			language ? undef.removeClass("active") : undef.addClass("active");
 		}
-
-		$("[bound]", control).data("language", language);
-		langTag.text(language);
-
-		language ? undef.removeClass("active") : undef.addClass("active");
 		
 		$(".language-list", control).append(
 			Object.keys(veda.user.availableLanguages).map(function (language_name) {
@@ -194,9 +192,9 @@
 
 		$(".language", control).on("click", function ( e ) {
 			e.preventDefault();
-			var $this = $(this);
+			langTag.text( $(this).data("language") || "" );
 			$("[bound]", control)
-				.data("language", $this.data("language") || null)
+				.data("language", $(this).data("language") || null)
 				.trigger("change");
 		});
 
@@ -224,7 +222,14 @@
 		}
 
 		this.val = function (value) {
-			if (!value) return $("[bound]", this).val();
+			if (!value) { 
+				return parser( $("[bound]", this).val() );
+			}
+			var language = value.language;
+			if (language) {
+				langTag.text(language);
+				$("[bound]", control).data("language", language)
+			}
 			return $("[bound]", this).val(value);
 		}
 		return control;
