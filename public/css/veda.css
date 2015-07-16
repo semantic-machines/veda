@@ -131,6 +131,7 @@ span.twitter-typeahead .tt-hint {
 }
 
 .codemirror-editor > button { 
+  margin: 5px;
   font-size: 14px;
   position:absolute;right:0px;z-index:999;
 }
