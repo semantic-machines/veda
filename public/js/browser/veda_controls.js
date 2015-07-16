@@ -172,11 +172,12 @@
 			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
 			undef = $("li", control),
 			langTag = $(".language-tag", control),
+			input = $("[bound]", control),
 			language;
 
 		if (isSingle && individual.hasValue(property_uri)) {
 			language = individual[property_uri][0].language;
-			$("[bound]", control).data("language", language);
+			input.data("language", language);
 			langTag.text(language);
 			language ? undef.removeClass("active") : undef.addClass("active");
 		}
@@ -193,9 +194,8 @@
 		$(".language", control).on("click", function ( e ) {
 			e.preventDefault();
 			langTag.text( $(this).data("language") || "" );
-			$("[bound]", control)
-				.data("language", $(this).data("language") || null)
-				.trigger("change");
+			input.data("language", $(this).data("language") || null);
+			if (input.val()) input.trigger("change");
 		});
 
 		function handler(doc_property_uri) {
@@ -223,14 +223,14 @@
 
 		this.val = function (value) {
 			if (!value) { 
-				return parser( $("[bound]", this).val() );
+				return parser( input.val() );
 			}
 			var language = value.language;
 			if (language) {
 				langTag.text(language);
-				$("[bound]", control).data("language", language)
+				input.data("language", language)
 			}
-			return $("[bound]", this).val(value);
+			return input.val(value);
 		}
 		return control;
 	};
