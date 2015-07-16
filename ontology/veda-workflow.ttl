@@ -1166,7 +1166,6 @@ v-wf:DecisionRedirect
 	rdf:type owl:Class ;
 	rdfs:label "перенаправить другому"@ru ;
 .	
-
 v-wf:DecisionRedirectTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -1182,24 +1181,75 @@ v-wf:DecisionRedirectTemplate
 	<br>
 	<strong class="text-muted" about="rdfs:comment" property="rdfs:label"></strong>
 	<div property="rdfs:comment" class="view -edit -search"></div>
-	<veda-control property="rdfs:comment" type="xsd:string" class="-view edit search"></veda-control>
+	<veda-control property="rdfs:comment" type="string" class="-view edit search"></veda-control>
 </div>
-<script>
-  if (mode !== "edit") template.trigger("edit");
-</script>
   """ ;
-  .
+.
+v-wf:DecisionTemplate1
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса -Решение-"@ru ;
+  rdfs:label "Template for -Decision- class"@en ;
+  v-ui:forClass v-wf:DecisionAgreed ;
+  v-ui:forClass v-wf:DecisionSign ;
+  v-ui:forClass v-wf:DecisionApprove ;
+  v-ui:forClass v-wf:DecisionReview ;
+  v-ui:forClass v-wf:DecisionBreak ;
+  v-ui:forClass v-wf:DecisionExamined ;
+  v-ui:forClass v-wf:DecisionAchieved ;
+  v-ui:forClass v-wf:DecisionRejected ;
+  v-ui:forClass v-wf:DecisionRemake ;
+  v-ui:forClass v-wf:DecisionNotPerformed ;
+  v-ui:template """
+<div>
+	<br>
+	<strong class="text-muted" about="rdfs:comment" property="rdfs:label"></strong>
+	<div property="rdfs:comment" class="view -edit -search"></div>
+	<veda-control property="rdfs:comment" type="string" class="-view edit search"></veda-control>
+</div>
+  """ ;
+.
+
 v-wf:DecisionRedirectTemplateSpec1
   rdf:type v-ui:PropertySpecification ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Спецификация к шаблону для класса -Перенаправить другому-"@ru ;
+  rdfs:label "Спецификация к свойству комментарий для некоторых подклассов класса -Решение-"@ru ;
+  rdfs:label "Spec for template for some -Decision- subclasses"@en ;
+  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:forProperty rdfs:comment ;
+  v-ui:forClass v-wf:DecisionRejected ;
+  v-ui:forClass v-wf:DecisionRemake ;
+  v-ui:forClass v-wf:DecisionNotPerformed ;
+.
+
+v-wf:DecisionRedirectTemplateSpec2
+  rdf:type v-ui:PropertySpecification ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Спецификация к свойству комментарий для некоторых подклассов класса -Решение-"@ru ;
+  rdfs:label "Spec for template for some -Decision- subclasses"@en ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:forProperty rdfs:comment ;
+  v-ui:forClass v-wf:DecisionAgreed ;
+  v-ui:forClass v-wf:DecisionSign ;
+  v-ui:forClass v-wf:DecisionApprove ;
+  v-ui:forClass v-wf:DecisionReview ;
+  v-ui:forClass v-wf:DecisionBreak ;
+  v-ui:forClass v-wf:DecisionExamined ;
+  v-ui:forClass v-wf:DecisionAchieved ;
+.
+
+v-wf:DecisionRedirectTemplateSpec3
+  rdf:type v-ui:PropertySpecification ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Спецификация свойств для класса -Перенаправить другому-"@ru ;
   rdfs:label "Spec for template for -Decision Redirect- class"@en ;
   v-ui:forClass v-wf:DecisionRedirect ;
   v-ui:forProperty v-wf:to, rdfs:comment ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Person')"
-  .
+.
 
 v-wf:startingJournalMap
 	rdf:type rdf:Property ;
