@@ -149,7 +149,6 @@ veda.Module(function (veda) { "use strict";
 				self._.values[property_uri] = value.filter(function (i) { return !!i; });
 				self._.individual[property_uri] = self._.values[property_uri].concat(filteredStrings).map( serializer );
 				if (setterCB) setterCB(self._.values[property_uri]);
-				self.trigger("individual:propertyModified", property_uri, self._.values[property_uri]);
 			},
 			
 			configurable: true
@@ -238,7 +237,9 @@ veda.Module(function (veda) { "use strict";
 			if (property_uri === "@") return;
 			if (property_uri === "rdf:type") return;
 			if (property_uri === "v-s:deleted") return;
-			self.defineProperty(property_uri);
+			self.defineProperty(property_uri, undefined, function (values) {
+				self.trigger("individual:propertyModified", property_uri, values);
+			});
 		});
 		if (self._.cache) veda.cache[self.id] = self;
 		if (self._.init) self.init();
@@ -277,32 +278,6 @@ veda.Module(function (veda) { "use strict";
 	 * @method
 	 * Reset current individual to database
 	 */
-/*	proto.reset = function () {
-		var self = this;
-		self.trigger("individual:beforeReset");
-		self._.individual = JSON.parse(self._.original_individual);
-		self._.properties = {};
-		self.properties = {};
-		self._.values = {};
-		Object.keys(self._.individual).map(function (property_uri) {
-			if (property_uri === "@") return;
-			if (property_uri === "rdf:type") return;
-			if (property_uri === "v-s:deleted") return;
-			self.defineProperty(property_uri);
-		});
-
-		self.defineProperty("rdf:type", undefined, function (classes) {
-			self._.sync = false;
-			self.init();
-			self.trigger("individual:typeChanged", classes);
-		});
-		self.defineProperty("v-s:deleted");
-		self.init();
-		self._.sync = true;
-		self.trigger("individual:afterReset");
-		return this;
-	};
-*/
 	proto.reset = function () {
 		var self = this;
 		self.trigger("individual:beforeReset");
@@ -361,7 +336,9 @@ veda.Module(function (veda) { "use strict";
 				Object.keys(_class.domainProperties).map(function (property_uri) {
 					if (property_uri === "rdf:type") return;
 					if (property_uri === "v-s:deleted") return;
-					self.defineProperty(property_uri);
+					self.defineProperty(property_uri, undefined, function (values) {
+						self.trigger("individual:propertyModified", property_uri, values);
+					});
 				});
 			}
 			if (_class.model) {
@@ -385,10 +362,14 @@ veda.Module(function (veda) { "use strict";
 		var clone = new veda.IndividualModel();
 		Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
 			if (property_uri === "rdf:type") return;
-			clone.defineProperty(property_uri);
+			if (property_uri === "v-s:deleted") return;
+			clone.defineProperty(property_uri, undefined, function (values) {
+				clone.trigger("individual:propertyModified", property_uri, values);
+			});
 			clone[property_uri] = self[property_uri].slice(0);
 		});
 		clone["rdf:type"] = self["rdf:type"].slice(0);
+		clone["v-s:deleted"] = self["v-s:deleted"].slice(0);
 		return clone;
 	};
 
