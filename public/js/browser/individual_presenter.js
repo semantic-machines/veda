@@ -274,16 +274,28 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				individual.off("individual:propertyModified", propertyModifiedHandler);
 			});
 		});
-		
-		// Relation value
-		$("[rel]:not(veda-control, [rel] *, [about], [about] *)", template).map( function () {
+
+		// Related resources & about resources
+		$("[rel]:not(veda-control, [rel] *, [about] *)", template).map( function () {
 			var relContainer = $(this), 
+				about = relContainer.attr("about"),
 				rel_uri = relContainer.attr("rel"),
 				isEmbedded = relContainer.attr("embedded") === "true",
 				spec = specs[rel_uri],
 				rel_inline_template = relContainer.children(),
 				rel_template_uri = relContainer.attr("template"),
-				relTemplate;
+				relTemplate,
+				isAbout;
+			
+			if (about) {
+				isAbout = true;
+				about = (about === "@" ? individual : new veda.IndividualModel(about));
+				relContainer.attr("about", about.id);
+			} else {
+				isAbout = false;
+				about = individual;
+			}
+			
 			if ( rel_template_uri ) {
 				var templateIndividual = new veda.IndividualModel( rel_template_uri );
 				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
@@ -292,11 +304,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				relTemplate = rel_inline_template.remove();
 			}
 			rel_inline_template = null;
-			if ( !individual[rel_uri] ) {
-				individual.defineProperty(rel_uri);
+			if ( !about[rel_uri] ) {
+				about.defineProperty(rel_uri);
 			}
 			
-			var values = individual[rel_uri], rendered = {}, counter = 0;
+			var values = about[rel_uri], rendered = {}, counter = 0;
 			
 			relContainer.empty();
 			
@@ -313,7 +325,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 								return;
 							}
 							setTimeout (function () {
-								var renderedTmpl = renderRelationValue (individual, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, mode);
+								var renderedTmpl = renderRelationValue (about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, mode, isAbout);
 								rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
 							}, 0);
 						});
@@ -328,12 +340,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					}
 				}
 			}
-			individual.on("individual:propertyModified", propertyModifiedHandler);
+			about.on("individual:propertyModified", propertyModifiedHandler);
 			template.one("remove", function () {
-				individual.off("individual:propertyModified", propertyModifiedHandler);
+				about.off("individual:propertyModified", propertyModifiedHandler);
 			});
 		});		
-		
+
 		// About resource property
 		$("[about][property]:not([rel] *, [about] *)", template).map( function () {
 			var propertyContainer = $(this), 
@@ -350,43 +362,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				if (doc_property_uri === property_uri) {
 					if (property_uri === "@") propertyContainer.text( about.id );
 					else propertyContainer.text( about[property_uri].join(", ") );
-				}
-			}
-			about.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				about.off("individual:propertyModified", propertyModifiedHandler);
-			});
-		});
-		
-		// About resource relation
-		$("[about][rel]:not([rel] *, [about] *)", template).map( function () {
-			var relContainer = $(this), 
-				rel_uri = relContainer.attr("rel"),
-				rel_template_uri = relContainer.attr("template"),
-				rel_inline_template = relContainer.children(),
-				about, relTemplate;
-			if ( rel_template_uri ) {
-				var templateIndividual = new veda.IndividualModel( rel_template_uri );
-				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
-			}
-			if ( rel_inline_template.length ) {
-				relTemplate = rel_inline_template.remove();
-			}
-			if (relContainer.attr("about") === "@") {
-				about = individual;
-				relContainer.attr("about", about.id);
-			} else {
-				about = new veda.IndividualModel(relContainer.attr("about"));
-			}
-			propertyModifiedHandler(rel_uri);
-			function propertyModifiedHandler(doc_rel_uri) {
-				if (doc_rel_uri === rel_uri) {
-					relContainer.empty();
-					if ( about.hasValue(rel_uri) ) {
-						about[rel_uri].map( function (item) {
-							item.present(relContainer, relTemplate.clone());
-						});
-					}
 				}
 			}
 			about.on("individual:propertyModified", propertyModifiedHandler);
@@ -609,7 +584,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 	}
 	
-	function renderRelationValue(individual, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, mode) {
+	function renderRelationValue(individual, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, mode, isAbout) {
 		var valTemplate;
 		if (isEmbedded) {
 			if (relTemplate) {
@@ -635,21 +610,23 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				valTemplate = relContainer.children();
 			}
 		}
-		var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
-		var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
-		wrapper.append(btnRemove);
-		
-		if (valTemplate.prop("tagName") !== "SPAN") {
-			wrapper.addClass("block");
-		}
-							
-		btnRemove.on("click", function () {
-			individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id !== value.id; });
-		});
+		if (!isAbout) {
+			var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
+			var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
+			wrapper.append(btnRemove);
+			
+			if (valTemplate.prop("tagName") !== "SPAN") {
+				wrapper.addClass("block");
+			}
+								
+			btnRemove.on("click", function () {
+				individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id !== value.id; });
+			});
 
-		valTemplate.css("position", "relative");
-		// It is important to append buttons to skip script element in template!
-		valTemplate.not("script").append(wrapper);
+			valTemplate.css("position", "relative");
+			// It is important to append buttons to skip script element in template!
+			valTemplate.not("script").append(wrapper);
+		}
 		return valTemplate;
 	}
 
