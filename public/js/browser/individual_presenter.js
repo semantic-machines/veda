@@ -102,8 +102,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		
 		// Embedded templates list & property controls
-		var embedded = [], 
-			props_ctrls = {};
+		var embedded = [];
 
 		// Trigger same events for embedded templates
 		function syncEmbedded (e) {
@@ -251,6 +250,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 
 		// Property value
+		var props_ctrls = {};
 		$("[property]:not(veda-control, [rel] *, [about], [about] *)", template).map( function () {
 			var propertyContainer = $(this),
 				property_uri = propertyContainer.attr("property"),
