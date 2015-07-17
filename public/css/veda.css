@@ -485,9 +485,9 @@ path {
 
 
 .calculated-height {
-    height: -moz-calc(100% - 50px - 21px);
-    height: -webkit-calc(100% - 50px - 21px);
-    height: calc(100% - 50px - 21px);
+    height: -moz-calc(100% - 50px - 23px);
+    height: -webkit-calc(100% - 50px - 23px);
+    height: calc(100% - 50px - 23px);
 }​
 
 .split-join {
