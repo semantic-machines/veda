@@ -331,14 +331,14 @@
 		<script type="html/template" id="link-control-template">
 			<div id="scrollable-typeahead">
 				<div class="input-group" style="display:table">
-					<span class="input-group-addon btn btn-default search-btn">
+					<span class="input-group-addon btn btn-default" id="fullsearch">
 						<i class="glyphicon glyphicon-search"></i>
 					</span>
-					<input type="text" class="form-control typeahead" />
-					<span class="input-group-addon btn btn-default all-btn">
+					<input type="text" class="form-control" id="fulltext"/>
+					<span class="input-group-addon btn btn-default" id="dropdown">
 						<i class="caret"></i>
 					</span>
-					<span class="input-group-addon btn btn-default add-btn">
+					<span class="input-group-addon btn btn-default" id="create">
 						<i class="glyphicon glyphicon-plus"></i>
 					</span>
 				</div>
@@ -477,6 +477,7 @@
 							</div>
 							<div class="col-md-8 text-right text-muted">
 								<a href="#/individual/@/#main"><span property="@"></span></a>
+								<a href="#/graph/@/#main"><span class="glyphicon glyphicon-link"></span></a>
 							</div>  
 						</div>
 					</div>
@@ -488,7 +489,7 @@
 								</div>
 								<div class="col-md-9 col-xs-7">
 									<h3 property="rdfs:label"></h3>
-									<veda-control type="multilingualString" property="rdfs:label" class='-view edit search'></veda-control>
+									<veda-control property="rdfs:label" type="multilingualString" class='-view edit search'></veda-control>
 								</div>
 							</div>
 							<div class="row">
@@ -497,7 +498,7 @@
 								</div>
 								<div class="col-md-9 col-xs-7">
 									<div rel="rdf:type" template="v-ui:ClassNameLabelTemplate"/>
-									<veda-control type="link" rel="rdf:type" template="v-ui:ClassNameLabelTemplate" class='-view edit search'></veda-control>
+									<veda-control rel="rdf:type" type="link" template="v-ui:ClassNameLabelTemplate" class='-view edit search fullsearch fulltext'></veda-control>
 								</div>
 							</div>
 							<hr style="margin: 10px 0px"/>

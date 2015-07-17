@@ -1175,11 +1175,11 @@ v-wf:DecisionRedirectTemplate
   v-ui:template """
 <div>
 	<br>
-	<strong class="text-muted" about="v-wf:to" property="rdfs:label"></strong>
+	<strong about="v-wf:to" property="rdfs:label" class="text-muted"></strong>
 	<div rel="v-wf:to" template="v-ui:LabelTemplate" class="view -edit -search"></div>
-	<veda-control rel="v-wf:to" class="-view edit search"></veda-control>
+	<veda-control rel="v-wf:to" type="link" class="-view edit search fulltext dropdown"></veda-control>
 	<br>
-	<strong class="text-muted" about="rdfs:comment" property="rdfs:label"></strong>
+	<strong about="rdfs:comment" property="rdfs:label" class="text-muted"></strong>
 	<div property="rdfs:comment" class="view -edit -search"></div>
 	<veda-control property="rdfs:comment" type="string" class="-view edit search"></veda-control>
 </div>
@@ -1203,7 +1203,7 @@ v-wf:DecisionTemplate1
   v-ui:template """
 <div>
 	<br>
-	<strong class="text-muted" about="rdfs:comment" property="rdfs:label"></strong>
+	<strong about="rdfs:comment" property="rdfs:label" class="text-muted"></strong>
 	<div property="rdfs:comment" class="view -edit -search"></div>
 	<veda-control property="rdfs:comment" type="string" class="-view edit search"></veda-control>
 </div>
@@ -1322,35 +1322,35 @@ v-wf:isProcess
 .
 v-wf:ProcessStarted
   rdf:type owl:Class ;
-  rdf:subClassOf v-s:JournalRecord ;
+  rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущен процесс"@ru ;
   rdfs:label "Process started"@en ;
 .
 v-wf:SubProcessStarted
   rdf:type owl:Class ;
-  rdf:subClassOf v-s:JournalRecord ;
+  rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущен подпроцесс"@ru ;
   rdfs:label "Subprocess started"@en ;
 .
 v-wf:ProcessCompleted
   rdf:type owl:Class ;
-  rdf:subClassOf v-s:JournalRecord ;
+  rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Завершен процесс"@ru ;
   rdfs:label "Process completed"@en ;
 .
 v-wf:TaskGiven
   rdf:type owl:Class ;
-  rdf:subClassOf v-s:JournalRecord ;
+  rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Выдана задача"@ru ;
   rdfs:label "Task given"@en ;
 .
 v-wf:TaskCompleted
   rdf:type owl:Class ;
-  rdf:subClassOf v-s:JournalRecord ;
+  rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Выполнена задача"@ru ;
   rdfs:label "Task completed"@en ;

@@ -742,7 +742,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					default:
 						$(".value", result).append (
 							$("<div/>", {"rel": property_uri, "template": "v-ui:ClassNameLabelTemplate"}),
-							$("<veda-control class='-view edit search'></veda-control>").attr("rel", property_uri)
+							$("<veda-control class='-view edit search fullsearch fulltext'></veda-control>").attr("rel", property_uri)
 						);
 					break;
 				}
@@ -765,6 +765,10 @@ function queryFromIndividual(individual) {
 		.map(function (property_uri) {
 			var property = individual.properties[property_uri];
 			var values = individual[property_uri].filter(function(item){return !!item && !!item.valueOf();});
+			// Filter rdfs:Resource type
+			if (property_uri === "rdf:type") { 
+				values = individual[property_uri].filter(function(item){ return item.id !== "rdfs:Resource" });
+			}
 			var oneProp;
 			switch (property["rdfs:range"][0].id) {
 				case "xsd:integer": 

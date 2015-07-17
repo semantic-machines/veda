@@ -390,7 +390,13 @@ veda.Module(function (veda) { "use strict";
 	 * @param {String} mode Initial mode for individual presenter. Expected values: "view", "edit", "search".
 	 */
 	proto.present = function (container, template, mode) {
-		if (container) veda.trigger("individual:loaded", this, container, template, mode);
+		if (container) { 
+			if (!this.hasValue("rdf:type")) { 
+				this["rdf:type"] = [veda.ontology["rdfs:Resource"]]; 
+				return;
+			}
+			veda.trigger("individual:loaded", this, container, template, mode);
+		}
 		return this;
 	};
 	

@@ -56,19 +56,6 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 			veda.trigger("search:complete", search, container, search.currentPage);
 		});
 
-		var tmplContainer = $("<div>");
-		var typeSelector = $("<div>").veda_link({
-			limit: -1,
-			queryPrefix: "('rdf:type'=='owl:Class')",
-			select: function (selected) {
-				search.selectedType = selected;
-				var ind = new veda.IndividualModel();
-				ind["rdf:type"] = [selected];
-				var doc = ind.present(tmplContainer, undefined, "search");
-			}
-		});
-		$("#params-" + search.id, container).append(typeSelector, tmplContainer);
-		
 /*
 		// Typed search request
 		var reqContainer = $("<div>").addClass("well");

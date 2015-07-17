@@ -821,14 +821,16 @@
 	$.fn.veda_link = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_link.defaults, options ),
 			control = $(opts.template),
-			add = $(".add-btn", control),
-			all = $(".all-btn", control),
 			individual = opts.individual,
 			spec = opts.spec,
 			queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : undefined,
 			rel_uri = opts.rel_uri,
-			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1;
-		
+			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+			create = $("#create", control),
+			dropdown = $("#dropdown", control),
+			fulltext = $("#fulltext", control),
+			fullsearch = $("#fullsearch", control);
+
 		function select(selected) {
 			if (isSingle) {
 				individual[rel_uri] = selected instanceof Array ? [ selected[0] ] : [ selected ];
@@ -837,79 +839,95 @@
 			}
 		}
 
-		function addNew() {
+		function createValue() {
 			var newVal = new veda.IndividualModel();
 			newVal["rdf:type"] = veda.ontology[rel_uri]["rdfs:range"];
 			select(newVal);
 		}
 
-		add.click(addNew);
-
-		if (!queryPrefix) {
-			all.remove();
+		// Create feature
+		if ( this.hasClass("create") || this.hasClass("full") ) {
+			create.click(createValue);
 		} else {
-			all.click(function () {
+			create.remove();
+		}
+
+		// Dropdown feature
+		if ( (this.hasClass("dropdown") || this.hasClass("full")) && queryPrefix ) {
+			dropdown.click(function () {
 				typeAhead.data().ttTypeahead.input.trigger("queryChanged", "");
 				typeAhead.focus();
 			});
+		} else {
+			dropdown.remove();
 		}
 
-		var typeAhead = $(".typeahead", control).typeahead (
-			{
-				minLength: 0,
-				highlight: true
-			},
-			{
-				name: "dataset",
-				source: function (q, cb) {
-					var limit = opts.limit || -1;
-					var s = new veda.SearchModel(q, null, queryPrefix);
-					var results = [];
-					for (var uri in s.results) {
-						if (limit-- === 0) break;
-						results.push(s.results[uri]);
-					}
-					cb(results);
+		// Fulltext search feature
+		if ( this.hasClass("fulltext") || this.hasClass("full") ) {
+			var typeAhead = fulltext.typeahead (
+				{
+					minLength: 0,
+					highlight: true
 				},
-				displayKey: function (individual) {
-					var result;
-					try { result = riot.render("{rdf:type.0.rdfs:label}: {rdfs:label}", individual); }
-					catch (ex) { result = individual.id; }
-					return result;
+				{
+					name: "dataset",
+					source: function (q, cb) {
+						var limit = opts.limit || -1;
+						var s = new veda.SearchModel(q, null, queryPrefix);
+						var results = [];
+						for (var uri in s.results) {
+							if (limit-- === 0) break;
+							results.push(s.results[uri]);
+						}
+						cb(results);
+					},
+					displayKey: function (individual) {
+						var result;
+						//try { result = riot.render("{rdf:type.0.rdfs:label}: {rdfs:label}", individual); }
+						try { result = riot.render("{rdfs:label}", individual); }
+						catch (ex) { result = individual.id; }
+						return result;
+					}
 				}
-			}
-		);
+			);
 
-		typeAhead.on("typeahead:selected", function (e, selected) {
-			if (!isSingle) typeAhead.val("");
-			select(selected);
-		});
-		
-/*		control.on("remove", function () {
-			typeAhead.typeahead("destroy");
-		});
-*/
-		// Search modal
-		var tmpl = $("#search-modal-template").html();
-		
-		$(".search-btn", control).on("click", function (e) {
-			var $modal = $(tmpl);
-			$("body").append($modal);
-			$modal.modal();
-			var search = new veda.SearchModel(undefined, $(".modal-body", $modal), queryPrefix);
-			// Add found values
-			$("button#ok", $modal).on("click", function (e) {
-				$(this).off("click");
-				var selected = [];
-				for (var uri in search.selected) {
-					selected.push( search.selected[uri] );
-				}
+			typeAhead.on("typeahead:selected", function (e, selected) {
+				if (!isSingle) typeAhead.val("");
 				select(selected);
 			});
-			$modal.on('hidden.bs.modal', function (e) {
-				$modal.remove();
+			
+			control.on("remove", function () {
+				typeAhead.typeahead("destroy");
 			});
-		});
+		} else {
+			fulltext.remove();
+		}
+
+		// Search modal feature
+		if ( this.hasClass("fullsearch") || this.hasClass("full") ) {
+			// Search modal
+			var tmpl = $("#search-modal-template").html();
+			fullsearch.on("click", function (e) {
+				var $modal = $(tmpl);
+				$("body").append($modal);
+				$modal.modal();
+				var srch = new veda.SearchModel(undefined, $(".modal-body", $modal), queryPrefix);
+				// Add found values
+				$("button#ok", $modal).on("click", function (e) {
+					$(this).off("click");
+					var selected = [];
+					for (var uri in srch.selected) {
+						selected.push( srch.selected[uri] );
+					}
+					select(selected);
+				});
+				$modal.on('hidden.bs.modal', function (e) {
+					$modal.remove();
+				});
+			});			
+		} else {
+			fullsearch.remove();
+		}
 		
 		this.on("view edit search", function (e) {
 			e.stopPropagation();

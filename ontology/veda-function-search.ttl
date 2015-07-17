@@ -218,7 +218,7 @@ v-fs:SearchTemplate
 				</div>
 				<strong about="v-fs:selectedType" property="rdfs:label"></strong>
 				<div rel="v-fs:selectedType" template="v-ui:ClassNameLabelTemplate"></div>
-				<veda-control rel="v-fs:selectedType"></veda-control>
+				<veda-control rel="v-fs:selectedType" type="link" class="fulltext dropdown"></veda-control>
 				<br />
 			</div>
 			<div role="tabpanel" class="tab-pane" id="results">
