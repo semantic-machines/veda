@@ -128,7 +128,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		function sendHandler(e) {
 			individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
-			saveHandler(e);
+			template.trigger("save");
 			$edit.remove();
 			$save.remove();
 			$delete.remove();
