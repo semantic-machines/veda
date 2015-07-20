@@ -481,7 +481,15 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                         if (!out_data0_el_arr)
                             out_data0_el_arr = [];
 
-                        out_data0_el_arr.push(element);
+						if (key == '@')
+						{
+							out_data0_el_arr.push({
+                            data: element,
+                            type: _Uri
+							});
+						}	
+						else
+							out_data0_el_arr.push(element);
 
                         out_data0_el[name] = out_data0_el_arr;
                     }
