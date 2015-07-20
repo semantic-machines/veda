@@ -5,8 +5,6 @@
 # c14n-version: 3
 @prefix : <http://semantic-machines.com/veda/test-data/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
-@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
-@prefix mnd-wf: <http://semantic-machines.com/veda/mondi-workflow/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -16,6 +14,9 @@
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix mnd-wf: <http://semantic-machines.com/veda/mondi-workflow/> .
+@prefix mnd-s-pdr: <http://semantic-machines.com/veda/mondi-schema-pdr/> .
 
 <http://semantic-machines.com/veda/test-data>
   rdf:type owl:Ontology ;
@@ -937,5 +938,51 @@ td:ComplexRouteStartForm1
     v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true "^^xsd:string;
     rdfs:label "общий инбокс: выполненые задачи"^^xsd:string;
     v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
+
+
+
+:dcf1ce1146792aaa860ae4db7893b2ebb 
+    a mnd-s-pdr:PerformanceDevelopmentReview;
+    v-s:hasChief td:ValeriyBushenev-TechnicalDirector;
+    v-s:responsible td:AndreyBychin-ExecutiveDirector;
+    v-s:dateFrom "2014-01-01T00:00:00.000Z"^^xsd:dateTime;
+    mnd-s-pdr:hasProfessionalObjective :d966ad08a80add1b5bd2c8a9997c9547f;
+    mnd-s-pdr:hasMobility :d5ecd0a39041e9160f723ae960f3b86fe;
+    mnd-s-pdr:hasLeaderObjective :d5fea50fe5b87544a8cfa069ca5d1679f;
+    mnd-s:hasCheckedDepartment td:CCIP;
+    v-s:year "2010"^^xsd:integer;
+    mnd-s-pdr:hasTrainingObjective :de6224bd385fa0248cfcc1248c41baaa1;
+    mnd-s-pdr:readyToNewPosition "тест"^^xsd:string;
+    rdfs:label "ТЕСТ ПДР"@ru;
+    v-wf:forNet mnd-wf:net_complex_route ;
+    v-wf:processInitiator td:RomanKarpov-Analyst1 ;
+    v-wf:processedDocument :dcf1ce1146792aaa860ae4db7893b2ebb ; 
+    v-wf:useTransformation mnd-wf:transformation2 ;
+.
+
+:d5fea50fe5b87544a8cfa069ca5d1679f v-s:dateTo "2016-01-01T00:00:00.000Z"^^xsd:dateTime;
+    v-s:dateFrom "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
+    a mnd-s-pdr:ObjectiveOfPdr.
+
+:d966ad08a80add1b5bd2c8a9997c9547f v-s:dateTo "2016-01-01T00:00:00.000Z"^^xsd:dateTime;
+    v-s:dateFrom "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
+    a mnd-s-pdr:ObjectiveOfPdr.
+
+mnd-s-pdr:PerformanceDevelopmentReview rdfs:subClassOf v-s:Document;
+    a owl:Class;
+    rdfs:label "Планирование и анализ достижения и развития"@ru.
+
+td:CCIP v-s:parentUnit td:MondiSyktyvkar;
+    a v-s:Department;
+    v-s:childUnit td:ApplicationDevelopmentGroup;
+    rdfs:label "Управление информационных технологий"@ru.
+
+:de6224bd385fa0248cfcc1248c41baaa1 v-s:dateTo "2016-01-01T00:00:00.000Z"^^xsd:dateTime;
+    v-s:dateFrom "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
+    a mnd-s-pdr:TrainingOfPdr.
+
+:d5ecd0a39041e9160f723ae960f3b86fe a mnd-s-pdr:Mobility;
+    rdfs:label "внутри страны с ограничениями"^^xsd:string.
+
 
 
