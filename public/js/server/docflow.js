@@ -5,7 +5,7 @@
  */
 function prepare_decision_form(ticket, document)
 {
-    //print("[WORKFLOW][DF1] : ### ---------------------------- prepare_decision_form:" + document['@']);
+    print("[WORKFLOW][DF1] : ### ---------------------------- prepare_decision_form:" + document['@']);
 
     var decision_form = document;
 
@@ -86,7 +86,7 @@ function prepare_decision_form(ticket, document)
 function prepare_work_order(ticket, document)
 {
     var _work_order = document;
-    //print("[WORKFLOW][WO.1] : ### ---------------------------- prepare_work_order:" + document['@']);
+    print("[WORKFLOW][WO.1] : ### ---------------------------- prepare_work_order:" + document['@']);
     var f_executor = document['v-wf:executor'];
     var executor = get_individual(ticket, getUri(f_executor));
     //if (!executor) return;
@@ -570,7 +570,7 @@ function prepare_work_order(ticket, document)
 function prepare_work_item(ticket, document)
 {
     var work_item = document;
-    //print("[WORKFLOW]:prepare_work_item ### --------------------------------- " + document['@']);
+    print("[WORKFLOW]:prepare_work_item ### --------------------------------- " + document['@']);
 
     //print("[WORKFLOW][PWI]:----- NetElement:" + getUri(document['v-wf:forNetElement']) + ' -----');
 
@@ -1004,11 +1004,23 @@ function prepare_process(ticket, document)
  */
 function prepare_start_form(ticket, document)
 {
-    // print(":prepare_start_form #B, doc_id=" + document['@']);
+     print(":prepare_start_form #B, doc_id=" + document['@']);
+
+     var hasStatusWorkflowif = document['v-s:hasStatusWorkflow'];    
+     if (hasStatusWorkflowif)
+     {
+	if (getUri (hasStatusWorkflowif) != 'v-s:ToBeSent')
+	{
+    	    print("[WORKFLOW]:prepare_start_form, not ready to start.");
+	    return;
+	}    
+     }
+    else
+	return;	
 
     if (document['v-wf:isProcess'])
     {
-        //print("[WORKFLOW]:prepare_start_form, already started.");
+        print("[WORKFLOW]:prepare_start_form, already started.");
         return;
     }
 
@@ -1054,15 +1066,19 @@ function prepare_start_form(ticket, document)
     if (process_inVars.length > 0) new_process['v-wf:inVars'] = new_vars;
 
     put_individual(ticket, new_process, _event_id);
-    //print("new_process=", toJson(new_process));
+    print("new_process=", toJson(new_process));
 
     create_new_journal(ticket, new_process_uri, _net['rdfs:label']);
 
-    document['v-wf:isProcess'] = [
+    var add_to_document = {
+        '@': document['@'],
+        'v-wf:isProcess': [
         {
             data: new_process_uri,
             type: _Uri
-      }];
-    put_individual(ticket, document, _event_id);
+      }]    
+	};
+    add_to_individual(ticket, add_to_document, _event_id);
+
     //print("[WORKFLOW]:new_process:" + new_process['@']);
 }
