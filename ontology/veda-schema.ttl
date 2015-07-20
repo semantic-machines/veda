@@ -288,6 +288,11 @@ v-s:StatusWorkflow
   rdfs:label "Статус документооборота"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
 .
+v-s:ToBeSent
+  rdf:type v-s:StatusWorkflow ;
+  rdfs:label "To be sent"@en ;
+  rdfs:label "Ожидает отправки"@ru ;
+.
 v-s:ThisMonth
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "This month"@en ;
@@ -474,8 +479,8 @@ v-s:dateFact
 .
 v-s:dateFrom
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "date begin of something"@en ;
-  rdfs:label "дата начала чего-либо"@ru ;
+  rdfs:label "date start"@en ;
+  rdfs:label "дата начала"@ru ;
   rdfs:range xsd:dateTime ;
 .
 v-s:datePlan
@@ -495,8 +500,8 @@ v-s:published
 
 v-s:dateTo
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "date end of something"@en ;
-  rdfs:label "дата окончания чего-либо"@ru ;
+  rdfs:label "date finish"@en ;
+  rdfs:label "дата окончания"@ru ;
   rdfs:range xsd:dateTime ;
 .
 v-s:decision
@@ -748,6 +753,7 @@ v-s:hasStatusWorkflow
   rdfs:label "status workflow"@en ;
   rdfs:label "статус документооборота"@ru ;
   rdfs:range v-s:StatusWorkflow ;
+  rdfs:domain rdfs:Resource ;
   rdfs:subPropertyOf v-s:status ;
 .
 v-s:hasYesNo

@@ -126,6 +126,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		template.on("save", saveHandler);
 
+		function sendHandler(e) {
+			individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
+			saveHandler(e);
+			$send.remove();
+			e.stopPropagation();
+		}
+		template.on("send", sendHandler);
+
 		function cancelHandler (e) {
 			template.trigger("view");
 			individual.reset();
@@ -170,6 +178,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Actions
 		var $edit = $("#edit.action", template),
 			$save = $("#save.action", template),
+			$send = $("#send.action", template),
 			$cancel = $("#cancel.action", template),
 			$delete = $("#delete.action", template),
 			$search = $("#search.action", template);
@@ -183,6 +192,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Delete
 		if ($delete.length && !(individual.rights.hasValue("v-s:canDelete") && individual.rights["v-s:canDelete"][0] == true) ) $delete.remove();
 
+		// Send
+		if ($send.length && individual.hasValue("v-s:hasStatusWorkflow")) $send.remove();
+
 		// Buttons handlers
 		// Edit
 		$edit.on("click", function (e) {
@@ -192,6 +204,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Save
 		$save.on("click", function (e) {
 			template.trigger("save");
+		});
+
+		// Send
+		$send.on("click", function (e) {
+			template.trigger("send");
 		});
 
 		//  Cancel
@@ -431,16 +448,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				control.trigger(e.type);
 				if (spec) state = validate(template, spec, individual[property_uri], property_uri);
 				e.type === "edit" ? 
-					state ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success") 
+					state ? control.removeClass("has-error") : control.addClass("has-error") 
 					:
-					control.removeClass("has-error has-success");
+					control.removeClass("has-error");
 			});
 			
 			function propertyModifiedHandler(doc_property_uri) {
 				if (doc_property_uri === property_uri) {
 					if (spec) state = validate(template, spec, individual[property_uri], property_uri);
 					if (mode === "edit") {
-						state ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
+						state ? control.removeClass("has-error") : control.addClass("has-error");
 					}
 				}
 			}
@@ -509,9 +526,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				if (spec) state = validate(template, spec, individual[rel_uri], rel_uri);
 				e.stopPropagation();
 				e.type === "edit" ? 
-					state ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success") 
+					state ? control.removeClass("has-error") : control.addClass("has-error") 
 					:
-					control.removeClass("has-error has-success");
+					control.removeClass("has-error");
 				control.trigger(e.type);
 			}
 			template.on("view edit search", modeHandler);
@@ -520,7 +537,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				if (doc_rel_uri === rel_uri) {
 					if (spec) state = validate(template, spec, individual[rel_uri], rel_uri);
 					if (mode === "edit") {
-						state ? control.addClass("has-success").removeClass("has-error") : control.addClass("has-error").removeClass("has-success");
+						state ? control.removeClass("has-error") : control.addClass("has-error");
 					}
 				}
 			}

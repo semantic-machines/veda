@@ -90,7 +90,6 @@ v-wf:belongsTo
 	rdfs:domain v-wf:NetElement ;
 	rdfs:range v-wf:Net .
 
-
 v-wf:hasFlow
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;

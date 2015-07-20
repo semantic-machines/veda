@@ -385,21 +385,21 @@ v-ui:ResourceTemplate
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-md-3 col-xs-5 text-right">
-					<h3 about="rdfs:label" property="rdfs:label" class="text-muted"></h3>
-				</div>
-				<div class="col-md-9 col-xs-7">
-					<h3 property="rdfs:label"></h3>
-					<veda-control property="rdfs:label" type="multilingualString" class="-view edit search"></veda-control>
-				</div>
-			</div>
-			<hr class="margin-sm">
-			<div class="row">
-				<div class="col-md-3 col-xs-5 text-right">
 					<strong about="rdf:type" property="rdfs:label" class="text-muted"></strong>
 				</div>
 				<div class="col-md-9 col-xs-7">
 					<div rel="rdf:type" template="v-ui:LabelTemplate"></div>
 					<veda-control rel="rdf:type" type="link" template="v-ui:LabelTemplate" class="-view edit search fulltext dropdown"></veda-control>
+				</div>
+			</div>
+			<hr class="margin-sm">
+			<div class="row">
+				<div class="col-md-3 col-xs-5 text-right">
+					<strong about="rdfs:label" property="rdfs:label" class="text-muted"></strong>
+				</div>
+				<div class="col-md-9 col-xs-7">
+					<span property="rdfs:label"></span>
+					<veda-control property="rdfs:label" type="multilingualString" class="-view edit search"></veda-control>
 				</div>
 			</div>
 			<hr class="margin-sm">
