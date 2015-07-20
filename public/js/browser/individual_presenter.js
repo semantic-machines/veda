@@ -129,6 +129,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		function sendHandler(e) {
 			individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
 			saveHandler(e);
+			$edit.remove();
+			$save.remove();
+			$delete.remove();
 			$send.remove();
 			e.stopPropagation();
 		}
@@ -193,7 +196,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		if ($delete.length && !(individual.rights.hasValue("v-s:canDelete") && individual.rights["v-s:canDelete"][0] == true) ) $delete.remove();
 
 		// Send
-		if ($send.length && individual.hasValue("v-s:hasStatusWorkflow")) $send.remove();
+		if ($send.length && individual.hasValue("v-s:hasStatusWorkflow")) { 
+			$edit.remove();
+			$save.remove();
+			$delete.remove();
+			$send.remove();
+		}
 
 		// Buttons handlers
 		// Edit
