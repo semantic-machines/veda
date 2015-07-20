@@ -258,7 +258,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				return state && template.data("valid").state;
 			}, true);
 			template.data("valid").state = isValid;
-			isValid ? $save.removeAttr("disabled") : $save.attr("disabled", "disabled");
+			if (isValid) { 
+				$save.removeAttr("disabled");
+				$send.removeAttr("disabled");
+			} else {
+				$save.attr("disabled", "disabled");
+				$send.attr("disabled", "disabled");
+			}
 			// "validate" event bubbles up to be handled by parent templates
 		}
 		template.on("validate", validationHandler);
