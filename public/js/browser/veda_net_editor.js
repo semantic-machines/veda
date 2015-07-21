@@ -227,7 +227,7 @@ jsWorkflow.ready = jsPlumb.ready;
              	}).appendTo($state);
             };
             
-            updateSVGBackground = function(item) {
+            instance.updateSVGBackground = function(item) {
                 var svgBackground = "";
                 if (item.hasClass('split-and')) {
                     svgBackground += "<line x1='80' y1='25' x2='100' y2='0' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='80' y1='0' x2='80' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='80' y1='25' x2='100' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' />";
@@ -251,11 +251,11 @@ jsWorkflow.ready = jsPlumb.ready;
                 item.css('background', svgBackground);
             };
             
-            showProcessRunPath = function(workItem, depth) {
+            instance.showProcessRunPath = function(workItem, depth) {
             	if (workItem.hasValue('v-wf:previousWorkItem')) {
             		workItem['v-wf:previousWorkItem'].forEach(function(previousWorkItem) {
             			if (workItem.hasValue('v-wf:forNetElement') && previousWorkItem.hasValue('v-wf:forNetElement')) {
-            				showProcessRunPath(previousWorkItem, depth+1);
+            				instance.showProcessRunPath(previousWorkItem, depth+1);
             				instance.select({target:workItem['v-wf:forNetElement'][0].id, source:previousWorkItem['v-wf:forNetElement'][0].id}).each(function(e) {
             					e.addClass('process-path-highlight');
             					e.setLabel(((e.getLabel()!='')?e.getLabel()+',':'')+(max_process_depth-depth));
@@ -282,10 +282,16 @@ jsWorkflow.ready = jsPlumb.ready;
                     selectedElementId = _this.id;
                 	selectedElementType = 'state';
                     currentElement.addClass('w_active');
-                    if (mode=='edit') {
+                    if (mode=='edit') 
+                    {
                     	var about = new veda.IndividualModel(_this.id);
                     	var holder = $("<div>");
-                    	about.present(holder, undefined, "edit");
+                    	if (about['rdf:type'][0].id == 'v-wf:Task') 
+                    	{
+                    		about.present(holder, new veda.IndividualModel("v-wf:TaskTemplate"), 'edit');
+                    	} else {
+                    		about.present(holder);
+                    	}
                     	props.append(holder);
                     	if ( about.hasValue("rdfs:label") ) propsHead.text(about["rdfs:label"].join(", "));
                     	else propsHead.text(about.id);
@@ -309,7 +315,7 @@ jsWorkflow.ready = jsPlumb.ready;
     	                	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
     	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"' && 'v-wf:forNetElement'=='"+_this.id+"'");
     	                	for (var el in s.results) {
-   	                	    	showProcessRunPath(s.results[el], 0);
+   	                	    	instance.showProcessRunPath(s.results[el], 0);
    	                	    	var holder = $("<div>");
    	                	    	s.results[el].present(holder, new veda.IndividualModel("v-wf:WorkItemTemplate"));
    	                	    	props.append(holder);
@@ -338,7 +344,7 @@ jsWorkflow.ready = jsPlumb.ready;
 										event.preventDefault();
 										props.empty();
 										$("#workflow-context-menu").hide();
-										showProcessRunPath(wi, 0);
+										instance.showProcessRunPath(wi, 0);
 										var holder = $("<div>");
 										wi.present(holder, new veda.IndividualModel("v-wf:WorkItemTemplate"));
 										props.append(holder);
@@ -673,7 +679,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 	var $state = $('#' + veda.Util.escape4$(state.id));
                 	bindStateEvents($state);
                 	if (mode=='edit') subNetViewButton(state, $state);
-                	updateSVGBackground($state);
+                	instance.updateSVGBackground($state);
             	}
             };
             
@@ -991,6 +997,10 @@ jsWorkflow.ready = jsPlumb.ready;
             
             $('.process-refresh').on('click', function() {
             	instance.createProcessView(process, true);
+            });
+            
+            $('.to-net-editor').on('click', function() {
+            	riot.route("#/individual/" + net.id + "/#main//edit", true);
             });
             
             /* ZOOM [BEGIN] */
