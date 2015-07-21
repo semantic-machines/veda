@@ -12,3 +12,4 @@ backup
 dub.selections.json
 /docs/
 /node_modules/
+/veda-pid
