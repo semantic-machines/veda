@@ -1038,7 +1038,11 @@ jsWorkflow.ready = jsPlumb.ready;
             
             $('.zoom-default').on('click', function() {            	
             	instance.optimizeView();
-            });            
+            });
+            
+            $('#full-width').on('click', function() {            	
+            	instance.optimizeView();
+            });          
             /* ZOOM [END] */
 
             /* NET MENU [END] */
