@@ -475,6 +475,10 @@ path {
 	cursor: pointer;
 }
 
+.properties-editor-add-button {
+	cursor: pointer;
+}
+
 .aLabel {
 	display: none;
 }
@@ -550,4 +554,8 @@ svg.process-path-highlight path
 	stroke-width:2;
 }
 
+.properties-editor {
+	
+/*	width: auto 100% !important; */
+}
 /* [END] NET EDITOR */

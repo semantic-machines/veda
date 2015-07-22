@@ -288,7 +288,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     	var holder = $("<div>");
                     	if (about['rdf:type'][0].id == 'v-wf:Task') 
                     	{
-                    		about.present(holder, new veda.IndividualModel("v-wf:TaskTemplate"), 'edit');
+                    		about.present(holder, new veda.IndividualModel("v-wf:TaskTemplateAsProperties"), 'edit');
                     	} else {
                     		about.present(holder);
                     	}
@@ -362,6 +362,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                });
                 }
                 if (mode=='edit') {
+                	/*
 	                windows.bind("contextmenu", function(e) {
 	                	var _this = this,
 	                	    menu = $("#workflow-context-menu ul");
@@ -499,6 +500,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                	});
 	                	return false;
 	                });
+	                */
 	
 	                windows.bind("dblclick", function() {
 	                    var _this = this;
@@ -707,11 +709,13 @@ jsWorkflow.ready = jsPlumb.ready;
                 var individualV = new veda.IndividualModel(); // create individual (Variable) 
                 individualV.defineProperty("rdf:type");
                 individualV.defineProperty("rdfs:label");
-                individualV.defineProperty("v-wf:variableName");
+                individualV.defineProperty("v-wf:varDefineName");
+                individualV.defineProperty("v-wf:varDefineScope");
                 
-           		individualV["rdf:type"] = [veda.ontology["v-wf:Variable"]];
+           		individualV["rdf:type"] = [veda.ontology["v-wf:VarDefine"]];
                 individualV['rdfs:label'] = ['Variable `'+variableName+'`'];
-                individualV['v-wf:variableName'] = [variableName];
+                individualV['v-wf:varDefineName'] = [variableName];
+                individualV['v-wf:varDefineScope'] = [net];
                 
                 var individualM = new veda.IndividualModel(); // create individual (Mapping)
                 
@@ -723,15 +727,14 @@ jsWorkflow.ready = jsPlumb.ready;
            		individualM["v-wf:mapToVariable"] = [individualV];
                 individualM['v-wf:mappingExpression'] = ["context.getVariableValue ('"+variableName+"')"];
                 
-                if (type=='input') {
-                	var state = veda.IndividualModel(stateId);
+            	var state = new veda.IndividualModel(stateId);
+           		state[type] = (state[type] === undefined)?[individualM]:state[type].concat([individualM]); // <- Add new Mapping to State
+                if (type=='v-wf:startingMapping') {
                		state['v-wf:inputVariable'] = (state['v-wf:inputVariable'] === undefined)?[individualV]:state['v-wf:inputVariable'].concat([individualV]); // <- Add new Varibale to State
-               		state['v-wf:startingMapping'] = (state['v-wf:startingMapping'] === undefined)?[individualM]:state['v-wf:startingMapping'].concat([individualM]); // <- Add new Mapping to State
                 }
-                if (type=='output') {
-                	var state = veda.IndividualModel(stateId);
+                if (type=='v-wf:completedMapping') {
+                	var state = new veda.IndividualModel(stateId);
                		state['v-wf:outputVariable'] = (state['v-wf:outputVariable'] === undefined)?[individualV]:state['v-wf:outputVariable'].concat([individualV]); // <- Add new Varibale to State
-               		state['v-wf:completedMapping'] = (state['v-wf:completedMapping'] === undefined)?[individualM]:state['v-wf:completedMapping'].concat([individualM]); // <- Add new Mapping to State
                 }
             };
             
@@ -917,20 +920,28 @@ jsWorkflow.ready = jsPlumb.ready;
             
             /* NET MENU [BEGIN] */
             $('#workflow-save-button').on('click', function() {
-            	// TODO REFACTOR - recursive save (based on type checking)
-           	  net.save();
+              // TODO REFACTOR - recursive save (based on type checking)
         	  if (net.hasValue('v-wf:consistsOf')) {
         		  net['v-wf:consistsOf'].forEach(function(el) {
-            		if (el.hasValue('v-wf:inputVariable')) {
-                		el['v-wf:inputVariable'].forEach(function(v) {
-                			v.save();
-                		});
-            		}
-            		if (el.hasValue('v-wf:startingMapping')) {
-            			el['v-wf:startingMapping'].forEach(function(m) {
-            				m.save();
-            			});
-            		}
+        			function saveMapping(mapping, el) 
+        			{
+	            		if (el.hasValue(mapping)) {
+	            			el[mapping].forEach(function(m) {
+	            				if (m.hasValue('v-wf:mapToVariable')) {
+	            					m['v-wf:mapToVariable'].forEach(function(v) {
+	                        			v.save();
+	                        		});
+	            				}
+	            				m.save();
+	            			});
+	            		}
+        			}
+        			saveMapping('v-wf:startingMapping', el);
+        			saveMapping('v-wf:completedMapping', el);
+        			saveMapping('v-wf:startingExecutorJournalMap', el);
+        			saveMapping('v-wf:completedExecutorJournalMap', el);
+        			saveMapping('v-wf:startingJournalMap', el);
+        			saveMapping('v-wf:completedJournalMap', el);
             		if (el.hasValue('v-wf:executor')) {
             			el['v-wf:executor'].forEach(function(e) {
             				e.save();
@@ -939,6 +950,7 @@ jsWorkflow.ready = jsPlumb.ready;
             		el.save();
         		 });
         	  }
+        	  net.save();
             });
             
             $('#workflow-export-ttl').on('click', function() {
