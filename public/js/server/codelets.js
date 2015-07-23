@@ -36,6 +36,21 @@ function restore_right(process, task)
     };
 }
 
+function is_exists_net_executor (process)
+{
+	var res = process.getExecutor () !== undefined;
+	
+	    var res_out = {
+        'res':
+        {
+            data: res,
+            type: _Bool
+        }
+    };
+
+    return res_out;
+}
+
 function is_in_docflow_and_set_if_true(process, task)
 {
     var res = false;

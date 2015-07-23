@@ -304,6 +304,16 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
     return new_vars;
 }
 //////////////////////////////////////////////////////////////////////////
+function is_exists_result(data)
+{
+    for (var i = 0; i < data.length; i++)
+    {
+        if (data[i].result)
+            return true;
+    }
+
+    return false;
+}
 
 function is_all_executors_taken_decision(data, decision)
 {
@@ -717,4 +727,93 @@ function mapToJournal(map_container, ticket, _process, _task, _order)
             logToJournal(ticket, jornal_uri, new_journal_record);
         }
     }
+}
+
+function create_new_subprocess (ticket, f_useSubNet, f_executor, parent_net, f_inVars, document)
+{
+				var parent_process = document['@'];
+
+                var use_net;
+
+                if (f_useSubNet)
+                    use_net = f_useSubNet;
+                else
+                    use_net = f_executor;
+
+                print("[WORKFLOW][WO2.4] executor= " + getUri(f_executor) + " used net= " + getUri(use_net));
+
+                //var ctx = new Context(work_item, ticket);
+                //ctx.print_variables ('v-wf:inVars');
+                var _started_net = get_individual(ticket, getUri(use_net));
+                if (_started_net)
+                {
+                    var new_process_uri = guid();
+
+                    var new_process = {
+                        '@': new_process_uri,
+                        'rdf:type': [
+                            {
+                                data: 'v-wf:Process',
+                                type: _Uri
+      }],
+                        'v-wf:instanceOf': use_net,
+                        'v-wf:parentWorkOrder': [
+                            {
+                                data: parent_process,
+                                type: _Uri
+      }]
+                    };
+
+                    var msg = "экземпляр маршрута :" + getFirstValue(_started_net['rdfs:label']) + ", запущен из " + getFirstValue(parent_net['rdfs:label'])
+
+                    if (f_useSubNet)
+                        msg += ", для " + getUri(f_executor);
+
+                    new_process['rdfs:label'] = [
+                        {
+                            data: msg,
+                            type: _String
+                  }];
+
+                    // возьмем входные переменные WorkItem	и добавим их процессу
+                    if (f_inVars)
+                        new_process['v-wf:inVars'] = f_inVars;
+
+                    if (f_useSubNet)
+                        new_process['v-wf:executor'] = f_executor;
+
+                    print("new_process=", toJson(new_process));
+                    put_individual(ticket, new_process, _event_id);
+
+                    create_new_journal(ticket, new_process_uri, _started_net['rdfs:label']);
+
+                    var journal_uri = getJournalUri(_process['@']);
+                    var new_journal_record = newJournalRecord(journal_uri);
+
+                    new_journal_record['rdf:type'] = [
+                        {
+                            data: 'v-wf:SubProcessStarted',
+                            type: _Uri
+     }];
+                    new_journal_record['rdfs:label'] = [
+                        {
+                            data: 'запущен подпроцесс',
+                            type: _String
+     }];
+                    new_journal_record['v-s:subJournal'] = [
+                        {
+                            data: getJournalUri(new_process_uri),
+                            type: _Uri
+     }];
+                    logToJournal(ticket, journal_uri, new_journal_record);
+
+                    document['v-wf:isProcess'] = [
+                        {
+                            data: new_process_uri,
+                            type: _Uri
+     }];
+                    put_individual(ticket, document, _event_id);
+
+                }
+	
 }

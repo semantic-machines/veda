@@ -90,7 +90,7 @@ vdi:index_02
   vdi:forClass v-s:Membership ;
   vdi:forClass v-wf:Variable ;
   vdi:forClass v-s:PermissionStatement ;
-  vdi:forClass mnd-wf:ComplexRouteStartForm ;
+#  vdi:forClass mnd-wf:ComplexRouteStartForm ;
   vdi:forClass v-s:Journal ;
   vdi:forClass v-s:JournalRecord ;
   vdi:indexed_to "not-indexed" ;
