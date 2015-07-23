@@ -475,6 +475,10 @@ path {
 	cursor: pointer;
 }
 
+.properties-editor-add-button {
+	cursor: pointer;
+}
+
 .aLabel {
 	display: none;
 }
@@ -485,9 +489,9 @@ path {
 
 
 .calculated-height {
-    height: -moz-calc(100% - 50px - 21px);
-    height: -webkit-calc(100% - 50px - 21px);
-    height: calc(100% - 50px - 21px);
+    height: -moz-calc(100% - 50px - 23px);
+    height: -webkit-calc(100% - 50px - 23px);
+    height: calc(100% - 50px - 23px);
 }​
 
 .split-join {
@@ -550,4 +554,8 @@ svg.process-path-highlight path
 	stroke-width:2;
 }
 
+.properties-editor {
+	
+/*	width: auto 100% !important; */
+}
 /* [END] NET EDITOR */

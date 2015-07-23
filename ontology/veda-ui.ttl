@@ -443,7 +443,12 @@ v-ui:LabelTemplate
   rdfs:label "Шаблон с меткой"@ru ;
   rdfs:label "Template with label"@en ;
   v-ui:template """
-  <span><span property="rdfs:label"></span></span>
+  <span><span id="label" property="rdfs:label"></span></span>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+  	  $("#label", template).text(individual.id);
+    }
+  </script>
   """ ;
 .
 v-ui:ClassNameLabelTemplate

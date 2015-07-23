@@ -227,7 +227,7 @@ jsWorkflow.ready = jsPlumb.ready;
              	}).appendTo($state);
             };
             
-            updateSVGBackground = function(item) {
+            instance.updateSVGBackground = function(item) {
                 var svgBackground = "";
                 if (item.hasClass('split-and')) {
                     svgBackground += "<line x1='80' y1='25' x2='100' y2='0' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='80' y1='0' x2='80' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' /><line x1='80' y1='25' x2='100' y2='50' style='stroke:rgb(0,0,0); stroke-width:1' />";
@@ -251,11 +251,11 @@ jsWorkflow.ready = jsPlumb.ready;
                 item.css('background', svgBackground);
             };
             
-            showProcessRunPath = function(workItem, depth) {
+            instance.showProcessRunPath = function(workItem, depth) {
             	if (workItem.hasValue('v-wf:previousWorkItem')) {
             		workItem['v-wf:previousWorkItem'].forEach(function(previousWorkItem) {
             			if (workItem.hasValue('v-wf:forNetElement') && previousWorkItem.hasValue('v-wf:forNetElement')) {
-            				showProcessRunPath(previousWorkItem, depth+1);
+            				instance.showProcessRunPath(previousWorkItem, depth+1);
             				instance.select({target:workItem['v-wf:forNetElement'][0].id, source:previousWorkItem['v-wf:forNetElement'][0].id}).each(function(e) {
             					e.addClass('process-path-highlight');
             					e.setLabel(((e.getLabel()!='')?e.getLabel()+',':'')+(max_process_depth-depth));
@@ -282,10 +282,16 @@ jsWorkflow.ready = jsPlumb.ready;
                     selectedElementId = _this.id;
                 	selectedElementType = 'state';
                     currentElement.addClass('w_active');
-                    if (mode=='edit') {
+                    if (mode=='edit') 
+                    {
                     	var about = new veda.IndividualModel(_this.id);
                     	var holder = $("<div>");
-                    	about.present(holder, undefined, "edit");
+                    	if (about['rdf:type'][0].id == 'v-wf:Task') 
+                    	{
+                    		about.present(holder, new veda.IndividualModel("v-wf:TaskTemplateAsProperties"), 'edit');
+                    	} else {
+                    		about.present(holder);
+                    	}
                     	props.append(holder);
                     	if ( about.hasValue("rdfs:label") ) propsHead.text(about["rdfs:label"].join(", "));
                     	else propsHead.text(about.id);
@@ -309,7 +315,7 @@ jsWorkflow.ready = jsPlumb.ready;
     	                	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
     	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"' && 'v-wf:forNetElement'=='"+_this.id+"'");
     	                	for (var el in s.results) {
-   	                	    	showProcessRunPath(s.results[el], 0);
+   	                	    	instance.showProcessRunPath(s.results[el], 0);
    	                	    	var holder = $("<div>");
    	                	    	s.results[el].present(holder, new veda.IndividualModel("v-wf:WorkItemTemplate"));
    	                	    	props.append(holder);
@@ -338,7 +344,7 @@ jsWorkflow.ready = jsPlumb.ready;
 										event.preventDefault();
 										props.empty();
 										$("#workflow-context-menu").hide();
-										showProcessRunPath(wi, 0);
+										instance.showProcessRunPath(wi, 0);
 										var holder = $("<div>");
 										wi.present(holder, new veda.IndividualModel("v-wf:WorkItemTemplate"));
 										props.append(holder);
@@ -356,6 +362,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                });
                 }
                 if (mode=='edit') {
+                	/*
 	                windows.bind("contextmenu", function(e) {
 	                	var _this = this,
 	                	    menu = $("#workflow-context-menu ul");
@@ -493,6 +500,7 @@ jsWorkflow.ready = jsPlumb.ready;
 	                	});
 	                	return false;
 	                });
+	                */
 	
 	                windows.bind("dblclick", function() {
 	                    var _this = this;
@@ -673,7 +681,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 	var $state = $('#' + veda.Util.escape4$(state.id));
                 	bindStateEvents($state);
                 	if (mode=='edit') subNetViewButton(state, $state);
-                	updateSVGBackground($state);
+                	instance.updateSVGBackground($state);
             	}
             };
             
@@ -701,11 +709,13 @@ jsWorkflow.ready = jsPlumb.ready;
                 var individualV = new veda.IndividualModel(); // create individual (Variable) 
                 individualV.defineProperty("rdf:type");
                 individualV.defineProperty("rdfs:label");
-                individualV.defineProperty("v-wf:variableName");
+                individualV.defineProperty("v-wf:varDefineName");
+                individualV.defineProperty("v-wf:varDefineScope");
                 
-           		individualV["rdf:type"] = [veda.ontology["v-wf:Variable"]];
+           		individualV["rdf:type"] = [veda.ontology["v-wf:VarDefine"]];
                 individualV['rdfs:label'] = ['Variable `'+variableName+'`'];
-                individualV['v-wf:variableName'] = [variableName];
+                individualV['v-wf:varDefineName'] = [variableName];
+                individualV['v-wf:varDefineScope'] = [net];
                 
                 var individualM = new veda.IndividualModel(); // create individual (Mapping)
                 
@@ -717,15 +727,14 @@ jsWorkflow.ready = jsPlumb.ready;
            		individualM["v-wf:mapToVariable"] = [individualV];
                 individualM['v-wf:mappingExpression'] = ["context.getVariableValue ('"+variableName+"')"];
                 
-                if (type=='input') {
-                	var state = veda.IndividualModel(stateId);
+            	var state = new veda.IndividualModel(stateId);
+           		state[type] = (state[type] === undefined)?[individualM]:state[type].concat([individualM]); // <- Add new Mapping to State
+                if (type=='v-wf:startingMapping') {
                		state['v-wf:inputVariable'] = (state['v-wf:inputVariable'] === undefined)?[individualV]:state['v-wf:inputVariable'].concat([individualV]); // <- Add new Varibale to State
-               		state['v-wf:startingMapping'] = (state['v-wf:startingMapping'] === undefined)?[individualM]:state['v-wf:startingMapping'].concat([individualM]); // <- Add new Mapping to State
                 }
-                if (type=='output') {
-                	var state = veda.IndividualModel(stateId);
+                if (type=='v-wf:completedMapping') {
+                	var state = new veda.IndividualModel(stateId);
                		state['v-wf:outputVariable'] = (state['v-wf:outputVariable'] === undefined)?[individualV]:state['v-wf:outputVariable'].concat([individualV]); // <- Add new Varibale to State
-               		state['v-wf:completedMapping'] = (state['v-wf:completedMapping'] === undefined)?[individualM]:state['v-wf:completedMapping'].concat([individualM]); // <- Add new Mapping to State
                 }
             };
             
@@ -911,20 +920,28 @@ jsWorkflow.ready = jsPlumb.ready;
             
             /* NET MENU [BEGIN] */
             $('#workflow-save-button').on('click', function() {
-            	// TODO REFACTOR - recursive save (based on type checking)
-           	  net.save();
+              // TODO REFACTOR - recursive save (based on type checking)
         	  if (net.hasValue('v-wf:consistsOf')) {
         		  net['v-wf:consistsOf'].forEach(function(el) {
-            		if (el.hasValue('v-wf:inputVariable')) {
-                		el['v-wf:inputVariable'].forEach(function(v) {
-                			v.save();
-                		});
-            		}
-            		if (el.hasValue('v-wf:startingMapping')) {
-            			el['v-wf:startingMapping'].forEach(function(m) {
-            				m.save();
-            			});
-            		}
+        			function saveMapping(mapping, el) 
+        			{
+	            		if (el.hasValue(mapping)) {
+	            			el[mapping].forEach(function(m) {
+	            				if (m.hasValue('v-wf:mapToVariable')) {
+	            					m['v-wf:mapToVariable'].forEach(function(v) {
+	                        			v.save();
+	                        		});
+	            				}
+	            				m.save();
+	            			});
+	            		}
+        			}
+        			saveMapping('v-wf:startingMapping', el);
+        			saveMapping('v-wf:completedMapping', el);
+        			saveMapping('v-wf:startingExecutorJournalMap', el);
+        			saveMapping('v-wf:completedExecutorJournalMap', el);
+        			saveMapping('v-wf:startingJournalMap', el);
+        			saveMapping('v-wf:completedJournalMap', el);
             		if (el.hasValue('v-wf:executor')) {
             			el['v-wf:executor'].forEach(function(e) {
             				e.save();
@@ -933,6 +950,7 @@ jsWorkflow.ready = jsPlumb.ready;
             		el.save();
         		 });
         	  }
+        	  net.save();
             });
             
             $('#workflow-export-ttl').on('click', function() {
@@ -993,6 +1011,10 @@ jsWorkflow.ready = jsPlumb.ready;
             	instance.createProcessView(process, true);
             });
             
+            $('.to-net-editor').on('click', function() {
+            	riot.route("#/individual/" + net.id + "/#main//edit", true);
+            });
+            
             /* ZOOM [BEGIN] */
             $('.zoom-in').on('click', function() {
             	if (net['currentScale']<1) return instance.changeScale(net['currentScale'] + 0.1);
@@ -1016,7 +1038,11 @@ jsWorkflow.ready = jsPlumb.ready;
             
             $('.zoom-default').on('click', function() {            	
             	instance.optimizeView();
-            });            
+            });
+            
+            $('#full-width').on('click', function() {            	
+            	instance.optimizeView();
+            });          
             /* ZOOM [END] */
 
             /* NET MENU [END] */
