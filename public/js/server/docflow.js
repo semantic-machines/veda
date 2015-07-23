@@ -119,8 +119,6 @@ function prepare_work_order(ticket, document)
         {
             print("[WORKFLOW][WO.2] executor not defined");
 
-            mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);
-
             if (!net_element['v-wf:completedMapping'])
             {
                 print("[WORKFLOW][WO W6] v-wf:completedMapping not defined=", net_element['@']);
@@ -145,9 +143,13 @@ function prepare_work_order(ticket, document)
                     type: _Uri
                 });
             }
+            else
+            {
+				//mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);				
+			}	
 
             if (task_output_vars.length > 0)
-            {
+            {				
                 document['v-wf:outVars'] = task_output_vars;
                 put_individual(ticket, document, _event_id);
             }
@@ -387,7 +389,18 @@ function prepare_work_order(ticket, document)
 
     if (is_goto_to_next_task)
     {
-        mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);
+		if (result.length > 0)
+		{
+		 if (result[0]['complete'])
+		 {
+			// если было пустое задание, то не журналируем
+		 }
+		 else
+		 {
+			print("[WORKFLOW][WO4.0.0] completedJournalMap");
+			mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);
+		 }
+		}	
 
         print("[WORKFLOW][WO4.1] is_goto_to_next_task == true");
         if (net_element['v-wf:completedMapping'])
@@ -607,8 +620,6 @@ function prepare_work_item(ticket, document)
     {
         print("[WORKFLOW]:Is task");
 
-        mapToJournal(netElement['v-wf:startingJournalMap'], ticket, _process, document);
-
         //* выполнить стартовый маппинг переменных	
         print("[PWI01.2] task: start mapping vars");
         var work_item__inVars = [];
@@ -680,6 +691,8 @@ function prepare_work_item(ticket, document)
         //* 	как индикатор для создания проходного(пустого) задания
         if (executor_list.length == 0)
             executor_list.push(null);
+        else
+            mapToJournal(netElement['v-wf:startingJournalMap'], ticket, _process, document);
 
         print("[PWI02] executor list =" + toJson(executor_list));
 

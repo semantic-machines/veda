@@ -961,14 +961,6 @@ td:ComplexRouteStartForm1
     v-wf:useTransformation mnd-wf:transformation2 ;
 .
 
-:d5fea50fe5b87544a8cfa069ca5d1679f v-s:dateTo "2016-01-01T00:00:00.000Z"^^xsd:dateTime;
-    v-s:dateFrom "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
-    a mnd-s-pdr:ObjectiveOfPdr.
-
-:d966ad08a80add1b5bd2c8a9997c9547f v-s:dateTo "2016-01-01T00:00:00.000Z"^^xsd:dateTime;
-    v-s:dateFrom "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
-    a mnd-s-pdr:ObjectiveOfPdr.
-
 mnd-s-pdr:PerformanceDevelopmentReview rdfs:subClassOf v-s:Document;
     a owl:Class;
     rdfs:label "Планирование и анализ достижения и развития"@ru.
@@ -978,11 +970,26 @@ td:CCIP v-s:parentUnit td:MondiSyktyvkar;
     v-s:childUnit td:ApplicationDevelopmentGroup;
     rdfs:label "Управление информационных технологий"@ru.
 
-:de6224bd385fa0248cfcc1248c41baaa1 v-s:dateTo "2016-01-01T00:00:00.000Z"^^xsd:dateTime;
+td:d5fea50fe5b87544a8cfa069ca5d1679f v-s:description "ее"^^xsd:string;
+    v-s:dateTo "2016-01-01T00:00:00.000Z"^^xsd:dateTime;
     v-s:dateFrom "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
-    a mnd-s-pdr:TrainingOfPdr.
+    a mnd-s-pdr:ObjectiveOfPdr;
+    mnd-s-pdr:unitOfMeasure "2"^^xsd:string.
 
-:d5ecd0a39041e9160f723ae960f3b86fe a mnd-s-pdr:Mobility;
+td:d966ad08a80add1b5bd2c8a9997c9547f v-s:description "цуцу"^^xsd:string;
+    v-s:dateTo "2016-01-01T00:00:00.000Z"^^xsd:dateTime;
+    v-s:dateFrom "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
+    a mnd-s-pdr:ObjectiveOfPdr;
+    mnd-s-pdr:unitOfMeasure "1"^^xsd:string.
+
+td:de6224bd385fa0248cfcc1248c41baaa1 mnd-s-pdr:hasPdrMethod mnd-s-pdr:de05a7c430cc5262a77e720961b7ac028;
+    v-s:dateTo "2016-01-01T00:00:00.000Z"^^xsd:dateTime;
+    mnd-s-pdr:developmentArea "гггг"^^xsd:string;
+    v-s:dateFrom "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
+    a mnd-s-pdr:TrainingOfPdr;
+    mnd-s-pdr:expectedResult "вввв"^^xsd:string.
+
+td:d5ecd0a39041e9160f723ae960f3b86fe a mnd-s-pdr:Mobility;
     rdfs:label "внутри страны с ограничениями"^^xsd:string.
 
 
