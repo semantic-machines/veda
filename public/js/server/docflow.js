@@ -640,7 +640,7 @@ function prepare_work_item(ticket, document)
                      print("[PWI01-1] executor=" + f_executor[i].data + ", script defined");
                     // определение исполнителей посредством скрипта
 
-                    var expression = getFirstValue(executor['v-s:script']);
+                    var expression = getFirstValue(executor['v-wf:executorExpression']);
                     if (!expression) return;
 
                      print(" expression=" + expression);
