@@ -73,9 +73,9 @@ function prepare_decision_form(ticket, document)
                  }];
         put_individual(ticket, document, _event_id);
 
-    //print("[WORKFLOW][DF1].5 completedExecutorJournalMap");
+        //print("[WORKFLOW][DF1].5 completedExecutorJournalMap");
         mapToJournal(net_element['v-wf:completedExecutorJournalMap'], ticket, _process, work_item, _work_order);
-    //print("[WORKFLOW][DF1].6 completedExecutorJournalMap");
+        //print("[WORKFLOW][DF1].6 completedExecutorJournalMap");
     }
 }
 
@@ -118,44 +118,44 @@ function prepare_work_order(ticket, document)
         if (!executor)
         {
             print("[WORKFLOW][WO.2] executor not defined");
-            
-             mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);
 
-             if (!net_element['v-wf:completedMapping'])
-             {
+            mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);
+
+            if (!net_element['v-wf:completedMapping'])
+            {
                 print("[WORKFLOW][WO W6] v-wf:completedMapping not defined=", net_element['@']);
                 task_output_vars.push(
                 {
                     data: 'v-wf:complete',
                     type: _Uri
                 });
-             }
-             else
-             {
+            }
+            else
+            {
                 // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
                 task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, null, true);
                 print("[WORKFLOW][WO.3] task_output_vars=", toJson(task_output_vars));
-             }
+            }
 
-             if (task_output_vars.length == 0)
-             {
+            if (task_output_vars.length == 0)
+            {
                 task_output_vars.push(
                 {
                     data: 'v-wf:complete',
                     type: _Uri
-                });				 				 
-		     }
+                });
+            }
 
-             if (task_output_vars.length > 0)
-             {
+            if (task_output_vars.length > 0)
+            {
                 document['v-wf:outVars'] = task_output_vars;
                 put_individual(ticket, document, _event_id);
-             }
+            }
         }
         else
-        {			
+        {
             if (is_exist(executor, 'rdf:type', 'v-s:Codelet'))
-            {				
+            {
                 print("[WORKFLOW][WO1.2] executor=" + getUri(f_executor) + ", is codelet");
 
                 var expression = getFirstValue(executor['v-s:script']);
@@ -303,8 +303,8 @@ function prepare_work_order(ticket, document)
             }
             if (is_exist(executor, 'rdf:type', 'v-wf:Net') || f_useSubNet)
             {
-				create_new_subprocess (ticket, f_useSubNet, f_executor, net_element, f_inVars, document);
-				
+                create_new_subprocess(ticket, f_useSubNet, f_executor, net_element, f_inVars, document);
+
                 print("[WORKFLOW][WO21-1]");
             }
         }
@@ -378,7 +378,7 @@ function prepare_work_order(ticket, document)
     if (result.length == workOrderList.length)
         is_goto_to_next_task = true;
     else
-		print("[WORKFLOW][WO4.0] не все задания выполнены, stop. result=", toJson (result), ", workOrderList=", toJson (workOrderList));
+        print("[WORKFLOW][WO4.0] не все задания выполнены, stop. result=", toJson(result), ", workOrderList=", toJson(workOrderList));
 
     // end //////////////// скрипт сборки результатов
     print("[WORKFLOW][WO4] result=" + toJson(result) + "");
@@ -610,7 +610,7 @@ function prepare_work_item(ticket, document)
         mapToJournal(netElement['v-wf:startingJournalMap'], ticket, _process, document);
 
         //* выполнить стартовый маппинг переменных	
-         print("[PWI01.2] task: start mapping vars");
+        print("[PWI01.2] task: start mapping vars");
         var work_item__inVars = [];
         if (netElement['v-wf:startingMapping'])
         {
@@ -637,13 +637,13 @@ function prepare_work_item(ticket, document)
 
                 if (is_exist(executor, 'rdf:type', 'v-wf:ExecutorDefinition'))
                 {
-                     print("[PWI01-1] executor=" + f_executor[i].data + ", script defined");
+                    print("[PWI01-1] executor=" + f_executor[i].data + ", script defined");
                     // определение исполнителей посредством скрипта
 
                     var expression = getFirstValue(executor['v-wf:executorExpression']);
                     if (!expression) return;
 
-                     print(" expression=" + expression);
+                    print(" expression=" + expression);
 
                     var task = new Context(document, ticket);
                     //            var net = new Context(_net, ticket);
@@ -652,7 +652,7 @@ function prepare_work_item(ticket, document)
 
                     var result = eval(expression);
 
-                     print(" task: result of v-wf:ExecutorDefinition=", toJson(result));
+                    print(" task: result of v-wf:ExecutorDefinition=", toJson(result));
 
                     if (result !== undefined && result.length > 0)
                     {
@@ -664,7 +664,7 @@ function prepare_work_item(ticket, document)
                 }
                 else
                 {
-                     print("[PWI01-2] executor=" + f_executor[i].data);
+                    print("[PWI01-2] executor=" + f_executor[i].data);
 
                     executor_list.push(f_executor[i]);
                 }
@@ -711,7 +711,7 @@ function prepare_work_item(ticket, document)
             if (executor_list[i] != null)
                 new_work_order['v-wf:executor'] = executor_list[i];
 
-			print("[PWI02-1] new order =" + toJson(new_work_order));
+            print("[PWI02-1] new order =" + toJson(new_work_order));
 
             work_order_list.push(new_work_order);
             work_order_uri_list.push(
@@ -719,7 +719,7 @@ function prepare_work_item(ticket, document)
                 data: new_work_order_uri,
                 type: _Uri
             });
-            
+
         }
 
         if (work_order_uri_list.length > 0)
@@ -740,7 +740,7 @@ function prepare_work_item(ticket, document)
     } // end [InputCondition]
     else if (is_exist(netElement, 'rdf:type', 'v-wf:OutputCondition'))
     {
-         print("[PWI]:Is output condition");
+        print("[PWI]:Is output condition");
         //var process = new Context(_process, ticket);
         //process.print_variables('v-wf:inVars');
         //process.print_variables('v-wf:outVars');
@@ -753,7 +753,7 @@ function prepare_work_item(ticket, document)
             {
                 if (!_net['v-wf:completedMapping'])
                 {
-                     print("[PWI] #6");
+                    print("[PWI] #6");
                     task_output_vars.push(
                     {
                         data: 'v-wf:complete',
@@ -762,14 +762,14 @@ function prepare_work_item(ticket, document)
                 }
                 else
                 {
-                     print("[PWI] #7");
+                    print("[PWI] #7");
                     // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
                     task_output_vars = create_and_mapping_variables(ticket, _net['v-wf:completedMapping'], _process, work_item, null, null, true);
                 }
 
                 if (task_output_vars.length > 0)
                 {
-                     print("[PWI] #8");
+                    print("[PWI] #8");
                     parent_work_order['v-wf:outVars'] = task_output_vars;
                     put_individual(ticket, parent_work_order, _event_id);
                 }
@@ -790,7 +790,7 @@ function prepare_work_item(ticket, document)
 
     if (is_goto_to_next_task == true)
     {
-         print(":Is inputCondition or Condition");
+        print(":Is inputCondition or Condition");
         var hasFlows = netElement['v-wf:hasFlow'];
         if (hasFlows)
         {
@@ -937,19 +937,19 @@ function prepare_process(ticket, document)
  */
 function prepare_start_form(ticket, document)
 {
-     print(":prepare_start_form #B, doc_id=" + document['@']);
+    print(":prepare_start_form #B, doc_id=" + document['@']);
 
-     var hasStatusWorkflowif = document['v-s:hasStatusWorkflow'];    
-     if (hasStatusWorkflowif)
-     {
-	if (getUri (hasStatusWorkflowif) != 'v-s:ToBeSent')
-	{
-    	    print("[WORKFLOW]:prepare_start_form, not ready to start.");
-	    return;
-	}    
-     }
+    var hasStatusWorkflowif = document['v-s:hasStatusWorkflow'];
+    if (hasStatusWorkflowif)
+    {
+        if (getUri(hasStatusWorkflowif) != 'v-s:ToBeSent')
+        {
+            print("[WORKFLOW]:prepare_start_form, not ready to start.");
+            return;
+        }
+    }
     else
-	return;	
+        return;
 
     if (document['v-wf:isProcess'])
     {
@@ -1006,11 +1006,11 @@ function prepare_start_form(ticket, document)
     var add_to_document = {
         '@': document['@'],
         'v-wf:isProcess': [
-        {
-            data: new_process_uri,
-            type: _Uri
-      }]    
-	};
+            {
+                data: new_process_uri,
+                type: _Uri
+      }]
+    };
     add_to_individual(ticket, add_to_document, _event_id);
 
     //print("[WORKFLOW]:new_process:" + new_process['@']);
