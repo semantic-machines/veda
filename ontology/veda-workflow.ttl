@@ -693,7 +693,13 @@ v-wf:TaskTemplateAsProperties
   		<td><span about="v-wf:executor" property="rdfs:label"></span></td>
   		<td about="@" rel="v-wf:executor">
   			<div>
+  				<span property="v-wf:executorExpression"></span>
+  				<span property="v-s:script"></span>
+  				<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+  				<!--
 				<veda-control type="string" property="v-wf:executorExpression" class="properties-editor"></veda-control>
+				<veda-control type="string" property="v-s:script" class="properties-editor"></veda-control>
+				-->
 			</div>
   		</td>
 	</tr>	 
