@@ -528,12 +528,11 @@ v-wf:ProcessTemplate
 			<h4>Элемент: <span id="props-head" property="rdfs:label"></span></h4><hr class="no-margin"/><br/>
 			<div id="props"></div>
 		</div>
+		<div id="workflow-context-menu" class="dropdown clearfix">
+    		<ul class="workflow-context-menu-list" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;">
+    		</ul>
+		</div>		
 	</div>
-</div>
-
-<div id="workflow-context-menu" class="dropdown clearfix">
-    <ul class="workflow-context-menu-list" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;">
-    </ul>
 </div>
 
 <script type="text/javascript">
@@ -696,10 +695,6 @@ v-wf:TaskTemplateAsProperties
   				<span property="v-wf:executorExpression"></span>
   				<span property="v-s:script"></span>
   				<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
-  				<!--
-				<veda-control type="string" property="v-wf:executorExpression" class="properties-editor"></veda-control>
-				<veda-control type="string" property="v-s:script" class="properties-editor"></veda-control>
-				-->
 			</div>
   		</td>
 	</tr>	 
@@ -716,7 +711,7 @@ v-wf:TaskTemplateAsProperties
 	<tr>
   		<td><span about="v-wf:localVariable" property="rdfs:label"></span></td>
   		<td about="@" rel="v-wf:localVariable">
-  			<div>
+  			<div>  			
   				<span about="@" property="v-wf:varDefineName"></span>
   				<veda-control type="string" property="v-wf:varDefineName" class="properties-editor"></veda-control>
   			</div>
