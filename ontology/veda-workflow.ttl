@@ -988,7 +988,9 @@ v-wf:TaskTemplateAsProperties
 		<td about="v-wf:hasFlow" property="rdfs:label"></td>
 		<td about="@" rel="v-wf:hasFlow">
 			<div>
-			    <span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span><a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+			    <span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span>
+			    [<span about="@" property="v-wf:predicate"></span>]
+			    <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
 			</div>
 		</td>
 	</tr>

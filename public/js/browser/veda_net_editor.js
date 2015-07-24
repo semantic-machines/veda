@@ -275,15 +275,24 @@ jsWorkflow.ready = jsPlumb.ready;
             bindStateEvents = function(windows) {
                 
                 windows.bind("click", function(e) {
-                    instance.defocus();
                 	
-                    var _this = this, currentElement = $(_this);
+                    var _this = this, currentElement = $(_this), alreadySelected = currentElement.hasClass('w_active');
                     
-                    selectedElementId = _this.id;
-                	selectedElementType = 'state';
-                    currentElement.addClass('w_active');
+                    if (!alreadySelected) {
+	                    instance.defocus();
+	                    
+	                    selectedElementId = _this.id;
+	                	selectedElementType = 'state';
+	                    currentElement.addClass('w_active');
+                    }
+                    
                     if (mode=='edit') 
                     {
+                    	e.stopPropagation();
+                    	if (alreadySelected) {
+                    		return; // do nothing when click on already selected element
+                    	}
+
                     	var about = new veda.IndividualModel(_this.id);
                     	var holder = $("<div>");
                     	if (about['rdf:type'][0].id == 'v-wf:Task') 
@@ -295,7 +304,6 @@ jsWorkflow.ready = jsPlumb.ready;
                     	props.append(holder);
                     	if ( about.hasValue("rdfs:label") ) propsHead.text(about["rdfs:label"].join(", "));
                     	else propsHead.text(about.id);
-                    	e.stopPropagation();
                     }
                     
                     
@@ -337,17 +345,18 @@ jsWorkflow.ready = jsPlumb.ready;
 		                	   left: e.pageX-((e.pageX+$contextMenu.width()>$( document ).width())?$contextMenu.width():0),
 		                	   top: e.pageY-((e.pageY+$contextMenu.height()>$( document ).height())?$contextMenu.height():0)
 		                	});
-                    	} else { 
-                        	e.stopPropagation();
-                        	var s = new veda.IndividualModel();
-    	                	s["rdf:type"]=[ veda.ontology["v-fs:Search"] ];
-    	                	s.search("'rdf:type' == 'v-wf:WorkItem' && 'v-wf:forProcess' == '"+process.id+"' && 'v-wf:forNetElement'=='"+_this.id+"'");
-    	                	for (var el in s.results) {
-   	                	    	instance.showProcessRunPath(s.results[el], 0);
+                    	} else {
+                    		e.stopPropagation();
+                        	if (alreadySelected) {
+                        		return; // do nothing when click on already selected element
+                        	}
+                        	$("[type='work-item']", _this).each(function() {
+                        		var wi = new veda.IndividualModel($(this).attr('work-item-id'));
+                        		instance.showProcessRunPath(wi, 0);
    	                	    	var holder = $("<div>");
-   	                	    	s.results[el].present(holder, new veda.IndividualModel("v-wf:WorkItemTemplate"));
+   	                	    	wi.present(holder, new veda.IndividualModel("v-wf:WorkItemTemplate"));
    	                	    	props.append(holder);
-    	                	}
+    	                	});
                     	}
                     }
                 });
