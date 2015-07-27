@@ -451,6 +451,21 @@ v-ui:LabelTemplate
   </script>
   """ ;
 .
+
+v-ui:LabelTemplateWithEditLink
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с меткой"@ru ;
+  rdfs:label "Template with label"@en ;
+  v-ui:template """  
+  <span><span id="label" property="rdfs:label"></span><a href="#/individual/@/#main//edit"><i class='glyphicon glyphicon-share-alt'></i></a></span>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+  	  $("#label", template).text(individual.id);
+    }
+  </script>
+  """ ;
+.
+
 v-ui:ClassNameLabelTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
