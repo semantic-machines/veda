@@ -566,8 +566,6 @@ v-wf:taskPropertySpecification1
   v-ui:forClass v-wf:Task ;
   v-ui:forProperty v-wf:locationX, v-wf:locationY ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Единичное числовое значение."@ru ;
-  v-ui:tooltip "Single integer value."@en ;
   v-ui:defaultIntegerValue "10"^^xsd:integer ;
 .
 v-wf:taskPropertySpecification2
@@ -577,8 +575,6 @@ v-wf:taskPropertySpecification2
   v-ui:forClass v-wf:Task ;
   v-ui:forProperty rdfs:comment ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Единичное строковое значение."@ru ;
-  v-ui:tooltip "Single string value."@en ;
 .
 v-wf:taskPropertySpecification3
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -586,7 +582,7 @@ v-wf:taskPropertySpecification3
   rdfs:label "Specification for join, split"@en ;
   v-ui:forClass v-wf:Task ;
   v-ui:forProperty v-wf:join, v-wf:split ;
-  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:optionObjectValue v-wf:AND ;
   v-ui:optionObjectValue v-wf:OR ;
   v-ui:optionObjectValue v-wf:XOR ;
@@ -599,9 +595,25 @@ v-wf:taskPropertySpecification4
   v-ui:forClass v-wf:Task ;
   v-ui:forProperty v-wf:expectedResultType ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Единичное значение. Ссылка на объект класса Класс."@ru ;
-  v-ui:tooltip "Single value. Link to instance of owl:Class"@en ;
   v-ui:queryPrefix "('rdf:type'=='owl:Class')"^^xsd:string ;
+.
+v-wf:taskPropertySpecification5
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация ожидаемого типа результата для класса Задача"@ru ;
+  rdfs:label "Expected result type property specification for Task class"@en ;
+  v-ui:forClass v-wf:Task ;
+  v-ui:forProperty v-wf:expectedResultType ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:queryPrefix "('rdf:type'=='owl:Class')"^^xsd:string ;
+.
+v-wf:taskPropertySpecification6
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация трансформаций для класса Задача"@ru ;
+  rdfs:label "Transform property specification for Task class"@en ;
+  v-ui:forClass v-wf:Task ;
+  v-ui:forProperty v-wf:startDecisionTransform, v-wf:completeDecisionTransform ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:queryPrefix "('rdf:type'=='v-wf:Transform')"^^xsd:string ;
 .
 v-wf:mappingPropertySpecification1
   rdf:type v-ui:StringPropertySpecification ;
@@ -610,8 +622,6 @@ v-wf:mappingPropertySpecification1
   v-ui:forClass v-wf:Mapping ;
   v-ui:forProperty v-wf:mappingExpression ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Единичное строковое значение."@ru ;
-  v-ui:tooltip "Single string value."@en ;
 .
 v-wf:variablesPropertySpecification1
   rdf:type v-ui:StringPropertySpecification ;
@@ -620,8 +630,6 @@ v-wf:variablesPropertySpecification1
   v-ui:forClass v-wf:VarDefine ;
   v-ui:forProperty v-wf:varDefineName ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Единичное строковое значение."@ru ;
-  v-ui:tooltip "Single string value."@en ;
 .
 v-wf:executorPropertySpecification1
   rdf:type v-ui:StringPropertySpecification ;
@@ -630,8 +638,6 @@ v-wf:executorPropertySpecification1
   v-ui:forClass v-wf:ExecutorDefinition ;
   v-ui:forProperty v-wf:executorExpression ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Единичное строковое значение."@ru ;
-  v-ui:tooltip "Single string value."@en ;
 .
 v-wf:TaskTemplateAsProperties
   rdf:type v-ui:ClassTemplate ;
@@ -648,36 +654,37 @@ v-wf:TaskTemplateAsProperties
   		<td><strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
   	  </tr>	 
   	</thead>
-	<tr>
+	<tr onclick="javascript: $('#VCjoin').show(); $('#viewVCjoin').hide();">
+  		<td><span about="v-wf:join" property="rdfs:label"></span></td>
+  		<td>
+			<div id="viewVCjoin" about="@" rel="v-wf:join" template="v-ui:LabelTemplate"></div>
+  			<veda-control id="VCjoin" rel="v-wf:join" type="objectSelect" class="-view edit search fulltext dropdown properties-editor" style="display:none;"></veda-control>
+  		</td>
+	</tr>
+	<tr onclick="javascript: $('#VCsplit').show(); $('#viewVCsplit').hide();">
+  		<td><span about="v-wf:split" property="rdfs:label"></span></td>
+  		<td>
+			<div id="viewVCsplit" about="@" rel="v-wf:split" template="v-ui:LabelTemplate"></div>
+  			<veda-control id="VCsplit" rel="v-wf:split" type="objectSelect" class="-view edit search fulltext dropdown properties-editor" style="display:none;"></veda-control>
+  		</td>
+	</tr>
+	<tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
+		<td about="rdfs:comment" property="rdfs:label"></td>
 		<td>
-			<div about="v-wf:join" property="rdfs:label"></div>
-			<div about="v-wf:split" property="rdfs:label"></div>
-		</td>	
-		<td>
-			<table class="table table-condensed " style="margin-bottom:0px;">
-			  <tr>
-				<td>
-					<div about="v-wf:join" property="rdfs:label"></div>
-					<veda-control rel="v-wf:join" type="objectRadio" template="v-ui:LabelTemplate"></veda-control>
-				</td>			
-				<td>
-					<div about="v-wf:split" property="rdfs:label"></div>
-					<veda-control rel="v-wf:split" type="objectRadio" template="v-ui:LabelTemplate"></veda-control>
-				</td>
-			  </tr>
-			</table>			
+			<div id="viewVCcomment" about="@" property="rdfs:comment"></div>
+			<veda-control id="VCcomment" type="string" property="rdfs:comment" class="-view edit properties-editor" style="display:none;"></veda-control>
 		</td>
 	</tr>
-	<tr>
-		<td about="rdfs:comment" property="rdfs:label"></td>
-		<td><veda-control type="string" property="rdfs:comment" class="properties-editor"></veda-control></td>
-	</tr>
-	<tr>
+	<tr onclick="javascript: $('#VCstartDecisionTransform').show();">
   		<td><span about="v-wf:startDecisionTransform" property="rdfs:label"></span></td>
-  		<td about="@" rel="v-wf:startDecisionTransform">
-  			<div>
-				<span about="@" property="@" template="v-ui:LabelTemplate"></span><a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
-			</div>
+  		<td>
+	  		<div about="@" rel="v-wf:startDecisionTransform">
+	  			<div>
+					<span about="@" property="@" template="v-ui:LabelTemplate"></span>
+					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+				</div>
+	  		</div>
+  			<veda-control id="VCstartDecisionTransform" rel="v-wf:startDecisionTransform" type="link" class="-view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   		</td>
 	</tr>	 
 	<tr>
@@ -701,7 +708,7 @@ v-wf:TaskTemplateAsProperties
 	<tr>
   		<td><span about="v-wf:expectedResultType" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control rel="v-wf:expectedResultType" type="link" class="-view edit search fulltext dropdown create properties-editor"></veda-control>
+  			<veda-control rel="v-wf:expectedResultType" type="link" class="-view edit search fulltext dropdown properties-editor"></veda-control>
   		</td>
 	</tr>
 	<tr>
@@ -988,7 +995,7 @@ v-wf:TaskTemplateAsProperties
 		<td about="v-wf:hasFlow" property="rdfs:label"></td>
 		<td about="@" rel="v-wf:hasFlow">
 			<div>
-			    <span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span>
+			    <strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
 			    [<span about="@" property="v-wf:predicate"></span>]
 			    <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
 			</div>
