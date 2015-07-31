@@ -643,11 +643,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		if (!isAbout) {
 			var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
-			var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
+			var btnRemove =$("<button class='btn btn-default button-delete'><span class='glyphicon glyphicon-remove'></span></button>");
 			wrapper.append(btnRemove);
 			
 			if (valTemplate.prop("tagName") !== "SPAN") {
 				wrapper.addClass("block");
+			}
+			if (valTemplate.attr("deleteButton") == "hide") {
+				btnRemove.hide();
 			}
 								
 			btnRemove.on("click", function () {
