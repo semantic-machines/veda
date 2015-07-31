@@ -886,7 +886,7 @@
 						//try { result = riot.render("{rdf:type.0.rdfs:label}: {rdfs:label}", individual); }
 						try { result = riot.render("{rdfs:label}", individual); }
 						catch (ex) { result = individual.id; }
-						return result;
+						return result==''?individual.id:result;
 					}
 				}
 			);
@@ -1114,16 +1114,18 @@
 			parser = opts.parser,
 			spec = opts.spec,
 			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1, 
+			isObligatory = spec && spec.hasValue("v-ui:minCardinality") && spec["v-ui:minCardinality"][0] == 1, 
 			optionProperty = opts.optionProperty,
 			select = $("select", control),
-			first_opt = $("option", control),
+		    first_opt = $("option", control),
 			template = new veda.IndividualModel( this.attr("template") || "v-ui:LabelTemplate" );
 		
 		function populate() {
 			if (spec && spec.hasValue(optionProperty)) {
-				select.empty().append(first_opt);
+				select.empty();
+				if (!isObligatory) { select.append(first_opt); }
 				spec[optionProperty].map(function (value) {
-					var opt = first_opt.clone().val(value.id).appendTo(select);
+					var opt = first_opt.clone().empty().val(value.id).appendTo(select);
 					value.present(opt, template, "view");
 					if (isSingle && individual.hasValue(rel_uri) && individual[rel_uri][0].id === value.id) {
 						opt.attr("selected", "true");
