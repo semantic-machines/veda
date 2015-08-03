@@ -683,7 +683,7 @@ v-wf:TaskTemplateAsProperties
   v-ui:forClass v-wf:Task ;
   v-ui:template """
 <div>
-  <table class="table table-condensed table-hover properties-editor">
+  <table id="taskTemplateProperties" class="table table-condensed table-hover properties-editor">
   	<thead>
   	  <tr>
   		<td style="width:25%"><span about="v-wf:NetElement" property="rdfs:label"></span></td>
@@ -705,24 +705,24 @@ v-wf:TaskTemplateAsProperties
   		</td>
 	</tr>
 	<tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
-		<td about="rdfs:comment" property="rdfs:label"></td>
+  		<td><span about="rdfs:comment" property="rdfs:label"></span></td>
 		<td>
 			<veda-control id="VCcomment" type="string" property="rdfs:comment" class="-view edit properties-editor" style="display:none;"></veda-control>
 			<div id="viewVCcomment" about="@" property="rdfs:comment"></div>
 		</td>
 	</tr>
 	<tr onclick="javascript: $('#VCstartDecisionTransform').show();">
-  		<td><span about="v-wf:startDecisionTransform" property="rdfs:label"></span></td>
+		<td><span about="v-wf:startDecisionTransform" property="rdfs:label"></span></td>
   		<td>
   			<veda-control id="VCstartDecisionTransform" about="@" rel="v-wf:startDecisionTransform" type="link" class="-view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-		    <span about="@" rel="v-wf:startDecisionTransform" template="v-ui:LabelTemplateWithEditLink"></span>
+		    <div about="@" rel="v-wf:startDecisionTransform" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
 	</tr>
 	<tr onclick="javascript: $('#VCcompleteDecisionTransform').show();">
-  		<td><span about="v-wf:completeDecisionTransform" property="rdfs:label"></span></td>
+		<td><span about="v-wf:completeDecisionTransform" property="rdfs:label"></span></td>
   		<td>
   			<veda-control id="VCcompleteDecisionTransform" about="@" rel="v-wf:completeDecisionTransform" type="link" class="-view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-		    <span about="@" rel="v-wf:completeDecisionTransform" template="v-ui:LabelTemplateWithEditLink"></span>
+		    <div about="@" rel="v-wf:completeDecisionTransform" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
 	</tr>
 	<tr onclick="javascript: $('#VCexecutor').show();">
@@ -938,6 +938,11 @@ v-wf:TaskTemplateAsProperties
     individual.off("individual:propertyModified");
   });
   
+  $('#taskTemplateProperties > tbody > tr > td > span[about]').each(function () {
+  	 if (!individual.hasValue($(this).attr('about'))) {
+  	 	$(this).parent().parent().appendTo($('#taskTemplateProperties'));
+  	 }
+  });
 </script>
   """ ;
   .

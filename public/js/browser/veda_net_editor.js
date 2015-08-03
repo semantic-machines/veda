@@ -169,7 +169,7 @@ jsWorkflow.ready = jsPlumb.ready;
             // Fill info panel on flow click
             instance.bind("click", function(transition) {
             	var _this = this;
-            	
+            	localStorage.setItem("workflow"+elementId+"-selectedElement", _this.id);
             	instance.defocus();
                 
                 transition.setPaintStyle({strokeStyle: "#FF0000"});
@@ -181,6 +181,18 @@ jsWorkflow.ready = jsPlumb.ready;
                 selectedElementId =  transition.id;
                 selectedElementType = 'flow';
                 selectedElementSourceId = transition.sourceId;
+                
+            	var about = new veda.IndividualModel(transition.id);
+            	var holder = $("<div>");
+            	if (about['rdf:type'][0].id == 'v-wf:') 
+            	{
+            		about.present(holder, new veda.IndividualModel("v-wf:FlowTemplate"), 'edit');
+            	} else {
+            		about.present(holder);
+            	}
+            	props.append(holder);
+            	if ( about.hasValue("rdfs:label") ) propsHead.text(about["rdfs:label"].join(", "));
+            	else propsHead.text(about.id);
             });
             
             instance.bind("beforeDetach", function(connection) {
@@ -277,7 +289,8 @@ jsWorkflow.ready = jsPlumb.ready;
                 windows.bind("click", function(e) {
                 	
                     var _this = this, currentElement = $(_this), alreadySelected = currentElement.hasClass('w_active');
-                    
+                	localStorage.setItem("workflow"+elementId+"-selectedElement", _this.id);
+
                     if (!alreadySelected) {
 	                    instance.defocus();
 	                    
@@ -774,7 +787,9 @@ jsWorkflow.ready = jsPlumb.ready;
             	instance.optimizeView();
             } else {
             	instance.changeScale(net['currentScale']);
-            }            	
+            }
+            
+            $('#'+veda.Util.escape4$(localStorage.getItem("workflow"+elementId+"-selectedElement"))).trigger("click");
             
             /* CONTEXT MENU [BEGIN] */
             var $contextMenu = $("#workflow-context-menu");
