@@ -145,11 +145,11 @@ function prepare_work_order(ticket, document)
             }
             else
             {
-				//mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);				
-			}	
+                //mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);				
+            }
 
             if (task_output_vars.length > 0)
-            {				
+            {
                 document['v-wf:outVars'] = task_output_vars;
                 put_individual(ticket, document, _event_id);
             }
@@ -288,9 +288,17 @@ function prepare_work_order(ticket, document)
 
                 var transform_result = transformation(ticket, work_item_inVars, transform, f_executor, newUri(document['@']));
 
+                var decisionFormList = [];
+
                 for (var i = 0; i < transform_result.length; i++)
                 {
                     put_individual(ticket, transform_result[i], _event_id);
+                    decisionFormList.push(
+                    {
+                        data: transform_result[i]['@'],
+                        type: _Uri
+                    });
+
                     // выдадим права отвечающему на эту форму
                     var employee = executor['v-s:employee'];
                     if (employee)
@@ -300,6 +308,12 @@ function prepare_work_order(ticket, document)
                         addRight(ticket, [can_read, can_update], employee[0].data, transform_result[i]['@']);
                     }
                 }
+
+                var add_to_document = {
+                    '@': document['@'],
+                    'v-wf:decisionFormList': decisionFormList
+                };
+                add_to_individual(ticket, add_to_document, _event_id);
 
                 print("[WORKFLOW][WO2.3] transform_result=" + toJson(transform_result));
             }
@@ -389,18 +403,18 @@ function prepare_work_order(ticket, document)
 
     if (is_goto_to_next_task)
     {
-		if (result.length > 0)
-		{
-		 if (result[0]['complete'])
-		 {
-			// если было пустое задание, то не журналируем
-		 }
-		 else
-		 {
-			print("[WORKFLOW][WO4.0.0] completedJournalMap");
-			mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);
-		 }
-		}	
+        if (result.length > 0)
+        {
+            if (result[0]['complete'])
+            {
+                // если было пустое задание, то не журналируем
+            }
+            else
+            {
+                print("[WORKFLOW][WO4.0.0] completedJournalMap");
+                mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);
+            }
+        }
 
         print("[WORKFLOW][WO4.1] is_goto_to_next_task == true");
         if (net_element['v-wf:completedMapping'])

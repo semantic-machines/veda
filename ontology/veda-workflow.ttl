@@ -61,7 +61,7 @@ v-wf:Task
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:subClassOf v-wf:NetElement ;	
 	rdfs:label "Task"@en ;
-	rdfs:label "Задача"@ru ;
+	rdfs:label "Задача"@ru ;	
 .
 v-wf:Flow
 	rdf:type owl:Class ;
@@ -985,7 +985,7 @@ v-wf:ProcessPropsTemplate
 v-wf:WorkItemTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Шаблон для класса -Рабочее задание-"@ru ;
+  rdfs:label "Шаблон для класса - Рабочий элемент"@ru ;
   rdfs:label "Template for Work order class"@en ;
   v-ui:forClass v-wf:WorkItem ;
   v-ui:template """
@@ -1061,6 +1061,10 @@ v-wf:WorkOrderTemplate
 		<em about="v-wf:executor" property="rdfs:label"></em>
 		<ul><li rel="v-wf:executor" template="v-ui:ClassNameLabelTemplate"></li></ul>
 	</div>
+	<div id="decisionFormList">
+		<em about="v-wf:decisionFormList" property="rdfs:label"></em>
+		<ul><li rel="v-wf:decisionFormList" template="v-ui:ClassNameLabelTemplate"></li></ul>
+	</div>
 	<div id="outVars">
 		<em about="v-wf:outVars" property="rdfs:label"></em>
 		<ul><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ul>
@@ -1072,6 +1076,7 @@ v-wf:WorkOrderTemplate
 	<br/>
 </div>
 <script>
+	if (!individual.hasValue("v-wf:decisionFormList")) $("#decisionFormList", template).remove();
 	if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
 	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
 	if (!individual.hasValue("v-wf:isProcess")) $("#isProcess", template).remove();
@@ -1412,6 +1417,12 @@ v-wf:useSubNet
 	rdfs:range v-wf:Net ;
 .
 
+v-wf:decisionFormList
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "список порожденных пользовательских форм"@ru ;
+	rdfs:domain v-wf:WorkOrder ;
+.
 # --------------------------- обработка событий => docflow ---------------------------------------
 v-wf:event_df1
 	rdf:type v-s:Event ;
