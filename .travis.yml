@@ -9,8 +9,7 @@ env:
     - secure: s1BV5JjhQIIdasowuMW2OqH5LjvN3tnU+sEGdz4HxWpHufgFUeNBVzu13S85qSxdch55lCyB4ft58PAX3q0wHFPYvBEwkvMlSFny7LeiytW9HZ/fkCG+Dwh6H6OEK1jKQriXZrYLQm4m6gnnAQYsUpDhxP12YejyyBbfaVW73Og=
 
 language: d
-d:
- - dmd
+d: dmd-2.066.1
 
 # Load all dependencies
 # Compile vibe-d before main project to prevent OutOfMemory issue
