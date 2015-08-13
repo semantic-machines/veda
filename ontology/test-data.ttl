@@ -992,5 +992,66 @@ td:de6224bd385fa0248cfcc1248c41baaa1 mnd-s-pdr:hasPdrMethod mnd-s-pdr:de05a7c430
 td:d5ecd0a39041e9160f723ae960f3b86fe a mnd-s-pdr:Mobility;
     rdfs:label "внутри страны с ограничениями"^^xsd:string.
 
+######################## сеть, пример 1 #######################
+
+:net1 
+    v-wf:consistsOf :net1-ic, :net1-oc, :net1-fl1;
+    rdfs:label "сеть, пример 1"^^xsd:string;
+    a v-wf:Net.
+
+:net1-ic 
+    v-wf:hasFlow :net1-fl1;
+    v-wf:locationX "0"^^xsd:integer;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:InputCondition;
+    rdfs:label "с1"^^xsd:string.
+
+:net1-oc 
+    v-wf:locationX "376"^^xsd:integer;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:OutputCondition;
+    rdfs:label "с2"^^xsd:string.
+
+:net1-fl1 
+    v-wf:flowsInto :net1-oc;
+    a v-wf:Flow;
+    rdfs:label ""^^xsd:string.
+
+######################## сеть, пример 2 #######################
+
+:net2 
+    v-wf:consistsOf :net2-ic, :net2-oc, :net2-fl1, :net2-t1, :net2-fl2;
+    rdfs:label "сеть, пример 2"^^xsd:string;
+    a v-wf:Net.
+
+:net2-ic 
+    v-wf:hasFlow :net2-fl1;
+    v-wf:locationX "0"^^xsd:integer;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:InputCondition;
+    rdfs:label "с1"^^xsd:string.
+
+:net2-fl1 
+    v-wf:flowsInto :net2-t1;
+    a v-wf:Flow;
+    rdfs:label ""^^xsd:string.
+
+:net2-t1  
+    v-wf:hasFlow :net2-fl2;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:Task;
+    rdfs:label "task 1"^^xsd:string;
+    v-wf:locationX "164"^^xsd:integer.
+
+:net2-fl2 v-wf:flowsInto :net2-oc;
+    a v-wf:Flow;
+    rdfs:label ""^^xsd:string.
+
+:net2-oc 
+    v-wf:locationX "376"^^xsd:integer;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:OutputCondition;
+    rdfs:label "с2"^^xsd:string.
+
 
 
