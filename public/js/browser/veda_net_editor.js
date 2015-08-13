@@ -558,71 +558,6 @@ jsWorkflow.ready = jsPlumb.ready;
             	}
             };
             
-            instance.addExecutorProperty = function(stateId) {
-            	
-                executorName = prompt("Enter name of the executor");
-                if (executorName==null) return;
-                
-                var individualE = new veda.IndividualModel(); // create individual (Executor) 
-                individualE.defineProperty("rdf:type");
-                individualE.defineProperty("rdfs:label");
-                individualE.defineProperty("v-s:script");
-                
-           		individualE["rdf:type"] = [veda.ontology["v-wf:ExecutorDefinition"]];
-                individualE['rdfs:label'] = ['Executor `'+executorName+'`'];
-                
-                var state = veda.IndividualModel(stateId);
-               	state['v-wf:executor'] = (state['v-wf:executor'] === undefined)?[individualE]:state['v-wf:executor'].concat([individualE]); // <- Add new Executor to State
-            };
-            
-            instance.addVarProperty = function(stateId, type) {            
-                variableName = prompt("Enter name of the variable");
-                if (variableName==null) return;
-                
-                var individualV = new veda.IndividualModel(); // create individual (Variable) 
-                individualV.defineProperty("rdf:type");
-                individualV.defineProperty("rdfs:label");
-                individualV.defineProperty("v-wf:varDefineName");
-                individualV.defineProperty("v-wf:varDefineScope");
-                
-           		individualV["rdf:type"] = [veda.ontology["v-wf:VarDefine"]];
-                individualV['rdfs:label'] = ['Variable `'+variableName+'`'];
-                individualV['v-wf:varDefineName'] = [variableName];
-                individualV['v-wf:varDefineScope'] = [net];
-                
-                var individualM = new veda.IndividualModel(); // create individual (Mapping)
-                
-                individualM.defineProperty("rdf:type");
-                individualM.defineProperty("v-wf:mapToVariable");
-                individualM.defineProperty("v-wf:mappingExpression");
-                
-           		individualM["rdf:type"] = [veda.ontology["v-wf:Mapping"]];
-           		individualM["v-wf:mapToVariable"] = [individualV];
-                individualM['v-wf:mappingExpression'] = ["context.getVariableValue ('"+variableName+"')"];
-                
-            	var state = new veda.IndividualModel(stateId);
-           		state[type] = (state[type] === undefined)?[individualM]:state[type].concat([individualM]); // <- Add new Mapping to State
-                if (type=='v-wf:startingMapping') {
-               		state['v-wf:inputVariable'] = (state['v-wf:inputVariable'] === undefined)?[individualV]:state['v-wf:inputVariable'].concat([individualV]); // <- Add new Varibale to State
-                }
-                if (type=='v-wf:completedMapping') {
-                	var state = new veda.IndividualModel(stateId);
-               		state['v-wf:outputVariable'] = (state['v-wf:outputVariable'] === undefined)?[individualV]:state['v-wf:outputVariable'].concat([individualV]); // <- Add new Varibale to State
-                }
-            };
-            
-            // Remove from state, defined by stateId, variable `varId` and its mapping `mapId`
-            instance.removeVarProperty = function(stateId, varId, mapId) {
-            	var state = veda.IndividualModel(stateId);
-           		state['v-wf:inputVariable'] = veda.Util.removeSubIndividual(state, 'v-wf:inputVariable', varId);
-           		state['v-wf:startingMapping'] = veda.Util.removeSubIndividual(state, 'v-wf:startingMapping', mapId);
-            };
-            
-            instance.removeExecutorProperty = function(stateId, executorId) {
-            	var state = veda.IndividualModel(stateId);   
-           		state['v-wf:executor'] = veda.Util.removeSubIndividual(state, 'v-wf:executor', executorId);
-            };
-            
             instance.deleteState = function(element) {
             	instance.detachAllConnections(element);
             	instance.remove(element);
@@ -639,10 +574,10 @@ jsWorkflow.ready = jsPlumb.ready;
             };
             
             instance.deleteFlow = function(flow, source) {
+	           	instance.detach(flow, {fireEvent:false, forceDetach: true});
 	          	net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', flow.id);
 	           	var source = new veda.IndividualModel(source.id);
 	       		source['v-wf:hasFlow'] = veda.Util.removeSubIndividual(source, 'v-wf:hasFlow', flow.id);
-	           	instance.detach(flow, {fireEvent:false});
             }
             
             /**
@@ -839,9 +774,7 @@ jsWorkflow.ready = jsPlumb.ready;
             $(".create-state").bind("click", function() {
                 var _this = this,
                         stateId,
-                        stateElement, 
-                        stateName = prompt("Enter name of the state");
-                if (stateName==null) return;
+                        stateElement;
                 var individual = new veda.IndividualModel(); // create individual (Task / Condition) 
                                 
                 individual.defineProperty("rdf:type");
@@ -849,7 +782,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 individual.defineProperty("v-wf:locationX");
                 individual.defineProperty("v-wf:locationY");
 
-                individual['rdfs:label'] = [stateName, ''];
+                individual['rdfs:label'] = ['', ''];
                 individual['v-wf:locationX'] = [new Number((-canvasSizePx/2-net['offsetX'])/net['currentScale'])];
                 individual['v-wf:locationY'] = [new Number((-canvasSizePx/2-net['offsetY'])/net['currentScale'])];
                 
@@ -879,7 +812,13 @@ jsWorkflow.ready = jsPlumb.ready;
                 }
                 if (selectedElementType == 'flow') {
 	                if (confirm('Delete flow ' + selectedElementId + ' ?')) {
-	                	instance.deleteFlow(instance.getSelector('#'+veda.Util.escape4$(selectedElementId))[0]);
+	                	instance.getConnections({
+	                		  source:selectedElementSourceId 
+	                	}).forEach(function(connection) {
+	                		if (connection.id == selectedElementId) {
+	                			instance.deleteFlow(connection, new veda.IndividualModel(selectedElementSourceId));
+	                		}
+	                	});
 	                }
                 }
             });
