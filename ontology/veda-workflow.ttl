@@ -1235,7 +1235,7 @@ v-wf:Transform
 .
 
 v-wf:transformRule
-        rdf:type rdf:Property ;
+        rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "правило преобразования"@ru ;
 	rdfs:domain v-wf:Transform ;
@@ -1249,21 +1249,21 @@ v-wf:Rule
 .
 
 v-wf:segregateObject
-        rdf:type rdf:Property ;
+        rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "выражение для выделения подмножества обьектов"@ru ;
 	rdfs:domain v-wf:Rule ;
         rdfs:range xsd:string ;
 .
 v-wf:segregateElement
-        rdf:type rdf:Property ;
+        rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "выражение для выделения подмножества элементов"@ru ;
 	rdfs:domain v-wf:Rule ;
         rdfs:range xsd:string ;
 .
 v-wf:conversion
-        rdf:type rdf:Property ;
+        rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "выражение для преобразования элемента"@ru ;
 	rdfs:domain v-wf:Rule ;
@@ -1271,7 +1271,7 @@ v-wf:conversion
 .
 
 v-wf:create
-        rdf:type rdf:Property ;
+        rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "выражение для создания обьекта"@ru ;
 	rdfs:domain v-wf:Rule ;
@@ -1279,7 +1279,7 @@ v-wf:create
 .
 
 v-wf:agregate
-        rdf:type rdf:Property ;
+        rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "выражение для размещения элемента в обьекте"@ru ;
 	rdfs:domain v-wf:Rule ;
@@ -1287,7 +1287,7 @@ v-wf:agregate
 .
 
 v-wf:grouping
-        rdf:type rdf:Property ;
+        rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "выражение для группировки созданных обьектов"@ru ;
 	rdfs:domain v-wf:Rule ;

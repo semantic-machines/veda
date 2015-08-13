@@ -95,7 +95,9 @@ function prepare_work_order(ticket, document)
     var work_item = get_individual(ticket, f_forWorkItem);
     if (!work_item) return;
 
-    var f_inVars = work_item['v-wf:inVars'];
+    var f_inVars = work_item['v-wf:inVars'];    
+    if (!f_inVars)
+	f_inVars = [];
 
     var forProcess_uri = getUri(work_item['v-wf:forProcess']);
     var _process = get_individual(ticket, forProcess_uri);
@@ -278,7 +280,7 @@ function prepare_work_order(ticket, document)
                 }
 
                 print("[WORKFLOW][WO2.0] transform_link=" + toJson(net_element['v-wf:startDecisionTransform']));
-                //print("[WORKFLOW][WO2.1] work_item_inVars=" + toJson(work_item_inVars));                
+                print("[WORKFLOW][WO2.1] work_item_inVars=" + toJson(work_item_inVars));                
                 mapToJournal(net_element['v-wf:startingExecutorJournalMap'], ticket, _process, work_item, _work_order);
 
                 var transform_link = getUri(net_element['v-wf:startDecisionTransform']);

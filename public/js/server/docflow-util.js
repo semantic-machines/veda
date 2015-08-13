@@ -423,7 +423,7 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                 var segregateElement = rules[i1]['v-wf:segregateElement'];
                 var grouping = rules[i1]['v-wf:grouping'];
 
-                var res;
+                var res = false;
 
                 if (segregateObject)
                 {
@@ -448,9 +448,12 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                     }
                 })();
 
-                res = eval(segregateElement[0].data);
-                if (res == false)
-                    continue;
+                if (segregateElement)
+                {
+            	    res = eval(segregateElement[0].data);
+            	    if (res == false)
+                	continue;
+		}
 
                 var getElement = (function ()
                 {

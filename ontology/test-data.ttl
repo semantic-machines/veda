@@ -1113,3 +1113,66 @@ td:d5ecd0a39041e9160f723ae960f3b86fe a mnd-s-pdr:Mobility;
     a v-wf:OutputCondition;
     rdfs:label "с2"^^xsd:string.
 
+######################## сеть, пример 4 #######################
+
+:start-form4 
+    a v-wf:StartForm;
+    v-s:hasStatusWorkflow v-s:DoNotSent;
+    rdfs:label "тест стартовой формы 4"@ru;
+    v-wf:forNet :net4 ;
+.
+
+:net4 
+    v-wf:consistsOf :net4-ic, :net4-oc, :net4-fl1, :net4-t1, :net4-fl2;
+    rdfs:label "сеть, пример 4"^^xsd:string;
+    a v-wf:Net.
+
+:net4-ic 
+    v-wf:hasFlow :net4-fl1;
+    v-wf:locationX "0"^^xsd:integer;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:InputCondition;
+    rdfs:label "с1"^^xsd:string.
+
+:net4-fl1 
+    v-wf:flowsInto :net4-t1;
+    a v-wf:Flow;
+    rdfs:label ""^^xsd:string.
+
+:net4-t1  
+    v-wf:hasFlow :net4-fl2;
+    v-wf:executor td:AndreyBychin-Analyst2;
+    v-wf:startDecisionTransform :net4-tr1;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:Task;
+    rdfs:label "задача 1"^^xsd:string;
+    v-wf:locationX "164"^^xsd:integer.
+
+:net4-fl2 v-wf:flowsInto :net4-oc;
+    a v-wf:Flow;
+    rdfs:label ""^^xsd:string.
+
+:net4-oc 
+    v-wf:locationX "376"^^xsd:integer;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:OutputCondition;
+    rdfs:label "с2"^^xsd:string.
+
+:net4-tr1
+        rdf:type v-wf:Transform ;
+    	rdfs:label "создание формы ответа на задачу, net4"^^xsd:string;
+	v-wf:transformRule :net4-tr1-r1 ;	
+.		
+
+:net4-tr1-r1
+	rdf:type v-wf:Rule ;
+	v-wf:segregateElement "contentName('@')" ;
+	v-wf:agregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
+	v-wf:agregate	"putUri ('rdf:type', 'mnd-wf:UserTaskForm')";
+	v-wf:agregate	"putString ('rdfs:label', 'задание')";
+	v-wf:agregate	"putBoolean ('v-wf:isCompleted', false)";
+	v-wf:agregate	"putExecutor ('v-wf:to')"; 	
+	v-wf:agregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
+	v-wf:agregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')"; 	
+	v-wf:agregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')"; 	
+.
