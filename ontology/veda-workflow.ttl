@@ -1159,6 +1159,11 @@ v-wf:StartForm
 	rdfs:label "Стартовая форма"@ru ;
 	rdfs:label "Start form"@en ;
 .
+
+v-s:StatusWorkflow
+	rdfs:domain v-wf:StartForm ;
+.
+
 v-wf:processedDocument
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1167,6 +1172,7 @@ v-wf:processedDocument
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-s:Document ;
 .
+
 v-wf:processInitiator
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1175,6 +1181,7 @@ v-wf:processInitiator
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-s:Appointment ;
 .
+
 v-wf:forNet
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;

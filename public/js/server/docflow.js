@@ -990,23 +990,24 @@ function prepare_start_form(ticket, document)
     var _net = get_individual(ticket, getUri(forNet));
     if (!_net) return;
 
-    var transform_link = getUri(document['v-wf:useTransformation']);
-    if (!transform_link) return;
-
-    var transform = get_individual(ticket, transform_link);
-    if (!transform) return;
-
-    // формируем входящие переменные для нового процесса
-    var process_inVars = transformation(ticket, document, transform, null, null);
     var new_vars = [];
-    for (var i = 0; i < process_inVars.length; i++)
+    var transform_link = getUri(document['v-wf:useTransformation']);
+    if (transform_link)
     {
-        put_individual(ticket, process_inVars[i], _event_id);
-        new_vars.push(
-        {
-            data: process_inVars[i]['@'],
-            type: _Uri
-        });
+	var transform = get_individual(ticket, transform_link);
+	if (!transform) return;
+
+	// формируем входящие переменные для нового процесса
+	var process_inVars = transformation(ticket, document, transform, null, null);
+	for (var i = 0; i < process_inVars.length; i++)
+	{
+    	put_individual(ticket, process_inVars[i], _event_id);
+    	new_vars.push(
+    	{
+    	    data: process_inVars[i]['@'],
+    	    type: _Uri
+    	});
+	}
     }
 
     var new_process = {
@@ -1023,7 +1024,7 @@ function prepare_start_form(ticket, document)
             data: "экземпляр маршрута :" + getFirstValue(_net['rdfs:label']),
             type: _String
       }];
-    if (process_inVars.length > 0) new_process['v-wf:inVars'] = new_vars;
+    if (new_vars.length > 0) new_process['v-wf:inVars'] = new_vars;
 
     put_individual(ticket, new_process, _event_id);
     print("new_process=", toJson(new_process));

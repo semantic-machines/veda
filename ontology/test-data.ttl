@@ -992,6 +992,15 @@ td:de6224bd385fa0248cfcc1248c41baaa1 mnd-s-pdr:hasPdrMethod mnd-s-pdr:de05a7c430
 td:d5ecd0a39041e9160f723ae960f3b86fe a mnd-s-pdr:Mobility;
     rdfs:label "внутри страны с ограничениями"^^xsd:string.
 
+###############################################################
+
+:start-form1 
+    a v-wf:StartForm;
+    v-s:hasStatusWorkflow v-s:DoNotSent;
+    rdfs:label "тест стартовой формы"@ru;
+    v-wf:forNet :net1 ;
+.
+
 ######################## сеть, пример 1 #######################
 
 :net1 
@@ -1052,6 +1061,3 @@ td:d5ecd0a39041e9160f723ae960f3b86fe a mnd-s-pdr:Mobility;
     v-wf:locationY "0"^^xsd:integer;
     a v-wf:OutputCondition;
     rdfs:label "с2"^^xsd:string.
-
-
-
