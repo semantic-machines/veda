@@ -733,6 +733,7 @@ v-wf:TaskTemplateAsProperties
 	  			<div>
 	  				<span property="v-wf:executorExpression"></span>
 	  				<span property="v-s:script"></span>
+	  				<span about="@" rel="v-s:employee" template="v-ui:LabelTemplate"></span>
 	  				<a href="#/individual/@/#main//edit"><i class='glyphicon glyphicon-share-alt'></i></a>
 				</div>
 			</div>	
