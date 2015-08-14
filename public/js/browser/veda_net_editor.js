@@ -580,19 +580,66 @@ jsWorkflow.ready = jsPlumb.ready;
 	       		source['v-wf:hasFlow'] = veda.Util.removeSubIndividual(source, 'v-wf:hasFlow', flow.id);
             }
             
+            
+            instance.createEmptyNetElement = function(type) {
+        		var individual = new veda.IndividualModel(); 
+                individual.defineProperty("rdf:type");
+                individual.defineProperty("rdfs:label");
+                individual.defineProperty("v-wf:locationX");
+                individual.defineProperty("v-wf:locationY");
+                
+                individual['rdfs:label'] = ['', ''];
+                individual['v-wf:locationX'] = [new Number((-canvasSizePx/2-net['offsetX'])/net['currentScale'])];
+                individual['v-wf:locationY'] = [new Number((-canvasSizePx/2-net['offsetY'])/net['currentScale'])];
+
+            	if (type=='condition') {
+               		individual["rdf:type"] = [veda.ontology["v-wf:Condition"]];
+                	instance.createState(individual);
+                } else if (type=='task') { 
+                    individual["rdf:type"] = [veda.ontology["v-wf:Task"]];
+                	instance.createState(individual);
+                } else if (type=='input') { 
+                    individual["rdf:type"] = [veda.ontology["v-wf:InputCondition"]];
+                	instance.createState(individual);
+                } else if (type=='output') { 
+                	individual['v-wf:locationX'] = [individual['v-wf:locationX'][0]+200];
+                    individual["rdf:type"] = [veda.ontology["v-wf:OutputCondition"]];
+                	instance.createState(individual);
+                }
+               	net['v-wf:consistsOf'] = (net['v-wf:consistsOf'] === undefined)?[individual]:net['v-wf:consistsOf'].concat([individual]);
+               	return individual;
+            }
+            
             /**
              *Create workflow Net by given Object (v-wf:Net individual).
              *@method createNetView A public method
              *@param {Object} workflowData A workflow object to create State transitions
-             */
+             */            
             instance.createNetView = function(net) {
             	$('#workflow-net-name').text(net['rdfs:label'][0]);
-            	// Create States
+            	// Create States            	
+            	var hasInput = false,
+            		hasOutput = false;
+            	
             	net['v-wf:consistsOf'].forEach(function(el) {
             		el['rdf:type'].forEach(function (type) {
             			instance.createState(el);
+            			if (el.hasValue('rdf:type') && el['rdf:type'][0].id == 'v-wf:InputCondition') {
+            				hasInput = true;
+            			}
+            			if (el.hasValue('rdf:type') && el['rdf:type'][0].id == 'v-wf:OutputCondition') {
+            				hasOutput = true;
+            			}
             		});
             	});
+            	
+            	// For empty net
+            	if (!hasInput) {
+                   	instance.createEmptyNetElement('input');
+            	}            	
+            	if (!hasOutput) {
+                   	instance.createEmptyNetElement('output');
+            	}            	
             	
             	// Create Flows
             	net['v-wf:consistsOf'].forEach(function(el) {
@@ -775,32 +822,8 @@ jsWorkflow.ready = jsPlumb.ready;
                 var _this = this,
                         stateId,
                         stateElement;
-                var individual = new veda.IndividualModel(); // create individual (Task / Condition) 
-                                
-                individual.defineProperty("rdf:type");
-                individual.defineProperty("rdfs:label");
-                individual.defineProperty("v-wf:locationX");
-                individual.defineProperty("v-wf:locationY");
-
-                individual['rdfs:label'] = ['', ''];
-                individual['v-wf:locationX'] = [new Number((-canvasSizePx/2-net['offsetX'])/net['currentScale'])];
-                individual['v-wf:locationY'] = [new Number((-canvasSizePx/2-net['offsetY'])/net['currentScale'])];
-                
-                if ($('#'+workflowData).find('#' + individual.id).length < 1) {
-
-                   	if ($(_this).hasClass('create-condition')) {
-                   		individual["rdf:type"] = [veda.ontology["v-wf:Condition"]];
-                    	instance.createState(individual);
-                    } else { 
-                        individual["rdf:type"] = [veda.ontology["v-wf:Task"]];
-                    	instance.createState(individual);
-                    }
-
-                   	net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]); // <- Add new State to Net	
-                    $('#' + individual.id).click();
-                } else {
-                    alert('This state is already present.');
-                }
+                var individual = instance.createEmptyNetElement($(_this).hasClass('create-condition')?'condition':'task');
+                $('#' + individual.id).click();
                 $(this).blur();
             });
 
