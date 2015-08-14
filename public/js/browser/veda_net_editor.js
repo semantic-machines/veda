@@ -239,6 +239,21 @@ jsWorkflow.ready = jsPlumb.ready;
              	}).appendTo($state);
             };
             
+            executorMark = function(state, $state) {
+            	if (!state.hasValue('v-wf:executor')) {
+            		return;
+            	}
+            	if (state['v-wf:executor'][0]['rdf:type'][0].id == 'v-s:Appointment') {
+	            	$("<span/>", {
+	            		 "class" : "glyphicon glyphicon-user"
+	             	}).appendTo($state);
+            	} else {
+	            	$("<span/>", {
+	            		 "class" : "glyphicon glyphicon-cog"
+	             	}).appendTo($state);
+            	}
+            };
+            
             instance.updateSVGBackground = function(item) {
                 var svgBackground = "";
                 if (item.hasClass('split-and')) {
@@ -554,6 +569,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 	var $state = $('#' + veda.Util.escape4$(state.id));
                 	bindStateEvents($state);
                 	if (mode=='edit') subNetViewButton(state, $state);
+                	executorMark(state, $state);
                 	instance.updateSVGBackground($state);
             	}
             };
