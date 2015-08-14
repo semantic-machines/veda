@@ -1167,12 +1167,12 @@ td:d5ecd0a39041e9160f723ae960f3b86fe a mnd-s-pdr:Mobility;
 :net4-tr1-r1
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
-	v-wf:agregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
-	v-wf:agregate	"putUri ('rdf:type', 'mnd-wf:UserTaskForm')";
-	v-wf:agregate	"putString ('rdfs:label', 'задание')";
-	v-wf:agregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:agregate	"putExecutor ('v-wf:to')"; 	
-	v-wf:agregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
-	v-wf:agregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')"; 	
-	v-wf:agregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'mnd-wf:UserTaskForm')";
+	v-wf:aggregate	"putString ('rdfs:label', 'задание')";
+	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
+	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
+	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
+	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')"; 	
+	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')"; 	
 .

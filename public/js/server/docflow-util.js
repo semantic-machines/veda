@@ -592,7 +592,7 @@ function transformation(ticket, _in_data, rule, executor, work_order)
 
                 //print("#9 segregateElement=", segregateElement[0].data);
 
-                // 3. v-wf:agregate
+                // 3. v-wf:aggregate
                 var group_key;
                 if (!grouping)
                 {
@@ -610,7 +610,7 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                     }
                 }
 
-                var agregate = rules[i1]['v-wf:agregate'];
+                var agregate = rules[i1]['v-wf:aggregate'];
                 for (var i2 = 0; i2 < agregate.length; i2++)
                 {
                     eval(agregate[i2].data);
