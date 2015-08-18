@@ -1,4 +1,4 @@
-# baseURI: http://semantic-machines.com/veda/veda-bundles
+# baseURI: http://semantic-machines.com/veda/veda-bundle
 # imports: http://semantic-machines.com/veda/veda-schema
 # imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
 # imports: http://www.w3.org/2000/01/rdf-schema#
@@ -10,9 +10,9 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix v-b: <http://semantic-machines.com/veda/veda-bundles/> .
+@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
 
-<http://semantic-machines.com/veda/veda-bundles>
+<http://semantic-machines.com/veda/veda-bundle>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system data index ontology"@en ;
   rdfs:label "Онтология индексирования данных системы Веда"@ru ;
