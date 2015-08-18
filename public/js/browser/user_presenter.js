@@ -2,24 +2,24 @@
 
 veda.Module(function UserPresenter(veda) { "use strict";
 
-	var template = $("#current-user-template").html();
+	var userTemplate = $("#user-template").html();
 	var languageTemplate = $("#language-template").html();
-	var container = $("#nav-container #user-info");
+	var userInfo = $("#user-info");
+	var languageSelector = $("#preferred-language");
 	
 	veda.on("started", function () {
-
-		container.empty().hide();
 
 		// Render languages
 		var languages = "";
 		Object.keys(veda.user.availableLanguages).map ( function (language_uri) {
 			languages += riot.render(languageTemplate, veda.user.availableLanguages[language_uri]);
 		});
+		languageSelector.html(languages);
 		
 		// Render user
-		container.html( riot.render(template, {user: veda.user, languages: languages}) );
-		
-		var $languages = $("#preferred-language > label", container);
+		userInfo.html( riot.render(userTemplate, {user: veda.user}) );
+
+		var $languages = $("label", languageSelector);
 		$languages.each( function() {
 			if (this.id in veda.user.language) $(this).addClass("active");
 			$(this).on("click", function() { 
@@ -27,8 +27,6 @@ veda.Module(function UserPresenter(veda) { "use strict";
 				this.id in veda.user.language ? $(this).addClass("active") : $(this).removeClass("active");
 			});
 		});
-
-		container.fadeIn(250);
 
 	});
 	

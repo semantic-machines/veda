@@ -2,10 +2,6 @@
   color: #333;
 }*/
 
-.navbar-right {
-  margin-right: inherit !important;
-}
-
 .popover {
   min-width: 300px !important;
   max-width: 400px;
@@ -14,7 +10,7 @@
 }
 
 #user-info {
-  margin-right:5px !important;
+  margin-right:10px !important;
 }
 
 .no-margin {

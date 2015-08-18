@@ -16,7 +16,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 
 	// Toggle tracing
 	$("#set-trace").on("click", function (e) {
-		var $el = $(this);
+		var $el = $(this).parent();
 		if ($el.hasClass("active")) { 
 			set_trace(0, false);
 			$el.removeClass("active");
@@ -48,11 +48,11 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			var page = hash_tokens[0];
 			var params = hash_tokens.slice(1);
 			if (page !== "") {
-				$("#menu > li").removeClass("active");
-				$("#menu > li#" + page).addClass("active");
+				$("#menu li").removeClass("active");
+				$("#menu li#" + page).addClass("active");
 				veda.load(page, params);
 			} else {
-				$("#menu > li").removeClass("active");
+				$("#menu li").removeClass("active");
 				$("#main").html( $("#wellcome-template").html() );
 			}
 		});

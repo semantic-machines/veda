@@ -38,40 +38,56 @@
 
 		<nav role="navigation" class="navbar navbar-inverse" id="navigation">
 			<div class="container-fluid" id="nav-container">
+				<button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+					<span class="glyphicon glyphicon-menu-hamburger"></span>
+				</button>
 				<a href="#/" class="navbar-brand"><img src="/img/veda-logo.png" style="position:relative; top:-3px"/></a>
 				<!--a href="#/" class="navbar-brand"><strong>veda</strong></a-->
-				<ul class="nav navbar-nav navbar-left" id="menu">
-					<li class="dropdown" id="individual">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Документ <span class="caret"></span></a>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="#/individual//#main//edit">Создать</a></li>
-							<li><a href="#/individual//#main//search">Найти</a></li>
-							<!--li class="divider"></li-->
-						</ul>
-					</li>
-					<li id="graph">	
-						<a i18n="[Graph]" href="#/graph">Граф</a>
-					</li>
-					<li id="console">	
-						<a i18n="[Console]" href="#/console">Консоль</a>
-					</li>
-					<li id="search">	
-						<a i18n="[Search]" href="#/search">Поиск</a>
-					</li>
-					<li id="tests">
-						<a i18n="[Tests]" href="/tests">Тесты</a>
-					</li>
-				</ul>
-				<a class="btn btn-xs btn-success navbar-btn navbar-left" id="set-trace">
-					<i class="glyphicon glyphicon-flash"></i> Trace
-				</a>
-				<a class="btn btn-xs btn-default navbar-btn navbar-left" id="clear-storage">
-					<i class="glyphicon glyphicon-trash"></i> Clear
-				</a>
-				<a class="btn btn-xs btn-danger navbar-btn navbar-right" id="logout">
-					<i class="glyphicon glyphicon-log-out"></i> <span i18n="[Logout]">Выйти</span>
-				</a>
-				<div id="user-info" class="navbar-right"></div>
+				<div class="collapse navbar-collapse" id="navbar-collapse">
+					<ul class="nav navbar-nav navbar-left" id="menu">
+						<li class="dropdown" id="individual">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Документ <span class="caret"></span></a>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="#/individual//#main//edit">Создать</a></li>
+								<li><a href="#/individual//#main//search">Найти</a></li>
+								<!--li class="divider"></li-->
+							</ul>
+						</li>
+						<li id="search">	
+							<a i18n="[Search]" href="#/search">Поиск</a>
+						</li>
+						<li class="dropdown" id="settings">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Настройки <span class="caret"></span></a>
+							<ul class="dropdown-menu" role="menu">
+								<li id="graph">	
+									<a i18n="[Graph]" href="#/graph">Граф</a>
+								</li>
+								<li id="console">	
+									<a i18n="[Console]" href="#/console">Консоль</a>
+								</li>
+								<li id="tests">
+									<a i18n="[Tests]" href="/tests">Тесты</a>
+								</li>
+								<li class="divider"></li>
+								<li>
+									<a id="set-trace">
+										<span class="glyphicon glyphicon-flash"></span> Trace
+									</a>
+								</li>
+								<li>
+									<a id="clear-storage">
+										<span class="glyphicon glyphicon-trash"></span> Clear
+									</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+					<button type="button" class="btn btn-xs btn-danger navbar-btn navbar-right" id="logout">
+						<span class="glyphicon glyphicon-log-out"></span>
+					</button>
+					<p id="user-info" class="navbar-text navbar-right"></p>
+					<div class="navbar-right btn-group" id="preferred-language"></div>
+				</div>
 			</div>
 		</nav>
 		
@@ -172,15 +188,11 @@
 		</script>	
 
 		<!-- Current user template -->
-		<script type="html/template" id="current-user-template">
-			<p class="navbar-text navbar-right">
-				<a href="#/individual/{user.id}/#main" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {user.rdfs:label}</a>
-			</p>
-			<div class="navbar-right btn-group" id="preferred-language">
-				{languages}
-			</div>
+		<script type="html/template" id="user-template">
+			<a href="#/individual/{user.id}/#main" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {user.rdfs:label}</a>
 		</script>
 
+		<!-- Language template -->
 		<script type="html/template" id="language-template">
 			<label id="{rdf:value.0}" class="btn btn-xs btn-info navbar-btn">
 				{rdfs:label}
