@@ -367,6 +367,22 @@ veda-control {
   position: absolute;
 }
 
+.view > #prop-actions.view,
+.edit > #prop-actions.edit,
+.search > #prop-actions.search
+{
+  visibility: visible;
+  position: relative;
+}
+
+.view > #prop-actions.-view,
+.edit > #prop-actions.-edit,
+.search > #prop-actions.-search
+{
+  visibility: hidden;
+  position: absolute;
+}
+
 
 /* [BEGIN] NET EDITOR */
 

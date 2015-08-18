@@ -551,7 +551,7 @@ td:PersonTemplate1
 		    <veda-control rel="v-ui:hasPreferences" type="link" class="-view edit search fulltext dropdown create"></veda-control>
           </div>
           <div class="col-md-6">
-            <div rel="v-s:hasAccount" template="td:AccountTemplate1" embedded="true">шаблон: td:AccountTemplate1</div>
+            <div rel="v-s:hasAccount" template="td:AccountTemplate1">шаблон: td:AccountTemplate1</div>
             <veda-control rel="v-s:hasAccount" type="link" class="-view edit search fulltext dropdown create"></veda-control>
           </div>
         </div>
@@ -725,13 +725,13 @@ td:PreferencesTemplate1
     <div>
       <strong about="v-ui:preferredLanguage" property="rdfs:label" class="text-muted">Язык</strong>:
       <ul>
-        <!--li rel="v-ui:preferredLanguage" template="v-ui:LabelTemplate"></li-->
-        <li rel="v-ui:preferredLanguage">
+        <li rel="v-ui:preferredLanguage" template="v-ui:LabelTemplate"></li>
+        <!--li rel="v-ui:preferredLanguage">
           <span>
 			  <span property="rdfs:label"></span>
 			  <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
 		  </span>
-        </li>
+        </li-->
       </ul>
       <veda-control rel="v-ui:preferredLanguage" type="link" class="-view edit search fullsearch fulltext"></veda-control>
       <strong about="v-ui:displayedElements" property="rdfs:label" class="text-muted">Отображать элементов</strong>: 

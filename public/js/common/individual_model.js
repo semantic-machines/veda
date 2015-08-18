@@ -125,7 +125,11 @@ veda.Module(function (veda) { "use strict";
 		
 		Object.defineProperty(self, property_uri, {
 			get: function () { 
-				if (self._.values[property_uri]) return self._.values[property_uri];
+				// TODO: performance issue?
+				/*if (self._.values[property_uri]) {
+					if (getterCB) getterCB(self._.values[property_uri]);
+					return self._.values[property_uri];
+				}*/
 				if (!self._.individual[property_uri]) self._.individual[property_uri] = [];
 				self._.values[property_uri] = self._.individual[property_uri].map( parser );
 				// Filter undesired language tagged strings && undefined values
