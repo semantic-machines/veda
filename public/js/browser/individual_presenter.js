@@ -392,7 +392,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			function propertyModifiedHandler(doc_property_uri) {
 				if (doc_property_uri === property_uri) {
 					if (property_uri === "@") propertyContainer.text( about.id );
-					else propertyContainer.text( about[property_uri].join(", ") );
+					else if (about[property_uri] !== undefined) propertyContainer.text( about[property_uri].join(", ") );
 				}
 			}
 			about.on("individual:propertyModified", propertyModifiedHandler);

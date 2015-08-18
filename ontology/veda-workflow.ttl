@@ -573,7 +573,7 @@ v-wf:taskPropertySpecification2
   rdfs:label "Спецификация свойства комментарий"@ru ;
   rdfs:label "Property specification for comment"@en ;
   v-ui:forClass v-wf:Task ;
-  v-ui:forProperty rdfs:comment ;
+  v-ui:forProperty rdfs:comment, rdfs:label ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
 .
 v-wf:taskPropertySpecification3
@@ -690,6 +690,13 @@ v-wf:TaskTemplateAsProperties
   		<td><strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
   	  </tr>	 
   	</thead>
+  	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
+  		<td><span about="rdfs:label" property="rdfs:label"></span></td>
+		<td>
+			<veda-control id="VClabel" type="string" property="rdfs:label" class="-view edit properties-editor" style="display:none;"></veda-control>
+			<div id="viewVClabel" about="@" property="rdfs:label"></div>
+		</td>
+	</tr>
 	<tr onclick="javascript: $('#VCjoin').show(); $('#viewVCjoin').hide();">
   		<td><span about="v-wf:join" property="rdfs:label"></span></td>
   		<td>
@@ -931,6 +938,10 @@ v-wf:TaskTemplateAsProperties
        $state.addClass(veda.net.getSplitJoinType('join', individual));
        $state.addClass(veda.net.getSplitJoinType('split', individual));
        veda.net.updateSVGBackground($state);
+    }
+    if (property_uri === "rdfs:label") {
+    	var $state = $('#' + veda.Util.escape4$(individual.id));
+    	$('.state-name', $state).html(values);    	
     }
   }
   individual.on("individual:propertyModified", handler);
