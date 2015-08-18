@@ -909,8 +909,6 @@
 			var tmpl = $("#search-modal-template").html();
 			fullsearch.on("click", function (e) {
 				var $modal = $(tmpl);
-				$("body").append($modal);
-				$modal.modal();
 				var srch = new veda.SearchModel(undefined, $(".modal-body", $modal), queryPrefix);
 				// Add found values
 				$("button#ok", $modal).on("click", function (e) {
@@ -924,6 +922,8 @@
 				$modal.on('hidden.bs.modal', function (e) {
 					$modal.remove();
 				});
+				$modal.modal();
+				$("body").append($modal);
 			});			
 		} else {
 			fullsearch.remove();
