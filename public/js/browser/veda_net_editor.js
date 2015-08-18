@@ -239,6 +239,21 @@ jsWorkflow.ready = jsPlumb.ready;
              	}).appendTo($state);
             };
             
+            executorMark = function(state, $state) {
+            	if (!state.hasValue('v-wf:executor')) {
+            		return;
+            	}
+            	if (state['v-wf:executor'][0]['rdf:type'][0].id == 'v-s:Appointment') {
+	            	$("<span/>", {
+	            		 "class" : "glyphicon glyphicon-user"
+	             	}).appendTo($state);
+            	} else {
+	            	$("<span/>", {
+	            		 "class" : "glyphicon glyphicon-cog"
+	             	}).appendTo($state);
+            	}
+            };
+            
             instance.updateSVGBackground = function(item) {
                 var svgBackground = "";
                 if (item.hasClass('split-and')) {
@@ -554,73 +569,9 @@ jsWorkflow.ready = jsPlumb.ready;
                 	var $state = $('#' + veda.Util.escape4$(state.id));
                 	bindStateEvents($state);
                 	if (mode=='edit') subNetViewButton(state, $state);
+                	executorMark(state, $state);
                 	instance.updateSVGBackground($state);
             	}
-            };
-            
-            instance.addExecutorProperty = function(stateId) {
-            	
-                executorName = prompt("Enter name of the executor");
-                if (executorName==null) return;
-                
-                var individualE = new veda.IndividualModel(); // create individual (Executor) 
-                individualE.defineProperty("rdf:type");
-                individualE.defineProperty("rdfs:label");
-                individualE.defineProperty("v-s:script");
-                
-           		individualE["rdf:type"] = [veda.ontology["v-wf:ExecutorDefinition"]];
-                individualE['rdfs:label'] = ['Executor `'+executorName+'`'];
-                
-                var state = veda.IndividualModel(stateId);
-               	state['v-wf:executor'] = (state['v-wf:executor'] === undefined)?[individualE]:state['v-wf:executor'].concat([individualE]); // <- Add new Executor to State
-            };
-            
-            instance.addVarProperty = function(stateId, type) {            
-                variableName = prompt("Enter name of the variable");
-                if (variableName==null) return;
-                
-                var individualV = new veda.IndividualModel(); // create individual (Variable) 
-                individualV.defineProperty("rdf:type");
-                individualV.defineProperty("rdfs:label");
-                individualV.defineProperty("v-wf:varDefineName");
-                individualV.defineProperty("v-wf:varDefineScope");
-                
-           		individualV["rdf:type"] = [veda.ontology["v-wf:VarDefine"]];
-                individualV['rdfs:label'] = ['Variable `'+variableName+'`'];
-                individualV['v-wf:varDefineName'] = [variableName];
-                individualV['v-wf:varDefineScope'] = [net];
-                
-                var individualM = new veda.IndividualModel(); // create individual (Mapping)
-                
-                individualM.defineProperty("rdf:type");
-                individualM.defineProperty("v-wf:mapToVariable");
-                individualM.defineProperty("v-wf:mappingExpression");
-                
-           		individualM["rdf:type"] = [veda.ontology["v-wf:Mapping"]];
-           		individualM["v-wf:mapToVariable"] = [individualV];
-                individualM['v-wf:mappingExpression'] = ["context.getVariableValue ('"+variableName+"')"];
-                
-            	var state = new veda.IndividualModel(stateId);
-           		state[type] = (state[type] === undefined)?[individualM]:state[type].concat([individualM]); // <- Add new Mapping to State
-                if (type=='v-wf:startingMapping') {
-               		state['v-wf:inputVariable'] = (state['v-wf:inputVariable'] === undefined)?[individualV]:state['v-wf:inputVariable'].concat([individualV]); // <- Add new Varibale to State
-                }
-                if (type=='v-wf:completedMapping') {
-                	var state = new veda.IndividualModel(stateId);
-               		state['v-wf:outputVariable'] = (state['v-wf:outputVariable'] === undefined)?[individualV]:state['v-wf:outputVariable'].concat([individualV]); // <- Add new Varibale to State
-                }
-            };
-            
-            // Remove from state, defined by stateId, variable `varId` and its mapping `mapId`
-            instance.removeVarProperty = function(stateId, varId, mapId) {
-            	var state = veda.IndividualModel(stateId);
-           		state['v-wf:inputVariable'] = veda.Util.removeSubIndividual(state, 'v-wf:inputVariable', varId);
-           		state['v-wf:startingMapping'] = veda.Util.removeSubIndividual(state, 'v-wf:startingMapping', mapId);
-            };
-            
-            instance.removeExecutorProperty = function(stateId, executorId) {
-            	var state = veda.IndividualModel(stateId);   
-           		state['v-wf:executor'] = veda.Util.removeSubIndividual(state, 'v-wf:executor', executorId);
             };
             
             instance.deleteState = function(element) {
@@ -639,25 +590,72 @@ jsWorkflow.ready = jsPlumb.ready;
             };
             
             instance.deleteFlow = function(flow, source) {
+	           	instance.detach(flow, {fireEvent:false, forceDetach: true});
 	          	net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', flow.id);
 	           	var source = new veda.IndividualModel(source.id);
 	       		source['v-wf:hasFlow'] = veda.Util.removeSubIndividual(source, 'v-wf:hasFlow', flow.id);
-	           	instance.detach(flow, {fireEvent:false});
+            }
+            
+            
+            instance.createEmptyNetElement = function(type) {
+        		var individual = new veda.IndividualModel(); 
+                individual.defineProperty("rdf:type");
+                individual.defineProperty("rdfs:label");
+                individual.defineProperty("v-wf:locationX");
+                individual.defineProperty("v-wf:locationY");
+                
+                individual['rdfs:label'] = ['', ''];
+                individual['v-wf:locationX'] = [new Number((-canvasSizePx/2-net['offsetX'])/net['currentScale'])];
+                individual['v-wf:locationY'] = [new Number((-canvasSizePx/2-net['offsetY'])/net['currentScale'])];
+
+            	if (type=='condition') {
+               		individual["rdf:type"] = [veda.ontology["v-wf:Condition"]];
+                	instance.createState(individual);
+                } else if (type=='task') { 
+                    individual["rdf:type"] = [veda.ontology["v-wf:Task"]];
+                	instance.createState(individual);
+                } else if (type=='input') { 
+                    individual["rdf:type"] = [veda.ontology["v-wf:InputCondition"]];
+                	instance.createState(individual);
+                } else if (type=='output') { 
+                	individual['v-wf:locationX'] = [individual['v-wf:locationX'][0]+200];
+                    individual["rdf:type"] = [veda.ontology["v-wf:OutputCondition"]];
+                	instance.createState(individual);
+                }
+               	net['v-wf:consistsOf'] = (net['v-wf:consistsOf'] === undefined)?[individual]:net['v-wf:consistsOf'].concat([individual]);
+               	return individual;
             }
             
             /**
              *Create workflow Net by given Object (v-wf:Net individual).
              *@method createNetView A public method
              *@param {Object} workflowData A workflow object to create State transitions
-             */
+             */            
             instance.createNetView = function(net) {
             	$('#workflow-net-name').text(net['rdfs:label'][0]);
-            	// Create States
+            	// Create States            	
+            	var hasInput = false,
+            		hasOutput = false;
+            	
             	net['v-wf:consistsOf'].forEach(function(el) {
             		el['rdf:type'].forEach(function (type) {
             			instance.createState(el);
+            			if (el.hasValue('rdf:type') && el['rdf:type'][0].id == 'v-wf:InputCondition') {
+            				hasInput = true;
+            			}
+            			if (el.hasValue('rdf:type') && el['rdf:type'][0].id == 'v-wf:OutputCondition') {
+            				hasOutput = true;
+            			}
             		});
             	});
+            	
+            	// For empty net
+            	if (!hasInput) {
+                   	instance.createEmptyNetElement('input');
+            	}            	
+            	if (!hasOutput) {
+                   	instance.createEmptyNetElement('output');
+            	}            	
             	
             	// Create Flows
             	net['v-wf:consistsOf'].forEach(function(el) {
@@ -839,35 +837,9 @@ jsWorkflow.ready = jsPlumb.ready;
             $(".create-state").bind("click", function() {
                 var _this = this,
                         stateId,
-                        stateElement, 
-                        stateName = prompt("Enter name of the state");
-                if (stateName==null) return;
-                var individual = new veda.IndividualModel(); // create individual (Task / Condition) 
-                                
-                individual.defineProperty("rdf:type");
-                individual.defineProperty("rdfs:label");
-                individual.defineProperty("v-wf:locationX");
-                individual.defineProperty("v-wf:locationY");
-
-                individual['rdfs:label'] = [stateName, ''];
-                individual['v-wf:locationX'] = [new Number((-canvasSizePx/2-net['offsetX'])/net['currentScale'])];
-                individual['v-wf:locationY'] = [new Number((-canvasSizePx/2-net['offsetY'])/net['currentScale'])];
-                
-                if ($('#'+workflowData).find('#' + individual.id).length < 1) {
-
-                   	if ($(_this).hasClass('create-condition')) {
-                   		individual["rdf:type"] = [veda.ontology["v-wf:Condition"]];
-                    	instance.createState(individual);
-                    } else { 
-                        individual["rdf:type"] = [veda.ontology["v-wf:Task"]];
-                    	instance.createState(individual);
-                    }
-
-                   	net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]); // <- Add new State to Net	
-                    $('#' + individual.id).click();
-                } else {
-                    alert('This state is already present.');
-                }
+                        stateElement;
+                var individual = instance.createEmptyNetElement($(_this).hasClass('create-condition')?'condition':'task');
+                $('#' + individual.id).click();
                 $(this).blur();
             });
 
@@ -879,7 +851,13 @@ jsWorkflow.ready = jsPlumb.ready;
                 }
                 if (selectedElementType == 'flow') {
 	                if (confirm('Delete flow ' + selectedElementId + ' ?')) {
-	                	instance.deleteFlow(instance.getSelector('#'+veda.Util.escape4$(selectedElementId))[0]);
+	                	instance.getConnections({
+	                		  source:selectedElementSourceId 
+	                	}).forEach(function(connection) {
+	                		if (connection.id == selectedElementId) {
+	                			instance.deleteFlow(connection, new veda.IndividualModel(selectedElementSourceId));
+	                		}
+	                	});
 	                }
                 }
             });

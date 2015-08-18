@@ -61,7 +61,7 @@ v-wf:Task
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:subClassOf v-wf:NetElement ;	
 	rdfs:label "Task"@en ;
-	rdfs:label "Задача"@ru ;
+	rdfs:label "Задача"@ru ;	
 .
 v-wf:Flow
 	rdf:type owl:Class ;
@@ -733,6 +733,7 @@ v-wf:TaskTemplateAsProperties
 	  			<div>
 	  				<span property="v-wf:executorExpression"></span>
 	  				<span property="v-s:script"></span>
+	  				<span about="@" rel="v-s:employee" template="v-ui:LabelTemplate"></span>
 	  				<a href="#/individual/@/#main//edit"><i class='glyphicon glyphicon-share-alt'></i></a>
 				</div>
 			</div>	
@@ -985,7 +986,7 @@ v-wf:ProcessPropsTemplate
 v-wf:WorkItemTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Шаблон для класса -Рабочее задание-"@ru ;
+  rdfs:label "Шаблон для класса - Рабочий элемент"@ru ;
   rdfs:label "Template for Work order class"@en ;
   v-ui:forClass v-wf:WorkItem ;
   v-ui:template """
@@ -1061,6 +1062,10 @@ v-wf:WorkOrderTemplate
 		<em about="v-wf:executor" property="rdfs:label"></em>
 		<ul><li rel="v-wf:executor" template="v-ui:ClassNameLabelTemplate"></li></ul>
 	</div>
+	<div id="decisionFormList">
+		<em about="v-wf:decisionFormList" property="rdfs:label"></em>
+		<ul><li rel="v-wf:decisionFormList" template="v-ui:ClassNameLabelTemplate"></li></ul>
+	</div>
 	<div id="outVars">
 		<em about="v-wf:outVars" property="rdfs:label"></em>
 		<ul><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ul>
@@ -1072,6 +1077,7 @@ v-wf:WorkOrderTemplate
 	<br/>
 </div>
 <script>
+	if (!individual.hasValue("v-wf:decisionFormList")) $("#decisionFormList", template).remove();
 	if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
 	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
 	if (!individual.hasValue("v-wf:isProcess")) $("#isProcess", template).remove();
@@ -1154,6 +1160,11 @@ v-wf:StartForm
 	rdfs:label "Стартовая форма"@ru ;
 	rdfs:label "Start form"@en ;
 .
+
+v-s:StatusWorkflow
+	rdfs:domain v-wf:StartForm ;
+.
+
 v-wf:processedDocument
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1162,6 +1173,7 @@ v-wf:processedDocument
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-s:Document ;
 .
+
 v-wf:processInitiator
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1170,6 +1182,7 @@ v-wf:processInitiator
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-s:Appointment ;
 .
+
 v-wf:forNet
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1223,7 +1236,7 @@ v-wf:Transform
 .
 
 v-wf:transformRule
-        rdf:type rdf:Property ;
+        rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "правило преобразования"@ru ;
 	rdfs:domain v-wf:Transform ;
@@ -1237,21 +1250,21 @@ v-wf:Rule
 .
 
 v-wf:segregateObject
-        rdf:type rdf:Property ;
+        rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "выражение для выделения подмножества обьектов"@ru ;
 	rdfs:domain v-wf:Rule ;
         rdfs:range xsd:string ;
 .
 v-wf:segregateElement
-        rdf:type rdf:Property ;
+        rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "выражение для выделения подмножества элементов"@ru ;
 	rdfs:domain v-wf:Rule ;
         rdfs:range xsd:string ;
 .
 v-wf:conversion
-        rdf:type rdf:Property ;
+        rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "выражение для преобразования элемента"@ru ;
 	rdfs:domain v-wf:Rule ;
@@ -1259,7 +1272,7 @@ v-wf:conversion
 .
 
 v-wf:create
-        rdf:type rdf:Property ;
+        rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "выражение для создания обьекта"@ru ;
 	rdfs:domain v-wf:Rule ;
@@ -1267,7 +1280,7 @@ v-wf:create
 .
 
 v-wf:agregate
-        rdf:type rdf:Property ;
+        rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "выражение для размещения элемента в обьекте"@ru ;
 	rdfs:domain v-wf:Rule ;
@@ -1275,7 +1288,7 @@ v-wf:agregate
 .
 
 v-wf:grouping
-        rdf:type rdf:Property ;
+        rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "выражение для группировки созданных обьектов"@ru ;
 	rdfs:domain v-wf:Rule ;
@@ -1412,6 +1425,12 @@ v-wf:useSubNet
 	rdfs:range v-wf:Net ;
 .
 
+v-wf:decisionFormList
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "список порожденных пользовательских форм"@ru ;
+	rdfs:domain v-wf:WorkOrder ;
+.
 # --------------------------- обработка событий => docflow ---------------------------------------
 v-wf:event_df1
 	rdf:type v-s:Event ;

@@ -95,7 +95,9 @@ function prepare_work_order(ticket, document)
     var work_item = get_individual(ticket, f_forWorkItem);
     if (!work_item) return;
 
-    var f_inVars = work_item['v-wf:inVars'];
+    var f_inVars = work_item['v-wf:inVars'];    
+    if (!f_inVars)
+	f_inVars = [];
 
     var forProcess_uri = getUri(work_item['v-wf:forProcess']);
     var _process = get_individual(ticket, forProcess_uri);
@@ -145,11 +147,11 @@ function prepare_work_order(ticket, document)
             }
             else
             {
-				//mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);				
-			}	
+                //mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);				
+            }
 
             if (task_output_vars.length > 0)
-            {				
+            {
                 document['v-wf:outVars'] = task_output_vars;
                 put_individual(ticket, document, _event_id);
             }
@@ -278,7 +280,7 @@ function prepare_work_order(ticket, document)
                 }
 
                 print("[WORKFLOW][WO2.0] transform_link=" + toJson(net_element['v-wf:startDecisionTransform']));
-                //print("[WORKFLOW][WO2.1] work_item_inVars=" + toJson(work_item_inVars));                
+                print("[WORKFLOW][WO2.1] work_item_inVars=" + toJson(work_item_inVars));                
                 mapToJournal(net_element['v-wf:startingExecutorJournalMap'], ticket, _process, work_item, _work_order);
 
                 var transform_link = getUri(net_element['v-wf:startDecisionTransform']);
@@ -288,9 +290,17 @@ function prepare_work_order(ticket, document)
 
                 var transform_result = transformation(ticket, work_item_inVars, transform, f_executor, newUri(document['@']));
 
+                var decisionFormList = [];
+
                 for (var i = 0; i < transform_result.length; i++)
                 {
                     put_individual(ticket, transform_result[i], _event_id);
+                    decisionFormList.push(
+                    {
+                        data: transform_result[i]['@'],
+                        type: _Uri
+                    });
+
                     // выдадим права отвечающему на эту форму
                     var employee = executor['v-s:employee'];
                     if (employee)
@@ -300,6 +310,12 @@ function prepare_work_order(ticket, document)
                         addRight(ticket, [can_read, can_update], employee[0].data, transform_result[i]['@']);
                     }
                 }
+
+                var add_to_document = {
+                    '@': document['@'],
+                    'v-wf:decisionFormList': decisionFormList
+                };
+                add_to_individual(ticket, add_to_document, _event_id);
 
                 print("[WORKFLOW][WO2.3] transform_result=" + toJson(transform_result));
             }
@@ -389,18 +405,18 @@ function prepare_work_order(ticket, document)
 
     if (is_goto_to_next_task)
     {
-		if (result.length > 0)
-		{
-		 if (result[0]['complete'])
-		 {
-			// если было пустое задание, то не журналируем
-		 }
-		 else
-		 {
-			print("[WORKFLOW][WO4.0.0] completedJournalMap");
-			mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);
-		 }
-		}	
+        if (result.length > 0)
+        {
+            if (result[0]['complete'])
+            {
+                // если было пустое задание, то не журналируем
+            }
+            else
+            {
+                print("[WORKFLOW][WO4.0.0] completedJournalMap");
+                mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);
+            }
+        }
 
         print("[WORKFLOW][WO4.1] is_goto_to_next_task == true");
         if (net_element['v-wf:completedMapping'])
@@ -976,23 +992,24 @@ function prepare_start_form(ticket, document)
     var _net = get_individual(ticket, getUri(forNet));
     if (!_net) return;
 
-    var transform_link = getUri(document['v-wf:useTransformation']);
-    if (!transform_link) return;
-
-    var transform = get_individual(ticket, transform_link);
-    if (!transform) return;
-
-    // формируем входящие переменные для нового процесса
-    var process_inVars = transformation(ticket, document, transform, null, null);
     var new_vars = [];
-    for (var i = 0; i < process_inVars.length; i++)
+    var transform_link = getUri(document['v-wf:useTransformation']);
+    if (transform_link)
     {
-        put_individual(ticket, process_inVars[i], _event_id);
-        new_vars.push(
-        {
-            data: process_inVars[i]['@'],
-            type: _Uri
-        });
+	var transform = get_individual(ticket, transform_link);
+	if (!transform) return;
+
+	// формируем входящие переменные для нового процесса
+	var process_inVars = transformation(ticket, document, transform, null, null);
+	for (var i = 0; i < process_inVars.length; i++)
+	{
+    	put_individual(ticket, process_inVars[i], _event_id);
+    	new_vars.push(
+    	{
+    	    data: process_inVars[i]['@'],
+    	    type: _Uri
+    	});
+	}
     }
 
     var new_process = {
@@ -1009,7 +1026,7 @@ function prepare_start_form(ticket, document)
             data: "экземпляр маршрута :" + getFirstValue(_net['rdfs:label']),
             type: _String
       }];
-    if (process_inVars.length > 0) new_process['v-wf:inVars'] = new_vars;
+    if (new_vars.length > 0) new_process['v-wf:inVars'] = new_vars;
 
     put_individual(ticket, new_process, _event_id);
     print("new_process=", toJson(new_process));

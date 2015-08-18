@@ -99,13 +99,13 @@ function Context(_src_data, _ticket)
 
     this.getOutVariableValue = function (var_name)
     {
-	//print ("CONTEXT::get out vars, var_name=", var_name);
+        //print ("CONTEXT::get out vars, var_name=", var_name);
         return this.getVariableValueIO(var_name, 'v-wf:outVars');
     }
 
     this.getVariableValueIO = function (var_name, io)
     {
-//        	print ("CONTEXT::getVariableValueIO src_data=" + toJson (this.src_data));
+        //        	print ("CONTEXT::getVariableValueIO src_data=" + toJson (this.src_data));
         var variables = this.src_data[io];
 
         if (variables)
@@ -114,7 +114,7 @@ function Context(_src_data, _ticket)
             {
                 var variable = get_individual(this.ticket, variables[i].data);
                 if (!variable) continue;
-        	//print ("CONTEXT::getVariableValueIO var=" + toJson (variable));
+                //print ("CONTEXT::getVariableValueIO var=" + toJson (variable));
 
                 var variable_name = getFirstValue(variable['v-wf:variableName']);
 
@@ -423,7 +423,7 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                 var segregateElement = rules[i1]['v-wf:segregateElement'];
                 var grouping = rules[i1]['v-wf:grouping'];
 
-                var res;
+                var res = false;
 
                 if (segregateObject)
                 {
@@ -448,9 +448,12 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                     }
                 })();
 
-                res = eval(segregateElement[0].data);
-                if (res == false)
-                    continue;
+                if (segregateElement)
+                {
+                    res = eval(segregateElement[0].data);
+                    if (res == false)
+                        continue;
+                }
 
                 var getElement = (function ()
                 {
@@ -480,6 +483,7 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                         out_data0_el[name] = out_data0_el_arr;
                     }
                 })();
+
                 var putElement = (function ()
                 {
                     return function (name)
@@ -491,15 +495,33 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                         if (!out_data0_el_arr)
                             out_data0_el_arr = [];
 
-						if (key == '@')
-						{
-							out_data0_el_arr.push({
-                            data: element,
-                            type: _Uri
-							});
-						}	
-						else
-							out_data0_el_arr.push(element);
+                        if (key == '@')
+                        {
+                            out_data0_el_arr.push(
+                            {
+                                data: element,
+                                type: _Uri
+                            });
+                        }
+                        else
+                            out_data0_el_arr.push(element);
+
+                        out_data0_el[name] = out_data0_el_arr;
+                    }
+                })();
+
+                var putFieldOfObject = (function ()
+                {
+                    return function (name, field)
+                    {
+                        var out_data0_el_arr;
+
+                        out_data0_el_arr = out_data0_el[name];
+
+                        if (!out_data0_el_arr)
+                            out_data0_el_arr = [];
+
+                        out_data0_el_arr.push(obj[field]);
 
                         out_data0_el[name] = out_data0_el_arr;
                     }
@@ -589,7 +611,7 @@ function transformation(ticket, _in_data, rule, executor, work_order)
 
                 //print("#9 segregateElement=", segregateElement[0].data);
 
-                // 3. v-wf:agregate
+                // 3. v-wf:aggregate
                 var group_key;
                 if (!grouping)
                 {
@@ -607,7 +629,7 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                     }
                 }
 
-                var agregate = rules[i1]['v-wf:agregate'];
+                var agregate = rules[i1]['v-wf:aggregate'];
                 for (var i2 = 0; i2 < agregate.length; i2++)
                 {
                     eval(agregate[i2].data);
@@ -729,91 +751,91 @@ function mapToJournal(map_container, ticket, _process, _task, _order)
     }
 }
 
-function create_new_subprocess (ticket, f_useSubNet, f_executor, parent_net, f_inVars, document)
+function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_inVars, document)
 {
-				var parent_process = document['@'];
+    var parent_process = document['@'];
 
-                var use_net;
+    var use_net;
 
-                if (f_useSubNet)
-                    use_net = f_useSubNet;
-                else
-                    use_net = f_executor;
+    if (f_useSubNet)
+        use_net = f_useSubNet;
+    else
+        use_net = f_executor;
 
-                print("[WORKFLOW][WO2.4] executor= " + getUri(f_executor) + " used net= " + getUri(use_net));
+    print("[WORKFLOW][WO2.4] executor= " + getUri(f_executor) + " used net= " + getUri(use_net));
 
-                //var ctx = new Context(work_item, ticket);
-                //ctx.print_variables ('v-wf:inVars');
-                var _started_net = get_individual(ticket, getUri(use_net));
-                if (_started_net)
+    //var ctx = new Context(work_item, ticket);
+    //ctx.print_variables ('v-wf:inVars');
+    var _started_net = get_individual(ticket, getUri(use_net));
+    if (_started_net)
+    {
+        var new_process_uri = guid();
+
+        var new_process = {
+            '@': new_process_uri,
+            'rdf:type': [
                 {
-                    var new_process_uri = guid();
-
-                    var new_process = {
-                        '@': new_process_uri,
-                        'rdf:type': [
-                            {
-                                data: 'v-wf:Process',
-                                type: _Uri
+                    data: 'v-wf:Process',
+                    type: _Uri
       }],
-                        'v-wf:instanceOf': use_net,
-                        'v-wf:parentWorkOrder': [
-                            {
-                                data: parent_process,
-                                type: _Uri
+            'v-wf:instanceOf': use_net,
+            'v-wf:parentWorkOrder': [
+                {
+                    data: parent_process,
+                    type: _Uri
       }]
-                    };
+        };
 
-                    var msg = "экземпляр маршрута :" + getFirstValue(_started_net['rdfs:label']) + ", запущен из " + getFirstValue(parent_net['rdfs:label'])
+        var msg = "экземпляр маршрута :" + getFirstValue(_started_net['rdfs:label']) + ", запущен из " + getFirstValue(parent_net['rdfs:label'])
 
-                    if (f_useSubNet)
-                        msg += ", для " + getUri(f_executor);
+        if (f_useSubNet)
+            msg += ", для " + getUri(f_executor);
 
-                    new_process['rdfs:label'] = [
-                        {
-                            data: msg,
-                            type: _String
+        new_process['rdfs:label'] = [
+            {
+                data: msg,
+                type: _String
                   }];
 
-                    // возьмем входные переменные WorkItem	и добавим их процессу
-                    if (f_inVars)
-                        new_process['v-wf:inVars'] = f_inVars;
+        // возьмем входные переменные WorkItem	и добавим их процессу
+        if (f_inVars)
+            new_process['v-wf:inVars'] = f_inVars;
 
-                    if (f_useSubNet)
-                        new_process['v-wf:executor'] = f_executor;
+        if (f_useSubNet)
+            new_process['v-wf:executor'] = f_executor;
 
-                    print("new_process=", toJson(new_process));
-                    put_individual(ticket, new_process, _event_id);
+        print("new_process=", toJson(new_process));
+        put_individual(ticket, new_process, _event_id);
 
-                    create_new_journal(ticket, new_process_uri, _started_net['rdfs:label']);
+        create_new_journal(ticket, new_process_uri, _started_net['rdfs:label']);
 
-                    var journal_uri = getJournalUri(_process['@']);
-                    var new_journal_record = newJournalRecord(journal_uri);
+        var journal_uri = getJournalUri(_process['@']);
+        var new_journal_record = newJournalRecord(journal_uri);
 
-                    new_journal_record['rdf:type'] = [
-                        {
-                            data: 'v-wf:SubProcessStarted',
-                            type: _Uri
+        new_journal_record['rdf:type'] = [
+            {
+                data: 'v-wf:SubProcessStarted',
+                type: _Uri
      }];
-                    new_journal_record['rdfs:label'] = [
-                        {
-                            data: 'запущен подпроцесс',
-                            type: _String
+        new_journal_record['rdfs:label'] = [
+            {
+                data: 'запущен подпроцесс',
+                type: _String
      }];
-                    new_journal_record['v-s:subJournal'] = [
-                        {
-                            data: getJournalUri(new_process_uri),
-                            type: _Uri
+        new_journal_record['v-s:subJournal'] = [
+            {
+                data: getJournalUri(new_process_uri),
+                type: _Uri
      }];
-                    logToJournal(ticket, journal_uri, new_journal_record);
+        logToJournal(ticket, journal_uri, new_journal_record);
 
-                    document['v-wf:isProcess'] = [
-                        {
-                            data: new_process_uri,
-                            type: _Uri
+        document['v-wf:isProcess'] = [
+            {
+                data: new_process_uri,
+                type: _Uri
      }];
-                    put_individual(ticket, document, _event_id);
+        put_individual(ticket, document, _event_id);
 
-                }
-	
+    }
+
 }

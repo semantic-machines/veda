@@ -992,5 +992,187 @@ td:de6224bd385fa0248cfcc1248c41baaa1 mnd-s-pdr:hasPdrMethod mnd-s-pdr:de05a7c430
 td:d5ecd0a39041e9160f723ae960f3b86fe a mnd-s-pdr:Mobility;
     rdfs:label "внутри страны с ограничениями"^^xsd:string.
 
+###############################################################
 
+######################## сеть, пример 1 #######################
 
+:start-form1 
+    a v-wf:StartForm;
+    v-s:hasStatusWorkflow v-s:DoNotSent;
+    rdfs:label "тест стартовой формы 1"@ru;
+    v-wf:forNet :net1 ;
+.
+
+:net1 
+    v-wf:consistsOf :net1-ic, :net1-oc, :net1-fl1;
+    rdfs:label "сеть, пример 1"^^xsd:string;
+    a v-wf:Net.
+
+:net1-ic 
+    v-wf:hasFlow :net1-fl1;
+    v-wf:locationX "0"^^xsd:integer;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:InputCondition;
+    rdfs:label "с1"^^xsd:string.
+
+:net1-oc 
+    v-wf:locationX "376"^^xsd:integer;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:OutputCondition;
+    rdfs:label "с2"^^xsd:string. 
+
+:net1-fl1 
+    v-wf:flowsInto :net1-oc;
+    a v-wf:Flow;
+    rdfs:label ""^^xsd:string.
+
+######################## сеть, пример 2 #######################
+
+:start-form2 
+    a v-wf:StartForm;
+    v-s:hasStatusWorkflow v-s:DoNotSent;
+    rdfs:label "тест стартовой формы 2"@ru;
+    v-wf:forNet :net2 ;
+.
+
+:net2 
+    v-wf:consistsOf :net2-ic, :net2-oc, :net2-fl1, :net2-t1, :net2-fl2;
+    rdfs:label "сеть, пример 2"^^xsd:string;
+    a v-wf:Net.
+
+:net2-ic 
+    v-wf:hasFlow :net2-fl1;
+    v-wf:locationX "0"^^xsd:integer;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:InputCondition;
+    rdfs:label "с1"^^xsd:string.
+
+:net2-fl1 
+    v-wf:flowsInto :net2-t1;
+    a v-wf:Flow;
+    rdfs:label ""^^xsd:string.
+
+:net2-t1  
+    v-wf:hasFlow :net2-fl2;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:Task;
+    rdfs:label "задача 1"^^xsd:string;
+    v-wf:locationX "164"^^xsd:integer.
+
+:net2-fl2 v-wf:flowsInto :net2-oc;
+    a v-wf:Flow;
+    rdfs:label ""^^xsd:string.
+
+:net2-oc 
+    v-wf:locationX "376"^^xsd:integer;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:OutputCondition;
+    rdfs:label "с2"^^xsd:string.
+
+######################## сеть, пример 3 #######################
+
+:start-form3 
+    a v-wf:StartForm;
+    v-s:hasStatusWorkflow v-s:DoNotSent;
+    rdfs:label "тест стартовой формы 3"@ru;
+    v-wf:forNet :net3 ;
+.
+
+:net3 
+    v-wf:consistsOf :net3-ic, :net3-oc, :net3-fl1, :net3-t1, :net3-fl2;
+    rdfs:label "сеть, пример 3"^^xsd:string;
+    a v-wf:Net.
+
+:net3-ic 
+    v-wf:hasFlow :net3-fl1;
+    v-wf:locationX "0"^^xsd:integer;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:InputCondition;
+    rdfs:label "с1"^^xsd:string.
+
+:net3-fl1 
+    v-wf:flowsInto :net3-t1;
+    a v-wf:Flow;
+    rdfs:label ""^^xsd:string.
+
+:net3-t1  
+    v-wf:hasFlow :net3-fl2;
+    v-wf:executor td:AndreyBychin-Analyst2;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:Task;
+    rdfs:label "задача 1"^^xsd:string;
+    v-wf:locationX "164"^^xsd:integer.
+
+:net3-fl2 v-wf:flowsInto :net3-oc;
+    a v-wf:Flow;
+    rdfs:label ""^^xsd:string.
+
+:net3-oc 
+    v-wf:locationX "376"^^xsd:integer;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:OutputCondition;
+    rdfs:label "с2"^^xsd:string.
+
+######################## сеть, пример 4 #######################
+
+:start-form4 
+    a v-wf:StartForm;
+    v-s:hasStatusWorkflow v-s:DoNotSent;
+    rdfs:label "тест стартовой формы 4"@ru;
+    v-wf:forNet :net4 ;
+.
+
+:net4 
+    v-wf:consistsOf :net4-ic, :net4-oc, :net4-fl1, :net4-t1, :net4-fl2;
+    rdfs:label "сеть, пример 4"^^xsd:string;
+    a v-wf:Net.
+
+:net4-ic 
+    v-wf:hasFlow :net4-fl1;
+    v-wf:locationX "0"^^xsd:integer;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:InputCondition;
+    rdfs:label "с1"^^xsd:string.
+
+:net4-fl1 
+    v-wf:flowsInto :net4-t1;
+    a v-wf:Flow;
+    rdfs:label ""^^xsd:string.
+
+:net4-t1  
+    v-wf:hasFlow :net4-fl2;
+    v-wf:executor td:AndreyBychin-Analyst2;
+    v-wf:startDecisionTransform :net4-tr1;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:Task;
+    rdfs:label "задача 1"^^xsd:string;
+    v-wf:locationX "164"^^xsd:integer.
+
+:net4-fl2 v-wf:flowsInto :net4-oc;
+    a v-wf:Flow;
+    rdfs:label ""^^xsd:string.
+
+:net4-oc 
+    v-wf:locationX "376"^^xsd:integer;
+    v-wf:locationY "0"^^xsd:integer;
+    a v-wf:OutputCondition;
+    rdfs:label "с2"^^xsd:string.
+
+:net4-tr1
+        rdf:type v-wf:Transform ;
+    	rdfs:label "создание формы ответа на задачу, net4"^^xsd:string;
+	v-wf:transformRule :net4-tr1-r1 ;	
+.		
+
+:net4-tr1-r1
+	rdf:type v-wf:Rule ;
+	v-wf:segregateElement "contentName('@')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'mnd-wf:UserTaskForm')";
+	v-wf:aggregate	"putString ('rdfs:label', 'задание')";
+	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
+	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
+	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
+	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')"; 	
+	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')"; 	
+.
