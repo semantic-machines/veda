@@ -463,7 +463,7 @@ function transformation(ticket, _in_data, rule, executor, work_order)
                     }
                 })();
 
-                var putFieldOfElement = (function ()
+                var putFieldOfIndividFromElement = (function ()
                 {
                     return function (name, field)
                     {
