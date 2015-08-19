@@ -925,9 +925,9 @@ v-ui:FileTemplate
   rdfs:label "File template"@en ;
   v-ui:forClass v-s:File ;
   v-ui:template """
-<span>
+<div>
 	<a><span id="icon" class="label label-primary"></span> <span property="v-s:fileName" class="view -edit search"></span>, <span id="fileSize"></span></a>
-</span>
+</div>
 <script>
 	$("a", template).attr("href", "/files/" + individual.id);
 	var fs = individual["v-s:fileSize"][0], 
