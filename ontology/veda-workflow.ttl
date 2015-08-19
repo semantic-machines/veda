@@ -1179,8 +1179,8 @@ v-s:StatusWorkflow
 v-wf:processedDocument
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "Обрабатываемый документ"@ru ;
-	rdfs:label "Processed document"@en ;
+	rdfs:label "обрабатываемый документ"@ru ;
+	rdfs:label "processed document"@en ;
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-s:Document ;
 .
@@ -1188,8 +1188,8 @@ v-wf:processedDocument
 v-wf:processInitiator
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "Инициатор процесса"@ru ;
-	rdfs:label "Process initiator"@en ;
+	rdfs:label "инициатор процесса"@ru ;
+	rdfs:label "process initiator"@en ;
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-s:Appointment ;
 .
@@ -1197,8 +1197,8 @@ v-wf:processInitiator
 v-wf:forNet
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "Для сети..."@ru ;
-	rdfs:label "For net..."@en ;
+	rdfs:label "для сети..."@ru ;
+	rdfs:label "for net..."@en ;
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-wf:Net ;
 .
@@ -1206,8 +1206,8 @@ v-wf:forNet
 v-wf:useTransformation
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "Использовать преобразование"@ru ;
-	rdfs:label "Use transformation"@en ;
+	rdfs:label "использовать преобразование"@ru ;
+	rdfs:label "use transformation"@en ;
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-wf:Process ;
 .
@@ -1784,4 +1784,132 @@ v-wf:TaskCompleted
 v-wf:takenDecision
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:JournalRecord ;
+.
+v-wf:RoutesTypeRules
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Правило связи документа и стартовых форм"@ru ;
+  rdfs:label "Routes type rules"@en ;
+.
+v-wf:className
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "класс документа"@ru ;
+  rdfs:label "document class"@en ;
+  rdfs:domain v-wf:RoutesTypeRules ;
+  rdfs:range owl:Class ;
+.
+v-wf:SpClassName
+  rdf:type v-ui:PropertySpecification ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Спецификация к свойству класс документа класса -Правило связи документа и стартовых форм-"@ru ;
+  rdfs:label "Spec for document class for Routes type rules classes"@en ;
+  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:forProperty v-wf:className ;
+  v-ui:forClass v-wf:RoutesTypeRules ;
+.
+v-wf:startFormDefault
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "стартовая форма по умолчанию"@ru ;
+  rdfs:label "start form default"@en ;
+  rdfs:domain v-wf:RoutesTypeRules ;
+  rdfs:range v-wf:StartForm ;
+.
+v-wf:SpStartFormDefault
+  rdf:type v-ui:PropertySpecification ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Спецификация к свойству стартовая форма по умолчанию класса -Правило связи документа и стартовых форм-"@ru ;
+  rdfs:label "Spec for default start form for Routes type rules classes"@en ;
+  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:forProperty v-wf:startFormDefault ;
+  v-ui:forClass v-wf:RoutesTypeRules ;
+.
+v-wf:startForm
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "доступные стартовые формы"@ru ;
+  rdfs:label "start form"@en ;
+  rdfs:domain v-wf:RoutesTypeRules ;
+  rdfs:range v-wf:StartForm ;
+.
+v-wf:SpStartForm
+  rdf:type v-ui:PropertySpecification ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Спецификация к свойству стартовая форма класса -Правило связи документа и стартовых форм-"@ru ;
+  rdfs:label "Spec for start form for Routes type rules classes"@en ;
+  v-ui:minCardinality "0"^^xsd:integer ;
+  v-ui:maxCardinality "20"^^xsd:integer ;
+  v-ui:forProperty v-wf:startFormDefault ;
+  v-ui:forClass v-wf:RoutesTypeRules ;
+.
+v-wf:hasTransformation
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "ссылка на трансформацию"@ru ;
+  rdfs:label "transformation link"@en ;
+  rdfs:domain v-wf:RoutesTypeRules ;
+  rdfs:range v-wf:Transform ;
+.
+v-wf:SpTransformation
+  rdf:type v-ui:PropertySpecification ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Спецификация к свойству ссылка на трансформацию для класса -Правило связи документа и стартовых форм-"@ru ;
+  rdfs:label "Spec for transfromation link for Routes type rules classes"@en ;
+  v-ui:minCardinality "0"^^xsd:integer ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:forProperty v-wf:hasTransformation ;
+  v-ui:forClass v-wf:RoutesTypeRules ;
+.
+v-wf:RoutesTypeRulesTemplate
+  rdf:type v-ui:ClassTemplate ;
+	rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Правило связи документа и стартовых форм"@ru ;
+  rdfs:label "Template for Routes type rules"@en ;
+  v-ui:forClass v-wf:RoutesTypeRules ;
+  v-ui:template """
+  <div class="container-fluid">
+    <h3 about="v-wf:RoutesTypeRules" property="rdfs:label"></h3>
+    <br>
+    <div class="panel panel-default">
+      <div class="panel-body">
+		<div class="row">
+		  <div class="col-md-3">
+			<em about="v-wf:className" property="rdfs:label" class="text-muted"></em>
+			<div rel="v-wf:className" template="v-ui:LabelTemplate"></div>
+			<veda-control rel="v-wf:className" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+		  </div>
+		  <div class="col-md-3">
+			<em about="v-wf:startFormDefault" property="rdfs:label" class="text-muted"></em>
+			<div rel="v-wf:startFormDefault" template="v-ui:LabelTemplate"></div>
+			<veda-control rel="v-wf:startFormDefault" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+		  </div>
+		  <div class="col-md-3">
+			<em about="v-wf:startForm" property="rdfs:label" class="text-muted"></em>
+			<div rel="v-wf:startForm" template="v-ui:LabelTemplate"></div>
+			<veda-control rel="v-wf:startForm" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+		  </div>	
+		  <div class="col-md-3">
+			<em about="v-wf:hasTransformation" property="rdfs:label" class="text-muted"></em>
+			<div rel="v-wf:hasTransformation" template="v-ui:LabelTemplate"></div>
+			<veda-control rel="v-wf:hasTransformation" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+		  </div>
+		</div>
+	</div>
+    </div>
+
+    <br><br>
+    <div class="well well-sm">
+      <button type="button" class="action btn btn-warning" id="send">Оправить</button>
+      <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
+      <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+      <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+      <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+    </div>
+
+  </div>
+""" ;
 .
