@@ -154,6 +154,7 @@ veda.Module(function (veda) { "use strict";
 				self._.values[property_uri] = value.filter(function (i) { return !!i; });
 				self._.individual[property_uri] = self._.values[property_uri].concat(filteredStrings).map( serializer );
 				if (setterCB) setterCB(self._.values[property_uri]);
+				else self.trigger("individual:propertyModified", property_uri, value);
 			},
 			
 			configurable: true
@@ -242,9 +243,7 @@ veda.Module(function (veda) { "use strict";
 			if (property_uri === "@") return;
 			if (property_uri === "rdf:type") return;
 			if (property_uri === "v-s:deleted") return;
-			self.defineProperty(property_uri, undefined, function (values) {
-				self.trigger("individual:propertyModified", property_uri, values);
-			});
+			self.defineProperty(property_uri);
 		});
 		if (self._.cache) veda.cache[self.id] = self;
 		if (self._.init) self.init();
