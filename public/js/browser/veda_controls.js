@@ -792,6 +792,7 @@
 		});
 		var files = [], n;
 		fileInput.change(function () {
+			files.length = 0;
 			n = this.files.length;
 		    for (var i = 0, file; (file = this.files && this.files[i]); i++) {
 				uploadFile(file, uploaded);
@@ -812,7 +813,7 @@
 			f["v-s:filePath"] = [ path ];
 			f.save();
 			files.push(f);
-			if (files.length === n) individual[rel_uri] = files;
+			if (files.length === n) { individual[rel_uri] = files; }
 		}
 	}
 	$.fn.veda_file.defaults = {
