@@ -163,9 +163,13 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 		// Show results
 		var keys = Object.getOwnPropertyNames(search.results);
 		var $timing = $("#timing-" + search.id, container);
+		var $query = $("#query-" + search.id, container);
+		var $queryText = $("#query-text", $query);
 		var $render_time = $("#render_time", $timing);
 		var $_get_count = $("#get_count", $timing);
 		var $_get_summary_time = $("#get_summary_time", $timing);
+		$queryText.text(search.fullQuery);
+		$query.show();
 		for (var i = search.currentPage * veda.user.displayedElements; i < (search.currentPage + 1) * veda.user.displayedElements && i < search.results_count; i++) {
 			(function (i) { 
 				setTimeout(function () {

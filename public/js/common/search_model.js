@@ -64,6 +64,8 @@ veda.Module(function (veda) { "use strict";
 			// Prefix query if defined in constructor
 			q = (self.queryPrefix ? self.queryPrefix + "&&" : "") + (q ? q : "") ;
 			
+			self.fullQuery = q;
+			
 			var results = query(veda.ticket, q, self.sort, databases, reopen);
 						
 			var t2 = Date.now();
