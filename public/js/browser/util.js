@@ -95,6 +95,11 @@ veda.Module(function Util(veda) { "use strict";
 		});
 	};
 	
+	veda.Util.applyTransform = function (individualList, transform)
+	{
+		return transformation(null, individualList, transform, null, null);
+	}
+	
 	veda.Util.forSubIndividual = function (net, property, id, func) {
 		if (net[property]===undefined) return;
 		net[property].forEach(function(el) {
