@@ -42,3 +42,18 @@ v-b:ImplementationPeriod
   rdfs:label "период реализации"@ru ;
   rdfs:label "implementation period"@en ;
 .
+v-b:datePlan
+  rdf:type v-b:Bundle ;
+  rdfs:label "плановая дата"@ru ;
+  rdfs:label "date plan"@en ;
+.
+v-b:dateFact
+  rdf:type v-b:Bundle ;
+  rdfs:label "фактическая дата"@ru ;
+  rdfs:label "date fact"@en ;
+.
+v-b:completion
+  rdf:type v-b:Bundle ;
+  rdfs:label "процент выполнения"@ru ;
+  rdfs:label "completion"@en ;
+.
