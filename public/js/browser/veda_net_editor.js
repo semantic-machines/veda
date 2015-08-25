@@ -111,6 +111,12 @@ jsWorkflow.ready = jsPlumb.ready;
 					process.present(holder, new veda.IndividualModel("v-wf:ProcessPropsTemplate"));
 					props.empty().append(holder);
 				}
+            	if (mode === "edit") {
+					var holder = $("<div>");
+					propsHead.text(net["rdfs:label"].join(", "));
+					net.present(holder, new veda.IndividualModel("v-wf:SimpleNetTemplate"));
+					props.empty().append(holder);
+				}            	
             });
 
             instance = this.instance;
@@ -655,7 +661,10 @@ jsWorkflow.ready = jsPlumb.ready;
             	}            	
             	if (!hasOutput) {
                    	instance.createEmptyNetElement('output');
-            	}            	
+            	}
+            	if (!net.hasValue('rdfs:label')) {
+            		net.defineProperty("rdfs:label");  
+            	}
             	
             	// Create Flows
             	net['v-wf:consistsOf'].forEach(function(el) {
