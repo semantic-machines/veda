@@ -180,6 +180,14 @@ v-wf:localVariable
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:VarDefine ;
 .
+v-wf:decisionForm
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "decision form"@en ;
+	rdfs:label "форма задачи"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:DecisionForm ;
+.
 v-wf:expectedResultType
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
@@ -192,7 +200,7 @@ v-wf:expectedResultType
 v-wf:startDecisionTransform
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "трансформация для создания формы решения"@ru ;
+	rdfs:label "создание задачи"@ru ;
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Transform ;
 .
@@ -200,7 +208,7 @@ v-wf:startDecisionTransform
 v-wf:completeDecisionTransform
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "трансформация преобразования формы решения"@ru ;
+	rdfs:label "обработка ответа на задачу"@ru ;
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Transform ;
 .
