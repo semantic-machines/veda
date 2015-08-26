@@ -114,7 +114,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	if (mode === "edit") {
 					var holder = $("<div>");
 					propsHead.text(net["rdfs:label"].join(", "));
-					net.present(holder, new veda.IndividualModel("v-wf:SimpleNetTemplate"));
+					net.present(holder, new veda.IndividualModel("v-wf:SimpleNetTemplate"), 'edit');
 					props.empty().append(holder);
 				}            	
             });

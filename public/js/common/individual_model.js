@@ -30,7 +30,7 @@ veda.Module(function (veda) { "use strict";
 		self.properties = {};
 		
 		if (!uri) { 
-			self._.individual["@"] = guid();
+			self._.individual["@"] = "d:"+guid();
 			self._.original_individual = '{"@":"' + self._.individual["@"] +'"}';
 			if (self._.cache && veda.cache) {
 				veda.cache[self._.individual["@"]] = self;

@@ -3,7 +3,6 @@
 # imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
 # imports: http://www.w3.org/2000/01/rdf-schema#
 # imports: http://www.w3.org/2002/07/owl
-# imports: http://semantic-machines.com/veda/mondi-schema-safety-audit
 
 # c14n-version: 3
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -41,4 +40,19 @@ v-b:ImplementationPeriod
   rdf:type v-b:Bundle ;
   rdfs:label "период реализации"@ru ;
   rdfs:label "implementation period"@en ;
+.
+v-b:datePlan
+  rdf:type v-b:Bundle ;
+  rdfs:label "плановая дата"@ru ;
+  rdfs:label "date plan"@en ;
+.
+v-b:dateFact
+  rdf:type v-b:Bundle ;
+  rdfs:label "фактическая дата"@ru ;
+  rdfs:label "date fact"@en ;
+.
+v-b:completion
+  rdf:type v-b:Bundle ;
+  rdfs:label "процент выполнения"@ru ;
+  rdfs:label "completion"@en ;
 .
