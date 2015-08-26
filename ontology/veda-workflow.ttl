@@ -715,7 +715,7 @@ v-wf:taskPropertySpecification8
   rdfs:label "Спецификация исполнителя для класса Задача"@ru ;
   rdfs:label "Executor property specification for Task class"@en ;
   v-ui:forClass v-wf:Task ;
-  v-ui:forProperty v-wf:inputOutputVariable, v-wf:localVariable ;
+  v-ui:forProperty v-wf:inputVariable, v-wf:outputVariable, v-wf:inputOutputVariable, v-wf:localVariable ;
   v-ui:queryPrefix "('rdf:type'=='v-wf:VarDefine')"^^xsd:string ;
 .
 v-wf:taskPropertySpecification9
@@ -806,25 +806,25 @@ v-wf:TaskTemplateAsProperties
 		<td><span about="v-wf:startDecisionTransform" property="rdfs:label"></span></td>
   		<td>
   			<veda-control id="VCstartDecisionTransform" about="@" rel="v-wf:startDecisionTransform" type="link" class="-view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-		    <div about="@" rel="v-wf:startDecisionTransform" template="v-ui:LabelTemplateWithEditLink"></div>
+		    <div rel="v-wf:startDecisionTransform" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
 	</tr>
 	<tr onclick="javascript: $('#VCcompleteDecisionTransform').show();">
 		<td><span about="v-wf:completeDecisionTransform" property="rdfs:label"></span></td>
   		<td>
   			<veda-control id="VCcompleteDecisionTransform" about="@" rel="v-wf:completeDecisionTransform" type="link" class="-view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-		    <div about="@" rel="v-wf:completeDecisionTransform" template="v-ui:LabelTemplateWithEditLink"></div>
+		    <div rel="v-wf:completeDecisionTransform" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
 	</tr>
 	<tr onclick="javascript: $('#VCexecutor').show();">
   		<td><span about="v-wf:executor" property="rdfs:label"></span></td>
   		<td>
   			<veda-control id="VCexecutor" about="@" rel="v-wf:executor" type="link" class="-view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-  			<div about="@" rel="v-wf:executor">
+  			<div rel="v-wf:executor">
 	  			<div>
 	  				<span property="v-wf:executorExpression"></span>
 	  				<span property="v-s:script"></span>
-	  				<span about="@" rel="v-s:employee" template="v-ui:LabelTemplate"></span>
+	  				<span rel="v-s:employee" template="v-ui:LabelTemplate"></span>
 	  				<a href="#/individual/@/#main//edit"><i class='glyphicon glyphicon-share-alt'></i></a>
 				</div>
 			</div>	
@@ -833,10 +833,26 @@ v-wf:TaskTemplateAsProperties
 	<tr onclick="javascript: $('#VCexpectedResultType').show(); $('#viewVCexpectedResultType').hide();">
   		<td><span about="v-wf:expectedResultType" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control id="VCexpectedResultType" rel="v-wf:expectedResultType" type="link" class="-view edit search fulltext dropdown properties-editor" style="display:none;"></veda-control>
-  			<div id="viewVCexpectedResultType" about="@" rel="v-wf:expectedResultType" template="v-ui:LabelTemplate"></div>
+  			<veda-control id="VCexpectedResultType" about="@" rel="v-wf:expectedResultType" type="link" class="-view edit search fulltext dropdown properties-editor" style="display:none;"></veda-control>
+  			<div id="viewVCexpectedResultType" rel="v-wf:expectedResultType" template="v-ui:LabelTemplate"></div>
   		</td>
 	</tr>
+	<tr onclick="javascript: $('.VCinputVariable').show(); $('.viewVCinputVariable').hide();">
+  		<td><span about="v-wf:inputVariable" property="rdfs:label"></span></td>
+  		<td>
+  			<veda-control about="@" rel="v-wf:inputVariable" type="link" class="VCinputVariable -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<div class="VCinputVariable" rel="v-wf:inputVariable" template="v-ui:LabelTemplateWithEditLink"></div>
+  			<div class="viewVCinputVariable" rel="v-wf:inputVariable" template="v-ui:LabelTemplateWithEditLink"></div>
+  		</td>
+	</tr>
+	<tr onclick="javascript: $('.VCoutputVariable').show(); $('.viewVCoutputVariable').hide();">
+  		<td><span about="v-wf:outputVariable" property="rdfs:label"></span></td>
+  		<td>
+  			<veda-control about="@" rel="v-wf:outputVariable" type="link" class="VCoutputVariable -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<div class="VCoutputVariable" rel="v-wf:outputVariable" template="v-ui:LabelTemplateWithEditLink"></div>
+  			<div class="viewVCoutputVariable" rel="v-wf:outputVariable" template="v-ui:LabelTemplateWithEditLink"></div>
+  		</td>
+	</tr>		
 	<tr onclick="javascript: $('.VCinputOutputVariable').show(); $('.viewVCinputOutputVariable').hide();">
   		<td><span about="v-wf:inputOutputVariable" property="rdfs:label"></span></td>
   		<td>
@@ -850,14 +866,14 @@ v-wf:TaskTemplateAsProperties
   		<td>
   			<veda-control about="@" rel="v-wf:localVariable" type="link" class="VClocalVariable -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div class="VClocalVariable" rel="v-wf:localVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
-  			<div class="viewVClocalVariable" about="@" rel="v-wf:localVariable" template="v-ui:LabelTemplateWithEditLink"></div>
+  			<div class="viewVClocalVariable" rel="v-wf:localVariable" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
 	</tr>
 	<tr onclick="javascript: $('#VCsubNet').show(); $('#viewVCsubNet').hide();">
   		<td><span about="v-wf:subNet" property="rdfs:label"></span></td>
   		<td>
   			<veda-control id="VCsubNet" rel="v-wf:subNet" type="link" class="-view edit search fulltext dropdown properties-editor" style="display:none;"></veda-control>
-  			<div id="viewVCsubNet" about="@" rel="v-wf:subNet" template="v-ui:LabelTemplate"></div>
+  			<div id="viewVCsubNet" rel="v-wf:subNet" template="v-ui:LabelTemplate"></div>
   		</td>
 	</tr>
 	<tr onclick="javascript: $('.button-delete', $('.VCstartingMapping').show()).show();">
