@@ -166,15 +166,17 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		function onDoubleClick (selected) {
 			if (!selected.nodes.length) return;
 			var id = selected.nodes[0];
-			var modal = $("#graph-modal", container).modal();
+			var modalTmpl = $("#graph-modal-template").html();
+			var modal = $(modalTmpl);
 			var modalBody = $(".modal-body", modal);
 			var modalTitle = $(".modal-title", modal);
 			modalTitle.text(nodes.get(id).label);
 			var doc = new veda.IndividualModel(id, modalBody);
-			// Bootstrap bug: page remains faded even if modal element was removed
-			modal.on("remove", function () {
-				modal.modal("hide");
+			modal.on('hidden.bs.modal', function (e) {
+				modal.remove();
 			});
+			modal.modal();
+			$("body").append(modal);
 		}
 
 		var root = new veda.IndividualModel(uri);

@@ -561,6 +561,10 @@ td:PersonTemplate1
             <div rel="v-s:test" template="v-fs:SearchTemplate">v-fs:SearchTemplate</div>
             <veda-control rel="v-s:test" type="link" class="-view edit search fulltext dropdown"></veda-control>
           </div>
+          <div class="col-md-6">
+            <div rel="v-asp:hasAspect"></div>
+            <veda-control rel="v-asp:hasAspect" type="link" class="-view edit search full"></veda-control>
+          </div>
         </div>
       </div>
       <div class="panel-footer">

@@ -19,6 +19,16 @@ veda.Module(function (veda) { "use strict";
 			displayedElements : 10
 		};
 		
+		if ( self.hasValue("v-asp:hasAspect") ) {
+			self.aspect = self["v-asp:hasAspect"][0];
+		} else {
+			self.aspect = new veda.IndividualModel();
+			self.aspect["rdf:type"] = [ veda.ontology["v-asp:PersonalAspect"] ];
+			self.aspect.save();
+			self["v-asp:hasAspect"] = [self.aspect];
+			self.save();
+		}
+		
 		try { 
 			self.preferences = self["v-ui:hasPreferences"][0];
 

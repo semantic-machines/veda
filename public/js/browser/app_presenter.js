@@ -53,7 +53,8 @@ veda.Module(function AppPresenter(veda) { "use strict";
 				veda.load(page, params);
 			} else {
 				$("#menu li").removeClass("active");
-				$("#main").html( $("#wellcome-template").html() );
+				//$("#main").html( $("#wellcome-template").html() );
+				veda.user.aspect.present("#main");
 			}
 		});
 		
