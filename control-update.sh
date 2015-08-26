@@ -8,6 +8,7 @@ if wget -q -O - "$@" https://api.travis-ci.org/repos/karpovr/veda/cc.xml?branch=
     rm *.log
     rm veda.app
     rm dub.selections.json
+    rm -r ~/.dub/cache
 
     echo "=== Update project ==="
     git pull
