@@ -926,7 +926,7 @@
 				$modal.on('hidden.bs.modal', function (e) {
 					$modal.remove();
 				});
-				$modal.modal();
+				$modal.modal();	
 				$("body").append($modal);
 			});			
 		} else {
