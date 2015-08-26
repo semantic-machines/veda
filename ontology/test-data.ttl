@@ -965,11 +965,6 @@ mnd-s-pdr:PerformanceDevelopmentReview rdfs:subClassOf v-s:Document;
     a owl:Class;
     rdfs:label "Планирование и анализ достижения и развития"@ru.
 
-td:CCIP v-s:parentUnit td:MondiSyktyvkar;
-    a v-s:Department;
-    v-s:childUnit td:ApplicationDevelopmentGroup;
-    rdfs:label "Управление информационных технологий"@ru.
-
 td:d5fea50fe5b87544a8cfa069ca5d1679f v-s:description "ее"^^xsd:string;
     v-s:dateTo "2016-01-01T00:00:00.000Z"^^xsd:dateTime;
     v-s:dateFrom "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
