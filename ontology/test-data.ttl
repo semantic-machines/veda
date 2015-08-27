@@ -518,32 +518,45 @@ td:PersonTemplate1
 	    </div>
       </div>
       <div class="panel-body">
-        <h3>
-  		  <span property="rdfs:label"><br></span>
-		  <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
-		</h3>
-        <div class="row">
-          <div class="col-md-3">
-            <strong about="v-s:lastName" property="rdfs:label" class="text-muted">Фамилия</strong>
-            <div property="v-s:lastName" class="view -edit -search"><br></div>
-            <veda-control property="v-s:lastName" type="multilingualString" class="-view edit search"></veda-control>
-          </div>
-          <div class="col-md-3">
-            <strong about="v-s:firstName" property="rdfs:label" class="text-muted">Имя</strong>
-            <div property="v-s:firstName"><br></div>
-            <veda-control property="v-s:firstName" type="string" class="-view edit search"></veda-control>
-          </div>
-          <div class="col-md-3">
-            <strong about="v-s:middleName" property="rdfs:label" class="text-muted">Отчество</strong>
-            <div property="v-s:middleName"><br></div>
-            <veda-control property="v-s:middleName" type="string" class="-view edit search"></veda-control>
-          </div>
-          <div class="col-md-3">
-            <strong about="v-s:birthday" property="rdfs:label" class="text-muted">День рождения</strong>
-            <div property="v-s:birthday"><br></div>
-            <veda-control property="v-s:birthday" type="dateTime" class="-view edit search"></veda-control>
-          </div>
-	    </div>
+		<div class="row">
+			<div class="col-md-2">
+				<div rel="v-s:hasImage" template="v-ui:ImageTemplate">
+				</div>
+				<veda-control type="file" rel="v-s:hasImage" class="-view edit -search"></veda-control>
+			</div>
+			<div class="col-md-10">
+				<div class="row">
+					<div class="col-md-12">
+						<h3>
+						  <span property="rdfs:label"><br></span>
+						  <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
+						</h3>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-3">
+						<strong about="v-s:lastName" property="rdfs:label" class="text-muted">Фамилия</strong>
+						<div property="v-s:lastName" class="view -edit -search"><br></div>
+						<veda-control property="v-s:lastName" type="multilingualString" class="-view edit search"></veda-control>
+					</div>
+					<div class="col-md-3">
+						<strong about="v-s:firstName" property="rdfs:label" class="text-muted">Имя</strong>
+						<div property="v-s:firstName"><br></div>
+						<veda-control property="v-s:firstName" type="string" class="-view edit search"></veda-control>
+					</div>
+					<div class="col-md-3">
+						<strong about="v-s:middleName" property="rdfs:label" class="text-muted">Отчество</strong>
+						<div property="v-s:middleName"><br></div>
+						<veda-control property="v-s:middleName" type="string" class="-view edit search"></veda-control>
+					</div>
+						<div class="col-md-3">
+						<strong about="v-s:birthday" property="rdfs:label" class="text-muted">День рождения</strong>
+						<div property="v-s:birthday"><br></div>
+						<veda-control property="v-s:birthday" type="dateTime" class="-view edit search"></veda-control>
+					</div>
+				</div>
+			</div>
+		</div>
         <hr />
         <div class="row">
           <div class="col-md-6">

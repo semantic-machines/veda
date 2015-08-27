@@ -813,7 +813,13 @@
 			f["v-s:filePath"] = [ path ];
 			f.save();
 			files.push(f);
-			if (files.length === n) { individual[rel_uri] = individual[rel_uri].concat(files); }
+			if (files.length === n) { 
+				if (isSingle) {
+					individual[rel_uri] = files; 
+				} else {
+					individual[rel_uri] = individual[rel_uri].concat(files); 
+				}
+			}
 		}
 	}
 	$.fn.veda_file.defaults = {

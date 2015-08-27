@@ -96,6 +96,10 @@ v-asp:hasWidget
 	rdfs:label "виджет"@ru ;
 .
 
+v-s:owner
+  rdfs:domain v-asp:PersonalAspect ;
+.
+
 v-asp:hasRelatedBusinessAspect
 	rdf:type owl:ObjectProperty ;
 	rdfs:domain v-asp:Aspect ;
@@ -156,4 +160,80 @@ v-asp:PsHasAspect
   v-ui:tooltip "Обязательно к заполнению, единичное значений. Ссылка на субъект класса Персональный аспект."@ru ;
   v-ui:tooltip "Required, single value. Link to instance of Personal aspect class"@en ;
   v-ui:queryPrefix "('rdf:type'=='v-asp:PersonalAspect')"^^xsd:string ;
+.
+
+v-asp:PersonalAspectTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Персональный аспект"@ru ;
+  rdfs:label "Template for Personal aspect class"@en ;
+  v-ui:forClass v-asp:PersonalAspect ;
+  v-ui:template """
+	<div class="container-fluid">
+		<br/>
+		<div class="row">
+			<div class="col-md-2">
+				<div rel="v-s:owner">
+					<div>
+						<div rel="v-s:hasImage" template="v-ui:ImageTemplate"></div>
+						<br/>
+						<p><strong property="v-s:firstName"></strong><strong property="v-s:lastName"></strong></p>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-10">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<h3><span about="v-b:MyPage" property="rdfs:label"></span></h3>
+						<hr/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<hr/>
+		<div class="row">
+			<div class="col-md-2">
+				<ul class="nav nav-pills nav-stacked" role="tablist">
+					<li role="presentation" class="active"><a href="#favorites" aria-controls="favorites" role="tab" data-toggle="tab"><span about="v-b:Favorites" property="rdfs:label"></span></a></li>
+					<li role="presentation"><a href="#blanks" aria-controls="blanks" role="tab" data-toggle="tab"><span about="v-b:Blanks" property="rdfs:label"></span></a></li>
+					<li role="presentation"><a href="#registries" aria-controls="registries" role="tab" data-toggle="tab"><span about="v-b:Registries" property="rdfs:label"></span></a></li>
+					<li role="presentation"><a href="#aspects" aria-controls="aspects" role="tab" data-toggle="tab"><span about="v-b:Aspects" property="rdfs:label"></span></a></li>
+					<li role="presentation"><a href="#reports" aria-controls="reports" role="tab" data-toggle="tab"><span about="v-b:Reports" property="rdfs:label"></span></a></li>
+					<li role="presentation"><a href="#other" aria-controls="other" role="tab" data-toggle="tab"><span about="v-b:Other" property="rdfs:label"></span></a></li>
+				</ul>
+			</div>
+			<div class="col-md-10">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane active" id="favorites">
+								<h3><span about="v-b:Favorites" property="rdfs:label"></span></h3>
+								<hr/>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="blanks">
+								<h3><span about="v-b:Blanks" property="rdfs:label"></span></h3>
+								<hr/>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="registries">
+								<h3><span about="v-b:Registries" property="rdfs:label"></span></h3>
+								<hr/>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="aspects">
+								<h3><span about="v-b:Aspects" property="rdfs:label"></span></h3>
+								<hr/>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="reports">
+								<h3><span about="v-b:Reports" property="rdfs:label"></span></h3>
+								<hr/>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="other">
+								<h3><span about="v-b:Other" property="rdfs:label"></span></h3>
+								<hr/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+  """ ;
 .

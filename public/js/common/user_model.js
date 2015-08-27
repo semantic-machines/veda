@@ -24,6 +24,7 @@ veda.Module(function (veda) { "use strict";
 		} else {
 			self.aspect = new veda.IndividualModel();
 			self.aspect["rdf:type"] = [ veda.ontology["v-asp:PersonalAspect"] ];
+			self.aspect["v-s:owner"] = [self];
 			self.aspect.save();
 			self["v-asp:hasAspect"] = [self.aspect];
 			self.save();

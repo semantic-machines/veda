@@ -280,6 +280,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			self.attr("href", str.replace("@", individual.id));
 		});
 
+		$("img[src*='@']:not([rel] *, [about] *)", template).map( function () {
+			var self = $(this);
+			var str = self.attr("src");
+			self.attr("src", str.replace("@", individual.id));
+		});
+
 		// Property value
 		var props_ctrls = {};
 		$("[property]:not(veda-control, [rel] *, [about], [about] *)", template).map( function () {

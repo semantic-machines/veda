@@ -56,3 +56,38 @@ v-b:completion
   rdfs:label "процент выполнения"@ru ;
   rdfs:label "completion"@en ;
 .
+v-b:MyPage
+  rdf:type v-b:Bundle ;
+  rdfs:label "Моя страница"@ru ;
+  rdfs:label "My page"@en ;
+.
+v-b:Favorites
+  rdf:type v-b:Bundle ;
+  rdfs:label "Избранное"@ru ;
+  rdfs:label "Favorites"@en ;
+.
+v-b:Blanks
+  rdf:type v-b:Bundle ;
+  rdfs:label "Бланки"@ru ;
+  rdfs:label "Blanks"@en ;
+.
+v-b:Registries
+  rdf:type v-b:Bundle ;
+  rdfs:label "Реестры"@ru ;
+  rdfs:label "Registries"@en ;
+.
+v-b:Reports
+  rdf:type v-b:Bundle ;
+  rdfs:label "Отчеты"@ru ;
+  rdfs:label "Reports"@en ;
+.
+v-b:Aspects
+  rdf:type v-b:Bundle ;
+  rdfs:label "Аспекты"@ru ;
+  rdfs:label "Aspects"@en ;
+.
+v-b:Other
+  rdf:type v-b:Bundle ;
+  rdfs:label "Другое"@ru ;
+  rdfs:label "Other"@en ;
+.

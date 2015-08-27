@@ -385,6 +385,14 @@ v-s:birthday
   rdfs:label "день рождения"@ru ;
   rdfs:range xsd:dateTime ;
 .
+v-s:hasImage
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Person ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "изображение"@ru ;
+  rdfs:label "image"@en ;
+  rdfs:range v-s:File ;
+.
 v-s:canCreate
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
