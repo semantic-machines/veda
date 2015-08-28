@@ -718,7 +718,7 @@ function prepare_work_item(ticket, document)
         //* сформировать задания для исполнителей
         for (var i = 0; i < executor_list.length; i++)
         {
-            var new_work_order_uri = guid();
+            var new_work_order_uri = genUri();
 
             var new_work_order = {
                 '@': new_work_order_uri,
@@ -986,7 +986,7 @@ function prepare_start_form(ticket, document)
         return;
     }
 
-    var new_process_uri = guid();
+    var new_process_uri = genUri();
 
     var forNet = document['v-wf:forNet'];
     var _net = get_individual(ticket, getUri(forNet));

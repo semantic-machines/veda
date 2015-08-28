@@ -2,7 +2,7 @@
 
 function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _event_id)
 {
-    var new_uri = guid();
+    var new_uri = genUri();
     var new_work_item = {
         '@': new_uri,
         'rdf:type': [
@@ -175,7 +175,7 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
 
     //print("[WORKFLOW][generate_variable]: variable_define_name=" + variable_name);
 
-    var new_uri = guid();
+    var new_uri = genUri();
     var new_variable = {
         '@': new_uri,
         'rdf:type': [
@@ -464,7 +464,7 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
     var _started_net = get_individual(ticket, getUri(use_net));
     if (_started_net)
     {
-        var new_process_uri = guid();
+        var new_process_uri = genUri();
 
         var new_process = {
             '@': new_process_uri,

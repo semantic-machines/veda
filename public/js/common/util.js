@@ -9,6 +9,10 @@ var _Datetime = 8;
 var _Decimal  = 32;
 var _Bool     = 64;
 
+function genUri()
+{
+    return 'd:' + guid();
+}
 
 function guid() {
   function s4() {
@@ -16,7 +20,7 @@ function guid() {
                .toString(16)
                .substring(1);
   }
-  return 'd' + s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
+  return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
 }
 
 function compare (a, b) {
@@ -419,7 +423,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
                 if (!grouping)
                 {
                     out_data0_el = {};
-                    out_data0_el['@'] = guid();
+                    out_data0_el['@'] = genUri();
                 }
                 else
                 {
@@ -428,7 +432,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
                     if (!out_data0_el)
                     {
                         out_data0_el = {};
-                        out_data0_el['@'] = guid();
+                        out_data0_el['@'] = genUri();
                     }
                 }
 
