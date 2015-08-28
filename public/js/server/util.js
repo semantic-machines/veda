@@ -89,7 +89,7 @@ function addRight(ticket, rights, subj_uri, obj_uri)
     }
 
     var new_permission = {
-        '@': guid(),
+        '@': genUri(),
         'rdf:type': [
             {
                 data: 'v-s:PermissionStatement',
@@ -135,7 +135,7 @@ function getJournalUri(object_uri)
 
 function newJournalRecord(journal_uri)
 {
-    var new_journal_record_uri = guid();
+    var new_journal_record_uri = genUri();
 
     var new_journal_record = {
         '@': new_journal_record_uri,
