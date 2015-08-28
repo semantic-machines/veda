@@ -291,7 +291,8 @@ jsWorkflow.ready = jsPlumb.ready;
             				instance.showProcessRunPath(previousWorkItem, depth+1);
             				instance.select({target:workItem['v-wf:forNetElement'][0].id, source:previousWorkItem['v-wf:forNetElement'][0].id}).each(function(e) {
             					e.addClass('process-path-highlight');
-            					e.setLabel(((e.getLabel()!='')?e.getLabel()+',':'')+(max_process_depth-depth));
+            					var pathCounterLabel = (e.getOverlay("pathCounter")!=undefined)?e.getOverlay("pathCounter").getLabel():'';
+                        		e.addOverlay(["Label", { label: ((pathCounterLabel!='')?pathCounterLabel+',':'')+(max_process_depth-depth), location:0.5, id: "pathCounter", cssClass:'pathCounterLabel'} ]);            					
             				});
             			}
             		});
@@ -343,7 +344,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     
                 	// build run path
                     if (mode=='view') {
-                		instance.select().removeClass('process-path-highlight').setLabel('');
+                		instance.select().removeClass('process-path-highlight').removeOverlay("pathCounter");;
                     	var about = new veda.IndividualModel(_this.id);
                 		if ( about.hasValue("rdfs:label") ) propsHead.text(about["rdfs:label"].join(", "));
                     	else propsHead.text(about.id);
@@ -366,6 +367,10 @@ jsWorkflow.ready = jsPlumb.ready;
 											event.preventDefault();
 											props.empty();
 											$("#workflow-context-menu").hide();
+							            	$.each(instance.getAllConnections(), function (idx, connection) {
+							            		var o = connection.getOverlay('flowLabel');
+							            		if (o != undefined) o.setVisible(false);
+							            	});
 											instance.showProcessRunPath(wi, 0);
 											var holder = $("<div>");
 											wi.present(holder, new veda.IndividualModel("v-wf:WorkItemTemplate"));
@@ -386,6 +391,10 @@ jsWorkflow.ready = jsPlumb.ready;
                         	}
                         	$("[type='work-item']", _this).each(function() {
                         		var wi = new veda.IndividualModel($(this).attr('work-item-id'));
+				            	$.each(instance.getAllConnections(), function (idx, connection) {
+				            		var o = connection.getOverlay('flowLabel');
+				            		if (o != undefined) o.setVisible(false);
+				            	});
                         		instance.showProcessRunPath(wi, 0);
    	                	    	var holder = $("<div>");
    	                	    	wi.present(holder, new veda.IndividualModel("v-wf:WorkItemTemplate"));
@@ -593,6 +602,23 @@ jsWorkflow.ready = jsPlumb.ready;
                     target: flow['v-wf:flowsInto'][0].id,
                     detachable:(mode=='edit')
                 });
+            	if (flow.hasValue('rdfs:label'))
+            	{
+            		connector.addOverlay(["Label", { label: flow['rdfs:label'][0], location:0.5, id: "flowLabel"} ]);
+            		//connector.setLabel(flow['rdfs:label'][0]);
+            	}
+                /* TODO
+            	if (flow.hasValue('rdfs:comment')) 
+            	{
+	            	connector.bind("mouseenter", function(conn) {
+	                    conn.addOverlay(["Label", { label: flow['rdfs:comment'][0], location:0.5, id: "connLabel"} ]);
+	                }); 
+	
+	            	connector.bind("mouseleave", function(conn) {
+	                    conn.removeOverlay("connLabel");
+	                });
+            	}
+            	*/
             };
             
             instance.deleteFlow = function(flow, source) {
@@ -721,11 +747,17 @@ jsWorkflow.ready = jsPlumb.ready;
             instance.defocus = function() {
             	props.empty();
             	$("#workflow-context-menu").hide();
-            	instance.select().removeClass('process-path-highlight').setLabel('');
+            	$.each(instance.getAllConnections(), function (idx, connection) {
+            		connection.removeClass('process-path-highlight');
+            		connection.removeOverlay('pathCounter');
+            		var o = connection.getOverlay('flowLabel');
+            		if (o != undefined) o.setVisible(true);
+            	});
                 $('#'+veda.Util.escape4$(selectedElementId)).removeClass('w_active');
                 if (selectedElementSourceId!=null) {
                 	instance.select({source:selectedElementSourceId}).each(function(e) {
                         e.setPaintStyle({strokeStyle: "#666666"});
+                        e.removeOverlay('connLabel');
                 	});
                 };
                 selectedElementId = null;
