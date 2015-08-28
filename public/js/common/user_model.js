@@ -38,7 +38,7 @@ veda.Module(function (veda) { "use strict";
 				return acc;
 			}, {} );
 
-			self.displayedElements = self.preferences["v-ui:displayedElements"][0];
+			self.displayedElements = self.preferences.hasValue("v-ui:displayedElements") ? self.preferences["v-ui:displayedElements"][0] : defaults.displayedElements;
 		} catch (e) {
 			self.language = defaults.language;
 			self.displayedElements = defaults.displayedElements;

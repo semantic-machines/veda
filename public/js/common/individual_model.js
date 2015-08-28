@@ -30,7 +30,7 @@ veda.Module(function (veda) { "use strict";
 		self.properties = {};
 		
 		if (!uri) { 
-			self._.individual["@"] = "d:"+guid();
+			self._.individual["@"] = "d:" + guid();
 			self._.original_individual = '{"@":"' + self._.individual["@"] +'"}';
 			if (self._.cache && veda.cache) {
 				veda.cache[self._.individual["@"]] = self;
@@ -72,7 +72,16 @@ veda.Module(function (veda) { "use strict";
 		});
 
 		self.defineProperty("v-s:deleted");
+		self.defineProperty("v-s:author");
+		self.defineProperty("v-s:created");
 		
+		if (!uri) {
+			self.on("individual:beforeSave", function () {
+				self["v-s:created"] = [new Date()];
+				self["v-s:author"] = [veda.user];
+			});
+		}
+				
 		self.on("individual:afterLoad", function (individual) {
 			self.present.call(individual, container, template, mode);
 		});

@@ -309,6 +309,18 @@ v-ui:displayedElements
   rdfs:label "display elements"@en ;
   rdfs:range xsd:nonNegativeInteger ;
 .
+v-ui:IconPersonTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон персоны с иконкой"@ru ;
+  rdfs:label "Person template with icon"@en ;
+  v-ui:template """
+<span>
+	<span class="glyphicon glyphicon-user"></span>
+	<span about="@" property="v-s:firstName"></span>
+	<span about="@" property="v-s:lastName"></span>
+</span>
+""" ;
+.
 v-ui:ClassTemplateTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса -Шаблон класса-"@ru ;
