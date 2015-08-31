@@ -258,7 +258,13 @@ td:Membership_5
   rdfs:label "Membership_5"@en ;
   rdfs:label "Членство_5"@ru ;
 .
-
+td:Membership_55
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:SuperAdmin ;
+  v-s:resource td:AleksandraKhvostikova ;
+  rdfs:label "Membership_55"@en ;
+  rdfs:label "Членство_55"@ru ;
+.
 td:Membership_6
   rdf:type v-s:Membership ;
   v-s:memberOf td:ResGroup_1 ;
@@ -370,6 +376,7 @@ td:Permission_3
   rdfs:label "Permissions record_3"@en ;
   rdfs:label "Запись о выдаче прав_3"@ru ;
 .
+
 td:Preferences_AndreyBychin
   rdf:type v-ui:Preferences ;
   v-s:owner td:AndreyBychin ;
