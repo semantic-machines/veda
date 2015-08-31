@@ -194,7 +194,7 @@ v-asp:PersonalAspectTemplate
 							<div role="tabpanel" class="tab-pane" id="aspects">
 								<h3><span about="v-b:Aspects" property="rdfs:label"></span></h3>
 								<hr/>
-								<div rel="v-asp:hasBusinessAspect"></div>
+								<div rel="v-asp:hasBusinessAspect" template="v-ui:ClassNameLabelBlockTemplate"> </div>
 							</div>
 							<div role="tabpanel" class="tab-pane" id="reports">
 								<h3><span about="v-b:Reports" property="rdfs:label"></span></h3>

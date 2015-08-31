@@ -451,7 +451,18 @@ td:AleksandraKhvostikova
   rdfs:label "Aleksandra Khvostikova"@en ;
   rdfs:label "Александра Хвостикова"@ru ;
   v-s:hasAppointment td:AleksandraKhvostikova-Analyst1 ;
+  v-asp:hasAspect v-asp:PersonalAspectKhvostia ;        
+  v-s:hasImage td:khvostiaImage;
 .
+td:khvostiaImage v-s:fileSize "89722"^^xsd:integer;
+    v-s:fileUri "Khvostia"^^xsd:string;
+    v-s:author td:AleksandraKhvostikova;
+    v-s:created "2015-08-31T11:54:39.000Z"^^xsd:dateTime;
+    v-s:fileName "Khvostia.jpg"^^xsd:string;
+    a v-s:File;
+    v-s:filePath "/mnd-s-asppd"^^xsd:string ;
+.
+
 td:AleksandraKhvostikova-Analyst1
   rdf:type v-s:Appointment ;
   v-s:author td:AleksandraKhvostikova-Analyst ;
@@ -1250,7 +1261,7 @@ v-asp:PersonalAspectKhvostia
 	v-s:owner td:AleksandraKhvostikova ;
 	rdfs:label "Персональный аспект Хвостикова"@ru ;
 	rdfs:label "Personal aspect Khvostikova"@en ;
-	v-asp:hasFavorite mnd-s-asppd:ProjectManagementAspect1 ;
+#	v-asp:hasFavorite ;
 #	v-asp:hasBlank ;
 #	v-asp:hasRegistry ;
 	v-asp:hasBusinessAspect mnd-s-asppd:ProjectManagementAspect1 ;

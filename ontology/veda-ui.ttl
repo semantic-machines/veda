@@ -484,6 +484,14 @@ v-ui:ClassNameLabelTemplate
   <span><a href="#/individual/@/#main"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span property="rdfs:label"></span></a></span>
   """ ;
 .
+v-ui:ClassNameLabelBlockTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с именем класса и меткой"@ru ;
+  rdfs:label "Template with class name and label"@en ;
+  v-ui:template """
+  <div><a href="#/individual/@/#main"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span property="rdfs:label"></span></a></div>
+  """ ;
+.
 v-ui:SavedSearchTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Сохраненный запрос"@ru ;
