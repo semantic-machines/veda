@@ -7,7 +7,7 @@
 ## II. How to install:
 
 
-**1: install dmd 2.066.1 and dub**
+**1: install dmd 2.068.0 and dub**
   - A) http://d-apt.sourceforge.net/
 ```sh
     sudo wget http://master.dl.sourceforge.net/project/d-apt/files/d-apt.list -O /etc/apt/sources.list.d/d-apt.list
@@ -15,7 +15,7 @@
     sudo apt-get install dmd-bin dub
     sudo apt-get install libraptor2-dev
 ```
-  - B) http://downloads.dlang.org/releases/2014/dmd_2.066.1-0_amd64.deb
+  - B) http://downloads.dlang.org/releases/2014/dmd_2.068.0-0_amd64.deb
 
 **2: install dependencies**
 ```sh
