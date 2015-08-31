@@ -218,6 +218,14 @@ td:KarpovR
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "KarpovR" ;
 .
+td:KhvostiA
+  rdf:type v-s:Account ;
+  v-s:login "KhvostiA"^^xsd:string ;
+  v-s:mailbox "Alexandra.khvostikova@mondigroup.com"^^xsd:string ;
+  v-s:owner td:AleksandraKhvostikova ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "KhvostiA" ;
+.
 
 td:Membership_1
   rdf:type v-s:Membership ;
@@ -289,6 +297,13 @@ td:Membership_11
   v-s:resource td:ValeriyBushenev ;
   rdfs:label "Membership_11"@en ;
   rdfs:label "Членство_11"@ru ;
+.
+td:Membership_12
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:ReadUser ;
+  v-s:resource td:AleksandraKhvostikova ;
+  rdfs:label "Membership_12"@en ;
+  rdfs:label "Членство_12"@ru ;
 .
 
 td:Membership_13
@@ -371,7 +386,14 @@ td:Preferences_RomanKarpov
   rdfs:label "Preferences (Roman Karpov)"@en ;
   rdfs:label "Предпочтения (Роман Карпов)"@ru ;
 .
-
+td:Preferences_AleksandraKhvostikova
+  rdf:type v-ui:Preferences ;
+  v-s:owner td:AleksandraKhvostikova ;
+  v-ui:preferredLanguage v-ui:RU ;
+  v-ui:displayedElements "10"^^xsd:nonNegativeInteger ;
+  rdfs:label "Preferences (Aleksandra Khvostikova)"@en ;
+  rdfs:label "Предпочтения (Александра Хвостикова)"@ru ;
+.
 td:Preferences_ValeriyBushenev
   rdf:type v-ui:Preferences ;
   v-s:author td:ValeriyBushenev-Programmer1 ;
@@ -403,6 +425,33 @@ td:RomanKarpov
   rdfs:label "Roman Karpov"@en ;
   rdfs:label "Роман Карпов"@ru ;
   v-s:hasAppointment td:RomanKarpov-CommercialDirector ;
+.
+td:AleksandraKhvostikova
+  rdf:type v-s:Person ;
+  v-s:actualVersion td:AleksandraKhvostikova ;
+  v-s:birthday "1984-04-28"^^xsd:dateTime ;
+  v-s:firstName "Aleksandra"@en ;
+  v-s:firstName "Александра"@ru ;
+  v-s:hasAccount td:KhvostiA ;
+  v-s:lastName "Khvostikova"@en ;
+  v-s:lastName "Хвостикова"@ru ;
+  v-s:middleName "Aleksandrovna"@en ;
+  v-s:middleName "Александровна"@ru ;
+  v-ui:hasPreferences td:Preferences_AleksandraKhvostikova ;
+  rdfs:label "Aleksandra Khvostikova"@en ;
+  rdfs:label "Александра Хвостикова"@ru ;
+  v-s:hasAppointment td:AleksandraKhvostikova-Analyst ;
+.
+td:AleksandraKhvostikova-Analyst1
+  rdf:type v-s:Appointment ;
+  v-s:author td:AleksandraKhvostikova-Analyst ;
+  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:employee td:AleksandraKhvostikova ;
+  v-s:occupation td:Analyst1 ;
+  v-s:official "true"^^xsd:boolean ;
+  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
+  rdfs:label "Александра Хвостикова : Аналитик"@ru ;
 .
 
 td:RomanKarpov-Analyst1
