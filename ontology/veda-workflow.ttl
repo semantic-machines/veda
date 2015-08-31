@@ -145,6 +145,14 @@ v-wf:None
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "None"^^xsd:string ;
 .
+
+v-wf:Membership_wf001
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:ReadResGroup ;
+  v-s:resource v-wf:XOR, v-wf:OR, v-wf:AND, v-wf:None;
+  rdfs:label "Membership wf 001" ;
+.
+
 v-wf:subNet
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1099,7 +1107,7 @@ v-wf:ConditionTemplateAsProperties
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса Условие"@ru ;
   rdfs:label "Template for Condition class"@en ;
-  v-ui:forClass v-wf:Condition, v-wf:inputCondition, v-wf:OutputCondition ;
+  v-ui:forClass v-wf:Condition, v-wf:InputCondition, v-wf:OutputCondition ;
   v-ui:template """
 <div>
   <table id="taskTemplateProperties" class="table table-condensed table-hover properties-editor">
