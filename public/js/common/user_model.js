@@ -19,6 +19,17 @@ veda.Module(function (veda) { "use strict";
 			displayedElements : 10
 		};
 		
+		if ( self.hasValue("v-asp:hasAspect") ) {
+			self.aspect = self["v-asp:hasAspect"][0];
+		} else {
+			self.aspect = new veda.IndividualModel();
+			self.aspect["rdf:type"] = [ veda.ontology["v-asp:PersonalAspect"] ];
+			self.aspect["v-s:owner"] = [self];
+			self.aspect.save();
+			self["v-asp:hasAspect"] = [self.aspect];
+			self.save();
+		}
+		
 		try { 
 			self.preferences = self["v-ui:hasPreferences"][0];
 
@@ -27,7 +38,7 @@ veda.Module(function (veda) { "use strict";
 				return acc;
 			}, {} );
 
-			self.displayedElements = self.preferences["v-ui:displayedElements"][0];
+			self.displayedElements = self.preferences.hasValue("v-ui:displayedElements") ? self.preferences["v-ui:displayedElements"][0] : defaults.displayedElements;
 		} catch (e) {
 			self.language = defaults.language;
 			self.displayedElements = defaults.displayedElements;

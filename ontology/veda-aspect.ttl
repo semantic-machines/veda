@@ -1,0 +1,243 @@
+# baseURI: http://semantic-machines.com/veda/veda-aspect
+# imports: http://semantic-machines.com/veda/veda-schema
+# imports: http://semantic-machines.com/veda/veda-ui
+# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+# imports: http://www.w3.org/2000/01/rdf-schema#
+# imports: http://www.w3.org/2002/07/owl
+
+# c14n-version: 3
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-asp: <http://semantic-machines.com/veda/veda-aspect/> .
+@prefix td: <http://semantic-machines.com/veda/test-data/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-aspect>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system aspect ontology"@en ;
+  rdfs:label "Онтология аспекта системы Веда"@ru ;
+  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
+  owl:imports <http://semantic-machines.com/veda/veda-ui> ;
+  owl:imports <http://semantic-machines.com/veda/test-data> ;
+  owl:imports rdf: ;
+  owl:imports rdfs: ;
+  owl:imports <http://www.w3.org/2002/07/owl> ;
+#  owl:versionInfo "1.1" ;
+.
+
+v-asp:Aspect 
+	rdf:type owl:Class ;
+	rdfs:label "Aspect"@en ;
+	rdfs:label "Аспект"@ru ;
+.
+
+v-asp:PersonalAspect 
+	rdf:type owl:Class ;
+	rdfs:label "Personal aspect"@en ;
+	rdfs:label "Персональный аспект"@ru ;
+	rdfs:subClassOf v-asp:Aspect ;
+.
+
+v-asp:BusinessAspect 
+	rdf:type owl:Class ;
+	rdfs:label "Business aspect"@en ;
+	rdfs:label "Деловой аспект"@ru ;
+	rdfs:subClassOf v-asp:Aspect ;
+.
+
+v-asp:hasFavorite
+	rdf:type owl:ObjectProperty ;
+	rdfs:domain v-asp:Aspect ;
+	rdfs:range rdfs:Resource ;
+	rdfs:label "favorite"@en ;
+	rdfs:label "избранное"@ru ;
+.
+
+v-asp:hasBlank
+	rdf:type owl:ObjectProperty ;
+	rdfs:domain v-asp:Aspect ;
+	rdfs:range rdfs:Resource ;
+	rdfs:label "blank"@en ;
+	rdfs:label "бланк"@ru ;
+.
+
+v-asp:hasRegistry
+	rdf:type owl:ObjectProperty ;
+	rdfs:domain v-asp:Aspect ;
+	rdfs:range rdfs:Resource ;
+	rdfs:label "registry"@en ;
+	rdfs:label "реестр"@ru ;
+.
+
+v-asp:hasReport
+	rdf:type owl:ObjectProperty ;
+	rdfs:domain v-asp:Aspect ;
+	rdfs:range rdfs:Resource ;
+	rdfs:label "report"@en ;
+	rdfs:label "отчет"@ru ;
+.
+
+v-asp:hasArbitraryLink
+	rdf:type owl:ObjectProperty ;
+	rdfs:domain v-asp:Aspect ;
+	rdfs:range rdfs:Resource ;
+	rdfs:label "arbitrary link"@en ;
+	rdfs:label "произвольная ссылка"@ru ;
+.
+
+v-asp:hasWidget
+	rdf:type owl:ObjectProperty ;
+	rdfs:domain v-asp:Aspect ;
+	rdfs:range rdfs:Resource ;
+	rdfs:label "widget"@en ;
+	rdfs:label "виджет"@ru ;
+.
+
+v-s:owner
+  rdfs:domain v-asp:PersonalAspect ;
+.
+
+v-asp:hasRelatedBusinessAspect
+	rdf:type owl:ObjectProperty ;
+	rdfs:domain v-asp:Aspect ;
+	rdfs:range v-asp:BusinessAspect ;
+	rdfs:label "related business aspect"@en ;
+	rdfs:label "связанный деловой аспект"@ru ;
+.
+
+v-asp:ProjectManagementAspect
+	rdf:type owl:Class ;
+	rdfs:subClassOf v-asp:BusinessAspect ;
+	rdfs:label "Project management aspect"@en ;
+	rdfs:label "Аспект управления проектами"@ru ;
+.
+
+v-asp:ProjectManagementAspect1
+	rdf:type v-asp:ProjectManagementAspect ;
+	rdfs:label "Project management aspect 1"@en ;
+	rdfs:label "Аспект управления проектами 1"@ru ;
+	v-asp:hasFavorite td:Preferences_RomanKarpov ;
+	v-asp:hasBlank td:KarpovR ;
+	v-asp:hasRegistry td:RomanKarpov ;
+	v-asp:hasReport td:KarpovR ;
+	v-asp:hasArbitraryLink td:Preferences_RomanKarpov ;
+	v-asp:hasWidget td:KarpovR ;
+	v-asp:hasRelatedBusinessAspect v-asp:PersonalAspect1 ;
+.
+
+v-asp:PersonalAspect1
+	rdf:type v-asp:PersonalAspect ;
+	rdfs:label "Персональный аспект 1"@ru ;
+	rdfs:label "Personal aspect 1"@en ;
+	v-asp:hasFavorite td:Preferences_RomanKarpov ;
+	v-asp:hasBlank td:KarpovR ;
+	v-asp:hasRegistry td:RomanKarpov ;
+	v-asp:hasReport td:KarpovR ;
+	v-asp:hasArbitraryLink td:Preferences_RomanKarpov ;
+	v-asp:hasWidget td:KarpovR ;
+	v-asp:hasRelatedBusinessAspect v-asp:ProjectManagementAspect1 ;
+.
+
+v-asp:hasAspect
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Person ;
+  rdfs:label "персональный аспект"@ru ;
+  rdfs:label "personal aspect"@ru ;
+  rdfs:range v-asp:PersonalAspect ;
+.
+
+v-asp:PsHasAspect
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация персонального аспекта класса Персона"@ru ;
+  rdfs:label "Personal aspect specification for Person class"@en ;
+  v-ui:forClass v-s:Person ;
+  v-ui:forProperty v-asp:hasAspect ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значений. Ссылка на субъект класса Персональный аспект."@ru ;
+  v-ui:tooltip "Required, single value. Link to instance of Personal aspect class"@en ;
+  v-ui:queryPrefix "('rdf:type'=='v-asp:PersonalAspect')"^^xsd:string ;
+.
+
+v-asp:PersonalAspectTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Персональный аспект"@ru ;
+  rdfs:label "Template for Personal aspect class"@en ;
+  v-ui:forClass v-asp:PersonalAspect ;
+  v-ui:template """
+	<div class="container-fluid">
+		<br/>
+		<div class="row">
+			<div class="col-md-2">
+				<div rel="v-s:owner">
+					<div>
+						<div rel="v-s:hasImage" template="v-ui:ImageTemplate"></div>
+						<br/>
+						<a href="#/individual/@/#main">
+							<p>
+								<span class="glyphicon glyphicon-user"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:lastName"></span>
+							</p>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-10">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<h3><span about="v-b:MyPage" property="rdfs:label"></span></h3>
+						<hr/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<hr/>
+		<div class="row">
+			<div class="col-md-2">
+				<ul class="nav nav-pills nav-stacked" role="tablist">
+					<li role="presentation" class="active"><a href="#favorites" aria-controls="favorites" role="tab" data-toggle="tab"><span about="v-b:Favorites" property="rdfs:label"></span></a></li>
+					<li role="presentation"><a href="#blanks" aria-controls="blanks" role="tab" data-toggle="tab"><span about="v-b:Blanks" property="rdfs:label"></span></a></li>
+					<li role="presentation"><a href="#registries" aria-controls="registries" role="tab" data-toggle="tab"><span about="v-b:Registries" property="rdfs:label"></span></a></li>
+					<li role="presentation"><a href="#aspects" aria-controls="aspects" role="tab" data-toggle="tab"><span about="v-b:Aspects" property="rdfs:label"></span></a></li>
+					<li role="presentation"><a href="#reports" aria-controls="reports" role="tab" data-toggle="tab"><span about="v-b:Reports" property="rdfs:label"></span></a></li>
+					<li role="presentation"><a href="#other" aria-controls="other" role="tab" data-toggle="tab"><span about="v-b:Other" property="rdfs:label"></span></a></li>
+				</ul>
+			</div>
+			<div class="col-md-10">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane active" id="favorites">
+								<h3><span about="v-b:Favorites" property="rdfs:label"></span></h3>
+								<hr/>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="blanks">
+								<h3><span about="v-b:Blanks" property="rdfs:label"></span></h3>
+								<hr/>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="registries">
+								<h3><span about="v-b:Registries" property="rdfs:label"></span></h3>
+								<hr/>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="aspects">
+								<h3><span about="v-b:Aspects" property="rdfs:label"></span></h3>
+								<hr/>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="reports">
+								<h3><span about="v-b:Reports" property="rdfs:label"></span></h3>
+								<hr/>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="other">
+								<h3><span about="v-b:Other" property="rdfs:label"></span></h3>
+								<hr/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+  """ ;
+.

@@ -784,7 +784,7 @@
 			individual = opts.individual,
 			rel_uri = opts.rel_uri,
 			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1;
-		var fileInput = $("<input type='file'/>");
+		var fileInput = $("input", control);
 		if (!isSingle) fileInput.attr("multiple", "multiple");
 		var btn = $("button", control);
 		btn.click(function (e) {
@@ -813,7 +813,13 @@
 			f["v-s:filePath"] = [ path ];
 			f.save();
 			files.push(f);
-			if (files.length === n) { individual[rel_uri] = individual[rel_uri].concat(files); }
+			if (files.length === n) { 
+				if (isSingle) {
+					individual[rel_uri] = files; 
+				} else {
+					individual[rel_uri] = individual[rel_uri].concat(files); 
+				}
+			}
 		}
 	}
 	$.fn.veda_file.defaults = {
@@ -926,7 +932,7 @@
 				$modal.on('hidden.bs.modal', function (e) {
 					$modal.remove();
 				});
-				$modal.modal();
+				$modal.modal();	
 				$("body").append($modal);
 			});			
 		} else {

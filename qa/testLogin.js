@@ -5,11 +5,11 @@ var connection = require('./connection.js'),
     By = require('selenium-webdriver').By;
 
 basic.openPage(driver);
-basic.login(driver);
+basic.login(driver, 'karpovr', '123');
 
 driver.wait
 (
-  until.elementTextContains(driver.findElement(By.id('main')),'Добро пожаловать в Veda!'),
+  until.elementTextContains(driver.findElement(By.id('current-user')),'Роман Карпов'),
   2000
 ).then
 (

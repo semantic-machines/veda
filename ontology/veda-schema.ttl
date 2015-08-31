@@ -368,7 +368,7 @@ v-s:attachment
 .
 v-s:author
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Document ;
+  rdfs:domain rdfs:Resource ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "author"@en ;
   rdfs:label "автор"@ru ;
@@ -384,6 +384,14 @@ v-s:birthday
   rdfs:label "birthday"@en ;
   rdfs:label "день рождения"@ru ;
   rdfs:range xsd:dateTime ;
+.
+v-s:hasImage
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Person ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "изображение"@ru ;
+  rdfs:label "image"@en ;
+  rdfs:range v-s:File ;
 .
 v-s:canCreate
   rdf:type owl:DatatypeProperty ;
@@ -442,7 +450,7 @@ v-s:contactInfo
 v-s:contributor
   rdf:type owl:ObjectProperty ;
   rdfs:label "contributor"@en ;
-  rdfs:label "соучастник"@ru ;
+  rdfs:label "содействующий"@ru ;
   rdfs:range v-s:Appointment ;
 .
 v-s:controller
@@ -465,7 +473,7 @@ v-s:country
 .
 v-s:created
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Document ;
+  rdfs:domain rdfs:Resource ;
   rdfs:label "creation date"@en ;
   rdfs:label "дата создания"@ru ;
   rdfs:range xsd:dateTime ;
@@ -680,6 +688,13 @@ v-s:hasAppointmentCopy
   rdfs:label "appointment copy"@en ;
   rdfs:label "в копию"@ru ;
   rdfs:range v-s:Appointment ;
+.
+v-s:hasAppointment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "appointment"@en ;
+  rdfs:label "назначение"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Person ;
 .
 v-s:hasAppointmentFrom
   rdf:type owl:ObjectProperty ;
@@ -1118,9 +1133,6 @@ v-s:onDocument
   rdfs:label "on document"@en ;
   rdfs:label "к документу"@ru ;
   rdfs:range v-s:Document ;
-.
-v-s:created
-  rdfs:domain v-s:Journal, v-s:JournalRecord ;
 .
 v-s:subJournal
   rdf:type owl:ObjectProperty ;

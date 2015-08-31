@@ -8,9 +8,12 @@
 		<meta name="author" content=""/>
 
 		<link href="/css/bootstrap.min.css" rel="stylesheet"/>
+
+		<!-- Bootstrap theme -->
+		<!--link href="/css/bootstrap-theme.min.css" rel="stylesheet"/-->
 		
 		<!-- Bootswatch themes -->
-		<!--link href="/css/cerulean.bootstrap.min.css" rel="stylesheet"/-->
+		<link href="/css/cerulean.bootstrap.min.css" rel="stylesheet"/>
 		<!--link href="/css/cosmo.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/cyborg.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/darkly.bootstrap.min.css" rel="stylesheet"/-->
@@ -24,7 +27,7 @@
 		<!--link href="/css/slate.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/spacelab.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/superhero.bootstrap.min.css" rel="stylesheet"/-->
-		<link href="/css/united.bootstrap.min.css" rel="stylesheet"/>
+		<!--link href="/css/united.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/yeti.bootstrap.min.css" rel="stylesheet"/-->
 
 		<link href="/css/codemirror.css" rel="stylesheet"/>
@@ -480,6 +483,7 @@
 		<!-- File control template -->
 		<script type="html/template" id="file-control-template">
 			<div>
+				<input type="file" style="display:none"/>
 				<button class="btn btn-primary">Browse...</button>
 			</div>
 		</script>
@@ -635,7 +639,10 @@
 					<li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
 				</ul>
 			</div>
-
+		</script>
+		
+		<!-- Graph modal template -->
+		<script type="html/template" id="graph-modal-template">
 			<div class="modal" id="graph-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content">
@@ -647,7 +654,6 @@
 					</div>
 				</div>
 			</div>
-
 		</script>
 
 		<!-- Javascript -->

@@ -119,7 +119,6 @@ td:AndreyBychin-Analyst2
   v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:employee td:AndreyBychin ;
   v-s:occupation td:Analyst2 ;
-  v-s:official "true"^^xsd:boolean ;
   v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Andrey Bychin : Analyst"@en ;
@@ -128,6 +127,7 @@ td:AndreyBychin-Analyst2
 
 td:AndreyBychin-ExecutiveDirector
   rdf:type v-s:Appointment ;
+  v-s:official "true"^^xsd:boolean ;
   v-s:author td:RomanKarpov-Analyst1 ;
   v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:employee td:AndreyBychin ;
@@ -402,7 +402,7 @@ td:RomanKarpov
   v-ui:hasPreferences td:Preferences_RomanKarpov ;
   rdfs:label "Roman Karpov"@en ;
   rdfs:label "Роман Карпов"@ru ;
-  v-s:test v-fs:Search1 ;
+  v-s:hasAppointment td:RomanKarpov-CommercialDirector ;
 .
 
 td:RomanKarpov-Analyst1
@@ -411,7 +411,6 @@ td:RomanKarpov-Analyst1
   v-s:created "2014-01-30T15:22:33"^^xsd:dateTime ;
   v-s:employee td:RomanKarpov ;
   v-s:occupation td:Analyst1 ;
-  v-s:official "true"^^xsd:boolean ;
   v-s:published "2014-01-30T15:22:33"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:22:33"^^xsd:dateTime ;
   rdfs:label "Роман Карпов : Аналитик"@ru ;
@@ -466,7 +465,6 @@ td:ValeriyBushenev-Programmer1
   v-s:created "2014-01-30T15:12:15"^^xsd:dateTime ;
   v-s:employee td:ValeriyBushenev ;
   v-s:occupation td:Programmer1 ;
-  v-s:official "true"^^xsd:boolean ;
   v-s:published "2014-01-30T15:12:15"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:12:15"^^xsd:dateTime ;
   rdfs:label "Валерий Бушенев : Программист"@ru ;
@@ -518,48 +516,56 @@ td:PersonTemplate1
 	    </div>
       </div>
       <div class="panel-body">
-        <h3>
-  		  <span property="rdfs:label"><br></span>
-		  <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
-		</h3>
-        <div class="row">
-          <div class="col-md-3">
-            <strong about="v-s:lastName" property="rdfs:label" class="text-muted">Фамилия</strong>
-            <div property="v-s:lastName" class="view -edit -search"><br></div>
-            <veda-control property="v-s:lastName" type="multilingualString" class="-view edit search"></veda-control>
-          </div>
-          <div class="col-md-3">
-            <strong about="v-s:firstName" property="rdfs:label" class="text-muted">Имя</strong>
-            <div property="v-s:firstName"><br></div>
-            <veda-control property="v-s:firstName" type="string" class="-view edit search"></veda-control>
-          </div>
-          <div class="col-md-3">
-            <strong about="v-s:middleName" property="rdfs:label" class="text-muted">Отчество</strong>
-            <div property="v-s:middleName"><br></div>
-            <veda-control property="v-s:middleName" type="string" class="-view edit search"></veda-control>
-          </div>
-          <div class="col-md-3">
-            <strong about="v-s:birthday" property="rdfs:label" class="text-muted">День рождения</strong>
-            <div property="v-s:birthday"><br></div>
-            <veda-control property="v-s:birthday" type="dateTime" class="-view edit search"></veda-control>
-          </div>
-	    </div>
+		<div class="row">
+			<div class="col-md-2">
+				<div rel="v-s:hasImage" template="v-ui:ImageTemplate"></div>
+				<veda-control type="file" rel="v-s:hasImage" class="-view edit -search"></veda-control>
+			</div>
+			<div class="col-md-10">
+				<div class="row">
+					<div class="col-md-12">
+						<h3>
+						  <span property="rdfs:label"><br></span>
+						  <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
+						</h3>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-3">
+						<strong about="v-s:lastName" property="rdfs:label" class="text-muted">Фамилия</strong>
+						<div property="v-s:lastName" class="view -edit -search"><br></div>
+						<veda-control property="v-s:lastName" type="multilingualString" class="-view edit search"></veda-control>
+					</div>
+					<div class="col-md-3">
+						<strong about="v-s:firstName" property="rdfs:label" class="text-muted">Имя</strong>
+						<div property="v-s:firstName"><br></div>
+						<veda-control property="v-s:firstName" type="string" class="-view edit search"></veda-control>
+					</div>
+					<div class="col-md-3">
+						<strong about="v-s:middleName" property="rdfs:label" class="text-muted">Отчество</strong>
+						<div property="v-s:middleName"><br></div>
+						<veda-control property="v-s:middleName" type="string" class="-view edit search"></veda-control>
+					</div>
+						<div class="col-md-3">
+						<strong about="v-s:birthday" property="rdfs:label" class="text-muted">День рождения</strong>
+						<div property="v-s:birthday"><br></div>
+						<veda-control property="v-s:birthday" type="dateTime" class="-view edit search"></veda-control>
+					</div>
+				</div>
+			</div>
+		</div>
         <hr />
         <div class="row">
-          <div class="col-md-6">
-		    <div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" embedded="true">шаблон: td:PreferencesTemplate1</div>
-		    <veda-control rel="v-ui:hasPreferences" type="link" class="-view edit search fulltext dropdown create"></veda-control>
-          </div>
           <div class="col-md-6">
             <div rel="v-s:hasAccount" template="td:AccountTemplate1">шаблон: td:AccountTemplate1</div>
             <veda-control rel="v-s:hasAccount" type="link" class="-view edit search fulltext dropdown create"></veda-control>
           </div>
-        </div>
-        <hr />
-        <div class="row">
           <div class="col-md-6">
-            <div rel="v-s:test" template="v-fs:SearchTemplate">v-fs:SearchTemplate</div>
-            <veda-control rel="v-s:test" type="link" class="-view edit search fulltext dropdown"></veda-control>
+		    <div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" embedded="true">шаблон: td:PreferencesTemplate1</div>
+		    <veda-control rel="v-ui:hasPreferences" type="link" class="-view edit search fulltext dropdown create"></veda-control>
+		    <br />
+		    <div rel="v-s:hasAppointment" embedded="true"></div>
+		    <veda-control rel="v-s:hasAppointment" type="link" class="-view edit search fulltext dropdown create"></veda-control>
           </div>
         </div>
       </div>
@@ -575,7 +581,15 @@ td:PersonTemplate1
   </div>
 """ ;
 .
-
+td:PsHasAppointmentPerson
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация назначения для класса Персона"@ru ;
+  rdfs:label "Appointment property specification for Person class"@en ;
+  v-ui:forClass v-s:Person ;
+  v-ui:forProperty v-s:hasAppointment ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
+.
 td:AppointmentTemplate1
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон Назначения"@ru ;
@@ -791,17 +805,6 @@ td:PropertySpecification8
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Предпочтения."@ru ;
   v-ui:tooltip "Required, single value. Link to instance of Preferences class"@en ;
   v-ui:queryPrefix "('rdf:type'=='v-ui:Preferences')"^^xsd:string ;
-.
-td:PropertySpecification9
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация тестового свойства для класса Персона"@ru ;
-  rdfs:label "Test property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:test ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Поиск."@ru ;
-  v-ui:tooltip "Required, single value. Link to instance of Preferences class"@en ;
-  v-ui:queryPrefix "('rdf:type'=='v-fs:Search')"^^xsd:string ;
-  v-ui:defaultObjectValue v-fs:Search1 ;
 .
 td:PropertySpecification10
   rdf:type v-ui:IntegerPropertySpecification ;
