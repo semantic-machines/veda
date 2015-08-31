@@ -6,7 +6,7 @@ veda.Module(function SavedSearchList(veda) { "use strict";
 	
 	veda.on("search:rendered", function (search, container_param) {
 
-		var q = "'rdf:type'=='v-s:SavedSearch'&&'v-s:author'=='" + veda.user.id + "'";
+		var q = "'rdf:type'=='v-s:SavedSearch'&&('v-s:author'=='" + veda.user.id + "'||'v-s:author'=='v-a:VedaSystemAccount')";
 		
 		var btn = $( template );
 		var container = container_param || $("#main");
