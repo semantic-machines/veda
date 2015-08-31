@@ -9,7 +9,7 @@ basic.login(driver, 'karpovr', '123');
 
 driver.wait
 (
-  until.elementTextContains(driver.findElement(By.id('current-user')),'Роман Карпов'),
+  until.elementTextContains(driver.findElement(By.id('user-info')),'Роман'),
   2000
 ).then
 (
@@ -20,4 +20,19 @@ driver.wait
     process.exit(1);
   }
 );
+driver.wait
+(
+  until.elementTextContains(driver.findElement(By.id('user-info')),'Карпов'),
+  2000
+).then
+(
+  null,
+  function(err)
+  {
+    console.trace(err);
+    process.exit(1);
+  }
+);
+
+
 driver.quit();
