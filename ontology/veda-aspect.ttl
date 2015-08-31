@@ -108,50 +108,12 @@ v-asp:hasBusinessAspect
 	rdfs:label "связанный деловой аспект"@ru ;
 .
 
-v-asp:ProjectManagementAspect
-	rdf:type owl:Class ;
-	rdfs:subClassOf v-asp:BusinessAspect ;
-	rdfs:label "Project management aspect"@en ;
-	rdfs:label "Аспект управления проектами"@ru ;
-.
-
-v-asp:ProjectManagementAspect1
-	rdf:type v-asp:ProjectManagementAspect ;
-	rdfs:label "Project management aspect 1"@en ;
-	rdfs:label "Аспект управления проектами 1"@ru ;
-	v-asp:hasFavorite td:Preferences_RomanKarpov ;
-	v-asp:hasBlank td:KarpovR ;
-	v-asp:hasRegistry td:RomanKarpov ;
-	v-asp:hasReport td:KarpovR ;
-	v-asp:hasArbitraryLink td:Preferences_RomanKarpov ;
-	v-asp:hasWidget td:KarpovR ;
-	v-asp:hasRelatedBusinessAspect v-asp:PersonalAspect1 ;
-.
-
-v-asp:PersonalAspect1
-	rdf:type v-asp:PersonalAspect ;
-	v-s:owner td:RomanKarpov ;
-	rdfs:label "Персональный аспект 1"@ru ;
-	rdfs:label "Personal aspect 1"@en ;
-	v-asp:hasFavorite td:Preferences_RomanKarpov ;
-	v-asp:hasBlank td:KarpovR ;
-	v-asp:hasRegistry td:RomanKarpov ;
-	v-asp:hasReport td:KarpovR ;
-	v-asp:hasArbitraryLink td:Preferences_RomanKarpov ;
-	v-asp:hasWidget td:KarpovR ;
-	v-asp:hasBusinessAspect v-asp:ProjectManagementAspect1 ;
-.
-
 v-asp:hasAspect
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Person ;
   rdfs:label "персональный аспект"@ru ;
   rdfs:label "personal aspect"@ru ;
   rdfs:range v-asp:PersonalAspect ;
-.
-
-td:RomanKarpov
-  v-asp:hasAspect v-asp:PersonalAspect1 ;
 .
 
 v-asp:PsHasAspect

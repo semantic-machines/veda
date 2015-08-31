@@ -17,6 +17,8 @@
 @prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
 @prefix mnd-wf: <http://semantic-machines.com/veda/mondi-workflow/> .
 @prefix mnd-s-pdr: <http://semantic-machines.com/veda/mondi-schema-pdr/> .
+@prefix v-asp: <http://semantic-machines.com/veda/veda-aspect/> .
+@prefix mnd-s-asppd: <http://semantic-machines.com/veda/mondi-schema-asppd/> .
 
 <http://semantic-machines.com/veda/test-data>
   rdf:type owl:Ontology ;
@@ -432,6 +434,7 @@ td:RomanKarpov
   rdfs:label "Roman Karpov"@en ;
   rdfs:label "Роман Карпов"@ru ;
   v-s:hasAppointment td:RomanKarpov-CommercialDirector ;
+  v-asp:hasAspect v-asp:PersonalAspectKarpovr ;      
 .
 td:AleksandraKhvostikova
   rdf:type v-s:Person ;
@@ -447,7 +450,7 @@ td:AleksandraKhvostikova
   v-ui:hasPreferences td:Preferences_AleksandraKhvostikova ;
   rdfs:label "Aleksandra Khvostikova"@en ;
   rdfs:label "Александра Хвостикова"@ru ;
-  v-s:hasAppointment td:AleksandraKhvostikova-Analyst ;
+  v-s:hasAppointment td:AleksandraKhvostikova-Analyst1 ;
 .
 td:AleksandraKhvostikova-Analyst1
   rdf:type v-s:Appointment ;
@@ -1229,4 +1232,29 @@ td:d5ecd0a39041e9160f723ae960f3b86fe a mnd-s-pdr:Mobility;
 	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
 	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')"; 	
 	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')"; 	
+.
+v-asp:PersonalAspectKarpovr
+	rdf:type v-asp:PersonalAspect ;
+	v-s:owner td:RomanKarpov ;
+	rdfs:label "Персональный аспект 1"@ru ;
+	rdfs:label "Personal aspect 1"@en ;
+	v-asp:hasFavorite td:Preferences_RomanKarpov ;
+	v-asp:hasBlank td:KarpovR ;
+	v-asp:hasRegistry td:RomanKarpov ;
+	v-asp:hasReport td:KarpovR ;
+	v-asp:hasArbitraryLink td:Preferences_RomanKarpov ;
+	v-asp:hasWidget td:KarpovR ;
+.
+v-asp:PersonalAspectKhvostia
+	rdf:type v-asp:PersonalAspect ;
+	v-s:owner td:AleksandraKhvostikova ;
+	rdfs:label "Персональный аспект Хвостикова"@ru ;
+	rdfs:label "Personal aspect Khvostikova"@en ;
+	v-asp:hasFavorite mnd-s-asppd:ProjectManagementAspect1 ;
+#	v-asp:hasBlank ;
+#	v-asp:hasRegistry ;
+	v-asp:hasBusinessAspect mnd-s-asppd:ProjectManagementAspect1 ;
+#	v-asp:hasReport ;
+#	v-asp:hasArbitraryLink ;
+#	v-asp:hasWidget ;
 .
