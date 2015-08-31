@@ -192,7 +192,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	var holder = $("<div>");
             	if (about['rdf:type'][0].id == 'v-wf:') 
             	{
-            		about.present(holder, new veda.IndividualModel("v-wf:FlowTemplate"), 'edit');
+            		about.present(holder, new veda.IndividualModel("v-wf:FlowTemplateAsProperties"), 'edit');
             	} else {
             		about.present(holder);
             	}
@@ -334,7 +334,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     	{
                     		about.present(holder, new veda.IndividualModel("v-wf:TaskTemplateAsProperties"), 'edit');
                     	} else {
-                    		about.present(holder);
+                    		about.present(holder, new veda.IndividualModel("v-wf:ConditionTemplateAsProperties"), 'edit');
                     	}
                     	props.append(holder);
                     	if ( about.hasValue("rdfs:label") ) propsHead.text(about["rdfs:label"].join(", "));
@@ -607,18 +607,6 @@ jsWorkflow.ready = jsPlumb.ready;
             		connector.addOverlay(["Label", { label: flow['rdfs:label'][0], location:0.5, id: "flowLabel"} ]);
             		//connector.setLabel(flow['rdfs:label'][0]);
             	}
-                /* TODO
-            	if (flow.hasValue('rdfs:comment')) 
-            	{
-	            	connector.bind("mouseenter", function(conn) {
-	                    conn.addOverlay(["Label", { label: flow['rdfs:comment'][0], location:0.5, id: "connLabel"} ]);
-	                }); 
-	
-	            	connector.bind("mouseleave", function(conn) {
-	                    conn.removeOverlay("connLabel");
-	                });
-            	}
-            	*/
             };
             
             instance.deleteFlow = function(flow, source) {
