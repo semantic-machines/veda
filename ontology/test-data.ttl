@@ -306,6 +306,15 @@ td:Membership_11
   rdfs:label "Membership_11"@en ;
   rdfs:label "Членство_11"@ru ;
 .
+
+td:Membership_11_1
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-wf:WorkflowReadUser ;
+  v-s:resource td:ValeriyBushenev ;
+  rdfs:label "Membership_11_1" ;
+.
+
+
 td:Membership_12
   rdf:type v-s:Membership ;
   v-s:memberOf v-a:ReadUser ;

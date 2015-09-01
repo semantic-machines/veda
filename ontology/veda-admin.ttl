@@ -23,35 +23,25 @@
   owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "1.0" ;
 .
+
 v-a:SuperAdmin
   rdf:type v-s:Group ;
   rdfs:label "Super admin"@en ;
   rdfs:label "Супер админ"@ru ;
 .
+
 v-a:ReadUser
   rdf:type v-s:Group ;
   rdfs:label "Read User"@en ;
   rdfs:label "Пользователи имеющие право на чтение"@ru ;
 .
+
 v-a:ReadResGroup
   rdf:type v-s:Group ;
   rdfs:label "Resource group to read"@en ;
   rdfs:label "Группа ресурсов для чтения"@ru ;
 .
-v-a:Membership_rl1
-  rdf:type v-s:Membership ;
-  v-s:memberOf v-a:ReadResGroup ;
-  v-s:resource v-ui:EN ;
-  rdfs:label "Membership_rl1"@en ;
-  rdfs:label "Членство_rl1"@ru ;
-.
-v-a:Membership_rl2
-  rdf:type v-s:Membership ;
-  v-s:memberOf v-a:ReadResGroup ;
-  v-s:resource v-ui:RU ;
-  rdfs:label "Membership_rl2"@en ;
-  rdfs:label "Членство_rl2"@ru ;
-.
+
 v-a:VedaSystem
   rdf:type v-s:Person ;
   v-s:actualVersion v-a:VedaSystem ;
@@ -64,6 +54,7 @@ v-a:VedaSystem
   rdfs:label "Veda System"@en ;
   rdfs:label "Система Веда"@ru ;
 .
+
 v-a:Permission_rr
   rdf:type v-s:PermissionStatement ;
   v-s:author v-a:VedaSystem ;
@@ -84,6 +75,34 @@ v-a:Event_1
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:script """
+
+//	print ("@JS0 doc=", toJson (document));
+var is_definedBy = document["rdfs:isDefinedBy"];
+if (is_definedBy)
+{
+	    var doc_uri = document['@'];	
+	    var new_membership = 
+	    {
+    	    '@' : guid (), 
+    	    'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
+    	    'v-s:memberOf' : [{data: 'v-a:ReadResGroup', type : _Uri}],
+    	    'v-s:resource'  : [{data: doc_uri, type : _Uri}],
+    	    'rdfs:comment'  : [{data: "выдан v-a:Event_1", type : _String}]
+	    };
+
+	    put_individual (ticket, new_membership, _event_id);
+
+}
+
+
+
+var vs_owner = document["v-s:owner"];
+if (vs_owner)
+{
+//	print ("@JS1 v-s:owner=", getUri (vs_owner));
+			addRight(ticket, [can_read, can_update, can_delete], getUri (vs_owner), document['@']);
+}
+
 var ff = get_property_chain (ticket, document, 'v-s:author', 'v-s:employee');
 if (ff)
 {
@@ -92,27 +111,16 @@ if (ff)
     var first_doc = ff['first'];
     if (first_doc)
     {
-	var doc_uri = first_doc['@'];	
-    if (employee_uri)
-    {
-	var new_permission = 
-	{
-        '@' : guid (), 
-        'rdf:type' : [{data: 'v-s:PermissionStatement', type : _Uri}],
-        'v-s:canDelete' : [{data: true, type : _Bool}],
-        'v-s:canRead' : [{data: true, type : _Bool}],
-        'v-s:canUpdate' : [{data: true, type : _Bool}],
-        'v-s:permissionObject' : [{data: doc_uri, type : _Uri}],
-        'v-s:permissionSubject'  : [{data: employee_uri, type : _Uri}]
-	};
-	put_individual (ticket, new_permission, _event_id);
-    }
+		var doc_uri = first_doc['@'];	
+		if (employee_uri)
+			addRight(ticket, [can_read, can_update, can_delete], employee_uri, doc_uri);
     }
 }
+
 """ ;
-  rdfs:comment "скрипт автоматической выдачи прав авторам"@ru ;
-  rdfs:label "Event_1"@en ;
-  rdfs:label "Событие_1"@ru ;
+  rdfs:comment "скрипт автоматической выдачи прав авторам (v-s:author) и владельцам (v-s:owner)";
+  rdfs:label "Event 1"@en ;
+  rdfs:label "Событие 1"@ru ;
 .
 
 # --------------------------- обработка событий => создание Журнала документа ------------------------------
@@ -310,10 +318,26 @@ v-a:VedaSystemAccount
   rdfs:label "Veda System Account"@en ;
   rdfs:label "Учетная запись системы Веда"@ru ;
 .
+
 v-a:Membership_1
   rdf:type v-s:Membership ;
   v-s:memberOf v-a:SuperAdmin ;
   v-s:resource v-a:VedaSystem ;
-  rdfs:label "v-a:Membership_1"@en ;
-  rdfs:label "v-a:Членство_1"@ru ;
+  rdfs:label "Membership, v-a:VedaSystem in v-a:SuperAdmin";
+.
+
+v-a:Membership_rl1
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:ReadResGroup ;
+  v-s:resource v-ui:EN ;
+  rdfs:label "Membership_rl1"@en ;
+  rdfs:label "Членство_rl1"@ru ;
+.
+
+v-a:Membership_rl2
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:ReadResGroup ;
+  v-s:resource v-ui:RU ;
+  rdfs:label "Membership_rl2"@en ;
+  rdfs:label "Членство_rl2"@ru ;
 .

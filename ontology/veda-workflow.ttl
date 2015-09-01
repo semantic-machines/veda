@@ -2066,3 +2066,9 @@ v-wf:takenDecision
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:JournalRecord ;
 .
+
+v-wf:WorkflowReadUser
+  rdf:type v-s:Group ;
+  rdfs:label "Workflow Read User"@en ;
+  rdfs:label "Пользователи имеющие право на чтение обьектов workflow"@ru ;
+.
