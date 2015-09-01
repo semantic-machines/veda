@@ -1902,91 +1902,112 @@ v-wf:takenDecision
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:JournalRecord ;
 .
-v-wf:RoutesTypeRules
+v-wf:DocumentLinkRules
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Document ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Правило связи документа и стартовых форм"@ru ;
-  rdfs:label "Routes type rules"@en ;
+  rdfs:label "Правило связи двух документов"@ru ;
+  rdfs:label "Documents link rules"@en ;
 .
-v-wf:className
+v-wf:classFrom
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "класс документа"@ru ;
-  rdfs:label "document class"@en ;
-  rdfs:domain v-wf:RoutesTypeRules ;
+  rdfs:label "из документа"@ru ;
+  rdfs:label "document from"@en ;
+  rdfs:domain v-wf:DocumentLinkRules ;
   rdfs:range owl:Class ;
 .
-v-wf:SpClassName
-  rdf:type v-ui:PropertySpecification ;
-  rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Спецификация к свойству класс документа класса -Правило связи документа и стартовых форм-"@ru ;
-  rdfs:label "Spec for document class for Routes type rules classes"@en ;
-  v-ui:minCardinality "1"^^xsd:integer ;
-  v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:forProperty v-wf:className ;
-  v-ui:forClass v-wf:RoutesTypeRules ;
-.
-v-wf:startFormDefault
+v-wf:classTo
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "стартовая форма по умолчанию"@ru ;
-  rdfs:label "start form default"@en ;
-  rdfs:domain v-wf:RoutesTypeRules ;
-  rdfs:range v-wf:StartForm ;
+  rdfs:label "в документ"@ru ;
+  rdfs:label "document to"@en ;
+  rdfs:domain v-wf:DocumentLinkRules ;
+  rdfs:range owl:Class ;
 .
-v-wf:SpStartFormDefault
-  rdf:type v-ui:PropertySpecification ;
+v-wf:PsClassFromTo
+  rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Спецификация к свойству стартовая форма по умолчанию класса -Правило связи документа и стартовых форм-"@ru ;
-  rdfs:label "Spec for default start form for Routes type rules classes"@en ;
+  rdfs:label "Спецификация к свойствам классов документов для класса -Правило связи двух документов-"@ru ;
+  rdfs:label "Spec for document classes for DocumentLinkRules class"@en ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:forProperty v-wf:startFormDefault ;
-  v-ui:forClass v-wf:RoutesTypeRules ;
-.
-v-wf:startForm
-  rdf:type owl:ObjectProperty ;
-  rdfs:isDefinedBy v-wf: ;
-  rdfs:label "доступные стартовые формы"@ru ;
-  rdfs:label "start form"@en ;
-  rdfs:domain v-wf:RoutesTypeRules ;
-  rdfs:range v-wf:StartForm ;
-.
-v-wf:SpStartForm
-  rdf:type v-ui:PropertySpecification ;
-  rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Спецификация к свойству стартовая форма класса -Правило связи документа и стартовых форм-"@ru ;
-  rdfs:label "Spec for start form for Routes type rules classes"@en ;
-  v-ui:minCardinality "0"^^xsd:integer ;
-  v-ui:maxCardinality "20"^^xsd:integer ;
-  v-ui:forProperty v-wf:startFormDefault ;
-  v-ui:forClass v-wf:RoutesTypeRules ;
+  v-ui:forProperty v-wf:classFrom ;
+  v-ui:forProperty v-wf:classTo ;
+  v-ui:forClass v-wf:DocumentLinkRules ;
 .
 v-wf:hasTransformation
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "ссылка на трансформацию"@ru ;
   rdfs:label "transformation link"@en ;
-  rdfs:domain v-wf:RoutesTypeRules ;
+  rdfs:domain v-wf:DocumentLinkRules ;
   rdfs:range v-wf:Transform ;
 .
-v-wf:SpTransformation
+v-wf:PsTransformation
   rdf:type v-ui:PropertySpecification ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Спецификация к свойству ссылка на трансформацию для класса -Правило связи документа и стартовых форм-"@ru ;
-  rdfs:label "Spec for transfromation link for Routes type rules classes"@en ;
+  rdfs:label "Спецификация к свойству трансформация для -Правило связи двух документов-"@ru ;
+  rdfs:label "Spec for transformation property for DocumentLinkRules class"@en ;
   v-ui:minCardinality "0"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:forProperty v-wf:hasTransformation ;
-  v-ui:forClass v-wf:RoutesTypeRules ;
+  v-ui:forClass v-wf:DocumentLinkRules ;
 .
-v-wf:RoutesTypeRulesTemplate
+v-wf:displayName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-wf:DocumentLinkRules ;
+  rdfs:label "display name"@en ;
+  rdfs:label "имя правила связи двух документов"@ru ;
+  rdfs:range xsd:string ;
+.
+v-wf:PsDisplayName
+  rdf:type v-ui:StringPropertySpecification ;
+  v-ui:forClass v-wf:DocumentLinkRules ;
+  v-ui:forProperty v-wf:displayName ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  v-ui:tooltip "non-Required, single Text"@en ;
+  v-ui:tooltip "Необязательно к заполнению, единичное значение. Текст без ограничений."@ru ;
+  rdfs:label "display name property specification for DocumentLinkRules class"@en ;
+  rdfs:label "Спецификация имя правила для класса Правило связи двух документов."@ru ;
+.
+v-wf:unique
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-wf:DocumentLinkRules ;
+  rdfs:label "unique"@en ;
+  rdfs:label "уникальное правило"@ru ;
+  rdfs:range xsd:boolean ;
+.
+v-wf:isRoute
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-wf:DocumentLinkRules ;
+  rdfs:label "is route"@en ;
+  rdfs:label "правило типа маршрут"@ru ;
+  rdfs:range xsd:boolean ;
+.
+v-wf:isClone
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-wf:DocumentLinkRules ;
+  rdfs:label "is clone"@en ;
+  rdfs:label "правило типа clone"@ru ;
+  rdfs:range xsd:boolean ;
+.
+v-ui:PsRulesBooleanProperty
+  rdf:type v-ui:BooleanPropertySpecification ;
+  rdfs:label "Спецификация булевых свойств класса Правило связи двух документов"@ru ;
+  rdfs:label "Specification for boolean property for DocumentLinkRules"@en ;
+  v-ui:forClass v-wf:DocumentLinkRules ;
+  v-ui:forProperty v-wf:unique ;
+  v-ui:forProperty v-wf:isRoute ;
+  v-ui:forProperty v-wf:isClone ;
+.
+v-wf:DocumentLinkRulesTemplate
   rdf:type v-ui:ClassTemplate ;
 	rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Шаблон для класса Правило связи документа и стартовых форм"@ru ;
-  rdfs:label "Template for Routes type rules"@en ;
-  v-ui:forClass v-wf:RoutesTypeRules ;
+  rdfs:label "Шаблон для класса Правило связи двух документов"@ru ;
+  rdfs:label "Template for DocumentLinkRules"@en ;
+  v-ui:forClass v-wf:DocumentLinkRules ;
   v-ui:template """
   <div class="container-fluid">
     <h3 about="v-wf:RoutesTypeRules" property="rdfs:label"></h3>
@@ -1995,26 +2016,51 @@ v-wf:RoutesTypeRulesTemplate
       <div class="panel-body">
 		<div class="row">
 		  <div class="col-md-3">
-			<em about="v-wf:className" property="rdfs:label" class="text-muted"></em>
-			<div rel="v-wf:className" template="v-ui:LabelTemplate"></div>
-			<veda-control rel="v-wf:className" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+			<em about="v-wf:classFrom" property="rdfs:label" class="text-muted"></em>
+			<div rel="v-wf:classFrom" template="v-ui:ClassNameLabelTemplate"></div>
+			<veda-control rel="v-wf:classFrom" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
 		  </div>
 		  <div class="col-md-3">
-			<em about="v-wf:startFormDefault" property="rdfs:label" class="text-muted"></em>
-			<div rel="v-wf:startFormDefault" template="v-ui:LabelTemplate"></div>
-			<veda-control rel="v-wf:startFormDefault" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+			<em about="v-wf:classTo" property="rdfs:label" class="text-muted"></em>
+			<div rel="v-wf:classTo" template="v-ui:ClassNameLabelTemplate"></div>
+			<veda-control rel="v-wf:classTo" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
 		  </div>
-		  <div class="col-md-3">
-			<em about="v-wf:startForm" property="rdfs:label" class="text-muted"></em>
-			<div rel="v-wf:startForm" template="v-ui:LabelTemplate"></div>
-			<veda-control rel="v-wf:startForm" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
-		  </div>	
 		  <div class="col-md-3">
 			<em about="v-wf:hasTransformation" property="rdfs:label" class="text-muted"></em>
-			<div rel="v-wf:hasTransformation" template="v-ui:LabelTemplate"></div>
+			<div rel="v-wf:hasTransformation" template="v-ui:ClassNameLabelBlockTemplate"></div>
 			<veda-control rel="v-wf:hasTransformation" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
 		  </div>
+		  <div class="col-md-3">
+
+		  </div>
 		</div>
+		
+		<div class="row">
+		  <div class="col-md-3">
+			<em about="v-wf:displayName" property="rdfs:label" class="text-muted"></em>
+			<div propery="v-wf:displayName" class="view -edit -search"></div>
+			<veda-control property="v-wf:displayName" type="string" class="-view edit search"></veda-control>
+		  </div>
+		 </div>
+		 
+		<div class="row">		 
+		  <div class="col-md-3">
+			<veda-control property="v-wf:unique" type="booleanCheckbox"></veda-control>
+			<strong about="v-wf:unique" property="rdfs:label" class="text-muted"></strong>
+		  </div>
+		</div>		  
+		<div class="row">		
+		  <div class="col-md-3">
+			<veda-control property="v-wf:isRoute" type="booleanCheckbox"></veda-control>
+			<strong about="v-wf:isRoute" property="rdfs:label" class="text-muted"></strong>
+		  </div>
+		</div>		  
+		<div class="row">
+		  <div class="col-md-3">
+			<veda-control property="v-wf:isClone" type="booleanCheckbox"></veda-control>
+			<strong about="v-wf:isClone" property="rdfs:label" class="text-muted"></strong>
+		  </div>
+		</div>		
 	</div>
     </div>
 

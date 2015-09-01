@@ -48,6 +48,10 @@ v-asp:BusinessAspect
 	rdfs:subClassOf v-asp:Aspect ;
 .
 
+v-s:hasImage
+  rdfs:domain v-asp:BusinessAspect  ;
+.
+
 v-asp:hasFavorite
 	rdf:type owl:ObjectProperty ;
 	rdfs:domain v-asp:Aspect ;

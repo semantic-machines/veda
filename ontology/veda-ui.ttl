@@ -973,6 +973,19 @@ v-ui:ImageTemplate
 </script>
   """ ;
 .
+v-ui:ImageTemplateTransparent
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для изображения"@ru ;
+  rdfs:label "Image template"@en ;
+  v-ui:template """
+<div>
+	<a href="/files/@"><img width="100%"></img></a>
+</div>
+<script>
+	 $("img", template).attr("src", "/files/" + individual.id);
+</script>
+  """ ;
+.
 v-ui:PsHasImage
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация изображения для класса Персона"@ru ;
