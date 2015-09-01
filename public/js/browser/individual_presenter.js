@@ -383,6 +383,44 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 		});		
 
+		/*// About resource relation
+		$("[about][rel]:not([rel] *)", template).map( function () {
+			var relContainer = $(this), 
+				rel_uri = relContainer.attr("rel"),
+				rel_template_uri = relContainer.attr("template"),
+				rel_inline_template = relContainer.children(),
+				about, relTemplate;
+			if ( rel_template_uri ) {
+				var templateIndividual = new veda.IndividualModel( rel_template_uri );
+				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
+			}
+			if ( rel_inline_template.length ) {
+				relTemplate = rel_inline_template.remove();
+			}
+			if (relContainer.attr("about") === "@") {
+				about = individual;
+				relContainer.attr("about", about.id);
+			} else {
+				about = new veda.IndividualModel(relContainer.attr("about"));
+			}
+			propertyModifiedHandler(rel_uri);
+			function propertyModifiedHandler(doc_rel_uri) {
+				if (doc_rel_uri === rel_uri) {
+					relContainer.empty();
+					if ( about.hasValue(rel_uri) ) {
+						about[rel_uri].map( function (item) {
+							item.present(relContainer, relTemplate.clone());
+						});
+					}
+				}
+			}
+			about.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				about.off("individual:propertyModified", propertyModifiedHandler);
+			});
+		});*/
+
+
 		// About resource property
 		$("[about][property]:not([rel] *, [about] *)", template).map( function () {
 			var propertyContainer = $(this), 

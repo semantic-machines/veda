@@ -266,8 +266,8 @@ veda.Module(function (veda) { "use strict";
 	 */
 	proto.save = function() {
 		var self = this;
-		if (self._.sync) return;
 		self.trigger("individual:beforeSave");
+		if (self._.sync) return;
 		Object.keys(self._.individual).reduce(function (acc, property_uri) {
 			if (property_uri === "@") return acc;
 			acc[property_uri] = self._.individual[property_uri].filter(function (item) {
@@ -392,7 +392,7 @@ veda.Module(function (veda) { "use strict";
 	 * @return {boolean}
 	 */
 	proto.isSync = function () {
-		return self._.sync;
+		return this._.sync;
 	};
 
 	/**
