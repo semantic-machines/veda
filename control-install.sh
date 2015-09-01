@@ -6,9 +6,9 @@
 
 # Variant II
 if ! dmd --version | grep 2.067.1 ; then
-    wget http://downloads.dlang.org/releases/2.x/2.067.1/dmd_2.067.1-0_amd64.deb
-    sudo dpkg -i dmd_2.067.1-0_amd64.deb
-    sudo cp ./qa/install/concurrency.d /usr/include/dmd/phobos/std/concurrency.d
+    wget http://downloads.dlang.org/releases/2.x/2.068.0/dmd_2.068.0-0_amd64.deb
+    sudo dpkg -i dmd_2.068.0-0_amd64.deb
+    sudo cp ./qa/patch_dmd_2_68_0/concurrency.d /usr/include/dmd/phobos/std/concurrency.d
 fi
 
 if ! dub --version | grep 0.9.23 ; then

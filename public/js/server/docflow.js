@@ -1043,5 +1043,42 @@ function prepare_start_form(ticket, document)
     };
     add_to_individual(ticket, add_to_document, _event_id);
 
+    // возьмем автора формы и выдадим ему права на процесс
+    var ff = get_property_chain(ticket, document, 'v-s:author', 'v-s:employee');
+    if (ff) 
+    {
+        var employee_uri = getUri(ff['field']);
+        if (employee_uri) 
+        {
+            var new_permission = {
+                '@': genUri(),
+                'rdf:type': [{
+                    data: 'v-s:PermissionStatement',
+                    type: _Uri
+                }],
+                'v-s:canDelete': [{
+                    data: true,
+                    type: _Bool
+                }],
+                'v-s:canRead': [{
+                    data: true,
+                    type: _Bool
+                }],
+                'v-s:canUpdate': [{
+                    data: true,
+                    type: _Bool
+                }],
+                'v-s:permissionObject': [{
+                    data: new_process_uri,
+                    type: _Uri
+                }],
+                'v-s:permissionSubject': [{
+                    data: employee_uri,
+                    type: _Uri
+                }]
+            };
+            put_individual(ticket, new_permission, _event_id);
+        }
+    }
     //print("[WORKFLOW]:new_process:" + new_process['@']);
 }
