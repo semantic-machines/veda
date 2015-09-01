@@ -476,6 +476,22 @@ v-ui:LabelTemplateWithEditLink
   """ ;
 .
 
+v-ui:LabelLinkTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон без имени класса, но с меткой"@ru ;
+  rdfs:label "Template without class name, with label"@en ;
+  v-ui:template """
+  <span><a href="#/individual/@/#main"><span property="rdfs:label"></span></a></span>
+  """ ;
+.
+v-ui:LabelBlockLinkTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон без имени класса, но с меткой, блочный"@ru ;
+  rdfs:label "Template without class name, with label, blocked"@en ;
+  v-ui:template """
+  <div><a href="#/individual/@/#main"><span property="rdfs:label"></span></a></div>
+  """ ;
+.
 v-ui:ClassNameLabelTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
@@ -486,7 +502,7 @@ v-ui:ClassNameLabelTemplate
 .
 v-ui:ClassNameLabelBlockTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с именем класса и меткой"@ru ;
+  rdfs:label "Шаблон с именем класса и меткой блочный"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
   <div><a href="#/individual/@/#main"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span property="rdfs:label"></span></a></div>
@@ -967,6 +983,19 @@ v-ui:ImageTemplate
   v-ui:template """
 <div>
 	<a href="/files/@"><img class="img-thumbnail"></img></a>
+</div>
+<script>
+	 $("img", template).attr("src", "/files/" + individual.id);
+</script>
+  """ ;
+.
+v-ui:ImageSimpleTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для изображения без ссылки"@ru ;
+  rdfs:label "Image template without link"@en ;
+  v-ui:template """
+<div>
+	<img class="img-thumbnail"></img>
 </div>
 <script>
 	 $("img", template).attr("src", "/files/" + individual.id);
