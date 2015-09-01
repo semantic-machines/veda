@@ -306,6 +306,15 @@ td:Membership_11
   rdfs:label "Membership_11"@en ;
   rdfs:label "Членство_11"@ru ;
 .
+
+td:Membership_11_1
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-wf:WorkflowReadUser ;
+  v-s:resource td:ValeriyBushenev ;
+  rdfs:label "Membership_11_1" ;
+.
+
+
 td:Membership_12
   rdf:type v-s:Membership ;
   v-s:memberOf v-a:ReadUser ;
@@ -1005,14 +1014,12 @@ td:ComplexRouteStartForm1
     v-s:created "2015-03-23T13:27:18.000Z"^^xsd:dateTime.
 
 :b435740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
-    v-s:author td:RomanKarpov;
 	v-s:author v-a:VedaSystemAccount ;
     v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false "^^xsd:string;
     rdfs:label "общий инбокс: новые задачи"^^xsd:string;
     v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
 
 :b555740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
-    v-s:author td:RomanKarpov;
 	v-s:author v-a:VedaSystemAccount ;
     v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true "^^xsd:string;
     rdfs:label "общий инбокс: выполненые задачи"^^xsd:string;
@@ -1044,6 +1051,7 @@ td:Membership_004
 
 :dcf1ce1146792aaa860ae4db7893b2ebb 
     a mnd-s-pdr:PerformanceDevelopmentReview;
+    v-s:author td:ValeriyBushenev-Programmer1;
     v-s:hasChief td:ValeriyBushenev-TechnicalDirector;
     v-s:responsible td:AndreyBychin-ExecutiveDirector;
     v-s:dateFrom "2014-01-01T00:00:00.000Z"^^xsd:dateTime;

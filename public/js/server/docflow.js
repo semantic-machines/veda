@@ -60,6 +60,7 @@ function prepare_decision_form(ticket, document)
             data: process_output_vars[i]['@'],
             type: _Uri
         });
+        addRight(ticket, [can_read], "v-wf:WorkflowReadUser", process_output_vars[i]['@']);
     }
     if (process_output_vars.length > 0)
     {
@@ -760,6 +761,7 @@ function prepare_work_item(ticket, document)
         for (var i = 0; i < work_order_list.length; i++)
         {
             put_individual(ticket, work_order_list[i], _event_id);
+			addRight(ticket, [can_read], "v-wf:WorkflowReadUser", work_order_list[i]['@']);                    
         }
 
     } // end [Task]
@@ -905,6 +907,7 @@ function prepare_process(ticket, document)
                         data: new_variable['@'],
                         type: _Uri
                     });
+					addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);                    
                 }
             }
 
@@ -987,6 +990,11 @@ function prepare_start_form(ticket, document)
     }
 
     var new_process_uri = genUri();
+    
+	var author_uri;
+    var ff = get_property_chain(ticket, document, 'v-s:author', 'v-s:employee');
+    if (ff) 
+		author_uri = getUri(ff['field']);	    
 
     var forNet = document['v-wf:forNet'];
     var _net = get_individual(ticket, getUri(forNet));
@@ -996,20 +1004,22 @@ function prepare_start_form(ticket, document)
     var transform_link = getUri(document['v-wf:useTransformation']);
     if (transform_link)
     {
-	var transform = get_individual(ticket, transform_link);
-	if (!transform) return;
+		var transform = get_individual(ticket, transform_link);
+		if (!transform) return;
 
-	// формируем входящие переменные для нового процесса
-	var process_inVars = transformation(ticket, document, transform, null, null);
-	for (var i = 0; i < process_inVars.length; i++)
-	{
-    	put_individual(ticket, process_inVars[i], _event_id);
-    	new_vars.push(
-    	{
-    	    data: process_inVars[i]['@'],
-    	    type: _Uri
-    	});
-	}
+		// формируем входящие переменные для нового процесса
+		var process_inVars = transformation(ticket, document, transform, null, null);
+		for (var i = 0; i < process_inVars.length; i++)
+		{
+			put_individual(ticket, process_inVars[i], _event_id);
+			new_vars.push(
+			{
+				data: process_inVars[i]['@'],
+				type: _Uri
+			});
+    	
+			addRight(ticket, [can_read], "v-wf:WorkflowReadUser", process_inVars[i]['@']);
+		}
     }
 
     var new_process = {
@@ -1043,5 +1053,8 @@ function prepare_start_form(ticket, document)
     };
     add_to_individual(ticket, add_to_document, _event_id);
 
+    // возьмем автора формы и выдадим ему права на процесс
+    if (author_uri) 
+			addRight(ticket, [can_read, can_update, can_delete], author_uri, new_process_uri);
     //print("[WORKFLOW]:new_process:" + new_process['@']);
 }
