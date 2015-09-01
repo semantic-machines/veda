@@ -60,6 +60,7 @@ function prepare_decision_form(ticket, document)
             data: process_output_vars[i]['@'],
             type: _Uri
         });
+        addRight(ticket, [can_read], "v-wf:WorkflowReadUser", process_output_vars[i]['@']);
     }
     if (process_output_vars.length > 0)
     {
@@ -760,6 +761,7 @@ function prepare_work_item(ticket, document)
         for (var i = 0; i < work_order_list.length; i++)
         {
             put_individual(ticket, work_order_list[i], _event_id);
+			addRight(ticket, [can_read], "v-wf:WorkflowReadUser", work_order_list[i]['@']);                    
         }
 
     } // end [Task]
@@ -905,6 +907,7 @@ function prepare_process(ticket, document)
                         data: new_variable['@'],
                         type: _Uri
                     });
+					addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);                    
                 }
             }
 
@@ -1015,8 +1018,7 @@ function prepare_start_form(ticket, document)
 				type: _Uri
 			});
     	
-			if (author_uri) 
-				addRight(ticket, [can_read], "v-wf:WorkflowReadUser", process_inVars[i]['@']);
+			addRight(ticket, [can_read], "v-wf:WorkflowReadUser", process_inVars[i]['@']);
 		}
     }
 

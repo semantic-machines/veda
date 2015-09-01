@@ -35,6 +35,8 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
 
     put_individual(ticket, new_work_item, _event_id);
 
+	addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_uri); 
+
     return new_uri;
 }
 
@@ -293,6 +295,8 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
                     data: new_variable['@'],
                     type: _Uri
                 });
+   				addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);                    
+
             }
             else
             {
