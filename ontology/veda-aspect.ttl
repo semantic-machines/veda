@@ -143,15 +143,13 @@ v-asp:PersonalAspectTemplate
 		<div class="row">
 			<div class="col-md-2">
 				<div rel="v-s:owner">
-					<div>
-						<div rel="v-s:hasImage" template="v-ui:ImageTemplate"></div>
-						<br/>
-						<a href="#/individual/@/#main">
-							<p>
-								<span class="glyphicon glyphicon-user"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:lastName"></span>
-							</p>
-						</a>
-					</div>
+					<div rel="v-s:hasImage" template="v-ui:ImageTemplate"></div>
+					<br/>
+					<a href="#/individual/@/#main">
+						<p>
+							<span class="glyphicon glyphicon-user"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:lastName"></span>
+						</p>
+					</a>
 				</div>
 			</div>
 			<div class="col-md-10">
