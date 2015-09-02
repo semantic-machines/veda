@@ -98,6 +98,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 	
 	function renderTemplate (individual, container, template, specs, mode) {
 
+		// Unwrapped templates support
 		var wrapper = $("<div>").append(template);
 
 		// Cleanup memory
