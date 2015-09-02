@@ -658,6 +658,7 @@ td:PersonTemplate1
       </div>
     </div>
   </div>
+  <div about="v-m:MainMenu"></div>
 """ ;
 .
 td:PsHasAppointmentPerson
