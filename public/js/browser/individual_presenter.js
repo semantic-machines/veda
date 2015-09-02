@@ -39,7 +39,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			if (typeof template === "string") template = $( template );
 			var $scripts = template.filter("script");
 			$scripts.map(function () { scripts.push( $(this).text() ); });
-			template = template.first();
+			//template = template.first();
+			template = template.filter("*:not(script)");
 			rendered.push({
 				template: renderTemplate(individual, container, template, specs, mode),
 				scripts: scripts
@@ -57,7 +58,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						template = $( _class.template["v-ui:template"][0].toString() );
 						var $scripts = template.filter("script");
 						$scripts.map(function () { scripts.push( $(this).text() ); });
-						template = template.first();
+						//template = template.first();
+						template = template.filter("*:not(script)");
 					} else {
 						// Construct generic template
 						template = genericTemplate(individual, _class);
@@ -96,9 +98,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 	
 	function renderTemplate (individual, container, template, specs, mode) {
 
+		// Unwrapped templates support
+		var wrapper = $("<div>").append(template);
+
 		// Cleanup memory
 		template.on("remove", function (event) {
-			$(".typeahead", template).typeahead("destroy");
+			$(".typeahead", wrapper).typeahead("destroy");
 		});
 		
 		// Embedded templates list & property controls
@@ -179,12 +184,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		template.on("recover", recoverHandler);
 		
 		// Actions
-		var $edit = $("#edit.action", template),
-			$save = $("#save.action", template),
-			$send = $("#send.action", template),
-			$cancel = $("#cancel.action", template),
-			$delete = $("#delete.action", template),
-			$search = $("#search.action", template);
+		var $edit = $("#edit.action", wrapper),
+			$save = $("#save.action", wrapper),
+			$send = $("#send.action", wrapper),
+			$cancel = $("#cancel.action", wrapper),
+			$delete = $("#delete.action", wrapper),
+			$search = $("#search.action", wrapper);
 
 		// Check rights to manage buttons		
 		// Update
@@ -274,13 +279,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Process RDFa compliant template
 
 		// Special (not RDFa)
-		$("a[href*='@']:not([rel] *, [about] *)", template).map( function () {
+		$("a[href*='@']:not([rel] *, [about] *)", wrapper).map( function () {
 			var self = $(this);
 			var str = self.attr("href");
 			self.attr("href", str.replace("@", individual.id));
 		});
 
-		$("img[src*='@']:not([rel] *, [about] *)", template).map( function () {
+		$("img[src*='@']:not([rel] *, [about] *)", wrapper).map( function () {
 			var self = $(this);
 			var str = self.attr("src");
 			self.attr("src", str.replace("@", individual.id));
@@ -288,7 +293,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		// Property value
 		var props_ctrls = {};
-		$("[property]:not(veda-control, [rel] *, [about], [about] *)", template).map( function () {
+		$("[property]:not(veda-control, [rel] *, [about], [about] *)", wrapper).map( function () {
 			var propertyContainer = $(this),
 				property_uri = propertyContainer.attr("property"),
 				spec = specs[property_uri];
@@ -313,7 +318,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 
 		// Related resources & about resources
-		$("[rel]:not(veda-control, [rel] *, [about] *)", template).map( function () {
+		$("[rel]:not(veda-control, [rel] *, [about] *)", wrapper).map( function () {
 			var relContainer = $(this), 
 				about = relContainer.attr("about"),
 				rel_uri = relContainer.attr("rel"),
@@ -383,46 +388,31 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 		});		
 
-		/*// About resource relation
-		$("[about][rel]:not([rel] *)", template).map( function () {
-			var relContainer = $(this), 
-				rel_uri = relContainer.attr("rel"),
-				rel_template_uri = relContainer.attr("template"),
-				rel_inline_template = relContainer.children(),
-				about, relTemplate;
-			if ( rel_template_uri ) {
-				var templateIndividual = new veda.IndividualModel( rel_template_uri );
-				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
+		// About resource
+		$("[about]:not([rel], [property])", wrapper).map( function () {
+			var aboutContainer = $(this), 
+				about_template_uri = aboutContainer.attr("template"),
+				about_inline_template = aboutContainer.children(),
+				about, aboutTemplate;
+			if ( about_template_uri ) {
+				var templateIndividual = new veda.IndividualModel( about_template_uri );
+				aboutTemplate = $( templateIndividual["v-ui:template"][0].toString() );
 			}
-			if ( rel_inline_template.length ) {
-				relTemplate = rel_inline_template.remove();
+			if ( about_inline_template.length ) {
+				aboutTemplate = about_inline_template.remove();
 			}
-			if (relContainer.attr("about") === "@") {
+			if (aboutContainer.attr("about") === "@") {
 				about = individual;
-				relContainer.attr("about", about.id);
+				aboutContainer.attr("about", about.id);
 			} else {
-				about = new veda.IndividualModel(relContainer.attr("about"));
+				about = new veda.IndividualModel(aboutContainer.attr("about"));
 			}
-			propertyModifiedHandler(rel_uri);
-			function propertyModifiedHandler(doc_rel_uri) {
-				if (doc_rel_uri === rel_uri) {
-					relContainer.empty();
-					if ( about.hasValue(rel_uri) ) {
-						about[rel_uri].map( function (item) {
-							item.present(relContainer, relTemplate.clone());
-						});
-					}
-				}
-			}
-			about.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				about.off("individual:propertyModified", propertyModifiedHandler);
-			});
-		});*/
-
+			aboutContainer.empty();
+			about.present(aboutContainer, aboutTemplate);
+		});
 
 		// About resource property
-		$("[about][property]:not([rel] *, [about] *)", template).map( function () {
+		$("[about][property]:not([rel] *, [about] *)", wrapper).map( function () {
 			var propertyContainer = $(this), 
 				property_uri = propertyContainer.attr("property"),
 				about;
@@ -446,7 +436,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 
 		// Property control
-		$("veda-control[property]:not([rel] *, [about] *)", template).map( function () {
+		$("veda-control[property]:not([rel] *, [about] *)", wrapper).map( function () {
 			
 			var control = $(this),
 				property_uri = control.attr("property"),
@@ -555,7 +545,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		
 		// Relation control
-		$("veda-control[rel]:not([rel] *, [about] *)", template).map( function () {
+		$("veda-control[rel]:not([rel] *, [about] *)", wrapper).map( function () {
 			
 			var control = $(this), 
 				rel_uri = control.attr("rel"),

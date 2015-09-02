@@ -76,14 +76,13 @@ v-a:Event_1
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:script """
 
-//	print ("@JS0 doc=", toJson (document));
-var is_definedBy = document["rdfs:isDefinedBy"];
-if (is_definedBy)
+var isDefinedBy = document["rdfs:isDefinedBy"];
+if (isDefinedBy)
 {
 	    var doc_uri = document['@'];	
 	    var new_membership = 
 	    {
-    	    '@' : guid (), 
+    	    '@' : genUri (), 
     	    'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
     	    'v-s:memberOf' : [{data: 'v-a:ReadResGroup', type : _Uri}],
     	    'v-s:resource'  : [{data: doc_uri, type : _Uri}],
@@ -94,19 +93,13 @@ if (is_definedBy)
 
 }
 
-
-
 var vs_owner = document["v-s:owner"];
 if (vs_owner)
-{
-//	print ("@JS1 v-s:owner=", getUri (vs_owner));
 			addRight(ticket, [can_read, can_update, can_delete], getUri (vs_owner), document['@']);
-}
 
 var ff = get_property_chain (ticket, document, 'v-s:author', 'v-s:employee');
 if (ff)
 {
-//    print ('v-a:Event_1:author');
     var employee_uri = getUri (ff['field']);
     var first_doc = ff['first'];
     if (first_doc)
@@ -322,18 +315,3 @@ v-a:Membership_1
   rdfs:label "Membership, v-a:VedaSystem in v-a:SuperAdmin";
 .
 
-v-a:Membership_rl1
-  rdf:type v-s:Membership ;
-  v-s:memberOf v-a:ReadResGroup ;
-  v-s:resource v-ui:EN ;
-  rdfs:label "Membership_rl1"@en ;
-  rdfs:label "Членство_rl1"@ru ;
-.
-
-v-a:Membership_rl2
-  rdf:type v-s:Membership ;
-  v-s:memberOf v-a:ReadResGroup ;
-  v-s:resource v-ui:RU ;
-  rdfs:label "Membership_rl2"@en ;
-  rdfs:label "Членство_rl2"@ru ;
-.
