@@ -114,6 +114,26 @@ td:AndreyBychin
   rdfs:label "Andrey Bychin"@en ;
   rdfs:label "Андрей Бычин"@ru ;
 .
+mnd-s-asppd:Membership1509021134
+  rdf:type v-s:Membership ;
+  v-s:memberOf mnd-s-asppd:AllUserAsppd ;
+  v-s:resource td:AndreyBychin ;
+  rdfs:label "Membership1509021134"@en ;
+  rdfs:label "Бычин в группу все пользователи аспекта АСППД"@ru ;
+.
+td:Permission1509021132
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject mnd-s-asppd:d090fb801e73c9fa73b10d9fd98851005 ;
+  v-s:permissionSubject td:AndreyBychin ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:canUpdate "true"^^xsd:boolean ;
+  v-s:created "2015-09-02T00:45:33"^^xsd:dateTime ;
+  v-s:published "2015-09-02T00:45:33"^^xsd:dateTime ;
+  v-s:startTime "2015-09-02T00:45:33"^^xsd:dateTime ;
+  rdfs:label "Read. Bychin. IdeaDoc."@en ;
+  rdfs:label "Чтение. Бычин. Экземпляр идеи."@ru ;
+  rdfs:comment "Запись о выдаче прав Бычину на чтение экземпляра Идеи" ;
+.
 
 td:AndreyBychin-Analyst2
   rdf:type v-s:Appointment ;
