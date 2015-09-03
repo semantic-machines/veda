@@ -420,8 +420,7 @@ veda.Module(function (veda) { "use strict";
 	 * @param {Number} Depth of the object tree to prefetch.
 	 */
 	proto.prefetch = function (depth) {
-		var uris = [];
-		var data = this._.individual;
+		var uris = [], data = this._.individual;
 		Object.keys(data).map( function (key) {
 			if (key === "@") return;
 			data[key].map(function (value) {
@@ -431,27 +430,17 @@ veda.Module(function (veda) { "use strict";
 			});
 		});
 		for (var i=0; i < depth && uris.length; i++) {
-			var result = get_individuals.call({}, veda.ticket, uris);
-			var res_map = result.map(function (value) {
+			var result = get_individuals.call({}, veda.ticket, uris),
+				res_map = result.map(function (value) {
+					var obj;
 					if (!veda.cache[ value["@"] ]) {
-						var obj = new veda.IndividualModel(value);
-						veda.cache[ value["@"] ] = obj;
+						obj = new veda.IndividualModel(value);
+					} else {
+						obj = veda.cache[ value["@"] ];
 					}
 					return obj.prefetch(0);
 				});
 			uris = veda.Util.flatten(res_map, false);
-			/*uris = veda.Util.flatten(
-				result.map(function (value) {
-					if (!veda.cache[ value["@"] ]) {
-						var obj = new veda.IndividualModel(value);
-						veda.cache[ value["@"] ] = obj;
-					}
-					return obj.prefetch(0);
-				}),
-				false
-			).filter( function (uri) {
-				return !veda.cache[uri];
-			});*/
 		}
 		return uris;
 	};
