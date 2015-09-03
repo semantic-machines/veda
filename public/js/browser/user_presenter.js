@@ -17,9 +17,7 @@ veda.Module(function UserPresenter(veda) { "use strict";
 		languageSelector.html(languages);
 		
 		// Render user
-		//userInfo.html( riot.render(userTemplate, {user: veda.user}) );
-		
-		var userTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");		
+		var userTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
 		veda.user.present(userInfo, userTmpl);
 
 		var $languages = $("label", languageSelector);

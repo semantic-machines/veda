@@ -193,6 +193,10 @@ veda-control {
   right:0px; 
   z-index:100;
 }
+.red-outline {
+  outline: 3px dashed #faa!important;
+  outline-offset: 3px!important;
+}
 
 /* Template elements visibility in different modes. Works up to 10 levels deep for embedded templates */
 

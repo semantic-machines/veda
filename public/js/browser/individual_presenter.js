@@ -631,6 +631,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			btnRemove.click(function () {
 				individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
 			});
+			btnRemove.mouseenter(function () {
+				valueHolder.addClass("red-outline");
+			});
+			btnRemove.mouseleave(function () {
+				valueHolder.removeClass("red-outline");
+			});
 			btnEdit.click(function () {
 				var val;
 				individual[property_uri] = individual[property_uri].filter(function (_, j) {
@@ -690,7 +696,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			btnRemove.on("click", function () {
 				individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id !== value.id; });
 			});
-
+			btnRemove.mouseenter(function () {
+				valTemplate.addClass("red-outline");
+			});
+			btnRemove.mouseleave(function () {
+				valTemplate.removeClass("red-outline");
+			});
 			valTemplate.css("position", "relative");
 			// It is important to append buttons to skip script element in template!
 			valTemplate.not("script").append(wrapper);
@@ -809,7 +820,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					break;
 					default:
 						$(".value", result).append (
-							$("<div/>", {"rel": property_uri, "template": "v-ui:ClassNameLabelTemplate"}),
+							$("<div/>", {"rel": property_uri, "template": "v-ui:ClassNameLabelBlockTemplate"}),
 							$("<veda-control class='-view edit search fullsearch fulltext'></veda-control>").attr("rel", property_uri)
 						);
 					break;
