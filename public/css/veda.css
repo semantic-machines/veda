@@ -175,10 +175,6 @@ veda-control {
   display: block;
 }
 
-[rel], [property] {
-  position: relative;
-}
-
 .value-holder {
   margin-right: 5px;
 }

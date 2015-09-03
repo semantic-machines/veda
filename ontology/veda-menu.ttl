@@ -1,0 +1,161 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-m: <http://semantic-machines.com/veda/veda-menu/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+
+<http://semantic-machines.com/veda/veda-menu>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system menu ontology"@en ;
+  rdfs:label "Онтология меню системы Веда"@ru ;
+  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
+  owl:imports <http://semantic-machines.com/veda/veda-ui> ;
+  owl:imports rdf: ;
+  owl:imports rdfs: ;
+  owl:imports <http://www.w3.org/2002/07/owl> ;
+#  owl:versionInfo "0.2" ;
+.
+
+########## MENU ###########
+
+v-m:Menu
+	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
+	rdfs:label "Menu"@en ;
+	rdfs:label "Меню"@ru ;
+.
+v-m:menuItem
+	rdf:type owl:ObjectProperty ;
+	rdfs:label "menu item"@en ;
+	rdfs:label "пункт меню"@ru ;
+	rdfs:domain v-m:Menu ;
+	rdfs:range rdfs:Resource ;
+.
+v-m:staticUrl
+	rdf:type owl:ObjectProperty ;
+	rdfs:label "static Url"@en ;
+	rdfs:label "статический Url"@ru ;
+	rdfs:domain v-m:Menu ;
+	rdfs:range xsd:string ;
+.
+v-m:MainMenu
+	rdf:type v-m:Menu ;
+	rdfs:label "Main menu"@en ;
+	rdfs:label "Главное меню"@ru ;
+	v-m:menuItem v-m:DocMenu ;
+	v-m:menuItem v-m:Search ;
+	v-m:menuItem v-m:Settings ;
+.
+v-m:DocMenu
+	rdf:type v-m:Menu ;
+	rdfs:label "Document"@en ;
+	rdfs:label "Документ"@ru ;
+	v-m:menuItem v-fc:Create ;
+	v-m:menuItem v-m:Find ;
+.
+v-m:Search
+	rdf:type v-m:Menu ;
+	rdfs:label "Search"@en ;
+	rdfs:label "Поиск"@ru ;
+	v-m:staticUrl "#/search"^^xsd:string ;
+.
+v-m:Find
+	rdf:type v-m:Menu ;
+	rdfs:label "Find"@en ;
+	rdfs:label "Найти"@ru ;
+	v-m:staticUrl "#/individual//#main//search"^^xsd:string ;
+.
+v-m:Settings
+	rdf:type v-m:Menu ;
+	rdfs:label "Settings"@en ;
+	rdfs:label "Настройки"@ru ;
+	v-m:menuItem v-m:Console ;
+	v-m:menuItem v-m:Tests ;
+	v-m:menuItem v-m:Trace ;
+	v-m:menuItem v-m:Clear ;
+.
+v-m:Console
+	rdf:type v-m:Menu ; 
+	rdfs:label "Console"@en ;
+	rdfs:label "Консоль"@ru ;
+	v-m:staticUrl "#/console"^^xsd:string ;
+.
+v-m:Tests
+	rdf:type v-m:Menu ;
+	rdfs:label "Tests"@en ;
+	rdfs:label "Тесты"@ru ;
+	v-m:staticUrl "/tests"^^xsd:string ;
+.
+v-m:Trace
+	rdf:type v-m:Menu ;
+	rdfs:label "Trace"@en ;
+	rdfs:label "Трассировка"@ru ;
+	v-m:staticUrl "#/trace"^^xsd:string ;
+.
+v-m:Clear
+	rdf:type v-m:Menu ;
+	rdfs:label "Clear data"@en ;
+	rdfs:label "Очистить данные"@ru ;
+	v-m:staticUrl "#/clear"^^xsd:string ;
+.
+
+v-m:MenuItemTemplate
+	rdf:type v-ui:ClassTemplate ;
+	rdfs:label "Menu item template"@en ;
+	rdfs:label "Шаблон пункта Меню"@ru ;
+	v-ui:template """
+<li id="item">
+	<a id="lnk" href="#/individual/@/#main">
+		<span property="rdfs:label"></span>
+	</a>
+</li>
+<li id="submenu" role="presentation" class="dropdown">
+	<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+		<span property="rdfs:label"></span> <span class="caret"></span>
+	</a>
+	<ul class="dropdown-menu" role="menu" rel="v-m:menuItem" template="v-m:MenuItemTemplate"></ul>
+</li>
+<script>
+	var itemTmpl = template.first(), subTmpl = template.last();
+	if (individual.hasValue("v-m:menuItem") && template.attr("id") === "item") {
+		itemTmpl.remove();
+	} else {
+		subTmpl.remove();
+		if (individual.hasValue("v-m:staticUrl")) {
+			$("#lnk", itemTmpl).attr("href", individual["v-m:staticUrl"][0]);
+		}
+	}
+</script>
+	"""
+.
+v-m:MenuTemplate
+	rdf:type v-ui:ClassTemplate ;
+	v-ui:forClass v-m:Menu ;
+	rdfs:label "Menu class template"@en ;
+	rdfs:label "Шаблон класса Меню"@ru ;
+	v-ui:template """
+<nav class="navbar navbar-default">
+	<ul class="nav navbar-nav" rel="v-m:menuItem" template="v-m:MenuItemTemplate"></ul> 
+</nav>
+	"""
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
