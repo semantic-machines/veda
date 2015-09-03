@@ -31,7 +31,7 @@ v-a:standart_node
 	rdf:type vsrv:Node ;
 	vsrv:count_thread "4"^^xsd:integer ;
 	vsrv:checktime_onto_files "30"^^xsd:integer ;
-#	vsrv:listener v-a:conn_rabbit_mq;
+	vsrv:listener v-a:conn_http;
 	vsrv:io_gate v-a:conn_rabbit_mq;
 	rdfs:label "стандартная конфигурация" ;
 .	
@@ -50,11 +50,20 @@ v-a:conn_rabbit_mq
 	vsrv:amqp_routingkey "";	
 .
 
+v-a:conn_http
+	rdf:type vsrv:Connection ;
+	vsrv:name "http-server" ;
+	rdfs:label "http server" ;
+	vsrv:port	"8080"^^xsd:integer ;
+	vsrv:transport	"http" ;
+.
+
 v-a:developer_node
 	rdf:type vsrv:Node ;
 	vsrv:count_thread "4"^^xsd:integer ;
 	vsrv:checktime_onto_files "1"^^xsd:integer ;
-	vsrv:listener v-a:conn_rabbit_mq;
+	vsrv:listener v-a:conn_http;
+	vsrv:io_gate v-a:conn_rabbit_mq;
 	rdfs:label "конфигурация разработчика" ;
 .	
 
