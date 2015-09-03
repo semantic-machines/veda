@@ -12,6 +12,7 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix vsrv: <http://semantic-machines.com/veda/veda-server/> .
 
 <http://semantic-machines.com/veda/veda-admin>
   rdf:type owl:Ontology ;
@@ -23,6 +24,41 @@
   owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "1.0" ;
 .
+
+#####################################################
+
+v-a:standart_node
+	rdf:type vsrv:Node ;
+	vsrv:count_thread "4"^^xsd:integer ;
+	vsrv:checktime_onto_files "30"^^xsd:integer ;
+#	vsrv:listener v-a:conn_rabbit_mq;
+	vsrv:io_gate v-a:conn_rabbit_mq;
+	rdfs:label "стандартная конфигурация" ;
+.	
+
+v-a:conn_rabbit_mq 
+	rdf:type vsrv:Connection ;
+	vsrv:name "funout" ;
+	rdfs:label "connect to rabbitmq server" ;
+	vsrv:host	"127.0.0.1" ;
+	vsrv:port	"5672"^^xsd:integer ;
+	vsrv:transport	"rabbitmq" ;
+	vsrv:queue "veda_fanout" ;
+	vsrv:login	"guest" ;
+	vsrv:credentional	"guest" ;
+	vsrv:amqp_vhost	"veda" ;
+	vsrv:amqp_routingkey "";	
+.
+
+v-a:developer_node
+	rdf:type vsrv:Node ;
+	vsrv:count_thread "4"^^xsd:integer ;
+	vsrv:checktime_onto_files "1"^^xsd:integer ;
+	vsrv:listener v-a:conn_rabbit_mq;
+	rdfs:label "конфигурация разработчика" ;
+.	
+
+#####################################################
 
 v-a:SuperAdmin
   rdf:type v-s:Group ;
