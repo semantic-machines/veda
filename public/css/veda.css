@@ -417,17 +417,28 @@ veda-control {
 	border-radius:8px;	
 }
 
-.state-condition {
+.state-io-condition {
 	width: 50px;
 	height: 50px;
 	-moz-border-radius:25px;
 	border-radius:25px;
 }
 
+.state-condition {
+	width: 30px;
+	height: 30px;
+	-moz-border-radius:15px;
+	border-radius:15px;
+}
+
 .state-name {
 	width: inherit;
 	position: absolute;
 	top: 50px;	
+}
+
+.condition-name {
+	top: 30px;	
 }
 
 .w_active {
