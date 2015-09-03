@@ -397,7 +397,7 @@ veda.Module(function (veda) { "use strict";
 
 	/**
 	 * @method
-	 * Call indivdual presenter
+	 * Call individual presenter
 	 * @param {String/jQuery} container Container to render individual in. If passed as String, then must be a valid css selector. If passed as jQuery, then is used as is. If not specified, than individual will not be presented.
 	 * @param {String/jQuery/veda.IndividualModel} template Template to render individual with.
 	 * @param {String} mode Initial mode for individual presenter. Expected values: "view", "edit", "search".
@@ -408,9 +408,52 @@ veda.Module(function (veda) { "use strict";
 				this["rdf:type"] = [veda.ontology["rdfs:Resource"]]; 
 				return;
 			}
+			this.prefetch(2);
 			veda.trigger("individual:loaded", this, container, template, mode);
 		}
 		return this;
 	};
-	
+
+	/**
+	 * @method
+	 * Prefetch linked objects
+	 * @param {Number} Depth of the object tree to prefetch.
+	 */
+	proto.prefetch = function (depth) {
+		var uris = [];
+		var data = this._.individual;
+		Object.keys(data).map( function (key) {
+			if (key === "@") return;
+			data[key].map(function (value) {
+				if (value.type === "Uri" && !veda.cache[value.data]) {
+					uris.push(value.data);
+				}
+			});
+		});
+		for (var i=0; i < depth && uris.length; i++) {
+			var result = get_individuals.call({}, veda.ticket, uris);
+			var res_map = result.map(function (value) {
+					if (!veda.cache[ value["@"] ]) {
+						var obj = new veda.IndividualModel(value);
+						veda.cache[ value["@"] ] = obj;
+					}
+					return obj.prefetch(0);
+				});
+			uris = veda.Util.flatten(res_map, false);
+			/*uris = veda.Util.flatten(
+				result.map(function (value) {
+					if (!veda.cache[ value["@"] ]) {
+						var obj = new veda.IndividualModel(value);
+						veda.cache[ value["@"] ] = obj;
+					}
+					return obj.prefetch(0);
+				}),
+				false
+			).filter( function (uri) {
+				return !veda.cache[uri];
+			});*/
+		}
+		return uris;
+	};
+
 });
