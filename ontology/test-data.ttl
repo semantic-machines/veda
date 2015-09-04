@@ -663,7 +663,7 @@ td:PersonTemplate1
 		    <div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" embedded="true">шаблон: td:PreferencesTemplate1</div>
 		    <veda-control rel="v-ui:hasPreferences" type="link" class="-view edit search fulltext dropdown create"></veda-control>
 		    <br />
-		    <div rel="v-s:hasAppointment" embedded="true"></div>
+		    <div rel="v-s:hasAppointment" template="td:AppointmentTemplate1" embedded="true"></div>
 		    <veda-control rel="v-s:hasAppointment" type="link" class="-view edit search fulltext dropdown create"></veda-control>
           </div>
         </div>
