@@ -3,7 +3,7 @@ import vibe.d;
 import properd;
 import veda.pacahon_driver;
 import veda.storage_rest;
-
+import onto.individual, onto.resource;
 
 void view_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
 {
@@ -60,10 +60,6 @@ shared static this()
     static if (is (typeof(registerMemoryErrorHandler)))
         registerMemoryErrorHandler();
 
-
-    ushort http_port    = 8080;
-    int    count_thread = 10;
-
     string[ string ] properties;
 
     try
@@ -74,76 +70,96 @@ shared static this()
     {
     }
 
-    http_port    = properties.as!(ushort)("http_port");
-    count_thread = properties.as!(int)("count_thread");
-    int checktime_onto_files = properties.as!(int)("checktime_onto_files");
+    string node_id = properties.as!(string)("node_id");
 
-    if (checktime_onto_files < 1)
-        checktime_onto_files = 30;
+//    http_port    = properties.as!(string)("node_id");
+//    count_thread = properties.as!(int)("count_thread");
+//    int checktime_onto_files = properties.as!(int)("checktime_onto_files");
 
-    pacahon.server.init_core(checktime_onto_files);
+//    if (checktime_onto_files < 1)
+//        checktime_onto_files = 30;
+    pacahon.context.Context core_context;
 
-    pacahon.context.Context      context;
-    string                       thread_name = "veda" ~ text(std.uuid.randomUUID().toHash())[ 0..5 ];
-    core.thread.Thread.getThis().name        = thread_name;
-    context = new pacahon.thread_context.PThreadContext(pacahon.server.props_file_path, thread_name, pacahon.context.P_MODULE.nop);
+    core_context = pacahon.server.init_core(node_id);
+    if (core_context is null)
+    {
+        writeln("ERR: Veda core has not been initialized");
+        return;
+    }
 
+    Individual            node = core_context.get_individual(null, node_id);
+
+    ushort                count_thread = cast(ushort)node.getFirstInteger("vsrv:count_thread", 4);
     std.concurrency.Tid[] pool;
-
     for (int i = 0; i < count_thread; i++)
     {
-        pool ~= std.concurrency.spawnLinked(&core_thread);
+        pool ~= std.concurrency.spawnLinked(&core_thread, node_id);
         core.thread.Thread.sleep(dur!("msecs")(10));
     }
 
-    VedaStorageRest vsr = new VedaStorageRest(pool, context, properties);
-
-    auto            settings = new HTTPServerSettings;
-    settings.port           = http_port;
-    settings.maxRequestSize = 1024 * 1024 * 1000;
-    //settings.bindAddresses = ["::1", "127.0.0.1", "172.17.35.148"];
-    //settings.bindAddresses = ["127.0.0.1"];
-    settings.errorPageHandler = toDelegate(&view_error);
-    //settings.options = HTTPServerOption.parseURL|HTTPServerOption.distribute;
-
-    auto router = new URLRouter;
-    router.get("/files/*", &vsr.fileManager);
-    router.get("*", serveStaticFiles("public"));
-    router.get("/", serveStaticFile("public/index.html"));
-    router.get("/tests", serveStaticFile("public/tests.html"));
-    router.post("/files", &uploadFile);
-
-    registerRestInterface(router, vsr);
-
-    logInfo("============ROUTES=============");
-    auto routes = router.getAllRoutes();
-    logInfo("GET:");
-    foreach (route; routes)
+    Resources listeners = node.resources.get("vsrv:listener", Resources.init);
+    foreach (listener_uri; listeners)
     {
-        if (route.method == HTTPMethod.GET)
-            logInfo(route.pattern);
-    }
+        Individual connection = core_context.get_individual(null, listener_uri.uri);
 
-    logInfo("PUT:");
-    foreach (route; routes)
-    {
-        if (route.method == HTTPMethod.PUT)
-            logInfo(route.pattern);
-    }
-    logInfo("POST:");
-    foreach (route; routes)
-    {
-        if (route.method == HTTPMethod.POST)
-            logInfo(route.pattern);
-    }
-    logInfo("DELETE:");
-    foreach (route; routes)
-    {
-        if (route.method == HTTPMethod.DELETE)
-            logInfo(route.pattern);
-    }
-    logInfo("===============================");
+        Resource transport = connection.getFirstResource("vsrv:transport");
+        if (transport != Resource.init)
+        {
+            if (transport.data() == "http")
+            {
+                ushort http_port = cast(ushort)connection.getFirstInteger("vsrv:port", 8080);
 
-    listenHTTP(settings, router);
-    logInfo("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
+                VedaStorageRest vsr = new VedaStorageRest(pool, core_context, properties);
+
+                auto            settings = new HTTPServerSettings;
+                settings.port           = http_port;
+                settings.maxRequestSize = 1024 * 1024 * 1000;
+                //settings.bindAddresses = ["::1", "127.0.0.1", "172.17.35.148"];
+                //settings.bindAddresses = ["127.0.0.1"];
+                settings.errorPageHandler = toDelegate(&view_error);
+                //settings.options = HTTPServerOption.parseURL|HTTPServerOption.distribute;
+
+                auto router = new URLRouter;
+                router.get("/files/*", &vsr.fileManager);
+                router.get("*", serveStaticFiles("public"));
+                router.get("/", serveStaticFile("public/index.html"));
+                router.get("/tests", serveStaticFile("public/tests.html"));
+                router.post("/files", &uploadFile);
+
+                registerRestInterface(router, vsr);
+
+                logInfo("============ROUTES=============");
+                auto routes = router.getAllRoutes();
+                logInfo("GET:");
+                foreach (route; routes)
+                {
+                    if (route.method == HTTPMethod.GET)
+                        logInfo(route.pattern);
+                }
+
+                logInfo("PUT:");
+                foreach (route; routes)
+                {
+                    if (route.method == HTTPMethod.PUT)
+                        logInfo(route.pattern);
+                }
+                logInfo("POST:");
+                foreach (route; routes)
+                {
+                    if (route.method == HTTPMethod.POST)
+                        logInfo(route.pattern);
+                }
+                logInfo("DELETE:");
+                foreach (route; routes)
+                {
+                    if (route.method == HTTPMethod.DELETE)
+                        logInfo(route.pattern);
+                }
+                logInfo("===============================");
+
+                listenHTTP(settings, router);
+                logInfo("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
+            }
+        }
+    }
 }

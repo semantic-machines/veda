@@ -36,19 +36,14 @@ v-a:standart_node
 	rdfs:label "стандартная конфигурация" ;
 .	
 
-v-a:conn_rabbit_mq 
-	rdf:type vsrv:Connection ;
-	vsrv:name "funout" ;
-	rdfs:label "connect to rabbitmq server" ;
-	vsrv:host	"127.0.0.1" ;
-	vsrv:port	"5672"^^xsd:integer ;
-	vsrv:transport	"rabbitmq" ;
-	vsrv:queue "veda_fanout" ;
-	vsrv:login	"guest" ;
-	vsrv:credentional	"guest" ;
-	vsrv:amqp_vhost	"veda" ;
-	vsrv:amqp_routingkey "";	
-.
+v-a:developer_node
+	rdf:type vsrv:Node ;
+	vsrv:count_thread "4"^^xsd:integer ;
+	vsrv:checktime_onto_files "1"^^xsd:integer ;
+	vsrv:listener v-a:conn_http;
+	vsrv:io_gate v-a:conn_rabbit_mq;
+	rdfs:label "конфигурация разработчика" ;
+.	
 
 v-a:conn_http
 	rdf:type vsrv:Connection ;
@@ -58,14 +53,19 @@ v-a:conn_http
 	vsrv:transport	"http" ;
 .
 
-v-a:developer_node
-	rdf:type vsrv:Node ;
-	vsrv:count_thread "4"^^xsd:integer ;
-	vsrv:checktime_onto_files "1"^^xsd:integer ;
-	vsrv:listener v-a:conn_http;
-	vsrv:io_gate v-a:conn_rabbit_mq;
-	rdfs:label "конфигурация разработчика" ;
-.	
+v-a:conn_rabbit_mq 
+	rdf:type vsrv:Connection ;
+	vsrv:name "funout" ;
+	rdfs:label "connect to rabbitmq server" ;
+	vsrv:host	"127.0.0.1" ;
+	vsrv:port	"5672"^^xsd:integer ;
+	vsrv:transport	"rabbitmq" ;
+	vsrv:queue "fanout" ;
+	vsrv:login	"guest" ;
+	vsrv:credentional	"guest" ;
+	vsrv:amqp_vhost	"veda" ;
+	vsrv:amqp_routingkey "";	
+.
 
 #####################################################
 
