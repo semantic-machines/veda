@@ -153,13 +153,9 @@ v-asp:PersonalAspectTemplate
 				</div>
 			</div>
 			<div class="col-md-10">
-				<div class="panel panel-default">
-					<div class="panel-body">
-						<h3><span about="v-b:MyPage" property="rdfs:label"></span></h3>
-						<hr/>
-						<div rel="v-asp:hasWidget"></div>
-					</div>
-				</div>
+				<h3><span about="v-b:MyPage" property="rdfs:label"></span></h3>
+				<hr/>
+				<div rel="v-asp:hasWidget"></div>
 			</div>
 		</div>
 		<hr/>
@@ -175,40 +171,36 @@ v-asp:PersonalAspectTemplate
 				</ul>
 			</div>
 			<div class="col-md-10">
-				<div class="panel panel-default">
-					<div class="panel-body">
-						<div class="tab-content">
-							<div role="tabpanel" class="tab-pane active" id="favorites">
-								<h3><span about="v-b:Favorites" property="rdfs:label"></span></h3>
-								<hr/>
-								<div rel="v-asp:hasFavorite"></div>
-							</div>
-							<div role="tabpanel" class="tab-pane" id="blanks">
-								<h3><span about="v-b:Blanks" property="rdfs:label"></span></h3>
-								<hr/>
-								<div rel="v-asp:hasBlank"></div>
-							</div>
-							<div role="tabpanel" class="tab-pane" id="registries">
-								<h3><span about="v-b:Registries" property="rdfs:label"></span></h3>
-								<hr/>
-								<div rel="v-asp:hasRegistry"></div>
-							</div>
-							<div role="tabpanel" class="tab-pane" id="aspects">
-								<h3><span about="v-b:Aspects" property="rdfs:label"></span></h3>
-								<hr/>
-								<div rel="v-asp:hasBusinessAspect" template="v-ui:LabelBlockLinkTemplate"> </div>
-							</div>
-							<div role="tabpanel" class="tab-pane" id="reports">
-								<h3><span about="v-b:Reports" property="rdfs:label"></span></h3>
-								<hr/>
-								<div rel="v-asp:hasReport"></div>
-							</div>
-							<div role="tabpanel" class="tab-pane" id="other">
-								<h3><span about="v-b:Other" property="rdfs:label"></span></h3>
-								<hr/>
-								<div rel="v-asp:hasArbitraryLink"></div>
-							</div>
-						</div>
+				<div class="tab-content">
+					<div role="tabpanel" class="tab-pane active" id="favorites">
+						<h3><span about="v-b:Favorites" property="rdfs:label"></span></h3>
+						<hr/>
+						<div rel="v-asp:hasFavorite"></div>
+					</div>
+					<div role="tabpanel" class="tab-pane" id="blanks">
+						<h3><span about="v-b:Blanks" property="rdfs:label"></span></h3>
+						<hr/>
+						<div rel="v-asp:hasBlank"></div>
+					</div>
+					<div role="tabpanel" class="tab-pane" id="registries">
+						<h3><span about="v-b:Registries" property="rdfs:label"></span></h3>
+						<hr/>
+						<div rel="v-asp:hasRegistry"></div>
+					</div>
+					<div role="tabpanel" class="tab-pane" id="aspects">
+						<h3><span about="v-b:Aspects" property="rdfs:label"></span></h3>
+						<hr/>
+						<div rel="v-asp:hasBusinessAspect" template="v-ui:LabelBlockLinkTemplate"> </div>
+					</div>
+					<div role="tabpanel" class="tab-pane" id="reports">
+						<h3><span about="v-b:Reports" property="rdfs:label"></span></h3>
+						<hr/>
+						<div rel="v-asp:hasReport"></div>
+					</div>
+					<div role="tabpanel" class="tab-pane" id="other">
+						<h3><span about="v-b:Other" property="rdfs:label"></span></h3>
+						<hr/>
+						<div rel="v-asp:hasArbitraryLink"></div>
 					</div>
 				</div>
 			</div>

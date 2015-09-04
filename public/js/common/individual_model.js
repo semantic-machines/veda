@@ -440,9 +440,20 @@ veda.Module(function (veda) { "use strict";
 					}
 					return obj.prefetch(0);
 				});
-			uris = veda.Util.flatten(res_map, false);
+			uris = unique( veda.Util.flatten(res_map, false) );
 		}
 		return uris;
 	};
+
+	function unique(arr) {
+		var n = {}, r=[];
+		for(var i = 0; i < arr.length; i++) {
+			if (!n[arr[i]]) {
+				n[arr[i]] = true; 
+				r.push(arr[i]); 
+			}
+		}
+		return r;
+	}
 
 });
