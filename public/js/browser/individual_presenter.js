@@ -663,7 +663,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				value.present(relContainer, valTemplate, mode);
 			} else {
 				value.present(relContainer, undefined, mode);
-				valTemplate = relContainer.children();
+				valTemplate = $("[resource='" + value.id + "']", relContainer);
 			}
 			embedded.push(valTemplate);
 			valTemplate.on("remove", function () {
@@ -678,7 +678,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				value.present(relContainer, valTemplate);
 			} else {
 				value.present(relContainer);
-				valTemplate = relContainer.children();
+				valTemplate = $("[resource='" + value.id + "']", relContainer);
 			}
 		}
 		if (!isAbout) {
