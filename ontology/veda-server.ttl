@@ -31,6 +31,14 @@ vsrv:count_thread
   rdfs:range xsd:integer ;
 .    
 
+vsrv:push_individual_by_event
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain vsrv:Node ;
+  rdfs:isDefinedBy vsrv: ;
+  rdfs:label "push individual by event" ;
+  rdfs:range vsrv:Connection ;
+.    
+
 vsrv:name
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vsrv:Node, vsrv:Connection ;
@@ -58,13 +66,6 @@ vsrv:listener
   rdfs:range vsrv:Connection ;
 .
 
-vsrv:io_gate
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain vsrv:Node ;
-  rdfs:isDefinedBy vsrv: ;
-  rdfs:label "io gate" ;
-  rdfs:range vsrv:Connection ;
-.
 
 vsrv:Connection
   rdf:type owl:Class ;

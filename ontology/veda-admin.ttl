@@ -32,7 +32,6 @@ v-a:standart_node
 	vsrv:count_thread "4"^^xsd:integer ;
 	vsrv:checktime_onto_files "30"^^xsd:integer ;
 	vsrv:listener v-a:conn_http;
-	vsrv:io_gate v-a:conn_rabbit_mq;
 	rdfs:label "стандартная конфигурация" ;
 .	
 
@@ -41,7 +40,7 @@ v-a:developer_node
 	vsrv:count_thread "4"^^xsd:integer ;
 	vsrv:checktime_onto_files "1"^^xsd:integer ;
 	vsrv:listener v-a:conn_http;
-	vsrv:io_gate v-a:conn_rabbit_mq;
+	vsrv:push_individual_by_event v-a:conn_rabbit_mq;
 	rdfs:label "конфигурация разработчика" ;
 .	
 
@@ -65,6 +64,7 @@ v-a:conn_rabbit_mq
 	vsrv:credentional	"guest" ;
 	vsrv:amqp_vhost	"veda" ;
 	vsrv:amqp_routingkey "";	
+	vsrv:mission "out_new_or_updated_individual";
 .
 
 #####################################################
