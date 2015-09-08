@@ -39,6 +39,16 @@ veda.Module(function (veda) { "use strict";
 		
 		var storage = typeof localStorage != 'undefined' ? localStorage : undefined;
 		
+		// TODO: do not query ontology objects if clientVsn === serverVsn is ok
+		if (storage) {
+			var clientVsn = storage["v-g:OntoVsn"];
+			var serverVsn = JSON.stringify( get_individual(veda.ticket, "v-g:OntoVsn") );
+			if ( clientVsn !== serverVsn ) {
+				storage.clear();
+				storage["v-g:OntoVsn"] = serverVsn;
+			}
+		}
+		
 		var q = /* Classes */ 
 				"'rdf:type' == 'rdfs:Class' || " +
 				"'rdf:type' == 'owl:Class' || " +
