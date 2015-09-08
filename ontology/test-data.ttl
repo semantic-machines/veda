@@ -15,7 +15,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
 @prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
-@prefix mnd-wf: <http://semantic-machines.com/veda/mondi-workflow/> .
+@prefix s-wf: <http://semantic-machines.com/veda/simple-workflow/> .
 @prefix mnd-s-pdr: <http://semantic-machines.com/veda/mondi-schema-pdr/> .
 @prefix v-asp: <http://semantic-machines.com/veda/veda-aspect/> .
 @prefix mnd-s-asppd: <http://semantic-machines.com/veda/mondi-schema-asppd/> .
@@ -1012,19 +1012,19 @@ td:SortOrder1
 # -------- стартовая форма маршрута ----------------
 td:ComplexRouteStartForm1
     v-s:author v-a:VedaSystemAccount ;
-	rdf:type mnd-wf:ComplexRouteStartForm ; 
+	rdf:type s-wf:ComplexRouteStartForm ; 
 	rdf:type v-wf:StartForm ; 
-	v-wf:forNet mnd-wf:net_complex_route ;
+	v-wf:forNet s-wf:net_complex_route ;
 	v-wf:processedDocument td:SavedSearch1 ; 
 	v-wf:processInitiator td:RomanKarpov-Analyst1 ; 
-	v-wf:useTransformation mnd-wf:transformation1 ;
+	v-wf:useTransformation s-wf:transformation1 ;
 	rdfs:label "ТЕСТ Комплексный маршрут"@ru;
-	mnd-wf:ComplexRouteStartForm_coordinator1 td:RomanKarpov-Analyst1 ; 
-	mnd-wf:ComplexRouteStartForm_coordinator1 td:ValeriyBushenev-Programmer1 ; 
-	mnd-wf:ComplexRouteStartForm_coordinator2 td:ValeriyBushenev-Programmer1 ; 
-	mnd-wf:ComplexRouteStartForm_coordinator3 td:AndreyBychin-ExecutiveDirector ; 
-	mnd-wf:ComplexRouteStartForm_reviewer td:ValeriyBushenev-Programmer1 ; 
-	mnd-wf:ComplexRouteStartForm_signer td:AndreyBychin-ExecutiveDirector ; 
+	s-wf:ComplexRouteStartForm_coordinator1 td:RomanKarpov-Analyst1 ; 
+	s-wf:ComplexRouteStartForm_coordinator1 td:ValeriyBushenev-Programmer1 ; 
+	s-wf:ComplexRouteStartForm_coordinator2 td:ValeriyBushenev-Programmer1 ; 
+	s-wf:ComplexRouteStartForm_coordinator3 td:AndreyBychin-ExecutiveDirector ; 
+	s-wf:ComplexRouteStartForm_reviewer td:ValeriyBushenev-Programmer1 ; 
+	s-wf:ComplexRouteStartForm_signer td:AndreyBychin-ExecutiveDirector ; 
 .
 
 :b435740-f19e-7731-03ef-e7cb2203f8c4 
@@ -1084,10 +1084,10 @@ td:Membership_004
     mnd-s-pdr:hasTrainingObjective :de6224bd385fa0248cfcc1248c41baaa1;
     mnd-s-pdr:readyToNewPosition "тест"^^xsd:string;
     rdfs:label "ТЕСТ ПДР"@ru;
-    v-wf:forNet mnd-wf:net_complex_route ;
+    v-wf:forNet s-wf:net_complex_route ;
     v-wf:processInitiator td:RomanKarpov-Analyst1 ;
     v-wf:processedDocument :dcf1ce1146792aaa860ae4db7893b2ebb ; 
-    v-wf:useTransformation mnd-wf:transformation2 ;
+    v-wf:useTransformation s-wf:transformation2 ;
 .
 
 td:Membership_001
@@ -1300,7 +1300,7 @@ td:d5ecd0a39041e9160f723ae960f3b86fe a mnd-s-pdr:Mobility;
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
-	v-wf:aggregate	"putUri ('rdf:type', 'mnd-wf:UserTaskForm')";
+	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
 	v-wf:aggregate	"putString ('rdfs:label', 'задание')";
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
 	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
