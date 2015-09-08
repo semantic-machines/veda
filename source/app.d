@@ -88,6 +88,7 @@ shared static this()
     }
 
     Individual            node = core_context.get_individual(null, node_id);
+    writeln("USE CONFIGURATION:", node);
 
     ushort                count_thread = cast(ushort)node.getFirstInteger("vsrv:count_thread", 4);
     std.concurrency.Tid[] pool;
