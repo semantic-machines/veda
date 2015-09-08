@@ -10,8 +10,8 @@ import vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
 
 import type;
-import pacahon.context;
-import pacahon.know_predicates;
+import veda.core.context;
+import veda.core.know_predicates;
 import onto.onto;
 import onto.individual;
 import onto.resource;

@@ -78,16 +78,16 @@ shared static this()
 
 //    if (checktime_onto_files < 1)
 //        checktime_onto_files = 30;
-    pacahon.context.Context core_context;
+    veda.core.context.Context core_context;
 
-    core_context = pacahon.server.init_core(node_id);
+    core_context = veda.core.server.init_core(node_id);
     if (core_context is null)
     {
         writeln("ERR: Veda core has not been initialized");
         return;
     }
 
-    Individual            node = core_context.get_individual(null, node_id);
+    Individual node = core_context.get_individual(null, node_id);
     writeln("USE CONFIGURATION:", node);
 
     ushort                count_thread = cast(ushort)node.getFirstInteger("vsrv:count_thread", 4);
@@ -103,12 +103,12 @@ shared static this()
     {
         Individual connection = core_context.get_individual(null, listener_uri.uri);
 
-        Resource transport = connection.getFirstResource("vsrv:transport");
+        Resource   transport = connection.getFirstResource("vsrv:transport");
         if (transport != Resource.init)
         {
             if (transport.data() == "http")
             {
-                ushort http_port = cast(ushort)connection.getFirstInteger("vsrv:port", 8080);
+                ushort          http_port = cast(ushort)connection.getFirstInteger("vsrv:port", 8080);
 
                 VedaStorageRest vsr = new VedaStorageRest(pool, core_context, properties);
 
