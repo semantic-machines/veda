@@ -48,23 +48,22 @@ v-a:conn_http
 	rdf:type vsrv:Connection ;
 	vsrv:name "http-server" ;
 	rdfs:label "http server" ;
-	vsrv:port	"8080"^^xsd:integer ;
-	vsrv:transport	"http" ;
+	vsrv:port "8080"^^xsd:integer ;
+	vsrv:transport "http" ;
 .
 
 v-a:conn_rabbit_mq 
 	rdf:type vsrv:Connection ;
 	vsrv:name "funout" ;
 	rdfs:label "connect to rabbitmq server" ;
-	vsrv:host	"127.0.0.1" ;
-	vsrv:port	"5672"^^xsd:integer ;
-	vsrv:transport	"rabbitmq" ;
+	vsrv:host "127.0.0.1" ;
+	vsrv:port "5672"^^xsd:integer ;
+	vsrv:transport "rabbitmq" ;
 	vsrv:queue "fanout" ;
-	vsrv:login	"guest" ;
-	vsrv:credentional	"guest" ;
+	vsrv:login "guest" ;
+	vsrv:credentional "guest" ;
 	vsrv:amqp_vhost	"veda" ;
 	vsrv:amqp_routingkey "";	
-	vsrv:mission "out_new_or_updated_individual";
 .
 
 #####################################################
