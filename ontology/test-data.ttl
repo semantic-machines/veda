@@ -502,6 +502,7 @@ td:AleksandraKhvostikova-Analyst1
   v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Александра Хвостикова : Аналитик"@ru ;
+  rdfs:label "Aleksandra Khvostikova : Analyst"@en ;  
 .
 
 td:RomanKarpov-Analyst1
