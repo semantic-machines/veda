@@ -39,54 +39,26 @@ veda.Module(function (veda) { "use strict";
 		
 		var storage = typeof localStorage != 'undefined' ? localStorage : undefined;
 		
+		// Get ontology 
 		if (!storage) {
+			// ... from server
 			getOntology();
 		} else {
+			// Check whether server & local v-g:OntoVsn objects are equal
 			var clientVsn = storage["v-g:OntoVsn"];
 			var serverVsn = JSON.stringify( get_individual(veda.ticket, "v-g:OntoVsn") );
 			if ( clientVsn !== serverVsn ) {
+				// Get ontology from server
 				storage.clear();
 				storage["v-g:OntoVsn"] = serverVsn;
 				getOntology();
 			} else {
+				// Get ontology from local storage
 				Object.keys(storage).map(function (key) {
 					var individual = JSON.parse(storage[key]);
 					self[key] = new veda.IndividualModel( individual, undefined, undefined, undefined, true, false );
 				});
 			}
-		}
-		
-		function getOntology () {
-			var q = /* Classes */ 
-					"'rdf:type' == 'rdfs:Class' || " +
-					"'rdf:type' == 'owl:Class' || " +
-					"'rdf:type' == 'rdfs:Datatype' || " +
-					"'rdf:type' == 'owl:Ontology' || " +
-					/* Properties */
-					"'rdf:type' == 'rdf:Property' || " +
-					"'rdf:type' == 'owl:DatatypeProperty' || " +
-					"'rdf:type' == 'owl:ObjectProperty' || " +
-					"'rdf:type' == 'owl:OntologyProperty' || " +
-					"'rdf:type' == 'owl:AnnotationProperty' || " +
-					/* Models */
-					"'rdf:type' == 'v-s:ClassModel' || " +
-					/* Templates */
-					"'rdf:type' == 'v-ui:ClassTemplate' || " +
-					/* Property specifications */
-					"'rdf:type' == 'v-ui:PropertySpecification' || " +
-					"'rdf:type' == 'v-ui:IntegerPropertySpecification' || " + 
-					"'rdf:type' == 'v-ui:DecimalPropertySpecification' || " +
-					"'rdf:type' == 'v-ui:DatetimePropertySpecification' || " +
-					"'rdf:type' == 'v-ui:StringPropertySpecification' || " +
-					"'rdf:type' == 'v-ui:BooleanPropertySpecification' || " +
-					"'rdf:type' == 'v-ui:ObjectPropertySpecification'";
-			
-			var q_results = query(veda.ticket, q);
-				
-			get_individuals(veda.ticket, q_results).map( function (item) {
-				if (storage) storage[ item["@"] ] = JSON.stringify(item);
-				self[ item["@"] ] = new veda.IndividualModel( item, undefined, undefined, undefined, true, false );
-			});
 		}
 
 		// Allocate ontology objects
@@ -95,9 +67,11 @@ veda.Module(function (veda) { "use strict";
 			if (!individual || !individual.id) return;
 			
 			// Update localStorage after individual was saved
-			individual.on("individual:afterSave", function (data) {
-				storage[uri] = data;
-			});
+			if (storage) {
+				individual.on("individual:afterSave", function (data) {
+					storage[uri] = data;
+				});
+			}
 			
 			switch ( individual["rdf:type"][0].id ) {
 				case "rdfs:Class" :
@@ -204,7 +178,40 @@ veda.Module(function (veda) { "use strict";
 		});
 
 		return self;
+		
+		// Get ontology from server
+		function getOntology () {
+			var q = /* Classes */ 
+					"'rdf:type' == 'rdfs:Class' || " +
+					"'rdf:type' == 'owl:Class' || " +
+					"'rdf:type' == 'rdfs:Datatype' || " +
+					"'rdf:type' == 'owl:Ontology' || " +
+					/* Properties */
+					"'rdf:type' == 'rdf:Property' || " +
+					"'rdf:type' == 'owl:DatatypeProperty' || " +
+					"'rdf:type' == 'owl:ObjectProperty' || " +
+					"'rdf:type' == 'owl:OntologyProperty' || " +
+					"'rdf:type' == 'owl:AnnotationProperty' || " +
+					/* Models */
+					"'rdf:type' == 'v-s:ClassModel' || " +
+					/* Templates */
+					"'rdf:type' == 'v-ui:ClassTemplate' || " +
+					/* Property specifications */
+					"'rdf:type' == 'v-ui:PropertySpecification' || " +
+					"'rdf:type' == 'v-ui:IntegerPropertySpecification' || " + 
+					"'rdf:type' == 'v-ui:DecimalPropertySpecification' || " +
+					"'rdf:type' == 'v-ui:DatetimePropertySpecification' || " +
+					"'rdf:type' == 'v-ui:StringPropertySpecification' || " +
+					"'rdf:type' == 'v-ui:BooleanPropertySpecification' || " +
+					"'rdf:type' == 'v-ui:ObjectPropertySpecification'";
 			
+			var q_results = query(veda.ticket, q);
+				
+			get_individuals(veda.ticket, q_results).map( function (item) {
+				if (storage) storage[ item["@"] ] = JSON.stringify(item);
+				self[ item["@"] ] = new veda.IndividualModel( item, undefined, undefined, undefined, true, false );
+			});
+		}
 	};
 
 });
