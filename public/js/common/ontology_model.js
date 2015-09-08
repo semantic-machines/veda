@@ -39,7 +39,7 @@ veda.Module(function (veda) { "use strict";
 		
 		var storage = typeof localStorage != 'undefined' ? localStorage : undefined;
 		
-		// TODO: do not query ontology objects if clientVsn === serverVsn is ok
+		// TODO: do not query ontology objects at all if clientVsn === serverVsn
 		if (storage) {
 			var clientVsn = storage["v-g:OntoVsn"];
 			var serverVsn = JSON.stringify( get_individual(veda.ticket, "v-g:OntoVsn") );
