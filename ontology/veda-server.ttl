@@ -108,6 +108,14 @@ vsrv:port
   rdfs:range xsd:integer ;
 .    
 
+vsrv:sql_database
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain vsrv:Connection ;
+  rdfs:isDefinedBy vsrv: ;
+  rdfs:label "database name" ;
+  rdfs:range xsd:string ;
+.    
+
 vsrv:amqp_vhost
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vsrv:Connection ;
