@@ -362,7 +362,6 @@ v-a:Event_4
   v-s:filter v-ui:BooleanPropertySpecification ;
   v-s:filter v-ui:ObjectPropertySpecification ;
   v-s:script """
-	    var doc_uri = document['@'];	
 	    var vsn = {
     	    '@' : "v-g:OntoVsn", 
     	    'rdf:type' : [{data: 'v-g:Global', type : _Uri}],
