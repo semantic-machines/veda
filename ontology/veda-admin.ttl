@@ -363,11 +363,10 @@ v-a:Event_4
   v-s:filter v-ui:BooleanPropertySpecification ;
   v-s:filter v-ui:ObjectPropertySpecification ;
   v-s:script """
-	    var doc_uri = document['@'];	
 	    var vsn = {
     	    '@' : "v-g:OntoVsn", 
     	    'rdf:type' : [{data: 'v-g:Global', type : _Uri}],
-    	    'v-g:literalValue' : [{data: genUri(), type : _String}],
+    	    'v-g:literalValue' : [{data: guid(), type : _String}],
 	    };
 	    put_individual (ticket, vsn, _event_id);
 """ ;
