@@ -12,6 +12,7 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix vsrv: <http://semantic-machines.com/veda/veda-server/> .
 
 <http://semantic-machines.com/veda/veda-admin>
   rdf:type owl:Ontology ;
@@ -23,6 +24,50 @@
   owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "1.0" ;
 .
+
+#####################################################
+
+v-a:standart_node
+	rdf:type vsrv:Node ;
+	vsrv:count_thread "4"^^xsd:integer ;
+	vsrv:checktime_onto_files "30"^^xsd:integer ;
+	vsrv:listener v-a:conn_http;
+	rdfs:label "стандартная конфигурация" ;
+.	
+
+v-a:developer_node
+	rdf:type vsrv:Node ;
+	vsrv:count_thread "4"^^xsd:integer ;
+	vsrv:checktime_onto_files "1"^^xsd:integer ;
+	vsrv:listener v-a:conn_http;
+	vsrv:push_individual_by_event v-a:conn_rabbit_mq;
+	rdfs:label "конфигурация разработчика" ;
+.	
+
+v-a:conn_http
+	rdf:type vsrv:Connection ;
+	vsrv:name "http-server" ;
+	rdfs:label "http server" ;
+	vsrv:port	"8080"^^xsd:integer ;
+	vsrv:transport	"http" ;
+.
+
+v-a:conn_rabbit_mq 
+	rdf:type vsrv:Connection ;
+	vsrv:name "funout" ;
+	rdfs:label "connect to rabbitmq server" ;
+	vsrv:host	"127.0.0.1" ;
+	vsrv:port	"5672"^^xsd:integer ;
+	vsrv:transport	"rabbitmq" ;
+	vsrv:queue "fanout" ;
+	vsrv:login	"guest" ;
+	vsrv:credentional	"guest" ;
+	vsrv:amqp_vhost	"veda" ;
+	vsrv:amqp_routingkey "";	
+	vsrv:mission "out_new_or_updated_individual";
+.
+
+#####################################################
 
 v-a:SuperAdmin
   rdf:type v-s:Group ;
@@ -293,6 +338,42 @@ v-a:Event_3
   rdfs:comment "скрипт автоматической выдачи прав на чтение для всех онтологий и UI настроек"@ru ;
   rdfs:label "Event_3"@en ;
   rdfs:label "Событие_3"@ru ;
+.
+
+v-a:Event_4
+  rdf:type v-s:Event ;
+  v-s:author v-a:VedaSystemAccount ;
+  v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:filter rdf:Property ;
+  v-s:filter rdfs:Class ;
+  v-s:filter rdfs:Datatype ;
+  v-s:filter owl:Class ;
+  v-s:filter owl:Ontology ;
+  v-s:filter owl:DatatypeProperty ;
+  v-s:filter owl:ObjectProperty ;
+  v-s:filter owl:Restriction ;
+  v-s:filter v-s:ClassModel ;
+  v-s:filter v-ui:ClassTemplate ;
+  v-s:filter v-ui:PropertySpecification ;
+  v-s:filter v-ui:IntegerPropertySpecification ;
+  v-s:filter v-ui:DecimalPropertySpecification ;
+  v-s:filter v-ui:DatetimePropertySpecification ;
+  v-s:filter v-ui:StringPropertySpecification ;
+  v-s:filter v-ui:BooleanPropertySpecification ;
+  v-s:filter v-ui:ObjectPropertySpecification ;
+  v-s:script """
+	    var doc_uri = document['@'];	
+	    var vsn = {
+    	    '@' : "v-g:OntoVsn", 
+    	    'rdf:type' : [{data: 'v-g:Global', type : _Uri}],
+    	    'v-g:literalValue' : [{data: guid(), type : _String}],
+	    };
+	    put_individual (ticket, vsn, _event_id);
+""" ;
+  rdfs:comment "скрипт автоматического изменения глобальной версии онтологии при изменении любого индивида онтологии"@ru ;
+  rdfs:label "Event_4"@en ;
+  rdfs:label "Событие_4"@ru ;
 .
 
 # -------------------------------------------------------------------------------------------------

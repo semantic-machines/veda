@@ -32,14 +32,21 @@ v-m:menuItem
 	rdfs:label "menu item"@en ;
 	rdfs:label "пункт меню"@ru ;
 	rdfs:domain v-m:Menu ;
-	rdfs:range rdfs:Resource ;
+	rdfs:range v-m:Menu ;
 .
-v-m:staticUrl
-	rdf:type owl:ObjectProperty ;
-	rdfs:label "static Url"@en ;
-	rdfs:label "статический Url"@ru ;
+v-m:staticLink
+	rdf:type owl:DatatypeProperty ;
+	rdfs:label "static link"@en ;
+	rdfs:label "статическая ссылка"@ru ;
 	rdfs:domain v-m:Menu ;
 	rdfs:range xsd:string ;
+.
+v-m:objectLink
+	rdf:type owl:ObjectProperty ;
+	rdfs:label "link to individual"@en ;
+	rdfs:label "ссылка на индивид"@ru ;
+	rdfs:domain v-m:Menu ;
+	rdfs:range rdfs:Resource ;
 .
 v-m:MainMenu
 	rdf:type v-m:Menu ;
@@ -47,107 +54,94 @@ v-m:MainMenu
 	rdfs:label "Главное меню"@ru ;
 	v-m:menuItem v-m:DocMenu ;
 	v-m:menuItem v-m:Search ;
-	v-m:menuItem v-m:Settings ;
 .
 v-m:DocMenu
 	rdf:type v-m:Menu ;
 	rdfs:label "Document"@en ;
 	rdfs:label "Документ"@ru ;
-	v-m:menuItem v-fc:Create ;
+	v-m:menuItem v-m:Create ;
 	v-m:menuItem v-m:Find ;
 .
-v-m:Search
+v-m:Create
 	rdf:type v-m:Menu ;
-	rdfs:label "Search"@en ;
-	rdfs:label "Поиск"@ru ;
-	v-m:staticUrl "#/search"^^xsd:string ;
+	rdfs:label "Create"@en ;
+	rdfs:label "Создать"@ru ;
+	v-m:objectLink v-fc:Create ;
 .
 v-m:Find
 	rdf:type v-m:Menu ;
 	rdfs:label "Find"@en ;
 	rdfs:label "Найти"@ru ;
-	v-m:staticUrl "#/individual//#main//search"^^xsd:string ;
+	v-m:staticLink "#/individual//#main//search"^^xsd:string ;
 .
-v-m:Settings
+v-m:Search
 	rdf:type v-m:Menu ;
-	rdfs:label "Settings"@en ;
-	rdfs:label "Настройки"@ru ;
-	v-m:menuItem v-m:Console ;
-	v-m:menuItem v-m:Tests ;
-	v-m:menuItem v-m:Trace ;
-	v-m:menuItem v-m:Clear ;
+	rdfs:label "Search"@en ;
+	rdfs:label "Поиск"@ru ;
+	v-m:staticLink "#/search"^^xsd:string ;
 .
-v-m:Console
-	rdf:type v-m:Menu ; 
-	rdfs:label "Console"@en ;
-	rdfs:label "Консоль"@ru ;
-	v-m:staticUrl "#/console"^^xsd:string ;
-.
-v-m:Tests
-	rdf:type v-m:Menu ;
-	rdfs:label "Tests"@en ;
-	rdfs:label "Тесты"@ru ;
-	v-m:staticUrl "/tests"^^xsd:string ;
-.
-v-m:Trace
-	rdf:type v-m:Menu ;
-	rdfs:label "Trace"@en ;
-	rdfs:label "Трассировка"@ru ;
-	v-m:staticUrl "#/trace"^^xsd:string ;
-.
-v-m:Clear
-	rdf:type v-m:Menu ;
-	rdfs:label "Clear data"@en ;
-	rdfs:label "Очистить данные"@ru ;
-	v-m:staticUrl "#/clear"^^xsd:string ;
-.
-
-v-m:MenuItemTemplate
+v-m:MenuItemViewTemplate
 	rdf:type v-ui:ClassTemplate ;
 	rdfs:label "Menu item template"@en ;
 	rdfs:label "Шаблон пункта Меню"@ru ;
 	v-ui:template """
-<li id="item">
-	<a id="lnk" href="#/individual/@/#main">
+<li id="static">
+	<a id="lnk">
 		<span property="rdfs:label"></span>
 	</a>
 </li>
-<li id="submenu" role="presentation" class="dropdown">
+<li id="object" rel="v-m:objectLink">
+	<a href="#/individual/@/#main">
+		<span property="rdfs:label"></span>
+	</a>
+</li>
+<li id="sub" role="presentation" class="dropdown">
 	<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
 		<span property="rdfs:label"></span> <span class="caret"></span>
 	</a>
-	<ul class="dropdown-menu" role="menu" rel="v-m:menuItem" template="v-m:MenuItemTemplate"></ul>
+	<ul class="dropdown-menu" role="menu" rel="v-m:menuItem" template="v-m:MenuItemViewTemplate"></ul>
 </li>
 <script>
-	var itemTmpl = template.first(), subTmpl = template.last();
-	if (individual.hasValue("v-m:menuItem") && template.attr("id") === "item") {
-		itemTmpl.remove();
+	var stcTmpl = template.eq(0), objTmpl = template.eq(1), subTmpl = template.eq(2);
+	if (individual.hasValue("v-m:menuItem")) {
+		stcTmpl.remove();
+		objTmpl.remove();
 	} else {
 		subTmpl.remove();
-		if (individual.hasValue("v-m:staticUrl")) {
-			$("#lnk", itemTmpl).attr("href", individual["v-m:staticUrl"][0]);
+		if (individual.hasValue("v-m:staticLink")) {
+			objTmpl.remove();
+			$("#lnk", stcTmpl).attr("href", individual["v-m:staticLink"][0]);
+		} else {
+			stcTmpl.remove();
 		}
 	}
 </script>
 	"""
 .
-v-m:MenuTemplate
+v-m:MenuViewTemplate
 	rdf:type v-ui:ClassTemplate ;
-	v-ui:forClass v-m:Menu ;
 	rdfs:label "Menu class template"@en ;
 	rdfs:label "Шаблон класса Меню"@ru ;
 	v-ui:template """
-<nav class="navbar navbar-default">
-	<ul class="nav navbar-nav" rel="v-m:menuItem" template="v-m:MenuItemTemplate"></ul> 
-</nav>
+<ul class="nav navbar-nav" rel="v-m:menuItem" template="v-m:MenuItemViewTemplate"></ul>
 	"""
 .
-
-
-
-
-
-
+v-m:PsStrings
+	rdf:type v-ui:StringPropertySpecification ;
+	v-ui:forProperty rdfs:label, v-m:staticLink ;
+	v-ui:forClass v-m:Menu ;
+	rdfs:label "rdfs:label, v-m:staticLink specification for Menu class"@en ;
+	rdfs:label "Спецификация rdfs:label, v-m:staticLink для класса Меню"@ru ;
+	v-ui:maxCardinality "1"^^xsd:integer ;
+.
+v-m:PsMenuItem
+	rdf:type v-ui:ObjectPropertySpecification ;
+	v-ui:forProperty v-m:menuItem ;
+	v-ui:forClass v-m:Menu ;
+	rdfs:label "v-m:menuItem specification for v-m:Menu class"@en ;
+	rdfs:label "Спецификация v-m:menuItem для класса v-m:Menu"@ru ;
+	v-ui:queryPrefix "('rdf:type' == 'v-m:Menu')"^^xsd:string ;
+.
 
 
 

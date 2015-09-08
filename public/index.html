@@ -47,18 +47,8 @@
 				<!--a href="#/" class="navbar-brand"><img src="/img/veda-logo.png" style="position:relative; top:-3px"/></a-->
 				<a href="#/" class="navbar-brand"><strong>veda</strong></a>
 				<div class="collapse navbar-collapse" id="navbar-collapse">
-					<ul class="nav navbar-nav navbar-left" id="menu">
-						<li class="dropdown" id="individual">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Документ <span class="caret"></span></a>
-							<ul class="dropdown-menu" role="menu">
-								<li><a href="#/individual//#main//edit">Создать</a></li>
-								<li><a href="#/individual//#main//search">Найти</a></li>
-								<!--li class="divider"></li-->
-							</ul>
-						</li>
-						<li id="search">	
-							<a i18n="[Search]" href="#/search">Поиск</a>
-						</li>
+					<div id="user-menu"></div>
+					<ul class="nav navbar-nav navbar-left" id="sys-menu">
 						<li class="dropdown" id="settings">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Настройки <span class="caret"></span></a>
 							<ul class="dropdown-menu" role="menu">
@@ -715,6 +705,7 @@
 		<script type="text/javascript" src="/js/browser/search_sort.js"></script>
 		<script type="text/javascript" src="/js/browser/search_selected_actions.js"></script>
 		<script type="text/javascript" src="/js/browser/user_presenter.js"></script>
+		<script type="text/javascript" src="/js/browser/menu_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/graph_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/veda_controls.js"></script>
 		<script type="text/javascript" src="/js/browser/veda_net_editor.js"></script>

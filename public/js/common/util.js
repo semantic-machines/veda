@@ -11,7 +11,7 @@ var _Bool     = 64;
 
 function genUri()
 {
-    return 'd:' + guid();
+    return 'd:a' + guid();
 }
 
 function guid() {

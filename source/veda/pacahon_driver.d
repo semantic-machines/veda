@@ -42,14 +42,14 @@ enum Function
     RightsOrigin
 }
 
-public void core_thread()
+public void core_thread(string node_id)
 {
     Context context;
     string  thread_name = "veda" ~ text(std.uuid.randomUUID().toHash())[ 0..5 ];
 
     core.thread.Thread.getThis().name = thread_name;
 
-    context = new PThreadContext(props_file_path, thread_name, P_MODULE.nop);
+    context = new PThreadContext(node_id, thread_name, P_MODULE.nop);
 
     writeln("--- START VEDA STORAGE THREAD LISTENER --- " ~ thread_name);
 
