@@ -28,8 +28,8 @@ v-fc:CreateClass
 .
 v-fc:Blank
   rdf:type owl:Class ;
-  rdfs:label "Бланк"@en ;
-  rdfs:label "Blank"@ru ;
+  rdfs:label "Бланк"@ru ;
+  rdfs:label "Blank"@en ;
   rdfs:subClassOf owl:Thing ;
 .
 v-fc:Create
@@ -88,6 +88,8 @@ v-fc:CreateClassTemplate
 	<veda-control rel="v-fc:type" type="link" class="fulltext dropdown"></veda-control>
 	<hr />
 	<div id="holder"></div>
+	<h3 about="v-b:Blanks" property="rdfs:label"></h3>
+	<ol id="blanks"></ol>
 </div>
 <script>
 	var self = individual;
@@ -104,6 +106,16 @@ v-fc:CreateClassTemplate
 	template.one("remove", function () {
 		self.off("individual:propertyModified", modHandler);
 	});
+	
+	var blanksHolder = $("#blanks", template),
+		asp = veda.user.aspect,
+		blanks = asp["v-asp:hasBlank"];
+	if (blanks) {
+		blanks.map( function (blank) {
+			var cont = $("<li>").appendTo(blanksHolder);
+			blank.present(cont, veda.ontology["v-ui:LabelBlockLinkTemplate"]);
+		});
+	}
 
 </script>
   """
@@ -139,9 +151,11 @@ v-fc:BlankTemplate
 	</div>
 </div>
 <script>
-	var self = individual;
-	var holder = $("#holder", template);
-	var object = new veda.IndividualModel();
+	var self = individual,
+		holder = $("#holder", template),
+		object = new veda.IndividualModel(),
+		asp = veda.user.aspect;
+	
 	object["rdf:type"] = self["v-fc:type"];
 	if ( self.isSync() ) {
 		Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
@@ -154,11 +168,13 @@ v-fc:BlankTemplate
 	}
 	object.present(holder, undefined, "edit");
 
-	self.on("individual:beforeSave", saveHandler);	
+	self.on("individual:beforeSave", bsHandler);	
+	self.on("individual:afterSave", asHandler);	
 	template.one("remove", function () {
-		self.off("individual:beforeSave", saveHandler);
+		self.off("individual:beforeSave", bsHandler);
+		self.off("individual:afterSave", asHandler);	
 	});
-	function saveHandler() {
+	function bsHandler() {
 		Object.getOwnPropertyNames(object.properties).map( function (property_uri) {
 			if (property_uri === "rdf:type") return;
 			if (property_uri === "rdfs:label") return;
@@ -166,6 +182,16 @@ v-fc:BlankTemplate
 			self.defineProperty(property_uri);
 			self[property_uri] = object[property_uri].slice(0);
 		});
+	}
+	function asHandler() {
+		if (self["v-s:deleted"][0] == true) {
+			asp["v-asp:hasBlank"] = asp["v-asp:hasBlank"].filter( function (i) { return i.id !== self.id;});
+		} else if (
+			!asp["v-asp:hasBlank"].filter( function (i) {return i.id === self.id;}).length
+		) {
+			asp["v-asp:hasBlank"] = asp["v-asp:hasBlank"].concat(self);
+		}
+		asp.save();
 	}
 </script>
   """

@@ -339,6 +339,42 @@ v-a:Event_3
   rdfs:label "Событие_3"@ru ;
 .
 
+v-a:Event_4
+  rdf:type v-s:Event ;
+  v-s:author v-a:VedaSystemAccount ;
+  v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:filter rdf:Property ;
+  v-s:filter rdfs:Class ;
+  v-s:filter rdfs:Datatype ;
+  v-s:filter owl:Class ;
+  v-s:filter owl:Ontology ;
+  v-s:filter owl:DatatypeProperty ;
+  v-s:filter owl:ObjectProperty ;
+  v-s:filter owl:Restriction ;
+  v-s:filter v-s:ClassModel ;
+  v-s:filter v-ui:ClassTemplate ;
+  v-s:filter v-ui:PropertySpecification ;
+  v-s:filter v-ui:IntegerPropertySpecification ;
+  v-s:filter v-ui:DecimalPropertySpecification ;
+  v-s:filter v-ui:DatetimePropertySpecification ;
+  v-s:filter v-ui:StringPropertySpecification ;
+  v-s:filter v-ui:BooleanPropertySpecification ;
+  v-s:filter v-ui:ObjectPropertySpecification ;
+  v-s:script """
+	    var doc_uri = document['@'];	
+	    var vsn = {
+    	    '@' : "v-g:OntoVsn", 
+    	    'rdf:type' : [{data: 'v-g:Global', type : _Uri}],
+    	    'v-g:literalValue' : [{data: guid(), type : _String}],
+	    };
+	    put_individual (ticket, vsn, _event_id);
+""" ;
+  rdfs:comment "скрипт автоматического изменения глобальной версии онтологии при изменении любого индивида онтологии"@ru ;
+  rdfs:label "Event_4"@en ;
+  rdfs:label "Событие_4"@ru ;
+.
+
 # -------------------------------------------------------------------------------------------------
 
 v-a:VedaSystemAccount

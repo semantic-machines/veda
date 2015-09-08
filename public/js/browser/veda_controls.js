@@ -841,6 +841,14 @@
 			fulltext = $("#fulltext", control),
 			fullsearch = $("#fullsearch", control);
 
+		if (!queryPrefix) {
+			var relRange = veda.ontology[rel_uri]["rdfs:range"];
+			if ( relRange && relRange.length && (relRange.length > 1 || relRange[0].id !== "rdfs:Resource") ) {
+				var types = relRange.map(function (i) { return "'rdf:type' == '" + i.id + "'";})
+				queryPrefix = "(" + types.join(" || ") + ")";
+			}
+		}
+
 		function select(selected) {
 			if (isSingle) {
 				individual[rel_uri] = selected instanceof Array ? [ selected[0] ] : [ selected ];
