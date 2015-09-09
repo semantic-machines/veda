@@ -55,6 +55,9 @@ public enum P_MODULE : byte
     file_reader                = 10,
 
     zmq_listener               = 11,
+    
+    fanout					   = 12,	
+    
     nop                        = 99
 }
 

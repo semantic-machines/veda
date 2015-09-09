@@ -26,19 +26,18 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
 
     if (ev_type == EVENT.CREATE || ev_type == EVENT.UPDATE)
     {
+    	Tid tid_fanout = context.getTid(P_MODULE.fanout);
+        if (tid_fanout != Tid.init)
+        {
+        	send(tid_fanout, CMD.PUT, subject_as_cbor);
+        }
+    	
         Tid tid_condition = context.getTid(P_MODULE.condition);
 
         if (rdfType.anyExist(owl_tags) == true)
         {
             // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
             context.push_signal("onto", Clock.currStdTime() / 10000);
-        }
-
-        if (rdfType.anyExist(veda_schema__Event))
-        {
-            // изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
-            send(tid_condition, CMD.RELOAD, subject_as_cbor, thisTid);
-            receive((bool){});
         }
 
         if (rdfType.anyExist(veda_schema__PermissionStatement) == true || rdfType.anyExist(veda_schema__Membership) == true)
@@ -53,6 +52,14 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
 
         if (tid_condition != Tid.init)
         {
+        	if (rdfType.anyExist(veda_schema__Event))
+        	{
+            	// изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
+            	send(tid_condition, CMD.RELOAD, subject_as_cbor, thisTid);
+            	receive((bool){});
+        	}
+        	
+        	
             try
             {
                 immutable(string)[] type;

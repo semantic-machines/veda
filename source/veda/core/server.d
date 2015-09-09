@@ -9,8 +9,8 @@ private
     version (linux) import std.c.linux.linux, core.stdc.stdlib;
     import io.mq_client, io.rabbitmq_client, io.file_reader;
     import util.logger, util.utils, util.load_info;
-    import veda.core.scripts, veda.core.context, veda.core.know_predicates, veda.core.log_msg, veda.core.thread_context, veda.core.define,
-           veda.core.interthread_signals;
+    import veda.core.scripts, veda.core.context, veda.core.know_predicates, veda.core.log_msg, veda.core.thread_context; 
+    import veda.core.define, veda.core.interthread_signals;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import type, az.acl, storage.storage_thread, search.xapian_indexer, veda.onto.individual, veda.onto.resource;
 }
@@ -162,6 +162,9 @@ Context init_core(string node_id)
                                                                         P_MODULE.print_statistic),
                                                  tids[ P_MODULE.statistic_data_accumulator ]);
         wait_starting_thread(P_MODULE.print_statistic, tids);
+
+        tids[ P_MODULE.fanout ] = spawn(&veda.core.fanout.fanout_thread, text(P_MODULE.fanout), node_id);
+        wait_starting_thread(P_MODULE.fanout, tids);
 
         foreach (key, value; tids)
             register(text(key), value);
