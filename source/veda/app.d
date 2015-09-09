@@ -3,7 +3,7 @@ import vibe.d;
 import properd;
 import veda.pacahon_driver;
 import veda.storage_rest;
-import onto.individual, onto.resource;
+import veda.onto.individual, veda.onto.resource;
 
 void view_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
 {

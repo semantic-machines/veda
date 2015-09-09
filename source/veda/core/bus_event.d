@@ -5,9 +5,9 @@ module veda.core.bus_event;
 
 private import std.outbuffer, std.stdio, std.concurrency, std.datetime, std.conv;
 import type;
-private import util.container, util.logger, util.utils, util.cbor8individual;
+private import util.container, util.logger, util.utils, veda.core.util.cbor8individual;
 private import veda.core.know_predicates, veda.core.context, veda.core.define;
-private import onto.individual, onto.resource;
+private import veda.onto.individual, veda.onto.resource;
 
 logger log;
 

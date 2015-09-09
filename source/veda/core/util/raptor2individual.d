@@ -2,14 +2,10 @@ module util.raptor2individual;
 
 import std.string, std.stdio : writeln;
 import bind.libraptor_header;
-
 import type;
-import onto.individual;
-import onto.resource;
+import veda.onto.individual, veda.onto.resource; 
 import onto.lang;
-
 import util.utils;
-
 import veda.core.context;
 import veda.core.define;
 
@@ -200,10 +196,10 @@ public Individual *[ string ] ttl2individuals(string file_name, Context context)
     raptor_uri    *uri;
     raptor_uri    *base_uri;
 
-    if (world is null)
+    //if (world is null)
         world = raptor_new_world_internal();
 
-    rdf_parser = raptor_new_parser(world, "turtle".ptr);
+    rdf_parser = raptor_new_parser(world, "turtle\0".ptr);
 
     void *user_data = null;
 
@@ -217,16 +213,17 @@ public Individual *[ string ] ttl2individuals(string file_name, Context context)
     raptor_parser_parse_file(rdf_parser, uri, base_uri);
     context.add_prefix_map(prefixes);
 
+    res          = _individuals.dup;
+
     raptor_free_parser(rdf_parser);
 
     raptor_free_uri(base_uri);
     raptor_free_uri(uri);
     raptor_free_memory(uri_string);
 
-    res          = _individuals.dup;
     _individuals = (Individual *[ string ]).init;
 
-    //raptor_free_world(world);
+    raptor_free_world(world);
     return res;
 }
 

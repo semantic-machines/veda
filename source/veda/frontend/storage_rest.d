@@ -13,8 +13,7 @@ import type;
 import veda.core.context;
 import veda.core.know_predicates;
 import onto.onto;
-import onto.individual;
-import onto.resource;
+import veda.onto.individual, veda.onto.resource;
 import onto.lang;
 import veda.util;
 

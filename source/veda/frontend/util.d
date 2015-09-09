@@ -3,8 +3,7 @@ module veda.util;
 import std.conv, std.stdio;
 import vibe.d;
 import onto.onto;
-import onto.individual;
-import onto.resource;
+import veda.onto.individual, veda.onto.resource;
 import onto.lang;
 import type;
 

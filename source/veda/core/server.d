@@ -12,7 +12,7 @@ private
     import veda.core.scripts, veda.core.context, veda.core.know_predicates, veda.core.log_msg, veda.core.thread_context, veda.core.define,
            veda.core.interthread_signals;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
-    import type, az.acl, storage.storage_thread, search.xapian_indexer, onto.individual, onto.resource;
+    import type, az.acl, storage.storage_thread, search.xapian_indexer, veda.onto.individual, veda.onto.resource;
 }
 
 logger log;

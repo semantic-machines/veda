@@ -1,15 +1,14 @@
 /**
  * Индивидуал (субьект)
  */
-module onto.individual;
+module veda.onto.individual;
 
 private
 {
     import std.stdio, std.typecons, std.conv, std.exception : assumeUnique;
-
-    import onto.resource;
+    import veda.onto.resource;
     import veda.core.know_predicates, veda.core.context;
-    import util.utils, util.container, util.cbor8individual;
+    import util.utils, util.container, veda.core.util.cbor8individual;
 }
 /// Массив индивидуалов
 alias Individual[] Individuals;

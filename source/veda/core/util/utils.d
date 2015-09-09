@@ -9,7 +9,7 @@ private
     import core.stdc.stdio;
     import std.file, std.datetime, std.json, std.c.string, std.c.linux.linux, std.format, std.stdio, std.conv, std.string, std.concurrency;
     import std.ascii, std.csv, std.typecons, std.outbuffer;
-    import onto.individual, onto.resource;
+    import veda.onto.individual, veda.onto.resource;
     import util.container;
     import veda.core.know_predicates, veda.core.context;
 }

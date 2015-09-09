@@ -9,7 +9,7 @@ module onto.onto;
 private
 {
     import std.stdio, std.datetime, std.conv, std.concurrency, std.exception : assumeUnique;
-    import onto.resource, onto.individual;
+    import veda.onto.resource, veda.onto.individual;
     import util.utils, util.container, util.logger;
     import veda.core.know_predicates, veda.core.context, veda.core.interthread_signals, veda.core.log_msg;
     import search.vql;
