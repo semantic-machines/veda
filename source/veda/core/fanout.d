@@ -72,11 +72,10 @@ void fanout_thread(string thread_name, string _node_id)
                             {
                                 try
                                 {
-                                    foreach (predicat, rss; indv.resources)
+                                    foreach (predicate, rss; indv.resources)
                                     {
                                         foreach (rs; rss)
                                         {
-                                            new_rss ~= rs;
                                             //mysql_push_individual_by_event.query("insert into qlik_atts2 (uri, individual) values (?, ?);", "-", rr.toString());
                                         }
                                     }
