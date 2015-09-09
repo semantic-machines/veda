@@ -949,7 +949,7 @@ td:PropertySpecification2
   v-ui:forClass v-s:Person ;
   v-ui:forProperty v-s:firstName ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "2"^^xsd:nonNegativeInteger ;
   v-ui:minLength "2"^^xsd:integer ;
   v-ui:maxLength "20"^^xsd:integer ;
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
@@ -962,7 +962,7 @@ td:PropertySpecification3
   v-ui:forClass v-s:Person ;
   v-ui:forProperty v-s:lastName ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "2"^^xsd:nonNegativeInteger ;
   v-ui:minLength "2"^^xsd:integer ;
   v-ui:maxLength "20"^^xsd:integer ;
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
@@ -975,7 +975,7 @@ td:PropertySpecification4
   v-ui:forClass v-s:Person ;
   v-ui:forProperty v-s:middleName ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "2"^^xsd:nonNegativeInteger ;
   v-ui:minLength "2"^^xsd:integer ;
   v-ui:maxLength "20"^^xsd:integer ;  
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
