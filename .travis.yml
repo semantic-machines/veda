@@ -15,10 +15,10 @@ d: dmd-2.068.0
 # Compile vibe-d before main project to prevent OutOfMemory issue
 before_install:
   - sudo apt-get update
-  - sudo apt-get install libzmq3-dev
-  - sudo apt-get install libevent-pthreads-2.0-5
-  - sudo apt-get install libraptor2-dev
+  - sudo apt-get install -y libzmq3-dev
+  - sudo apt-get install -y libevent-pthreads-2.0-5
   - sudo apt-get install -y libraptor2-dev
+  - sudo apt-get install -y mysqlclient-dev
   - sudo cp ./qa/patch_dmd_2_68_0/concurrency.d ${HOME}/dmd2/src/phobos/std/concurrency.d
   - dub -v fetch vibe-d
   - npm install selenium-webdriver

@@ -17,9 +17,9 @@ if ! dub --version | grep 0.9.23 ; then
     sudo cp ./dub /usr/bin/dub
 fi
 
-sudo apt-get install libzmq3-dev
-sudo apt-get install libevent-pthreads-2.0-5
-sudo apt-get install libraptor2-dev
-sudo apt-get install libevent-dev libssl-dev
-
+sudo apt-get install -y libzmq3-dev
+sudo apt-get install -y libevent-pthreads-2.0-5
+sudo apt-get install -y libraptor2-dev
+sudo apt-get install -y libevent-dev libssl-dev
+sudo apt-get install -y mysqlclient-dev
 
