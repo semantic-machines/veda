@@ -27,7 +27,9 @@ veda.Module(function (veda) { "use strict";
 	];
 
 	veda.OntologyModel = function () {
-
+		
+		//var t1 = new Date();
+		
 		var self = this;
 		
 		self.classes = {};
@@ -105,7 +107,7 @@ veda.Module(function (veda) { "use strict";
 					break;
 			}
 		});
-		
+
 		// Process classes
 		Object.keys(self.classes).map( function (uri) {
 			var _class = self.classes[uri];
@@ -170,12 +172,16 @@ veda.Module(function (veda) { "use strict";
 			});
 		});
 
+
 		// Initialize ontology objects
 		Object.keys(self).map( function (uri) {
 			var individual = self[uri];
 			if (!individual || !individual.id) return;
 			individual.init();
 		});
+
+		//var t2 = new Date();
+		//console.log("onto load", (t2-t1)/1000, "sec", storage.length);
 
 		return self;
 		
