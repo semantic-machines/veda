@@ -13,7 +13,7 @@ private import std.concurrency, std.datetime;
 private import type;
 private import util.container;
 private import search.vel;
-private import onto.onto, onto.individual, onto.resource;
+private import onto.onto, veda.onto.individual, veda.onto.resource;
 private import veda.core.define;
 
 private import bind.v8d_header;

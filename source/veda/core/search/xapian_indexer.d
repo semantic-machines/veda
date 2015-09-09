@@ -7,8 +7,8 @@ module search.xapian_indexer;
 private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.algorithm;
 private import type;
 private import bind.xapian_d_header;
-private import util.utils, util.cbor, util.cbor8individual, util.logger;
-private import onto.onto, onto.resource, onto.lang, onto.individual;
+private import util.utils, util.cbor, veda.core.util.cbor8individual, util.logger;
+private import onto.onto, veda.onto.resource, onto.lang, veda.onto.individual;
 private import veda.core.define, veda.core.know_predicates, veda.core.context, veda.core.log_msg, veda.core.thread_context;
 private import storage.lmdb_storage;
 private import search.vel, search.xapian_vql, search.indexer_property;
@@ -972,7 +972,7 @@ void xapian_indexer(string thread_name, string _node_id)
                         }
                         else if (cmd == CMD.PUT)
                         {
-                            ictx.index_msg(msg);
+                            ictx.index_msg(msg);                            
                         }
                         else if (cmd == CMD.DELETE)
                         {
@@ -993,8 +993,6 @@ void xapian_indexer(string thread_name, string _node_id)
     }
 }
 
-private import io.rabbitmq_client, io.mq_client;
-mq_client rabbitmq_connection;
 
 private int get_slot_and_set_if_not_found(string field, ref int[ string ] key2slot)
 {

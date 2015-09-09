@@ -1,11 +1,11 @@
 /**
  * CBOR: cbor <-> individual
  */
-module util.cbor8individual;
+module veda.core.util.cbor8individual;
 
 private import std.outbuffer, std.stdio, std.string;
 private import type;
-private import onto.resource, onto.individual, onto.lang;
+private import veda.onto.resource, veda.onto.individual, onto.lang;
 private import util.cbor;
 import backtrace.backtrace;
 import Backtrace = backtrace.backtrace;

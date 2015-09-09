@@ -5,9 +5,9 @@ module bind.v8d_header;
 
 import std.stdio, std.conv;
 import type;
-import onto.individual, onto.resource, onto.lang;
+import veda.onto.individual, veda.onto.resource, onto.lang;
 import veda.core.context;
-import util.cbor8individual;
+import veda.core.util.cbor8individual;
 
 // //////////////////////////  call D from C //////////////////////////////////////////
 
