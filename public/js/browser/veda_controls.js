@@ -849,10 +849,7 @@
 			}
 		}
 
-		if (isSingle && individual.hasValue(rel_uri)) {
-			fulltext.val( riot.render("{rdfs:label}", individual[rel_uri][0]) );
-		}
-
+		// Select value
 		function select(selected) {
 			if (isSingle) {
 				individual[rel_uri] = selected instanceof Array ? [ selected[0] ] : [ selected ];
@@ -905,22 +902,45 @@
 					},
 					displayKey: function (individual) {
 						var result;
-						//try { result = riot.render("{rdf:type.0.rdfs:label}: {rdfs:label}", individual); }
 						try { result = riot.render("{rdfs:label}", individual); }
 						catch (ex) { result = individual.id; }
-						return result==''?individual.id:result;
+						return result === "" ? individual.id : result;
 					}
 				}
 			);
 
 			typeAhead.on("typeahead:selected", function (e, selected) {
-				if (!isSingle) typeAhead.val("");
 				select(selected);
+				if (!isSingle) { 
+					typeAhead.typeahead("val", "");
+				}
 			});
+
+			// Fill in value in fulltext field if maxCardinality = 1
+			if (isSingle && individual.hasValue(rel_uri)) {
+				typeAhead.typeahead("val", riot.render("{rdfs:label}", individual[rel_uri][0]) );
+			}
+			
+			// Clear values from individual if isSingle && typeAhead was emptied
+			typeAhead.change(function () {
+				if (isSingle && this.value === "") {
+					individual[rel_uri] = [];
+				}
+			});
+			
+			// Clear typeAhead if isSingle && individual values were emptied
+			var handler = function (ind_rel_uri, values) {
+				if (ind_rel_uri === rel_uri && isSingle && !values.length) {
+					typeAhead.typeahead("val", "");
+				}
+			};
+			individual.on("individual:propertyModified", handler);
 			
 			control.on("remove", function () {
 				typeAhead.typeahead("destroy");
+				individual.off("individual:propertyModified", handler);
 			});
+
 		} else {
 			fulltext.remove();
 		}
