@@ -849,6 +849,10 @@
 			}
 		}
 
+		if (isSingle && individual.hasValue(rel_uri)) {
+			fulltext.val( riot.render("{rdfs:label}", individual[rel_uri][0]) );
+		}
+
 		function select(selected) {
 			if (isSingle) {
 				individual[rel_uri] = selected instanceof Array ? [ selected[0] ] : [ selected ];

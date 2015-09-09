@@ -14,7 +14,6 @@
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix mnd-s-sa: <http://semantic-machines.com/veda/mondi-schema-safety-audit/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix mnd-wf: <http://semantic-machines.com/veda/mondi-workflow/> .
 
 <http://semantic-machines.com/veda/veda-index>
   rdf:type owl:Ontology ;
@@ -90,7 +89,6 @@ vdi:index_02
   vdi:forClass v-s:Membership ;
   vdi:forClass v-wf:Variable ;
   vdi:forClass v-s:PermissionStatement ;
-#  vdi:forClass mnd-wf:ComplexRouteStartForm ;
   vdi:forClass v-s:Journal ;
   vdi:forClass v-s:JournalRecord ;
   vdi:indexed_to "not-indexed" ;

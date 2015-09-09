@@ -5,10 +5,16 @@
 	"authors": ["karpovr"],
 	"dependencies": {
 		"vibe-d": "0.7.24",
-		"pacahon": "0.2.34-alpha"
+		"pacahon_third_party": "1.0.8", 
+		"backtrace-d": "0.1.0"
 	},
 	"buildOptions": ["debugMode", "debugInfo"],	
 	"versions": ["VibeDefaultMain"],	
+        "libs": [
+                "raptor2"
+        ],
+        "license": "LGPL v3",
+	"sourceFiles":["lib64/libv8d.a", "lib64/libxapiand.a"],
 	"configurations": [
 	{
 	    "name": "app",

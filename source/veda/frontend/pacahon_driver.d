@@ -3,10 +3,10 @@ module veda.pacahon_driver;
 import std.stdio, std.datetime, std.conv, std.string, std.variant, std.concurrency;
 import vibe.data.json;
 
-import pacahon.server;
-import pacahon.context;
-import pacahon.thread_context;
-import pacahon.know_predicates;
+import veda.core.server;
+import veda.core.context;
+import veda.core.thread_context;
+import veda.core.know_predicates;
 import type;
 import onto.onto;
 import onto.individual;
@@ -44,8 +44,8 @@ enum Function
 
 public void core_thread(string node_id)
 {
-    Context context;
-    string  thread_name = "veda" ~ text(std.uuid.randomUUID().toHash())[ 0..5 ];
+    Context                      context;
+    string                       thread_name = "veda" ~ text(std.uuid.randomUUID().toHash())[ 0..5 ];
 
     core.thread.Thread.getThis().name = thread_name;
 
@@ -118,16 +118,16 @@ public void core_thread(string node_id)
                                 rc = ticket.result;
                                 if (rc == ResultCode.OK)
                                 {
-                                	if (reopen)
-                                		context.reopen_ro_fulltext_indexer_db ();
+                                    if (reopen)
+                                        context.reopen_ro_fulltext_indexer_db();
                                     res = context.get_individuals_ids_via_query(ticket, arg1, arg2, arg3);
                                 }
                             }
                             catch (Exception ex) { writeln(ex.msg); }
                             send(tid, res, rc, worker_id);
                         }
-                	}
-                },    
+                    }
+                },
                 (Command cmd, Function fn, string arg1, string arg2, string _ticket, int worker_id, Tid tid)
                 {
                     if (tid != Tid.init)
@@ -200,6 +200,7 @@ public void core_thread(string node_id)
                             void trace(string resource_group, string subject_group, string right)
                             {
                                 Individual indv_res = Individual.init;
+
                                 indv_res.uri = "_";
                                 indv_res.addResource(rdf__type,
                                                      Resource(DataType.Uri, veda_schema__PermissionStatement));

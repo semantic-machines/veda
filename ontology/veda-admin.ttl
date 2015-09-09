@@ -40,7 +40,7 @@ v-a:developer_node
 	vsrv:count_thread "4"^^xsd:integer ;
 	vsrv:checktime_onto_files "1"^^xsd:integer ;
 	vsrv:listener v-a:conn_http;
-	vsrv:push_individual_by_event v-a:conn_rabbit_mq;
+	vsrv:push_individual_by_event v-a:conn_mysql1;
 	rdfs:label "конфигурация разработчика" ;
 .	
 
@@ -48,23 +48,34 @@ v-a:conn_http
 	rdf:type vsrv:Connection ;
 	vsrv:name "http-server" ;
 	rdfs:label "http server" ;
-	vsrv:port	"8080"^^xsd:integer ;
-	vsrv:transport	"http" ;
+	vsrv:port "8080"^^xsd:integer ;
+	vsrv:transport "http" ;
 .
 
-v-a:conn_rabbit_mq 
+v-a:conn_rabbitmq1 
 	rdf:type vsrv:Connection ;
 	vsrv:name "funout" ;
 	rdfs:label "connect to rabbitmq server" ;
-	vsrv:host	"127.0.0.1" ;
-	vsrv:port	"5672"^^xsd:integer ;
-	vsrv:transport	"rabbitmq" ;
+	vsrv:host "127.0.0.1" ;
+	vsrv:port "5672"^^xsd:integer ;
+	vsrv:transport "rabbitmq" ;
 	vsrv:queue "fanout" ;
-	vsrv:login	"guest" ;
-	vsrv:credentional	"guest" ;
+	vsrv:login "guest" ;
+	vsrv:credentional "guest" ;
 	vsrv:amqp_vhost	"veda" ;
 	vsrv:amqp_routingkey "";	
-	vsrv:mission "out_new_or_updated_individual";
+.
+
+v-a:conn_mysql1
+	rdf:type vsrv:Connection ;
+	vsrv:name "funout" ;
+	rdfs:label "connect to msql" ;
+	vsrv:host "127.0.0.1" ;
+	vsrv:port "3306"^^xsd:integer ;
+	vsrv:transport "mysql" ;
+	vsrv:login "guest" ;
+	vsrv:credentional "guest" ;
+	vsrv:sql_database "veda" ;
 .
 
 #####################################################
@@ -363,7 +374,6 @@ v-a:Event_4
   v-s:filter v-ui:BooleanPropertySpecification ;
   v-s:filter v-ui:ObjectPropertySpecification ;
   v-s:script """
-	    var doc_uri = document['@'];	
 	    var vsn = {
     	    '@' : "v-g:OntoVsn", 
     	    'rdf:type' : [{data: 'v-g:Global', type : _Uri}],
