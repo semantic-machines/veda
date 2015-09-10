@@ -320,14 +320,15 @@ private void prepare_list(Individual *[] ss_list, Context context, string file_n
             try
             {
                 remove(doc_filename);
+
+            	append(
+                   doc_filename,
+                   "<html><body><head><meta charset=\"utf-8\"/><link href=\"css/bootstrap.min.css\" rel=\"stylesheet\"/><style=\"padding: 0px 0px 30px;\"></head>\n");
             }
             catch (Exception ex)
             {
             }
 
-            append(
-                   doc_filename,
-                   "<html><body><head><meta charset=\"utf-8\"/><link href=\"css/bootstrap.min.css\" rel=\"stylesheet\"/><style=\"padding: 0px 0px 30px;\"></head>\n");
 
 
             log.trace_log_and_console("Onto for load:[%s]", prefix);
