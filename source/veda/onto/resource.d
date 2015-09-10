@@ -2,7 +2,7 @@
  * Ресурс
  */
 
-module onto.resource;
+module veda.onto.resource;
 
 import std.conv, std.stdio, std.datetime, std.string;
 import onto.lang;

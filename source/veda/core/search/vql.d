@@ -8,22 +8,11 @@ module search.vql;
 private
 {
     import std.string, std.array, std.stdio, std.conv, std.datetime, std.json, std.outbuffer, std.c.string, std.concurrency;
-
-    import util.container;
-    import util.logger;
-    import util.utils;
-    import util.cbor;
-    import util.cbor8individual;
-
-    import veda.core.context;
-    import veda.core.define;
-    import veda.core.know_predicates;
-
-    import search.vel;
-    import search.xapian_reader;
-
+    import util.container, util.logger, util.utils, util.cbor, veda.core.util.cbor8individual;
+    import veda.core.context, veda.core.define, veda.core.know_predicates;
+    import search.vel, search.xapian_reader;
     import storage.storage_thread;
-    import onto.individual;
+    import veda.onto.individual;
     import az.acl;
 }
 

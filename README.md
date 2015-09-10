@@ -23,6 +23,7 @@
     sudo apt-get install libevent-pthreads-2.0-5
     sudo apt-get install libraptor2-dev
     sudo apt-get install libevent-dev libssl-dev
+    sudo apt-get install libmysqlclient-dev
 ```
 
 **3: get src**

@@ -2,10 +2,7 @@ module veda.util;
 
 import std.conv, std.stdio;
 import vibe.d;
-import onto.onto;
-import onto.individual;
-import onto.resource;
-import onto.lang;
+import veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang;
 import type;
 
 static LANG[ string ] Lang;

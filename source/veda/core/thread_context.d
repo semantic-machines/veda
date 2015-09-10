@@ -10,9 +10,9 @@ private
     import type;
     import bind.xapian_d_header, bind.v8d_header;
     import io.mq_client;
-    import util.container, util.logger, util.utils, util.cbor, util.cbor8individual;
+    import util.container, util.logger, util.utils, util.cbor, veda.core.util.cbor8individual;
     import veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.interthread_signals, veda.core.log_msg;
-    import onto.onto, onto.individual, onto.resource, storage.lmdb_storage;
+    import veda.onto.onto, veda.onto.individual, veda.onto.resource, storage.lmdb_storage;
     import az.acl;
 }
 
@@ -1129,6 +1129,13 @@ class PThreadContext : Context
                 {
                     bus_event_after(ticket, indv, rdfType, ss_as_cbor, ev, this, event_id);
                 }
+
+    			Tid tid_fanout = getTid(P_MODULE.fanout);
+        		if (tid_fanout != Tid.init)
+        		{
+        			send(tid_fanout, CMD.PUT, ss_as_cbor);
+        		}
+    	
 
                 if (wait_for_indexing)
                 {

@@ -5,9 +5,9 @@ module veda.core.bus_event;
 
 private import std.outbuffer, std.stdio, std.concurrency, std.datetime, std.conv;
 import type;
-private import util.container, util.logger, util.utils, util.cbor8individual;
+private import util.container, util.logger, util.utils, veda.core.util.cbor8individual;
 private import veda.core.know_predicates, veda.core.context, veda.core.define;
-private import onto.individual, onto.resource;
+private import veda.onto.individual, veda.onto.resource;
 
 logger log;
 
@@ -34,13 +34,6 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
             context.push_signal("onto", Clock.currStdTime() / 10000);
         }
 
-        if (rdfType.anyExist(veda_schema__Event))
-        {
-            // изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
-            send(tid_condition, CMD.RELOAD, subject_as_cbor, thisTid);
-            receive((bool){});
-        }
-
         if (rdfType.anyExist(veda_schema__PermissionStatement) == true || rdfType.anyExist(veda_schema__Membership) == true)
         {
             Tid tid_acl = context.getTid(P_MODULE.acl_manager);
@@ -53,6 +46,14 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
 
         if (tid_condition != Tid.init)
         {
+        	if (rdfType.anyExist(veda_schema__Event))
+        	{
+            	// изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
+            	send(tid_condition, CMD.RELOAD, subject_as_cbor, thisTid);
+            	receive((bool){});
+        	}
+        	
+        	
             try
             {
                 immutable(string)[] type;

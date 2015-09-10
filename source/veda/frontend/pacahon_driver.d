@@ -2,17 +2,10 @@ module veda.pacahon_driver;
 
 import std.stdio, std.datetime, std.conv, std.string, std.variant, std.concurrency;
 import vibe.data.json;
-
-import veda.core.server;
-import veda.core.context;
-import veda.core.thread_context;
-import veda.core.know_predicates;
+import veda.core.server, veda.core.context, veda.core.thread_context, veda.core.know_predicates;
 import type;
-import onto.onto;
-import onto.individual;
-import onto.resource;
-import onto.lang;
-
+import veda.onto.onto, onto.lang, veda.onto.individual, veda.onto.resource;
+import veda.core.util.cbor8json; 
 import veda.util;
 
 enum Command
@@ -161,7 +154,7 @@ public void core_thread(string node_id)
                                         if (rc == ResultCode.OK)
                                         {
                                             Json rr = Json.emptyObject;
-                                            veda.cbor8json.cbor2json(&rr, cb);
+                                            cbor2json(&rr, cb);
                                             res ~= cast(immutable)rr;
                                         }
                                         //if (ii.getStatus() == ResultCode.OK)

@@ -2,14 +2,14 @@
  * кэш из индивидов относящихся к онтологии
  */
 
-module onto.onto;
+module veda.onto.onto;
 
 // TODO сделать перезагрузку онтологии только в случае ее изменения (проверять CRC?)
 
 private
 {
     import std.stdio, std.datetime, std.conv, std.concurrency, std.exception : assumeUnique;
-    import onto.resource, onto.individual;
+    import veda.onto.resource, veda.onto.individual;
     import util.utils, util.container, util.logger;
     import veda.core.know_predicates, veda.core.context, veda.core.interthread_signals, veda.core.log_msg;
     import search.vql;
@@ -43,6 +43,21 @@ class Onto
         //writeln ("@$1");
 
         return individuals;
+    }
+
+    public bool isSubClasses(string _class_uri, string[] _subclasses_uri)
+    {
+        OfSubClasses subclasses = ofClass.get(_class_uri, null);
+
+        if (subclasses !is null)
+        {
+        	foreach (_subclass_uri ; _subclasses_uri)
+        	{
+        		if (subclasses.get(_subclass_uri, false) == true)
+            		return true;
+            }	
+        }
+        return false;
     }
 
     public bool isSubClass(string _class_uri, string _subclass_uri)
@@ -93,13 +108,14 @@ class Onto
                 if (icl is null)
                 {
                     OfSubClasses sc = OfSubClasses.init;
-                    ofClass[ type_uri ] = sc;
                     prepare_subclasses(sc, individuals, type_uri);
-//                      writeln ("# subClasses for class ", type_uri, ", = ", sc.data);
+                    ofClass[ type_uri ] = sc;
+//                      writeln ("# subClasses for class ", type_uri, ", = ", sc);
                 }
             }
         }
-
+//if (l_individuals.length > 100)        
+//core.thread.Thread.sleep(dur!("seconds")(10));
         if (trace_msg[ 20 ] == 1)
             log.trace_log_and_console("[%s] load onto to graph..Ok", context.get_name);
     }

@@ -1,13 +1,12 @@
 /**
  * CBOR: cbor <-> Json
  */
-module veda.cbor8json;
+module veda.core.util.cbor8json;
 
 private import std.outbuffer, std.stdio, std.string, std.conv, std.datetime;
 private import vibe.data.json;
 private import type;
-private import onto.resource;
-private import onto.individual;
+private import veda.onto.resource, veda.onto.individual;
 private import onto.lang;
 private import util.cbor;
 
