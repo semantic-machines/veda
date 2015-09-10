@@ -11,10 +11,11 @@ private import storage.lmdb_storage, veda.core.thread_context;
 private import veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
 private import mysql.d;
 
-Mysql      mysql_push_individual_by_event;
+Mysql      mysql_conn;
 string     node_id;
 Context    context;
 Individual *node;
+string     database_name;
 
 // ////// logger ///////////////////////////////////////////
 private import util.logger;
@@ -68,33 +69,9 @@ void fanout_thread(string thread_name, string _node_id)
                             if (node is null)
                                 connect_to_mysql(context);
 
-                            if (mysql_push_individual_by_event !is null)
+                            if (mysql_conn !is null)
                             {
-                                try
-                                {
-                                    foreach (predicate, rss; indv.resources)
-                                    {
-                                        foreach (rs; rss)
-                                        {
-                                            //mysql_push_individual_by_event.query("insert into qlik_atts2 (uri, individual) values (?, ?);", "-", rr.toString());
-                                        }
-                                    }
-
-                                    //            Json rr = Json.emptyObject;
-                                    //             cbor2json(&rr, msg);
-
-
-
-                                    //writeln ("@@@@7 rr", rr.toString());
-                                    //writeln ("@@@@1 insert TO MYSQL IS OK ", text (mysql_push_individual_by_event));
-                                }
-                                catch (Exception ex)
-                                {
-                                    writeln("@@@@FAIL insert TO MYSQL ", ex.msg);
-                                }
-
-
-                                //writeln("@@fanout indv.uri=", indv.uri);
+                                push_to_mysql(indv);
                             }
                         }
                     },
@@ -102,11 +79,93 @@ void fanout_thread(string thread_name, string _node_id)
         }
         catch (Exception ex)
         {
-            log.trace("^^^^fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+            log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
         }
     }
 }
 
+///////////////////////////////////////////// MYSQL FANOUT ///////////////////////////////////////////////////////////////////
+
+bool[ string ] isExistsTable;
+
+private void push_to_mysql(ref Individual indv)
+{
+    try
+    {
+        Resources types        = indv.getResources("rdf:type");
+        bool      need_prepare = false;
+
+        foreach (type; types)
+        {
+            if (context.get_onto().isSubClasses(type.uri, [ "v-s:Document", "v-s:Dictionary" ]))
+            {
+                need_prepare = true;
+                break;
+            }
+        }
+
+
+        if (need_prepare)
+        {
+            foreach (predicate, rss; indv.resources)
+            {
+                try
+                {
+                    create_table_if_not_exists(predicate);
+                    mysql_conn.query("DELETE FROM `?` WHERE doc_id = ?", predicate, indv.uri);
+
+                    foreach (rs; rss)
+                    {
+                        mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, indv.uri,
+                                         rs.asString(), text(rs.lang));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+                }
+            }
+        }
+
+        //writeln ("@@@@1 insert TO MYSQL IS OK ", text (mysql_conn));
+    }
+    catch (Exception ex)
+    {
+        log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+    }
+
+    //writeln("@@fanout indv.uri=", indv.uri);
+}
+
+private void create_table_if_not_exists(string predicate)
+{
+    if (isExistsTable.get(predicate, false) == true)
+        return;
+
+    auto rows = mysql_conn.query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = ? AND table_name = ?;", database_name,
+                                 predicate);
+
+    if (rows.front()[ 0 ] == "0")
+    {
+        // create new table
+        try
+        {
+            mysql_conn.query(
+                             "CREATE TABLE `veda_db`.`" ~ predicate ~
+                             "` ( `doc_id` VARCHAR(128) NOT NULL,  `value` MEDIUMTEXT NULL,  `lang` CHAR(2) NULL) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
+            isExistsTable[ predicate ] = true;
+        }
+        catch (Exception ex)
+        {
+            log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+            throw ex;
+        }
+    }
+    else
+    {
+        isExistsTable[ predicate ] = true;
+    }
+}
 
 private void connect_to_mysql(Context context)
 {
@@ -121,20 +180,20 @@ private void connect_to_mysql(Context context)
         {
             if (transport.data() == "mysql")
             {
-                //writeln ("@@@@6");
                 try
                 {
-                    mysql_push_individual_by_event = new Mysql(connection.getFirstLiteral("vsrv:host"),
-                                                               cast(uint)connection.getFirstInteger("vsrv:port"),
-                                                               connection.getFirstLiteral("vsrv:login"),
-                                                               connection.getFirstLiteral("vsrv:credentional"),
-                                                               connection.getFirstLiteral("vsrv:sql_database"));
+                    database_name = connection.getFirstLiteral("vsrv:sql_database");
+                    mysql_conn    = new Mysql(connection.getFirstLiteral("vsrv:host"),
+                                              cast(uint)connection.getFirstInteger("vsrv:port"),
+                                              connection.getFirstLiteral("vsrv:login"),
+                                              connection.getFirstLiteral("vsrv:credentional"),
+                                              database_name);
 
-                    writeln("@@@@1 CONNECT TO MYSQL IS OK ", text(mysql_push_individual_by_event));
+                    //writeln("@@@@1 CONNECT TO MYSQL IS OK ", text(mysql_conn));
                 }
                 catch (Exception ex)
                 {
-                    writeln("@@@@FAIL CONNECT TO MYSQL ", ex.msg);
+                    log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
                 }
             }
         }

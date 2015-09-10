@@ -45,6 +45,21 @@ class Onto
         return individuals;
     }
 
+    public bool isSubClasses(string _class_uri, string[] _subclasses_uri)
+    {
+        OfSubClasses subclasses = ofClass.get(_class_uri, null);
+
+        if (subclasses !is null)
+        {
+        	foreach (_subclass_uri ; _subclasses_uri)
+        	{
+        		if (subclasses.get(_subclass_uri, false) == true)
+            		return true;
+            }	
+        }
+        return false;
+    }
+
     public bool isSubClass(string _class_uri, string _subclass_uri)
     {
         OfSubClasses subclasses = ofClass.get(_class_uri, null);
@@ -93,13 +108,14 @@ class Onto
                 if (icl is null)
                 {
                     OfSubClasses sc = OfSubClasses.init;
-                    ofClass[ type_uri ] = sc;
                     prepare_subclasses(sc, individuals, type_uri);
-//                      writeln ("# subClasses for class ", type_uri, ", = ", sc.data);
+                    ofClass[ type_uri ] = sc;
+//                      writeln ("# subClasses for class ", type_uri, ", = ", sc);
                 }
             }
         }
-
+//if (l_individuals.length > 100)        
+//core.thread.Thread.sleep(dur!("seconds")(10));
         if (trace_msg[ 20 ] == 1)
             log.trace_log_and_console("[%s] load onto to graph..Ok", context.get_name);
     }

@@ -26,12 +26,6 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
 
     if (ev_type == EVENT.CREATE || ev_type == EVENT.UPDATE)
     {
-    	Tid tid_fanout = context.getTid(P_MODULE.fanout);
-        if (tid_fanout != Tid.init)
-        {
-        	send(tid_fanout, CMD.PUT, subject_as_cbor);
-        }
-    	
         Tid tid_condition = context.getTid(P_MODULE.condition);
 
         if (rdfType.anyExist(owl_tags) == true)
