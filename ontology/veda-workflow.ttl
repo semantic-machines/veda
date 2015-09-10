@@ -1419,6 +1419,7 @@ v-wf:possibleDecisionClass
         rdfs:domain v-wf:DecisionForm ;
         rdfs:range owl:Class ;
 .
+
 v-wf:onDocument
         rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1426,7 +1427,6 @@ v-wf:onDocument
         rdfs:domain v-wf:DecisionForm ;
         rdfs:range rdfs:Resource ;
 .
-        
 v-wf:from
         rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1434,11 +1434,10 @@ v-wf:from
         rdfs:domain v-wf:DecisionForm ;
         rdfs:range v-s:Appointment ;
 .
-
 v-wf:dateGiven
         rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "когда"@ru ;
+        rdfs:label "контрольный срок"@ru ;
         rdfs:domain v-wf:DecisionForm ;
         rdfs:range xsd:dateTime ;
 .
