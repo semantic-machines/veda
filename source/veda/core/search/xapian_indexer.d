@@ -8,7 +8,7 @@ private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typec
 private import type;
 private import bind.xapian_d_header;
 private import util.utils, util.cbor, veda.core.util.cbor8individual, util.logger;
-private import onto.onto, veda.onto.resource, onto.lang, veda.onto.individual;
+private import veda.onto.onto, veda.onto.resource, onto.lang, veda.onto.individual;
 private import veda.core.define, veda.core.know_predicates, veda.core.context, veda.core.log_msg, veda.core.thread_context;
 private import storage.lmdb_storage;
 private import search.vel, search.xapian_vql, search.indexer_property;
