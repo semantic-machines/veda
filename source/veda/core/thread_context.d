@@ -12,7 +12,7 @@ private
     import io.mq_client;
     import util.container, util.logger, util.utils, util.cbor, veda.core.util.cbor8individual;
     import veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.interthread_signals, veda.core.log_msg;
-    import onto.onto, veda.onto.individual, veda.onto.resource, storage.lmdb_storage;
+    import veda.onto.onto, veda.onto.individual, veda.onto.resource, storage.lmdb_storage;
     import az.acl;
 }
 

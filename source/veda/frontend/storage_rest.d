@@ -12,9 +12,7 @@ import properd;
 import type;
 import veda.core.context;
 import veda.core.know_predicates;
-import onto.onto;
-import veda.onto.individual, veda.onto.resource;
-import onto.lang;
+import veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang;
 import veda.util;
 
 
