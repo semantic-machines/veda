@@ -1339,3 +1339,14 @@ td:ProjectSearch_forKh
   rdfs:label "Реестр проектов для Хвостиковой"@ru ;
   v-fs:q "'rdf:type'=='mnd-s-asppd:Project'"^^xsd:string ;
 .
+
+v-wf:UserTaskForm1
+	rdf:type s-wf:UserTaskForm ;
+	rdfs:label "example"@en ;
+	rdfs:label "экземпляр"@ru ;
+	v-wf:possibleDecisionClass v-wf:DecisionApprove ;  
+	v-wf:possibleDecisionClass v-wf:DecisionRemake ;  	
+	v-wf:possibleDecisionClass v-wf:DecisionRejected ;  		
+	v-wf:possibleDecisionClass v-wf:DecisionBreak ;  		
+	v-wf:from td:RomanKarpov-Analyst1 ;  		
+.
