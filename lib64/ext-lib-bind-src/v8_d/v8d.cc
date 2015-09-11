@@ -49,6 +49,7 @@ Handle<Value> individual2jsobject(Individual *individual, Isolate *isolate)
             }
             else if (value.type == _Datetime)
             {
+                in_obj->Set(f_data, v8::Date::New(isolate, value.long_data));
             }
             else if (value.type == _Boolean)
             {
