@@ -16,12 +16,14 @@ private
     import az.acl;
 }
 
-logger log;
-
-static this()
+logger _log;
+logger log ()
 {
-    log = new logger("pacahon", "log", "VQL");
-}
+	if (_log is null)
+    	_log = new logger("pacahon", "log", "VQL");	
+    return _log;	
+} 
+
 
 static const int RETURN    = 0;
 static const int FILTER    = 1;

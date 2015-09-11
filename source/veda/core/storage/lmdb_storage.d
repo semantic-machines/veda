@@ -12,12 +12,13 @@ private
     import veda.core.context, veda.core.define;
 }
 
-logger log;
-
-static this()
+logger _log;
+logger log ()
 {
-    log = new logger("pacahon", "log", "lmdb");
-}
+	if (_log is null)
+    	_log = new logger("pacahon", "log", "lmdb");	
+    return _log;	
+} 
 
 /// Режим работы хранилища
 enum DBMode
