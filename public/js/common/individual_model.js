@@ -82,13 +82,14 @@ veda.Module(function (veda) { "use strict";
 			});
 		}
 				
-		self.on("individual:afterLoad", function (individual) {
-			self.present.call(individual, container, template, mode);
-		});
-		
-		self.on("individual:typeChanged", function () {
-			self.present(container, template, mode);
-		});
+		if (container) {
+			self.on("individual:afterLoad", function (individual) {
+				self.present.call(individual, container, template, mode);
+			});
+			self.on("individual:typeChanged", function () {
+				self.present(container, template, mode);
+			});
+		}
 		
 		// Load data 
 		if (uri) self = self.load(uri);
