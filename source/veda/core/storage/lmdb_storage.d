@@ -6,7 +6,7 @@ module storage.lmdb_storage;
 private
 {
     import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string;
-    import bind.lmdb_header;
+    import veda.core.bind.lmdb_header;
     import veda.onto.individual;
     import util.logger, util.utils, util.cbor, veda.core.util.cbor8individual;
     import veda.core.context, veda.core.define;

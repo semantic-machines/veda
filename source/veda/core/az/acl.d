@@ -8,7 +8,7 @@ private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
     import veda.onto.individual, veda.onto.resource;
-    import bind.lmdb_header;
+    import veda.core.bind.lmdb_header;
     import util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, util.logger;
     import type;
     import veda.core.context, veda.core.define, veda.core.know_predicates, veda.core.log_msg;
