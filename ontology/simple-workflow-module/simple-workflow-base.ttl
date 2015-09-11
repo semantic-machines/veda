@@ -31,13 +31,30 @@ s-wf:var_initiator
         rdfs:label "Инициатор"@ru ;
 	rdfs:isDefinedBy s-wf: ;
 .
+s-wf:var_task_comment
+        rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "taskComment" ;
+        rdfs:label "комментарий к задаче"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
+s-wf:var_dateTo
+        rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "taskDateTo" ;
+        rdfs:label "контрольный срок задачи"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
 s-wf:var_doc_id
         rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "docId" ;
         rdfs:label "id документа"@ru ;
 	rdfs:isDefinedBy s-wf: ;
 .
-
+s-wf:var_startForm_id
+        rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "startForm_id" ;
+        rdfs:label "id стартовой формы"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
 s-wf:var_coordinator
         rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "coordinator" ;

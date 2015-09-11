@@ -1464,7 +1464,7 @@ v-wf:processedDocument
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-s:Document ;
 .
-
+#-- используется только в тестовом комплексном маршруте --
 v-wf:processInitiator
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1489,7 +1489,7 @@ v-wf:useTransformation
 	rdfs:label "использовать преобразование"@ru ;
 	rdfs:label "use transformation"@en ;
 	rdfs:domain v-wf:StartForm ;
-	rdfs:range v-wf:Process ;
+	rdfs:range v-wf:Transform ;
 .
 
 # --------------------------- Mapping to variable ---------------------------
