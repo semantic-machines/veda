@@ -5,6 +5,7 @@
 # c14n-version: 3
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
 @prefix : <http://semantic-machines.com/veda/test-data/> .
+@prefix d: <http://semantic-machines.com/veda/data/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -20,6 +21,7 @@
 @prefix mnd-s-pdr: <http://semantic-machines.com/veda/mondi-schema-pdr/> .
 @prefix v-asp: <http://semantic-machines.com/veda/veda-aspect/> .
 @prefix mnd-s-asppd: <http://semantic-machines.com/veda/mondi-schema-asppd/> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
 
 <http://semantic-machines.com/veda/test-data>
   rdf:type owl:Ontology ;
@@ -848,7 +850,7 @@ td:PreferencesTemplate1
 		  </span>
         </li-->
       </ul>
-      <veda-control rel="v-ui:preferredLanguage" type="link" class="-view edit search fullsearch fulltext"></veda-control>
+      <veda-control rel="v-ui:preferredLanguage" type="link" class="-view edit search fulltext dropdown"></veda-control>
       <strong about="v-ui:displayedElements" property="rdfs:label" class="text-muted">Отображать элементов</strong>: 
       <span property="v-ui:displayedElements"></span>
       <veda-control property="v-ui:displayedElements" type="integer" class="-view edit search"></veda-control>
