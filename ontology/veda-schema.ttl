@@ -293,6 +293,11 @@ v-s:ToBeSent
   rdfs:label "To be sent"@en ;
   rdfs:label "Ожидает отправки"@ru ;
 .
+v-s:IsSent
+  rdf:type v-s:StatusWorkflow ;
+  rdfs:label "Is sent"@en ;
+  rdfs:label "Отправлено"@ru ;
+.
 v-s:DoNotSent
   rdf:type v-s:StatusWorkflow ;
   rdfs:label "Do Not Send"@en ;
