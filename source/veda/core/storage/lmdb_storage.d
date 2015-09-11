@@ -65,9 +65,6 @@ public class LmdbStorage
         mode                 = _mode;
         parent_thread_name   = _parent_thread_name;
 
-        if (log is null)
-            log = new logger("pacahon", "log", "lmdb");
-
         create_folder_struct();
         open_db();
         reopen_db();
