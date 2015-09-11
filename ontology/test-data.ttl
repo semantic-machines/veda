@@ -19,6 +19,7 @@
 @prefix mnd-s-pdr: <http://semantic-machines.com/veda/mondi-schema-pdr/> .
 @prefix v-asp: <http://semantic-machines.com/veda/veda-aspect/> .
 @prefix mnd-s-asppd: <http://semantic-machines.com/veda/mondi-schema-asppd/> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
 
 <http://semantic-machines.com/veda/test-data>
   rdf:type owl:Ontology ;
