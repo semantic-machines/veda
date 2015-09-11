@@ -758,6 +758,7 @@
 		}
 	};
 
+	// FILE UPLOAD CONTROL
 	function uploadFile(file, cb) {
 		var url = "/files",
 			xhr = new XMLHttpRequest(),
@@ -776,7 +777,6 @@
 		fd.append("uri", uri);
 		xhr.send(fd);
 	}
-
 	$.fn.veda_file = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_file.defaults, options ),
 			control = $(opts.template),
@@ -826,7 +826,6 @@
 		template: $("#file-control-template").html()
 	};
 
-	
 	// OBJECT PROPERTY CONTROL
 	$.fn.veda_link = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_link.defaults, options ),
@@ -951,6 +950,11 @@
 			var tmpl = $("#search-modal-template").html();
 			fullsearch.on("click", function (e) {
 				var $modal = $(tmpl);
+				$modal.on('hidden.bs.modal', function (e) {
+					$modal.remove();
+				});
+				$modal.modal();	
+				$("body").append($modal);
 				var srch = new veda.SearchModel(undefined, $(".modal-body", $modal), queryPrefix);
 				// Add found values
 				$("button#ok", $modal).on("click", function (e) {
@@ -961,11 +965,6 @@
 					}
 					select(selected);
 				});
-				$modal.on('hidden.bs.modal', function (e) {
-					$modal.remove();
-				});
-				$modal.modal();	
-				$("body").append($modal);
 			});			
 		} else {
 			fullsearch.remove();

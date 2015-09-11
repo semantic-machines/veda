@@ -56,7 +56,7 @@ v-ui:forProperty
   rdfs:domain v-ui:PropertySpecification ;
   rdfs:label "for property"@en ;
   rdfs:label "для свойства"@ru ;
-  rdfs:range owl:Class ;
+  rdfs:range owl:DatatypeProperty, owl:ObjectProperty, rdf:Property ;
 .
 v-ui:template
   rdf:type owl:DatatypeProperty ;
