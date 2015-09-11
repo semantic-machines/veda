@@ -203,7 +203,7 @@ public class LmdbStorage
         Individual ind;
 
         if (cbor2individual(&ind, cbor) > 0)
-            return update_or_create(ind.uri, cbor, new_hash, ev);
+            return update_or_create(ind.uri.dup, cbor.dup, new_hash, ev);
         else
             log.trace("!ERR:invalid individual=%s", cbor);
         return EVENT.ERROR;
@@ -213,11 +213,14 @@ public class LmdbStorage
     {
         string content = individual2cbor(ind);
 
-        return update_or_create(ind.uri, content, new_hash, ev);
+        return update_or_create(ind.uri.dup, content.dup, new_hash, ev);
     }
 
-    public ResultCode put(string _key, string value)
+    public ResultCode put(string in_key, string in_value)
     {
+		string _key = in_key.dup;
+		string value = in_value.dup;
+		
         if (_key is null || _key.length < 1)
             return ResultCode.No_Content;
 
@@ -496,7 +499,7 @@ public class LmdbStorage
         if (uri is null || uri.length < 2)
             return null;
 
-        string  str;
+        string  str = null;
         int     rc;
         MDB_txn *txn_r;
         MDB_dbi dbi;

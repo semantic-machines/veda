@@ -283,6 +283,7 @@ public int cbor2individual(Individual *individual, string in_str)
     {
         writeln("!ERR:cbor2individual ex=", ex.msg, ", in_str=", in_str);
         //printPrettyTrace(stderr);
+        //throw new Exception("invalid cbor");
         return -1;
     }
 }

@@ -68,14 +68,20 @@ class VQL
             Individual individual = Individual();
 
             string     data = context.get_individual_from_storage(uri);
-
-            if (cbor2individual(&individual, data) > 0)
-            {
-                individuals ~= individual.idup;
-            }
+			if (data is null)
+			{
+                log.trace_log_and_console("!ERR:Unable to find the object it should be, uri=[%s]", text (uri));
+            }    
             else
-            {
-                writeln("!ERR:invalid individual=", uri);
+            {    								
+            	if (cbor2individual(&individual, data) > 0)
+            	{
+                	individuals ~= individual.idup;
+            	}
+            	else
+            	{
+                	writeln("!ERR:invalid individual=", uri);
+            	}
             }
         }
         dg = &collect_subject;
@@ -97,6 +103,12 @@ class VQL
 
             string     data = context.get_individual_from_storage(uri);
 
+			if (data is null)
+			{
+                log.trace_log_and_console("!ERR:Unable to find the object it should be, uri=[%s]", text(uri));
+            }    
+            else
+            {    								
             if (cbor2individual(&individual, data) > 0)
             {
                 individuals ~= individual;
@@ -104,6 +116,7 @@ class VQL
             else
             {
                 writeln("!ERR:invalid individual=", uri);
+            }
             }
         }
         dg = &collect_subject;
@@ -192,6 +205,12 @@ class VQL
             {
                 string     data = context.get_individual_from_storage(uri);
 
+			if (data is null)
+			{
+                log.trace_log_and_console("!ERR:Unable to find the object it should be, uri=[%s]", text(uri));
+            }    
+            else
+            {    								
                 Individual ind;
 
                 if (cbor2individual(&ind, data) > 0)
@@ -211,6 +230,7 @@ class VQL
                     {
                         writeln("!ERR:vql.get attempt 2, invalid individual=", uri);
                     }
+                }
                 }
             }
             dg = &collect_subject;
