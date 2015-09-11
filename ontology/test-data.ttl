@@ -4,6 +4,7 @@
 
 # c14n-version: 3
 @prefix : <http://semantic-machines.com/veda/test-data/> .
+@prefix d: <http://semantic-machines.com/veda/data/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -847,7 +848,7 @@ td:PreferencesTemplate1
 		  </span>
         </li-->
       </ul>
-      <veda-control rel="v-ui:preferredLanguage" type="link" class="-view edit search fullsearch fulltext"></veda-control>
+      <veda-control rel="v-ui:preferredLanguage" type="link" class="-view edit search fulltext dropdown"></veda-control>
       <strong about="v-ui:displayedElements" property="rdfs:label" class="text-muted">Отображать элементов</strong>: 
       <span property="v-ui:displayedElements"></span>
       <veda-control property="v-ui:displayedElements" type="integer" class="-view edit search"></veda-control>
