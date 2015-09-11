@@ -498,6 +498,15 @@ s-wf:rul_transform23_2
 	rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:codelet_get_type_of_docId
+	rdf:type v-s:Codelet ;
+	rdfs:label "взять тип документа в переменной docId" ;
+	v-s:script """
+	get_type_of_docId (process, task)	
+""" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
 # ------------------------------ CODELET : "запущен ли процесс по документу" ------------------------------------- #
 s-wf:codelet_is_run
 	rdf:type v-s:Codelet ;
