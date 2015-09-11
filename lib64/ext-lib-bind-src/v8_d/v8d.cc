@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <string.h>
+#include <math.h> 
 #include "cbor.h"
 #include "cbor2individual.h"
 
@@ -46,6 +47,7 @@ Handle<Value> individual2jsobject(Individual *individual, Isolate *isolate)
             }
             else if (value.type == _Decimal)
             {
+                in_obj->Set(f_data, v8::Number::New(isolate, value.decimal_mantissa_data * pow(10.0, value.decimal_expanent_data)));
             }
             else if (value.type == _Datetime)
             {
