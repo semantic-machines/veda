@@ -151,7 +151,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
     if (Array.isArray(individuals) !== true) {
     	individuals = [individuals];
     }
-
+	
     var rules = transform['v-wf:transformRule'];
 
     if (!rules)
@@ -160,7 +160,13 @@ function transformation(ticket, individuals, transform, executor, work_order)
     for (var i in rules)
     {
     	if (typeof window === "undefined") {
-    		rules[i] = get_individual(ticket, rules[i].data);
+				var rule = get_individual(ticket, rules[i].data);
+				if (!rule)
+				{
+					print ("not read rule [", rules[i].data, "]");
+					continue;
+				}				
+				rules[i] = rule;    		
     	} else {
     		rules[i] = new veda.IndividualModel(rules[i].data);
     	}

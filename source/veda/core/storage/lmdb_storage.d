@@ -6,18 +6,19 @@ module storage.lmdb_storage;
 private
 {
     import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string;
-    import bind.lmdb_header;
+    import veda.core.bind.lmdb_header;
     import veda.onto.individual;
     import util.logger, util.utils, util.cbor, veda.core.util.cbor8individual;
     import veda.core.context, veda.core.define;
 }
 
-logger log;
-
-static this()
+logger _log;
+logger log ()
 {
-    log = new logger("pacahon", "log", "lmdb");
-}
+	if (_log is null)
+    	_log = new logger("pacahon", "log", "lmdb");	
+    return _log;	
+} 
 
 /// Режим работы хранилища
 enum DBMode
@@ -63,9 +64,6 @@ public class LmdbStorage
         summ_hash_this_db_id = "summ_hash_this_db";
         mode                 = _mode;
         parent_thread_name   = _parent_thread_name;
-
-        if (log is null)
-            log = new logger("pacahon", "log", "lmdb");
 
         create_folder_struct();
         open_db();
@@ -203,7 +201,7 @@ public class LmdbStorage
         Individual ind;
 
         if (cbor2individual(&ind, cbor) > 0)
-            return update_or_create(ind.uri, cbor, new_hash, ev);
+            return update_or_create(ind.uri.dup, cbor.dup, new_hash, ev);
         else
             log.trace("!ERR:invalid individual=%s", cbor);
         return EVENT.ERROR;
@@ -213,11 +211,14 @@ public class LmdbStorage
     {
         string content = individual2cbor(ind);
 
-        return update_or_create(ind.uri, content, new_hash, ev);
+        return update_or_create(ind.uri.dup, content.dup, new_hash, ev);
     }
 
-    public ResultCode put(string _key, string value)
+    public ResultCode put(string in_key, string in_value)
     {
+		string _key = in_key.dup;
+		string value = in_value.dup;
+		
         if (_key is null || _key.length < 1)
             return ResultCode.No_Content;
 
@@ -496,7 +497,7 @@ public class LmdbStorage
         if (uri is null || uri.length < 2)
             return null;
 
-        string  str;
+        string  str = null;
         int     rc;
         MDB_txn *txn_r;
         MDB_dbi dbi;

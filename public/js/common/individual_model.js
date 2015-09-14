@@ -82,13 +82,14 @@ veda.Module(function (veda) { "use strict";
 			});
 		}
 				
-		self.on("individual:afterLoad", function (individual) {
-			self.present.call(individual, container, template, mode);
-		});
-		
-		self.on("individual:typeChanged", function () {
-			self.present(container, template, mode);
-		});
+		if (container) {
+			self.on("individual:afterLoad", function (individual) {
+				self.present.call(individual, container, template, mode);
+			});
+			self.on("individual:typeChanged", function () {
+				self.present(container, template, mode);
+			});
+		}
 		
 		// Load data 
 		if (uri) self = self.load(uri);
@@ -408,6 +409,7 @@ veda.Module(function (veda) { "use strict";
 				this["rdf:type"] = [veda.ontology["rdfs:Resource"]]; 
 				return;
 			}
+			// Prefetch linked object (depth 2) to reduce 'get_individual' requests count during rendering
 			this.prefetch(2);
 			veda.trigger("individual:loaded", this, container, template, mode);
 		}
@@ -416,7 +418,7 @@ veda.Module(function (veda) { "use strict";
 
 	/**
 	 * @method
-	 * Prefetch linked objects
+	 * Prefetch linked objects. Useful for presenting objects with many links.
 	 * @param {Number} Depth of the object tree to prefetch.
 	 */
 	proto.prefetch = function (depth) {
