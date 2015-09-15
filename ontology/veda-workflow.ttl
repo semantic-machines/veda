@@ -1811,6 +1811,20 @@ v-wf:DecisionAgreed
 	rdfs:label "согласовано"@ru ;
 .	
 
+v-wf:DecisionAgreedToProject
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "согласовано в проект"@ru ;
+.	
+
+v-wf:DecisionAgreedToExecute
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "согласовано в реализацию"@ru ;
+.	
+
 v-wf:DecisionSign
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;

@@ -662,6 +662,7 @@ s-wf:tr_coord_form
 	v-wf:transformRule s-wf:rul_tr_coord_4 ;	
 	v-wf:transformRule s-wf:rul_tr_coord_5 ;	
 	rdfs:isDefinedBy s-wf: ;
+    rdfs:label "трансформация формы согласования"@ru ;		
 .		
 
 s-wf:rul_tr_coord_1
@@ -671,6 +672,7 @@ s-wf:rul_tr_coord_1
 	v-wf:aggregate	"putElement ('v-wf:from')"; 	
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
+	rdfs:label "определение инициатора согласования"@ru ;		
 .
 s-wf:rul_tr_coord_2
 	rdf:type v-wf:Rule ;
@@ -688,6 +690,7 @@ s-wf:rul_tr_coord_2
 	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionRedirect')"; 	
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
+    rdfs:label "варианты ответа согласования"@ru ;	
 .
 
 s-wf:rul_tr_coord_3
@@ -697,6 +700,7 @@ s-wf:rul_tr_coord_3
 	v-wf:aggregate	"putString ('rdfs:label', '1 уровень')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
+	rdfs:label "определение согласования 1 уровень"@ru ;	
 .
 
 s-wf:rul_tr_coord_4
@@ -706,6 +710,7 @@ s-wf:rul_tr_coord_4
 	v-wf:aggregate	"putString ('rdfs:label', '2 уровень')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
+	rdfs:label "определение согласования 2 уровень"@ru ;		
 .
 
 s-wf:rul_tr_coord_5
@@ -715,6 +720,7 @@ s-wf:rul_tr_coord_5
 	v-wf:aggregate	"putString ('rdfs:label', '3 уровень')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
+	rdfs:label "определение согласования 3 уровень"@ru ;		
 .
 
 # ------------- journal ------------------------
