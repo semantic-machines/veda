@@ -196,6 +196,7 @@ s-wf:map_t1_e
 	v-wf:mapToVariable s-wf:var_result_t1 ;	
 	v-wf:mappingExpression	"local.getLocalVariableValue ('res')" ;
 	rdfs:isDefinedBy s-wf: ;
+	rdfs:label "Вытащить из задачи результаты работы"@ru ;
 .
 
 # ------------------------------- NET Complex Route : User Form ---------------------------- #
