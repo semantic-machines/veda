@@ -661,6 +661,7 @@ s-wf:tr_coord_form
 	v-wf:transformRule s-wf:rul_tr_coord_3 ;	
 	v-wf:transformRule s-wf:rul_tr_coord_4 ;	
 	v-wf:transformRule s-wf:rul_tr_coord_5 ;	
+	v-wf:transformRule s-wf:rul_tr_coord_6 ;
 	rdfs:isDefinedBy s-wf: ;
     rdfs:label "трансформация формы согласования"@ru ;		
 .		
@@ -721,6 +722,14 @@ s-wf:rul_tr_coord_5
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
 	rdfs:label "определение согласования 3 уровень"@ru ;		
+.
+
+s-wf:rul_tr_coord_6
+	rdf:type v-wf:Rule ;
+	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'possibleDecision')" ;
+	v-wf:aggregate	"putElement ('v-wf:possibleDecisionClass')"; 	
+	v-wf:grouping	"1";
+	rdfs:isDefinedBy s-wf: ;
 .
 
 # ------------- journal ------------------------
