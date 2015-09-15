@@ -17,7 +17,7 @@
 <http://semantic-machines.com/veda/simple-workflow-cr>
   rdf:type owl:Ontology ;
   owl:imports <http://semantic-machines.com/veda/veda-workflow-cr> ;
-  owl:versionInfo "1.4" ;
+#  owl:versionInfo "1.4" ;
   rdfs:label "simple workflow ontology"@en ;
 	rdfs:isDefinedBy s-wfc: ;
   rdfs:label "Онтология бизнес процессов Монди"@ru ;
@@ -425,6 +425,13 @@ s-wf:executor_def_2
 	rdf:type v-wf:ExecutorDefinition ;
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:executorExpression "process.getVariableValue ('coordinatorLevel2')" ;
+.
+
+s-wf:executor_from_coordinators
+	rdf:type v-wf:ExecutorDefinition ;
+	rdfs:isDefinedBy s-wfc: ;
+	v-wf:executorExpression "process.getVariableValue ('coordinator')" ;
+	rdfs:label "исполнители из переменной coordinator"@ru ;
 .
 
 s-wf:var_coordinator_3
