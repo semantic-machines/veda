@@ -1407,7 +1407,8 @@ td:ProjectTest mnd-s-asppd:stopProductionRisk mnd-s-asppd:d913b746aded06653b193a
     mnd-s-asppd:minimizationRisk mnd-s-pdr:d72b419456be9fee83d6fd2c728644537;
     mnd-s-asppd:volumeDescription "краткое описание объема проекта, краткое описание объема проекта, краткое описание объема проекта, краткое описание объема проекта"^^xsd:string;
     mnd-s-asppd:lossResourcesRisk mnd-s-asppd:d13545e8b279170bf558caf04382077d3;
-    mnd-s-asppd:descriptionOfActualState "описание актуального состояния объекта, описание актуального состояния объекта, описание актуального состояния объекта"^^xsd:string.
+    mnd-s-asppd:descriptionOfActualState "описание актуального состояния объекта, описание актуального состояния объекта, описание актуального состояния объекта"^^xsd:string;
+.
 
 td:testIdea1
 	rdf:type mnd-s-asppd:Idea;
@@ -1423,5 +1424,7 @@ d:db25870c68a23a0455fd29f0d67
     v-s:author td:RomanKarpov;
     v-s:created "2015-09-11T11:32:44.017Z"^^xsd:dateTime;
     rdfs:label "91 тестовая стартовая форма"^^xsd:string;    
-    mnd-s-asppd:ideaRouteStartForm_customer td:RomanKarpov-Analyst1.
+    mnd-s-asppd:ideaRouteStartForm_customer td:RomanKarpov-Analyst1;
+    v-wf:isTrace "true"^^xsd:boolean;
+.
 
