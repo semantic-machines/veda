@@ -420,6 +420,7 @@ function create_new_journal(ticket, process_uri, label)
 
     put_individual(ticket, new_journal, _event_id);
 
+	return new_journal_uri;
 }
 
 function mapToJournal(map_container, ticket, _process, _task, _order)

@@ -173,5 +173,21 @@ function logToJournal(ticket, journal_uri, journal_record)
     };
 
     add_to_individual(ticket, add_to_journal, _event_id);
-
 }
+
+function logStringToJournal(ticket, journal_uri, str)
+{
+	print ("@1");
+	var journal_record = newJournalRecord(journal_uri);
+	print ("@2");
+	journal_record['rdfs:label'] = [
+            {
+                data: str,
+                type: _String
+    }];
+	print ("@3");    
+	logToJournal(ticket, journal_uri, journal_record);	
+	print ("@4");
+	
+}	
+

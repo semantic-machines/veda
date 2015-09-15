@@ -978,6 +978,8 @@ function prepare_start_form(ticket, document)
 
 	if (isTrace && getFirstValue (isTrace) == true)
 		isTrace = true;
+	else
+		isTrace = false;
 		
     var hasStatusWorkflowif = document['v-s:hasStatusWorkflow'];
     if (hasStatusWorkflowif)
@@ -1000,9 +1002,6 @@ function prepare_start_form(ticket, document)
     var new_process_uri = genUri();
 
 	var system_journal_uri;
-
-	if (isTrace)
-		system_journal_uri = create_new_journal(ticket, new_process_uri + 's', _net['rdfs:label']);
 
     var author_uri;
     var ff = get_property_chain(ticket, document, 'v-s:author', 'v-s:employee');
@@ -1052,7 +1051,12 @@ function prepare_start_form(ticket, document)
     if (new_vars.length > 0) new_process['v-wf:inVars'] = new_vars;
 
     put_individual(ticket, new_process, _event_id);
-    print("new_process=", toJson(new_process));
+
+	if (isTrace)
+		system_journal_uri = create_new_journal(ticket, new_process_uri + 's', _net['rdfs:label']);
+    
+    if (isTrace)
+		logStringToJournal(ticket, system_journal_uri, "started new process=" + toJson(new_process));
 
     create_new_journal(ticket, new_process_uri, _net['rdfs:label']);
 
