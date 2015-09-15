@@ -1415,13 +1415,13 @@ td:testIdea1
     rdfs:label "91 тестовая идея"^^xsd:string;	
 .    
 
-d:db25870c68a23a0455fd29f0d67
+d:d25870c68a23a0455fd29f0d67
 	v-wf:processedDocument td:testIdea1;
     a mnd-s-asppd:IdeaRouteStartForm;
     v-s:dateTo "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
     v-wf:useTransformation mnd-s-asppd:ideaRouteStartFormToNet;
     v-wf:forNet d:ProjectNet;
-    v-s:author td:RomanKarpov;
+    v-s:author td:AleksandraKhvostikova;
     v-s:created "2015-09-11T11:32:44.017Z"^^xsd:dateTime;
     rdfs:label "91 тестовая стартовая форма"^^xsd:string;    
     mnd-s-asppd:ideaRouteStartForm_customer td:RomanKarpov-Analyst1;
