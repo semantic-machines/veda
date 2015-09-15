@@ -722,7 +722,7 @@ v-wf:taskPropertySpecification7
   v-ui:forClass v-wf:Task ;
   v-ui:forProperty v-wf:executor ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:queryPrefix "('rdf:type'=='v-wf:ExecutorDefinition')"^^xsd:string ;
+  v-ui:queryPrefix "('rdf:type'=='v-wf:ExecutorDefinition' ||  'rdf:type'=='v-s:Codelet' ||  'rdf:type'=='v-s:Appointment')"^^xsd:string ;
 .
 v-wf:taskPropertySpecification8
   rdf:type v-ui:ObjectPropertySpecification ;
