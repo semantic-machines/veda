@@ -661,6 +661,7 @@ s-wf:tr_coord_form
 	v-wf:transformRule s-wf:rul_tr_coord_3 ;	
 	v-wf:transformRule s-wf:rul_tr_coord_4 ;	
 	v-wf:transformRule s-wf:rul_tr_coord_5 ;	
+	v-wf:transformRule s-wf:rul_tr_coord_6 ;
 	rdfs:isDefinedBy s-wf: ;
 .		
 
@@ -713,6 +714,14 @@ s-wf:rul_tr_coord_5
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'coordinationLevel')" ;
 	v-wf:segregateElement "elementContentStrValue('v-wf:variableValue', '3')" ;
 	v-wf:aggregate	"putString ('rdfs:label', '3 уровень')";
+	v-wf:grouping	"1";
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:rul_tr_coord_6
+	rdf:type v-wf:Rule ;
+	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'possibleDecision')" ;
+	v-wf:aggregate	"putElement ('v-wf:possibleDecisionClass')"; 	
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
 .
