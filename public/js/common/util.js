@@ -422,7 +422,8 @@ function transformation(ticket, individuals, transform, executor, work_order)
                 //print("#7 key=", key);
                 //print("#7 element=", toJson(element));
 
-                //print("#9 segregateElement=", segregateElement[0].data);
+				//if (segregateElement)
+				//	print("#8 segregateElement=", segregateElement[0].data);
 
                 // 3. v-wf:aggregate
                 var group_key;
@@ -466,7 +467,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
         out_data.push(out_data0[key]);
     }
 
-    //print ("#8 out_data=", toJson (out_data));
+    //print ("#e out_data=", toJson (out_data));
 
     return out_data;
 }
