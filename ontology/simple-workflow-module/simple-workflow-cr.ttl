@@ -427,7 +427,7 @@ s-wf:executor_def_2
 	v-wf:executorExpression "process.getVariableValue ('coordinatorLevel2')" ;
 .
 
-s-wf:executor_from_coordinators
+s-wf:executor_from_coordinator
 	rdf:type v-wf:ExecutorDefinition ;
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:executorExpression "process.getVariableValue ('coordinator')" ;
