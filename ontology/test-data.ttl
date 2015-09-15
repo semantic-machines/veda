@@ -1409,14 +1409,19 @@ td:ProjectTest mnd-s-asppd:stopProductionRisk mnd-s-asppd:d913b746aded06653b193a
     mnd-s-asppd:lossResourcesRisk mnd-s-asppd:d13545e8b279170bf558caf04382077d3;
     mnd-s-asppd:descriptionOfActualState "описание актуального состояния объекта, описание актуального состояния объекта, описание актуального состояния объекта"^^xsd:string.
 
-<http://semantic-machines.com/veda/veda-data/6ea28ba25870c68a23a0455fd29f0d67> 
-	v-wf:processedDocument d:bfa452cdd6cffdb9d6967e4140f796de;
+td:testIdea1
+	rdf:type mnd-s-asppd:Idea;
+    rdfs:label "91 тестовая идея"^^xsd:string;	
+.    
+
+d:db25870c68a23a0455fd29f0d67
+	v-wf:processedDocument td:testIdea1;
     a mnd-s-asppd:IdeaRouteStartForm;
     v-s:dateTo "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
     v-wf:useTransformation mnd-s-asppd:ideaRouteStartFormToNet;
     v-wf:forNet d:ProjectNet;
     v-s:author td:RomanKarpov;
     v-s:created "2015-09-11T11:32:44.017Z"^^xsd:dateTime;
-    rdfs:label "111 тестовая стартовая форма"^^xsd:string;    
+    rdfs:label "91 тестовая стартовая форма"^^xsd:string;    
     mnd-s-asppd:ideaRouteStartForm_customer td:RomanKarpov-Analyst1.
 

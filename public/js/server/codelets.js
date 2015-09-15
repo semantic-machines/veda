@@ -60,7 +60,7 @@ function get_type_of_docId(process, task)
         var doc_id = task.getVariableValue('docId');
         if (doc_id)
         {
-            var doc = get_individual(process.ticket, doc_id);
+            var doc = get_individual(process.ticket, doc_id[0].data);
 
             if (doc)
             {
@@ -77,7 +77,7 @@ function get_type_of_docId(process, task)
             type: _Uri
         }
     };
-
+	
     return res_out;
 }
 
