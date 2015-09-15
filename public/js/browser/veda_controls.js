@@ -35,14 +35,14 @@
 				});
 			}
 			
-			if (spec.hasValue("v-ui:tooltip")) {
+			/*if (spec.hasValue("v-ui:tooltip")) {
 				control.tooltip({
 					title: spec["v-ui:tooltip"].join(", "),
 					placement: "bottom",
 					container: control,
 					trigger: "focus"
 				});
-			}
+			}*/
 		}
 
 		input.on("change focusout", function () {
