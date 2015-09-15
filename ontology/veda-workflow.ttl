@@ -384,6 +384,14 @@ v-wf:complete
 	v-wf:variableValue "yes" ;
 .
 
+v-wf:isTrace
+	rdf:type owl:DatatypeProperty ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "использовать трассировку"@ru ;
+	rdfs:domain v-wf:Process,  v-wf:StartForm ;
+	rdfs:range xsd:boolean ;
+.
+
 
 #------------------------------------------------------
 v-wf:netPropertySpecification1
