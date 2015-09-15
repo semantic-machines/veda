@@ -461,6 +461,20 @@ s-wf:map_coordinator1
         v-wf:mappingExpression  "process.getVariableValue ('coordinatorLevel1')" ;
 .
 
+s-wf:map_possibleDecision_for_idea
+        rdf:type v-wf:Mapping ;
+	rdfs:isDefinedBy s-wfc: ;
+        v-wf:mapToVariable s-wf:possibleDecision ;
+        v-wf:mappingExpression  "[newUri ('v-wf:DecisionAgreedToExecute'), newUri ('v-wf:DecisionAgreedToProject')]" ;
+.
+
+s-wf:map_possibleDecision
+        rdf:type v-wf:Mapping ;
+	rdfs:isDefinedBy s-wfc: ;
+        v-wf:mapToVariable s-wf:possibleDecision ;
+        v-wf:mappingExpression  "process.getVariableValue ('possibleDecision')" ;
+.
+
 s-wf:map_coordinator1_1
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wfc: ;
