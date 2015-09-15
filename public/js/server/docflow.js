@@ -485,19 +485,22 @@ function prepare_work_order(ticket, document)
                 }
                 else
                 {
-                    // условия нет, выполним переход								
-                    var nextNetElement = get_individual(ticket, getUri(flowsInto));
-
-                    if (nextNetElement)
+                    if (!split)
                     {
-                        //print("[WORKFLOW][WO11] create next work item for =" + nextNetElement['@']);
-                        var work_item_uri = create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id);
-                        workItemList.push(
-                        {
-                            data: work_item_uri,
-                            type: _Uri
-                        });
-                    }
+						// условия нет, выполним переход								
+						var nextNetElement = get_individual(ticket, getUri(flowsInto));
+
+						if (nextNetElement)
+						{
+							//print("[WORKFLOW][WO11] create next work item for =" + nextNetElement['@']);
+							var work_item_uri = create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id);
+							workItemList.push(
+							{
+								data: work_item_uri,
+								type: _Uri
+							});
+						}
+					}
 
 
                 }
@@ -971,6 +974,11 @@ function prepare_start_form(ticket, document)
 {
     print(":prepare_start_form #B, doc_id=" + document['@']);
 
+	var isTrace = document['v-wf:isTrace'];
+
+	if (isTrace && getFirstValue (isTrace) == true)
+		isTrace = true;
+		
     var hasStatusWorkflowif = document['v-s:hasStatusWorkflow'];
     if (hasStatusWorkflowif)
     {
@@ -990,6 +998,11 @@ function prepare_start_form(ticket, document)
     }
 
     var new_process_uri = genUri();
+
+	var system_journal_uri;
+
+	if (isTrace)
+		system_journal_uri = create_new_journal(ticket, new_process_uri + 's', _net['rdfs:label']);
 
     var author_uri;
     var ff = get_property_chain(ticket, document, 'v-s:author', 'v-s:employee');
