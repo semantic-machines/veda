@@ -507,6 +507,19 @@ s-wf:rul_transform23_2
 	rdfs:isDefinedBy s-wf: ;
 .
 
+# ------------------------------ CODELET : ------------------------------------- #
+
+s-wf:codelet_create_use_transformation
+	rdf:type v-s:Codelet ;
+	rdfs:label "создать на основе трансформации (src_uri, transformation_uri)" ;
+	v-s:script """
+	create_use_transformation (process, task)	
+""" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+# ------------------------------ CODELET : ------------------------------------- #
+
 s-wf:codelet_get_type_of_docId
 	rdf:type v-s:Codelet ;
 	rdfs:label "взять тип документа в переменной docId" ;

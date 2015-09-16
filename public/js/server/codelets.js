@@ -132,3 +132,42 @@ function is_in_docflow_and_set_if_true(process, task)
 function distribution(process, task)
 {
 }
+
+function create_use_transformation (process, task)
+{
+	var new_items_uri = [];
+
+    if (task)
+    {
+		var src_doc_id = task.getVariableValue('src_uri');		
+		var transform_link = task.getVariableValue('transformation_uri');		
+		
+		if (transform_link)
+		{
+			var transform = get_individual(ticket, transform_link);
+			if (transform)
+			{
+				var document = get_individual(ticket, src_doc_id);
+				if (document)
+				{
+					var new_items = transformation(ticket, document, transform, null, null);
+					for (var i = 0; i < new_items.length; i++)
+					{
+						put_individual(ticket, new_items[i], _event_id);
+						new_items_uri.push(
+						{
+							data: new_items[i]['@'],
+							type: _Uri
+						});
+					}
+				}
+			}
+		
+		}
+	}		
+	
+	var res_out = {
+		'res': new_items_uri
+    };
+    return res_out;	
+}	
