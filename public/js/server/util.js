@@ -180,7 +180,7 @@ function logToJournal(ticket, journal_uri, journal_record)
     add_to_individual(ticket, add_to_journal, _event_id);
 }
 
-function logTraceToJournal(ticket, journal_uri, str)
+function traceToJournal(ticket, journal_uri, label, data)
 {
 	var journal_record = newJournalRecord(journal_uri);
 	
@@ -189,13 +189,17 @@ function logTraceToJournal(ticket, journal_uri, str)
                 data: 'v-wf:TraceRecord',
                 type: _Uri
     }];	
+	journal_record['rdfs:label'] = [
+            {
+                data: label,
+                type: _String
+    }];
 	journal_record['rdfs:comment'] = [
             {
-                data: str,
+                data: data,
                 type: _String
     }];
     
 	logToJournal(ticket, journal_uri, journal_record);		
-	//print ("@@@ jr=", toJson (journal_record));
 }	
 

@@ -890,7 +890,7 @@ function prepare_process(ticket, document)
 	var trace_journal_uri = get_trace_journal (document, document);
 
 	if (trace_journal_uri)
-		logTraceToJournal(ticket, trace_journal_uri, "prepare_process:" + document['@']);
+		traceToJournal(ticket, trace_journal_uri, "prepare_process", document['@']);
 
     var inVars = _process['v-wf:inVars'];
     if (!inVars)
@@ -1073,7 +1073,7 @@ function prepare_start_form(ticket, document)
 	if (isTrace)
 	{
 		trace_journal_uri = create_new_journal(ticket, getTraceJournalUri(new_process_uri), new_process_uri, _net['rdfs:label']);    
-		logTraceToJournal(ticket, trace_journal_uri, "started new process=" + toJson(new_process));
+		traceToJournal(ticket, trace_journal_uri, "started new process", toJson(new_process));
 	}	
 
     create_new_journal(ticket, getJournalUri (new_process_uri), _net['rdfs:label']);
