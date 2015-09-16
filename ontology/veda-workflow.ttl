@@ -1577,7 +1577,7 @@ v-wf:create
         rdfs:range xsd:string ;
 .
 
-v-wf:agregate
+v-wf:aggregate
         rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "выражение для размещения элемента в обьекте"@ru ;

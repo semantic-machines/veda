@@ -586,14 +586,14 @@ s-wf:map_jrn_msg_t1e_ev
 s-wf:transformation1
         rdf:type v-wf:Transform ;
 	rdfs:isDefinedBy s-wfc: ;
-	v-wf:transformRule s-wf:rul_transform1 ;	
-	v-wf:transformRule s-wf:rul_transform2 ;	
-	v-wf:transformRule s-wf:rul_transform3 ;	
-	v-wf:transformRule s-wf:rul_transform4 ;	
-	v-wf:transformRule s-wf:rul_transform5 ;	
-	v-wf:transformRule s-wf:rul_transform6 ;	
-	v-wf:transformRule s-wf:rul_transform7 ;	
-.		
+	v-wf:transformRule s-wf:rul_transform1 ;
+	v-wf:transformRule s-wf:rul_transform2 ;
+	v-wf:transformRule s-wf:rul_transform3 ;
+	v-wf:transformRule s-wf:rul_transform4 ;
+	v-wf:transformRule s-wf:rul_transform5 ;
+	v-wf:transformRule s-wf:rul_transform6 ;
+	v-wf:transformRule s-wf:rul_transform7 ;
+.
 
 s-wf:rul_transform1
 	rdf:type v-wf:Rule ;
