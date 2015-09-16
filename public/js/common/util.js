@@ -146,37 +146,159 @@ function is_exist (individual, field, value)
  */
 function transformation(ticket, individuals, transform, executor, work_order)
 {
+  try {	
     var out_data0 = {};
 
     if (Array.isArray(individuals) !== true) {
     	individuals = [individuals];
     }
-	
+
     var rules = transform['v-wf:transformRule'];
 
     if (!rules)
         return;
 
-    for (var i in rules)
-    {
-    	if (typeof window === "undefined") {
-				var rule = get_individual(ticket, rules[i].data);
-				if (!rule)
-				{
-					print ("not read rule [", rules[i].data, "]");
-					continue;
-				}				
-				rules[i] = rule;    		
-    	} else {
-    		rules[i] = new veda.IndividualModel(rules[i].data);
+	if (typeof window === "undefined") 
+	{
+		for (var i in rules)
+		{
+    		rules[i] = get_individual(ticket, rules[i].data);
+    		if (!rule)
+			{
+				print ("not read rule [", rules[i].data, "]");
+				continue;
+			}				
     	}
     }
 
-    //print("#6 individuals=", toJson(individuals));
     var out_data0_el = {};
-
-    individuals.forEach(function(individual)
+    
+    /* PUT functions [BEGIN] */
+    var putFieldOfIndividFromElement = (function ()
     {
+        return function (name, field)
+        {                    	
+            var rr = get_individual(ticket, getUri(element));
+            if (!rr)
+                return;
+
+            var out_data0_el_arr;
+
+            out_data0_el_arr = out_data0_el[name];
+
+            if (!out_data0_el_arr)
+                out_data0_el_arr = [];
+
+            out_data0_el_arr.push(rr[field]);
+
+            out_data0_el[name] = out_data0_el_arr;
+        }
+    })();
+
+    var putFieldOfObject = (function ()
+    {
+        return function (name, field)
+        {
+            var out_data0_el_arr;
+
+            out_data0_el_arr = out_data0_el[name];
+
+            if (!out_data0_el_arr)
+                out_data0_el_arr = [];
+
+            out_data0_el_arr.push(individual[field]);
+
+            out_data0_el[name] = out_data0_el_arr;
+        }
+    })();
+
+    var putUri = (function ()
+    {
+        return function (name, value)
+        {
+            var out_data0_el_arr;
+
+            out_data0_el_arr = out_data0_el[name];
+
+            if (!out_data0_el_arr)
+                out_data0_el_arr = [];
+
+            out_data0_el_arr.push(
+            {
+                data: value,
+                type: _Uri
+            });
+
+            out_data0_el[name] = out_data0_el_arr;
+        }
+    })();
+
+    var putString = (function ()
+    {
+        return function (name, value)
+        {
+            var out_data0_el_arr;
+
+            out_data0_el_arr = out_data0_el[name];
+
+            if (!out_data0_el_arr)
+                out_data0_el_arr = [];
+
+            out_data0_el_arr.push(
+            {
+                data: value,
+                type: _String
+            });
+
+            out_data0_el[name] = out_data0_el_arr;
+        }
+    })();
+
+    var putBoolean = (function ()
+    {
+        return function (name, value)
+        {
+            var out_data0_el_arr;
+
+            out_data0_el_arr = out_data0_el[name];
+
+            if (!out_data0_el_arr)
+                out_data0_el_arr = [];
+
+            out_data0_el_arr.push(
+            {
+                data: value,
+                type: _Bool
+            });
+
+            out_data0_el[name] = out_data0_el_arr;
+        }
+    })();
+            
+    var putExecutor = (function ()
+    {
+        return function (name)
+        {
+            out_data0_el[name] = [executor];
+        }
+    })();
+
+    var putWorkOrder = (function ()
+    {
+        return function (name)
+        {
+            out_data0_el[name] = [work_order];
+        }
+    })();
+    /* PUT functions [END] */
+
+    for (var key in individuals)
+    {
+    	//print("#1 key=", key);
+    	var individual = individuals[key];
+    	if (typeof window !== "undefined") individual['@'] = individual['id']; // sly hack
+    	
+    	//print("#1.1 key=", key);
         var objectContentStrValue = (function ()
         {
             return function (name, value)
@@ -211,24 +333,83 @@ function transformation(ticket, individuals, transform, executor, work_order)
             }
         })();
 
-        for (var key in individual)
-        {
-            var element = individual[key];
+        //print("#1.2 key=", key);
+        var iteratedObject = (typeof window === "undefined")?Object.getOwnPropertyNames(individual):Object.getOwnPropertyNames(individual.properties);
+        if (typeof window !== "undefined") {
+        	iteratedObject.push('@');
+        }
+        //print("#1.3 key=", key);
 
+        for (var key2 = 0; key2 < iteratedObject.length; key2++)
+        {
+        	//print("#2 key2=", key2);
+            var element = individual[iteratedObject[key2]];
+
+            var putElement = (function ()
+    	    {
+    	        return function (name)
+    	        {
+    	            var out_data0_el_arr;
+
+    	            out_data0_el_arr = out_data0_el[name];
+
+    	            if (!out_data0_el_arr)
+    	                out_data0_el_arr = [];
+    	            if (iteratedObject[key2] == '@')
+    	            {
+    	                out_data0_el_arr.push(
+    	                {
+    	                    data: element,
+    	                    type: _Uri
+    	                });
+    	            }
+    	            else
+    	                out_data0_el_arr.push(element);
+
+    	            out_data0_el[name] = out_data0_el_arr;
+    	        }
+    	    })();
+            
+            /* Segragate functions [BEGIN] */
             var contentName = (function ()
             {
                 return function (name)
                 {
-                    if (key == name)
+                	return iteratedObject[key2] == name;
+                }
+            })();
+
+            var elementContentStrValue = (function ()
+            {
+                return function (name, value)
+                {
+                    if (iteratedObject[key2] !== name)
+                        return false;
+                    //print("individual[name]=", toJson(individual[name]));
+                    var str = typeof window === "undefined"?element[0].data:element[0];
+                    //print("str=", str);
+                    if (str == value)
                         return true;
                     else
                         return false;
                 }
             })();
+            /* Segragate functions [END] */
+            
+            var getElement = (function ()
+            {
+                return function ()
+                {
+                    return element;
+                }
+            })();
+
 
             // выполняем все rules
-            rules.forEach(function(rule)
+            for (var key3 in rules)
             {
+            	//print("#3 key3=", key3);
+            	var rule = rules[key3];
                 // 1. v-wf:segregateObject
                 var segregateObject = rule['v-wf:segregateObject'];
 
@@ -236,188 +417,29 @@ function transformation(ticket, individuals, transform, executor, work_order)
                 var segregateElement = rule['v-wf:segregateElement'];
                 var grouping = rule['v-wf:grouping'];
 
-                var res = false;
-
+                var res = undefined;
+                
                 if (segregateObject)
                 {
-                    res = eval(typeof window === "undefined"?segregateObject[0].data:segregateObject[0]);
+                	if (typeof window === "undefined") {
+                		res = eval(segregateObject[0].data)
+                	} else if (segregateObject[0] != undefined) {
+                		res = eval(segregateObject[0].toString());
+                	}
                     if (res == false)
-                        return;
+                    	continue;
                 }
-
-                var elementContentStrValue = (function ()
-                {
-                    return function (name, value)
-                    {
-                        if (key !== name)
-                            return false;
-                        //print("individual[name]=", toJson(individual[name]));
-                        var str = typeof window === "undefined"?element[0].data:element[0];
-                        //print("str=", str);
-                        if (str == value)
-                            return true;
-                        else
-                            return false;
-                    }
-                })();
 
                 if (segregateElement)
                 {
-                    res = eval(typeof window === "undefined"?segregateElement[0].data:segregateElement[0]);
+                	if (typeof window === "undefined") {
+                		res = eval(segregateElement[0].data)
+                	} else if (segregateElement[0] != undefined) {
+                		res = eval(segregateElement[0].toString());
+                	}
                     if (res == false)
-                    	return;
+                    	continue;
                 }
-
-                var getElement = (function ()
-                {
-                    return function ()
-                    {
-                        return element;
-                    }
-                })();
-
-                var putFieldOfIndividFromElement = (function ()
-                {
-                    return function (name, field)
-                    {                    	
-                        var rr = get_individual(ticket, getUri(element));
-                        if (!rr)
-                            return;
-
-                        var out_data0_el_arr;
-
-                        out_data0_el_arr = out_data0_el[name];
-
-                        if (!out_data0_el_arr)
-                            out_data0_el_arr = [];
-
-                        out_data0_el_arr.push(rr[field]);
-
-                        out_data0_el[name] = out_data0_el_arr;
-                    }
-                })();
-
-                var putElement = (function ()
-                {
-                    return function (name)
-                    {
-                        var out_data0_el_arr;
-
-                        out_data0_el_arr = out_data0_el[name];
-
-                        if (!out_data0_el_arr)
-                            out_data0_el_arr = [];
-
-                        if (key == '@')
-                        {
-                            out_data0_el_arr.push(
-                            {
-                                data: element,
-                                type: _Uri
-                            });
-                        }
-                        else
-                            out_data0_el_arr.push(element);
-
-                        out_data0_el[name] = out_data0_el_arr;
-                    }
-                })();
-
-                var putFieldOfObject = (function ()
-                {
-                    return function (name, field)
-                    {
-                        var out_data0_el_arr;
-
-                        out_data0_el_arr = out_data0_el[name];
-
-                        if (!out_data0_el_arr)
-                            out_data0_el_arr = [];
-
-                        out_data0_el_arr.push(individual[field]);
-
-                        out_data0_el[name] = out_data0_el_arr;
-                    }
-                })();
-
-                var putUri = (function ()
-                {
-                    return function (name, value)
-                    {
-                        var out_data0_el_arr;
-
-                        out_data0_el_arr = out_data0_el[name];
-
-                        if (!out_data0_el_arr)
-                            out_data0_el_arr = [];
-
-                        out_data0_el_arr.push(
-                        {
-                            data: value,
-                            type: _Uri
-                        });
-
-                        out_data0_el[name] = out_data0_el_arr;
-                    }
-                })();
-
-                var putString = (function ()
-                {
-                    return function (name, value)
-                    {
-                        var out_data0_el_arr;
-
-                        out_data0_el_arr = out_data0_el[name];
-
-                        if (!out_data0_el_arr)
-                            out_data0_el_arr = [];
-
-                        out_data0_el_arr.push(
-                        {
-                            data: value,
-                            type: _String
-                        });
-
-                        out_data0_el[name] = out_data0_el_arr;
-                    }
-                })();
-
-                var putBoolean = (function ()
-                {
-                    return function (name, value)
-                    {
-                        var out_data0_el_arr;
-
-                        out_data0_el_arr = out_data0_el[name];
-
-                        if (!out_data0_el_arr)
-                            out_data0_el_arr = [];
-
-                        out_data0_el_arr.push(
-                        {
-                            data: value,
-                            type: _Bool
-                        });
-
-                        out_data0_el[name] = out_data0_el_arr;
-                    }
-                })();
-
-                var putExecutor = (function ()
-                {
-                    return function (name)
-                    {
-                        out_data0_el[name] = [executor];
-                    }
-                })();
-
-                var putWorkOrder = (function ()
-                {
-                    return function (name)
-                    {
-                        out_data0_el[name] = [work_order];
-                    }
-                })();
 
                 //print("#7 key=", key);
                 //print("#7 element=", toJson(element));
@@ -446,7 +468,13 @@ function transformation(ticket, individuals, transform, executor, work_order)
                 var agregate = rule['v-wf:aggregate'];
                 for (var i2 = 0; i2 < agregate.length; i2++)
                 {
-                    eval(typeof window === "undefined"?agregate[i2].data:agregate[i2]);
+                	if (typeof window === "undefined") 
+                	{
+                		eval(agregate[i2].data);
+                	} else if (agregate[i2] != undefined) 
+                	{ 
+                		eval(agregate[i2].toString());
+                	}
                 }
 
                 if (!grouping)
@@ -457,9 +485,9 @@ function transformation(ticket, individuals, transform, executor, work_order)
                 {
                     out_data0[group_key] = out_data0_el;
                 }
-            });
+            }          
         }
-    });
+    }
 
     var out_data = [];
     for (var key in out_data0)
@@ -470,4 +498,11 @@ function transformation(ticket, individuals, transform, executor, work_order)
     //print ("#e out_data=", toJson (out_data));
 
     return out_data;
+  } catch(e) {
+	if (typeof window === "undefined") {
+		print(e.stack);
+	} else {
+		console.log(e.stack);
+	}
+  }
 }

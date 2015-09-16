@@ -102,9 +102,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		var wrapper = $("<div>").append(template);
 
 		// Cleanup memory
-		template.on("remove", function (event) {
+		/*template.on("remove", function (event) {
 			$(".typeahead", wrapper).typeahead("destroy");
-		});
+			wrapper = embedded = props_ctrls = null;
+		});*/
 		
 		// Embedded templates list & property controls
 		var embedded = [];
@@ -132,13 +133,57 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		template.on("save", saveHandler);
 
 		function sendHandler(e) {
-			individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
-			template.trigger("save");
-			$edit.remove();
-			$save.remove();
-			$delete.remove();
-			$send.remove();
-			e.stopPropagation();
+			var s = new veda.SearchModel("'rdfs:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
+			if (Object.getOwnPropertyNames(s.results).length == 0) {
+				individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
+				template.trigger("save");
+				$edit.remove();
+				$save.remove();
+				$delete.remove();
+				$send.remove();
+				e.stopPropagation();				
+			} else if (Object.getOwnPropertyNames(s.results).length == 1) {
+				Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
+					var res = s.results[res_id];
+					var transfromResult = veda.Util.applyTransform(individual, res['v-s:hasTransformation'][0]);
+					console.log(transfromResult);
+					var startForm = new veda.IndividualModel();
+					Object.getOwnPropertyNames(transfromResult[0]).forEach(function (key)
+					{
+						if (key != '@') 
+						{
+							startForm.defineProperty(key);
+							if (!Array.isArray(transfromResult[0][key])) {
+								transfromResult[0][key] = [transfromResult[0][key]];
+							} 
+							for (var i in transfromResult[0][key]) 
+							{
+								var value = null;
+								if (key == 'rdf:type')
+								{
+									value = veda.ontology[transfromResult[0][key][i].data];
+								} else  
+								{
+									value = transfromResult[0][key][i].hasOwnProperty('data')?new veda.IndividualModel(transfromResult[0][key][i].data):transfromResult[0][key][i];
+								}
+								if (value) {
+									startForm[key] = startForm[key].concat(value);
+									console.log(">"+key);
+									console.log(value);
+								}
+							}
+						}
+					});
+					/*
+					startForm.defineProperty("rdfs:comment");
+					startForm["rdfs:comment"] = ["123"];
+					*/
+					console.log(startForm);
+	            	riot.route("#/individual/" + startForm.id + "/#main//edit", true);
+				});
+			} else {
+				alert('Несколько стартовых трансформаций. Меня жизнь к такому не готовила.');
+			}
 		}
 		template.on("send", sendHandler);
 
@@ -205,7 +250,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			$edit.remove();
 			$save.remove();
 			$delete.remove();
-			$send.remove();
+			//$send.remove();
 		}
 
 		// Buttons handlers
@@ -279,13 +324,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Process RDFa compliant template
 
 		// Special (not RDFa)
-		$("a[href*='@']:not([rel] *, [about] *)", wrapper).map( function () {
+		$("a[href*='@']:not([rel] *):not([about] *)", wrapper).map( function () {
 			var self = $(this);
 			var str = self.attr("href");
 			self.attr("href", str.replace("@", individual.id));
 		});
 
-		$("img[src*='@']:not([rel] *, [about] *)", wrapper).map( function () {
+		$("img[src*='@']:not([rel] *):not([about] *)", wrapper).map( function () {
 			var self = $(this);
 			var str = self.attr("src");
 			self.attr("src", str.replace("@", individual.id));
@@ -293,7 +338,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		// Property value
 		var props_ctrls = {};
-		$("[property]:not(veda-control, [rel] *, [about], [about] *)", wrapper).map( function () {
+		$("[property]:not(veda-control):not([rel] *):not([about]):not([about] *)", wrapper).map( function () {
 			var propertyContainer = $(this),
 				property_uri = propertyContainer.attr("property"),
 				spec = specs[property_uri];
@@ -318,7 +363,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 
 		// Related resources & about resources
-		$("[rel]:not(veda-control, [rel] *, [about] *)", wrapper).map( function () {
+		$("[rel]:not(veda-control):not([rel] *):not([about] *)", wrapper).map( function () {
 			var relContainer = $(this), 
 				about = relContainer.attr("about"),
 				rel_uri = relContainer.attr("rel"),
@@ -389,7 +434,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});		
 
 		// About resource
-		$("[about]:not([rel], [property])", wrapper).map( function () {
+		$("[about]:not([rel]):not([property])", wrapper).map( function () {
 			var aboutContainer = $(this), 
 				about_template_uri = aboutContainer.attr("template"),
 				about_inline_template = aboutContainer.children(),
@@ -412,7 +457,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 
 		// About resource property
-		$("[about][property]:not([rel] *, [about] *)", wrapper).map( function () {
+		$("[about][property]:not([rel] *):not([about] *)", wrapper).map( function () {
 			var propertyContainer = $(this), 
 				property_uri = propertyContainer.attr("property"),
 				about;
@@ -436,7 +481,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 
 		// Property control
-		$("veda-control[property]:not([rel] *, [about] *)", wrapper).map( function () {
+		$("veda-control[property]:not([rel] *):not([about] *)", wrapper).map( function () {
 			
 			var control = $(this),
 				property_uri = control.attr("property"),
@@ -545,7 +590,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		
 		// Relation control
-		$("veda-control[rel]:not([rel] *, [about] *)", wrapper).map( function () {
+		$("veda-control[rel]:not([rel] *):not([about] *)", wrapper).map( function () {
 			
 			var control = $(this), 
 				rel_uri = control.attr("rel"),
@@ -604,14 +649,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			
 			// tooltip from spec
-			if (spec && spec.hasValue("v-ui:tooltip")) {
+			/*if (spec && spec.hasValue("v-ui:tooltip")) {
 				control.tooltip({
 					title: spec["v-ui:tooltip"].join(", "),
 					placement: "top",
 					container: control,
 					trigger: "focus"
 				});
-			}
+			}*/
 			
 		});
 
@@ -793,7 +838,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		} else {
 			properties = individual.properties;
 		}
-		
 		$(".properties", template).append (
 			Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
 				var property = veda.ontology[property_uri];
