@@ -2238,6 +2238,9 @@ v-ui:TraceEventTemplate
   v-ui:forClass v-wf:TraceRecord;
   v-ui:template """
 <div class="journal-record">
+  <style>
+    pre {font-size:10px;}
+  </style>
   <hr class="margin-sm">
   <div class="row">
 	<div class="col-md-3 col-sm-3 event-type">
