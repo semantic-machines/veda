@@ -344,7 +344,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     
                 	// build run path
                     if (mode=='view') {
-                		instance.select().removeClass('process-path-highlight').removeOverlay("pathCounter");;
+                		instance.select().removeClass('process-path-highlight').removeOverlay("pathCounter");
                     	var about = new veda.IndividualModel(_this.id);
                 		if ( about.hasValue("rdfs:label") ) propsHead.text(about["rdfs:label"].join(", "));
                     	else propsHead.text(about.id);
@@ -777,8 +777,10 @@ jsWorkflow.ready = jsPlumb.ready;
             	wis.forEach(function(wi) {
             		if (wi.hasValue('v-wf:forNetElement')) {
             			var state = $('#'+veda.Util.escape4$(wi['v-wf:forNetElement'][0].id));
-            			$("<span/>", {'type' :'work-item', 
-            						  'work-item-id': wi.id }).appendTo(state);
+            			if ($(state).find('[work-item-id="'+veda.Util.escape4$(wi.id)+'"]').length == 0) {
+	            			$("<span/>", {'type' :'work-item', 
+	            						  'work-item-id': wi.id }).appendTo(state);
+            			}
             			var wic = parseInt(state.attr('work-items-count'));
             			var red = state.attr('colored-to')=='red';    
             			if (wic>0) {                				
