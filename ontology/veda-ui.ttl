@@ -453,10 +453,10 @@ v-ui:LabelTemplate
   rdfs:label "Шаблон с меткой"@ru ;
   rdfs:label "Template with label"@en ;
   v-ui:template """
-  <span><span id="label" property="rdfs:label"></span></span>
+  <span id="label" property="rdfs:label"></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
-  	  $("#label", template).text(individual.id);
+  	  template.text(individual.id);
     }
   </script>
   """ ;
@@ -467,10 +467,13 @@ v-ui:LabelTemplateWithEditLink
   rdfs:label "Шаблон с меткой"@ru ;
   rdfs:label "Template with label"@en ;
   v-ui:template """  
-  <span><span id="label" property="rdfs:label"></span><a href="#/individual/@/#main//edit"><i class='glyphicon glyphicon-share-alt'></i></a></span>
+  <span id="label" property="rdfs:label"></span>
+  <a href="#/individual/@/#main//edit">
+	<i class='glyphicon glyphicon-share-alt'></i>
+  </a>
   <script>
     if (!individual.hasValue("rdfs:label")) {
-  	  $("#label", template).text(individual.id);
+  	  template.first().text(individual.id);
     }
   </script>
   """ ;
@@ -481,7 +484,7 @@ v-ui:LabelLinkTemplate
   rdfs:label "Шаблон без имени класса, но с меткой"@ru ;
   rdfs:label "Template without class name, with label"@en ;
   v-ui:template """
-  <span><a href="#/individual/@/#main"><span property="rdfs:label"></span></a></span>
+  <a href="#/individual/@/#main"><span property="rdfs:label"></span></a>
   """ ;
 .
 v-ui:LabelBlockLinkTemplate
