@@ -1073,62 +1073,6 @@ td:Membership_004
   rdfs:label "Членство 004"@ru ;
 .
 
-:dcf1ce1146792aaa860ae4db7893b2ebb 
-    a mnd-s-pdr:PerformanceDevelopmentReview;
-    v-s:author td:ValeriyBushenev-Programmer1;
-    v-s:hasChief td:ValeriyBushenev-TechnicalDirector;
-    v-s:responsible td:AndreyBychin-ExecutiveDirector;
-    v-s:dateFrom "2014-01-01T00:00:00.000Z"^^xsd:dateTime;
-    mnd-s-pdr:hasProfessionalObjective :d966ad08a80add1b5bd2c8a9997c9547f;
-    mnd-s-pdr:hasMobility :d5ecd0a39041e9160f723ae960f3b86fe;
-    mnd-s-pdr:hasLeaderObjective :d5fea50fe5b87544a8cfa069ca5d1679f;
-    mnd-s:hasCheckedDepartment td:CCIP;
-    v-s:year "2010"^^xsd:integer;
-    mnd-s-pdr:hasTrainingObjective :de6224bd385fa0248cfcc1248c41baaa1;
-    mnd-s-pdr:readyToNewPosition "тест"^^xsd:string;
-    rdfs:label "ТЕСТ ПДР"@ru;
-    v-wf:forNet s-wf:net_complex_route ;
-    v-wf:processInitiator td:RomanKarpov-Analyst1 ;
-    v-wf:processedDocument :dcf1ce1146792aaa860ae4db7893b2ebb ; 
-    v-wf:useTransformation s-wf:transformation2 ;
-.
-
-td:Membership_001
-  rdf:type v-s:Membership ;
-  v-s:memberOf v-a:ReadResGroup ;
-  v-s:resource :dcf1ce1146792aaa860ae4db7893b2ebb ;
-  rdfs:label "Membership 001"@en ;
-  rdfs:label "Членство 001"@ru ;
-.
-
-mnd-s-pdr:PerformanceDevelopmentReview rdfs:subClassOf v-s:Document;
-    a owl:Class;
-    rdfs:label "Планирование и анализ достижения и развития"@ru.
-
-td:d5fea50fe5b87544a8cfa069ca5d1679f v-s:description "ее"^^xsd:string;
-    v-s:dateTo "2016-01-01T00:00:00.000Z"^^xsd:dateTime;
-    v-s:dateFrom "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
-    a mnd-s-pdr:ObjectiveOfPdr;
-    mnd-s-pdr:unitOfMeasure "2"^^xsd:string.
-
-td:d966ad08a80add1b5bd2c8a9997c9547f v-s:description "цуцу"^^xsd:string;
-    v-s:dateTo "2016-01-01T00:00:00.000Z"^^xsd:dateTime;
-    v-s:dateFrom "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
-    a mnd-s-pdr:ObjectiveOfPdr;
-    mnd-s-pdr:unitOfMeasure "1"^^xsd:string.
-
-td:de6224bd385fa0248cfcc1248c41baaa1 mnd-s-pdr:hasPdrMethod mnd-s-pdr:de05a7c430cc5262a77e720961b7ac028;
-    v-s:dateTo "2016-01-01T00:00:00.000Z"^^xsd:dateTime;
-    mnd-s-pdr:developmentArea "гггг"^^xsd:string;
-    v-s:dateFrom "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
-    a mnd-s-pdr:TrainingOfPdr;
-    mnd-s-pdr:expectedResult "вввв"^^xsd:string.
-
-td:d5ecd0a39041e9160f723ae960f3b86fe a mnd-s-pdr:Mobility;
-    rdfs:label "внутри страны с ограничениями"^^xsd:string.
-
-###############################################################
-
 ######################## сеть, пример 1 #######################
 
 :start-form1 
@@ -1311,6 +1255,9 @@ td:d5ecd0a39041e9160f723ae960f3b86fe a mnd-s-pdr:Mobility;
 	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')"; 	
 	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')"; 	
 .
+
+##############################################################################################
+
 v-asp:PersonalAspectKarpovr
 	rdf:type v-asp:PersonalAspect ;
 	v-s:owner td:RomanKarpov ;
@@ -1336,6 +1283,7 @@ v-asp:PersonalAspectKhvostia
 #	v-asp:hasArbitraryLink ;
 #	v-asp:hasWidget ;
 .
+
 td:ProjectSearch_forKh
   rdf:type v-fs:Search ;
   rdfs:label "ProjectSearch"@en ;
@@ -1352,79 +1300,5 @@ v-wf:UserTaskForm1
 	v-wf:possibleDecisionClass v-wf:DecisionRejected ;  		
 	v-wf:possibleDecisionClass v-wf:DecisionBreak ;  		
 	v-wf:from td:RomanKarpov-Analyst1 ;  		
-.
-
-td:ProjectTest mnd-s-asppd:stopProductionRisk mnd-s-asppd:d913b746aded06653b193ab11d9ce531c;
-    mnd-s-asppd:hasProjectStage mnd-s-asppd:ProjectStage1;
-    mnd-s-asppd:hasMember td:AleksandraKhvostikova-Analyst1, td:AndreyBychin-Analyst2, td:RomanKarpov-Analyst1;
-    mnd-s-asppd:coordination1Plan mnd-s-asppd:d7e2cfc919d550b5662e039a43d5da4d7;
-    mnd-s-asppd:technologicalEquipmentInfo "технологическая информация об оборудовании, технологическая информация об оборудовании, технологическая информация об оборудовании"^^xsd:string;
-    mnd-s-asppd:installingWorkCost "488454.6"^^xsd:decimal;
-    mnd-s-asppd:lossOfMarketRisk mnd-s-asppd:d9a4ac66ccae37aac073c7674f7ab1ec8;
-    mnd-s-asppd:designCost "21"^^xsd:integer;
-    mnd-s-asppd:penaltyRisk mnd-s-asppd:d13545e8b279170bf558caf04382077d3;
-    mnd-s-asppd:osNumber "545532213"^^xsd:string;
-    mnd-s-asppd:adjustmentWorkCost "85454.9"^^xsd:decimal;
-    mnd-s-asppd:needPermit mnd-s-pdr:dfae95ea3d168186a970e0248ca3a095b;
-    mnd-s-asppd:purchaseStrategy "рекомендуемая стратегия закупки, рекомендуемая стратегия закупки, рекомендуемая стратегия закупки, рекомендуемая стратегия закупки, рекомендуемая стратегия закупки, рекомендуемая стратегия закупки"^^xsd:string;
-    mnd-s-asppd:hasImplementationCost mnd-s-pdr:d72b419456be9fee83d6fd2c728644537;
-    mnd-s-asppd:coordinationWithOtherAction "координация с другими мероприятиями комбината, координация с другими мероприятиями комбината, координация с другими мероприятиями комбината, координация с другими мероприятиями комбината, координация с другими мероприятиями комбината"^^xsd:string;
-    mnd-s-asppd:technicalEquipmentInfo "техническая информация об оборудовании, техническая информация об оборудовании. техническая информация об оборудовании, техническая информация об оборудовании"^^xsd:string;
-    v-s:author td:AleksandraKhvostikova;
-    mnd-s-asppd:hasProjectStage2 <http://semantic-machines.com/veda/veda-data/10c95d41dc8c25cf159fceb96f70baff>;
-    v-s:created "2015-09-08T11:45:25.000Z"^^xsd:dateTime;
-    mnd-s-asppd:alternativeDecision "альтернативные решения и выводы, альтернативные решения и выводы, альтернативные решения и выводы, альтернативные решения и выводы"^^xsd:string;
-    mnd-s-asppd:coordination2Plan <http://semantic-machines.com/veda/mondi-schema-asppd/2c2261b16c32445ca54ce176522ddb5d>;
-    mnd-s-asppd:hasProjectStage4 d:ac3ca311e6b06c7cc4bfe1ea44acc80f;
-    mnd-s-asppd:projectName "тестовый проект (выгруженный в ttl)"^^xsd:string;
-    mnd-s-asppd:preengineeringCost "55655.6"^^xsd:decimal;
-    mnd-s-asppd:coordination1Fact <http://semantic-machines.com/veda/mondi-schema-asppd/6a2f802277d20b7cf83fe83ae9377f85>;
-    mnd-s-asppd:productionEquipmentCost "545"^^xsd:integer;
-    mnd-s-asppd:buildingWorkCost "51.6"^^xsd:decimal;
-    mnd-s-asppd:backgroundToChange "предпосылки к изменениям, предпосылки к изменениям, предпосылки к изменениям, предпосылки к изменениям"^^xsd:string;
-    mnd-s-asppd:hasEquipmentProvider d:cb9125cab0cd107be77ef0acb197db18;
-    mnd-s-asppd:reputationalRisk mnd-s-asppd:d13545e8b279170bf558caf04382077d3;
-    mnd-s-asppd:hasFinancialEffect <http://semantic-machines.com/veda/veda-data/9584753cf0eaa0cc21ef1aeff608eed8>, d:b4574f6219b9b955e7998cba93a328c1;
-    mnd-s-asppd:sheRequirementCost "2521.8"^^xsd:decimal;
-    mnd-s:registrationNumber "111"^^xsd:string;
-    mnd-s-asppd:hasProjectStage3 d:afae31f318bfe9d05e2e4c1715cbf429;
-    mnd-s-asppd:accidentRisk mnd-s-asppd:d15e1d21a6bf8fdc94b693fadd960f71e;
-    mnd-s-asppd:designShedule d:b1f431f18c83400793aa00a9a73ed0d2;
-    a mnd-s-asppd:Project;
-    mnd-s-asppd:impactOnEnviromentRisk mnd-s-asppd:d13545e8b279170bf558caf04382077d3;
-    mnd-s-asppd:coordination2Fact <http://semantic-machines.com/veda/mondi-schema-asppd/2c2261b16c32445ca54ce176522ddb5d>;
-    mnd-s-asppd:coordination3Plan <http://semantic-machines.com/veda/mondi-schema-asppd/2c2261b16c32445ca54ce176522ddb5d>;
-    rdfs:label "111 тестовый проект (выгруженный в ttl)"^^xsd:string;
-    mnd-s-asppd:otherRisk mnd-s-asppd:d13545e8b279170bf558caf04382077d3;
-    mnd-s-asppd:stopTechnologicalPotokRisk mnd-s-asppd:d15e1d21a6bf8fdc94b693fadd960f71e;
-    mnd-s-asppd:hasProjectKind mnd-s-asppd:d33eb7f35b0216410cc404540c8e041a6;
-    mnd-s-asppd:hasProjectStage5 d:d0b0d1ddd45f748e2371409f4812f583;
-    mnd-s-asppd:addNonFinancialEffect "дополнительные финансовые эффекты, дополнительные финансовые эффекты, дополнительные финансовые эффекты"^^xsd:string;
-    mnd-s-asppd:lossOfFinishedProductRisk mnd-s-asppd:d913b746aded06653b193ab11d9ce531c;
-    mnd-s-asppd:goalsOfProject "цели мероприятия, цели мероприятия, цели мероприятия, цели мероприятия"^^xsd:string;
-    mnd-s-asppd:guardInstallingCost "12121.1"^^xsd:decimal;
-    mnd-s-asppd:productionAddEquipmentCost "32.8"^^xsd:decimal;
-    mnd-s-asppd:minimizationRisk mnd-s-pdr:d72b419456be9fee83d6fd2c728644537;
-    mnd-s-asppd:volumeDescription "краткое описание объема проекта, краткое описание объема проекта, краткое описание объема проекта, краткое описание объема проекта"^^xsd:string;
-    mnd-s-asppd:lossResourcesRisk mnd-s-asppd:d13545e8b279170bf558caf04382077d3;
-    mnd-s-asppd:descriptionOfActualState "описание актуального состояния объекта, описание актуального состояния объекта, описание актуального состояния объекта"^^xsd:string;
-.
-
-td:testIdea1
-	rdf:type mnd-s-asppd:Idea;
-    rdfs:label "91 тестовая идея"^^xsd:string;	
-.    
-
-d:dd25870c68a23a0455fd29f0d67
-	v-wf:processedDocument td:testIdea1;
-    a mnd-s-asppd:IdeaRouteStartForm;
-    v-s:dateTo "2015-01-01T00:00:00.000Z"^^xsd:dateTime;
-    v-wf:useTransformation mnd-s-asppd:ideaRouteStartFormToNet;
-    v-wf:forNet d:ProjectNet;
-    v-s:author td:AleksandraKhvostikova;
-    v-s:created "2015-09-11T11:32:44.017Z"^^xsd:dateTime;
-    rdfs:label "91 тестовая стартовая форма"^^xsd:string;    
-    mnd-s-asppd:ideaRouteStartForm_customer td:RomanKarpov-Analyst1;
-    v-wf:isTrace "true"^^xsd:boolean;
 .
 
