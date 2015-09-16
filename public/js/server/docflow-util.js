@@ -56,6 +56,15 @@ function Context(_src_data, _ticket)
         return this.src_data;
     };
 
+    this.executor_taken_decision = function ()
+    {		
+            return [
+                {
+                    'data': this.src_data[0].result,
+                    'type': _Uri
+            }];
+	}
+
     this.if_all_executors_taken_decision = function (true_decision, false_decision)
     {
         //print("Context.src_data=", toJson(this.src_data));
@@ -89,8 +98,8 @@ function Context(_src_data, _ticket)
 
     this.getLocalVariableValue = function (var_name)
     {
-        //print ("src_data=", toJson (this.src_data));
-        //print ("var_name=", var_name);
+        //print ("@@@ src_data=", toJson (this.src_data));
+        //print ("@@@ var_name=", var_name);
         return this.src_data[var_name];
     };
 
@@ -233,7 +242,7 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
                 {
                     data: scope,
                     type: _Uri
-    }];
+				}];
         }
     }
 
