@@ -940,6 +940,7 @@ v-wf:TaskTemplateAsProperties
 						</span>
 					</span> =
 					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
 					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
 				<div>
 			</div>
@@ -959,6 +960,7 @@ v-wf:TaskTemplateAsProperties
 						</span>
 					</span> =
 					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
 					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
 				<div>
 			</div>
@@ -978,6 +980,7 @@ v-wf:TaskTemplateAsProperties
 						</span>
 					</span> =
 					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
 					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
 				<div>
 			</div>
@@ -997,6 +1000,7 @@ v-wf:TaskTemplateAsProperties
 						</span>
 					</span> =
 					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
 					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
 				<div>
 			</div>
@@ -1016,6 +1020,7 @@ v-wf:TaskTemplateAsProperties
 						</span>
 					</span> =
 					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
 					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
 				<div>
 			</div>
@@ -1035,6 +1040,7 @@ v-wf:TaskTemplateAsProperties
 						</span>
 					</span> =
 					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
 					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
 				<div>
 			</div>
@@ -1054,6 +1060,7 @@ v-wf:TaskTemplateAsProperties
 						</span>
 					</span> =
 					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
 					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
 				<div>
 			</div>
