@@ -831,6 +831,31 @@ s-wf:map_journal_doc_id
 	rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:src_uri
+        rdf:type v-wf:VarDefine ;
+	rdfs:isDefinedBy s-wf: ;
+	v-wf:varDefineName "src_uri" ;
+        rdfs:label "документ-источник"@ru ;
+.
+s-wf:map_docID_to_src
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:src_uri ;	
+	v-wf:mappingExpression	"process.getVariableValue ('docId')" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+s-wf:transformation_uri
+        rdf:type v-wf:VarDefine ;
+	rdfs:isDefinedBy s-wf: ;
+	v-wf:varDefineName "transformation_uri" ;
+        rdfs:label "ссылка на трансформацию"@ru ;
+.
+s-wf:map_idea1ToIdea4_to_transformation
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:transformation_uri ;	
+	v-wf:mappingExpression	"newUri('mnd-s-asppd:idea1ToIdea4')" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
 #---------- Net Coordination
 
 s-wf:def_exec_coordinator
