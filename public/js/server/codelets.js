@@ -51,6 +51,36 @@ function is_exists_net_executor (process)
     return res_out;
 }
 
+function get_type_of_docId(process, task)
+{
+    var res = '?';
+
+    if (task)
+    {
+        var doc_id = task.getVariableValue('docId');
+        if (doc_id)
+        {
+            var doc = get_individual(process.ticket, doc_id[0].data);
+
+            if (doc)
+            {
+                res = doc['rdf:type'][0].data;
+            }
+        }
+
+    }
+
+    var res_out = {
+        'res':
+        {
+            data: res,
+            type: _Uri
+        }
+    };
+	
+    return res_out;
+}
+
 function is_in_docflow_and_set_if_true(process, task)
 {
     var res = false;

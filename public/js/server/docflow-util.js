@@ -398,9 +398,8 @@ function rsffiwit(ticket, work_item_list, compare_field, compare_value, res, _pa
 
 ///////////////////////////////////////////// JOURNAL //////////////////////////////////////////////////
 
-function create_new_journal(ticket, process_uri, label)
+function create_new_journal(ticket, new_journal_uri, process_uri, label)
 {
-    var new_journal_uri = getJournalUri(process_uri);
     var new_journal = {
         '@': new_journal_uri,
         'rdf:type': [
@@ -419,7 +418,8 @@ function create_new_journal(ticket, process_uri, label)
         new_journal['rdfs:label'] = label;
 
     put_individual(ticket, new_journal, _event_id);
-
+    
+    return new_journal_uri;
 }
 
 function mapToJournal(map_container, ticket, _process, _task, _order)
@@ -506,7 +506,7 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
         print("new_process=", toJson(new_process));
         put_individual(ticket, new_process, _event_id);
 
-        create_new_journal(ticket, new_process_uri, _started_net['rdfs:label']);
+        create_new_journal(ticket, getTraceJournalUri(new_process_uri), _started_net['rdfs:label']);
 
         var journal_uri = getJournalUri(_process['@']);
         var new_journal_record = newJournalRecord(journal_uri);

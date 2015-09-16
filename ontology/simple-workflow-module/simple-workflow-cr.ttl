@@ -17,7 +17,7 @@
 <http://semantic-machines.com/veda/simple-workflow-cr>
   rdf:type owl:Ontology ;
   owl:imports <http://semantic-machines.com/veda/veda-workflow-cr> ;
-  owl:versionInfo "1.4" ;
+#  owl:versionInfo "1.4" ;
   rdfs:label "simple workflow ontology"@en ;
 	rdfs:isDefinedBy s-wfc: ;
   rdfs:label "Онтология бизнес процессов Монди"@ru ;
@@ -427,6 +427,20 @@ s-wf:executor_def_2
 	v-wf:executorExpression "process.getVariableValue ('coordinatorLevel2')" ;
 .
 
+s-wf:executor_from_coordinator
+	rdf:type v-wf:ExecutorDefinition ;
+	rdfs:isDefinedBy s-wfc: ;
+	v-wf:executorExpression "process.getVariableValue ('coordinator')" ;
+	rdfs:label "исполнители из переменной coordinator"@ru ;
+.
+
+s-wf:possibleDecision
+        rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "possibleDecision" ;
+        rdfs:label "возможные варианты решения"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:var_coordinator_3
         rdf:type v-wf:VarDefine ;
 	rdfs:isDefinedBy s-wfc: ;
@@ -445,6 +459,20 @@ s-wf:map_coordinator1
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:var_coordinator ;
         v-wf:mappingExpression  "process.getVariableValue ('coordinatorLevel1')" ;
+.
+
+s-wf:map_possibleDecision_for_idea
+        rdf:type v-wf:Mapping ;
+	rdfs:isDefinedBy s-wfc: ;
+        v-wf:mapToVariable s-wf:possibleDecision ;
+        v-wf:mappingExpression  "[newUri ('v-wf:DecisionAgreedToExecute'), newUri ('v-wf:DecisionAgreedToProject'), newUri('v-wf:DecisionRejected')]" ;
+.
+
+s-wf:map_possibleDecision
+        rdf:type v-wf:Mapping ;
+	rdfs:isDefinedBy s-wfc: ;
+        v-wf:mapToVariable s-wf:possibleDecision ;
+        v-wf:mappingExpression  "process.getVariableValue ('possibleDecision')" ;
 .
 
 s-wf:map_coordinator1_1
@@ -558,14 +586,14 @@ s-wf:map_jrn_msg_t1e_ev
 s-wf:transformation1
         rdf:type v-wf:Transform ;
 	rdfs:isDefinedBy s-wfc: ;
-	v-wf:transformRule s-wf:rul_transform1 ;	
-	v-wf:transformRule s-wf:rul_transform2 ;	
-	v-wf:transformRule s-wf:rul_transform3 ;	
-	v-wf:transformRule s-wf:rul_transform4 ;	
-	v-wf:transformRule s-wf:rul_transform5 ;	
-	v-wf:transformRule s-wf:rul_transform6 ;	
-	v-wf:transformRule s-wf:rul_transform7 ;	
-.		
+	v-wf:transformRule s-wf:rul_transform1 ;
+	v-wf:transformRule s-wf:rul_transform2 ;
+	v-wf:transformRule s-wf:rul_transform3 ;
+	v-wf:transformRule s-wf:rul_transform4 ;
+	v-wf:transformRule s-wf:rul_transform5 ;
+	v-wf:transformRule s-wf:rul_transform6 ;
+	v-wf:transformRule s-wf:rul_transform7 ;
+.
 
 s-wf:rul_transform1
 	rdf:type v-wf:Rule ;

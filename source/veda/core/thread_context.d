@@ -248,8 +248,8 @@ class PThreadContext : Context
         //writeln ("@ get_individual_as_cbor, uri=", uri);
         string res = inividuals_storage.find(uri);
 
-//                  if (res.length != 266)
-//                      writeln ("@@@#### in_str.length=", res.length, ", uri=", uri);
+        if (res !is null && res.length < 10)
+        	log.trace_log_and_console("!ERR:get_individual_from_storage, found invalid CBOR, uri=%s", uri);
 
         return res;
     }
@@ -861,11 +861,15 @@ class PThreadContext : Context
                     if (cbor2individual(&individual, individual_as_cbor) > 0)
                         individual.setStatus(ResultCode.OK);
                     else
+                    {
                         individual.setStatus(ResultCode.Unprocessable_Entity);
+                        writeln ("ERR!: invalid cbor: [", individual_as_cbor, "] ", uri);
+                    }    
                 }
                 else
                 {
                     individual.setStatus(ResultCode.Unprocessable_Entity);
+                    //writeln ("ERR!: empty cbor: [", individual_as_cbor, "] ", uri);
                 }
             }
             else
@@ -949,6 +953,11 @@ class PThreadContext : Context
                 {
                     res = individual_as_cbor;
                     rs  = ResultCode.OK;
+                }
+                else
+                {
+                        //writeln ("ERR!: empty cbor: ", uri);
+                	
                 }
             }
             else

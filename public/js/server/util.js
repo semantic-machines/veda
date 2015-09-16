@@ -126,11 +126,16 @@ function addRight(ticket, rights, subj_uri, obj_uri)
     //print("ADD RIGHT:", toJson(new_permission));
 }
 
-// JOURNAL
+/////////////////////////////////////// JOURNAL
 
 function getJournalUri(object_uri)
 {
     return object_uri + "j";
+}
+
+function getTraceJournalUri(object_uri)
+{
+    return object_uri + "t";
 }
 
 function newJournalRecord(journal_uri)
@@ -173,5 +178,24 @@ function logToJournal(ticket, journal_uri, journal_record)
     };
 
     add_to_individual(ticket, add_to_journal, _event_id);
-
 }
+
+function logTraceToJournal(ticket, journal_uri, str)
+{
+	var journal_record = newJournalRecord(journal_uri);
+	
+	journal_record['rdf:type'] = [
+            {
+                data: 'v-wf:TraceRecord',
+                type: _Uri
+    }];	
+	journal_record['rdfs:comment'] = [
+            {
+                data: str,
+                type: _String
+    }];
+    
+	logToJournal(ticket, journal_uri, journal_record);		
+	//print ("@@@ jr=", toJson (journal_record));
+}	
+

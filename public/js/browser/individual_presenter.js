@@ -133,13 +133,57 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		template.on("save", saveHandler);
 
 		function sendHandler(e) {
-			individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
-			template.trigger("save");
-			$edit.remove();
-			$save.remove();
-			$delete.remove();
-			$send.remove();
-			e.stopPropagation();
+			var s = new veda.SearchModel("'rdfs:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
+			if (Object.getOwnPropertyNames(s.results).length == 0) {
+				individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
+				template.trigger("save");
+				$edit.remove();
+				$save.remove();
+				$delete.remove();
+				$send.remove();
+				e.stopPropagation();				
+			} else if (Object.getOwnPropertyNames(s.results).length == 1) {
+				Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
+					var res = s.results[res_id];
+					var transfromResult = veda.Util.applyTransform(individual, res['v-s:hasTransformation'][0]);
+					console.log(transfromResult);
+					var startForm = new veda.IndividualModel();
+					Object.getOwnPropertyNames(transfromResult[0]).forEach(function (key)
+					{
+						if (key != '@') 
+						{
+							startForm.defineProperty(key);
+							if (!Array.isArray(transfromResult[0][key])) {
+								transfromResult[0][key] = [transfromResult[0][key]];
+							} 
+							for (var i in transfromResult[0][key]) 
+							{
+								var value = null;
+								if (key == 'rdf:type')
+								{
+									value = veda.ontology[transfromResult[0][key][i].data];
+								} else  
+								{
+									value = transfromResult[0][key][i].hasOwnProperty('data')?new veda.IndividualModel(transfromResult[0][key][i].data):transfromResult[0][key][i];
+								}
+								if (value) {
+									startForm[key] = startForm[key].concat(value);
+									console.log(">"+key);
+									console.log(value);
+								}
+							}
+						}
+					});
+					/*
+					startForm.defineProperty("rdfs:comment");
+					startForm["rdfs:comment"] = ["123"];
+					*/
+					console.log(startForm);
+	            	riot.route("#/individual/" + startForm.id + "/#main//edit", true);
+				});
+			} else {
+				alert('Несколько стартовых трансформаций. Меня жизнь к такому не готовила.');
+			}
 		}
 		template.on("send", sendHandler);
 
@@ -206,7 +250,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			$edit.remove();
 			$save.remove();
 			$delete.remove();
-			$send.remove();
+			//$send.remove();
 		}
 
 		// Buttons handlers
