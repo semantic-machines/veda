@@ -1100,6 +1100,7 @@ v-s:year
   rdfs:label "год"@ru ;
   rdfs:range xsd:integer ;
 .
+################################ JOURNAL ####################################################
 v-s:Journal
   rdf:type owl:Class ;
   rdfs:isDefinedBy v-s: ;
@@ -1178,6 +1179,7 @@ v-s:DocumentDeleted
   rdfs:label "Документ удален"@ru ;
   rdfs:label "Document deleted"@en ;
 .
+####################################################################################
 v-s:DocumentLinkRules
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Document ;
