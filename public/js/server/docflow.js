@@ -869,24 +869,37 @@ function prepare_work_item(ticket, document)
 
 }
 
+function get_trace_journal (document, process)
+{
+	var isTrace = document['v-wf:isTrace'];
+	if (isTrace && getFirstValue (isTrace) == true)
+	{
+		return getTraceJournalUri (process['@']);
+	}	
+	else
+	{
+		return undefined;
+	}	
+}
 /*
  *  обработка процесса
  */
 function prepare_process(ticket, document)
 {
     var _process = document;
+	var trace_journal_uri = get_trace_journal (document, document);
 
-    // print("[PP01] prepare_process:" + document['@']);
+	if (trace_journal_uri)
+		logTraceToJournal(ticket, trace_journal_uri, "prepare_process:" + document['@']);
+
     var inVars = _process['v-wf:inVars'];
     if (!inVars)
         inVars = [];
 
-    // print("[PP02]");
     var instanceOf = document['v-wf:instanceOf'];
     var net = get_individual(ticket, getUri(instanceOf));
     if (!net) return;
 
-    // print("[PP03]");
     // создадим переменные с областью видимости данного процесса (v-wf:varDefineScope = v-wf:Net)
     var variables = net['v-wf:localVariable'];
     if (variables)
@@ -964,6 +977,8 @@ function prepare_process(ticket, document)
     // print("[PP0E]");
 }
 
+
+
 /*
  *  Обработка стартовой формы и создание экземпляра процесса.
  *  Условие запуска процесса: в стартовой форме не должно быть поля v-wf:isProcess.
@@ -975,7 +990,6 @@ function prepare_start_form(ticket, document)
     print(":prepare_start_form #B, doc_id=" + document['@']);
 
 	var isTrace = document['v-wf:isTrace'];
-
 	if (isTrace && getFirstValue (isTrace) == true)
 		isTrace = true;
 	else
@@ -1000,8 +1014,6 @@ function prepare_start_form(ticket, document)
     }
 
     var new_process_uri = genUri();
-
-	var system_journal_uri;
 
     var author_uri;
     var ff = get_property_chain(ticket, document, 'v-s:author', 'v-s:employee');
@@ -1048,17 +1060,23 @@ function prepare_start_form(ticket, document)
         data: "экземпляр маршрута :" + getFirstValue(_net['rdfs:label']),
         type: _String
     }];
+    
+    if (isTrace)
+		new_process['v-wf:isTrace'] = [{data: true, type:_Bool}];
+    
     if (new_vars.length > 0) new_process['v-wf:inVars'] = new_vars;
 
     put_individual(ticket, new_process, _event_id);
 
-	if (isTrace)
-		system_journal_uri = create_new_journal(ticket, new_process_uri + 's', _net['rdfs:label']);
-    
-    if (isTrace)
-		logStringToJournal(ticket, system_journal_uri, "started new process=" + toJson(new_process));
+	var trace_journal_uri;
 
-    create_new_journal(ticket, new_process_uri, _net['rdfs:label']);
+	if (isTrace)
+	{
+		trace_journal_uri = create_new_journal(ticket, getTraceJournalUri(new_process_uri), new_process_uri, _net['rdfs:label']);    
+		logTraceToJournal(ticket, trace_journal_uri, "started new process=" + toJson(new_process));
+	}	
+
+    create_new_journal(ticket, getJournalUri (new_process_uri), _net['rdfs:label']);
 
     var add_to_document = {
         '@': document['@'],
