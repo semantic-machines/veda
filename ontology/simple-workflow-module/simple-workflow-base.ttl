@@ -686,9 +686,7 @@ s-wf:rul_tr_coord_2
 	v-wf:aggregate	"putElement ('v-wf:onDocument')"; 	
 	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
 	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAgreed')"; 	
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionRemake')"; 	
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionRedirect')"; 	
+#	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionRedirect')"; 	
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
     rdfs:label "варианты ответа согласования"@ru ;	

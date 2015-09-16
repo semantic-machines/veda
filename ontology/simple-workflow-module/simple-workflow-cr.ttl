@@ -465,7 +465,7 @@ s-wf:map_possibleDecision_for_idea
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:possibleDecision ;
-        v-wf:mappingExpression  "[newUri ('v-wf:DecisionAgreedToExecute'), newUri ('v-wf:DecisionAgreedToProject')]" ;
+        v-wf:mappingExpression  "[newUri ('v-wf:DecisionAgreedToExecute'), newUri ('v-wf:DecisionAgreedToProject'), newUri('v-wf:DecisionRejected')]" ;
 .
 
 s-wf:map_possibleDecision
