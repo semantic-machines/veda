@@ -146,6 +146,7 @@ function is_exist (individual, field, value)
  */
 function transformation(ticket, individuals, transform, executor, work_order)
 {
+  try {	
     var out_data0 = {};
 
     if (Array.isArray(individuals) !== true) {
@@ -293,9 +294,11 @@ function transformation(ticket, individuals, transform, executor, work_order)
 
     for (var key in individuals)
     {
+    	//print("#1 key=", key);
     	var individual = individuals[key];
-    	individual['@'] = individual['id']; // sly hack
+    	if (typeof window !== "undefined") individual['@'] = individual['id']; // sly hack
     	
+    	//print("#1.1 key=", key);
         var objectContentStrValue = (function ()
         {
             return function (name, value)
@@ -330,13 +333,17 @@ function transformation(ticket, individuals, transform, executor, work_order)
             }
         })();
 
-        var iteratedObject = (typeof window === "undefined")?individual:Object.getOwnPropertyNames(individual.properties);
+        //print("#1.2 key=", key);
+        var iteratedObject = (typeof window === "undefined")?Object.getOwnPropertyNames(individual):Object.getOwnPropertyNames(individual.properties);
         if (typeof window !== "undefined") {
         	iteratedObject.push('@');
         }
+        //print("#1.3 key=", key);
+
         for (var key2 = 0; key2 < iteratedObject.length; key2++)
         {
-            var element = (typeof window === "undefined")?individual[key2]:individual[iteratedObject[key2]];
+        	//print("#2 key2=", key2);
+            var element = individual[iteratedObject[key2]];
 
             var putElement = (function ()
     	    {
@@ -348,7 +355,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
 
     	            if (!out_data0_el_arr)
     	                out_data0_el_arr = [];
-    	            if ((typeof window === "undefined"?key2:iteratedObject[key2]) == '@')
+    	            if (iteratedObject[key2] == '@')
     	            {
     	                out_data0_el_arr.push(
     	                {
@@ -368,11 +375,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
             {
                 return function (name)
                 {
-                    if (typeof window === "undefined") {
-                    	return key2 == name;
-                    } else {
-                   		return iteratedObject[key2] == name;
-                    }
+                	return iteratedObject[key2] == name;
                 }
             })();
 
@@ -380,7 +383,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
             {
                 return function (name, value)
                 {
-                    if (((typeof window === "undefined")?key2:iteratedObject[key2]) !== name)
+                    if (iteratedObject[key2] !== name)
                         return false;
                     //print("individual[name]=", toJson(individual[name]));
                     var str = typeof window === "undefined"?element[0].data:element[0];
@@ -405,6 +408,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
             // выполняем все rules
             for (var key3 in rules)
             {
+            	//print("#3 key3=", key3);
             	var rule = rules[key3];
                 // 1. v-wf:segregateObject
                 var segregateObject = rule['v-wf:segregateObject'];
@@ -494,4 +498,11 @@ function transformation(ticket, individuals, transform, executor, work_order)
     //print ("#e out_data=", toJson (out_data));
 
     return out_data;
+  } catch(e) {
+	if (typeof window === "undefined") {
+		print(e.stack);
+	} else {
+		console.log(e.stack);
+	}
+  }
 }
