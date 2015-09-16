@@ -349,7 +349,7 @@ private void prepare_list(Individual *[] ss_list, Context context, string file_n
                 }
 
                 ss.addResource("rdfs:isDefinedBy", Resource(DataType.Uri, onto_info.uri));
-
+				(*ss).repare_unique("rdfs:isDefinedBy");
                 append(doc_filename, individual2html(ss));
 
                 long pos_path_delimiter = indexOf(ss.uri, '/');
