@@ -417,7 +417,6 @@ v-wf:SimpleNetTemplate
 	rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса Сеть"@ru ;
   rdfs:label "Template for Net class"@en ;
-  v-ui:forClass v-wf:Net ;
   v-ui:template """
 <div>
   <table id="taskTemplateProperties" class="table table-condensed table-hover properties-editor">
