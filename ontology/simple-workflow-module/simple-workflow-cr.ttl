@@ -600,7 +600,7 @@ s-wf:rul_transform1
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:segregateElement "contentName('v-wf:processedDocument')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putElement ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'docId')"; 	
 .
 
@@ -609,7 +609,7 @@ s-wf:rul_transform2
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:segregateElement "contentName('v-wf:processInitiator')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putElement ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'initiator')"; 	
 .
 
@@ -618,7 +618,7 @@ s-wf:rul_transform3
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:segregateElement "contentName('s-wf:ComplexRouteStartForm_coordinator1')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putElement ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'coordinatorLevel1')"; 	
 .
 
@@ -627,7 +627,7 @@ s-wf:rul_transform4
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:segregateElement "contentName('s-wf:ComplexRouteStartForm_coordinator2')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putElement ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'coordinatorLevel2')"; 	
 .
 
@@ -636,7 +636,7 @@ s-wf:rul_transform5
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:segregateElement "contentName('s-wf:ComplexRouteStartForm_coordinator3')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putElement ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'coordinatorLevel3')"; 	
 .
 
@@ -645,7 +645,7 @@ s-wf:rul_transform6
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:segregateElement "contentName('s-wf:ComplexRouteStartForm_reviewer')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putElement ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'reviewer')"; 	
 .
 
@@ -654,7 +654,7 @@ s-wf:rul_transform7
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:segregateElement "contentName('s-wf:ComplexRouteStartForm_signer')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putElement ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'signer')"; 	
 .
 
@@ -679,7 +679,7 @@ s-wf:rul_transform21_0
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
-	v-wf:aggregate	"putElement ('v-wf:onDocument')"; 	
+	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
 	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
 	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
         v-wf:aggregate   "putBoolean ('v-wf:isCompleted', false)";
@@ -692,7 +692,7 @@ s-wf:rul_transform21_1
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'initiator')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putElement ('v-wf:from')"; 	
+	v-wf:aggregate	"putValue ('v-wf:from')"; 	
 	v-wf:grouping	"1";
 .
 
@@ -795,7 +795,7 @@ s-wf:rul_t2_transform1
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:segregateElement "contentName('v-wf:processInitiator')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putElement ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'initiator')"; 	
 .
 
@@ -804,7 +804,7 @@ s-wf:rul_t2_transform2
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:segregateElement "contentName('v-s:hasChief')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putElement ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'signer')"; 	
 .
 
@@ -813,7 +813,7 @@ s-wf:rul_t2_transform3
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:segregateElement "contentName('@')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putElement ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'docId')"; 	
 .
 

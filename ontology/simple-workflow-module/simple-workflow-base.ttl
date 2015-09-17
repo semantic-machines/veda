@@ -365,7 +365,7 @@ s-wf:rul_transform3_2
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-wf:takenDecision')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putElement ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'result_data')"; 	
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -383,7 +383,7 @@ s-wf:rul_transform22_1
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'initiator')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putElement ('v-wf:from')"; 	
+	v-wf:aggregate	"putValue ('v-wf:from')"; 	
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -395,7 +395,7 @@ s-wf:rul_transform22_2
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
 	v-wf:aggregate	"putString ('rdfs:label', 'подписание документа ' + getElement ()[0].data)";
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:aggregate	"putElement ('v-wf:onDocument')"; 	
+	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
 	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
 	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
 	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionSign')"; 	
@@ -420,7 +420,7 @@ s-wf:rul_transform23_5
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
 	v-wf:aggregate	"putString ('rdfs:label', 'рассмотрение по документу ' + getElement ()[0].data)";
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:aggregate	"putElement ('v-wf:onDocument')"; 	
+	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
 	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
 	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
 	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionReview')"; 	
@@ -443,7 +443,7 @@ s-wf:rul_transform23_4
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
 	v-wf:aggregate	"putString ('rdfs:label', 'поручение по документу ' + getElement ()[0].data)";
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:aggregate	"putElement ('v-wf:onDocument')"; 	
+	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
 	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
 	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
 	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')"; 	
@@ -467,7 +467,7 @@ s-wf:rul_transform23_3
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
 	v-wf:aggregate	"putString ('rdfs:label', 'ознакомление по документу ' + getElement ()[0].data)";
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:aggregate	"putElement ('v-wf:onDocument')"; 	
+	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
 	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
 	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
 	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionExamined')"; 	
@@ -486,7 +486,7 @@ s-wf:rul_transform23_1
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'initiator')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putElement ('v-wf:from')"; 	
+	v-wf:aggregate	"putValue ('v-wf:from')"; 	
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -498,7 +498,7 @@ s-wf:rul_transform23_2
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
 	v-wf:aggregate	"putString ('rdfs:label', 'утверждение подписанного документа ' + getElement ()[0].data)";
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:aggregate	"putElement ('v-wf:onDocument')"; 	
+	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
 	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
 	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
 	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionApprove')"; 	
@@ -513,7 +513,7 @@ s-wf:codelet_create_use_transformation
 	rdf:type v-s:Codelet ;
 	rdfs:label "создать на основе трансформации (src_uri, transformation_uri)" ;
 	v-s:script """
-	create_use_transformation (process, task)	
+	create_use_transformation (task)	
 """ ;
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -524,7 +524,7 @@ s-wf:codelet_get_type_of_docId
 	rdf:type v-s:Codelet ;
 	rdfs:label "взять тип документа в переменной docId" ;
 	v-s:script """
-	get_type_of_docId (process, task)	
+	get_type_of_docId (task)	
 """ ;
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -534,7 +534,7 @@ s-wf:codelet_is_run
 	rdf:type v-s:Codelet ;
 	rdfs:label "запущен ли процесс по документу" ;
 	v-s:script """
-	is_in_docflow_and_set_if_true (process, task)	
+	is_in_docflow_and_set_if_true (task)	
 """ ;
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -544,7 +544,7 @@ s-wf:codelet_down_right
 	rdf:type v-s:Codelet ;
 	rdfs:label "понизить права" ;
 	v-s:script """
-	down_right_and_store (process, task)	
+	down_right_and_store (task)	
 """ ;
 	rdfs:isDefinedBy s-wf: ;
 .	
@@ -554,7 +554,7 @@ s-wf:codelet_restore_right
 	rdf:type v-s:Codelet ;
 	rdfs:label "восстановить права" ;
 	v-s:script """
-	restore_right (process, task)	
+	restore_right (task)	
 """ ;
 	rdfs:isDefinedBy s-wf: ;
 .	
@@ -691,7 +691,7 @@ s-wf:rul_tr_coord_1
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'initiator')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putElement ('v-wf:from')"; 	
+	v-wf:aggregate	"putValue ('v-wf:from')"; 	
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
 	rdfs:label "определение инициатора согласования"@ru ;		
@@ -704,7 +704,7 @@ s-wf:rul_tr_coord_2
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
 	v-wf:aggregate	"putString ('rdfs:label', 'согласование по документу ' + getElement ()[0].data)";
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:aggregate	"putElement ('v-wf:onDocument')"; 	
+	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
 	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
 	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
 #	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionRedirect')"; 	
@@ -747,7 +747,7 @@ s-wf:rul_tr_coord_6
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'possibleDecision')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putElement ('v-wf:possibleDecisionClass')"; 	
+	v-wf:aggregate	"putValue ('v-wf:possibleDecisionClass')"; 	
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -849,13 +849,6 @@ s-wf:transformation_uri
 	v-wf:varDefineName "transformation_uri" ;
         rdfs:label "ссылка на трансформацию"@ru ;
 .
-s-wf:map_idea1ToIdea4_to_transformation
-	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:transformation_uri ;	
-	v-wf:mappingExpression	"newUri('mnd-s-asppd:idea1ToIdea4')" ;
-	rdfs:isDefinedBy s-wf: ;
-.
-
 #---------- Net Coordination
 
 s-wf:def_exec_coordinator

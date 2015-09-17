@@ -1345,7 +1345,7 @@ v-s:DocumentLinkRulesTemplate
 
     <br><br>
     <div class="well well-sm">
-      <button type="button" class="action btn btn-warning" id="send">Оправить</button>
+      <button type="button" class="action btn btn-warning" id="send">Отправить</button>
       <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
       <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
       <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>

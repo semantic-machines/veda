@@ -163,9 +163,9 @@ function transformation(ticket, individuals, transform, executor, work_order)
 		for (var i in rules)
 		{
     		rules[i] = get_individual(ticket, rules[i].data);
-    		if (!rule)
+    		if (!rules[i])
 			{
-				print ("not read rule [", rules[i].data, "]");
+				print ("not read rule [", toJson (rules[i]), "]");
 				continue;
 			}				
     	}
@@ -243,6 +243,24 @@ function transformation(ticket, individuals, transform, executor, work_order)
 
             if (!out_data0_el_arr)
                 out_data0_el_arr = [];
+
+            out_data0_el_arr.push(
+            {
+                data: value,
+                type: _String
+            });
+
+            out_data0_el[name] = out_data0_el_arr;
+        }
+    })();
+
+    var setString = (function ()
+    {
+        return function (name, value)
+        {
+            var out_data0_el_arr;
+
+            out_data0_el_arr = [];
 
             out_data0_el_arr.push(
             {
@@ -345,16 +363,11 @@ function transformation(ticket, individuals, transform, executor, work_order)
         	//print("#2 key2=", key2);
             var element = individual[iteratedObject[key2]];
 
-            var putElement = (function ()
+            var putValue = (function ()
     	    {
     	        return function (name)
     	        {
-    	            var out_data0_el_arr;
-
-					if (!name)					
-						name = iteratedObject[key2];
-						
-					out_data0_el_arr = out_data0_el[name];
+    	            var out_data0_el_arr = out_data0_el[name];
 
     	            if (!out_data0_el_arr)
     	                out_data0_el_arr = [];
@@ -368,6 +381,25 @@ function transformation(ticket, individuals, transform, executor, work_order)
     	            }
     	            else
     	                out_data0_el_arr.push(element);
+
+    	            out_data0_el[name] = out_data0_el_arr;
+    	        }
+    	    })();
+    	    
+            var putElement = (function ()
+    	    {
+    	        return function ()
+    	        {
+					var	name = iteratedObject[key2];
+    	            if (name == '@')
+						return;
+						
+    	            var out_data0_el_arr = [];
+					out_data0_el_arr = out_data0_el[name];
+
+    	            if (!out_data0_el_arr)
+    	                out_data0_el_arr = [];
+   	                out_data0_el_arr.push(element);
 
     	            out_data0_el[name] = out_data0_el_arr;
     	        }
