@@ -448,6 +448,14 @@ s-wf:user_task_form_label
 	rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_user_task_form_label
+        rdf:type v-wf:Mapping ;
+	rdfs:isDefinedBy s-wfc: ;
+        v-wf:mapToVariable s-wf:user_task_form_label ;
+        v-wf:mappingExpression  "process.getVariableValue ('user_task_form_label')" ;
+        rdfs:label "user_task_form_label=process.user_task_form_label" ;        
+.
+
 s-wf:map_user_task_form_label_coordination
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wfc: ;
