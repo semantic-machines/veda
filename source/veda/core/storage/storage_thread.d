@@ -94,7 +94,6 @@ public void individuals_manager(string thread_name, string db_path, string node_
                         {
                             string new_hash;
                             EVENT ev = storage.update_or_create(msg, new_hash, EVENT.NONE);
-
                             send(tid_response_reciever, ev, msg, thisTid);
 
                             bin_log_name = write_in_binlog(msg, new_hash, bin_log_name, size_bin_log, max_size_bin_log, db_path);
@@ -114,12 +113,21 @@ public void individuals_manager(string thread_name, string db_path, string node_
 
                             Individual indv;
                             string ss_as_cbor = storage.find(arg.uri);
-                            code = cbor2individual(&indv, ss_as_cbor);
-                            if (code < 0)
+                            if (ss_as_cbor is null && (cmd == CMD.ADD || cmd == CMD.SET))
                             {
-                                log.trace("ERR:store_individual(ADD|SET|REMOVE):cbor2individual [%s]", ss_as_cbor);
-                                send(tid_response_reciever, EVENT.ERROR, msg, thisTid);
-                                return;
+                            	EVENT ev = storage.update_or_create(msg, new_hash, EVENT.NONE);
+                            	send(tid_response_reciever, ev, msg, thisTid);
+                            	return;
+                            }
+                            else
+                            {
+                            	code = cbor2individual(&indv, ss_as_cbor);
+                            	if (code < 0)
+                            	{
+                                	log.trace("ERR:store_individual(ADD|SET|REMOVE):cbor2individual [%s]", ss_as_cbor);
+                                	send(tid_response_reciever, EVENT.ERROR, msg, thisTid);
+                                	return;
+                            	}
                             }
 
                             foreach (predicate; arg.resources.keys)
