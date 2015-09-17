@@ -232,6 +232,24 @@ function transformation(ticket, individuals, transform, executor, work_order)
             out_data0_el[name] = out_data0_el_arr;
         }
     })();
+    
+    var setUri = (function ()
+    {
+        return function (name, value)
+        {
+            var out_data0_el_arr;
+
+            out_data0_el_arr = [];
+
+            out_data0_el_arr.push(
+            {
+                data: value,
+                type: _Uri
+            });
+
+            out_data0_el[name] = out_data0_el_arr;
+        }
+    })();    
 
     var putString = (function ()
     {
