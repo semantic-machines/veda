@@ -22,7 +22,7 @@
   owl:imports rdf: ;
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "1.0" ;
+#  owl:versionInfo "1.0" ;
 .
 
 #####################################################
@@ -374,12 +374,91 @@ v-a:Event_4
   v-s:filter v-ui:BooleanPropertySpecification ;
   v-s:filter v-ui:ObjectPropertySpecification ;
   v-s:script """
-	    var vsn = {
-    	    '@' : "v-g:OntoVsn", 
-    	    'rdf:type' : [{data: 'v-g:Global', type : _Uri}],
-    	    'v-g:literalValue' : [{data: guid(), type : _String}],
-	    };
-	    put_individual (ticket, vsn, _event_id);
+	// Update ontology vsn
+	var vsn = {
+		"@" : "v-g:OntoVsn", 
+		"rdf:type" : [{data: "v-g:Global", type : _Uri}],
+		"v-g:literalValue" : [{data: guid(), type : _String}]
+	};
+	put_individual (ticket, vsn, _event_id);
+
+	// Process ontology objects
+	function hasValue(doc, prop, val) {
+		var any = !!(doc[prop] && doc[prop].length);
+		if (!val) return any;
+		return !!(any && doc[prop].filter(function (i) {
+			return (i.type === val.type && i.data === val.data);
+		}).length);
+	}
+
+	// owl:Thing && rdfs:Resource domain properties
+	var stopList = [
+		//"rdf:type",
+		//"rdfs:comment",
+		//"rdfs:label",
+		//"v-s:deleted",
+		"owl:annotatedProperty",
+		"owl:annotatedSource",
+		"owl:annotatedTarget",
+		"owl:bottomDataProperty",
+		"owl:bottomObjectProperty",
+		"owl:deprecated",
+		"owl:differentFrom",
+		"owl:members",
+		"owl:sameAs",
+		"owl:topObjectProperty",
+		"owl:topDataProperty",
+		"owl:versionInfo",
+		"rdf:value",
+		"rdfs:isDefinedBy",
+		"rdfs:member",
+		"rdfs:seeAlso"
+	];
+
+	var doc = document;
+	var type = document["rdf:type"][0].data;
+	var uri = document["@"];
+	switch (type) {
+		// Process classes
+		case "rdfs:Class":
+		case "owl:Class":
+			if ( uri === "rdfs:Resource" ) break;
+			// If class is not a subclass of another then make it a subclass of rdfs:Resource
+			if ( !hasValue(doc, "rdfs:subClassOf") ) {
+				doc["rdfs:subClassOf"] = [{data: "rdfs:Resource", type: _Uri}];
+			}
+			doc["rdfs:subClassOf"].map( function ( i ) {
+				var sup = {
+					"@": i.data,
+					"v-ui:hasSubClass": [{data: uri, type: _Uri}]
+				}
+				add_to_individual(ticket, sup, _event_id);
+			});
+			break;
+		// Process properties
+		case "rdf:Property" :
+		case "owl:DatatypeProperty" :
+		case "owl:ObjectProperty" :
+		case "owl:OntologyProperty" :
+		case "owl:AnnotationProperty" :
+			/*Object.keys(self.properties).map( function (uri) {
+				if (stopList.indexOf(uri) >= 0) return;
+				var property = self.properties[uri];
+				if (!property["rdfs:domain"]) return;
+				property["rdfs:domain"].map( function ( item ) {
+					(function fillDomainProperty (_class) {
+						_class.domainProperties = _class.domainProperties || {};
+						_class.domainProperties[property.id] = property;
+						if (_class.subClasses && Object.keys(_class.subClasses).length) {
+							Object.keys(_class.subClasses).map( function (subClass_uri) {
+								fillDomainProperty (_class.subClasses[subClass_uri]);
+							});
+						}
+					})(item);
+				});
+			});*/
+			break;
+	}
 """ ;
   rdfs:comment "скрипт автоматического изменения глобальной версии онтологии при изменении любого индивида онтологии"@ru ;
   rdfs:label "Event_4"@en ;
