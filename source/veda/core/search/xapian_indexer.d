@@ -214,7 +214,6 @@ private class IndexerContext
                 string prefix;
                 //int slot = get_slot_and_set_if_not_found(predicate, key2slot);
 
-                //all_text.write(escaping_or_uuid2search(pp.predicate));
                 //all_text.write('|');
 
                 string type = "xsd__string";
@@ -278,7 +277,6 @@ private class IndexerContext
                 {
                     string data;
 
-                    //data = escaping_or_uuid2search(oo.literal);
                     data = oo.literal;
                     if (data.length < 1)
                         return;

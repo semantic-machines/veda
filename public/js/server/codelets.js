@@ -1,6 +1,6 @@
 "use strict";
 
-function down_right_and_store(process, task)
+function down_right_and_store(task)
 {
     var doc_id = task.getVariableValue('docId');
 
@@ -21,7 +21,7 @@ function down_right_and_store(process, task)
     };
 }
 
-function restore_right(process, task)
+function restore_right(task)
 {
     //print("[WORKFLOW]:restore_right, task=", toJson(task));
     //print("[WORKFLOW]:restore_right function RESTORE RIGHT IS NOT IMPLIMENTED");
@@ -51,7 +51,7 @@ function is_exists_net_executor (process)
     return res_out;
 }
 
-function get_type_of_docId(process, task)
+function get_type_of_docId(task)
 {
     var res = '?';
 
@@ -60,7 +60,7 @@ function get_type_of_docId(process, task)
         var doc_id = task.getVariableValue('docId');
         if (doc_id)
         {
-            var doc = get_individual(process.ticket, doc_id[0].data);
+            var doc = get_individual(task.ticket, doc_id[0].data);
 
             if (doc)
             {
@@ -81,7 +81,7 @@ function get_type_of_docId(process, task)
     return res_out;
 }
 
-function is_in_docflow_and_set_if_true(process, task)
+function is_in_docflow_and_set_if_true(task)
 {
     var res = false;
 
@@ -90,31 +90,35 @@ function is_in_docflow_and_set_if_true(process, task)
         var doc_id = task.getVariableValue('docId');
         if (doc_id)
         {
-            var instanceOf = getUri(process.src_data['v-wf:instanceOf']);
+			var forProcess = getUri(task.src_data['v-wf:forProcess']);
+			var process = get_individual(task.ticket, forProcess);
+			if (process)
+			{
+				var instanceOf = getUri(_process['v-wf:instanceOf']);
 
-            var net_doc_id = instanceOf + "_" + doc_id[0].data;
-            //print("[WORKFLOW]:is_in_docflow_and_set_if_true, find=", net_doc_id);
+				var net_doc_id = instanceOf + "_" + doc_id[0].data;
+				//print("[WORKFLOW]:is_in_docflow_and_set_if_true, find=", net_doc_id);
 
-            var in_doc_flow = get_individual(process.ticket, net_doc_id);
+				var in_doc_flow = get_individual(process.ticket, net_doc_id);
 
-            if (in_doc_flow)
-            {
-                res = true;
-            }
-            else
-            {
-                var new_doc = {
+				if (in_doc_flow)
+				{
+					res = true;
+				}
+				else
+				{
+					var new_doc = {
                     '@': net_doc_id,
                     'rdf:type': [
                         {
                             data: 'v-wf:Variable',
                             type: _Uri
-                }]
-                };
-                put_individual(process.ticket, new_doc, _event_id);
-            }
-
-        }
+						}]
+					};
+					put_individual(process.ticket, new_doc, _event_id);
+				}
+			}
+		}
 
     }
 
@@ -133,7 +137,7 @@ function distribution(process, task)
 {
 }
 
-function create_use_transformation (process, task)
+function create_use_transformation (task)
 {
 	var new_items_uri = [];
 
@@ -144,13 +148,13 @@ function create_use_transformation (process, task)
 		
 		if (transform_link)
 		{
-			var transform = get_individual(ticket, transform_link);
+			var transform = get_individual(task.ticket, getUri (transform_link));
 			if (transform)
 			{
-				var document = get_individual(ticket, src_doc_id);
+				var document = get_individual(task.ticket, getUri (src_doc_id));
 				if (document)
 				{
-					var new_items = transformation(ticket, document, transform, null, null);
+					var new_items = transformation(task.ticket, document, transform, null, null);
 					for (var i = 0; i < new_items.length; i++)
 					{
 						put_individual(ticket, new_items[i], _event_id);

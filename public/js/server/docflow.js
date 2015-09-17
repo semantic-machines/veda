@@ -1093,5 +1093,4 @@ function prepare_start_form(ticket, document)
         addRight(ticket, [can_read, can_update, can_delete], author_uri, new_process_uri);
 
     addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_process_uri);
-    //print("[WORKFLOW]:new_process:" + new_process['@']);
 }
