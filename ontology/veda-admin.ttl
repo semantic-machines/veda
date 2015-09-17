@@ -70,12 +70,12 @@ v-a:conn_mysql1
 	rdf:type vsrv:Connection ;
 	vsrv:name "funout" ;
 	rdfs:label "connect to msql" ;
-	vsrv:host "127.0.0.1" ;
+	vsrv:host "test" ;
 	vsrv:port "3306"^^xsd:integer ;
 	vsrv:transport "mysql" ;
-	vsrv:login "guest" ;
-	vsrv:credentional "guest" ;
-	vsrv:sql_database "veda" ;
+	vsrv:login "ba" ;
+	vsrv:credentional ",f,ehtxyfz69" ;
+	vsrv:sql_database "veda_db" ;
 .
 
 #####################################################
@@ -180,8 +180,8 @@ v-a:Event_1_1
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:filter v-s:Journaling ;
   v-s:script """
-	print ('user_uri=', user_uri);	
-        print('v-a:Event_1_1:journal');
+	//print ('user_uri=', user_uri);	
+    //    print('v-a:Event_1_1:journal');
 
 var ff = get_property_chain(ticket, document, 'v-s:author', 'v-s:employee');
 if (ff)
@@ -190,7 +190,7 @@ if (ff)
     if (employee_uri)
     {
         var journal_uri = getJournalUri(document['@']);
-        print('v-a:Event_1_1:journal journal_uri=' + journal_uri);
+        //print('v-a:Event_1_1:journal journal_uri=' + journal_uri);
         var exist_journal = get_individual(ticket, journal_uri);
         if (exist_journal)
         {

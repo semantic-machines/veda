@@ -2252,7 +2252,7 @@ v-ui:TraceEventTemplate
   <hr class="margin-sm">
   <div class="row">
 	<div class="col-md-3 col-sm-3 event-type">
-	  <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong>
+	  <span property="rdfs:label"></span>
 	</div>
 	<div class="col-md-7 col-sm-6 event-desc">
 	  <pre property="rdfs:comment"></pre>
@@ -2262,5 +2262,12 @@ v-ui:TraceEventTemplate
 	</div>
   </div>
 </div>
+<script>
+  var pre = $("pre", template),
+      txt = pre.text(),
+      re = new RegExp('"([\\w-]+:[\\w-]+)"','g'),
+      txt2 = txt.replace(re, "<a href='#/individual/$1/#main'>'$1'</a>");
+  pre.html(txt2);
+</script>
   """ ;
 .
