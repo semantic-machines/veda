@@ -351,7 +351,10 @@ function transformation(ticket, individuals, transform, executor, work_order)
     	        {
     	            var out_data0_el_arr;
 
-    	            out_data0_el_arr = out_data0_el[name];
+					if (!name)					
+						name = iteratedObject[key2];
+						
+					out_data0_el_arr = out_data0_el[name];
 
     	            if (!out_data0_el_arr)
     	                out_data0_el_arr = [];
@@ -370,7 +373,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
     	        }
     	    })();
             
-            /* Segragate functions [BEGIN] */
+            /* Segregate functions [BEGIN] */
             var contentName = (function ()
             {
                 return function (name)
@@ -394,7 +397,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
                         return false;
                 }
             })();
-            /* Segragate functions [END] */
+            /* Segregate functions [END] */
             
             var getElement = (function ()
             {
