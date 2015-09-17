@@ -441,6 +441,29 @@ s-wf:possibleDecision
 	rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:user_task_form_label
+        rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "user_task_form_label" ;
+        rdfs:label "наименование формы ответа на задачу"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_user_task_form_label_coordination
+        rdf:type v-wf:Mapping ;
+	rdfs:isDefinedBy s-wfc: ;
+        v-wf:mapToVariable s-wf:user_task_form_label ;
+        v-wf:mappingExpression  "newStr ('Согласовать документ')" ;
+        rdfs:label "user_task_form_label=согласование"@ru ;        
+.
+
+s-wf:map_user_task_form_label_instruction
+        rdf:type v-wf:Mapping ;
+	rdfs:isDefinedBy s-wfc: ;
+        v-wf:mapToVariable s-wf:user_task_form_label ;
+        v-wf:mappingExpression  "newStr ('Исполнить поручение')" ;
+        rdfs:label "user_task_form_label=поручение"@ru ;        
+.
+
 s-wf:var_coordinator_3
         rdf:type v-wf:VarDefine ;
 	rdfs:isDefinedBy s-wfc: ;
