@@ -460,74 +460,6 @@ string to_lower_and_replace_delimeters(string in_text)
     return cast(immutable)out_text;
 }
 
-string escaping_or_uuid2search(string in_text)
-{
-    OutBuffer outbuff = new OutBuffer();
-
-    escaping_or_uuid2search(in_text, outbuff);
-    return outbuff.toString;
-}
-
-void escaping_or_uuid2search(string in_text, ref OutBuffer outbuff)
-{
-    bool need_prepare = false;
-
-    int  idx = 0;
-
-    foreach (ch; in_text)
-    {
-        if (ch == '-')
-        {
-            need_prepare = true;
-            break;
-        }
-        if (ch == '"' || ch == '\n' || ch == '\\' || ch == '\t' || (ch == ':' && idx < 5))
-        {
-            need_prepare = true;
-//			break;
-        }
-        idx++;
-    }
-
-    if (need_prepare)
-    {
-        int len = cast(uint)in_text.length;
-
-        for (int i = 0; i < len; i++)
-        {
-            if (i >= len)
-                break;
-
-            char ch = in_text[ i ];
-
-            if ((ch == '"' || ch == '\\'))
-            {
-                outbuff.write('\\');
-                outbuff.write(ch);
-            }
-            else if (ch == '\n')
-            {
-                outbuff.write("\\n");
-            }
-            else if (ch == '\t')
-            {
-                outbuff.write("\\t");
-            }
-            else
-            {
-                if (ch == '-' || ch == ':')
-                    outbuff.write('_');
-                else
-                    outbuff.write(ch);
-            }
-        }
-    }
-    else
-    {
-        outbuff.write(in_text);
-    }
-}
-
 //////////////////////////////////////////////////////////////////////////////
 void print_2(ref Set!string *[ string ] res)
 {
@@ -635,6 +567,10 @@ string uxxxx2utf8(string so)
                 i += 1;
                 new_s ~= '"';
                 susecs = true;
+            }
+            else
+            {
+            	new_s ~= c;
             }
         }
         else
