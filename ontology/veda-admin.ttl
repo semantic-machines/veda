@@ -374,6 +374,13 @@ v-a:Event_4
   v-s:filter v-ui:BooleanPropertySpecification ;
   v-s:filter v-ui:ObjectPropertySpecification ;
   v-s:script """
+	/* Available variables:
+	 * ticket = superuser ticket
+	 * document = captured document
+	 * user_uri = user who's actions triggered event
+	 * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+	 */
+	
 	// Update ontology vsn
 	var vsn = {
 		"@" : "v-g:OntoVsn", 
@@ -428,11 +435,11 @@ v-a:Event_4
 				doc["rdfs:subClassOf"] = [{data: "rdfs:Resource", type: _Uri}];
 			}
 			doc["rdfs:subClassOf"].map( function ( i ) {
-				var sup = {
+				var cls = {
 					"@": i.data,
 					"v-ui:hasSubClass": [{data: uri, type: _Uri}]
 				}
-				add_to_individual(ticket, sup, _event_id);
+				add_to_individual(ticket, cls, _event_id);
 			});
 			break;
 		// Process properties
@@ -441,22 +448,58 @@ v-a:Event_4
 		case "owl:ObjectProperty" :
 		case "owl:OntologyProperty" :
 		case "owl:AnnotationProperty" :
-			/*Object.keys(self.properties).map( function (uri) {
-				if (stopList.indexOf(uri) >= 0) return;
-				var property = self.properties[uri];
-				if (!property["rdfs:domain"]) return;
-				property["rdfs:domain"].map( function ( item ) {
-					(function fillDomainProperty (_class) {
-						_class.domainProperties = _class.domainProperties || {};
-						_class.domainProperties[property.id] = property;
-						if (_class.subClasses && Object.keys(_class.subClasses).length) {
-							Object.keys(_class.subClasses).map( function (subClass_uri) {
-								fillDomainProperty (_class.subClasses[subClass_uri]);
-							});
-						}
-					})(item);
+			if (stopList.indexOf(uri) >= 0) break;
+			if ( hasValue(doc, "rdfs:domain") ) {
+				doc["rdfs:domain"].map( function ( i ) {
+					var cls = {
+						"@": i.data,
+						"v-ui:hasProperty": [{data: uri, type: _Uri}]
+					}
+					add_to_individual(ticket, cls, _event_id);
 				});
-			});*/
+			}
+			break;
+		// Process specifications
+		case "v-ui:PropertySpecification" :
+		case "v-ui:IntegerPropertySpecification" :
+		case "v-ui:DecimalPropertySpecification" :
+		case "v-ui:DatetimePropertySpecification" :
+		case "v-ui:StringPropertySpecification" :
+		case "v-ui:BooleanPropertySpecification" :
+		case "v-ui:ObjectPropertySpecification" :
+			if ( hasValue(doc, "v-ui:forClass") ) {
+				doc["v-ui:forClass"].map( function ( i ) {
+					var cls = {
+						"@": i.data,
+						"v-ui:hasSpecification": [{data: uri, type: _Uri}]
+					}
+					add_to_individual(ticket, cls, _event_id);
+				});
+			}
+			break;
+		// Process models
+		case "v-s:ClassModel" :
+			if ( hasValue(doc, "v-ui:forClass") ) {
+				doc["v-ui:forClass"].map( function ( i ) {
+					var cls = {
+						"@": i.data,
+						"v-ui:hasModel": [{data: uri, type: _Uri}]
+					}
+					add_to_individual(ticket, cls, _event_id);
+				});
+			}
+			break;
+		// Process templates
+		case "v-ui:ClassTemplate" :
+			if ( hasValue(doc, "v-ui:forClass") ) {
+				doc["v-ui:forClass"].map( function ( i ) {
+					var cls = {
+						"@": i.data,
+						"v-ui:hasTemplate": [{data: uri, type: _Uri}]
+					}
+					add_to_individual(ticket, cls, _event_id);
+				});
+			}
 			break;
 	}
 """ ;
