@@ -147,7 +147,8 @@ public class LmdbStorage
             log.trace_log_and_console("%s(%s) WARN#1:%s", __FUNCTION__ ~ ":" ~ text(__LINE__), _path, fromStringz(mdb_strerror(rc)));
         else
         {
-            rc = mdb_env_open(env, cast(char *)_path, MDB_NOMETASYNC | MDB_NOSYNC | MDB_NOTLS, std.conv.octal !664);
+//            rc = mdb_env_open(env, cast(char *)_path, MDB_NOMETASYNC | MDB_NOSYNC | MDB_NOTLS, std.conv.octal !664);
+            rc = mdb_env_open(env, cast(char *)_path, MDB_NOSYNC, std.conv.octal !664);
             if (rc != 0)
                 log.trace_log_and_console("%s(%s) WARN#2:%s", __FUNCTION__ ~ ":" ~ text(__LINE__), _path, fromStringz(mdb_strerror(rc)));
 
@@ -507,7 +508,7 @@ public class LmdbStorage
         {
             for (int i = 0; i < 10 && rc != 0; i++)
             {
-                log.trace_log_and_console("[%s] warn: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
+                //log.trace_log_and_console("[%s] warn: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
                 mdb_txn_abort(txn_r);
 
                 // TODO: sleep ?
