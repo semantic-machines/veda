@@ -81,13 +81,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 
 		rendered.map( function (view) {
-			view.template.hide();
+			view.template
+				.attr("resource", individual.id)
+				.attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") )
+				.addClass("mode-" + mode);
 			container.append(view.template);
-			view.template.attr("resource", individual.id).attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") );
 			// Timeout to wait all related individuals to render
 			setTimeout(function () {
 				view.template.trigger(mode);
-				view.template.show();
 				view.scripts.map( function (script) { 
 					var presenter = new Function("veda", "individual", "container", "template", "mode", script + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js");
 					presenter(veda, individual, container, view.template, mode);
@@ -737,7 +738,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			if (valTemplate.attr("deleteButton") == "hide") {
 				btnRemove.hide();
 			}
-								
 			btnRemove.on("click", function () {
 				individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id !== value.id; });
 			});
@@ -748,7 +748,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				valTemplate.removeClass("red-outline");
 			});
 			valTemplate.css("position", "relative");
-			// It is important to append buttons to skip script element in template!
+			// It is important to append buttons skipping script element in template!
 			valTemplate.not("script").append(wrapper);
 		}
 		return valTemplate;
