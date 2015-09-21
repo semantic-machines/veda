@@ -208,9 +208,8 @@ void processed(Context context)
         }
     }
 
-        if (trace_msg[ 29 ] == 1)
-        	log.trace("file_reader::processed end");
-    
+    if (trace_msg[ 29 ] == 1)
+        log.trace("file_reader::processed end");
 }
 
 import util.individual2html;
@@ -325,9 +324,9 @@ private void prepare_list(Individual *[] ss_list, Context context, string file_n
             {
                 remove(doc_filename);
 
-            	append(
-                   doc_filename,
-                   "<html><body><head><meta charset=\"utf-8\"/><link href=\"css/bootstrap.min.css\" rel=\"stylesheet\"/><style=\"padding: 0px 0px 30px;\"></head>\n");
+                append(
+                       doc_filename,
+                       "<html><body><head><meta charset=\"utf-8\"/><link href=\"css/bootstrap.min.css\" rel=\"stylesheet\"/><style=\"padding: 0px 0px 30px;\"></head>\n");
             }
             catch (Exception ex)
             {
@@ -353,7 +352,7 @@ private void prepare_list(Individual *[] ss_list, Context context, string file_n
                 }
 
                 ss.addResource("rdfs:isDefinedBy", Resource(DataType.Uri, onto_info.uri));
-				(*ss).repare_unique("rdfs:isDefinedBy");
+                (*ss).repare_unique("rdfs:isDefinedBy");
                 append(doc_filename, individual2html(ss));
 
                 long pos_path_delimiter = indexOf(ss.uri, '/');
@@ -419,7 +418,7 @@ private void prepare_list(Individual *[] ss_list, Context context, string file_n
         }
         //context.reopen_ro_subject_storage_db ();
         if (trace_msg[ 33 ] == 1)
-        	log.trace("prepare_list end");
+            log.trace("prepare_list end");
         //writeln ("file_reader::prepare_file end");
     }
     catch (Exception ex)
