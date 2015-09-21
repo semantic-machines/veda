@@ -43,7 +43,8 @@ public enum Result
     Nothing
 }
 
-//bool[ string ] db_is_rw;
+bool[ string ] db_is_open;
+
 
 /// key-value хранилище на lmdb
 public class LmdbStorage
@@ -64,10 +65,17 @@ public class LmdbStorage
         summ_hash_this_db_id = "summ_hash_this_db";
         mode                 = _mode;
         parent_thread_name   = _parent_thread_name;
+        
+        string thread_name = core.thread.Thread.getThis().name;
+     	if (thread_name is null || thread_name.length == 0)
+    	{
+ 			core.thread.Thread.getThis().name = "core" ~ text(std.uuid.randomUUID().toHash())[ 0..5 ];
+    	}	
+    		
 
         create_folder_struct();
         open_db();
-        reopen_db();
+//        reopen_db();
     }
 
     @property
@@ -120,12 +128,21 @@ public class LmdbStorage
     }
 
 
+	public void close_db ()
+	{
+       flush(1);
+		mdb_env_close(env);
+		db_is_open[ _path ] = false;		
+//    	writeln ("@@@ close_db, thread:", core.thread.Thread.getThis().name);
+	}
+
     public void reopen_db()
     {
+    	
         if (mode == DBMode.R)
         {
-            mdb_env_close(env);
-
+//    	writeln ("@@@ reopen_db, thread:", core.thread.Thread.getThis().name);
+            close_db();
             open_db();
         }
     	
@@ -149,6 +166,16 @@ public class LmdbStorage
 
     public void open_db()
     {
+//    	string thread_name  = core.thread.Thread.getThis().name;    	
+//    	writeln ("@@@ open_db ", _path, ", thread:", thread_name);
+    	
+    	if (db_is_open.get (_path, false) == true)
+    	{
+    	string thread_name  = core.thread.Thread.getThis().name;    	
+    	writeln ("@@@ open_db ", _path, ", thread:", thread_name, ", ALREADY OPENNING");
+    	return;    		
+    	}
+    	
         int rc;
 
         rc = mdb_env_create(&env);
@@ -162,15 +189,15 @@ public class LmdbStorage
 //            	rc = mdb_env_open(env, cast(char *)_path, MDB_NOSYNC, std.conv.octal !664);
             	rc = mdb_env_open(env, cast(char *)_path, MDB_NOMETASYNC | MDB_NOSYNC | MDB_NOTLS, std.conv.octal !664);
             else	
-            	rc = mdb_env_open(env, cast(char *)_path, 0, std.conv.octal !666);
+            	rc = mdb_env_open(env, cast(char *)_path, MDB_NOTLS, std.conv.octal !666);
             	
+                db_is_open[ _path ] = true;            
+
             if (rc != 0)
                 log.trace_log_and_console("%s(%s) WARN#2:%s", __FUNCTION__ ~ ":" ~ text(__LINE__), _path, fromStringz(mdb_strerror(rc)));
 
             if (rc == 0 && mode == DBMode.RW)
             {
-                //db_is_rw[ _path ] = true;
-
                 string hash_str = find(summ_hash_this_db_id);
 
                 if (hash_str is null || hash_str.length < 1)
@@ -471,9 +498,7 @@ public class LmdbStorage
             if (rc == MDB_MAP_RESIZED)
             {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) WARN:%s", _path, fromStringz(mdb_strerror(rc)));
-                mdb_env_close(env);
-                open_db();
-
+                reopen_db ();
                 return count_entries();
             }
 
@@ -539,9 +564,7 @@ public class LmdbStorage
             if (rc == MDB_MAP_RESIZED)
             {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) WARN:%s", _path, fromStringz(mdb_strerror(rc)));
-                mdb_env_close(env);
-                open_db();
-
+                reopen_db ();
                 return find(uri);
             }
             else if (rc == MDB_BAD_RSLOT)
@@ -552,8 +575,7 @@ public class LmdbStorage
                 // TODO: sleep ?
                 //core.thread.Thread.sleep(dur!("msecs")(1));
                 //rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-                mdb_env_close(env);
-                open_db();
+                reopen_db();
                 rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
             }
         }

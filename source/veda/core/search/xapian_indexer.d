@@ -109,7 +109,7 @@ private class IndexerContext
 
     XapianTermGenerator    indexer;
     string                 lang = "russian";
-    LmdbStorage            inividuals_storage;
+
     // XapianEnquire     xapian_enquire;
     // XapianQueryParser xapian_qp;
     int[ string ] key2slot;
@@ -122,6 +122,8 @@ private class IndexerContext
     Tid    tid_acl_manager;
     Tid    key2slot_accumulator;
     string thread_name;
+
+	Ticket* ticket;
 
     void reload_index_schema()
     {
@@ -348,7 +350,7 @@ private class IndexerContext
                         try
                         {
                             // 1. считать индивид по ссылке
-                            Individual inner_indv = inividuals_storage.find_individual(rs.uri);
+                            Individual inner_indv = context.get_individual(ticket, rs.uri);
 
                             //string tab; for (int i = 0; i < level; i++)
                             //    tab ~= "	";
@@ -733,11 +735,6 @@ void xapian_indexer(string thread_name, string _node_id)
     IndexerContext ictx = new IndexerContext;
     ictx.thread_name = thread_name;
     // //////////////////////////////////
-
-
-
-    // //////////////////////////////////
-    ictx.inividuals_storage = new LmdbStorage(individuals_db_path, DBMode.R, "search:inividuals");
 
     core.thread.Thread.getThis().name = thread_name;
 
