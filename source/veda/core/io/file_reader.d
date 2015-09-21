@@ -207,6 +207,10 @@ void processed(Context context)
             }
         }
     }
+
+        if (trace_msg[ 29 ] == 1)
+        	log.trace("file_reader::processed end");
+    
 }
 
 import util.individual2html;
@@ -383,7 +387,7 @@ private void prepare_list(Individual *[] ss_list, Context context, string file_n
 
                                 ResultCode res = context.put_individual(null, ss.uri, ss1.repare_unique("rdf:type"), false);
                                 if (trace_msg[ 33 ] == 1)
-                                    log.trace("file_reader:apply, uri=%s %s", ss.uri, ss1);
+                                    log.trace("apply, uri=%s %s", ss.uri, ss1);
                                 if (res != ResultCode.OK)
                                     log.trace("individual =%s, not store, errcode =%s", ss1.uri, text(res));
                             }
@@ -391,7 +395,7 @@ private void prepare_list(Individual *[] ss_list, Context context, string file_n
                             {
                                 ResultCode res = context.put_individual(null, ss.uri, (*ss).repare_unique("rdf:type"), false);
                                 if (trace_msg[ 33 ] == 1)
-                                    log.trace("file_reader:store, uri=%s %s", ss.uri, *ss);
+                                    log.trace("store, uri=%s %s", ss.uri, *ss);
                                 if (res != ResultCode.OK)
                                     log.trace("individual =%s, not store, errcode =%s", ss.uri, text(res));
                             }
@@ -403,7 +407,7 @@ private void prepare_list(Individual *[] ss_list, Context context, string file_n
                     //if (for_load.get(ss.uri, false) == true)
                     {
                         if (trace_msg[ 33 ] == 1)
-                            log.trace("file_reader:store, uri=%s %s", ss.uri, *ss);
+                            log.trace("store, uri=%s %s", ss.uri, *ss);
                         context.put_individual(null, ss.uri, (*ss).repare_unique("rdf:type"), false);
                     }
                 }
@@ -414,6 +418,8 @@ private void prepare_list(Individual *[] ss_list, Context context, string file_n
             context.set_reload_signal_to_local_thread("search");
         }
         //context.reopen_ro_subject_storage_db ();
+        if (trace_msg[ 33 ] == 1)
+        	log.trace("prepare_list end");
         //writeln ("file_reader::prepare_file end");
     }
     catch (Exception ex)
