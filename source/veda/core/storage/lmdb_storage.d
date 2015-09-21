@@ -43,7 +43,7 @@ public enum Result
     Nothing
 }
 
-bool[ string ] db_is_rw;
+//bool[ string ] db_is_rw;
 
 /// key-value хранилище на lmdb
 public class LmdbStorage
@@ -122,6 +122,14 @@ public class LmdbStorage
 
     public void reopen_db()
     {
+        if (mode == DBMode.R)
+        {
+            mdb_env_close(env);
+
+            open_db();
+        }
+    	
+/*    	
         flush(1);
 
         bool is_cooperative = db_is_rw.get(_path, false);
@@ -136,6 +144,7 @@ public class LmdbStorage
 
             open_db();
         }
+*/        
     }
 
     public void open_db()
@@ -148,13 +157,19 @@ public class LmdbStorage
         else
         {
 //            rc = mdb_env_open(env, cast(char *)_path, MDB_NOMETASYNC | MDB_NOSYNC | MDB_NOTLS, std.conv.octal !664);
-            rc = mdb_env_open(env, cast(char *)_path, MDB_NOSYNC, std.conv.octal !664);
+			
+            if (mode == DBMode.RW)
+//            	rc = mdb_env_open(env, cast(char *)_path, MDB_NOSYNC, std.conv.octal !664);
+            	rc = mdb_env_open(env, cast(char *)_path, MDB_NOMETASYNC | MDB_NOSYNC | MDB_NOTLS, std.conv.octal !664);
+            else	
+            	rc = mdb_env_open(env, cast(char *)_path, 0, std.conv.octal !666);
+            	
             if (rc != 0)
                 log.trace_log_and_console("%s(%s) WARN#2:%s", __FUNCTION__ ~ ":" ~ text(__LINE__), _path, fromStringz(mdb_strerror(rc)));
 
             if (rc == 0 && mode == DBMode.RW)
             {
-                db_is_rw[ _path ] = true;
+                //db_is_rw[ _path ] = true;
 
                 string hash_str = find(summ_hash_this_db_id);
 
