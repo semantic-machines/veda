@@ -53,6 +53,7 @@ class PThreadContext : Context
 
     private                string[ string ] prefix_map;
 
+	bool use_rdonly_storage = true;
     private LmdbStorage    inividuals_storage;
     private LmdbStorage    tickets_storage;
     private search.vql.VQL _vql;
@@ -67,7 +68,10 @@ class PThreadContext : Context
     this(string _node_id, string context_name, P_MODULE _id)
     {
         node_id            = _node_id;
-        inividuals_storage = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals");
+        
+        if (use_rdonly_storage)
+        	inividuals_storage = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals");
+        	
         tickets_storage    = new LmdbStorage(tickets_db_path, DBMode.R, context_name ~ ":tickets");
         acl_indexes        = new Authorization(acl_indexes_db_path, DBMode.R, context_name ~ ":acl");
 
@@ -246,7 +250,12 @@ class PThreadContext : Context
     public string get_individual_from_storage(string uri)
     {
         //writeln ("@ get_individual_as_cbor, uri=", uri);
-        string res = inividuals_storage.find(uri);
+        string res;
+        
+        if (inividuals_storage !is null)
+        	res = inividuals_storage.find(uri);
+        else
+        	res = find (uri);	
 
         if (res !is null && res.length < 10)
         	log.trace_log_and_console("!ERR:get_individual_from_storage, found invalid CBOR, uri=%s", uri);
@@ -319,7 +328,12 @@ class PThreadContext : Context
 
     public int[ string ] get_key2slot()
     {
-        string key2slot_str = inividuals_storage.find(xapian_metadata_doc_id);
+        string key2slot_str;
+        
+        if (inividuals_storage !is null)
+        	key2slot_str = inividuals_storage.find(xapian_metadata_doc_id);
+        else
+        	key2slot_str = find (xapian_metadata_doc_id);
 
         if (key2slot_str !is null)
         {
@@ -796,7 +810,8 @@ class PThreadContext : Context
     {
         if (this.getTid(P_MODULE.subject_manager) != Tid.init)
             this.wait_thread(P_MODULE.subject_manager);
-        inividuals_storage.reopen_db();
+        if (inividuals_storage !is null)    
+        	inividuals_storage.reopen_db();
     }
 
     // ////////// external ////////////
@@ -1299,7 +1314,11 @@ class PThreadContext : Context
 
     public long count_individuals()
     {
-        return inividuals_storage.count_entries();
+    	long count = 0;
+    	if (inividuals_storage !is null)
+        	count = inividuals_storage.count_entries();
+        	
+        return count;	
     }
 
     public void freeze()
@@ -1324,4 +1343,17 @@ class PThreadContext : Context
             send(tid_subject_manager, CMD.UNFREEZE);
         }
     }
+    
+string find (string uri)
+{
+	string res;
+    Tid tid_subject_manager = getTid(P_MODULE.subject_manager);
+		
+    send(tid_subject_manager, CMD.FIND, uri, thisTid);
+    receive((string key, string data, Tid tid)
+            {
+                res = data;
+            });
+    return res;
+}    
 }

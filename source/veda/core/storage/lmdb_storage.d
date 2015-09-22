@@ -130,7 +130,8 @@ public class LmdbStorage
 
     public void close_db()
     {
-        flush(1);
+    	if (mode == DBMode.RW)
+        	flush(1);
         mdb_env_close(env);
         db_is_open[ _path ] = false;
 //      writeln ("@@@ close_db, thread:", core.thread.Thread.getThis().name);
@@ -186,9 +187,9 @@ public class LmdbStorage
 
             if (mode == DBMode.RW)
 //              rc = mdb_env_open(env, cast(char *)_path, MDB_NOSYNC, std.conv.octal !664);
-                rc = mdb_env_open(env, cast(char *)_path, MDB_NOMETASYNC | MDB_NOSYNC | MDB_NOTLS, std.conv.octal !664);
+                rc = mdb_env_open(env, cast(char *)_path, MDB_NOMETASYNC | MDB_NOSYNC, std.conv.octal !664);
             else
-                rc = mdb_env_open(env, cast(char *)_path, MDB_NOTLS, std.conv.octal !666);
+                rc = mdb_env_open(env, cast(char *)_path, MDB_RDONLY | MDB_NOMETASYNC | MDB_NOSYNC | MDB_NOLOCK, std.conv.octal !666);
 
             db_is_open[ _path ] = true;
 
@@ -466,8 +467,8 @@ public class LmdbStorage
 
         mdb_dbi_close(env, dbi);
 
-        if (count_update % 2_000 == 0)
-            reopen_db();
+//        if (count_update % 2_000 == 0)
+//            reopen_db();
 
         return ev;
     }
