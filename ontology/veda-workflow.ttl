@@ -1935,9 +1935,28 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionRemake ;
   v-ui:forClass v-wf:DecisionNotPerformed ;
   v-ui:forClass v-wf:DecisionAgreedToProject ;  
+  v-ui:template """
+<div>
+	<br>
+	<strong about="rdfs:comment" property="rdfs:label" class="text-muted"></strong>
+	<div property="rdfs:comment" class="view -edit -search"></div>
+	<veda-control property="rdfs:comment" type="string" class="-view edit search"></veda-control>
+</div>
+  """ ;
+.
+
+v-wf:DecisionTemplate2
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса -Решение-"@ru ;
+  rdfs:label "Template for -Decision- class"@en ;
   v-ui:forClass v-wf:DecisionAgreedToExecute ;    
   v-ui:template """
 <div>
+	<br>
+	<strong about="v-wf:to" property="rdfs:label" class="text-muted"></strong>
+	<div rel="v-wf:to" template="v-ui:LabelTemplate" class="view -edit -search"></div>
+	<veda-control rel="v-wf:to" type="link" class="-view edit search fulltext dropdown"></veda-control>
 	<br>
 	<strong about="rdfs:comment" property="rdfs:label" class="text-muted"></strong>
 	<div property="rdfs:comment" class="view -edit -search"></div>
@@ -1973,6 +1992,7 @@ v-wf:DecisionRedirectTemplateSpec2
   v-ui:forClass v-wf:DecisionBreak ;
   v-ui:forClass v-wf:DecisionExamined ;
   v-ui:forClass v-wf:DecisionAchieved ;
+  v-ui:forClass v-wf:DecisionAgreedToProject ;   
 .
 
 v-wf:DecisionRedirectTemplateSpec3
@@ -1981,6 +2001,7 @@ v-wf:DecisionRedirectTemplateSpec3
   rdfs:label "Спецификация свойств для класса -Перенаправить другому-"@ru ;
   rdfs:label "Spec for template for -Decision Redirect- class"@en ;
   v-ui:forClass v-wf:DecisionRedirect ;
+  v-ui:forClass v-wf:DecisionAgreedToExecute ;   
   v-ui:forProperty v-wf:to, rdfs:comment ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
