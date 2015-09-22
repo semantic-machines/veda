@@ -58,6 +58,53 @@ v-ui:forProperty
   rdfs:label "для свойства"@ru ;
   rdfs:range owl:DatatypeProperty, owl:ObjectProperty, rdf:Property ;
 .
+v-ui:hasTemplate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain owl:Class ;
+  rdfs:domain rdfs:Class ;
+  rdfs:label "has template"@en ;
+  rdfs:label "имеет шаблон"@ru ;
+  rdfs:range v-ui:ClassTemplate ;
+.
+v-ui:hasModel
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain owl:Class ;
+  rdfs:domain rdfs:Class ;
+  rdfs:label "has model"@en ;
+  rdfs:label "имеет модель"@ru ;
+  rdfs:range v-ui:ClassModel ;
+.
+v-ui:hasSpecification
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain owl:Class ;
+  rdfs:domain rdfs:Class ;
+  rdfs:label "has specification"@en ;
+  rdfs:label "имеет спецификацию"@ru ;
+  rdfs:range v-ui:PropertySpecification ;
+  rdfs:range v-ui:StringPropertySpecification ;
+  rdfs:range v-ui:IntegerPropertySpecification ;
+  rdfs:range v-ui:BooleanPropertySpecification ;
+  rdfs:range v-ui:DecimalPropertySpecification ;
+  rdfs:range v-ui:DatetimePropertySpecification ;
+  rdfs:range v-ui:ObjectPropertySpecification ;
+.
+v-ui:hasProperty
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain owl:Class ;
+  rdfs:domain rdfs:Class ;
+  rdfs:label "has property"@en ;
+  rdfs:label "имеет свойство"@ru ;
+  rdfs:range owl:DatatypeProperty, owl:ObjectProperty, rdf:Property ;
+.
+v-ui:hasSubClass
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain owl:Class ;
+  rdfs:domain rdfs:Class ;
+  rdfs:label "has subclass"@en ;
+  rdfs:label "имеет подкласс"@ru ;
+  rdfs:range owl:Class ;
+  rdfs:range rdfs:Class ;
+.
 v-ui:template
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:ClassTemplate ;
@@ -453,7 +500,7 @@ v-ui:LabelTemplate
   rdfs:label "Шаблон с меткой"@ru ;
   rdfs:label "Template with label"@en ;
   v-ui:template """
-  <span id="label" property="rdfs:label"></span>
+  <span property="rdfs:label"></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
   	  template.text(individual.id);
@@ -500,7 +547,12 @@ v-ui:ClassNameLabelTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <span><a href="#/individual/@/#main"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span property="rdfs:label"></span></a></span>
+  <span><a href="#/individual/@/#main"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span id="label" property="rdfs:label"></span></a></span>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+  	  $("#label", template).text(individual.id);
+    }
+  </script>
   """ ;
 .
 v-ui:ClassNameLabelBlockTemplate
@@ -508,7 +560,12 @@ v-ui:ClassNameLabelBlockTemplate
   rdfs:label "Шаблон с именем класса и меткой блочный"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <div><a href="#/individual/@/#main"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span property="rdfs:label"></span></a></div>
+  <div><a href="#/individual/@/#main"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span id="label" property="rdfs:label"></span></a></div>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+  	  $("#label", template).text(individual.id);
+    }
+  </script>
   """ ;
 .
 v-ui:SavedSearchTemplate
