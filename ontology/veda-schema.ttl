@@ -976,7 +976,7 @@ v-s:responsible
   rdf:type owl:ObjectProperty ;
   rdfs:label "responsible"@en ;
   rdfs:label "ответсвенное лицо"@ru ;
-  rdfs:range v-s:Document ;
+  rdfs:range v-s:Appointment ;
 .
 v-s:restriction
   rdf:type owl:ObjectProperty ;
