@@ -1,0 +1,247 @@
+# baseURI: http://semantic-machines.com/veda/veda-docflow
+# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+# imports: http://www.w3.org/2000/01/rdf-schema#
+# imports: http://www.w3.org/2002/07/owl
+
+# c14n-version: 3
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-a: <http://semantic-machines.com/veda/veda-admin/> .
+@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-df: <http://semantic-machines.com/veda/veda-docflow/> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix mnd-s-asppd: <http://semantic-machines.com/veda/mondi-schema-asppd/> .
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+
+<http://semantic-machines.com/veda/veda-docflow>
+  rdfs:isDefinedBy v-df: ;
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system docflow ontology"@en ;
+  rdfs:label "Онтология процессов документооборота системы Veda"@ru ;
+  owl:imports rdf: ;
+  owl:imports rdfs: ;
+  owl:imports owl: ;
+#  owl:DversionInfo "1.2" ;
+.
+
+v-df:ApprovalTask
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy v-df: ;
+  rdfs:label "Approval document"@en ;
+  rdfs:label "Утвердить документ"@ru ;
+  rdfs:comment "Форма ответа на задачу утверждения"@ru ;  
+  rdfs:subClassOf v-wf:DecisionForm ;
+.
+v-df:PsApprovalTask_from
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-df:ApprovalTask ;
+  v-ui:forProperty v-wf:from ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
+  v-ui:tooltip "Non-required, single value. Link to instance of Appointment class"@en ;
+  v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Назначение."@ru ;
+  rdfs:label "Task sender property specification for Approval task class"@en ;
+  rdfs:label "Спецификация отправителя задачи для класса Форма задачи утверждение"@ru ;
+.
+v-df:PsApprovalTask_onDocument
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-df:ApprovalTask ;
+  v-ui:forProperty v-wf:onDocument ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  v-ui:queryPrefix "('rdf:type'=='mnd-s-asppd:Project' || 'rdf:type'=='mnd-s-asppd:Idea')"^^xsd:string ;
+  v-ui:tooltip "Non-required, multy value. Link to instance of Project or Idea class"@en ;
+  v-ui:tooltip "Необязательно к заполнению, множественное значение. Ссылка на объект класса Project или Idea."@ru ;
+  rdfs:label "Task bu document property specification for ApprovalTask class"@en ;
+  rdfs:label "Спецификация ссылки на документ для класса Форма задачи утверждения"@ru ;
+.
+v-df:PsApprovalTask_dateGiven
+  rdf:type v-ui:DatetimePropertySpecification ;
+  v-ui:forClass v-df:ApprovalTask ;
+  v-ui:forProperty v-wf:dateGiven ;
+  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:tooltip "Required, single value. Format: 2011-08-19"@en ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
+  rdfs:label "Preferences property specification for dateFrom in AgShedule class"@en ;
+  rdfs:label "Спецификация даты заседания технического комитета для класса AgShedule"@ru ;
+.
+
+v-df:approvalTask_decisionKind
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Примите решение по задаче"@ru ;
+  rdfs:label "Take decision by task"@en ;
+  rdfs:comment "Виды решений по задаче утверждения"@ru ;  
+  rdfs:domain v-df:ApprovalTask ;
+  rdfs:range xsd:string ;
+.
+v-df:PsApprovalTask_decisionKind
+  rdf:type v-ui:StringPropertySpecification ;
+  rdfs:label "Спецификация видов решения задачи утверждения"@ru ;
+  rdfs:label "Specification for Approval task decision kind property"@en ;
+  v-ui:forClass v-df:ApprovalTask ;
+  v-ui:forProperty v-df:approvalTask_decisionKind ;
+  v-ui:optionStringValue "Утверждено"^^xsd:string ;
+  v-ui:optionStringValue "Отложено"^^xsd:string ;
+  v-ui:optionStringValue "Отклонено"^^xsd:string ;
+  v-ui:optionStringValue "На доработку"^^xsd:string ;  
+  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+.
+
+v-wf:possibleDecisionClass
+  rdfs:domain v-df:ApprovalTask ;
+.
+
+# -- ШАБЛОН ФОРМЫ ЗАДАЧИ УТВЕРЖДЕНИЯ --
+v-df:ApprovalTaskTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-df:ApprovalTask ;
+  rdfs:label "Approval task template"@en ;
+  rdfs:label "Шаблон формы задачи утверждения"@ru ;
+  v-ui:template """
+    <div class="panel panel-default">
+      <div class="panel-body">
+        
+			<div class="row">
+			  <div class="col-md-12">
+				<h3><span about="v-df:ApprovalTask" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>    
+			  </div>
+			</div>
+			<br>
+
+			<div class="row">
+			  <div class="col-md-3">
+					<em about="v-wf:from" property="rdfs:label" class="text-muted"></em>            
+			  </div>				
+			  <div class="col-md-3">	  
+					<div rel="v-wf:from" template="v-ui:LabelTemplate" class="view -edit -search"></div>
+					<veda-control rel="v-wf:from" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
+			  </div>
+			</div>
+			<div class="row">
+			  <div class="col-md-3">
+					<em about="v-wf:onDocument" property="rdfs:label" class="text-muted"></em>            
+			  </div>				
+			  <div class="col-md-3">	  
+					<div rel="v-wf:onDocument" template="v-ui:LabelTemplate" class="view -edit -search"></div>
+					<veda-control rel="v-wf:onDocument" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
+			  </div>			  
+			</div>            
+			<div class="row">
+			  <div class="col-md-3">
+					<em about="v-wf:dateGiven" property="rdfs:label" class="text-muted"></em>            
+			  </div>				
+			  <div class="col-md-3">	  
+					<div property="v-wf:dateGiven" class="view -edit -search"></div>
+					<veda-control property="v-wf:dateGiven" type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>            
+			  </div>			  
+			</div>            			
+			<hr class="margin-sm">
+
+			<div class="row">
+			  <div class="col-md-3">
+					<em about="v-df:approvalTask_decisionKind" property="rdfs:label" class="text-muted"></em>            
+			  </div>					
+			  <div class="col-md-3">
+					<veda-control property="v-df:approvalTask_decisionKind" type="stringRadio"></veda-control>					
+			  </div>		
+			</div>
+
+
+			<div class="row">
+			  <div class="col-md-3">
+					<em about="v-wf:possibleDecisionClass" property="rdfs:label" class="text-muted"></em>            
+			  </div>					
+			  <div class="col-md-3">
+					<veda-control rel="v-wf:possibleDecisionClass" type="objectRadio"></veda-control>					
+			  </div>		
+			</div>
+
+
+			<br><br>
+			<div class="well well-sm">
+			  <button type="button" class="action btn btn-warning" id="send">Оправить</button>
+			  <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
+			  <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+			  <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+			  <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+			  <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
+			</div>    
+		
+	  </div>		
+	</div>			
+""" ;
+.
+
+# -- ФОРМА ОТВЕТА ЗАДАЧИ ИДЕЯ В РЕАЛИЗАЦИЮ --
+
+mnd-s:hasAction
+  rdfs:domain v-wf:DecisionAgreedToExecute ;
+.
+v-df:PsHasAction
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-wf:DecisionAgreedToExecute ;
+  v-ui:forProperty mnd-s:hasAction ;
+  v-ui:maxCardinality 20 ;
+  v-ui:minCardinality 0 ;
+  v-ui:queryPrefix "('rdf:type'=='mnd-s:Action')"^^xsd:string ;
+  v-ui:tooltip "Non-required, multy value. Link to instance of Action class"@en ;
+  v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Action."@ru ;
+  rdfs:label "Project phases shedule property specification for Project class"@en ;
+  rdfs:label "Спецификация ссылки на мероприятие для класса Согласовано в реализацию"@ru ;
+.
+
+v-df:DecisionTemplate2
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса -Решение-"@ru ;
+  rdfs:label "Template for -Decision- class"@en ;
+  v-ui:forClass v-wf:DecisionAgreedToExecute ;    
+  v-ui:template """
+<div>
+	<br>
+	<strong about="mnd-s:hasAction" property="rdfs:label" class="text-muted"></strong>
+	<div rel="mnd-s:hasAction" template="v-df:ActionInDecisionTemplate" embedded="true"></div>
+	<veda-control rel="mnd-s:hasAction" type="link" class="-view edit search fullsearch fulltext create"></veda-control>
+</div>
+  """ ;
+.
+
+v-df:ActionInDecisionTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Мероприятие внутри Ответа на задачу"@ru ;
+  rdfs:label "Action in decision Template"@en ;
+#  v-ui:forClass mnd-s:Action ;  
+  v-ui:template """
+<div>
+	<div class="panel panel-info">
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-md-4">
+					<em about="v-s:responsible" property="rdfs:label" class="text-muted"></em>
+					<div rel="v-s:responsible" template="v-ui:LabelTemplate" class="view -edit -search"></div>
+					<veda-control rel="v-s:responsible" type="link" class="fulltext dropdown -view edit search"></veda-control>
+				</div>
+				<div class="col-md-4">
+					<em about="v-s:description" property="rdfs:label" class="text-muted"></em>
+					<div property="v-s:description" class="view -edit -search"></div>
+					<veda-control property="v-s:description" type="multilingualText" class="-view edit search"></veda-control>
+				</div>
+				<div class="col-md-4">
+					<em about="v-s:dateTo" property="rdfs:label" class="text-muted"></em>
+					<div rel="v-s:dateTo" template="v-ui:LabelTemplate" class="view -edit -search"></div>
+					<veda-control rel="v-s:dateTo" type="link" class="fulltext dropdown -view edit search"></veda-control>
+				</div>				
+			</div>
+		</div>
+	</div>
+</div>
+  """ ;
+.
