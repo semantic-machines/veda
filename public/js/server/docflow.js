@@ -132,7 +132,7 @@ function prepare_work_order(ticket, document)
                 {
                     // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
                     task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, null, true);
-                    print("[PWO].completedMapping1, task_output_vars=", toJson(task_output_vars));
+                    //print("[PWO].completedMapping1, task_output_vars=", toJson(task_output_vars));
                 }
 
                 if (task_output_vars.length == 0)
@@ -335,10 +335,10 @@ function prepare_work_order(ticket, document)
         var is_goto_to_next_task = false;
 
         // begin //////////////// скрипт сборки результатов (WorkOrder) ///////////////////////////////////////////
-        var result = [];
+        var work_item_result = [];
 
         // найдем маппинг множественных результатов
-        //var wosResultsMapping = net_element['v-wf:wosResultsMapping'];
+        var wosResultsMapping = net_element['v-wf:wosResultsMapping'];
 
         var workOrderList = work_item['v-wf:workOrderList'];
         // проверяем есть ли результаты рабочих заданий
@@ -366,11 +366,11 @@ function prepare_work_order(ticket, document)
                     //print("[WORKFLOW][WO3.2] _result=" + toJson(_result) + "");
                     if (_result)
                     {
-                        //if (wosResultsMapping)
-                        //{
-                        // wosResultsMapping указан 
-                        //}
-                        //else
+                        if (wosResultsMapping)
+                        {
+                            // wosResultsMapping указан 
+                        }
+                        else
                         {
                             // складываем все результаты в локальную переменную					
                             var key, val;
@@ -380,7 +380,7 @@ function prepare_work_order(ticket, document)
 
                             var varValue = _result["v-wf:variableValue"];
                             if (varValue)
-                                val = varValue[0].data;
+                                val = varValue;
 
                             if (val !== undefined && key !== undefined)
                             {
@@ -391,27 +391,29 @@ function prepare_work_order(ticket, document)
                         }
                     }
                 }
-                if (f_set) result.push(el);
+                if (f_set) work_item_result.push(el);
 
             }
 
         }
 
-        if (result.length == workOrderList.length)
+        if (work_item_result.length == workOrderList.length)
             is_goto_to_next_task = true;
-        //else
-        //print("[WORKFLOW][WO4.0] не все задания выполнены, stop. result=", toJson(result), ", workOrderList=", toJson(workOrderList));
+        else
+            print("[WORKFLOW][WO4.0] не все задания выполнены, stop. work_item_result=", toJson(work_item_result), ", workOrderList=", toJson(workOrderList));
 
         // end //////////////// скрипт сборки результатов
-        //print("[WORKFLOW][WO4] result=" + toJson(result) + "");
+        print("[WORKFLOW][WO4] work_item_result=" + toJson(work_item_result) + "");
 
         var workItemList = [];
 
         if (is_goto_to_next_task)
         {
-            if (result.length > 0)
+            // переход к новой задаче  prepare[[wo][wo][wo]] ----> new [wi]
+
+            if (work_item_result.length > 0)
             {
-                if (result[0]['complete'])
+                if (work_item_result[0]['complete'])
                 {
                     // если было пустое задание, то не журналируем
                 }
@@ -426,7 +428,7 @@ function prepare_work_order(ticket, document)
             if (net_element['v-wf:completedMapping'])
             {
                 // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
-                task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, result, true);
+                task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, work_item_result, true);
                 print("[PWO].completedMapping3, task_output_vars=", toJson(task_output_vars));
             }
 
@@ -459,30 +461,39 @@ function prepare_work_order(ticket, document)
                     {
                         //print("[WORKFLOW][WO8] predicate=" + toJson(predicate));
                         expression = getFirstValue(predicate);
-                        //print("[WORKFLOW][WO8.1] result=" + toJson(result));
+                        //print("[WORKFLOW][WO8.1] work_item_result=" + toJson(work_item_result));
                         //print("[WORKFLOW][WO9] expression=" + toJson(expression));
                         if (expression)
                         {
-                            var res1 = eval(expression);
-                            //print("[WORKFLOW][WO9.1] expr res=" + toJson(res1));
-                            if (res1 === true)
+                            try
                             {
-                                // выполним переход по XOR условию								
-                                var nextNetElement = get_individual(ticket, getUri(flowsInto));
-
-                                if (nextNetElement)
+                                print("[WORKFLOW][WO9] expression=" + toJson(expression));
+                                var local = new WorkItemResult(work_item_result);
+                                var res1 = eval(expression);
+                                //print("[WORKFLOW][WO9.1] expr res=" + toJson(res1));
+                                if (res1 === true)
                                 {
-                                    //print("[WORKFLOW][WO10] create next work item for =" + nextNetElement['@']);
-                                    var work_item_uri = create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id);
-                                    workItemList.push(
-                                    {
-                                        data: work_item_uri,
-                                        type: _Uri
-                                    });
-                                }
+                                    // выполним переход по XOR условию								
+                                    var nextNetElement = get_individual(ticket, getUri(flowsInto));
 
-                                if (split == 'v-wf:XOR')
-                                    break;
+                                    if (nextNetElement)
+                                    {
+                                        //print("[WORKFLOW][WO10] create next work item for =" + nextNetElement['@']);
+                                        var work_item_uri = create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id);
+                                        workItemList.push(
+                                        {
+                                            data: work_item_uri,
+                                            type: _Uri
+                                        });
+                                    }
+
+                                    if (split == 'v-wf:XOR')
+                                        break;
+                                }
+                            }
+                            catch (e)
+                            {
+                                print(e.stack);
                             }
                         }
                     }
@@ -874,6 +885,7 @@ function prepare_work_item(ticket, document)
         {
             put_individual(ticket, document, _event_id);
         }
+
     }
     catch (e)
     {

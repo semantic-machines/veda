@@ -48,6 +48,82 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
 
 }
 
+function WorkItemResult(_work_item_result)
+{
+    this.work_item_result = _work_item_result;
+
+    /////////////////////////// functions prepare work_item_result
+    this.getValue = function(var_name)
+    {
+        print("%%%1");
+        for (var i in this.work_item_result)
+        {
+            print("%%%2");
+            return this.work_item_result[i][var_name];
+        }
+        print("%%%3");
+    };
+
+    this.compare = function(var_name, value)
+    {
+        //print ("@@@compareTaskResult this.work_item_result=", toJson (this.work_item_result));
+        //print ("@@@compareTaskResult value=", toJson (value));
+        //print ("@@@compareTaskResult var_name=", toJson (var_name));
+        if (!this.work_item_result || this.work_item_result.length == 0)
+            return false;
+
+        if (value.length > 0)
+        {
+            //	print ("@@@compareTaskResult 1");
+            var true_count = 0;
+            for (var i in this.work_item_result)
+            {
+                //	print ("@@@compareTaskResult 2");
+                var wirv = this.work_item_result[i][var_name];
+                if (wirv && wirv.length == value.length)
+                {
+                    //	print ("@@@compareTaskResult 3");
+                    for (var j in wirv)
+                    {
+                        //	print ("@@@compareTaskResult 4");
+                        for (var k in value)
+                        {
+                            if (wirv[j].data == value[k].data && wirv[j].type == value[k].type)
+                                true_count++;
+
+                        }
+                        if (true_count == value.length)
+                            return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    };
+
+
+
+    this.is_all_executors_taken_decision = function(var_name, value)
+    {
+        var count_agreed = 0;
+        for (var i = 0; i < this.work_item_result.length; i++)
+        {
+            var wirv = this.work_item_result[i][var_name];
+
+            if (!wirv && wirv[j].data == value[k].data && wirv[j].type == value[k].type)
+                count_agreed++;
+        }
+
+        if (count_agreed == work_item_result.length)
+            return true;
+        else
+            return false;
+
+    };
+
+
+}
 
 function Context(_src_data, _ticket)
 {
@@ -64,75 +140,90 @@ function Context(_src_data, _ticket)
         return this.src_data;
     };
 
-    this.executor_taken_decision = function()
-    {
-        return [
-        {
-            'data': this.src_data[0].result,
-            'type': _Uri
-        }];
-    }
-
     this.if_all_executors_taken_decision = function(true_decision, false_decision)
     {
-        var count_agreed = 0;
-        for (var i = 0; i < this.src_data.length; i++)
+        try
         {
-            //	   print ("data[i].result=", data[i].result);
-            if (this.src_data[i].result == true_decision)
+            var count_agreed = 0;
+            for (var i = 0; i < this.src_data.length; i++)
             {
-                count_agreed++;
+                //	   print ("data[i].result=", data[i].result);
+                if (this.src_data[i].result == true_decision)
+                {
+                    count_agreed++;
+                }
+            }
+
+            if (count_agreed == this.src_data.length)
+            {
+                return [
+                {
+                    'data': true_decision,
+                    'type': _Uri
+                }];
+            }
+            else
+            {
+                return [
+                {
+                    'data': false_decision,
+                    'type': _Uri
+                }];
             }
         }
+        catch (e)
+        {
+            print(e.stack);
+            return false;
+        }
 
-        if (count_agreed == this.src_data.length)
-        {
-            return [
-            {
-                'data': true_decision,
-                'type': _Uri
-            }];
-        }
-        else
-        {
-            return [
-            {
-                'data': false_decision,
-                'type': _Uri
-            }];
-        }
     };
 
     this.getLocalVariableValue = function(var_name)
     {
-        print("@@@getLocalVariableValue: Context.src_data=", toJson(this.src_data));
-        print("@@@ var_name=", var_name);
-
-        if (this.src_data.length > 1)
+        try
         {
-            print("@@@1");
-            var data = this.src_data;
-            var res = [];
-            for (var i in data)
+            print("@@@getLocalVariableValue: Context.src_data=", toJson(this.src_data));
+            print("@@@ var_name=", var_name);
+
+            if (this.src_data.length > 1)
             {
-                print("@@@2");
-                var value = data[i][var_name];
-                if (value)
-                    res.push(value);
-            }
-            print("@@@3 res=", toJson(res));
+                print("@@@1");
+                var data = this.src_data;
+                var res = [];
+                for (var i in data)
+                {
+                    print("@@@2");
+                    var value = data[i][var_name];
+                    if (value)
+                        res.push(value);
+                }
+                print("@@@3 res=", toJson(res));
 
-            return res;
+                return res;
+            }
+            else
+            {
+                return this.src_data[var_name];
+            }
         }
-        else
+
+        catch (e)
         {
-            return this.src_data[var_name];
+            print(e.stack);
+            return false;
         }
+
     };
 
     this.getVariableValue = function(var_name)
     {
         return this.getVariableValueIO(var_name, 'v-wf:inVars');
+    }
+
+    this.getLocalVariableValue = function(var_name)
+    {
+        return this.getVariableValueIO(var_name, 'v-wf:localVars');
     }
 
     this.getOutVariableValue = function(var_name)
@@ -144,67 +235,94 @@ function Context(_src_data, _ticket)
 
     this.getVariableValueIO = function(var_name, io)
     {
-        //        	print ("CONTEXT::getVariableValueIO src_data=" + toJson (this.src_data));
-        var variables = this.src_data[io];
-
-        if (variables)
+        try
         {
-            for (var i = 0; i < variables.length; i++)
+            //        	print ("CONTEXT::getVariableValueIO src_data=" + toJson (this.src_data));
+            var variables = this.src_data[io];
+
+            if (variables)
             {
-                var variable = get_individual(this.ticket, variables[i].data);
-                if (!variable) continue;
-                //print ("CONTEXT::getVariableValueIO var=" + toJson (variable));
-
-                var variable_name = getFirstValue(variable['v-wf:variableName']);
-
-                //print("[WORKFLOW]:getVariableIO #0: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
-
-                if (variable_name == var_name)
+                for (var i = 0; i < variables.length; i++)
                 {
-                    var val = variable['v-wf:variableValue'];
+                    var variable = get_individual(this.ticket, variables[i].data);
+                    if (!variable) continue;
+                    //print ("CONTEXT::getVariableValueIO var=" + toJson (variable));
 
-                    //print("[WORKFLOW]:getVariableValue #1: work_item=" + this.src_data['@'] + ", var_name=" + var_name + ", val=" + toJson(val)); // + ", variable=" + toJson (variable));
-                    return val;
+                    var variable_name = getFirstValue(variable['v-wf:variableName']);
+
+                    //print("[WORKFLOW]:getVariableIO #0: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
+
+                    if (variable_name == var_name)
+                    {
+                        var val = variable['v-wf:variableValue'];
+
+                        //print("[WORKFLOW]:getVariableValue #1: work_item=" + this.src_data['@'] + ", var_name=" + var_name + ", val=" + toJson(val)); // + ", variable=" + toJson (variable));
+                        return val;
+                    }
                 }
-            }
 
+            }
         }
+        catch (e)
+        {
+            print(e.stack);
+            return false;
+        }
+
         //print("[WORKFLOW]:getVariableValue: work_item=" + this.src_data['@'] + ", var_name=" + var_name + ", val=undefined");
     };
 
     this.print_variables = function(io)
     {
-        var variables = this.src_data[io];
-
-        if (variables)
+        try
         {
-            for (var i = 0; i < variables.length; i++)
+            var variables = this.src_data[io];
+
+            if (variables)
             {
-                var variable = get_individual(this.ticket, variables[i].data);
-                if (!variable) continue;
+                for (var i = 0; i < variables.length; i++)
+                {
+                    var variable = get_individual(this.ticket, variables[i].data);
+                    if (!variable) continue;
 
-                var variable_name = getFirstValue(variable['v-wf:variableName']);
+                    var variable_name = getFirstValue(variable['v-wf:variableName']);
 
-                print("[WORKFLOW]:print_variable: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
+                    //print("[WORKFLOW]:print_variable: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
+                }
+
             }
-
         }
+        catch (e)
+        {
+            print(e.stack);
+            return false;
+        }
+
     };
 
     this.get_result_value = function(field1, type1)
     {
-        if (this.src_data && this.src_data.length > 0)
+        try
         {
-            var rr = this.src_data[0][field1];
-            if (rr)
-                return [
-                {
-                    'data': rr,
-                    'type': type1
-                }];
-            else
-                return null;
+            if (this.src_data && this.src_data.length > 0)
+            {
+                var rr = this.src_data[0][field1];
+                if (rr)
+                    return [
+                    {
+                        'data': rr,
+                        'type': type1
+                    }];
+                else
+                    return null;
+            }
         }
+        catch (e)
+        {
+            print(e.stack);
+            return false;
+        }
+
     };
 }
 
@@ -281,11 +399,17 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
 
             if (scope)
             {
-                // найдем среди локальных переменных процесса, такую переменную
-                // если нашли, то новая переменная должна перезаписать переменную процесса
-                var local_vars = _process['v-wf:inVars'];
+                new_variable['v-wf:variableScope'] = [
+                {
+                    data: scope,
+                    type: _Uri
+                }];
+
+                var local_vars = _process['v-wf:localVars'];
                 if (local_vars)
                 {
+                    // найдем среди локальных переменных процесса, такую переменную
+                    // если нашли, то новая переменная должна перезаписать переменную процесса
                     var find_local_var;
                     for (var i = 0; i < local_vars.length; i++)
                     {
@@ -305,12 +429,20 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
                     if (find_local_var)
                         new_variable['@'] = find_local_var['@'];
                 }
-
-                new_variable['v-wf:variableScope'] = [
+                else
                 {
-                    data: scope,
-                    type: _Uri
-                }];
+                    // если не нашли то привязать новую переменную к процессу
+                    var add_to_document = {
+                        '@': _process['@'],
+                        'v-wf:localVars': [
+                        {
+                            data: new_variable['@'],
+                            type: _Uri
+                        }]
+                    };
+                    add_to_individual(ticket, add_to_document, _event_id);
+                }
+
             }
         }
 
@@ -349,7 +481,7 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
             order = new Context(_order, ticket);
 
         if (_local)
-            local = new Context(_local, ticket);
+            local = new WorkItemResult(_local);
 
         for (var i = 0; i < mapping.length; i++)
         {
@@ -396,6 +528,7 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
     catch (e)
     {
         print(e.stack);
+        return [];
     }
 
 }
@@ -411,56 +544,18 @@ function is_exists_result(data)
     return false;
 }
 
-function is_all_executors_taken_decision(data, decision)
+function is_some_executor_taken_decision(data, decision)
 {
-    try
+    for (var i = 0; i < data.length; i++)
     {
-        var count_agreed = 0;
-        for (var i = 0; i < data.length; i++)
-        {
-            //	   print ("data[i].result=", data[i].result);
-            if (data[i].result == decision)
-            {
-                count_agreed++;
-            }
-        }
-
-        if (count_agreed == data.length)
+        //	   print ("data[i].result=", data[i].result);
+        if (data[i].result == decision)
         {
             return true;
         }
-        else
-        {
-            return false;
-        }
-    }
-    catch (e)
-    {
-        print(e.stack);
     }
 
-}
-
-function is_some_executor_taken_decision(data, decision)
-{
-    try
-    {
-        for (var i = 0; i < data.length; i++)
-        {
-            //	   print ("data[i].result=", data[i].result);
-            if (data[i].result == decision)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-    catch (e)
-    {
-        print(e.stack);
-    }
-
+    return false;
 }
 
 //////////////////////////////////////////////////////////////////////////

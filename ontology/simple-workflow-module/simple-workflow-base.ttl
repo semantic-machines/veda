@@ -131,7 +131,7 @@ s-wf:map_set_result_from_local
 s-wf:map_set_decision_from_local
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_result ;	
-	v-wf:mappingExpression	"local.executor_taken_decision ()";
+	v-wf:mappingExpression	"local.getValue ('result_data')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -895,7 +895,7 @@ s-wf:transformation_uri
 
 s-wf:def_exec_coordinator
 	rdf:type v-wf:ExecutorDefinition ;
-	v-wf:executorExpression "process.getVariableValue ('coordinator_lc')" ;
+	v-wf:executorExpression "process.getLocalVariableValue ('coordinator_lc')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -1045,12 +1045,12 @@ s-wf:nc_f_t3_t1 a v-wf:Flow;
 s-wf:nc_f_t2_oc a v-wf:Flow;
     rdfs:isDefinedBy s-wf: ;
     v-wf:flowsInto s-wf:nc_oc;
-    v-wf:predicate "is_all_executors_taken_decision (result, 'v-wf:DecisionRedirect') == false"^^xsd:string.
+    v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionRedirect')) == false"^^xsd:string.
 
 s-wf:nc_f_t2_t1 a v-wf:Flow;
     rdfs:isDefinedBy s-wf: ;
     v-wf:flowsInto s-wf:nc_t1;
-    v-wf:predicate "is_all_executors_taken_decision (result, 'v-wf:DecisionRedirect') == true"^^xsd:string.
+    v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionRedirect')) == true"^^xsd:string.
 
 #---- ---- -----
 

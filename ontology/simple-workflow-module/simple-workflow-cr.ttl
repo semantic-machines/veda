@@ -116,14 +116,14 @@ s-wf:f_t3_c2 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     v-wf:belongsTo s-wf:net_complex_route;
     v-wf:flowsInto s-wf:c2;
-    v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision (result, 'v-wf:DecisionAgreed') == false";
+    v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == false";
 .
 
 s-wf:f_t3_t4 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     v-wf:belongsTo s-wf:net_complex_route;
     v-wf:flowsInto s-wf:t4;
-    v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision (result, 'v-wf:DecisionAgreed') == true";
+    v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true";
 .
 
 s-wf:t4 a v-wf:Task;
@@ -143,14 +143,14 @@ s-wf:f_t4_c2 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     v-wf:belongsTo s-wf:net_complex_route;
     v-wf:flowsInto s-wf:c2;
-    v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision (result, 'v-wf:DecisionAgreed') == false";
+    v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == false";
 .
 
 s-wf:f_t4_t5 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     v-wf:belongsTo s-wf:net_complex_route;
     v-wf:flowsInto s-wf:t5;
-    v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision (result, 'v-wf:DecisionAgreed') == true";
+    v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true";
 .
 
 s-wf:t5 a v-wf:Task;
@@ -170,14 +170,14 @@ s-wf:f_t5_c2 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     v-wf:belongsTo s-wf:net_complex_route;
     v-wf:flowsInto s-wf:c2;
-    v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision (result, 'v-wf:DecisionAgreed') == false";
+    v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == false";
 .
 
 s-wf:f_t5_t6 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     v-wf:belongsTo s-wf:net_complex_route;
     v-wf:flowsInto s-wf:t6;
-    v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision (result, 'v-wf:DecisionAgreed') == true";
+    v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true";
 .
 
 s-wf:t6 a v-wf:Task;
@@ -200,13 +200,13 @@ s-wf:f_t6_c2 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     v-wf:belongsTo s-wf:net_complex_route;
     v-wf:flowsInto s-wf:c2;
-    v-wf:predicate "is_all_executors_taken_decision (result, 'v-wf:DecisionSign') == false"^^xsd:string.
+    v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionSign')) == false"^^xsd:string.
 
 s-wf:f_t6_t7 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     v-wf:belongsTo s-wf:net_complex_route;
     v-wf:flowsInto s-wf:t7;
-    v-wf:predicate "is_all_executors_taken_decision (result, 'v-wf:DecisionSign') == true"^^xsd:string.
+    v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionSign')) == true"^^xsd:string.
 
 s-wf:t7 a v-wf:Task;
     rdfs:isDefinedBy s-wfc: ;
@@ -225,31 +225,31 @@ s-wf:f_t7_c2 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     v-wf:belongsTo s-wf:net_complex_route;
     v-wf:flowsInto s-wf:c2;
-    v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision (result, 'v-wf:DecisionApprove') == false".
+    v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionApprove')) == false".
 
 s-wf:f_t7_texamin a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     rdfs:label ""^^xsd:string;
     v-wf:flowsInto s-wf:t_examination;
-    v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision (result, 'v-wf:DecisionApprove') == true".
+    v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionApprove')) == true".
 
 s-wf:f_t7_treview a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     rdfs:label ""^^xsd:string;
     v-wf:flowsInto s-wf:t_review;
-    v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision (result, 'v-wf:DecisionApprove') == true".
+    v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionApprove')) == true".
 
 s-wf:f_t7_tinstr a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     rdfs:label ""^^xsd:string;
     v-wf:flowsInto s-wf:t_instruction;
-    v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision (result, 'v-wf:DecisionApprove') == true".
+    v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionApprove')) == true".
 
 s-wf:f_t7_tautoinstr a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     rdfs:label ""^^xsd:string;
     v-wf:flowsInto s-wf:t_auto_instruction;
-    v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision (result, 'v-wf:DecisionApprove') == true".
+    v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionApprove')) == true".
 
 s-wf:t8 a v-wf:Task;
 	rdfs:isDefinedBy s-wfc: ;
@@ -294,27 +294,27 @@ s-wf:oc1 a v-wf:OutputCondition;
 s-wf:f_t8_t3 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     v-wf:flowsInto s-wf:t3;
-    v-wf:predicate "is_all_executors_taken_decision (result, 'v-wf:DecisionGoCoordination1') == true"^^xsd:string.
+    v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionGoCoordination1')) == true"^^xsd:string.
 
 s-wf:f_t8_t4 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     v-wf:flowsInto s-wf:t4;
-    v-wf:predicate "is_all_executors_taken_decision (result, 'v-wf:DecisionGoCoordination2') == true"^^xsd:string.
+    v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionGoCoordination2')) == true"^^xsd:string.
 
 s-wf:f_t8_t5 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     v-wf:flowsInto s-wf:t5;
-    v-wf:predicate "is_all_executors_taken_decision (result, 'v-wf:DecisionGoCoordination3') == true"^^xsd:string.
+    v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionGoCoordination3')) == true"^^xsd:string.
 
 s-wf:f_t8_t6 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     v-wf:flowsInto s-wf:t6;
-    v-wf:predicate "is_all_executors_taken_decision (result, 'v-wf:DecisionGoSign') == true"^^xsd:string.
+    v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionGoSign')) == true"^^xsd:string.
 
 s-wf:f_t8_t7 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
     v-wf:flowsInto s-wf:t7;
-    v-wf:predicate "is_all_executors_taken_decision (result, 'v-wf:DecisionGoReview') == true"^^xsd:string.
+    v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionGoReview')) == true"^^xsd:string.
 
 s-wf:f_t2_t3 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
