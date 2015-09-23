@@ -6,36 +6,36 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
     var new_work_item = {
         '@': new_uri,
         'rdf:type': [
-            {
-                data: 'v-wf:WorkItem',
-                type: _Uri
+        {
+            data: 'v-wf:WorkItem',
+            type: _Uri
         }],
         'v-wf:forProcess': [
-            {
-                data: process_uri,
-                type: _Uri
+        {
+            data: process_uri,
+            type: _Uri
         }],
         'v-wf:forNetElement': [
-            {
-                data: net_element_uri,
-                type: _Uri
+        {
+            data: net_element_uri,
+            type: _Uri
         }]
     };
 
     if (parent_uri !== null)
     {
         new_work_item['v-wf:previousWorkItem'] = [
-            {
-                data: parent_uri,
-                type: _Uri
-   }];
+        {
+            data: parent_uri,
+            type: _Uri
+        }];
     }
 
     //print("[WORKFLOW]:create work item:" + new_uri);
 
     put_individual(ticket, new_work_item, _event_id);
 
-	addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_uri); 
+    addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_uri);
 
     return new_uri;
 }
@@ -46,26 +46,26 @@ function Context(_src_data, _ticket)
     this.src_data = _src_data;
     this.ticket = _ticket;
 
-    this.getExecutor = function ()
+    this.getExecutor = function()
     {
         return this.src_data['v-wf:executor'];
     };
 
-    this.get_results = function ()
+    this.get_results = function()
     {
         return this.src_data;
     };
 
-    this.executor_taken_decision = function ()
-    {		
-            return [
-                {
-                    'data': this.src_data[0].result,
-                    'type': _Uri
-            }];
-	}
+    this.executor_taken_decision = function()
+    {
+        return [
+        {
+            'data': this.src_data[0].result,
+            'type': _Uri
+        }];
+    }
 
-    this.if_all_executors_taken_decision = function (true_decision, false_decision)
+    this.if_all_executors_taken_decision = function(true_decision, false_decision)
     {
         var count_agreed = 0;
         for (var i = 0; i < this.src_data.length; i++)
@@ -80,61 +80,61 @@ function Context(_src_data, _ticket)
         if (count_agreed == this.src_data.length)
         {
             return [
-                {
-                    'data': true_decision,
-                    'type': _Uri
+            {
+                'data': true_decision,
+                'type': _Uri
             }];
         }
         else
         {
             return [
-                {
-                    'data': false_decision,
-                    'type': _Uri
+            {
+                'data': false_decision,
+                'type': _Uri
             }];
         }
     };
 
-    this.getLocalVariableValue = function (var_name)
+    this.getLocalVariableValue = function(var_name)
     {
-		print("@@@getLocalVariableValue: Context.src_data=", toJson(this.src_data));		
-        print ("@@@ var_name=", var_name);
-        
+        print("@@@getLocalVariableValue: Context.src_data=", toJson(this.src_data));
+        print("@@@ var_name=", var_name);
+
         if (this.src_data.length > 1)
-        {       
-			print ("@@@1"); 
-			var data = this.src_data;
-			var res = [];
-			for (var i in data)
-			{
-			print ("@@@2"); 
-							var value = data[i][var_name];
-				if (value)
-					res.push (value);
-			}	
-			print ("@@@3 res=", toJson (res)); 
-			
-			return res;
-		}	
+        {
+            print("@@@1");
+            var data = this.src_data;
+            var res = [];
+            for (var i in data)
+            {
+                print("@@@2");
+                var value = data[i][var_name];
+                if (value)
+                    res.push(value);
+            }
+            print("@@@3 res=", toJson(res));
+
+            return res;
+        }
         else
         {
-			return this.src_data[var_name];
-		}				
+            return this.src_data[var_name];
+        }
     };
 
-    this.getVariableValue = function (var_name)
+    this.getVariableValue = function(var_name)
     {
         return this.getVariableValueIO(var_name, 'v-wf:inVars');
     }
 
-    this.getOutVariableValue = function (var_name)
+    this.getOutVariableValue = function(var_name)
     {
-		//print("@@@getOutVariableValue: Context.src_data=", toJson(this.src_data));		
+        //print("@@@getOutVariableValue: Context.src_data=", toJson(this.src_data));		
         //print ("CONTEXT::get out vars, var_name=", var_name);
         return this.getVariableValueIO(var_name, 'v-wf:outVars');
     }
 
-    this.getVariableValueIO = function (var_name, io)
+    this.getVariableValueIO = function(var_name, io)
     {
         //        	print ("CONTEXT::getVariableValueIO src_data=" + toJson (this.src_data));
         var variables = this.src_data[io];
@@ -164,7 +164,7 @@ function Context(_src_data, _ticket)
         //print("[WORKFLOW]:getVariableValue: work_item=" + this.src_data['@'] + ", var_name=" + var_name + ", val=undefined");
     };
 
-    this.print_variables = function (io)
+    this.print_variables = function(io)
     {
         var variables = this.src_data[io];
 
@@ -183,16 +183,16 @@ function Context(_src_data, _ticket)
         }
     };
 
-    this.get_result_value = function (field1, type1)
+    this.get_result_value = function(field1, type1)
     {
         if (this.src_data && this.src_data.length > 0)
         {
             var rr = this.src_data[0][field1];
             if (rr)
                 return [
-                    {
-                        'data': rr,
-                        'type': type1
+                {
+                    'data': rr,
+                    'type': type1
                 }];
             else
                 return null;
@@ -200,32 +200,32 @@ function Context(_src_data, _ticket)
     };
 }
 
-function get_new_variable (name, value)
+function get_new_variable(name, value)
 {
     var new_uri = genUri();
     var new_variable = {
         '@': new_uri,
         'rdf:type': [
-            {
-                data: 'v-wf:Variable',
-                type: _Uri
-            }],
+        {
+            data: 'v-wf:Variable',
+            type: _Uri
+        }],
         'v-wf:variableName': [
-            {
-                data: variable_name,
-                type: _String
-            }]
+        {
+            data: variable_name,
+            type: _String
+        }]
     };
 
     if (value)
         new_variable['v-wf:variableValue'] = value;
-	
-	return new_variable;
-}	
 
-function store_items_and_set_minimal_rights (ticket, data)
+    return new_variable;
+}
+
+function store_items_and_set_minimal_rights(ticket, data)
 {
-	var ids = [];
+    var ids = [];
     for (var i = 0; i < data.length; i++)
     {
         put_individual(ticket, data[i], _event_id);
@@ -236,15 +236,15 @@ function store_items_and_set_minimal_rights (ticket, data)
         });
         addRight(ticket, [can_read], "v-wf:WorkflowReadUser", data[i]['@']);
     }
-	return ids; 
-}	
+    return ids;
+}
 
 function generate_variable(ticket, def_variable, value, _process, _task, _local)
 {
     var variable_name = getFirstValue(def_variable['v-wf:varDefineName']);
 
     //print("[WORKFLOW][generate_variable]: variable_define_name=" + variable_name);
-	var new_variable = get_new_variable (variable_name, value)
+    var new_variable = get_new_variable(variable_name, value)
 
     var variable_scope = getUri(def_variable['v-wf:varDefineScope']);
     if (variable_scope)
@@ -281,10 +281,10 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
             }
 
             new_variable['v-wf:variableScope'] = [
-                {
-                    data: scope,
-                    type: _Uri
-				}];
+            {
+                data: scope,
+                type: _Uri
+            }];
         }
     }
 
@@ -346,7 +346,7 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
                     data: new_variable['@'],
                     type: _Uri
                 });
-   				addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);                    
+                addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);
 
             }
             else
@@ -454,22 +454,22 @@ function create_new_journal(ticket, new_journal_uri, process_uri, label)
     var new_journal = {
         '@': new_journal_uri,
         'rdf:type': [
-            {
-                data: 'v-s:Journal',
-                type: _Uri
-          }],
+        {
+            data: 'v-s:Journal',
+            type: _Uri
+        }],
         'v-wf:onProcess': [
-            {
-                data: process_uri,
-                type: _Uri
-          }]
+        {
+            data: process_uri,
+            type: _Uri
+        }]
     };
 
     if (label)
         new_journal['rdfs:label'] = label;
 
     put_individual(ticket, new_journal, _event_id);
-    
+
     return new_journal_uri;
 }
 
@@ -524,16 +524,16 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
         var new_process = {
             '@': new_process_uri,
             'rdf:type': [
-                {
-                    data: 'v-wf:Process',
-                    type: _Uri
-      }],
+            {
+                data: 'v-wf:Process',
+                type: _Uri
+            }],
             'v-wf:instanceOf': use_net,
             'v-wf:parentWorkOrder': [
-                {
-                    data: parent_process,
-                    type: _Uri
-      }]
+            {
+                data: parent_process,
+                type: _Uri
+            }]
         };
 
         var msg = "экземпляр маршрута :" + getFirstValue(_started_net['rdfs:label']) + ", запущен из " + getFirstValue(parent_net['rdfs:label'])
@@ -542,10 +542,10 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
             msg += ", для " + getUri(f_executor);
 
         new_process['rdfs:label'] = [
-            {
-                data: msg,
-                type: _String
-                  }];
+        {
+            data: msg,
+            type: _String
+        }];
 
         // возьмем входные переменные WorkItem	и добавим их процессу
         if (f_inVars)
@@ -563,27 +563,27 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
         var new_journal_record = newJournalRecord(journal_uri);
 
         new_journal_record['rdf:type'] = [
-            {
-                data: 'v-wf:SubProcessStarted',
-                type: _Uri
-     }];
+        {
+            data: 'v-wf:SubProcessStarted',
+            type: _Uri
+        }];
         new_journal_record['rdfs:label'] = [
-            {
-                data: 'запущен подпроцесс',
-                type: _String
-     }];
+        {
+            data: 'запущен подпроцесс',
+            type: _String
+        }];
         new_journal_record['v-s:subJournal'] = [
-            {
-                data: getJournalUri(new_process_uri),
-                type: _Uri
-     }];
+        {
+            data: getJournalUri(new_process_uri),
+            type: _Uri
+        }];
         logToJournal(ticket, journal_uri, new_journal_record);
 
         document['v-wf:isProcess'] = [
-            {
-                data: new_process_uri,
-                type: _Uri
-     }];
+        {
+            data: new_process_uri,
+            type: _Uri
+        }];
         put_individual(ticket, document, _event_id);
 
     }
