@@ -1280,9 +1280,9 @@ v-wf:ProcessPropsTemplate
 		<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
 		<ol><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ol>
 	</div>
-	<div id="localVar">
-		<em><h5 about="v-wf:localVar" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:localVar" template="v-wf:VariableTemplate"></li></ol>
+	<div id="localVars">
+		<em><h5 about="v-wf:localVars" property="rdfs:label"></h5></em>
+		<ol><li rel="v-wf:localVars" template="v-wf:VariableTemplate"></li></ol>
 		<hr>
 	</div>	
 </div>
