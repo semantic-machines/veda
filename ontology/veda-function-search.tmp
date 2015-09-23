@@ -1,0 +1,402 @@
+# baseURI: http://semantic-machines.com/veda/veda-ui
+# imports: http://semantic-machines.com/veda/veda-schema
+# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+# imports: http://www.w3.org/2000/01/rdf-schema#
+# imports: http://www.w3.org/2002/07/owl
+
+# c14n-version: 3
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+
+<http://semantic-machines.com/veda/veda-function-search>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system function 'Search' ontology"@en ;
+  rdfs:label "Онтология функции 'Поиск' системы Веда"@ru ;
+  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
+  owl:imports <http://semantic-machines.com/veda/veda-ui> ;
+  owl:imports rdf: ;
+  owl:imports rdfs: ;
+  owl:imports <http://www.w3.org/2002/07/owl> ;
+#  owl:versionInfo "0.2" ;
+.
+
+########## SEARCH FUNCTION ###########
+
+v-fs:FunctionSearch
+  rdf:type owl:Class ;
+  rdfs:label "Function Search"@en ;
+  rdfs:label "Функция Поиск"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-fs:SearchRequest
+  rdf:type owl:Class ;
+  rdfs:label "Search request"@en ;
+  rdfs:label "Поисковый запрос"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-fs:Search
+  rdf:type v-fs:FunctionSearch ;
+  rdfs:label "Search"@en ;
+  rdfs:label "Найти"@ru ;
+.
+v-fs:SearchRequest1
+  rdf:type v-fs:SearchRequest ;
+  rdfs:label "Search request 1"@en ;
+  rdfs:label "Поисковый запрос 1"@ru ;
+  v-fs:manualQuery "'rdf:type'=='v-s:Person'"^^xsd:string ;
+.
+v-fs:manualQuery
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "query"@en ;
+  rdfs:label "запрос"@ru ;
+  rdfs:domain v-fs:SearchRequest ;
+  rdfs:range xsd:string ;
+.
+v-fs:typedQuery
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "typed query"@en ;
+  rdfs:label "типизированный запрос"@ru ;
+  rdfs:domain v-fs:SearchRequest ;
+  rdfs:range xsd:string ;
+.
+v-fs:queryPrefix
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "query prefix"@en ;
+  rdfs:label "префикс запроса"@ru ;
+  rdfs:domain v-fs:SearchRequest ;
+  rdfs:range xsd:string ;
+.
+v-fs:sortOrder
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "sort order"@en ;
+  rdfs:label "порядок сортировки"@ru ;
+  rdfs:domain v-fs:SearchRequest ;
+  rdfs:range xsd:string ;
+.
+v-fs:databases
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "databases"@en ;
+  rdfs:label "базы данных"@ru ;
+  rdfs:domain v-fs:SearchRequest ;
+  rdfs:range xsd:string ;
+.
+v-fs:reopen
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "reopen"@en ;
+  rdfs:label "открыть заново"@ru ;
+  rdfs:domain v-fs:SearchRequest ;
+  rdfs:range xsd:boolean ;
+.
+v-fs:typeToSearch
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "тип искомого объекта"@ru ;
+  rdfs:label "type of object to search"@en ;
+  rdfs:domain v-fs:FunctionSearch ;
+  rdfs:range owl:Class ;
+.
+v-fs:TypeToSearchSpec
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:Search"@ru ;
+  rdfs:label "v-fs:typeToSearch property specification for class v-fs:Search"@en ;
+  v-ui:forClass v-fs:SearchRequest ;
+  v-ui:forProperty v-fs:typeToSearch ;
+  v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
+  v-ui:tooltip "Link to instance of Class class"@en ;
+  v-ui:queryPrefix "('rdf:type'=='owl:Class')"^^xsd:string ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+.
+v-fs:ManualQuerySpec
+  rdf:type v-ui:StringPropertySpecification ;
+  rdfs:label "Спецификация свойства v-fs:manualQuery для класса v-fs:SearchRequest"@ru ;
+  rdfs:label "v-fs:manualQuery property specification for class v-fs:SearchRequest"@en ;
+  v-ui:forClass v-fs:SearchRequest ;
+  v-ui:forProperty v-fs:manualQuery ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:minCardinality "0"^^xsd:integer ;
+  v-ui:tooltip "Введите запрос"@ru ;
+  v-ui:tooltip "Enter query"@en ;
+.
+v-fs:LabelSpec
+  rdf:type v-ui:StringPropertySpecification ;
+  rdfs:label "Спецификация свойства rdfs:label для класса v-fs:SearchRequest"@ru ;
+  rdfs:label "rdfs:label property specification for class v-fs:SearchRequest"@en ;
+  v-ui:forClass v-fs:SearchRequest ;
+  v-ui:forProperty rdfs:label ;
+  v-ui:tooltip "Обязательно. Строка произвольной длины."@ru ;
+  v-ui:tooltip "Mandatory. Arbitrary length string."@en ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:minCardinality "1"^^xsd:integer ;
+.
+v-fs:Request
+  rdf:type v-b:Bundle ;
+  rdfs:label "Request"@en ;
+  rdfs:label "Запрос"@ru ;
+.
+v-fs:Params
+  rdf:type v-b:Bundle ;
+  rdfs:label "Parameters"@en ;
+  rdfs:label "Параметры"@ru ;
+.
+v-fs:Find
+  rdf:type v-b:Bundle ;
+  rdfs:label "Find"@en ;
+  rdfs:label "Найти"@ru ;
+.
+v-fs:Results
+  rdf:type v-b:Bundle ;
+  rdfs:label "Results"@en ;
+  rdfs:label "Результаты"@ru ;
+.
+v-fs:Empty
+  rdf:type v-b:Bundle ;
+  rdfs:label "Empty!"@en ;
+  rdfs:label "Пусто!"@ru ;
+.
+v-fs:NothingFound
+  rdf:type v-b:Bundle ;
+  rdfs:label "Nothing found for your request. Please refine the query."@en ;
+  rdfs:label "По Вашему запросу ничего не найдено. Пожалуйста, уточните запрос."@ru ;
+.
+v-fs:SearchTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Search class template"@en ;
+  rdfs:label "Шаблон класса поиск"@ru ;
+  v-ui:forClass v-fs:FunctionSearch ;
+  v-ui:template """
+	<div class="container-fluid">
+		<div id="holder"></div>
+		<hr>
+		<h3 about="v-b:Registries" property="rdfs:label"></h3>
+		<ol id="regs"></ol>
+	</div>
+	<script>
+		var self = individual,
+			holder = $("#holder", template);
+		self.request = new veda.IndividualModel();
+		self.request["rdf:type"] = [ new veda.IndividualModel("v-fs:SearchRequest") ];
+		self.request.present(holder, undefined, "edit");
+		
+		var regsHolder = $("#regs", template),
+			asp = veda.user.aspect,
+			regs = asp["v-asp:hasRegistry"];
+		if (regs) {
+			regs.map( function (reg) {
+				var cont = $("<li>").appendTo(regsHolder);
+				reg.present(cont, veda.ontology["v-ui:LabelBlockLinkTemplate"]);
+			});
+		}
+	</script>
+"""
+v-fs:SearchRequestModel
+  rdf:type v-s:ClassModel ;
+  rdfs:label "v-fs:SearchRequest class model"@en ;
+  rdfs:label "Модель класса v-fs:SearchRequest"@ru ;
+  v-ui:forClass v-fs:SearchRequest ;
+  v-s:script """
+	var self = individual;
+	self.q = self.hasValue("v-fs:manualQuery")       ? self["v-fs:manualQuery"][0] : 
+			 self.hasValue("v-fs:typedQuery")        ? self["v-fs:typedQuery"][0]  : undefined;
+	self.sort = self.hasValue("v-fs:sortOrder")      ? self["v-fs:sortOrder"][0]   : undefined;
+	self.databases = self.hasValue("v-fs:databases") ? self["v-fs:databases"][0]   : undefined;
+	self.reopen = self.hasValue("v-fs:reopen")       ? self["v-fs:reopen"][0]      : false;
+	
+	self.on("individual:propertyModified", function (property_uri, values) {
+		switch (property_uri) {
+			case "v-fs:manualQuery": 
+			case "v-fs:typedQuery" : self.q = values.length         ? values[0].toString() : undefined; break;
+			case "v-fs:sortOrder"  : self.sort = values.length      ? values[0].toString() : undefined; break;
+			case "v-fs:databases"  : self.databases = values.length ? values[0].toString() : undefined; break;
+			case "v-fs:reopen"     : self.reopen = values.length    ? values[0].toString() : undefined; break;
+		}
+	});
+	self.result  = [];
+	self.count  = 0;
+	self.selected = [];
+	self.search = function () {
+		self.trigger("beforeSearch");
+		self.result = query(veda.ticket, self.q, self.sort, self.databases, self.reopen);
+		self.count = self.result.length;
+		self.trigger("afterSearch");
+		return self.result;
+	};
+	// Search if query defined
+	if (self.q) { self.search(self.q) };
+  """
+.
+v-fs:SearchRequestTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Search class template"@en ;
+  rdfs:label "Шаблон класса поиск"@ru ;
+  v-ui:forClass v-fs:SearchRequest ;
+  v-ui:template """
+<div role="tabpanel">
+	<h3><span about="v-fs:Request" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
+	<!-- Nav tabs -->
+	<ul class="nav nav-pills" role="tablist">
+		<li role="presentation" class="active"><a id="params-pill" href="#params" about="v-fs:Params" property="rdfs:label" aria-controls="params" role="tab" data-toggle="tab"></a></li>
+		<li role="presentation"><a id="results-pill" href="#results" aria-controls="results" role="tab" data-toggle="tab"><span href="#params" about="v-fs:Results" property="rdfs:label"></span> <span class="badge" id="results-count">0</span></a></li>
+	</ul>
+	<br />
+	<!-- Tab panes -->
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active" id="params">
+			<div class="row">
+				<div class="col-md-10 col-sm-8">
+					<div class="well">
+						<div class="container-fluid">
+							<form role="form">
+								<div class="form-group">
+									<div class="input-group">
+										<veda-control id="manual" type="string" property="v-fs:manualQuery"></veda-control>
+										<span class="input-group-btn">
+											<button type="submit" id="submit" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
+										</span>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+					<veda-control rel="v-fs:typeToSearch" type="link" class="fulltext dropdown"></veda-control>
+					<br />
+				</div>
+				<div class="col-md-2 col-sm-4" style="border-left: 1px solid lightgray;">
+					Управление запросом
+					<div><strong property="rdfs:label" class="view -edit"></strong></div>
+					<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
+					<br>
+					<div>
+						<button type="button" class="action btn btn-xs btn-primary view -edit" id="edit">Редактировать</button>
+						<button type="button" class="action btn btn-xs btn-success -view edit" id="save">Сохранить</button>
+						<button type="button" class="action btn btn-xs btn-link view -edit" id="delete">Удалить</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div role="tabpanel" class="tab-pane" id="results">
+			<div class="container-fluid" id="search-results">
+				<ol id="results-list"></ol>
+				<hr/>
+				<div class="text-center">
+					<ul class="pagination" id="pager"></ul>
+					<br />
+				</div>
+			</div>
+		</div>
+		<div id="not-found" class="alert alert-warning" style="display: none">
+			<strong about="v-fs:Empty" property="rdfs:label"></strong> <span about="v-fs:NothingFound" property="rdfs:label"></span>
+		</div>
+	</div>
+</div>
+<script>
+	var self = individual,
+		asp = veda.user.aspect,
+		notFound = $("#not-found", template),
+		params = $("a#params-pill", template),
+		results = $("a#results-pill", template),
+		pager = $("#pager", template),
+		resultsList = $("#results-list", template),
+		resultsCount = $("#results-count", template),
+		submit = $("#submit", template);
+	
+	// Autofocus on query field
+	params.on("shown.bs.tab", function () {
+		if (!self.hasValue("v-fs:typedQuery")) {
+			$("#manual", template).trigger("veda_focus");
+		}
+	});
+	params.trigger("shown.bs.tab");
+	
+	// Enter on query field triggers search
+	submit.click( function (e) {
+		e.preventDefault();
+		self.search();
+	});
+	
+	// Define and clean handlers
+	self.on("beforeSearch", beforeSearch);
+	self.on("afterSearch", afterSearch);
+	self.on("individual:afterSave", asHandler);	
+	template.on("remove", function () {
+		self.off("beforeSearch", beforeSearch);
+		self.off("afterSearch", afterSearch);
+		self.off("individual:afterSave", asHandler);	
+	});
+	
+	// Present results if query defined
+	if (self.q) { self.trigger("afterSearch"); }
+	
+	// Update user aspect when search request was saved
+	function asHandler() {
+		if (self["v-s:deleted"][0] == true) {
+			asp["v-asp:hasRegistry"] = asp["v-asp:hasRegistry"].filter( function (i) { return i.id !== self.id;});
+		} else if (
+			!asp["v-asp:hasRegistry"].filter( function (i) {return i.id === self.id;}).length
+		) {
+			asp["v-asp:hasRegistry"] = asp["v-asp:hasRegistry"].concat(self);
+		}
+		asp.save();
+	}
+	
+	// Present results
+	function beforeSearch() {
+		notFound.hide();
+	}
+	function afterSearch() {
+		resultsList.empty();
+		pager.empty();
+		resultsCount.text(self.count);
+		
+		// Nothing found
+		if (self.count === 0) {
+			params.tab("show");
+			notFound.show();
+
+		// Render results
+		} else {
+			self.page = self.page || 0;
+			if (self.count < self.page * veda.user.displayedElements) {
+				self.page = Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0) - 1;
+			}
+			resultsList.attr("start", self.page * veda.user.displayedElements + 1);
+			results.tab("show");
+			
+			for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
+				(function (i) {
+					setTimeout(function () {
+						var container = $("<li>").appendTo(resultsList);
+						var result = new veda.IndividualModel( self.result[i] );
+						result.present(container, new veda.IndividualModel("v-ui:ClassNameLabelTemplate"));
+					}, 0);
+				}(i));
+			}
+			
+			// Show pager
+			for (var pg = 0; pg < Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0); pg++) {
+				var $pg = $("<li/>")
+					.attr("class", pg === self.page ? "active" : "")
+					.appendTo(pager);
+				var $a = $("<a/>", {
+					"text" : pg + 1,
+					"click": (function (pg) {
+						if (pg === self.page) return $.noop;
+						return function (event) {
+							event.preventDefault();
+							self.page = pg;
+							self.trigger("afterSearch");
+						}
+					})(pg),
+					"href" : ""
+				}).appendTo($pg);
+			}
+		}
+	}
+</script>
+  """
+.
+
