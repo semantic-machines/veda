@@ -2,6 +2,8 @@
 
 function down_right_and_store(task)
 {
+	try
+	{
     var doc_id = task.getVariableValue('docId');
 
     if (doc_id)
@@ -12,47 +14,48 @@ function down_right_and_store(task)
         //print("[WORKFLOW]:down_right_and_store, find=", net_doc_id);
 
     }
-    return {
-        'right': [
-            {
-                data: 'acl1',
-                type: _String
-                }]
-    };
+    return [get_new_variable ('right', newStr ('acl1'))];
+	} 
+	catch(e) 
+	{
+		print(e.stack);    
+	}	
 }
 
 function restore_right(task)
 {
+	try
+	{
     //print("[WORKFLOW]:restore_right, task=", toJson(task));
     //print("[WORKFLOW]:restore_right function RESTORE RIGHT IS NOT IMPLIMENTED");
     var right = task.getVariableValue('originalRights');
     //print("[WORKFLOW]:restore_right ", toJson(right));
-    return {
-        'result': [
-            {
-                data: 'Ok',
-                type: _String
-                }]
-    };
+    return [get_new_variable ('result', newStr ('Ok'))];
+
+	} 
+	catch(e) 
+	{
+		print(e.stack);    
+	}	
 }
 
 function is_exists_net_executor (process)
 {
-	var res = process.getExecutor () !== undefined;
-	
-	    var res_out = {
-        'res':
-        {
-            data: res,
-            type: _Bool
-        }
-    };
-
-    return res_out;
+	try
+	{
+	 var res = process.getExecutor () !== undefined;	
+	 return [get_new_variable ('res', newBool (res))];
+	} 
+	catch(e) 
+	{
+		print(e.stack);    
+	}	
 }
 
 function get_type_of_docId(task)
 {
+	try
+	{
     var res = '?';
 
     if (task)
@@ -70,19 +73,19 @@ function get_type_of_docId(task)
 
     }
 
-    var res_out = {
-        'res':
-        {
-            data: res,
-            type: _Uri
-        }
-    };
-	
-    return res_out;
+	 return [get_new_variable ('res', newUri (res))];
+	} 
+	catch(e) 
+	{
+		print(e.stack);    
+	}	
+    
 }
 
 function is_in_docflow_and_set_if_true(task)
 {
+	try
+	{
     var res = false;
 
     if (task)
@@ -122,15 +125,13 @@ function is_in_docflow_and_set_if_true(task)
 
     }
 
-    var res_out = {
-        'res':
-        {
-            data: res,
-            type: _Bool
-        }
-    };
-
-    return res_out;
+	 return [get_new_variable ('res', newUri (res))];
+	} 
+	catch(e) 
+	{
+		print(e.stack);    
+	}	
+    
 }
 
 function distribution(process, task)
@@ -139,6 +140,8 @@ function distribution(process, task)
 
 function create_use_transformation (task)
 {
+	try
+	{
 	var new_items_uri = [];
 
     if (task)
@@ -170,8 +173,11 @@ function create_use_transformation (task)
 		}
 	}		
 	
-	var res_out = {
-		'res': new_items_uri
-    };
-    return res_out;	
+	return [get_new_variable ('res', new_items_uri)];
+	} 
+	catch(e) 
+	{
+		print(e.stack);    
+	}	
+    
 }	

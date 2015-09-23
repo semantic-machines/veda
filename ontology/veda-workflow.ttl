@@ -1624,6 +1624,15 @@ v-wf:inVars
 	rdfs:range v-wf:Variable ;
 .
 
+v-wf:localVars
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "локальные переменные"@ru ;
+	rdfs:domain v-wf:Process ;
+	rdfs:domain v-wf:WorkItem ;
+	rdfs:range v-wf:Variable ;
+.
+
 v-wf:outVars
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
