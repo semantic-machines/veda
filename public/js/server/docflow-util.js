@@ -1,6 +1,6 @@
 "use strict";
 
-function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _event_id)
+function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _event_id, isTrace)
 {
     try
     {
@@ -23,6 +23,9 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
                 type: _Uri
             }]
         };
+
+		if (isTrace)
+			new_work_item['v-wf:isTrace'] = newBool(true);
 
         if (parent_uri !== null)
         {
@@ -778,4 +781,53 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
         print(e.stack);
     }
 
+}
+
+function create_new_subjournal (parent_uri, net_element_impl, label)
+{
+	    var isTrace = net_element_impl['v-wf:isTrace'];
+		if (isTrace && getFirstValue(isTrace) == true)
+		{
+			var new_sub_journal_uri = getTraceJournalUri(net_element_impl['@']);
+            create_new_journal(ticket, new_sub_journal_uri, label);
+
+            var journal_uri = getTraceJournalUri(parent_uri);
+            var new_journal_record = newJournalRecord(journal_uri);
+
+            new_journal_record['rdf:type'] = [
+            {
+                data: 'v-wf:SubProcessStarted',
+                type: _Uri
+            }];
+            new_journal_record['rdfs:label'] = [
+            {
+                data: 'запущен элемент сети',
+                type: _String
+            }];
+            new_journal_record['v-s:subJournal'] = [
+            {
+                data: new_sub_journal_uri,
+                type: _Uri
+            }];
+            logToJournal(ticket, journal_uri, new_journal_record);
+            
+            return new_sub_journal_uri;	
+		}
+		else
+		{
+			return undefined;
+		}
+}	
+
+function get_trace_journal(document, process)
+{
+    var isTrace = document['v-wf:isTrace'];
+    if (isTrace && getFirstValue(isTrace) == true)
+    {
+        return getTraceJournalUri(process['@']);
+    }
+    else
+    {
+        return undefined;
+    }
 }

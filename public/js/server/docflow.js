@@ -7,8 +7,6 @@ function prepare_decision_form(ticket, document)
 {
     try
     {
-        //print("[WORKFLOW][DF1] : ### ---------------------------- prepare_decision_form:" + document['@']);
-
         var decision_form = document;
 
         if (decision_form['v-wf:isCompleted'] && decision_form['v-wf:isCompleted'][0].data == true)
@@ -32,6 +30,8 @@ function prepare_decision_form(ticket, document)
         var forProcess_uri = getUri(work_item['v-wf:forProcess']);
         var _process = get_individual(ticket, forProcess_uri);
         if (!_process) return;
+
+		var trace_journal_uri = create_new_subjournal (forProcess_uri, work_item, "prepare_decision_form:" + decision_form['@'])
 
         //print("[WORKFLOW][DF1].2");
 
@@ -84,7 +84,7 @@ function prepare_work_order(ticket, document)
     try
     {
         var _work_order = document;
-        print("[WORKFLOW][WO.1] : ### ---------------------------- prepare_work_order:" + document['@']);
+
         var f_executor = document['v-wf:executor'];
         var executor = get_individual(ticket, getUri(f_executor));
         //if (!executor) return;
@@ -93,13 +93,15 @@ function prepare_work_order(ticket, document)
         var work_item = get_individual(ticket, f_forWorkItem);
         if (!work_item) return;
 
-        var f_inVars = work_item['v-wf:inVars'];
-        if (!f_inVars)
-            f_inVars = [];
-
         var forProcess_uri = getUri(work_item['v-wf:forProcess']);
         var _process = get_individual(ticket, forProcess_uri);
         if (!_process) return;
+
+		var trace_journal_uri = create_new_subjournal (forProcess_uri, _work_order, "prepare_work_order:" + _work_order['@'])
+
+        var f_inVars = work_item['v-wf:inVars'];
+        if (!f_inVars)
+            f_inVars = [];
 
         var f_process_inVars = _process['v-wf:inVars'];
 
@@ -479,7 +481,7 @@ function prepare_work_order(ticket, document)
                                     if (nextNetElement)
                                     {
                                         //print("[WORKFLOW][WO10] create next work item for =" + nextNetElement['@']);
-                                        var work_item_uri = create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id);
+                                        var work_item_uri = create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id, trace_journal_uri);
                                         workItemList.push(
                                         {
                                             data: work_item_uri,
@@ -507,7 +509,7 @@ function prepare_work_order(ticket, document)
                             if (nextNetElement)
                             {
                                 //print("[WORKFLOW][WO11] create next work item for =" + nextNetElement['@']);
-                                var work_item_uri = create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id);
+                                var work_item_uri = create_work_item(ticket, forProcess_uri, nextNetElement['@'], work_item['@'], _event_id, trace_journal_uri);
                                 workItemList.push(
                                 {
                                     data: work_item_uri,
@@ -551,32 +553,35 @@ function prepare_work_order(ticket, document)
  */
 function prepare_work_item(ticket, document)
 {
+    var work_item = document;
+
     try
     {
-        var work_item = document;
-        print("[WORKFLOW]:prepare_work_item ### --------------------------------- " + document['@']);
-        //print("[WORKFLOW][PWI]:----- NetElement:" + getUri(document['v-wf:forNetElement']) + ' -----');
+        var forProcess = getUri(work_item['v-wf:forProcess']);
+
+		var trace_journal_uri = create_new_subjournal (forProcess, work_item, "prepare_work_item:" + work_item['@'])
+
+		if (trace_journal_uri)
+			traceToJournal(ticket, trace_journal_uri, "prepare_work_item:", work_item['@']);
 
         var isCompleted = document['v-wf:isCompleted'];
-
         if (isCompleted)
         {
             if (isCompleted[0].data === true)
             {
-                //print("[WORKFLOW][PWI]:prepare_work_item, completed, exit");
+				if (trace_journal_uri)
+					traceToJournal(ticket, trace_journal_uri, "prepare_work_item:completed, exit", work_item['@']);
+
                 return;
             }
         }
 
-        var forProcess = getUri(document['v-wf:forProcess']);
         var _process = get_individual(ticket, forProcess);
         if (!_process) return;
 
         var instanceOf = getUri(_process['v-wf:instanceOf']);
         var _net = get_individual(ticket, instanceOf);
         if (!_net) return;
-
-        //print("[WORKFLOW]:Process=" + _process['@'] + ", net=" + _net['@']);
 
         var forNetElement = document['v-wf:forNetElement'];
         var netElement = get_individual(ticket, getUri(forNetElement));
@@ -860,7 +865,7 @@ function prepare_work_item(ticket, document)
                     var nextNetElement = get_individual(ticket, getUri(flowsInto));
                     if (!nextNetElement) continue;
 
-                    var work_item_uri = create_work_item(ticket, forProcess, nextNetElement['@'], document['@'], _event_id);
+                    var work_item_uri = create_work_item(ticket, forProcess, nextNetElement['@'], document['@'], _event_id, trace_journal_uri);
                     workItemList.push(
                     {
                         data: work_item_uri,
@@ -894,25 +899,13 @@ function prepare_work_item(ticket, document)
 
 }
 
-function get_trace_journal(document, process)
-{
-    var isTrace = document['v-wf:isTrace'];
-    if (isTrace && getFirstValue(isTrace) == true)
-    {
-        return getTraceJournalUri(process['@']);
-    }
-    else
-    {
-        return undefined;
-    }
-}
 /*
  *  обработка процесса
  */
 function prepare_process(ticket, document)
 {
     var _process = document;
-    var trace_journal_uri = get_trace_journal(document, document);
+    var trace_journal_uri = get_trace_journal(document, _process);
 
     if (trace_journal_uri)
         traceToJournal(ticket, trace_journal_uri, "prepare_process", document['@']);
@@ -971,7 +964,7 @@ function prepare_process(ticket, document)
 
             if (is_exist(net_consistsOf, 'rdf:type', 'v-wf:InputCondition'))
             {
-                var work_item_uri = create_work_item(ticket, document['@'], net_consistsOf['@'], null, _event_id);
+                var work_item_uri = create_work_item(ticket, document['@'], net_consistsOf['@'], null, _event_id, trace_journal_uri);
 
                 ////print("[PP05.2]");
 
@@ -1087,11 +1080,7 @@ function prepare_start_form(ticket, document)
     }];
 
     if (isTrace)
-        new_process['v-wf:isTrace'] = [
-        {
-            data: true,
-            type: _Bool
-        }];
+        new_process['v-wf:isTrace'] = newBool(true);
 
     if (new_vars.length > 0) new_process['v-wf:inVars'] = new_vars;
 
