@@ -2,42 +2,50 @@
 
 function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _event_id)
 {
-    var new_uri = genUri();
-    var new_work_item = {
-        '@': new_uri,
-        'rdf:type': [
-        {
-            data: 'v-wf:WorkItem',
-            type: _Uri
-        }],
-        'v-wf:forProcess': [
-        {
-            data: process_uri,
-            type: _Uri
-        }],
-        'v-wf:forNetElement': [
-        {
-            data: net_element_uri,
-            type: _Uri
-        }]
-    };
-
-    if (parent_uri !== null)
+    try
     {
-        new_work_item['v-wf:previousWorkItem'] = [
+        var new_uri = genUri();
+        var new_work_item = {
+            '@': new_uri,
+            'rdf:type': [
+            {
+                data: 'v-wf:WorkItem',
+                type: _Uri
+            }],
+            'v-wf:forProcess': [
+            {
+                data: process_uri,
+                type: _Uri
+            }],
+            'v-wf:forNetElement': [
+            {
+                data: net_element_uri,
+                type: _Uri
+            }]
+        };
+
+        if (parent_uri !== null)
         {
-            data: parent_uri,
-            type: _Uri
-        }];
+            new_work_item['v-wf:previousWorkItem'] = [
+            {
+                data: parent_uri,
+                type: _Uri
+            }];
+        }
+
+        //print("[WORKFLOW]:create work item:" + new_uri);
+
+        put_individual(ticket, new_work_item, _event_id);
+
+        addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_uri);
+
+        return new_uri;
+    }
+    catch (e)
+    {
+        print(e.stack);
     }
 
-    //print("[WORKFLOW]:create work item:" + new_uri);
-
-    put_individual(ticket, new_work_item, _event_id);
-
-    addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_uri);
-
-    return new_uri;
 }
 
 
@@ -200,163 +208,196 @@ function Context(_src_data, _ticket)
     };
 }
 
-function get_new_variable(name, value)
+function get_new_variable(variable_name, value)
 {
-    var new_uri = genUri();
-    var new_variable = {
-        '@': new_uri,
-        'rdf:type': [
-        {
-            data: 'v-wf:Variable',
-            type: _Uri
-        }],
-        'v-wf:variableName': [
-        {
-            data: variable_name,
-            type: _String
-        }]
-    };
+    try
+    {
+        var new_uri = genUri();
+        var new_variable = {
+            '@': new_uri,
+            'rdf:type': [
+            {
+                data: 'v-wf:Variable',
+                type: _Uri
+            }],
+            'v-wf:variableName': [
+            {
+                data: variable_name,
+                type: _String
+            }]
+        };
 
-    if (value)
-        new_variable['v-wf:variableValue'] = value;
+        if (value)
+            new_variable['v-wf:variableValue'] = value;
 
-    return new_variable;
+        return new_variable;
+    }
+    catch (e)
+    {
+        print(e.stack);
+        throw e;
+    }
+
 }
 
 function store_items_and_set_minimal_rights(ticket, data)
 {
-    var ids = [];
-    for (var i = 0; i < data.length; i++)
+    try
     {
-        put_individual(ticket, data[i], _event_id);
-        ids.push(
+        var ids = [];
+        for (var i = 0; i < data.length; i++)
         {
-            data: data[i]['@'],
-            type: _Uri
-        });
-        addRight(ticket, [can_read], "v-wf:WorkflowReadUser", data[i]['@']);
+            put_individual(ticket, data[i], _event_id);
+            ids.push(
+            {
+                data: data[i]['@'],
+                type: _Uri
+            });
+            addRight(ticket, [can_read], "v-wf:WorkflowReadUser", data[i]['@']);
+        }
+        return ids;
     }
-    return ids;
+    catch (e)
+    {
+        print(e.stack);
+    }
 }
 
 function generate_variable(ticket, def_variable, value, _process, _task, _local)
 {
-    var variable_name = getFirstValue(def_variable['v-wf:varDefineName']);
-
-    //print("[WORKFLOW][generate_variable]: variable_define_name=" + variable_name);
-    var new_variable = get_new_variable(variable_name, value)
-
-    var variable_scope = getUri(def_variable['v-wf:varDefineScope']);
-    if (variable_scope)
+    try
     {
-        var scope;
-        if (variable_scope == 'v-wf:Net')
-            scope = _process['@'];
+        var variable_name = getFirstValue(def_variable['v-wf:varDefineName']);
 
-        if (scope)
+        //print("[WORKFLOW][generate_variable]: variable_define_name=" + variable_name);
+        var new_variable = get_new_variable(variable_name, value)
+
+        var variable_scope = getUri(def_variable['v-wf:varDefineScope']);
+        if (variable_scope)
         {
-            // найдем среди локальных переменных процесса, такую переменную
-            // если нашли, то новая переменная должна перезаписать переменную процесса
-            var local_vars = _process['v-wf:inVars'];
-            if (local_vars)
+            var scope;
+            if (variable_scope == 'v-wf:Net')
+                scope = _process['@'];
+
+            if (scope)
             {
-                var find_local_var;
-                for (var i = 0; i < local_vars.length; i++)
+                // найдем среди локальных переменных процесса, такую переменную
+                // если нашли, то новая переменная должна перезаписать переменную процесса
+                var local_vars = _process['v-wf:inVars'];
+                if (local_vars)
                 {
-                    var local_var = get_individual(ticket, local_vars[i].data);
-                    if (!local_var) continue;
-
-                    var var_name = getFirstValue(local_var['v-wf:variableName']);
-                    if (!var_name) continue;
-
-                    if (var_name == variable_name)
+                    var find_local_var;
+                    for (var i = 0; i < local_vars.length; i++)
                     {
-                        find_local_var = local_var;
-                        break;
+                        var local_var = get_individual(ticket, local_vars[i].data);
+                        if (!local_var) continue;
+
+                        var var_name = getFirstValue(local_var['v-wf:variableName']);
+                        if (!var_name) continue;
+
+                        if (var_name == variable_name)
+                        {
+                            find_local_var = local_var;
+                            break;
+                        }
                     }
+
+                    if (find_local_var)
+                        new_variable['@'] = find_local_var['@'];
                 }
 
-                if (find_local_var)
-                    new_variable['@'] = find_local_var['@'];
+                new_variable['v-wf:variableScope'] = [
+                {
+                    data: scope,
+                    type: _Uri
+                }];
             }
-
-            new_variable['v-wf:variableScope'] = [
-            {
-                data: scope,
-                type: _Uri
-            }];
         }
+
+        //print("[WORKFLOW][generate_variable]: new variable: " + toJson(new_variable));
+
+        return new_variable;
+    }
+    catch (e)
+    {
+        print(e.stack);
+        throw e;
     }
 
-    //print("[WORKFLOW][generate_variable]: new variable: " + toJson(new_variable));
-
-    return new_variable;
 }
 
 function create_and_mapping_variables(ticket, mapping, _process, _task, _order, _local, f_store)
 {
-    //print("[WORKFLOW][create_and_mapping_variables]: mapping=" + toJson(mapping));
-    var new_vars = [];
-    if (!mapping) return [];
-
-    var process;
-    var task;
-    var order;
-    var local;
-
-    if (_process)
-        process = new Context(_process, ticket);
-
-    if (_task)
-        task = new Context(_task, ticket);
-
-    if (_order)
-        order = new Context(_order, ticket);
-
-    if (_local)
-        local = new Context(_local, ticket);
-
-    for (var i = 0; i < mapping.length; i++)
+    try
     {
-        var map = get_individual(ticket, mapping[i].data);
-        //print("[WORKFLOW][create_and_mapping_variables]: map=" + toJson(map));
-        var expression = getFirstValue(map['v-wf:mappingExpression']);
-        if (!expression) continue;
+        //print("[WORKFLOW][create_and_mapping_variables]: mapping=" + toJson(mapping));
+        var new_vars = [];
+        if (!mapping) return [];
 
-        print("[WORKFLOW][create_and_mapping_variables]: expression=" + expression);
-        var res1 = eval(expression);
-        print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson(res1));
-        if (!res1) continue;
+        var process;
+        var task;
+        var order;
+        var local;
 
-        var mapToVariable_uri = getUri(map['v-wf:mapToVariable']);
-        if (!mapToVariable_uri) continue;
+        if (_process)
+            process = new Context(_process, ticket);
 
-        var def_variable = get_individual(ticket, mapToVariable_uri);
-        if (!def_variable) continue;
+        if (_task)
+            task = new Context(_task, ticket);
 
-        var new_variable = generate_variable(ticket, def_variable, res1, _process, _task, _local);
-        if (new_variable)
+        if (_order)
+            order = new Context(_order, ticket);
+
+        if (_local)
+            local = new Context(_local, ticket);
+
+        for (var i = 0; i < mapping.length; i++)
         {
-            if (f_store == true)
-            {
-                put_individual(ticket, new_variable, _event_id);
+            var map = get_individual(ticket, mapping[i].data);
+            //print("[WORKFLOW][create_and_mapping_variables]: map=" + toJson(map));
+            var expression = getFirstValue(map['v-wf:mappingExpression']);
+            if (!expression) continue;
 
-                new_vars.push(
+            print("[WORKFLOW][create_and_mapping_variables]: expression=" + expression);
+            var res1 = eval(expression);
+            print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson(res1));
+            if (!res1) continue;
+
+            var mapToVariable_uri = getUri(map['v-wf:mapToVariable']);
+            if (!mapToVariable_uri) continue;
+
+            var def_variable = get_individual(ticket, mapToVariable_uri);
+            if (!def_variable) continue;
+
+            var new_variable = generate_variable(ticket, def_variable, res1, _process, _task, _local);
+            if (new_variable)
+            {
+                if (f_store == true)
                 {
-                    data: new_variable['@'],
-                    type: _Uri
-                });
-                addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);
+                    put_individual(ticket, new_variable, _event_id);
 
-            }
-            else
-            {
-                new_vars.push(new_variable);
+                    new_vars.push(
+                    {
+                        data: new_variable['@'],
+                        type: _Uri
+                    });
+                    addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);
+
+                }
+                else
+                {
+                    new_vars.push(new_variable);
+                }
             }
         }
+
+        return new_vars;
+    }
+    catch (e)
+    {
+        print(e.stack);
     }
 
-    return new_vars;
 }
 //////////////////////////////////////////////////////////////////////////
 function is_exists_result(data)
@@ -372,78 +413,109 @@ function is_exists_result(data)
 
 function is_all_executors_taken_decision(data, decision)
 {
-    var count_agreed = 0;
-    for (var i = 0; i < data.length; i++)
+    try
     {
-        //	   print ("data[i].result=", data[i].result);
-        if (data[i].result == decision)
+        var count_agreed = 0;
+        for (var i = 0; i < data.length; i++)
         {
-            count_agreed++;
+            //	   print ("data[i].result=", data[i].result);
+            if (data[i].result == decision)
+            {
+                count_agreed++;
+            }
+        }
+
+        if (count_agreed == data.length)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
+    catch (e)
+    {
+        print(e.stack);
+    }
 
-    if (count_agreed == data.length)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
 }
 
 function is_some_executor_taken_decision(data, decision)
 {
-    for (var i = 0; i < data.length; i++)
+    try
     {
-        //	   print ("data[i].result=", data[i].result);
-        if (data[i].result == decision)
+        for (var i = 0; i < data.length; i++)
         {
-            return true;
+            //	   print ("data[i].result=", data[i].result);
+            if (data[i].result == decision)
+            {
+                return true;
+            }
         }
+
+        return false;
+    }
+    catch (e)
+    {
+        print(e.stack);
     }
 
-    return false;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 function find_in_work_item_tree(ticket, _process, compare_field, compare_value)
 {
-    var res = [];
+    try
+    {
+        var res = [];
 
-    var f_workItemList = _process['v-wf:workItemList'];
+        var f_workItemList = _process['v-wf:workItemList'];
 
-    if (f_workItemList)
-        rsffiwit(ticket, f_workItemList, compare_field, compare_value, res, _process);
+        if (f_workItemList)
+            rsffiwit(ticket, f_workItemList, compare_field, compare_value, res, _process);
 
-    return res;
+        return res;
+    }
+    catch (e)
+    {
+        print(e.stack);
+    }
 }
 
 function rsffiwit(ticket, work_item_list, compare_field, compare_value, res, _parent)
 {
-    for (var idx = 0; idx < work_item_list.length; idx++)
+    try
     {
-        var i_work_item = get_individual(ticket, work_item_list[idx].data);
-        if (i_work_item)
+        for (var idx = 0; idx < work_item_list.length; idx++)
         {
-            var ov = i_work_item[compare_field];
-            var isCompleted = i_work_item['v-wf:isCompleted'];
+            var i_work_item = get_individual(ticket, work_item_list[idx].data);
+            if (i_work_item)
+            {
+                var ov = i_work_item[compare_field];
+                var isCompleted = i_work_item['v-wf:isCompleted'];
 
-            if (ov && getUri(ov) == compare_value && !isCompleted)
-                res.push(
-                {
-                    parent: _parent,
-                    work_item: i_work_item
-                });
+                if (ov && getUri(ov) == compare_value && !isCompleted)
+                    res.push(
+                    {
+                        parent: _parent,
+                        work_item: i_work_item
+                    });
 
-            var f_workItemList = i_work_item['v-wf:workItemList'];
+                var f_workItemList = i_work_item['v-wf:workItemList'];
 
-            if (f_workItemList)
-                rsffiwit(ticket, f_workItemList, compare_field, compare_value, res, i_work_item);
+                if (f_workItemList)
+                    rsffiwit(ticket, f_workItemList, compare_field, compare_value, res, i_work_item);
+            }
+
         }
-
     }
+    catch (e)
+    {
+        print(e.stack);
+    }
+
 
 }
 
@@ -451,141 +523,164 @@ function rsffiwit(ticket, work_item_list, compare_field, compare_value, res, _pa
 
 function create_new_journal(ticket, new_journal_uri, process_uri, label)
 {
-    var new_journal = {
-        '@': new_journal_uri,
-        'rdf:type': [
-        {
-            data: 'v-s:Journal',
-            type: _Uri
-        }],
-        'v-wf:onProcess': [
-        {
-            data: process_uri,
-            type: _Uri
-        }]
-    };
-
-    if (label)
-        new_journal['rdfs:label'] = label;
-
-    put_individual(ticket, new_journal, _event_id);
-
-    return new_journal_uri;
-}
-
-function mapToJournal(map_container, ticket, _process, _task, _order)
-{
-    //print ("@mapToJournal.1");
-    if (map_container)
+    try
     {
-        //* выполнить маппинг для журнала 
-        var journalVars = [];
-
-        journalVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false);
-        if (journalVars)
-        {
-            var jornal_uri = getJournalUri(_process['@']);
-            var new_journal_record = newJournalRecord(jornal_uri);
-
-            for (var idx = 0; idx < journalVars.length; idx++)
-            {
-                var jvar = journalVars[idx];
-                var name = getFirstValue(jvar['v-wf:variableName']);
-                var value = jvar['v-wf:variableValue'];
-
-                //print("@mapToJournal.2 name=" + name + ", value=" + toJson(value));
-                new_journal_record[name] = value;
-            }
-            logToJournal(ticket, jornal_uri, new_journal_record);
-        }
-    }
-}
-
-function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_inVars, document)
-{
-    var parent_process = document['@'];
-
-    var use_net;
-
-    if (f_useSubNet)
-        use_net = f_useSubNet;
-    else
-        use_net = f_executor;
-
-    print("[WORKFLOW][WO2.4] executor= " + getUri(f_executor) + " used net= " + getUri(use_net));
-
-    //var ctx = new Context(work_item, ticket);
-    //ctx.print_variables ('v-wf:inVars');
-    var _started_net = get_individual(ticket, getUri(use_net));
-    if (_started_net)
-    {
-        var new_process_uri = genUri();
-
-        var new_process = {
-            '@': new_process_uri,
+        var new_journal = {
+            '@': new_journal_uri,
             'rdf:type': [
             {
-                data: 'v-wf:Process',
+                data: 'v-s:Journal',
                 type: _Uri
             }],
-            'v-wf:instanceOf': use_net,
-            'v-wf:parentWorkOrder': [
+            'v-wf:onProcess': [
             {
-                data: parent_process,
+                data: process_uri,
                 type: _Uri
             }]
         };
 
-        var msg = "экземпляр маршрута :" + getFirstValue(_started_net['rdfs:label']) + ", запущен из " + getFirstValue(parent_net['rdfs:label'])
+        if (label)
+            new_journal['rdfs:label'] = label;
+
+        put_individual(ticket, new_journal, _event_id);
+
+        return new_journal_uri;
+    }
+    catch (e)
+    {
+        print(e.stack);
+    }
+
+}
+
+function mapToJournal(map_container, ticket, _process, _task, _order)
+{
+    try
+    {
+        //print ("@mapToJournal.1");
+        if (map_container)
+        {
+            //* выполнить маппинг для журнала 
+            var journalVars = [];
+
+            journalVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false);
+            if (journalVars)
+            {
+                var jornal_uri = getJournalUri(_process['@']);
+                var new_journal_record = newJournalRecord(jornal_uri);
+
+                for (var idx = 0; idx < journalVars.length; idx++)
+                {
+                    var jvar = journalVars[idx];
+                    var name = getFirstValue(jvar['v-wf:variableName']);
+                    var value = jvar['v-wf:variableValue'];
+
+                    //print("@mapToJournal.2 name=" + name + ", value=" + toJson(value));
+                    new_journal_record[name] = value;
+                }
+                logToJournal(ticket, jornal_uri, new_journal_record);
+            }
+        }
+    }
+    catch (e)
+    {
+        print(e.stack);
+    }
+
+}
+
+function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_inVars, document)
+{
+    try
+    {
+        var parent_process = document['@'];
+
+        var use_net;
 
         if (f_useSubNet)
-            msg += ", для " + getUri(f_executor);
+            use_net = f_useSubNet;
+        else
+            use_net = f_executor;
 
-        new_process['rdfs:label'] = [
+        print("[WORKFLOW][WO2.4] executor= " + getUri(f_executor) + " used net= " + getUri(use_net));
+
+        //var ctx = new Context(work_item, ticket);
+        //ctx.print_variables ('v-wf:inVars');
+        var _started_net = get_individual(ticket, getUri(use_net));
+        if (_started_net)
         {
-            data: msg,
-            type: _String
-        }];
+            var new_process_uri = genUri();
 
-        // возьмем входные переменные WorkItem	и добавим их процессу
-        if (f_inVars)
-            new_process['v-wf:inVars'] = f_inVars;
+            var new_process = {
+                '@': new_process_uri,
+                'rdf:type': [
+                {
+                    data: 'v-wf:Process',
+                    type: _Uri
+                }],
+                'v-wf:instanceOf': use_net,
+                'v-wf:parentWorkOrder': [
+                {
+                    data: parent_process,
+                    type: _Uri
+                }]
+            };
 
-        if (f_useSubNet)
-            new_process['v-wf:executor'] = f_executor;
+            var msg = "экземпляр маршрута :" + getFirstValue(_started_net['rdfs:label']) + ", запущен из " + getFirstValue(parent_net['rdfs:label'])
 
-        print("new_process=", toJson(new_process));
-        put_individual(ticket, new_process, _event_id);
+            if (f_useSubNet)
+                msg += ", для " + getUri(f_executor);
 
-        create_new_journal(ticket, getTraceJournalUri(new_process_uri), _started_net['rdfs:label']);
+            new_process['rdfs:label'] = [
+            {
+                data: msg,
+                type: _String
+            }];
 
-        var journal_uri = getJournalUri(new_process_uri);
-        var new_journal_record = newJournalRecord(journal_uri);
+            // возьмем входные переменные WorkItem	и добавим их процессу
+            if (f_inVars)
+                new_process['v-wf:inVars'] = f_inVars;
 
-        new_journal_record['rdf:type'] = [
-        {
-            data: 'v-wf:SubProcessStarted',
-            type: _Uri
-        }];
-        new_journal_record['rdfs:label'] = [
-        {
-            data: 'запущен подпроцесс',
-            type: _String
-        }];
-        new_journal_record['v-s:subJournal'] = [
-        {
-            data: getJournalUri(new_process_uri),
-            type: _Uri
-        }];
-        logToJournal(ticket, journal_uri, new_journal_record);
+            if (f_useSubNet)
+                new_process['v-wf:executor'] = f_executor;
 
-        document['v-wf:isProcess'] = [
-        {
-            data: new_process_uri,
-            type: _Uri
-        }];
-        put_individual(ticket, document, _event_id);
+            print("new_process=", toJson(new_process));
+            put_individual(ticket, new_process, _event_id);
 
+            create_new_journal(ticket, getTraceJournalUri(new_process_uri), _started_net['rdfs:label']);
+
+            var journal_uri = getJournalUri(new_process_uri);
+            var new_journal_record = newJournalRecord(journal_uri);
+
+            new_journal_record['rdf:type'] = [
+            {
+                data: 'v-wf:SubProcessStarted',
+                type: _Uri
+            }];
+            new_journal_record['rdfs:label'] = [
+            {
+                data: 'запущен подпроцесс',
+                type: _String
+            }];
+            new_journal_record['v-s:subJournal'] = [
+            {
+                data: getJournalUri(new_process_uri),
+                type: _Uri
+            }];
+            logToJournal(ticket, journal_uri, new_journal_record);
+
+            document['v-wf:isProcess'] = [
+            {
+                data: new_process_uri,
+                type: _Uri
+            }];
+            put_individual(ticket, document, _event_id);
+
+        }
+    }
+    catch (e)
+    {
+        print(e.stack);
     }
 
 }
