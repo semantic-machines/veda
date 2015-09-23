@@ -53,6 +53,15 @@ function newStr(_data)
     }];
 }
 
+function newBool(_data)
+{
+    return [
+        {
+            data: _data,
+            type: _Bool
+    }];
+}
+
 function getUri(field)
 {
     if (field && field.length > 0)

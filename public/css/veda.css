@@ -2,7 +2,9 @@ body {
   /*color: #234;
   background-color: #f5f5f9;*/
 }
-
+footer {
+  font-size: 12px;
+}
 .navbar-brand {
   font-size: 20px;
 }

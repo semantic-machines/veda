@@ -67,7 +67,6 @@ function Context(_src_data, _ticket)
 
     this.if_all_executors_taken_decision = function (true_decision, false_decision)
     {
-        //print("Context.src_data=", toJson(this.src_data));
         var count_agreed = 0;
         for (var i = 0; i < this.src_data.length; i++)
         {
@@ -98,9 +97,29 @@ function Context(_src_data, _ticket)
 
     this.getLocalVariableValue = function (var_name)
     {
-        //print ("@@@ src_data=", toJson (this.src_data));
-        //print ("@@@ var_name=", var_name);
-        return this.src_data[var_name];
+		print("@@@getLocalVariableValue: Context.src_data=", toJson(this.src_data));		
+        print ("@@@ var_name=", var_name);
+        
+        if (this.src_data.length > 1)
+        {       
+			print ("@@@1"); 
+			var data = this.src_data;
+			var res = [];
+			for (var i in data)
+			{
+			print ("@@@2"); 
+							var value = data[i][var_name];
+				if (value)
+					res.push (value);
+			}	
+			print ("@@@3 res=", toJson (res)); 
+			
+			return res;
+		}	
+        else
+        {
+			return this.src_data[var_name];
+		}				
     };
 
     this.getVariableValue = function (var_name)
@@ -110,6 +129,7 @@ function Context(_src_data, _ticket)
 
     this.getOutVariableValue = function (var_name)
     {
+		//print("@@@getOutVariableValue: Context.src_data=", toJson(this.src_data));		
         //print ("CONTEXT::get out vars, var_name=", var_name);
         return this.getVariableValueIO(var_name, 'v-wf:outVars');
     }
@@ -180,12 +200,8 @@ function Context(_src_data, _ticket)
     };
 }
 
-function generate_variable(ticket, def_variable, value, _process, _task, _local)
+function get_new_variable (name, value)
 {
-    var variable_name = getFirstValue(def_variable['v-wf:varDefineName']);
-
-    //print("[WORKFLOW][generate_variable]: variable_define_name=" + variable_name);
-
     var new_uri = genUri();
     var new_variable = {
         '@': new_uri,
@@ -203,6 +219,32 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
 
     if (value)
         new_variable['v-wf:variableValue'] = value;
+	
+	return new_variable;
+}	
+
+function store_items_and_set_minimal_rights (ticket, data)
+{
+	var ids = [];
+    for (var i = 0; i < data.length; i++)
+    {
+        put_individual(ticket, data[i], _event_id);
+        ids.push(
+        {
+            data: data[i]['@'],
+            type: _Uri
+        });
+        addRight(ticket, [can_read], "v-wf:WorkflowReadUser", data[i]['@']);
+    }
+	return ids; 
+}	
+
+function generate_variable(ticket, def_variable, value, _process, _task, _local)
+{
+    var variable_name = getFirstValue(def_variable['v-wf:varDefineName']);
+
+    //print("[WORKFLOW][generate_variable]: variable_define_name=" + variable_name);
+	var new_variable = get_new_variable (variable_name, value)
 
     var variable_scope = getUri(def_variable['v-wf:varDefineScope']);
     if (variable_scope)
@@ -281,9 +323,9 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
         var expression = getFirstValue(map['v-wf:mappingExpression']);
         if (!expression) continue;
 
-        //print("[WORKFLOW][create_and_mapping_variables]: expression=" + expression);
+        print("[WORKFLOW][create_and_mapping_variables]: expression=" + expression);
         var res1 = eval(expression);
-        //print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson(res1));
+        print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson(res1));
         if (!res1) continue;
 
         var mapToVariable_uri = getUri(map['v-wf:mapToVariable']);
@@ -517,7 +559,7 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
 
         create_new_journal(ticket, getTraceJournalUri(new_process_uri), _started_net['rdfs:label']);
 
-        var journal_uri = getJournalUri(_process['@']);
+        var journal_uri = getJournalUri(new_process_uri);
         var new_journal_record = newJournalRecord(journal_uri);
 
         new_journal_record['rdf:type'] = [

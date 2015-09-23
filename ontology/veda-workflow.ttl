@@ -412,6 +412,15 @@ v-wf:netPropertySpecification2
   v-ui:queryPrefix "('rdf:type'=='v-wf:VarDefine')"^^xsd:string ;
 .
 
+v-wf:netPropertySpecification3
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация мэпперов для класса Задача"@ru ;
+  rdfs:label "Mapper property specification for Task class"@en ;
+  v-ui:forClass v-wf:Net ;
+  v-ui:forProperty v-wf:completedMapping ;
+  v-ui:queryPrefix "('rdf:type'=='v-wf:Mapping')"^^xsd:string ;
+.
+
 v-wf:SimpleNetTemplate
   rdf:type v-ui:ClassTemplate ;
 	rdfs:isDefinedBy v-wf: ;
@@ -471,7 +480,27 @@ v-wf:SimpleNetTemplate
   			<div class="VCinputOutputVariable" rel="v-wf:inputOutputVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
   			<div class="viewVCinputOutputVariable" about="@" rel="v-wf:inputOutputVariable" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
-	</tr>			
+	</tr>
+	<tr onclick="javascript: $('.button-delete', $('.VCcompletedMapping').show()).show();">
+		<td>
+			<span about="v-wf:completedMapping" property="rdfs:label"></span>
+		</td>
+  		<td>
+  			<veda-control rel="v-wf:completedMapping" type="link" class="VCcompletedMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<div rel="v-wf:completedMapping">
+	  			<div deleteButton="hide" class="VCcompletedMapping">
+		  			<span about="@" rel="v-wf:mapToVariable">
+						<span>
+							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+						</span>
+					</span> =
+					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+				<div>
+			</div>
+		</td>
+	</tr>	
   </table>
 </div>  
   """ ;
@@ -1280,6 +1309,11 @@ v-wf:ProcessPropsTemplate
 		<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
 		<ol><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ol>
 	</div>
+	<div id="localVars">
+		<em><h5 about="v-wf:localVars" property="rdfs:label"></h5></em>
+		<ol><li rel="v-wf:localVars" template="v-wf:VariableTemplate"></li></ol>
+		<hr>
+	</div>	
 </div>
 <script>
 	if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
@@ -1619,6 +1653,15 @@ v-wf:inVars
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "входящие переменные"@ru ;
+	rdfs:domain v-wf:Process ;
+	rdfs:domain v-wf:WorkItem ;
+	rdfs:range v-wf:Variable ;
+.
+
+v-wf:localVars
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "локальные переменные"@ru ;
 	rdfs:domain v-wf:Process ;
 	rdfs:domain v-wf:WorkItem ;
 	rdfs:range v-wf:Variable ;
