@@ -505,7 +505,7 @@ v-s:datePlan
   rdf:type owl:DatatypeProperty ;
   rdfs:label "date plan"@en ;
   rdfs:label "плановая дата"@ru ;
-  rdfs:range xsd:date ;
+  rdfs:range xsd:dateTime ;
 .
 
 v-s:published

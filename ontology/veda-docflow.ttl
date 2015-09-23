@@ -232,7 +232,7 @@ v-df:ActionInDecisionTemplate
 				<div class="col-md-4">
 					<em about="v-s:description" property="rdfs:label" class="text-muted"></em>
 					<div property="v-s:description" class="view -edit -search"></div>
-					<veda-control property="v-s:description" type="multilingualText" class="-view edit search"></veda-control>
+					<veda-control property="v-s:description" type="text" class="-view edit search"></veda-control>
 				</div>
 				<div class="col-md-4">
 					<em about="v-s:dateTo" property="rdfs:label" class="text-muted"></em>
@@ -244,4 +244,27 @@ v-df:ActionInDecisionTemplate
 	</div>
 </div>
   """ ;
+.
+v-df:PsresponsibleInDecision
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass mnd-s:Action ;
+  v-ui:forProperty v-s:responsible ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 1 ;
+  v-ui:tooltip "Non-required, single value. Link to instance of Appointment class"@en ;
+  v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Назначение."@ru ;
+  rdfs:label "Projeсt manager property specification for AgDecision class"@en ;
+  rdfs:label "Спецификация руководителя проекта для класса Решение тех.комитета"@ru ;
+.
+
+v-df:PsDescriptionInDecision
+  rdf:type v-ui:StringPropertySpecification ;
+  v-ui:forClass mnd-s:Action ;
+  v-ui:forProperty v-s:description ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  v-ui:tooltip "non-Required, single Text"@en ;
+  v-ui:tooltip "Необязательно к заполнению, единичное значение. Текст без ограничений."@ru ;
+  rdfs:label "Comment propertys specification for IdeaRouteStartForm"@en ;
+  rdfs:label "Спецификация комментария в поручении стартовой формы"@ru ;
 .
