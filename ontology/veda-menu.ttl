@@ -6,6 +6,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-m: <http://semantic-machines.com/veda/veda-menu/> .
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 
 <http://semantic-machines.com/veda/veda-menu>
   rdf:type owl:Ontology ;
@@ -61,6 +62,7 @@ v-m:DocMenu
 	rdfs:label "Документ"@ru ;
 	v-m:menuItem v-m:Create ;
 	v-m:menuItem v-m:Find ;
+	v-m:menuItem v-m:Find2 ;
 .
 v-m:Create
 	rdf:type v-m:Menu ;
@@ -72,6 +74,13 @@ v-m:Find
 	rdf:type v-m:Menu ;
 	rdfs:label "Find"@en ;
 	rdfs:label "Найти"@ru ;
+	v-m:objectLink v-fs:Search ;
+#	v-m:staticLink "#/individual//#main//search"^^xsd:string ;
+.
+v-m:Find2
+	rdf:type v-m:Menu ;
+	rdfs:label "Find 2"@en ;
+	rdfs:label "Найти 2"@ru ;
 	v-m:staticLink "#/individual//#main//search"^^xsd:string ;
 .
 v-m:Search
@@ -85,17 +94,17 @@ v-m:MenuItemViewTemplate
 	rdfs:label "Menu item template"@en ;
 	rdfs:label "Шаблон пункта Меню"@ru ;
 	v-ui:template """
-<li id="static">
+<li id="static" class="hidden">
 	<a id="lnk">
 		<span property="rdfs:label"></span>
 	</a>
 </li>
-<li id="object" rel="v-m:objectLink">
+<li id="object" rel="v-m:objectLink" class="hidden">
 	<a href="#/individual/@/#main">
 		<span property="rdfs:label"></span>
 	</a>
 </li>
-<li id="sub" role="presentation" class="dropdown">
+<li id="sub" role="presentation" class="dropdown hidden">
 	<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
 		<span property="rdfs:label"></span> <span class="caret"></span>
 	</a>
@@ -115,6 +124,7 @@ v-m:MenuItemViewTemplate
 			stcTmpl.remove();
 		}
 	}
+	template.toggleClass("hidden show");
 </script>
 	"""
 .

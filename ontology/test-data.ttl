@@ -673,7 +673,7 @@ td:PersonTemplate1
         </div>
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-warning" id="send">Отправить</button>
+        <button type="button" class="action btn btn-warning view edit -search" id="send">Отправить</button>
         <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
         <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
         <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>

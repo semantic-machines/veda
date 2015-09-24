@@ -5,6 +5,7 @@
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
 
 <http://semantic-machines.com/veda/veda-function-create>
   rdf:type owl:Ontology ;
@@ -36,6 +37,11 @@ v-fc:Create
   rdf:type v-fc:FunctionCreate ;
   rdfs:label "Create"@en ;
   rdfs:label "Создать"@ru ;
+.
+v-fc:ChooseType
+  rdf:type v-b:Bundle ;
+  rdfs:label "Choose a type to create"@en ;
+  rdfs:label "Выберите тип объекта"@ru ;
 .
 v-fc:typeToCreate
   rdf:type owl:ObjectProperty ;
@@ -85,10 +91,12 @@ v-fc:FunctionCreateTemplate
   v-ui:template """
 <div>
 	<h3 property="rdfs:label"></h3>
+	<hr>	
+	<h4 about="v-fc:ChooseType" property="rdfs:label"></h4>
 	<veda-control rel="v-fc:typeToCreate" type="link" class="fulltext dropdown"></veda-control>
-	<hr />
+	<hr>
 	<div id="holder"></div>
-	<h3 about="v-b:Blanks" property="rdfs:label"></h3>
+	<h4 about="v-b:Blanks" property="rdfs:label"></h4>
 	<ol id="blanks"></ol>
 </div>
 <script>
@@ -98,10 +106,12 @@ v-fc:FunctionCreateTemplate
 	function modHandler(property_uri, values) {
 		if (property_uri === "v-fc:typeToCreate") {
 			var holder = $("#holder", template).empty();
-			var blank = new veda.IndividualModel();
-			blank["rdf:type"] = [ veda.ontology["v-fc:Blank"] ];
-			blank["v-fc:typeToCreate"] = values;
-			blank.present(holder, undefined, "edit");
+			if (values.length) {
+				var blank = new veda.IndividualModel();
+				blank["rdf:type"] = [ veda.ontology["v-fc:Blank"] ];
+				blank["v-fc:typeToCreate"] = values;
+				blank.present(holder, undefined, "edit");
+			}
 		}
 	}
 	template.one("remove", function () {
@@ -126,7 +136,7 @@ v-fc:BlankTemplate
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
 <div>
-	<h3><span about="v-fc:Blank" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
+	<h4><span about="v-fc:Blank" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h4>
 	<div class="row">
 		<div class="col-md-10 col-sm-9">
 			<div id="holder"></div>
@@ -160,13 +170,13 @@ v-fc:BlankTemplate
 		});
 	}
 	object.present(holder, undefined, "edit");
-	self.on("individual:beforeSave", bsHandler);	
-	self.on("individual:afterSave", asHandler);	
+	self.on("individual:beforeSave", updateBlank);	
+	self.on("individual:afterSave", updateAspect);	
 	template.one("remove", function () {
-		self.off("individual:beforeSave", bsHandler);
-		self.off("individual:afterSave", asHandler);	
+		self.off("individual:beforeSave", updateBlank);
+		self.off("individual:afterSave", updateAspect);
 	});
-	function bsHandler() {
+	function updateBlank() {
 		Object.getOwnPropertyNames(object.properties).map( function (property_uri) {
 			if (property_uri === "rdf:type") return;
 			if (property_uri === "rdfs:label") return;
@@ -175,7 +185,7 @@ v-fc:BlankTemplate
 			self[property_uri] = object[property_uri].slice(0);
 		});
 	}
-	function asHandler() {
+	function updateAspect() {
 		if (self["v-s:deleted"][0] == true) {
 			asp["v-asp:hasBlank"] = asp["v-asp:hasBlank"].filter( function (i) { return i.id !== self.id;});
 		} else if (
