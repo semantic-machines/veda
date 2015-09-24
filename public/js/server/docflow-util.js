@@ -183,57 +183,18 @@ function Context(_src_data, _ticket)
 
     };
 
-    this.getLocalVariableValue = function(var_name)
-    {
-        try
-        {
-            print("@@@getLocalVariableValue: Context.src_data=", toJson(this.src_data));
-            print("@@@ var_name=", var_name);
-
-            if (this.src_data.length > 1)
-            {
-                print("@@@1");
-                var data = this.src_data;
-                var res = [];
-                for (var i in data)
-                {
-                    print("@@@2");
-                    var value = data[i][var_name];
-                    if (value)
-                        res.push(value);
-                }
-                print("@@@3 res=", toJson(res));
-
-                return res;
-            }
-            else
-            {
-                return this.src_data[var_name];
-            }
-        }
-
-        catch (e)
-        {
-            print(e.stack);
-            return false;
-        }
-
-    };
-
-    this.getVariableValue = function(var_name)
+    this.getInputVariable = function(var_name)
     {
         return this.getVariableValueIO(var_name, 'v-wf:inVars');
     }
 
-    this.getLocalVariableValue = function(var_name)
+    this.getLocalVariable = function(var_name)
     {
         return this.getVariableValueIO(var_name, 'v-wf:localVars');
     }
 
-    this.getOutVariableValue = function(var_name)
+    this.getOutVariable = function(var_name)
     {
-        //print("@@@getOutVariableValue: Context.src_data=", toJson(this.src_data));		
-        //print ("CONTEXT::get out vars, var_name=", var_name);
         return this.getVariableValueIO(var_name, 'v-wf:outVars');
     }
 
@@ -385,7 +346,7 @@ function store_items_and_set_minimal_rights(ticket, data)
     }
 }
 
-function generate_variable(ticket, def_variable, value, _process, _task, _local)
+function generate_variable(ticket, def_variable, value, _process, _task, _task_result)
 {
     try
     {
@@ -413,7 +374,7 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
                 var find_local_var;
                 if (local_vars)
                 {
-                    print("[WORKFLOW][generate_variable]: A");
+                    print("[WORKFLOW][generate_variable]: ищем переменную среди локальных");
 
                     // найдем среди локальных переменных процесса, такую переменную
                     // если нашли, то новая переменная должна перезаписать переменную процесса
@@ -437,9 +398,9 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
                         new_variable['@'] = find_local_var['@'];
                 }
                 
-                if (!local_vars || !find_local_var)
+                if (!find_local_var)
                 {
-                        print("[WORKFLOW][generate_variable]: B");
+                        print("[WORKFLOW][generate_variable]: не, найдена, привязать новую к процессу:" + _process['@']);
 
                     // если не нашли то привязать новую переменную к процессу
                     var add_to_document = {
@@ -468,7 +429,7 @@ function generate_variable(ticket, def_variable, value, _process, _task, _local)
 
 }
 
-function create_and_mapping_variables(ticket, mapping, _process, _task, _order, _local, f_store)
+function create_and_mapping_variables(ticket, mapping, _process, _task, _order, _task_result, f_store)
 {
     try
     {
@@ -479,7 +440,7 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
         var process;
         var task;
         var order;
-        var local;
+        var task_result;
 
         if (_process)
             process = new Context(_process, ticket);
@@ -490,12 +451,15 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
         if (_order)
             order = new Context(_order, ticket);
 
-        if (_local)
-            local = new WorkItemResult(_local);
+        if (_task_result)
+            task_result = new WorkItemResult(_task_result);
 
         for (var i = 0; i < mapping.length; i++)
         {
             var map = get_individual(ticket, mapping[i].data);
+            
+            if (map)
+            {
             print("[WORKFLOW][create_and_mapping_variables]: map_uri=" + map['@']);
             var expression = getFirstValue(map['v-wf:mappingExpression']);
             if (!expression) continue;
@@ -511,7 +475,7 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
             var def_variable = get_individual(ticket, mapToVariable_uri);
             if (!def_variable) continue;
 
-            var new_variable = generate_variable(ticket, def_variable, res1, _process, _task, _local);
+            var new_variable = generate_variable(ticket, def_variable, res1, _process, _task, _task_result);
             if (new_variable)
             {
                 if (f_store == true)
@@ -531,6 +495,11 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
                     new_vars.push(new_variable);
                 }
             }
+			}
+			else
+			{
+				            print("[WORKFLOW][create_and_mapping_variables]: map not found :" + mapping[i].data);
+			}	
         }
 
         return new_vars;

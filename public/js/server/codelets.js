@@ -4,7 +4,7 @@ function down_right_and_store(task)
 {
     try
     {
-        var doc_id = task.getVariableValue('docId');
+        var doc_id = task.getInputVariable('docId');
 
         if (doc_id)
         {
@@ -28,7 +28,7 @@ function restore_right(task)
     {
         //print("[WORKFLOW]:restore_right, task=", toJson(task));
         //print("[WORKFLOW]:restore_right function RESTORE RIGHT IS NOT IMPLIMENTED");
-        var right = task.getVariableValue('originalRights');
+        var right = task.getInputVariable('originalRights');
         //print("[WORKFLOW]:restore_right ", toJson(right));
         return [get_new_variable('result', newStr('Ok'))];
 
@@ -60,7 +60,7 @@ function get_type_of_docId(task)
 
         if (task)
         {
-            var doc_id = task.getVariableValue('docId');
+            var doc_id = task.getInputVariable('docId');
             if (doc_id)
             {
                 var doc = get_individual(task.ticket, doc_id[0].data);
@@ -90,7 +90,7 @@ function is_in_docflow_and_set_if_true(task)
 
         if (task)
         {
-            var doc_id = task.getVariableValue('docId');
+            var doc_id = task.getInputVariable('docId');
             if (doc_id)
             {
                 var forProcess = getUri(task.src_data['v-wf:forProcess']);
@@ -145,8 +145,8 @@ function create_use_transformation(task)
 
         if (task)
         {
-            var src_doc_id = task.getVariableValue('src_uri');
-            var transform_link = task.getVariableValue('transformation_uri');
+            var src_doc_id = task.getInputVariable('src_uri');
+            var transform_link = task.getInputVariable('transformation_uri');
 
             if (transform_link)
             {

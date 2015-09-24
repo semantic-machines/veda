@@ -4,7 +4,7 @@
 	"copyright": "Copyright © 2014, karpovr",
 	"authors": ["karpovr"],
 	"dependencies": {
-		"vibe-d": "0.7.24",
+		"vibe-d": "0.7.25",
 		"pacahon_third_party": "1.0.8", 
 		"backtrace-d": "0.1.0", 
 		"mysql-d": "~>0.3.2"
