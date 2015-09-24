@@ -434,11 +434,11 @@ function prepare_work_order(ticket, document)
                 print("[PWO].completedMapping3, task_output_vars=", toJson(task_output_vars));
             }
 
-            if (task_output_vars.length > 0)
-            {
-                document['v-wf:outVars'] = task_output_vars;
-                put_individual(ticket, document, _event_id);
-            }
+//            if (task_output_vars.length > 0)
+//            {
+//                document['v-wf:outVars'] = task_output_vars;
+//                put_individual(ticket, document, _event_id);
+//            }
 
             // определим переход на следующие задачи в зависимости от результата
             // res должен быть использован при eval каждого из предикатов
@@ -533,6 +533,9 @@ function prepare_work_order(ticket, document)
 
             if (workItemList.length > 0)
                 work_item['v-wf:workItemList'] = workItemList;
+
+            if (task_output_vars.length > 0)
+                work_item['v-wf:outVars'] = task_output_vars;
 
             put_individual(ticket, work_item, _event_id);
             //print("[WORKFLOW][WOe] document=", toJson(document));
