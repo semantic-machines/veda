@@ -88,11 +88,19 @@ v-fs:typeToSearch
   rdfs:range owl:Class ;
   rdfs:range rdfs:Class ;
 .
-v-fs:TypeToSearchSpec
+v-fs:TypeToSearchSpecFT
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:FulltextRequest"@ru ;
   rdfs:label "v-fs:typeToSearch property specification for class v-fs:TypedRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
+  v-ui:forProperty v-fs:typeToSearch ;
+  v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
+  v-ui:tooltip "Link to instance of Class class"@en ;
+.
+v-fs:TypeToSearchSpecTyped
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:FulltextRequest"@ru ;
+  rdfs:label "v-fs:typeToSearch property specification for class v-fs:TypedRequest"@en ;
   v-ui:forClass v-fs:TypedRequest ;
   v-ui:forProperty v-fs:typeToSearch ;
   v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
@@ -231,7 +239,12 @@ v-fs:FulltextRequestModel
 	if (q) { self.search() };
 	
 	function mkQuery () {
-		var type = self.hasValue("v-fs:typeToSearch") ? "('rdf:type' == '" + self["v-fs:typeToSearch"][0].id + "') " : "";
+		var type = self.hasValue("v-fs:typeToSearch") ? 
+				"(" + self["v-fs:typeToSearch"].map(function (i) {
+					return "'rdf:type'=='" + i.id + "'" 
+				}).join("||") + ")"
+			: 
+				"";
 		var q = self.hasValue("v-fs:manualQuery") ? self["v-fs:manualQuery"][0] : "";
 		if (q && q.indexOf("==") < 0) {
 			q = "(" + q.trim().split(" ").map(function (t) { return "'*'=='" + t + "*'";}).join("&&") + ")";
@@ -270,6 +283,7 @@ v-fs:FulltextRequestTemplate
 							</div>
 						</div>
 						<h4 about="v-fs:ChooseType" property="rdfs:label"></h4>
+						<div rel="v-fs:typeToSearch" template="v-ui:ClassNameLabelTemplate"></div>
 						<veda-control rel="v-fs:typeToSearch" type="link" class="fulltext dropdown"></veda-control>
 					</form>
 				</div>
