@@ -195,6 +195,7 @@ v-fs:SearchTemplate
 		}
 	</script>
 """
+.
 v-fs:FulltextRequestModel
   rdf:type v-s:ClassModel ;
   rdfs:label "v-fs:SearchRequest class model"@en ;
