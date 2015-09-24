@@ -1318,6 +1318,7 @@ v-wf:ProcessPropsTemplate
 <script>
 	if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
 	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
+	if (!individual.hasValue("v-wf:localVars")) $("#localVars", template).remove();
 	if (!individual.hasValue("v-wf:localVariable")) $("#localVariable", template).remove();
 	if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
 </script>
