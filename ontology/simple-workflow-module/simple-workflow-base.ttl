@@ -125,14 +125,14 @@ s-wf:var_coordination_level
 s-wf:map_decision_of_set_responsible
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_decision_of_set_responsible ;	
-	v-wf:mappingExpression	"task_result.getLocalVariable ('result_decision')";
+	v-wf:mappingExpression	"task_result.getValue ('result_decision')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_get_rights
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_right_1 ;	
-	v-wf:mappingExpression	"task_result.getLocalVariable ('right')";
+	v-wf:mappingExpression	"task_result.getValue ('right')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -951,6 +951,12 @@ s-wf:map_set_result_from_local
 	rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:m_result_f_out_var
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_result ;	
+	v-wf:mappingExpression	"task.getOutVariable ('result')";
+	rdfs:isDefinedBy s-wf: ;
+.
 
 s-wf:map_set_result_decision_from_local
 	rdf:type v-wf:Mapping ;
@@ -999,7 +1005,7 @@ s-wf:nc_t2 a v-wf:Task;
 s-wf:map_set_decision_from_local
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_result ;	
-	v-wf:mappingExpression	"task_result.getValue ('result_data')";
+	v-wf:mappingExpression	"task_result.getValue ('result')";
 	rdfs:isDefinedBy s-wf: ;
 .
 

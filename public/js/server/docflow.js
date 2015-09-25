@@ -538,7 +538,7 @@ function prepare_work_order(ticket, document)
                 work_item['v-wf:outVars'] = task_output_vars;
 
             put_individual(ticket, work_item, _event_id);
-            //print("[WORKFLOW][WOe] document=", toJson(document));
+            //print("[WORKFLOW][WOe] update work_item=", toJson(work_item));
         }
     }
     catch (e)
