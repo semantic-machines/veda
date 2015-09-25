@@ -152,7 +152,7 @@ private void create_table_if_not_exists(string predicate)
         {
             mysql_conn.query(
                              "CREATE TABLE `veda_db`.`" ~ predicate ~
-                             "` ( `doc_id` VARCHAR(128) NOT NULL,  `value` MEDIUMTEXT NULL,  `lang` CHAR(2) NULL) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
+                             "` ( `ID` BIGINT NOT NULL AUTO_INCREMENT, `doc_id` VARCHAR(128) NOT NULL,  `value` MEDIUMTEXT NULL,  `lang` CHAR(2) NULL, PRIMARY KEY (`ID`),  INDEX c(`doc_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
             isExistsTable[ predicate ] = true;
         }
         catch (Exception ex)

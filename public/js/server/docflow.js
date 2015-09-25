@@ -434,11 +434,11 @@ function prepare_work_order(ticket, document)
                 print("[PWO].completedMapping3, task_output_vars=", toJson(task_output_vars));
             }
 
-            if (task_output_vars.length > 0)
-            {
-                document['v-wf:outVars'] = task_output_vars;
-                put_individual(ticket, document, _event_id);
-            }
+//            if (task_output_vars.length > 0)
+//            {
+//                document['v-wf:outVars'] = task_output_vars;
+//                put_individual(ticket, document, _event_id);
+//            }
 
             // определим переход на следующие задачи в зависимости от результата
             // res должен быть использован при eval каждого из предикатов
@@ -470,7 +470,7 @@ function prepare_work_order(ticket, document)
                             try
                             {
                                 print("[WORKFLOW][WO9] expression=" + toJson(expression));
-                                var local = new WorkItemResult(work_item_result);
+                                var task_result = new WorkItemResult(work_item_result);
                                 var res1 = eval(expression);
                                 //print("[WORKFLOW][WO9.1] expr res=" + toJson(res1));
                                 if (res1 === true)
@@ -533,6 +533,9 @@ function prepare_work_order(ticket, document)
 
             if (workItemList.length > 0)
                 work_item['v-wf:workItemList'] = workItemList;
+
+            if (task_output_vars.length > 0)
+                work_item['v-wf:outVars'] = task_output_vars;
 
             put_individual(ticket, work_item, _event_id);
             //print("[WORKFLOW][WOe] document=", toJson(document));
@@ -706,17 +709,26 @@ function prepare_work_item(ticket, document)
                         var process = new Context(_process, ticket);
                         //var context = task;
 
-                        var result = eval(expression);
+						try
+						{
+							var result = eval(expression);
 
-                        //print(" task: result of v-wf:ExecutorDefinition=", toJson(result));
+							//print(" task: result of v-wf:ExecutorDefinition=", toJson(result));
 
-                        if (result !== undefined && result.length > 0)
-                        {
-                            for (var i3 = 0; i3 < result.length; i3++)
-                            {
-                                executor_list.push(result[i3]);
-                            }
-                        }
+							if (result !== undefined && result.length > 0)
+							{
+								for (var i3 = 0; i3 < result.length; i3++)
+								{
+									executor_list.push(result[i3]);
+								}
+							}
+						}
+						catch (e)
+						{
+							print("исполнители не были определены [", expression, "]");
+							print(e.stack);
+						}
+						
                     }
                     else
                     {

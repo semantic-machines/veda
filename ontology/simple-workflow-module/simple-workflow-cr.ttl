@@ -411,7 +411,7 @@ s-wf:var_coordinator_1
 s-wf:executor_def_1
 	rdf:type v-wf:ExecutorDefinition ;
 	rdfs:isDefinedBy s-wfc: ;
-	v-wf:executorExpression "process.getVariableValue ('coordinatorLevel1')" ;
+	v-wf:executorExpression "process.getInputVariable ('coordinatorLevel1')" ;
 .
 
 s-wf:var_coordinator_2
@@ -424,13 +424,13 @@ s-wf:var_coordinator_2
 s-wf:executor_def_2
 	rdf:type v-wf:ExecutorDefinition ;
 	rdfs:isDefinedBy s-wfc: ;
-	v-wf:executorExpression "process.getVariableValue ('coordinatorLevel2')" ;
+	v-wf:executorExpression "process.getInputVariable ('coordinatorLevel2')" ;
 .
 
 s-wf:executor_from_coordinator
 	rdf:type v-wf:ExecutorDefinition ;
 	rdfs:isDefinedBy s-wfc: ;
-	v-wf:executorExpression "process.getVariableValue ('coordinator')" ;
+	v-wf:executorExpression "process.getInputVariable ('coordinator')" ;
 	rdfs:label "исполнители из переменной coordinator"@ru ;
 .
 
@@ -452,7 +452,7 @@ s-wf:map_user_task_form_label
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:user_task_form_label ;
-        v-wf:mappingExpression  "process.getVariableValue ('user_task_form_label')" ;
+        v-wf:mappingExpression  "process.getInputVariable ('user_task_form_label')" ;
         rdfs:label "user_task_form_label=process.user_task_form_label" ;        
 .
 
@@ -482,14 +482,14 @@ s-wf:var_coordinator_3
 s-wf:executor_def_3
 	rdf:type v-wf:ExecutorDefinition ;
 	rdfs:isDefinedBy s-wfc: ;
-	v-wf:executorExpression "process.getVariableValue ('coordinatorLevel3')" ;
+	v-wf:executorExpression "process.getInputVariable ('coordinatorLevel3')" ;
 .
 
 s-wf:map_coordinator1
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:var_coordinator ;
-        v-wf:mappingExpression  "process.getVariableValue ('coordinatorLevel1')" ;
+        v-wf:mappingExpression  "process.getInputVariable ('coordinatorLevel1')" ;
 .
 
 s-wf:map_possibleDecision_for_idea
@@ -512,7 +512,7 @@ s-wf:map_possibleDecision
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:possibleDecision ;
-        v-wf:mappingExpression  "process.getVariableValue ('possibleDecision')" ;
+        v-wf:mappingExpression  "process.getInputVariable ('possibleDecision')" ;
 .
 
 s-wf:map_coordinator1_1
@@ -526,7 +526,7 @@ s-wf:map_coordinator2
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:var_coordinator ;
-        v-wf:mappingExpression  "process.getVariableValue ('coordinatorLevel2')" ;
+        v-wf:mappingExpression  "process.getInputVariable ('coordinatorLevel2')" ;
 .
 
 s-wf:map_coordinator2_1
@@ -540,7 +540,7 @@ s-wf:map_coordinator3
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:var_coordinator ;
-        v-wf:mappingExpression  "process.getVariableValue ('coordinatorLevel3')" ;
+        v-wf:mappingExpression  "process.getInputVariable ('coordinatorLevel3')" ;
 .
 
 s-wf:map_coordinator3_1
