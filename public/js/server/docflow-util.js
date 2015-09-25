@@ -113,7 +113,7 @@ function WorkItemResult(_work_item_result)
         {
             var wirv = this.work_item_result[i][var_name];
 
-			print ("@@@is_all_executors_taken_decision: wiri=" + toJson (wirv), ", value=", toJson (value));
+            print("@@@is_all_executors_taken_decision: wiri=" + toJson(wirv), ", value=", toJson(value));
 
             if (wirv && wirv.length > 0 && wirv[0].data == value[0].data && wirv[0].type == value[0].type)
                 count_agreed++;
@@ -121,31 +121,31 @@ function WorkItemResult(_work_item_result)
 
         if (count_agreed == this.work_item_result.length)
         {
-			print ("@@@is_some_executor_taken_decision: TRUE");
+            print("@@@is_some_executor_taken_decision: TRUE");
             return true;
-        }    
+        }
         else
             return false;
 
     };
 
-	this.is_some_executor_taken_decision = function (var_name, value)
-	{
+    this.is_some_executor_taken_decision = function(var_name, value)
+    {
         for (var i = 0; i < this.work_item_result.length; i++)
         {
             var wirv = this.work_item_result[i][var_name];
 
-			print ("@@@is_some_executor_taken_decision: wiri=" + toJson (wirv), ", value=", toJson (value));
+            print("@@@is_some_executor_taken_decision: wiri=" + toJson(wirv), ", value=", toJson(value));
 
             if (wirv && wirv.length > 0 && wirv[0].data == value[0].data && wirv[0].type == value[0].type)
             {
-				print ("@@@is_some_executor_taken_decision: TRUE");
+                print("@@@is_some_executor_taken_decision: TRUE");
                 return true;
-            }    
+            }
         }
 
-		return false;
-	}
+        return false;
+    }
 
 
 }
@@ -418,10 +418,10 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
                     if (find_local_var)
                         new_variable['@'] = find_local_var['@'];
                 }
-                
+
                 if (!find_local_var)
                 {
-                        //print("[WORKFLOW][generate_variable]: не, найдена, привязать новую к процессу:" + _process['@']);
+                    //print("[WORKFLOW][generate_variable]: не, найдена, привязать новую к процессу:" + _process['@']);
 
                     // если не нашли то привязать новую переменную к процессу
                     var add_to_document = {
@@ -478,58 +478,58 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
         for (var i = 0; i < mapping.length; i++)
         {
             var map = get_individual(ticket, mapping[i].data);
-            
+
             if (map)
             {
-            //print("[WORKFLOW][create_and_mapping_variables]: map_uri=" + map['@']);
-            var expression = getFirstValue(map['v-wf:mappingExpression']);
-            if (!expression) continue;
+                //print("[WORKFLOW][create_and_mapping_variables]: map_uri=" + map['@']);
+                var expression = getFirstValue(map['v-wf:mappingExpression']);
+                if (!expression) continue;
 
-            //print("[WORKFLOW][create_and_mapping_variables]: expression=" + expression);
-            try
-            {
-            var res1 = eval(expression);
-            //print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson(res1));
-            if (!res1) continue;
-
-            var mapToVariable_uri = getUri(map['v-wf:mapToVariable']);
-            if (!mapToVariable_uri) continue;
-
-            var def_variable = get_individual(ticket, mapToVariable_uri);
-            if (!def_variable) continue;
-
-            var new_variable = generate_variable(ticket, def_variable, res1, _process, _task, _task_result);
-            if (new_variable)
-            {
-                if (f_store == true)
+                //print("[WORKFLOW][create_and_mapping_variables]: expression=" + expression);
+                try
                 {
-                    put_individual(ticket, new_variable, _event_id);
+                    var res1 = eval(expression);
+                    //print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson(res1));
+                    if (!res1) continue;
 
-                    new_vars.push(
+                    var mapToVariable_uri = getUri(map['v-wf:mapToVariable']);
+                    if (!mapToVariable_uri) continue;
+
+                    var def_variable = get_individual(ticket, mapToVariable_uri);
+                    if (!def_variable) continue;
+
+                    var new_variable = generate_variable(ticket, def_variable, res1, _process, _task, _task_result);
+                    if (new_variable)
                     {
-                        data: new_variable['@'],
-                        type: _Uri
-                    });
-                    addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);
+                        if (f_store == true)
+                        {
+                            put_individual(ticket, new_variable, _event_id);
 
+                            new_vars.push(
+                            {
+                                data: new_variable['@'],
+                                type: _Uri
+                            });
+                            addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);
+
+                        }
+                        else
+                        {
+                            new_vars.push(new_variable);
+                        }
+                    }
                 }
-                else
+                catch (e)
                 {
-                    new_vars.push(new_variable);
+                    print("err: expression: ", expression)
+                    print(e.stack);
                 }
+
             }
-    }
-    catch (e)
-    {
-		print ("err: expression: ", expression)
-        print(e.stack);
-    }
-            
-			}
-			else
-			{
-				//            print("[WORKFLOW][create_and_mapping_variables]: map not found :" + mapping[i].data);
-			}	
+            else
+            {
+                //            print("[WORKFLOW][create_and_mapping_variables]: map not found :" + mapping[i].data);
+            }
         }
 
         return new_vars;
