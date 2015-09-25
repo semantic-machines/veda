@@ -120,14 +120,12 @@ veda.Module(function (veda) { "use strict";
 				catch (e) { self._.properties[property_uri] = property_uri; }
 				return self._.properties[property_uri];
 			},
-			
 			set: function (value) { 
 				if (self._.properties[property_uri] == value) return; 
 				self._.properties[property_uri] = value; 
 			},
-			
-			configurable: true
-		
+			configurable: true,
+			enumerable: true
 		});
 		
 		var filteredStrings = [];
@@ -170,6 +168,23 @@ veda.Module(function (veda) { "use strict";
 			configurable: true
 		
 		});
+		return this;
+	};
+	
+	/**
+	 * @method
+	 * 
+	 * Remove property from individual  
+	 * 
+	 * @param {String} property_uri name of property
+	 */
+	proto.removeProperty = function (property_uri) {
+		delete this._.properties[property_uri];
+		delete this[property_uri];
+		delete this._.individual[property_uri];
+		delete this._.values[property_uri];
+		delete this.properties[property_uri];
+		this._.sync = false;
 		return this;
 	};
 
