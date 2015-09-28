@@ -489,14 +489,15 @@ v-wf:SimpleNetTemplate
   			<veda-control rel="v-wf:completedMapping" type="link" class="VCcompletedMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedMapping">
 	  			<div deleteButton="hide" class="VCcompletedMapping">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/individual/@/#main">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -891,18 +892,20 @@ v-wf:TaskTemplateAsProperties
   			<veda-control about="@" rel="v-wf:executor" type="link" class="VCexecutor -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div class="VCexecutor" rel="v-wf:executor" style="display:none;">
 	  			<div>
-	  				<span property="v-wf:executorExpression"></span>
-	  				<span property="v-s:script"></span>
-	  				<span rel="v-s:employee" template="v-ui:LabelTemplate"></span>
-	  				<a href="#/individual/@/#main//edit"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/individual/@/#main//edit">
+		  				<span property="v-wf:executorExpression"></span>
+		  				<span property="v-s:script"></span>
+		  				<span rel="v-s:employee" template="v-ui:LabelTemplate"></span>
+	  				</a>
 				</div>
 			</div>
 			<div class="viewVCexecutor" about="@" rel="v-wf:executor">
 	  			<div>
-	  				<span property="v-wf:executorExpression"></span>
-	  				<span property="v-s:script"></span>
-	  				<span rel="v-s:employee" template="v-ui:LabelTemplate"></span>
-	  				<a href="#/individual/@/#main//edit"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/individual/@/#main//edit">
+		  				<span property="v-wf:executorExpression"></span>
+		  				<span property="v-s:script"></span>
+		  				<span rel="v-s:employee" template="v-ui:LabelTemplate"></span>
+	  				</a>
 				</div>
 			</div>		
   		</td>
@@ -963,14 +966,15 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:startingMapping" type="link" class="VCstartingMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingMapping">
 	  			<div deleteButton="hide" class="VCstartingMapping">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/individual/@/#main">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -983,14 +987,15 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:completedMapping" type="link" class="VCcompletedMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedMapping">
 	  			<div deleteButton="hide" class="VCcompletedMapping">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/individual/@/#main">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -1003,14 +1008,15 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:startingExecutorJournalMap" type="link" class="VCstartingExecutorJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingExecutorJournalMap">
 	  			<div deleteButton="hide" class="VCstartingExecutorJournalMap">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/individual/@/#main">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -1023,14 +1029,15 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:completedExecutorJournalMap" type="link" class="VCcompletedExecutorJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedExecutorJournalMap">
 	  			<div deleteButton="hide" class="VCcompletedExecutorJournalMap">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/individual/@/#main">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -1043,14 +1050,15 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:startingJournalMap" type="link" class="VCstartingJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingJournalMap">
 	  			<div deleteButton="hide" class="VCstartingJournalMap">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+		  			#<a href="#/individual/@/#main">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -1063,14 +1071,15 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:completedJournalMap" type="link" class="VCcompletedJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedJournalMap">
 	  			<div deleteButton="hide" class="VCcompletedJournalMap">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/individual/@/#main">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -1083,14 +1092,15 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:wosResultsMapping" type="link" class="VCwosResultsMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:wosResultsMapping">
 	  			<div deleteButton="hide" class="VCwosResultsMapping">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/individual/@/#main">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -1099,9 +1109,10 @@ v-wf:TaskTemplateAsProperties
 		<td about="v-wf:hasFlow" property="rdfs:label"></td>
 		<td about="@" rel="v-wf:hasFlow">
 			<div>
-			    <strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
-			    [<span about="@" property="v-wf:predicate"></span>]
-			    <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+				#<a href="#/individual/@/#main">
+				    <strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
+				    [<span about="@" property="v-wf:predicate"></span>]
+			    </a>
 			</div>
 		</td>
 	</tr>
@@ -1178,9 +1189,10 @@ v-wf:ConditionTemplateAsProperties
 		<td about="v-wf:hasFlow" property="rdfs:label"></td>
 		<td about="@" rel="v-wf:hasFlow">
 			<div>
-			    <strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
-			    [<span about="@" property="v-wf:predicate"></span>]
-			    <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+				#<a href="#/individual/@/#main">
+				    <strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
+				    [<span about="@" property="v-wf:predicate"></span>]
+			    </a>
 			</div>
 		</td>
 	</tr>
@@ -1297,21 +1309,21 @@ v-wf:ProcessPropsTemplate
 	</div>
 	<div id="localVariable">
 		<em><h5 about="v-wf:localVariable" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:localVariable" template="v-wf:VariableTemplate"></li></ol>
+		<span rel="v-wf:localVariable" template="v-wf:VariableTemplate"></span>
 		<hr>
 	</div>
 	<div id="inVars">
 		<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:inVars" template="v-wf:VariableTemplate"></li></ol>
+		<span rel="v-wf:inVars" template="v-wf:VariableTemplate"></span>
 		<hr>
 	</div>
 	<div id="outVars">
 		<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ol>
+		<span rel="v-wf:outVars" template="v-wf:VariableTemplate"></span>
 	</div>
 	<div id="localVars">
 		<em><h5 about="v-wf:localVars" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:localVars" template="v-wf:VariableTemplate"></li></ol>
+		<span rel="v-wf:localVars" template="v-wf:VariableTemplate"></span>
 		<hr>
 	</div>	
 </div>
@@ -1337,17 +1349,17 @@ v-wf:WorkItemTemplate
 	<hr>
 	<div id="inVars">
 		<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:inVars" template="v-wf:VariableTemplate"></li></ol>
+		<span rel="v-wf:inVars" template="v-wf:VariableTemplate"></span>
 		<hr>
 	</div>
 	<div id="outVars">
 		<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ol>
+		<span rel="v-wf:outVars" template="v-wf:VariableTemplate"></span>
 		<hr>
 	</div>
 	<div id="workOrderList">
 		<em><h5 about="v-wf:workOrderList" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:workOrderList" template="v-wf:WorkOrderTemplate"></li></ol>
+		<span rel="v-wf:workOrderList" template="v-wf:WorkOrderTemplate"></span>
 		<hr>		
 	</div>
 </div>

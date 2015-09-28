@@ -31,7 +31,7 @@ function prepare_decision_form(ticket, document)
         var _process = get_individual(ticket, forProcess_uri);
         if (!_process) return;
 
-		var trace_journal_uri = create_new_subjournal (forProcess_uri, work_item, "prepare_decision_form:" + decision_form['@'])
+        var trace_journal_uri = create_new_subjournal(forProcess_uri, work_item, "prepare_decision_form:" + decision_form['@'])
 
         //print("[WORKFLOW][DF1].2");
 
@@ -97,7 +97,7 @@ function prepare_work_order(ticket, document)
         var _process = get_individual(ticket, forProcess_uri);
         if (!_process) return;
 
-		var trace_journal_uri = create_new_subjournal (forProcess_uri, _work_order, "prepare_work_order:" + _work_order['@'])
+        var trace_journal_uri = create_new_subjournal(forProcess_uri, _work_order, "prepare_work_order:" + _work_order['@'])
 
         var f_inVars = work_item['v-wf:inVars'];
         if (!f_inVars)
@@ -434,11 +434,11 @@ function prepare_work_order(ticket, document)
                 print("[PWO].completedMapping3, task_output_vars=", toJson(task_output_vars));
             }
 
-//            if (task_output_vars.length > 0)
-//            {
-//                document['v-wf:outVars'] = task_output_vars;
-//                put_individual(ticket, document, _event_id);
-//            }
+            //            if (task_output_vars.length > 0)
+            //            {
+            //                document['v-wf:outVars'] = task_output_vars;
+            //                put_individual(ticket, document, _event_id);
+            //            }
 
             // определим переход на следующие задачи в зависимости от результата
             // res должен быть использован при eval каждого из предикатов
@@ -562,18 +562,18 @@ function prepare_work_item(ticket, document)
     {
         var forProcess = getUri(work_item['v-wf:forProcess']);
 
-		var trace_journal_uri = create_new_subjournal (forProcess, work_item, "prepare_work_item:" + work_item['@'])
+        var trace_journal_uri = create_new_subjournal(forProcess, work_item, "prepare_work_item:" + work_item['@'])
 
-		if (trace_journal_uri)
-			traceToJournal(ticket, trace_journal_uri, "prepare_work_item:", work_item['@']);
+        if (trace_journal_uri)
+            traceToJournal(ticket, trace_journal_uri, "prepare_work_item:", work_item['@']);
 
         var isCompleted = document['v-wf:isCompleted'];
         if (isCompleted)
         {
             if (isCompleted[0].data === true)
             {
-				if (trace_journal_uri)
-					traceToJournal(ticket, trace_journal_uri, "prepare_work_item:completed, exit", work_item['@']);
+                if (trace_journal_uri)
+                    traceToJournal(ticket, trace_journal_uri, "prepare_work_item:completed, exit", work_item['@']);
 
                 return;
             }
@@ -709,26 +709,26 @@ function prepare_work_item(ticket, document)
                         var process = new Context(_process, ticket);
                         //var context = task;
 
-						try
-						{
-							var result = eval(expression);
+                        try
+                        {
+                            var result = eval(expression);
 
-							//print(" task: result of v-wf:ExecutorDefinition=", toJson(result));
+                            //print(" task: result of v-wf:ExecutorDefinition=", toJson(result));
 
-							if (result !== undefined && result.length > 0)
-							{
-								for (var i3 = 0; i3 < result.length; i3++)
-								{
-									executor_list.push(result[i3]);
-								}
-							}
-						}
-						catch (e)
-						{
-							print("исполнители не были определены [", expression, "]");
-							print(e.stack);
-						}
-						
+                            if (result !== undefined && result.length > 0)
+                            {
+                                for (var i3 = 0; i3 < result.length; i3++)
+                                {
+                                    executor_list.push(result[i3]);
+                                }
+                            }
+                        }
+                        catch (e)
+                        {
+                            print("исполнители не были определены [", expression, "]");
+                            print(e.stack);
+                        }
+
                     }
                     else
                     {
