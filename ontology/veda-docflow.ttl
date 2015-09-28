@@ -268,3 +268,15 @@ v-df:PsDescriptionInDecision
   rdfs:label "Comment propertys specification for IdeaRouteStartForm"@en ;
   rdfs:label "Спецификация комментария в поручении стартовой формы"@ru ;
 .
+
+mnd-s-asppd:PsAction_dateTo
+  rdf:type v-ui:DatetimePropertySpecification ;
+  rdfs:label "Спецификация контрольной даты для класса IdeaRouteStartForm"@ru ;
+  rdfs:label "Preferences property specification for dateFrom in mnd-s-pdr"@en ;
+  v-ui:forClass mnd-s:Action ;
+  v-ui:forProperty v-s:dateTo ;
+  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
+  v-ui:tooltip "Required, single value. Format: 2011-08-19"@en ;
+.
