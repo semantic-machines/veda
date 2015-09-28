@@ -527,14 +527,13 @@ v-ui:LabelTemplateWithEditLink
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с меткой"@ru ;
   rdfs:label "Template with label"@en ;
-  v-ui:template """  
-  <span id="label" property="rdfs:label"></span>
-  <a href="#/individual/@/#main//edit">
-	<i class='glyphicon glyphicon-share-alt'></i>
-  </a>
+  v-ui:template """
+  <span>  
+  # <a href="#/individual/@/#main//edit"><span id="label" property="rdfs:label"></span></a>
+  </span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
-  	  template.first().text(individual.id);
+  	  template.first().first().first().text(individual.id);
     }
   </script>
   """ ;

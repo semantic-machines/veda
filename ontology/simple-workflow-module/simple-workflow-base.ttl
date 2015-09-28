@@ -604,15 +604,19 @@ s-wf:UserTaskFormTemplate
           </div>
         </div>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                <strong about="v-wf:from" property="rdfs:label" class="text-muted">От кого</strong>
                <div about="@" rel="v-wf:from" template="v-ui:LabelTemplate"></div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                <strong about="v-wf:to" property="rdfs:label" class="text-muted">Кому</strong>
                <div about="@" rel="v-wf:to" template="v-ui:LabelTemplate"></div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
+               <strong about="v-s:description" property="rdfs:label" class="text-muted">Когда</strong>
+               <div about="@" property="v-s:description"></div>
+            </div>            
+            <div class="col-md-3">
                <strong about="v-wf:dateGiven" property="rdfs:label" class="text-muted">Когда</strong>
                <div about="@" property="v-wf:dateGiven"></div>
             </div>

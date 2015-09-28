@@ -1100,6 +1100,30 @@ v-s:year
   rdfs:label "год"@ru ;
   rdfs:range xsd:integer ;
 .
+################################ REPORTS START ####################################################
+v-s:ReportsForClass
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Reports list"@en ;
+  rdfs:label "Список отчетов"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-ui:forClass
+  rdfs:domain v-s:ReportsForClass ;
+.
+v-s:filePath
+  rdfs:domain v-s:ReportsForClass ;
+.
+v-s:fileFormat
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "file format"@en ;
+  rdfs:label "формат файла"@ru ;
+  rdfs:domain v-s:ReportsForClass ;  
+  rdfs:range xsd:string ;
+.
+
+################################ REPORTS END ####################################################
+
 ################################ JOURNAL ####################################################
 v-s:Journal
   rdf:type owl:Class ;
