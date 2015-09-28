@@ -129,6 +129,26 @@ v-fs:LabelSpec
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:minCardinality "1"^^xsd:integer ;
 .
+v-fs:RequestMgmt
+  rdf:type v-b:Bundle ;
+  rdfs:label "Request management"@en ;
+  rdfs:label "Управление запросом"@ru ;
+.
+v-fs:SavedRequests
+  rdf:type v-b:Bundle ;
+  rdfs:label "Saved requests"@en ;
+  rdfs:label "Сохраненные запросы"@ru ;
+.
+v-fs:Fulltext
+  rdf:type v-b:Bundle ;
+  rdfs:label "Fulltext"@en ;
+  rdfs:label "Полнотекстовый"@ru ;
+.
+v-fs:Attributive
+  rdf:type v-b:Bundle ;
+  rdfs:label "Attributive"@en ;
+  rdfs:label "Атрибутивный"@ru ;
+.
 v-fs:Request
   rdf:type v-b:Bundle ;
   rdfs:label "Request"@en ;
@@ -178,21 +198,42 @@ v-fs:SearchTemplate
 	<div class="container-fluid">
 		<h3 about="v-fs:Find" property="rdfs:label"></h3>
 		<hr>
-		<div id="ft-holder"></div>
-		<hr>
-		<h4 about="v-b:Registries" property="rdfs:label"></h4>
-		<ol id="regs"></ol>
+		<div class="row">
+			<div class="col-md-2 col-sm-3">
+				<h4></h4>
+				<ul class="nav nav-pills nav-stacked" role="tablist">
+					<li role="presentation" class="active"><a href="#fulltext" about="v-fs:Fulltext" property="rdfs:label" aria-controls="fulltext" role="tab" data-toggle="tab"></a></li>
+					<li role="presentation"><a href="#attributive" about="v-fs:Attributive" property="rdfs:label" aria-controls="attributive" role="tab" data-toggle="tab"></a></li>
+				</ul>
+				<hr>
+				<h4 about="v-fs:SavedRequests" property="rdfs:label"></h4>
+				<ol id="saved"></ol>
+			</div>
+			<div class="col-md-10 col-sm-9" style="border-left: 1px solid gainsboro;">
+				<div class="tab-content">
+					<div role="tabpanel" class="tab-pane active" id="fulltext"></div>
+					<div role="tabpanel" class="tab-pane" id="attributive"></div>
+				</div>
+			</div>
+		</div>
 	</div>
 	<script>
 		var self = individual,
-			ftHolder = $("#ft-holder", template);
+			ftHolder = $("#fulltext", template),
+			attrHolder = $("#attributive", template);
 		if (!self.ftRequest) {
 			self.ftRequest = new veda.IndividualModel();
 			self.ftRequest["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
 		}
 		self.ftRequest.present(ftHolder, undefined, "edit");
+
+		if (!self.attrRequest) {
+			self.attrRequest = new veda.IndividualModel();
+			self.attrRequest["rdf:type"] = [ new veda.IndividualModel("v-fs:TypedRequest") ];
+		}
+		self.attrRequest.present(attrHolder, undefined, "edit");
 		
-		var regsHolder = $("#regs", template),
+		var regsHolder = $("#saved", template),
 			asp = veda.user.aspect,
 			regs = asp["v-asp:hasRegistry"];
 		if (regs) {
@@ -262,65 +303,63 @@ v-fs:FulltextRequestTemplate
 <div role="tabpanel">
 	<h4 about="@" property="rdfs:label"></h4>
 	<!-- Nav tabs -->
-	<ul class="nav nav-pills" role="tablist" id="tabs">
-		<li role="presentation" class="active"><a id="params-pill" href="#params" about="v-fs:Params" property="rdfs:label" aria-controls="params" role="tab" data-toggle="tab"></a></li>
-		<li role="presentation"><a id="results-pill" href="#results" aria-controls="results" role="tab" data-toggle="tab"><span href="#params" about="v-fs:Results" property="rdfs:label"></span> <span class="badge" id="results-count">0</span></a></li>
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active"><a id="params-pill-ft" href="#params-ft" about="v-fs:Params" property="rdfs:label" aria-controls="params-ft" role="tab" data-toggle="tab"></a></li>
+		<li role="presentation"><a id="results-pill-ft" href="#results-ft" aria-controls="results-ft" role="tab" data-toggle="tab"><span href="#params-ft" about="v-fs:Results" property="rdfs:label"></span> <span class="badge" id="results-count">0</span></a></li>
+		<li role="presentation"><a href="#mgmt-ft" about="v-fs:RequestMgmt" property="rdfs:label" aria-controls="mgmt-ft" role="tab" data-toggle="tab"></a></li>
 	</ul>
 	<br />
 	<!-- Tab panes -->
 	<div class="tab-content">
-		<div role="tabpanel" class="tab-pane active" id="params">
-			<div class="row">
-				<div class="col-md-10 col-sm-8">
-					<form role="form">
-						<h4 about="v-fs:EnterQuery" property="rdfs:label"></h4>
-						<div class="form-group">
-							<div class="input-group">
-								<veda-control id="manual" type="string" property="v-fs:manualQuery"></veda-control>
-								<span class="input-group-btn">
-									<button type="submit" id="submit" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
-								</span>
-							</div>
-						</div>
-						<h4 about="v-fs:ChooseType" property="rdfs:label"></h4>
-						<div rel="v-fs:typeToSearch" template="v-ui:ClassNameLabelTemplate"></div>
-						<veda-control rel="v-fs:typeToSearch" type="link" class="fulltext dropdown"></veda-control>
-					</form>
-				</div>
-				<div class="col-md-2 col-sm-4" style="border-left: 1px solid lightgray;">
-					Управление запросом
-					<div><strong property="rdfs:label" class="view -edit"></strong></div>
-					<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
-					<br>
-					<div>
-						<button type="button" class="action btn btn-xs btn-primary view -edit" id="edit">Редактировать</button>
-						<button type="button" class="action btn btn-xs btn-success -view edit" id="save">Сохранить</button>
-						<button type="button" class="action btn btn-xs btn-link view -edit" id="delete">Удалить</button>
+		<div role="tabpanel" class="tab-pane active" id="params-ft">
+			<div class="not-found alert alert-warning" style="display: none">
+				<strong about="v-fs:Empty" property="rdfs:label"></strong> <span about="v-fs:NothingFound" property="rdfs:label"></span>
+			</div>
+			<form role="form">
+				<h4 about="v-fs:EnterQuery" property="rdfs:label"></h4>
+				<div class="form-group">
+					<div class="input-group">
+						<veda-control id="manual" type="string" property="v-fs:manualQuery"></veda-control>
+						<span class="input-group-btn">
+							<button type="submit" id="submit" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
+						</span>
 					</div>
 				</div>
-			</div>
+				<h4 about="v-fs:ChooseType" property="rdfs:label"></h4>
+				<div rel="v-fs:typeToSearch" template="v-ui:ClassNameLabelTemplate"></div>
+				<veda-control rel="v-fs:typeToSearch" type="link" class="fulltext dropdown"></veda-control>
+			</form>
 		</div>
-		<div role="tabpanel" class="tab-pane" id="results">
-			<div class="container-fluid" id="search-results">
+		<div role="tabpanel" class="tab-pane" id="results-ft">
+			<div class="not-found alert alert-warning" style="display: none">
+				<strong about="v-fs:Empty" property="rdfs:label"></strong> <span about="v-fs:NothingFound" property="rdfs:label"></span>
+			</div>
+			<div id="search-results">
 				<ol id="results-list"></ol>
-				<hr/>
 				<div class="text-center">
 					<ul class="pagination" id="pager"></ul>
 					<br />
 				</div>
 			</div>
 		</div>
-		<div id="not-found" class="alert alert-warning" style="display: none">
-			<strong about="v-fs:Empty" property="rdfs:label"></strong> <span about="v-fs:NothingFound" property="rdfs:label"></span>
+		<div role="tabpanel" class="tab-pane" id="mgmt-ft">
+			<div><strong property="rdfs:label" class="view -edit"></strong></div>
+			<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
+			<br>
+			<div>
+				<button type="button" class="action btn btn-xs btn-primary view -edit" id="edit">Редактировать</button>
+				<button type="button" class="action btn btn-xs btn-success -view edit" id="save">Сохранить</button>
+				<button type="button" class="action btn btn-xs btn-link view -edit" id="delete">Удалить</button>
+			</div>
 		</div>
 	</div>
 </div>
 <script>
 	var self = individual,
 		asp = veda.user.aspect,
-		notFound = $("#not-found", template),
-		params = $("a#params-pill", template),
-		results = $("a#results-pill", template),
+		notFound = $(".not-found", template),
+		params = $("a#params-pill-ft", template),
+		results = $("a#results-pill-ft", template),
 		pager = $("#pager", template),
 		resultsList = $("#results-list", template),
 		resultsCount = $("#results-count", template),
@@ -467,14 +506,14 @@ v-fs:TypedRequestModel
 		switch (property_uri) {
 			case "v-fs:typeToSearch": 
 				self.form = new veda.IndividualModel();
-				self.form["rdf:type"] = values.splice(0);
+				self.form["rdf:type"] = values.slice(0);
 				for (var property_uri in self.properties) {
 					if ( property_uri === "rdf:type" ||
 						 property_uri === "v-s:author" ||
 						 property_uri === "v-s:deleted" ||
 						 property_uri === "rdfs:label"
 					) { continue; }
-					if (self.form[property_uri]) { self.form[property_uri] = self[property_uri].splice(0); }
+					if (self.form[property_uri]) { self.form[property_uri] = self[property_uri].slice(0); }
 				}
 				self.form.on("individual:propertyModified", handler);
 				q = mkQuery(self.form);
@@ -491,7 +530,7 @@ v-fs:TypedRequestModel
 			 property_uri !== "rdfs:label"
 		) { 
 			if (!self[property_uri]) self.defineProperty(property_uri);
-			self[property_uri] = values.splice(0);
+			self[property_uri] = values.slice(0);
 			q = mkQuery(self.form);
 		}
 	}
@@ -522,36 +561,25 @@ v-fs:TypedRequestTemplate
 <div role="tabpanel">
 	<h4 about="@" property="rdfs:label"></h4>
 	<!-- Nav tabs -->
-	<ul class="nav nav-pills" role="tablist" id="tabs">
-		<li role="presentation" class="active"><a id="params-pill" href="#params" about="v-fs:Params" property="rdfs:label" aria-controls="params" role="tab" data-toggle="tab"></a></li>
-		<li role="presentation"><a id="results-pill" href="#results" aria-controls="results" role="tab" data-toggle="tab"><span href="#params" about="v-fs:Results" property="rdfs:label"></span> <span class="badge" id="results-count">0</span></a></li>
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active"><a id="params-pill-at" href="#params-at" about="v-fs:Params" property="rdfs:label" aria-controls="params-at" role="tab" data-toggle="tab"></a></li>
+		<li role="presentation"><a id="results-pill-at" href="#results-at" aria-controls="results-at" role="tab" data-toggle="tab"><span href="#params-at" about="v-fs:Results" property="rdfs:label"></span> <span class="badge" id="results-count">0</span></a></li>
+		<li role="presentation"><a href="#mgmt-at" about="v-fs:RequestMgmt" property="rdfs:label" aria-controls="mgmt-at" role="tab" data-toggle="tab"></a></li>
 	</ul>
 	<br />
 	<!-- Tab panes -->
+	<div id="not-found" class="alert alert-warning" style="display: none">
+		<strong about="v-fs:Empty" property="rdfs:label"></strong> <span about="v-fs:NothingFound" property="rdfs:label"></span>
+	</div>
 	<div class="tab-content">
-		<div role="tabpanel" class="tab-pane active" id="params">
-			<div class="row">
-				<div class="col-md-10 col-sm-8">
-					<h4 about="v-fs:ChooseType" property="rdfs:label"></h4>
-					<veda-control rel="v-fs:typeToSearch" type="link" class="fulltext dropdown"></veda-control>
-					<br>
-					<div id="form-holder"></div>
-					<button type="button" id="find" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
-				</div>
-				<div class="col-md-2 col-sm-4" style="border-left: 1px solid lightgray;">
-					Управление запросом
-					<div><strong property="rdfs:label" class="view -edit"></strong></div>
-					<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
-					<br>
-					<div>
-						<button type="button" class="action btn btn-xs btn-primary view -edit" id="edit">Редактировать</button>
-						<button type="button" class="action btn btn-xs btn-success -view edit" id="save">Сохранить</button>
-						<button type="button" class="action btn btn-xs btn-link view -edit" id="delete">Удалить</button>
-					</div>
-				</div>
-			</div>
+		<div role="tabpanel" class="tab-pane active" id="params-at">
+			<h4 about="v-fs:ChooseType" property="rdfs:label"></h4>
+			<veda-control rel="v-fs:typeToSearch" type="link" class="fulltext dropdown"></veda-control>
+			<br>
+			<div id="form-holder"></div>
+			<button type="button" id="find" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
 		</div>
-		<div role="tabpanel" class="tab-pane" id="results">
+		<div role="tabpanel" class="tab-pane" id="results-at">
 			<div class="container-fluid" id="search-results">
 				<ol id="results-list"></ol>
 				<hr/>
@@ -561,8 +589,15 @@ v-fs:TypedRequestTemplate
 				</div>
 			</div>
 		</div>
-		<div id="not-found" class="alert alert-warning" style="display: none">
-			<strong about="v-fs:Empty" property="rdfs:label"></strong> <span about="v-fs:NothingFound" property="rdfs:label"></span>
+		<div role="tabpanel" class="tab-pane" id="mgmt-at">
+			<div><strong property="rdfs:label" class="view -edit"></strong></div>
+			<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
+			<br>
+			<div>
+				<button type="button" class="action btn btn-xs btn-primary view -edit" id="edit">Редактировать</button>
+				<button type="button" class="action btn btn-xs btn-success -view edit" id="save">Сохранить</button>
+				<button type="button" class="action btn btn-xs btn-link view -edit" id="delete">Удалить</button>
+			</div>
 		</div>
 	</div>
 </div>
@@ -570,8 +605,8 @@ v-fs:TypedRequestTemplate
 	var self = individual,
 		asp = veda.user.aspect,
 		notFound = $("#not-found", template),
-		params = $("a#params-pill", template),
-		results = $("a#results-pill", template),
+		params = $("a#params-pill-at", template),
+		results = $("a#results-pill-at", template),
 		pager = $("#pager", template),
 		resultsList = $("#results-list", template),
 		resultsCount = $("#results-count", template),

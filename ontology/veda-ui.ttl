@@ -72,7 +72,7 @@ v-ui:hasModel
   rdfs:domain rdfs:Class ;
   rdfs:label "has model"@en ;
   rdfs:label "имеет модель"@ru ;
-  rdfs:range v-ui:ClassModel ;
+  rdfs:range v-s:ClassModel ;
 .
 v-ui:hasSpecification
   rdf:type owl:ObjectProperty ;
