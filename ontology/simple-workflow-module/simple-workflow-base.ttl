@@ -639,6 +639,7 @@ s-wf:UserTaskFormTemplate
       </div>
       <div class="panel-footer">
         <button type="button" class="action btn btn-warning" id="send">Отправить</button>
+        <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
       </div>
     </div>
     <script type="text/javascript">
@@ -861,6 +862,39 @@ s-wf:map_docID_to_src
 	v-wf:mappingExpression	"process.getInputVariable ('docId')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
+
+##########################################################################################################################################
+
+s-wf:var_actor_task 
+        rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "actor_task" ;
+        rdfs:label "actor task"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_decision_of_set_responsible_2_actor_task
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_actor_task ;	
+	v-wf:mappingExpression	"process.getLocalVariable ('decision_of_set_responsible')" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+
+s-wf:map_description_task_2_actor_task
+	rdf:type v-wf:ExecutorDefinition ;
+	v-wf:mappingExpression """
+	
+	get_properties_chain (process.getInputVariable('actor_task'), 
+							[{$go:'mnd-s:hasAction'}, {$get:'v-s:description', $eq:{'v-s:responsible':process.getExecutor ()}}] 
+						  )
+	
+	""";
+	rdfs:label "описание задачи из формы решения пользователя"@ru ;
+.
+
+##########################################################################################################################################
+
+
 s-wf:transformation_uri
         rdf:type v-wf:VarDefine ;
 	rdfs:isDefinedBy s-wf: ;
@@ -1020,7 +1054,7 @@ s-wf:nc_t3 a v-wf:Task;
     v-wf:locationY "525"^^xsd:integer;
     v-wf:belongsTo s-wf:net_coordination;
     v-wf:hasFlow s-wf:nc_f_t3_t1;
-    rdfs:label "установить исполнителя"^^xsd:string;
+    rdfs:label "установить исполнителя и подготовить задание"^^xsd:string;
     v-wf:completedMapping s-wf:map_set_coordinator;
     .
 

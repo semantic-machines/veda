@@ -825,49 +825,85 @@ function get_trace_journal(document, process)
 }
 
 
-function get_properties_chain(var1, _path)
+function get_properties_chain(var1, query)
 {
     var res = [];
 
-    if (arguments.length < 2)
+    if (query.length < 1)
         return res;
 
     var doc;
-//    print ('@@@get_properties_chain#1 var1=', toJson (var1));
+    print ('@@@get_properties_chain#1 var1=', toJson (var1));
     doc = get_individual(ticket, getUri (var1));
 
 	if (doc)
-		traversal(doc, arguments, 1, res);
+		traversal(doc, query, 0, res);
 
-//    print ('@@@get_properties_chain #2 res=', toJson (res));
+    print ('@@@get_properties_chain #2 res=', toJson (res));
 
     return res;
 }
 
-function traversal(indv, path, pos_in_path, result)
+function traversal(indv, query, pos_in_path, result)
 {
-    var see_prop = path[pos_in_path];
+    var condition = query[pos_in_path];
 
-//    print ('@@@ traversal#0 =', toJson (see_prop), ", indv=", toJson (indv));
+    print ('@@@ traversal#0 condition=', toJson (condition), ", indv=", toJson (indv));
 
-    var ffs = indv[see_prop];
-//    print ('@@@ traversal#1 ffs =', toJson (ffs));
-    if (ffs)
-    {
+	var op_get;
+	var op_go;
+	var op_eq;
+	for (var key in condition)
+	{
+		var op = key;
+		
+		if (op == '$get')
+			op_get = condition[key];
+		
+		if (op == '$go')
+			op_go = condition[key];
+	
+		if (op == '$eq')
+			op_eq = condition[key];
+	}
+	if (op_go)
+	{
+		var ffs = indv[op_go];
+
         for (var i in ffs)
         {
-//    print ('@@@ traversal#2 ffs[i]=', ffs[i].data);
-            if (pos_in_path >= path.length - 1)
-            {
-//    print ('@@@ traversal#3 push ', ffs[i].data);
-                result.push(ffs[i]);
-            }
-            else
-            {
+    print ('@@@ traversal#2 ffs[i]=', ffs[i].data);
                 var doc = get_individual(ticket, ffs[i].data);
-//    print ('@@@ traversal#4 doc=', toJson (doc));
-                traversal(doc, path, pos_in_path + 1, result);
-            }
+    print ('@@@ traversal#4 doc=', toJson (doc));
+                traversal(doc, query, pos_in_path + 1, result);
         }
-    }
+	}
+	
+	if (op_get)
+    {
+		var is_get = true;
+	if (op_eq)
+    {
+		var kk = Object.keys(op_eq);
+		print ("###1 kk=", toJson (kk));
+		var vv = op_eq[vv];
+		print ("###2 vv=", toJson (vv));
+		
+	}
+	
+		if (is_get)
+		{
+		var ffs = indv[op_get];
+
+        for (var i in ffs)
+        {
+				print ('@@@ traversal#3 push ', ffs[i].data);
+                result.push(ffs[i]);
+        }
+		}
+	}		
+
 }
+
+
+
