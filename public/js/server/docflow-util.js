@@ -823,3 +823,51 @@ function get_trace_journal(document, process)
         return undefined;
     }
 }
+
+
+function get_properties_chain(var1, _path)
+{
+    var res = [];
+
+    if (arguments.length < 2)
+        return res;
+
+    var doc;
+//    print ('@@@get_properties_chain#1 var1=', toJson (var1));
+    doc = get_individual(ticket, getUri (var1));
+
+	if (doc)
+		traversal(doc, arguments, 1, res);
+
+//    print ('@@@get_properties_chain #2 res=', toJson (res));
+
+    return res;
+}
+
+function traversal(indv, path, pos_in_path, result)
+{
+    var see_prop = path[pos_in_path];
+
+//    print ('@@@ traversal#0 =', toJson (see_prop), ", indv=", toJson (indv));
+
+    var ffs = indv[see_prop];
+//    print ('@@@ traversal#1 ffs =', toJson (ffs));
+    if (ffs)
+    {
+        for (var i in ffs)
+        {
+//    print ('@@@ traversal#2 ffs[i]=', ffs[i].data);
+            if (pos_in_path >= path.length - 1)
+            {
+//    print ('@@@ traversal#3 push ', ffs[i].data);
+                result.push(ffs[i]);
+            }
+            else
+            {
+                var doc = get_individual(ticket, ffs[i].data);
+//    print ('@@@ traversal#4 doc=', toJson (doc));
+                traversal(doc, path, pos_in_path + 1, result);
+            }
+        }
+    }
+}
