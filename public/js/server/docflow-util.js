@@ -833,13 +833,13 @@ function get_properties_chain(var1, query)
         return res;
 
     var doc;
-    print ('@@@get_properties_chain#1 var1=', toJson (var1));
-    doc = get_individual(ticket, getUri (var1));
+    print('@@@get_properties_chain#1 var1=', toJson(var1));
+    doc = get_individual(ticket, getUri(var1));
 
-	if (doc)
-		traversal(doc, query, 0, res);
+    if (doc)
+        traversal(doc, query, 0, res);
 
-    print ('@@@get_properties_chain #2 res=', toJson (res));
+    print('@@@get_properties_chain #2 res=', toJson(res));
 
     return res;
 }
@@ -848,62 +848,81 @@ function traversal(indv, query, pos_in_path, result)
 {
     var condition = query[pos_in_path];
 
-    print ('@@@ traversal#0 condition=', toJson (condition), ", indv=", toJson (indv));
+    print('@@@ traversal#0 condition=', toJson(condition), ", indv=", toJson(indv));
 
-	var op_get;
-	var op_go;
-	var op_eq;
-	for (var key in condition)
-	{
-		var op = key;
-		
-		if (op == '$get')
-			op_get = condition[key];
-		
-		if (op == '$go')
-			op_go = condition[key];
-	
-		if (op == '$eq')
-			op_eq = condition[key];
-	}
-	if (op_go)
-	{
-		var ffs = indv[op_go];
+    var op_get;
+    var op_go;
+    var op_eq;
+    for (var key in condition)
+    {
+        var op = key;
+
+        if (op == '$get')
+            op_get = condition[key];
+
+        if (op == '$go')
+            op_go = condition[key];
+
+        if (op == '$eq')
+            op_eq = condition[key];
+    }
+    if (op_go)
+    {
+        var ffs = indv[op_go];
 
         for (var i in ffs)
         {
-    print ('@@@ traversal#2 ffs[i]=', ffs[i].data);
-                var doc = get_individual(ticket, ffs[i].data);
-    print ('@@@ traversal#4 doc=', toJson (doc));
-                traversal(doc, query, pos_in_path + 1, result);
+            print('@@@ traversal#2 ffs[i]=', ffs[i].data);
+            var doc = get_individual(ticket, ffs[i].data);
+            print('@@@ traversal#4 doc=', toJson(doc));
+            traversal(doc, query, pos_in_path + 1, result);
         }
-	}
-	
-	if (op_get)
-    {
-		var is_get = true;
-	if (op_eq)
-    {
-		var kk = Object.keys(op_eq);
-		print ("###1 kk=", toJson (kk));
-		var vv = op_eq[vv];
-		print ("###2 vv=", toJson (vv));
-		
-	}
-	
-		if (is_get)
-		{
-		var ffs = indv[op_get];
+    }
 
-        for (var i in ffs)
+    if (op_get)
+    {
+        var is_get = true;
+        if (op_eq)
         {
-				print ('@@@ traversal#3 push ', ffs[i].data);
+            is_get = false;
+
+            var kk = Object.keys(op_eq);
+            if (kk)
+            {
+                var field = kk[0];
+
+                var A = indv[field];
+                if (A)
+                {
+                    print("###1 A=", toJson(A));
+                    var B = op_eq[field];
+                    print("###2 B=", toJson(B));
+
+                    for (var i in A)
+                    {
+                        if (A[i].type == B[0].type && A[i].data == B[0].data)
+                        {
+                            is_get = true;
+                    print("###3 A == B");
+                            break;
+                        }
+
+                    }
+
+                }
+            }
+        }
+
+        if (is_get)
+        {
+            var ffs = indv[op_get];
+
+            for (var i in ffs)
+            {
+                print('@@@ traversal#3 push ', ffs[i].data);
                 result.push(ffs[i]);
+            }
         }
-		}
-	}		
+    }
 
 }
-
-
-
