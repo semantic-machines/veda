@@ -73,7 +73,8 @@ v-asp:hasBlank
 v-asp:hasRegistry
 	rdf:type owl:ObjectProperty ;
 	rdfs:domain v-asp:Aspect ;
-	rdfs:range v-fs:SearchRequest ;
+	rdfs:range v-fs:FulltextRequest ;
+	rdfs:range v-fs:AttributiveRequest ;
 	rdfs:label "registry"@en ;
 	rdfs:label "реестр"@ru ;
 .

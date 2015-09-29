@@ -33,6 +33,16 @@ v-fc:Blank
   rdfs:label "Blank"@en ;
   rdfs:subClassOf owl:Thing ;
 .
+v-fc:BlankMgmt
+  rdf:type v-b:Bundle ;
+  rdfs:label "Управление бланком"@ru ;
+  rdfs:label "Blank management"@en ;
+.
+v-fc:SavedBlanks
+  rdf:type v-b:Bundle ;
+  rdfs:label "Saved blanks"@en ;
+  rdfs:label "Сохраненные бланки"@ru ;
+.
 v-fc:Create
   rdf:type v-fc:FunctionCreate ;
   rdfs:label "Create"@en ;
@@ -89,15 +99,21 @@ v-fc:FunctionCreateTemplate
   rdfs:label "Шаблон класса v-fc:FunctionCreate"@ru ;
   v-ui:forClass v-fc:FunctionCreate ;
   v-ui:template """
-<div>
+<div class="container-fluid">
 	<h3 property="rdfs:label"></h3>
 	<hr>	
-	<h4 about="v-fc:ChooseType" property="rdfs:label"></h4>
-	<veda-control rel="v-fc:typeToCreate" type="link" class="fulltext dropdown"></veda-control>
-	<hr>
-	<div id="holder"></div>
-	<h4 about="v-b:Blanks" property="rdfs:label"></h4>
-	<ol id="blanks"></ol>
+	<div class="row">
+		<div class="col-md-2 col-sm-3">
+			<h4 about="v-fc:SavedBlanks" property="rdfs:label"></h4>
+			<ol id="blanks"></ol>
+		</div>
+		<div class="col-md-10 col-sm-9" style="border-left: 1px solid gainsboro;">
+			<h4 about="v-fc:ChooseType" property="rdfs:label"></h4>
+			<veda-control rel="v-fc:typeToCreate" type="link" class="fulltext dropdown"></veda-control>
+			<br>
+			<div id="holder"></div>
+		</div>
+	</div>
 </div>
 <script>
 	var self = individual;
@@ -135,28 +151,34 @@ v-fc:BlankTemplate
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
-<div>
-	<h4><span about="v-fc:Blank" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h4>
-	<div class="row">
-		<div class="col-md-10 col-sm-9">
-			<div id="holder"></div>
+<div role="tabpanel">
+	<h4 about="@" property="rdfs:label"></h4>
+	<!-- Nav tabs -->
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active"><a id="blank-pill" href="#blank" about="v-fc:Blank" property="rdfs:label" aria-controls="blank" role="tab" data-toggle="tab"></a></li>
+		<li role="presentation"><a id="mgmt-pill" href="#mgmt" about="v-fc:BlankMgmt" property="rdfs:label" aria-controls="mgmt" role="tab" data-toggle="tab"></a></li>
+	</ul>
+	<br />
+	<!-- Tab panes -->
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active" id="blank">
+			<div id="object"></div>
 		</div>
-		<div class="col-md-2 col-sm-3" style="border-left: 1px solid lightgray;">
-			Управление бланком
-			<div><strong property="rdfs:label" class="view -edit"></strong></div>
+		<div role="tabpanel" class="tab-pane" id="mgmt">
+			<p about="rdfs:label" property="rdfs:label" class="-view edit"></p>
 			<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
 			<br>
 			<div>
-				<button type="button" class="action btn btn-xs btn-primary view -edit" id="edit">Редактировать</button>
-				<button type="button" class="action btn btn-xs btn-success -view edit" id="save">Сохранить</button>
-				<button type="button" class="action btn btn-xs btn-link view -edit" id="delete">Удалить</button>
+				<button type="button" class="action btn btn-primary view -edit" id="edit">Редактировать</button>
+				<button type="button" class="action btn btn-success -view edit" id="save">Сохранить</button>
+				<button type="button" class="action btn btn-link view -edit" id="delete">Удалить</button>
 			</div>
 		</div>
 	</div>
 </div>
 <script>
 	var self = individual,
-		holder = $("#holder", template),
+		holder = $("#object", template),
 		object = new veda.IndividualModel(),
 		asp = veda.user.aspect;
 	object["rdf:type"] = self["v-fc:typeToCreate"];
