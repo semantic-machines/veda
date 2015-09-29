@@ -343,13 +343,13 @@ v-fs:FulltextRequestTemplate
 			</div>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="mgmt-ft">
-			<div><strong property="rdfs:label" class="view -edit"></strong></div>
+			<p about="rdfs:label" property="rdfs:label" class="-view edit"></p>
 			<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
 			<br>
 			<div>
-				<button type="button" class="action btn btn-xs btn-primary view -edit" id="edit">Редактировать</button>
-				<button type="button" class="action btn btn-xs btn-success -view edit" id="save">Сохранить</button>
-				<button type="button" class="action btn btn-xs btn-link view -edit" id="delete">Удалить</button>
+				<button type="button" class="action btn btn-primary view -edit" id="edit">Редактировать</button>
+				<button type="button" class="action btn btn-success -view edit" id="save">Сохранить</button>
+				<button type="button" class="action btn btn-link view -edit" id="delete">Удалить</button>
 			</div>
 		</div>
 	</div>
@@ -498,10 +498,6 @@ v-fs:TypedRequestModel
 		reopen = self.hasValue("v-fs:reopen")       ? self["v-fs:reopen"][0]    : false,
 		q;
 	
-	if (self.hasValue("v-fs:typeToSearch")) {
-		self.trigger("individual:propertyModified", "v-fs:typeToSearch", self["v-fs:typeToSearch"]);
-	}
-	
 	self.on("individual:propertyModified", function (property_uri, values) {
 		switch (property_uri) {
 			case "v-fs:typeToSearch": 
@@ -510,6 +506,7 @@ v-fs:TypedRequestModel
 				for (var property_uri in self.properties) {
 					if ( property_uri === "rdf:type" ||
 						 property_uri === "v-s:author" ||
+						 property_uri === "v-s:created" ||
 						 property_uri === "v-s:deleted" ||
 						 property_uri === "rdfs:label"
 					) { continue; }
@@ -523,9 +520,15 @@ v-fs:TypedRequestModel
 			case "v-fs:reopen"      : reopen = values.length    ? values[0].toString() : false; break;
 		}
 	});
+
+	if (self.hasValue("v-fs:typeToSearch")) {
+		self.trigger("individual:propertyModified", "v-fs:typeToSearch", self["v-fs:typeToSearch"]);
+	}
+
 	function handler(property_uri, values) {
 		if ( property_uri !== "rdf:type" &&
 			 property_uri !== "v-s:author" &&
+			 property_uri !== "v-s:created" &&
 			 property_uri !== "v-s:deleted" &&
 			 property_uri !== "rdfs:label"
 		) { 
@@ -590,13 +593,13 @@ v-fs:TypedRequestTemplate
 			</div>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="mgmt-at">
-			<div><strong property="rdfs:label" class="view -edit"></strong></div>
+			<p about="rdfs:label" property="rdfs:label" class="-view edit"></p>
 			<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
 			<br>
 			<div>
-				<button type="button" class="action btn btn-xs btn-primary view -edit" id="edit">Редактировать</button>
-				<button type="button" class="action btn btn-xs btn-success -view edit" id="save">Сохранить</button>
-				<button type="button" class="action btn btn-xs btn-link view -edit" id="delete">Удалить</button>
+				<button type="button" class="action btn btn-primary view -edit" id="edit">Редактировать</button>
+				<button type="button" class="action btn btn-success -view edit" id="save">Сохранить</button>
+				<button type="button" class="action btn btn-link view -edit" id="delete">Удалить</button>
 			</div>
 		</div>
 	</div>
