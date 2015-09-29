@@ -18,7 +18,11 @@ veda.Module(function Util(veda) { "use strict";
 	  }
 	  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
 			 s4() + '-' + s4() + s4() + s4();
-	}
+	};
+
+	veda.Util.genUri = function () {
+	    return 'd:a' + veda.Util.guid();
+	};
 
 	veda.Util.construct = function (constr, args) {
 		function F() {
@@ -26,13 +30,13 @@ veda.Module(function Util(veda) { "use strict";
 		}
 		F.prototype = constr.prototype;
 		return new F();
-	}
+	};
 	
-	function isInteger(n) { return n % 1 === 0; }
+	function isInteger(n) { return n % 1 === 0; };
 	
 	function zeroPref(n) {
 		return n > 9 ? n : "0" + n;
-	}
+	};
 	
 	veda.Util.formatDate = function (date) {
 		var day = date.getDate(),

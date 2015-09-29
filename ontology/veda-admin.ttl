@@ -237,7 +237,7 @@ if (ff)
             put_individual(ticket, new_journal, _event_id);
 
             var new_journal_permission = {
-                '@': guid(),
+                '@': genUri(),
                 'rdf:type': [
                     {
                         data: 'v-s:PermissionStatement',

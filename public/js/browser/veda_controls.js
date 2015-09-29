@@ -764,7 +764,7 @@
 			xhr = new XMLHttpRequest(),
 			d = new Date(),
 			path = ["", d.getFullYear(), d.getMonth() + 1, d.getDate()].join("/"),
-			uri = veda.Util.guid(),
+			uri = veda.Util.genUri(),
 			fd = new FormData();
 		xhr.open("POST", url, true);
 		xhr.onreadystatechange = function() {
