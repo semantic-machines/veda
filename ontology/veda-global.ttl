@@ -44,6 +44,15 @@ v-g:GlobalsGroup
   rdfs:label "Globals group"@en ;
   rdfs:label "Группа глобалов"@ru ;
 .
+
+v-g:Membership
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-g:GlobalsGroup ;
+  v-s:resource v-g:OntoVsn ;
+  rdfs:label "Globals мembership"@en ;
+  rdfs:label "Членство глобалов"@ru ;
+.
+
 v-g:GlobalsPermission
   rdf:type v-s:PermissionStatement ;
   v-s:canRead "true"^^xsd:boolean ;
@@ -60,10 +69,4 @@ v-g:GlobalsPermission1
   rdfs:label "Globals permission1"@en ;
   rdfs:label "Запись о выдаче прав для глобалов1"@ru ;
 .
-v-g:Membership
-  rdf:type v-s:Membership ;
-  v-s:memberOf v-g:GlobalsGroup ;
-  v-s:resource v-g:OntoVsn ;
-  rdfs:label "Globals мembership"@en ;
-  rdfs:label "Членство глобалов"@ru ;
-.
+
