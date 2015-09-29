@@ -40,10 +40,10 @@ v-fs:FulltextRequest
   rdfs:label "Полнотекстовый запрос"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
-v-fs:TypedRequest
+v-fs:AttributiveRequest
   rdf:type owl:Class ;
-  rdfs:label "Typed request"@en ;
-  rdfs:label "Типизированный запрос"@ru ;
+  rdfs:label "Attributive request"@en ;
+  rdfs:label "Аттрибутивный запрос"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
 v-fs:Search
@@ -51,7 +51,7 @@ v-fs:Search
   rdfs:label "Search"@en ;
   rdfs:label "Найти"@ru ;
 .
-v-fs:manualQuery
+v-fs:fulltextQuery
   rdf:type owl:DatatypeProperty ;
   rdfs:label "query"@en ;
   rdfs:label "запрос"@ru ;
@@ -84,35 +84,35 @@ v-fs:typeToSearch
   rdfs:label "тип искомого объекта"@ru ;
   rdfs:label "type of object to search"@en ;
   rdfs:domain v-fs:FulltextRequest ;
-  rdfs:domain v-fs:TypedRequest ;
+  rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range owl:Class ;
   rdfs:range rdfs:Class ;
 .
 v-fs:TypeToSearchSpecFT
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:FulltextRequest"@ru ;
-  rdfs:label "v-fs:typeToSearch property specification for class v-fs:TypedRequest"@en ;
+  rdfs:label "v-fs:typeToSearch property specification for class v-fs:AttributiveRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:forProperty v-fs:typeToSearch ;
   v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
   v-ui:tooltip "Link to instance of Class class"@en ;
 .
-v-fs:TypeToSearchSpecTyped
+v-fs:TypeToSearchSpecAttributive
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:FulltextRequest"@ru ;
-  rdfs:label "v-fs:typeToSearch property specification for class v-fs:TypedRequest"@en ;
-  v-ui:forClass v-fs:TypedRequest ;
+  rdfs:label "v-fs:typeToSearch property specification for class v-fs:AttributiveRequest"@en ;
+  v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:forProperty v-fs:typeToSearch ;
   v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
   v-ui:tooltip "Link to instance of Class class"@en ;
   v-ui:maxCardinality "1"^^xsd:integer ;
 .
-v-fs:ManualQuerySpec
+v-fs:FulltextQuerySpec
   rdf:type v-ui:StringPropertySpecification ;
-  rdfs:label "Спецификация свойства v-fs:manualQuery для класса v-fs:SearchRequest"@ru ;
-  rdfs:label "v-fs:manualQuery property specification for class v-fs:SearchRequest"@en ;
+  rdfs:label "Спецификация свойства v-fs:fulltextQuery для класса v-fs:SearchRequest"@ru ;
+  rdfs:label "v-fs:fulltextQuery property specification for class v-fs:SearchRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
-  v-ui:forProperty v-fs:manualQuery ;
+  v-ui:forProperty v-fs:fulltextQuery ;
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:tooltip "Введите запрос"@ru ;
   v-ui:tooltip "Enter query"@en ;
@@ -122,7 +122,7 @@ v-fs:LabelSpec
   rdfs:label "Спецификация свойства rdfs:label для класса v-fs:SearchRequest"@ru ;
   rdfs:label "rdfs:label property specification for class v-fs:SearchRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
-  v-ui:forClass v-fs:TypedRequest ;
+  v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:forProperty rdfs:label ;
   v-ui:tooltip "Обязательно. Строка произвольной длины."@ru ;
   v-ui:tooltip "Mandatory. Arbitrary length string."@en ;
@@ -229,7 +229,7 @@ v-fs:SearchTemplate
 
 		if (!self.attrRequest) {
 			self.attrRequest = new veda.IndividualModel();
-			self.attrRequest["rdf:type"] = [ new veda.IndividualModel("v-fs:TypedRequest") ];
+			self.attrRequest["rdf:type"] = [ new veda.IndividualModel("v-fs:AttributiveRequest") ];
 		}
 		self.attrRequest.present(attrHolder, undefined, "edit");
 		
@@ -260,7 +260,7 @@ v-fs:FulltextRequestModel
 	self.on("individual:propertyModified", function (property_uri, values) {
 		switch (property_uri) {
 			case "v-fs:typeToSearch": 
-			case "v-fs:manualQuery" : q = mkQuery(); break;
+			case "v-fs:fulltextQuery" : q = mkQuery(); break;
 			case "v-fs:sortOrder"   : sort = values.length      ? values[0].toString() : undefined; break;
 			case "v-fs:databases"   : databases = values.length ? values[0].toString() : undefined; break;
 			case "v-fs:reopen"      : reopen = values.length    ? values[0].toString() : false; break;
@@ -286,7 +286,7 @@ v-fs:FulltextRequestModel
 				}).join("||") + ")"
 			: 
 				"";
-		var q = self.hasValue("v-fs:manualQuery") ? self["v-fs:manualQuery"][0] : "";
+		var q = self.hasValue("v-fs:fulltextQuery") ? self["v-fs:fulltextQuery"][0] : "";
 		if (q && q.indexOf("==") < 0) {
 			q = "(" + q.trim().split(" ").map(function (t) { return "'*'=='" + t + "*'";}).join("&&") + ")";
 		}
@@ -319,7 +319,7 @@ v-fs:FulltextRequestTemplate
 				<h4 about="v-fs:EnterQuery" property="rdfs:label"></h4>
 				<div class="form-group">
 					<div class="input-group">
-						<veda-control id="manual" type="string" property="v-fs:manualQuery"></veda-control>
+						<veda-control id="fulltext" type="string" property="v-fs:fulltextQuery"></veda-control>
 						<span class="input-group-btn">
 							<button type="submit" id="submit" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
 						</span>
@@ -364,13 +364,13 @@ v-fs:FulltextRequestTemplate
 		resultsList = $("#results-list", template),
 		resultsCount = $("#results-count", template),
 		submit = $("#submit", template),
-		manual = $("#manual", template),
+		fulltext = $("#fulltext", template),
 		form = new veda.IndividualModel();
 	
 	// Autofocus on query field
 	params.on("shown.bs.tab", function () {
-		if (!self.hasValue("v-fs:typedQuery")) {
-			$("#manual", template).trigger("veda_focus");
+		if (!self.hasValue("v-fs:attributiveQuery")) {
+			$("#fulltext", template).trigger("veda_focus");
 		}
 	});
 	params.trigger("shown.bs.tab");
@@ -484,11 +484,11 @@ v-fs:FulltextRequestTemplate
 </script>
   """
 .
-v-fs:TypedRequestModel
+v-fs:AttributiveRequestModel
   rdf:type v-s:ClassModel ;
-  rdfs:label "v-fs:TypedRequest class model"@en ;
-  rdfs:label "Модель класса v-fs:TepedRequest"@ru ;
-  v-ui:forClass v-fs:TypedRequest ;
+  rdfs:label "v-fs:AttributiveRequest class model"@en ;
+  rdfs:label "Модель класса v-fs:AttributiveRequest"@ru ;
+  v-ui:forClass v-fs:AttributiveRequest ;
   v-s:script """
 	var mkQuery = veda.Util.queryFromIndividual;
 	
@@ -552,14 +552,11 @@ v-fs:TypedRequestModel
 	if (q) { self.search() };
   """
 .
-v-fs:TypedRequest1
-  rdf:type v-fs:TypedRequest ;
-.
-v-fs:TypedRequestTemplate
+v-fs:AttributiveRequestTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "v-fs:TypedRequest class template"@en ;
-  rdfs:label "Шаблон класса v-fs:TypedRequest"@ru ;
-  v-ui:forClass v-fs:TypedRequest ;
+  rdfs:label "v-fs:AttributiveRequest class template"@en ;
+  rdfs:label "Шаблон класса v-fs:AttributiveRequest"@ru ;
+  v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:template """
 <div role="tabpanel">
 	<h4 about="@" property="rdfs:label"></h4>
@@ -585,7 +582,6 @@ v-fs:TypedRequestTemplate
 		<div role="tabpanel" class="tab-pane" id="results-at">
 			<div class="container-fluid" id="search-results">
 				<ol id="results-list"></ol>
-				<hr/>
 				<div class="text-center">
 					<ul class="pagination" id="pager"></ul>
 					<br />
@@ -614,13 +610,13 @@ v-fs:TypedRequestTemplate
 		resultsList = $("#results-list", template),
 		resultsCount = $("#results-count", template),
 		find = $("#find", template),
-		manual = $("#manual", template),
+		fulltext = $("#fulltext", template),
 		formHolder = $("#form-holder", template);
 	
 	// Autofocus on query field
 	params.on("shown.bs.tab", function () {
-		if (!self.hasValue("v-fs:typedQuery")) {
-			$("#manual", template).trigger("veda_focus");
+		if (!self.hasValue("v-fs:attributiveQuery")) {
+			$("#fulltext", template).trigger("veda_focus");
 		}
 	});
 	params.trigger("shown.bs.tab");
