@@ -900,6 +900,26 @@ s-wf:map_description_task_2_actor_task
 	rdfs:label "описание задачи из формы решения пользователя"@ru ;
 .
 
+s-wf:var_actor_task_date_to 
+        rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "var_actor_task_date_to" ;
+        rdfs:label "var_actor_task_date_to" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_task_date_to_2_actor_task
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_actor_task_date_to ;
+	v-wf:mappingExpression """
+	
+	get_properties_chain (process.getInputVariable('actor_task'), 
+							[{$go:'mnd-s:hasAction'}, {$get:'v-s:dateTo', $eq:{'v-s:responsible':process.getExecutor ()}}] 
+						  )
+	
+	""";
+	rdfs:label "описание задачи из формы решения пользователя"@ru ;
+.
+
 ##########################################################################################################################################
 
 
@@ -1063,7 +1083,7 @@ s-wf:nc_t3 a v-wf:Task;
     v-wf:belongsTo s-wf:net_coordination;
     v-wf:hasFlow s-wf:nc_f_t3_t1;
     rdfs:label "установить исполнителя и подготовить задание"^^xsd:string;
-    v-wf:completedMapping s-wf:map_set_coordinator, s-wf:map_description_task_2_actor_task;    
+    v-wf:completedMapping s-wf:map_set_coordinator, s-wf:map_description_task_2_actor_task, s-wf:map_task_date_to_2_actor_task;    
     .
 
 s-wf:nc_oc a v-wf:OutputCondition;
