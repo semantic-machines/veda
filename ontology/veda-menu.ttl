@@ -62,7 +62,6 @@ v-m:DocMenu
 	rdfs:label "Документ"@ru ;
 	v-m:menuItem v-m:Create ;
 	v-m:menuItem v-m:Find ;
-	v-m:menuItem v-m:Find2 ;
 .
 v-m:Create
 	rdf:type v-m:Menu ;
@@ -75,13 +74,6 @@ v-m:Find
 	rdfs:label "Find"@en ;
 	rdfs:label "Найти"@ru ;
 	v-m:objectLink v-fs:Search ;
-#	v-m:staticLink "#/individual//#main//search"^^xsd:string ;
-.
-v-m:Find2
-	rdf:type v-m:Menu ;
-	rdfs:label "Find 2"@en ;
-	rdfs:label "Найти 2"@ru ;
-	v-m:staticLink "#/individual//#main//search"^^xsd:string ;
 .
 v-m:Search
 	rdf:type v-m:Menu ;
