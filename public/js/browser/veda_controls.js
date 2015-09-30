@@ -149,6 +149,7 @@
 	$.fn.veda_dateTime = function (options) {
 		var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
 			control = veda_literal_input.call(this, opts);
+		control.datetimepicker({ locale: 'ru' });
 		this.append(control);
 		return this;
 	};

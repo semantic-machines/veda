@@ -11,6 +11,7 @@
 @prefix v-a: <http://semantic-machines.com/veda/veda-admin/> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix vsrv: <http://semantic-machines.com/veda/veda-server/> .
 
@@ -348,6 +349,16 @@ v-a:Event_3
   v-s:filter owl:DatatypeProperty ;
   v-s:filter owl:ObjectProperty ;
   v-s:filter owl:Restriction ;
+  v-s:filter v-s:ClassModel ;
+  v-s:filter v-ui:ClassTemplate ;
+  v-s:filter v-ui:PropertySpecification ;
+  v-s:filter v-ui:IntegerPropertySpecification ;
+  v-s:filter v-ui:DecimalPropertySpecification ;
+  v-s:filter v-ui:DatetimePropertySpecification ;
+  v-s:filter v-ui:StringPropertySpecification ;
+  v-s:filter v-ui:BooleanPropertySpecification ;
+  v-s:filter v-ui:ObjectPropertySpecification ;
+  v-s:filter v-b:Bundle ;
   v-s:script """
 
 	    var doc_uri = document['@'];	
