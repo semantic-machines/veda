@@ -10,6 +10,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 		 *  - Find transformation to start form.
 		 *  - Apply transformation and redirect to start form. 
 		 */
+		individual.off("send");
 		individual.on("send", function (e) {
 			var s = new veda.SearchModel("'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
 			if (Object.getOwnPropertyNames(s.results).length == 0) {
@@ -58,6 +59,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 		 *  - Let user to choice report (if more then one founded)
 		 *  - Redirect to report
 		 */
+		individual.off("createReport");
 		individual.on("createReport", function (e) {
 			var s = new veda.SearchModel("'rdf:type' == 'v-s:ReportsForClass' && 'v-ui:forClass' == '"+individual["rdf:type"][0].id+"'", null);
 			if (Object.getOwnPropertyNames(s.results).length == 0) {
