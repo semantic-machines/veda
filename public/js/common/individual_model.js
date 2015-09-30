@@ -64,6 +64,23 @@ veda.Module(function (veda) { "use strict";
 			},
 			configurable: false
 		});
+		
+		var rightsOrigin;
+		Object.defineProperty(self, "rightsOrigin", {
+			get: function () { 
+				if (rightsOrigin) return rightsOrigin;
+				try {
+					var rightsOriginJSON = get_rights_origin(veda.ticket, self.id);
+					console.log(rightsOriginJSON);
+					rightsOrigin = new veda.IndividualModel( rightsOriginJSON );
+				} catch (e) {
+					rightsOrigin = null;
+				} finally {
+					return rightsOrigin;
+				}
+			},
+			configurable: false
+		});
 
 		self.defineProperty("rdf:type", undefined, function (classes) {
 			self._.sync = false;
