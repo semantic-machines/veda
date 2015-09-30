@@ -636,8 +636,8 @@ td:PersonTemplate1
 				<div class="row">
 					<div class="col-md-3">
 						<strong about="v-s:lastName" property="rdfs:label" class="text-muted">Фамилия</strong>
-						<div property="v-s:lastName" class="-view edit search"><br></div>
-						<veda-control property="v-s:lastName" type="multilingualString" class="-view edit search"></veda-control>
+						<div property="v-s:lastName"><br></div>
+						<veda-control property="v-s:lastName" type="string" class="-view edit search"></veda-control>
 					</div>
 					<div class="col-md-3">
 						<strong about="v-s:firstName" property="rdfs:label" class="text-muted">Имя</strong>

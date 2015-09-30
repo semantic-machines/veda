@@ -682,20 +682,22 @@ v-wf:DecisionGoReview
 
 #----------------------- Coordination Net ------------------------------
 
-s-wf:tr_coord_form
+s-wf:tr_actor_form
         rdf:type v-wf:Transform ;
-	v-wf:transformRule s-wf:rul_tr_coord_1 ;	
-	v-wf:transformRule s-wf:rul_tr_coord_2 ;	
-	v-wf:transformRule s-wf:rul_tr_coord_3 ;	
-	v-wf:transformRule s-wf:rul_tr_coord_4 ;	
-	v-wf:transformRule s-wf:rul_tr_coord_5 ;	
-	v-wf:transformRule s-wf:rul_tr_coord_6 ;
-	v-wf:transformRule s-wf:rul_tr_coord_7 ;
+	v-wf:transformRule s-wf:rul_tr_form_1 ;	
+	v-wf:transformRule s-wf:rul_tr_form_2 ;	
+	v-wf:transformRule s-wf:rul_tr_form_3 ;	
+	v-wf:transformRule s-wf:rul_tr_form_4 ;	
+	v-wf:transformRule s-wf:rul_tr_form_5 ;	
+	v-wf:transformRule s-wf:rul_tr_form_6 ;
+	v-wf:transformRule s-wf:rul_tr_form_7 ;
+	v-wf:transformRule s-wf:rul_tr_form_8 ;
+	v-wf:transformRule s-wf:rul_tr_form_9 ;
 	rdfs:isDefinedBy s-wf: ;
-    rdfs:label "трансформация пользовательской формы ответа на задачу"@ru ;		
+    rdfs:label "трансформация создания пользовательской формы ответа на задачу"@ru ;		
 .		
 
-s-wf:rul_tr_coord_1
+s-wf:rul_tr_form_1
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'initiator')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
@@ -704,7 +706,7 @@ s-wf:rul_tr_coord_1
 	rdfs:isDefinedBy s-wf: ;
 	rdfs:label "определение инициатора"@ru ;		
 .
-s-wf:rul_tr_coord_2
+s-wf:rul_tr_form_2
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'docId')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
@@ -721,7 +723,7 @@ s-wf:rul_tr_coord_2
     rdfs:label "варианты ответа"@ru ;	
 .
 
-s-wf:rul_tr_coord_3
+s-wf:rul_tr_form_3
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'coordinationLevel')" ;
 	v-wf:segregateElement "elementContentStrValue('v-wf:variableValue', '1')" ;
@@ -731,7 +733,7 @@ s-wf:rul_tr_coord_3
 	rdfs:label "определение согласования 1 уровень"@ru ;	
 .
 
-s-wf:rul_tr_coord_4
+s-wf:rul_tr_form_4
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'coordinationLevel')" ;
 	v-wf:segregateElement "elementContentStrValue('v-wf:variableValue', '2')" ;
@@ -741,7 +743,7 @@ s-wf:rul_tr_coord_4
 	rdfs:label "определение согласования 2 уровень"@ru ;		
 .
 
-s-wf:rul_tr_coord_5
+s-wf:rul_tr_form_5
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'coordinationLevel')" ;
 	v-wf:segregateElement "elementContentStrValue('v-wf:variableValue', '3')" ;
@@ -751,7 +753,7 @@ s-wf:rul_tr_coord_5
 	rdfs:label "определение согласования 3 уровень"@ru ;		
 .
 
-s-wf:rul_tr_coord_6
+s-wf:rul_tr_form_6
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'possibleDecision')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
@@ -761,7 +763,7 @@ s-wf:rul_tr_coord_6
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:rul_tr_coord_7
+s-wf:rul_tr_form_7
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'user_task_form_label')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
@@ -770,6 +772,27 @@ s-wf:rul_tr_coord_7
 	rdfs:isDefinedBy s-wf: ;
 	rdfs:label "установить rdfs:label из переменной user_task_form_label"@ru ;	
 .
+
+s-wf:rul_tr_form_8
+	rdf:type v-wf:Rule ;
+	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'actor_task_date_to')" ;
+	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
+	v-wf:aggregate	"putValue ('v-wf:dateGiven')";
+	v-wf:grouping	"1";
+	rdfs:isDefinedBy s-wf: ;
+	rdfs:label "установить v-wf:dateGiven из переменной s-wf:var_actor_task_date_to"@ru ;	
+.
+
+s-wf:rul_tr_form_9
+	rdf:type v-wf:Rule ;
+	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'actor_task_description')" ;
+	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
+	v-wf:aggregate	"putValue ('v-s:description')";
+	v-wf:grouping	"1";
+	rdfs:isDefinedBy s-wf: ;
+	rdfs:label "установить v-s:description из переменной s-wf:var_actor_task_description"@ru ;	
+.
+
 
 # ------------- journal ------------------------
 
@@ -881,9 +904,10 @@ s-wf:map_decision_of_set_responsible_2_actor_task
 
 
 s-wf:var_actor_task_description 
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "actor_task_description" ;
-        rdfs:label "var actor task description" ;
+	v-wf:varDefineScope v-wf:Net ;
+	rdfs:label "var actor task description" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -901,9 +925,10 @@ s-wf:map_description_task_2_actor_task
 .
 
 s-wf:var_actor_task_date_to 
-        rdf:type v-wf:VarDefine ;
-	v-wf:varDefineName "var_actor_task_date_to" ;
-        rdfs:label "var_actor_task_date_to" ;
+    rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "actor_task_date_to" ;
+    rdfs:label "actor_task_date_to" ;
+	v-wf:varDefineScope v-wf:Net ;        
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -1056,13 +1081,13 @@ s-wf:nc_t2 a v-wf:Task;
     v-wf:locationY "529"^^xsd:integer;
     v-wf:split v-wf:XOR;
     v-wf:belongsTo s-wf:net_coordination;
-    v-wf:startDecisionTransform s-wf:tr_coord_form;
+    v-wf:startDecisionTransform s-wf:tr_actor_form;
     v-wf:completeDecisionTransform s-wf:tr_taken_decision;
     v-wf:hasFlow s-wf:nc_f_t2_t1, s-wf:nc_f_t2_oc;
     v-wf:executor s-wf:def_exec_coordinator;
     rdfs:label "согласование"^^xsd:string;
     v-wf:expectedResultType s-wf:UserTaskForm;
-    v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coord_level, s-wf:map_possibleDecision, s-wf:map_user_task_form_label;
+    v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coord_level, s-wf:map_possibleDecision, s-wf:map_user_task_form_label, s-wf:map_t2_sm1, s-wf:map_t2_sm2;
     v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_other_coordinator, s-wf:map_set_result_decision;
     v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
     v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
@@ -1075,6 +1100,19 @@ s-wf:map_set_decision_from_local
 	rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_t2_sm1
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_actor_task_date_to ;	
+	v-wf:mappingExpression	"process.getLocalVariable ('actor_task_date_to')";
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_t2_sm2
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_actor_task_description ;	
+	v-wf:mappingExpression	"process.getLocalVariable ('actor_task_description')";
+	rdfs:isDefinedBy s-wf: ;
+.
 
 s-wf:nc_t3 a v-wf:Task;
 	rdfs:isDefinedBy s-wf: ;

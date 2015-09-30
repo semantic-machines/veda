@@ -17,6 +17,7 @@ veda.Module(function UserPresenter(veda) { "use strict";
 		languageSelector.html(languages);
 		
 		// Render user
+		userInfo.empty();
 		var userTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
 		veda.user.present(userInfo, userTmpl);
 

@@ -15,12 +15,14 @@
   owl:imports <http://www.w3.org/2002/07/owl> ;
 #  owl:versionInfo "0.1" ;
 .
+
 v-g:Global
   rdf:type owl:Class ;
   rdfs:label "Global"@en ;
   rdfs:label "Глобал"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
+
 v-g:literalValue
   rdf:type owl:DatatypeProperty ;
   rdfs:label "literal value"@en ;
@@ -35,10 +37,12 @@ v-g:objectValue
   rdfs:domain v-g:Global ;
   rdfs:range rdfs:Resource ;
 .
+
 v-g:OntoVsn
   rdf:type v-g:Global ;
   v-g:literalValue "0"^^xsd:string ;
 .
+
 v-g:GlobalsGroup
   rdf:type v-s:Group ;
   rdfs:label "Globals group"@en ;
@@ -61,6 +65,7 @@ v-g:GlobalsPermission
   rdfs:label "Globals permission"@en ;
   rdfs:label "Запись о выдаче прав для глобалов"@ru ;
 .
+
 v-g:GlobalsPermission1
   rdf:type v-s:PermissionStatement ;
   v-s:canRead "true"^^xsd:boolean ;
@@ -70,3 +75,9 @@ v-g:GlobalsPermission1
   rdfs:label "Запись о выдаче прав для глобалов1"@ru ;
 .
 
+v-g:jasperServerAddress
+  rdf:type v-g:Global ;
+  rdfs:label "JasperServer address"@en ;
+  rdfs:label "Адрес JasperServer"@ru ;
+  v-g:literalValue "http://syk-vs59:8080/jasperserver/"^^xsd:string ;
+.

@@ -252,6 +252,9 @@ veda.Module(function (veda) { "use strict";
 				self._.individual = get_individual(veda.ticket, uri);
 				self._.sync = true;
 			} catch (e) {
+				if (e.status === 471) {
+					return veda.trigger("login:failed");
+				}
 				self._.individual = {
 					"@": uri,
 					"rdfs:label": [{type: "String", data: uri, lang: "NONE"}]
@@ -298,6 +301,9 @@ veda.Module(function (veda) { "use strict";
 			self._.sync = true;
 			self.trigger("individual:afterSave", self._.original_individual);
 		} catch (e) {
+			if (e.status === 471) {
+				return veda.trigger("login:failed");
+			}
 			alert("Error: " + e.status + "\n" + "description: " + e.description);
 		}
 		return this;
