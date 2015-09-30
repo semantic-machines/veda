@@ -162,6 +162,7 @@ class Authorization : LmdbStorage
     {
         void reopen_db()
         {
+        	this.reopen_db ();
             subject_groups_cache[ ticket.user_uri ] = string[].init;
         }
 
@@ -207,8 +208,7 @@ class Authorization : LmdbStorage
             if (rc == MDB_MAP_RESIZED)
             {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) WARN:%s", path, fromStringz(mdb_strerror(rc)));
-                mdb_env_close(env);
-                open_db();
+                reopen_db();
                 rc                                      = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
                 subject_groups_cache[ ticket.user_uri ] = string[].init;
             }
@@ -220,8 +220,7 @@ class Authorization : LmdbStorage
                 // TODO: sleep ?
                 //core.thread.Thread.sleep(dur!("msecs")(1));
                 //rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-                mdb_env_close(env);
-                open_db();
+                reopen_db();
                 rc                                      = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
                 subject_groups_cache[ ticket.user_uri ] = string[].init;
             }
