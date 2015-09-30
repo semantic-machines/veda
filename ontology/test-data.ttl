@@ -811,15 +811,15 @@ td:AccountTemplate1
   """ ;
 .
 
-td:PositionTemplate1
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса Должность"@ru ;
-  rdfs:label "Template for Position class"@en ;
-  v-ui:forClass v-s:Position ;
-  v-ui:template """
-  <span property="rdfs:label">Должность</span>
-  """ ;
-.
+#td:PositionTemplate1
+#  rdf:type v-ui:ClassTemplate ;
+#  rdfs:label "Шаблон для класса Должность"@ru ;
+#  rdfs:label "Template for Position class"@en ;
+#  v-ui:forClass v-s:Position ;
+#  v-ui:template """
+#  <span property="rdfs:label">Должность</span>
+#  """ ;
+#.
 
 td:PreferencesTemplate1
   rdf:type v-ui:ClassTemplate ;
