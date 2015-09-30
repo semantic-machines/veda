@@ -957,17 +957,21 @@ void xapian_indexer(string thread_name, string _node_id)
                                 }
 
                                 ictx.commit_all_db();
-//                            printf("ok\n");
 
                                 //indexer_base_db.close (&err);
                                 //indexer_base_db = new_WritableDatabase(xapian_search_db_path.ptr, xapian_search_db_path.length, DB_CREATE_OR_OPEN, &err);
                                 ictx.last_counter_after_timed_commit = ictx.counter;
                                 send(ictx.key2slot_accumulator, CMD.PUT, CNAME.LAST_UPDATE_TIME, "");
+       							//core.memory.GC.collect ();	
+       							//writeln ("GC COLLECT");				    	                  	
                             }
                         }
                         else if (cmd == CMD.PUT)
                         {
+					    	//core.memory.GC.disable ();                        	
                             ictx.index_msg(msg);                            
+					    	//core.memory.GC.enable ();      
+       						//core.memory.GC.collect ();	
                         }
                         else if (cmd == CMD.DELETE)
                         {
