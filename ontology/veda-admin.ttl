@@ -154,10 +154,10 @@ var vs_owner = document["v-s:owner"];
 if (vs_owner)
 			addRight(ticket, [can_read, can_update, can_delete], getUri (vs_owner), document['@']);
 
-var author_uri = document["v-s:author"];
-if (author_uri)
+var vs_author = document["v-s:author"];
+if (vs_author)
 {
-    var author = get_individual(ticket, author_uri);
+    var author = get_individual(ticket, getUri (vs_author));
 
     if (author)
     {
