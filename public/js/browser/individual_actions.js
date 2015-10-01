@@ -66,11 +66,13 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			}
 		});
 		
+		individual.off("valid");
 		individual.on("valid", function (){
 			var individualNode = $('[resource="'+individual.id+'"]');
 			individualNode.find("#send").removeAttr("disabled");
 		});
 		
+		individual.off("invalid");
 		individual.on("invalid", function (){
 			var individualNode = $('[resource="'+individual.id+'"]');
 			individualNode.find("#send").attr("disabled", "disabled");
@@ -122,8 +124,15 @@ veda.Module(function IndividualActions(veda) { "use strict";
 		 */
 		individual.off("showRights");
 		individual.on("showRights", function (e) {
-			console.log(individual['rightsOrigin']);
-			riot.route("#/individual/" + individual['rightsOrigin'].id + "/#main", true);
+			var origin = individual['rightsOrigin'];
+			var container = $('#main');
+			container.html('<div id="rightrecords"></div>');
+			origin.forEach(function (rightRecord) {
+				var holder = $("<div>");
+				rightRecord.present(holder);
+				container.append(holder);
+			});
+			
 		});
 	});
 });
