@@ -23,7 +23,7 @@ driver.wait
      });
   })
   ,
-  90000
+  60000
 ).then
 (
   null,
