@@ -268,6 +268,22 @@ td:Membership_2
   rdfs:label "Членство_2"@ru ;
 .
 
+td:Membership_201510011056
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:SuperAdmin ;
+  v-s:resource d:mondi_employee_00056542 ;
+  rdfs:label "Membership_borivskya"@en ;
+  rdfs:label "Членство_borivskya"@ru ;
+.
+td:Membership_201510011103
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:ReadUser ;
+  v-s:resource td:d:mondi_employee_00056542 ;
+  rdfs:label "Membership_borivskya_readuser"@en ;
+  rdfs:label "Членство_borivskya_readuser"@ru ;
+.
+ 
+
 td:Membership_4
   rdf:type v-s:Membership ;
   v-s:memberOf td:UserGroup_1 ;
@@ -1269,6 +1285,20 @@ v-asp:PersonalAspectKhvostia
 	v-s:owner td:AleksandraKhvostikova ;
 	rdfs:label "Персональный аспект Хвостикова"@ru ;
 	rdfs:label "Personal aspect Khvostikova"@en ;
+#	v-asp:hasFavorite ;
+#	v-asp:hasBlank ;
+	v-asp:hasRegistry td:ProjectSearch_forKh ;
+	v-asp:hasBusinessAspect mnd-s-asppd:ProjectManagementAspect1 ;
+#	v-asp:hasReport ;
+#	v-asp:hasArbitraryLink ;
+#	v-asp:hasWidget ;
+.
+
+v-asp:PersonalAspectBorivskaya
+	rdf:type v-asp:PersonalAspect ;
+	v-s:owner d:mondi_employee_00056542 ;
+	rdfs:label "Персональный аспект Боривская"@ru ;
+	rdfs:label "Personal aspect Borivskaya"@en ;
 #	v-asp:hasFavorite ;
 #	v-asp:hasBlank ;
 	v-asp:hasRegistry td:ProjectSearch_forKh ;

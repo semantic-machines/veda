@@ -211,6 +211,7 @@ v-asp:PersonalAspectTemplate
 					<div role="tabpanel" class="tab-pane" id="aspects">
 						<h3><span about="v-b:Aspects" property="rdfs:label"></span></h3>
 						<hr/>
+                        <div rel="v-asp:hasBusinessAspect" template="v-ui:LabelBlockLinkTemplate" class="view edit -search"></div>
 						<veda-control rel="v-asp:hasBusinessAspect" type="link" class="-view edit search fulltext dropdown"></veda-control>						
 					</div>
 					<div role="tabpanel" class="tab-pane" id="reports">
