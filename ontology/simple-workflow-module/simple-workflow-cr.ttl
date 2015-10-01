@@ -497,7 +497,7 @@ s-wf:map_possibleDecision_for_idea
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:possibleDecision ;
         v-wf:mappingExpression  "[newUri ('v-wf:DecisionAgreedToExecute'), newUri ('v-wf:DecisionAgreedToProject'), newUri('v-wf:DecisionRejected')]" ;
-	rdfs:label "варианты ответа для идеи 4"^^xsd:string;
+	rdfs:label "варианты ответа для идеи 5"^^xsd:string;
 .
 
 s-wf:map_possibleDecision_for_instruction

@@ -942,7 +942,6 @@ td:PropertySpecification1
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
   v-ui:tooltip "Required, single value. Format: 2011-08-19"@en ;
-  v-ui:defaultDatetimeValue "1980-01-01T12:00:00"^^xsd:dateTime ;
 .
 
 td:PropertySpecification2
@@ -1277,6 +1276,7 @@ v-asp:PersonalAspectKhvostia
 #	v-asp:hasArbitraryLink ;
 #	v-asp:hasWidget ;
 .
+
 
 td:ProjectSearch_forKh
   rdf:type v-fs:Search ;

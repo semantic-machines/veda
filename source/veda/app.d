@@ -14,6 +14,9 @@ void view_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorIn
 
 void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
 {
+	string   filename;
+	try
+	{
     auto pf = "file" in req.files;
 
     enforce(pf !is null, "No file uploaded!");
@@ -23,7 +26,7 @@ void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
     if (pt !is null && nm !is null)
     {
         string   pts      = cast(string)*pt;
-        string   filename = cast(string)*nm;
+        filename = cast(string)*nm;
 
         string[] ptspc = pts.split('/');
 
@@ -40,8 +43,8 @@ void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
             }
         }
 
-        auto path = Path("data/files/" ~ pts ~ "/") ~filename;
-
+        Path path = Path("data/files/" ~ pts ~ "/") ~ filename;
+        
         try moveFile(pf.tempPath, path);
         catch (Exception e) {
 //                logWarn("Failed to move file to destination folder: %s", e.msg);
@@ -51,6 +54,11 @@ void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
 
         res.writeBody("File uploaded!", "text/plain");
     }
+    }
+	catch (Throwable ex)
+	{
+		writeln("Ex!: ", __FUNCTION__, ":", text(__LINE__), ", ", ex.msg, ", filename:", filename);
+	}
 }
 
 
