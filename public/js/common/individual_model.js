@@ -70,9 +70,10 @@ veda.Module(function (veda) { "use strict";
 			get: function () { 
 				if (rightsOrigin) return rightsOrigin;
 				try {
-					var rightsOriginJSON = get_rights_origin(veda.ticket, self.id);
-					console.log(rightsOriginJSON);
-					rightsOrigin = new veda.IndividualModel( rightsOriginJSON );
+					var rightsOriginArr = get_rights_origin(veda.ticket, self.id);
+					rightsOrigin = rightsOriginArr.map(function (item) {
+						return new veda.IndividualModel( item );
+					});
 				} catch (e) {
 					rightsOrigin = null;
 				} finally {
