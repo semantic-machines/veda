@@ -63,21 +63,24 @@ v-fs:sortOrder
   rdf:type owl:DatatypeProperty ;
   rdfs:label "sort order"@en ;
   rdfs:label "порядок сортировки"@ru ;
-  rdfs:domain v-fs:SearchRequest ;
+  rdfs:domain v-fs:FulltextRequest ;
+  rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:string ;
 .
 v-fs:databases
   rdf:type owl:DatatypeProperty ;
   rdfs:label "databases"@en ;
   rdfs:label "базы данных"@ru ;
-  rdfs:domain v-fs:SearchRequest ;
+  rdfs:domain v-fs:FulltextRequest ;
+  rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:string ;
 .
 v-fs:reopen
   rdf:type owl:DatatypeProperty ;
   rdfs:label "reopen"@en ;
   rdfs:label "открыть заново"@ru ;
-  rdfs:domain v-fs:SearchRequest ;
+  rdfs:domain v-fs:FulltextRequest ;
+  rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:boolean ;
 .
 v-fs:typeToSearch
@@ -110,8 +113,8 @@ v-fs:TypeToSearchSpecAttributive
 .
 v-fs:FulltextQuerySpec
   rdf:type v-ui:StringPropertySpecification ;
-  rdfs:label "Спецификация свойства v-fs:fulltextQuery для класса v-fs:SearchRequest"@ru ;
-  rdfs:label "v-fs:fulltextQuery property specification for class v-fs:SearchRequest"@en ;
+  rdfs:label "Спецификация свойства v-fs:fulltextQuery для класса v-fs:FulltextRequest"@ru ;
+  rdfs:label "v-fs:fulltextQuery property specification for class v-fs:FulltextRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:forProperty v-fs:fulltextQuery ;
   v-ui:maxCardinality "1"^^xsd:integer ;
@@ -120,8 +123,8 @@ v-fs:FulltextQuerySpec
 .
 v-fs:LabelSpec
   rdf:type v-ui:StringPropertySpecification ;
-  rdfs:label "Спецификация свойства rdfs:label для класса v-fs:SearchRequest"@ru ;
-  rdfs:label "rdfs:label property specification for class v-fs:SearchRequest"@en ;
+  rdfs:label "Спецификация свойства rdfs:label для классов v-fs:FulltextRequest, v-fs:AttributiveRequest"@ru ;
+  rdfs:label "rdfs:label property specification for class v-fs:FulltextRequest, v-fs:AttributiveRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:forProperty rdfs:label ;
@@ -248,8 +251,8 @@ v-fs:SearchTemplate
 .
 v-fs:FulltextRequestModel
   rdf:type v-s:ClassModel ;
-  rdfs:label "v-fs:SearchRequest class model"@en ;
-  rdfs:label "Модель класса v-fs:SearchRequest"@ru ;
+  rdfs:label "v-fs:FulltextRequest class model"@en ;
+  rdfs:label "Модель класса v-fs:FulltextRequest"@ru ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-s:script """
 	var self = individual,
