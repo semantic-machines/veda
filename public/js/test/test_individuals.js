@@ -9,7 +9,7 @@ function get_admin_ticket ()
 {
     if (_admin_ticket == '')
     {
-	return  _admin_ticket = authenticate("karpovr", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");	
+	return  _admin_ticket = authenticate("karpovrt", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");	
     }
     return _admin_ticket;
 }
@@ -18,7 +18,7 @@ function get_user1_ticket ()
 {
     if (_user1_ticket == '')
     {
-	_user1_ticket = authenticate("bushenevv", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");	
+	_user1_ticket = authenticate("bushenevvt", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");	
     }
     return _user1_ticket;
 }
@@ -27,7 +27,7 @@ function get_user2_ticket ()
 {
     if (_user2_ticket == '')
     {
-	_user2_ticket = authenticate("BychinA", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");	
+	_user2_ticket = authenticate("BychinAt", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");	
     }
     return _user2_ticket;
 }
