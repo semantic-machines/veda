@@ -1,5 +1,5 @@
 {
-	"name": "veda.app",
+	"name": "veda",
 	"description": "A simple vibe.d server application.",
 	"copyright": "Copyright © 2014, karpovr",
 	"authors": ["karpovr"],
@@ -9,7 +9,6 @@
 		"backtrace-d": "0.1.0", 
 		"mysql-d": "~>0.3.2"
 	},
-	"buildOptions": ["debugMode", "debugInfo"],	
 	"versions": ["VibeDefaultMain"],	
         "libs": [
                 "raptor2"
