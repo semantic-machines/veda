@@ -165,7 +165,7 @@ if (vs_author)
 
 	if (author_type == 'v-s:Person')	
 	{
-	    addRight(ticket, [can_read, can_update, can_delete], author_uri, doc_uri);
+	    addRight(ticket, [can_read, can_update, can_delete], vs_author, doc_uri);
 	}
 	else
 	{
