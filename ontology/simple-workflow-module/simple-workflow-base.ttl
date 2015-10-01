@@ -638,11 +638,15 @@ s-wf:UserTaskFormTemplate
         </div>
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-warning" id="send">Отправить</button>
+        <button type="button" class="action btn btn-warning view edit -search" id="send">Отправить</button>
         <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
       </div>
     </div>
     <script type="text/javascript">
+      $('#send').on('click', function () {
+		individual.trigger("send");
+	  });
+	  
       template.trigger("edit");
       var control = $("select#decision-control");
       if (individual.hasValue("v-wf:possibleDecisionClass")) {

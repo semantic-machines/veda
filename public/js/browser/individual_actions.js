@@ -11,11 +11,24 @@ veda.Module(function IndividualActions(veda) { "use strict";
 		 *  - Apply transformation and redirect to start form. 
 		 */
 		individual.off("send");
-		individual.on("send", function (e) {
+		individual.on("send", function (template) {
 			var s = new veda.SearchModel("'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
 			if (Object.getOwnPropertyNames(s.results).length == 0) {
-				alert('Нет стартовой трансформации. Меня жизнь к такому не готовила.');
+				if (!individual.hasValue("v-s:hasStatusWorkflow")) {
+					individual.defineProperty("v-s:hasStatusWorkflow");
+					individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
+					$('[resource="'+individual.id+'"]').find("#save").trigger("click");
+					var individualNode = $('[resource="'+individual.id+'"]');
+					individualNode.find("#send").remove();
+					individualNode.find("#edit").remove();
+					individualNode.find("#save").remove();
+					individualNode.find("#cancel").remove();
+					individualNode.find("#delete").remove();
+				} else {
+					alert("Документ уже отправлен");
+				}
 			} else if (Object.getOwnPropertyNames(s.results).length == 1) {
+				$('[resource="'+individual.id+'"]').find("#save").trigger("click");
 				Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
 					var res = s.results[res_id];
 					var transfromResult = veda.Util.applyTransform(individual, res['v-s:hasTransformation'][0]);
@@ -51,6 +64,16 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			} else {
 				alert('Несколько стартовых трансформаций. Меня жизнь к такому не готовила.');
 			}
+		});
+		
+		individual.on("valid", function (){
+			var individualNode = $('[resource="'+individual.id+'"]');
+			individualNode.find("#send").removeAttr("disabled");
+		});
+		
+		individual.on("invalid", function (){
+			var individualNode = $('[resource="'+individual.id+'"]');
+			individualNode.find("#send").attr("disabled", "disabled");
 		});
 		
 		/**
@@ -89,6 +112,18 @@ veda.Module(function IndividualActions(veda) { "use strict";
 					});				
 				}
 			}
+		});
+		
+		/**
+		 * Event `showRights` handler: 
+		 *  - Find available reports
+		 *  - Let user to choice report (if more then one founded)
+		 *  - Redirect to report
+		 */
+		individual.off("showRights");
+		individual.on("showRights", function (e) {
+			console.log(individual['rightsOrigin']);
+			riot.route("#/individual/" + individual['rightsOrigin'].id + "/#main", true);
 		});
 	});
 });

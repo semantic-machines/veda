@@ -91,3 +91,38 @@ v-b:Other
   rdfs:label "Другое"@ru ;
   rdfs:label "Other"@en ;
 .
+v-b:Send
+  rdf:type v-b:Bundle ;
+  rdfs:label "Отправить"@ru ;
+  rdfs:label "Send"@en ;
+.
+v-b:Edit
+  rdf:type v-b:Bundle ;
+  rdfs:label "Редактировать"@ru ;
+  rdfs:label "Edit"@en ;
+.
+v-b:Save
+  rdf:type v-b:Bundle ;
+  rdfs:label "Сохранить"@ru ;
+  rdfs:label "Save"@en ;
+.
+v-b:Cancel
+  rdf:type v-b:Bundle ;
+  rdfs:label "Отмена"@ru ;
+  rdfs:label "Cancel"@en ;
+.
+v-b:Delete
+  rdf:type v-b:Bundle ;
+  rdfs:label "Удалить"@ru ;
+  rdfs:label "Delete"@en ;
+.
+v-b:CreateReport
+  rdf:type v-b:Bundle ;
+  rdfs:label "Сформировать отчет"@ru ;
+  rdfs:label "Create report"@en ;
+.
+v-b:RightsOrigin
+  rdf:type v-b:Bundle ;
+  rdfs:label "Права доступа"@ru ;
+  rdfs:label "Access rights"@en ;
+.
