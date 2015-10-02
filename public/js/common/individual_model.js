@@ -449,7 +449,7 @@ veda.Module(function (veda) { "use strict";
 				return;
 			}
 			// Prefetch linked object (depth 2) to reduce 'get_individual' requests count during rendering
-			this.prefetch(2);
+			//this.prefetch(2);
 			veda.trigger("individual:loaded", this, container, template, mode);
 		}
 		return this;
