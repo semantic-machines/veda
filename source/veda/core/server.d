@@ -180,7 +180,7 @@ Context init_core(string node_id)
         wait_starting_thread(P_MODULE.file_reader, tids);
         Context core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop);
 //        io.file_reader.processed(core_context);
-//        core_context.reopen_ro_subject_storage_db();
+        core_context.reopen_ro_subject_storage_db();
         Individual node = core_context.get_individual(null, node_id);
 
         Resources  listeners = node.resources.get("vsrv:listener", Resources.init);
