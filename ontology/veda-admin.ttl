@@ -36,6 +36,14 @@ v-a:standart_node
 	rdfs:label "стандартная конфигурация" ;
 .	
 
+v-a:test_node
+	rdf:type vsrv:Node ;
+	vsrv:count_thread "4"^^xsd:integer ;
+	vsrv:checktime_onto_files "30"^^xsd:integer ;
+	vsrv:listener v-a:test_conn_http;
+	rdfs:label "тестовая конфигурация" ;
+.	
+
 v-a:developer_node
 	rdf:type vsrv:Node ;
 	vsrv:count_thread "4"^^xsd:integer ;
@@ -50,6 +58,14 @@ v-a:conn_http
 	vsrv:name "http-server" ;
 	rdfs:label "http server" ;
 	vsrv:port "8080"^^xsd:integer ;
+	vsrv:transport "http" ;
+.
+
+v-a:test_conn_http
+	rdf:type vsrv:Connection ;
+	vsrv:name "http-server" ;
+	rdfs:label "http server" ;
+	vsrv:port "8090"^^xsd:integer ;
 	vsrv:transport "http" ;
 .
 
@@ -133,55 +149,50 @@ v-a:Event_1
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:script """
 
+var doc_uri = document['@'];	
+
 var isDefinedBy = document["rdfs:isDefinedBy"];
-if (isDefinedBy)
-{
-	    var doc_uri = document['@'];	
-	    var new_membership = 
-	    {
-    	    '@' : genUri (), 
-    	    'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
-    	    'v-s:memberOf' : [{data: 'v-a:ReadResGroup', type : _Uri}],
-    	    'v-s:resource'  : [{data: doc_uri, type : _Uri}],
-    	    'rdfs:comment'  : [{data: "выдан v-a:Event_1", type : _String}]
-	    };
-
-	    put_individual (ticket, new_membership, _event_id);
-
+if (isDefinedBy) {
+	var new_membership = {
+		'@' : genUri (), 
+		'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
+		'v-s:memberOf' : [{data: 'v-a:ReadResGroup', type : _Uri}],
+		'v-s:resource'  : [{data: doc_uri, type : _Uri}],
+		'rdfs:comment'  : [{data: "выдан v-a:Event_1", type : _String}]
+	};
+	put_individual (ticket, new_membership, _event_id);
 }
 
 var vs_owner = document["v-s:owner"];
-if (vs_owner)
-			addRight(ticket, [can_read, can_update, can_delete], getUri (vs_owner), document['@']);
+if (vs_owner) {
+	addRight(ticket, [can_read, can_update, can_delete], getUri(vs_owner), doc_uri);
+	print("#1 owner, doc_uri = " + doc_uri + ", person = " + getUri(vs_owner)); 
+}
 
 var vs_author = document["v-s:author"];
-if (vs_author)
-{
-    var author = get_individual(ticket, getUri (vs_author));
-
-    if (author)
-    {
-	var author_type = getUri (author['rdf:type']);
-
-	if (author_type == 'v-s:Person')	
-	{
-	    addRight(ticket, [can_read, can_update, can_delete], vs_author, doc_uri);
-	}
-	else
-	{
-	var ff = get_property_chain (ticket, document, 'v-s:author', 'v-s:employee');
-	if (ff)
-	{
-	    var employee_uri = getUri (ff['field']);
-	    var first_doc = ff['first'];
-	    if (first_doc)
-	    {
-		var doc_uri = first_doc['@'];	
-		if (employee_uri)
-			addRight(ticket, [can_read, can_update, can_delete], employee_uri, doc_uri);
-	    }
-	}
-	}
+if (vs_author) {
+    var author = get_individual(ticket, getUri(vs_author));
+    if (author) {
+		
+		var author_type = getUri(author['rdf:type']);
+		
+		if (author_type == 'v-s:Person') {
+			addRight(ticket, [can_read, can_update, can_delete], getUri(vs_author), doc_uri); 
+			print("#2 author = person, doc_uri = " + doc_uri + ", person = " + getUri(vs_author)); 
+		} else {
+			var ff = get_property_chain (ticket, document, 'v-s:author', 'v-s:employee');
+			if (ff) {
+				var employee_uri = getUri (ff['field']);
+				var first_doc = ff['first'];
+				if (first_doc) {
+					doc_uri = first_doc['@'];	
+					if (employee_uri) {
+						print("#3 author = appointment, doc_uri = " + doc_uri + ", person = " + employee_uri);
+						addRight(ticket, [can_read, can_update, can_delete], employee_uri, doc_uri);
+					}
+				}
+			}
+		}
     }
 }
 
