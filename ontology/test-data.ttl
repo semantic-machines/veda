@@ -174,7 +174,7 @@ td:ApplicationDevelopmentGroup
 
 td:BushenevV
   rdf:type v-s:Account ;
-  v-s:login "BushenevV"^^xsd:string ;
+  v-s:login "BushenevVT"^^xsd:string ;
   v-s:mailbox "valeriy.bushenev@mondigroup.com"^^xsd:string ;
   v-s:owner td:ValeriyBushenev ;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
@@ -183,7 +183,7 @@ td:BushenevV
 
 td:BychinA
   rdf:type v-s:Account ;
-  v-s:login "BychinA"^^xsd:string ;
+  v-s:login "BychinAT"^^xsd:string ;
   v-s:mailbox "andrey.bychin@mondigroup.com"^^xsd:string ;
   v-s:owner td:AndreyBychin ;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
@@ -237,15 +237,15 @@ td:ResGroup_2
 
 td:KarpovR
   rdf:type v-s:Account ;
-  v-s:login "KarpovR"^^xsd:string ;
+  v-s:login "KarpovRT"^^xsd:string ;
   v-s:mailbox "roman.karpov@mondigroup.com"^^xsd:string ;
   v-s:owner td:RomanKarpov ;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  rdfs:label "KarpovR" ;
+  rdfs:label "KarpovRT" ;
 .
 td:KhvostiA
   rdf:type v-s:Account ;
-  v-s:login "KhvostiA"^^xsd:string ;
+  v-s:login "KhvostiAT"^^xsd:string ;
   v-s:mailbox "Alexandra.khvostikova@mondigroup.com"^^xsd:string ;
   v-s:owner td:AleksandraKhvostikova ;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;

@@ -10,8 +10,8 @@
 			spec = opts.spec,
 			property_uri = opts.property_uri,
 			individual = opts.individual,
-			input = $("[bound]", control);
-	
+			input = $(".form-control", control);
+		
 		var singleValueHandler = function (doc_property_uri, values) {
 			if (doc_property_uri === property_uri) {
 				input.val( values[0] );
@@ -146,20 +146,117 @@
 	};
 
 	// Datetime control
-	$.fn.veda_dateTime = function (options) {
+	/*$.fn.veda_dateTime = function (options) {
 		var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
-			control = veda_literal_input.call(this, opts);
-		control.datetimepicker({ locale: 'ru' });
+			control = veda_literal_input.call(this, opts),
+			individual = opts.individual, 
+			property_uri = opts.property_uri,
+			spec = opts.spec,
+			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+			input = $("input", control);
+		control.datetimepicker({
+			locale: "ru",
+			allowInputToggle: true,
+			format: "DD.MM.YYYY HH:mm"
+		});
+		if (isSingle) input.val( moment(individual[property_uri][0]).format("DD.MM.YYYY HH:mm") );
 		this.append(control);
 		return this;
 	};
 	$.fn.veda_dateTime.defaults = {
 		template: $("#datetime-control-template").html(),
 		parser: function (input) {
-			var timestamp = Date.parse(input);
-			return !isNaN(timestamp) ? new Date(timestamp) : null;
+			var timestamp = moment(input, "DD.MM.YYYY HH:mm").toDate();
+			return new Date(timestamp);
 		}
 	};
+*/
+
+	$.fn.veda_dateTime = function (options) {
+		var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
+			control = $(opts.template),
+			spec = opts.spec,
+			property_uri = opts.property_uri,
+			individual = opts.individual,
+			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+			input = $("input", control);
+		
+		var singleValueHandler = function (doc_property_uri, values) {
+			if (doc_property_uri === property_uri) {
+				input.val( moment(values[0]).format("DD.MM.YYYY HH:mm") );
+			}
+		}
+		
+		var change = function (value) { 
+			individual[property_uri] = individual[property_uri].concat(value);
+			input.val("");
+		}
+		
+		if (spec) {
+			if (isSingle) {
+				change = function (value) {
+					individual[property_uri] = [value];
+				};
+				input.val( moment(individual[property_uri][0]).format("DD.MM.YYYY HH:mm") );
+				individual.on("individual:propertyModified", singleValueHandler);
+				control.one("remove", function () {
+					individual.off("individual:propertyModified", singleValueHandler);
+				});
+			}
+			
+			/*if (spec.hasValue("v-ui:tooltip")) {
+				control.tooltip({
+					title: spec["v-ui:tooltip"].join(", "),
+					placement: "bottom",
+					container: control,
+					trigger: "focus"
+				});
+			}*/
+		}
+
+/*		control.datetimepicker({
+			locale: "ru",
+			allowInputToggle: true,
+			format: "DD.MM.YYYY HH:mm"
+		});
+*/
+		input.on("change focusout", function () {
+			var value = opts.parser( this.value, this );
+			change(value);
+		});
+		
+		this.on("veda_focus", function (e) {
+			input.trigger("focus");
+			e.stopPropagation();
+		});
+		
+		this.on("view edit search", function (e) {
+			e.stopPropagation();
+		});
+		
+		this.val = function (value) {
+			if (!value) return input.val();
+			return input.val(value);
+		}
+		this.append(control);
+
+/*		this.on("remove", function () {
+			control.data("DateTimePicker").destroy();
+		});
+*/
+		return this;
+	};
+	$.fn.veda_dateTime.defaults = {
+		template: $("#datetime-control-template").html(),
+		parser: function (input) {
+			var timestamp = moment(input, "DD.MM.YYYY HH:mm").toDate();
+			return new Date(timestamp);
+		}
+	};
+
+
+
+
 
 	// MULTILINGUAL INPUT CONTROLS
 	
@@ -173,7 +270,7 @@
 			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
 			undef = $("li", control),
 			langTag = $(".language-tag", control),
-			input = $("[bound]", control),
+			input = $(".form-control", control),
 			language;
 
 		if (isSingle && individual.hasValue(property_uri)) {
@@ -269,7 +366,7 @@
 	$.fn.veda_booleanCheckbox = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_booleanCheckbox.defaults, options ),
 			control = $( opts.template ),
-			input = $("[bound]", control),
+			input = $("input", control),
 			individual = opts.individual,
 			property_uri = opts.property_uri,
 			spec = opts.spec;
@@ -356,8 +453,8 @@
 		});
 		
 		this.val = function (value) {
-			if (!value) return $("[bound]", this).val();
-			return $("[bound]", this).val( value.toString() );
+			if (!value) return $("select", this).val();
+			return $("select", this).val( value.toString() );
 		}
 		return control;
 	};
@@ -1205,7 +1302,7 @@
 		});
 		
 		this.val = function (value) {
-			if (!value) return $("[bound]", this).val();
+			if (!value) return $("select", this).val();
 			populate();
 			return this;
 		}

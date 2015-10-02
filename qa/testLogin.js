@@ -5,7 +5,7 @@ var connection = require('./connection.js'),
     By = require('selenium-webdriver').By;
 
 basic.openPage(driver);
-basic.login(driver, 'karpovr', '123');
+basic.login(driver, 'karpovrt', '123');
 
 driver.wait
 (

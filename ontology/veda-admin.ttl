@@ -154,16 +154,34 @@ var vs_owner = document["v-s:owner"];
 if (vs_owner)
 			addRight(ticket, [can_read, can_update, can_delete], getUri (vs_owner), document['@']);
 
-var ff = get_property_chain (ticket, document, 'v-s:author', 'v-s:employee');
-if (ff)
+var vs_author = document["v-s:author"];
+if (vs_author)
 {
-    var employee_uri = getUri (ff['field']);
-    var first_doc = ff['first'];
-    if (first_doc)
+    var author = get_individual(ticket, getUri (vs_author));
+
+    if (author)
     {
+	var author_type = getUri (author['rdf:type']);
+
+	if (author_type == 'v-s:Person')	
+	{
+	    addRight(ticket, [can_read, can_update, can_delete], vs_author, doc_uri);
+	}
+	else
+	{
+	var ff = get_property_chain (ticket, document, 'v-s:author', 'v-s:employee');
+	if (ff)
+	{
+	    var employee_uri = getUri (ff['field']);
+	    var first_doc = ff['first'];
+	    if (first_doc)
+	    {
 		var doc_uri = first_doc['@'];	
 		if (employee_uri)
 			addRight(ticket, [can_read, can_update, can_delete], employee_uri, doc_uri);
+	    }
+	}
+	}
     }
 }
 

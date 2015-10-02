@@ -19,19 +19,6 @@ veda.Module(function (veda) { "use strict";
 			displayedElements : 10
 		};
 		
-		if ( self.hasValue("v-asp:hasAspect") ) {
-			self.aspect = self["v-asp:hasAspect"][0];
-		} else {
-			self.aspect = new veda.IndividualModel();
-			self.aspect["rdf:type"] = [ veda.ontology["v-asp:PersonalAspect"] ];
-			self.aspect["v-s:owner"] = [ self ];
-			self.aspect["v-s:author"] = [ self ];
-			self.aspect["rdfs:label"] = [ "PersonalAspect_" + self["v-s:firstName"][0] + self["v-s:lastName"][0] ];
-			self.aspect.save();
-			self["v-asp:hasAspect"] = [ self.aspect ];
-			self.save();
-		}
-		
 		try { 
 			self.preferences = self["v-ui:hasPreferences"][0];
 
@@ -44,6 +31,18 @@ veda.Module(function (veda) { "use strict";
 		} catch (e) {
 			self.language = defaults.language;
 			self.displayedElements = defaults.displayedElements;
+		}
+
+		if ( self.hasValue("v-asp:hasAspect") ) {
+			self.aspect = self["v-asp:hasAspect"][0];
+		} else {
+			self.aspect = new veda.IndividualModel();
+			self.aspect["rdf:type"] = [ veda.ontology["v-asp:PersonalAspect"] ];
+			self.aspect["v-s:owner"] = [ self ];
+			self.aspect["rdfs:label"] = [ "PersonalAspect_" + self["v-s:firstName"][0] + self["v-s:lastName"][0] ];
+			self.aspect.save();
+			self["v-asp:hasAspect"] = [ self.aspect ];
+			self.save();
 		}
 
 		if (self.preferences) { 

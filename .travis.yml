@@ -32,7 +32,7 @@ before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
-  - start-stop-daemon --start --verbose --chdir $PWD --make-pidfile --pidfile $PWD/veda-pid --background --startas /bin/bash -- -c "exec ./veda.app >> $PWD/veda.log 2>&1"
+  - start-stop-daemon --start --verbose --chdir $PWD --make-pidfile --pidfile $PWD/veda-pid --background --startas /bin/bash -- -c "exec ./veda >> $PWD/veda.log 2>&1"
   - sleep 60  # give Web server some time to bind to sockets, load startup data, etc
 
 # Run API & integration test
@@ -42,5 +42,5 @@ script:
 
 # Stop deamon and show log
 after_script:
-  - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda.app
+  - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
   - cat $PWD/veda.log
