@@ -118,7 +118,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 			e.stopPropagation();
 		}
-		template.on("view edit search save cancel delete recover", syncEmbedded);
+		template.on("view edit search save cancel delete recover showRights", syncEmbedded);
 				
 		// Define handlers
 		function saveHandler (e) {
@@ -132,6 +132,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			e.stopPropagation();
 		}
 		template.on("save", saveHandler);
+		
+		function showRightsHandler (e) {
+			individual.trigger("showRights");
+		}
+		template.on("showRights", showRightsHandler);
 
 		function cancelHandler (e) {
 			template.trigger("view");
@@ -177,6 +182,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Actions
 		var $edit = $("#edit.action", wrapper),
 			$save = $("#save.action", wrapper),
+			$showRights = $("#showRights.action", wrapper),
 			$cancel = $("#cancel.action", wrapper),
 			$delete = $("#delete.action", wrapper),
 			$search = $("#search.action", wrapper);
@@ -200,6 +206,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Save
 		$save.on("click", function (e) {
 			template.trigger("save");
+		});
+		
+		// Show rights
+		$showRights.on("click", function (e) {
+			template.trigger("showRights");
 		});
 
 		//  Cancel
