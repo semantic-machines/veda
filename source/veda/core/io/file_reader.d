@@ -213,15 +213,15 @@ void processed(Context context, bool is_load)
                         individuals[ uri ] = Individual.init;
 
                         Individual indv_in_storage = context.get_individual(null, uri);
-                        log.trace("in storage, uri=%s \n%s", indv_in_storage.uri, text(indv_in_storage));
+                        //log.trace("in storage, uri=%s \n%s", indv_in_storage.uri, text(indv_in_storage));
 
                         if (indv_in_storage == Individual.init || indv.compare(indv_in_storage) == false)
                         {
                             ResultCode res = context.put_individual(null, indv.uri, indv, false);
                             if (trace_msg[ 33 ] == 1)
                                 log.trace("store, uri=%s %s", indv.uri, indv);
-                            else
-                                log.trace("store, uri=%s %s \n%s \n%s", indv.uri, uri, text(indv), text(indv_in_storage));
+                                
+                            //log.trace("store, uri=%s %s \n%s \n%s", indv.uri, uri, text(indv), text(indv_in_storage));
                             if (res != ResultCode.OK)
                                 log.trace("individual =%s, not store, errcode =%s", indv.uri, text(res));
                         }
