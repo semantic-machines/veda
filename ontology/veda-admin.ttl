@@ -166,7 +166,7 @@ if (isDefinedBy) {
 var vs_owner = document["v-s:owner"];
 if (vs_owner) {
 	addRight(ticket, [can_read, can_update, can_delete], getUri(vs_owner), doc_uri);
-	print("#1 owner, doc_uri = " + doc_uri + ", person = " + getUri(vs_owner)); 
+	//print("#1 owner, doc_uri = " + doc_uri + ", person = " + getUri(vs_owner)); 
 }
 
 var vs_author = document["v-s:author"];
@@ -178,7 +178,7 @@ if (vs_author) {
 		
 		if (author_type == 'v-s:Person') {
 			addRight(ticket, [can_read, can_update, can_delete], getUri(vs_author), doc_uri); 
-			print("#2 author = person, doc_uri = " + doc_uri + ", person = " + getUri(vs_author)); 
+			//print("#2 author = person, doc_uri = " + doc_uri + ", person = " + getUri(vs_author)); 
 		} else {
 			var ff = get_property_chain (ticket, document, 'v-s:author', 'v-s:employee');
 			if (ff) {
@@ -187,7 +187,7 @@ if (vs_author) {
 				if (first_doc) {
 					doc_uri = first_doc['@'];	
 					if (employee_uri) {
-						print("#3 author = appointment, doc_uri = " + doc_uri + ", person = " + employee_uri);
+						//print("#3 author = appointment, doc_uri = " + doc_uri + ", person = " + employee_uri);
 						addRight(ticket, [can_read, can_update, can_delete], employee_uri, doc_uri);
 					}
 				}

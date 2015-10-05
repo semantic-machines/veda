@@ -529,7 +529,7 @@ public int exec_xapian_query_and_queue_authorize(Ticket *ticket,
             string subject_id = cast(immutable)data_str[ 0..*data_len ].dup;
 
             if (trace_msg[ 201 ] == 1)
-                log.trace("subject_id:%s", subject_id);
+                log.trace("subject_id:[%s]", subject_id);
 
             if (context.authorize(subject_id, ticket, Access.can_read))
             {
