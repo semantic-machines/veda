@@ -124,15 +124,24 @@ veda.Module(function IndividualActions(veda) { "use strict";
 		 */
 		individual.off("showRights");
 		individual.on("showRights", function (e) {
-			var origin = individual['rightsOrigin'];
-			var container = $('#main');
-			container.html('<div id="rightrecords"></div>');
+			// Ignore individuals without id
+			if (individual.id === undefined || individual.id === '' || individual.id === '_') return;
+			var container = $($("#show-rights-modal-template").html());
+			container.modal();
+
+			$("body").append(container);
+			
+			var rights = individual['rights'];
+			var holder = $("<div>");
+			rights.present(holder);
+			holder.appendTo($(".modal-body", container));
+
+			var origin = individual['rightsOrigin'];						
 			origin.forEach(function (rightRecord) {
 				var holder = $("<div>");
 				rightRecord.present(holder);
-				container.append(holder);
-			});
-			
+				holder.appendTo($(".modal-body", container));
+			});			
 		});
 	});
 });

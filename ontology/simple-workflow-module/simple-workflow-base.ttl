@@ -646,11 +646,16 @@ s-wf:UserTaskFormTemplate
       <div class="panel-footer">
         <button type="button" class="action btn btn-warning view edit -search" id="send">Отправить</button>
         <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
+		<button type="button" class="action btn btn-warning view -edit -search" id="rightsOrigin" about="v-b:RightsOrigin" property="rdfs:label"/>
       </div>
     </div>
     <script type="text/javascript">
       $('#send').on('click', function () {
 		individual.trigger("send");
+	  });
+	  
+	  $('#rightsOrigin').on('click', function () {
+		individual.trigger("showRights");
 	  });
 	  
       template.trigger("edit");
