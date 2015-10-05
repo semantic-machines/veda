@@ -111,3 +111,8 @@ v-b:RightsOrigin
   rdfs:label "Права доступа"@ru ;
   rdfs:label "Access rights"@en ;
 .
+v-b:Instruction
+  rdf:type v-b:Bundle ;
+  rdfs:label "Поручение"@ru ;
+  rdfs:label "Instruction"@en ;
+.
