@@ -111,3 +111,8 @@ v-b:RightsOrigin
   rdfs:label "Права доступа"@ru ;
   rdfs:label "Access rights"@en ;
 .
+v-b:SearchRequest
+  rdf:type v-b:Bundle ;
+  rdfs:label "Поисковый запрос"@ru ;
+  rdfs:label "Search request"@en ;
+.

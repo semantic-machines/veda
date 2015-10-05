@@ -351,9 +351,9 @@ v-fs:FulltextRequestTemplate
 			<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
 			<br>
 			<div>
-				<button type="button" class="action btn btn-primary view -edit" id="edit">Редактировать</button>
-				<button type="button" class="action btn btn-success -view edit" id="save">Сохранить</button>
-				<button type="button" class="action btn btn-link view -edit" id="delete">Удалить</button>
+				<button type="button" class="action btn btn-primary view -edit" id="edit" about="v-b:Edit" property="rdfs:label"/>
+				<button type="button" class="action btn btn-success -view edit" id="save" about="v-b:Save" property="rdfs:label"/>
+				<button type="button" class="action btn btn-link view -edit" id="delete" about="v-b:Delete" property="rdfs:label"/>
 			</div>
 		</div>
 	</div>
@@ -597,9 +597,9 @@ v-fs:AttributiveRequestTemplate
 			<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
 			<br>
 			<div>
-				<button type="button" class="action btn btn-primary view -edit" id="edit">Редактировать</button>
-				<button type="button" class="action btn btn-success -view edit" id="save">Сохранить</button>
-				<button type="button" class="action btn btn-link view -edit" id="delete">Удалить</button>
+				<button type="button" class="action btn btn-primary view -edit" id="edit" about="v-b:Edit" property="rdfs:label"/>
+				<button type="button" class="action btn btn-success -view edit" id="save" about="v-b:Save" property="rdfs:label"/>
+				<button type="button" class="action btn btn-link view -edit" id="delete" about="v-b:Delete" property="rdfs:label"/>
 			</div>
 		</div>
 	</div>
