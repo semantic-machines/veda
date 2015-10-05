@@ -546,6 +546,11 @@ v-ui:LabelLinkTemplate
   rdfs:label "Template without class name, with label"@en ;
   v-ui:template """
   <a href="#/individual/@/#main"><span property="rdfs:label"></span></a>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+  	  template.text(individual.id);
+    }
+  </script>
   """ ;
 .
 v-ui:LabelBlockLinkTemplate

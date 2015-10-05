@@ -682,11 +682,11 @@ v-fs:AttributiveRequestTemplate
 	function gen_head(type) {
 		var props = Object.getOwnPropertyNames(type.domainProperties);
 		var sortable = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
-		var tr = $("<tr>");
+		var tr = $("<tr><th>#</th><th><span class='glyphicon glyphicon-search'></span></th></tr>"); 
 		var sortBy = dir = "";
 		if ( self.hasValue("v-fs:sortOrder") ) {
 			var t = self["v-fs:sortOrder"][0].split(" ");
-			sortBy = t[0].split("'")[1]; dir = t[1];
+			sortBy = t[0]; dir = t[1];
 		}
 		var header = props.map( function (property_uri) {
 			if (property_uri === "rdf:type" || property_uri === "v-s:deleted") { return ""; }
@@ -736,26 +736,8 @@ v-fs:AttributiveRequestTemplate
 			}
 			return res.join("");
 		}).join("");
-		var res = ["<tr>", tmpl, "</tr>"].join("");
+		var res = ["<tr>", "<td>###</td><td><a href='#/individual/@/#main'><span class='glyphicon glyphicon-search'></span></a></td>", tmpl, "</tr>"].join("");
 		return res;
-	}
-	
-	function genericTemplate(individual) {
-		var head = "<strong><a href='#/individual/@/#main' property='rdfs:label'></a></strong>";
-		var allprops = Object.getOwnPropertyNames(individual.properties);
-		var props = "<div>";
-		for (var i = 0, uri; (uri = allprops && allprops[i]); i++) {
-			if ( individual.hasValue(uri) ) {
-				props += "<span about='" + uri + "' property='rdfs:label' class='text-muted'></span>: "
-				if (individual[uri][0] instanceof veda.IndividualModel) {
-					props += "<span about='@' rel='" + uri + "' template='v-ui:LabelLinkTemplate'></span>; "
-				} else {
-					props += "<span about='@' property='" + uri + "'></span>; "
-				}
-			}
-		}
-		props += "</div>";
-		return "<span>" + head + props + "</span>";
 	}
 	
 	// Present results
@@ -785,18 +767,14 @@ v-fs:AttributiveRequestTemplate
 			if (self.count < self.page * veda.user.displayedElements) {
 				self.page = Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0) - 1;
 			}
-			resultsList.attr("start", self.page * veda.user.displayedElements + 1);
 			results.tab("show");
 			
 			for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
 				(function (i) {
 					setTimeout(function () {
-						/*var container = $("<li>").appendTo(resultsList);
+						var _tmpl = tmpl.replace("###", i+1);
 						var result = new veda.IndividualModel( self.result[i] );
-						var tmpl = genericTemplate(result);
-						result.present(container, tmpl);*/
-						var result = new veda.IndividualModel( self.result[i] );
-						result.present(tBody, tmpl);
+						result.present(tBody, _tmpl);
 					}, 0);
 				}(i));
 			}
