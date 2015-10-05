@@ -174,7 +174,7 @@ function newJournalRecord(journal_uri)
 
 function logToJournal(ticket, journal_uri, journal_record)
 {
-    //print("new_journal_record=" + toJson(new_journal_record));
+    print("@@@ new_journal_record=" + toJson(journal_record));
     put_individual(ticket, journal_record, _event_id);
 
     var add_to_journal = {
