@@ -31,30 +31,10 @@ v-b:Chief
   rdfs:label "Руководитель"@ru ;
   rdfs:label "Chief"@en ;
 .
-v-b:GeneralInfo
-  rdf:type v-b:Bundle ;
-  rdfs:label "Общая информация"@ru ;
-  rdfs:label "general information"@en ;
-.
 v-b:ImplementationPeriod
   rdf:type v-b:Bundle ;
   rdfs:label "период реализации"@ru ;
   rdfs:label "implementation period"@en ;
-.
-v-b:datePlan
-  rdf:type v-b:Bundle ;
-  rdfs:label "плановая дата"@ru ;
-  rdfs:label "date plan"@en ;
-.
-v-b:dateFact
-  rdf:type v-b:Bundle ;
-  rdfs:label "фактическая дата"@ru ;
-  rdfs:label "date fact"@en ;
-.
-v-b:completion
-  rdf:type v-b:Bundle ;
-  rdfs:label "процент выполнения"@ru ;
-  rdfs:label "completion"@en ;
 .
 v-b:MyPage
   rdf:type v-b:Bundle ;
@@ -106,6 +86,11 @@ v-b:Save
   rdfs:label "Сохранить"@ru ;
   rdfs:label "Save"@en ;
 .
+v-b:Find
+  rdf:type v-b:Bundle ;
+  rdfs:label "Найти"@ru ;
+  rdfs:label "Find"@en ;
+.
 v-b:Cancel
   rdf:type v-b:Bundle ;
   rdfs:label "Отмена"@ru ;
@@ -125,4 +110,9 @@ v-b:RightsOrigin
   rdf:type v-b:Bundle ;
   rdfs:label "Права доступа"@ru ;
   rdfs:label "Access rights"@en ;
+.
+v-b:SearchRequest
+  rdf:type v-b:Bundle ;
+  rdfs:label "Поисковый запрос"@ru ;
+  rdfs:label "Search request"@en ;
 .

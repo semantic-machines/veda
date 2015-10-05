@@ -78,7 +78,7 @@ Handle<Value> individual2jsobject(Individual *individual, Isolate *isolate)
 }
 
 
-void jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, string predicate)
+bool jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, string predicate)
 {
     //std::cout << "@json->cbor #0 predicate=" << predicate << std::endl;
 
@@ -91,7 +91,7 @@ void jsobject2individual(Local<Value> value, Individual *indv, Resource *resourc
         {
             Local<Value> js_value = js_arr->Get(0);
             jsobject2individual(js_value, indv, resource, predicate);
-            return;
+            return true;
         }
 
         for (uint32_t idx = 0; idx < js_arr->Length(); idx++)
@@ -99,35 +99,42 @@ void jsobject2individual(Local<Value> value, Individual *indv, Resource *resourc
             Local<Value> js_value = js_arr->Get(idx);
             jsobject2individual(js_value, indv, resource, predicate);
         }
-        return;
+        return true;
     }
     else if (value->IsString())
     {
-        //std::cout << "@json->cbor #is sring" << std::endl;
-        v8::String::Utf8Value s1(value);
-        std::string           vv = std::string(*s1);
+    	if (resource == NULL)
+    		return false;
 
-        resource->type     = _String;
-        resource->str_data = vv;
+    	//std::cout << "@json->cbor #is sring" << std::endl;
+    	v8::String::Utf8Value s1(value);
+    	std::string           vv = std::string(*s1);
 
-        return;
+    	resource->type     = _String;
+    	resource->str_data = vv;
+
+        return true;
     }
     else if (value->IsBoolean())
     {
+    	if (resource == NULL)
+    		return false;
         //std::cout << "@json->cbor #is boolean" << std::endl;
 
         resource->type      = _Boolean;
         resource->bool_data = value->ToBoolean()->Value();
 
-        return;
+        return true;
     }
     else if (value->IsDate())
     {
+    	if (resource == NULL)
+    		return false;
 //        std::cout << "@json->cbor #10" << std::endl;
         resource->type      = _Datetime;
         resource->long_data = value->ToInteger()->Value();
 
-        return;
+        return true;
     }
     else if (value->IsNumber())
     {
@@ -177,7 +184,7 @@ void jsobject2individual(Local<Value> value, Individual *indv, Resource *resourc
             }
             else if (name == "@")
             {
-                Resource              rc;
+                //Resource              rc;
                 Local<Value>          js_value = obj->Get(js_key);
 
                 v8::String::Utf8Value s2(js_value);
@@ -187,8 +194,21 @@ void jsobject2individual(Local<Value> value, Individual *indv, Resource *resourc
             }
             else
             {
-                Local<Value> js_value = obj->Get(js_key);
-                jsobject2individual(js_value, indv, resource, name);
+        		Local<Value> js_value = obj->Get(js_key);
+           		bool res = jsobject2individual(js_value, indv, resource, name);
+           		if (res == false)
+           		{
+                        Resource rc;
+               			rc.lang = LANG_EN;
+                        v8::String::Utf8Value s1_1(js_value);
+                        std::string           std_s1_1 = std::string(*s1_1);
+                        vector <Resource> values = indv->resources[ name ];
+                        rc.type     = _String;
+                        rc.str_data = std_s1_1;
+                        values.push_back(rc);
+
+                        indv->resources[ name ] = values;
+           		}
             }
         }
 
@@ -197,7 +217,7 @@ void jsobject2individual(Local<Value> value, Individual *indv, Resource *resourc
             //std::cout << "@json->cbor #4" << std::endl;
             int      type = v_type->ToInt32()->Value();
 
-            Resource rc;
+            //Resource rc;
 
             if (type == _Boolean)
             {
@@ -208,7 +228,7 @@ void jsobject2individual(Local<Value> value, Individual *indv, Resource *resourc
                 rc.bool_data = boolValue;
                 values.push_back(rc);
                 indv->resources[ predicate ] = values;
-                return;
+                return true;
             }
             else if (type == _Datetime)
 	    {
@@ -223,12 +243,12 @@ void jsobject2individual(Local<Value> value, Individual *indv, Resource *resourc
                 rc.long_data = value;
                 values.push_back(rc);
                 indv->resources[ predicate ] = values;
-                return;
+                return true;
 	    }	
             else if (type == _Integer)
             {
                 int intValue = v_data->ToInteger()->Value();
-                return;
+                return true;
             }
             else if (type == _Uri || type == _String)
             {
@@ -250,11 +270,14 @@ void jsobject2individual(Local<Value> value, Individual *indv, Resource *resourc
                 //std::cout << "@json->cbor #4.1" << std_s1_1 << std::endl;
 
                 vector <Resource> values = indv->resources[ predicate ];
+
                 rc.type     = type;
                 rc.str_data = std_s1_1;
                 values.push_back(rc);
+
                 indv->resources[ predicate ] = values;
-                return;
+
+                return true;
             }
         }
 //        else
@@ -264,7 +287,7 @@ void jsobject2individual(Local<Value> value, Individual *indv, Resource *resourc
     }
 
     //std::cout << "@json->cbor #12" << std::endl;
-    return;
+    return true;
 }
 
 ///////pacahon IO section //////////////////////////////////////////////////////////////////////////////////////////////////

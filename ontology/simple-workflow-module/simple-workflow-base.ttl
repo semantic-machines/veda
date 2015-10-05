@@ -173,6 +173,12 @@ s-wf:map_coord_level
 	rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_project2_to_docId
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_doc_id ;	
+	v-wf:mappingExpression	"process.getLocalVariable ('project2')" ;
+	rdfs:isDefinedBy s-wf: ;
+.
 #----
 
 s-wf:executor_signer
@@ -269,7 +275,7 @@ s-wf:ComplexRouteStartForm_Template
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <span about="s-wf:ComplexRouteStartForm" property="rdfs:label">Стартовая форма</span>
+	        <span about="s-wf:ComplexRouteStartForm" property="rdfs:label" />
   	      </div>  
           <div class="col-md-6 text-right text-muted">
                 <a href="#/individual/@/#main"><span property="@">ID</span></a>
@@ -279,59 +285,59 @@ s-wf:ComplexRouteStartForm_Template
       <div class="panel-body">
         <div class="row">
             <div class="col-md-4">
-               <strong about="v-wf:processInitiator" property="rdfs:label" class="text-muted">Инициатор</strong>
+               <strong about="v-wf:processInitiator" property="rdfs:label" class="text-muted"></strong>
                <div rel="v-wf:processInitiator" template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
             </div>
             <div class="col-md-4">
-               <strong about="v-wf:processedDocument" property="rdfs:label" class="text-muted">Документ</strong>
-               <div rel="v-wf:processedDocument" template="v-ui:ClassNameLabelTemplate">Ссылка на документ</div>
+               <strong about="v-wf:processedDocument" property="rdfs:label" class="text-muted"></strong>
+               <div rel="v-wf:processedDocument" template="v-ui:ClassNameLabelTemplate"></div>
             </div>
             <div class="col-md-4">
-               <strong about="v-wf:forNet" property="rdfs:label" class="text-muted">Документ</strong>
-               <div rel="v-wf:forNet" template="v-ui:ClassNameLabelTemplate">Ссылка на сеть</div>
+               <strong about="v-wf:forNet" property="rdfs:label" class="text-muted"></strong>
+               <div rel="v-wf:forNet" template="v-ui:ClassNameLabelTemplate"></div>
             </div>
             <div class="col-md-4">
-               <strong about="v-wf:isProcess" property="rdfs:label" class="text-muted">Документ</strong>
-               <div rel="v-wf:isProcess" template="v-ui:ClassNameLabelTemplate">Запущен по процессу</div>
+               <strong about="v-wf:isProcess" property="rdfs:label" class="text-muted"></strong>
+               <div rel="v-wf:isProcess" template="v-ui:ClassNameLabelTemplate"></div>
             </div>
             <div class="col-md-4">
-               <strong about="v-wf:useTransformation" property="rdfs:label" class="text-muted">Документ</strong>
-               <div rel="v-wf:useTransformation" template="v-ui:ClassNameLabelTemplate">Использована декомпозиция</div>
-            </div>
-        </div>
-        <hr />
-        <div class="row">
-            <div class="col-md-4">
-               <strong about="s-wf:ComplexRouteStartForm_coordinator1" property="rdfs:label" class="text-muted">Согласующие 1 уровня</strong>
-               <div rel="s-wf:ComplexRouteStartForm_coordinator1" template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
-            </div>
-            <div class="col-md-4">
-               <strong about="s-wf:ComplexRouteStartForm_coordinator2" property="rdfs:label" class="text-muted">Согласующие 2 уровня</strong>
-               <div rel="s-wf:ComplexRouteStartForm_coordinator2" template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
-            </div>
-            <div class="col-md-4">
-               <strong about="s-wf:ComplexRouteStartForm_coordinator3" property="rdfs:label" class="text-muted">Согласующие 3 уровня</strong>
-               <div rel="s-wf:ComplexRouteStartForm_coordinator3" template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
+               <strong about="v-wf:useTransformation" property="rdfs:label" class="text-muted"></strong>
+               <div rel="v-wf:useTransformation" template="v-ui:ClassNameLabelTemplate"></div>
             </div>
         </div>
         <hr />
         <div class="row">
             <div class="col-md-4">
-               <strong about="s-wf:ComplexRouteStartForm_reviewer" property="rdfs:label" class="text-muted">Рассматривающий</strong>
-               <div rel="s-wf:ComplexRouteStartForm_reviewer" template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
+               <strong about="s-wf:ComplexRouteStartForm_coordinator1" property="rdfs:label" class="text-muted"></strong>
+               <div rel="s-wf:ComplexRouteStartForm_coordinator1" template="td:AppointmentTemplate2"></div>
             </div>
             <div class="col-md-4">
-               <strong about="s-wf:ComplexRouteStartForm_signer" property="rdfs:label" class="text-muted">Подписывающий</strong>
-               <div rel="s-wf:ComplexRouteStartForm_signer" template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
+               <strong about="s-wf:ComplexRouteStartForm_coordinator2" property="rdfs:label" class="text-muted"></strong>
+               <div rel="s-wf:ComplexRouteStartForm_coordinator2" template="td:AppointmentTemplate2"></div>
+            </div>
+            <div class="col-md-4">
+               <strong about="s-wf:ComplexRouteStartForm_coordinator3" property="rdfs:label" class="text-muted"></strong>
+               <div rel="s-wf:ComplexRouteStartForm_coordinator3" template="td:AppointmentTemplate2"></div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-4">
+               <strong about="s-wf:ComplexRouteStartForm_reviewer" property="rdfs:label" class="text-muted"></strong>
+               <div rel="s-wf:ComplexRouteStartForm_reviewer" template="td:AppointmentTemplate2"></div>
+            </div>
+            <div class="col-md-4">
+               <strong about="s-wf:ComplexRouteStartForm_signer" property="rdfs:label" class="text-muted"></strong>
+               <div rel="s-wf:ComplexRouteStartForm_signer" template="td:AppointmentTemplate2"></div>
             </div>
         </div>
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-primary" id="edit" i18n="[Edit]">Редактировать</button>
-        <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
-        <button type="button" class="action btn btn-success" id="save_and_start_process" i18n="[StartProccess]">Запустить по маршруту</button>
-        <button type="button" class="action btn btn-default" id="cancel" i18n="[Cancel]">Отмена</button>
-        <button type="button" class="action btn btn-link" id="delete" i18n="[Delete]">Удалить</button>
+        <button type="button" class="action btn btn-primary" id="edit" about="v-b:Edit" property="rdfs:label"/>
+        <button type="button" class="action btn btn-success" id="save" about="v-b:Save" property="rdfs:label"/>
+        <button type="button" class="action btn btn-success" id="save_and_start_process" about="v-b:Send" property="rdfs:label"/>
+        <button type="button" class="action btn btn-default" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
+        <button type="button" class="action btn btn-link" id="delete" about="v-b:Delete" property="rdfs:label"/>
       </div>
     </div>
   </div>
@@ -590,7 +596,7 @@ s-wf:UserTaskFormTemplate
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <span about="s-wf:UserTaskForm" property="rdfs:label">Форма ответа на задачу</span>
+	        <span about="s-wf:UserTaskForm" property="rdfs:label"></span>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
                 <a href="#/individual/@/#main"><span property="@">ID</span></a>
@@ -605,26 +611,26 @@ s-wf:UserTaskFormTemplate
         </div>
         <div class="row">
             <div class="col-md-3">
-               <strong about="v-wf:from" property="rdfs:label" class="text-muted">От кого</strong>
+               <strong about="v-wf:from" property="rdfs:label" class="text-muted"></strong>
                <div about="@" rel="v-wf:from" template="v-ui:LabelTemplate"></div>
             </div>
             <div class="col-md-3">
-               <strong about="v-wf:to" property="rdfs:label" class="text-muted">Кому</strong>
+               <strong about="v-wf:to" property="rdfs:label" class="text-muted"></strong>
                <div about="@" rel="v-wf:to" template="v-ui:LabelTemplate"></div>
             </div>
             <div class="col-md-3">
-               <strong about="v-s:description" property="rdfs:label" class="text-muted">Когда</strong>
+               <strong about="v-s:description" property="rdfs:label" class="text-muted"></strong>
                <div about="@" property="v-s:description"></div>
             </div>            
             <div class="col-md-3">
-               <strong about="v-wf:dateGiven" property="rdfs:label" class="text-muted">Когда</strong>
+               <strong about="v-wf:dateGiven" property="rdfs:label" class="text-muted"></strong>
                <div about="@" property="v-wf:dateGiven"></div>
             </div>
         </div>
         <hr />
         <div class="row">
             <div class="col-md-12">
-               <strong about="v-wf:takenDecision" property="rdfs:label" class="text-muted">Решение</strong>
+               <strong about="v-wf:takenDecision" property="rdfs:label" class="text-muted"></strong>
                <select class="form-control" id="decision-control"></select>
                <div about="@" rel="v-wf:takenDecision" embedded="true"></div>
             </div>
@@ -632,14 +638,14 @@ s-wf:UserTaskFormTemplate
         <hr />
         <div class="row">
             <div class="col-md-12">
-               <strong about="v-wf:onDocument" property="rdfs:label" class="text-muted">По документу</strong>
+               <strong about="v-wf:onDocument" property="rdfs:label" class="text-muted"></strong>
                <div about="@" rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate"></div>
             </div>
         </div>
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-warning view edit -search" id="send">Отправить</button>
-        <button type="button" class="action btn btn-success" id="save" i18n="[Save]">Сохранить</button>
+        <button type="button" class="action btn btn-warning view edit -search" id="send" about="v-b:Edit" property="rdfs:label"/>
+        <button type="button" class="action btn btn-success" id="save" about="v-b:Save" property="rdfs:label"/>
 		<button type="button" class="action btn btn-warning view -edit -search" id="rightsOrigin" about="v-b:RightsOrigin" property="rdfs:label"/>
       </div>
     </div>

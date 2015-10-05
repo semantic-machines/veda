@@ -2127,6 +2127,28 @@ v-wf:SubProcessStarted
   rdfs:label "Запущен подпроцесс"@ru ;
   rdfs:label "Subprocess started"@en ;
 .
+
+v-wf:WorkItemStarted
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:JournalRecord ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "WorkItem Started"@en ;
+.
+
+v-wf:DecisionFormStarted
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:JournalRecord ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Decision Form Started"@en ;
+.
+
+v-wf:WorkOrderStarted
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:JournalRecord ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "WorkOrder Started"@en ;
+.
+
 v-wf:ProcessCompleted
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
@@ -2164,6 +2186,15 @@ v-wf:WorkflowReadUser
   rdfs:label "Workflow Read User"@en ;
   rdfs:label "Пользователи имеющие право на чтение обьектов workflow"@ru ;
 .
+
+v-wf:traceJournal
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:domain v-wf:NetElement ;
+  rdfs:label "системный журнал"@ru ;
+  rdfs:range v-s:Journal ;
+.
+
 
 #################################################################################### JOURNAL UI
 v-ui:TaskGivenTemplate
@@ -2262,6 +2293,7 @@ v-ui:ProcessEventTemplate
 </script>
   """ ;
 .
+
 v-ui:SubProcessStartedEventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон события запуска подпроцесса"@ru ;
@@ -2297,6 +2329,42 @@ v-ui:SubProcessStartedEventTemplate
 </script>
   """ ;
 .
+
+v-ui:WorkItemStartedEventTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон обработки work item"@ru ;
+  v-ui:forClass v-wf:WorkItemStarted ;
+  v-ui:template """
+<div class="journal-record">
+  <hr class="margin-sm">
+  <div class="row">
+	<div class="col-md-3 col-sm-3 event-type">
+	  <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
+	</div>
+	<div class="col-md-7 col-sm-6 event-desc">
+	  <div property="rdfs:label"></div>
+	  <span id="initiator">
+        <span about="v-wf:initiator" property="rdfs:label"></span>: 
+	    <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
+	  </span>
+	</div>
+	<div class="col-md-2 col-sm-3 event-date text-right">
+	  <span property="v-s:created"></span>
+	</div>
+  </div>
+  <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
+</div>
+<script>
+  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
+  $("#exp", template).click(function (e) {
+    e.preventDefault();
+    $("div[rel='v-s:subJournal']", template).toggle();
+    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+  });
+</script>
+  """ ;
+.
+
 v-ui:TraceEventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Trace event template"@en ;
@@ -2328,3 +2396,4 @@ v-ui:TraceEventTemplate
 </script>
   """ ;
 .
+
