@@ -1258,20 +1258,13 @@ v-asp:PersonalAspectKhvostia
 	rdfs:label "Personal aspect Khvostikova"@en ;
 #	v-asp:hasFavorite ;
 #	v-asp:hasBlank ;
-	v-asp:hasRegistry td:ProjectSearch_forKh ;
+#	v-asp:hasRegistry ;
 	v-asp:hasBusinessAspect mnd-s-asppd:ProjectManagementAspect1 ;
 #	v-asp:hasReport ;
 #	v-asp:hasArbitraryLink ;
 #	v-asp:hasWidget ;
 .
 
-
-td:ProjectSearch_forKh
-  rdf:type v-fs:Search ;
-  rdfs:label "ProjectSearch"@en ;
-  rdfs:label "Реестр проектов для Хвостиковой"@ru ;
-  v-fs:q "'rdf:type'=='mnd-s-asppd:Project'"^^xsd:string ;
-.
 
 v-wf:UserTaskForm1
 	rdf:type s-wf:UserTaskForm ;
