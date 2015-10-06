@@ -89,7 +89,11 @@
 	$.fn.veda_text = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_text.defaults, options ),
 			control = veda_literal_input.call(this, opts);
-	
+		var ta = $("textarea", control);
+		autosize(ta);
+		this.on("remove", function () {
+			autosize.destroy(ta);
+		});
 		this.append(control);
 		return this;
 	};
@@ -225,7 +229,7 @@
 			allowInputToggle: true,
 			format: "DD.MM.YYYY HH:mm"
 		});
-
+		
 		input.on("change focusout", function () {
 			var value = opts.parser( this.value );
 			change(value);
@@ -248,6 +252,7 @@
 
 		this.on("remove", function () {
 			control.data("DateTimePicker").destroy();
+			control.data("DateTimePicker") = null;
 		});
 
 		return this;
@@ -360,6 +365,11 @@
 	$.fn.veda_multilingualText = function (options) {
 		var opts = $.extend( {}, $.fn.veda_multilingualText.defaults, options ),
 			control = veda_multilingual.call(this, opts);
+		var ta = $("textarea", control);
+		autosize(ta);
+		this.on("remove", function () {
+			autosize.destroy(ta);
+		});
 		this.append(control);
 		return this;
 	};
@@ -895,9 +905,9 @@
 		});
 		var files = [], n;
 		fileInput.change(function () {
-			files.length = 0;
+			files = [];
 			n = this.files.length;
-		    for (var i = 0, file; (file = this.files && this.files[i]); i++) {
+			for (var i = 0, file; (file = this.files && this.files[i]); i++) {
 				uploadFile(file, uploaded);
 			}
 		});

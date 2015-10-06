@@ -14,6 +14,11 @@ footer {
   color: #707070;
 }
 
+textarea { 
+  resize: vertical;
+  max-height: 300px; 
+}
+
 .popover {
   min-width: 300px !important;
   max-width: 400px;

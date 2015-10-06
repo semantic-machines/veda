@@ -101,7 +101,7 @@ v-fs:TypeToSearchSpecFT
   v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
   v-ui:tooltip "Link to instance of Class class"@en ;
 .
-v-fs:TypeToSearchSpecAttributive
+v-fs:TypeToSearchSpecAT
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:FulltextRequest"@ru ;
   rdfs:label "v-fs:typeToSearch property specification for class v-fs:AttributiveRequest"@en ;
@@ -584,10 +584,9 @@ v-fs:AttributiveRequestTemplate
 			<button type="button" id="find" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="results-at">
-			<div class="container-fluid" id="search-results">
-				<ol id="results-list"></ol>
+			<div id="search-results">
 				<div class="table-responsive">
-					<table id="results-tbl" class="table table-bordered table-condensed table-striped">
+					<table id="results-tbl" class="table table-condensed table-striped">
 						<thead></thead>
 						<tbody></tbody>
 					</table>
