@@ -1213,3 +1213,70 @@ v-ui:DocumentEventTemplate
 </script>
   """ ;
 .
+
+v-ui:PermissionStatementTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса записи выдачи прав"@ru ;
+  rdfs:label "Document event template"@en ;
+  v-ui:forClass v-s:PermissionStatement ;
+  v-ui:template """
+  <div>
+	<div class="row right-header" style="display:none">
+		<div class="col-md-1">
+			<span about="v-s:canCreate" property="rdfs:label"></span>
+		</div>
+		<div class="col-md-1">
+			<span about="v-s:canRead" property="rdfs:label"></span>
+		</div>
+		<div class="col-md-1">
+			<span about="v-s:canUpdate" property="rdfs:label"></span>
+		</div>
+		<div class="col-md-1">
+			<span about="v-s:canDelete" property="rdfs:label"></span>
+		</div>					
+		<div class="col-md-3">
+			<span about="v-s:permissionObject" property="rdfs:label"></span>
+		</div>
+		<div class="col-md-3">
+			<span about="v-s:permissionSubject" property="rdfs:label"></span>
+		</div>
+		<div class="col-md-1">
+			<span about="v-s:startTime" property="rdfs:label"></span>
+		</div>
+		<div class="col-md-1">
+			<span about="v-s:endTime" property="rdfs:label"></span>
+		</div>
+	</div>
+	<hr/>
+	<div class="row">
+		<div class="col-md-1">
+			<span about="@" property="v-s:canCreate"></span>
+		</div>
+		<div class="col-md-1">
+			<span about="@" property="v-s:canRead"></span>
+		</div>
+		<div class="col-md-1">
+			<span about="@" property="v-s:canUpdate"></span>
+		</div>
+		<div class="col-md-1">
+			<span about="@" property="v-s:canDelete"></span>
+		</div>					
+		<div class="col-md-3">
+			<span rel="v-s:permissionObject" template="v-ui:LabelLinkTemplate"></span>
+		</div>
+		<div class="col-md-3">
+			<span rel="v-s:permissionSubject" template="v-ui:LabelLinkTemplate"></span>
+		</div>
+		<div class="col-md-1">
+			<span about="@" property="v-s:startTime"></span>
+		</div>
+		<div class="col-md-1">
+			<span about="@" property="v-s:endTime"></span>
+		</div>
+	</div>
+  </div>
+	<script>
+	  if (!individual.hasValue("v-s:permissionObject") && !individual.hasValue("v-s:permissionSubject")) $(".right-header", template).show();
+	</script>
+  """ ;
+.

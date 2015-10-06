@@ -450,11 +450,13 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
 
 }
 
-function create_and_mapping_variables(ticket, mapping, _process, _task, _order, _task_result, f_store)
+function create_and_mapping_variables(ticket, mapping, _process, _task, _order, _task_result, f_store, trace_journal_uri)
 {
     try
     {
-        //print("[WORKFLOW][create_and_mapping_variables]: mapping=" + toJson(mapping));
+		if (trace_journal_uri)
+			traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables, start", toJson(mapping));							
+		
         var new_vars = [];
         if (!mapping) return [];
 
@@ -531,6 +533,9 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
                 //            print("[WORKFLOW][create_and_mapping_variables]: map not found :" + mapping[i].data);
             }
         }
+
+		if (trace_journal_uri)
+			traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables, result", toJson(new_vars));							
 
         return new_vars;
     }
@@ -615,6 +620,10 @@ function create_new_journal(ticket, new_journal_uri, process_uri, label)
 {
     try
     {
+	var exists_journal = get_individual (ticket, new_journal_uri);
+	
+	if (!exists_journal)
+	{
         var new_journal = {
             '@': new_journal_uri,
             'rdf:type': [
@@ -630,9 +639,9 @@ function create_new_journal(ticket, new_journal_uri, process_uri, label)
         if (label)
             new_journal['rdfs:label'] = label;
 
-//print ("@@1 new_journal=", toJson (new_journal));
         put_individual(ticket, new_journal, _event_id);
-//print ("@@2");
+		//print ("@@@ create new journal, =", toJson (new_journal))
+	}
 
         return new_journal_uri;
     }
@@ -653,7 +662,7 @@ function mapToJournal(map_container, ticket, _process, _task, _order)
             //* выполнить маппинг для журнала 
             var journalVars = [];
 
-            journalVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false);
+            journalVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, null);
             if (journalVars)
             {
                 var jornal_uri = getJournalUri(_process['@']);
@@ -687,7 +696,7 @@ function create_new_trace_subjournal(parent_uri, net_element_impl, label, type)
         var new_sub_journal_uri = getTraceJournalUri(net_element_impl['@']);
         create_new_journal(ticket, new_sub_journal_uri, null, label);
 
-        var journal_uri = getTraceJournalUri(parent_uri);
+        var parent_journal_uri = getTraceJournalUri(parent_uri);
         var new_journal_record = newJournalRecord(journal_uri);
 
         new_journal_record['rdf:type'] = [
@@ -705,18 +714,14 @@ function create_new_trace_subjournal(parent_uri, net_element_impl, label, type)
             data: new_sub_journal_uri,
             type: _Uri
         }];
-        logToJournal(ticket, journal_uri, new_journal_record);
+        logToJournal(ticket, parent_journal_uri, new_journal_record);
 
 		put_individual(ticket, journal_record, _event_id);
 
 		var add_to_net_element_impl = {
         '@': net_element_impl['@'],
-        'v-wf:traceJournal': [
-            {
-                data: new_sub_journal_uri,
-                type: _Uri
-		}]
-		};
+        'v-wf:traceJournal': newUri (new_sub_journal_uri)
+        };
 
 		add_to_individual(ticket, add_to_net_element_impl, _event_id);
 
@@ -743,7 +748,7 @@ function get_trace_journal(document, process)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_inVars, document, trace_journal_uri)
+function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_inVars, document, parent_trace_journal_uri)
 {
     try
     {
@@ -756,8 +761,8 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
         else
             use_net = f_executor;
 
-		if (trace_journal_uri)
-			traceToJournal(ticket, trace_journal_uri, "[WO2.4] executor= " + getUri(f_executor) + " used net", getUri(use_net));							
+		if (parent_trace_journal_uri)
+			traceToJournal(ticket, parent_trace_journal_uri, "[WO2.4] executor= " + getUri(f_executor) + " used net", getUri(use_net));							
 
         //var ctx = new Context(work_item, ticket);
         //ctx.print_variables ('v-wf:inVars');
@@ -799,11 +804,17 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
             if (f_useSubNet)
                 new_process['v-wf:executor'] = f_executor;
 
-			if (trace_journal_uri)
-				traceToJournal(ticket, trace_journal_uri, "new_process=", getUri(use_net), toJson(new_process));							
-            put_individual(ticket, new_process, _event_id);
+			if (parent_trace_journal_uri)
+			{
+				traceToJournal(ticket, parent_trace_journal_uri, "new_process=", getUri(use_net), toJson(new_process));							
+				new_process['v-wf:isTrace'] = newBool(true);
 
-            create_new_journal(ticket, getTraceJournalUri(new_process_uri), null, _started_net['rdfs:label']);
+				var trace_journal_uri = getTraceJournalUri(new_process_uri);
+				create_new_journal(ticket, trace_journal_uri, null, _started_net['rdfs:label']);
+				new_process['v-wf:traceJournal'] = newUri (trace_journal_uri);				
+			}
+			
+            put_individual(ticket, new_process, _event_id);
 
             var journal_uri = getJournalUri(new_process_uri);
             var new_journal_record = newJournalRecord(journal_uri);
@@ -830,8 +841,8 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
                 data: new_process_uri,
                 type: _Uri
             }];
+                        
             put_individual(ticket, document, _event_id);
-
         }
     }
     catch (e)

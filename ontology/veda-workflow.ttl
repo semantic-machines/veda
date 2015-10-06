@@ -1325,14 +1325,20 @@ v-wf:ProcessPropsTemplate
 		<em><h5 about="v-wf:localVars" property="rdfs:label"></h5></em>
 		<span rel="v-wf:localVars" template="v-wf:VariableTemplate"></span>
 		<hr>
-	</div>	
+	</div>
+	<div id="traceJournal">
+		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
+		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
+		<hr>
+	</div>		
 </div>
 <script>
+	if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
+	if (!individual.hasValue("v-wf:localVariable")) $("#localVariable", template).remove();
 	if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
 	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
+	if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
 	if (!individual.hasValue("v-wf:localVars")) $("#localVars", template).remove();
-	if (!individual.hasValue("v-wf:localVariable")) $("#localVariable", template).remove();
-	if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
 </script>
   """
 .
@@ -1362,11 +1368,17 @@ v-wf:WorkItemTemplate
 		<span rel="v-wf:workOrderList" template="v-wf:WorkOrderTemplate"></span>
 		<hr>		
 	</div>
+	<div id="traceJournal">
+		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
+		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
+		<hr>
+	</div>	
 </div>
 <script>
 	if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
 	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
 	if (!individual.hasValue("v-wf:workOrderList")) $("#workOrderList", template).remove();
+	if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
 </script>
   """ ;
   .
@@ -1427,13 +1439,19 @@ v-wf:WorkOrderTemplate
 		<em about="v-wf:isProcess" property="rdfs:label"></em>
 		<ul><li rel="v-wf:isProcess" template="v-ui:ClassNameLabelTemplate"></li></ul>
 	</div>
-	<br/>
+	<div id="traceJournal">
+		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
+		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
+		<hr>
+	</div>	
+	<br/>	
 </div>
 <script>
 	if (!individual.hasValue("v-wf:decisionFormList")) $("#decisionFormList", template).remove();
 	if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
 	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
 	if (!individual.hasValue("v-wf:isProcess")) $("#isProcess", template).remove();
+	if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
 </script>
   """ ;
   .
@@ -1446,6 +1464,18 @@ v-wf:DecisionFormTemplate
   rdfs:comment "Пустой шаблон сделан специально, поскольку индивиды этого класса не должны вводиться пользователями"@ru ;
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
+<div>
+	<strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
+	<div id="traceJournal">
+		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
+		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
+		<hr>
+	</div>	
+	<br/>	
+</div>
+<script>
+	if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
+</script>  
   """ ;
   .
 
@@ -2189,8 +2219,11 @@ v-wf:WorkflowReadUser
 
 v-wf:traceJournal
   rdf:type owl:ObjectProperty ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:domain v-wf:NetElement ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:domain v-wf:DecisionForm ;
+  rdfs:domain v-wf:WorkItem ;
+  rdfs:domain v-wf:WorkOrder ;
+  rdfs:domain v-wf:Process ;
   rdfs:label "системный журнал"@ru ;
   rdfs:range v-s:Journal ;
 .
@@ -2364,6 +2397,77 @@ v-ui:WorkItemStartedEventTemplate
 </script>
   """ ;
 .
+
+v-ui:WorkOrderStartedEventTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон обработки work item"@ru ;
+  v-ui:forClass v-wf:WorkOrderStarted ;
+  v-ui:template """
+<div class="journal-record">
+  <hr class="margin-sm">
+  <div class="row">
+        <div class="col-md-3 col-sm-3 event-type">
+          <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
+        </div>
+        <div class="col-md-7 col-sm-6 event-desc">
+          <div property="rdfs:label"></div>
+          <span id="initiator">
+        <span about="v-wf:initiator" property="rdfs:label"></span>:
+            <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
+          </span>
+        </div>
+        <div class="col-md-2 col-sm-3 event-date text-right">
+          <span property="v-s:created"></span>
+        </div>
+  </div>
+  <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
+</div>
+<script>
+  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
+  $("#exp", template).click(function (e) {
+    e.preventDefault();
+    $("div[rel='v-s:subJournal']", template).toggle();
+    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+  });
+</script>
+  """ ;
+.
+
+v-ui:DecisionFormStartedEventTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон обработки work item"@ru ;
+  v-ui:forClass v-wf:DecisionFormStarted ;
+  v-ui:template """
+<div class="journal-record">
+  <hr class="margin-sm">
+  <div class="row">
+        <div class="col-md-3 col-sm-3 event-type">
+          <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
+        </div>
+        <div class="col-md-7 col-sm-6 event-desc">
+          <div property="rdfs:label"></div>
+          <span id="initiator">
+        <span about="v-wf:initiator" property="rdfs:label"></span>:
+            <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
+          </span>
+        </div>
+        <div class="col-md-2 col-sm-3 event-date text-right">
+          <span property="v-s:created"></span>
+        </div>
+  </div>
+  <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
+</div>
+<script>
+  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
+  $("#exp", template).click(function (e) {
+    e.preventDefault();
+    $("div[rel='v-s:subJournal']", template).toggle();
+    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+  });
+</script>
+  """ ;
+.
+
 
 v-ui:TraceEventTemplate
   rdf:type v-ui:ClassTemplate ;
