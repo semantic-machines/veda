@@ -1369,12 +1369,12 @@ v-s:DocumentLinkRulesTemplate
 
     <br><br>
     <div class="well well-sm">
-      <button type="button" class="action btn btn-warning" id="send">Отправить</button>
-      <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
-      <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
-      <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
-      <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
-	  <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
+      <button type="button" class="action btn btn-warning" id="send" about="v-b:Send" property="rdfs:label"/>
+      <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-b:Edit" property="rdfs:label"/>
+      <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/>
+      <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
+      <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-b:Delete" property="rdfs:label"/>
+	  <button type="button" class="action btn btn-primary -view -edit search" id="search" about="v-b:Find" property="rdfs:label"/>
     </div>
 
   </div>

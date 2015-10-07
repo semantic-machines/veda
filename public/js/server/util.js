@@ -62,6 +62,19 @@ function newBool(_data)
     }];
 }
 
+function getStrings(field)
+{
+	res = [];
+    if (field)
+    {
+		for (var i in field)
+		{
+			res.push (field[i].data);
+		}
+    }
+    return res;
+}
+
 function getUri(field)
 {
     if (field && field.length > 0)
@@ -174,7 +187,7 @@ function newJournalRecord(journal_uri)
 
 function logToJournal(ticket, journal_uri, journal_record)
 {
-    //print("new_journal_record=" + toJson(new_journal_record));
+    //print("@@@ logToJournal, new_journal_record=" + toJson(journal_record));
     put_individual(ticket, journal_record, _event_id);
 
     var add_to_journal = {
@@ -186,10 +199,11 @@ function logToJournal(ticket, journal_uri, journal_record)
     }]
     };
 
+    //print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
     add_to_individual(ticket, add_to_journal, _event_id);
 }
 
-function traceToJournal(ticket, journal_uri, label, data)
+function traceToJournal(ticket, journal_uri, label, _data)
 {
 	var journal_record = newJournalRecord(journal_uri);
 	
@@ -205,10 +219,13 @@ function traceToJournal(ticket, journal_uri, label, data)
     }];
 	journal_record['rdfs:comment'] = [
             {
-                data: data,
+                data: _data,
                 type: _String
     }];
     
-	logToJournal(ticket, journal_uri, journal_record);		
+	logToJournal(ticket, journal_uri, journal_record);
+	
+	//print("@@@ traceToJournal, journal_uri=" + journal_uri + ", " + toJson(journal_record));
+
 }	
 

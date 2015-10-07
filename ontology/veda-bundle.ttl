@@ -103,8 +103,8 @@ v-b:Delete
 .
 v-b:CreateReport
   rdf:type v-b:Bundle ;
-  rdfs:label "Сформировать отчет"@ru ;
-  rdfs:label "Create report"@en ;
+  rdfs:label "Печатный бланк"@ru ;
+  rdfs:label "Print blank"@en ;
 .
 v-b:RightsOrigin
   rdf:type v-b:Bundle ;
@@ -115,4 +115,9 @@ v-b:Instruction
   rdf:type v-b:Bundle ;
   rdfs:label "Поручение"@ru ;
   rdfs:label "Instruction"@en ;
+.
+v-b:SearchRequest
+  rdf:type v-b:Bundle ;
+  rdfs:label "Поисковый запрос"@ru ;
+  rdfs:label "Search request"@en ;
 .

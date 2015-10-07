@@ -89,7 +89,11 @@
 	$.fn.veda_text = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_text.defaults, options ),
 			control = veda_literal_input.call(this, opts);
-	
+		var ta = $("textarea", control);
+		autosize(ta);
+		this.on("remove", function () {
+			autosize.destroy(ta);
+		});
 		this.append(control);
 		return this;
 	};
@@ -125,7 +129,7 @@
 	$.fn.veda_integer.defaults = {
 		template: $("#integer-control-template").html(),
 		parser: function (input) {
-			var int = parseInt(input, 10);
+			var int = parseInt( input.replace(",", "."), 10 );
 			return !isNaN(int) ? new Number(int) : null;
 		}
 	};
@@ -179,49 +183,55 @@
 			property_uri = opts.property_uri,
 			individual = opts.individual,
 			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
-			input = $("input", control);
+			input = $("input", control),
+			change;
+		
 		
 		var singleValueHandler = function (doc_property_uri, values) {
 			if (doc_property_uri === property_uri) {
-				input.val( moment(values[0]).format("DD.MM.YYYY HH:mm") );
+				if (values.length) {
+					input.val( moment(values[0]).format("DD.MM.YYYY HH:mm") );
+				} else {
+					input.val("");
+				}
 			}
 		}
 		
-		var change = function (value) { 
-			individual[property_uri] = individual[property_uri].concat(value);
-			input.val("");
+		if (isSingle) {
+			change = function (value) {
+				individual[property_uri] = [value];
+			};
+			if (individual.hasValue(property_uri)) { 
+				input.val( moment(individual[property_uri][0]).format("DD.MM.YYYY HH:mm") ); 
+			}
+			individual.on("individual:propertyModified", singleValueHandler);
+			control.one("remove", function () {
+				individual.off("individual:propertyModified", singleValueHandler);
+			});
+		} else {
+			change = function (value) { 
+				individual[property_uri] = individual[property_uri].concat(value);
+				input.val("");
+			}
 		}
 		
-		if (spec) {
-			if (isSingle) {
-				change = function (value) {
-					individual[property_uri] = [value];
-				};
-				input.val( moment(individual[property_uri][0]).format("DD.MM.YYYY HH:mm") );
-				individual.on("individual:propertyModified", singleValueHandler);
-				control.one("remove", function () {
-					individual.off("individual:propertyModified", singleValueHandler);
-				});
-			}
-			
-			/*if (spec.hasValue("v-ui:tooltip")) {
-				control.tooltip({
-					title: spec["v-ui:tooltip"].join(", "),
-					placement: "bottom",
-					container: control,
-					trigger: "focus"
-				});
-			}*/
+		if (spec && spec.hasValue("v-ui:tooltip")) {
+			control.tooltip({
+				title: spec["v-ui:tooltip"].join(", "),
+				placement: "bottom",
+				container: control,
+				trigger: "focus"
+			});
 		}
 
-/*		control.datetimepicker({
+		control.datetimepicker({
 			locale: "ru",
 			allowInputToggle: true,
 			format: "DD.MM.YYYY HH:mm"
 		});
-*/
+		
 		input.on("change focusout", function () {
-			var value = opts.parser( this.value, this );
+			var value = opts.parser( this.value );
 			change(value);
 		});
 		
@@ -240,23 +250,23 @@
 		}
 		this.append(control);
 
-/*		this.on("remove", function () {
+		this.on("remove", function () {
 			control.data("DateTimePicker").destroy();
+			control.data("DateTimePicker") = null;
 		});
-*/
+
 		return this;
 	};
 	$.fn.veda_dateTime.defaults = {
 		template: $("#datetime-control-template").html(),
 		parser: function (input) {
-			var timestamp = moment(input, "DD.MM.YYYY HH:mm").toDate();
-			return new Date(timestamp);
+			if (input) {
+				var timestamp = moment(input, "DD.MM.YYYY HH:mm").toDate();
+				return new Date(timestamp);
+			}
+			return undefined;
 		}
 	};
-
-
-
-
 
 	// MULTILINGUAL INPUT CONTROLS
 	
@@ -355,6 +365,11 @@
 	$.fn.veda_multilingualText = function (options) {
 		var opts = $.extend( {}, $.fn.veda_multilingualText.defaults, options ),
 			control = veda_multilingual.call(this, opts);
+		var ta = $("textarea", control);
+		autosize(ta);
+		this.on("remove", function () {
+			autosize.destroy(ta);
+		});
 		this.append(control);
 		return this;
 	};
@@ -890,9 +905,9 @@
 		});
 		var files = [], n;
 		fileInput.change(function () {
-			files.length = 0;
+			files = [];
 			n = this.files.length;
-		    for (var i = 0, file; (file = this.files && this.files[i]); i++) {
+			for (var i = 0, file; (file = this.files && this.files[i]); i++) {
 				uploadFile(file, uploaded);
 			}
 		});

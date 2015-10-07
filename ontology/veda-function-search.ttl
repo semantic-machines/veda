@@ -101,7 +101,7 @@ v-fs:TypeToSearchSpecFT
   v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
   v-ui:tooltip "Link to instance of Class class"@en ;
 .
-v-fs:TypeToSearchSpecAttributive
+v-fs:TypeToSearchSpecAT
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:FulltextRequest"@ru ;
   rdfs:label "v-fs:typeToSearch property specification for class v-fs:AttributiveRequest"@en ;
@@ -351,9 +351,9 @@ v-fs:FulltextRequestTemplate
 			<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
 			<br>
 			<div>
-				<button type="button" class="action btn btn-primary view -edit" id="edit">Редактировать</button>
-				<button type="button" class="action btn btn-success -view edit" id="save">Сохранить</button>
-				<button type="button" class="action btn btn-link view -edit" id="delete">Удалить</button>
+				<button type="button" class="action btn btn-primary view -edit" id="edit" about="v-b:Edit" property="rdfs:label"/>
+				<button type="button" class="action btn btn-success -view edit" id="save" about="v-b:Save" property="rdfs:label"/>
+				<button type="button" class="action btn btn-link view -edit" id="delete" about="v-b:Delete" property="rdfs:label"/>
 			</div>
 		</div>
 	</div>
@@ -414,7 +414,7 @@ v-fs:FulltextRequestTemplate
 		var head = "<strong><a href='#/individual/@/#main' property='rdfs:label'></a></strong>";
 		var allprops = Object.getOwnPropertyNames(individual.properties);
 		var props = "<div>";
-		for (var i = 0, uri; (uri = allprops && allprops[i]) && (i < 10); ++i) {
+		for (var i = 0, uri; (uri = allprops && allprops[i]); i++) {
 			if ( individual.hasValue(uri) ) {
 				props += "<span about='" + uri + "' property='rdfs:label' class='text-muted'></span>: "
 				if (individual[uri][0] instanceof veda.IndividualModel) {
@@ -508,11 +508,11 @@ v-fs:AttributiveRequestModel
 				self.form = new veda.IndividualModel();
 				self.form["rdf:type"] = values.slice(0);
 				for (var property_uri in self.properties) {
-					if ( property_uri === "rdf:type" ||
-						 property_uri === "v-s:author" ||
-						 property_uri === "v-s:created" ||
-						 property_uri === "v-s:deleted" ||
-						 property_uri === "rdfs:label"
+					if ( property_uri === "rdf:type" 
+						 || property_uri === "v-s:author" 
+						 || property_uri === "v-s:created"
+						 || property_uri === "v-s:deleted" 
+						 || property_uri === "rdfs:label"
 					) { continue; }
 					if (self.form[property_uri]) { self.form[property_uri] = self[property_uri].slice(0); }
 				}
@@ -530,16 +530,16 @@ v-fs:AttributiveRequestModel
 	}
 
 	function handler(property_uri, values) {
-		if ( property_uri !== "rdf:type" &&
-			 property_uri !== "v-s:author" &&
-			 property_uri !== "v-s:created" &&
-			 property_uri !== "v-s:deleted" &&
-			 property_uri !== "rdfs:label"
+		if ( property_uri !== "rdf:type" 
+			 && property_uri !== "v-s:author" 
+			 && property_uri !== "v-s:created" 
+			 && property_uri !== "v-s:deleted" 
+			 && property_uri !== "rdfs:label"
 		) { 
 			if (!self[property_uri]) self.defineProperty(property_uri);
 			self[property_uri] = values.slice(0);
-			q = mkQuery(self.form);
 		}
+		q = mkQuery(self.form);
 	}
 	
 	self.result  = [];
@@ -584,8 +584,13 @@ v-fs:AttributiveRequestTemplate
 			<button type="button" id="find" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="results-at">
-			<div class="container-fluid" id="search-results">
-				<ol id="results-list"></ol>
+			<div id="search-results">
+				<div class="table-responsive">
+					<table id="results-tbl" class="table table-condensed table-striped">
+						<thead></thead>
+						<tbody></tbody>
+					</table>
+				</div>
 				<div class="text-center">
 					<ul class="pagination" id="pager"></ul>
 					<br />
@@ -597,9 +602,9 @@ v-fs:AttributiveRequestTemplate
 			<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
 			<br>
 			<div>
-				<button type="button" class="action btn btn-primary view -edit" id="edit">Редактировать</button>
-				<button type="button" class="action btn btn-success -view edit" id="save">Сохранить</button>
-				<button type="button" class="action btn btn-link view -edit" id="delete">Удалить</button>
+				<button type="button" class="action btn btn-primary view -edit" id="edit" about="v-b:Edit" property="rdfs:label"/>
+				<button type="button" class="action btn btn-success -view edit" id="save" about="v-b:Save" property="rdfs:label"/>
+				<button type="button" class="action btn btn-link view -edit" id="delete" about="v-b:Delete" property="rdfs:label"/>
 			</div>
 		</div>
 	</div>
@@ -615,7 +620,10 @@ v-fs:AttributiveRequestTemplate
 		resultsCount = $("#results-count", template),
 		find = $("#find", template),
 		fulltext = $("#fulltext", template),
-		formHolder = $("#form-holder", template);
+		formHolder = $("#form-holder", template),
+		tHead = $("thead", template),
+		tBody = $("tbody", template),
+		head, tmpl;
 	
 	// Autofocus on query field
 	params.on("shown.bs.tab", function () {
@@ -647,10 +655,13 @@ v-fs:AttributiveRequestTemplate
 	if (self.count) { self.trigger("afterSearch"); }
 
 	// Present form if defined
-	if (self.form) { self.form.present(formHolder, undefined, "search"); }
+	if (self.form) { 
+		self.form.present(formHolder, undefined, "search"); 
+	}
 	
-	function showForm(property_uri) {
+	function showForm(property_uri, types) {
 		if (property_uri === "v-fs:typeToSearch") {
+			formHolder.empty();
 			self.form.present(formHolder, undefined, "search");
 		}
 	}
@@ -667,22 +678,65 @@ v-fs:AttributiveRequestTemplate
 		asp.save();
 	}
 	
-	function genericTemplate(individual) {
-		var head = "<strong><a href='#/individual/@/#main' property='rdfs:label'></a></strong>";
-		var allprops = Object.getOwnPropertyNames(individual.properties);
-		var props = "<div>";
-		for (var i = 0, uri; (uri = allprops && allprops[i]) && (i < 10); ++i) {
-			if ( individual.hasValue(uri) ) {
-				props += "<span about='" + uri + "' property='rdfs:label' class='text-muted'></span>: "
-				if (individual[uri][0] instanceof veda.IndividualModel) {
-					props += "<span about='@' rel='" + uri + "' template='v-ui:LabelLinkTemplate'></span>; "
-				} else {
-					props += "<span about='@' property='" + uri + "'></span>; "
-				}
-			}
+	function gen_head(type) {
+		var props = Object.getOwnPropertyNames(type.domainProperties);
+		var sortable = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
+		var tr = $("<tr><th>#</th><th><span class='glyphicon glyphicon-search'></span></th></tr>"); 
+		var sortBy = dir = "";
+		if ( self.hasValue("v-fs:sortOrder") ) {
+			var t = self["v-fs:sortOrder"][0].split(" ");
+			sortBy = t[0]; dir = t[1];
 		}
-		props += "</div>";
-		return "<span>" + head + props + "</span>";
+		var header = props.map( function (property_uri) {
+			if (property_uri === "rdf:type" || property_uri === "v-s:deleted") { return ""; }
+			var property = type.domainProperties[property_uri];
+			var th = $("<th>", {
+				"id": property_uri,
+				"text": property["rdfs:label"].join(", "),
+			});
+			var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : undefined;
+			if (sortable.indexOf(range) >= 0) {
+				var sortOrder = $("<a>", {href:"#"}).addClass("btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes");
+				if (sortBy.indexOf(property_uri) >= 0) {
+					sortOrder.removeClass("text-muted");
+					if (dir === "desc") sortOrder.removeClass("glyphicon-sort-by-attributes").addClass("glyphicon-sort-by-attributes-alt");
+				}
+				sortOrder.click(function (e) {
+					e.preventDefault();
+					var dir = sortOrder.hasClass("glyphicon-sort-by-attributes-alt") ? " asc" : " desc";
+					sortOrder.toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");					
+					if (range === "rdfs:Literal" || range === "xsd:string") {
+						self["v-fs:sortOrder"] = ["'" + property_uri + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir];
+					} else {
+						self["v-fs:sortOrder"] = ["'" + property_uri + "'" + dir];
+					}
+					self.search();
+					return false;
+				});
+				th.prepend(sortOrder);
+			}
+			tr.append(th);
+		});
+		return tr;
+	}
+
+	function gen_tmpl(type) {
+		var props = Object.getOwnPropertyNames(type.domainProperties);
+		var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
+		var tmpl = props.map( function (property_uri) {
+			if (property_uri === "rdf:type" || property_uri === "v-s:deleted") { return ""; }
+			var property = type.domainProperties[property_uri];
+			var res;
+			var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : undefined;
+			if (literals.indexOf(range) >= 0) {
+				res = ["<td about='@' property='", property_uri, "'>", "</td>"];
+			} else {
+				res = ["<td about='@' rel='", property_uri, "' template='v-ui:LabelLinkTemplate'>", "</td>"];
+			}
+			return res.join("");
+		}).join("");
+		var res = ["<tr>", "<td>###</td><td><a href='#/individual/@/#main'><span class='glyphicon glyphicon-search'></span></a></td>", tmpl, "</tr>"].join("");
+		return res;
 	}
 	
 	// Present results
@@ -694,6 +748,10 @@ v-fs:AttributiveRequestTemplate
 	}
 	function afterSearch() {
 		resultsList.empty();
+		head = gen_head(self["v-fs:typeToSearch"][0]);
+		tmpl = gen_tmpl(self["v-fs:typeToSearch"][0]);
+		tHead.empty().append(head);
+		tBody.empty();
 		pager.empty();
 		resultsCount.text(self.count);
 		
@@ -708,16 +766,14 @@ v-fs:AttributiveRequestTemplate
 			if (self.count < self.page * veda.user.displayedElements) {
 				self.page = Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0) - 1;
 			}
-			resultsList.attr("start", self.page * veda.user.displayedElements + 1);
 			results.tab("show");
 			
 			for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
 				(function (i) {
 					setTimeout(function () {
-						var container = $("<li>").appendTo(resultsList);
+						var _tmpl = tmpl.replace("###", i+1);
 						var result = new veda.IndividualModel( self.result[i] );
-						var tmpl = genericTemplate(result);
-						result.present(container, tmpl);
+						result.present(tBody, _tmpl);
 					}, 0);
 				}(i));
 			}

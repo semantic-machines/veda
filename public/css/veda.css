@@ -1,6 +1,7 @@
 body {
   /*color: #234;
   background-color: #f5f5f9;*/
+  overflow-x: hidden;
 }
 footer {
   font-size: 12px;
@@ -11,6 +12,11 @@ footer {
 
 .text-muted {
   color: #707070;
+}
+
+textarea { 
+  resize: vertical;
+  max-height: 300px; 
 }
 
 .popover {

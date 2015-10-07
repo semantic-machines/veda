@@ -450,11 +450,13 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
 
 }
 
-function create_and_mapping_variables(ticket, mapping, _process, _task, _order, _task_result, f_store)
+function create_and_mapping_variables(ticket, mapping, _process, _task, _order, _task_result, f_store, trace_journal_uri)
 {
     try
     {
-        //print("[WORKFLOW][create_and_mapping_variables]: mapping=" + toJson(mapping));
+		if (trace_journal_uri)
+			traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables, start", toJson(mapping));							
+		
         var new_vars = [];
         if (!mapping) return [];
 
@@ -531,6 +533,9 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
                 //            print("[WORKFLOW][create_and_mapping_variables]: map not found :" + mapping[i].data);
             }
         }
+
+		if (trace_journal_uri)
+			traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables, result", toJson(new_vars));							
 
         return new_vars;
     }
@@ -615,24 +620,28 @@ function create_new_journal(ticket, new_journal_uri, process_uri, label)
 {
     try
     {
+	var exists_journal = get_individual (ticket, new_journal_uri);
+	
+	if (!exists_journal)
+	{
         var new_journal = {
             '@': new_journal_uri,
             'rdf:type': [
             {
                 data: 'v-s:Journal',
                 type: _Uri
-            }],
-            'v-wf:onProcess': [
-            {
-                data: process_uri,
-                type: _Uri
             }]
         };
 
+		if (process_uri)
+            new_journal['v-wf:onProcess'] = newUri (process_uri);
+		
         if (label)
             new_journal['rdfs:label'] = label;
 
         put_individual(ticket, new_journal, _event_id);
+		//print ("@@@ create new journal, =", toJson (new_journal))
+	}
 
         return new_journal_uri;
     }
@@ -653,7 +662,7 @@ function mapToJournal(map_container, ticket, _process, _task, _order)
             //* выполнить маппинг для журнала 
             var journalVars = [];
 
-            journalVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false);
+            journalVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, null);
             if (journalVars)
             {
                 var jornal_uri = getJournalUri(_process['@']);
@@ -679,7 +688,67 @@ function mapToJournal(map_container, ticket, _process, _task, _order)
 
 }
 
-function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_inVars, document)
+function create_new_trace_subjournal(parent_uri, net_element_impl, label, type)
+{
+    var isTrace = net_element_impl['v-wf:isTrace'];
+    if (isTrace && getFirstValue(isTrace) == true)
+    {
+        var new_sub_journal_uri = getTraceJournalUri(net_element_impl['@']);
+        create_new_journal(ticket, new_sub_journal_uri, null, label);
+
+        var parent_journal_uri = getTraceJournalUri(parent_uri);
+        var new_journal_record = newJournalRecord(journal_uri);
+
+        new_journal_record['rdf:type'] = [
+        {
+            data: type,
+            type: _Uri
+        }];
+        new_journal_record['rdfs:label'] = [
+        {
+            data: 'запущен элемент сети',
+            type: _String
+        }];
+        new_journal_record['v-s:subJournal'] = [
+        {
+            data: new_sub_journal_uri,
+            type: _Uri
+        }];
+        logToJournal(ticket, parent_journal_uri, new_journal_record);
+
+		put_individual(ticket, journal_record, _event_id);
+
+		var add_to_net_element_impl = {
+        '@': net_element_impl['@'],
+        'v-wf:traceJournal': newUri (new_sub_journal_uri)
+        };
+
+		add_to_individual(ticket, add_to_net_element_impl, _event_id);
+
+        return new_sub_journal_uri;
+    }
+    else
+    {
+        return undefined;
+    }
+}
+
+function get_trace_journal(document, process)
+{
+    var isTrace = document['v-wf:isTrace'];
+    if (isTrace && getFirstValue(isTrace) == true)
+    {
+        return getTraceJournalUri(process['@']);
+    }
+    else
+    {
+        return undefined;
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_inVars, document, parent_trace_journal_uri)
 {
     try
     {
@@ -692,7 +761,8 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
         else
             use_net = f_executor;
 
-        print("[WORKFLOW][WO2.4] executor= " + getUri(f_executor) + " used net= " + getUri(use_net));
+		if (parent_trace_journal_uri)
+			traceToJournal(ticket, parent_trace_journal_uri, "[WO2.4] executor= " + getUri(f_executor) + " used net", getUri(use_net));							
 
         //var ctx = new Context(work_item, ticket);
         //ctx.print_variables ('v-wf:inVars');
@@ -734,10 +804,17 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
             if (f_useSubNet)
                 new_process['v-wf:executor'] = f_executor;
 
-            print("new_process=", toJson(new_process));
-            put_individual(ticket, new_process, _event_id);
+			if (parent_trace_journal_uri)
+			{
+				traceToJournal(ticket, parent_trace_journal_uri, "new_process=", getUri(use_net), toJson(new_process));							
+				new_process['v-wf:isTrace'] = newBool(true);
 
-            create_new_journal(ticket, getTraceJournalUri(new_process_uri), _started_net['rdfs:label']);
+				var trace_journal_uri = getTraceJournalUri(new_process_uri);
+				create_new_journal(ticket, trace_journal_uri, null, _started_net['rdfs:label']);
+				new_process['v-wf:traceJournal'] = newUri (trace_journal_uri);				
+			}
+			
+            put_individual(ticket, new_process, _event_id);
 
             var journal_uri = getJournalUri(new_process_uri);
             var new_journal_record = newJournalRecord(journal_uri);
@@ -764,8 +841,8 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
                 data: new_process_uri,
                 type: _Uri
             }];
+                        
             put_individual(ticket, document, _event_id);
-
         }
     }
     catch (e)
@@ -773,55 +850,6 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
         print(e.stack);
     }
 
-}
-
-function create_new_subjournal(parent_uri, net_element_impl, label)
-{
-    var isTrace = net_element_impl['v-wf:isTrace'];
-    if (isTrace && getFirstValue(isTrace) == true)
-    {
-        var new_sub_journal_uri = getTraceJournalUri(net_element_impl['@']);
-        create_new_journal(ticket, new_sub_journal_uri, label);
-
-        var journal_uri = getTraceJournalUri(parent_uri);
-        var new_journal_record = newJournalRecord(journal_uri);
-
-        new_journal_record['rdf:type'] = [
-        {
-            data: 'v-wf:SubProcessStarted',
-            type: _Uri
-        }];
-        new_journal_record['rdfs:label'] = [
-        {
-            data: 'запущен элемент сети',
-            type: _String
-        }];
-        new_journal_record['v-s:subJournal'] = [
-        {
-            data: new_sub_journal_uri,
-            type: _Uri
-        }];
-        logToJournal(ticket, journal_uri, new_journal_record);
-
-        return new_sub_journal_uri;
-    }
-    else
-    {
-        return undefined;
-    }
-}
-
-function get_trace_journal(document, process)
-{
-    var isTrace = document['v-wf:isTrace'];
-    if (isTrace && getFirstValue(isTrace) == true)
-    {
-        return getTraceJournalUri(process['@']);
-    }
-    else
-    {
-        return undefined;
-    }
 }
 
 
@@ -833,13 +861,13 @@ function get_properties_chain(var1, query)
         return res;
 
     var doc;
-    print('@@@get_properties_chain#1 var1=', toJson(var1));
+//    print('@@@get_properties_chain#1 var1=', toJson(var1));
     doc = get_individual(ticket, getUri(var1));
 
     if (doc)
         traversal(doc, query, 0, res);
 
-    print('@@@get_properties_chain #2 res=', toJson(res));
+//    print('@@@get_properties_chain #2 res=', toJson(res));
 
     return res;
 }
@@ -848,7 +876,7 @@ function traversal(indv, query, pos_in_path, result)
 {
     var condition = query[pos_in_path];
 
-    print('@@@ traversal#0 condition=', toJson(condition), ", indv=", toJson(indv));
+    //print('@@@ traversal#0 condition=', toJson(condition), ", indv=", toJson(indv));
 
     var op_get;
     var op_go;
@@ -872,9 +900,9 @@ function traversal(indv, query, pos_in_path, result)
 
         for (var i in ffs)
         {
-            print('@@@ traversal#2 ffs[i]=', ffs[i].data);
+            //print('@@@ traversal#2 ffs[i]=', ffs[i].data);
             var doc = get_individual(ticket, ffs[i].data);
-            print('@@@ traversal#4 doc=', toJson(doc));
+            //print('@@@ traversal#4 doc=', toJson(doc));
             traversal(doc, query, pos_in_path + 1, result);
         }
     }
@@ -894,16 +922,16 @@ function traversal(indv, query, pos_in_path, result)
                 var A = indv[field];
                 if (A)
                 {
-                    print("###1 A=", toJson(A));
+                    //print("###1 A=", toJson(A));
                     var B = op_eq[field];
-                    print("###2 B=", toJson(B));
+                    //print("###2 B=", toJson(B));
 
                     for (var i in A)
                     {
                         if (A[i].type == B[0].type && A[i].data == B[0].data)
                         {
                             is_get = true;
-                    print("###3 A == B");
+                    //print("###3 A == B");
                             break;
                         }
 
@@ -919,7 +947,7 @@ function traversal(indv, query, pos_in_path, result)
 
             for (var i in ffs)
             {
-                print('@@@ traversal#3 push ', ffs[i].data);
+                //print('@@@ traversal#3 push ', ffs[i].data);
                 result.push(ffs[i]);
             }
         }
