@@ -133,7 +133,7 @@ function prepare_work_order(ticket, document)
                 else
                 {
                     // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
-                    task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, null, true, trace_journal_uri);
+                    task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, null, true, trace_journal_uri, 'v-wf:completedMapping');
                     //print("[PWO].completedMapping1, task_output_vars=", toJson(task_output_vars));
                 }
 
@@ -193,7 +193,7 @@ function prepare_work_order(ticket, document)
                                     else
                                     {
                                         // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
-                                        task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, result0, true, trace_journal_uri);
+                                        task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, result0, true, trace_journal_uri, 'v-wf:completedMapping');
                                         print("[PWO]completedMapping2, task_output_vars=", toJson(task_output_vars));
                                     }
 
@@ -434,9 +434,7 @@ function prepare_work_order(ticket, document)
             if (net_element['v-wf:completedMapping'])
             {
                 // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
-                task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, work_item_result, true, trace_journal_uri);
-				if (trace_journal_uri)
-					traceToJournal(ticket, trace_journal_uri, "[PWO].completedMapping3, task_output_vars", toJson(task_output_vars));							
+                task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, work_item_result, true, trace_journal_uri, 'v-wf:completedMapping');
             }
 
             //            if (task_output_vars.length > 0)
@@ -581,7 +579,7 @@ function prepare_work_item(ticket, document)
         var trace_journal_uri = create_new_trace_subjournal(forProcess, work_item, "prepare_work_item:" + work_item['@'], 'v-wf:WorkItemStarted')
 
         if (trace_journal_uri)
-            traceToJournal(ticket, trace_journal_uri, "prepare_work_item:", work_item['@'] + " - " + netElement['@'] + ' - ' + getStrings (netElement['rdfs:label']));
+            traceToJournal(ticket, trace_journal_uri, "prepare_work_item:", "'" + work_item['@'] + "' - '" + netElement['@'] + "' - [" + getStrings (netElement['rdfs:label']) + "]");
 
         var isCompleted = document['v-wf:isCompleted'];
         if (isCompleted)
@@ -678,10 +676,7 @@ function prepare_work_item(ticket, document)
             var work_item__inVars = [];
             if (netElement['v-wf:startingMapping'])
             {
-				if (trace_journal_uri)
-					traceToJournal(ticket, trace_journal_uri, "use mapping", 'v-wf:startingMapping');							
-				
-                work_item__inVars = create_and_mapping_variables(ticket, netElement['v-wf:startingMapping'], _process, document, null, null, true, trace_journal_uri);
+                work_item__inVars = create_and_mapping_variables(ticket, netElement['v-wf:startingMapping'], _process, document, null, null, true, trace_journal_uri, 'v-wf:startingMapping');
                 if (work_item__inVars.length > 0)
                     document['v-wf:inVars'] = work_item__inVars;
 
@@ -845,10 +840,7 @@ function prepare_work_item(ticket, document)
                     else
                     {
                         // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
-						if (trace_journal_uri)
-							traceToJournal(ticket, trace_journal_uri, "use mapping", 'v-wf:completedMapping');							
-
-                        task_output_vars = create_and_mapping_variables(ticket, _net['v-wf:completedMapping'], _process, work_item, null, null, true, trace_journal_uri);
+                        task_output_vars = create_and_mapping_variables(ticket, _net['v-wf:completedMapping'], _process, work_item, null, null, true, trace_journal_uri, 'v-wf:completedMapping');
                     }
 
                     if (task_output_vars.length > 0)
