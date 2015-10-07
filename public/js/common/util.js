@@ -509,12 +509,25 @@ function transformation(ticket, individuals, transform, executor, work_order)
                 }
                 else
                 {
-                    group_key = typeof window === "undefined"?grouping[0].data:grouping[0];
+					var useExistsUid = false;
+					for (var i in grouping)
+					{
+						var gk = typeof window === "undefined"?grouping[i].data:grouping[i];
+						if (gk == '@')
+							useExistsUid = true;
+						else	
+							group_key = gk;
+						
+					}	
+					
                     out_data0_el = out_data0[group_key];
                     if (!out_data0_el)
                     {
                         out_data0_el = {};
-                        out_data0_el['@'] = genUri();
+                        if (useExistsUid)
+							out_data0_el['@'] = individual['@'];                        
+                        else
+							out_data0_el['@'] = genUri();
                     }
                 }
 
