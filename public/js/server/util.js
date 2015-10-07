@@ -64,7 +64,7 @@ function newBool(_data)
 
 function getStrings(field)
 {
-	res = [];
+	var res = [];
     if (field)
     {
 		for (var i in field)

@@ -58,13 +58,13 @@ function WorkItemResult(_work_item_result)
     /////////////////////////// functions prepare work_item_result
     this.getValue = function(var_name)
     {
-        print("%%%1");
+        //print("%%%1");
         for (var i in this.work_item_result)
         {
-            print("%%%2");
+            //print("%%%2");
             return this.work_item_result[i][var_name];
         }
-        print("%%%3");
+        //print("%%%3");
     };
 
     this.compare = function(var_name, value)
@@ -697,7 +697,7 @@ function create_new_trace_subjournal(parent_uri, net_element_impl, label, type)
         create_new_journal(ticket, new_sub_journal_uri, null, label);
 
         var parent_journal_uri = getTraceJournalUri(parent_uri);
-        var new_journal_record = newJournalRecord(journal_uri);
+        var new_journal_record = newJournalRecord(parent_journal_uri);
 
         new_journal_record['rdf:type'] = [
         {
@@ -716,7 +716,7 @@ function create_new_trace_subjournal(parent_uri, net_element_impl, label, type)
         }];
         logToJournal(ticket, parent_journal_uri, new_journal_record);
 
-		put_individual(ticket, journal_record, _event_id);
+		put_individual(ticket, new_journal_record, _event_id);
 
 		var add_to_net_element_impl = {
         '@': net_element_impl['@'],
