@@ -90,9 +90,9 @@
 		var opts = $.extend( {}, $.fn.veda_text.defaults, options ),
 			control = veda_literal_input.call(this, opts);
 		var ta = $("textarea", control);
-		autosize(ta);
+//		autosize(ta);
 		this.on("remove", function () {
-			autosize.destroy(ta);
+//			autosize.destroy(ta);
 		});
 		this.append(control);
 		return this;
@@ -366,9 +366,9 @@
 		var opts = $.extend( {}, $.fn.veda_multilingualText.defaults, options ),
 			control = veda_multilingual.call(this, opts);
 		var ta = $("textarea", control);
-		autosize(ta);
+//		autosize(ta);
 		this.on("remove", function () {
-			autosize.destroy(ta);
+//			autosize.destroy(ta);
 		});
 		this.append(control);
 		return this;
