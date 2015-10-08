@@ -7,7 +7,8 @@
 		"vibe-d": "0.7.25",
 		"pacahon_third_party": "1.0.8", 
 		"backtrace-d": "0.1.0", 
-		"mysql-d": "~>0.3.2"
+		"mysql-d": "~>0.3.2",
+		"d-nanomsg": "~>0.1.1"
 	},
 	"versions": ["VibeDefaultMain"],	
         "libs": [
