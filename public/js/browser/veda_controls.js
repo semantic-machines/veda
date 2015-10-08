@@ -891,32 +891,60 @@
 		xhr.send(fd);
 	}
 	$.fn.veda_file = function( options ) {
-		var opts = $.extend( {}, $.fn.veda_file.defaults, options ),
-			control = $(opts.template),
-			spec = opts.spec,
-			individual = opts.individual,
-			rel_uri = opts.rel_uri,
-			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1;
-		var fileInput = $("input", control);
-		if (!isSingle) fileInput.attr("multiple", "multiple");
-		var btn = $("button", control);
-		btn.click(function (e) {
-			fileInput.click();
-		});
-		var files = [], n;
-		fileInput.change(function () {
-			files = [];
-			n = this.files.length;
-			for (var i = 0, file; (file = this.files && this.files[i]); i++) {
-				uploadFile(file, uploaded);
-			}
-		});
-		this.on("view edit search", function (e) {
-			e.stopPropagation();
-		});
-		this.append(control);
-		return this;
-		
+		if (/*window.FormData*/ false) {
+			var opts = $.extend( {}, $.fn.veda_file.defaults, options ),
+				control = $(opts.templateAJAX),
+				spec = opts.spec,
+				individual = opts.individual,
+				rel_uri = opts.rel_uri,
+				isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1;
+			var fileInput = $("input", control);
+			if (!isSingle) fileInput.attr("multiple", "multiple");
+			var btn = $("button", control);
+			btn.click(function (e) {
+				fileInput.click();
+			});
+			var files = [], n;
+			fileInput.change(function () {
+				files = [];
+				n = this.files.length;
+				for (var i = 0, file; (file = this.files && this.files[i]); i++) {
+					uploadFile(file, uploaded);
+				}
+			});
+			this.on("view edit search", function (e) {
+				e.stopPropagation();
+			});
+			this.append(control);
+			return this;
+		} else {
+			var opts = $.extend( {}, $.fn.veda_file.defaults, options ),
+				control = $(opts.templateIFRAME),
+				fileInput = $("input", control),
+				btn = $("button", control),
+				form = $("form", control),
+				iframe = $("iframe", control),
+				spec = opts.spec,
+				individual = opts.individual,
+				rel_uri = opts.rel_uri,
+				isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+				id = veda.Util.guid();
+			form.attr("target", id);
+			iframe.attr("id", id).attr("name", id);	
+			btn.click(function (e) {
+				fileInput.click();
+			});
+			fileInput.change(function () {
+				if (this.value) {
+					form.submit();
+				}
+			});
+			this.on("view edit search", function (e) {
+				e.stopPropagation();
+			});
+			this.append(control);
+			return this;
+		}
 		function uploaded(file, path, uri) {
 			var f = new veda.IndividualModel();
 			f["rdf:type"] = [ veda.ontology["v-s:File"] ];
@@ -936,7 +964,8 @@
 		}
 	}
 	$.fn.veda_file.defaults = {
-		template: $("#file-control-template").html()
+		templateAJAX: $("#file-control-template-ajax").html(),
+		templateIFRAME: $("#file-control-template-iframe").html()
 	};
 
 	// OBJECT PROPERTY CONTROL

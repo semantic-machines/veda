@@ -492,11 +492,22 @@
 			</div>
 		</script>
 
-		<!-- File control template -->
-		<script type="html/template" id="file-control-template">
+		<!-- File control template with ajax support -->
+		<script type="html/template" id="file-control-template-ajax">
 			<div>
 				<input type="file" style="display:none"/>
 				<button class="btn btn-primary">Browse...</button>
+			</div>
+		</script>
+		
+		<!-- File control template using iframe -->
+		<script type="html/template" id="file-control-template-iframe">
+			<div>
+				<form action="/files" method="post" enctype="multipart/form-data">
+					<input type="file" style="display:none"/>
+					<button class="btn btn-primary">Browse...</button>
+				</form>
+				<iframe style="display:none"></iframe>
 			</div>
 		</script>
 
