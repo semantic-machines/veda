@@ -75,6 +75,19 @@ function getStrings(field)
     return res;
 }
 
+function getUris(field)
+{
+	var res = [];
+    if (field)
+    {
+		for (var i in field)
+		{
+			res.push (field[i].data);
+		}
+    }
+    return res;
+}
+
 function getUri(field)
 {
     if (field && field.length > 0)

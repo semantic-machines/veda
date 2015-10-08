@@ -450,13 +450,12 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
 
 }
 
-function create_and_mapping_variables(ticket, mapping, _process, _task, _order, _task_result, f_store, trace_journal_uri)
+function create_and_mapping_variables(ticket, mapping, _process, _task, _order, _task_result, f_store, trace_journal_uri, trace_comment)
 {
     try
     {
-		if (trace_journal_uri)
-			traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables, start", toJson(mapping));							
-		
+		var _trace_info = [];
+				
         var new_vars = [];
         if (!mapping) return [];
 
@@ -507,6 +506,9 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
                         {
                             put_individual(ticket, new_variable, _event_id);
 
+							if (trace_journal_uri)
+								_trace_info.push(new_variable);								
+
                             new_vars.push(
                             {
                                 data: new_variable['@'],
@@ -523,19 +525,19 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
                 }
                 catch (e)
                 {
-                    print("err: expression: ", expression)
-                    print(e.stack);
+					if (trace_journal_uri)
+						traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", "err: expression: " + expression + "\n" + e.stack);							
                 }
-
             }
             else
             {
-                //            print("[WORKFLOW][create_and_mapping_variables]: map not found :" + mapping[i].data);
+				if (trace_journal_uri)
+					traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", "map not found :" + mapping[i].data);							
             }
         }
 
 		if (trace_journal_uri)
-			traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables, result", toJson(new_vars));							
+			traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", trace_comment + " = '" + getUris (mapping) + "' \n\nout = \n" + toJson(_trace_info));							
 
         return new_vars;
     }
