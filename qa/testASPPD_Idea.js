@@ -24,7 +24,7 @@ driver.wait
 (
   webdriver.until.elementIsEnabled(driver.findElement({id:'save'})),
   basic.FAST_OPERATION
-).then (null, function(err) {if (console.trace!==undefined) {console.trace(err); process.exit(1);}});
+);
 
 driver.executeScript("document.getElementById('save').scrollIntoView(true);");
 
@@ -48,7 +48,23 @@ basic.openFulltextSearchDocumentForm(driver, 'Идея');
 // Вводим текст запроса
 driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input'}).sendKeys(timeStamp);
 
-// Нажимаем поиск
-driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] button[id="submit"]'}).sendKeys(timeStamp);
+// Нажимаем поиск и удостоверяемся что в результатах поиска появился созданный выше документ  
+driver.wait
+(
+  function () {
+	  driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] button[id="submit"]'}).click();
+	  driver.sleep(1000); // Иначе слишком часто щелкает поиск
+	  return driver.findElement({css:'span[href="#params-ft"]+span[class="badge"]'}).getText().then(function (txt) {
+		  return txt == '1';
+	  });
+  },
+  basic.EXTRA_SLOW_OPERATION
+);
+
+driver.wait
+(  
+  webdriver.until.elementTextContains(driver.findElement({css:'div[id="search-results"] span[property="mnd-s:registrationNumber"]'}),timeStamp),
+  basic.FAST_OPERATION
+);
 
 driver.quit();

@@ -1,7 +1,7 @@
 var webdriver = require('selenium-webdriver'),
     FAST_OPERATION = 2000, 			// 2000ms  = 2sec  - time limit for fast operations 
 	SLOW_OPERATION = 10000,			// 10000ms = 10sec - time limit for fast operations
-	EXTRA_SLOW_OPERATION = 30000,	// 30000ms = 30sec - time limit for extra slow operations
+	EXTRA_SLOW_OPERATION = 60000,	// 30000ms = 30sec - time limit for extra slow operations
 	SERVER_ADDRESS = 'http://127.0.0.1:8080/';
 
 webdriver.promise.controlFlow().on('uncaughtException', function(e) {
@@ -105,7 +105,7 @@ module.exports = {
 		// Клик `Поиск`
 		driver.findElement({css:'li[resource="v-m:Find"]'}).click();
 
-		// Проверяем что открылась страница создания документов
+		// Проверяем что открылась страница поиска
 		driver.wait
 		(
 		  webdriver.until.elementIsVisible(driver.findElement({css:'div[resource="v-fs:Search"]'})),
@@ -130,7 +130,7 @@ module.exports = {
 		  },
 		  FAST_OPERATION
 		);
-
+		
 		// Кликаем на запрашиваемый тип в выпавшем списке
 		driver.findElements({css:'veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
 			webdriver.promise.filter(suggestions, function(suggestion) {
