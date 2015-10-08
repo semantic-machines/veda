@@ -29,3 +29,4 @@ sudo apt-get install -y libraptor2-dev
 sudo apt-get install -y libevent-dev libssl-dev
 sudo apt-get install -y libmysqlclient-dev
 
+sudo ldconfig
