@@ -644,7 +644,7 @@ s-wf:UserTaskFormTemplate
         </div>
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-warning view edit -search" id="send" about="v-b:Edit" property="rdfs:label"/>
+        <button type="button" class="action btn btn-warning view edit -search" id="send" about="v-b:Send" property="rdfs:label"/>
         <button type="button" class="action btn btn-success" id="save" about="v-b:Save" property="rdfs:label"/>
 		<button type="button" class="action btn btn-warning view -edit -search" id="rightsOrigin" about="v-b:RightsOrigin" property="rdfs:label"/>
       </div>
