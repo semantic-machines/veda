@@ -72,7 +72,6 @@ public class LmdbStorage
             core.thread.Thread.getThis().name = "core" ~ text(std.uuid.randomUUID().toHash())[ 0..5 ];
         }
 
-
         create_folder_struct();
         open_db();
 //        reopen_db();
@@ -191,10 +190,11 @@ public class LmdbStorage
             else
                 rc = mdb_env_open(env, cast(char *)_path, MDB_RDONLY | MDB_NOMETASYNC | MDB_NOSYNC | MDB_NOLOCK, std.conv.octal !666);
 
-            db_is_open[ _path ] = true;
 
             if (rc != 0)
                 log.trace_log_and_console("%s(%s) WARN#2:%s", __FUNCTION__ ~ ":" ~ text(__LINE__), _path, fromStringz(mdb_strerror(rc)));
+            else    
+            	db_is_open[ _path ] = true;
 
             if (rc == 0 && mode == DBMode.RW)
             {
@@ -537,6 +537,11 @@ public class LmdbStorage
     {
         if (uri is null || uri.length < 2)
             return null;
+
+
+		if (db_is_open.get (_path, false) == false)
+			return null;
+
 
         string  str = null;
         int     rc;

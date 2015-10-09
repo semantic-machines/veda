@@ -801,15 +801,26 @@ class PThreadContext : Context
 
     public void reopen_ro_fulltext_indexer_db()
     {
-        if (this.getTid(P_MODULE.fulltext_indexer) != Tid.init)
-            this.wait_thread(P_MODULE.fulltext_indexer);
-        vql.reopen_db();
+    	try
+    	{
+        	if (this.getTid(P_MODULE.fulltext_indexer) != Tid.init)
+            	this.wait_thread(P_MODULE.fulltext_indexer);
+        }
+    	catch (Exception ex){}
+
+        if (vql !is null)    
+        	vql.reopen_db();
     }
 
     public void reopen_ro_subject_storage_db()
     {
-        if (this.getTid(P_MODULE.subject_manager) != Tid.init)
-            this.wait_thread(P_MODULE.subject_manager);
+    	try
+    	{
+        	if (this.getTid(P_MODULE.subject_manager) != Tid.init)
+            	this.wait_thread(P_MODULE.subject_manager);
+        }
+    	catch (Exception ex){}
+    	    
         if (inividuals_storage !is null)    
         	inividuals_storage.reopen_db();
     }
