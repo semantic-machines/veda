@@ -142,7 +142,10 @@ class XapianReader : SearchReader
 
         context.ft_check_for_reload(&reopen_db);
 
-        int[ string ] key2slot = context.get_key2slot();
+        int[string] key2slot = context.get_key2slot();
+        
+        if (key2slot == (int[string]).init)
+        	return 0;
         //writeln ("@key2slot=", key2slot);
 
         XapianQuery query;
@@ -221,6 +224,9 @@ class XapianReader : SearchReader
                           attempt_count);
             }
         }
+
+    	if (opened_db.keys.length == 0)
+    		return 0;
 
         if (trace_msg[ 323 ] == 1)
             log.trace("[%s][Q:%X] xapian query [%s]", context.get_name(), cast(void *)str_query, get_query_description(query));

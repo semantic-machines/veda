@@ -13,3 +13,10 @@ dub.selections.json
 /docs/
 /node_modules/
 /veda-pid
+/doc/
+/.externalToolBuilders/
+/bin/
+/*.rf
+/*.app
+/*.dprojectoptions
+/*.buildpath
