@@ -891,7 +891,7 @@
 		xhr.send(fd);
 	}
 	$.fn.veda_file = function( options ) {
-		if (window.FormData) {
+		if (/*window.FormData*/false) {
 			var opts = $.extend( {}, $.fn.veda_file.defaults, options ),
 				control = $(opts.templateAJAX),
 				spec = opts.spec,
@@ -940,7 +940,7 @@
 				fileInput = $("input#file", control),
 				filePath = $("input#path", control),
 				fileUri = $("input#uri", control),
-				btn = $("button", control),
+				//btn = $("button", control),
 				form = $("form", control),
 				iframe = $("iframe", control),
 				spec = opts.spec,
@@ -949,10 +949,10 @@
 				isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
 				id = veda.Util.guid();
 			form.attr("target", id);
-			iframe.attr("id", id).attr("name", id);
-			btn.click(function (e) {
+			iframe.attr("id", id).attr("name", id).attr("src", "javascript:void(0);");
+			/*btn.click(function (e) {
 				fileInput.click();
-			});
+			});*/
 			fileInput.change(function () {
 				if (this.value) {
 					var d = new Date(),

@@ -139,12 +139,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		template.on("showRights", showRightsHandler);
 
 		function cancelHandler (e) {
-			window.history.back();
-			/*
 			template.trigger("view");
 			individual.reset();
 			e.stopPropagation();
-			*/
+			window.history.back();
 		}
 		template.on("cancel", cancelHandler);
 

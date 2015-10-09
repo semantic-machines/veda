@@ -504,12 +504,11 @@
 		<script type="html/template" id="file-control-template-iframe">
 			<div>
 				<form action="/files" method="post" enctype="multipart/form-data">
-					<input type="file" id="file" name="file" style="display:none"/>
+					<input type="file" id="file" name="file"/>
 					<input type="hidden" id="path" name="path"/>
 					<input type="hidden" id="uri" name="uri"/>
-					<button class="btn btn-primary">Browse...</button>
 				</form>
-				<iframe style="display:none"></iframe>
+				<iframe src="#" style="display:none"></iframe>
 			</div>
 		</script>
 
