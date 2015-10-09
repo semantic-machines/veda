@@ -16,38 +16,27 @@ module.exports = {
 	FAST_OPERATION: FAST_OPERATION,
 	SLOW_OPERATION: SLOW_OPERATION,
 	EXTRA_SLOW_OPERATION: EXTRA_SLOW_OPERATION,
-	openPage: function (driver, driverAbout, path) {
-		if (path === undefined) {
-			driver.get(SERVER_ADDRESS).then(function() {
-				console.log('****** GET NEW PAGE. PLATFORM > '+driverAbout.os+' / '+driverAbout.browser+' / '+driverAbout.version);
-			}); 
-		} else {
-			driver.get(SERVER_ADDRESS+path).then(function() {
-				console.log('****** GET NEW PAGE. PLATFORM > '+driverAbout.os+' / '+driverAbout.browser+' / '+driverAbout.version);
-			});
-		}
-	},
 	getDrivers: function () {
 		if (process.env.TRAVIS_BUILD_NUMBER === undefined) {
 			return [{}];
 		} else {
 			return  [
-//			       {'os':'Windows 10',		'browser':'chrome',					'version':'26.0'},
-//			       {'os':'Windows 8.1',		'browser':'chrome',					'version':'26.0'},
-			       {'os':'Windows 7',		'browser':'chrome',					'version':'26.0'},
-			       {'os':'Windows XP',		'browser':'chrome',					'version':'26.0'},
-			       {'os':'Linux',			'browser':'chrome',					'version':'26.0'},
+//			       {'os':'Windows 10',		'browser':'chrome',					'version':'43.0'},
+//			       {'os':'Windows 8.1',		'browser':'chrome',					'version':'43.0'},
+			       {'os':'Windows 7',		'browser':'chrome',					'version':'43.0'},
+			       {'os':'Windows XP',		'browser':'chrome',					'version':'43.0'},
+			       {'os':'Linux',			'browser':'chrome',					'version':'43.0'},
 //			       {'os':'Windows 10',		'browser':'internet explorer',		'version':'11.0'},
 //			       {'os':'Windows 8.1',		'browser':'internet explorer',		'version':'11.0'},
 			       {'os':'Windows 7',		'browser':'internet explorer',		'version':'11.0'},
 			       {'os':'Windows 7',		'browser':'opera',					'version':'11.64'},
 //			       {'os':'Windows XP',		'browser':'opera',					'version':'11.64'},
 //			       {'os':'Linux',			'browser':'opera',					'version':'12.15'},
-//			       {'os':'Windows 10',		'browser':'firefox',				'version':'26.0'},
-//			       {'os':'Windows 8.1',		'browser':'firefox',				'version':'26.0'},
-			       {'os':'Windows 7',		'browser':'firefox',				'version':'26.0'},
-//			       {'os':'Windows XP',		'browser':'firefox',				'version':'26.0'},
-//			       {'os':'Linux',			'browser':'firefox',				'version':'26.0'}
+//			       {'os':'Windows 10',		'browser':'firefox',				'version':'40.0'},
+//			       {'os':'Windows 8.1',		'browser':'firefox',				'version':'40.0'},
+			       {'os':'Windows 7',		'browser':'firefox',				'version':'40.0'},
+//			       {'os':'Windows XP',		'browser':'firefox',				'version':'40.0'},
+//			       {'os':'Linux',			'browser':'firefox',				'version':'40.0'}
 			        ];
 		}
 	},
@@ -65,6 +54,17 @@ module.exports = {
 				                username: process.env.SAUCE_USERNAME,
 				                accessKey: process.env.SAUCE_ACCESS_KEY
 				               }).build();
+		}
+	},
+	openPage: function (driver, driverAbout, path) {
+		if (path === undefined) {
+			driver.get(SERVER_ADDRESS).then(function() {
+				console.log('****** GET NEW PAGE. PLATFORM > '+driverAbout.os+' / '+driverAbout.browser+' / '+driverAbout.version);
+			}); 
+		} else {
+			driver.get(SERVER_ADDRESS+path).then(function() {
+				console.log('****** GET NEW PAGE. PLATFORM > '+driverAbout.os+' / '+driverAbout.browser+' / '+driverAbout.version);
+			});
 		}
 	},
 	/**
