@@ -142,7 +142,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			template.trigger("view");
 			individual.reset();
 			e.stopPropagation();
-			window.history.back();
 		}
 		template.on("cancel", cancelHandler);
 
@@ -594,14 +593,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			
 			// tooltip from spec
-			/*if (spec && spec.hasValue("v-ui:tooltip")) {
+			if (spec && spec.hasValue("v-ui:tooltip")) {
 				control.tooltip({
 					title: spec["v-ui:tooltip"].join(", "),
 					placement: "top",
 					container: control,
 					trigger: "focus"
 				});
-			}*/
+			}
 			
 		});
 
