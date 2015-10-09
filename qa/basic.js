@@ -1,3 +1,6 @@
+/**
+ * You can specify OS/browsers in `drivers` method
+ */
 var webdriver = require('selenium-webdriver'),
     FAST_OPERATION = 2000, 			// 2000ms  = 2sec  - time limit for fast operations 
 	SLOW_OPERATION = 10000,			// 10000ms = 10sec - time limit for fast operations
@@ -12,11 +15,55 @@ module.exports = {
 	FAST_OPERATION: FAST_OPERATION,
 	SLOW_OPERATION: SLOW_OPERATION,
 	EXTRA_SLOW_OPERATION: EXTRA_SLOW_OPERATION,
-	openPage: function (driver, path) {
+	openPage: function (driver, driverAbout, path) {
 		if (path === undefined) {
-			driver.get(SERVER_ADDRESS); 
+			driver.get(SERVER_ADDRESS).then(function() {
+				console.log('****** GET NEW PAGE. PLATFORM > '+driverAbout.os+' / '+driverAbout.browser+' / '+driverAbout.version);
+			}); 
 		} else {
-			driver.get(SERVER_ADDRESS+path);
+			driver.get(SERVER_ADDRESS+path).then(function() {
+				console.log('****** GET NEW PAGE. PLATFORM > '+driverAbout.os+' / '+driverAbout.browser+' / '+driverAbout.version);
+			});
+		}
+	},
+	getDrivers: function () {
+		if (process.env.TRAVIS_BUILD_NUMBER === undefined) {
+			return [{}];
+		} else {
+			return  [
+//			       {'os':'Windows 10',		'browser':'chrome',					'version':'26.0'},
+//			       {'os':'Windows 8.1',		'browser':'chrome',					'version':'26.0'},
+			       {'os':'Windows 7',		'browser':'chrome',					'version':'26.0'},
+			       {'os':'Windows XP',		'browser':'chrome',					'version':'26.0'},
+			       {'os':'Linux',			'browser':'chrome',					'version':'26.0'},
+//			       {'os':'Windows 10',		'browser':'internet explorer',		'version':'11.0'},
+//			       {'os':'Windows 8.1',		'browser':'internet explorer',		'version':'11.0'},
+			       {'os':'Windows 7',		'browser':'internet explorer',		'version':'11.0'},
+			       {'os':'Windows 7',		'browser':'opera',					'version':'11.64'},
+//			       {'os':'Windows XP',		'browser':'opera',					'version':'11.64'},
+//			       {'os':'Linux',			'browser':'opera',					'version':'12.15'},
+//			       {'os':'Windows 10',		'browser':'firefox',				'version':'26.0'},
+//			       {'os':'Windows 8.1',		'browser':'firefox',				'version':'26.0'},
+			       {'os':'Windows 7',		'browser':'firefox',				'version':'26.0'},
+//			       {'os':'Windows XP',		'browser':'firefox',				'version':'26.0'},
+//			       {'os':'Linux',			'browser':'firefox',				'version':'26.0'}
+			        ];
+		}
+	},
+	getDriver: function (driver) {
+		if (process.env.TRAVIS_BUILD_NUMBER === undefined) {
+			// for local testing in chrome
+			return new webdriver.Builder().withCapabilities(webdriver.Capabilities.chrome()).build(); 
+		} else {
+			return new webdriver.Builder().usingServer('http://localhost:4445/wd/hub').withCapabilities({
+								platform: driver.os,
+				                browserName: driver.browser,
+				                version: driver.version,
+				                'tunnel-identifier' : process.env.TRAVIS_JOB_NUMBER,
+				                build : process.env.TRAVIS_BUILD_NUMBER,
+				                username: process.env.SAUCE_USERNAME,
+				                accessKey: process.env.SAUCE_ACCESS_KEY
+				               }).build();
 		}
 	},
 	/**

@@ -1,7 +1,7 @@
 addons:
   sauce_connect:
-    username: karpovr
-    access_key: df6653fd-ae02-404f-9bf7-97eeaa3e974f
+    username: semantic-machines
+    access_key: 92a54db7-283e-4b3d-96ab-b2df3f6e02ff
 
 env:
   global:
@@ -35,6 +35,7 @@ before_script:
 script:
   - node ./qa/testAPI.js
   - node ./qa/testLogin.js
+  - node ./qa/testPerson.js
 
 # Stop deamon and show log
 after_script:
