@@ -891,7 +891,7 @@
 		xhr.send(fd);
 	}
 	$.fn.veda_file = function( options ) {
-		if (/*window.FormData*/false) {
+		if (window.FormData) {
 			var opts = $.extend( {}, $.fn.veda_file.defaults, options ),
 				control = $(opts.templateAJAX),
 				spec = opts.spec,
