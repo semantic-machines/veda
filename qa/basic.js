@@ -47,9 +47,9 @@ module.exports = {
 		} else {
 			return new webdriver.Builder().usingServer('http://localhost:4445/wd/hub').withCapabilities({
 								platform: driver.os,
-				                browserName: driver.browser,
-				                version: driver.version,
-				                'screenResolution', '1280x1024',
+				                browserName : driver.browser,
+				                version : driver.version,
+				                'screenResolution' : '1280x1024',
 				                'tunnel-identifier' : process.env.TRAVIS_JOB_NUMBER,
 				                build : process.env.TRAVIS_BUILD_NUMBER,
 				                username: process.env.SAUCE_USERNAME,
