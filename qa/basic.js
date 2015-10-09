@@ -9,6 +9,7 @@ var webdriver = require('selenium-webdriver'),
 
 webdriver.promise.controlFlow().on('uncaughtException', function(e) {
 	console.trace(e);
+	process.exit(1);
 });
 
 module.exports = {
