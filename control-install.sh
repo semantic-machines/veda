@@ -5,11 +5,14 @@
 #sudo apt-get install libraptor2-dev
 
 # Variant II
+sudo apt-get update
+
 if ! dmd --version | grep 2.067.1 ; then    
     wget http://downloads.dlang.org/releases/2.x/2.068.2/dmd_2.068.2-0_amd64.deb
     sudo dpkg -i dmd_2.068.2-0_amd64.deb
     rm dmd_2.068.2-0_amd64.deb
     sudo cp ./qa/patch_dmd_2_68_0/concurrency.d /usr/include/dmd/phobos/std/concurrency.d
+    sudo cp ./qa/patch_dmd_2_68_0/concurrency.d ${HOME}/dmd2/src/phobos/std/concurrency.d
     wget http://factory.b-com.com/www/watcher/download/watcher-metering/libnanomsg_0.6.0_all.deb
     sudo dpkg -i libnanomsg_0.6.0_all.deb
     rm libnanomsg_0.6.0_all.deb
