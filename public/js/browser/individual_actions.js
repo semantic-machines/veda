@@ -44,7 +44,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 		var jasperServerAddress = jasperServer['v-g:literalValue'][0];
 		var report = new veda.IndividualModel(reportId);				
 		
-		window.open(jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&individualId='+encodeURIComponent(individual.id),'_blank');
+		window.open(jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id),'_blank');
 	}
 	
 	veda.on("individual:loaded", function (individual, container, template, mode) {
@@ -126,7 +126,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 				   			   "style" : "cursor:pointer",    
 		                 	   "text" : report['rdfs:label'][0],
 		                 	   "click": (function (e) {
-			        				window.open(jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&individualId='+encodeURIComponent(individual.id),'_blank');
+			        				window.open(jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id),'_blank');
 		                 	   })
 		                  	}).appendTo(reportsDropdown);
 						});				
