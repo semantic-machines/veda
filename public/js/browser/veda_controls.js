@@ -8,9 +8,13 @@
 		var opts = $.extend( {}, veda_literal_input.defaults, options ),
 			control = $(opts.template),
 			spec = opts.spec,
+			placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
+			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
 			property_uri = opts.property_uri,
 			individual = opts.individual,
 			input = $(".form-control", control);
+
+		input.attr("placeholder", placeholder);
 		
 		var singleValueHandler = function (doc_property_uri, values) {
 			if (doc_property_uri === property_uri) {
@@ -24,7 +28,7 @@
 		}
 		
 		if (spec) {
-			if (spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1) {
+			if (isSingle) {
 				change = function (value) {
 					individual[property_uri] = [value];
 				};
@@ -180,12 +184,14 @@
 		var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
 			control = $(opts.template),
 			spec = opts.spec,
+			placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
 			property_uri = opts.property_uri,
 			individual = opts.individual,
 			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
 			input = $("input", control),
 			change;
 		
+		input.attr("placeholder", placeholder);
 		
 		var singleValueHandler = function (doc_property_uri, values) {
 			if (doc_property_uri === property_uri) {
@@ -277,11 +283,14 @@
 			individual = opts.individual,
 			property_uri = opts.property_uri,
 			spec = opts.spec,
+			placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
 			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
 			undef = $("li", control),
 			langTag = $(".language-tag", control),
 			input = $(".form-control", control),
 			language;
+
+		input.attr("placeholder", placeholder);
 
 		if (isSingle && individual.hasValue(property_uri)) {
 			language = individual[property_uri][0].language;
@@ -996,6 +1005,7 @@
 			control = $(opts.template),
 			individual = opts.individual,
 			spec = opts.spec,
+			placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
 			queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : undefined,
 			rel_uri = opts.rel_uri,
 			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
@@ -1046,6 +1056,9 @@
 
 		// Fulltext search feature
 		if ( this.hasClass("fulltext") || this.hasClass("full") ) {
+
+			fulltext.attr("placeholder", placeholder);
+
 			var typeAhead = fulltext.typeahead (
 				{
 					minLength: 0,
