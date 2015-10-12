@@ -893,6 +893,13 @@ v-s:owner
   rdfs:range v-s:OrganizationUnit ;
   rdfs:range v-s:Person ;
 .
+v-s:initiator
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "initiator"@en ;
+  rdfs:label "инициатор"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Person ;
+.
 v-s:parentUnit
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;

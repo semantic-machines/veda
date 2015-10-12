@@ -109,6 +109,8 @@ bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
             });
     return res;
 }
+//		import io.zmq_io;
+
 
 Context init_core(string node_id)
 {
@@ -125,14 +127,15 @@ Context init_core(string node_id)
     {
 //        log.trace_log_and_console("\nPACAHON %s.%s.%s\nSOURCE: commit=%s date=%s\n", veda.core.myversion.major, veda.core.myversion.minor,
 //                                  veda.core.myversion.patch, veda.core.myversion.hash, veda.core.myversion.date);
+        Context core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop);
+
+        tids[ P_MODULE.interthread_signals ] = spawn(&interthread_signals_thread, text(P_MODULE.interthread_signals));
+        wait_starting_thread(P_MODULE.interthread_signals, tids);
 
         tids[ P_MODULE.fulltext_indexer ] =
             spawn(&xapian_indexer, text(P_MODULE.fulltext_indexer), node_id);
         if (wait_starting_thread(P_MODULE.fulltext_indexer, tids) == false)
             return null;
-
-        tids[ P_MODULE.interthread_signals ] = spawn(&interthread_signals_thread, text(P_MODULE.interthread_signals));
-        wait_starting_thread(P_MODULE.interthread_signals, tids);
 
         tids[ P_MODULE.subject_manager ] = spawn(&individuals_manager, text(P_MODULE.subject_manager), individuals_db_path, node_id);
         wait_starting_thread(P_MODULE.subject_manager, tids);
@@ -175,12 +178,16 @@ Context init_core(string node_id)
         register(text(P_MODULE.condition), tids[ P_MODULE.condition ]);
         Tid tid_condition = locate(text(P_MODULE.condition));
 
+		//spawn (&zmq_thread, "");
+        //Context core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop);
+
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
         tids[ P_MODULE.file_reader ] = spawn(&io.file_reader.file_reader_thread, P_MODULE.file_reader, node_id, 5);
         wait_starting_thread(P_MODULE.file_reader, tids);
-        Context core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop);
+        
 //        io.file_reader.processed(core_context);
         core_context.reopen_ro_subject_storage_db();
+        core_context.reopen_ro_acl_storage_db();
         Individual node = core_context.get_individual(null, node_id);
 
         Resources  listeners = node.resources.get("vsrv:listener", Resources.init);
