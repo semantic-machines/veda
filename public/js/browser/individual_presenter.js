@@ -16,10 +16,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		mode = mode || "view";
 		
 		// Change location.hash if individual was presented in #main container
-		if (container.prop("id") === "main") {
+		/*if (container.prop("id") === "main") {
 			var hash = ["#", "individual", individual.id, "#main"].join("/");
 			if (hash !== location.hash) riot.route(hash, false);
-		}
+		}*/
 
 		var specs = $.extend.apply ({}, [].concat(
 			individual["rdf:type"]
