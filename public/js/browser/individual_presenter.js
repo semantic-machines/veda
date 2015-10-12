@@ -86,6 +86,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				.attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") )
 				.addClass("mode-" + mode);
 			container.append(view.template);
+			individual.trigger("individual:templateReady", view.template);
 			// Timeout to wait all related individuals to render
 			setTimeout(function () {
 				view.template.trigger(mode);

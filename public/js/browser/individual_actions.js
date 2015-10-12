@@ -87,16 +87,18 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			}			
 		});
 		
-		individual.off("valid");
-		individual.on("valid", function (){
-			var individualNode = $('[resource="'+individual.id+'"]');
-			individualNode.find("#send").removeAttr("disabled");
-		});
-		
-		individual.off("invalid");
-		individual.on("invalid", function (){
-			var individualNode = $('[resource="'+individual.id+'"]');
-			individualNode.find("#send").attr("disabled", "disabled");
+		individual.off("individual:templateReady");
+		individual.on("individual:templateReady", function (template) {
+			var send = template.find("#send");
+			individual.off("valid");
+			individual.on("valid", function () {
+				send.removeAttr("disabled");
+			});
+			
+			individual.off("invalid");
+			individual.on("invalid", function () {
+				send.attr("disabled", "disabled");
+			});
 		});
 		
 		/**
