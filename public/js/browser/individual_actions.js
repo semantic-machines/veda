@@ -87,19 +87,24 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			}			
 		});
 		
-		individual.off("individual:templateReady");
-		individual.on("individual:templateReady", function (template) {
-			var send = template.find("#send");
-			individual.off("valid");
-			individual.on("valid", function () {
-				send.removeAttr("disabled");
-			});
+		function sendHandler(template) {
+
+			function validHandler() { send.removeAttr("disabled"); }
+		
+			function inValidHandler() { send.attr("disabled", "disabled"); }
 			
-			individual.off("invalid");
-			individual.on("invalid", function () {
-				send.attr("disabled", "disabled");
+			var send = template.find("#send");
+			
+			individual.on("valid", validHandler);
+			individual.on("invalid", inValidHandler);
+			
+			template.on("remove", function () {
+				individual.off("valid", validHandler);
+				individual.off("invalid", inValidHandler);
+				individual.off("individual:templateReady", sendHandler);
 			});
-		});
+		}
+		individual.on("individual:templateReady", sendHandler);
 		
 		/**
 		 * Event `createReport` handler: 
