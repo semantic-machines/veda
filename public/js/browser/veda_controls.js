@@ -95,6 +95,9 @@
 			control = veda_literal_input.call(this, opts);
 		var ta = $("textarea", control);
 		autosize(ta);
+		setTimeout (function () {
+			autosize.update(ta);
+		}, 100);
 		this.on("remove", function () {
 			autosize.destroy(ta);
 		});
@@ -376,6 +379,9 @@
 			control = veda_multilingual.call(this, opts);
 		var ta = $("textarea", control);
 		autosize(ta);
+		setTimeout (function () {
+			autosize.update(ta);
+		}, 100);
 		this.on("remove", function () {
 			autosize.destroy(ta);
 		});
