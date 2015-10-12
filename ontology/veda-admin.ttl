@@ -36,7 +36,6 @@ v-a:standart_node
 	rdfs:label "стандартная конфигурация" ;
 .	
 
-
 v-a:js_worker_node
 	rdf:type vsrv:Node ;
 	vsrv:role "js_worker";
@@ -48,6 +47,7 @@ v-a:test_node
 	vsrv:count_thread "4"^^xsd:integer ;
 	vsrv:checktime_onto_files "30"^^xsd:integer ;
 	vsrv:listener v-a:test_conn_http;
+	vsrv:role "complete";
 	rdfs:label "тестовая конфигурация" ;
 .	
 
@@ -56,6 +56,7 @@ v-a:developer_node
 	vsrv:count_thread "4"^^xsd:integer ;
 	vsrv:checktime_onto_files "1"^^xsd:integer ;
 	vsrv:listener v-a:conn_http;
+	vsrv:role "complete";
 	vsrv:push_individual_by_event v-a:conn_mysql1;
 	rdfs:label "конфигурация разработчика" ;
 .	
