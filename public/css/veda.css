@@ -189,6 +189,7 @@ veda-control {
 
 .value-holder {
   margin-right: 5px;
+  white-space: pre;
 }
 
 #prop-actions {
