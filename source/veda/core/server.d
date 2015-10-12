@@ -109,7 +109,7 @@ bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
             });
     return res;
 }
-		import io.zmq_io;
+//		import io.zmq_io;
 
 
 Context init_core(string node_id)
