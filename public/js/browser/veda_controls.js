@@ -1072,38 +1072,42 @@
 				}
 			);
 
+			// Assign values in individual
 			typeAhead.on("typeahead:selected", function (e, selected) {
 				select(selected);
-				if (!isSingle) { 
-					typeAhead.typeahead("val", "");
-				}
 			});
 
-			// Fill in value in fulltext field if maxCardinality = 1
-			if (isSingle && individual.hasValue(rel_uri)) {
-				typeAhead.typeahead("val", riot.render("{rdfs:label}", individual[rel_uri][0]) );
-			}
-			
 			// Clear values from individual if isSingle && typeAhead was emptied
 			typeAhead.change(function () {
 				if (isSingle && this.value === "") {
 					individual[rel_uri] = [];
 				}
 			});
-			
-			// Clear typeAhead if isSingle && individual values were emptied
-			var handler = function (ind_rel_uri, values) {
-				if (ind_rel_uri === rel_uri && isSingle && !values.length) {
-					typeAhead.typeahead("val", "");
+
+			// Fill in value in fulltext field
+			var handler = function (doc_rel_uri, values) {
+				if (doc_rel_uri === rel_uri) {
+					if (isSingle) {
+						if (values.length) {
+							typeAhead.typeahead("val", riot.render("{rdfs:label}", values[0]) );
+						} else {
+							typeAhead.typeahead("val", "" );
+						}
+					} else {
+						typeAhead.typeahead("val", "" );
+					}
 				}
-			};
+			}
+
 			individual.on("individual:propertyModified", handler);
-			
-			control.on("remove", function () {
-				typeAhead.typeahead("destroy");
+			control.one("remove", function () {
 				individual.off("individual:propertyModified", handler);
 			});
 
+			if (individual.hasValue(rel_uri)) {
+				handler(rel_uri, individual[rel_uri]);
+			}
+			
 		} else {
 			fulltext.remove();
 		}
