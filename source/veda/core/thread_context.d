@@ -313,7 +313,7 @@ class PThreadContext : Context
 
             if (tmp_tid == Tid.init)
             {
-                writeln("!!! NOT FOUND TID=", text(tid_id), "\n", name_2_tids, ", locate=1 ", );
+//                writeln("!!! NOT FOUND TID=", text(tid_id), "\n", name_2_tids, ", locate=1 ", );
                 throw new Exception("!!! NOT FOUND TID=" ~ text(tid_id));
             }
             else
@@ -823,6 +823,19 @@ class PThreadContext : Context
     	    
         if (inividuals_storage !is null)    
         	inividuals_storage.reopen_db();
+    }
+
+    public void reopen_ro_acl_storage_db()
+    {
+    	try
+    	{
+        	if (this.getTid(P_MODULE.acl_manager) != Tid.init)
+            	this.wait_thread(P_MODULE.acl_manager);
+        }
+    	catch (Exception ex){}
+    	    
+        if (acl_indexes !is null)    
+        	acl_indexes.reopen_db();
     }
 
     // ////////// external ////////////

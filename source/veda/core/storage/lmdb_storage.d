@@ -43,8 +43,7 @@ public enum Result
     Nothing
 }
 
-bool[ string ] db_is_open;
-
+public bool[ string ] db_is_open;
 
 /// key-value хранилище на lmdb
 public class LmdbStorage
@@ -478,6 +477,9 @@ public class LmdbStorage
         long    count = -1;
         int     rc;
 
+		if (db_is_open.get (_path, false) == false)
+			return -1;
+
         MDB_txn *txn_r;
         MDB_dbi dbi;
 
@@ -538,10 +540,8 @@ public class LmdbStorage
         if (uri is null || uri.length < 2)
             return null;
 
-
 		if (db_is_open.get (_path, false) == false)
 			return null;
-
 
         string  str = null;
         int     rc;
