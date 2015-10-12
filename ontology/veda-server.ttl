@@ -155,3 +155,11 @@ vsrv:queue
   rdfs:label "queue" ;
   rdfs:range xsd:string ;
 .    
+
+vsrv:role
+  rdf:type owl:DatatypeProperty ;
+  rdfs:isDefinedBy vsrv: ;
+  rdfs:domain vsrv:Node ;
+  rdfs:label "node_role" ;
+  rdfs:range xsd:string ;
+.    
