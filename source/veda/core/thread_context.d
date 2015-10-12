@@ -407,22 +407,31 @@ class PThreadContext : Context
         }
     }
 
-    private void stat(CMD command_type, ref StopWatch sw, string func = __FUNCTION__)
+    private void stat(CMD command_type, ref StopWatch sw, string func = __FUNCTION__) nothrow
     {
+    	try
+    	{
         sw.stop();
         int t = cast(int)sw.peek().usecs;
+        
+        Tid statistic_data_accumulator_tid = this.getTid(P_MODULE.statistic_data_accumulator);
 
-        send(this.getTid(P_MODULE.statistic_data_accumulator), CMD.PUT, CNAME.WORKED_TIME, t);
+        send(statistic_data_accumulator_tid, CMD.PUT, CNAME.WORKED_TIME, t);
 
 //        send(this.getTid(P_MODULE.statistic_data_accumulator), CMD.PUT, CNAME.COUNT_COMMAND, 1);
 
         if (command_type == CMD.GET)
-            send(this.getTid(P_MODULE.statistic_data_accumulator), CMD.PUT, CNAME.COUNT_GET, 1);
+            send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_GET, 1);
         else
-            send(this.getTid(P_MODULE.statistic_data_accumulator), CMD.PUT, CNAME.COUNT_PUT, 1);
+            send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_PUT, 1);
 
         if (trace_msg[ 555 ] == 1)
             log.trace(func[ (func.lastIndexOf(".") + 1)..$ ] ~ ": t=%d µs", t);
+        }
+    	catch (Exception ex)
+    	{
+    		
+    	}    
     }
 
     // ////////////////////////////////////////////////////////////////////////////////

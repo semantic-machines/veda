@@ -127,8 +127,17 @@ Context init_core(string node_id)
     {
 //        log.trace_log_and_console("\nPACAHON %s.%s.%s\nSOURCE: commit=%s date=%s\n", veda.core.myversion.major, veda.core.myversion.minor,
 //                                  veda.core.myversion.patch, veda.core.myversion.hash, veda.core.myversion.date);
-        Context core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop);
+		Individual node;
+		Resources roles;
 
+        Context core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop);
+        node = core_context.get_individual(null, node_id);
+		if (node.getStatus() == ResultCode.OK)
+		{
+        	log.trace_log_and_console ("VEDA NODE CONFIGURATION: [%s]", node);
+   	        roles = node.resources.get("vsrv:role", Resources.init);        	
+        }
+                        
         tids[ P_MODULE.interthread_signals ] = spawn(&interthread_signals_thread, text(P_MODULE.interthread_signals));
         wait_starting_thread(P_MODULE.interthread_signals, tids);
 
@@ -161,8 +170,7 @@ Context init_core(string node_id)
         tids[ P_MODULE.statistic_data_accumulator ] = spawn(&statistic_data_accumulator, text(P_MODULE.statistic_data_accumulator));
         wait_starting_thread(P_MODULE.statistic_data_accumulator, tids);
 
-        tids[ P_MODULE.print_statistic ] = spawn(&print_statistic, text(
-                                                                        P_MODULE.print_statistic),
+        tids[ P_MODULE.print_statistic ] = spawn(&print_statistic, text(P_MODULE.print_statistic),
                                                  tids[ P_MODULE.statistic_data_accumulator ]);
         wait_starting_thread(P_MODULE.print_statistic, tids);
 
@@ -186,15 +194,19 @@ Context init_core(string node_id)
         wait_starting_thread(P_MODULE.file_reader, tids);
         
 //        io.file_reader.processed(core_context);
-        core_context.reopen_ro_subject_storage_db();
-        core_context.reopen_ro_acl_storage_db();
-        Individual node = core_context.get_individual(null, node_id);
+		if (node.getStatus() != ResultCode.OK)
+		{
+        	core_context.reopen_ro_subject_storage_db();
+        	core_context.reopen_ro_acl_storage_db();
+        	node = core_context.get_individual(null, node_id);
+        	
+        	log.trace_log_and_console ("VEDA NODE CONFIGURATION:[%s]", node);
+        }
 
         Resources  listeners = node.resources.get("vsrv:listener", Resources.init);
         foreach (listener; listeners)
         {
             Individual connection = core_context.get_individual(null, listener.uri);
-            //writeln ("@@@@2 listener=", connection);
 
             Resource transport = connection.getFirstResource("vsrv:transport");
             if (transport != Resource.init)
