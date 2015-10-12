@@ -884,6 +884,8 @@ td:PropertySpecification7
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Учетная запись."@ru ;
   v-ui:tooltip "Required, single value. Link to instance of Account class"@en ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Account')"^^xsd:string ;
+  v-ui:placeholder "Учетная запись"@ru ;
+  v-ui:placeholder "Account"@en ;
 .
 td:PropertySpecification8
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -930,6 +932,8 @@ td:PropertySpecification1
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
   v-ui:tooltip "Required, single value. Format: 2011-08-19"@en ;
+  v-ui:placeholder "день рождения"@ru ;
+  v-ui:placeholder "birthday"@en ;
 .
 
 td:PropertySpecification2
@@ -944,6 +948,8 @@ td:PropertySpecification2
   v-ui:maxLength "20"^^xsd:integer ;
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
   v-ui:tooltip "Required, single value. More than 2 and less than 20 characters"@en ;
+  v-ui:placeholder "имя"@ru ;
+  v-ui:placeholder "first name"@en ;
 .
 td:PropertySpecification3
   rdf:type v-ui:StringPropertySpecification ;
@@ -957,6 +963,8 @@ td:PropertySpecification3
   v-ui:maxLength "20"^^xsd:integer ;
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
   v-ui:tooltip "Required, single value. More than 2 and less than 20 characters"@en ;
+  v-ui:placeholder "фамилия"@ru ;
+  v-ui:placeholder "last name"@en ;
 .
 td:PropertySpecification4
   rdf:type v-ui:StringPropertySpecification ;
@@ -970,6 +978,8 @@ td:PropertySpecification4
   v-ui:maxLength "20"^^xsd:integer ;  
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
   v-ui:tooltip "Required, single value. More than 2 and less than 20 characters"@en ;
+  v-ui:placeholder "отчество"@ru ;
+  v-ui:placeholder "middle name"@en ;
 .
 td:SearchRequest1
   rdf:type v-s:SearchRequest ;

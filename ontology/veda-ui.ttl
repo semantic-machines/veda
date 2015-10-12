@@ -132,6 +132,13 @@ v-ui:tooltip
   rdfs:label "tooltip"@en ;
   rdfs:range xsd:string ;
 .
+v-ui:placeholder
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:PropertySpecification ;
+  rdfs:label "заполнитель"@ru ;
+  rdfs:label "placeholder"@en ;
+  rdfs:range xsd:string ;
+.
 v-ui:minCardinality
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:PropertySpecification ;
