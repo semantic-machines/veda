@@ -14,7 +14,7 @@ veda.Module(function SearchResultPresenter(veda) { "use strict";
 							// Check if string starts with http:// or ftp://
 							return item.search(/^.{3,5}:\/\//) === 0 ? "<a target='_blank' href='" + item + "'>" + item + "</a>" : item ;
 						else if (item instanceof veda.IndividualModel)
-							return "<a href='#/individual/" + item.id + "/#main'>" + 
+							return "<a href='#/" + item.id + "'>" + 
 								(item["rdfs:label"] && item["rdfs:label"].length ? item["rdfs:label"].join(", ") : item.id) + "</a>";
 						else return item;
 					})

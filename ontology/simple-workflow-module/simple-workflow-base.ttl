@@ -278,7 +278,7 @@ s-wf:ComplexRouteStartForm_Template
 	        <span about="s-wf:ComplexRouteStartForm" property="rdfs:label" />
   	      </div>  
           <div class="col-md-6 text-right text-muted">
-                <a href="#/individual/@/#main"><span property="@">ID</span></a>
+                <a href="#/@"><span property="@">ID</span></a>
 	      </div>  
 	    </div>
       </div>
@@ -599,7 +599,7 @@ s-wf:UserTaskFormTemplate
 	        <span about="s-wf:UserTaskForm" property="rdfs:label"></span>
   	      </div>  
           <div class="col-md-6 text-right text-muted">
-                <a href="#/individual/@/#main"><span property="@">ID</span></a>
+                <a href="#/@"><span property="@">ID</span></a>
 	      </div>  
 	    </div>
       </div>

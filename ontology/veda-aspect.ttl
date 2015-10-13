@@ -160,7 +160,7 @@ v-asp:PersonalAspectTemplate
 				<div about="@" rel="v-s:owner">
 					<div rel="v-s:hasImage" template="v-ui:ImageTemplate"></div>
 					<br/>
-					<a href="#/individual/@/#main">
+					<a href="#/@">
 						<p>
 							<span class="glyphicon glyphicon-user"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:lastName"></span>
 						</p>
@@ -196,7 +196,7 @@ v-asp:PersonalAspectTemplate
 						<h3><span about="v-b:Blanks" property="rdfs:label"></span></h3>
 						<hr/>
 						<ol rel="v-asp:hasBlank">
-							<li><a href="#/individual/@/#main"><span property="rdfs:label"></span></a></li>
+							<li><a href="#/@"><span property="rdfs:label"></span></a></li>
 						</ol>
 						<veda-control type="link" rel="v-asp:hasBlank" class="fulltext dropdown -view edit"></veda-control>
 					</div>
@@ -204,7 +204,7 @@ v-asp:PersonalAspectTemplate
 						<h3><span about="v-b:Registries" property="rdfs:label"></span></h3>
 						<hr/>
 						<ol rel="v-asp:hasRegistry">
-							<li><a href="#/individual/@/#main"><span property="rdfs:label"></span></a></li>
+							<li><a href="#/@"><span property="rdfs:label"></span></a></li>
 						</ol>
 						<veda-control type="link" rel="v-asp:hasRegistry" class="fulltext dropdown -view edit"></veda-control>
 					</div>

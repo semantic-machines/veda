@@ -4,11 +4,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 	
 	var deletedAlertTmpl = $("#deleted-individual-alert-template").html();
 	
-	//var c = 0;
+	var c = 0;
 	
 	veda.on("individual:loaded", function (individual, container, template, mode) {
 		
-		//console.log(individual.id, "presenter count:", ++c);
+		console.log(individual.id, "presenter count:", ++c);
 		
 		if (typeof container === "string") { 
 			container = $(container).empty();
@@ -16,10 +16,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		mode = mode || "view";
 		
 		// Change location.hash if individual was presented in #main container
-		/*if (container.prop("id") === "main") {
-			var hash = ["#", "individual", individual.id, "#main"].join("/");
+		if (container.prop("id") === "main" && location.hash.indexOf(individual.id) < 0) {
+			var hash = ["#", individual.id].join("/");
 			if (hash !== location.hash) riot.route(hash, false);
-		}*/
+		}
 
 		var specs = $.extend.apply ({}, [].concat(
 			individual["rdf:type"]
@@ -127,7 +127,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			template.trigger("view");
 			// Change location.hash if individual was presented in #main container
 			if (container.prop("id") === "main") {
-				var hash = ["#", "individual", individual.id, "#main"].join("/");
+				var hash = ["#", individual.id].join("/");
 				if (hash !== location.hash) riot.route(hash, false);
 			}
 			e.stopPropagation();

@@ -411,7 +411,7 @@ v-fs:FulltextRequestTemplate
 	}
 	
 	function genericTemplate(individual) {
-		var head = "<strong><a href='#/individual/@/#main' property='rdfs:label'></a></strong>";
+		var head = "<strong><a href='#/@' property='rdfs:label'></a></strong>";
 		var allprops = Object.getOwnPropertyNames(individual.properties);
 		var props = "<div>";
 		for (var i = 0, uri; (uri = allprops && allprops[i]); i++) {
@@ -735,7 +735,7 @@ v-fs:AttributiveRequestTemplate
 			}
 			return res.join("");
 		}).join("");
-		var res = ["<tr>", "<td>###</td><td><a href='#/individual/@/#main'><span class='glyphicon glyphicon-search'></span></a></td>", tmpl, "</tr>"].join("");
+		var res = ["<tr>", "<td>###</td><td><a href='#/@'><span class='glyphicon glyphicon-search'></span></a></td>", tmpl, "</tr>"].join("");
 		return res;
 	}
 	

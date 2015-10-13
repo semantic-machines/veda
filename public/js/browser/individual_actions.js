@@ -57,7 +57,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 		individual.on("send", function (transformId) {
 			if (transformId !== undefined) {
 				var startForm = buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
-            	riot.route("#/individual/" + startForm.id + "/#main//edit", true);
+            	riot.route("#/" + startForm.id + "///edit", true);
 			} else {
 				var s = new veda.SearchModel("'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
 				if (Object.getOwnPropertyNames(s.results).length == 0) {
@@ -79,7 +79,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 					Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
 						var res = s.results[res_id];
 						var startForm = buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
-		            	riot.route("#/individual/" + startForm.id + "/#main//edit", true);
+		            	riot.route("#/" + startForm.id + "///edit", true);
 					});
 				} else {
 					alert('Несколько стартовых трансформаций. Меня жизнь к такому не готовила.');

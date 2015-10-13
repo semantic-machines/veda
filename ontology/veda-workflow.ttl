@@ -432,7 +432,7 @@ v-wf:SimpleNetTemplate
   	<thead>
   	  <tr>
   		<td style="width:25%"><span about="v-wf:Net" property="rdfs:label"></span></td>
-  		<td><strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
+  		<td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
   	  </tr>	 
   	</thead>
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
@@ -489,7 +489,7 @@ v-wf:SimpleNetTemplate
   			<veda-control rel="v-wf:completedMapping" type="link" class="VCcompletedMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedMapping">
 	  			<div deleteButton="hide" class="VCcompletedMapping">
-	  				#<a href="#/individual/@/#main">
+	  				#<a href="#/@">
 			  			<span about="@" rel="v-wf:mapToVariable">
 							<span>
 								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
@@ -831,7 +831,7 @@ v-wf:TaskTemplateAsProperties
   	<thead>
   	  <tr>
   		<td style="width:25%"><span about="v-wf:NetElement" property="rdfs:label"></span></td>
-  		<td><strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
+  		<td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
   	  </tr>	 
   	</thead>
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
@@ -892,7 +892,7 @@ v-wf:TaskTemplateAsProperties
   			<veda-control about="@" rel="v-wf:executor" type="link" class="VCexecutor -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div class="VCexecutor" rel="v-wf:executor" style="display:none;">
 	  			<div>
-	  				#<a href="#/individual/@/#main//edit">
+	  				#<a href="#/@///edit">
 		  				<span property="v-wf:executorExpression"></span>
 		  				<span property="v-s:script"></span>
 		  				<span rel="v-s:employee" template="v-ui:LabelTemplate"></span>
@@ -901,7 +901,7 @@ v-wf:TaskTemplateAsProperties
 			</div>
 			<div class="viewVCexecutor" about="@" rel="v-wf:executor">
 	  			<div>
-	  				#<a href="#/individual/@/#main//edit">
+	  				#<a href="#/@///edit">
 		  				<span property="v-wf:executorExpression"></span>
 		  				<span property="v-s:script"></span>
 		  				<span rel="v-s:employee" template="v-ui:LabelTemplate"></span>
@@ -966,7 +966,7 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:startingMapping" type="link" class="VCstartingMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingMapping">
 	  			<div deleteButton="hide" class="VCstartingMapping">
-	  				#<a href="#/individual/@/#main">
+	  				#<a href="#/@">
 			  			<span about="@" rel="v-wf:mapToVariable">
 							<span>
 								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
@@ -987,7 +987,7 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:completedMapping" type="link" class="VCcompletedMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedMapping">
 	  			<div deleteButton="hide" class="VCcompletedMapping">
-	  				#<a href="#/individual/@/#main">
+	  				#<a href="#/@">
 			  			<span about="@" rel="v-wf:mapToVariable">
 							<span>
 								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
@@ -1008,7 +1008,7 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:startingExecutorJournalMap" type="link" class="VCstartingExecutorJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingExecutorJournalMap">
 	  			<div deleteButton="hide" class="VCstartingExecutorJournalMap">
-	  				#<a href="#/individual/@/#main">
+	  				#<a href="#/@">
 			  			<span about="@" rel="v-wf:mapToVariable">
 							<span>
 								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
@@ -1029,7 +1029,7 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:completedExecutorJournalMap" type="link" class="VCcompletedExecutorJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedExecutorJournalMap">
 	  			<div deleteButton="hide" class="VCcompletedExecutorJournalMap">
-	  				#<a href="#/individual/@/#main">
+	  				#<a href="#/@">
 			  			<span about="@" rel="v-wf:mapToVariable">
 							<span>
 								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
@@ -1050,7 +1050,7 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:startingJournalMap" type="link" class="VCstartingJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingJournalMap">
 	  			<div deleteButton="hide" class="VCstartingJournalMap">
-		  			#<a href="#/individual/@/#main">
+		  			#<a href="#/@">
 			  			<span about="@" rel="v-wf:mapToVariable">
 							<span>
 								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
@@ -1071,7 +1071,7 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:completedJournalMap" type="link" class="VCcompletedJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedJournalMap">
 	  			<div deleteButton="hide" class="VCcompletedJournalMap">
-	  				#<a href="#/individual/@/#main">
+	  				#<a href="#/@">
 			  			<span about="@" rel="v-wf:mapToVariable">
 							<span>
 								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
@@ -1092,7 +1092,7 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:wosResultsMapping" type="link" class="VCwosResultsMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:wosResultsMapping">
 	  			<div deleteButton="hide" class="VCwosResultsMapping">
-	  				#<a href="#/individual/@/#main">
+	  				#<a href="#/@">
 			  			<span about="@" rel="v-wf:mapToVariable">
 							<span>
 								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
@@ -1109,7 +1109,7 @@ v-wf:TaskTemplateAsProperties
 		<td about="v-wf:hasFlow" property="rdfs:label"></td>
 		<td about="@" rel="v-wf:hasFlow">
 			<div>
-				#<a href="#/individual/@/#main">
+				#<a href="#/@">
 				    <strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
 				    [<span about="@" property="v-wf:predicate"></span>]
 			    </a>
@@ -1168,7 +1168,7 @@ v-wf:ConditionTemplateAsProperties
   	<thead>
   	  <tr>
   		<td style="width:25%"><span about="v-wf:NetElement" property="rdfs:label"></span></td>
-  		<td><strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
+  		<td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
   	  </tr>	 
   	</thead>
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
@@ -1189,7 +1189,7 @@ v-wf:ConditionTemplateAsProperties
 		<td about="v-wf:hasFlow" property="rdfs:label"></td>
 		<td about="@" rel="v-wf:hasFlow">
 			<div>
-				#<a href="#/individual/@/#main">
+				#<a href="#/@">
 				    <strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
 				    [<span about="@" property="v-wf:predicate"></span>]
 			    </a>
@@ -1234,7 +1234,7 @@ v-wf:FlowTemplateAsProperties
   	<thead>
   	  <tr>
   		<td style="width:25%"><span about="v-wf:Net" property="rdfs:label"></span></td>
-  		<td><strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
+  		<td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
   	  </tr>	 
   	</thead>
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
@@ -1351,7 +1351,7 @@ v-wf:WorkItemTemplate
   v-ui:template """
 <div>
 	<h4><span about="v-wf:WorkItem" property="rdfs:label"></span></h4>
-	<h5><strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong></h5>
+	<h5><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></h5>
 	<hr>
 	<div id="inVars">
 		<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
@@ -1422,7 +1422,7 @@ v-wf:WorkOrderTemplate
   v-ui:forClass v-wf:WorkOrder ;
   v-ui:template """
 <div>
-	<strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
+	<strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
 	<div id="executor">
 		<em about="v-wf:executor" property="rdfs:label"></em>
 		<ul><li rel="v-wf:executor" template="v-ui:ClassNameLabelTemplate"></li></ul>
@@ -1465,7 +1465,7 @@ v-wf:DecisionFormTemplate
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
 <div>
-	<strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
+	<strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
 	<div id="traceJournal">
 		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
 		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
@@ -2495,7 +2495,7 @@ v-ui:TraceEventTemplate
   var pre = $("pre", template),
       txt = pre.text(),
       re = new RegExp('"([\\w-]+:[\\w-]+)"','g'),
-      txt2 = txt.replace(re, "<a href='#/individual/$1/#main'>'$1'</a>");
+      txt2 = txt.replace(re, "<a href='#/$1'>'$1'</a>");
   pre.html(txt2);
 </script>
   """ ;
