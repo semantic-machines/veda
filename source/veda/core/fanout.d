@@ -97,7 +97,13 @@ private void push_to_mysql(ref Individual indv)
 
         foreach (type; types)
         {
-            if (context.get_onto().isSubClasses(type.uri, [ "v-s:Document", "v-s:Dictionary", "v-s:File" ]))
+        	if (type.uri == "v-s:File")
+            {
+                need_prepare = true;
+                break;
+            }
+        	
+            if (context.get_onto().isSubClasses(type.uri, [ "v-s:Document", "v-s:Dictionary" ]))
             {
                 need_prepare = true;
                 break;
