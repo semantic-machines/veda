@@ -261,7 +261,6 @@
 
 		this.on("remove", function () {
 			control.data("DateTimePicker").destroy();
-			control.data("DateTimePicker") = null;
 		});
 
 		return this;
