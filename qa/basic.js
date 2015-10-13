@@ -5,7 +5,7 @@ var webdriver = require('selenium-webdriver'),
     FAST_OPERATION = 2000, 			// 2000ms  = 2sec  - time limit for fast operations 
 	SLOW_OPERATION = 10000,			// 10000ms = 10sec - time limit for fast operations
 	EXTRA_SLOW_OPERATION = 60000,	// 30000ms = 30sec - time limit for extra slow operations
-	SERVER_ADDRESS = 'http://127.0.0.1:8080/';
+	SERVER_ADDRESS = (process.env.TRAVIS_BUILD_NUMBER === undefined)?'http://veda:8080/':'http://127.0.0.1:8080/';
 
 webdriver.promise.controlFlow().on('uncaughtException', function(e) {
 	console.trace(e);
@@ -18,7 +18,12 @@ module.exports = {
 	EXTRA_SLOW_OPERATION: EXTRA_SLOW_OPERATION,
 	getDrivers: function () {
 		if (process.env.TRAVIS_BUILD_NUMBER === undefined) {
-			return [{}];
+			return  [
+//			         {'os':'Windows 7',		'browser':'firefox',				'version':'40.0'},
+			         {'os':'Windows 7',		'browser':'chrome',					'version':'43.0'},
+//					 {'os':'Windows 7',		'browser':'opera',					'version':'32.0'},
+			         {'os':'Windows 7',		'browser':'internet explorer',		'version':'11.0'}
+			        ];
 		} else {
 			return  [
 //			       {'os':'Windows 10',		'browser':'chrome',					'version':'43.0'},
@@ -41,15 +46,30 @@ module.exports = {
 		}
 	},
 	getDriver: function (driver) {
-		if (process.env.TRAVIS_BUILD_NUMBER === undefined) {
-			// for local testing in chrome
-			return new webdriver.Builder().withCapabilities(webdriver.Capabilities.chrome()).build(); 
+		if (process.env.TRAVIS_BUILD_NUMBER === undefined) 
+		{
+			// for remote tetsing via local selenium
+			if (process.env.LOCAL === undefined) 
+			{
+				return new webdriver.Builder().usingServer('http://selenium-local:4444/wd/hub').withCapabilities({
+															platform: driver.os,
+															browserName : driver.browser,
+															version : driver.version,
+															'screenResolution' : '1280x960',
+															ignoreZoomSetting : true,
+															proxy : {proxyType: 'direct'}
+														 }).build();
+			} else {
+				// for local testing in chrome
+				return new webdriver.Builder().withCapabilities(webdriver.Capabilities.chrome()).build(); 
+			}
 		} else {
+			// for remote testing via Sauce Labs
 			return new webdriver.Builder().usingServer('http://localhost:4445/wd/hub').withCapabilities({
 								platform: driver.os,
 				                browserName : driver.browser,
 				                version : driver.version,
-				                'screenResolution' : '1280x1024',
+				                'screenResolution' : '1280x960',
 				                'tunnel-identifier' : process.env.TRAVIS_JOB_NUMBER,
 				                build : process.env.TRAVIS_BUILD_NUMBER,
 				                username: process.env.SAUCE_USERNAME,
@@ -67,6 +87,7 @@ module.exports = {
 				console.log('****** GET NEW PAGE. PLATFORM > '+driverAbout.os+' / '+driverAbout.browser+' / '+driverAbout.version);
 			});
 		}
+		driver.manage().window().setSize(1280, 1024);
 	},
 	/**
 	 * @param login - логин пользователя
@@ -79,6 +100,7 @@ module.exports = {
 		driver.findElement({id:'login'}).sendKeys(login);
 		driver.findElement({id:'password'}).sendKeys(password);
 		driver.findElement({id:'submit'}).click();
+		driver.findElement({id:'submit'}).sendKeys(webdriver.Key.ENTER).thenCatch(function (e) {});
 		
 		// Проверям что мы залогинены корректно
 		driver.wait
@@ -108,12 +130,12 @@ module.exports = {
 		  function () {
 			  return driver.findElements({css:'div[rel="'+attribute+'"] + veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
 				  return webdriver.promise.filter(suggestions, function(suggestion) {
-						return suggestion.getText().then(function(txt){ return txt.toLowerCase() == valueToChoose.toLowerCase() });
+						return suggestion.getText().then(function(txt){return txt.toLowerCase() == valueToChoose.toLowerCase() });
 				  }).then(function(x) { return x.length>0; });
 			  });
 		  },
 		  FAST_OPERATION
-		);
+		);		
 		
 		// Кликаем на запрашиваемый тип в выпавшем списке		
 		driver.findElements({css:'div[rel="'+attribute+'"] + veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
