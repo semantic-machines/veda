@@ -7,7 +7,7 @@
 # Variant II
 sudo apt-get update
 
-if ! dmd --version | grep 2.067.1 ; then    
+if ! dmd --version | grep 2.068.2 ; then    
     wget http://downloads.dlang.org/releases/2.x/2.068.2/dmd_2.068.2-0_amd64.deb
     sudo dpkg -i dmd_2.068.2-0_amd64.deb
     rm dmd_2.068.2-0_amd64.deb
