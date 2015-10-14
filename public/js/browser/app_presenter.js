@@ -49,11 +49,10 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			var params = hash_tokens.slice(1);
 			if (page !== "") {
 				$("#menu li").removeClass("active");
-				$("#menu li#" + page).addClass("active");
+				$("#menu li#" + veda.Util.escape4$(page)).addClass("active");
 				veda.load(page, params);
 			} else {
 				$("#menu li").removeClass("active");
-				//$("#main").html( $("#wellcome-template").html() );
 				veda.user.aspect.present("#main");
 			}
 		});

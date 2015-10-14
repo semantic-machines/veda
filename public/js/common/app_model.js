@@ -34,9 +34,6 @@
 		
 		self.load = function (page, params) {
 			switch (page) {
-				case "individual":
-					veda.Util.construct(veda.IndividualModel, params);
-					break;
 				case "console":
 					veda.Util.construct(veda.ConsoleModel, params);
 					break;
@@ -46,6 +43,12 @@
 				case "graph":
 					self.trigger.apply(self, ["load:graph"].concat(params));
 					break;
+				case "individual":
+					veda.Util.construct(veda.IndividualModel, params);
+					break;
+				default:
+					if (!params[0]) { params[0] = "#main"; }
+					veda.Util.construct(veda.IndividualModel, [page].concat(params));
 			}
 		};
 		

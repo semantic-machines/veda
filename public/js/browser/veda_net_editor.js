@@ -168,7 +168,7 @@ jsWorkflow.ready = jsPlumb.ready;
             if (mode=='edit') {
 	            instance.bind("dblclick", function(transition) {
 	                var _this = this;
-	            	riot.route("#/individual/" + transition.id + "/#main//edit", true);
+	            	riot.route("#/" + transition.id + "///edit", true);
 	            });
             }
             
@@ -239,7 +239,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	}
             	$("<span/>", {
             		"click": (function (instance) {
-            	    	riot.route('#/individual/'+state['v-wf:subNet'][0].id+'/#main//edit', true);
+            	    	riot.route('#/'+state['v-wf:subNet'][0].id+'///edit', true);
             		 }),
             		 "class" : "glyphicon glyphicon-search subnet-link"
              	}).appendTo($state);
@@ -407,7 +407,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 if (mode=='edit') {
 	                windows.bind("dblclick", function() {
 	                    var _this = this;
-	                	riot.route("#/individual/" + $(_this).attr('id')+"/#main//edit", true);
+	                	riot.route("#/" + $(_this).attr('id')+"///edit", true);
 	                });
 	
 	                // Initialize State elements as draggable.  
@@ -898,7 +898,7 @@ jsWorkflow.ready = jsPlumb.ready;
             });
             
             $('.to-net-editor').on('click', function() {
-            	riot.route("#/individual/" + net.id + "/#main//edit", true);
+            	riot.route("#/" + net.id + "///edit", true);
             });
             
             /* ZOOM [BEGIN] */

@@ -44,7 +44,6 @@
 				<button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
 					<span class="glyphicon glyphicon-menu-hamburger"></span>
 				</button>
-				<!--a href="#/" class="navbar-brand"><img src="/img/veda-logo.png" style="position:relative; top:-3px"/></a-->
 				<a href="#/" class="navbar-brand"><strong>veda</strong></a>
 				<div class="collapse navbar-collapse" id="navbar-collapse">
 					<div id="user-menu"></div>
@@ -171,7 +170,7 @@
 		
 		<!-- Individual label template -->
 		<script type="html/template" id="individual-label-template">
-			<a href="#/individual/{uri}/#main"><strong>{label}</strong></a>
+			<a href="#/{uri}"><strong>{label}</strong></a>
 		</script>
 
 		<!-- Individual single property template -->
@@ -182,7 +181,7 @@
 
 		<!-- Current user template -->
 		<script type="html/template" id="user-template">
-			<a href="#/individual/{user.id}/#main" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {user.rdfs:label}</a>
+			<a href="#/{user.id}" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {user.rdfs:label}</a>
 		</script>
 
 		<!-- Language template -->
@@ -523,7 +522,7 @@
 							<div class="col-md-4 className">
 							</div>
 							<div class="col-md-8 text-right text-muted">
-								<a href="#/individual/@/#main"><span property="@"></span></a>
+								<a href="#/@"><span property="@"></span></a>
 								<a href="#/graph/@/#main"><span class="glyphicon glyphicon-link"></span></a>
 							</div>  
 						</div>
@@ -730,6 +729,7 @@
 		<script type="text/javascript" src="/js/browser/backend.js"></script>
 		<script type="text/javascript" src="/js/browser/util.js"></script>
 		<script type="text/javascript" src="/js/browser/console_presenter.js"></script>
+		<script type="text/javascript" src="/js/browser/veda_controls.js"></script>
 		<script type="text/javascript" src="/js/browser/individual_actions.js"></script>
 		<script type="text/javascript" src="/js/browser/individual_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/saved_search_list.js"></script>
@@ -741,7 +741,6 @@
 		<script type="text/javascript" src="/js/browser/user_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/menu_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/graph_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/veda_controls.js"></script>
 		<script type="text/javascript" src="/js/browser/veda_net_editor.js"></script>
 		<script type="text/javascript" src="/js/browser/app_presenter.js"></script>
 

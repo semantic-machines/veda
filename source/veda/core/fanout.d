@@ -4,7 +4,7 @@
 
 module veda.core.fanout;
 
-private import std.concurrency, std.stdio, std.conv;
+private import std.concurrency, std.stdio, std.conv, std.utf;
 private import type, veda.core.context;
 private import util.logger, util.cbor, veda.core.util.cbor8individual;
 private import storage.lmdb_storage, veda.core.thread_context;
@@ -97,7 +97,13 @@ private void push_to_mysql(ref Individual indv)
 
         foreach (type; types)
         {
-            if (context.get_onto().isSubClasses(type.uri, [ "v-s:Document", "v-s:Dictionary", "v-s:File" ]))
+        	if (type.uri == "v-s:File")
+            {
+                need_prepare = true;
+                break;
+            }
+        	
+            if (context.get_onto().isSubClasses(type.uri, [ "v-s:Document", "v-s:Dictionary" ]))
             {
                 need_prepare = true;
                 break;
@@ -117,7 +123,7 @@ private void push_to_mysql(ref Individual indv)
                     foreach (rs; rss)
                     {
                         mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, indv.uri,
-                                         rs.asString(), text(rs.lang));
+                                         rs.asString().toUTF8(), text(rs.lang));
                     }
                 }
                 catch (Exception ex)
