@@ -53,7 +53,6 @@ class PThreadContext : Context
 
     private                string[ string ] prefix_map;
 
-	bool use_rdonly_storage = true;
     private LmdbStorage    inividuals_storage;
     private LmdbStorage    tickets_storage;
     private search.vql.VQL _vql;
@@ -63,15 +62,13 @@ class PThreadContext : Context
     private long           local_last_update_time;
     private Individual     node = Individual.init;
     private string         node_id;
-
+	private string 		   external_write_storage;
 
     this(string _node_id, string context_name, P_MODULE _id)
     {
         node_id            = _node_id;
         
-        if (use_rdonly_storage)
-        	inividuals_storage = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals");
-        	
+       	inividuals_storage = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals");        	
         tickets_storage    = new LmdbStorage(tickets_db_path, DBMode.R, context_name ~ ":tickets");
         acl_indexes        = new Authorization(acl_indexes_db_path, DBMode.R, context_name ~ ":acl");
 
@@ -102,7 +99,7 @@ class PThreadContext : Context
         local_count_indexed = get_count_indexed();
     }
 
-    public Individual *getConfiguration()
+    public Individual getConfiguration()
     {
         if (node == Individual.init)
         {
@@ -110,8 +107,15 @@ class PThreadContext : Context
             node = get_individual(null, node_id);
             if (node.getStatus() != ResultCode.OK)
                 node = Individual.init;
+			  
+			Resources write_storage = node.resources.get("vsrv:write_storage", Resources.init);                
+            if (write_storage.length != 0)
+            {
+            	external_write_storage = write_storage[0].asString ();
+            	log.trace_log_and_console("USING external write storage=%s", external_write_storage);
+            }    
         }
-        return &node;
+        return node;
     }
 
     public Onto get_onto()

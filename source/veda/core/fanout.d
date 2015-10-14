@@ -14,7 +14,7 @@ private import mysql.d;
 Mysql      mysql_conn;
 string     node_id;
 Context    context;
-Individual *node;
+Individual node;
 string     database_name;
 
 // ////// logger ///////////////////////////////////////////
@@ -72,7 +72,7 @@ void fanout_thread(string thread_name, string _node_id)
                         	}
                         	else
                         	{
-                            if (node is null)
+                            if (node == Individual.init)
                                 connect_to_mysql(context);
 
                             if (mysql_conn !is null)

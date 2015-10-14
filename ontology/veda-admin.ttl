@@ -50,7 +50,7 @@ v-a:test_node
 	vsrv:checktime_onto_files "30"^^xsd:integer ;
 	vsrv:listener v-a:test_conn_http;
 	vsrv:jsvm_node v-a:conn_http_8081;
-	vsrv:role "complete";
+	vsrv:role "basic";
 	rdfs:label "тестовая конфигурация" ;
 .	
 
@@ -84,7 +84,7 @@ v-a:test_conn_http
 	rdf:type vsrv:Connection ;
 	vsrv:name "http-server" ;
 	rdfs:label "http server" ;
-	vsrv:port "8090"^^xsd:integer ;
+	vsrv:port "8080"^^xsd:integer ;
 	vsrv:transport "http" ;
 .
 

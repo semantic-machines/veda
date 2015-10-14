@@ -387,7 +387,7 @@ interface Context
      */
     public void unfreeze();
 
-    public Individual *getConfiguration();
+    public Individual getConfiguration();
 }
 
 import core.atomic;
