@@ -1,4 +1,4 @@
-module veda.util;
+module veda.core.util.individual8json;
 
 import std.conv, std.stdio;
 import vibe.d;

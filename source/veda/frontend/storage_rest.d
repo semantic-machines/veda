@@ -10,10 +10,8 @@ import vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
 
 import type;
-import veda.core.context;
-import veda.core.know_predicates;
-import veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang;
-import veda.util;
+import veda.core.context, veda.core.know_predicates, veda.core.define;
+import veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang, veda.core.util.individual8json;
 
 
 public const string veda_schema__File          = "v-s:File";
@@ -111,6 +109,10 @@ interface VedaStorageRest_API {
 
     @path("add_to_individual") @method(HTTPMethod.PUT)
     int add_to_individual(string ticket, Json individual, bool wait_for_indexing);
+
+    @path("trigger") @method(HTTPMethod.PUT)
+    int trigger(string _ticket, EVENT type, Json individual, string event_id);
+
 }
 
 
@@ -582,8 +584,6 @@ class VedaStorageRest : VedaStorageRest_API
         ResultCode rc;
         int        recv_worker_id;
 
-        if (true)
-        {
             Json[] res;
 
             Worker *worker = allocate_worker();
@@ -612,52 +612,17 @@ class VedaStorageRest : VedaStorageRest_API
                 return res[ 0 ];
             else
                 return Json.init;
-        }
-        else
-        {
-            Individual res;
-
-            Individual[ string ] onto_individuals =
-                context.get_onto_as_map_individuals();
-
-            Individual individual = onto_individuals.get(uri, Individual.init);
-
-            if (individual != Individual.init)
-            {
-                rc  = ResultCode.OK;
-                res = individual;
-            }
-            else
-            {
-                Ticket *ticket = context.get_ticket(_ticket);
-                rc = ticket.result;
-                if (rc == ResultCode.OK)
-                {
-                    Individual ii = context.get_individual(ticket, uri);
-                    if (ii.getStatus() == ResultCode.OK)
-                        res = ii;
-                    else
-                        rc = ii.getStatus();
-                }
-            }
-
-            if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc);
-
-            Json json = individual_to_json(res);
-            return json;
-        }
     }
 
     int put_individual(string _ticket, Json individual_json, bool wait_for_indexing)
     {
-        Individual indv    = json_to_individual(individual_json);
         Ticket     *ticket = context.get_ticket(_ticket);
 
         ResultCode rc = ticket.result;
 
         if (rc == ResultCode.OK)
         {
+        	Individual indv    = json_to_individual(individual_json);
             rc = context.put_individual(ticket, indv.uri, indv, wait_for_indexing);
         }
 
@@ -669,13 +634,13 @@ class VedaStorageRest : VedaStorageRest_API
 
     int add_to_individual(string _ticket, Json individual_json, bool wait_for_indexing)
     {
-        Individual indv    = json_to_individual(individual_json);
         Ticket     *ticket = context.get_ticket(_ticket);
 
         ResultCode rc = ticket.result;
 
         if (rc == ResultCode.OK)
         {
+        	Individual indv    = json_to_individual(individual_json);
             rc = context.add_to_individual(ticket, indv.uri, indv, wait_for_indexing);
         }
 
@@ -687,13 +652,13 @@ class VedaStorageRest : VedaStorageRest_API
 
     int set_in_individual(string _ticket, Json individual_json, bool wait_for_indexing)
     {
-        Individual indv    = json_to_individual(individual_json);
         Ticket     *ticket = context.get_ticket(_ticket);
 
         ResultCode rc = ticket.result;
 
         if (rc == ResultCode.OK)
         {
+        	Individual indv    = json_to_individual(individual_json);
             rc = context.set_in_individual(ticket, indv.uri, indv, wait_for_indexing);
         }
 
@@ -705,13 +670,12 @@ class VedaStorageRest : VedaStorageRest_API
 
     int remove_from_individual(string _ticket, Json individual_json, bool wait_for_indexing)
     {
-        Individual indv    = json_to_individual(individual_json);
         Ticket     *ticket = context.get_ticket(_ticket);
 
         ResultCode rc = ticket.result;
-
         if (rc == ResultCode.OK)
         {
+        	Individual indv    = json_to_individual(individual_json);
             rc = context.remove_from_individual(ticket, indv.uri, indv, wait_for_indexing);
         }
 
@@ -720,4 +684,24 @@ class VedaStorageRest : VedaStorageRest_API
 
         return rc.to!int;
     }
+    
+   int trigger(string _ticket, EVENT ev_type, Json individual_json, string event_id)
+   {
+        Ticket     *ticket = context.get_ticket(_ticket);
+
+        ResultCode rc = ticket.result;
+        if (rc == ResultCode.OK)
+        {
+        	Individual indv = json_to_individual(individual_json);
+        	
+			veda.core.bus_event.trigger_script (ticket, ev_type, &indv, context, event_id);
+
+   			rc = ResultCode.OK;   		
+   		}
+        if (rc != ResultCode.OK)
+            throw new HTTPStatusException(rc);
+
+        return rc.to!int;           
+   }
+
 }
