@@ -237,25 +237,6 @@ public class LmdbStorage
         return rc;
     }
 
-    public EVENT update_or_create(string cbor, out string new_hash, EVENT ev = EVENT.NONE)
-    {
-        // TODO не оптимально!
-        Individual ind;
-
-        if (cbor2individual(&ind, cbor) > 0)
-            return update_or_create(ind.uri.dup, cbor.dup, new_hash, ev);
-        else
-            log.trace("!ERR:invalid individual=%s", cbor);
-        return EVENT.ERROR;
-    }
-
-    public EVENT update_or_create(Individual *ind, out string new_hash, EVENT ev = EVENT.NONE)
-    {
-        string content = individual2cbor(ind);
-
-        return update_or_create(ind.uri.dup, content.dup, new_hash, ev);
-    }
-
     public ResultCode put(string in_key, string in_value)
     {
         string _key  = in_key.dup;
@@ -359,7 +340,7 @@ public class LmdbStorage
 
     long count_update;
 
-    private EVENT update_or_create(string uri, string content, out string new_hash, EVENT ev = EVENT.NONE)
+    public int update_or_create(string uri, string content, out string new_hash)
     {
 //                                      StopWatch sw; sw.start;
         new_hash = get_new_hash(content);
@@ -388,16 +369,6 @@ public class LmdbStorage
 
         MDB_val data;
 
-        if (ev == EVENT.NONE)
-        {
-            // проверим был есть ли такой субьект в базе
-            rc = mdb_get(txn, dbi, &key, &data);
-            if (rc == 0)
-                ev = EVENT.UPDATE;
-            else
-                ev = EVENT.CREATE;
-        }
-
         data.mv_data = cast(char *)content;
         data.mv_size = content.length;
 
@@ -407,7 +378,7 @@ public class LmdbStorage
             growth_db(env, txn);
 
             // retry
-            return update_or_create(uri, content, new_hash, ev);
+            return update_or_create(uri, content, new_hash);
         }
 
         if (rc != 0)
@@ -432,7 +403,7 @@ public class LmdbStorage
                 growth_db(env, txn);
 
                 // retry
-                return update_or_create(uri, content, new_hash, ev);
+                return update_or_create(uri, content, new_hash);
             }
 
             if (rc != 0)
@@ -451,7 +422,7 @@ public class LmdbStorage
             growth_db(env, null);
 
             // retry
-            return update_or_create(uri, content, new_hash, ev);
+            return update_or_create(uri, content, new_hash);
         }
 
         if (rc != 0)
@@ -469,7 +440,7 @@ public class LmdbStorage
 //        if (count_update % 2_000 == 0)
 //            reopen_db();
 
-        return ev;
+        return 0;
     }
 
     public long count_entries()

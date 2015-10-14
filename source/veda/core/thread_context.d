@@ -677,7 +677,7 @@ class PThreadContext : Context
                     if (tid_ticket_manager != Tid.init)
                     {
                         send(tid_ticket_manager, CMD.PUT, ss_as_cbor, thisTid);
-                        receive((EVENT ev, string msg, Tid from)
+                        receive((EVENT ev, string prev_state, string msg, Tid from)
                                 {
                                     if (from == getTid(P_MODULE.ticket_manager))
                                     {
@@ -1139,15 +1139,16 @@ class PThreadContext : Context
             EVENT ev = EVENT.NONE;
 
             tid_subject_manager = getTid(P_MODULE.subject_manager);
-
+			string prev_state;
             if (tid_subject_manager != Tid.init)
             {
                 send(tid_subject_manager, cmd, ss_as_cbor, thisTid);
-                receive((EVENT _ev, string res, Tid from)
+                receive((EVENT _ev, string _prev_state, string _new_state, Tid from)
                         {
                             if (from == getTid(P_MODULE.subject_manager))
                                 ev = _ev;
-                            ss_as_cbor = res;
+                                prev_state = _prev_state;
+                            ss_as_cbor = _new_state;
                         });
             }
 
@@ -1190,7 +1191,7 @@ class PThreadContext : Context
     			Tid tid_fanout = getTid(P_MODULE.fanout);
         		if (tid_fanout != Tid.init)
         		{
-        			send(tid_fanout, CMD.PUT, ss_as_cbor);
+        			send(tid_fanout, CMD.PUT, prev_state, ss_as_cbor);
         		}
     	
 
