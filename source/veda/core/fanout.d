@@ -55,23 +55,30 @@ void fanout_thread(string thread_name, string _node_id)
         try
         {
             receive(
-                    (CMD cmd, string msg)
+                    (CMD cmd, string prev_state, string new_state)
                     {
                         check_context();
 
-                        Individual indv;
-                        if (cbor2individual(&indv, msg) < 0)
+                        Individual prev_indv, new_indv;
+                        if (cbor2individual(&new_indv, new_state) < 0)
                         {
-                            log.trace("!ERR:invalid individual:[%s]", msg);
+                            log.trace("!ERR:invalid individual:[%s]", new_state);
                         }
                         else
                         {
+                        	if (prev_state !is null && cbor2individual(&prev_indv, prev_state) < 0)
+                        	{
+                            	log.trace("!ERR:invalid individual:[%s]", prev_state);
+                        	}
+                        	else
+                        	{
                             if (node is null)
                                 connect_to_mysql(context);
 
                             if (mysql_conn !is null)
                             {
-                                push_to_mysql(indv);
+                                push_to_mysql(prev_indv, new_indv);
+                            }
                             }
                         }
                     },
@@ -88,11 +95,11 @@ void fanout_thread(string thread_name, string _node_id)
 
 bool[ string ] isExistsTable;
 
-private void push_to_mysql(ref Individual indv)
+private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
 {
     try
     {
-        Resources types        = indv.getResources("rdf:type");
+        Resources types        = new_indv.getResources("rdf:type");
         bool      need_prepare = false;
 
         foreach (type; types)
@@ -113,16 +120,26 @@ private void push_to_mysql(ref Individual indv)
 
         if (need_prepare)
         {
-            foreach (predicate, rss; indv.resources)
+            foreach (predicate, rss; prev_indv.resources)
+            {
+                try
+                {
+                    mysql_conn.query("DELETE FROM `?` WHERE doc_id = ?", predicate, prev_indv.uri);
+                }
+                catch (Exception ex)
+                {
+                    log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+                }
+            }
+            foreach (predicate, rss; new_indv.resources)
             {
                 try
                 {
                     create_table_if_not_exists(predicate);
-                    mysql_conn.query("DELETE FROM `?` WHERE doc_id = ?", predicate, indv.uri);
 
                     foreach (rs; rss)
                     {
-                        mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, indv.uri,
+                        mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, new_indv.uri,
                                          rs.asString().toUTF8(), text(rs.lang));
                     }
                 }
