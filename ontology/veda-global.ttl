@@ -79,5 +79,5 @@ v-g:jasperServerAddress
   rdf:type v-g:Global ;
   rdfs:label "JasperServer address"@en ;
   rdfs:label "Адрес JasperServer"@ru ;
-  v-g:literalValue "http://syk-vs59:8080/jasperserver/"^^xsd:string ;
+  v-g:literalValue "http://syk-vs59:8081/jasperserver/"^^xsd:string ;
 .
