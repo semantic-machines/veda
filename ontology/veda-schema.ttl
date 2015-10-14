@@ -219,7 +219,7 @@ v-s:OrganizationUnit
   rdfs:comment "Организационная единица (организация, подразделение, штатная должность)"@ru ;
   rdfs:label "Organization unit"@en ;
   rdfs:label "Организационная единица"@ru ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Document ;
 .
 v-s:PermissionStatement
   rdf:type owl:Class ;
