@@ -1,4 +1,4 @@
-# Veda - enterprise application development platform [![Build Status](https://travis-ci.org/karpovr/veda.svg?branch=master)](https://travis-ci.org/karpovr/veda)
+# Veda - enterprise application development platform [![Build Status](https://travis-ci.org/karpovr/veda.svg?branch=master)](https://travis-ci.org/semantic-machines/veda)
 
 ## I. Overview
 

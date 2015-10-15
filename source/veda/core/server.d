@@ -131,14 +131,16 @@ Context init_core(string node_id)
         Resources  roles;
         bool       is_js_worker = false;
         bool       is_complete  = false;
+        bool       is_basic     = false;
 
         Context    core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop);
-        node = core_context.get_individual(null, node_id);
+        node = core_context.getConfiguration();
         if (node.getStatus() == ResultCode.OK)
         {
             log.trace_log_and_console("VEDA NODE CONFIGURATION: [%s]", node);
             roles        = node.resources.get("vsrv:role", Resources.init);
             is_js_worker = roles.anyExist([ "js_worker" ]);
+            is_basic     = roles.anyExist([ "basic" ]);
         }
 
         if (roles.length == 0)
@@ -153,7 +155,7 @@ Context init_core(string node_id)
         tids[ P_MODULE.interthread_signals ] = spawn(&interthread_signals_thread, text(P_MODULE.interthread_signals));
         wait_starting_thread(P_MODULE.interthread_signals, tids);
 
-        if (is_complete)
+        if (is_complete || is_basic)
         {
             tids[ P_MODULE.fulltext_indexer ] =
                 spawn(&xapian_indexer, text(P_MODULE.fulltext_indexer), node_id);
@@ -189,7 +191,7 @@ Context init_core(string node_id)
                                                  tids[ P_MODULE.statistic_data_accumulator ]);
         wait_starting_thread(P_MODULE.print_statistic, tids);
 
-        if (is_complete)
+        if (is_complete || is_basic)
         {
             tids[ P_MODULE.fanout ] = spawn(&veda.core.fanout.fanout_thread, text(P_MODULE.fanout), node_id);
             wait_starting_thread(P_MODULE.fanout, tids);
@@ -210,7 +212,7 @@ Context init_core(string node_id)
         //Context core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if (is_complete)
+        if (is_complete || is_basic)
         {
             tids[ P_MODULE.file_reader ] = spawn(&io.file_reader.file_reader_thread, P_MODULE.file_reader, node_id, 5);
             wait_starting_thread(P_MODULE.file_reader, tids);

@@ -47,29 +47,29 @@ class Onto
 
     public bool isSubClasses(string _class_uri, string[] _subclasses_uri)
     {
-		//writeln ("@@@0 _class_uri=", _class_uri, ", _subclasses_uri=", _subclasses_uri);
+        //writeln ("@@@0 _class_uri=", _class_uri, ", _subclasses_uri=", _subclasses_uri);
         OfSubClasses subclasses = ofClass.get(_class_uri, null);
-		//writeln ("@@@1 subclasses=", subclasses);
+
+        //writeln ("@@@1 subclasses=", subclasses);
 
         if (subclasses !is null)
         {
-        	foreach (_subclass_uri ; _subclasses_uri)
-        	{
-        		if (_subclass_uri == _class_uri)
-            		return true;
-        		
-        		if (subclasses.get(_subclass_uri, false) == true)
-            		return true;
-            }	
-        	
-        	// не нашли, ищем глубже
-        	foreach (_subclass_uri ; _subclasses_uri)
-        	{
-        		bool res = isSubClasses(_subclass_uri, _subclasses_uri);
-        		if (res)
-            		return true;
-            }	
-        	
+            foreach (_subclass_uri; _subclasses_uri)
+            {
+                if (_subclass_uri == _class_uri)
+                    return true;
+
+                if (subclasses.get(_subclass_uri, false) == true)
+                    return true;
+            }
+
+            // не нашли, ищем глубже
+            foreach (_subclass_uri; _subclasses_uri)
+            {
+                bool res = isSubClasses(_subclass_uri, _subclasses_uri);
+                if (res)
+                    return true;
+            }
         }
         return false;
     }
@@ -102,8 +102,10 @@ class Onto
         context.reopen_ro_subject_storage_db();
         context.reopen_ro_fulltext_indexer_db();
 
+        Ticket sticket = context.sys_ticket();
+
         context.vql().get(
-                          null,
+                          &sticket,
                           "return { '*'}
             filter { 'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'rdf:Property' || 'rdf:type' == 'owl:Class' || 'rdf:type' == 'owl:ObjectProperty' || 'rdf:type' == 'owl:DatatypeProperty' }",
                           l_individuals);
@@ -128,7 +130,7 @@ class Onto
                 }
             }
         }
-//if (l_individuals.length > 100)        
+//if (l_individuals.length > 100)
 //core.thread.Thread.sleep(dur!("seconds")(10));
         if (trace_msg[ 20 ] == 1)
             log.trace_log_and_console("[%s] load onto to graph..Ok", context.get_name);
