@@ -83,6 +83,7 @@ void processed(Context context, bool is_load)
     string[ string ] filename_2_prefix;
     Individual *[ string ][ string ] individuals_2_filename;
     Set!string files_to_load;
+	Ticket sticket = context.sys_ticket();
 
     auto oFiles = dirEntries(path, SpanMode.depth);
 
@@ -212,12 +213,12 @@ void processed(Context context, bool is_load)
                     {
                         individuals[ uri ] = Individual.init;
 
-                        Individual indv_in_storage = context.get_individual(null, uri);
+                        Individual indv_in_storage = context.get_individual(&sticket, uri);
                         //log.trace("in storage, uri=%s \n%s", indv_in_storage.uri, text(indv_in_storage));
 
                         if (indv_in_storage == Individual.init || indv.compare(indv_in_storage) == false)
                         {
-                            ResultCode res = context.put_individual(null, indv.uri, indv, false);
+                            ResultCode res = context.put_individual(&sticket, indv.uri, indv, false);
                             if (trace_msg[ 33 ] == 1)
                                 log.trace("store, uri=%s %s", indv.uri, indv);
                                 

@@ -212,6 +212,7 @@ Context init_core(string node_id)
         //Context core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Ticket sticket = core_context.sys_ticket();
         if (is_complete || is_basic)
         {
             tids[ P_MODULE.file_reader ] = spawn(&io.file_reader.file_reader_thread, P_MODULE.file_reader, node_id, 5);
@@ -222,7 +223,7 @@ Context init_core(string node_id)
             {
                 core_context.reopen_ro_subject_storage_db();
                 core_context.reopen_ro_acl_storage_db();
-                node = core_context.get_individual(null, node_id);
+                node = core_context.get_individual(&sticket, node_id);
 
                 log.trace_log_and_console("VEDA NODE CONFIGURATION:[%s]", node);
             }
@@ -231,7 +232,7 @@ Context init_core(string node_id)
         Resources listeners = node.resources.get("vsrv:listener", Resources.init);
         foreach (listener; listeners)
         {
-            Individual connection = core_context.get_individual(null, listener.uri);
+            Individual connection = core_context.get_individual(&sticket, listener.uri);
 
             Resource   transport = connection.getFirstResource("vsrv:transport");
             if (transport != Resource.init)
