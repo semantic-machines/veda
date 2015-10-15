@@ -281,11 +281,6 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 
         foreach (ss; ss_list)
         {
-            if (ss.isExist(veda_schema__login, "veda"))
-            {
-                //writeln("FOUND SYSTEM ACCOUNT = ", ss);
-                context.push_signal("43", ss.getFirstLiteral(veda_schema__password));
-            }
             if (ss.isExist(rdf__type, owl__Ontology))
             {
                 prefix = context.get_prefix_map.get(ss.uri, null);
