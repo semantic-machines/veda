@@ -189,33 +189,33 @@ public struct Individual
 
     bool compare(Individual B)
     {
-    	if (B.resources.length != resources.length)
-    		return false;
-    	
+        if (B.resources.length != resources.length)
+            return false;
+
         foreach (key, A_rss; this.resources)
         {
-           	Resources B_rss = B.resources.get(key, Resources.init);
-           	
-           	if (A_rss.length != B_rss.length)
-           		return false;
-           	
-           	int count_identical = 0;
-           	bool[string] B_rss_h;
+            Resources B_rss = B.resources.get(key, Resources.init);
+
+            if (A_rss.length != B_rss.length)
+                return false;
+
+            int count_identical = 0;
+            bool[ string ] B_rss_h;
 
             foreach (B_rs; B_rss)
             {
-            	B_rss_h[text(B_rs)] = true;
+                B_rss_h[ text(B_rs) ] = true;
             }
-           	
+
             foreach (A_rs; A_rss)
             {
-            	if (B_rss_h.get (text(A_rs), false) != true)
-            		return false;
+                if (B_rss_h.get(text(A_rs), false) != true)
+                    return false;
             }
         }
-   		return true;
-	}
-    
+        return true;
+    }
+
     Individual apply(Individual item)
     {
         Individual res = this.dup();
