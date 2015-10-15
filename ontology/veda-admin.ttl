@@ -39,6 +39,8 @@ v-a:standart_node
 v-a:js_worker_node
 	rdf:type vsrv:Node ;
 	vsrv:role "js_worker";
+	vsrv:listener v-a:conn_http_8081;
+	vsrv:write_storage_node v-a:test_conn_http;
 	rdfs:label "js worker node" ;
 .	
 
@@ -47,7 +49,8 @@ v-a:test_node
 	vsrv:count_thread "4"^^xsd:integer ;
 	vsrv:checktime_onto_files "30"^^xsd:integer ;
 	vsrv:listener v-a:test_conn_http;
-	vsrv:role "complete";
+	vsrv:jsvm_node v-a:conn_http_8081;
+	vsrv:role "basic";
 	rdfs:label "тестовая конфигурация" ;
 .	
 
@@ -69,11 +72,19 @@ v-a:conn_http
 	vsrv:transport "http" ;
 .
 
+v-a:conn_http_8081
+	rdf:type vsrv:Connection ;
+	vsrv:name "http-server" ;
+	rdfs:label "http server" ;
+	vsrv:port "8081"^^xsd:integer ;
+	vsrv:transport "http" ;
+.
+
 v-a:test_conn_http
 	rdf:type vsrv:Connection ;
 	vsrv:name "http-server" ;
 	rdfs:label "http server" ;
-	vsrv:port "8090"^^xsd:integer ;
+	vsrv:port "8080"^^xsd:integer ;
 	vsrv:transport "http" ;
 .
 

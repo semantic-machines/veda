@@ -36,7 +36,7 @@ jsWorkflow.ready = jsPlumb.ready;
          *return {Object} instance Returns an initialized instance of the workflow object
          */
         jsWorkflow.Instance.prototype.init = function(workflowData, veda, net, template, container) {
-
+			net.prefetch(3);
             var 	instance,
                     windows,
                     addNewState,

@@ -26,8 +26,6 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
 
     if (ev_type == EVENT.CREATE || ev_type == EVENT.UPDATE)
     {
-        Tid tid_condition = context.getTid(P_MODULE.condition);
-
         if (rdfType.anyExist(owl_tags) == true)
         {
             // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
@@ -44,6 +42,7 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
         }
 
 
+        Tid tid_condition = context.getTid(P_MODULE.condition);
         if (tid_condition != Tid.init)
         {
         	if (rdfType.anyExist(veda_schema__Event))
@@ -76,4 +75,45 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
     //writeln ("#bus_event E");
 }
 
+ResultCode trigger_script (Ticket *ticket, EVENT ev_type, Individual *individual, Context context, string event_id)
+{	
+        Tid tid_condition = context.getTid(P_MODULE.condition);
+        if (tid_condition != Tid.init)
+        {
+        	Resource[ string ] rdfType;
+        	setMapResources(individual.resources.get(rdf__type, Resources.init), rdfType);
+
+			string subject_as_cbor = individual2cbor(individual);        	
+        	
+        	if (rdfType.anyExist(veda_schema__Event))
+        	{
+            	// изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
+            	send(tid_condition, CMD.RELOAD, subject_as_cbor, thisTid);
+            	receive((bool){});
+        	}
+        	        	
+            try
+            {
+                immutable(string)[] type;
+
+                foreach (key; rdfType.keys)
+                    type ~= key;
+
+                string user_uri;
+
+                if (ticket !is null)
+                    user_uri = ticket.user_uri;
+                send(tid_condition, user_uri, ev_type, subject_as_cbor, type, individual.uri, event_id);
+                
+                return ResultCode.OK;
+            }
+            catch (Exception ex)
+            {
+                writeln("EX!bus_event:", ex.msg);
+                return ResultCode.Internal_Server_Error;
+            }
+        }
+        
+        return ResultCode.Not_Ready;
+}
 

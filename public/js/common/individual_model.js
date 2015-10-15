@@ -304,7 +304,7 @@ veda.Module(function (veda) { "use strict";
 	proto.save = function() {
 		var self = this;
 		self.trigger("individual:beforeSave");
-		if (self._.sync) return;
+		//if (self._.sync) return;
 		Object.keys(self._.individual).reduce(function (acc, property_uri) {
 			if (property_uri === "@") return acc;
 			acc[property_uri] = self._.individual[property_uri].filter(function (item) {
@@ -313,17 +313,10 @@ veda.Module(function (veda) { "use strict";
 			if (!acc[property_uri].length) delete acc[property_uri];
 			return acc;
 		}, self._.individual);
-		try { 
-			put_individual(veda.ticket, self._.individual);
-			self._.original_individual = JSON.stringify(self._.individual);
-			self._.sync = true;
-			self.trigger("individual:afterSave", self._.original_individual);
-		} catch (e) {
-			if (e.status === 471) {
-				return veda.trigger("login:failed");
-			}
-			alert("Error: " + e.status + "\n" + "description: " + e.description);
-		}
+		put_individual(veda.ticket, self._.individual);
+		self._.original_individual = JSON.stringify(self._.individual);
+		self._.sync = true;
+		self.trigger("individual:afterSave", self._.original_individual);
 		return this;
 	};
 
@@ -465,11 +458,15 @@ veda.Module(function (veda) { "use strict";
 		Object.keys(data).map( function (key) {
 			if (key === "@") return;
 			data[key].map(function (value) {
-				if (value.type === "Uri" && !veda.cache[value.data]) {
+				if (value.type !== "Uri") return; 
+				if (!veda.cache[value.data]) {
 					uris.push(value.data);
+				} else if (depth !== 0) {
+					uris.push(veda.cache[value.data].prefetch(0));
 				}
 			});
 		});
+		uris = unique( veda.Util.flatten(uris, false) );
 		for (var i=0; i < depth && uris.length; i++) {
 			var result = get_individuals.call({}, veda.ticket, uris),
 				res_map = result.map(function (value) {
