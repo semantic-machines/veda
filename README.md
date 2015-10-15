@@ -26,23 +26,18 @@
   - OS - Ubuntu 12.04 LTS, 14.04 LTS
   - RAM - 1Gb
 
-## III. How to install
+## III. How to install and run
 
 **1: Install dependencies**
 ```sh
 $ sudo control-install.sh
 ```
-**2: Building & running veda**
+**2: Build & start veda**
 ```sh
 $ dub
 ```
-**3: Start/stop veda as daemon**
+**3: Start/stop veda as daemon once built**
 ```sh
 $ control-start.sh
 $ control-stop.sh
-```
-**4: Get sources**
-```sh
-$ sudo apt-get install git
-$ git clone https://github.com/semantic-machines/veda.git
 ```
