@@ -38,23 +38,21 @@
 ```
   - B) http://downloads.dlang.org/releases/2014/dmd_2.068.2-0_amd64.deb
 
-**2: install dependencies**
+**2: Install dependencies**
 ```sh
-    sudo apt-get install libzmq3-dev
-    sudo apt-get install libevent-pthreads-2.0-5
-    sudo apt-get install libraptor2-dev
-    sudo apt-get install libevent-dev libssl-dev
-    sudo apt-get install libmysqlclient-dev
+    control-install.sh
 ```
-
-**3: get src**
+**3: Building & running veda**
+```sh
+	dub
+```
+**4: Start/stop veda as daemon**
+```sh
+    control-start.sh
+    control-stop.sh
+```
+**5: Get sources**
 ```sh
     sudo apt-get install git
-    git clone https://github.com/karpovr/veda.git
-```
-
-**4: Building & running veda:**
-```sh
-    cd /path/to/veda
-    dub
+    git clone https://github.com/semantic-machines/veda.git
 ```
