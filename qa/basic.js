@@ -97,10 +97,10 @@ module.exports = {
 	 */
 	login: function (driver, login, password, assertUserFirstName, assertUserLastName) {
 		// Вводим логин и пароль 
-		driver.findElement({id:'login'}).sendKeys(login);
-		driver.findElement({id:'password'}).sendKeys(password);
-		driver.findElement({id:'submit'}).click();
-		driver.findElement({id:'submit'}).sendKeys(webdriver.Key.ENTER).thenCatch(function (e) {});
+		driver.findElement({css:'input[id="login"]'}).sendKeys(login);
+		driver.findElement({css:'input[id="password"]'}).sendKeys(password);
+		driver.findElement({css:'button[id="submit"]'}).click();
+		driver.findElement({css:'button[id="submit"]'}).sendKeys(webdriver.Key.ENTER).thenCatch(function (e) {});
 		
 		// Проверям что мы залогинены корректно
 		driver.wait
