@@ -27,9 +27,10 @@
 		};
 		
 		self.logout = function() {
-			self.off("*");
-			self = undefined;
-			veda = new Veda(config);
+			self.user_uri = self.ticket = self.end_time = "";
+			self.cache = {};
+			self.ontology = {};
+			self.trigger("login:failed");
 		};
 		
 		self.load = function (page, params) {
@@ -43,9 +44,9 @@
 				case "graph":
 					self.trigger.apply(self, ["load:graph"].concat(params));
 					break;
-				case "individual":
+				/*case "individual":
 					veda.Util.construct(veda.IndividualModel, params);
-					break;
+					break;*/
 				default:
 					if (!params[0]) { params[0] = "#main"; }
 					veda.Util.construct(veda.IndividualModel, [page].concat(params));
@@ -58,6 +59,17 @@
 			self.user = new veda.UserModel(self.user_uri);
 			self.trigger("started");
 		};
+		
+		self.on("error", function (error) {
+			switch (error.status) {
+				case 471: 
+				case 473: 
+					self.logout(); 
+					break;
+				default: 
+					console.log ? console.log("Error:", error) : null;
+			}
+		});
 		
 		return self;
 	};

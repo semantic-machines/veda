@@ -31,5 +31,10 @@ veda.Module(function UserPresenter(veda) { "use strict";
 		});
 
 	});
+
+	veda.on("login:failed", function () {
+		userInfo.empty();
+		languageSelector.empty();
+	});
 	
 });

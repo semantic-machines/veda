@@ -6,4 +6,7 @@ veda.Module(function MenuPresenter(veda) { "use strict";
 		var template = new veda.IndividualModel("v-m:MenuViewTemplate");
 		var menu = new veda.IndividualModel("v-m:MainMenu", container, template);
 	});
+	veda.on("login:failed", function () {
+		container.empty();
+	});
 });
