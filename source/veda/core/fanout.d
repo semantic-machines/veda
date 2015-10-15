@@ -103,14 +103,8 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
         bool      need_prepare = false;
 
         foreach (type; types)
-        {
-        	if (type.uri == "v-s:File")
-            {
-                need_prepare = true;
-                break;
-            }
-        	
-            if (context.get_onto().isSubClasses(type.uri, [ "v-s:Document", "v-s:Dictionary" ]))
+        {        	
+            if (context.get_onto().isSubClasses(type.uri, [ "v-s:Exportable" ]))
             {
                 need_prepare = true;
                 break;
