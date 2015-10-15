@@ -219,7 +219,8 @@ v-s:OrganizationUnit
   rdfs:comment "Организационная единица (организация, подразделение, штатная должность)"@ru ;
   rdfs:label "Organization unit"@en ;
   rdfs:label "Организационная единица"@ru ;
-  rdfs:subClassOf owl:Thing ;
+#  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Document ;
 .
 v-s:PermissionStatement
   rdf:type owl:Class ;
@@ -1120,14 +1121,25 @@ v-ui:forClass
 .
 v-s:filePath
   rdfs:domain v-s:ReportsForClass ;
+  rdfs:domain v-s:Report ;  
 .
 v-s:fileFormat
   rdf:type owl:DatatypeProperty ;
   rdfs:label "file format"@en ;
   rdfs:label "формат файла"@ru ;
   rdfs:domain v-s:ReportsForClass ;  
+  rdfs:domain v-s:Report ;    
   rdfs:range xsd:string ;
 .
+
+v-s:Report
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Report"@en ;
+  rdfs:label "Отчет"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+
 
 ################################ REPORTS END ####################################################
 

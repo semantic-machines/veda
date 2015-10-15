@@ -217,7 +217,10 @@ v-asp:PersonalAspectTemplate
 					<div role="tabpanel" class="tab-pane" id="reports">
 						<h3><span about="v-b:Reports" property="rdfs:label"></span></h3>
 						<hr/>
-						<div rel="v-asp:hasReport"></div>
+						<ol rel="v-asp:hasReport"></div>
+							<li><a href="#/@"><span property="rdfs:label"></span></a></li>                        
+                        </ol>
+						<veda-control type="link" rel="v-asp:hasReport" class="fulltext dropdown -view edit"></veda-control>                        
 					</div>
 					<div role="tabpanel" class="tab-pane" id="other">
 						<h3><span about="v-b:Other" property="rdfs:label"></span></h3>
