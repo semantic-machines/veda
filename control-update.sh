@@ -18,7 +18,6 @@ if wget -q -O - "$@" https://api.travis-ci.org/repos/karpovr/veda/cc.xml?branch=
 
     echo "=== Build dependencies ==="
     dub -v fetch vibe-d
-    dub -v fetch pacahon
     echo "=== Build project ==="
     dub -v build --build=debug
 
