@@ -52,7 +52,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 		{
 			var hiddenField = document.createElement("input"); 
 			hiddenField.setAttribute("type", "hidden");
-			hiddenField.setAttribute("name", key);
+			hiddenField.setAttribute("name", key.replace(':','_'));
 			hiddenField.setAttribute("value", (individual[key][0] instanceof veda.IndividualModel)?individual[key][0].id:individual[key][0]);
 			form.appendChild(hiddenField);
 		});
