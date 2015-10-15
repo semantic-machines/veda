@@ -116,6 +116,7 @@ v-s:Document
   rdfs:label "Документ"@ru ;
   rdfs:subClassOf owl:Thing ;
   rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Exportable ;
 .
 v-s:Empty
   rdf:type v-s:SpecialSearchValues ;
@@ -134,6 +135,7 @@ v-s:File
   rdfs:isDefinedBy v-s: ;
   rdfs:label "File"@en ;
   rdfs:label "Файл"@ru ;
+  rdfs:subClassOf v-s:Exportable ;  
 .
 v-s:Group
   rdf:type owl:Class ;
@@ -219,8 +221,8 @@ v-s:OrganizationUnit
   rdfs:comment "Организационная единица (организация, подразделение, штатная должность)"@ru ;
   rdfs:label "Organization unit"@en ;
   rdfs:label "Организационная единица"@ru ;
-#  rdfs:subClassOf owl:Thing ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Exportable ;
 .
 v-s:PermissionStatement
   rdf:type owl:Class ;
@@ -238,6 +240,7 @@ v-s:Person
   rdfs:label "Персона"@ru ;
   rdfs:subClassOf v-s:Versioned ;
   rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Exportable ;  
 .
 v-s:Position
   rdf:type owl:Class ;
@@ -338,6 +341,12 @@ v-s:Versioned
   rdf:type owl:Class ;
   rdfs:label "Versioned thing"@en ;
   rdfs:label "Версионная сущность"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-s:Exportable
+  rdf:type owl:Class ;
+  rdfs:label "Exportable thing"@en ;
+  rdfs:label "Выгружаемая сущность"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
 v-s:YesNo

@@ -39,12 +39,39 @@ veda.Module(function IndividualActions(veda) { "use strict";
 	}
 
 	function redirectToReport(individual, reportId) {
-		$('[resource="'+individual.id+'"]').find("#createReport").dropdown('toggle');
 		var jasperServer = new veda.IndividualModel('v-g:jasperServerAddress');
 		var jasperServerAddress = jasperServer['v-g:literalValue'][0];
-		var report = new veda.IndividualModel(reportId);				
 		
-		window.open(jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id),'_blank');
+		if (individual.hasValue('v-s:hasParentLink'))
+		{
+			var report = new veda.IndividualModel(individual['v-s:hasParentLink'][0]);
+			// Case for reports by request
+			if (report['rdf:type'][0].id=='v-s:Report') 
+			{
+				var form = document.createElement("form");
+				form.setAttribute("method", "post");
+				form.setAttribute("action", jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id));
+				form.setAttribute("target", "view");
+
+				Object.getOwnPropertyNames(individual).forEach(function (key) 
+				{
+					var hiddenField = document.createElement("input"); 
+					hiddenField.setAttribute("type", "hidden");
+					hiddenField.setAttribute("name", key);
+					hiddenField.setAttribute("value", individual[key][0]);
+					form.appendChild(hiddenField);
+				});
+				document.body.appendChild(form);
+
+				window.open('', 'view');
+
+				form.submit();
+			}
+		} else {
+			// Case for print blanks
+			var report = new veda.IndividualModel(reportId);				
+			window.open(jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id),'_blank');
+		}
 	}
 	
 	veda.on("individual:loaded", function (individual, container, template, mode) {
@@ -107,25 +134,24 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			 */
 			individual.on("createReport", function (reportId) {
 				if (reportId !== undefined) {
+					$('[resource="'+individual.id+'"]').find("#createReport").dropdown('toggle');
 					redirectToReport(individual, reportId);
 				} else {
 					var s = new veda.SearchModel("'rdf:type' == 'v-s:ReportsForClass' && 'v-ui:forClass' == '"+individual["rdf:type"][0].id+"'", null);
 					if (Object.getOwnPropertyNames(s.results).length == 0) {
 						alert('Нет отчета. Меня жизнь к такому не готовила.');
 					} else if (Object.getOwnPropertyNames(s.results).length == 1) {
+						$('[resource="'+individual.id+'"]').find("#createReport").dropdown('toggle');
 						redirectToReport(individual, Object.getOwnPropertyNames(s.results)[0]);
 					} else {
 						var reportsDropdown = $('[resource="'+individual.id+'"]').find("#chooseReport");
 						if (reportsDropdown.html()== '') {
 							Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
-			       				var jasperServer = new veda.IndividualModel('v-g:jasperServerAddress');
-			    				var jasperServerAddress = jasperServer['v-g:literalValue'][0];
-								var report = new veda.IndividualModel(res_id);
 								$("<li/>", {
 					   			   "style" : "cursor:pointer",    
 			                 	   "text" : report['rdfs:label'][0],
 			                 	   "click": (function (e) {
-				        				window.open(jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id),'_blank');
+			                 		    redirectToReport(individual, Object.getOwnPropertyNames(res_id)[0]);
 			                 	   })
 			                  	}).appendTo(reportsDropdown);
 							});				
