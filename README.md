@@ -23,7 +23,7 @@
   - Various visualisation libraries & plugins.
 
 ## II. System requirements
-  - OS - Ubuntu 12.04 LTS, 14.04 LTS
+  - OS - Ubuntu 12.04 LTS, 14.04 LTS 64-Bit
   - RAM - 1Gb
 
 ## III. How to install and run
