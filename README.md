@@ -28,31 +28,21 @@
 
 ## III. How to install
 
-**1: install dmd 2.068.2 and dub**
-  - A) http://d-apt.sourceforge.net/
+**1: Install dependencies**
 ```sh
-    sudo wget http://master.dl.sourceforge.net/project/d-apt/files/d-apt.list -O /etc/apt/sources.list.d/d-apt.list
-    sudo apt-get update && sudo apt-get -y --allow-unauthenticated install --reinstall d-apt-keyring && sudo apt-get update
-    sudo apt-get install dmd-bin dub
-    sudo apt-get install libraptor2-dev
+$ sudo control-install.sh
 ```
-  - B) http://downloads.dlang.org/releases/2014/dmd_2.068.2-0_amd64.deb
-
-**2: Install dependencies**
+**2: Building & running veda**
 ```sh
-    control-install.sh
+$ dub
 ```
-**3: Building & running veda**
+**3: Start/stop veda as daemon**
 ```sh
-	dub
+$ control-start.sh
+$ control-stop.sh
 ```
-**4: Start/stop veda as daemon**
+**4: Get sources**
 ```sh
-    control-start.sh
-    control-stop.sh
-```
-**5: Get sources**
-```sh
-    sudo apt-get install git
-    git clone https://github.com/semantic-machines/veda.git
+$ sudo apt-get install git
+$ git clone https://github.com/semantic-machines/veda.git
 ```
