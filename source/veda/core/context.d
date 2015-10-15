@@ -55,9 +55,9 @@ public enum P_MODULE : byte
     file_reader                = 10,
 
     zmq_listener               = 11,
-    
-    fanout					   = 12,	
-    
+
+    fanout                     = 12,
+
     nop                        = 99
 }
 
@@ -190,7 +190,11 @@ interface Context
     bool authorize(string uri, Ticket *ticket, ubyte request_acess);
     Individual[] get_individuals_via_query(Ticket *ticket, string query_str);
     string get_individual_from_storage(string uri);
+    Ticket create_new_ticket(string user_id);
     Onto get_onto();
+    @property
+    public Ticket sys_ticket();
+
 
     // *************************************************** external API ? *********************************** //
     ref string[ string ] get_prefix_map();
@@ -415,3 +419,28 @@ public int get_count_indexed()
 {
     return atomicOp !"+" (count_indexed, 0);
 }
+
+
+private shared string systicket_id;
+private shared string systicket_user_uri;
+private shared long   systicket_end_time;
+
+public Ticket get_global_systicket()
+{
+    Ticket t;
+
+    t.id       = atomicLoad(systicket_id);
+    t.user_uri = atomicLoad(systicket_user_uri);
+    t.end_time = atomicLoad(systicket_end_time);
+    return t;
+}
+
+public void set_global_systicket(Ticket new_data)
+{
+    atomicStore(systicket_id, new_data.id);
+    atomicStore(systicket_user_uri, new_data.user_uri);
+    atomicStore(systicket_end_time, new_data.end_time);
+}
+
+
+

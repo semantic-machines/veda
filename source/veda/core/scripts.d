@@ -206,8 +206,9 @@ public void load()
     //if (trace_msg[ 301 ] == 1)
     log.trace("start load scripts");
 
+    Ticket       sticket = context.sys_ticket();
     Individual[] res;
-    vql.get(null,
+    vql.get(&sticket,
             "return { 'v-s:script'}
             filter { 'rdf:type' == 'v-s:Event'}",
             res);

@@ -102,8 +102,10 @@ class Onto
         context.reopen_ro_subject_storage_db();
         context.reopen_ro_fulltext_indexer_db();
 
+		Ticket sticket = context.sys_ticket();
+
         context.vql().get(
-                          null,
+                          &sticket,
                           "return { '*'}
             filter { 'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'rdf:Property' || 'rdf:type' == 'owl:Class' || 'rdf:type' == 'owl:ObjectProperty' || 'rdf:type' == 'owl:DatatypeProperty' }",
                           l_individuals);

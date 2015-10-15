@@ -62,13 +62,13 @@ class PThreadContext : Context
     private long           local_last_update_time;
     private Individual     node = Individual.init;
     private string         node_id;
-	private string 		   external_write_storage;
+    private string         external_write_storage;
 
     this(string _node_id, string context_name, P_MODULE _id)
     {
-        node_id            = _node_id;
-        
-       	inividuals_storage = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals");        	
+        node_id = _node_id;
+
+        inividuals_storage = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals");
         tickets_storage    = new LmdbStorage(tickets_db_path, DBMode.R, context_name ~ ":tickets");
         acl_indexes        = new Authorization(acl_indexes_db_path, DBMode.R, context_name ~ ":acl");
 
@@ -99,6 +99,26 @@ class PThreadContext : Context
         local_count_indexed = get_count_indexed();
     }
 
+    @property
+    public Ticket sys_ticket()
+    {
+        Ticket ticket = get_global_systicket();
+
+        if (ticket == Ticket.init)
+        {
+            try
+            {
+                ticket = create_new_ticket("v-a:VedaSystem");
+                set_global_systicket(ticket);
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+        //writeln("### sys ticket=", ticket);
+        return ticket;
+    }
+
     public Individual getConfiguration()
     {
         if (node == Individual.init)
@@ -107,13 +127,13 @@ class PThreadContext : Context
             node = get_individual(null, node_id);
             if (node.getStatus() != ResultCode.OK)
                 node = Individual.init;
-			  
-			Resources write_storage = node.resources.get("vsrv:write_storage", Resources.init);                
+
+            Resources write_storage = node.resources.get("vsrv:write_storage", Resources.init);
             if (write_storage.length != 0)
             {
-            	external_write_storage = write_storage[0].asString ();
-            	log.trace_log_and_console("USING external write storage=%s", external_write_storage);
-            }    
+                external_write_storage = write_storage[ 0 ].asString();
+                log.trace_log_and_console("USING external write storage=%s", external_write_storage);
+            }
         }
         return node;
     }
@@ -224,9 +244,14 @@ class PThreadContext : Context
 
         return res;
     }
-
+    import backtrace.backtrace, Backtrace = backtrace.backtrace;
     bool authorize(string uri, Ticket *ticket, ubyte request_acess)
     {
+        if (ticket is null)
+        {
+            printPrettyTrace(stderr);
+        }
+
         //writeln ("@p ### uri=", uri, " ", request_acess);
         ubyte res = acl_indexes.authorize(uri, ticket, request_acess, this);
 
@@ -255,14 +280,14 @@ class PThreadContext : Context
     {
         //writeln ("@ get_individual_as_cbor, uri=", uri);
         string res;
-        
+
         if (inividuals_storage !is null)
-        	res = inividuals_storage.find(uri);
+            res = inividuals_storage.find(uri);
         else
-        	res = find (uri);	
+            res = find(uri);
 
         if (res !is null && res.length < 10)
-        	log.trace_log_and_console("!ERR:get_individual_from_storage, found invalid CBOR, uri=%s", uri);
+            log.trace_log_and_console("!ERR:get_individual_from_storage, found invalid CBOR, uri=%s", uri);
 
         return res;
     }
@@ -333,11 +358,11 @@ class PThreadContext : Context
     public int[ string ] get_key2slot()
     {
         string key2slot_str;
-        
+
         if (inividuals_storage !is null)
-        	key2slot_str = inividuals_storage.find(xapian_metadata_doc_id);
+            key2slot_str = inividuals_storage.find(xapian_metadata_doc_id);
         else
-        	key2slot_str = find (xapian_metadata_doc_id);
+            key2slot_str = find(xapian_metadata_doc_id);
 
         if (key2slot_str !is null)
         {
@@ -413,29 +438,28 @@ class PThreadContext : Context
 
     private void stat(CMD command_type, ref StopWatch sw, string func = __FUNCTION__) nothrow
     {
-    	try
-    	{
-        sw.stop();
-        int t = cast(int)sw.peek().usecs;
-        
-        Tid statistic_data_accumulator_tid = this.getTid(P_MODULE.statistic_data_accumulator);
+        try
+        {
+            sw.stop();
+            int t = cast(int)sw.peek().usecs;
 
-        send(statistic_data_accumulator_tid, CMD.PUT, CNAME.WORKED_TIME, t);
+            Tid statistic_data_accumulator_tid = this.getTid(P_MODULE.statistic_data_accumulator);
+
+            send(statistic_data_accumulator_tid, CMD.PUT, CNAME.WORKED_TIME, t);
 
 //        send(this.getTid(P_MODULE.statistic_data_accumulator), CMD.PUT, CNAME.COUNT_COMMAND, 1);
 
-        if (command_type == CMD.GET)
-            send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_GET, 1);
-        else
-            send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_PUT, 1);
+            if (command_type == CMD.GET)
+                send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_GET, 1);
+            else
+                send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_PUT, 1);
 
-        if (trace_msg[ 555 ] == 1)
-            log.trace(func[ (func.lastIndexOf(".") + 1)..$ ] ~ ": t=%d µs", t);
+            if (trace_msg[ 555 ] == 1)
+                log.trace(func[ (func.lastIndexOf(".") + 1)..$ ] ~ ": t=%d µs", t);
         }
-    	catch (Exception ex)
-    	{
-    		
-    	}    
+        catch (Exception ex)
+        {
+        }
     }
 
     // ////////////////////////////////////////////////////////////////////////////////
@@ -628,6 +652,46 @@ class PThreadContext : Context
         }
     }
 
+    Ticket create_new_ticket(string user_id)
+    {
+        Ticket     ticket;
+        Individual new_ticket;
+
+        new_ticket.resources[ rdf__type ] ~= Resource(ticket__Ticket);
+
+        UUID new_id = randomUUID();
+        new_ticket.uri = new_id.toString();
+
+        new_ticket.resources[ ticket__accessor ] ~= Resource(user_id);
+        new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
+        new_ticket.resources[ ticket__duration ] ~= Resource("40000");
+
+        if (trace_msg[ 18 ] == 1)
+            log.trace("authenticate, ticket__accessor=%s", user_id);
+
+        // store ticket
+        string ss_as_cbor = individual2cbor(&new_ticket);
+
+        Tid    tid_ticket_manager = getTid(P_MODULE.ticket_manager);
+
+        if (tid_ticket_manager != Tid.init)
+        {
+            send(tid_ticket_manager, CMD.PUT, ss_as_cbor, thisTid);
+            receive((EVENT ev, string prev_state, string msg, Tid from)
+                    {
+                        if (from == getTid(P_MODULE.ticket_manager))
+                        {
+//                            res = msg;
+                            //writeln("context.store_subject:msg=", msg);
+                            subject2Ticket(new_ticket, &ticket);
+                            ticket.result = ResultCode.OK;
+                            user_of_ticket[ ticket.id ] = &ticket;
+                        }
+                    });
+        }
+        return ticket;
+    }
+
     public Ticket authenticate(string login, string password)
     {
         StopWatch sw; sw.start;
@@ -643,14 +707,13 @@ class PThreadContext : Context
             if (login == null || login.length < 1 || password == null || password.length < 6)
                 return ticket;
 
-            Ticket *sys_ticket;
-
             if (this.getTid(P_MODULE.subject_manager) != Tid.init)
                 this.wait_thread(P_MODULE.subject_manager);
             if (this.getTid(P_MODULE.fulltext_indexer) != Tid.init)
                 this.wait_thread(P_MODULE.fulltext_indexer);
 
-            Individual[] candidate_users = get_individuals_via_query(sys_ticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
+            Ticket       sticket         = sys_ticket;
+            Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
             foreach (user; candidate_users)
             {
                 string user_id = user.getFirstResource(veda_schema__owner).uri;
@@ -660,40 +723,7 @@ class PThreadContext : Context
                 Resources pass = user.resources.get(veda_schema__password, _empty_Resources);
                 if (pass.length > 0 && pass[ 0 ] == password)
                 {
-                    Individual new_ticket;
-                    new_ticket.resources[ rdf__type ] ~= Resource(ticket__Ticket);
-
-                    UUID new_id = randomUUID();
-                    new_ticket.uri = new_id.toString();
-
-                    new_ticket.resources[ ticket__accessor ] ~= Resource(user_id);
-                    new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
-                    new_ticket.resources[ ticket__duration ] ~= Resource("40000");
-
-                    if (trace_msg[ 18 ] == 1)
-                        log.trace("authenticate, ticket__accessor=%s", user_id);
-
-                    // store ticket
-                    string ss_as_cbor = individual2cbor(&new_ticket);
-
-                    Tid    tid_ticket_manager = getTid(P_MODULE.ticket_manager);
-
-                    if (tid_ticket_manager != Tid.init)
-                    {
-                        send(tid_ticket_manager, CMD.PUT, ss_as_cbor, thisTid);
-                        receive((EVENT ev, string prev_state, string msg, Tid from)
-                                {
-                                    if (from == getTid(P_MODULE.ticket_manager))
-                                    {
-//                            res = msg;
-                                        //writeln("context.store_subject:msg=", msg);
-                                        subject2Ticket(new_ticket, &ticket);
-                                        ticket.result = ResultCode.OK;
-                                        user_of_ticket[ ticket.id ] = &ticket;
-                                    }
-                                });
-                    }
-
+                    ticket = create_new_ticket(user_id);
                     return ticket;
                 }
             }
@@ -814,41 +844,41 @@ class PThreadContext : Context
 
     public void reopen_ro_fulltext_indexer_db()
     {
-    	try
-    	{
-        	if (this.getTid(P_MODULE.fulltext_indexer) != Tid.init)
-            	this.wait_thread(P_MODULE.fulltext_indexer);
+        try
+        {
+            if (this.getTid(P_MODULE.fulltext_indexer) != Tid.init)
+                this.wait_thread(P_MODULE.fulltext_indexer);
         }
-    	catch (Exception ex){}
+        catch (Exception ex) {}
 
-        if (vql !is null)    
-        	vql.reopen_db();
+        if (vql !is null)
+            vql.reopen_db();
     }
 
     public void reopen_ro_subject_storage_db()
     {
-    	try
-    	{
-        	if (this.getTid(P_MODULE.subject_manager) != Tid.init)
-            	this.wait_thread(P_MODULE.subject_manager);
+        try
+        {
+            if (this.getTid(P_MODULE.subject_manager) != Tid.init)
+                this.wait_thread(P_MODULE.subject_manager);
         }
-    	catch (Exception ex){}
-    	    
-        if (inividuals_storage !is null)    
-        	inividuals_storage.reopen_db();
+        catch (Exception ex) {}
+
+        if (inividuals_storage !is null)
+            inividuals_storage.reopen_db();
     }
 
     public void reopen_ro_acl_storage_db()
     {
-    	try
-    	{
-        	if (this.getTid(P_MODULE.acl_manager) != Tid.init)
-            	this.wait_thread(P_MODULE.acl_manager);
+        try
+        {
+            if (this.getTid(P_MODULE.acl_manager) != Tid.init)
+                this.wait_thread(P_MODULE.acl_manager);
         }
-    	catch (Exception ex){}
-    	    
-        if (acl_indexes !is null)    
-        	acl_indexes.reopen_db();
+        catch (Exception ex) {}
+
+        if (acl_indexes !is null)
+            acl_indexes.reopen_db();
     }
 
     // ////////// external ////////////
@@ -915,8 +945,8 @@ class PThreadContext : Context
                     else
                     {
                         individual.setStatus(ResultCode.Unprocessable_Entity);
-                        writeln ("ERR!: invalid cbor: [", individual_as_cbor, "] ", uri);
-                    }    
+                        writeln("ERR!: invalid cbor: [", individual_as_cbor, "] ", uri);
+                    }
                 }
                 else
                 {
@@ -1008,8 +1038,7 @@ class PThreadContext : Context
                 }
                 else
                 {
-                        //writeln ("ERR!: empty cbor: ", uri);
-                	
+                    //writeln ("ERR!: empty cbor: ", uri);
                 }
             }
             else
@@ -1143,7 +1172,7 @@ class PThreadContext : Context
             EVENT ev = EVENT.NONE;
 
             tid_subject_manager = getTid(P_MODULE.subject_manager);
-			string prev_state;
+            string prev_state;
             if (tid_subject_manager != Tid.init)
             {
                 send(tid_subject_manager, cmd, ss_as_cbor, thisTid);
@@ -1151,7 +1180,7 @@ class PThreadContext : Context
                         {
                             if (from == getTid(P_MODULE.subject_manager))
                                 ev = _ev;
-                                prev_state = _prev_state;
+                            prev_state = _prev_state;
                             ss_as_cbor = _new_state;
                         });
             }
@@ -1192,12 +1221,12 @@ class PThreadContext : Context
                     bus_event_after(ticket, indv, rdfType, ss_as_cbor, ev, this, event_id);
                 }
 
-    			Tid tid_fanout = getTid(P_MODULE.fanout);
-        		if (tid_fanout != Tid.init)
-        		{
-        			send(tid_fanout, CMD.PUT, prev_state, ss_as_cbor);
-        		}
-    	
+                Tid tid_fanout = getTid(P_MODULE.fanout);
+                if (tid_fanout != Tid.init)
+                {
+                    send(tid_fanout, CMD.PUT, prev_state, ss_as_cbor);
+                }
+
 
                 if (wait_for_indexing)
                 {
@@ -1352,11 +1381,12 @@ class PThreadContext : Context
 
     public long count_individuals()
     {
-    	long count = 0;
-    	if (inividuals_storage !is null)
-        	count = inividuals_storage.count_entries();
-        	
-        return count;	
+        long count = 0;
+
+        if (inividuals_storage !is null)
+            count = inividuals_storage.count_entries();
+
+        return count;
     }
 
     public void freeze()
@@ -1381,17 +1411,17 @@ class PThreadContext : Context
             send(tid_subject_manager, CMD.UNFREEZE);
         }
     }
-    
-string find (string uri)
-{
-	string res;
-    Tid tid_subject_manager = getTid(P_MODULE.subject_manager);
-		
-    send(tid_subject_manager, CMD.FIND, uri, thisTid);
-    receive((string key, string data, Tid tid)
-            {
-                res = data;
-            });
-    return res;
-}    
+
+    string find(string uri)
+    {
+        string res;
+        Tid    tid_subject_manager = getTid(P_MODULE.subject_manager);
+
+        send(tid_subject_manager, CMD.FIND, uri, thisTid);
+        receive((string key, string data, Tid tid)
+                {
+                    res = data;
+                });
+        return res;
+    }
 }
