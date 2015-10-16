@@ -3,7 +3,7 @@ import vibe.d;
 import properd;
 import veda.pacahon_driver;
 import veda.storage_rest;
-import veda.onto.individual, veda.onto.resource;
+import veda.onto.individual, veda.onto.resource, veda.core.context;
 
 void view_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
 {
@@ -95,7 +95,9 @@ shared static this()
         return;
     }
 
-    Individual node = core_context.get_individual(null, node_id);
+    Ticket sticket = core_context.sys_ticket();
+
+    Individual node = core_context.get_individual(&sticket, node_id);
 
     ushort                count_thread = cast(ushort)node.getFirstInteger("vsrv:count_thread", 4);
     std.concurrency.Tid[] pool;
@@ -108,7 +110,7 @@ shared static this()
     Resources listeners = node.resources.get("vsrv:listener", Resources.init);
     foreach (listener_uri; listeners)
     {
-        Individual connection = core_context.get_individual(null, listener_uri.uri);
+        Individual connection = core_context.get_individual(&sticket, listener_uri.uri);
 
         Resource   transport = connection.getFirstResource("vsrv:transport");
         if (transport != Resource.init)

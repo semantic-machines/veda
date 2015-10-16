@@ -124,7 +124,9 @@ class PThreadContext : Context
         if (node == Individual.init)
         {
             this.reopen_ro_subject_storage_db();
-            node = get_individual(null, node_id);
+            Ticket sticket = sys_ticket();
+
+            node = get_individual(&sticket, node_id);
             if (node.getStatus() != ResultCode.OK)
                 node = Individual.init;
 

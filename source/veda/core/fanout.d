@@ -66,19 +66,19 @@ void fanout_thread(string thread_name, string _node_id)
                         }
                         else
                         {
-                        	if (prev_state !is null && cbor2individual(&prev_indv, prev_state) < 0)
-                        	{
-                            	log.trace("!ERR:invalid individual:[%s]", prev_state);
-                        	}
-                        	else
-                        	{
-                            if (node == Individual.init)
-                                connect_to_mysql(context);
-
-                            if (mysql_conn !is null)
+                            if (prev_state !is null && cbor2individual(&prev_indv, prev_state) < 0)
                             {
-                                push_to_mysql(prev_indv, new_indv);
+                                log.trace("!ERR:invalid individual:[%s]", prev_state);
                             }
+                            else
+                            {
+                                if (node == Individual.init)
+                                    connect_to_mysql(context);
+
+                                if (mysql_conn !is null)
+                                {
+                                    push_to_mysql(prev_indv, new_indv);
+                                }
                             }
                         }
                     },
@@ -103,7 +103,7 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
         bool      need_prepare = false;
 
         foreach (type; types)
-        {        	
+        {
             if (context.get_onto().isSubClasses(type.uri, [ "v-s:Exportable" ]))
             {
                 need_prepare = true;
@@ -186,11 +186,13 @@ private void create_table_if_not_exists(string predicate)
 
 private void connect_to_mysql(Context context)
 {
+    Ticket sticket = context.sys_ticket();
+
     node = context.getConfiguration();
     Resources gates = node.resources.get("vsrv:push_individual_by_event", Resources.init);
     foreach (gate; gates)
     {
-        Individual connection = context.get_individual(null, gate.uri);
+        Individual connection = context.get_individual(&sticket, gate.uri);
 
         Resource   transport = connection.getFirstResource("vsrv:transport");
         if (transport != Resource.init)

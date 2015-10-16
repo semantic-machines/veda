@@ -1,9 +1,7 @@
 addons:
   sauce_connect:
-  username: xupyprmv
-  access_key: f19d1c49-74e5-4e7a-b340-70bac7948b1a
-#    username: semantic-machines
-#    access_key: 92a54db7-283e-4b3d-96ab-b2df3f6e02ff
+    username: Itiu
+    access_key: 2762d6d6-6f43-4166-982d-db5ce578f53b
 
 env:
   global:

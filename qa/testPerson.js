@@ -44,7 +44,7 @@ basic.getDrivers().forEach (function (drv) {
 	// Проверяем что сохранение успешно
 	// Переходим на страницу просмотра документа
 	driver.findElement({css:'div[id="object"] > [typeof="v-s:Person"]'}).getAttribute('resource').then(function (individualId) {
-		basic.openPage(driver, drv, '#/individual/'+individualId+'/#main');	
+		basic.openPage(driver, drv, '#/'+individualId);	
 	});
 	
 	// Смотрим что в нём содержится введённый ранее текст

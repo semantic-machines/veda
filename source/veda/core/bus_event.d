@@ -17,10 +17,51 @@ static this()
 }
 
 int count;
+import vibe.data.json;
+import vibe.core.log;
+import vibe.http.client;
+import vibe.stream.operations;
+import veda.core.util.individual8json;
 
+import backtrace.backtrace, Backtrace = backtrace.backtrace;
 void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] rdfType, string subject_as_cbor, EVENT ev_type, Context context,
                      string event_id)
 {
+    if (ticket is null)
+    {
+        printPrettyTrace(stderr);
+    }
+/*
+    try
+    {
+        Json indv_json = individual_to_json(*individual);
+
+        Json req_body = Json.emptyObject;
+        if (ticket is null)
+            req_body[ "ticket" ] = "null";
+        else
+            req_body[ "ticket" ] = ticket.id;
+        req_body[ "individual" ] = indv_json;
+        req_body[ "event_type" ] = text(ev_type);
+        req_body[ "event_id" ]   = text(event_id);
+
+
+
+        requestHTTP("http://127.0.0.1:8081/trigger",
+                    (scope req) {
+                        req.method = HTTPMethod.PUT;
+                        req.writeJsonBody(req_body);
+                    },
+                    (scope res) {
+                        logInfo("Response: %s", res.bodyReader.readAllUTF8());
+                    }
+                    );
+    }
+    catch (Exception ex)
+    {
+        writeln("EX!bus_event:", ex.msg);
+    }
+*/
     //writeln ("@bus_event B subject_as_cbor=[", individual.uri, "]");
     //writeln (rdfType);
 
@@ -45,14 +86,14 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
         Tid tid_condition = context.getTid(P_MODULE.condition);
         if (tid_condition != Tid.init)
         {
-        	if (rdfType.anyExist(veda_schema__Event))
-        	{
-            	// изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
-            	send(tid_condition, CMD.RELOAD, subject_as_cbor, thisTid);
-            	receive((bool){});
-        	}
-        	
-        	
+            if (rdfType.anyExist(veda_schema__Event))
+            {
+                // изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
+                send(tid_condition, CMD.RELOAD, subject_as_cbor, thisTid);
+                receive((bool){});
+            }
+
+
             try
             {
                 immutable(string)[] type;
@@ -75,45 +116,46 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
     //writeln ("#bus_event E");
 }
 
-ResultCode trigger_script (Ticket *ticket, EVENT ev_type, Individual *individual, Context context, string event_id)
-{	
-        Tid tid_condition = context.getTid(P_MODULE.condition);
-        if (tid_condition != Tid.init)
+ResultCode trigger_script(Ticket *ticket, EVENT ev_type, Individual *individual, Context context, string event_id)
+{
+    Tid tid_condition = context.getTid(P_MODULE.condition);
+
+    if (tid_condition != Tid.init)
+    {
+        Resource[ string ] rdfType;
+        setMapResources(individual.resources.get(rdf__type, Resources.init), rdfType);
+
+        string subject_as_cbor = individual2cbor(individual);
+
+        if (rdfType.anyExist(veda_schema__Event))
         {
-        	Resource[ string ] rdfType;
-        	setMapResources(individual.resources.get(rdf__type, Resources.init), rdfType);
-
-			string subject_as_cbor = individual2cbor(individual);        	
-        	
-        	if (rdfType.anyExist(veda_schema__Event))
-        	{
-            	// изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
-            	send(tid_condition, CMD.RELOAD, subject_as_cbor, thisTid);
-            	receive((bool){});
-        	}
-        	        	
-            try
-            {
-                immutable(string)[] type;
-
-                foreach (key; rdfType.keys)
-                    type ~= key;
-
-                string user_uri;
-
-                if (ticket !is null)
-                    user_uri = ticket.user_uri;
-                send(tid_condition, user_uri, ev_type, subject_as_cbor, type, individual.uri, event_id);
-                
-                return ResultCode.OK;
-            }
-            catch (Exception ex)
-            {
-                writeln("EX!bus_event:", ex.msg);
-                return ResultCode.Internal_Server_Error;
-            }
+            // изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
+            send(tid_condition, CMD.RELOAD, subject_as_cbor, thisTid);
+            receive((bool){});
         }
-        
-        return ResultCode.Not_Ready;
+
+        try
+        {
+            immutable(string)[] type;
+
+            foreach (key; rdfType.keys)
+                type ~= key;
+
+            string user_uri;
+
+            if (ticket !is null)
+                user_uri = ticket.user_uri;
+            send(tid_condition, user_uri, ev_type, subject_as_cbor, type, individual.uri, event_id);
+
+            return ResultCode.OK;
+        }
+        catch (Exception ex)
+        {
+            writeln("EX!bus_event:", ex.msg);
+            return ResultCode.Internal_Server_Error;
+        }
+    }
+
+    return ResultCode.Not_Ready;
 }
 
