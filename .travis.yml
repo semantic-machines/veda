@@ -1,7 +1,7 @@
 addons:
   sauce_connect:
-  username: itiu
-  access_key: 2762d6d6-6f43-4166-982d-db5ce578f53b
+    username: Itiu
+    access_key: 2762d6d6-6f43-4166-982d-db5ce578f53b
 
 env:
   global:
