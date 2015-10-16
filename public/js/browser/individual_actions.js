@@ -41,13 +41,13 @@ veda.Module(function IndividualActions(veda) { "use strict";
 	function redirectToReport(individual, reportId) {
 		var jasperServer = new veda.IndividualModel('v-g:jasperServerAddress');
 		var jasperServerAddress = jasperServer['v-g:literalValue'][0];
-		var report = new veda.IndividualModel(reportId);				
+		var report = new veda.IndividualModel(reportId);
 		
 		var form = document.createElement("form");
 		form.setAttribute("method", "post");
 		form.setAttribute("action", jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id));
 		form.setAttribute("target", "view");
-
+		
 		Object.getOwnPropertyNames(individual).forEach(function (key) 
 		{
 			var hiddenField = document.createElement("input"); 
