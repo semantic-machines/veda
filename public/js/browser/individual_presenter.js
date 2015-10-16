@@ -415,8 +415,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			propertyModifiedHandler(property_uri);
 			function propertyModifiedHandler(doc_property_uri) {
 				if (doc_property_uri === property_uri) {
-					if (property_uri === "@") propertyContainer.text( about.id );
-					else if (about[property_uri] !== undefined) propertyContainer.text( about[property_uri].join(", ") );
+					if (property_uri === "@") {
+						propertyContainer.text( about.id );
+					} else if (about[property_uri] !== undefined) {
+						var formatted = about[property_uri].map(formatValue).join(", ");
+						propertyContainer.text( formatted );
+					}
 				}
 			}
 			about.on("individual:propertyModified", propertyModifiedHandler);
@@ -608,22 +612,26 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		return template;
 	}
 
+	function formatValue (value) {
+		var formatted;
+		switch (true) {
+			case value instanceof Date:
+				formatted = veda.Util.formatDate(value);
+				break;
+			case value instanceof Number:
+				formatted = veda.Util.formatNumber(value);
+				break;
+			default: 
+				formatted = value.toString();
+		}
+		return formatted;
+	}
+
 	function renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls) {
 		propertyContainer.empty();
 		individual[property_uri].map( function (value, i) {
 			var valueHolder = $("<span class='value-holder'/>");
-			var formatted;
-			switch (true) {
-				case value instanceof Date:
-					formatted = veda.Util.formatDate(value);
-					break;
-				case value instanceof Number:
-					formatted = veda.Util.formatNumber(value);
-					break;
-				default: 
-					formatted = value.toString();
-			}
-			propertyContainer.append(valueHolder.text( formatted ));
+			propertyContainer.append(valueHolder.text( formatValue(value) ));
 			var wrapper = $("<div id='prop-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
 			var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
 			var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
