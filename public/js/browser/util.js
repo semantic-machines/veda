@@ -53,6 +53,9 @@ veda.Module(function Util(veda) { "use strict";
 		if (ftime === "00:00:00") return fdate;
 		return [fdate, ftime].join(" ");
 	};
+	veda.Util.formatNumber = function (n) {
+		return (n+"").replace(/.(?=(?:[0-9]{3})+\b)/g, '$& ');
+	};
 	
 	veda.Util.exportTTL = function (individualList) {
 		var s = new veda.SearchModel("'rdf:type'=='owl:Ontology'", null);

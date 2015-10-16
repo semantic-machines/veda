@@ -612,8 +612,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		propertyContainer.empty();
 		individual[property_uri].map( function (value, i) {
 			var valueHolder = $("<span class='value-holder'/>");
-			if (value instanceof Date) {propertyContainer.append(valueHolder.text( veda.Util.formatDate(value) ));}
-			else { propertyContainer.append(valueHolder.text(value.toString())); }
+			var formatted;
+			switch (true) {
+				case value instanceof Date:
+					formatted = veda.Util.formatDate(value);
+					break;
+				case value instanceof Number:
+					formatted = veda.Util.formatNumber(value);
+					break;
+				default: 
+					formatted = value.toString();
+			}
+			propertyContainer.append(valueHolder.text( formatted ));
 			var wrapper = $("<div id='prop-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
 			var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
 			var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
