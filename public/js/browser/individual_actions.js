@@ -43,20 +43,24 @@ veda.Module(function IndividualActions(veda) { "use strict";
 		var jasperServerAddress = jasperServer['v-g:literalValue'][0];
 		var report = new veda.IndividualModel(reportId);
 		
-		var q = '';
-		// TODO передавать только собственные параметры (без унаследованных)
-		if (individual['rdf:type'][0].id == 'mnd-s-asppd:IdeaCountReportParameters') {
-			var key = 'v-s:year';
-			q = q+'&'+key.replace(':','_')+'='+((individual[key][0] instanceof veda.IndividualModel && individual[key][0] !== undefined)?individual[key][0].id:individual[key][0]);
-		}
+		var form = document.createElement("form");
+		form.setAttribute("method", "post");
+		form.setAttribute("action", jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id));
+		form.setAttribute("target", "view");
 		
-		/*
-		individual.getOnlyDirectChildProperties().forEach(function (key) 
+		Object.getOwnPropertyNames(individual).forEach(function (key) 
 		{
-			q+='&'+key.replace(':','_')+'='+(individual[key][0] instanceof veda.IndividualModel && individual[key][0] !== undefined)?individual[key][0].id:individual[key][0];
+			var hiddenField = document.createElement("input"); 
+			hiddenField.setAttribute("type", "hidden");
+			hiddenField.setAttribute("name", key.replace(':','_'));
+			hiddenField.setAttribute("value", (individual[key][0] instanceof veda.IndividualModel)?individual[key][0].id:individual[key][0]);
+			form.appendChild(hiddenField);
 		});
-		*/
-		window.open(jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id)+q,'_blank');
+		document.body.appendChild(form);
+
+		window.open('', 'view');
+
+		form.submit();
 	}
 	
 	veda.on("individual:loaded", function (individual, container, template, mode) {
