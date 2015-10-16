@@ -687,11 +687,14 @@ class VedaStorageRest : VedaStorageRest_API
     
    int trigger(string _ticket, string event_type, Json individual_json, string event_id)
    {
+   	writeln ("@@1");
         Ticket     *ticket = context.get_ticket(_ticket);
 
+   	writeln ("@@2");
         ResultCode rc = ticket.result;
         if (rc == ResultCode.OK)
         {
+   	writeln ("@@3");
         	Individual indv = json_to_individual(individual_json);
         	
         	EVENT ev_type;
@@ -703,12 +706,16 @@ class VedaStorageRest : VedaStorageRest_API
         	else if (event_type == "REMOVE")
         		ev_type = EVENT.REMOVE;
         	
+   	writeln ("@@4");
 			veda.core.bus_event.trigger_script (ticket, ev_type, &indv, context, event_id);
 
    			rc = ResultCode.OK;   		
    		}
         if (rc != ResultCode.OK)
+        {
+        	   	writeln ("@@5 rc=", rc);
             throw new HTTPStatusException(rc);
+        }    
 
         return rc.to!int;           
    }
