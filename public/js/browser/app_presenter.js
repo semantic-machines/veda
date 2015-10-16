@@ -72,21 +72,28 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	});
 	
 	// Login invitation
-	veda.on("login:failed", function () {
-		var template = $("#login-template").html();
-		var container = $("#login");
-		container.removeClass("hidden");
-		container.html(template);
-		$("#submit", container).on("click", function (e) {
-			e.preventDefault();
-			// Successful authentication calls veda.init() in model
-			var authResult = veda.login( $("#login", container).val(), Sha256.hash( $("#password", container).val() ) );
-			if (!authResult) return veda.trigger("login:failed");
+	var loginTmpl = $("#login-template").html();
+	var loginContainer = $("#login");
+	loginContainer.html(loginTmpl);
+	var errorMsg = $("#login-error", loginContainer);	
+	var submit = $("#submit", loginContainer);
+	submit.click( function (e) {
+		e.preventDefault();
+		// Successful authentication calls veda.init() in model
+		try {
+			errorMsg.addClass("hidden");
+			var authResult = veda.login( $("#login", loginContainer).val(), Sha256.hash( $("#password", loginContainer).val() ) );
 			setCookie("user_uri", authResult.user_uri, { path: "/", expires: new Date(parseInt(authResult.user_uri)) });
 			setCookie("ticket", authResult.ticket, { path: "/", expires: new Date(parseInt(authResult.user_uri)) });
 			setCookie("end_time", authResult.end_time, { path: "/", expires: new Date(parseInt(authResult.user_uri)) });
-			container.addClass("hidden");
-		});
+			loginContainer.addClass("hidden");
+		} catch (e) {
+			errorMsg.removeClass("hidden");
+			veda.trigger("login:failed");
+		}
+	});
+	veda.on("login:failed", function () {
+		loginContainer.removeClass("hidden");
 	});
 
 	// Initialize application if ticket is valid

@@ -44,9 +44,6 @@
 				case "graph":
 					self.trigger.apply(self, ["load:graph"].concat(params));
 					break;
-				/*case "individual":
-					veda.Util.construct(veda.IndividualModel, params);
-					break;*/
 				default:
 					if (!params[0]) { params[0] = "#main"; }
 					veda.Util.construct(veda.IndividualModel, [page].concat(params));
@@ -63,11 +60,10 @@
 		self.on("error", function (error) {
 			switch (error.status) {
 				case 471: 
-				case 473: 
 					self.logout(); 
 					break;
 				default: 
-					console.log ? console.log("Error:", error) : null;
+					console.log ? console.log("Error:", JSON.stringify(error)) : null;
 			}
 		});
 		
