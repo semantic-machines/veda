@@ -31,7 +31,7 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
     {
         printPrettyTrace(stderr);
     }
-
+/*
     try
     {
         Json indv_json = individual_to_json(*individual);
@@ -61,7 +61,7 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
     {
         writeln("EX!bus_event:", ex.msg);
     }
-
+*/
     //writeln ("@bus_event B subject_as_cbor=[", individual.uri, "]");
     //writeln (rdfType);
 
