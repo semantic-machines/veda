@@ -41,26 +41,22 @@ veda.Module(function IndividualActions(veda) { "use strict";
 	function redirectToReport(individual, reportId) {
 		var jasperServer = new veda.IndividualModel('v-g:jasperServerAddress');
 		var jasperServerAddress = jasperServer['v-g:literalValue'][0];
-		var report = new veda.IndividualModel(reportId);				
+		var report = new veda.IndividualModel(reportId);
 		
-		var form = document.createElement("form");
-		form.setAttribute("method", "post");
-		form.setAttribute("action", jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id));
-		form.setAttribute("target", "view");
-
-		Object.getOwnPropertyNames(individual).forEach(function (key) 
+		var q = '';
+		// TODO передавать только собственные параметры (без унаследованных)
+		if (individual['rdf:type'][0].id == 'mnd-s-asppd:IdeaCountReportParameters') {
+			var key = 'v-s:year';
+			q = q+'&'+key.replace(':','_')+'='+((individual[key][0] instanceof veda.IndividualModel && individual[key][0] !== undefined)?individual[key][0].id:individual[key][0]);
+		}
+		
+		/*
+		individual.getOnlyDirectChildProperties().forEach(function (key) 
 		{
-			var hiddenField = document.createElement("input"); 
-			hiddenField.setAttribute("type", "hidden");
-			hiddenField.setAttribute("name", key.replace(':','_'));
-			hiddenField.setAttribute("value", (individual[key][0] instanceof veda.IndividualModel)?individual[key][0].id:individual[key][0]);
-			form.appendChild(hiddenField);
+			q+='&'+key.replace(':','_')+'='+(individual[key][0] instanceof veda.IndividualModel && individual[key][0] !== undefined)?individual[key][0].id:individual[key][0];
 		});
-		document.body.appendChild(form);
-
-		window.open('', 'view');
-
-		form.submit();
+		*/
+		window.open(jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id)+q,'_blank');
 	}
 	
 	veda.on("individual:loaded", function (individual, container, template, mode) {
