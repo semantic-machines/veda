@@ -7,22 +7,33 @@ veda.Module(function Backend(veda) { "use strict";
 		cache: false
 	});
 
+	function call_server(ticket, params, success, fail) {
+		if( !(success && fail) ) {
+			params.async = false;
+			var res = $.ajax(params);
+			if (res.status >= 400) { 
+				veda.trigger("error", {status: res.status, description: res.statusText});
+				throw {status: res.status, description: res.statusText};
+			}
+			var result;
+			try { 
+				result = JSON.parse(res.responseText);
+			} catch (e) {
+				result = res.responseText;
+			} finally {
+				return result;
+			}
+		}
+		$.ajax(params).done(success).fail(fail);
+	}
+
 	window.get_rights = function (ticket, uri, success, fail) {
 		var params = {
 			type: "GET",
 			url: "get_rights",
 			data: { "ticket": ticket, "uri": uri }
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) { 
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(ticket, params, success, fail);
 	}
 
 	window.get_rights_origin = function (ticket, uri, success, fail) {
@@ -31,16 +42,7 @@ veda.Module(function Backend(veda) { "use strict";
 			url: "get_rights_origin",
 			data: { "ticket": ticket, "uri": uri }
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) {
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(ticket, params, success, fail);
 	}
 
 	window.authenticate = function (login, password, success, fail) {
@@ -49,16 +51,7 @@ veda.Module(function Backend(veda) { "use strict";
 			url: "authenticate",
 			data: { "login": login, "password": password }
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) {
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(undefined, params, success, fail);
 	}
 
 	window.is_ticket_valid = function (ticket, success, fail) {
@@ -67,15 +60,7 @@ veda.Module(function Backend(veda) { "use strict";
 			url: "is_ticket_valid",
 			data: { "ticket": ticket }
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) {
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return result.responseText;
-		}
+		return call_server(undefined, params, success, fail);
 	}
 
 	window.wait_pmodule = function (pmodule_id, success, fail) {
@@ -84,52 +69,25 @@ veda.Module(function Backend(veda) { "use strict";
 			url: "wait_pmodule",
 			data: { "pmodule_id": pmodule_id }
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) {
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(undefined, params, success, fail);
 	}
 
-	window.backup = function (callback) {
+	window.backup = function (success, fail) {
 		var params = {
 			type: "GET",
 			url: "backup",
 			data: { }
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) {
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(undefined, params, success, fail);
 	}
 
-	window.count_individuals = function (callback) {
+	window.count_individuals = function (success, fail) {
 		var params = {
 			type: "GET",
 			url: "count_individuals",
 			data: { }
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) { 
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(undefined, params, success, fail);
 	}
 
 	window.set_trace = function (idx, state, success, fail) {
@@ -138,16 +96,7 @@ veda.Module(function Backend(veda) { "use strict";
 			url: "set_trace",
 			data: { "idx": idx, "state" : state  }
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) {
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(undefined, params, success, fail);
 	}
 
 	window.query = function (ticket, q, sort, databases, reopen, success, fail) {
@@ -156,16 +105,7 @@ veda.Module(function Backend(veda) { "use strict";
 			url: "query",
 			data: { "ticket": ticket, "query": q, "sort": sort || null, "databases" : databases || null, "reopen" : reopen || false }
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) {
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(ticket, params, success, fail);
 	}
 
 	window.get_individuals = function (ticket, uris, success, fail) {
@@ -175,16 +115,7 @@ veda.Module(function Backend(veda) { "use strict";
 			data: JSON.stringify({ "ticket": ticket, "uris": uris }),
 			contentType: "application/json"
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) {
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(ticket, params, success, fail);
 	}
 
 	window.get_count = 0, window.get_summary_time = 0;
@@ -225,16 +156,7 @@ veda.Module(function Backend(veda) { "use strict";
 			data: JSON.stringify({"ticket": ticket, "individual": individual, "wait_for_indexing" : wait_for_indexing || false }),
 			contentType: "application/json"
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) {
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(ticket, params, success, fail);
 	}
 
 	window.add_to_individual = function (ticket, individual, wait_for_indexing, success, fail) {
@@ -244,16 +166,7 @@ veda.Module(function Backend(veda) { "use strict";
 			data: JSON.stringify({"ticket": ticket, "individual": individual, "wait_for_indexing" : wait_for_indexing || false }),
 			contentType: "application/json"
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) {
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(ticket, params, success, fail);
 	}
 
 	window.set_in_individual = function (ticket, individual, wait_for_indexing, success, fail) {
@@ -263,16 +176,7 @@ veda.Module(function Backend(veda) { "use strict";
 			data: JSON.stringify({"ticket": ticket, "individual": individual, "wait_for_indexing" : wait_for_indexing || false }),
 			contentType: "application/json"
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) {
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(ticket, params, success, fail);
 	}
 
 	window.remove_from_individual = function (ticket, individual, wait_for_indexing, success, fail) {
@@ -282,16 +186,7 @@ veda.Module(function Backend(veda) { "use strict";
 			data: JSON.stringify({"ticket": ticket, "individual": individual, "wait_for_indexing" : wait_for_indexing || false }),
 			contentType: "application/json"
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) {
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(ticket, params, success, fail);
 	}
 
 	window.get_property_value = function (ticket, uri, property_uri, success, fail) {
@@ -300,16 +195,7 @@ veda.Module(function Backend(veda) { "use strict";
 			url: "get_property_value",
 			data: { "ticket": ticket, "uri": uri, "property_uri": property_uri }
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) {
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(ticket, params, success, fail);
 	}
 
 	window.execute_script = function (script, success, fail) {
@@ -319,16 +205,7 @@ veda.Module(function Backend(veda) { "use strict";
 			data: JSON.stringify({"script": script}),
 			contentType: "application/json"
 		};
-		if(!success || !fail) {
-			params.async = false;
-			var result = $.ajax(params);
-			if (result.status >= 400) { 
-				veda.trigger("error", {status: result.status, description: result.statusText});
-				throw {status: result.status, description: result.statusText};
-			}
-			return JSON.parse(result.responseText);
-		}
-		$.ajax(params).done(success).fail(fail);
+		return call_server(undefined, params, success, fail);
 	}
 	
 });

@@ -269,13 +269,12 @@ veda.Module(function (veda) { "use strict";
 			try {
 				self._.individual = get_individual(veda.ticket, uri);
 				self._.sync = true;
+				if (self._.cache) veda.cache[self.id] = self;
 			} catch (e) {
-				if (e.status === 471) {
-					return veda.trigger("login:failed");
-				}
 				self._.individual = {
 					"@": uri,
-					"rdfs:label": [{type: "String", data: uri, lang: "NONE"}]
+					"rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
+					"rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
 				};
 			}
 		} else if (uri instanceof veda.IndividualModel) {
@@ -283,6 +282,7 @@ veda.Module(function (veda) { "use strict";
 			return uri;
 		} else {
 			self._.individual = uri;
+			if (self._.cache) veda.cache[self.id] = self;
 		}
 		self._.original_individual = JSON.stringify(self._.individual);
 		Object.keys(self._.individual).map(function (property_uri) {
@@ -291,7 +291,6 @@ veda.Module(function (veda) { "use strict";
 			if (property_uri === "v-s:deleted") return;
 			self.defineProperty(property_uri);
 		});
-		if (self._.cache) veda.cache[self.id] = self;
 		if (self._.init) self.init();
 		self.trigger("individual:afterLoad", self);
 		return this;
@@ -304,6 +303,7 @@ veda.Module(function (veda) { "use strict";
 	proto.save = function() {
 		var self = this;
 		self.trigger("individual:beforeSave");
+		// Do not save individual to server if nothing changed
 		//if (self._.sync) return;
 		Object.keys(self._.individual).reduce(function (acc, property_uri) {
 			if (property_uri === "@") return acc;

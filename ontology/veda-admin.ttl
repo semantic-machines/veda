@@ -439,7 +439,7 @@ v-a:Event_4
 	};
 	put_individual (ticket, vsn, _event_id);
 
-	// Process ontology objects
+/*	// Process ontology objects
 	function hasValue(doc, prop, val) {
 		var any = !!(doc[prop] && doc[prop].length);
 		if (!val) return any;
@@ -551,7 +551,7 @@ v-a:Event_4
 				});
 			}
 			break;
-	}
+	}*/
 """ ;
   rdfs:comment "Скрипт обработки индивидов онтологии"@ru ;
   rdfs:label "Event_4"@en ;
