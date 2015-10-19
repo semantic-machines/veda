@@ -111,7 +111,7 @@ interface VedaStorageRest_API {
     int add_to_individual(string ticket, Json individual, bool wait_for_indexing);
 
     @path("trigger") @method(HTTPMethod.PUT)
-    int trigger(string ticket, string event_type, Json individual, string event_id);
+   int trigger(string _ticket, string event_type, Json individual, Json prev_state, string event_id);
 
 }
 
@@ -685,7 +685,7 @@ class VedaStorageRest : VedaStorageRest_API
         return rc.to!int;
     }
     
-   int trigger(string _ticket, string event_type, Json individual_json, string event_id)
+   int trigger(string _ticket, string event_type, Json individual_json, Json prev_state_json, string event_id)
    {
    	writeln ("@@1");
         Ticket     *ticket = context.get_ticket(_ticket);
@@ -706,8 +706,12 @@ class VedaStorageRest : VedaStorageRest_API
         	else if (event_type == "REMOVE")
         		ev_type = EVENT.REMOVE;
         	
+        	Individual prev_state_indv;
+        	if (prev_state_json != Json.init)
+        		prev_state_indv = json_to_individual(individual_json);
+        	
    	writeln ("@@4");
-			veda.core.bus_event.trigger_script (ticket, ev_type, &indv, context, event_id);
+			veda.core.bus_event.trigger_script (ticket, ev_type, &indv, &prev_state_indv, context, event_id);
 
    			rc = ResultCode.OK;   		
    		}

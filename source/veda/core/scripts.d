@@ -93,12 +93,18 @@ public void condition_thread(string thread_name)
                             else
                                 send(to, false);
                         },
-                        (string user_uri, EVENT type, string msg, immutable(string)[] indv_types, string individual_id, string event_id)
+                        (string user_uri, EVENT type, string msg, string prev_state, immutable(string)[] indv_types, string individual_id, string event_id)
                         {
                             if (msg !is null && msg.length > 3 && script_vm !is null)
                             {
                                 if (onto is null)
                                     onto = context.get_onto();
+
+								if (prev_state !is null)
+								{
+                                g_prev_state.data = cast(char *)prev_state;
+                                g_prev_state.length = cast(int)prev_state.length;
+                                }
 
                                 g_document.data = cast(char *)msg;
                                 g_document.length = cast(int)msg.length;
@@ -238,7 +244,7 @@ private void prepare_condition(Individual ss, ScriptVM script_vm)
             return;
 
         string str_script =
-            "var ticket = ''; var user_uri = get_env_str_var ('$user'); var document = get_individual (ticket, '$document'); if (document) { var _script_id = '"
+            "var ticket = ''; var user_uri = get_env_str_var ('$user'); var prev_state = get_individual (ticket, '$prev_state'); var document = get_individual (ticket, '$document'); if (document) { var _script_id = '"
             ~ ss.uri ~
             "'; var _event_id = document['@'] + _script_id; " ~ condition_text ~ "}";
         try

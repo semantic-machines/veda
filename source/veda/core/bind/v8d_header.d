@@ -14,6 +14,7 @@ import veda.core.util.cbor8individual;
 string[ string ] g_prop;
 Context g_context;
 
+_Buff   g_prev_state;
 _Buff   g_document;
 _Buff   g_user;
 
@@ -170,6 +171,10 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
         if (uri == "$document")
         {
             return &g_document;
+        }
+        else if (uri == "$prev_state")
+        {
+            return &g_prev_state;
         }
         else
         {
