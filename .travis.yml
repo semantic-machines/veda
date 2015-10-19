@@ -17,7 +17,7 @@ before_install:
   - sudo apt-get update
   - ./control-install.sh    
   - dub -v fetch vibe-d
-  - npm install selenium-webdriver
+  - npm install selenium-webdriver@2.47.0
 
 # Build
 install:
