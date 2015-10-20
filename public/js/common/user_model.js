@@ -44,6 +44,14 @@ veda.Module(function (veda) { "use strict";
 			self["v-asp:hasAspect"] = [ self.aspect ];
 			self.save();
 		}
+		
+		if (self.hasValue("v-s:defaultAppointment")) {
+			veda.appointment = self["v-s:defaultAppointment"][0];
+		} else if (self.hasValue("v-s:hasAppointment")) {
+			self["v-s:defaultAppointment"] = [ self["v-s:hasAppointment"][0] ];
+			self.save();
+			veda.appointment = self["v-s:defaultAppointment"][0];
+		}
 
 		if (self.preferences) { 
 			self.preferences.on("individual:propertyModified", function (property_uri, values) {

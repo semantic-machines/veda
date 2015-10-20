@@ -711,6 +711,13 @@ v-s:hasAppointment
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Person ;
 .
+v-s:defaultAppointment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "default appointment"@en ;
+  rdfs:label "назначение по-умолчанию"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Person ;
+.
 v-s:hasAppointmentFrom
   rdf:type owl:ObjectProperty ;
   rdfs:label "appointment from"@en ;
@@ -862,7 +869,7 @@ v-s:occupation
   rdfs:domain v-s:Appointment ;
   rdfs:label "occupation"@en ;
   rdfs:label "занимает должность"@ru ;
-  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Position ;
 .
 v-s:official
   rdf:type owl:DatatypeProperty ;
