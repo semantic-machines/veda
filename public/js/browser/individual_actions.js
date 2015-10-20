@@ -107,7 +107,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 						Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
 							var res = s.results[res_id];
 							var startForm = buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
-			            	riot.route("#/individual/" + startForm.id + "/#main//edit", true);
+			            	riot.route("#/" + startForm.id + "///edit", true);
 						});
 					} else {
 						alert('Несколько стартовых трансформаций. Меня жизнь к такому не готовила.');
