@@ -1,0 +1,63 @@
+# baseURI: http://semantic-machines.com/veda/dictionary-CurrencyKind
+# imports: http://semantic-machines.com/veda/mondi-schema
+# imports: http://semantic-machines.com/veda/veda-schema
+
+# c14n-version: 2
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix d-curk: <http://semantic-machines.com/veda/dictionary-CurrencyKind/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+
+<http://semantic-machines.com/veda/dictionary-CurrencyKind>
+  rdf:type owl:Ontology ;
+  rdfs:label "Mondi ontology. Dictionary - CurrencyKind"@en ;
+  rdfs:label "Онтология Монди. Справочник Вид валюты"@ru ;
+  owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
+.
+
+
+d:currency_usd
+	v-s:author td:AleksandraKhvostikova;
+    v-s:created "2015-10-20T10:41:08.800Z"^^xsd:dateTime;
+    a mnd-s:CurrencyKind;
+    v-s:title "USD"^^xsd:string;
+    rdfs:label "Доллар США"^^xsd:string.
+
+d:currency_eur
+	v-s:author td:AleksandraKhvostikova;
+    v-s:created "2015-10-20T10:41:32.872Z"^^xsd:dateTime;
+    a mnd-s:CurrencyKind;
+    v-s:title "EUR"^^xsd:string;
+    rdfs:label "Евро"^^xsd:string.
+
+d:currency_rub
+	v-s:author td:AleksandraKhvostikova;
+    v-s:created "2015-10-20T10:41:53.433Z"^^xsd:dateTime;
+    a mnd-s:CurrencyKind;
+    v-s:title "RUB"^^xsd:string;
+    rdfs:label "Российский рубль"^^xsd:string.
+
+d:currency_gbp
+	v-s:author td:AleksandraKhvostikova;
+    v-s:created "2015-10-20T10:42:16.872Z"^^xsd:dateTime;
+    a mnd-s:CurrencyKind;
+    v-s:title "GBP"^^xsd:string;
+    rdfs:label "Британский фунт"^^xsd:string.
+
+d:currency_rureur
+	v-s:author td:AleksandraKhvostikova;
+    v-s:created "2015-10-20T10:42:36.688Z"^^xsd:dateTime;
+    a mnd-s:CurrencyKind;
+    v-s:title "RUEUR"^^xsd:string;
+    rdfs:label "Условная единица EUR"^^xsd:string.
+
+d:currency_ruusd
+	v-s:author td:AleksandraKhvostikova;
+    v-s:created "2015-10-20T10:42:56.088Z"^^xsd:dateTime;
+    a mnd-s:CurrencyKind;
+    v-s:title "RUUSD"^^xsd:string;
+    rdfs:label "Условная единица USD"^^xsd:string.
