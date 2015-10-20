@@ -18,7 +18,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("core-" ~ proccess_name, "log", "FILE");
+        _log = new logger("veda-core-" ~ proccess_name, "log", "FILE");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
