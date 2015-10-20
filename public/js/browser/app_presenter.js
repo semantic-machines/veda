@@ -47,11 +47,8 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			var page = hash_tokens[0];
 			var params = hash_tokens.slice(1);
 			if (page !== "") {
-				$("#menu li").removeClass("active");
-				$("#menu li#" + veda.Util.escape4$(page)).addClass("active");
 				veda.load(page, params);
 			} else {
-				$("#menu li").removeClass("active");
 				veda.user.aspect.present("#main");
 			}
 		});
@@ -73,7 +70,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	
 	// Login invitation
 	var loginTmpl = $("#login-template").html();
-	var loginContainer = $("#login");
+	var loginContainer = $("#login-holder");
 	loginContainer.html(loginTmpl);
 	var errorMsg = $("#login-error", loginContainer);	
 	var submit = $("#submit", loginContainer);

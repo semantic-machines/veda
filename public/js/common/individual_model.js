@@ -96,7 +96,7 @@ veda.Module(function (veda) { "use strict";
 		if (!uri) {
 			self.on("individual:beforeSave", function () {
 				self["v-s:created"] = [new Date()];
-				self["v-s:author"] = [veda.user];
+				self["v-s:author"] = [ veda.appointment ? veda.appointment : veda.user ];
 			});
 		}
 				
