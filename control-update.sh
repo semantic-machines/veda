@@ -1,6 +1,6 @@
 echo "= UPDATE = "
 date
-if wget -q -O - "$@" https://api.travis-ci.org/repos/karpovr/veda/cc.xml?branch=master | grep 'lastBuildStatus="Success"'; then
+if wget -q -O - "$@" https://api.travis-ci.org/repos/semantic-machines/veda/cc.xml?branch=master | grep 'lastBuildStatus="Success"'; then
     echo "=== Stop daemon ==="
     ./control-stop.sh
 
