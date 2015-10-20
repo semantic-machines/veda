@@ -11,6 +11,7 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix td: <http://semantic-machines.com/veda/test-data/> .
 
 <http://semantic-machines.com/veda/dictionary-CurrencyKind>
   rdf:type owl:Ontology ;
