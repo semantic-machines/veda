@@ -1220,7 +1220,7 @@ class PThreadContext : Context
 
                 if (prepareEvents == true)
                 {
-                    bus_event_after(ticket, indv, rdfType, ss_as_cbor, ev, this, event_id);
+                    bus_event_after(ticket, indv, rdfType, ss_as_cbor, prev_state, ev, this, event_id);
                 }
 
                 Tid tid_fanout = getTid(P_MODULE.fanout);

@@ -24,7 +24,7 @@ import vibe.stream.operations;
 import veda.core.util.individual8json;
 
 import backtrace.backtrace, Backtrace = backtrace.backtrace;
-void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] rdfType, string subject_as_cbor, EVENT ev_type, Context context,
+void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] rdfType, string subject_as_cbor, string prev_state, EVENT ev_type, Context context,
                      string event_id)
 {
     if (ticket is null)
@@ -96,16 +96,16 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
 
             try
             {
-                immutable(string)[] type;
+                immutable(string)[] types;
 
                 foreach (key; rdfType.keys)
-                    type ~= key;
+                    types ~= key;
 
                 string user_uri;
 
                 if (ticket !is null)
                     user_uri = ticket.user_uri;
-                send(tid_condition, user_uri, ev_type, subject_as_cbor, type, individual.uri, event_id);
+                send(tid_condition, user_uri, ev_type, subject_as_cbor, prev_state, types, individual.uri, event_id);
             }
             catch (Exception ex)
             {
@@ -116,7 +116,7 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
     //writeln ("#bus_event E");
 }
 
-ResultCode trigger_script(Ticket *ticket, EVENT ev_type, Individual *individual, Context context, string event_id)
+ResultCode trigger_script(Ticket *ticket, EVENT ev_type, Individual *individual, Individual *indv_prev_state, Context context, string event_id)
 {
     Tid tid_condition = context.getTid(P_MODULE.condition);
 
@@ -126,6 +126,10 @@ ResultCode trigger_script(Ticket *ticket, EVENT ev_type, Individual *individual,
         setMapResources(individual.resources.get(rdf__type, Resources.init), rdfType);
 
         string subject_as_cbor = individual2cbor(individual);
+        string prev_state;	
+        
+        if (indv_prev_state !is null)
+			prev_state = individual2cbor(indv_prev_state);
 
         if (rdfType.anyExist(veda_schema__Event))
         {
@@ -136,16 +140,16 @@ ResultCode trigger_script(Ticket *ticket, EVENT ev_type, Individual *individual,
 
         try
         {
-            immutable(string)[] type;
+            immutable(string)[] types;
 
             foreach (key; rdfType.keys)
-                type ~= key;
+                types ~= key;
 
             string user_uri;
 
             if (ticket !is null)
                 user_uri = ticket.user_uri;
-            send(tid_condition, user_uri, ev_type, subject_as_cbor, type, individual.uri, event_id);
+            send(tid_condition, user_uri, ev_type, subject_as_cbor, prev_state, types, individual.uri, event_id);
 
             return ResultCode.OK;
         }
