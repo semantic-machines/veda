@@ -21,7 +21,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("pacahon", "log", "search");
+        _log = new logger("core-" ~ proccess_name, "log", "SEARCH");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

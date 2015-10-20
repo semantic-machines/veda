@@ -11,16 +11,20 @@ private
     import std.stdio, std.datetime, std.conv, std.concurrency, std.exception : assumeUnique;
     import veda.onto.resource, veda.onto.individual;
     import util.utils, util.container, util.logger;
-    import veda.core.know_predicates, veda.core.context, veda.core.interthread_signals, veda.core.log_msg;
+    import veda.core.know_predicates, veda.core.context, veda.core.interthread_signals, veda.core.log_msg, veda.core.define;
     import search.vql;
 }
 
-logger log;
-
-static this()
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
 {
-    log = new logger("pacahon", "log", "onto");
+    if (_log is null)
+        _log = new logger("core-" ~ proccess_name, "log", "ONTO");
+    return _log;
 }
+// ////// ////// ///////////////////////////////////////////
 
 alias bool[ string ] OfSubClasses;
 
@@ -87,9 +91,6 @@ class Onto
 
     public void load()
     {
-        if (log is null)
-            log = new logger("pacahon", "log", "onto");
-
         reload_count++;
         Individual[] l_individuals;
 

@@ -15,13 +15,16 @@ private
     import storage.lmdb_storage;
 }
 
-logger log;
-
-static this()
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
 {
-    log = new logger("pacahon", "log", "server");
+    if (_log is null)
+        _log = new logger("core-" ~ proccess_name, "log", "API");
+    return _log;
 }
-
+// ////// ////// ///////////////////////////////////////////
 
 
 public void individuals_manager(string thread_name, string db_path, string node_id)

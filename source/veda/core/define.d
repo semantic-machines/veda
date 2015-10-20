@@ -8,6 +8,8 @@ import util.container;
 import std.concurrency, std.file, std.stdio;
 import veda.core.know_predicates;
 
+string proccess_name = "";
+
 string[] access_list_predicates = [ veda_schema__canCreate, veda_schema__canRead, veda_schema__canUpdate, veda_schema__canDelete ];
 
 enum CNAME : byte

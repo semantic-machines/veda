@@ -6,15 +6,15 @@ module search.indexer_property;
 
 private import std.conv, std.stdio;
 private import veda.core.context, veda.core.log_msg;
-private import veda.onto.resource, onto.lang, veda.onto.individual;
+private import veda.onto.resource, onto.lang, veda.onto.individual, veda.core.define;
 
 // ////// logger ///////////////////////////////////////////
-private import util.logger;
+import util.logger;
 logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("pacahon", "log", "search");
+        _log = new logger("core-" ~ proccess_name, "log", "SEARCH");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

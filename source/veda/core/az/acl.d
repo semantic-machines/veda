@@ -27,12 +27,16 @@ private
 *********************************************************************/
 protected byte err;
 
-logger         log;
-
-static this()
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
 {
-    log = new logger("pacahon", "log", "acl");
+    if (_log is null)
+        _log = new logger("core-" ~ proccess_name, "log", "ACL");
+    return _log;
 }
+// ////// ////// ///////////////////////////////////////////
 
 /// Хранение, чтение PermissionStatement, Membership
 class Authorization : LmdbStorage

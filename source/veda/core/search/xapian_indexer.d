@@ -14,12 +14,12 @@ private import storage.lmdb_storage;
 private import search.vel, search.xapian_vql, search.indexer_property;
 
 // ////// logger ///////////////////////////////////////////
-private import util.logger;
+import util.logger;
 logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("pacahon", "log", "search");
+        _log = new logger("core-" ~ proccess_name, "log", "SEARCH");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

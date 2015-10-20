@@ -23,7 +23,7 @@ private
 private void logger_process()
 {
     //writeln("SPAWN: Logger");
-    LoggerQueue llq = null;
+    LoggerQueue[string] llq_2_filename;
 
     while (true)
     {
@@ -31,9 +31,14 @@ private void logger_process()
         auto msg = receiveOnly!(char, string, string, string, string)();
 
         char cmd = msg[ 0 ];
+		string file_name = msg[ 1 ];
 
+		LoggerQueue llq = llq_2_filename.get (file_name, null);
         if (llq is null)
-            llq = new LoggerQueue(msg[ 1 ], msg[ 2 ]);
+        {
+            llq = new LoggerQueue(file_name, msg[ 2 ]);
+            llq_2_filename[file_name] = llq;
+        }
 
         if (cmd == 'T')
             llq.trace(msg[ 4 ], msg[ 3 ]);
@@ -147,7 +152,6 @@ private class LoggerQueue
 
     private string trace_logfilename = "app";
     private string ext               = "log";
-
 
     private FILE *ff = null;
 
