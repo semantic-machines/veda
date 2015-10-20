@@ -49,8 +49,8 @@ v-a:test_node
 	vsrv:count_thread "4"^^xsd:integer ;
 	vsrv:checktime_onto_files "30"^^xsd:integer ;
 	vsrv:listener v-a:test_conn_http;
-	vsrv:jsvm_node v-a:conn_http_8081;
-	vsrv:role "basic";
+	vsrv:jsvm_node "external";
+	vsrv:role "main";
 	rdfs:label "тестовая конфигурация" ;
 .	
 

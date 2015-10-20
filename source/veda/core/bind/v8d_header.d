@@ -6,8 +6,19 @@ module bind.v8d_header;
 import std.stdio, std.conv;
 import type;
 import veda.onto.individual, veda.onto.resource, onto.lang;
-import veda.core.context;
+import veda.core.context, veda.core.define;
 import veda.core.util.cbor8individual;
+
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
+{
+    if (_log is null)
+        _log = new logger("core-" ~ proccess_name, "log", "V8D");
+    return _log;
+}
+// ////// ////// ///////////////////////////////////////////
 
 // //////////////////////////  call D from C //////////////////////////////////////////
 
@@ -56,7 +67,15 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
 
             Ticket *ticket = g_context.get_ticket(ticket_id);
 
-            return g_context.store_individual(CMD.PUT, ticket, null, cbor, false, true, event_id);
+            Individual indv;
+            int code = cbor2individual(&indv, cbor);
+            if (code < 0)
+            {
+                    //cbor2individual(indv, ss_as_cbor);
+                    log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
+                    return ResultCode.Unprocessable_Entity;
+            }
+            return g_context.put_individual(ticket, indv.uri, indv, false, true, event_id);
         }
         return ResultCode.Service_Unavailable;
     }
@@ -65,6 +84,7 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
         //writeln ("@p:v8d end put_individual");
     }
 }
+
 extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
                                           int _event_id_length)
 {
@@ -79,8 +99,15 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
             string event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
 
             Ticket *ticket = g_context.get_ticket(ticket_id);
-
-            return g_context.store_individual(CMD.ADD, ticket, null, cbor, false, true, event_id);
+            Individual indv;
+            int code = cbor2individual(&indv, cbor);
+            if (code < 0)
+            {
+                    //cbor2individual(indv, ss_as_cbor);
+                    log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
+                    return ResultCode.Unprocessable_Entity;
+            }
+            return g_context.add_to_individual(ticket, indv.uri, indv, false, true, event_id);
         }
         return ResultCode.Service_Unavailable;
     }
@@ -104,8 +131,15 @@ extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_lengt
             string event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
 
             Ticket *ticket = g_context.get_ticket(ticket_id);
-
-            return g_context.store_individual(CMD.SET, ticket, null, cbor, false, true, event_id);
+            Individual indv;
+            int code = cbor2individual(&indv, cbor);
+            if (code < 0)
+            {
+                    //cbor2individual(indv, ss_as_cbor);
+                    log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
+                    return ResultCode.Unprocessable_Entity;
+            }
+            return g_context.set_in_individual(ticket, indv.uri, indv, false, true, event_id);
         }
         return ResultCode.Service_Unavailable;
     }
@@ -129,8 +163,15 @@ extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_
             string event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
 
             Ticket *ticket = g_context.get_ticket(ticket_id);
-
-            return g_context.store_individual(CMD.REMOVE, ticket, null, cbor, false, true, event_id);
+            Individual indv;
+            int code = cbor2individual(&indv, cbor);
+            if (code < 0)
+            {
+                    //cbor2individual(indv, ss_as_cbor);
+                    log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
+                    return ResultCode.Unprocessable_Entity;
+            }
+            return g_context.remove_from_individual(ticket, indv.uri, indv, false, true, event_id);
         }
         return ResultCode.Service_Unavailable;
     }

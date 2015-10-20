@@ -5,7 +5,7 @@ module veda.core.server;
 
 private
 {
-    import core.thread, std.stdio, std.string, std.c.string, std.outbuffer, std.datetime, std.conv, std.concurrency;
+    import core.thread, std.stdio, std.string, std.c.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process;
     version (linux) import std.c.linux.linux, core.stdc.stdlib;
     import io.mq_client, io.rabbitmq_client, io.file_reader;
     import util.logger, util.utils, util.load_info;
@@ -15,7 +15,17 @@ private
     import type, az.acl, storage.storage_thread, search.xapian_indexer, veda.onto.individual, veda.onto.resource;
 }
 
-logger log;
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
+{
+    if (_log is null)
+        _log = new logger("core-" ~ proccess_name, "log", "server");
+    return _log;
+}
+// ////// ////// ///////////////////////////////////////////
+
 logger io_msg;
 
 // Called upon a signal from Linux
@@ -55,7 +65,6 @@ extern (C) public void sighandler1(int sig) nothrow @system
 
 static this()
 {
-    log    = new logger("pacahon", "log", "server");
     io_msg = new logger("pacahon", "io", "server");
 }
 
@@ -112,14 +121,16 @@ bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
 //		import io.zmq_io;
 
 
-Context init_core(string node_id)
+Context init_core(string node_id, string role, ushort listener_http_port, string write_storage_node)
 {
-    if (node_id is null || node_id.length < 2)
+    if ((node_id is null || node_id.length < 2) && role is null)
         node_id = "v-a:standart_node";
+
+    log.trace("init_core: node_id=[%s], role=[%s], listener_http_port=%d, write_storage_node=%s", node_id, role, listener_http_port,
+              write_storage_node);
 
     Backtrace.install(stderr);
 
-    log    = new logger("pacahon", "log", "server");
     io_msg = new logger("pacahon", "io", "server");
     Tid[ P_MODULE ] tids;
 
@@ -128,34 +139,51 @@ Context init_core(string node_id)
 //        log.trace_log_and_console("\nPACAHON %s.%s.%s\nSOURCE: commit=%s date=%s\n", veda.core.myversion.major, veda.core.myversion.minor,
 //                                  veda.core.myversion.patch, veda.core.myversion.hash, veda.core.myversion.date);
         Individual node;
-        Resources  roles;
         bool       is_js_worker = false;
-        bool       is_complete  = false;
-        bool       is_basic     = false;
+        bool       is_main      = true;
+        string     jsvm_node_type;
+        Context    core_context;
+        Ticket     sticket;
 
-        Context    core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop);
-        node = core_context.getConfiguration();
-        if (node.getStatus() == ResultCode.OK)
+        if (node_id !is null)
         {
-            log.trace_log_and_console("VEDA NODE CONFIGURATION: [%s]", node);
-            roles        = node.resources.get("vsrv:role", Resources.init);
-            is_js_worker = roles.anyExist([ "js_worker" ]);
-            is_basic     = roles.anyExist([ "basic" ]);
+            core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop, write_storage_node, role);
+            sticket      = core_context.sys_ticket();
+            node         = core_context.getConfiguration();
+            if (node.getStatus() == ResultCode.OK)
+            {
+                Resources roles;
+                log.trace_log_and_console("VEDA NODE CONFIGURATION: [%s]", node);
+                roles = node.resources.get("vsrv:role", Resources.init);
+                if (roles.length == 0)
+                    is_main = true;
+                else
+                {
+                    is_js_worker = roles.anyExist([ "js_worker" ]);
+                    is_main      = roles.anyExist([ "main" ]);
+                }
+                jsvm_node_type = node.getFirstLiteral("vsrv:jsvm_node");
+            }
+        }
+        else
+        {
+            if (write_storage_node !is null)
+                is_main = false;
         }
 
-        if (roles.length == 0)
+        if (is_main)
         {
-            roles ~= Resource("complete");
+            if (jsvm_node_type is null || jsvm_node_type == "")
+                jsvm_node_type = "internal";
         }
 
-        log.trace_log_and_console("NODE ROLES: [%s]", roles);
+        log.trace("init_core: is_main=%s", text(is_main));
 
-        is_complete = roles.anyExist([ "complete" ]);
 
         tids[ P_MODULE.interthread_signals ] = spawn(&interthread_signals_thread, text(P_MODULE.interthread_signals));
         wait_starting_thread(P_MODULE.interthread_signals, tids);
 
-        if (is_complete || is_basic)
+        if (is_main)
         {
             tids[ P_MODULE.fulltext_indexer ] =
                 spawn(&xapian_indexer, text(P_MODULE.fulltext_indexer), node_id);
@@ -191,7 +219,7 @@ Context init_core(string node_id)
                                                  tids[ P_MODULE.statistic_data_accumulator ]);
         wait_starting_thread(P_MODULE.print_statistic, tids);
 
-        if (is_complete || is_basic)
+        if (is_main)
         {
             tids[ P_MODULE.fanout ] = spawn(&veda.core.fanout.fanout_thread, text(P_MODULE.fanout), node_id);
             wait_starting_thread(P_MODULE.fanout, tids);
@@ -200,20 +228,43 @@ Context init_core(string node_id)
         foreach (key, value; tids)
             register(text(key), value);
 
-        if (is_complete || is_js_worker)
+        if (is_main)
         {
-            tids[ P_MODULE.condition ] = spawn(&condition_thread, text(P_MODULE.condition));
-            wait_starting_thread(P_MODULE.condition, tids);
+            if (jsvm_node_type == "internal")
+            {
+                tids[ P_MODULE.condition ] = spawn(&condition_thread, text(P_MODULE.condition), node_id);
+                wait_starting_thread(P_MODULE.condition, tids);
 
-            register(text(P_MODULE.condition), tids[ P_MODULE.condition ]);
-            Tid tid_condition = locate(text(P_MODULE.condition));
+                register(text(P_MODULE.condition), tids[ P_MODULE.condition ]);
+                Tid tid_condition = locate(text(P_MODULE.condition));
+            }
+            else if (jsvm_node_type == "external")
+            {
+                Resources listeners = node.resources.get("vsrv:listener", Resources.init);
+                foreach (listener_uri; listeners)
+                {
+                    Individual connection = core_context.get_individual(&sticket, listener_uri.uri);
+
+                    Resource   transport = connection.getFirstResource("vsrv:transport");
+                    if (transport != Resource.init)
+                    {
+                        if (transport.data() == "http")
+                        {
+                            ushort http_port = cast(ushort)connection.getFirstInteger("vsrv:port", 8080);
+                            writeln("SPAWN PROCESS");
+                            auto   js_worker_pid =
+                                spawnProcess([ "./veda", "--role", "js_worker", "--listener_http_port", "8081", "--write_storage_node",
+                                               "http://127.0.0.1:" ~ text(http_port) ]);
+                        }
+                    }
+                }
+            }
         }
         //spawn (&zmq_thread, "");
         //Context core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Ticket sticket = core_context.sys_ticket();
-        if (is_complete || is_basic)
+        if (is_main)
         {
             tids[ P_MODULE.file_reader ] = spawn(&io.file_reader.file_reader_thread, P_MODULE.file_reader, node_id, 5);
             wait_starting_thread(P_MODULE.file_reader, tids);
@@ -226,48 +277,6 @@ Context init_core(string node_id)
                 node = core_context.get_individual(&sticket, node_id);
 
                 log.trace_log_and_console("VEDA NODE CONFIGURATION:[%s]", node);
-            }
-        }
-
-        Resources listeners = node.resources.get("vsrv:listener", Resources.init);
-        foreach (listener; listeners)
-        {
-            Individual connection = core_context.get_individual(&sticket, listener.uri);
-
-            Resource   transport = connection.getFirstResource("vsrv:transport");
-            if (transport != Resource.init)
-            {
-                if (transport.data() == "rabbitmq")
-                {
-                    mq_client rabbitmq_connection = null;
-
-                    // прием данных по каналу rabbitmq
-                    log.trace_log_and_console("LISTENER: connect to rabbitmq");
-
-                    try
-                    {
-                        rabbitmq_connection = new rabbitmq_client();
-                        rabbitmq_connection.connect_as_listener(getAsSimpleMapWithoutPrefix(connection));
-
-                        if (rabbitmq_connection.is_success() == true)
-                        {
-                            //rabbitmq_connection.set_callback(&get_message);
-
-                            ServerThread thread_listener_for_rabbitmq = new ServerThread(&rabbitmq_connection.listener, node_id, "RABBITMQ");
-
-                            thread_listener_for_rabbitmq.start();
-
-//								LoadInfoThread load_info_thread1 = new LoadInfoThread(&thread_listener_for_rabbitmq.getStatistic);
-//								load_info_thread1.start();
-                        }
-                        else
-                        {
-                            writeln(rabbitmq_connection.get_fail_msg);
-                        }
-                    } catch (Exception ex)
-                    {
-                    }
-                }
             }
         }
 

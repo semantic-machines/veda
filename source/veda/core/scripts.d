@@ -15,12 +15,16 @@ private
     import bind.v8d_header;
 }
 
-logger log;
-
-static this()
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
 {
-    log = new logger("pacahon", "log", "condition");
+    if (_log is null)
+        _log = new logger("core-" ~ proccess_name, "log", "SCRIPTS");
+    return _log;
 }
+// ////// ////// ///////////////////////////////////////////
 
 struct ScriptInfo
 {
@@ -35,11 +39,11 @@ private Context context;
 private         ScriptInfo[ string ] scripts;
 private VQL     vql;
 
-public void condition_thread(string thread_name)
+public void condition_thread(string thread_name, string node_id)
 {
     core.thread.Thread.getThis().name = thread_name;
 
-    context   = new PThreadContext(null, thread_name, P_MODULE.condition);
+    context   = new PThreadContext(node_id, thread_name, P_MODULE.condition);
     g_context = context;
 
     vql = new VQL(context);
@@ -93,17 +97,18 @@ public void condition_thread(string thread_name)
                             else
                                 send(to, false);
                         },
-                        (string user_uri, EVENT type, string msg, string prev_state, immutable(string)[] indv_types, string individual_id, string event_id)
+                        (string user_uri, EVENT type, string msg, string prev_state, immutable(string)[] indv_types, string individual_id,
+                         string event_id)
                         {
                             if (msg !is null && msg.length > 3 && script_vm !is null)
                             {
                                 if (onto is null)
                                     onto = context.get_onto();
 
-								if (prev_state !is null)
-								{
-                                g_prev_state.data = cast(char *)prev_state;
-                                g_prev_state.length = cast(int)prev_state.length;
+                                if (prev_state !is null)
+                                {
+                                    g_prev_state.data = cast(char *)prev_state;
+                                    g_prev_state.length = cast(int)prev_state.length;
                                 }
 
                                 g_document.data = cast(char *)msg;

@@ -24,44 +24,16 @@ import vibe.stream.operations;
 import veda.core.util.individual8json;
 
 import backtrace.backtrace, Backtrace = backtrace.backtrace;
-void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] rdfType, string subject_as_cbor, string prev_state, EVENT ev_type, Context context,
+void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] rdfType, string subject_as_cbor, string prev_state, EVENT ev_type,
+                     Context context,
                      string event_id)
 {
     if (ticket is null)
     {
         printPrettyTrace(stderr);
     }
-/*
-    try
-    {
-        Json indv_json = individual_to_json(*individual);
 
-        Json req_body = Json.emptyObject;
-        if (ticket is null)
-            req_body[ "ticket" ] = "null";
-        else
-            req_body[ "ticket" ] = ticket.id;
-        req_body[ "individual" ] = indv_json;
-        req_body[ "event_type" ] = text(ev_type);
-        req_body[ "event_id" ]   = text(event_id);
-
-
-
-        requestHTTP("http://127.0.0.1:8081/trigger",
-                    (scope req) {
-                        req.method = HTTPMethod.PUT;
-                        req.writeJsonBody(req_body);
-                    },
-                    (scope res) {
-                        logInfo("Response: %s", res.bodyReader.readAllUTF8());
-                    }
-                    );
-    }
-    catch (Exception ex)
-    {
-        writeln("EX!bus_event:", ex.msg);
-    }
-*/
+    string js_vm_node = context.get_js_vm_node();
     //writeln ("@bus_event B subject_as_cbor=[", individual.uri, "]");
     //writeln (rdfType);
 
@@ -82,34 +54,68 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
             }
         }
 
-
-        Tid tid_condition = context.getTid(P_MODULE.condition);
-        if (tid_condition != Tid.init)
+        if (js_vm_node !is null)
         {
-            if (rdfType.anyExist(veda_schema__Event))
-            {
-                // изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
-                send(tid_condition, CMD.RELOAD, subject_as_cbor, thisTid);
-                receive((bool){});
-            }
-
-
             try
             {
-                immutable(string)[] types;
+                Json indv_json = individual_to_json(*individual);
 
-                foreach (key; rdfType.keys)
-                    types ~= key;
+                Json req_body = Json.emptyObject;
+                if (ticket is null)
+                    req_body[ "ticket" ] = "null";
+                else
+                    req_body[ "ticket" ] = ticket.id;
+                req_body[ "individual" ] = indv_json;
+                req_body[ "event_type" ] = text(ev_type);
+                req_body[ "event_id" ]   = text(event_id);
 
-                string user_uri;
 
-                if (ticket !is null)
-                    user_uri = ticket.user_uri;
-                send(tid_condition, user_uri, ev_type, subject_as_cbor, prev_state, types, individual.uri, event_id);
+
+                requestHTTP(js_vm_node ~ "/trigger",
+                            (scope req) {
+                                req.method = HTTPMethod.PUT;
+                                req.writeJsonBody(req_body);
+                            },
+                            (scope res) {
+                                logInfo("Response: %s", res.bodyReader.readAllUTF8());
+                            }
+                            );
             }
             catch (Exception ex)
             {
-                writeln("EX!bus_event:", ex.msg);
+                writeln("EX!bus_event:", ex.msg, ", url=", js_vm_node);
+            }
+        }
+        else
+        {
+            Tid tid_condition = context.getTid(P_MODULE.condition);
+            if (tid_condition != Tid.init)
+            {
+                if (rdfType.anyExist(veda_schema__Event))
+                {
+                    // изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
+                    send(tid_condition, CMD.RELOAD, subject_as_cbor, thisTid);
+                    receive((bool){});
+                }
+
+
+                try
+                {
+                    immutable(string)[] types;
+
+                    foreach (key; rdfType.keys)
+                        types ~= key;
+
+                    string user_uri;
+
+                    if (ticket !is null)
+                        user_uri = ticket.user_uri;
+                    send(tid_condition, user_uri, ev_type, subject_as_cbor, prev_state, types, individual.uri, event_id);
+                }
+                catch (Exception ex)
+                {
+                    writeln("EX!bus_event:", ex.msg);
+                }
             }
         }
     }
@@ -126,10 +132,10 @@ ResultCode trigger_script(Ticket *ticket, EVENT ev_type, Individual *individual,
         setMapResources(individual.resources.get(rdf__type, Resources.init), rdfType);
 
         string subject_as_cbor = individual2cbor(individual);
-        string prev_state;	
-        
+        string prev_state;
+
         if (indv_prev_state !is null)
-			prev_state = individual2cbor(indv_prev_state);
+            prev_state = individual2cbor(indv_prev_state);
 
         if (rdfType.anyExist(veda_schema__Event))
         {

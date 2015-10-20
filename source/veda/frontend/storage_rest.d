@@ -140,15 +140,10 @@ class VedaStorageRest : VedaStorageRest_API
     private Context    context;
     private Worker *[] pool;
     string[ string ] properties;
-    int                count_thread;
-
     int                last_used_tid = 0;
 
-    this(std.concurrency.Tid[] _pool, Context _local_context, ref string[ string ] _properties)
+    this(std.concurrency.Tid[] _pool, Context _local_context)
     {
-        properties   = _properties;
-        count_thread = properties.as!(int)("count_thread");
-
         context = _local_context;
         foreach (idx, tid; _pool)
         {
@@ -717,9 +712,10 @@ class VedaStorageRest : VedaStorageRest_API
    		}
         if (rc != ResultCode.OK)
         {
-        	   	writeln ("@@5 rc=", rc);
+        	   	writeln ("@@6 rc=", rc);
             throw new HTTPStatusException(rc);
         }    
+   	writeln ("@@7");
 
         return rc.to!int;           
    }

@@ -16,12 +16,17 @@ private
     import az.acl;
 }
 
-logger log;
-
-static this()
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
 {
-    log = new logger("pacahon", "log", "API");
+    if (_log is null)
+        _log = new logger("core-" ~ proccess_name, "log", "API");
+    return _log;
 }
+// ////// ////// ///////////////////////////////////////////
+
 
 Tid    dummy_tid;
 
@@ -62,10 +67,19 @@ class PThreadContext : Context
     private long           local_last_update_time;
     private Individual     node = Individual.init;
     private string         node_id;
-    private string         external_write_storage;
 
-    this(string _node_id, string context_name, P_MODULE _id)
+    private string         external_write_storage;
+    private string         external_js_vm;
+
+
+    this(string _node_id, string context_name, P_MODULE _id, string _external_write_storage = null, string _role = null)
     {
+        if (_node_id is null)
+        {
+            writeln("NODE_ID IS NULL");
+            printPrettyTrace(stdout);
+        }
+
         node_id = _node_id;
 
         inividuals_storage = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals");
@@ -73,9 +87,6 @@ class PThreadContext : Context
         acl_indexes        = new Authorization(acl_indexes_db_path, DBMode.R, context_name ~ ":acl");
 
         name = context_name;
-
-        if (trace_msg[ 21 ] == 1)
-            log.trace("CREATE NEW CONTEXT:", context_name);
 
         foreach (id; P_MODULE.min .. P_MODULE.max)
         {
@@ -97,6 +108,19 @@ class PThreadContext : Context
 
         local_count_put     = get_count_put();
         local_count_indexed = get_count_indexed();
+
+        getConfiguration();
+
+        if (_external_write_storage !is null)
+        {
+            external_write_storage = _external_write_storage;
+            log.trace_log_and_console("NEW CONTEXT [%s], external: write storage=%s, js_vm=%s", context_name, external_write_storage, external_js_vm);
+        }
+    }
+
+    public string get_js_vm_node()
+    {
+        return external_js_vm;
     }
 
     @property
@@ -109,19 +133,20 @@ class PThreadContext : Context
             try
             {
                 ticket = create_new_ticket("v-a:VedaSystem");
-                set_global_systicket(ticket);
             }
             catch (Exception ex)
             {
+                ticket.user_uri = "v-a:VedaSystem";
             }
+            set_global_systicket(ticket);
         }
-        //writeln("### sys ticket=", ticket);
+        //writeln("###2 sys ticket=", ticket);
         return ticket;
     }
 
     public Individual getConfiguration()
     {
-        if (node == Individual.init)
+        if (node == Individual.init && node_id !is null)
         {
             this.reopen_ro_subject_storage_db();
             Ticket sticket = sys_ticket();
@@ -130,12 +155,8 @@ class PThreadContext : Context
             if (node.getStatus() != ResultCode.OK)
                 node = Individual.init;
 
-            Resources write_storage = node.resources.get("vsrv:write_storage", Resources.init);
-            if (write_storage.length != 0)
-            {
-                external_write_storage = write_storage[ 0 ].asString();
-                log.trace_log_and_console("USING external write storage=%s", external_write_storage);
-            }
+            external_write_storage = node.getFirstLiteral("vsrv:write_storage_node");
+            external_js_vm         = node.getFirstLiteral("vsrv:jsvm_node");
         }
         return node;
     }
@@ -654,9 +675,16 @@ class PThreadContext : Context
         }
     }
 
-    Ticket create_new_ticket(string user_id)
+    private Ticket create_new_ticket(string user_id)
     {
-        Ticket     ticket;
+        Ticket ticket;
+
+        if (external_write_storage !is null)
+        {
+            writeln("$$$ create_new_ticket EXTERNAL");
+            return ticket;
+        }
+
         Individual new_ticket;
 
         new_ticket.resources[ rdf__type ] ~= Resource(ticket__Ticket);
@@ -698,41 +726,49 @@ class PThreadContext : Context
     {
         StopWatch sw; sw.start;
 
+        Ticket    ticket;
+
         try
         {
-            if (trace_msg[ 18 ] == 1)
-                log.trace("authenticate, login=[%s] password=[%s]", login, password);
-
-            Ticket ticket;
-            ticket.result = ResultCode.Authentication_Failed;
-
-            if (login == null || login.length < 1 || password == null || password.length < 6)
-                return ticket;
-
-            if (this.getTid(P_MODULE.subject_manager) != Tid.init)
-                this.wait_thread(P_MODULE.subject_manager);
-            if (this.getTid(P_MODULE.fulltext_indexer) != Tid.init)
-                this.wait_thread(P_MODULE.fulltext_indexer);
-
-            Ticket       sticket         = sys_ticket;
-            Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
-            foreach (user; candidate_users)
+            if (external_write_storage !is null)
             {
-                string user_id = user.getFirstResource(veda_schema__owner).uri;
-                if (user_id is null)
-                    continue;
-
-                Resources pass = user.resources.get(veda_schema__password, _empty_Resources);
-                if (pass.length > 0 && pass[ 0 ] == password)
-                {
-                    ticket = create_new_ticket(user_id);
-                    return ticket;
-                }
+                writeln("$$$ authenticate EXTERNAL");
             }
+            else
+            {
+                if (trace_msg[ 18 ] == 1)
+                    log.trace("authenticate, login=[%s] password=[%s]", login, password);
 
-            log.trace("fail authenticate, login=[%s] password=[%s]", login, password);
+                ticket.result = ResultCode.Authentication_Failed;
 
-            ticket.result = ResultCode.Authentication_Failed;
+                if (login == null || login.length < 1 || password == null || password.length < 6)
+                    return ticket;
+
+                if (this.getTid(P_MODULE.subject_manager) != Tid.init)
+                    this.wait_thread(P_MODULE.subject_manager);
+                if (this.getTid(P_MODULE.fulltext_indexer) != Tid.init)
+                    this.wait_thread(P_MODULE.fulltext_indexer);
+
+                Ticket       sticket         = sys_ticket;
+                Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
+                foreach (user; candidate_users)
+                {
+                    string user_id = user.getFirstResource(veda_schema__owner).uri;
+                    if (user_id is null)
+                        continue;
+
+                    Resources pass = user.resources.get(veda_schema__password, _empty_Resources);
+                    if (pass.length > 0 && pass[ 0 ] == password)
+                    {
+                        ticket = create_new_ticket(user_id);
+                        return ticket;
+                    }
+                }
+
+                log.trace("fail authenticate, login=[%s] password=[%s]", login, password);
+
+                ticket.result = ResultCode.Authentication_Failed;
+            }
             return ticket;
         }
         finally
@@ -1060,44 +1096,9 @@ class PThreadContext : Context
         }
     }
 
-    public immutable(string)[] get_individuals_as_cbor(Ticket * ticket, string[] uris)
-    {
-        StopWatch sw; sw.start;
-
-/*
-        try
-        {
-            string[] res = string[].init;
-
-            foreach (uri; uris)
-            {
-                if (acl_indexes.authorize(uri, ticket, Access.can_read) == Access.can_read)
-                {
-                    Individual individual         = Individual.init;
-                    string     individual_as_cbor = get_individual_from_storage(uri);
-
-                    if (individual_as_cbor !is null && individual_as_cbor.length > 1)
-                        cbor2individual(&individual, individual_as_cbor);
-
-                    res ~= individual;
-                }
-            }
-
-            return res;
-        }
-        finally
-        {
-            stat(CMD.GET, sw);
-        }
- */
-        immutable(string)[] res;
-        return res;
-    }
-
-
-    public ResultCode store_individual(CMD cmd, Ticket *ticket, Individual *indv, string ss_as_cbor, bool wait_for_indexing,
-                                       bool prepareEvents = true,
-                                       string event_id = null)
+    private ResultCode store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool wait_for_indexing,
+                                        bool prepareEvents,
+                                        string event_id)
     {
         StopWatch sw; sw.start;
 
@@ -1115,42 +1116,13 @@ class PThreadContext : Context
             if (trace_msg[ 27 ] == 1)
                 log.trace("[%s] store_individual", name);
 
-            if (indv is null && ss_as_cbor is null)
+            if (indv is null || indv.resources.length == 0)
                 return ResultCode.No_Content;
 
-            //if (trace_msg[ 27 ] == 1)
-            //    log.trace("[%s] store_individual 1", name);
-
-            if (ss_as_cbor is null)
-                ss_as_cbor = individual2cbor(indv);
-
-            //if (trace_msg[ 27 ] == 1)
-            //    log.trace("[%s] store_individual 2", name);
-
-            Individual tmp_indv;
-            if (indv is null && ss_as_cbor !is null)
-            {
-                indv = &tmp_indv;
-                int code = cbor2individual(indv, ss_as_cbor);
-                if (code < 0)
-                {
-                    //cbor2individual(indv, ss_as_cbor);
-                    log.trace("ERR:store_individual:cbor2individual [%s]", ss_as_cbor);
-                    return ResultCode.Unprocessable_Entity;
-                }
-            }
-
-            //if (trace_msg[ 27 ] == 1)
-            //    log.trace("[%s] store_individual 3", name);
-
-            if (indv is null && ss_as_cbor is null)
-                return ResultCode.No_Content;
+            string ss_as_cbor = individual2cbor(indv);
 
             if (trace_msg[ 27 ] == 1)
                 log.trace("[%s] store_individual: %s", name, *indv);
-
-            if (indv.resources.length == 0)
-                return ResultCode.No_Content;
 
             Resource[ string ] rdfType;
 
@@ -1250,31 +1222,55 @@ class PThreadContext : Context
         }
     }
 
-    public ResultCode put_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing)
+    public ResultCode put_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
+                                     string event_id = null)
     {
         individual.uri = uri;
-        return store_individual(CMD.PUT, ticket, &individual, null, wait_for_indexing);
+        if (external_write_storage !is null)
+        {
+            writeln("$$$ put_individual EXTERNAL");
+            return ResultCode.Not_Implemented;
+        }
+        return store_individual(CMD.PUT, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
     }
 
-    public ResultCode add_to_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing)
+    public ResultCode add_to_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
+                                        string event_id = null)
     {
         individual.uri = uri;
-        return store_individual(CMD.ADD, ticket, &individual, null, wait_for_indexing);
+        if (external_write_storage !is null)
+        {
+            writeln("$$$ add_to_individual EXTERNAL");
+            return ResultCode.Not_Implemented;
+        }
+        return store_individual(CMD.ADD, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
     }
 
-    public ResultCode set_in_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing)
+    public ResultCode set_in_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
+                                        string event_id = null)
     {
         individual.uri = uri;
-        return store_individual(CMD.SET, ticket, &individual, null, wait_for_indexing);
+        if (external_write_storage !is null)
+        {
+            writeln("$$$ set_in_individual EXTERNAL");
+            return ResultCode.Not_Implemented;
+        }
+        return store_individual(CMD.SET, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
     }
 
-    public ResultCode remove_from_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing)
+    public ResultCode remove_from_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
+                                             string event_id = null)
     {
         individual.uri = uri;
-        return store_individual(CMD.REMOVE, ticket, &individual, null, wait_for_indexing);
+        if (external_write_storage !is null)
+        {
+            writeln("$$$ remove_from_individual EXTERNAL");
+            return ResultCode.Not_Implemented;
+        }
+        return store_individual(CMD.REMOVE, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
     }
 
-
+/////////////////////////////////////////////////////////////////////////////
 
     public void wait_thread(P_MODULE thread_id)
     {

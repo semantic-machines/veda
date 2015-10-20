@@ -190,10 +190,11 @@ interface Context
     bool authorize(string uri, Ticket *ticket, ubyte request_acess);
     Individual[] get_individuals_via_query(Ticket *ticket, string query_str);
     string get_individual_from_storage(string uri);
-    Ticket create_new_ticket(string user_id);
     Onto get_onto();
+
     @property
     public Ticket sys_ticket();
+    public string get_js_vm_node();
 
 
     // *************************************************** external API ? *********************************** //
@@ -288,33 +289,6 @@ interface Context
     public string get_individual_as_cbor(Ticket *ticket, string uri, out ResultCode rs);
 
     /**
-     * Вернуть список индивидуалов(CBOR) по списку uri
-       Params:
-                ticket = указатель на обьект Ticket
-                uris   = список содержащий заданные uri
-
-       Returns:
-                авторизованные индивиды в виде массива CBOR строк
-     */
-    public immutable(string)[] get_individuals_as_cbor(Ticket * ticket, string[] uris);
-
-    /**
-     * Сохранить индивидуал
-       Params:
-                 ticket = указатель на обьект Ticket
-                 indv   = указатель на экземпляр Individual, сохраняется если !is null
-                 ss_as_cbor = индивидуал в виде строки, сохраняется если $(D indv is null)
-                 wait_for_indexing = ожидать окончания полнотекстовой индексации
-                 event_id = указывается при сохранения индивида из скриптов (если идет обработка вызванная срабатыванием storage event)
-
-       Returns:
-                Код результата операции
-     */
-    public ResultCode store_individual(CMD cmd, Ticket *ticket, Individual *indv, string ss_as_cbor, bool wait_for_indexing,
-                                       bool prepareEvents = true,
-                                       string event_id = null);
-
-    /**
        Сохранить индивидуал, по указанному uri
        Params:
                  ticket = указатель на обьект Ticket
@@ -325,11 +299,15 @@ interface Context
        Returns:
                 Код результата операции
      */
-    public ResultCode put_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing);
+    public ResultCode put_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
+                                     string event_id = null);
 
-    public ResultCode add_to_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing);
-    public ResultCode set_in_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing);
-    public ResultCode remove_from_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing);
+    public ResultCode add_to_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
+                                        string event_id = null);
+    public ResultCode set_in_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
+                                        string event_id = null);
+    public ResultCode remove_from_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
+                                             string event_id = null);
 
     // ////////////////////////////////////////////// AUTHORIZATION ////////////////////////////////////////////
     /**
