@@ -16,14 +16,16 @@ private
     import az.acl;
 }
 
+// ////// logger ///////////////////////////////////////////
+import util.logger;
 logger _log;
-logger log ()
+logger log()
 {
-	if (_log is null)
-    	_log = new logger("pacahon", "log", "VQL");	
-    return _log;	
-} 
-
+    if (_log is null)
+        _log = new logger("core-" ~ proccess_name, "log", "VQL");
+    return _log;
+}
+// ////// ////// ///////////////////////////////////////////
 
 static const int RETURN    = 0;
 static const int FILTER    = 1;
