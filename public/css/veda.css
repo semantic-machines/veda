@@ -158,7 +158,7 @@ span.twitter-typeahead .tt-hint {
   position: relative;
 }
 
-.codemirror-editor > button { 
+.fs-btn { 
   margin: 5px;
   font-size: 14px;
   position:absolute;right:0px;z-index:999;
@@ -188,6 +188,14 @@ html, body {
   width:100%;
   height:100%;
   z-index: 999999;
+}
+#login-holder {
+  position:absolute; 
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index: 1000000;
 }
 
 .CodeMirror {
