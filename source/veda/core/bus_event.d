@@ -8,6 +8,12 @@ import type;
 private import util.container, util.logger, util.utils, veda.core.util.cbor8individual;
 private import veda.core.know_predicates, veda.core.context, veda.core.define;
 private import veda.onto.individual, veda.onto.resource;
+import backtrace.backtrace, Backtrace = backtrace.backtrace;
+import vibe.data.json;
+import vibe.core.log;
+import vibe.http.client;
+import vibe.stream.operations;
+import veda.core.util.individual8json;
 
 logger log;
 
@@ -17,13 +23,7 @@ static this()
 }
 
 int count;
-import vibe.data.json;
-import vibe.core.log;
-import vibe.http.client;
-import vibe.stream.operations;
-import veda.core.util.individual8json;
 
-import backtrace.backtrace, Backtrace = backtrace.backtrace;
 void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] rdfType, string subject_as_cbor, string prev_state, EVENT ev_type,
                      Context context,
                      string event_id)
