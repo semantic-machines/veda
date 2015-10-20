@@ -18,12 +18,12 @@ Individual node;
 string     database_name;
 
 // ////// logger ///////////////////////////////////////////
-private import util.logger;
+import util.logger;
 logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("pacahon", "log", "fanout");
+        _log = new logger("core-" ~ proccess_name, "log", "API");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
