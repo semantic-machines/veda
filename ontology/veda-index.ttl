@@ -81,14 +81,14 @@ vdi:index_01
   vdi:forClass v-wf:DecisionForm ;
   vdi:forClass v-wf:WorkOrder ;
   vdi:forClass v-wf:WorkItem ;
+  vdi:forClass v-s:Membership ;
+  vdi:forClass v-s:PermissionStatement ;
   vdi:indexed_to "system" ;
 .
 
 vdi:index_02
   rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Membership ;
   vdi:forClass v-wf:Variable ;
-  vdi:forClass v-s:PermissionStatement ;
   vdi:forClass v-s:Journal ;
   vdi:forClass v-s:JournalRecord ;
   vdi:indexed_to "not-indexed" ;
