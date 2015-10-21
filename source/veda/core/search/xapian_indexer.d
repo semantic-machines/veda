@@ -135,32 +135,7 @@ private class IndexerContext
         }
     }
 
-    void delete_msg(string msg)
-    {
-        Individual indv;
-
-        if (cbor2individual(&indv, msg) < 0)
-        {
-            log.trace("!ERR:invalid individual:[%s]", msg);
-            return;
-        }
-
-        string uuid = "uid_" ~ to_lower_and_replace_delimeters(indv.uri);
-
-        indexer_base_db.delete_document(uuid.ptr, uuid.length, &err);
-
-        counter++;
-
-        if (counter % 5000 == 0)
-        {
-            if (trace_msg[ 212 ] == 1)
-                log.trace("commit delete..");
-
-            commit_all_db();
-        }
-    }
-
-    void index_msg(string msg)
+    void index_msg(string msg, bool is_deleted = false)
     {
         Individual indv;
 
@@ -676,17 +651,22 @@ private class IndexerContext
             doc.add_boolean_term(uuid.ptr, uuid.length, &err);
             doc.set_data(indv.uri.ptr, indv.uri.length, &err);
 
+            if (is_deleted)
+            {
+                indexer_deleted_db.replace_document(uuid.ptr, uuid.length, doc, &err);
+            	doc      = new_Document(&err);
+            	indexer.set_document(doc, &err);
+            }
 
             if (dbname == "system")
             {
                 indexer_system_db.replace_document(uuid.ptr, uuid.length, doc, &err);
-                //writeln ("as system ",  uuid);
             }
             else
             {
                 indexer_base_db.replace_document(uuid.ptr, uuid.length, doc, &err);
             }
-
+            
             if (counter % 100 == 0)
             {
                 if (trace_msg[ 211 ] == 1)
@@ -968,14 +948,11 @@ void xapian_indexer(string thread_name, string _node_id)
                         }
                         else if (cmd == CMD.PUT)
                         {
-					    	//core.memory.GC.disable ();                        	
-                            ictx.index_msg(msg);                            
-					    	//core.memory.GC.enable ();      
-       						//core.memory.GC.collect ();	
+                            ictx.index_msg(msg);
                         }
                         else if (cmd == CMD.DELETE)
                         {
-                            ictx.delete_msg(msg);
+                            ictx.index_msg(msg, true);
                         }
                     },
                     (CMD cmd, int arg, bool arg2)
