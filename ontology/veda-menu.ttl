@@ -7,6 +7,7 @@
 @prefix v-m: <http://semantic-machines.com/veda/veda-menu/> .
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
 
 <http://semantic-machines.com/veda/veda-menu>
   rdf:type owl:Ontology ;
@@ -53,8 +54,35 @@ v-m:MainMenu
 	rdf:type v-m:Menu ;
 	rdfs:label "Main menu"@en ;
 	rdfs:label "Главное меню"@ru ;
+	v-m:menuItem v-m:Tasks ;
 	v-m:menuItem v-m:DocMenu ;
 	v-m:menuItem v-m:Search ;
+.
+v-m:Tasks
+	rdf:type v-m:Menu ;
+	rdfs:label "Tasks"@en ;
+	rdfs:label "Задачи"@ru ;
+	v-m:menuItem v-m:Inbox ;
+	v-m:menuItem v-m:Outbox ;
+	v-m:menuItem v-m:Completed ;
+.
+v-m:Inbox
+	rdf:type v-m:Menu ;
+	rdfs:label "Inbox"@en ;
+	rdfs:label "Входящие"@ru ;
+	v-m:objectLink v-ft:Inbox ;
+.
+v-m:Outbox
+	rdf:type v-m:Menu ;
+	rdfs:label "Outbox"@en ;
+	rdfs:label "Исходящие"@ru ;
+	v-m:objectLink v-ft:Outbox ;
+.
+v-m:Completed
+	rdf:type v-m:Menu ;
+	rdfs:label "Completed"@en ;
+	rdfs:label "Выполненные"@ru ;
+	v-m:objectLink v-ft:Completed ;
 .
 v-m:DocMenu
 	rdf:type v-m:Menu ;
