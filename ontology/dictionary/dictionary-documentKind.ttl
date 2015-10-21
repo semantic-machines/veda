@@ -22,14 +22,6 @@
 .
 
 
-d:d24ed1518119496aa45fd7ee0714173e6 a mnd-s:DocumentKind;
-    rdfs:isDefinedBy <http://semantic-machines.com/veda/mondi-schema-asppd/>;
-    rdfs:label "Техническое задание"@ru.
-
-d:d2653a9f521ea5332f982d0e7fe2a193b a mnd-s:DocumentKind;
-    rdfs:isDefinedBy <http://semantic-machines.com/veda/mondi-schema-asppd/>;
-    rdfs:label "Коммерческое предложение"@ru.
-
 d:a6121c30f-052a-e9b6-319f-0c9ead8b9732 v-s:author td:AleksandraKhvostikova;
     a mnd-s:DocumentKind;
     v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3;
@@ -65,9 +57,12 @@ d:ace9defa2-7c73-2d57-679f-0ccb1dbc324d v-s:author td:AleksandraKhvostikova;
     rdfs:isDefinedBy <http://semantic-machines.com/veda/dictionary-documentKind/>;
     rdfs:label " Прочие"^^xsd:string.
 
-d:d2653a9f521ea5332f982d0e7fe2a193b v-s:author td:AleksandraKhvostikova;
+
+d:d2653a9f521ea5332f982d0e7fe2a193b 
+	v-s:author td:AleksandraKhvostikova;
     a mnd-s:DocumentKind;
     v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3;
+	v-s:hasParentLink d:ab8f2e964-d3d9-9d73-53b2-cdcd931c16a6;    
     rdfs:isDefinedBy <http://semantic-machines.com/veda/dictionary-documentKind/>;
     rdfs:label "Коммерческое предложение"@ru.
 
