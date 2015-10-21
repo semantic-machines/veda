@@ -269,7 +269,6 @@ veda.Module(function (veda) { "use strict";
 			try {
 				self._.individual = get_individual(veda.ticket, uri);
 				self._.sync = true;
-				if (self._.cache) veda.cache[self.id] = self;
 			} catch (e) {
 				self._.individual = {
 					"@": uri,
@@ -292,6 +291,7 @@ veda.Module(function (veda) { "use strict";
 			self.defineProperty(property_uri);
 		});
 		if (self._.init) self.init();
+		if (self._.cache) veda.cache[self.id] = self;
 		self.trigger("individual:afterLoad", self);
 		return this;
 	};
