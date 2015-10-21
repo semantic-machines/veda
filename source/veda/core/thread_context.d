@@ -14,6 +14,11 @@ private
     import veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.interthread_signals, veda.core.log_msg;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, storage.lmdb_storage;
     import az.acl;
+    
+    import vibe.data.json;
+	import vibe.core.log;
+	import vibe.http.client;
+	import vibe.stream.operations;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -22,7 +27,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("core-" ~ proccess_name, "log", "API");
+        _log = new logger("veda-core-" ~ proccess_name, "log", "API");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -730,9 +735,39 @@ class PThreadContext : Context
 
         try
         {
+        	string url = external_write_storage ~ "/authenticate";
             if (external_write_storage !is null)
             {
-                writeln("$$$ authenticate EXTERNAL");
+            try
+            {
+                Json req_body = Json.emptyObject;
+                req_body[ "login" ] = login;
+                req_body[ "password" ] = password;
+
+                requestHTTP(url ~ "?login=" ~ login ~ "&password=" ~ password,
+                            (scope req) {
+                                req.method = HTTPMethod.GET;
+//                                req.headers["login"] = login;
+//                                req.headers["password"] = password;
+//                                req.writeJsonBody(req_body);
+							writeln ("req:", req.toString ());
+                            },
+                            (scope res) {
+                            	auto res_json = res.readJson ();
+                            	if (res_json["result"] == 200)
+                            	{
+                            		ticket.id = res_json["id"].get!string; 
+                            		ticket.user_uri = res_json["user_uri"].get!string; 
+                            		ticket.end_time = res_json["end_time"].get!long; 
+                            		ticket.result = ResultCode.OK;
+								}
+                            }
+                            );
+            }
+            catch (Exception ex)
+            {
+                writeln("ERR! authenticate:", ex.msg, ", url=", url);
+            }
             }
             else
             {

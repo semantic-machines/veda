@@ -21,7 +21,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("core-" ~ proccess_name, "log", "server");
+        _log = new logger("veda-core-" ~ proccess_name, "log", "server");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -145,9 +145,9 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
         Context    core_context;
         Ticket     sticket;
 
+        core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop, write_storage_node, role);
         if (node_id !is null)
         {
-            core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop, write_storage_node, role);
             sticket      = core_context.sys_ticket();
             node         = core_context.getConfiguration();
             if (node.getStatus() == ResultCode.OK)
@@ -251,9 +251,8 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
                         if (transport.data() == "http")
                         {
                             ushort http_port = cast(ushort)connection.getFirstInteger("vsrv:port", 8080);
-                            writeln("SPAWN PROCESS");
                             auto   js_worker_pid =
-                                spawnProcess([ "./veda", "--role", "js_worker", "--listener_http_port", "8081", "--write_storage_node",
+                                spawnProcess([ "./veda-js-worker", "--role", "js_worker", "--listener_http_port", "8081", "--write_storage_node",
                                                "http://127.0.0.1:" ~ text(http_port) ]);
                         }
                     }

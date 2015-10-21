@@ -5,6 +5,18 @@ import veda.pacahon_driver;
 import veda.storage_rest;
 import veda.onto.individual, veda.onto.resource, veda.core.context, veda.core.define;
 
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
+{
+    if (_log is null)
+        _log = new logger("veda-core-" ~ proccess_name, "log", "frontend");
+    return _log;
+}
+// ////// ////// ///////////////////////////////////////////
+
+
 void view_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
 {
     res.renderCompat!("view_error.dt",
@@ -58,7 +70,7 @@ void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
     }
     catch (Throwable ex)
     {
-        writeln("Ex!: ", __FUNCTION__, ":", text(__LINE__), ", ", ex.msg, ", filename:", filename);
+        log.trace("ERR! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", " ~ ex.msg ~ ", filename:" ~ filename);
     }
 }
 
@@ -112,7 +124,7 @@ shared static this()
     core_context = veda.core.server.init_core(node_id, role, listener_http_port, write_storage_node);
     if (core_context is null)
     {
-        writeln("ERR: Veda core has not been initialized");
+        log.trace("ERR! Veda core has not been initialized");
         return;
     }
 
@@ -175,35 +187,37 @@ void start_http_listener(Context core_context, ref std.concurrency.Tid[] pool, u
 
     registerRestInterface(router, vsr);
 
-    logInfo("============ROUTES=============");
+    log.trace("============ROUTES=============");
     auto routes = router.getAllRoutes();
-    logInfo("GET:");
+    log.trace("GET:");
     foreach (route; routes)
     {
         if (route.method == HTTPMethod.GET)
-            logInfo(route.pattern);
+            log.trace(route.pattern);
     }
 
-    logInfo("PUT:");
+    log.trace("PUT:");
     foreach (route; routes)
     {
         if (route.method == HTTPMethod.PUT)
-            logInfo(route.pattern);
+            log.trace(route.pattern);
     }
-    logInfo("POST:");
+
+    log.trace("POST:");
     foreach (route; routes)
     {
         if (route.method == HTTPMethod.POST)
-            logInfo(route.pattern);
+            log.trace(route.pattern);
     }
-    logInfo("DELETE:");
+
+    log.trace("DELETE:");
     foreach (route; routes)
     {
         if (route.method == HTTPMethod.DELETE)
-            logInfo(route.pattern);
+            log.trace(route.pattern);
     }
-    logInfo("===============================");
+    log.trace("===============================");
 
     listenHTTP(settings, router);
-    logInfo("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
+    log.trace("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
 }
