@@ -194,7 +194,7 @@ interface Context
 
     @property
     public Ticket sys_ticket();
-    public string get_js_vm_node();
+    public string get_js_vm_url();
 
 
     // *************************************************** external API ? *********************************** //
@@ -420,5 +420,17 @@ public void set_global_systicket(Ticket new_data)
     atomicStore(systicket_end_time, new_data.end_time);
 }
 
+private shared string _external_js_vm_url;
+public string get_g_external_js_vm_url()
+{
+    string data = atomicLoad(_external_js_vm_url);
+
+    return data;
+}
+
+public void set_g_external_js_vm_url(string new_data)
+{
+    atomicStore(_external_js_vm_url, new_data);
+}
 
 
