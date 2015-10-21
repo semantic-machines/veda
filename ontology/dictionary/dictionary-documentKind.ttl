@@ -22,55 +22,92 @@
 .
 
 
-d:a5e8c1e41-dff1-27e0-9fdc-e380ecfa6e02 v-s:author td:AleksandraKhvostikova;
-	a mnd-s:DocumentKind;
-    rdfs:label "Виды документов для идеи"@ru
-.
-d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3 v-s:author td:AleksandraKhvostikova;
-	a mnd-s:DocumentKind;
-    rdfs:label "Группа АСППД"@ru
-.
-d:d24ed1518119496aa45fd7ee0714173e6 v-s:author td:AleksandraKhvostikova;
-	a mnd-s:DocumentKind;
-    v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3;	
-    rdfs:label "Техническое задание"@ru
-.
-d:d2653a9f521ea5332f982d0e7fe2a193b v-s:author td:AleksandraKhvostikova;
-	a mnd-s:DocumentKind;
-    v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3;
-    rdfs:label "Коммерческое предложение"@ru
-.
-d:a93809019-e952-d4e0-f870-9ab0dbf9c58c v-s:author td:AleksandraKhvostikova;
-    a mnd-s:DocumentKind;
-    v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3;
-    rdfs:label "План управления проектом"^^xsd:string
-.
-d:a0b2e7441-bd01-9c69-1f1d-777ed4b377c9 v-s:author td:AleksandraKhvostikova;
-    a mnd-s:DocumentKind;
-    v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3;
-    v-s:hasParentLink d:a5e8c1e41-dff1-27e0-9fdc-e380ecfa6e02;	        
-    rdfs:label " Чертеж"^^xsd:string
-.
-d:a4f9e7fd7-ce49-bc89-b19e-b9c20e39e599 v-s:author td:AleksandraKhvostikova;
-    a mnd-s:DocumentKind;
-    v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3;
-    v-s:hasParentLink d:a5e8c1e41-dff1-27e0-9fdc-e380ecfa6e02;	        
-    rdfs:label " Фотоматериалы"^^xsd:string
-.
-d:a03e970d9-d451-7fd9-7fa7-a6eef162b208 v-s:author td:AleksandraKhvostikova;
-    a mnd-s:DocumentKind;
-    v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3;
-    v-s:hasParentLink d:a5e8c1e41-dff1-27e0-9fdc-e380ecfa6e02;	    
-    rdfs:label " ТЭО"^^xsd:string
-.
+d:d24ed1518119496aa45fd7ee0714173e6 a mnd-s:DocumentKind;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/mondi-schema-asppd/>;
+    rdfs:label "Техническое задание"@ru.
+
+d:d2653a9f521ea5332f982d0e7fe2a193b a mnd-s:DocumentKind;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/mondi-schema-asppd/>;
+    rdfs:label "Коммерческое предложение"@ru.
+
 d:a6121c30f-052a-e9b6-319f-0c9ead8b9732 v-s:author td:AleksandraKhvostikova;
     a mnd-s:DocumentKind;
     v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3;
-    rdfs:label "Приемочная документация"^^xsd:string
-.
-d:ace9defa2-7c73-2d57-679f-0ccb1dbc324d v-s:author td:AleksandraKhvostikova;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/dictionary-documentKind/>;
+    rdfs:label "Приемочная документация"^^xsd:string.
+
+d:d24ed1518119496aa45fd7ee0714173e6 v-s:author td:AleksandraKhvostikova;
     a mnd-s:DocumentKind;
     v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3;
-    v-s:hasParentLink d:a5e8c1e41-dff1-27e0-9fdc-e380ecfa6e02;	        
-    rdfs:label " Прочие"^^xsd:string
-.
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/dictionary-documentKind/>;
+    rdfs:label "Техническое задание"@ru.
+
+d:a0b2e7441-bd01-9c69-1f1d-777ed4b377c9 v-s:author td:AleksandraKhvostikova;
+    a mnd-s:DocumentKind;
+    v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3, d:a5e8c1e41-dff1-27e0-9fdc-e380ecfa6e02;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/dictionary-documentKind/>;
+    rdfs:label " Чертеж"^^xsd:string.
+
+d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3 v-s:author td:AleksandraKhvostikova;
+    a mnd-s:DocumentKind;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/dictionary-documentKind/>;
+    rdfs:label "Группа АСППД"@ru.
+
+d:a93809019-e952-d4e0-f870-9ab0dbf9c58c v-s:author td:AleksandraKhvostikova;
+    a mnd-s:DocumentKind;
+    v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/dictionary-documentKind/>;
+    rdfs:label "План управления проектом"^^xsd:string.
+
+d:ace9defa2-7c73-2d57-679f-0ccb1dbc324d v-s:author td:AleksandraKhvostikova;
+    a mnd-s:DocumentKind;
+    v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3, d:a5e8c1e41-dff1-27e0-9fdc-e380ecfa6e02;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/dictionary-documentKind/>;
+    rdfs:label " Прочие"^^xsd:string.
+
+d:d2653a9f521ea5332f982d0e7fe2a193b v-s:author td:AleksandraKhvostikova;
+    a mnd-s:DocumentKind;
+    v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/dictionary-documentKind/>;
+    rdfs:label "Коммерческое предложение"@ru.
+
+d:a4f9e7fd7-ce49-bc89-b19e-b9c20e39e599 v-s:author td:AleksandraKhvostikova;
+    a mnd-s:DocumentKind;
+    v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3, d:a5e8c1e41-dff1-27e0-9fdc-e380ecfa6e02;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/dictionary-documentKind/>;
+    rdfs:label " Фотоматериалы"^^xsd:string.
+
+d:a03e970d9-d451-7fd9-7fa7-a6eef162b208 v-s:author td:AleksandraKhvostikova;
+    a mnd-s:DocumentKind;
+    v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3, d:a5e8c1e41-dff1-27e0-9fdc-e380ecfa6e02;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/dictionary-documentKind/>;
+    rdfs:label " ТЭО"^^xsd:string.
+
+d:a5e8c1e41-dff1-27e0-9fdc-e380ecfa6e02 v-s:author td:AleksandraKhvostikova;
+    a mnd-s:DocumentKind;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/dictionary-documentKind/>;
+    rdfs:label "Виды документов для идеи"@ru.
+
+
+d:ab8f2e964-d3d9-9d73-53b2-cdcd931c16a6 v-s:author td:AleksandraKhvostikova;
+    v-s:created "2015-10-21T12:06:30.000Z"^^xsd:dateTime;
+    a mnd-s:DocumentKind;
+    rdfs:label "Виды документов для затрат"^^xsd:string.
+
+d:a21d21b69-866c-51f2-86f7-9eada17716c9 v-s:author td:AleksandraKhvostikova;
+    v-s:created "2015-10-21T12:09:23.000Z"^^xsd:dateTime;
+    a mnd-s:DocumentKind;
+    v-s:hasParentLink d:ab8f2e964-d3d9-9d73-53b2-cdcd931c16a6;
+    rdfs:label "Протокол"^^xsd:string.
+
+d:af5c1790c-8ec4-1185-0c6d-29a8d99bee0f v-s:author td:AleksandraKhvostikova;
+    v-s:created "2015-10-21T12:14:52.000Z"^^xsd:dateTime;
+    a mnd-s:DocumentKind;
+    v-s:hasParentLink d:ab8f2e964-d3d9-9d73-53b2-cdcd931c16a6;
+    rdfs:label "Смета"^^xsd:string.
+
+d:aca36e76a-a32d-ab00-a6e4-3d0337340121 v-s:author td:AleksandraKhvostikova;
+    v-s:created "2015-10-21T12:15:34.000Z"^^xsd:dateTime;
+    a mnd-s:DocumentKind;
+    v-s:hasParentLink d:ab8f2e964-d3d9-9d73-53b2-cdcd931c16a6;
+    rdfs:label "Переписка"^^xsd:string.
