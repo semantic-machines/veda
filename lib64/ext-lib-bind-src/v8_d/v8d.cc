@@ -49,6 +49,10 @@ Handle<Value> individual2jsobject(Individual *individual, Isolate *isolate)
             {
                 in_obj->Set(f_data, v8::Number::New(isolate, value.decimal_mantissa_data * pow(10.0, value.decimal_expanent_data)));
             }
+            else if (value.type == _Integer)
+            {
+                in_obj->Set(f_data, v8::Integer::New(isolate, value.long_data));
+            }
             else if (value.type == _Datetime)
             {
                 in_obj->Set(f_data, v8::Date::New(isolate, value.long_data*1000));
