@@ -169,7 +169,7 @@ private void create_table_if_not_exists(string predicate)
         {
             mysql_conn.query(
                              "CREATE TABLE `veda_db`.`" ~ predicate ~
-                             "` ( `ID` BIGINT NOT NULL AUTO_INCREMENT, `doc_id` VARCHAR(128) NOT NULL,  `value` MEDIUMTEXT NULL,  `lang` CHAR(2) NULL, PRIMARY KEY (`ID`),  INDEX c(`doc_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
+                             "` ( `ID` BIGINT NOT NULL AUTO_INCREMENT, `doc_id` VARCHAR(128) NOT NULL,  `value` MEDIUMTEXT NULL,  `lang` CHAR(2) NULL, PRIMARY KEY (`ID`),  INDEX c1(`doc_id`), INDEX c2(`lang`), INDEX c3(`value`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
             isExistsTable[ predicate ] = true;
         }
         catch (Exception ex)
@@ -207,6 +207,8 @@ private void connect_to_mysql(Context context)
                                               connection.getFirstLiteral("vsrv:login"),
                                               connection.getFirstLiteral("vsrv:credentional"),
                                               database_name);
+
+		            mysql_conn.query("SET NAMES utf8;");
 
                     //writeln("@@@@1 CONNECT TO MYSQL IS OK ", text(mysql_conn));
                 }
