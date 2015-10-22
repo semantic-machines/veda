@@ -148,8 +148,8 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
         core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop, write_storage_node, role);
         if (node_id !is null)
         {
-            sticket      = core_context.sys_ticket();
-            node         = core_context.getConfiguration();
+            sticket = core_context.sys_ticket();
+            node    = core_context.getConfiguration();
             if (node.getStatus() == ResultCode.OK)
             {
                 Resources roles;
@@ -177,7 +177,7 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
                 jsvm_node_type = "internal";
         }
 
-        log.trace("init_core: is_main=%s", text(is_main));
+        log.trace("init core: is_main=%s, jsvm_node_type=%s", text(is_main), jsvm_node_type);
 
 
         tids[ P_MODULE.interthread_signals ] = spawn(&interthread_signals_thread, text(P_MODULE.interthread_signals));
@@ -250,10 +250,12 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
                     {
                         if (transport.data() == "http")
                         {
-                            ushort http_port = cast(ushort)connection.getFirstInteger("vsrv:port", 8080);
+                            ushort http_port     = cast(ushort)connection.getFirstInteger("vsrv:port", 8080);
                             auto   js_worker_pid =
                                 spawnProcess([ "./veda-js-worker", "--role", "js_worker", "--listener_http_port", "8081", "--write_storage_node",
                                                "http://127.0.0.1:" ~ text(http_port) ]);
+
+                            set_g_external_js_vm_url("http://127.0.0.1:" ~ text(http_port));
                         }
                     }
                 }

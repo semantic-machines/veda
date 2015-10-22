@@ -5,7 +5,7 @@ import vibe.data.json;
 import veda.core.server, veda.core.context, veda.core.thread_context, veda.core.know_predicates;
 import type;
 import veda.onto.onto, onto.lang, veda.onto.individual, veda.onto.resource;
-import veda.core.util.cbor8json, veda.core.util.individual8json; 
+import veda.core.util.cbor8json, veda.core.util.individual8json;
 
 enum Command
 {

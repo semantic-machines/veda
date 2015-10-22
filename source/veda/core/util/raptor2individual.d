@@ -3,7 +3,7 @@ module util.raptor2individual;
 import std.string, std.stdio : writeln;
 import bind.libraptor_header;
 import type;
-import veda.onto.individual, veda.onto.resource; 
+import veda.onto.individual, veda.onto.resource;
 import onto.lang;
 import util.utils;
 import veda.core.context;
@@ -197,7 +197,7 @@ public Individual *[ string ] ttl2individuals(string file_name, Context context)
     raptor_uri    *base_uri;
 
     //if (world is null)
-        world = raptor_new_world_internal();
+    world = raptor_new_world_internal();
 
     rdf_parser = raptor_new_parser(world, "turtle\0".ptr);
 
@@ -213,7 +213,7 @@ public Individual *[ string ] ttl2individuals(string file_name, Context context)
     raptor_parser_parse_file(rdf_parser, uri, base_uri);
     context.add_prefix_map(prefixes);
 
-    res          = _individuals.dup;
+    res = _individuals.dup;
 
     raptor_free_parser(rdf_parser);
 

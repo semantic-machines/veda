@@ -10,15 +10,15 @@ private
     import type;
     import bind.xapian_d_header, bind.v8d_header;
     import io.mq_client;
-    import util.container, util.logger, util.utils, util.cbor, veda.core.util.cbor8individual;
+    import util.container, util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, veda.core.util.individual8json;
     import veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.interthread_signals, veda.core.log_msg;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, storage.lmdb_storage;
     import az.acl;
-    
+
     import vibe.data.json;
-	import vibe.core.log;
-	import vibe.http.client;
-	import vibe.stream.operations;
+    import vibe.core.log;
+    import vibe.http.client;
+    import vibe.stream.operations;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -74,8 +74,7 @@ class PThreadContext : Context
     private string         node_id;
 
     private string         external_write_storage;
-    private string         external_js_vm;
-
+    private string         external_js_vm_url;
 
     this(string _node_id, string context_name, P_MODULE _id, string _external_write_storage = null, string _role = null)
     {
@@ -116,16 +115,19 @@ class PThreadContext : Context
 
         getConfiguration();
 
+        external_js_vm_url = get_g_external_js_vm_url();
+
         if (_external_write_storage !is null)
         {
             external_write_storage = _external_write_storage;
-            log.trace_log_and_console("NEW CONTEXT [%s], external: write storage=%s, js_vm=%s", context_name, external_write_storage, external_js_vm);
+            log.trace_log_and_console("NEW CONTEXT [%s], external: write storage=%s, js_vm=%s", context_name, external_write_storage,
+                                      external_js_vm_url);
         }
     }
 
-    public string get_js_vm_node()
+    string get_js_vm_url()
     {
-        return external_js_vm;
+        return external_js_vm_url;
     }
 
     @property
@@ -161,7 +163,7 @@ class PThreadContext : Context
                 node = Individual.init;
 
             external_write_storage = node.getFirstLiteral("vsrv:write_storage_node");
-            external_js_vm         = node.getFirstLiteral("vsrv:jsvm_node");
+//            external_js_vm         = node.getFirstLiteral("vsrv:jsvm_node");
         }
         return node;
     }
@@ -527,11 +529,12 @@ class PThreadContext : Context
         if (now - local_time_check_indexed > timeout)
         {
             int count_indexed = get_count_indexed();
-            //writeln ("@count_indexed=", count_indexed);
-            //writeln ("@local_count_indexed=", local_count_indexed);
+            //writeln ("@ft_check_for_reload:count_indexed=", count_indexed);
+            //writeln ("@ft_check_for_reload:local_count_indexed=", local_count_indexed);
 
             if (count_indexed - local_count_indexed > 0)
             {
+                //writeln ("@ft_check_for_reload:execute load");
                 local_time_check_indexed = now;
                 local_count_indexed      = count_indexed;
                 load();
@@ -735,39 +738,36 @@ class PThreadContext : Context
 
         try
         {
-        	string url = external_write_storage ~ "/authenticate";
+            string url = external_write_storage ~ "/authenticate";
             if (external_write_storage !is null)
             {
-            try
-            {
-                Json req_body = Json.emptyObject;
-                req_body[ "login" ] = login;
-                req_body[ "password" ] = password;
+                try
+                {
+                    Json req_body = Json.emptyObject;
+                    req_body[ "login" ]    = login;
+                    req_body[ "password" ] = password;
 
-                requestHTTP(url ~ "?login=" ~ login ~ "&password=" ~ password,
-                            (scope req) {
-                                req.method = HTTPMethod.GET;
-//                                req.headers["login"] = login;
-//                                req.headers["password"] = password;
-//                                req.writeJsonBody(req_body);
-							writeln ("req:", req.toString ());
-                            },
-                            (scope res) {
-                            	auto res_json = res.readJson ();
-                            	if (res_json["result"] == 200)
-                            	{
-                            		ticket.id = res_json["id"].get!string; 
-                            		ticket.user_uri = res_json["user_uri"].get!string; 
-                            		ticket.end_time = res_json["end_time"].get!long; 
-                            		ticket.result = ResultCode.OK;
-								}
-                            }
-                            );
-            }
-            catch (Exception ex)
-            {
-                writeln("ERR! authenticate:", ex.msg, ", url=", url);
-            }
+                    requestHTTP(url ~ "?login=" ~ login ~ "&password=" ~ password,
+                                (scope req) {
+                                    req.method = HTTPMethod.GET;
+//								writeln ("req:", req.toString ());
+                                },
+                                (scope res) {
+                                    auto res_json = res.readJson();
+                                    if (res_json[ "result" ] == 200)
+                                    {
+                                        ticket.id = res_json[ "id" ].get!string;
+                                        ticket.user_uri = res_json[ "user_uri" ].get!string;
+                                        ticket.end_time = res_json[ "end_time" ].get!long;
+                                        ticket.result = ResultCode.OK;
+                                    }
+                                }
+                                );
+                }
+                catch (Exception ex)
+                {
+                    writeln("ERR! authenticate:", ex.msg, ", url=", url);
+                }
             }
             else
             {
@@ -1139,116 +1139,160 @@ class PThreadContext : Context
 
         try
         {
-            Tid tid_subject_manager;
-            Tid tid_acl;
-
-            if (indv !is null && (indv.uri is null || indv.uri.length < 2))
+            if (external_write_storage !is null)
             {
-                log.trace("Ex! store_subject:%s", indv);
-                return ResultCode.Unprocessable_Entity;
-            }
+                writeln("$$$ put_individual EXTERNAL");
 
-            if (trace_msg[ 27 ] == 1)
-                log.trace("[%s] store_individual", name);
 
-            if (indv is null || indv.resources.length == 0)
-                return ResultCode.No_Content;
+                string url;
+                if (cmd == CMD.PUT)
+                    url = external_write_storage ~ "/put_individual";
 
-            string ss_as_cbor = individual2cbor(indv);
-
-            if (trace_msg[ 27 ] == 1)
-                log.trace("[%s] store_individual: %s", name, *indv);
-
-            Resource[ string ] rdfType;
-
-            setMapResources(indv.resources.get(rdf__type, Resources.init), rdfType);
-
-            if (rdfType.anyExist(veda_schema__Membership) == true)
-            {
-                // before storing the data, expected availability acl_manager.
-                wait_thread(P_MODULE.acl_manager);
-                if (this.acl_indexes.isExistMemberShip(indv) == true)
-                    return ResultCode.Duplicate_Key;
-            }
-            else if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
-            {
-                // before storing the data, expected availability acl_manager.
-                wait_thread(P_MODULE.acl_manager);
-                if (this.acl_indexes.isExistPermissionStatement(indv) == true)
-                    return ResultCode.Duplicate_Key;
-            }
-
-            EVENT ev = EVENT.NONE;
-
-            tid_subject_manager = getTid(P_MODULE.subject_manager);
-            string prev_state;
-            if (tid_subject_manager != Tid.init)
-            {
-                send(tid_subject_manager, cmd, ss_as_cbor, thisTid);
-                receive((EVENT _ev, string _prev_state, string _new_state, Tid from)
-                        {
-                            if (from == getTid(P_MODULE.subject_manager))
-                                ev = _ev;
-                            prev_state = _prev_state;
-                            ss_as_cbor = _new_state;
-                        });
-            }
-
-            if (ev == EVENT.NOT_READY)
-                return ResultCode.Not_Ready;
-
-            if (ev == EVENT.ERROR)
-                return ResultCode.Fail_Store;
-
-            if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
-            {
-                if (indv.isExist(veda_schema__deleted, true) == false)
+                try
                 {
-                    Tid tid_search_manager = getTid(P_MODULE.fulltext_indexer);
+                    Json req_body = Json.emptyObject;
+                    req_body[ "ticket" ]            = ticket.id;
+                    req_body[ "individual" ]        = individual_to_json(*indv);
+                    req_body[ "wait_for_indexing" ] = wait_for_indexing;
 
-                    if (tid_search_manager != Tid.init)
-                    {
-                        push_signal("search", Clock.currStdTime() / 10000);
-
-                        send(tid_search_manager, CMD.PUT, ss_as_cbor);
-                    }
+                    requestHTTP(url,
+                                (scope req) {
+                                    req.method = HTTPMethod.PUT;
+                                    req.writeJsonBody(req_body);
+                                    writeln("req:", req.toString());
+                                },
+                                (scope res) {
+                                    auto res_json = res.readJson();
+                                    if (res_json[ "result" ] == 200)
+                                    {
+                                        ticket.id = res_json[ "id" ].get!string;
+                                        ticket.user_uri = res_json[ "user_uri" ].get!string;
+                                        ticket.end_time = res_json[ "end_time" ].get!long;
+                                        ticket.result = ResultCode.OK;
+                                    }
+                                }
+                                );
+                    return ResultCode.OK;
                 }
-                else
+                catch (Exception ex)
                 {
-                    Tid tid_search_manager = getTid(P_MODULE.fulltext_indexer);
-
-                    if (tid_search_manager != Tid.init)
-                    {
-                        push_signal("search", Clock.currStdTime() / 10000);
-
-                        send(tid_search_manager, CMD.DELETE, ss_as_cbor);
-                    }
+                    writeln("ERR! authenticate:", ex.msg, ", url=", url);
+                    return ResultCode.Internal_Server_Error;
                 }
-
-                if (prepareEvents == true)
-                {
-                    bus_event_after(ticket, indv, rdfType, ss_as_cbor, prev_state, ev, this, event_id);
-                }
-
-                Tid tid_fanout = getTid(P_MODULE.fanout);
-                if (tid_fanout != Tid.init)
-                {
-                    send(tid_fanout, CMD.PUT, prev_state, ss_as_cbor);
-                }
-
-
-                if (wait_for_indexing)
-                {
-                    //writeln ("wait-for-indexing");
-                    wait_thread(P_MODULE.fulltext_indexer);
-                }
-
-                return ResultCode.OK;
             }
             else
             {
-                log.trace("Ex! store_subject:%s", ev);
-                return ResultCode.Internal_Server_Error;
+                Tid tid_subject_manager;
+                Tid tid_acl;
+
+                if (indv !is null && (indv.uri is null || indv.uri.length < 2))
+                {
+                    log.trace("Ex! store_subject:%s", indv);
+                    return ResultCode.Unprocessable_Entity;
+                }
+
+                if (trace_msg[ 27 ] == 1)
+                    log.trace("[%s] store_individual", name);
+
+                if (indv is null || indv.resources.length == 0)
+                    return ResultCode.No_Content;
+
+                string ss_as_cbor = individual2cbor(indv);
+
+                if (trace_msg[ 27 ] == 1)
+                    log.trace("[%s] store_individual: %s", name, *indv);
+
+                Resource[ string ] rdfType;
+
+                setMapResources(indv.resources.get(rdf__type, Resources.init), rdfType);
+
+                if (rdfType.anyExist(veda_schema__Membership) == true)
+                {
+                    // before storing the data, expected availability acl_manager.
+                    wait_thread(P_MODULE.acl_manager);
+                    if (this.acl_indexes.isExistMemberShip(indv) == true)
+                        return ResultCode.Duplicate_Key;
+                }
+                else if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
+                {
+                    // before storing the data, expected availability acl_manager.
+                    wait_thread(P_MODULE.acl_manager);
+                    if (this.acl_indexes.isExistPermissionStatement(indv) == true)
+                        return ResultCode.Duplicate_Key;
+                }
+
+                EVENT ev = EVENT.NONE;
+
+                tid_subject_manager = getTid(P_MODULE.subject_manager);
+                string prev_state;
+                if (tid_subject_manager != Tid.init)
+                {
+                    send(tid_subject_manager, cmd, ss_as_cbor, thisTid);
+                    receive((EVENT _ev, string _prev_state, string _new_state, Tid from)
+                            {
+                                if (from == getTid(P_MODULE.subject_manager))
+                                    ev = _ev;
+                                prev_state = _prev_state;
+                                ss_as_cbor = _new_state;
+                            });
+                }
+
+                if (ev == EVENT.NOT_READY)
+                    return ResultCode.Not_Ready;
+
+                if (ev == EVENT.ERROR)
+                    return ResultCode.Fail_Store;
+
+                if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
+                {
+                    if (indv.isExist(veda_schema__deleted, true) == false)
+                    {
+                        Tid tid_search_manager = getTid(P_MODULE.fulltext_indexer);
+
+                        if (tid_search_manager != Tid.init)
+                        {
+                            push_signal("search", Clock.currStdTime() / 10000);
+
+                            send(tid_search_manager, CMD.PUT, ss_as_cbor);
+                        }
+                    }
+                    else
+                    {
+                        Tid tid_search_manager = getTid(P_MODULE.fulltext_indexer);
+
+                        if (tid_search_manager != Tid.init)
+                        {
+                            push_signal("search", Clock.currStdTime() / 10000);
+
+                            send(tid_search_manager, CMD.DELETE, ss_as_cbor);
+                        }
+                    }
+
+                    if (prepareEvents == true)
+                    {
+                        bus_event_after(ticket, indv, rdfType, ss_as_cbor, prev_state, ev, this, event_id);
+                    }
+
+                    Tid tid_fanout = getTid(P_MODULE.fanout);
+                    if (tid_fanout != Tid.init)
+                    {
+                        send(tid_fanout, CMD.PUT, prev_state, ss_as_cbor);
+                    }
+
+
+                    if (wait_for_indexing)
+                    {
+                        //writeln ("wait-for-indexing");
+                        wait_thread(P_MODULE.fulltext_indexer);
+                    }
+
+                    return ResultCode.OK;
+                }
+                else
+                {
+                    log.trace("Ex! store_subject:%s", ev);
+                    return ResultCode.Internal_Server_Error;
+                }
             }
         }
         finally
@@ -1261,11 +1305,6 @@ class PThreadContext : Context
                                      string event_id = null)
     {
         individual.uri = uri;
-        if (external_write_storage !is null)
-        {
-            writeln("$$$ put_individual EXTERNAL");
-            return ResultCode.Not_Implemented;
-        }
         return store_individual(CMD.PUT, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
     }
 
@@ -1273,11 +1312,6 @@ class PThreadContext : Context
                                         string event_id = null)
     {
         individual.uri = uri;
-        if (external_write_storage !is null)
-        {
-            writeln("$$$ add_to_individual EXTERNAL");
-            return ResultCode.Not_Implemented;
-        }
         return store_individual(CMD.ADD, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
     }
 
@@ -1285,11 +1319,6 @@ class PThreadContext : Context
                                         string event_id = null)
     {
         individual.uri = uri;
-        if (external_write_storage !is null)
-        {
-            writeln("$$$ set_in_individual EXTERNAL");
-            return ResultCode.Not_Implemented;
-        }
         return store_individual(CMD.SET, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
     }
 
@@ -1297,11 +1326,6 @@ class PThreadContext : Context
                                              string event_id = null)
     {
         individual.uri = uri;
-        if (external_write_storage !is null)
-        {
-            writeln("$$$ remove_from_individual EXTERNAL");
-            return ResultCode.Not_Implemented;
-        }
         return store_individual(CMD.REMOVE, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
     }
 

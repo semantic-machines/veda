@@ -131,8 +131,8 @@ public class LmdbStorage
 
     public void close_db()
     {
-    	if (mode == DBMode.RW)
-        	flush(1);
+        if (mode == DBMode.RW)
+            flush(1);
         mdb_env_close(env);
         db_is_open[ _path ] = false;
 //      writeln ("@@@ close_db, thread:", core.thread.Thread.getThis().name);
@@ -195,8 +195,8 @@ public class LmdbStorage
 
             if (rc != 0)
                 log.trace_log_and_console("%s(%s) WARN#2:%s", __FUNCTION__ ~ ":" ~ text(__LINE__), _path, fromStringz(mdb_strerror(rc)));
-            else    
-            	db_is_open[ _path ] = true;
+            else
+                db_is_open[ _path ] = true;
 
             if (rc == 0 && mode == DBMode.RW)
             {
@@ -448,11 +448,11 @@ public class LmdbStorage
 
     public long count_entries()
     {
-        long    count = -1;
-        int     rc;
+        long count = -1;
+        int  rc;
 
-		if (db_is_open.get (_path, false) == false)
-			return -1;
+        if (db_is_open.get(_path, false) == false)
+            return -1;
 
         MDB_txn *txn_r;
         MDB_dbi dbi;
@@ -514,8 +514,8 @@ public class LmdbStorage
         if (uri is null || uri.length < 2)
             return null;
 
-		if (db_is_open.get (_path, false) == false)
-			return null;
+        if (db_is_open.get(_path, false) == false)
+            return null;
 
         string  str = null;
         int     rc;

@@ -57,20 +57,20 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
 
     while (true)
     {
-    	try
-    	{
-        	processed(context, true);
+        try
+        {
+            processed(context, true);
         }
-    	catch (Throwable thw)
-    	{
-    		log.trace("file_reader_thread Ex:", thw.msg);
-    	}
+        catch (Throwable thw)
+        {
+            log.trace("file_reader_thread Ex:", thw.msg);
+        }
 
         if (checktime > 0)
         {
-        	//writeln (checktime); 
+            //writeln (checktime);
             core.thread.Thread.sleep(dur!("seconds")(checktime));
-        }    
+        }
     }
 }
 
@@ -83,9 +83,9 @@ void processed(Context context, bool is_load)
     string[ string ] filename_2_prefix;
     Individual *[ string ][ string ] individuals_2_filename;
     Set!string files_to_load;
-	Ticket sticket = context.sys_ticket();
+    Ticket sticket = context.sys_ticket();
 
-    auto oFiles = dirEntries(path, SpanMode.depth);
+    auto   oFiles = dirEntries(path, SpanMode.depth);
 
     if (trace_msg[ 29 ] == 1)
         log.trace("load directory sequence");
@@ -221,7 +221,7 @@ void processed(Context context, bool is_load)
                             ResultCode res = context.put_individual(&sticket, indv.uri, indv, false);
                             if (trace_msg[ 33 ] == 1)
                                 log.trace("store, uri=%s %s", indv.uri, indv);
-                                
+
                             //log.trace("store, uri=%s %s \n%s \n%s", indv.uri, uri, text(indv), text(indv_in_storage));
                             if (res != ResultCode.OK)
                                 log.trace("individual =%s, not store, errcode =%s", indv.uri, text(res));
@@ -232,7 +232,7 @@ void processed(Context context, bool is_load)
             idx++;
 
             //    context.reopen_ro_subject_storage_db();
-			//    context.reopen_ro_fulltext_indexer_db();
+            //    context.reopen_ro_fulltext_indexer_db();
 
             Tid tid_condition_manager = context.getTid(P_MODULE.condition);
             if (tid_condition_manager != Tid.init)

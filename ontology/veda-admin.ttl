@@ -33,6 +33,7 @@ v-a:standart_node
 	vsrv:count_thread "4"^^xsd:integer ;
 	vsrv:checktime_onto_files "30"^^xsd:integer ;
 	vsrv:listener v-a:conn_http;
+	vsrv:role "main";
 	rdfs:label "стандартная конфигурация" ;
 .	
 
@@ -59,7 +60,7 @@ v-a:developer_node
 	vsrv:count_thread "4"^^xsd:integer ;
 	vsrv:checktime_onto_files "1"^^xsd:integer ;
 	vsrv:listener v-a:conn_http;
-	vsrv:role "complete";
+	vsrv:role "main";
 	vsrv:push_individual_by_event v-a:conn_mysql1;
 	rdfs:label "конфигурация разработчика" ;
 .	

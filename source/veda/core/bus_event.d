@@ -33,7 +33,7 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
         printPrettyTrace(stderr);
     }
 
-    string js_vm_node = context.get_js_vm_node();
+    string js_vm_node = context.get_js_vm_url();
     //writeln ("@bus_event B subject_as_cbor=[", individual.uri, "]");
     //writeln (rdfType);
 
