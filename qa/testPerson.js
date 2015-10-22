@@ -63,7 +63,7 @@ basic.getDrivers().forEach (function (drv) {
 	(
 	  function () {
 		  driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] button[id="submit"]'}).click();
-		  driver.sleep(1000); // Иначе слишком часто щелкает поиск
+		  driver.sleep(10000); // Иначе слишком часто щелкает поиск
 		  return driver.findElement({css:'span[href="#params-ft"]+span[class="badge"]'}).getText().then(function (txt) {
 			  return txt == '1';
 		  });
