@@ -19,7 +19,7 @@ module.exports = {
 	getDrivers: function () {
 		if (process.env.TRAVIS_BUILD_NUMBER === undefined) {
 			return  [
-//			         {'os':'Windows 7',		'browser':'firefox',				'version':'40.0'},
+			         {'os':'Windows 7',		'browser':'firefox',				'version':'40.0'},
 			         {'os':'Windows 7',		'browser':'chrome',					'version':'43.0'},
 //					 {'os':'Windows 7',		'browser':'opera',					'version':'32.0'},
 			         {'os':'Windows 7',		'browser':'internet explorer',		'version':'11.0'}
@@ -87,7 +87,7 @@ module.exports = {
 				console.log('****** GET NEW PAGE. PLATFORM > '+driverAbout.os+' / '+driverAbout.browser+' / '+driverAbout.version);
 			});
 		}
-		driver.manage().window().setSize(1280, 1024);
+		driver.manage().window().setSize(1280, 960);
 	},
 	/**
 	 * @param login - логин пользователя
