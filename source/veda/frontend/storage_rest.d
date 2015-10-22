@@ -99,16 +99,16 @@ interface VedaStorageRest_API {
     Json get_individual(string ticket, string uri);
 
     @path("put_individual") @method(HTTPMethod.PUT)
-    int put_individual(string ticket, Json individual, bool wait_for_indexing);
+    int put_individual(string ticket, Json individual, bool wait_for_indexing, bool prepare_events = true, string event_id = null);
 
     @path("remove_from_individual") @method(HTTPMethod.PUT)
-    int remove_from_individual(string ticket, Json individual, bool wait_for_indexing);
+    int remove_from_individual(string ticket, Json individual, bool wait_for_indexing, bool prepare_events = true, string event_id = null);
 
     @path("set_in_individual") @method(HTTPMethod.PUT)
-    int set_in_individual(string ticket, Json individual, bool wait_for_indexing);
+    int set_in_individual(string ticket, Json individual, bool wait_for_indexing, bool prepare_events = true, string event_id = null);
 
     @path("add_to_individual") @method(HTTPMethod.PUT)
-    int add_to_individual(string ticket, Json individual, bool wait_for_indexing);
+    int add_to_individual(string ticket, Json individual, bool wait_for_indexing, bool prepare_events = true, string event_id = null);
 
     @path("trigger") @method(HTTPMethod.PUT)
     int trigger(string _ticket, string event_type, Json individual, Json prev_state, string event_id);
@@ -608,7 +608,7 @@ class VedaStorageRest : VedaStorageRest_API
             return Json.init;
     }
 
-    int put_individual(string _ticket, Json individual_json, bool wait_for_indexing)
+    int put_individual(string _ticket, Json individual_json, bool wait_for_indexing, bool prepareEvents = true, string event_id = null)
     {
         Ticket     *ticket = context.get_ticket(_ticket);
 
@@ -617,7 +617,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc == ResultCode.OK)
         {
             Individual indv = json_to_individual(individual_json);
-            rc = context.put_individual(ticket, indv.uri, indv, wait_for_indexing);
+            rc = context.put_individual(ticket, indv.uri, indv, wait_for_indexing, prepareEvents, event_id);
         }
 
         if (rc != ResultCode.OK)
@@ -626,7 +626,7 @@ class VedaStorageRest : VedaStorageRest_API
         return rc.to!int;
     }
 
-    int add_to_individual(string _ticket, Json individual_json, bool wait_for_indexing)
+    int add_to_individual(string _ticket, Json individual_json, bool wait_for_indexing, bool prepareEvents = true, string event_id = null)
     {
         Ticket     *ticket = context.get_ticket(_ticket);
 
@@ -635,7 +635,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc == ResultCode.OK)
         {
             Individual indv = json_to_individual(individual_json);
-            rc = context.add_to_individual(ticket, indv.uri, indv, wait_for_indexing);
+            rc = context.add_to_individual(ticket, indv.uri, indv, wait_for_indexing, prepareEvents, event_id);
         }
 
         if (rc != ResultCode.OK)
@@ -644,7 +644,7 @@ class VedaStorageRest : VedaStorageRest_API
         return rc.to!int;
     }
 
-    int set_in_individual(string _ticket, Json individual_json, bool wait_for_indexing)
+    int set_in_individual(string _ticket, Json individual_json, bool wait_for_indexing, bool prepareEvents = true, string event_id = null)
     {
         Ticket     *ticket = context.get_ticket(_ticket);
 
@@ -653,7 +653,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc == ResultCode.OK)
         {
             Individual indv = json_to_individual(individual_json);
-            rc = context.set_in_individual(ticket, indv.uri, indv, wait_for_indexing);
+            rc = context.set_in_individual(ticket, indv.uri, indv, wait_for_indexing, prepareEvents, event_id);
         }
 
         if (rc != ResultCode.OK)
@@ -662,7 +662,7 @@ class VedaStorageRest : VedaStorageRest_API
         return rc.to!int;
     }
 
-    int remove_from_individual(string _ticket, Json individual_json, bool wait_for_indexing)
+    int remove_from_individual(string _ticket, Json individual_json, bool wait_for_indexing, bool prepareEvents = true, string event_id = null)
     {
         Ticket     *ticket = context.get_ticket(_ticket);
 
@@ -671,7 +671,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc == ResultCode.OK)
         {
             Individual indv = json_to_individual(individual_json);
-            rc = context.remove_from_individual(ticket, indv.uri, indv, wait_for_indexing);
+            rc = context.remove_from_individual(ticket, indv.uri, indv, wait_for_indexing, prepareEvents, event_id);
         }
 
         if (rc != ResultCode.OK)
