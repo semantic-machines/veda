@@ -111,8 +111,7 @@ interface VedaStorageRest_API {
     int add_to_individual(string ticket, Json individual, bool wait_for_indexing);
 
     @path("trigger") @method(HTTPMethod.PUT)
-   int trigger(string _ticket, string event_type, Json individual, Json prev_state, string event_id);
-
+    int trigger(string _ticket, string event_type, Json individual, Json prev_state, string event_id);
 }
 
 
@@ -579,34 +578,34 @@ class VedaStorageRest : VedaStorageRest_API
         ResultCode rc;
         int        recv_worker_id;
 
-            Json[] res;
+        Json[]     res;
 
-            Worker *worker = allocate_worker();
+        Worker     *worker = allocate_worker();
 
-            std.concurrency.send(worker.tid, Command.Get, Function.Individual, uri, "", _ticket, worker.id, std.concurrency.thisTid);
-            yield();
-            std.concurrency.receive((immutable(
-                                               Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;
-                                                                                                    recv_worker_id = _recv_worker_id; });
+        std.concurrency.send(worker.tid, Command.Get, Function.Individual, uri, "", _ticket, worker.id, std.concurrency.thisTid);
+        yield();
+        std.concurrency.receive((immutable(
+                                           Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;
+                                                                                                recv_worker_id = _recv_worker_id; });
 
-            if (recv_worker_id == worker.id)
-            {
-                //writeln ("free worker ", worker.id);
-                worker.complete = false;
-                worker.ready    = true;
+        if (recv_worker_id == worker.id)
+        {
+            //writeln ("free worker ", worker.id);
+            worker.complete = false;
+            worker.ready    = true;
 
-                if (rc != ResultCode.OK)
-                    throw new HTTPStatusException(rc);
-            }
-            else
-            {
-                res = put_another_get_my(recv_worker_id, res, rc, worker);
-            }
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc);
+        }
+        else
+        {
+            res = put_another_get_my(recv_worker_id, res, rc, worker);
+        }
 
-            if (res.length > 0)
-                return res[ 0 ];
-            else
-                return Json.init;
+        if (res.length > 0)
+            return res[ 0 ];
+        else
+            return Json.init;
     }
 
     int put_individual(string _ticket, Json individual_json, bool wait_for_indexing)
@@ -617,7 +616,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         if (rc == ResultCode.OK)
         {
-        	Individual indv    = json_to_individual(individual_json);
+            Individual indv = json_to_individual(individual_json);
             rc = context.put_individual(ticket, indv.uri, indv, wait_for_indexing);
         }
 
@@ -635,7 +634,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         if (rc == ResultCode.OK)
         {
-        	Individual indv    = json_to_individual(individual_json);
+            Individual indv = json_to_individual(individual_json);
             rc = context.add_to_individual(ticket, indv.uri, indv, wait_for_indexing);
         }
 
@@ -653,7 +652,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         if (rc == ResultCode.OK)
         {
-        	Individual indv    = json_to_individual(individual_json);
+            Individual indv = json_to_individual(individual_json);
             rc = context.set_in_individual(ticket, indv.uri, indv, wait_for_indexing);
         }
 
@@ -668,9 +667,10 @@ class VedaStorageRest : VedaStorageRest_API
         Ticket     *ticket = context.get_ticket(_ticket);
 
         ResultCode rc = ticket.result;
+
         if (rc == ResultCode.OK)
         {
-        	Individual indv    = json_to_individual(individual_json);
+            Individual indv = json_to_individual(individual_json);
             rc = context.remove_from_individual(ticket, indv.uri, indv, wait_for_indexing);
         }
 
@@ -679,45 +679,44 @@ class VedaStorageRest : VedaStorageRest_API
 
         return rc.to!int;
     }
-    
-   int trigger(string _ticket, string event_type, Json individual_json, Json prev_state_json, string event_id)
-   {
-   	writeln ("@@1");
-        Ticket     *ticket = context.get_ticket(_ticket);
 
-   	writeln ("@@2");
+    int trigger(string _ticket, string event_type, Json individual_json, Json prev_state_json, string event_id)
+    {
+        writeln("@@1");
+        Ticket *ticket = context.get_ticket(_ticket);
+
+        writeln("@@2");
         ResultCode rc = ticket.result;
         if (rc == ResultCode.OK)
         {
-   	writeln ("@@3");
-        	Individual indv = json_to_individual(individual_json);
-        	
-        	EVENT ev_type;
-        	
-        	if (event_type == "UPDATE")
-        		ev_type = EVENT.UPDATE;
-        	else if (event_type == "CREATE")
-        		ev_type = EVENT.CREATE;
-        	else if (event_type == "REMOVE")
-        		ev_type = EVENT.REMOVE;
-        	
-        	Individual prev_state_indv;
-        	if (prev_state_json != Json.init)
-        		prev_state_indv = json_to_individual(individual_json);
-        	
-   	writeln ("@@4");
-			veda.core.bus_event.trigger_script (ticket, ev_type, &indv, &prev_state_indv, context, event_id);
+            writeln("@@3");
+            Individual indv = json_to_individual(individual_json);
 
-   			rc = ResultCode.OK;   		
-   		}
+            EVENT      ev_type;
+
+            if (event_type == "UPDATE")
+                ev_type = EVENT.UPDATE;
+            else if (event_type == "CREATE")
+                ev_type = EVENT.CREATE;
+            else if (event_type == "REMOVE")
+                ev_type = EVENT.REMOVE;
+
+            Individual prev_state_indv;
+            if (prev_state_json != Json.init)
+                prev_state_indv = json_to_individual(individual_json);
+
+            writeln("@@4");
+            veda.core.bus_event.trigger_script(ticket, ev_type, &indv, &prev_state_indv, context, event_id);
+
+            rc = ResultCode.OK;
+        }
         if (rc != ResultCode.OK)
         {
-        	   	writeln ("@@6 rc=", rc);
+            writeln("@@6 rc=", rc);
             throw new HTTPStatusException(rc);
-        }    
-   	writeln ("@@7");
+        }
+        writeln("@@7");
 
-        return rc.to!int;           
-   }
-
+        return rc.to!int;
+    }
 }

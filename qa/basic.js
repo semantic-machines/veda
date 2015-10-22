@@ -4,7 +4,7 @@
 var webdriver = require('selenium-webdriver'),
     FAST_OPERATION = 2000, 			// 2000ms  = 2sec  - time limit for fast operations 
 	SLOW_OPERATION = 10000,			// 10000ms = 10sec - time limit for fast operations
-	EXTRA_SLOW_OPERATION = 90000,	//  time limit for extra slow operations
+	EXTRA_SLOW_OPERATION = 100000,	//  time limit for extra slow operations
 	SERVER_ADDRESS = (process.env.TRAVIS_BUILD_NUMBER === undefined)?'http://veda:8080/':'http://127.0.0.1:8080/';
 
 webdriver.promise.controlFlow().on('uncaughtException', function(e) {
@@ -19,7 +19,7 @@ module.exports = {
 	getDrivers: function () {
 		if (process.env.TRAVIS_BUILD_NUMBER === undefined) {
 			return  [
-//			         {'os':'Windows 7',		'browser':'firefox',				'version':'40.0'},
+			         {'os':'Windows 7',		'browser':'firefox',				'version':'40.0'},
 			         {'os':'Windows 7',		'browser':'chrome',					'version':'43.0'},
 //					 {'os':'Windows 7',		'browser':'opera',					'version':'32.0'},
 			         {'os':'Windows 7',		'browser':'internet explorer',		'version':'11.0'}
@@ -87,7 +87,7 @@ module.exports = {
 				console.log('****** GET NEW PAGE. PLATFORM > '+driverAbout.os+' / '+driverAbout.browser+' / '+driverAbout.version);
 			});
 		}
-		driver.manage().window().setSize(1280, 1024);
+		driver.manage().window().setSize(1280, 960);
 	},
 	/**
 	 * @param login - логин пользователя

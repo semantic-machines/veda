@@ -166,7 +166,7 @@ class Authorization : LmdbStorage
     {
         void reopen_db()
         {
-        	this.reopen_db ();
+            this.reopen_db();
             subject_groups_cache[ ticket.user_uri ] = string[].init;
         }
 
@@ -188,8 +188,8 @@ class Authorization : LmdbStorage
 //        context.check_for_reload("search", &reopen_db);
         context.ft_check_for_reload(&reopen_db);
 
-		if (db_is_open.get (path, false) == false)
-			return res;
+        if (db_is_open.get(path, false) == false)
+            return res;
 
         rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
         if (rc == MDB_BAD_RSLOT)

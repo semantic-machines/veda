@@ -72,20 +72,21 @@ class VQL
             Individual individual = Individual();
 
             string     data = context.get_individual_from_storage(uri);
-			if (data is null)
-			{
-                log.trace_log_and_console("!ERR:Unable to find the object it should be, uri=[%s]", text (uri));
-            }    
+
+            if (data is null)
+            {
+                log.trace_log_and_console("!ERR:Unable to find the object it should be, uri=[%s]", text(uri));
+            }
             else
-            {    								
-            	if (cbor2individual(&individual, data) > 0)
-            	{
-                	individuals ~= individual.idup;
-            	}
-            	else
-            	{
-                	writeln("!ERR:invalid individual=", uri);
-            	}
+            {
+                if (cbor2individual(&individual, data) > 0)
+                {
+                    individuals ~= individual.idup;
+                }
+                else
+                {
+                    writeln("!ERR:invalid individual=", uri);
+                }
             }
         }
         dg = &collect_subject;
@@ -107,20 +108,20 @@ class VQL
 
             string     data = context.get_individual_from_storage(uri);
 
-			if (data is null)
-			{
+            if (data is null)
+            {
                 log.trace_log_and_console("!ERR:Unable to find the object it should be, uri=[%s]", text(uri));
-            }    
-            else
-            {    								
-            if (cbor2individual(&individual, data) > 0)
-            {
-                individuals ~= individual;
             }
             else
             {
-                writeln("!ERR:invalid individual=", uri);
-            }
+                if (cbor2individual(&individual, data) > 0)
+                {
+                    individuals ~= individual;
+                }
+                else
+                {
+                    writeln("!ERR:invalid individual=", uri);
+                }
             }
         }
         dg = &collect_subject;
@@ -207,34 +208,34 @@ class VQL
             void delegate(string uri) dg;
             void collect_subject(string uri)
             {
-                string     data = context.get_individual_from_storage(uri);
+                string data = context.get_individual_from_storage(uri);
 
-			if (data is null)
-			{
-                log.trace_log_and_console("!ERR:Unable to find the object it should be, uri=[%s]", text(uri));
-            }    
-            else
-            {    								
-                Individual ind;
-
-                if (cbor2individual(&ind, data) > 0)
+                if (data is null)
                 {
-                    res ~= ind;
+                    log.trace_log_and_console("!ERR:Unable to find the object it should be, uri=[%s]", text(uri));
                 }
                 else
                 {
-                    //writeln("!ERR:invalid individual=", uri);
-                    context.reopen_ro_subject_storage_db();
-                    data = context.get_individual_from_storage(uri);
+                    Individual ind;
+
                     if (cbor2individual(&ind, data) > 0)
                     {
                         res ~= ind;
                     }
                     else
                     {
-                        writeln("!ERR:vql.get attempt 2, invalid individual=", uri);
+                        //writeln("!ERR:invalid individual=", uri);
+                        context.reopen_ro_subject_storage_db();
+                        data = context.get_individual_from_storage(uri);
+                        if (cbor2individual(&ind, data) > 0)
+                        {
+                            res ~= ind;
+                        }
+                        else
+                        {
+                            writeln("!ERR:vql.get attempt 2, invalid individual=", uri);
+                        }
                     }
-                }
                 }
             }
             dg = &collect_subject;

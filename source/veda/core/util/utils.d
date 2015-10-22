@@ -570,7 +570,7 @@ string uxxxx2utf8(string so)
             }
             else
             {
-            	new_s ~= c;
+                new_s ~= c;
             }
         }
         else
