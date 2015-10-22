@@ -123,7 +123,7 @@ private class IndexerContext
     Tid    key2slot_accumulator;
     string thread_name;
 
-	Ticket* ticket;
+    Ticket *ticket;
 
     void reload_index_schema()
     {
@@ -654,8 +654,8 @@ private class IndexerContext
             if (is_deleted)
             {
                 indexer_deleted_db.replace_document(uuid.ptr, uuid.length, doc, &err);
-            	doc      = new_Document(&err);
-            	indexer.set_document(doc, &err);
+                doc = new_Document(&err);
+                indexer.set_document(doc, &err);
             }
 
             if (dbname == "system")
@@ -666,7 +666,7 @@ private class IndexerContext
             {
                 indexer_base_db.replace_document(uuid.ptr, uuid.length, doc, &err);
             }
-            
+
             if (counter % 100 == 0)
             {
                 if (trace_msg[ 211 ] == 1)
@@ -942,8 +942,8 @@ void xapian_indexer(string thread_name, string _node_id)
                                 //indexer_base_db = new_WritableDatabase(xapian_search_db_path.ptr, xapian_search_db_path.length, DB_CREATE_OR_OPEN, &err);
                                 ictx.last_counter_after_timed_commit = ictx.counter;
                                 send(ictx.key2slot_accumulator, CMD.PUT, CNAME.LAST_UPDATE_TIME, "");
-       							//core.memory.GC.collect ();	
-       							//writeln ("GC COLLECT");				    	                  	
+                                //core.memory.GC.collect ();
+                                //writeln ("GC COLLECT");
                             }
                         }
                         else if (cmd == CMD.PUT)

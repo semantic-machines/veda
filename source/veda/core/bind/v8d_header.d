@@ -61,19 +61,19 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
 
         if (g_context !is null)
         {
-            string cbor      = cast(string)_cbor[ 0.._cbor_length ].dup;
-            string ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
-            string event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
+            string     cbor      = cast(string)_cbor[ 0.._cbor_length ].dup;
+            string     ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
+            string     event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
 
-            Ticket *ticket = g_context.get_ticket(ticket_id);
+            Ticket     *ticket = g_context.get_ticket(ticket_id);
 
             Individual indv;
-            int code = cbor2individual(&indv, cbor);
+            int        code = cbor2individual(&indv, cbor);
             if (code < 0)
             {
-                    //cbor2individual(indv, ss_as_cbor);
-                    log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
-                    return ResultCode.Unprocessable_Entity;
+                //cbor2individual(indv, ss_as_cbor);
+                log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
+                return ResultCode.Unprocessable_Entity;
             }
             return g_context.put_individual(ticket, indv.uri, indv, false, true, event_id);
         }
@@ -94,18 +94,18 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
 
         if (g_context !is null)
         {
-            string cbor      = cast(string)_cbor[ 0.._cbor_length ].dup;
-            string ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
-            string event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
+            string     cbor      = cast(string)_cbor[ 0.._cbor_length ].dup;
+            string     ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
+            string     event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
 
-            Ticket *ticket = g_context.get_ticket(ticket_id);
+            Ticket     *ticket = g_context.get_ticket(ticket_id);
             Individual indv;
-            int code = cbor2individual(&indv, cbor);
+            int        code = cbor2individual(&indv, cbor);
             if (code < 0)
             {
-                    //cbor2individual(indv, ss_as_cbor);
-                    log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
-                    return ResultCode.Unprocessable_Entity;
+                //cbor2individual(indv, ss_as_cbor);
+                log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
+                return ResultCode.Unprocessable_Entity;
             }
             return g_context.add_to_individual(ticket, indv.uri, indv, false, true, event_id);
         }
@@ -126,18 +126,18 @@ extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_lengt
 
         if (g_context !is null)
         {
-            string cbor      = cast(string)_cbor[ 0.._cbor_length ].dup;
-            string ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
-            string event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
+            string     cbor      = cast(string)_cbor[ 0.._cbor_length ].dup;
+            string     ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
+            string     event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
 
-            Ticket *ticket = g_context.get_ticket(ticket_id);
+            Ticket     *ticket = g_context.get_ticket(ticket_id);
             Individual indv;
-            int code = cbor2individual(&indv, cbor);
+            int        code = cbor2individual(&indv, cbor);
             if (code < 0)
             {
-                    //cbor2individual(indv, ss_as_cbor);
-                    log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
-                    return ResultCode.Unprocessable_Entity;
+                //cbor2individual(indv, ss_as_cbor);
+                log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
+                return ResultCode.Unprocessable_Entity;
             }
             return g_context.set_in_individual(ticket, indv.uri, indv, false, true, event_id);
         }
@@ -158,18 +158,18 @@ extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_
 
         if (g_context !is null)
         {
-            string cbor      = cast(string)_cbor[ 0.._cbor_length ].dup;
-            string ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
-            string event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
+            string     cbor      = cast(string)_cbor[ 0.._cbor_length ].dup;
+            string     ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
+            string     event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
 
-            Ticket *ticket = g_context.get_ticket(ticket_id);
+            Ticket     *ticket = g_context.get_ticket(ticket_id);
             Individual indv;
-            int code = cbor2individual(&indv, cbor);
+            int        code = cbor2individual(&indv, cbor);
             if (code < 0)
             {
-                    //cbor2individual(indv, ss_as_cbor);
-                    log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
-                    return ResultCode.Unprocessable_Entity;
+                //cbor2individual(indv, ss_as_cbor);
+                log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
+                return ResultCode.Unprocessable_Entity;
             }
             return g_context.remove_from_individual(ticket, indv.uri, indv, false, true, event_id);
         }

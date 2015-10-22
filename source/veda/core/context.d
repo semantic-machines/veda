@@ -396,7 +396,7 @@ public void inc_count_indexed(int delta = 1)
 
 public int get_count_indexed()
 {
-    return atomicLoad (count_indexed);
+    return atomicLoad(count_indexed);
 }
 
 
@@ -409,6 +409,7 @@ private shared long   systicket_end_time;
 public Ticket get_global_systicket()
 {
     Ticket t;
+
     t.id       = atomicLoad(systicket_id);
     t.user_uri = atomicLoad(systicket_user_uri);
     t.end_time = atomicLoad(systicket_end_time);

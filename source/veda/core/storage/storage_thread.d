@@ -93,8 +93,8 @@ public void individuals_manager(string thread_name, string db_path, string node_
 
                     try
                     {
-                    	string prev_state;
-                    	
+                        string prev_state;
+
                         if (cmd == CMD.PUT)
                         {
                             Individual arg;
@@ -104,18 +104,18 @@ public void individuals_manager(string thread_name, string db_path, string node_
                                 log.trace("ERR:store_individual(PUT):cbor2individual [%s]", msg);
                                 send(tid_response_reciever, EVENT.ERROR, prev_state, msg, thisTid);
                                 return;
-                            }                        	
-                        	
-                        	
+                            }
+
+
                             string new_hash;
                             EVENT ev;
                             prev_state = storage.find(arg.uri);
                             if (prev_state is null)
-                            	ev = EVENT.CREATE;
+                                ev = EVENT.CREATE;
                             else
-                            {	
-                            	ev = EVENT.UPDATE;
-                            }	
+                            {
+                                ev = EVENT.UPDATE;
+                            }
                             storage.update_or_create(arg.uri, msg, new_hash);
                             send(tid_response_reciever, ev, prev_state, msg, thisTid);
 
