@@ -4,8 +4,17 @@ veda.Module(function SearchSelectedFunctions(veda) { "use strict";
 		var container = container_param || $("#main"),
 			holder = $("#selected-actions-" + search.id, container),
 			actions = $( tmpl ),
+			upd = $("#update", actions),
 			del = $("#delete", actions),
 			ttl = $("#export-ttl", actions);
+		upd.click(function () {
+			if ( confirm("Вы действительно хотите обновить выбранные элементы?") ) {
+				var l = new veda.IndividualListModel(search.selected);
+				l.each(function (item) {
+					item.save();
+				});
+			}
+		});
 		del.click(function () {
 			if ( confirm("Вы действительно хотите удалить выбранные элементы?") ) {
 				var l = new veda.IndividualListModel(search.selected);
