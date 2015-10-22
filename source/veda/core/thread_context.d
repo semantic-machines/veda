@@ -1132,7 +1132,7 @@ class PThreadContext : Context
     }
 
     private ResultCode store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool wait_for_indexing,
-                                        bool prepareEvents,
+                                        bool prepare_events,
                                         string event_id)
     {
         StopWatch sw; sw.start;
@@ -1154,6 +1154,8 @@ class PThreadContext : Context
                     req_body[ "ticket" ]            = ticket.id;
                     req_body[ "individual" ]        = individual_to_json(*indv);
                     req_body[ "wait_for_indexing" ] = wait_for_indexing;
+                    req_body[ "prepare_events" ] = prepare_events;
+                    req_body[ "event_id" ] = event_id;
 
                     requestHTTP(url,
                                 (scope req) {
@@ -1268,7 +1270,7 @@ class PThreadContext : Context
                         }
                     }
 
-                    if (prepareEvents == true)
+                    if (prepare_events == true)
                     {
                         bus_event_after(ticket, indv, rdfType, ss_as_cbor, prev_state, ev, this, event_id);
                     }
@@ -1301,29 +1303,29 @@ class PThreadContext : Context
         }
     }
 
-    public ResultCode put_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
-                                     string event_id = null)
+    public ResultCode put_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents,
+                                     string event_id)
     {
         individual.uri = uri;
         return store_individual(CMD.PUT, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
     }
 
-    public ResultCode add_to_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
-                                        string event_id = null)
+    public ResultCode add_to_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents,
+                                        string event_id)
     {
         individual.uri = uri;
         return store_individual(CMD.ADD, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
     }
 
-    public ResultCode set_in_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
-                                        string event_id = null)
+    public ResultCode set_in_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents,
+                                        string event_id)
     {
         individual.uri = uri;
         return store_individual(CMD.SET, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
     }
 
-    public ResultCode remove_from_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
-                                             string event_id = null)
+    public ResultCode remove_from_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents,
+                                             string event_id)
     {
         individual.uri = uri;
         return store_individual(CMD.REMOVE, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
