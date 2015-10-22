@@ -582,3 +582,10 @@ v-a:Permission_1
   v-s:permissionObject v-s:AllResourcesGroup ;
   v-s:permissionSubject v-a:VedaSystem ;
 .
+
+v-a:Permission_0
+  rdf:type v-s:PermissionStatement ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:permissionObject v-a:ReadResGroup ;
+  v-s:permissionSubject v-a:ReadUser ;
+.
