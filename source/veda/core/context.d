@@ -383,8 +383,9 @@ public void inc_count_put(int delta = 1)
 
 public int get_count_put()
 {
-    return atomicOp !"+" (count_put, 0);
+    return atomicLoad(count_put);
 }
+
 
 private shared int count_indexed = 0;
 
@@ -395,9 +396,11 @@ public void inc_count_indexed(int delta = 1)
 
 public int get_count_indexed()
 {
-    return atomicOp !"+" (count_indexed, 0);
+    return atomicLoad (count_indexed);
 }
 
+
+/////////////////////////////// global_systicket //////////////////////////
 
 private shared string systicket_id;
 private shared string systicket_user_uri;
@@ -406,7 +409,6 @@ private shared long   systicket_end_time;
 public Ticket get_global_systicket()
 {
     Ticket t;
-
     t.id       = atomicLoad(systicket_id);
     t.user_uri = atomicLoad(systicket_user_uri);
     t.end_time = atomicLoad(systicket_end_time);
@@ -420,12 +422,11 @@ public void set_global_systicket(Ticket new_data)
     atomicStore(systicket_end_time, new_data.end_time);
 }
 
+/////////////////////////////// g_external_js_vm_url //////////////////////////
 private shared string _external_js_vm_url;
 public string get_g_external_js_vm_url()
 {
-    string data = atomicLoad(_external_js_vm_url);
-
-    return data;
+    return atomicLoad(_external_js_vm_url);
 }
 
 public void set_g_external_js_vm_url(string new_data)

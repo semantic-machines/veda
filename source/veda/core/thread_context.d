@@ -529,11 +529,12 @@ class PThreadContext : Context
         if (now - local_time_check_indexed > timeout)
         {
             int count_indexed = get_count_indexed();
-            //writeln ("@count_indexed=", count_indexed);
-            //writeln ("@local_count_indexed=", local_count_indexed);
+            //writeln ("@ft_check_for_reload:count_indexed=", count_indexed);
+            //writeln ("@ft_check_for_reload:local_count_indexed=", local_count_indexed);
 
             if (count_indexed - local_count_indexed > 0)
             {
+            	//writeln ("@ft_check_for_reload:execute load");
                 local_time_check_indexed = now;
                 local_count_indexed      = count_indexed;
                 load();
