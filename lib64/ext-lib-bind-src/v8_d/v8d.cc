@@ -140,6 +140,16 @@ bool jsobject2individual(Local<Value> value, Individual *indv, Resource *resourc
 
         return true;
     }
+    else if (value->IsInt32() || value->IsUint32())
+    {
+    	if (resource == NULL)
+    		return false;
+//        std::cout << "@json->cbor #10" << std::endl;
+        resource->type      = _Integer;
+        resource->long_data = value->ToInteger()->Value();
+
+        return true;
+    }
     else if (value->IsNumber())
     {
         //std::cout << "@json->cbor #11" << std::endl;
