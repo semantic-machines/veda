@@ -59,7 +59,7 @@ basic.getDrivers().forEach (function (drv) {
 	driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input'}).sendKeys(timeStamp);
 	
 	// Нажимаем поиск и удостоверяемся что в результатах поиска появился созданный выше документ  
-        driver.sleep(10000);
+        driver.sleep(13000);
 	driver.wait
 	(
 	  function () {
