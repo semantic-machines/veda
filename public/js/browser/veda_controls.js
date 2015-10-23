@@ -140,6 +140,37 @@
 			return !isNaN(int) ? new Number(int) : null;
 		}
 	};
+	
+	// Numerator control
+	$.fn.veda_numerator = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_numerator.defaults, options ),
+			control = veda_literal_input.call(this, opts),
+			input = $("input", control),
+			individual = opts.individual,
+			property_uri = opts.property_uri,
+			button = $(".get-numerator-value", control);
+
+		button.on("click", function () {
+			var prop = new veda.IndividualModel(property_uri);
+			var numertor = prop['v-s:hasNumeratorRule'][0];
+			
+		    var scope = eval(numertor['v-s:numeratorScope'][0].toString())(null, individual);
+		    var nextValue = eval(numertor['v-s:numeratorGetNextValue'][0].toString())(null, scope);
+		    
+		    input.val(nextValue);
+		});
+		
+		this.append(control);
+		
+		return this;
+	};
+	$.fn.veda_numerator.defaults = {
+		template: $("#numerator-control-template").html(),
+		parser: function (input) {
+			var int = parseInt( input.replace(",", "."), 10 );
+			return !isNaN(int) ? new Number(int) : null;
+		}
+	};
 
 	// Decimal control
 	$.fn.veda_decimal = function( options ) {
