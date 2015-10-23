@@ -129,12 +129,15 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
             {
                 try
                 {
-                    create_table_if_not_exists(predicate);
-
-                    foreach (rs; rss)
+                    if (rss.length > 0)
                     {
-                        mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, new_indv.uri,
-                                         rs.asString().toUTF8(), text(rs.lang));
+                        create_table_if_not_exists(predicate, rss[ 0 ]);
+
+                        foreach (rs; rss)
+                        {
+                            mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, new_indv.uri,
+                                             rs.asString().toUTF8(), text(rs.lang));
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -154,7 +157,7 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
     //writeln("@@fanout indv.uri=", indv.uri);
 }
 
-private void create_table_if_not_exists(string predicate)
+private void create_table_if_not_exists(string predicate, Resource rs)
 {
     if (isExistsTable.get(predicate, false) == true)
         return;
@@ -167,9 +170,40 @@ private void create_table_if_not_exists(string predicate)
         // create new table
         try
         {
+            string sql_type;
+            string sql_value_index = ", INDEX c3(`value`)";
+
+            if (rs.type == DataType.Boolean)
+            {
+                sql_type = "BOOL";
+            }
+            else if (rs.type == DataType.Integer)
+            {
+                sql_type = "INTEGER";
+            }
+            else if (rs.type == DataType.Decimal)
+            {
+                sql_type = "DECIMAL";
+            }
+            else if (rs.type == DataType.String)
+            {
+                sql_type        = "TEXT";
+                sql_value_index = "";
+            }
+            else if (rs.type == DataType.Uri)
+            {
+                sql_type = "CHAR(128)";
+            }
+            else if (rs.type == DataType.Datetime)
+            {
+                sql_type = "INTEGER";
+            }
+
             mysql_conn.query(
                              "CREATE TABLE `veda_db`.`" ~ predicate ~
-                             "` ( `ID` BIGINT NOT NULL AUTO_INCREMENT, `doc_id` VARCHAR(128) NOT NULL,  `value` MEDIUMTEXT NULL,  `lang` CHAR(2) NULL, PRIMARY KEY (`ID`),  INDEX c1(`doc_id`), INDEX c2(`lang`), INDEX c3(`value`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
+                             "` ( `ID` BIGINT NOT NULL AUTO_INCREMENT, `doc_id` CHAR(128) NOT NULL,  `value` " ~ sql_type ~
+                             " NULL,  `lang` CHAR(2) NULL, PRIMARY KEY (`ID`),  INDEX c1(`doc_id`), INDEX c2(`lang`) " ~
+                             sql_value_index ~ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
             isExistsTable[ predicate ] = true;
         }
         catch (Exception ex)
@@ -208,7 +242,7 @@ private void connect_to_mysql(Context context)
                                               connection.getFirstLiteral("vsrv:credentional"),
                                               database_name);
 
-		            mysql_conn.query("SET NAMES utf8;");
+                    mysql_conn.query("SET NAMES utf8;");
 
                     //writeln("@@@@1 CONNECT TO MYSQL IS OK ", text(mysql_conn));
                 }
