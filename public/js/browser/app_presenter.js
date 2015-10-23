@@ -14,18 +14,6 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		e.preventDefault();
 	});
 
-	// Toggle tracing
-	$("#set-trace").on("click", function (e) {
-		var $el = $(this).parent();
-		if ($el.hasClass("active")) { 
-			set_trace(0, false);
-			$el.removeClass("active");
-			return;
-		}
-		set_trace(0, true);
-		$el.addClass("active");
-	});
-
 	// Clear local storage
 	$("#clear-storage").on("click", function (e) {
 		localStorage.clear();
