@@ -51,7 +51,11 @@ v-asp:BusinessAspect
 .
 
 v-s:hasImage
-  rdfs:domain v-asp:BusinessAspect  ;
+  rdfs:domain v-asp:BusinessAspect ;
+.
+
+v-s:hasLogo
+  rdfs:domain v-asp:BusinessAspect ;
 .
 
 v-asp:hasFavorite

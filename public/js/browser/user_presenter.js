@@ -2,7 +2,6 @@
 
 veda.Module(function UserPresenter(veda) { "use strict";
 
-	var userTemplate = $("#user-template").html();
 	var languageTemplate = $("#language-template").html();
 	var userInfo = $("#user-info");
 	var languageSelector = $("#preferred-language");

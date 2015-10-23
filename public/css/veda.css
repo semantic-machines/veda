@@ -24,14 +24,26 @@ body {
 footer {
   font-size: 12px;
 }
+.navbar {
+  margin:7px 0px;
+}
+.navbar .nav {
+  margin:2px 0px;
+}
 .navbar-brand {
   font-size: 20px;
+  padding: 0px 15px;
+}
+.navbar a, .navbar .navbar-text  {
+  color: #666;
+}
+.navbar-fixed-bottom {
+  margin:0px;
 }
 
 .text-muted {
   color: #707070;
 }
-
 textarea { 
   resize: vertical;
   max-height: 300px; 
@@ -42,10 +54,6 @@ textarea {
   max-width: 400px;
   width: auto;
   padding: 0px;
-}
-
-#user-info {
-  margin-right:10px !important;
 }
 
 .no-margin {
@@ -175,7 +183,7 @@ span.twitter-typeahead .tt-hint {
 }
 
 html, body { 
-  height:100%; 
+  height:99%;
 }
 .fs-wrapper {
   min-height:100%; 

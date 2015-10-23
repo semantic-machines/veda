@@ -418,7 +418,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					if (property_uri === "@") {
 						propertyContainer.text( about.id );
 					} else if (about[property_uri] !== undefined) {
-						var formatted = about[property_uri].map(formatValue).join(", ");
+						var formatted = about[property_uri].map(formatValue).join(" ");
 						propertyContainer.text( formatted );
 					}
 				}

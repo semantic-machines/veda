@@ -10,7 +10,7 @@
 		<link href="/css/bootstrap.min.css" rel="stylesheet"/>
 
 		<!-- Bootstrap theme -->
-		<!--link href="/css/bootstrap-theme.min.css" rel="stylesheet"/-->
+		<link href="/css/bootstrap-theme.min.css" rel="stylesheet"/>
 		
 		<!-- Bootswatch themes -->
 		<!--link href="/css/cerulean.bootstrap.min.css" rel="stylesheet"/-->
@@ -27,57 +27,84 @@
 		<!--link href="/css/slate.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/spacelab.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/superhero.bootstrap.min.css" rel="stylesheet"/-->
-		<link href="/css/united.bootstrap.min.css" rel="stylesheet"/>
+		<!--link href="/css/united.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/yeti.bootstrap.min.css" rel="stylesheet"/-->
 
 		<link href="/css/codemirror.css" rel="stylesheet"/>
 		<link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet"/>
 		<link href="/css/veda.css" rel="stylesheet"/>
+		<link href="/css/font-awesome.min.css" rel="stylesheet"/>
 
 		<meta http-equiv="pragma" content="no-cache" />
 		<meta http-equiv="cache-control" content="no-cache" />
 	</head>
-	<body style="padding: 0px 0px 20px;">
-
-		<nav role="navigation" class="navbar navbar-default" id="navigation">
+	<body>
+		<nav role="navigation" class="navbar" id="navigation">
 			<div class="container-fluid" id="nav-container">
 				<button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
 					<span class="glyphicon glyphicon-menu-hamburger"></span>
 				</button>
-				<a href="#/" class="navbar-brand"><strong>veda</strong></a>
+				<a class="navbar-brand">
+					<img alt="Mondi" src="./img/mondi-sm.png">
+				</a>
 				<div class="collapse navbar-collapse" id="navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li id="project-management">
+							<a href="#/mnd-s-asppd:ProjectManagementAspect1"><i class="fa fa-bar-chart"></i> Управление проектами</a>
+						</li>
+					</ul>
 					<div id="user-menu"></div>
-					<ul class="nav navbar-nav navbar-left" id="sys-menu">
+					<ul class="nav navbar-nav navbar-right">
+						<li id="user-info"></li>
 						<li class="dropdown" id="settings">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Настройки <span class="caret"></span></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="fa fa-cog fa-lg"></span> <span class="caret"></span></a>
 							<ul class="dropdown-menu" role="menu">
+								<li id="inbox">	
+									<a href="#/v-ft:Inbox">Входящие</a>
+								</li>
+								<li id="outbox">	
+									<a href="#/v-ft:Outbox">Исходящие</a>
+								</li>
+								<li id="completed">	
+									<a href="#/v-ft:Completed">Выполненные</a>
+								</li>
+								<li class="divider"></li>
+								<li id="create">	
+									<a href="#/v-fc:Create">Создать</a>
+								</li>
+								<li id="search">
+									<a href="#/v-fs:Search">Найти</a>
+								</li>
+								<li class="divider"></li>
+								<li id="find">
+									<a href="#/search">Поиск</a>
+								</li>
+								<li class="divider"></li>
 								<li id="graph">	
-									<a i18n="[Graph]" href="#/graph">Граф</a>
+									<a href="#/graph">Граф</a>
 								</li>
 								<li id="console">	
-									<a i18n="[Console]" href="#/console">Консоль</a>
+									<a href="#/console">Консоль</a>
 								</li>
 								<li id="tests">
-									<a i18n="[Tests]" href="/tests">Тесты</a>
+									<a href="/tests">Тесты</a>
 								</li>
 								<li class="divider"></li>
 								<li>
-									<a id="set-trace">
-										<span class="glyphicon glyphicon-flash"></span> Trace
+									<a id="clear-storage">
+										<span class="glyphicon glyphicon-trash"></span> Очистить данные
 									</a>
 								</li>
+								<li class="divider"></li>
 								<li>
-									<a id="clear-storage">
-										<span class="glyphicon glyphicon-trash"></span> Clear
+									<a id="logout">
+										<span class="glyphicon glyphicon glyphicon-log-out"></span> Выйти
 									</a>
 								</li>
 							</ul>
 						</li>
 					</ul>
-					<button type="button" class="btn btn-xs btn-danger navbar-btn navbar-right" id="logout">
-						<span class="glyphicon glyphicon-log-out"></span>
-					</button>
-					<p id="user-info" class="navbar-text navbar-right"></p>
+					<!--p id="user-info" class="navbar-text navbar-right"></p-->
 					<div class="navbar-right btn-group" id="preferred-language"></div>
 				</div>
 			</div>
@@ -93,8 +120,8 @@
 		<nav style="min-height:12px;" class="navbar navbar-fixed-bottom" id="copyright">
 			<footer>
 				<div class="container-fluid" style="background-color: white; border-top: 1px solid lightgray">
-					<a href="http://www.semantic-machines.com" i18n="[Semantic machines]">© Смысловые машины.</a>
-					<span i18n="[License]">Лицензия</span>
+					<a href="http://www.semantic-machines.com">© Смысловые машины.</a>
+					<span>Лицензия</span>
 					<a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
 				</div>
 			</footer>
@@ -138,27 +165,27 @@
 		<!-- Console template -->
 		<script type="html/template" id="console-template">
 			<div class="container-fluid" id="console">
-				<h3 i18n="[Javascript console]">Консоль JavaScript</h3>
+				<h3>Консоль JavaScript</h3>
 				<form role="form">
 					<div class="form-group row">
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<label i18n="[Script]" for="script">Скрипт</label>
+							<label for="script">Скрипт</label>
 							<textarea rows="10" class="form-control" autofocus="autofocus" id="script" bound>{script}</textarea>
 						</div>
 					</div>
 					<div class="form-group row">
 						<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
 							<select class="form-control" id="runat" bound>
-								<option i18n="[Browser]" value="browser">Браузер</option>
-								<option i18n="[Server]" value="server">Сервер</option>
+								<option value="browser">Браузер</option>
+								<option value="server">Сервер</option>
 							</select>
 						</div>
-						<button type="submit" class="btn btn-success" id="run" i18n="[Run]">Выполнить!</button>
-						<button type="reset" class="btn" id="reset" i18n="[Reset]">Сброс</button>
+						<button type="submit" class="btn btn-success" id="run">Выполнить!</button>
+						<button type="reset" class="btn" id="reset">Сброс</button>
 					</div>
 				</form>
 				<hr />
-				<p><strong><span i18n="[Result]">Результат</span> <span class="text-muted">(<span id="time" bound>{time}</span> msec)</span></label></strong></p>
+				<p><strong><span>Результат</span> <span class="text-muted">(<span id="time" bound>{time}</span> msec)</span></label></strong></p>
 				<pre id="result" bound>{result}</pre>
 			</div>
 		</script>
@@ -188,14 +215,13 @@
 
 		<!-- Language template -->
 		<script type="html/template" id="language-template">
-			<label id="{rdf:value.0}" class="btn btn-xs btn-info navbar-btn">
+			<label id="{rdf:value.0}" class="btn btn-xs btn-default navbar-btn">
 				{rdfs:label}
 			</label>
 		</script>
 
 		<!-- Search template -->
 		<script type="html/template" id="search-template">
-
 			<div role="tabpanel" id="search-tab-panel-{id}">
 				<!-- Nav tabs -->
 				<ul class="nav nav-pills" role="tablist">
@@ -227,7 +253,7 @@
 										<div class="input-group">
 											<input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
 											<span class="input-group-btn" id="q-actions">
-												<button type="submit" id="search-submit" class="btn btn-primary" i18n="[Search]">Найти</button>
+												<button type="submit" id="search-submit" class="btn btn-primary">Найти</button>
 											</span>
 										</div>
 									</form>
@@ -235,7 +261,7 @@
 							</div>
 						</div>
 						<div class="alert alert-warning not-found" style="display: none">
-							<strong i18n="[Empty!]">Пусто!</strong> <span i18n="[Nothing found]">По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
+							<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 						</div>
 					</div>
 					
@@ -244,7 +270,7 @@
 							<div id="search-features" class="form-inline">
 								<div class="checkbox">
 									<label>
-										<input type="checkbox" id="select-all"> <span i18n="[Select all]">Выбрать все</span>
+										<input type="checkbox" id="select-all"> <span>Выбрать все</span>
 									</label>
 								</div>
 							</div>
@@ -257,7 +283,7 @@
 							</div>
 						</div>
 						<div class="alert alert-warning not-found" style="display: none">
-							<strong i18n="[Empty!]">Пусто!</strong> <span i18n="[Nothing found]">По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
+							<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 						</div>
 						<div id="selected-actions-{id}">
 						</div>

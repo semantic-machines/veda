@@ -408,6 +408,13 @@ v-s:hasImage
   rdfs:label "image"@en ;
   rdfs:range v-s:File ;
 .
+v-s:hasLogo
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "логотип"@ru ;
+  rdfs:label "logo"@en ;
+  rdfs:range v-s:File ;
+.
 v-s:canCreate
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;

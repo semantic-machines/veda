@@ -205,7 +205,7 @@ v-fs:SearchTemplate
 		<div class="row">
 			<div class="col-md-2 col-sm-3">
 				<h4></h4>
-				<ul class="nav nav-pills nav-stacked" role="tablist">
+				<ul class="nav nav-pills nav-stacked" role="tablist" id="req-tabs">
 					<li role="presentation" class="active"><a href="#fulltext" about="v-fs:Fulltext" property="rdfs:label" aria-controls="fulltext" role="tab" data-toggle="tab"></a></li>
 					<li role="presentation"><a href="#attributive" about="v-fs:Attributive" property="rdfs:label" aria-controls="attributive" role="tab" data-toggle="tab"></a></li>
 				</ul>
@@ -236,7 +236,24 @@ v-fs:SearchTemplate
 			self.attrRequest["rdf:type"] = [ new veda.IndividualModel("v-fs:AttributiveRequest") ];
 		}
 		self.attrRequest.present(attrHolder, undefined, "edit");
+		/*
+		$("#req-tabs a", template).click(function (e) {
+			e.preventDefault();
+			if ($(this).attr("href") === "fulltext") { 
+				individual.reqType = "fulltext"; 
+			} else {
+				individual.reqType = "attributive";
+			}
+		});
 		
+		if (individual.reqType === "attributive") {
+			$("#req-tabs a[href='attributive']", template).tab("show");
+			individual.reqType = "attributive";
+		} else {
+			$("#req-tabs a[href='fulltext']", template).tab("show");
+			individual.reqType = "fulltext";
+		}
+		*/
 		var regsHolder = $("#saved", template),
 			asp = veda.user.aspect,
 			regs = asp["v-asp:hasRegistry"];

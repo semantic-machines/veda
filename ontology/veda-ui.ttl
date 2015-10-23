@@ -26,14 +26,12 @@
 .
 v-ui:EN
   rdf:type v-ui:Language ;
-  rdfs:label "English"@en ;
-  rdfs:label "Английский"@ru ;
+  rdfs:label "Eng"^^xsd:string ;
   rdf:value "EN" ;
 .
 v-ui:RU
   rdf:type v-ui:Language ;
-  rdfs:label "Russian"@en ;
-  rdfs:label "Русский"@ru ;
+  rdfs:label "Рус"^^xsd:string ;
   rdf:value "RU" ;
 .
 v-ui:preferredLanguage
@@ -369,14 +367,15 @@ v-ui:IconPersonTemplate
   rdfs:label "Шаблон персоны с иконкой"@ru ;
   rdfs:label "Person template with icon"@en ;
   v-ui:template """
-<span>
+<a href="#">
 	<span class="glyphicon glyphicon-user"></span>
-	<span about="@" property="v-s:firstName"></span>
-	<span about="@" property="v-s:lastName"></span>, 
+	<span about="@" property="rdfs:label"></span>
 	<span about="@" rel="v-s:defaultAppointment">
-		<span about="@" rel="v-s:occupation" template="v-ui:LabelTemplate"></span>
+		<span>
+			- <span about="@" rel="v-s:occupation" template="v-ui:LabelTemplate"></span>
+		</span>
 	</span>
-</span>
+</a>
 """ ;
 .
 v-ui:ClassTemplateTemplate
@@ -1075,6 +1074,17 @@ v-ui:ImageTemplate
 </script>
   """ ;
 .
+v-ui:ImageSimpleTemplateWithoutBorder
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для изображения"@ru ;
+  rdfs:label "Image template"@en ;
+  v-ui:template """
+<img></img>
+<script>
+	 template.attr("src", "/files/" + individual.id);
+</script>
+  """ ;
+.
 v-ui:ImageSimpleTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для изображения без ссылки"@ru ;
@@ -1093,11 +1103,9 @@ v-ui:ImageSimpleTemplateTransparent
   rdfs:label "Шаблон для изображения без ссылки прозрачный фон"@ru ;
   rdfs:label "Image template without link transparent"@en ;
   v-ui:template """
-<div>
-	<img width="100%"></img>
-</div>
+<img width="100%" style="max-width:200px;"></img>
 <script>
-	 $("img", template).attr("src", "/files/" + individual.id);
+	 template.attr("src", "/files/" + individual.id);
 </script>
   """ ;
 .
