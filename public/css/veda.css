@@ -1,7 +1,6 @@
 body {
-  /*color: #234;
-  background-color: #f5f5f9;*/
   overflow-x: hidden;
+  font-family:"Ubuntu",Tahoma,"Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
 #credentials {
@@ -25,7 +24,11 @@ footer {
   font-size: 12px;
 }
 .navbar {
-  margin:7px 0px;
+  padding:7px 0px;
+  margin-bottom:0px;
+  background-image: none;
+  border: none;
+  box-shadow: none;
 }
 .navbar .nav {
   margin:2px 0px;
