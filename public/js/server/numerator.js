@@ -30,16 +30,16 @@ function numerate(ticket, individual, oldstate, _event_id) {
 		var property = get_individual(ticket, key);
 		if (property['v-s:hasNumeratorRule']) {
 		  if (individual[key][0].data > 0) {	
-			print ('4'+key);
+			//print ('4'+key);
 			var numerator = get_individual(ticket, property['v-s:hasNumeratorRule'][0].data);
 			var scopeId = getScope(ticket, individual, numerator); 
-			print ('scopeId'+scopeId);
+			//print ('scopeId'+scopeId);
 			var scope = get_individual(ticket, scopeId);
 			
 			if (typeof scope === "undefined") {
 				scope = createScope(ticket, scopeId);
 			}
-			print ('5'+scopeId);
+			//print ('5'+scopeId);
 			
 			if (oldstate === "undefined" || !(oldstate[key] && oldstate[key][0].data > 0)) {
 				if (commitValue(ticket, scope, parseInt(individual[key][0].data), _event_id)) {
@@ -52,15 +52,22 @@ function numerate(ticket, individual, oldstate, _event_id) {
 				}
 			} else {
 				var oldScopeId = getScope(ticket, oldstate, numerator);
-				print (toJson(oldstate));
-				if (scopeId == oldScopeId && individual[key][0].data == oldstate[key][0].data) {
+				//print (toJson(oldstate));
+				if (scopeId == oldScopeId && individual[key][0].data == oldstate[key][0].data
+					&& !(individual['v-s:deleted'].data =='true' && oldstate['v-s:deleted'].data == 'false')) {
 					// scope and numbers are not changed
-					return {'sucess': true, 'result':'NO CHANGES'};
+					if (individual['v-s:deleted'].data =='false' && oldstate['v-s:deleted'].data == 'true') {
+						// document deleted
+						revoke(ticket, scope, parseInt(individual[key][0].data), _event_id);
+						return {'sucess': true, 'result':'VALUE REVOKED'};
+					} else {
+						return {'sucess': true, 'result':'NO CHANGES'};
+					}
 				} else {
 					// commit in new scope, then revoke in old scope
 					if (commitValue(ticket, scope, parseInt(individual[key][0].data), _event_id)) {
 						var oldScope = get_individual(ticket, oldScopeId);
-						//TODO revokeValue(ticket, oldScope, parseInt(oldstate[key][0].data), _event_id);
+						revokeValue(ticket, oldScope, parseInt(oldstate[key][0].data), _event_id);
 						return {'sucess': true , 'result':'VALUE IS COMMITED'};
 					} else {
 						// TODO REFACTOR THIS
@@ -114,10 +121,12 @@ function commitValue(ticket, scope, value, _event_id) {
 	var prevInterval = null;
 	if (scope['v-s:numeratorCommitedInterval']) {
 		// Scope is not empty
-		for (var intervalUri in scope['v-s:numeratorCommitedInterval']) {
+		for (var i in scope['v-s:numeratorCommitedInterval']) {
+			var intervalUri = scope['v-s:numeratorCommitedInterval'][i];
+			//print('commit0 >> '+intervalUri+' + '+intervalUri.data);
 			var interval = get_individual(ticket, intervalUri.data);
-			print('commit1 >> '+toJson(scope));
-			print('commit2 >> '+toJson(interval));
+			//print('commit1 >> '+toJson(scope));
+			//print('commit2 >> '+toJson(interval));
 			if ((interval['v-s:numeratorCommitedIntervalBegin'][0].data <= value) &&
 				    (value <= interval['v-s:numeratorCommitedIntervalEnd'][0].data)) {
 				// value is already commited
@@ -130,17 +139,19 @@ function commitValue(ticket, scope, value, _event_id) {
 		}
 		if (prevInterval != null && nextInterval != null) {
 			// merge prev && value && next
-			print('merge prev && value && next');
+			//print('merge prev && value && next');
 			
 			// prev = prev+next
-			prevInterval['v-s:numeratorCommitedIntervalEnd'][0].data = prevInterval['v-s:numeratorCommitedIntervalEnd'][0].data
+			prevInterval['rdfs:label'][0].data = [prevInterval['v-s:numeratorCommitedIntervalBegin'][0].data+' - '+nextInterval['v-s:numeratorCommitedIntervalEnd'][0].data];
+			prevInterval['v-s:numeratorCommitedIntervalEnd'][0].data = nextInterval['v-s:numeratorCommitedIntervalEnd'][0].data
 			put_individual(ticket, prevInterval, _event_id);
 			
 			// remove next 
 			add_to_individual(ticket, {'@': nextInterval['@'],  'v-s:deleted': [{data:'true', type: _Bool }]}, false);
 			var intervals = [];
-			for (var intervalUri in scope['v-s:numeratorCommitedInterval']) {
-				if (intervalUri != nextInterval['@']) {
+			for (var i in scope['v-s:numeratorCommitedInterval']) {
+				var intervalUri = scope['v-s:numeratorCommitedInterval'][i];
+				if (intervalUri.data != nextInterval['@']) {
 					intervals.push(intervalUri);
 				}
 			}
@@ -149,26 +160,26 @@ function commitValue(ticket, scope, value, _event_id) {
 			
 		} else if (prevInterval != null) {
 			// merge prev && value
-			print('merge prev && value');
-			
+			//print('merge prev && value');
+			prevInterval['rdfs:label'][0].data = [prevInterval['v-s:numeratorCommitedIntervalBegin'][0].data+' - '+value];
 			prevInterval['v-s:numeratorCommitedIntervalEnd'][0].data = value;
 			put_individual(ticket, prevInterval, _event_id);
 			
 		} else if (nextInterval != null) {
 			// merge value && next
-			print('merge value && next');
-			
-			prevInterval['v-s:numeratorCommitedIntervalBegin'][0].data = value;
-			put_individual(ticket, prevInterval, _event_id);
+			//print('merge value && next');
+			nextInterval['rdfs:label'][0].data = [value+' - '+nextInterval['v-s:numeratorCommitedIntervalEnd'][0].data];
+			nextInterval['v-s:numeratorCommitedIntervalBegin'][0].data = value;
+			put_individual(ticket, nextInterval, _event_id);
 			
 		} else {
 			// new interval
-			print('new interval');
+			//print('new interval');
 			
 			var intervalId = genUri();
 			var interval = {
 				'@': intervalId,
-		        'rdfs:label' : [intervalId],				
+		        'rdfs:label' : [value+' - '+value],				
 				'rdf:type' : [{data: 'v-s:NumerationCommitedInterval', type: _Uri }],
 				'v-s:numeratorCommitedIntervalBegin'	 : [{data: value, type: _Integer}],
 				'v-s:numeratorCommitedIntervalEnd'		 : [{data: value, type: _Integer}]
@@ -183,12 +194,12 @@ function commitValue(ticket, scope, value, _event_id) {
 		var intervalId = genUri();
 		var interval = {
 			'@': intervalId,
-			'rdfs:label' : [intervalId],
+			'rdfs:label' : [value+' - '+value],
 			'rdf:type' : [{data: 'v-s:NumerationCommitedInterval', type: _Uri }],
 			'v-s:numeratorCommitedIntervalBegin'	 : [{data: value, type: _Integer}],
 			'v-s:numeratorCommitedIntervalEnd'		 : [{data: value, type: _Integer}]
 		}
-		print('Scope is empty - create new interval'+toJson(interval));
+		//print('Scope is empty - create new interval'+toJson(interval));
 		put_individual(ticket, interval, _event_id);
 		
 		scope['v-s:numeratorCommitedInterval'] = [{data:interval['@'], type: _Uri}];
@@ -203,16 +214,17 @@ function commitValue(ticket, scope, value, _event_id) {
 function revokeValue(ticket, scope, value, _event_id) {
   try {		
 	var intervals = [];
-	for (var intervalUri in scope['v-s:numeratorCommitedInterval']) {
+	for (var i in scope['v-s:numeratorCommitedInterval']) {
+		var intervalUri = scope['v-s:numeratorCommitedInterval'][i];
 		var interval = get_individual(ticket, intervalUri.data);
-		print('revoke '+toJson(interval));
+		//print('revoke '+toJson(interval));
 		if (interval['v-s:numeratorCommitedIntervalBegin'][0].data == value) {
 			// value is an interval begin
 			if (interval['v-s:numeratorCommitedIntervalBegin'][0].data < interval['v-s:numeratorCommitedIntervalEnd'][0].data) {
 				// cut interval
 				put_individual(ticket, {
 					'@': interval['@'],
-					'rdfs:label' : [interval['@']],
+					'rdfs:label' : [(value+1)+' - '+interval['v-s:numeratorCommitedIntervalEnd'][0].data],
 					'rdf:type' : [{data: 'v-s:NumerationCommitedInterval', type: _Uri }],
 					'v-s:numeratorCommitedIntervalBegin'	 : [{data: value+1, type: _Integer}],
 					'v-s:numeratorCommitedIntervalEnd'		 : [{data: interval['v-s:numeratorCommitedIntervalEnd'][0].data, type: _Integer}]
@@ -228,7 +240,7 @@ function revokeValue(ticket, scope, value, _event_id) {
 				// cut interval
 				put_individual(ticket, {
 					'@': interval['@'],
-					'rdfs:label' : [interval['@']],
+					'rdfs:label' : [interval['v-s:numeratorCommitedIntervalBegin'][0].data+' - '+(value-1)],
 					'rdf:type' : [{data: 'v-s:NumerationCommitedInterval', type: _Uri }],
 					'v-s:numeratorCommitedIntervalBegin'	 : [{data: interval['v-s:numeratorCommitedIntervalBegin'][0].data, type: _Integer}],
 					'v-s:numeratorCommitedIntervalEnd'		 : [{data: value-1, type: _Integer}]
@@ -245,7 +257,7 @@ function revokeValue(ticket, scope, value, _event_id) {
 			// cut current interval to value
 			put_individual(ticket, {
 				'@': interval['@'],
-				'rdfs:label' : [interval['@']],
+				'rdfs:label' : [interval['v-s:numeratorCommitedIntervalBegin'][0].data+' - '+(value-1)],
 				'rdf:type' : [{data: 'v-s:NumerationCommitedInterval', type: _Uri }],
 				'v-s:numeratorCommitedIntervalBegin'	 : [{data: interval['v-s:numeratorCommitedIntervalBegin'][0].data, type: _Integer}],
 				'v-s:numeratorCommitedIntervalEnd'		 : [{data: value-1, type: _Integer}]
@@ -257,7 +269,7 @@ function revokeValue(ticket, scope, value, _event_id) {
 			
 			put_individual(ticket, {
 				'@': newIntervalUri.data,
-				'rdfs:label' : [newIntervalUri.data],
+				'rdfs:label' : [(value+1)+' - '+interval['v-s:numeratorCommitedIntervalEnd'][0].data],
 				'rdf:type' : [{data: 'v-s:NumerationCommitedInterval', type: _Uri }],
 				'v-s:numeratorCommitedIntervalBegin'	 : [{data: value+1, type: _Integer}],
 				'v-s:numeratorCommitedIntervalEnd'		 : [{data: interval['v-s:numeratorCommitedIntervalEnd'][0].data, type: _Integer}]

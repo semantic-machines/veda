@@ -157,7 +157,8 @@
 		    var scope = eval(numertor['v-s:numeratorScope'][0].toString())(null, individual);
 		    var nextValue = eval(numertor['v-s:numeratorGetNextValue'][0].toString())(null, scope);
 		    
-		    input.val(nextValue);
+		    // input.val(nextValue);
+		    individual[property_uri] = [nextValue]; 
 		});
 		
 		this.append(control);

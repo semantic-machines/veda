@@ -1484,31 +1484,42 @@ v-s:SimpleNumerator
   rdfs:label "Нумератор в пределах шаблона"@ru ;
   rdfs:label "Numerator with type as scope"@en ;
   v-s:numeratorScope """
-(function (ticket, individual) {
+(function (ticket, individual) 
+{
     if (!individual['rdf:type']) return '';
 	return "numerator-scope:"+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id);
 })
 """ ;
   v-s:numeratorGetNextValue """  
 (function getNextValue(ticket, scope) {
+ 	if (typeof scope == 'string') 
+ 	{
+ 		scope = new veda.IndividualModel(scope);
+ 	}
     if (typeof scope === 'undefined' 
-        || !(typeof scope === 'object') 
-        || (typeof scope['v-s:numeratorCommitedInterval'] === 'undefined') 
-        || scope['v-s:numeratorCommitedInterval'].length == 0) {
+        || !scope['v-s:numeratorCommitedInterval'])
+    {
        return 1;    
     }    
     var max = 0;
     
-	if (typeof window === 'undefined') {
-		scope['v-s:numeratorCommitedInterval'].forEach(function(interval) {
-			if (interval['v-ui:numeratorCommitedIntervalEnd'][0].data > max) {
-				max = interval['v-ui:numeratorCommitedIntervalEnd'][0].data; 
+	if (typeof window === 'undefined') 
+	{
+		scope['v-s:numeratorCommitedInterval'].forEach(function(interval) 
+		{
+			if (interval['v-s:numeratorCommitedIntervalEnd'][0].data > max) 
+			{
+				max = interval['v-s:numeratorCommitedIntervalEnd'][0].data; 
 			}			
 		});
-	} else {
-		scope['v-s:numeratorCommitedInterval'].forEach(function(interval) {
-			if (interval['v-ui:numeratorCommitedIntervalEnd'][0] > max) {
-				max = interval['v-ui:numeratorCommitedIntervalEnd'][0]; 
+	} else 
+	{
+		scope['v-s:numeratorCommitedInterval'].forEach(function(interval) 
+		{
+			console.log(interval);
+			if (interval['v-s:numeratorCommitedIntervalEnd'][0] > max) 
+			{
+				max = interval['v-s:numeratorCommitedIntervalEnd'][0]; 
 			}			
 		});
 	}
