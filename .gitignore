@@ -20,3 +20,4 @@ dub.selections.json
 /*.app
 /*.dprojectoptions
 /*.buildpath
+veda.properties
