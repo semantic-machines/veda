@@ -177,10 +177,12 @@ private class LoggerQueue
         int   hour   = ptm.tm_hour;
         int   minute = ptm.tm_min;
         int   second = ptm.tm_sec;
+        auto  now    = Clock.currTime();
+        int   usecs  = now.fracSec.usecs;
 
         auto  writer = appender!string();
 
-        formattedWrite(writer, "%s_%04d-%02d-%02d_%02d:%02d:%02d.%s", trace_logfilename, year, month, day, hour, minute, second, ext);
+        formattedWrite(writer, "%s_%04d-%02d-%02d_%02d:%02d:%02d-%06d.%s", trace_logfilename, year, month, day, hour, minute, second, usecs, ext);
 
         writer.put(cast(char)0);
 

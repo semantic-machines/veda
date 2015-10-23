@@ -1,14 +1,33 @@
 /**
  * define
  */
-
 module veda.core.define;
 
+import std.concurrency, std.file, std.stdio, core.atomic;
 import util.container;
-import std.concurrency, std.file, std.stdio;
 import veda.core.know_predicates;
 
-string   proccess_name = "";
+// variable proccess_name static mirror of g_proccess_name 
+string   proccess_name;
+static this ()
+{
+	get_g_proccess_name();
+}
+/////////////////////////////// g_proccess_name //////////////////////////
+private shared string g_proccess_name;
+public string get_g_proccess_name()
+{
+    proccess_name = atomicLoad(g_proccess_name);
+    return proccess_name;
+}
+
+public void set_g_proccess_name(string new_data)
+{
+    atomicStore(g_proccess_name, new_data);
+    proccess_name = new_data;
+}
+
+
 
 string[] access_list_predicates = [ veda_schema__canCreate, veda_schema__canRead, veda_schema__canUpdate, veda_schema__canDelete ];
 

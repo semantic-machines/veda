@@ -140,9 +140,19 @@ bool jsobject2individual(Local<Value> value, Individual *indv, Resource *resourc
 
         return true;
     }
+    else if (value->IsInt32() || value->IsUint32())
+    {
+    	if (resource == NULL)
+    		return false;
+//        std::cout << "@json->cbor #10" << std::endl;
+        resource->type      = _Integer;
+        resource->long_data = value->ToInteger()->Value();
+
+        return true;
+    }
     else if (value->IsNumber())
     {
-        //std::cout << "@json->cbor #11" << std::endl;
+        std::cout << "!Err: @v8:json->cbor (value->IsNumber() not implemented" << std::endl;
     }
     else if (value->IsObject())
     {
@@ -252,6 +262,12 @@ bool jsobject2individual(Local<Value> value, Individual *indv, Resource *resourc
             else if (type == _Integer)
             {
                 int intValue = v_data->ToInteger()->Value();
+                vector <Resource> values    = indv->resources[ predicate ];
+                Resource          rc;
+                rc.type      = type;
+                rc.long_data = intValue;
+                values.push_back(rc);
+                indv->resources[ predicate ] = values;
                 return true;
             }
             else if (type == _Uri || type == _String)
