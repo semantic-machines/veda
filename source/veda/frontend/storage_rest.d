@@ -299,7 +299,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     void fileManager(HTTPServerRequest req, HTTPServerResponse res)
     {
-        writeln("@v req.path=", req.path);
+        //writeln("@v req.path=", req.path);
 
         string uri;
         // uri субьекта
@@ -314,11 +314,11 @@ class VedaStorageRest : VedaStorageRest_API
 
         // найдем в хранилище указанного субьекта
 
-        writeln("@v uri=", uri);
+        //writeln("@v uri=", uri);
 
         string _ticket = req.cookies.get("ticket", "");
 
-        writeln("@v ticket=", _ticket);
+        //writeln("@v ticket=", _ticket);
 
         if (uri.length > 3 && _ticket !is null)
         {
@@ -331,7 +331,7 @@ class VedaStorageRest : VedaStorageRest_API
             {
                 file_info = context.get_individual(ticket, uri);
 
-                writeln("@v file_info=", file_info);
+                //writeln("@v file_info=", file_info);
                 auto fileServerSettings = new HTTPFileServerSettings;
                 fileServerSettings.encodingFileExtension = [ "jpeg":".JPG" ];
 
@@ -352,8 +352,8 @@ class VedaStorageRest : VedaStorageRest_API
 
                     string originFileName = file_info.getFirstResource(veda_schema__fileName).get!string;
 
-                    writeln("@v originFileName=", originFileName);
-                    writeln("@v getMimeTypeForFile(originFileName)=", getMimeTypeForFile(originFileName));
+                    //writeln("@v originFileName=", originFileName);
+                    //writeln("@v getMimeTypeForFile(originFileName)=", getMimeTypeForFile(originFileName));
 
                     res.headers[ "Content-Disposition" ] = "attachment; filename=\"" ~ originFileName ~ "\"";
 
