@@ -48,7 +48,7 @@ v-a:js_worker_node
 v-a:test_node
 	rdf:type vsrv:Node ;
 	vsrv:count_thread "4"^^xsd:integer ;
-	vsrv:checktime_onto_files "30"^^xsd:integer ;
+	vsrv:checktime_onto_files "20"^^xsd:integer ;
 	vsrv:listener v-a:test_conn_http;
 	vsrv:jsvm_node "external";
 	vsrv:role "main";

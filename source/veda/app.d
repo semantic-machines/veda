@@ -84,7 +84,7 @@ shared static this()
     import vibe.core.args;
     string role;
     ushort listener_http_port = 8081;
-    string write_storage_node = "http://127.0.0.1:8080";
+    string write_storage_node = "http://localhost:8080";
 
     readOption("role", &role, "set role, if role is empty, then ignore params: [listener_http_port] and [write_storage_node]");
     readOption("listener_http_port", &listener_http_port, "default: 8081");
@@ -110,7 +110,7 @@ shared static this()
     }
     else
     {
-        proccess_name = role;
+    	set_g_proccess_name(role);
     }
 
 //    http_port    = properties.as!(string)("node_id");
@@ -121,6 +121,9 @@ shared static this()
 //        checktime_onto_files = 30;
     veda.core.context.Context core_context;
 
+    if (write_storage_node !is null)
+    	set_g_external_write_storage_url (write_storage_node);
+
     core_context = veda.core.server.init_core(node_id, role, listener_http_port, write_storage_node);
     if (core_context is null)
     {
@@ -130,6 +133,7 @@ shared static this()
 
     Ticket                sticket      = core_context.sys_ticket();
     ushort                count_thread = 1;
+        
     std.concurrency.Tid[] pool;
     for (int i = 0; i < count_thread; i++)
     {

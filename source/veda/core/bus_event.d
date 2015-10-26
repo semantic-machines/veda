@@ -4,23 +4,23 @@
 module veda.core.bus_event;
 
 private import std.outbuffer, std.stdio, std.concurrency, std.datetime, std.conv;
-import type;
-private import util.container, util.logger, util.utils, veda.core.util.cbor8individual;
+private import vibe.data.json, vibe.core.log, vibe.http.client, vibe.stream.operations;
+private import backtrace.backtrace, Backtrace = backtrace.backtrace;
+private import type;
+private import util.container, util.logger, util.utils, veda.core.util.cbor8individual, veda.core.util.individual8json;
 private import veda.core.know_predicates, veda.core.context, veda.core.define;
 private import veda.onto.individual, veda.onto.resource;
-import backtrace.backtrace, Backtrace = backtrace.backtrace;
-import vibe.data.json;
-import vibe.core.log;
-import vibe.http.client;
-import vibe.stream.operations;
-import veda.core.util.individual8json;
 
-logger log;
-
-static this()
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
 {
-    log = new logger("bus_event", "log", "bus_event");
+    if (_log is null)
+        _log = new logger("veda-core-" ~ proccess_name, "log", "event");
+    return _log;
 }
+// ////// ////// ///////////////////////////////////////////
 
 int count;
 
@@ -30,13 +30,11 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
 {
     if (ticket is null)
     {
+    	writeln ("---TICKET IS NULL:bus_event_after");
         printPrettyTrace(stderr);
+    	writeln ("^^^ TICKET IS NULL:bus_event_after");
     }
-
-    string js_vm_node = context.get_js_vm_url();
-    //writeln ("@bus_event B subject_as_cbor=[", individual.uri, "]");
-    //writeln (rdfType);
-
+    
     if (ev_type == EVENT.CREATE || ev_type == EVENT.UPDATE)
     {
         if (rdfType.anyExist(owl_tags) == true)
@@ -54,8 +52,10 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
             }
         }
 
-        if (js_vm_node !is null)
+        if (external_js_vm_url !is null)
         {
+    		log.trace ("EXECUTE SCRIPT: event:%s uri:[%s], USE EXTERNAL", ev_type, individual.uri);
+        	
             try
             {
                 Json indv_json = individual_to_json(*individual);
@@ -69,9 +69,7 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
                 req_body[ "event_type" ] = text(ev_type);
                 req_body[ "event_id" ]   = text(event_id);
 
-
-
-                requestHTTP(js_vm_node ~ "/trigger",
+                requestHTTP(external_js_vm_url ~ "/trigger",
                             (scope req) {
                                 req.method = HTTPMethod.PUT;
                                 req.writeJsonBody(req_body);
@@ -83,11 +81,13 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
             }
             catch (Exception ex)
             {
-                writeln("EX!bus_event:", ex.msg, ", url=", js_vm_node);
+                writeln("EX!bus_event:", ex.msg, ", url=", external_js_vm_url);
             }
         }
         else
         {
+    		log.trace ("EXECUTE SCRIPT: event:%s uri:[%s]", ev_type, individual.uri);
+        	
             Tid tid_condition = context.getTid(P_MODULE.condition);
             if (tid_condition != Tid.init)
             {

@@ -41,7 +41,7 @@ public void core_thread(string node_id, string write_storage_node)
 
     core.thread.Thread.getThis().name = thread_name;
 
-    context = new PThreadContext(node_id, thread_name, P_MODULE.nop, write_storage_node);
+    context = new PThreadContext(node_id, thread_name, P_MODULE.nop);
 
     writeln("--- START VEDA STORAGE THREAD LISTENER --- " ~ thread_name);
 

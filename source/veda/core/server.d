@@ -145,7 +145,7 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
         Context    core_context;
         Ticket     sticket;
 
-        core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop, write_storage_node, role);
+        core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop);
         if (node_id !is null)
         {
             sticket = core_context.sys_ticket();
