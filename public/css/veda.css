@@ -1,6 +1,7 @@
 body {
   overflow-x: hidden;
   font-family:"Ubuntu",Tahoma,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  /*background-color: #fcfcfc;*/
 }
 
 #credentials {
@@ -19,7 +20,10 @@ body {
   border-top-right-radius: 0;
   border-top-left-radius: 0;
 }
-
+.huge {
+  font-size: 32px;
+  font-weight: bold;
+}
 footer {
   font-size: 12px;
 }

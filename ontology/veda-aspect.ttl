@@ -14,6 +14,7 @@
 @prefix v-asp: <http://semantic-machines.com/veda/veda-aspect/> .
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -152,6 +153,17 @@ v-asp:PsHasBusinessAspect
   v-ui:queryPrefix "('rdf:type'=='v-asp:BusinessAspect' || 'rdf:type'=='mnd-s-asppd:ProjectManagementAspect')"^^xsd:string ;
 .
 
+v-asp:ViewDetails
+  rdf:type v-b:Bundle ;
+  rdfs:label "Подробнее"@ru ;
+  rdfs:label "View details"@en ;
+.
+v-asp:NewTasks
+  rdf:type v-b:Bundle ;
+  rdfs:label "Новые задачи"@ru ;
+  rdfs:label "New tasks"@en ;
+.
+
 v-asp:PersonalAspectTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Персональный аспект"@ru ;
@@ -173,74 +185,156 @@ v-asp:PersonalAspectTemplate
 			</div>
 			<div class="col-md-10">
 				<h3><span about="v-b:MyPage" property="rdfs:label"></span></h3>
+				
 				<hr/>
+				
 				<div rel="v-asp:hasWidget"></div>
-			</div>
-		</div>
-		<hr/>
-		<div class="row">
-			<div class="col-md-2">
-				<ul class="nav nav-pills nav-stacked" role="tablist">
-					<li role="presentation" class="active"><a href="#favorites" aria-controls="favorites" role="tab" data-toggle="tab"><span about="v-b:Favorites" property="rdfs:label"></span></a></li>
-					<li role="presentation"><a href="#blanks" aria-controls="blanks" role="tab" data-toggle="tab"><span about="v-b:Blanks" property="rdfs:label"></span></a></li>
-					<li role="presentation"><a href="#registries" aria-controls="registries" role="tab" data-toggle="tab"><span about="v-b:Registries" property="rdfs:label"></span></a></li>
-					<li role="presentation"><a href="#aspects" aria-controls="aspects" role="tab" data-toggle="tab"><span about="v-b:Aspects" property="rdfs:label"></span></a></li>
-					<li role="presentation"><a href="#reports" aria-controls="reports" role="tab" data-toggle="tab"><span about="v-b:Reports" property="rdfs:label"></span></a></li>
-					<li role="presentation"><a href="#other" aria-controls="other" role="tab" data-toggle="tab"><span about="v-b:Other" property="rdfs:label"></span></a></li>
-				</ul>
-			</div>
-			<div class="col-md-10">
-				<div class="tab-content">
-					<div role="tabpanel" class="tab-pane active" id="favorites">
-						<h3><span about="v-b:Favorites" property="rdfs:label"></span></h3>
-						<hr/>
-						<div rel="v-asp:hasFavorite"></div>
+				<div class="row">
+					<div class="col-lg-3 col-md-6">
+						<div class="panel panel-success">
+							<div class="panel-heading">
+								<div class="row">
+									<div class="col-xs-3">
+										<i class="fa fa-tasks fa-5x"></i>
+									</div>
+									<div class="col-xs-9 text-right">
+										<div class="huge">12</div>
+										<div about="v-asp:NewTasks" property="rdfs:label"></div>
+									</div>
+								</div>
+							</div>
+							<a href="#">
+								<div class="panel-body">
+									<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
+									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+									<div class="clearfix"></div>
+								</div>
+							</a>
+						</div>
 					</div>
-					
-                    <div role="tabpanel" class="tab-pane" id="blanks">
-						<h3><span about="v-b:Blanks" property="rdfs:label"></span></h3>
-						<hr/>
-						<ol rel="v-asp:hasBlank">
-							<li><a href="#/@"><span property="rdfs:label"></span></a></li>
-						</ol>
-						<veda-control type="link" rel="v-asp:hasBlank" class="fulltext dropdown -view edit"></veda-control>
+					<div class="col-lg-3 col-md-6">
+						<div class="panel panel-info">
+							<div class="panel-heading">
+								<div class="row">
+									<div class="col-xs-3">
+										<i class="fa fa-comments fa-5x"></i>
+									</div>
+									<div class="col-xs-9 text-right">
+										<div class="huge">26</div>
+										<div>New Comments!</div>
+									</div>
+								</div>
+							</div>
+							<a href="#">
+								<div class="panel-body">
+									<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
+									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+									<div class="clearfix"></div>
+								</div>
+							</a>
+						</div>
 					</div>
-                    
-					<div role="tabpanel" class="tab-pane" id="registries">
-						<h3><span about="v-b:Registries" property="rdfs:label"></span></h3>
-						<hr/>
-						<ol rel="v-asp:hasRegistry">
-							<li><a href="#/@"><span property="rdfs:label"></span></a></li>
-						</ol>
-						<veda-control type="link" rel="v-asp:hasRegistry" class="fulltext dropdown -view edit"></veda-control>
+					<div class="col-lg-3 col-md-6">
+						<div class="panel panel-warning">
+							<div class="panel-heading">
+								<div class="row">
+									<div class="col-xs-3">
+										<i class="fa fa-shopping-cart fa-5x"></i>
+									</div>
+									<div class="col-xs-9 text-right">
+										<div class="huge">124</div>
+										<div>New Orders!</div>
+									</div>
+								</div>
+							</div>
+							<a href="#">
+								<div class="panel-body">
+									<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
+									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+									<div class="clearfix"></div>
+								</div>
+							</a>
+						</div>
 					</div>
-                    
-					<div role="tabpanel" class="tab-pane" id="aspects">
-						<h3><span about="v-b:Aspects" property="rdfs:label"></span></h3>
-						<hr/>
-                        <div rel="v-asp:hasBusinessAspect" template="v-ui:LabelBlockLinkTemplate" class="view edit -search"></div>
-						<veda-control rel="v-asp:hasBusinessAspect" type="link" class="-view edit search fulltext dropdown"></veda-control>						
+					<div class="col-lg-3 col-md-6">
+						<div class="panel panel-danger">
+							<div class="panel-heading">
+								<div class="row">
+									<div class="col-xs-3">
+										<i class="fa fa-support fa-5x"></i>
+									</div>
+									<div class="col-xs-9 text-right">
+										<div class="huge">13</div>
+										<div>Support Tickets!</div>
+									</div>
+								</div>
+							</div>
+							<a href="#">
+								<div class="panel-body">
+									<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
+									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+									<div class="clearfix"></div>
+								</div>
+							</a>
+						</div>
 					</div>
-                    
-					<div role="tabpanel" class="tab-pane" id="reports">
-						<h3><span about="v-b:Reports" property="rdfs:label"></span></h3>
-						<hr/>
-						<ol rel="v-asp:hasReport">
-							<li><a href="#/@"><span property="rdfs:label"></span></a></li>                        
-                        </ol>
-						<veda-control type="link" rel="v-asp:hasReport" class="fulltext dropdown -view edit"></veda-control>                        
-					</div>
-                    
-					<div role="tabpanel" class="tab-pane" id="other">
-						<h3><span about="v-b:Other" property="rdfs:label"></span></h3>
-						<hr/>
-						<div rel="v-asp:hasArbitraryLink"></div>
-					</div>
-                    
 				</div>
 			</div>
 		</div>
-		<br>
+		
+		<hr/>
+		
+		<div class="row">
+			<div class="col-md-4">
+				<div class="panel panel-warning">
+					<div class="panel-heading">
+						<h4 class="no-margin"><i class="fa fa-eye"></i> <strong about="v-b:Aspects" property="rdfs:label"></strong></h4>
+					</div>
+					<div class="panel-body">
+						<div rel="v-asp:hasBusinessAspect">
+							<div>
+								<a href="#/@" class="btn btn-warning btn-lg btn-block"><span property="rdfs:label"></span></a>
+								<br>
+							</div>								
+						</div>
+						<veda-control type="link" rel="v-asp:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="panel panel-success">
+					<div class="panel-heading">
+						<h4 class="no-margin"><i class="fa fa-file-text-o"></i> <strong about="v-b:Blanks" property="rdfs:label"></strong></h4>
+					</div>
+					<div class="panel-body">
+						<div rel="v-asp:hasBlank">
+							<div>
+								<a href="#/@" class="btn btn-success btn-lg btn-block"><span property="rdfs:label"></span></a>
+								<br>
+							</div>
+						</div>
+						<veda-control type="link" rel="v-asp:hasBlank" class="fulltext dropdown -view edit"></veda-control>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						<h4 class="no-margin"><i class="fa fa-table"></i> <strong about="v-b:Registries" property="rdfs:label"></strong></h4>
+					</div>
+					<div class="panel-body">
+						<div rel="v-asp:hasRegistry">
+							<div>
+								<a href="#/@" class="btn btn-info btn-lg btn-block"><span property="rdfs:label"></span></a>
+								<br>
+							</div>
+						</div>
+						<veda-control type="link" rel="v-asp:hasRegistry" class="fulltext dropdown -view edit"></veda-control>
+					</div>
+				</div>
+			</div>
+		</div>
+		
 		<div class="well well-sm">
 			<button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-b:Edit" property="rdfs:label"/>
 			<button type="button" class="action btn btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/>
