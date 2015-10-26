@@ -19,8 +19,8 @@ module.exports = {
 	getDrivers: function () {
 		if (process.env.TRAVIS_BUILD_NUMBER === undefined) {
 			return  [
-			         {'os':'Windows 7',		'browser':'firefox',				'version':'40.0'},
 			         {'os':'Windows 7',		'browser':'chrome',					'version':'43.0'},
+			         {'os':'Windows 7',		'browser':'firefox',				'version':'40.0'},
 //					 {'os':'Windows 7',		'browser':'opera',					'version':'32.0'},
 			         {'os':'Windows 7',		'browser':'internet explorer',		'version':'11.0'}
 			        ];
@@ -159,17 +159,17 @@ module.exports = {
 	 */
 	openCreateDocumentForm: function (driver, templateName, templateRdfType) {
 		// Клик `Документ` в главном меню
-		driver.findElement({css:'li[resource="v-m:DocMenu"]'}).click();
+		driver.findElement({id:'settings'}).click();
 
 		// Проверяем что открылось подменю 
 		driver.wait
 		(
-		  webdriver.until.elementIsVisible(driver.findElement({css:'li[resource="v-m:Create"]'})),
+		  webdriver.until.elementIsVisible(driver.findElement({css:'li[id="settings"] li[id="create"]'})),
 		  FAST_OPERATION
 		);
 
 		// Клик `Создать`
-		driver.findElement({css:'li[resource="v-m:Create"]'}).click();
+		driver.findElement({css:'li[id="settings"] li[id="create"]'}).click();
 
 		// Проверяем что открылась страница создания документов
 		driver.wait
@@ -216,17 +216,17 @@ module.exports = {
 	 */
 	openFulltextSearchDocumentForm: function (driver, templateName, templateRdfType) {
 		// Клик `Документ` в главном меню
-		driver.findElement({css:'li[resource="v-m:DocMenu"]'}).click();
+		driver.findElement({css:'li[id="settings"]'}).click();
 
 		// Проверяем что открылось подменю 
 		driver.wait
 		(
-		  webdriver.until.elementIsVisible(driver.findElement({css:'li[resource="v-m:Find"]'})),
+		  webdriver.until.elementIsVisible(driver.findElement({css:'li[id="settings"] li[id="search"]'})),
 		  FAST_OPERATION
 		);
 
 		// Клик `Поиск`
-		driver.findElement({css:'li[resource="v-m:Find"]'}).click();
+		driver.findElement({css:'li[id="settings"] li[id="search"]'}).click();
 
 		// Проверяем что открылась страница поиска
 		driver.wait
