@@ -14,11 +14,15 @@
  *
  * 2. How it works
  *    
- *    2.1 You must specify `v-s:hasNumeratorRule` value for your individual property  
+ *    2.1 You must specify `v-s:hasNumeratorMapper` values for your individual property
+ *    
+ *    2.2 Add one or may `v-s:NumeratorMapper` with values:
+ *    	  + v-s:numerationClass - link to `owl:Class` - class that will be numarated against rule
+ *        + v-s:hasNumeratorRule - link to `v-s:NumerationRule`
  * 
- * 	  2.2 Add `type="numerator"` property to your `<veda-control>` at your template. 
+ * 	  2.3 Add `type="numerator"` property to your `<veda-control>` at your template. 
  * 	
- * 	  2.3 You can use already existed rule for v-ui:hasNumeratorRule. Or create your own. See examples : `v-s:SimpleNumerator`, `v-s:YearNumerator`
+ * 	  2.4 You can use already existed rule for v-ui:hasNumeratorRule. Or create your own. See examples : `v-s:SimpleNumerator`, `v-s:YearNumerator`
  *    
  *    2.4 Now when you click "Get number" button you get next uncommited value for you numeration scope. 
  *        Another way - you can type a number and it will be checked for uniqueness
