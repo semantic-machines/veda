@@ -151,14 +151,21 @@
 			button = $(".get-numerator-value", control);
 
 		button.on("click", function () {
-			var prop = new veda.IndividualModel(property_uri);
-			var numertor = prop['v-s:hasNumeratorRule'][0];
-			
-		    var scope = eval(numertor['v-s:numeratorScope'][0].toString())(null, individual);
-		    var nextValue = eval(numertor['v-s:numeratorGetNextValue'][0].toString())(null, scope);
-		    
-		    // input.val(nextValue);
-		    individual[property_uri] = [nextValue]; 
+			var prop = new veda.IndividualModel(property_uri);			
+			if (prop['v-s:hasNumeratorMapper']) {
+				for (var mapkey in prop['v-s:hasNumeratorMapper']) {
+					var map = prop['v-s:hasNumeratorMapper'][mapkey];
+					if (map['v-s:numerationClass'][0].id == individual['rdf:type'][0].id) {
+						var numertor = map['v-s:hasNumeratorRule'][0];
+						console.log('>> '+map['v-s:hasNumeratorRule'][0].id);
+						
+					    var scope = eval(numertor['v-s:numeratorScope'][0].toString())(null, individual);
+					    var nextValue = eval(numertor['v-s:numeratorGetNextValue'][0].toString())(null, scope);
+					    
+					    individual[property_uri] = [nextValue];
+					}
+				}
+			}
 		});
 		
 		this.append(control);

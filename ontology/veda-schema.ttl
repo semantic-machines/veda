@@ -1428,9 +1428,29 @@ v-s:DocumentLinkRulesTemplate
   </div>
 """ ;
 .
-v-s:hasNumeratorRule
+
+v-s:hasNumeratorMapper
   rdf:type owl:ObjectProperty ;
   rdfs:domain owl:DatatypeProperty ;
+  rdfs:label "ссылка на связку: тип индивида + правило нумерации"@ru ;
+  rdfs:label "link to mapper: type of individual + numeration rule"@en ;
+  rdfs:range v-s:NumerationMapper;
+.
+v-s:NumerationMapper
+  rdf:type owl:Class ;
+  rdfs:label "Numeration rule"@en ;
+  rdfs:label "Правило автонумерации"@ru ;
+.
+v-s:numerationClass
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:NumerationMapper ;
+  rdfs:label "ссылка на тип индивида"@ru ;
+  rdfs:label "link to numeration rule"@en ;
+  rdfs:range owl:Class;
+.
+v-s:hasNumeratorRule
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:NumerationMapper ;
   rdfs:label "ссылка на правило нумерации"@ru ;
   rdfs:label "link to numeration rule"@en ;
   rdfs:range v-s:NumerationRule;

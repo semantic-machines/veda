@@ -28,10 +28,19 @@ function numerate(ticket, individual, oldstate, _event_id) {
   try {	
 	for (var key in individual) {
 		var property = get_individual(ticket, key);
-		if (property['v-s:hasNumeratorRule']) {
+		if (property['v-s:hasNumeratorMapper']) {
+		  var rule;
+		  for (var mapperkey in property['v-s:hasNumeratorMapper']) {
+			  var mapper = get_individual(ticket, property['v-s:hasNumeratorMapper'][mapperkey].data);
+			  if (mapper['v-s:numerationClass'][0].data == individual['rdf:type'][0].data) {
+				  rule = mapper['v-s:hasNumeratorRule'][0].data
+			  }
+		  }
+		  if (!rule) return;
+		  
 		  if (individual[key][0].data > 0) {	
 			//print ('4'+key);
-			var numerator = get_individual(ticket, property['v-s:hasNumeratorRule'][0].data);
+			var numerator = get_individual(ticket, rule);
 			var scopeId = getScope(ticket, individual, numerator); 
 			//print ('scopeId'+scopeId);
 			var scope = get_individual(ticket, scopeId);
@@ -54,7 +63,9 @@ function numerate(ticket, individual, oldstate, _event_id) {
 				var oldScopeId = getScope(ticket, oldstate, numerator);
 				//print (toJson(oldstate));
 				if (scopeId == oldScopeId && individual[key][0].data == oldstate[key][0].data
-					&& !(individual['v-s:deleted'].data =='true' && oldstate['v-s:deleted'].data == 'false')) {
+					&& (!individual['v-s:deleted'] 
+					    || !oldstate['v-s:deleted'] 
+					    || (!(individual['v-s:deleted'].data =='true' && oldstate['v-s:deleted'].data == 'false')))) {
 					// scope and numbers are not changed
 					if (individual['v-s:deleted'].data =='false' && oldstate['v-s:deleted'].data == 'true') {
 						// document deleted
