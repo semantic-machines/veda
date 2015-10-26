@@ -16,12 +16,12 @@
  *    
  *    2.1 You must specify `v-s:hasNumeratorRule` value for your individual property  
  * 
- * 	  2.2 You can use already existed rule for v-ui:hasNumeratorRule. Or create your own. See examples : `v-s:SimpleNumerator`, `v-s:YearNumerator`
+ * 	  2.2 Add `type="numerator"` property to your `<veda-control>` at your template. 
+ * 	
+ * 	  2.3 You can use already existed rule for v-ui:hasNumeratorRule. Or create your own. See examples : `v-s:SimpleNumerator`, `v-s:YearNumerator`
  *    
- *    2.3 Now when you click "Get number" button you get next uncommited value for you numeration scope. 
+ *    2.4 Now when you click "Get number" button you get next uncommited value for you numeration scope. 
  *        Another way - you can type a number and it will be checked for uniqueness
- *        
- *    2.4 Note your individuals of type ``
  */
  
 function numerate(ticket, individual, oldstate, _event_id) {
@@ -102,7 +102,7 @@ function createScope(ticket, scopeId) {
   try {		
     var scope = {
         '@': scopeId,
-        'rdfs:label' : [scopeId],
+        'rdfs:label' : [{data: scopeId, type: _String}],
         'rdf:type': [{
         	data: 'v-s:NumerationScope',
             type: _Uri
@@ -142,7 +142,7 @@ function commitValue(ticket, scope, value, _event_id) {
 			//print('merge prev && value && next');
 			
 			// prev = prev+next
-			prevInterval['rdfs:label'][0].data = [prevInterval['v-s:numeratorCommitedIntervalBegin'][0].data+' - '+nextInterval['v-s:numeratorCommitedIntervalEnd'][0].data];
+			prevInterval['rdfs:label'][0].data = prevInterval['v-s:numeratorCommitedIntervalBegin'][0].data+' - '+nextInterval['v-s:numeratorCommitedIntervalEnd'][0].data;
 			prevInterval['v-s:numeratorCommitedIntervalEnd'][0].data = nextInterval['v-s:numeratorCommitedIntervalEnd'][0].data
 			put_individual(ticket, prevInterval, _event_id);
 			
@@ -161,14 +161,14 @@ function commitValue(ticket, scope, value, _event_id) {
 		} else if (prevInterval != null) {
 			// merge prev && value
 			//print('merge prev && value');
-			prevInterval['rdfs:label'][0].data = [prevInterval['v-s:numeratorCommitedIntervalBegin'][0].data+' - '+value];
+			prevInterval['rdfs:label'][0].data = prevInterval['v-s:numeratorCommitedIntervalBegin'][0].data+' - '+value;
 			prevInterval['v-s:numeratorCommitedIntervalEnd'][0].data = value;
 			put_individual(ticket, prevInterval, _event_id);
 			
 		} else if (nextInterval != null) {
 			// merge value && next
 			//print('merge value && next');
-			nextInterval['rdfs:label'][0].data = [value+' - '+nextInterval['v-s:numeratorCommitedIntervalEnd'][0].data];
+			nextInterval['rdfs:label'][0].data = value+' - '+nextInterval['v-s:numeratorCommitedIntervalEnd'][0].data;
 			nextInterval['v-s:numeratorCommitedIntervalBegin'][0].data = value;
 			put_individual(ticket, nextInterval, _event_id);
 			
@@ -179,7 +179,7 @@ function commitValue(ticket, scope, value, _event_id) {
 			var intervalId = genUri();
 			var interval = {
 				'@': intervalId,
-		        'rdfs:label' : [value+' - '+value],				
+		        'rdfs:label' : [{data: value+' - '+value, type: _String}],				
 				'rdf:type' : [{data: 'v-s:NumerationCommitedInterval', type: _Uri }],
 				'v-s:numeratorCommitedIntervalBegin'	 : [{data: value, type: _Integer}],
 				'v-s:numeratorCommitedIntervalEnd'		 : [{data: value, type: _Integer}]
@@ -194,7 +194,7 @@ function commitValue(ticket, scope, value, _event_id) {
 		var intervalId = genUri();
 		var interval = {
 			'@': intervalId,
-			'rdfs:label' : [value+' - '+value],
+			'rdfs:label' : [{data: value+' - '+value, type: _String}],
 			'rdf:type' : [{data: 'v-s:NumerationCommitedInterval', type: _Uri }],
 			'v-s:numeratorCommitedIntervalBegin'	 : [{data: value, type: _Integer}],
 			'v-s:numeratorCommitedIntervalEnd'		 : [{data: value, type: _Integer}]
@@ -224,7 +224,7 @@ function revokeValue(ticket, scope, value, _event_id) {
 				// cut interval
 				put_individual(ticket, {
 					'@': interval['@'],
-					'rdfs:label' : [(value+1)+' - '+interval['v-s:numeratorCommitedIntervalEnd'][0].data],
+					'rdfs:label' : [{data: (value+1)+' - '+interval['v-s:numeratorCommitedIntervalEnd'][0].data, type: _String}],
 					'rdf:type' : [{data: 'v-s:NumerationCommitedInterval', type: _Uri }],
 					'v-s:numeratorCommitedIntervalBegin'	 : [{data: value+1, type: _Integer}],
 					'v-s:numeratorCommitedIntervalEnd'		 : [{data: interval['v-s:numeratorCommitedIntervalEnd'][0].data, type: _Integer}]
@@ -240,7 +240,7 @@ function revokeValue(ticket, scope, value, _event_id) {
 				// cut interval
 				put_individual(ticket, {
 					'@': interval['@'],
-					'rdfs:label' : [interval['v-s:numeratorCommitedIntervalBegin'][0].data+' - '+(value-1)],
+					'rdfs:label' : [{data: interval['v-s:numeratorCommitedIntervalBegin'][0].data+' - '+(value-1), type: _String}],
 					'rdf:type' : [{data: 'v-s:NumerationCommitedInterval', type: _Uri }],
 					'v-s:numeratorCommitedIntervalBegin'	 : [{data: interval['v-s:numeratorCommitedIntervalBegin'][0].data, type: _Integer}],
 					'v-s:numeratorCommitedIntervalEnd'		 : [{data: value-1, type: _Integer}]
@@ -257,7 +257,7 @@ function revokeValue(ticket, scope, value, _event_id) {
 			// cut current interval to value
 			put_individual(ticket, {
 				'@': interval['@'],
-				'rdfs:label' : [interval['v-s:numeratorCommitedIntervalBegin'][0].data+' - '+(value-1)],
+				'rdfs:label' : [{data: interval['v-s:numeratorCommitedIntervalBegin'][0].data+' - '+(value-1), type: _String}],
 				'rdf:type' : [{data: 'v-s:NumerationCommitedInterval', type: _Uri }],
 				'v-s:numeratorCommitedIntervalBegin'	 : [{data: interval['v-s:numeratorCommitedIntervalBegin'][0].data, type: _Integer}],
 				'v-s:numeratorCommitedIntervalEnd'		 : [{data: value-1, type: _Integer}]
@@ -269,7 +269,7 @@ function revokeValue(ticket, scope, value, _event_id) {
 			
 			put_individual(ticket, {
 				'@': newIntervalUri.data,
-				'rdfs:label' : [(value+1)+' - '+interval['v-s:numeratorCommitedIntervalEnd'][0].data],
+				'rdfs:label' : [{data: (value+1)+' - '+interval['v-s:numeratorCommitedIntervalEnd'][0].data, type: _String}],
 				'rdf:type' : [{data: 'v-s:NumerationCommitedInterval', type: _Uri }],
 				'v-s:numeratorCommitedIntervalBegin'	 : [{data: value+1, type: _Integer}],
 				'v-s:numeratorCommitedIntervalEnd'		 : [{data: interval['v-s:numeratorCommitedIntervalEnd'][0].data, type: _Integer}]
