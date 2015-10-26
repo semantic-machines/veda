@@ -1,7 +1,7 @@
 /**
  * Внешнее API
 
-   Copyright: © 2014 Semantic Machines
+   Copyright: © 2014-2015 Semantic Machines
    License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
    Authors: Valeriy Bushenev
 
@@ -9,12 +9,10 @@
 module veda.core.context;
 
 private import std.concurrency, std.datetime;
-
 private import type;
 private import util.container;
 private import search.vel;
-private import veda.onto.onto, veda.onto.individual, veda.onto.resource;
-private import veda.core.define;
+private import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.define;
 
 private import bind.v8d_header;
 
@@ -194,7 +192,6 @@ interface Context
 
     @property
     public Ticket sys_ticket();
-    public string get_js_vm_url();
 
 
     // *************************************************** external API ? *********************************** //
@@ -372,6 +369,8 @@ interface Context
     public Individual getConfiguration();
 }
 
+//////////////////////////////////////////////////////////////////////////
+
 import core.atomic;
 
 private shared int count_put = 0;
@@ -423,16 +422,48 @@ public void set_global_systicket(Ticket new_data)
     atomicStore(systicket_end_time, new_data.end_time);
 }
 
-/////////////////////////////// g_external_js_vm_url //////////////////////////
-private shared string _external_js_vm_url;
+/////////////////////////////// external_js_vm_url & external_write_storage_url //////////////////////////
+
+private shared string g_external_js_vm_url;
 public string get_g_external_js_vm_url()
 {
-    return atomicLoad(_external_js_vm_url);
+    return atomicLoad(g_external_js_vm_url);
 }
 
 public void set_g_external_js_vm_url(string new_data)
 {
-    atomicStore(_external_js_vm_url, new_data);
+    atomicStore(g_external_js_vm_url, new_data);
 }
 
+private shared string g_external_write_storage_url;
+public string get_g_external_write_storage_url()
+{
+    return atomicLoad(g_external_write_storage_url);
+}
+
+public void set_g_external_write_storage_url(string new_data)
+{
+    atomicStore(g_external_write_storage_url, new_data);
+}
+
+    private string         _external_write_storage_url;
+    private string         _external_js_vm_url;
+
+ @property
+    string external_js_vm_url()
+    {
+    	if (_external_js_vm_url is null)
+    		_external_js_vm_url = get_g_external_js_vm_url();
+    		
+        return _external_js_vm_url;
+    }
+
+ @property
+    string external_write_storage_url()
+    {
+    	if (_external_write_storage_url is null)
+    		_external_write_storage_url = get_g_external_write_storage_url();
+    		
+        return _external_write_storage_url;
+    }
 

@@ -73,16 +73,14 @@ class PThreadContext : Context
     private Individual     node = Individual.init;
     private string         node_id;
 
-    private string         external_write_storage;
-    private string         external_js_vm_url;
-
-    this(string _node_id, string context_name, P_MODULE _id, string _external_write_storage = null, string _role = null)
+    this(string _node_id, string context_name, P_MODULE _id)
     {
-        if (_node_id is null)
-        {
-            writeln("NODE_ID IS NULL");
-            printPrettyTrace(stdout);
-        }
+//        if (_node_id is null)
+//        {
+//            writeln("---NODE_ID IS NULL---");
+//            printPrettyTrace(stdout);
+//            writeln("^^^NODE_ID IS NULL^^^");
+//        }
 
         node_id = _node_id;
 
@@ -115,19 +113,8 @@ class PThreadContext : Context
 
         getConfiguration();
 
-        external_js_vm_url = get_g_external_js_vm_url();
-
-        if (_external_write_storage !is null)
-        {
-            external_write_storage = _external_write_storage;
-            log.trace_log_and_console("NEW CONTEXT [%s], external: write storage=%s, js_vm=%s", context_name, external_write_storage,
+        log.trace_log_and_console("NEW CONTEXT [%s], external: write storage=[%s], js_vm=[%s]", context_name, external_write_storage_url,
                                       external_js_vm_url);
-        }
-    }
-
-    string get_js_vm_url()
-    {
-        return external_js_vm_url;
     }
 
     @property
@@ -162,7 +149,7 @@ class PThreadContext : Context
             if (node.getStatus() != ResultCode.OK)
                 node = Individual.init;
 
-            external_write_storage = node.getFirstLiteral("vsrv:write_storage_node");
+            set_g_external_write_storage_url (node.getFirstLiteral("vsrv:write_storage_node"));
 //            external_js_vm         = node.getFirstLiteral("vsrv:jsvm_node");
         }
         return node;
@@ -687,7 +674,7 @@ class PThreadContext : Context
     {
         Ticket ticket;
 
-        if (external_write_storage !is null)
+        if (external_write_storage_url !is null)
         {
             writeln("$$$ create_new_ticket EXTERNAL");
             return ticket;
@@ -738,9 +725,9 @@ class PThreadContext : Context
 
         try
         {
-            string url = external_write_storage ~ "/authenticate";
-            if (external_write_storage !is null)
+            if (external_write_storage_url !is null)
             {
+            	string url = external_write_storage_url ~ "/authenticate";
                 try
                 {
                     Json req_body = Json.emptyObject;
@@ -1131,22 +1118,31 @@ class PThreadContext : Context
         }
     }
 
-    private ResultCode store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool wait_for_indexing,
-                                        bool prepare_events,
-                                        string event_id)
+    private ResultCode store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool wait_for_indexing, bool prepare_events, string event_id)
     {
+trace_msg[ 27 ] = 1;
+    	
         StopWatch sw; sw.start;
+
+        if (indv !is null && (indv.uri is null || indv.uri.length < 2))
+        {
+            log.trace("Ex! store_subject:%s", indv);
+            return ResultCode.Unprocessable_Entity;
+        }
+
+        if (indv is null || indv.resources.length == 0)
+            return ResultCode.No_Content;
 
         try
         {
-            if (external_write_storage !is null)
+            if (external_write_storage_url !is null)
             {
-                writeln("$$$ put_individual EXTERNAL");
-
+                if (trace_msg[ 27 ] == 1)
+                    log.trace("[%s] store_individual use EXTERNAL", name);
 
                 string url;
                 if (cmd == CMD.PUT)
-                    url = external_write_storage ~ "/put_individual";
+                    url = external_write_storage_url ~ "/put_individual";
 
                 try
                 {
@@ -1154,8 +1150,8 @@ class PThreadContext : Context
                     req_body[ "ticket" ]            = ticket.id;
                     req_body[ "individual" ]        = individual_to_json(*indv);
                     req_body[ "wait_for_indexing" ] = wait_for_indexing;
-                    req_body[ "prepare_events" ] = prepare_events;
-                    req_body[ "event_id" ] = event_id;
+                    req_body[ "prepare_events" ]    = prepare_events;
+                    req_body[ "event_id" ]          = event_id;
 
                     requestHTTP(url,
                                 (scope req) {
@@ -1184,20 +1180,11 @@ class PThreadContext : Context
             }
             else
             {
-                Tid tid_subject_manager;
-                Tid tid_acl;
-
-                if (indv !is null && (indv.uri is null || indv.uri.length < 2))
-                {
-                    log.trace("Ex! store_subject:%s", indv);
-                    return ResultCode.Unprocessable_Entity;
-                }
-
                 if (trace_msg[ 27 ] == 1)
                     log.trace("[%s] store_individual", name);
 
-                if (indv is null || indv.resources.length == 0)
-                    return ResultCode.No_Content;
+                Tid    tid_subject_manager;
+                Tid    tid_acl;
 
                 string ss_as_cbor = individual2cbor(indv);
 
