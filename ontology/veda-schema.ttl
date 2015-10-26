@@ -1501,7 +1501,7 @@ v-s:SimpleNumerator
 (function getNextValue(ticket, scope) {
  	if (typeof scope == 'string') 
  	{
- 		scope = new veda.IndividualModel(scope);
+ 		scope = new veda.IndividualModel(scope, undefined, undefined, undefined, false);
  	}
     if (typeof scope === 'undefined' 
         || !scope['v-s:numeratorCommitedInterval'])
@@ -1514,6 +1514,7 @@ v-s:SimpleNumerator
 	{
 		scope['v-s:numeratorCommitedInterval'].forEach(function(interval) 
 		{
+			interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
 			if (interval['v-s:numeratorCommitedIntervalEnd'][0].data > max) 
 			{
 				max = interval['v-s:numeratorCommitedIntervalEnd'][0].data; 
@@ -1523,6 +1524,7 @@ v-s:SimpleNumerator
 	{
 		scope['v-s:numeratorCommitedInterval'].forEach(function(interval) 
 		{
+			interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
 			console.log(interval);
 			if (interval['v-s:numeratorCommitedIntervalEnd'][0] > max) 
 			{
