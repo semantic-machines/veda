@@ -631,7 +631,7 @@ s-wf:UserTaskFormTemplate
         <div class="row">
             <div class="col-md-12">
                <strong about="v-wf:takenDecision" property="rdfs:label" class="text-muted"></strong>
-               <select class="form-control" id="decision-control"></select>
+               <select class="form-control" id="decision-control" class="-view edit search"></select>
                <div about="@" rel="v-wf:takenDecision" embedded="true"></div>
             </div>
         </div>
