@@ -239,7 +239,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		function modeHandler (e) {
 			mode = e.type;
 			mode === "view" ? template.addClass("mode-view").removeClass("mode-edit mode-search") :
-			mode === "edit" ? template.addClass("mode-edit").removeClass("mode-view mode-search") :
+			mode === "edit" && (individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ? template.addClass("mode-edit").removeClass("mode-view mode-search") :
 			mode === "search" ? template.addClass("mode-search").removeClass("mode-view mode-edit") : 
 			true;
 			e.stopPropagation();
@@ -269,13 +269,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Process RDFa compliant template
 
 		// Special (not RDFa)
-		$("a[href*='@']:not([rel] *):not([about] *)", wrapper).map( function () {
+		$("[href*='@']:not([rel] *):not([about] *)", wrapper).map( function () {
 			var self = $(this);
 			var str = self.attr("href");
 			self.attr("href", str.replace("@", individual.id));
 		});
 
-		$("img[src*='@']:not([rel] *):not([about] *)", wrapper).map( function () {
+		$("[src*='@']:not([rel] *):not([about] *)", wrapper).map( function () {
 			var self = $(this);
 			var str = self.attr("src");
 			self.attr("src", str.replace("@", individual.id));
