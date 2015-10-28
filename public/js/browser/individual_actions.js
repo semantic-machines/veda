@@ -27,7 +27,19 @@ veda.Module(function IndividualActions(veda) { "use strict";
 						value = veda.ontology[transfromResult[0][key][i].data];
 					} else  
 					{
-						value = transfromResult[0][key][i].hasOwnProperty('data')?new veda.IndividualModel(transfromResult[0][key][i].data):transfromResult[0][key][i];
+						if (transfromResult[0][key][i].type == _Uri) {
+							value = new veda.IndividualModel(transfromResult[0][key][i].data);
+						} else if (transfromResult[0][key][i].type == _Integer) {
+							value = new Number(transfromResult[0][key][i].data);
+						} else if (transfromResult[0][key][i].type == _Datetime) {
+							value = new Date(Date.parse(transfromResult[0][key][i].data));
+						} else if (transfromResult[0][key][i].type == _Decimal) {
+							value = new Number(transfromResult[0][key][i].data);
+						} else if (transfromResult[0][key][i].type == _Bool) {
+							value = new Boolean(transfromResult[0][key][i].data);
+						} else {
+							value = transfromResult[0][key][i].data;
+						}
 					}
 					if (value) {
 						startForm[key] = startForm[key].concat(value);
@@ -76,6 +88,23 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			individual.on("valid", validHandler);
 			
 			individual.on("invalid", inValidHandler);
+			
+			/**
+			 * Save draft of individual
+			 */
+			individual.on("draft", function () {
+				if (!individual.hasValue('v-s:isDraftOf')) {
+					// If `v-s:isDraftOf` is empty, then current individual is "draftonly" individual
+					individual['v-s:isDraftOf'] = [individual.id];
+				}
+				individual.save();
+				template.trigger("view");
+				// Change location.hash if individual was presented in #main container
+				if (container.prop("id") === "main") {
+					var hash = ["#", individual.id].join("/");
+					if (hash !== location.hash) riot.route(hash, false);
+				}
+			});
 			
 			/**
 			 * Event `send` handler: 
