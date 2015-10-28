@@ -328,10 +328,14 @@ veda.Module(function (veda) { "use strict";
 		var self = this;
 		self.trigger("individual:beforeReset");
 		var original = JSON.parse(self._.original_individual);
-		Object.keys(original).map(function (property_uri) {
+		Object.getOwnPropertyNames(self.properties).map(function (property_uri) {
 			if (property_uri === "@") return;
 			if (property_uri === "rdf:type") return;
-			self[property_uri] = original[property_uri].map( parser );
+			if (original[property_uri] && original[property_uri].length) {
+				self[property_uri] = original[property_uri].map( parser );
+			} else {
+				self[property_uri] = [];
+			}
 		});
 		self._.sync = true;
 		self.trigger("individual:afterReset");

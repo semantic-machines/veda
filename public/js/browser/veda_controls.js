@@ -993,7 +993,6 @@
 				fileInput = $("input#file", control),
 				filePath = $("input#path", control),
 				fileUri = $("input#uri", control),
-				//btn = $("button", control),
 				form = $("form", control),
 				iframe = $("iframe", control),
 				spec = opts.spec,
@@ -1003,9 +1002,6 @@
 				id = veda.Util.guid();
 			form.attr("target", id);
 			iframe.attr("id", id).attr("name", id).attr("src", "javascript:void(0);");
-			/*btn.click(function (e) {
-				fileInput.click();
-			});*/
 			fileInput.change(function () {
 				if (this.value) {
 					var d = new Date(),
@@ -1019,7 +1015,6 @@
 						var f = new veda.IndividualModel();
 						f["rdf:type"] = [ veda.ontology["v-s:File"] ];
 						f["v-s:fileName"] = [ name ];
-						//f["v-s:fileSize"] = [ 0 ];
 						f["v-s:fileUri"] = [ uri ];
 						f["v-s:filePath"] = [ path ];
 						f.save();

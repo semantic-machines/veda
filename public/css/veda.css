@@ -34,6 +34,9 @@ footer {
   border: none;
   box-shadow: none;
 }
+.navbar-fixed-bottom {
+  padding:0px;
+}
 .navbar .nav {
   margin:2px 0px;
 }
