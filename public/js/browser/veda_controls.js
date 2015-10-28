@@ -441,10 +441,15 @@
 
 		function handler (doc_property_uri) {
 			if (doc_property_uri === property_uri) {
+				if (individual.hasValue(property_uri)) {
+					if (individual[property_uri][0] == true) { input.prop("checked", true); }
+					else { input.prop("checked", false); }
+				} else {
+					input.prop("indeterminate", true);
+				}
 				individual.hasValue(property_uri) && individual[property_uri][0] == true ? input.attr("checked", "checked") : input.removeAttr("checked");
 			}
 		}
-		
 		handler(property_uri);
 		
 		individual.on("individual:propertyModified", handler);
@@ -452,8 +457,16 @@
 			individual.off("individual:propertyModified", handler);
 		});
 		
-		input.on("change", function () {
-			individual[property_uri] = [ new Boolean(input.is(":checked")) ];
+		input.change( function () {
+			if ( input.prop("readonly") ) {
+				input.prop("checked", false).prop("readonly", false);
+				individual[property_uri] = [new Boolean(false) ];
+			} else if ( !input.prop("checked") ) {
+				input.prop("readonly", true).prop("indeterminate", true);
+				individual[property_uri] = []; 
+			} else {
+				individual[property_uri] = [new Boolean(true) ];
+			}
 		});
 		
 		this.on("view edit search", function (e) {
