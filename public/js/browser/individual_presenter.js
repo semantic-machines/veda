@@ -508,34 +508,33 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				individual.off("individual:propertyModified", propertyModifiedHandler);
 			});
 
-			function assignDefaultValue (e) {
-				var defaultValue;
-				switch (property["rdfs:range"][0].id) {
-					case "xsd:boolean": 
-						defaultValue = spec && spec.hasValue("v-ui:defaultBooleanValue") ? spec["v-ui:defaultBooleanValue"][0] : undefined;
-						break;
-					case "xsd:integer": 
-					case "xsd:nonNegativeInteger":
-						defaultValue = spec && spec.hasValue("v-ui:defaultIntegerValue") ? spec["v-ui:defaultIntegerValue"][0] : undefined; 
-						break;
-					case "xsd:decimal":
-						defaultValue = spec && spec.hasValue("v-ui:defaultDecimalValue") ? spec["v-ui:defaultDecimalValue"][0] : undefined; 
-						break;
-					case "xsd:dateTime": 
-						defaultValue = spec && spec.hasValue("v-ui:defaultDatetimeValue") ? spec["v-ui:defaultDatetimeValue"][0] : undefined;
-						break;
-					default: 
-						defaultValue = spec && spec.hasValue("v-ui:defaultStringValue") ? spec["v-ui:defaultStringValue"][0] : undefined;
-						break;
+			function assignDefaultValue () {
+				if ( spec && !individual.hasValue(property_uri) ) {
+					var defaultValue;
+					switch (property["rdfs:range"][0].id) {
+						case "xsd:boolean": 
+							defaultValue = spec && spec.hasValue("v-ui:defaultBooleanValue") ? spec["v-ui:defaultBooleanValue"][0] : undefined;
+							break;
+						case "xsd:integer": 
+						case "xsd:nonNegativeInteger":
+							defaultValue = spec && spec.hasValue("v-ui:defaultIntegerValue") ? spec["v-ui:defaultIntegerValue"][0] : undefined; 
+							break;
+						case "xsd:decimal":
+							defaultValue = spec && spec.hasValue("v-ui:defaultDecimalValue") ? spec["v-ui:defaultDecimalValue"][0] : undefined; 
+							break;
+						case "xsd:dateTime": 
+							defaultValue = spec && spec.hasValue("v-ui:defaultDatetimeValue") ? spec["v-ui:defaultDatetimeValue"][0] : undefined;
+							break;
+						default: 
+							defaultValue = spec && spec.hasValue("v-ui:defaultStringValue") ? spec["v-ui:defaultStringValue"][0] : undefined;
+							break;
+					}
+					if (defaultValue) individual[property_uri] = [ defaultValue ];
 				}
-				
-				if (defaultValue) individual[property_uri] = [ defaultValue ];
 				return false;
 			}
-			if ( spec && !individual.hasValue(property_uri) ) {
-				template.on("edit", assignDefaultValue);
-				if ( mode === "edit" ) assignDefaultValue();
-			}
+			template.on("edit", assignDefaultValue);
+			
 		});
 		
 		// Relation control
@@ -588,14 +587,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				individual.off("individual:propertyModified", propertyModifiedHandler);
 			});
 
-			function assignDefaultObjectValue (e) {
-				individual[rel_uri] = [ spec["v-ui:defaultObjectValue"][0] ];
+			function assignDefaultObjectValue () {
+				if ( spec && spec.hasValue("v-ui:defaultObjectValue") && !individual.hasValue(rel_uri) ) {
+					individual[rel_uri] = [ spec["v-ui:defaultObjectValue"][0] ];
+				}
 				return false;
 			}
-			if ( spec && spec.hasValue("v-ui:defaultObjectValue") && !individual.hasValue(rel_uri) ) {
-				template.on("edit", assignDefaultObjectValue);
-				if (mode === "edit") individual[rel_uri] = [ spec["v-ui:defaultObjectValue"][0] ];
-			}
+			template.on("edit", assignDefaultObjectValue);
 			
 			// tooltip from spec
 			if (spec && spec.hasValue("v-ui:tooltip")) {
@@ -739,14 +737,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			result = result && (
 				values.length >= spec["v-ui:minCardinality"][0] && 
 				// filter empty values
-				values.length === values.filter(function(item){return !!item && !!item.valueOf();}).length
+				values.length === values.filter(function(item){return !!item;}).length
 			);
 		}
 		if (spec.hasValue("v-ui:maxCardinality")) { 
 			result = result && (
 				values.length <= spec["v-ui:maxCardinality"][0] && 
 				// filter empty values
-				values.length === values.filter(function(item){return !!item && !!item.valueOf();}).length
+				values.length === values.filter(function(item){return !!item;}).length
 			);
 		}
 		// check each value
