@@ -2,10 +2,21 @@ module veda.pacahon_driver;
 
 import std.stdio, std.datetime, std.conv, std.string, std.variant, std.concurrency;
 import vibe.data.json;
-import veda.core.server, veda.core.context, veda.core.thread_context, veda.core.know_predicates;
+import veda.core.server, veda.core.context, veda.core.thread_context, veda.core.know_predicates, veda.core.define;
 import type;
 import veda.onto.onto, onto.lang, veda.onto.individual, veda.onto.resource;
 import veda.core.util.cbor8json, veda.core.util.individual8json;
+
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
+{
+    if (_log is null)
+        _log = new logger("veda-core-" ~ proccess_name, "pacahon_driver", "API");
+    return _log;
+}
+// ////// ////// ///////////////////////////////////////////
 
 enum Command
 {
@@ -224,6 +235,28 @@ public void core_thread(string node_id, string write_storage_node)
                         if (cmd == Command.Execute && fn == Function.Script)
                         {
                             send(tid, context.execute_script(args));
+                        }
+                    }
+                },
+                (Command cmd, Function fn, int arg, int worker_id, Tid tid)
+                {
+                    if (tid !is Tid.init)
+                    {
+                        if (cmd == Command.Wait && fn == Function.PModule)
+                        {
+                            ResultCode rc = ResultCode.Internal_Server_Error;
+                            try
+                            {
+                                context.wait_thread(cast(P_MODULE)arg);
+                                if (arg == P_MODULE.fulltext_indexer)
+                                    context.reopen_ro_fulltext_indexer_db();
+                                rc = ResultCode.OK;
+                            }
+                            catch (Exception ex)
+                            {
+                                log.trace("pacahon_driver:wait_thread, err=%s", ex.msg);
+                            }
+                            send(tid, 0L, worker_id);
                         }
                     }
                 },

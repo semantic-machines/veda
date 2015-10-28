@@ -13,6 +13,17 @@ import type;
 import veda.core.context, veda.core.know_predicates, veda.core.define;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang, veda.core.util.individual8json;
 
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
+{
+    if (_log is null)
+        _log = new logger("veda-core-" ~ proccess_name, "log", "API");
+    return _log;
+}
+// ////// ////// ///////////////////////////////////////////
+
 
 public const string veda_schema__File          = "v-s:File";
 public const string veda_schema__fileName      = "v-s:fileName";
@@ -78,7 +89,7 @@ interface VedaStorageRest_API {
     bool is_ticket_valid(string ticket);
 
     @path("wait_pmodule") @method(HTTPMethod.GET)
-    void wait_pmodule(int pmodule_id);
+    long wait_pmodule(int pmodule_id);
 
     @path("set_trace") @method(HTTPMethod.GET)
     void set_trace(int idx, bool state);
@@ -111,7 +122,7 @@ interface VedaStorageRest_API {
     int add_to_individual(string ticket, Json individual, bool wait_for_indexing, bool prepare_events, string event_id);
 
     @path("trigger") @method(HTTPMethod.PUT)
-    int trigger(string _ticket, string event_type, Json individual, Json prev_state, string event_id);
+    int trigger(string ticket, string event_type, string event_id, Json individual, Json prev_state);
 }
 
 
@@ -305,6 +316,7 @@ class VedaStorageRest : VedaStorageRest_API
         // uri субьекта
 
         long pos = lastIndexOf(req.path, "/");
+
         if (pos > 0)
         {
             uri = req.path[ pos + 1..$ ];
@@ -429,13 +441,33 @@ class VedaStorageRest : VedaStorageRest_API
         return ticket;
     }
 
-    void wait_pmodule(int thread_id)
+    long wait_pmodule(int module_id)
     {
-        context.wait_thread(cast(P_MODULE)thread_id);
-        if (thread_id == P_MODULE.fulltext_indexer)
+        ResultCode rc = ResultCode.OK;
+        int        recv_worker_id;
+
+        long       res = -1;
+
+        Worker     *worker = allocate_worker();
+
+        std.concurrency.send(worker.tid, Command.Wait, Function.PModule, module_id, worker.id, std.concurrency.thisTid);
+        yield();
+        std.concurrency.receive((long _res, int _recv_worker_id) { res = _res; recv_worker_id = _recv_worker_id; });
+
+        if (recv_worker_id == worker.id)
         {
-            context.reopen_ro_fulltext_indexer_db();
+            worker.complete = false;
+            worker.ready    = true;
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc);
         }
+        else
+        {
+            res = put_another_get_my(recv_worker_id, res, rc, worker);
+        }
+
+        return res;
     }
 
     void set_trace(int idx, bool state)
@@ -680,16 +712,13 @@ class VedaStorageRest : VedaStorageRest_API
         return rc.to!int;
     }
 
-    int trigger(string _ticket, string event_type, Json individual_json, Json prev_state_json, string event_id)
+    int trigger(string _ticket, string event_type, string event_id, Json individual_json, Json prev_state_json)
     {
-        writeln("@@1");
         Ticket *ticket = context.get_ticket(_ticket);
 
-        writeln("@@2");
         ResultCode rc = ticket.result;
         if (rc == ResultCode.OK)
         {
-            writeln("@@3");
             Individual indv = json_to_individual(individual_json);
 
             EVENT      ev_type;
@@ -705,7 +734,6 @@ class VedaStorageRest : VedaStorageRest_API
             if (prev_state_json != Json.init)
                 prev_state_indv = json_to_individual(individual_json);
 
-            writeln("@@4");
             veda.core.bus_event.trigger_script(ticket, ev_type, &indv, &prev_state_indv, context, event_id);
 
             rc = ResultCode.OK;
@@ -715,7 +743,6 @@ class VedaStorageRest : VedaStorageRest_API
             writeln("@@6 rc=", rc);
             throw new HTTPStatusException(rc);
         }
-        writeln("@@7");
 
         return rc.to!int;
     }
