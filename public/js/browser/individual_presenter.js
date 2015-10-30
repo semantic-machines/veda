@@ -4,7 +4,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 	
 	var deletedAlertTmpl = $("#deleted-individual-alert-template").html();
 	
-	//var c = 0;
+	//var c = 0; 
 	
 	veda.on("individual:loaded", function (individual, container, template, mode) {
 		
@@ -103,6 +103,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Unwrapped templates support
 		var wrapper = $("<div>").append(template);
 
+		// Additional buttons change for drafts 
+		if (individual.is('v-s:DraftAllowed')) {
+			// If individual is draft
+			if (individual.hasValue('v-s:isDraftOf') || individual.hasValue('v-s:hasDraft')) {			
+				//Put link to actual version
+				
+				//Rename edit button
+				$('#edit', wrapper).attr('about', 'v-b:ContinueEdit');
+				
+				//Hide send button
+				$('#send', wrapper).remove();
+			} 
+		}
+		
 		// Cleanup memory
 		/*template.on("remove", function (event) {
 			$(".typeahead", wrapper).typeahead("destroy");
@@ -340,6 +354,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				about.defineProperty(rel_uri);
 			}
 			
+			template.on("edit", function () {
+				if ( !individual.hasValue(rel_uri) && isEmbedded/* && spec && spec["v-ui:minCardinality"][0] >= 1*/ ) {
+					var emptyValue = new veda.IndividualModel();
+					if ( individual.properties[rel_uri].hasValue("rdfs:range") ) {
+						emptyValue["rdf:type"] = individual.properties[rel_uri]["rdfs:range"].slice(0);
+					}
+					individual[rel_uri] = [emptyValue];
+				}
+			});
+
 			var values = about[rel_uri], rendered = {}, counter = 0;
 			
 			relContainer.empty();
@@ -606,6 +630,97 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			
 		});
+		
+		if (individual.is('v-s:DraftAllowed')) {
+			
+			if (individual.hasValue('v-s:isDraftOf')) {			
+				//Put draft sign
+				$('[about="'+individual.id+'"][property="rdfs:label"]', wrapper).append('<span class="glyphicon glyphicon-pencil draftsign" style="font-size: 10px;">');
+			}
+			
+			$edit.unbind("click");
+			$edit.on("click", function (e) {
+				// Go to edit draft instead of edit individual
+				if (individual.hasValue('v-s:hasDraft')) {
+					// Go to already existed draft
+					var draft = new veda.IndividualModel(individual['v-s:hasDraft'][0].id);
+					container.empty();
+					draft.present(container, undefined, "edit");
+				} else 
+				{
+					if (individual.hasValue('v-s:isDraftOf') && individual.id == individual['v-s:isDraftOf'][0].id) {
+						// Individual is draft itself
+						container.empty();
+						individual.present(container, undefined, "edit");
+					} else {
+						// Create new draft
+						var clone = individual.clone();
+						clone['v-s:hasDraft'] = [];
+						clone['v-s:isDraftOf'] = [individual];
+						clone.save();
+	
+						// Add link to draft
+						individual['v-s:hasDraft'] = [clone];
+						individual.save();
+						
+						container.empty();
+						clone.present(container, undefined, "edit");
+					}
+				}
+			});
+			
+			// Remove edit button if no rights to edit draft
+			if (individual.hasValue('v-s:hasDraft')) {
+				var draft = new veda.IndividualModel(individual['v-s:hasDraft'][0].id);
+				if ($edit.length   && !(draft.rights.hasValue("v-s:canUpdate") && draft.rights["v-s:canUpdate"][0] == true) ) $edit.remove();
+			}
+			
+			$save.unbind("click");
+			$save.on("click", function (e) {
+				if (individual.is('v-s:Versioned')) {
+					if (individual.hasValue('v-s:isDraftOf')) {
+						// original document exists
+						var originalId = individual['v-s:isDraftOf'][0].id;
+
+						// add new version
+						individual['v-s:isDraftOf'] = [];
+						individual['v-s:actualVersion'] = [originalId];
+						individual.save();
+						
+						// remove 'v-s:hasDraft' on old original
+						var original = new veda.IndividualModel();
+						original['v-s:hasDraft'] = [];
+						original.save();
+						
+						container.empty();
+						individual.present(container, undefined, "view");
+					} else {
+						// first save of draft
+						individual['v-s:isDraftOf'] = [];
+						individual['v-s:actualVersion'] = [individual];
+						individual.save();
+						
+						container.empty();
+						individual.present(container, undefined, "view");
+					}
+				} else {
+					// rewrite original document
+					var draftId = individual.id;
+					individual['v-s:hasDraft'] = [];
+					var originalId = individual['v-s:isDraftOf'][0].id;
+					individual.id = originalId;
+					individual.save();
+					
+					// + delete draft
+					individual.id = draftId;
+					individual['v-s:deleted'] = [new Boolean(true)];
+					individual.save();
+					
+					container.empty();
+					individual.present(container, undefined, "view");
+				}
+			});
+		}
 
 		return template;
 	}

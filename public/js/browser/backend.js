@@ -63,15 +63,24 @@ veda.Module(function Backend(veda) { "use strict";
 		return call_server(undefined, params, success, fail);
 	}
 
-	window.wait_pmodule = function (pmodule_id, success, fail) {
+	window.get_operation_state = function (module_id, success, fail) {
 		var params = {
 			type: "GET",
-			url: "wait_pmodule",
-			data: { "pmodule_id": pmodule_id }
+			url: "get_operation_state",
+			data: { "module_id": module_id }
 		};
 		return call_server(undefined, params, success, fail);
 	}
 
+	window.wait_module = function (module_id, op_id, success, fail) {
+		var params = {
+			type: "GET",
+			url: "wait_module",
+			data: { "module_id": module_id, "op_id": op_id }
+		};
+		return call_server(undefined, params, success, fail);
+	}
+	
 	window.backup = function (success, fail) {
 		var params = {
 			type: "GET",
@@ -149,41 +158,45 @@ veda.Module(function Backend(veda) { "use strict";
 		$.ajax(params).done(success).fail(fail);
 	}
 
-	window.put_individual = function (ticket, individual, wait_for_indexing, prepare_events, event_id, success, fail) {
+	window.put_individual = function (ticket, individual, prepare_events, event_id, wait1, wait2, wait3, wait4, success, fail) {
 		var params = {
 			type: "PUT",
 			url: "put_individual",
-			data: JSON.stringify({"ticket": ticket, "individual": individual, "wait_for_indexing" : wait_for_indexing || false, "prepare_events" : prepare_events || true,  "event_id" : event_id || ""}),
+			data: JSON.stringify({"ticket": ticket, "individual": individual, 
+			"prepare_events" : prepare_events || true,  "event_id" : event_id || ""}),
 			contentType: "application/json"
 		};
 		return call_server(ticket, params, success, fail);
 	}
 
-	window.add_to_individual = function (ticket, individual, wait_for_indexing, prepare_events, event_id, success, fail) {
+	window.add_to_individual = function (ticket, individual, prepare_events, event_id, wait1, wait2, wait3, wait4, success, fail) {
 		var params = {
 			type: "PUT",
 			url: "add_to_individual",
-			data: JSON.stringify({"ticket": ticket, "individual": individual, "wait_for_indexing" : wait_for_indexing || false, "prepare_events" : prepare_events || true,  "event_id" : event_id || "" }),
+			data: JSON.stringify({"ticket": ticket, "individual": individual, 
+			"prepare_events" : prepare_events || true,  "event_id" : event_id || ""}),
 			contentType: "application/json"
 		};
 		return call_server(ticket, params, success, fail);
 	}
 
-	window.set_in_individual = function (ticket, individual, wait_for_indexing, prepare_events, event_id, success, fail) {
+	window.set_in_individual = function (ticket, individual, prepare_events, event_id, wait1, wait2, wait3, wait4, success, fail) {
 		var params = {
 			type: "PUT",
 			url: "set_in_individual",
-			data: JSON.stringify({"ticket": ticket, "individual": individual, "wait_for_indexing" : wait_for_indexing || false, "prepare_events" : prepare_events || true,  "event_id" : event_id || "" }),
+			data: JSON.stringify({"ticket": ticket, "individual": individual,
+			"prepare_events" : prepare_events || true,  "event_id" : event_id || ""}),
 			contentType: "application/json"
 		};
 		return call_server(ticket, params, success, fail);
 	}
 
-	window.remove_from_individual = function (ticket, individual, wait_for_indexing, prepare_events, event_id, success, fail) {
+	window.remove_from_individual = function (ticket, individual, prepare_events, event_id, wait1, wait2, wait3, wait4, success, fail) {
 		var params = {
 			type: "PUT",
 			url: "remove_from_individual",
-			data: JSON.stringify({"ticket": ticket, "individual": individual, "wait_for_indexing" : wait_for_indexing || false, "prepare_events" : prepare_events || true,  "event_id" : event_id || "" }),
+			data: JSON.stringify({"ticket": ticket, "individual": individual,
+			"prepare_events" : prepare_events || true,  "event_id" : event_id || ""}),
 			contentType: "application/json"
 		};
 		return call_server(ticket, params, success, fail);

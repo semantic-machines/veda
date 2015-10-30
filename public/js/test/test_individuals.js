@@ -32,6 +32,21 @@ function get_user2_ticket ()
     return _user2_ticket;
 }
 
+/*
+function wait_module(module_id, op_id)
+{
+	if (!op_id)
+		return;
+		
+	for (var i = 0; i < 100; i++)
+	{
+		var in_module_op_id = get_operation_state(module_id);
+	
+		if (in_module_op_id >= op_id || in_module_op_id == -1)
+			return;
+	}		
+}
+*/
 var i = 0;
 
 for (i = 0; i < 1; i++)
@@ -102,9 +117,9 @@ test(
 				} ]
 			};
 
-			put_individual(ticket_user1.id, new_test_doc1);
-			wait_pmodule(condition);
-			wait_pmodule(acl_manager);
+			var res = put_individual(ticket_user1.id, new_test_doc1);
+			wait_module(condition, res.op_id);
+			wait_module(acl_manager, res.op_id);
 
 			var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
@@ -142,9 +157,9 @@ test(
 				} ]
 			};
 
-			put_individual(ticket_user1.id, new_test_doc1);
-			wait_pmodule(condition);
-			wait_pmodule(acl_manager);
+			var res = put_individual(ticket_user1.id, new_test_doc1);
+			wait_module(condition, res.op_id);
+			wait_module(acl_manager, res.op_id);
 
 			var read_individual;
 			try { read_individual = get_individual(ticket_user2.id, new_test_doc1_uri); }
@@ -175,8 +190,8 @@ test(
 					type : _Uri
 				} ]
 			};
-			put_individual(ticket_user1.id, new_permission); //
-			wait_pmodule(2);
+			var res = put_individual(ticket_user1.id, new_permission); //
+			wait_module(acl_manager, res.op_id);
 
 			read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
@@ -231,9 +246,9 @@ test(
 				} ]
 			};
 
-			put_individual(ticket_user1.id, new_test_doc1);
-			wait_pmodule(condition);
-			wait_pmodule(acl_manager);
+			var res = put_individual(ticket_user1.id, new_test_doc1);
+			wait_module(condition, res.op_id);
+			wait_module(acl_manager, res.op_id);
 
 			var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
 
@@ -304,8 +319,8 @@ test("#007 Individual store and read, test datatype", function() {
 		} ]
 	};
 
-	put_individual(ticket.id, new_test_doc1);
-	wait_pmodule(subject_manager);
+	var res = put_individual(ticket.id, new_test_doc1);
+	wait_module(subject_manager, res.op_id);
 
 	var read_individual = get_individual(ticket.id, new_test_doc1_uri);
 
@@ -349,8 +364,8 @@ test("#008 Individual of [v-s:PermissionStatement] store 3 and read 2 (check on 
 				} ]
 			};
 
-			put_individual(ticket.id, new_test_doc1);
-			wait_pmodule(subject_manager);
+			var res = put_individual(ticket.id, new_test_doc1);
+			wait_module(subject_manager, res.op_id);
 
 			var read_individual = get_individual(ticket.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
@@ -362,8 +377,8 @@ test("#008 Individual of [v-s:PermissionStatement] store 3 and read 2 (check on 
 				data : false,
 				type : _Bool
 			} ];
-			put_individual(ticket.id, new_test_doc2);
-			wait_pmodule(subject_manager);
+			var res = put_individual(ticket.id, new_test_doc2);
+			wait_module(subject_manager, res.op_id);
 
 			var read_individual = get_individual(ticket.id, new_test_doc2_uri);
 			ok(compare(new_test_doc2, read_individual));
@@ -376,9 +391,9 @@ test("#008 Individual of [v-s:PermissionStatement] store 3 and read 2 (check on 
 				type : _Bool
 			} ];
 
-			try { put_individual(ticket.id, new_test_doc3); } catch (err) {}
+			try { res = put_individual(ticket.id, new_test_doc3); } catch (err) {}
 
-			wait_pmodule(subject_manager);
+			wait_module(subject_manager, res.op_id);
 
 			try { read_individual = get_individual(ticket.id, new_test_doc3_uri); } catch (e) { read_individual = {}; }
 			ok((read_individual['@'] == new_test_doc3_uri) == false);
@@ -422,8 +437,8 @@ test(
 				} ]
 			};
 
-			put_individual(ticket.id, new_test_doc1);
-			wait_pmodule(subject_manager);
+			var res = put_individual(ticket.id, new_test_doc1);
+			wait_module(subject_manager, res.op_id);
 
 			var read_individual = get_individual(ticket.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
@@ -435,8 +450,8 @@ test(
 				data : false,
 				type : _Bool
 			} ];
-		        put_individual(ticket.id, new_test_doc2);
-			wait_pmodule(subject_manager);
+		        var res = put_individual(ticket.id, new_test_doc2);
+			wait_module(subject_manager, res.op_id);
 
 			read_individual = get_individual(ticket.id, new_test_doc2_uri);
 			ok(compare(new_test_doc2, read_individual));
@@ -448,8 +463,8 @@ test(
 				data : true,
 				type : _Bool
 			} ];
-			put_individual(ticket.id, new_test_doc3);
-			wait_pmodule(subject_manager);
+			var res = put_individual(ticket.id, new_test_doc3);
+			wait_module(subject_manager, res.op_id);
 
 			read_individual = get_individual(ticket.id, new_test_doc3_uri);
 			ok((read_individual['@'] == new_test_doc3_uri) == true);
@@ -480,8 +495,8 @@ test("#010 Individual of [v-s:Membership] store 3 and read 2",
 				} ]
 			};
 
-			put_individual(ticket.id, new_test_doc1);
-			wait_pmodule(subject_manager);
+			var res = put_individual(ticket.id, new_test_doc1);
+			wait_module(subject_manager, res.op_id);
 
 			var read_individual = get_individual(ticket.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
@@ -493,8 +508,8 @@ test("#010 Individual of [v-s:Membership] store 3 and read 2",
 				data : guid(),
 				type : _Uri
 			} ];
-			put_individual(ticket.id, new_test_doc2);
-			wait_pmodule(subject_manager);
+			var res = put_individual(ticket.id, new_test_doc2);
+			wait_module(subject_manager, res.op_id);
 
 			read_individual = get_individual(ticket.id, new_test_doc2_uri);
 			ok(compare(new_test_doc2, read_individual));
@@ -506,8 +521,8 @@ test("#010 Individual of [v-s:Membership] store 3 and read 2",
 				data : memberOf,
 				type : _Uri
 			} ];
-			try { put_individual(ticket.id, new_test_doc3); } catch (err) {}
-			wait_pmodule(subject_manager);
+			try { var res = put_individual(ticket.id, new_test_doc3); } catch (err) {}
+			wait_module(subject_manager, res.op_id);
 
 			try { read_individual = get_individual(ticket.id, new_test_doc3_uri); }
 			catch (e) { read_individual = {}; }
@@ -539,8 +554,8 @@ test("#010 Individual of [v-s:Membership] store 3 and read 2",
 				} ]
 			};
 
-			put_individual(ticket.id, new_test_doc1);
-			wait_pmodule(subject_manager);
+			var res = put_individual(ticket.id, new_test_doc1);
+			wait_module(subject_manager, res.op_id);
 
 			var read_individual = get_individual(ticket.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
@@ -552,8 +567,8 @@ test("#010 Individual of [v-s:Membership] store 3 and read 2",
 				data : guid(),
 				type : _Uri
 			} ];
-			put_individual(ticket.id, new_test_doc2);
-			wait_pmodule(subject_manager);
+			var res = put_individual(ticket.id, new_test_doc2);
+			wait_module(subject_manager, res.op_id);
 
 			read_individual = get_individual(ticket.id, new_test_doc2_uri);
 			ok(compare(new_test_doc2, read_individual));
@@ -565,8 +580,8 @@ test("#010 Individual of [v-s:Membership] store 3 and read 2",
 				data : memberOf,
 				type : _Uri
 			} ];
-			put_individual(ticket.id, new_test_doc3);
-			wait_pmodule(subject_manager);
+			var res = put_individual(ticket.id, new_test_doc3);
+			wait_module(subject_manager, res.op_id);
 
 			read_individual = get_individual(ticket.id, new_test_doc3_uri);
 			ok((read_individual['@'] == new_test_doc3_uri) == true);
@@ -684,15 +699,15 @@ test(
 				} ]
 			};
 
-			put_individual(ticket_user1.id, new_test_doc1, false);
-			put_individual(ticket_user1.id, new_test_doc2, false);
-			put_individual(ticket_user1.id, new_test_doc3, false);
-			put_individual(ticket_user1.id, new_test_doc4, false);
+			var res = put_individual(ticket_user1.id, new_test_doc1, false);
+			var res = put_individual(ticket_user1.id, new_test_doc2, false);
+			var res = put_individual(ticket_user1.id, new_test_doc3, false);
+			var res = put_individual(ticket_user1.id, new_test_doc4, false);
 
-			wait_pmodule(fulltext_indexer);
-			wait_pmodule(subject_manager);
-			wait_pmodule(acl_manager);
-			wait_pmodule(condition);			    
+			wait_module(fulltext_indexer, res.op_id);
+			wait_module(subject_manager, res.op_id);
+			wait_module(acl_manager, res.op_id);
+			wait_module(condition, res.op_id);			    
 
 			var data = query(ticket_user1.id, test_data_uid, undefined, undefined, true);
 			ok(compare(data.length, 2));
@@ -844,15 +859,15 @@ test(
 				} ]
 			};
 
-			put_individual(ticket_user1.id, new_test_doc1, false);
-			put_individual(ticket_user1.id, new_test_doc2, false);
-			put_individual(ticket_user1.id, new_test_doc3, false);
-			put_individual(ticket_user1.id, new_test_doc4, false);
+			var res = put_individual(ticket_user1.id, new_test_doc1, false);
+			var res = put_individual(ticket_user1.id, new_test_doc2, false);
+			var res = put_individual(ticket_user1.id, new_test_doc3, false);
+			var res = put_individual(ticket_user1.id, new_test_doc4, false);
 
-			wait_pmodule(fulltext_indexer);
-			wait_pmodule(subject_manager);
-			wait_pmodule(acl_manager);
-			wait_pmodule(condition);			    
+			wait_module(fulltext_indexer, res.op_id);
+			wait_module(subject_manager, res.op_id);
+			wait_module(acl_manager, res.op_id);
+			wait_module(condition, res.op_id);			    
 
 			var data = query(ticket_user1.id, test_group_uid, undefined, undefined, true);
 			ok(compare(data.length, 4));
@@ -898,9 +913,9 @@ test(
 				} ]
 			};
 
-			put_individual(ticket_user1.id, new_test_doc1);
-			wait_pmodule(condition);
-			wait_pmodule(acl_manager);
+			var res = put_individual(ticket_user1.id, new_test_doc1);
+			wait_module(condition, res.op_id);
+			wait_module(acl_manager, res.op_id);
 
 			var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
@@ -918,8 +933,8 @@ test(
 			};
 
 			add_to_individual(ticket_user1.id, new_test_add1);
-			wait_pmodule(condition);
-			wait_pmodule(acl_manager);
+			wait_module(condition, res.op_id);
+			wait_module(acl_manager, res.op_id);
 
 			var new_test_doc1_add1 = {
 				'@' : new_test_doc1_uri,
@@ -960,8 +975,8 @@ test(
 			};
 
 			set_in_individual(ticket_user1.id, new_test_set1);
-			wait_pmodule(condition);
-			wait_pmodule(acl_manager);
+			wait_module(condition, res.op_id);
+			wait_module(acl_manager, res.op_id);
 
 			var new_test_doc1_set1 = {
 				'@' : new_test_doc1_uri,

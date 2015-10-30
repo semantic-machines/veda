@@ -17,6 +17,11 @@ basic.getDrivers().forEach (function (drv) {
 		assert(!flag);
 	});
 	
+	// Удаляем раскрытый appointment
+	driver.executeScript("document.querySelector('[rel=\"v-s:hasAppointment\"] button.button-delete').scrollIntoView(true);");
+	driver.findElement({css:'[rel="v-s:hasAppointment"] button.button-delete'}).click();
+	
+	
 	// Заполняем обязательные поля
 	driver.findElement({css:'div[id="object"] [property="rdfs:label"] + veda-control input'}).sendKeys("Вася Пупкин "+timeStamp);
 	driver.findElement({css:'[property="v-s:lastName"] + veda-control input'}).sendKeys("Пупкин");
@@ -26,6 +31,9 @@ basic.getDrivers().forEach (function (drv) {
 			now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2));
 	
 	basic.chooseFromDropdown(driver, 'v-s:hasAccount', 'karpovrt', 'karpovrt');
+	
+	driver.executeScript("document.querySelector('[rel=\"v-s:hasAppointment\"] + veda-control input').scrollIntoView(true);");
+	
 	basic.chooseFromDropdown(driver, 'v-s:hasAppointment', 'Роман Карпов', 'Роман Карпов : Аналитик');
 	driver.findElement({css:'[property="v-s:lastName"] + veda-control input'}).click();
 	

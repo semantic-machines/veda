@@ -21,7 +21,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ proccess_name, "log", "SCRIPTS");
+        _log = new logger("veda-core-" ~ process_name, "log", "SCRIPTS");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -98,8 +98,9 @@ public void condition_thread(string thread_name, string node_id)
                                 send(to, false);
                         },
                         (string user_uri, EVENT type, string msg, string prev_state, immutable(string)[] indv_types, string individual_id,
-                         string event_id)
+                         string event_id, long op_id)
                         {
+                            //writeln("scripts B #1 *", process_name);
                             if (msg !is null && msg.length > 3 && script_vm !is null)
                             {
                                 if (onto is null)
@@ -124,6 +125,10 @@ public void condition_thread(string thread_name, string node_id)
                                     g_user.data = cast(char *)"v-a:VedaSystem";
                                     g_user.length = "v-a:VedaSystem".length;
                                 }
+
+                                string sticket = context.sys_ticket().id;
+                                g_ticket.data = cast(char *)sticket;
+                                g_ticket.length = cast(int)sticket.length;
 
                                 foreach (script_id, script; scripts)
                                 {
@@ -154,7 +159,7 @@ public void condition_thread(string thread_name, string node_id)
                                             if (any_exist == false)
                                                 continue;
                                         }
-                                        //writeln("#2 exec script:", script_id);
+                                        //log.trace("execute script:%s", script_id);
 
                                         if (event_id !is null && event_id.length > 1 && event_id == (individual_id ~ script_id))
                                         {
@@ -168,9 +173,12 @@ public void condition_thread(string thread_name, string node_id)
                                             if (trace_msg[ 300 ] == 1)
                                                 log.trace("exec script : %s ", script_id);
 
+                                            // writeln("scripts B #2 ", script_id, " *", process_name);
+
                                             count++;
                                             script_vm.run(script.compiled_script);
 
+                                            // writeln("scripts B #3 ", script_id, " *", process_name);
                                             if (trace_msg[ 300 ] == 1)
                                                 log.trace("end exec script");
                                         }
@@ -181,10 +189,13 @@ public void condition_thread(string thread_name, string node_id)
                                     }
                                 }
 
+
 //                                writeln("count:", count);
 
                                 //clear_script_data_cache ();
+                                // writeln("scripts B #e *", process_name);
                             }
+                            set_scripts_op_id(op_id);
                         },
                         (CMD cmd, int arg, bool arg2)
                         {
@@ -208,14 +219,13 @@ public void condition_thread(string thread_name, string node_id)
 
 public void load()
 {
-    //writeln ("@1");
     ScriptVM script_vm = context.get_ScriptVM();
 
     if (script_vm is null)
         return;
 
     //if (trace_msg[ 301 ] == 1)
-    log.trace("start load scripts");
+    log.trace("start load db scripts");
 
     Ticket       sticket = context.sys_ticket();
     Individual[] res;
@@ -233,7 +243,7 @@ public void load()
 
     //writeln ("@2");
     //if (trace_msg[ 300 ] == 1)
-    log.trace("end load scripts, count=%d ", res.length);
+    log.trace("end load db scripts, count=%d ", res.length);
 }
 
 private void prepare_condition(Individual ss, ScriptVM script_vm)
@@ -249,7 +259,7 @@ private void prepare_condition(Individual ss, ScriptVM script_vm)
             return;
 
         string str_script =
-            "var ticket = ''; var user_uri = get_env_str_var ('$user'); var prev_state = get_individual (ticket, '$prev_state'); var document = get_individual (ticket, '$document'); if (document) { var _script_id = '"
+            "var ticket = get_env_str_var ('$ticket'); var user_uri = get_env_str_var ('$user'); var prev_state = get_individual (ticket, '$prev_state'); var document = get_individual (ticket, '$document'); if (document) { var _script_id = '"
             ~ ss.uri ~
             "'; var _event_id = document['@'] + _script_id; " ~ condition_text ~ "}";
         try

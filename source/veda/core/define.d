@@ -7,24 +7,24 @@ import std.concurrency, std.file, std.stdio, core.atomic;
 import util.container;
 import veda.core.know_predicates;
 
-// variable proccess_name static mirror of g_proccess_name 
-string   proccess_name;
-static this ()
+// variable process_name static mirror of g_process_name
+string process_name;
+static this()
 {
-	get_g_proccess_name();
+    get_g_process_name();
 }
-/////////////////////////////// g_proccess_name //////////////////////////
-private shared string g_proccess_name;
-public string get_g_proccess_name()
+/////////////////////////////// g_process_name //////////////////////////
+private shared string g_process_name;
+public string get_g_process_name()
 {
-    proccess_name = atomicLoad(g_proccess_name);
-    return proccess_name;
+    process_name = atomicLoad(g_process_name);
+    return process_name;
 }
 
-public void set_g_proccess_name(string new_data)
+public void set_g_process_name(string new_data)
 {
-    atomicStore(g_proccess_name, new_data);
-    proccess_name = new_data;
+    atomicStore(g_process_name, new_data);
+    process_name = new_data;
 }
 
 
@@ -70,11 +70,14 @@ const string individuals_db_path = "./data/lmdb-individuals";
 const string tickets_db_path     = "./data/lmdb-tickets";
 const string acl_indexes_db_path = "./data/acl-indexes";
 
-public const string[ string ] xapian_search_db_path;
-static this()
+private      string[ string ] _xapian_search_db_path;
+
+public string get_xapiab_db_path(string db_name)
 {
-    xapian_search_db_path =
-    [ "base":"data/xapian-search-base", "system":"data/xapian-search-system", "deleted":"data/xapian-search-deleted" ];
+    if (_xapian_search_db_path.length == 0)
+        _xapian_search_db_path =
+        [ "base":"data/xapian-search-base", "system":"data/xapian-search-system", "deleted":"data/xapian-search-deleted" ];
+    return _xapian_search_db_path.get(db_name, null);
 }
 
 public const string xapian_metadata_doc_id = "ItIsADocumentContainingTheNameOfTheFieldTtheNumberOfSlots";

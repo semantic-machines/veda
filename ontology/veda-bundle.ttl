@@ -81,7 +81,22 @@ v-b:Edit
   rdfs:label "Редактировать"@ru ;
   rdfs:label "Edit"@en ;
 .
+v-b:ContinueEdit
+  rdf:type v-b:Bundle ;
+  rdfs:label "Продолжить редактирование"@ru ;
+  rdfs:label "Continue edit"@en ;
+.
 v-b:Save
+  rdf:type v-b:Bundle ;
+  rdfs:label "Опубликовать"@ru ;
+  rdfs:label "Publish"@en ;
+.
+v-b:Draft
+  rdf:type v-b:Bundle ;
+  rdfs:label "Черновик"@ru ;
+  rdfs:label "Draft"@en ;
+.
+v-b:toDraft
   rdf:type v-b:Bundle ;
   rdfs:label "Сохранить"@ru ;
   rdfs:label "Save"@en ;

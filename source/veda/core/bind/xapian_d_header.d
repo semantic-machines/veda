@@ -474,13 +474,24 @@ class XapianError : Exception
 
     string get_xapian_msg()
     {
+        if (xapian_msg_code.length == 0)
+            init_err_code();
+
         return xapian_msg_code.get(code, "Unknown");
     }
 }
 
+string get_xapian_err_msg(byte code)
+{
+    if (xapian_msg_code.length == 0)
+        init_err_code();
+
+    return xapian_msg_code.get(code, "Unknown");
+}
+
 private string[ byte ] xapian_msg_code;
 
-static this()
+private void init_err_code()
 {
     xapian_msg_code =
     [

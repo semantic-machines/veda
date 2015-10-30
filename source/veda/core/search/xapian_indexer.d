@@ -5,6 +5,7 @@
 module search.xapian_indexer;
 
 private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.algorithm;
+private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import type;
 private import bind.xapian_d_header;
 private import util.utils, util.cbor, veda.core.util.cbor8individual, util.logger;
@@ -19,7 +20,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ proccess_name, "log", "SEARCH");
+        _log = new logger("veda-core-" ~ process_name, "log", "SEARCH");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -110,13 +111,12 @@ private class IndexerContext
     XapianTermGenerator    indexer;
     string                 lang = "russian";
 
-    // XapianEnquire     xapian_enquire;
-    // XapianQueryParser xapian_qp;
     int[ string ] key2slot;
 
-    int    counter                         = 0;
-    int    last_counter_after_timed_commit = 0;
-    ulong  last_size_key2slot              = 0;
+    long   counter                         = 0;
+    long   last_counter_after_timed_commit = 0;
+
+    ulong  last_size_key2slot = 0;
 
     Tid    tid_subject_manager;
     Tid    tid_acl_manager;
@@ -135,8 +135,11 @@ private class IndexerContext
         }
     }
 
-    void index_msg(string msg, bool is_deleted = false)
+    void index_msg(string msg, bool is_deleted, long op_id)
     {
+        counter = op_id;
+        set_count_indexed(counter);
+
         Individual indv;
 
         if (cbor2individual(&indv, msg) < 0)
@@ -183,8 +186,6 @@ private class IndexerContext
 
             if (dbname == "not-indexed")
                 return;
-
-            counter++;
 
             foreach (predicate, resources; indv.resources)
             {
@@ -667,11 +668,11 @@ private class IndexerContext
                 indexer_base_db.replace_document(uuid.ptr, uuid.length, doc, &err);
             }
 
-            if (counter % 100 == 0)
-            {
-                if (trace_msg[ 211 ] == 1)
-                    log.trace("prepare msg counter:%d,slot size=%d", counter, key2slot.length);
-            }
+//            if (counter % 100 == 0)
+//            {
+//                if (trace_msg[ 211 ] == 1)
+//                    log.trace("prepare msg counter:%d,slot size=%d", counter, key2slot.length);
+//            }
 
             if (counter % 5000 == 0)
             {
@@ -691,14 +692,15 @@ private class IndexerContext
             log.trace("index end");
     }
 
-    private int prev_counter = 0;
     void commit_all_db()
     {
+    	writeln ("@indexer: commit_all_db");
+    	
         indexer_base_db.commit(&err);
         indexer_system_db.commit(&err);
+        indexer_deleted_db.commit(&err);
 
-        inc_count_indexed(counter - prev_counter);
-        prev_counter = counter;
+//        set_count_indexed(counter);
     }
 }
 
@@ -727,9 +729,9 @@ void xapian_indexer(string thread_name, string _node_id)
     {
     }
 
-    string db_path_base    = xapian_search_db_path[ "base" ];
-    string db_path_system  = xapian_search_db_path[ "system" ];
-    string db_path_deleted = xapian_search_db_path[ "deleted" ];
+    string db_path_base    = get_xapiab_db_path("base");
+    string db_path_system  = get_xapiab_db_path("system");
+    string db_path_deleted = get_xapiab_db_path("deleted");
 
     try
     {
@@ -850,8 +852,7 @@ void xapian_indexer(string thread_name, string _node_id)
 
                         if (cmd == CMD.BACKUP)
                         {
-                            string new_path_backup_xapian = dbs_backup ~ "/" ~ msg ~ "/" ~ xapian_search_db_path[ "base" ];
-
+                            string new_path_backup_xapian = dbs_backup ~ "/" ~ msg ~ "/" ~ get_xapiab_db_path("base");
                             try
                             {
                                 mkdir(new_path_backup_xapian);
@@ -863,7 +864,7 @@ void xapian_indexer(string thread_name, string _node_id)
 
                             try
                             {
-                                auto oFiles = dirEntries(xapian_search_db_path[ "base" ], "*.*", SpanMode.depth);
+                                auto oFiles = dirEntries(get_xapiab_db_path("base"), "*.*", SpanMode.depth);
                                 foreach (o; oFiles)
                                 {
                                     string new_path;
@@ -898,6 +899,8 @@ void xapian_indexer(string thread_name, string _node_id)
                         }
                         else
                         {
+                            if (cmd == CMD.NOP)
+                        		writeln ("@indexer: NOP #1");
                             // если ожидают окончания операции для indexer, то вероятнее всего собираются сразу-же читать из поиска
                             // следовательно нужно сделать коммит
                             if (ictx.key2slot.length - ictx.last_size_key2slot > 0)
@@ -912,6 +915,9 @@ void xapian_indexer(string thread_name, string _node_id)
                             ictx.last_counter_after_timed_commit = ictx.counter;
 
                             if (cmd == CMD.NOP)
+                        		writeln ("@indexer: NOP #2");
+
+                            if (cmd == CMD.NOP)
                                 send(tid_response_reciever, true);
                             else
                                 send(tid_response_reciever, false);
@@ -922,7 +928,7 @@ void xapian_indexer(string thread_name, string _node_id)
                         //writeln (cast(void*)indexer_base_db, " @1 cmd=", cmd, ", msg: ", msg);
                         if (cmd == CMD.COMMIT)
                         {
-                            //writeln ("@@ COMMIT");
+                            //writeln ("@@ XAPIAN:COMMIT");
 
                             if (ictx.counter - ictx.last_counter_after_timed_commit > 0)
                             {
@@ -946,21 +952,26 @@ void xapian_indexer(string thread_name, string _node_id)
                                 //writeln ("GC COLLECT");
                             }
                         }
-                        else if (cmd == CMD.PUT)
+                    },
+                    (CMD cmd, string msg, long op_id)
+                    {
+                        //writeln ("@@XAPIAN INDEXER START op_id=", op_id);
+                        if (cmd == CMD.PUT)
                         {
-                            ictx.index_msg(msg);
+                            ictx.index_msg(msg, false, op_id);
                         }
                         else if (cmd == CMD.DELETE)
                         {
-                            ictx.index_msg(msg, true);
+                            ictx.index_msg(msg, true, op_id);
                         }
+                        //writeln ("@@XAPIAN INDEXER END op_id=", op_id);
                     },
                     (CMD cmd, int arg, bool arg2)
                     {
                         if (cmd == CMD.SET_TRACE)
                             set_trace(arg, arg2);
                     },
-                    (Variant v) { writeln(thread_name, "::xapian_indexer::Received some other type.", v); });
+                    (Variant v) { writeln(thread_name, "::xapian_indexer::Received some other type.", v); printPrettyTrace(stderr); });
         }
         catch (Exception ex)
         {

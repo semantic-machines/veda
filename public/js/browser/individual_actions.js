@@ -95,12 +95,12 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			individual.on("draft", function () {
 				if (!individual.hasValue('v-s:isDraftOf')) {
 					// If `v-s:isDraftOf` is empty, then current individual is "draftonly" individual
-					individual['v-s:isDraftOf'] = [individual.id];
+					individual['v-s:isDraftOf'] = [individual];
 				}
 				individual.save();
 				template.trigger("view");
 				// Change location.hash if individual was presented in #main container
-				if (container.prop("id") === "main") {
+				if (container === "#main" || container.prop("id") === "main") {
 					var hash = ["#", individual.id].join("/");
 					if (hash !== location.hash) riot.route(hash, false);
 				}
