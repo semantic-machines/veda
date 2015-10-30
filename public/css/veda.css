@@ -50,9 +50,11 @@ footer {
 .navbar-fixed-bottom {
   margin:0px;
 }
-
 .text-muted {
   color: #707070;
+}
+.has-error + * {
+	color: #a94442;
 }
 textarea { 
   resize: vertical;
