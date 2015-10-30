@@ -18,7 +18,11 @@ veda.Module(function Util(veda) { "use strict";
 	  }
 	  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
 			 s4() + '-' + s4() + s4() + s4();
-	}
+	};
+
+	veda.Util.genUri = function () {
+	    return 'd:a' + veda.Util.guid();
+	};
 
 	veda.Util.construct = function (constr, args) {
 		function F() {
@@ -26,13 +30,13 @@ veda.Module(function Util(veda) { "use strict";
 		}
 		F.prototype = constr.prototype;
 		return new F();
-	}
+	};
 	
-	function isInteger(n) { return n % 1 === 0; }
+	function isInteger(n) { return n % 1 === 0; };
 	
 	function zeroPref(n) {
 		return n > 9 ? n : "0" + n;
-	}
+	};
 	
 	veda.Util.formatDate = function (date) {
 		var day = date.getDate(),
@@ -48,6 +52,9 @@ veda.Module(function Util(veda) { "use strict";
 		ftime = [hours, mins, secs].join(":");
 		if (ftime === "00:00:00") return fdate;
 		return [fdate, ftime].join(" ");
+	};
+	veda.Util.formatNumber = function (n) {
+		return (n+"").replace(/.(?=(?:[0-9]{3})+\b)/g, '$& ');
 	};
 	
 	veda.Util.exportTTL = function (individualList) {
@@ -148,4 +155,60 @@ veda.Module(function Util(veda) { "use strict";
 		return result;
 	};
 	
+	veda.Util.queryFromIndividual = function (individual) {
+		// Serialize individual as search query
+		var query;
+		var allProps = Object.getOwnPropertyNames(individual.properties)
+			.map(function (property_uri) {
+				var property = individual.properties[property_uri];
+				var values = individual[property_uri].filter(function(item){return !!item && !!item.valueOf();});
+				// Filter rdfs:Resource type
+				if (property_uri === "rdf:type") { 
+					values = individual[property_uri].filter(function(item){ return item.id !== "rdfs:Resource" });
+				}
+				var oneProp;
+				switch (property["rdfs:range"][0].id) {
+					case "xsd:integer": 
+					case "xsd:nonNegativeInteger":
+					case "xsd:decimal":
+						oneProp =
+							values.length === 1 ? "'" + property_uri + "'==[" + values[0] + "," + values[0] + "]" :
+							values.length > 1 ? "'" + property_uri + "'==[" + values[0] + "," + values[values.length-1] + "]" :
+							undefined;
+						break;
+					case "xsd:dateTime": 
+						oneProp =
+							values.length === 1 ? "'" + property_uri + "'==[" + values[0].toISOString().substring(0,19) + "," + values[0].toISOString().substring(0,19) + "]" :
+							values.length > 1 ? "'" + property_uri + "'==[" + values[0].toISOString().substring(0,19) + "," + values[values.length-1].toISOString().substring(0,19) + "]" :
+							undefined;
+						break;
+					case "xsd:boolean": 
+					case "xsd:string": 
+					case "rdfs:Literal": 
+						oneProp = values
+							.filter(function(item){return !!item && !!item.valueOf();})
+							.map( function (value) {
+								return "'" + property_uri + "'=='" + value + "'";
+							})
+							.join("||");
+						break;
+					default:
+						oneProp = values
+							.filter( function (value) {
+								return value instanceof veda.IndividualModel;
+							})
+							.map( function (value) {
+								return "'" + property_uri + "'=='" + value.id + "'";
+							})
+							.join("||");
+						break;
+				}
+				return oneProp ? "(" + oneProp + ")" : undefined;
+			})
+			.filter(function(item){return !!item;})
+			.join("&&");
+		query = allProps ? "(" + allProps + ")" : undefined;
+		return query;
+	}
+
 });

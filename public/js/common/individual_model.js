@@ -30,7 +30,7 @@ veda.Module(function (veda) { "use strict";
 		self.properties = {};
 		
 		if (!uri) { 
-			self._.individual["@"] = "d:" + guid();
+			self._.individual["@"] = veda.Util.genUri();
 			self._.original_individual = '{"@":"' + self._.individual["@"] +'"}';
 			if (self._.cache && veda.cache) {
 				veda.cache[self._.individual["@"]] = self;
@@ -64,6 +64,24 @@ veda.Module(function (veda) { "use strict";
 			},
 			configurable: false
 		});
+		
+		var rightsOrigin;
+		Object.defineProperty(self, "rightsOrigin", {
+			get: function () { 
+				if (rightsOrigin) return rightsOrigin;
+				try {
+					var rightsOriginArr = get_rights_origin(veda.ticket, self.id);
+					rightsOrigin = rightsOriginArr.map(function (item) {
+						return new veda.IndividualModel( item );
+					});
+				} catch (e) {
+					rightsOrigin = null;
+				} finally {
+					return rightsOrigin;
+				}
+			},
+			configurable: false
+		});
 
 		self.defineProperty("rdf:type", undefined, function (classes) {
 			self._.sync = false;
@@ -78,17 +96,18 @@ veda.Module(function (veda) { "use strict";
 		if (!uri) {
 			self.on("individual:beforeSave", function () {
 				self["v-s:created"] = [new Date()];
-				self["v-s:author"] = [veda.user];
+				self["v-s:author"] = [ veda.appointment ? veda.appointment : veda.user ];
 			});
 		}
 				
-		self.on("individual:afterLoad", function (individual) {
-			self.present.call(individual, container, template, mode);
-		});
-		
-		self.on("individual:typeChanged", function () {
-			self.present(container, template, mode);
-		});
+		if (container) {
+			self.on("individual:afterLoad", function (individual) {
+				self.present.call(individual, container, template, mode);
+			});
+			self.on("individual:typeChanged", function () {
+				self.present(container, template, mode);
+			});
+		}
 		
 		// Load data 
 		if (uri) self = self.load(uri);
@@ -119,14 +138,12 @@ veda.Module(function (veda) { "use strict";
 				catch (e) { self._.properties[property_uri] = property_uri; }
 				return self._.properties[property_uri];
 			},
-			
 			set: function (value) { 
 				if (self._.properties[property_uri] == value) return; 
 				self._.properties[property_uri] = value; 
 			},
-			
-			configurable: true
-		
+			configurable: true,
+			enumerable: true
 		});
 		
 		var filteredStrings = [];
@@ -169,6 +186,23 @@ veda.Module(function (veda) { "use strict";
 			configurable: true
 		
 		});
+		return this;
+	};
+	
+	/**
+	 * @method
+	 * 
+	 * Remove property from individual  
+	 * 
+	 * @param {String} property_uri name of property
+	 */
+	proto.removeProperty = function (property_uri) {
+		delete this._.properties[property_uri];
+		delete this[property_uri];
+		delete this._.individual[property_uri];
+		delete this._.values[property_uri];
+		delete this.properties[property_uri];
+		this._.sync = false;
 		return this;
 	};
 
@@ -238,7 +272,8 @@ veda.Module(function (veda) { "use strict";
 			} catch (e) {
 				self._.individual = {
 					"@": uri,
-					"rdfs:label": [{type: "String", data: uri, lang: "NONE"}]
+					"rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
+					"rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
 				};
 			}
 		} else if (uri instanceof veda.IndividualModel) {
@@ -246,6 +281,7 @@ veda.Module(function (veda) { "use strict";
 			return uri;
 		} else {
 			self._.individual = uri;
+			if (self._.cache) veda.cache[self.id] = self;
 		}
 		self._.original_individual = JSON.stringify(self._.individual);
 		Object.keys(self._.individual).map(function (property_uri) {
@@ -254,8 +290,8 @@ veda.Module(function (veda) { "use strict";
 			if (property_uri === "v-s:deleted") return;
 			self.defineProperty(property_uri);
 		});
-		if (self._.cache) veda.cache[self.id] = self;
 		if (self._.init) self.init();
+		if (self._.cache) veda.cache[self.id] = self;
 		self.trigger("individual:afterLoad", self);
 		return this;
 	};
@@ -267,7 +303,8 @@ veda.Module(function (veda) { "use strict";
 	proto.save = function() {
 		var self = this;
 		self.trigger("individual:beforeSave");
-		if (self._.sync) return;
+		// Do not save individual to server if nothing changed
+		//if (self._.sync) return;
 		Object.keys(self._.individual).reduce(function (acc, property_uri) {
 			if (property_uri === "@") return acc;
 			acc[property_uri] = self._.individual[property_uri].filter(function (item) {
@@ -276,14 +313,10 @@ veda.Module(function (veda) { "use strict";
 			if (!acc[property_uri].length) delete acc[property_uri];
 			return acc;
 		}, self._.individual);
-		try { 
-			put_individual(veda.ticket, self._.individual);
-			self._.original_individual = JSON.stringify(self._.individual);
-			self._.sync = true;
-			self.trigger("individual:afterSave", self._.original_individual);
-		} catch (e) {
-			alert("Error: " + e.status + "\n" + "description: " + e.description);
-		}
+		put_individual(veda.ticket, self._.individual);
+		self._.original_individual = JSON.stringify(self._.individual);
+		self._.sync = true;
+		self.trigger("individual:afterSave", self._.original_individual);
 		return this;
 	};
 
@@ -295,10 +328,14 @@ veda.Module(function (veda) { "use strict";
 		var self = this;
 		self.trigger("individual:beforeReset");
 		var original = JSON.parse(self._.original_individual);
-		Object.keys(original).map(function (property_uri) {
+		Object.getOwnPropertyNames(self.properties).map(function (property_uri) {
 			if (property_uri === "@") return;
 			if (property_uri === "rdf:type") return;
-			self[property_uri] = original[property_uri].map( parser );
+			if (original[property_uri] && original[property_uri].length) {
+				self[property_uri] = original[property_uri].map( parser );
+			} else {
+				self[property_uri] = [];
+			}
 		});
 		self._.sync = true;
 		self.trigger("individual:afterReset");
@@ -408,7 +445,8 @@ veda.Module(function (veda) { "use strict";
 				this["rdf:type"] = [veda.ontology["rdfs:Resource"]]; 
 				return;
 			}
-			this.prefetch(2);
+			// Prefetch linked object (depth 2) to reduce 'get_individual' requests count during rendering
+			//this.prefetch(2);
 			veda.trigger("individual:loaded", this, container, template, mode);
 		}
 		return this;
@@ -416,7 +454,7 @@ veda.Module(function (veda) { "use strict";
 
 	/**
 	 * @method
-	 * Prefetch linked objects
+	 * Prefetch linked objects. Useful for presenting objects with many links.
 	 * @param {Number} Depth of the object tree to prefetch.
 	 */
 	proto.prefetch = function (depth) {
@@ -424,11 +462,15 @@ veda.Module(function (veda) { "use strict";
 		Object.keys(data).map( function (key) {
 			if (key === "@") return;
 			data[key].map(function (value) {
-				if (value.type === "Uri" && !veda.cache[value.data]) {
+				if (value.type !== "Uri") return; 
+				if (!veda.cache[value.data]) {
 					uris.push(value.data);
+				} else if (depth !== 0) {
+					uris.push(veda.cache[value.data].prefetch(0));
 				}
 			});
 		});
+		uris = unique( veda.Util.flatten(uris, false) );
 		for (var i=0; i < depth && uris.length; i++) {
 			var result = get_individuals.call({}, veda.ticket, uris),
 				res_map = result.map(function (value) {
@@ -440,9 +482,20 @@ veda.Module(function (veda) { "use strict";
 					}
 					return obj.prefetch(0);
 				});
-			uris = veda.Util.flatten(res_map, false);
+			uris = unique( veda.Util.flatten(res_map, false) );
 		}
 		return uris;
 	};
+
+	function unique(arr) {
+		var n = {}, r=[];
+		for(var i = 0; i < arr.length; i++) {
+			if (!n[arr[i]]) {
+				n[arr[i]] = true; 
+				r.push(arr[i]); 
+			}
+		}
+		return r;
+	}
 
 });

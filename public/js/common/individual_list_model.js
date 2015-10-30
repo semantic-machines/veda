@@ -24,7 +24,7 @@ veda.Module(function (veda) { "use strict";
 		
 		args.map( function (item) {
 			switch (true) {
-				case typeof item == "string" :
+				case typeof item === "string" :
 					keys.push(item);
 					Object.defineProperty(self, item, {
 						get: function () { return new veda.IndividualModel(item); },
@@ -38,7 +38,7 @@ veda.Module(function (veda) { "use strict";
 						configurable: true
 					});
 					break;
-				case typeof item == "object" :
+				case typeof item === "object" :
 					for (var key in item) {
 						keys.push(key);
 						var value = item[key];
@@ -60,6 +60,22 @@ veda.Module(function (veda) { "use strict";
 			return self;
 		};
 
+		self.map = function (callback) {
+			return keys.map(function (key, index) {
+				return callback(self[key], key, index);
+			});
+		};
+
+		self.filter = function (callback) {
+			var result = [];
+			keys.map(function (key, index) {
+				if ( callback(self[key], key, index) ) { 
+					result.push( self[key] );
+				};
+			});
+			return result;
+		};
+
 		self.add = function (individual) {
 			keys.push(individual.id);
 			Object.defineProperty(self, individual.id, {
@@ -75,6 +91,11 @@ veda.Module(function (veda) { "use strict";
 			return self;
 		};
 
+		Object.defineProperty(self, "length", {
+			get: function () { return keys.length; },
+			configurable: false
+		});
+					
 		return self;
 	};
 

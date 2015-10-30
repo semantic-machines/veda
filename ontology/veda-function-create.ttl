@@ -5,11 +5,12 @@
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
 
 <http://semantic-machines.com/veda/veda-function-create>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system create function ontology"@en ;
-  rdfs:label "Онтология фукнции создания системы Веда"@ru ;
+  rdfs:label "Veda system function 'Create' ontology"@en ;
+  rdfs:label "Онтология функции 'Создать' системы Веда"@ru ;
   owl:imports <http://semantic-machines.com/veda/veda-schema> ;
   owl:imports <http://semantic-machines.com/veda/veda-ui> ;
   owl:imports rdf: ;
@@ -20,24 +21,39 @@
 
 ########## CREATE FUNCTION ###########
 
-v-fc:CreateClass
+v-fc:FunctionCreate
   rdf:type owl:Class ;
-  rdfs:label "Create"@en ;
-  rdfs:label "Создать"@ru ;
+  rdfs:label "Function Create"@en ;
+  rdfs:label "Функция Создать"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
 v-fc:Blank
   rdf:type owl:Class ;
-  rdfs:label "Бланк"@en ;
-  rdfs:label "Blank"@ru ;
+  rdfs:label "Бланк"@ru ;
+  rdfs:label "Blank"@en ;
   rdfs:subClassOf owl:Thing ;
 .
+v-fc:BlankMgmt
+  rdf:type v-b:Bundle ;
+  rdfs:label "Управление бланком"@ru ;
+  rdfs:label "Blank management"@en ;
+.
+v-fc:SavedBlanks
+  rdf:type v-b:Bundle ;
+  rdfs:label "Saved blanks"@en ;
+  rdfs:label "Сохраненные бланки"@ru ;
+.
 v-fc:Create
-  rdf:type v-fc:CreateClass ;
+  rdf:type v-fc:FunctionCreate ;
   rdfs:label "Create"@en ;
   rdfs:label "Создать"@ru ;
 .
-v-fc:type
+v-fc:ChooseType
+  rdf:type v-b:Bundle ;
+  rdfs:label "Choose a type to create"@en ;
+  rdfs:label "Выберите тип объекта"@ru ;
+.
+v-fc:typeToCreate
   rdf:type owl:ObjectProperty ;
   rdfs:label "type"@en ;
   rdfs:label "тип"@ru ;
@@ -45,12 +61,12 @@ v-fc:type
   rdfs:range owl:Class ;
   rdfs:range rdfs:Class ;
 .
-v-fc:TypeSpec
+v-fc:TypeToCreateSpec
   rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация свойства v-fc:type"@ru ;
-  rdfs:label "v-fc:type property specification"@en ;
-  v-ui:forClass v-fc:Blank, v-fc:CreateClass ;
-  v-ui:forProperty v-fc:type ;
+  rdfs:label "Спецификация свойства v-fc:typeToCreate"@ru ;
+  rdfs:label "v-fc:typeToCreate property specification"@en ;
+  v-ui:forClass v-fc:Blank, v-fc:FunctionCreate ;
+  v-ui:forProperty v-fc:typeToCreate ;
   v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
   v-ui:tooltip "Link to instance of Class class"@en ;
   v-ui:queryPrefix "('rdf:type'=='owl:Class'||'rdf:type'=='rdfs:Class')"^^xsd:string ;
@@ -68,81 +84,104 @@ v-fc:LabelSpec
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:minCardinality "1"^^xsd:integer ;
 .
-v-fc:CreateClassModel
+v-fc:FunctionCreateModel
   rdf:type v-s:ClassModel ;
-  rdfs:label "Create class model"@en ;
-  rdfs:label "Модель класса Создать"@ru ;
-  v-ui:forClass v-fc:CreateClass ;
+  rdfs:label "v-fc:FunctionCreate class model"@en ;
+  rdfs:label "Модель класса v-fc:FunctionCreate"@ru ;
+  v-ui:forClass v-fc:FunctionCreate ;
   v-s:script """
 var self = individual;
   """
 .
-v-fc:CreateClassTemplate
+v-fc:FunctionCreateTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Search class template"@en ;
-  rdfs:label "Шаблон класса поиск"@ru ;
-  v-ui:forClass v-fc:CreateClass ;
+  rdfs:label "v-fc:FunctionCreate class template"@en ;
+  rdfs:label "Шаблон класса v-fc:FunctionCreate"@ru ;
+  v-ui:forClass v-fc:FunctionCreate ;
   v-ui:template """
-<div>
+<div class="container-fluid">
 	<h3 property="rdfs:label"></h3>
-	<veda-control rel="v-fc:type" type="link" class="fulltext dropdown"></veda-control>
-	<hr />
-	<div id="holder"></div>
-</div>
-<script>
-	var self = individual;
-	self.on("individual:propertyModified", modHandler);
-	function modHandler(property_uri, values) {
-		if (property_uri === "v-fc:type") {
-			var holder = $("#holder", template).empty();
-			var blank = new veda.IndividualModel();
-			blank["rdf:type"] = [ veda.ontology["v-fc:Blank"] ];
-			blank["v-fc:type"] = values;
-			blank.present(holder, undefined, "edit");
-		}
-	}
-	template.one("remove", function () {
-		self.off("individual:propertyModified", modHandler);
-	});
-
-</script>
-  """
-.
-v-fc:BlankTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Search class template"@en ;
-  rdfs:label "Шаблон класса поиск"@ru ;
-  v-ui:forClass v-fc:Blank ;
-  v-ui:template """
-<div>
+	<hr>	
 	<div class="row">
-		<div class="col-md-9 col-sm-8">
-			<div id="holder"></div>
+		<div class="col-md-2 col-sm-3">
+			<h4 about="v-fc:SavedBlanks" property="rdfs:label"></h4>
+			<ol id="blanks"></ol>
 		</div>
-		<div class="col-md-3 col-sm-4">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					Управление бланком
-				</div>
-				<div class="panel-body">
-					<div><strong property="rdfs:label" class="view -edit"></strong></div>
-					<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
-					<br>
-					<div>
-						<button type="button" class="action btn btn-xs btn-primary view -edit" id="edit">Редактировать</button>
-						<button type="button" class="action btn btn-xs btn-success -view edit" id="save">Сохранить</button>
-						<button type="button" class="action btn btn-xs btn-link view -edit" id="delete">Удалить</button>
-					</div>
-				</div>
-			</div>
+		<div class="col-md-10 col-sm-9" style="border-left: 1px solid gainsboro;">
+			<h4 about="v-fc:ChooseType" property="rdfs:label"></h4>
+			<veda-control rel="v-fc:typeToCreate" type="link" class="fulltext dropdown"></veda-control>
+			<br>
+			<div id="holder"></div>
 		</div>
 	</div>
 </div>
 <script>
 	var self = individual;
-	var holder = $("#holder", template);
-	var object = new veda.IndividualModel();
-	object["rdf:type"] = self["v-fc:type"];
+	if (self.hasValue("v-fc:typeToCreate")) { modHandler("v-fc:typeToCreate", self["v-fc:typeToCreate"]) };
+	self.on("individual:propertyModified", modHandler);
+	function modHandler(property_uri, values) {
+		if (property_uri === "v-fc:typeToCreate") {
+			var holder = $("#holder", template).empty();
+			if (values.length) {
+				var blank = new veda.IndividualModel();
+				blank["rdf:type"] = [ veda.ontology["v-fc:Blank"] ];
+				blank["v-fc:typeToCreate"] = values;
+				blank.present(holder, undefined, "edit");
+			}
+		}
+	}
+	template.one("remove", function () {
+		self.off("individual:propertyModified", modHandler);
+	});
+	var blanksHolder = $("#blanks", template),
+		asp = veda.user.aspect,
+		blanks = asp["v-asp:hasBlank"];
+	if (blanks) {
+		blanks.map( function (blank) {
+			var cont = $("<li>").appendTo(blanksHolder);
+			blank.present(cont, veda.ontology["v-ui:LabelBlockLinkTemplate"]);
+		});
+	}
+</script>
+  """
+.
+v-fc:BlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "v-fc:Blank class template"@en ;
+  rdfs:label "Шаблон класса v-fc:Blank"@ru ;
+  v-ui:forClass v-fc:Blank ;
+  v-ui:template """
+<div role="tabpanel">
+	<h4 about="@" property="rdfs:label"></h4>
+	<!-- Nav tabs -->
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active"><a id="blank-pill" href="#blank" about="v-fc:Blank" property="rdfs:label" aria-controls="blank" role="tab" data-toggle="tab"></a></li>
+		<li role="presentation"><a id="mgmt-pill" href="#mgmt" about="v-fc:BlankMgmt" property="rdfs:label" aria-controls="mgmt" role="tab" data-toggle="tab"></a></li>
+	</ul>
+	<br />
+	<!-- Tab panes -->
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active" id="blank">
+			<div id="object"></div>
+		</div>
+		<div role="tabpanel" class="tab-pane" id="mgmt">
+			<p about="rdfs:label" property="rdfs:label" class="-view edit"></p>
+			<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
+			<br>
+			<div>
+				<button type="button" class="action btn btn-primary view -edit" id="edit" about="v-b:Edit" property="rdfs:label"/>
+				<button type="button" class="action btn btn-success -view edit" id="save" about="v-b:Save" property="rdfs:label"/>
+				<button type="button" class="action btn btn-link view -edit" id="delete" about="v-b:Delete" property="rdfs:label"/>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	var self = individual,
+		holder = $("#object", template),
+		object = new veda.IndividualModel(),
+		asp = veda.user.aspect;
+	object["rdf:type"] = self["v-fc:typeToCreate"];
 	if ( self.isSync() ) {
 		Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
 			if (property_uri === "rdf:type") return;
@@ -153,12 +192,13 @@ v-fc:BlankTemplate
 		});
 	}
 	object.present(holder, undefined, "edit");
-
-	self.on("individual:beforeSave", saveHandler);	
+	self.on("individual:beforeSave", updateBlank);	
+	self.on("individual:afterSave", updateAspect);	
 	template.one("remove", function () {
-		self.off("individual:beforeSave", saveHandler);
+		self.off("individual:beforeSave", updateBlank);
+		self.off("individual:afterSave", updateAspect);
 	});
-	function saveHandler() {
+	function updateBlank() {
 		Object.getOwnPropertyNames(object.properties).map( function (property_uri) {
 			if (property_uri === "rdf:type") return;
 			if (property_uri === "rdfs:label") return;
@@ -166,6 +206,16 @@ v-fc:BlankTemplate
 			self.defineProperty(property_uri);
 			self[property_uri] = object[property_uri].slice(0);
 		});
+	}
+	function updateAspect() {
+		if (self["v-s:deleted"][0] == true) {
+			asp["v-asp:hasBlank"] = asp["v-asp:hasBlank"].filter( function (i) { return i.id !== self.id;});
+		} else if (
+			!asp["v-asp:hasBlank"].filter( function (i) {return i.id === self.id;}).length
+		) {
+			asp["v-asp:hasBlank"] = asp["v-asp:hasBlank"].concat(self);
+		}
+		asp.save();
 	}
 </script>
   """

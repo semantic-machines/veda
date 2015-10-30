@@ -36,7 +36,7 @@ jsWorkflow.ready = jsPlumb.ready;
          *return {Object} instance Returns an initialized instance of the workflow object
          */
         jsWorkflow.Instance.prototype.init = function(workflowData, veda, net, template, container) {
-
+			net.prefetch(3);
             var 	instance,
                     windows,
                     addNewState,
@@ -73,9 +73,9 @@ jsWorkflow.ready = jsPlumb.ready;
             } else {
                 workflow = workflowData;
             }
-            net['offsetX'] = localStorage.getItem("workflow"+elementId+"-offsetX");
-            net['offsetY'] = localStorage.getItem("workflow"+elementId+"-offsetY");
-            net['currentScale'] = localStorage.getItem("workflow"+elementId+"-zoom");
+            net['offsetX'] = veda["workflow"+elementId+"-offsetX"];
+            net['offsetY'] = veda["workflow"+elementId+"-offsetY"];
+            net['currentScale'] = veda["workflow"+elementId+"-zoom"];
             if (net['currentScale']==null) net['currentScale'] = 1.0;
             
             if (!net['offsetX']) {
@@ -153,8 +153,8 @@ jsWorkflow.ready = jsPlumb.ready;
            			'left': (newLeft)+'px',
            			'top': (newTop)+'px',
            		});
-                localStorage.setItem("workflow"+elementId+"-offsetX", newLeft);
-                localStorage.setItem("workflow"+elementId+"-offsetY", newTop);
+                veda["workflow"+elementId+"-offsetX"] = newLeft;
+                veda["workflow"+elementId+"-offsetY"] = newTop;
                 net['offsetX'] = newLeft;
                 net['offsetY'] = newTop;
             }
@@ -168,14 +168,14 @@ jsWorkflow.ready = jsPlumb.ready;
             if (mode=='edit') {
 	            instance.bind("dblclick", function(transition) {
 	                var _this = this;
-	            	riot.route("#/individual/" + transition.id + "/#main//edit", true);
+	            	riot.route("#/" + transition.id + "///edit", true);
 	            });
             }
             
             // Fill info panel on flow click
             instance.bind("click", function(transition) {
             	var _this = this;
-            	localStorage.setItem("workflow"+elementId+"-selectedElement", _this.id);
+            	veda["workflow"+elementId+"-selectedElement"] = _this.id;
             	instance.defocus();
                 
                 transition.setPaintStyle({strokeStyle: "#FF0000"});
@@ -239,7 +239,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	}
             	$("<span/>", {
             		"click": (function (instance) {
-            	    	riot.route('#/individual/'+state['v-wf:subNet'][0].id+'/#main//edit', true);
+            	    	riot.route('#/'+state['v-wf:subNet'][0].id+'///edit', true);
             		 }),
             		 "class" : "glyphicon glyphicon-search subnet-link"
              	}).appendTo($state);
@@ -311,7 +311,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 windows.bind("click", function(e) {
                 	
                     var _this = this, currentElement = $(_this), alreadySelected = currentElement.hasClass('w_active');
-                	localStorage.setItem("workflow"+elementId+"-selectedElement", _this.id);
+                	veda["workflow"+elementId+"-selectedElement"] = _this.id;
 
                     if (!alreadySelected) {
 	                    instance.defocus();
@@ -344,7 +344,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     
                 	// build run path
                     if (mode=='view') {
-                		instance.select().removeClass('process-path-highlight').removeOverlay("pathCounter");;
+                		instance.select().removeClass('process-path-highlight').removeOverlay("pathCounter");
                     	var about = new veda.IndividualModel(_this.id);
                 		if ( about.hasValue("rdfs:label") ) propsHead.text(about["rdfs:label"].join(", "));
                     	else propsHead.text(about.id);
@@ -407,7 +407,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 if (mode=='edit') {
 	                windows.bind("dblclick", function() {
 	                    var _this = this;
-	                	riot.route("#/individual/" + $(_this).attr('id')+"/#main//edit", true);
+	                	riot.route("#/" + $(_this).attr('id')+"///edit", true);
 	                });
 	
 	                // Initialize State elements as draggable.  
@@ -500,7 +500,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	$("#workflow-context-menu").hide();
             	
             	net['currentScale'] = parseFloat(scale);
-            	localStorage.setItem("workflow"+elementId+"-zoom", net['currentScale']);
+            	veda["workflow"+elementId+"-zoom"] = net['currentScale'];
             	
             	instance.setZoom(net['currentScale']);
             	$('#'+workflowData).css({
@@ -777,8 +777,10 @@ jsWorkflow.ready = jsPlumb.ready;
             	wis.forEach(function(wi) {
             		if (wi.hasValue('v-wf:forNetElement')) {
             			var state = $('#'+veda.Util.escape4$(wi['v-wf:forNetElement'][0].id));
-            			$("<span/>", {'type' :'work-item', 
-            						  'work-item-id': wi.id }).appendTo(state);
+            			if ($(state).find('[work-item-id="'+veda.Util.escape4$(wi.id)+'"]').length == 0) {
+	            			$("<span/>", {'type' :'work-item', 
+	            						  'work-item-id': wi.id }).appendTo(state);
+            			}
             			var wic = parseInt(state.attr('work-items-count'));
             			var red = state.attr('colored-to')=='red';    
             			if (wic>0) {                				
@@ -816,7 +818,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	instance.changeScale(net['currentScale']);
             }
             
-            $('#'+veda.Util.escape4$(localStorage.getItem("workflow"+elementId+"-selectedElement"))).trigger("click");
+            $('#'+veda.Util.escape4$(veda["workflow"+elementId+"-selectedElement"])).trigger("click");
             
             /* CONTEXT MENU [BEGIN] */
             var $contextMenu = $("#workflow-context-menu");
@@ -896,7 +898,7 @@ jsWorkflow.ready = jsPlumb.ready;
             });
             
             $('.to-net-editor').on('click', function() {
-            	riot.route("#/individual/" + net.id + "/#main//edit", true);
+            	riot.route("#/" + net.id + "///edit", true);
             });
             
             /* ZOOM [BEGIN] */

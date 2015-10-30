@@ -1,12 +1,12 @@
 echo "= UPDATE = "
 date
-if wget -q -O - "$@" https://api.travis-ci.org/repos/karpovr/veda/cc.xml?branch=master | grep 'lastBuildStatus="Success"'; then
+if wget -q -O - "$@" https://api.travis-ci.org/repos/semantic-machines/veda/cc.xml?branch=master | grep 'lastBuildStatus="Success"'; then
     echo "=== Stop daemon ==="
     ./control-stop.sh
 
     echo "=== Remove old files ==="
     rm *.log
-    rm veda.app
+    rm veda
     rm dub.selections.json
     rm -r ~/.dub/cache
 
@@ -18,7 +18,6 @@ if wget -q -O - "$@" https://api.travis-ci.org/repos/karpovr/veda/cc.xml?branch=
 
     echo "=== Build dependencies ==="
     dub -v fetch vibe-d
-    dub -v fetch pacahon
     echo "=== Build project ==="
     dub -v build --build=debug
 

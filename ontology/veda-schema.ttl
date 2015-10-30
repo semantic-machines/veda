@@ -48,7 +48,7 @@ v-s:AllResourcesGroup
 v-s:Appointment
   rdf:type owl:Class ;
   rdfs:label "Appointment"@en ;
-  rdfs:label "Назначение на должность"@ru ;
+  rdfs:label "Назначение"@ru ;
   rdfs:subClassOf v-s:HRRecord ;
   owl:disjointWith v-s:Absence ;
 .
@@ -116,6 +116,7 @@ v-s:Document
   rdfs:label "Документ"@ru ;
   rdfs:subClassOf owl:Thing ;
   rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Exportable ;
 .
 v-s:Empty
   rdf:type v-s:SpecialSearchValues ;
@@ -134,6 +135,7 @@ v-s:File
   rdfs:isDefinedBy v-s: ;
   rdfs:label "File"@en ;
   rdfs:label "Файл"@ru ;
+  rdfs:subClassOf v-s:Exportable ;  
 .
 v-s:Group
   rdf:type owl:Class ;
@@ -220,6 +222,7 @@ v-s:OrganizationUnit
   rdfs:label "Organization unit"@en ;
   rdfs:label "Организационная единица"@ru ;
   rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Exportable ;
 .
 v-s:PermissionStatement
   rdf:type owl:Class ;
@@ -237,6 +240,7 @@ v-s:Person
   rdfs:label "Персона"@ru ;
   rdfs:subClassOf v-s:Versioned ;
   rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Exportable ;  
 .
 v-s:Position
   rdf:type owl:Class ;
@@ -293,6 +297,11 @@ v-s:ToBeSent
   rdfs:label "To be sent"@en ;
   rdfs:label "Ожидает отправки"@ru ;
 .
+v-s:IsSent
+  rdf:type v-s:StatusWorkflow ;
+  rdfs:label "Is sent"@en ;
+  rdfs:label "Отправлено"@ru ;
+.
 v-s:DoNotSent
   rdf:type v-s:StatusWorkflow ;
   rdfs:label "Do Not Send"@en ;
@@ -332,6 +341,12 @@ v-s:Versioned
   rdf:type owl:Class ;
   rdfs:label "Versioned thing"@en ;
   rdfs:label "Версионная сущность"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-s:Exportable
+  rdf:type owl:Class ;
+  rdfs:label "Exportable thing"@en ;
+  rdfs:label "Выгружаемая сущность"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
 v-s:YesNo
@@ -391,6 +406,13 @@ v-s:hasImage
   rdfs:isDefinedBy v-s: ;
   rdfs:label "изображение"@ru ;
   rdfs:label "image"@en ;
+  rdfs:range v-s:File ;
+.
+v-s:hasLogo
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "логотип"@ru ;
+  rdfs:label "logo"@en ;
   rdfs:range v-s:File ;
 .
 v-s:canCreate
@@ -500,7 +522,7 @@ v-s:datePlan
   rdf:type owl:DatatypeProperty ;
   rdfs:label "date plan"@en ;
   rdfs:label "плановая дата"@ru ;
-  rdfs:range xsd:date ;
+  rdfs:range xsd:dateTime ;
 .
 
 v-s:published
@@ -696,6 +718,13 @@ v-s:hasAppointment
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Person ;
 .
+v-s:defaultAppointment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "default appointment"@en ;
+  rdfs:label "назначение по-умолчанию"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Person ;
+.
 v-s:hasAppointmentFrom
   rdf:type owl:ObjectProperty ;
   rdfs:label "appointment from"@en ;
@@ -847,7 +876,7 @@ v-s:occupation
   rdfs:domain v-s:Appointment ;
   rdfs:label "occupation"@en ;
   rdfs:label "занимает должность"@ru ;
-  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Position ;
 .
 v-s:official
   rdf:type owl:DatatypeProperty ;
@@ -885,6 +914,13 @@ v-s:owner
   rdfs:domain v-ui:Preferences ;
   rdfs:label "owner"@en ;
   rdfs:label "владелец"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Person ;
+.
+v-s:initiator
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "initiator"@en ;
+  rdfs:label "инициатор"@ru ;
   rdfs:range v-s:OrganizationUnit ;
   rdfs:range v-s:Person ;
 .
@@ -971,7 +1007,7 @@ v-s:responsible
   rdf:type owl:ObjectProperty ;
   rdfs:label "responsible"@en ;
   rdfs:label "ответсвенное лицо"@ru ;
-  rdfs:range v-s:Document ;
+  rdfs:range v-s:Appointment ;
 .
 v-s:restriction
   rdf:type owl:ObjectProperty ;
@@ -1044,6 +1080,12 @@ v-s:sum
   rdfs:label "сумма"@ru ;
   rdfs:range xsd:integer ;
 .
+v-s:sum_decimal
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "sum"@en ;
+  rdfs:label "сумма"@ru ;
+  rdfs:range xsd:decimal ;
+.
 v-s:summary
   rdf:type owl:DatatypeProperty ;
   rdfs:label "summary"@en ;
@@ -1095,6 +1137,42 @@ v-s:year
   rdfs:label "год"@ru ;
   rdfs:range xsd:integer ;
 .
+################################ REPORTS START ####################################################
+v-s:ReportsForClass
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Reports list"@en ;
+  rdfs:label "Список отчетов"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-ui:forClass
+  rdfs:domain v-s:ReportsForClass ;
+.
+v-s:filePath
+  rdfs:domain v-s:ReportsForClass ;
+  rdfs:domain v-s:Report ;  
+.
+v-s:fileFormat
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "file format"@en ;
+  rdfs:label "формат файла"@ru ;
+  rdfs:domain v-s:ReportsForClass ;  
+  rdfs:domain v-s:Report ;    
+  rdfs:range xsd:string ;
+.
+
+v-s:Report
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Report"@en ;
+  rdfs:label "Отчет"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+
+
+################################ REPORTS END ####################################################
+
+################################ JOURNAL ####################################################
 v-s:Journal
   rdf:type owl:Class ;
   rdfs:isDefinedBy v-s: ;
@@ -1173,6 +1251,7 @@ v-s:DocumentDeleted
   rdfs:label "Документ удален"@ru ;
   rdfs:label "Document deleted"@en ;
 .
+####################################################################################
 v-s:DocumentLinkRules
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Document ;
@@ -1224,6 +1303,7 @@ v-s:PsTransformation
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:forProperty v-s:hasTransformation ;
   v-ui:forClass v-s:DocumentLinkRules ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Transform')"^^xsd:string ;
 .
 v-s:displayName
   rdf:type owl:DatatypeProperty ;
@@ -1337,14 +1417,193 @@ v-s:DocumentLinkRulesTemplate
 
     <br><br>
     <div class="well well-sm">
-      <button type="button" class="action btn btn-warning" id="send">Оправить</button>
-      <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
-      <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
-      <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
-      <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
-	  <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
+      <button type="button" class="action btn btn-warning" id="send" about="v-b:Send" property="rdfs:label"/>
+      <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-b:Edit" property="rdfs:label"/>
+      <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/>
+      <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
+      <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-b:Delete" property="rdfs:label"/>
+	  <button type="button" class="action btn btn-primary -view -edit search" id="search" about="v-b:Find" property="rdfs:label"/>
     </div>
 
   </div>
 """ ;
+.
+
+v-s:hasNumeratorMapper
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain owl:DatatypeProperty ;
+  rdfs:label "ссылка на связку: тип индивида + правило нумерации"@ru ;
+  rdfs:label "link to mapper: type of individual + numeration rule"@en ;
+  rdfs:range v-s:NumerationMapper;
+.
+v-s:NumerationMapper
+  rdf:type owl:Class ;
+  rdfs:label "Numeration rule"@en ;
+  rdfs:label "Правило автонумерации"@ru ;
+.
+v-s:numerationClass
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:NumerationMapper ;
+  rdfs:label "ссылка на тип индивида"@ru ;
+  rdfs:label "link to numeration rule"@en ;
+  rdfs:range owl:Class;
+.
+v-s:hasNumeratorRule
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:NumerationMapper ;
+  rdfs:label "ссылка на правило нумерации"@ru ;
+  rdfs:label "link to numeration rule"@en ;
+  rdfs:range v-s:NumerationRule;
+.
+v-s:NumerationRule
+  rdf:type owl:Class ;
+  rdfs:label "Numeration rule"@en ;
+  rdfs:label "Правило автонумерации"@ru ;
+.
+v-s:numeratorScope
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:NumerationRule ;
+  rdfs:label "скрипт, возвращает пространство нумерации"@ru ;
+  rdfs:label "script, returns numeration scope"@en ;
+  rdfs:range xsd:string ;
+.
+v-s:numeratorGetNextValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:NumerationRule ;
+  rdfs:label "скрипт, возвращает следующее незанятое значение из пространства нумерации"@ru ;
+  rdfs:label "script, returns next uncommited value for numeration scope"@en ;
+  rdfs:range xsd:string ;
+.
+v-s:NumerationScope
+  rdf:type owl:Class ;
+  rdfs:label "Numeration scope"@en ;
+  rdfs:label "Пространство автонумерации"@ru ;
+. 
+v-s:numeratorCommitedInterval
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:NumerationScope ;
+  rdfs:range v-s:NumerationCommitedInterval;  
+  rdfs:label "Numeration commited interval"@en ;
+  rdfs:label "Занятый интервал"@ru ;
+.
+v-s:NumerationCommitedInterval
+  rdf:type owl:Class ;
+  rdfs:label "Numeration commited interval"@en ;
+  rdfs:label "Занятый интервал"@ru ;
+. 
+v-s:numeratorCommitedIntervalBegin
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:NumerationCommitedInterval ;
+  rdfs:label "начало занятого интервала нумератора"@ru ;
+  rdfs:label "numerator commited interval begin"@en ;
+  rdfs:range xsd:integer ;
+.
+v-s:numeratorCommitedIntervalEnd
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:NumerationCommitedInterval ;
+  rdfs:label "конец занятого интервала нумератора"@ru ;
+  rdfs:label "numerator commited interval end"@en ;
+  rdfs:range xsd:integer ;
+.
+v-s:SimpleNumerator
+  rdf:type v-s:NumerationRule ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Нумератор в пределах шаблона"@ru ;
+  rdfs:label "Numerator with type as scope"@en ;
+  v-s:numeratorScope """
+(function (ticket, individual) 
+{
+    if (!individual['rdf:type']) return '';
+	return "numerator-scope:"+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id);
+})
+""" ;
+  v-s:numeratorGetNextValue """  
+(function getNextValue(ticket, scope) {
+ 	if (typeof scope == 'string') 
+ 	{
+ 		scope = new veda.IndividualModel(scope, undefined, undefined, undefined, false);
+ 	}
+    if (typeof scope === 'undefined' 
+        || !scope['v-s:numeratorCommitedInterval'])
+    {
+       return 1;    
+    }    
+    var max = 0;
+    
+	if (typeof window === 'undefined') 
+	{
+		scope['v-s:numeratorCommitedInterval'].forEach(function(interval) 
+		{
+			interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
+			if (interval['v-s:numeratorCommitedIntervalEnd'][0].data > max) 
+			{
+				max = interval['v-s:numeratorCommitedIntervalEnd'][0].data; 
+			}			
+		});
+	} else 
+	{
+		scope['v-s:numeratorCommitedInterval'].forEach(function(interval) 
+		{
+			interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
+			console.log(interval);
+			if (interval['v-s:numeratorCommitedIntervalEnd'][0] > max) 
+			{
+				max = interval['v-s:numeratorCommitedIntervalEnd'][0]; 
+			}			
+		});
+	}
+	return max+1;
+})
+""" ;  
+.
+v-s:YearNumerator8
+  rdf:type v-s:NumerationRule ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Нумератор в пределах шаблона"@ru ;
+  rdfs:label "Numerator with type as scope"@en ;
+  v-s:numeratorScope """
+(function (ticket, individual) 
+{
+    if (!individual['rdf:type']) return '';
+	return "numerator-scope:"+(new Date()).getFullYear()+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id);
+})
+""" ;
+  v-s:numeratorGetNextValue """  
+(function getNextValue(ticket, scope) {
+ 	if (typeof scope == 'string') 
+ 	{
+ 		scope = new veda.IndividualModel(scope, undefined, undefined, undefined, false);
+ 	}
+    if (typeof scope === 'undefined' 
+        || !scope['v-s:numeratorCommitedInterval'])
+    {
+       return (new Date()).getFullYear()*10000+1;    
+    }    
+    var max = 0;
+    
+	if (typeof window === 'undefined') 
+	{
+		scope['v-s:numeratorCommitedInterval'].forEach(function(interval) 
+		{
+			interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
+			if (interval['v-s:numeratorCommitedIntervalEnd'][0].data > max) 
+			{
+				max = interval['v-s:numeratorCommitedIntervalEnd'][0].data; 
+			}			
+		});
+	} else 
+	{
+		scope['v-s:numeratorCommitedInterval'].forEach(function(interval) 
+		{
+			interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
+			console.log(interval);
+			if (interval['v-s:numeratorCommitedIntervalEnd'][0] > max) 
+			{
+				max = interval['v-s:numeratorCommitedIntervalEnd'][0]; 
+			}			
+		});
+	}
+	return max+1;
+})
+""" ;  
 .

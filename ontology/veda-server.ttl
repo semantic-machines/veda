@@ -31,6 +31,14 @@ vsrv:count_thread
   rdfs:range xsd:integer ;
 .    
 
+vsrv:push_individual_by_event
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain vsrv:Node ;
+  rdfs:isDefinedBy vsrv: ;
+  rdfs:label "push individual by event" ;
+  rdfs:range vsrv:Connection ;
+.    
+
 vsrv:name
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vsrv:Node, vsrv:Connection ;
@@ -58,11 +66,19 @@ vsrv:listener
   rdfs:range vsrv:Connection ;
 .
 
-vsrv:io_gate
+vsrv:jsvm_node
   rdf:type owl:ObjectProperty ;
   rdfs:domain vsrv:Node ;
   rdfs:isDefinedBy vsrv: ;
-  rdfs:label "io gate" ;
+  rdfs:label "адрес ноды с JSVM" ;
+  rdfs:range vsrv:Connection ;
+.
+
+vsrv:write_storage_node
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain vsrv:Node ;
+  rdfs:isDefinedBy vsrv: ;
+  rdfs:label "адрес write ноды" ;
   rdfs:range vsrv:Connection ;
 .
 
@@ -107,6 +123,14 @@ vsrv:port
   rdfs:range xsd:integer ;
 .    
 
+vsrv:sql_database
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain vsrv:Connection ;
+  rdfs:isDefinedBy vsrv: ;
+  rdfs:label "database name" ;
+  rdfs:range xsd:string ;
+.    
+
 vsrv:amqp_vhost
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vsrv:Connection ;
@@ -144,5 +168,13 @@ vsrv:queue
   rdfs:domain vsrv:Connection ;
   rdfs:isDefinedBy vsrv: ;
   rdfs:label "queue" ;
+  rdfs:range xsd:string ;
+.    
+
+vsrv:role
+  rdf:type owl:DatatypeProperty ;
+  rdfs:isDefinedBy vsrv: ;
+  rdfs:domain vsrv:Node ;
+  rdfs:label "node_role" ;
   rdfs:range xsd:string ;
 .    

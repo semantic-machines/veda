@@ -1,7 +1,7 @@
 addons:
   sauce_connect:
-    username: karpovr
-    access_key: df6653fd-ae02-404f-9bf7-97eeaa3e974f
+    username: Itiua
+    access_key: 660aeb73-b835-4f4a-aaff-17ecdf19a845
 
 env:
   global:
@@ -9,19 +9,15 @@ env:
     - secure: s1BV5JjhQIIdasowuMW2OqH5LjvN3tnU+sEGdz4HxWpHufgFUeNBVzu13S85qSxdch55lCyB4ft58PAX3q0wHFPYvBEwkvMlSFny7LeiytW9HZ/fkCG+Dwh6H6OEK1jKQriXZrYLQm4m6gnnAQYsUpDhxP12YejyyBbfaVW73Og=
 
 language: d
-d: dmd-2.068.0
+d: dmd-2.068.2
 
 # Load all dependencies
 # Compile vibe-d before main project to prevent OutOfMemory issue
 before_install:
   - sudo apt-get update
-  - sudo apt-get install libzmq3-dev
-  - sudo apt-get install libevent-pthreads-2.0-5
-  - sudo apt-get install libraptor2-dev
-  - sudo apt-get install -y libraptor2-dev
-  - sudo cp ./qa/patch_dmd_2_68_0/concurrency.d ${HOME}/dmd2/src/phobos/std/concurrency.d
+  - ./control-install.sh    
   - dub -v fetch vibe-d
-  - npm install selenium-webdriver
+  - npm install selenium-webdriver@2.47.0
 
 # Build
 install:
@@ -32,15 +28,16 @@ before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
-  - start-stop-daemon --start --verbose --chdir $PWD --make-pidfile --pidfile $PWD/veda-pid --background --startas /bin/bash -- -c "exec ./veda.app >> $PWD/veda.log 2>&1"
+  - start-stop-daemon --start --verbose --chdir $PWD --make-pidfile --pidfile $PWD/veda-pid --background --startas /bin/bash -- -c "exec ./veda >> $PWD/veda.log 2>&1"
   - sleep 60  # give Web server some time to bind to sockets, load startup data, etc
 
 # Run API & integration test
 script:
   - node ./qa/testAPI.js
   - node ./qa/testLogin.js
+  - node ./qa/testPerson.js
 
 # Stop deamon and show log
 after_script:
-  - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda.app
+  - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
   - cat $PWD/veda.log

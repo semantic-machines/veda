@@ -10,75 +10,103 @@
 		<link href="/css/bootstrap.min.css" rel="stylesheet"/>
 
 		<!-- Bootstrap theme -->
-		<!--link href="/css/bootstrap-theme.min.css" rel="stylesheet"/-->
+		<link href="/css/bootstrap-theme.min.css" rel="stylesheet"/>
 		
-		<!-- Bootswatch themes -->
-		<link href="/css/cerulean.bootstrap.min.css" rel="stylesheet"/>
+		<!-- Bootswatch themes (good) -->
+		<!--link href="/css/united.bootstrap.min.css" rel="stylesheet"/-->
+		<!--link href="/css/cerulean.bootstrap.min.css" rel="stylesheet"/-->
+		<!--link href="/css/journal.bootstrap.min.css" rel="stylesheet"/-->
+		<!--link href="/css/lumen.bootstrap.min.css" rel="stylesheet"/-->
+		<!--link href="/css/paper.bootstrap.min.css" rel="stylesheet"/-->
+		<!--link href="/css/simplex.bootstrap.min.css" rel="stylesheet"/-->
+		<!--link href="/css/spacelab.bootstrap.min.css" rel="stylesheet"/-->
+		<!--link href="/css/yeti.bootstrap.min.css" rel="stylesheet"/-->
+
+		<!-- Bootswatch themes (bad) -->
+		<!--link href="/css/readable.bootstrap.min.css" rel="stylesheet"/-->
+		<!--link href="/css/sandstone.bootstrap.min.css" rel="stylesheet"/-->
+		<!--link href="/css/slate.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/cosmo.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/cyborg.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/darkly.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/flatly.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/journal.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/lumen.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/paper.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/readable.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/sandstone.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/simplex.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/slate.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/spacelab.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/superhero.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/united.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/yeti.bootstrap.min.css" rel="stylesheet"/-->
 
 		<link href="/css/codemirror.css" rel="stylesheet"/>
 		<link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet"/>
 		<link href="/css/veda.css" rel="stylesheet"/>
+		<link href="/css/font-awesome.min.css" rel="stylesheet"/>
 
 		<meta http-equiv="pragma" content="no-cache" />
 		<meta http-equiv="cache-control" content="no-cache" />
 	</head>
-	<body style="padding: 0px 0px 20px;">
-
-		<nav role="navigation" class="navbar navbar-default" id="navigation">
+	<body>
+		<nav role="navigation" class="navbar" id="navigation">
 			<div class="container-fluid" id="nav-container">
 				<button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
 					<span class="glyphicon glyphicon-menu-hamburger"></span>
 				</button>
-				<!--a href="#/" class="navbar-brand"><img src="/img/veda-logo.png" style="position:relative; top:-3px"/></a-->
-				<a href="#/" class="navbar-brand"><strong>veda</strong></a>
+				<a class="navbar-brand" href="#/">
+					<img alt="Mondi" src="./img/mondi-sm.png">
+				</a>
 				<div class="collapse navbar-collapse" id="navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li id="project-management">
+							<a href="#/mnd-s-asppd:ProjectManagementAspect1"><i class="fa fa-bar-chart"></i> Управление проектами</a>
+						</li>
+					</ul>
 					<div id="user-menu"></div>
-					<ul class="nav navbar-nav navbar-left" id="sys-menu">
+					<ul class="nav navbar-nav navbar-right">
+						<li id="user-info"></li>
 						<li class="dropdown" id="settings">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Настройки <span class="caret"></span></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="fa fa-cog fa-lg"></span> <span class="caret"></span></a>
 							<ul class="dropdown-menu" role="menu">
+								<li id="inbox">	
+									<a href="#/v-ft:Inbox">Входящие</a>
+								</li>
+								<li id="outbox">	
+									<a href="#/v-ft:Outbox">Исходящие</a>
+								</li>
+								<li id="completed">	
+									<a href="#/v-ft:Completed">Выполненные</a>
+								</li>
+								<li class="divider"></li>
+								<li id="create">	
+									<a href="#/v-fc:Create">Создать</a>
+								</li>
+								<li id="search">
+									<a href="#/v-fs:Search">Найти</a>
+								</li>
+								<li class="divider"></li>
+								<li id="find">
+									<a href="#/search">Поиск</a>
+								</li>
+								<li class="divider"></li>
 								<li id="graph">	
-									<a i18n="[Graph]" href="#/graph">Граф</a>
+									<a href="#/graph">Граф</a>
 								</li>
 								<li id="console">	
-									<a i18n="[Console]" href="#/console">Консоль</a>
+									<a href="#/console">Консоль</a>
 								</li>
 								<li id="tests">
-									<a i18n="[Tests]" href="/tests">Тесты</a>
+									<a href="/tests">Тесты</a>
 								</li>
 								<li class="divider"></li>
 								<li>
-									<a id="set-trace">
-										<span class="glyphicon glyphicon-flash"></span> Trace
+									<a id="clear-storage">
+										<span class="glyphicon glyphicon-trash"></span> Очистить данные
 									</a>
 								</li>
+								<li class="divider"></li>
 								<li>
-									<a id="clear-storage">
-										<span class="glyphicon glyphicon-trash"></span> Clear
+									<a id="logout">
+										<span class="glyphicon glyphicon glyphicon-log-out"></span> Выйти
 									</a>
 								</li>
 							</ul>
 						</li>
 					</ul>
-					<button type="button" class="btn btn-xs btn-danger navbar-btn navbar-right" id="logout">
-						<span class="glyphicon glyphicon-log-out"></span>
-					</button>
-					<p id="user-info" class="navbar-text navbar-right"></p>
+					<!--p id="user-info" class="navbar-text navbar-right"></p-->
 					<div class="navbar-right btn-group" id="preferred-language"></div>
 				</div>
 			</div>
@@ -88,12 +116,14 @@
 		<div id="main" class="container-fluid"></div>
 		<br>
 		
+		<div id="login-holder" class="hidden" style="background-color:#eee"></div>
+		
 		<!-- Footer -->
-		<nav style="min-height:20px;" class="navbar navbar-fixed-bottom" id="copyright">
+		<nav style="min-height:12px;" class="navbar navbar-fixed-bottom" id="copyright">
 			<footer>
 				<div class="container-fluid" style="background-color: white; border-top: 1px solid lightgray">
-					<a href="http://www.semantic-machines.com" i18n="[Semantic machines]">© Смысловые машины.</a>
-					<span i18n="[License]">Лицензия</span>
+					<a href="http://www.semantic-machines.com">© Смысловые машины.</a>
+					<span>Лицензия</span>
 					<a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
 				</div>
 			</footer>
@@ -105,18 +135,18 @@
 		<script type="html/template" id="login-template">
 			<div class="container-fluid" id="login-form">
 				<div class="row">
-					<div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
-						<h3>Представьтесь</h3>
+					<div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
 						<form role="form" id="credentials">
-							<div class="form-group">
-								<label for="login">Логин</label>
-								<input id="login" required="required" type="text" name="login" class="form-control"/>
+							<h3>Войдите / Sign in</h3>
+							<input id="login" required="required" placeholder="login" type="text" name="login" class="form-control"/>
+							<input id="password" required="required" placeholder="password" type="password" name="password" autofocus="autofocus" class="form-control"/>
+							<br>
+							<button type="submit" id="submit" class="btn btn-primary btn-block">Войти / Sign in</button>
+							<br>
+							<div id="login-error" class="hidden">
+								<p><strong class="text-danger">Ошибка!</strong> Неверное имя пользователя или пароль.</p>
+								<p><strong class="text-danger">Error!</strong> Wrong login or password.</p>
 							</div>
-							<div class="form-group">
-								<label for="password">Пароль</label>
-								<input id="password" required="required" type="password" name="password" autofocus="autofocus" class="form-control"/>
-							</div>
-							<button type="submit" id="submit" class="btn btn-primary">Войти</button>
 						</form>
 					</div>
 				</div>
@@ -137,27 +167,27 @@
 		<!-- Console template -->
 		<script type="html/template" id="console-template">
 			<div class="container-fluid" id="console">
-				<h3 i18n="[Javascript console]">Консоль JavaScript</h3>
+				<h3>Консоль JavaScript</h3>
 				<form role="form">
 					<div class="form-group row">
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<label i18n="[Script]" for="script">Скрипт</label>
+							<label for="script">Скрипт</label>
 							<textarea rows="10" class="form-control" autofocus="autofocus" id="script" bound>{script}</textarea>
 						</div>
 					</div>
 					<div class="form-group row">
 						<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
 							<select class="form-control" id="runat" bound>
-								<option i18n="[Browser]" value="browser">Браузер</option>
-								<option i18n="[Server]" value="server">Сервер</option>
+								<option value="browser">Браузер</option>
+								<option value="server">Сервер</option>
 							</select>
 						</div>
-						<button type="submit" class="btn btn-success" id="run" i18n="[Run]">Выполнить!</button>
-						<button type="reset" class="btn" id="reset" i18n="[Reset]">Сброс</button>
+						<button type="submit" class="btn btn-success" id="run">Выполнить!</button>
+						<button type="reset" class="btn" id="reset">Сброс</button>
 					</div>
 				</form>
 				<hr />
-				<p><strong><span i18n="[Result]">Результат</span> <span class="text-muted">(<span id="time" bound>{time}</span> msec)</span></label></strong></p>
+				<p><strong><span>Результат</span> <span class="text-muted">(<span id="time" bound>{time}</span> msec)</span></label></strong></p>
 				<pre id="result" bound>{result}</pre>
 			</div>
 		</script>
@@ -171,7 +201,7 @@
 		
 		<!-- Individual label template -->
 		<script type="html/template" id="individual-label-template">
-			<a href="#/individual/{uri}/#main"><strong>{label}</strong></a>
+			<a href="#/{uri}"><strong>{label}</strong></a>
 		</script>
 
 		<!-- Individual single property template -->
@@ -182,19 +212,18 @@
 
 		<!-- Current user template -->
 		<script type="html/template" id="user-template">
-			<a href="#/individual/{user.id}/#main" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {user.rdfs:label}</a>
+			<a href="#/{user.id}" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {user.rdfs:label}</a>
 		</script>
 
 		<!-- Language template -->
 		<script type="html/template" id="language-template">
-			<label id="{rdf:value.0}" class="btn btn-xs btn-info navbar-btn">
+			<label id="{rdf:value.0}" class="btn btn-xs btn-default navbar-btn">
 				{rdfs:label}
 			</label>
 		</script>
 
 		<!-- Search template -->
 		<script type="html/template" id="search-template">
-
 			<div role="tabpanel" id="search-tab-panel-{id}">
 				<!-- Nav tabs -->
 				<ul class="nav nav-pills" role="tablist">
@@ -226,7 +255,7 @@
 										<div class="input-group">
 											<input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
 											<span class="input-group-btn" id="q-actions">
-												<button type="submit" id="search-submit" class="btn btn-primary" i18n="[Search]">Найти</button>
+												<button type="submit" id="search-submit" class="btn btn-primary">Найти</button>
 											</span>
 										</div>
 									</form>
@@ -234,7 +263,7 @@
 							</div>
 						</div>
 						<div class="alert alert-warning not-found" style="display: none">
-							<strong i18n="[Empty!]">Пусто!</strong> <span i18n="[Nothing found]">По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
+							<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 						</div>
 					</div>
 					
@@ -243,7 +272,7 @@
 							<div id="search-features" class="form-inline">
 								<div class="checkbox">
 									<label>
-										<input type="checkbox" id="select-all"> <span i18n="[Select all]">Выбрать все</span>
+										<input type="checkbox" id="select-all"> <span>Выбрать все</span>
 									</label>
 								</div>
 							</div>
@@ -256,7 +285,7 @@
 							</div>
 						</div>
 						<div class="alert alert-warning not-found" style="display: none">
-							<strong i18n="[Empty!]">Пусто!</strong> <span i18n="[Nothing found]">По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
+							<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 						</div>
 						<div id="selected-actions-{id}">
 						</div>
@@ -269,6 +298,7 @@
 		<script type="html/template" id="selected-actions-template">
 			<div class="well well-sm" id="selected-actions">
 				<button id="export-ttl" class="btn btn-success">Экспорт в ttl</button>
+				<button id="update" class="btn btn-default">Обновить</button>
 				<button id="delete" class="btn btn-link">Удалить</button>
 			</div>
 			<br>
@@ -336,13 +366,33 @@
 				</div>
 			</div>
 		</script>
+		
+		<!-- Show rights modal -->
+		<script type="html/template" id="show-rights-modal-template">
+			<div class="modal" id="show-rights-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<!--div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+							<h4 class="modal-title" id="myModalLabel">Поиск объекта</h4>
+						</div-->
+						<div class="modal-body">
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
+							<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Отмена</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</script>
 
 <!-- BEGIN VEDA-CONTROLS -->
 
 		<!-- Link control template -->
 		<script type="html/template" id="link-control-template">
 			<div id="scrollable-typeahead">
-				<div class="input-group" style="display:table">
+				<div class="input-group">
 					<span class="input-group-addon btn btn-default" id="fullsearch">
 						<i class="glyphicon glyphicon-search"></i>
 					</span>
@@ -360,89 +410,101 @@
 		<!-- String control template -->
 		<script type="html/template" id="string-control-template">
 			<div>
-				<input type="text" class="form-control" bound />
+				<input type="text" class="form-control" />
 			</div>
 		</script>
 
 		<!-- Text control template -->
 		<script type="html/template" id="text-control-template">
 			<div>
-				<textarea class="form-control" rows="1" bound />
+				<textarea class="form-control" rows="1" />
 			</div>
 		</script>
 
 		<!-- Multilingual string control template -->
 		<script type="html/template" id="multilingual-string-control-template">
-			<span class="input-group" style="display:table">
+			<div class="input-group">
 				<span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown"><span class="language-tag"></span> <span class="caret"></span></span>
 				<ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
 					<li><a href="#" class="language">-</a></li>
 				</ul>
-				<input type="text" class="form-control" bound />
-			</span>
+				<input type="text" class="form-control" />
+			</div>
 		</script>
 
 		<!-- Multilingual text control template -->
 		<script type="html/template" id="multilingual-text-control-template">
-			<span class="input-group" style="display:table">
+			<div class="input-group">
 				<span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown"><span class="language-tag"></span> <span class="caret"></span></span>
 				<ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
 					<li><a href="#" class="language">-</a></li>
 				</ul>
-				<textarea class="form-control" rows="1" bound />
-			</span>
+				<textarea class="form-control" rows="1" />
+			</div>
 		</script>
 
 		<!-- Source code control template -->
 		<script type="html/template" id="source-control-template">
 			<div class="panel panel-default codemirror-editor">
-				<button id="full-screen" class="btn btn-xs btn-default glyphicon glyphicon-resize-full"></button>
+				<button id="full-screen" class="fs-btn btn btn-xs btn-default glyphicon glyphicon-resize-full"></button>
 			</div>		
 		</script>
 		
 		<!-- Datetime control template -->
 		<script type="html/template" id="datetime-control-template">
-			<span class="input-group" style="display:table">
-				<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-time"></i></span>
-				<input type="text" class="form-control" bound />
-			</span>
+			<div class="input-group date">
+				<span class="input-group-addon btn btn-default">
+					<span class="glyphicon glyphicon-time"></span>
+				</span>
+				<input type="text" class="form-control" />
+			</div>
 		</script>
 
 		<!-- Integer control template -->
 		<script type="html/template" id="integer-control-template">
-			<span class="input-group" style="display:table">
+			<div class="input-group">
 				<span class="input-group-addon btn btn-default"><strong>#</strong></span>
-				<input type="number" class="form-control" bound />
-			</span>
+				<input type="text" class="form-control" />
+			</div>
+		</script>
+		
+		<!-- Numerator control template -->
+		<script type="html/template" id="numerator-control-template">
+			<div class="input-group">
+				<span class="get-numerator-value input-group-addon btn btn-default" id="fullsearch">
+					<i class="glyphicon glyphicon-retweet"></i>
+				</span>
+				<input type="text" class="form-control" />
+			</div>
 		</script>
 
 		<!-- Decimal control template -->
 		<script type="html/template" id="decimal-control-template">
-			<span class="input-group" style="display:table">
+			<div class="input-group">
 				<span class="input-group-addon btn btn-default"><strong>#.#</strong></span>
-				<input type="text" class="form-control" bound />
-			</span>
+				<input type="text" class="form-control" />
+			</div>
 		</script>
 
 		<!-- Boolean control template -->
 		<script type="html/template" id="boolean-control-template">
-			<span class="input-group" style="display:table">
+			<div class="input-group">
 				<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-ok"></i></span>
-				<input type="text" class="form-control" bound />
-			</span>
+				<input type="text" class="form-control" />
+			</div>
 		</script>
 
 		<!-- Boolean checkbox control template -->
 		<script type="html/template" id="boolean-checkbox-control-template">
 			<span>
-				<input type="checkbox" bound />
+				<input type="checkbox" />
 			</span>
 		</script>
 
 		<!-- Option select control template -->
 		<script type="html/template" id="select-control-template">
 			<div>
-				<select class="form-control" bound>
+				<select class="form-control">
 					<option value="">...</option>
 				</select>
 			</div>
@@ -470,11 +532,23 @@
 			</div>
 		</script>
 
-		<!-- File control template -->
-		<script type="html/template" id="file-control-template">
+		<!-- File control template with ajax support -->
+		<script type="html/template" id="file-control-template-ajax">
 			<div>
 				<input type="file" style="display:none"/>
 				<button class="btn btn-primary">Browse...</button>
+			</div>
+		</script>
+		
+		<!-- File control template using iframe -->
+		<script type="html/template" id="file-control-template-iframe">
+			<div>
+				<form action="/files" method="post" enctype="multipart/form-data">
+					<input type="file" id="file" name="file"/>
+					<input type="hidden" id="path" name="path"/>
+					<input type="hidden" id="uri" name="uri"/>
+				</form>
+				<iframe src="#" style="display:none"></iframe>
 			</div>
 		</script>
 
@@ -489,7 +563,7 @@
 							<div class="col-md-4 className">
 							</div>
 							<div class="col-md-8 text-right text-muted">
-								<a href="#/individual/@/#main"><span property="@"></span></a>
+								<a href="#/@"><span property="@"></span></a>
 								<a href="#/graph/@/#main"><span class="glyphicon glyphicon-link"></span></a>
 							</div>  
 						</div>
@@ -523,6 +597,7 @@
 						<button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
 						<button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
 						<button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
+						<button type="button" class="action btn btn-primary view -edit -search" id="showRights">Права доступа</button>
 					</div>
 				</div>
 			</div>
@@ -652,9 +727,7 @@
 		<script type="text/javascript" src="/js/browser/lib/jquery.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/bootstrap.min.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/jquery.i18n.min.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/sha256.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/jquery.autosize.min.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/jsplumb.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/vis.min.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/bootstrap-contextmenu.js"></script>
@@ -662,8 +735,8 @@
 		<script type="text/javascript" src="/js/browser/lib/FileSaver.min.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/typeahead.jquery.min.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/cookie.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/moment/moment.min.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/moment/all.locales.min.js"></script>
+		<script type="text/javascript" src="/js/browser/lib/autosize.min.js"></script>
+		<script type="text/javascript" src="/js/browser/lib/moment-with-locales.min.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/bootstrap-datetimepicker.min.js"></script>
 		
 		<!-- CodeMirror -->
@@ -697,6 +770,8 @@
 		<script type="text/javascript" src="/js/browser/backend.js"></script>
 		<script type="text/javascript" src="/js/browser/util.js"></script>
 		<script type="text/javascript" src="/js/browser/console_presenter.js"></script>
+		<script type="text/javascript" src="/js/browser/veda_controls.js"></script>
+		<script type="text/javascript" src="/js/browser/individual_actions.js"></script>
 		<script type="text/javascript" src="/js/browser/individual_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/saved_search_list.js"></script>
 		<script type="text/javascript" src="/js/browser/save_search.js"></script>
@@ -707,7 +782,6 @@
 		<script type="text/javascript" src="/js/browser/user_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/menu_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/graph_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/veda_controls.js"></script>
 		<script type="text/javascript" src="/js/browser/veda_net_editor.js"></script>
 		<script type="text/javascript" src="/js/browser/app_presenter.js"></script>
 
@@ -716,6 +790,23 @@
 				veda.Module({/* configuration object */});
 			});
 		</script>
-	
+		<script> 
+		var $buoop = {
+				vs:{i:10,f:39.0,o:11.5,s:8.0},
+				c:2,
+			    //vs: {i:11,f:40.0,o:11.60,s:8.1,c:43.0}, 
+			    reminder: 0
+			};
+			function $buo_f()
+			{ 
+				var e = document.createElement("script"); 
+				e.src = "/js/browser/lib/update.min.js"; 
+				document.body.appendChild(e);
+			};
+			try 
+			{
+				document.addEventListener("DOMContentLoaded", $buo_f,false)
+			} catch(e) { window.attachEvent("onload", $buo_f) }
+		</script> 
 	</body>
 </html>

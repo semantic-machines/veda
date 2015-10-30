@@ -19,17 +19,6 @@ veda.Module(function (veda) { "use strict";
 			displayedElements : 10
 		};
 		
-		if ( self.hasValue("v-asp:hasAspect") ) {
-			self.aspect = self["v-asp:hasAspect"][0];
-		} else {
-			self.aspect = new veda.IndividualModel();
-			self.aspect["rdf:type"] = [ veda.ontology["v-asp:PersonalAspect"] ];
-			self.aspect["v-s:owner"] = [self];
-			self.aspect.save();
-			self["v-asp:hasAspect"] = [self.aspect];
-			self.save();
-		}
-		
 		try { 
 			self.preferences = self["v-ui:hasPreferences"][0];
 
@@ -42,6 +31,26 @@ veda.Module(function (veda) { "use strict";
 		} catch (e) {
 			self.language = defaults.language;
 			self.displayedElements = defaults.displayedElements;
+		}
+
+		if ( self.hasValue("v-asp:hasAspect") ) {
+			self.aspect = self["v-asp:hasAspect"][0];
+		} else {
+			self.aspect = new veda.IndividualModel();
+			self.aspect["rdf:type"] = [ veda.ontology["v-asp:PersonalAspect"] ];
+			self.aspect["v-s:owner"] = [ self ];
+			self.aspect["rdfs:label"] = [ "PersonalAspect_" + self.id ];
+			self.aspect.save();
+			self["v-asp:hasAspect"] = [ self.aspect ];
+			self.save();
+		}
+		
+		if (self.hasValue("v-s:defaultAppointment")) {
+			veda.appointment = self["v-s:defaultAppointment"][0];
+		} else if (self.hasValue("v-s:hasAppointment")) {
+			self["v-s:defaultAppointment"] = [ self["v-s:hasAppointment"][0] ];
+			self.save();
+			veda.appointment = self["v-s:defaultAppointment"][0];
 		}
 
 		if (self.preferences) { 

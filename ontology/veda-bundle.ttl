@@ -1,0 +1,134 @@
+# baseURI: http://semantic-machines.com/veda/veda-bundle
+# imports: http://semantic-machines.com/veda/veda-schema
+# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+# imports: http://www.w3.org/2000/01/rdf-schema#
+# imports: http://www.w3.org/2002/07/owl
+
+# c14n-version: 3
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
+
+<http://semantic-machines.com/veda/veda-bundle>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system data index ontology"@en ;
+  rdfs:label "Онтология индексирования данных системы Веда"@ru ;
+  owl:imports rdf: ;
+  owl:imports rdfs: ;
+  owl:imports <http://www.w3.org/2002/07/owl> ;
+#  owl:versionInfo "0.1" ;
+.
+v-b:Bundle
+  rdf:type owl:Class ;
+  rdfs:label "Bundle"@en ;
+  rdfs:label "Текстовая константа"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-b:Chief
+  rdf:type v-b:Bundle ;
+  rdfs:label "Руководитель"@ru ;
+  rdfs:label "Chief"@en ;
+.
+v-b:ImplementationPeriod
+  rdf:type v-b:Bundle ;
+  rdfs:label "период реализации"@ru ;
+  rdfs:label "implementation period"@en ;
+.
+v-b:MyPage
+  rdf:type v-b:Bundle ;
+  rdfs:label "Моя страница"@ru ;
+  rdfs:label "My page"@en ;
+.
+v-b:Favorites
+  rdf:type v-b:Bundle ;
+  rdfs:label "Избранное"@ru ;
+  rdfs:label "Favorites"@en ;
+.
+v-b:Blanks
+  rdf:type v-b:Bundle ;
+  rdfs:label "Бланки"@ru ;
+  rdfs:label "Blanks"@en ;
+.
+v-b:Registries
+  rdf:type v-b:Bundle ;
+  rdfs:label "Реестры"@ru ;
+  rdfs:label "Registries"@en ;
+.
+v-b:Reports
+  rdf:type v-b:Bundle ;
+  rdfs:label "Отчеты"@ru ;
+  rdfs:label "Reports"@en ;
+.
+v-b:Aspects
+  rdf:type v-b:Bundle ;
+  rdfs:label "Аспекты"@ru ;
+  rdfs:label "Aspects"@en ;
+.
+v-b:Other
+  rdf:type v-b:Bundle ;
+  rdfs:label "Другое"@ru ;
+  rdfs:label "Other"@en ;
+.
+v-b:Send
+  rdf:type v-b:Bundle ;
+  rdfs:label "Отправить"@ru ;
+  rdfs:label "Send"@en ;
+.
+v-b:Edit
+  rdf:type v-b:Bundle ;
+  rdfs:label "Редактировать"@ru ;
+  rdfs:label "Edit"@en ;
+.
+v-b:Save
+  rdf:type v-b:Bundle ;
+  rdfs:label "Сохранить"@ru ;
+  rdfs:label "Save"@en ;
+.
+v-b:Find
+  rdf:type v-b:Bundle ;
+  rdfs:label "Найти"@ru ;
+  rdfs:label "Find"@en ;
+.
+v-b:Cancel
+  rdf:type v-b:Bundle ;
+  rdfs:label "Отмена"@ru ;
+  rdfs:label "Cancel"@en ;
+.
+v-b:Delete
+  rdf:type v-b:Bundle ;
+  rdfs:label "Удалить"@ru ;
+  rdfs:label "Delete"@en ;
+.
+v-b:CreateReport
+  rdf:type v-b:Bundle ;
+  rdfs:label "Сформировать отчёт"@ru ;
+  rdfs:label "Create report"@en ;
+.
+v-b:PrintBlank
+  rdf:type v-b:Bundle ;
+  rdfs:label "Печатный бланк"@ru ;
+  rdfs:label "Print blank"@en ;
+.
+v-b:CreateReport_ProjectOrder
+  rdf:type v-b:Bundle ;
+  rdfs:label "Project Order"@ru ;
+  rdfs:label "Project Order"@en ;
+.
+
+v-b:RightsOrigin
+  rdf:type v-b:Bundle ;
+  rdfs:label "Права доступа"@ru ;
+  rdfs:label "Access rights"@en ;
+.
+v-b:Instruction
+  rdf:type v-b:Bundle ;
+  rdfs:label "Поручение"@ru ;
+  rdfs:label "Instruction"@en ;
+.
+v-b:SearchRequest
+  rdf:type v-b:Bundle ;
+  rdfs:label "Поисковый запрос"@ru ;
+  rdfs:label "Search request"@en ;
+.

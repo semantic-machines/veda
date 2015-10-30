@@ -53,6 +53,41 @@ function newStr(_data)
     }];
 }
 
+function newBool(_data)
+{
+    return [
+        {
+            data: _data,
+            type: _Bool
+    }];
+}
+
+function getStrings(field)
+{
+	var res = [];
+    if (field)
+    {
+		for (var i in field)
+		{
+			res.push (field[i].data);
+		}
+    }
+    return res;
+}
+
+function getUris(field)
+{
+	var res = [];
+    if (field)
+    {
+		for (var i in field)
+		{
+			res.push (field[i].data);
+		}
+    }
+    return res;
+}
+
 function getUri(field)
 {
     if (field && field.length > 0)
@@ -126,11 +161,16 @@ function addRight(ticket, rights, subj_uri, obj_uri)
     //print("ADD RIGHT:", toJson(new_permission));
 }
 
-// JOURNAL
+/////////////////////////////////////// JOURNAL
 
 function getJournalUri(object_uri)
 {
     return object_uri + "j";
+}
+
+function getTraceJournalUri(object_uri)
+{
+    return object_uri + "t";
 }
 
 function newJournalRecord(journal_uri)
@@ -160,7 +200,7 @@ function newJournalRecord(journal_uri)
 
 function logToJournal(ticket, journal_uri, journal_record)
 {
-    //print("new_journal_record=" + toJson(new_journal_record));
+    //print("@@@ logToJournal, new_journal_record=" + toJson(journal_record));
     put_individual(ticket, journal_record, _event_id);
 
     var add_to_journal = {
@@ -172,6 +212,33 @@ function logToJournal(ticket, journal_uri, journal_record)
     }]
     };
 
+    //print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
     add_to_individual(ticket, add_to_journal, _event_id);
-
 }
+
+function traceToJournal(ticket, journal_uri, label, _data)
+{
+	var journal_record = newJournalRecord(journal_uri);
+	
+	journal_record['rdf:type'] = [
+            {
+                data: 'v-wf:TraceRecord',
+                type: _Uri
+    }];	
+	journal_record['rdfs:label'] = [
+            {
+                data: label,
+                type: _String
+    }];
+	journal_record['rdfs:comment'] = [
+            {
+                data: _data,
+                type: _String
+    }];
+    
+	logToJournal(ticket, journal_uri, journal_record);
+	
+	//print("@@@ traceToJournal, journal_uri=" + journal_uri + ", " + toJson(journal_record));
+
+}	
+

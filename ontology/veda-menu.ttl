@@ -6,6 +6,8 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-m: <http://semantic-machines.com/veda/veda-menu/> .
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
 
 <http://semantic-machines.com/veda/veda-menu>
   rdf:type owl:Ontology ;
@@ -52,8 +54,35 @@ v-m:MainMenu
 	rdf:type v-m:Menu ;
 	rdfs:label "Main menu"@en ;
 	rdfs:label "Главное меню"@ru ;
+	v-m:menuItem v-m:Tasks ;
 	v-m:menuItem v-m:DocMenu ;
 	v-m:menuItem v-m:Search ;
+.
+v-m:Tasks
+	rdf:type v-m:Menu ;
+	rdfs:label "Tasks"@en ;
+	rdfs:label "Задачи"@ru ;
+	v-m:menuItem v-m:Inbox ;
+	v-m:menuItem v-m:Outbox ;
+	v-m:menuItem v-m:Completed ;
+.
+v-m:Inbox
+	rdf:type v-m:Menu ;
+	rdfs:label "Inbox"@en ;
+	rdfs:label "Входящие"@ru ;
+	v-m:objectLink v-ft:Inbox ;
+.
+v-m:Outbox
+	rdf:type v-m:Menu ;
+	rdfs:label "Outbox"@en ;
+	rdfs:label "Исходящие"@ru ;
+	v-m:objectLink v-ft:Outbox ;
+.
+v-m:Completed
+	rdf:type v-m:Menu ;
+	rdfs:label "Completed"@en ;
+	rdfs:label "Выполненные"@ru ;
+	v-m:objectLink v-ft:Completed ;
 .
 v-m:DocMenu
 	rdf:type v-m:Menu ;
@@ -72,7 +101,7 @@ v-m:Find
 	rdf:type v-m:Menu ;
 	rdfs:label "Find"@en ;
 	rdfs:label "Найти"@ru ;
-	v-m:staticLink "#/individual//#main//search"^^xsd:string ;
+	v-m:objectLink v-fs:Search ;
 .
 v-m:Search
 	rdf:type v-m:Menu ;
@@ -85,17 +114,17 @@ v-m:MenuItemViewTemplate
 	rdfs:label "Menu item template"@en ;
 	rdfs:label "Шаблон пункта Меню"@ru ;
 	v-ui:template """
-<li id="static">
+<li id="static" class="hidden">
 	<a id="lnk">
 		<span property="rdfs:label"></span>
 	</a>
 </li>
-<li id="object" rel="v-m:objectLink">
-	<a href="#/individual/@/#main">
+<li id="object" rel="v-m:objectLink" class="hidden">
+	<a href="#/@">
 		<span property="rdfs:label"></span>
 	</a>
 </li>
-<li id="sub" role="presentation" class="dropdown">
+<li id="sub" role="presentation" class="dropdown hidden">
 	<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
 		<span property="rdfs:label"></span> <span class="caret"></span>
 	</a>
@@ -115,6 +144,7 @@ v-m:MenuItemViewTemplate
 			stcTmpl.remove();
 		}
 	}
+	template.toggleClass("hidden show");
 </script>
 	"""
 .

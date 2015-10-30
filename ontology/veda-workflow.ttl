@@ -384,6 +384,14 @@ v-wf:complete
 	v-wf:variableValue "yes" ;
 .
 
+v-wf:isTrace
+	rdf:type owl:DatatypeProperty ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "использовать трассировку"@ru ;
+	rdfs:domain v-wf:Process,  v-wf:StartForm ;
+	rdfs:range xsd:boolean ;
+.
+
 
 #------------------------------------------------------
 v-wf:netPropertySpecification1
@@ -404,19 +412,27 @@ v-wf:netPropertySpecification2
   v-ui:queryPrefix "('rdf:type'=='v-wf:VarDefine')"^^xsd:string ;
 .
 
+v-wf:netPropertySpecification3
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация мэпперов для класса Задача"@ru ;
+  rdfs:label "Mapper property specification for Task class"@en ;
+  v-ui:forClass v-wf:Net ;
+  v-ui:forProperty v-wf:completedMapping ;
+  v-ui:queryPrefix "('rdf:type'=='v-wf:Mapping')"^^xsd:string ;
+.
+
 v-wf:SimpleNetTemplate
   rdf:type v-ui:ClassTemplate ;
 	rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса Сеть"@ru ;
   rdfs:label "Template for Net class"@en ;
-  v-ui:forClass v-wf:Net ;
   v-ui:template """
 <div>
   <table id="taskTemplateProperties" class="table table-condensed table-hover properties-editor">
   	<thead>
   	  <tr>
   		<td style="width:25%"><span about="v-wf:Net" property="rdfs:label"></span></td>
-  		<td><strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
+  		<td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
   	  </tr>	 
   	</thead>
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
@@ -464,7 +480,28 @@ v-wf:SimpleNetTemplate
   			<div class="VCinputOutputVariable" rel="v-wf:inputOutputVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
   			<div class="viewVCinputOutputVariable" about="@" rel="v-wf:inputOutputVariable" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
-	</tr>			
+	</tr>
+	<tr onclick="javascript: $('.button-delete', $('.VCcompletedMapping').show()).show();">
+		<td>
+			<span about="v-wf:completedMapping" property="rdfs:label"></span>
+		</td>
+  		<td>
+  			<veda-control rel="v-wf:completedMapping" type="link" class="VCcompletedMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<div rel="v-wf:completedMapping">
+	  			<div deleteButton="hide" class="VCcompletedMapping">
+	  				#<a href="#/@">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
+				<div>
+			</div>
+		</td>
+	</tr>	
   </table>
 </div>  
   """ ;
@@ -722,7 +759,7 @@ v-wf:taskPropertySpecification7
   v-ui:forClass v-wf:Task ;
   v-ui:forProperty v-wf:executor ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:queryPrefix "('rdf:type'=='v-wf:ExecutorDefinition')"^^xsd:string ;
+  v-ui:queryPrefix "('rdf:type'=='v-wf:ExecutorDefinition' ||  'rdf:type'=='v-s:Codelet' ||  'rdf:type'=='v-s:Appointment')"^^xsd:string ;
 .
 v-wf:taskPropertySpecification8
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -794,7 +831,7 @@ v-wf:TaskTemplateAsProperties
   	<thead>
   	  <tr>
   		<td style="width:25%"><span about="v-wf:NetElement" property="rdfs:label"></span></td>
-  		<td><strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
+  		<td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
   	  </tr>	 
   	</thead>
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
@@ -855,18 +892,20 @@ v-wf:TaskTemplateAsProperties
   			<veda-control about="@" rel="v-wf:executor" type="link" class="VCexecutor -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div class="VCexecutor" rel="v-wf:executor" style="display:none;">
 	  			<div>
-	  				<span property="v-wf:executorExpression"></span>
-	  				<span property="v-s:script"></span>
-	  				<span rel="v-s:employee" template="v-ui:LabelTemplate"></span>
-	  				<a href="#/individual/@/#main//edit"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/@///edit">
+		  				<span property="v-wf:executorExpression"></span>
+		  				<span property="v-s:script"></span>
+		  				<span rel="v-s:employee" template="v-ui:LabelTemplate"></span>
+	  				</a>
 				</div>
 			</div>
 			<div class="viewVCexecutor" about="@" rel="v-wf:executor">
 	  			<div>
-	  				<span property="v-wf:executorExpression"></span>
-	  				<span property="v-s:script"></span>
-	  				<span rel="v-s:employee" template="v-ui:LabelTemplate"></span>
-	  				<a href="#/individual/@/#main//edit"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/@///edit">
+		  				<span property="v-wf:executorExpression"></span>
+		  				<span property="v-s:script"></span>
+		  				<span rel="v-s:employee" template="v-ui:LabelTemplate"></span>
+	  				</a>
 				</div>
 			</div>		
   		</td>
@@ -927,13 +966,15 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:startingMapping" type="link" class="VCstartingMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingMapping">
 	  			<div deleteButton="hide" class="VCstartingMapping">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/@">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -946,13 +987,15 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:completedMapping" type="link" class="VCcompletedMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedMapping">
 	  			<div deleteButton="hide" class="VCcompletedMapping">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/@">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -965,13 +1008,15 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:startingExecutorJournalMap" type="link" class="VCstartingExecutorJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingExecutorJournalMap">
 	  			<div deleteButton="hide" class="VCstartingExecutorJournalMap">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/@">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -984,13 +1029,15 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:completedExecutorJournalMap" type="link" class="VCcompletedExecutorJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedExecutorJournalMap">
 	  			<div deleteButton="hide" class="VCcompletedExecutorJournalMap">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/@">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -1003,13 +1050,15 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:startingJournalMap" type="link" class="VCstartingJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingJournalMap">
 	  			<div deleteButton="hide" class="VCstartingJournalMap">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+		  			#<a href="#/@">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -1022,13 +1071,15 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:completedJournalMap" type="link" class="VCcompletedJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedJournalMap">
 	  			<div deleteButton="hide" class="VCcompletedJournalMap">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/@">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -1041,13 +1092,15 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:wosResultsMapping" type="link" class="VCwosResultsMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:wosResultsMapping">
 	  			<div deleteButton="hide" class="VCwosResultsMapping">
-		  			<span about="@" rel="v-wf:mapToVariable">
-						<span>
-							<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-						</span>
-					</span> =
-					<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-					<a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+	  				#<a href="#/@">
+			  			<span about="@" rel="v-wf:mapToVariable">
+							<span>
+								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+							</span>
+						</span> =
+						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
+					</a>
 				<div>
 			</div>
 		</td>
@@ -1056,9 +1109,10 @@ v-wf:TaskTemplateAsProperties
 		<td about="v-wf:hasFlow" property="rdfs:label"></td>
 		<td about="@" rel="v-wf:hasFlow">
 			<div>
-			    <strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
-			    [<span about="@" property="v-wf:predicate"></span>]
-			    <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+				#<a href="#/@">
+				    <strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
+				    [<span about="@" property="v-wf:predicate"></span>]
+			    </a>
 			</div>
 		</td>
 	</tr>
@@ -1114,7 +1168,7 @@ v-wf:ConditionTemplateAsProperties
   	<thead>
   	  <tr>
   		<td style="width:25%"><span about="v-wf:NetElement" property="rdfs:label"></span></td>
-  		<td><strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
+  		<td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
   	  </tr>	 
   	</thead>
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
@@ -1135,9 +1189,10 @@ v-wf:ConditionTemplateAsProperties
 		<td about="v-wf:hasFlow" property="rdfs:label"></td>
 		<td about="@" rel="v-wf:hasFlow">
 			<div>
-			    <strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
-			    [<span about="@" property="v-wf:predicate"></span>]
-			    <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a>
+				#<a href="#/@">
+				    <strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
+				    [<span about="@" property="v-wf:predicate"></span>]
+			    </a>
 			</div>
 		</td>
 	</tr>
@@ -1179,7 +1234,7 @@ v-wf:FlowTemplateAsProperties
   	<thead>
   	  <tr>
   		<td style="width:25%"><span about="v-wf:Net" property="rdfs:label"></span></td>
-  		<td><strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
+  		<td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
   	  </tr>	 
   	</thead>
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
@@ -1254,24 +1309,36 @@ v-wf:ProcessPropsTemplate
 	</div>
 	<div id="localVariable">
 		<em><h5 about="v-wf:localVariable" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:localVariable" template="v-wf:VariableTemplate"></li></ol>
+		<span rel="v-wf:localVariable" template="v-wf:VariableTemplate"></span>
 		<hr>
 	</div>
 	<div id="inVars">
 		<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:inVars" template="v-wf:VariableTemplate"></li></ol>
+		<span rel="v-wf:inVars" template="v-wf:VariableTemplate"></span>
 		<hr>
 	</div>
 	<div id="outVars">
 		<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ol>
+		<span rel="v-wf:outVars" template="v-wf:VariableTemplate"></span>
 	</div>
+	<div id="localVars">
+		<em><h5 about="v-wf:localVars" property="rdfs:label"></h5></em>
+		<span rel="v-wf:localVars" template="v-wf:VariableTemplate"></span>
+		<hr>
+	</div>
+	<div id="traceJournal">
+		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
+		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
+		<hr>
+	</div>		
 </div>
 <script>
+	if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
+	if (!individual.hasValue("v-wf:localVariable")) $("#localVariable", template).remove();
 	if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
 	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
-	if (!individual.hasValue("v-wf:localVariable")) $("#localVariable", template).remove();
-	if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
+	if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
+	if (!individual.hasValue("v-wf:localVars")) $("#localVars", template).remove();
 </script>
   """
 .
@@ -1284,28 +1351,34 @@ v-wf:WorkItemTemplate
   v-ui:template """
 <div>
 	<h4><span about="v-wf:WorkItem" property="rdfs:label"></span></h4>
-	<h5><strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong></h5>
+	<h5><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></h5>
 	<hr>
 	<div id="inVars">
 		<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:inVars" template="v-wf:VariableTemplate"></li></ol>
+		<span rel="v-wf:inVars" template="v-wf:VariableTemplate"></span>
 		<hr>
 	</div>
 	<div id="outVars">
 		<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:outVars" template="v-wf:VariableTemplate"></li></ol>
+		<span rel="v-wf:outVars" template="v-wf:VariableTemplate"></span>
 		<hr>
 	</div>
 	<div id="workOrderList">
 		<em><h5 about="v-wf:workOrderList" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:workOrderList" template="v-wf:WorkOrderTemplate"></li></ol>
+		<span rel="v-wf:workOrderList" template="v-wf:WorkOrderTemplate"></span>
 		<hr>		
 	</div>
+	<div id="traceJournal">
+		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
+		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
+		<hr>
+	</div>	
 </div>
 <script>
 	if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
 	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
 	if (!individual.hasValue("v-wf:workOrderList")) $("#workOrderList", template).remove();
+	if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
 </script>
   """ ;
   .
@@ -1349,7 +1422,7 @@ v-wf:WorkOrderTemplate
   v-ui:forClass v-wf:WorkOrder ;
   v-ui:template """
 <div>
-	<strong><span about="@" property="@"></span> <a href="#/individual/@/#main"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
+	<strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
 	<div id="executor">
 		<em about="v-wf:executor" property="rdfs:label"></em>
 		<ul><li rel="v-wf:executor" template="v-ui:ClassNameLabelTemplate"></li></ul>
@@ -1366,13 +1439,19 @@ v-wf:WorkOrderTemplate
 		<em about="v-wf:isProcess" property="rdfs:label"></em>
 		<ul><li rel="v-wf:isProcess" template="v-ui:ClassNameLabelTemplate"></li></ul>
 	</div>
-	<br/>
+	<div id="traceJournal">
+		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
+		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
+		<hr>
+	</div>	
+	<br/>	
 </div>
 <script>
 	if (!individual.hasValue("v-wf:decisionFormList")) $("#decisionFormList", template).remove();
 	if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
 	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
 	if (!individual.hasValue("v-wf:isProcess")) $("#isProcess", template).remove();
+	if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
 </script>
   """ ;
   .
@@ -1385,6 +1464,18 @@ v-wf:DecisionFormTemplate
   rdfs:comment "Пустой шаблон сделан специально, поскольку индивиды этого класса не должны вводиться пользователями"@ru ;
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
+<div>
+	<strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
+	<div id="traceJournal">
+		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
+		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
+		<hr>
+	</div>	
+	<br/>	
+</div>
+<script>
+	if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
+</script>  
   """ ;
   .
 
@@ -1419,6 +1510,7 @@ v-wf:possibleDecisionClass
         rdfs:domain v-wf:DecisionForm ;
         rdfs:range owl:Class ;
 .
+
 v-wf:onDocument
         rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1426,7 +1518,6 @@ v-wf:onDocument
         rdfs:domain v-wf:DecisionForm ;
         rdfs:range rdfs:Resource ;
 .
-        
 v-wf:from
         rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1434,11 +1525,10 @@ v-wf:from
         rdfs:domain v-wf:DecisionForm ;
         rdfs:range v-s:Appointment ;
 .
-
 v-wf:dateGiven
         rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "когда"@ru ;
+        rdfs:label "контрольный срок"@ru ;
         rdfs:domain v-wf:DecisionForm ;
         rdfs:range xsd:dateTime ;
 .
@@ -1465,7 +1555,7 @@ v-wf:processedDocument
 	rdfs:domain v-wf:StartForm ;
 	rdfs:range v-s:Document ;
 .
-
+#-- используется только в тестовом комплексном маршруте --
 v-wf:processInitiator
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1490,7 +1580,7 @@ v-wf:useTransformation
 	rdfs:label "использовать преобразование"@ru ;
 	rdfs:label "use transformation"@en ;
 	rdfs:domain v-wf:StartForm ;
-	rdfs:range v-wf:Process ;
+	rdfs:range v-wf:Transform ;
 .
 
 # --------------------------- Mapping to variable ---------------------------
@@ -1571,7 +1661,7 @@ v-wf:create
         rdfs:range xsd:string ;
 .
 
-v-wf:agregate
+v-wf:aggregate
         rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
         rdfs:label "выражение для размещения элемента в обьекте"@ru ;
@@ -1606,6 +1696,15 @@ v-wf:inVars
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "входящие переменные"@ru ;
+	rdfs:domain v-wf:Process ;
+	rdfs:domain v-wf:WorkItem ;
+	rdfs:range v-wf:Variable ;
+.
+
+v-wf:localVars
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "локальные переменные"@ru ;
 	rdfs:domain v-wf:Process ;
 	rdfs:domain v-wf:WorkItem ;
 	rdfs:range v-wf:Variable ;
@@ -1804,6 +1903,20 @@ v-wf:DecisionAgreed
 	rdfs:label "согласовано"@ru ;
 .	
 
+v-wf:DecisionAgreedToProject
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "согласовано в проект"@ru ;
+.	
+
+v-wf:DecisionAgreedToExecute
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "согласовано в реализацию"@ru ;
+.	
+
 v-wf:DecisionSign
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1907,6 +2020,7 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionRejected ;
   v-ui:forClass v-wf:DecisionRemake ;
   v-ui:forClass v-wf:DecisionNotPerformed ;
+  v-ui:forClass v-wf:DecisionAgreedToProject ;  
   v-ui:template """
 <div>
 	<br>
@@ -1944,6 +2058,7 @@ v-wf:DecisionRedirectTemplateSpec2
   v-ui:forClass v-wf:DecisionBreak ;
   v-ui:forClass v-wf:DecisionExamined ;
   v-ui:forClass v-wf:DecisionAchieved ;
+  v-ui:forClass v-wf:DecisionAgreedToProject ;   
 .
 
 v-wf:DecisionRedirectTemplateSpec3
@@ -1952,6 +2067,7 @@ v-wf:DecisionRedirectTemplateSpec3
   rdfs:label "Спецификация свойств для класса -Перенаправить другому-"@ru ;
   rdfs:label "Spec for template for -Decision Redirect- class"@en ;
   v-ui:forClass v-wf:DecisionRedirect ;
+  v-ui:forClass v-wf:DecisionAgreedToExecute ;   
   v-ui:forProperty v-wf:to, rdfs:comment ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
@@ -2041,6 +2157,28 @@ v-wf:SubProcessStarted
   rdfs:label "Запущен подпроцесс"@ru ;
   rdfs:label "Subprocess started"@en ;
 .
+
+v-wf:WorkItemStarted
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:JournalRecord ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "WorkItem Started"@en ;
+.
+
+v-wf:DecisionFormStarted
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:JournalRecord ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Decision Form Started"@en ;
+.
+
+v-wf:WorkOrderStarted
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:JournalRecord ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "WorkOrder Started"@en ;
+.
+
 v-wf:ProcessCompleted
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
@@ -2062,6 +2200,12 @@ v-wf:TaskCompleted
   rdfs:label "Выполнена задача"@ru ;
   rdfs:label "Task completed"@en ;
 .
+v-wf:TraceRecord
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:JournalRecord ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Trace Record"@en ;
+.
 v-wf:takenDecision
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:JournalRecord ;
@@ -2072,3 +2216,288 @@ v-wf:WorkflowReadUser
   rdfs:label "Workflow Read User"@en ;
   rdfs:label "Пользователи имеющие право на чтение обьектов workflow"@ru ;
 .
+
+v-wf:traceJournal
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:domain v-wf:DecisionForm ;
+  rdfs:domain v-wf:WorkItem ;
+  rdfs:domain v-wf:WorkOrder ;
+  rdfs:domain v-wf:Process ;
+  rdfs:label "системный журнал"@ru ;
+  rdfs:range v-s:Journal ;
+.
+
+
+#################################################################################### JOURNAL UI
+v-ui:TaskGivenTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон события по задаче"@ru ;
+  rdfs:label "Task event template"@en ;
+  v-ui:forClass v-wf:TaskGiven ;
+  v-ui:template """
+<div class="journal-record">
+  <hr class="margin-sm">
+  <div class="row">
+	<div class="col-md-3 col-sm-3 event-type">
+	  <span rel="rdf:type" template="v-ui:LabelTemplate"></span>
+	</div>
+	<div class="col-md-7 col-sm-6 event-desc">
+	  <div property="rdfs:label"></div>
+      <span id="executor">
+        <span about="v-wf:executor" property="rdfs:label"></span>: 
+	    <em rel="v-wf:executor" template="v-ui:LabelTemplate"></em>
+	  </span>
+	</div>
+	<div class="col-md-2 col-sm-3 event-date text-right">
+	  <span property="v-s:created"></span>
+	</div>
+  </div>
+</div>
+<script>
+  if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
+</script>
+  """ ;
+.
+v-ui:TaskCompletedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон события по задаче"@ru ;
+  rdfs:label "Task event template"@en ;
+  v-ui:forClass v-wf:TaskCompleted ;
+  v-ui:template """
+<div class="journal-record">
+  <hr class="margin-sm">
+  <div class="row">
+	<div class="col-md-3 col-sm-3 event-type">
+	  <span rel="rdf:type" template="v-ui:LabelTemplate"></span>
+	</div>
+	<div class="col-md-7 col-sm-6 event-desc">
+	  <div property="rdfs:label"></div>
+      <span id="executor">
+        <span about="v-wf:executor" property="rdfs:label"></span>: 
+	    <em rel="v-wf:executor" template="v-ui:LabelTemplate"></em>
+	  </span>
+      <div id="decision">
+        <span about="v-wf:takenDecision" property="rdfs:label"></span>: 
+	    <em rel="v-wf:takenDecision">
+	      <span>
+			<strong property="rdfs:label"></strong>, <span property="rdfs:comment"></span>
+		  </span>
+	    </em>
+	  </div>
+	</div>
+	<div class="col-md-2 col-sm-3 event-date text-right">
+	  <span property="v-s:created"></span>
+	</div>
+  </div>
+</div>
+<script>
+  if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
+  if (!individual.hasValue("v-wf:takenDecision")) $("#decision", template).remove();
+</script>
+  """ ;
+.
+v-ui:ProcessEventTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон события процесса"@ru ;
+  rdfs:label "Process event template"@en ;
+  v-ui:forClass v-wf:ProcessStarted, v-wf:ProcessCompleted ;
+  v-ui:template """
+<div class="journal-record">
+  <hr class="margin-sm">
+  <div class="row">
+	<div class="col-md-3 col-sm-3 event-type">
+	  <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong>
+	</div>
+	<div class="col-md-7 col-sm-6 event-desc">
+	  <div property="rdfs:label"></div>
+      <span id="initiator">
+        <span about="v-wf:initiator" property="rdfs:label"></span>: 
+	    <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
+	  </span>
+	</div>
+	<div class="col-md-2 col-sm-3 event-date text-right">
+	  <span property="v-s:created"></span>
+	</div>
+  </div>
+</div>
+<script>
+  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
+</script>
+  """ ;
+.
+
+v-ui:SubProcessStartedEventTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон события запуска подпроцесса"@ru ;
+  rdfs:label "Subprocess start event template"@en ;
+  v-ui:forClass v-wf:SubProcessStarted ;
+  v-ui:template """
+<div class="journal-record">
+  <hr class="margin-sm">
+  <div class="row">
+	<div class="col-md-3 col-sm-3 event-type">
+	  <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
+	</div>
+	<div class="col-md-7 col-sm-6 event-desc">
+	  <div property="rdfs:label"></div>
+	  <span id="initiator">
+        <span about="v-wf:initiator" property="rdfs:label"></span>: 
+	    <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
+	  </span>
+	</div>
+	<div class="col-md-2 col-sm-3 event-date text-right">
+	  <span property="v-s:created"></span>
+	</div>
+  </div>
+  <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
+</div>
+<script>
+  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
+  $("#exp", template).click(function (e) {
+    e.preventDefault();
+    $("div[rel='v-s:subJournal']", template).toggle();
+    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+  });
+</script>
+  """ ;
+.
+
+v-ui:WorkItemStartedEventTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон обработки work item"@ru ;
+  v-ui:forClass v-wf:WorkItemStarted ;
+  v-ui:template """
+<div class="journal-record">
+  <hr class="margin-sm">
+  <div class="row">
+	<div class="col-md-3 col-sm-3 event-type">
+	  <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
+	</div>
+	<div class="col-md-7 col-sm-6 event-desc">
+	  <div property="rdfs:label"></div>
+	  <span id="initiator">
+        <span about="v-wf:initiator" property="rdfs:label"></span>: 
+	    <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
+	  </span>
+	</div>
+	<div class="col-md-2 col-sm-3 event-date text-right">
+	  <span property="v-s:created"></span>
+	</div>
+  </div>
+  <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
+</div>
+<script>
+  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
+  $("#exp", template).click(function (e) {
+    e.preventDefault();
+    $("div[rel='v-s:subJournal']", template).toggle();
+    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+  });
+</script>
+  """ ;
+.
+
+v-ui:WorkOrderStartedEventTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон обработки work item"@ru ;
+  v-ui:forClass v-wf:WorkOrderStarted ;
+  v-ui:template """
+<div class="journal-record">
+  <hr class="margin-sm">
+  <div class="row">
+        <div class="col-md-3 col-sm-3 event-type">
+          <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
+        </div>
+        <div class="col-md-7 col-sm-6 event-desc">
+          <div property="rdfs:label"></div>
+          <span id="initiator">
+        <span about="v-wf:initiator" property="rdfs:label"></span>:
+            <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
+          </span>
+        </div>
+        <div class="col-md-2 col-sm-3 event-date text-right">
+          <span property="v-s:created"></span>
+        </div>
+  </div>
+  <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
+</div>
+<script>
+  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
+  $("#exp", template).click(function (e) {
+    e.preventDefault();
+    $("div[rel='v-s:subJournal']", template).toggle();
+    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+  });
+</script>
+  """ ;
+.
+
+v-ui:DecisionFormStartedEventTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон обработки work item"@ru ;
+  v-ui:forClass v-wf:DecisionFormStarted ;
+  v-ui:template """
+<div class="journal-record">
+  <hr class="margin-sm">
+  <div class="row">
+        <div class="col-md-3 col-sm-3 event-type">
+          <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
+        </div>
+        <div class="col-md-7 col-sm-6 event-desc">
+          <div property="rdfs:label"></div>
+          <span id="initiator">
+        <span about="v-wf:initiator" property="rdfs:label"></span>:
+            <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
+          </span>
+        </div>
+        <div class="col-md-2 col-sm-3 event-date text-right">
+          <span property="v-s:created"></span>
+        </div>
+  </div>
+  <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
+</div>
+<script>
+  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
+  $("#exp", template).click(function (e) {
+    e.preventDefault();
+    $("div[rel='v-s:subJournal']", template).toggle();
+    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+  });
+</script>
+  """ ;
+.
+
+
+v-ui:TraceEventTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Trace event template"@en ;
+  v-ui:forClass v-wf:TraceRecord;
+  v-ui:template """
+<div class="journal-record">
+  <style>
+    pre {font-size:10px;}
+  </style>
+  <hr class="margin-sm">
+  <div class="row">
+	<div class="col-md-3 col-sm-3 event-type">
+	  <span property="rdfs:label"></span>
+	</div>
+	<div class="col-md-7 col-sm-6 event-desc">
+	  <pre property="rdfs:comment"></pre>
+	</div>
+	<div class="col-md-2 col-sm-3 event-date text-right">
+	  <span property="v-s:created"></span>
+	</div>
+  </div>
+</div>
+<script>
+  var pre = $("pre", template),
+      txt = pre.text(),
+      re = new RegExp('"([\\w-]+:[\\w-]+)"','g'),
+      txt2 = txt.replace(re, "<a href='#/$1'>'$1'</a>");
+  pre.html(txt2);
+</script>
+  """ ;
+.
+

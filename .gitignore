@@ -4,7 +4,7 @@
 *.log
 data
 pacahon-properties.json
-veda.app
+veda
 dub
 veda.geany
 m.sh
@@ -13,3 +13,11 @@ dub.selections.json
 /docs/
 /node_modules/
 /veda-pid
+/doc/
+/.externalToolBuilders/
+/bin/
+/*.rf
+/*.app
+/*.dprojectoptions
+/*.buildpath
+veda.properties

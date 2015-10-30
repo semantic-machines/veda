@@ -2,7 +2,6 @@
 
 veda.Module(function UserPresenter(veda) { "use strict";
 
-	var userTemplate = $("#user-template").html();
 	var languageTemplate = $("#language-template").html();
 	var userInfo = $("#user-info");
 	var languageSelector = $("#preferred-language");
@@ -17,6 +16,7 @@ veda.Module(function UserPresenter(veda) { "use strict";
 		languageSelector.html(languages);
 		
 		// Render user
+		userInfo.empty();
 		var userTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
 		veda.user.present(userInfo, userTmpl);
 
@@ -29,6 +29,11 @@ veda.Module(function UserPresenter(veda) { "use strict";
 			});
 		});
 
+	});
+
+	veda.on("login:failed", function () {
+		userInfo.empty();
+		languageSelector.empty();
 	});
 	
 });

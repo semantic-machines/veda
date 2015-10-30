@@ -15,13 +15,13 @@
 		<meta http-equiv="cache-control" content="no-cache" />
 	</head>
 	<body style="padding: 0px 0px 30px;">
-
-		<nav role="navigation" class="navbar navbar-inverse" id="navigation">
-			<div class="container-fluid">
-				<a href="/#/" class="navbar-brand"><img src="/img/veda-logo.png" style="position:relative; top:-3px"/></a>
+		<nav role="navigation" class="navbar" id="navigation">
+			<div class="container-fluid" id="nav-container">
+				<a class="navbar-brand" href="#">
+					<img alt="Mondi" src="./img/mondi-sm.png">
+				</a>
 			</div>
 		</nav>
-
         <div id="qunit-testrunner-toolbar">
         </div>
         <h2 id="qunit-userAgent"></h2>
@@ -55,6 +55,21 @@
 		<script src="/js/common/util.js" data-cover></script>
 
 		<!-- Veda browser only -->
+		<script>
+			var veda = riot.observable({});
+			(function (veda) { "use strict";
+				veda.Module = riot.observable(function(arg) {
+					if (typeof arg == 'function') {
+						veda.Module.on("ready", arg);
+					} else {
+						veda.on("ready", function() {
+							veda.Module.trigger("ready", veda);
+						});
+						veda.trigger("ready");
+					}
+				});
+			})(veda);
+		</script>
 		<script src="/js/browser/backend.js" data-cover></script>
 		
 		<!-- QUNIT tests -->
@@ -65,6 +80,7 @@
 		<script src="./js/test/test_individuals.js"></script>
 		<script src="./js/test/stress_test_docflow.js"></script>
 		<script>
+			veda.Module();
 			QUnit.jUnitReport = function(report) {
 			    console.log(report.xml);
 			};

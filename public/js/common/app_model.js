@@ -27,16 +27,14 @@
 		};
 		
 		self.logout = function() {
-			self.off("*");
-			self = undefined;
-			veda = new Veda(config);
+			self.user_uri = self.ticket = self.end_time = "";
+			self.cache = {};
+			self.ontology = {};
+			self.trigger("login:failed");
 		};
 		
 		self.load = function (page, params) {
 			switch (page) {
-				case "individual":
-					veda.Util.construct(veda.IndividualModel, params);
-					break;
 				case "console":
 					veda.Util.construct(veda.ConsoleModel, params);
 					break;
@@ -46,6 +44,9 @@
 				case "graph":
 					self.trigger.apply(self, ["load:graph"].concat(params));
 					break;
+				default:
+					if (!params[0]) { params[0] = "#main"; }
+					veda.Util.construct(veda.IndividualModel, [page].concat(params));
 			}
 		};
 		
@@ -55,6 +56,16 @@
 			self.user = new veda.UserModel(self.user_uri);
 			self.trigger("started");
 		};
+		
+		self.on("error", function (error) {
+			switch (error.status) {
+				case 471: 
+					self.logout(); 
+					break;
+				default: 
+					console.log ? console.log("Error:", JSON.stringify(error)) : null;
+			}
+		});
 		
 		return self;
 	};

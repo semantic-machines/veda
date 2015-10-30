@@ -1,0 +1,99 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
+
+<http://semantic-machines.com/veda/veda-function-tasks>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system function 'Tasks' ontology"@en ;
+  rdfs:label "Онтология функции 'Задачи' системы Веда"@ru ;
+  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
+  owl:imports <http://semantic-machines.com/veda/veda-ui> ;
+  owl:imports rdf: ;
+  owl:imports rdfs: ;
+  owl:imports <http://www.w3.org/2002/07/owl> ;
+  owl:versionInfo "0.1" ;
+.
+
+########## TASKS FUNCTION ###########
+
+v-ft:FunctionTasks
+  rdf:type owl:Class ;
+  rdfs:label "Function Inbox"@en ;
+  rdfs:label "Функция Входящие"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-ft:query
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:FunctionTasks ;
+  rdfs:range xsd:string ;
+.
+v-ft:FunctionTasksModel
+  rdf:type v-s:ClassModel ;
+  rdfs:label "v-ft:FunctionTasks class template"@en ;
+  rdfs:label "Шаблон для класса v-ft:FunctionTasks"@ru ;
+  v-ui:forClass v-ft:FunctionTasks ;
+  v-s:script """
+	var q = individual["v-ft:query"][0].replace("$1", veda.appointment ? veda.appointment.id : veda.user.id);
+	individual["v-ft:query"] = [q];
+  """
+.
+v-ft:Inbox
+  rdf:type v-ft:FunctionTasks ;
+  rdfs:label "Inbox"@en ;
+  rdfs:label "Входящие"@ru ;
+  v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$1'"^^xsd:string ;
+.
+v-ft:Outbox
+  rdf:type v-ft:FunctionTasks ;
+  rdfs:label "Outbox"@en ;
+  rdfs:label "Исходящие"@ru ;
+  v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$1'"^^xsd:string ;
+.
+v-ft:Completed
+  rdf:type v-ft:FunctionTasks ;
+  rdfs:label "Completed"@en ;
+  rdfs:label "Выполненные"@ru ;
+  v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$1'"^^xsd:string ;  
+.
+v-ft:TasksNotFound
+  rdf:type v-b:Bundle ;
+  rdfs:label "Tasks not found"@en ;
+  rdfs:label "Задачи не найдены"@ru ;
+.
+v-ft:FunctionTasksTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "v-ft:FunctionInbox class template"@en ;
+  rdfs:label "Шаблон для класса v-ft:FunctionInbox"@ru ;
+  v-ui:forClass v-ft:FunctionTasks ;
+  v-ui:template """
+<div class="container-fluid">
+	<h3 property="rdfs:label"></h3>
+	<ul id="tasks">
+		<li about="v-ft:TasksNotFound" property="rdfs:label"></li>
+	</ul>
+</div>
+<script>
+	var tasks = new veda.IndividualModel();
+	tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
+	tasks["v-fs:fulltextQuery"] = individual["v-ft:query"].slice(0);
+	var result = tasks.search();
+	var tmpl = new veda.IndividualModel("v-ui:LabelLinkTemplate");
+	var cnt = $("#tasks", template);
+	if (result.length) {
+		cnt.empty();
+		result.map(function (uri) {
+			var res_cnt = $("<li>");
+			var ind = new veda.IndividualModel(uri);
+			ind.present(res_cnt, tmpl);
+			cnt.append(res_cnt);
+		});
+	}
+</script>
+  """ ;
+.
