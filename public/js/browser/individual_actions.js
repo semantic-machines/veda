@@ -95,7 +95,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			individual.on("draft", function () {
 				if (!individual.hasValue('v-s:isDraftOf')) {
 					// If `v-s:isDraftOf` is empty, then current individual is "draftonly" individual
-					individual['v-s:isDraftOf'] = [individual.id];
+					individual['v-s:isDraftOf'] = [individual];
 				}
 				individual.save();
 				template.trigger("view");

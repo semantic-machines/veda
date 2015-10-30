@@ -1463,7 +1463,7 @@ v-s:DocumentLinkRulesTemplate
 """ ;
 .
 
-v-s:hasNumeratorMapper
+v-s:hasNumerationMapper
   rdf:type owl:ObjectProperty ;
   rdfs:domain owl:DatatypeProperty ;
   rdfs:label "ссылка на связку: тип индивида + правило нумерации"@ru ;
@@ -1482,7 +1482,7 @@ v-s:numerationClass
   rdfs:label "link to numeration rule"@en ;
   rdfs:range owl:Class;
 .
-v-s:hasNumeratorRule
+v-s:hasNumerationRule
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:NumerationMapper ;
   rdfs:label "ссылка на правило нумерации"@ru ;
@@ -1494,14 +1494,14 @@ v-s:NumerationRule
   rdfs:label "Numeration rule"@en ;
   rdfs:label "Правило автонумерации"@ru ;
 .
-v-s:numeratorScope
+v-s:numerationScope
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:NumerationRule ;
   rdfs:label "скрипт, возвращает пространство нумерации"@ru ;
   rdfs:label "script, returns numeration scope"@en ;
   rdfs:range xsd:string ;
 .
-v-s:numeratorGetNextValue
+v-s:numerationGetNextValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:NumerationRule ;
   rdfs:label "скрипт, возвращает следующее незанятое значение из пространства нумерации"@ru ;
@@ -1513,7 +1513,7 @@ v-s:NumerationScope
   rdfs:label "Numeration scope"@en ;
   rdfs:label "Пространство автонумерации"@ru ;
 . 
-v-s:numeratorCommitedInterval
+v-s:numerationCommitedInterval
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:NumerationScope ;
   rdfs:range v-s:NumerationCommitedInterval;  
@@ -1525,119 +1525,66 @@ v-s:NumerationCommitedInterval
   rdfs:label "Numeration commited interval"@en ;
   rdfs:label "Занятый интервал"@ru ;
 . 
-v-s:numeratorCommitedIntervalBegin
+v-s:numerationCommitedIntervalBegin
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:NumerationCommitedInterval ;
-  rdfs:label "начало занятого интервала нумератора"@ru ;
-  rdfs:label "numerator commited interval begin"@en ;
+  rdfs:label "начало занятого интервала нумерации"@ru ;
+  rdfs:label "numeration commited interval begin"@en ;
   rdfs:range xsd:integer ;
 .
-v-s:numeratorCommitedIntervalEnd
+v-s:numerationCommitedIntervalEnd
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:NumerationCommitedInterval ;
-  rdfs:label "конец занятого интервала нумератора"@ru ;
-  rdfs:label "numerator commited interval end"@en ;
+  rdfs:label "конец занятого интервала нумерации"@ru ;
+  rdfs:label "numeration commited interval end"@en ;
   rdfs:range xsd:integer ;
 .
-v-s:SimpleNumerator
+v-s:SimpleNumeration
   rdf:type v-s:NumerationRule ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Нумератор в пределах шаблона"@ru ;
-  rdfs:label "Numerator with type as scope"@en ;
-  v-s:numeratorScope """
+  rdfs:label "Нумерация в пределах шаблона"@ru ;
+  rdfs:label "Numeration with type as scope"@en ;
+  v-s:numerationScope """
 (function (ticket, individual) 
 {
     if (!individual['rdf:type']) return '';
-	return "numerator-scope:"+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id);
+	return "numeration-scope:"+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id);
 })
 """ ;
-  v-s:numeratorGetNextValue """  
+  v-s:numerationGetNextValue """  
 (function getNextValue(ticket, scope) {
- 	if (typeof scope == 'string') 
- 	{
- 		scope = new veda.IndividualModel(scope, undefined, undefined, undefined, false);
- 	}
-    if (typeof scope === 'undefined' 
-        || !scope['v-s:numeratorCommitedInterval'])
-    {
-       return 1;    
-    }    
-    var max = 0;
-    
-	if (typeof window === 'undefined') 
-	{
-		scope['v-s:numeratorCommitedInterval'].forEach(function(interval) 
-		{
-			interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
-			if (interval['v-s:numeratorCommitedIntervalEnd'][0].data > max) 
-			{
-				max = interval['v-s:numeratorCommitedIntervalEnd'][0].data; 
-			}			
-		});
-	} else 
-	{
-		scope['v-s:numeratorCommitedInterval'].forEach(function(interval) 
-		{
-			interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
-			console.log(interval);
-			if (interval['v-s:numeratorCommitedIntervalEnd'][0] > max) 
-			{
-				max = interval['v-s:numeratorCommitedIntervalEnd'][0]; 
-			}			
-		});
-	}
-	return max+1;
+	return getNextValueSimple(ticket, scope, 1);
 })
 """ ;  
 .
-v-s:YearNumerator8
+v-s:YearNumeration8
   rdf:type v-s:NumerationRule ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Нумератор в пределах шаблона"@ru ;
-  rdfs:label "Numerator with type as scope"@en ;
-  v-s:numeratorScope """
+  rdfs:label "Нумерация в пределах шаблона"@ru ;
+  rdfs:label "Numeration with type as scope"@en ;
+  v-s:numerationScope """
 (function (ticket, individual) 
 {
     if (!individual['rdf:type']) return '';
-	return "numerator-scope:"+(new Date()).getFullYear()+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id);
+	return "numeration-scope:"+(new Date()).getFullYear()+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id);
 })
 """ ;
-  v-s:numeratorGetNextValue """  
+  v-s:numerationGetNextValue """  
 (function getNextValue(ticket, scope) {
- 	if (typeof scope == 'string') 
- 	{
- 		scope = new veda.IndividualModel(scope, undefined, undefined, undefined, false);
- 	}
-    if (typeof scope === 'undefined' 
-        || !scope['v-s:numeratorCommitedInterval'])
-    {
-       return (new Date()).getFullYear()*10000+1;    
-    }    
-    var max = 0;
-    
-	if (typeof window === 'undefined') 
-	{
-		scope['v-s:numeratorCommitedInterval'].forEach(function(interval) 
-		{
-			interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
-			if (interval['v-s:numeratorCommitedIntervalEnd'][0].data > max) 
-			{
-				max = interval['v-s:numeratorCommitedIntervalEnd'][0].data; 
-			}			
-		});
-	} else 
-	{
-		scope['v-s:numeratorCommitedInterval'].forEach(function(interval) 
-		{
-			interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
-			console.log(interval);
-			if (interval['v-s:numeratorCommitedIntervalEnd'][0] > max) 
-			{
-				max = interval['v-s:numeratorCommitedIntervalEnd'][0]; 
-			}			
-		});
-	}
-	return max+1;
+	return getNextValueSimple(ticket, scope, (new Date()).getFullYear()*10000+1);
 })
 """ ;  
+.
+v-a:NumerationEvent
+  rdf:type v-s:Event ;
+  v-s:author v-a:VedaSystemAccount ;
+  v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:script """
+  if (!document['v-s:isDraftOf'] || document['v-s:isDraftOf'].length==0) {
+	  print("NUMERATION EVENT"); 
+	  var result = numerate(ticket, document, prev_state, _event_id);
+	  print("RESULT : " +toJson(result));
+  }
+"""
 .

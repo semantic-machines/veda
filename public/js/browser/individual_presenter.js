@@ -106,7 +106,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Additional buttons change for drafts 
 		if (individual.is('v-s:DraftAllowed')) {
 			// If individual is draft
-			if (individual.hasValue('v-s:isDraftOf')) {			
+			if (individual.hasValue('v-s:isDraftOf') || individual.hasValue('v-s:hasDraft')) {			
 				//Put link to actual version
 				
 				//Rename edit button
@@ -648,12 +648,23 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					draft.present(container, undefined, "edit");
 				} else 
 				{
-					// Create new draft
-					var clone = individual.clone();
-					clone['v-s:hasDraft'] = [];
-					clone['v-s:isDraftOf'] = [individual];
-					container.empty();
-					clone.present(container, undefined, "edit");
+					if (individual.hasValue('v-s:isDraftOf') && individual.id == individual['v-s:isDraftOf'][0].id) {
+						// Individual is draft itself
+						template.addClass("mode-edit").removeClass("mode-view mode-search");
+					} else {
+						// Create new draft
+						var clone = individual.clone();
+						clone['v-s:hasDraft'] = [];
+						clone['v-s:isDraftOf'] = [individual];
+						clone.save();
+	
+						// Add link to draft
+						individual['v-s:hasDraft'] = [clone];
+						individual.save();
+						
+						container.empty();
+						clone.present(container, undefined, "edit");
+					}
 				}
 			});
 			

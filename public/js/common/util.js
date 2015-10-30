@@ -572,3 +572,53 @@ function transformation(ticket, individuals, transform, executor, work_order)
 	}
   }
 }
+
+
+/**
+ * General function for getNextValue method for numerators
+ * 
+ * @param ticket
+ * @param scope - numerator scope
+ * @param FIRST_VALUE - first value in scope
+ * @returns
+ */
+function getNextValueSimple(ticket, scope, FIRST_VALUE) {
+	if (typeof scope == 'string') 
+	{
+		try { 	
+			scope = new veda.IndividualModel(scope, undefined, undefined, undefined, false);
+		} catch (e) {
+			return FIRST_VALUE;	
+		}
+	}
+	if (typeof scope === 'undefined' 
+	    || !scope['v-s:numerationCommitedInterval'])
+	{
+	   return FIRST_VALUE;    
+	}        
+	var max = 0;
+	
+	if (typeof window === 'undefined') 
+	{
+		scope['v-s:numerationCommitedInterval'].forEach(function(interval) 
+		{
+			interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
+			if (interval['v-s:numerationCommitedIntervalEnd'][0].data > max) 
+			{
+				max = interval['v-s:numerationCommitedIntervalEnd'][0].data; 
+			}			
+		});
+	} else 
+	{
+		scope['v-s:numerationCommitedInterval'].forEach(function(interval) 
+		{
+			interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
+			console.log(interval);
+			if (interval['v-s:numerationCommitedIntervalEnd'][0] > max) 
+			{
+				max = interval['v-s:numerationCommitedIntervalEnd'][0]; 
+			}			
+		});
+	}
+	return max+1;
+}
