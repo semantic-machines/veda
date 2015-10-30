@@ -343,6 +343,26 @@ v-s:Versioned
   rdfs:label "Версионная сущность"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
+v-s:DraftAllowed
+  rdf:type owl:Class ;
+  rdfs:label "Draft allowed"@en ;
+  rdfs:label "Возможно создание черновика"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+v-s:hasDraft
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:DraftAllowed ;
+  rdfs:label "has draft"@en ;
+  rdfs:label "имеет черновик"@ru ;
+  rdfs:range v-s:DraftAllowed ;
+.
+v-s:isDraftOf
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:DraftAllowed ;
+  rdfs:label "is draft of"@en ;
+  rdfs:label "является черновиком"@ru ;
+  rdfs:range v-s:DraftAllowed ;
+.
 v-s:Exportable
   rdf:type owl:Class ;
   rdfs:label "Exportable thing"@en ;
@@ -531,6 +551,14 @@ v-s:published
   rdfs:label "date published"@en ;
   rdfs:label "дата публикации"@ru ;
   rdfs:range xsd:dateTime ;
+.
+
+v-s:publisher
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Document ;
+  rdfs:label "publisher"@en ;
+  rdfs:label "издатель (автор публикации)"@ru ;
+  rdfs:range v-s:Appointment ;
 .
 
 v-s:dateTo

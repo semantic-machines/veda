@@ -377,6 +377,19 @@ veda.Module(function (veda) { "use strict";
 
 	/**
 	 * @method
+	 * @param {String} id of class to check
+	 * @return {boolean} is individual rdf:type subclass of requested class 
+	 */
+	proto.is = function (classId) {
+		var type = veda.ontology[this['rdf:type'][0].id];
+		for (var key in type['rdfs:subClassOf']) {
+			if (type['rdfs:subClassOf'][key].id == classId) return true;
+		}
+		return false;
+	};
+
+	/**
+	 * @method
 	 * Initialize individual with class specific domain properties and methods
 	 */
 	proto.init = function () {

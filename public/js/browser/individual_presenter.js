@@ -103,6 +103,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Unwrapped templates support
 		var wrapper = $("<div>").append(template);
 
+		// Additional buttons change for drafts 
+		if (individual.is('v-s:DraftAllowed')) {
+			// If individual is draft
+			if (individual.hasValue('v-s:isDraftOf')) {			
+				//Put link to actual version
+				
+				//Rename edit button
+				$('#edit', wrapper).attr('about', 'v-b:ContinueEdit');
+				
+				//Hide send button
+				$('#send', wrapper).remove();
+			} 
+		}
+		
 		// Cleanup memory
 		/*template.on("remove", function (event) {
 			$(".typeahead", wrapper).typeahead("destroy");
@@ -616,6 +630,56 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			
 		});
+		
+		if (individual.is('v-s:DraftAllowed')) {
+			
+			if (individual.hasValue('v-s:isDraftOf')) {			
+				//Put draft sign
+				$('[about="'+individual.id+'"][property="rdfs:label"]', wrapper).append('<span class="glyphicon glyphicon-pencil draftsign" style="font-size: 10px;">');
+			}
+			
+			$edit.unbind("click");
+			$edit.on("click", function (e) {
+				// Go to edit draft instead of edit individual
+				if (individual.hasValue('v-s:hasDraft')) {
+					// Go to already existed draft
+					var draft = new veda.IndividualModel(individual['v-s:hasDraft'][0].id);
+					container.empty();
+					draft.present(container, undefined, "edit");
+				} else 
+				{
+					// Create new draft
+					var clone = individual.clone();
+					clone['v-s:hasDraft'] = [];
+					clone['v-s:isDraftOf'] = [individual];
+					container.empty();
+					clone.present(container, undefined, "edit");
+				}
+			});
+			
+			// Remove edit button if no rights to edit draft
+			if (individual.hasValue('v-s:hasDraft')) {
+				var draft = new veda.IndividualModel(individual['v-s:hasDraft'][0].id);
+				if ($edit.length   && !(draft.rights.hasValue("v-s:canUpdate") && draft.rights["v-s:canUpdate"][0] == true) ) $edit.remove();
+			}
+			
+			$save.unbind("click");
+			$save.on("click", function (e) {
+				if (individual.is('v-s:Versioned')) {
+					if (individual.hasValue('v-s:hasDraft')) {
+						
+						
+					}
+				} else {
+					var draftId = individual.id;
+					individual['v-s:hasDraft'] = [];
+					var originalId = individual['v-s:isDraftOf'][0].id;
+					individual.id = originalId;
+					individual.save();
+					
+				}
+			});
+		}
 
 		return template;
 	}
