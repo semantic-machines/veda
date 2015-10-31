@@ -33,7 +33,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ proccess_name, "log", "ACL");
+        _log = new logger("veda-core-" ~ process_name, "log", "ACL");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -185,7 +185,6 @@ class Authorization : LmdbStorage
         string  str;
         int     rc;
 
-//        context.check_for_reload("search", &reopen_db);
         context.ft_check_for_reload(&reopen_db);
 
         if (db_is_open.get(path, false) == false)
@@ -394,10 +393,12 @@ void acl_manager(string thread_name, string db_path)
                         storage.flush(1);
                     }
                 },
-                (CMD cmd, EVENT type, string msg)
+                (CMD cmd, EVENT type, string msg, long op_id)
                 {
                     if (cmd == CMD.PUT)
                     {
+                    	set_acl_manager_op_id (op_id);
+                    	
                         Individual ind;
                         if (cbor2individual(&ind, msg) < 0)
                         {

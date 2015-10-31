@@ -17,7 +17,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ proccess_name, "log", "SEARCH");
+        _log = new logger("veda-core-" ~ process_name, "log", "SEARCH");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -33,58 +33,6 @@ interface SearchReader
     public void reopen_db();
 }
 
-/*
-   class XapianSynchronizedReader : SearchReader
-   {
-    private Context context;
-
-    this(Context _context)
-    {
-        context = _context;
-    }
-
-    public int get(Ticket *ticket, string str_query, string fields, string sort, int count_authorize,
-                   void delegate(string uri, string cbor_subject) add_out_element)
-    {
-        if (str_query is null)
-            return 0;
-
-   //      writeln ("@ XapianSynchronizedReader.get #1");
-        Tid tid_subject_manager = context.getTid(P_MODULE.subject_manager);
-
-        send(context.getTid(P_MODULE.xapian_indexer), CMD.FIND, str_query, fields, sort, count_authorize, thisTid);
-
-        bool next_recieve = true;
-        int  read_count;
-        while (next_recieve)
-        {
-            receive(
-                    (CMD cmd)
-                    {
-                        if (cmd == CMD.END_DATA)
-                        {
-                            next_recieve = false;
-                        }
-                    },
-                    (CMD cmd, string msg)
-                    {
-                        if (cmd == CMD.PUT)
-                        {
-                            if (tid_subject_manager != Tid.init)
-                            {
-                                // writeln("msg:", msg);
-                                add_out_element(uri, msg);
-                                read_count++;
-                            }
-                        }
-                    });
-        }
-
-   //      writeln ("@ XapianSynchronizedReader.get #end");
-        return read_count;
-    }
-   }
- */
 class Database_QueryParser
 {
     XapianDatabase    db;
@@ -138,8 +86,6 @@ class XapianReader : SearchReader
     public int get(Ticket *ticket, string str_query, string str_sort, string _db_names, int count_authorize,
                    void delegate(string uri) add_out_element, bool inner_get)
     {
-//        context.check_for_reload("search", &reopen_db);
-
         context.ft_check_for_reload(&reopen_db);
 
         int[ string ] key2slot = context.get_key2slot();
@@ -236,6 +182,12 @@ class XapianReader : SearchReader
         {
             xapian_enquire = db_qp.db.new_Enquire(&err);
 
+            if (err < 0)
+            {
+                log.trace("ERR! xapian_reader:get err=%s", get_xapian_err_msg(err));
+                return 0;
+            }
+
             XapianMultiValueKeyMaker sorter = get_sorter(str_sort, key2slot);
 
             xapian_enquire.set_query(query, &err);
@@ -295,23 +247,28 @@ class XapianReader : SearchReader
             foreach (el; db_names)
             {
                 XapianDatabase _db = open_db(el);
-                dbqp.db.add_database(_db, &err);
-                if (err != 0)
-                    writeln("xapian_reader:add_database:err", err);
+                if (_db !is null)
+                {
+                    dbqp.db.add_database(_db, &err);
+                    if (err != 0)
+                        log.trace("xapian_reader:add_database:err=%s", get_xapian_err_msg(err));
+                }
+                else
+                    log.trace("xapian_reader:add_database:db not opened:%s", el);
             }
 
             dbqp.qp = new_QueryParser(&err);
             if (err != 0)
-                writeln("xapian_reader:new_QueryParser:err", err);
+                log.trace("xapian_reader:new_QueryParser:err=%s", get_xapian_err_msg(err));
 
             xapian_stemmer = new_Stem(cast(char *)xapian_lang, cast(uint)xapian_lang.length, &err);
             dbqp.qp.set_stemmer(xapian_stemmer, &err);
             if (err != 0)
-                writeln("xapian_reader:set_stemmer:err", err);
+                log.trace("xapian_reader:set_stemmer:err=%s", get_xapian_err_msg(err));
 
             dbqp.qp.set_database(dbqp.db, &err);
             if (err != 0)
-                writeln("xapian_reader:set_database:err", err);
+                log.trace("xapian_reader:set_database:err=%s", get_xapian_err_msg(err));
 
             using_dbqp[ db_names.idup ] = dbqp;
         }
@@ -328,16 +285,23 @@ class XapianReader : SearchReader
 
         if (db is null)
         {
-            string path = xapian_search_db_path.get(db_name, null);
+            string path = get_xapiab_db_path(db_name);
 
             if (path !is null)
+            {
                 db = new_Database(path.ptr, cast(uint)path.length, xapian_db_type, &err);
 
-            if (err != 0)
-                writeln("xapian_reader:new_Database:err", err);
+                if (err < 0)
+                    log.trace("ERR! xapian_reader:open_db:new_Database[%s]:err=%s", db_name, get_xapian_err_msg(err));
+                else
+                    opened_db[ db_name ] = db;
+            }
             else
-                opened_db[ db_name ] = db;
+                log.trace("ERR! xapian_reader:open_db: not set db_path to [%s]", db_name);
         }
+
+        if (db is null)
+            log.trace("ERR! xapian_reader:open_db: not open db [%s]", db_name);
 
         return db;
     }
@@ -349,11 +313,11 @@ class XapianReader : SearchReader
         {
             el.db.reopen(&err);
             if (err != 0)
-                writeln("xapian_reader:reopen_db:err", err);
+                log.trace("ERR! xapian_reader:reopen_db:err=%s", get_xapian_err_msg(err));
 
             el.qp.set_database(el.db, &err);
             if (err != 0)
-                writeln("xapian_reader:set_database:err", err);
+                log.trace("ERR! xapian_reader:set_database:err=%s", get_xapian_err_msg(err));
         }
 //        foreach (db; opened_db.values)
 //        {
@@ -369,13 +333,13 @@ class XapianReader : SearchReader
         {
             el.db.close(&err);
             if (err != 0)
-                writeln("xapian_reader:close database:err", err);
+                log.trace("xapian_reader:close database:err=%s", get_xapian_err_msg(err));
         }
         foreach (db; opened_db.values)
         {
             db.close(&err);
             if (err != 0)
-                writeln("xapian_reader:close database:err", err);
+                log.trace("xapian_reader:close database:err=%s", get_xapian_err_msg(err));
         }
     }
 }

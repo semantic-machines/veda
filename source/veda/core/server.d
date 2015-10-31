@@ -7,11 +7,11 @@ private
 {
     import core.thread, std.stdio, std.string, std.c.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process;
     version (linux) import std.c.linux.linux, core.stdc.stdlib;
+    import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import io.mq_client, io.rabbitmq_client, io.file_reader;
     import util.logger, util.utils, util.load_info;
     import veda.core.scripts, veda.core.context, veda.core.know_predicates, veda.core.log_msg, veda.core.thread_context;
     import veda.core.define, veda.core.interthread_signals;
-    import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import type, az.acl, storage.storage_thread, search.xapian_indexer, veda.onto.individual, veda.onto.resource;
 }
 
@@ -21,7 +21,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ proccess_name, "log", "server");
+        _log = new logger("veda-core-" ~ process_name, "log", "server");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -228,17 +228,20 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
         foreach (key, value; tids)
             register(text(key), value);
 
+        sticket = core_context.sys_ticket(true);
+
+        if (jsvm_node_type == "internal" || jsvm_node_type == "")
+        {
+            tids[ P_MODULE.condition ] = spawn(&condition_thread, text(P_MODULE.condition), node_id);
+            wait_starting_thread(P_MODULE.condition, tids);
+
+            register(text(P_MODULE.condition), tids[ P_MODULE.condition ]);
+            Tid tid_condition = locate(text(P_MODULE.condition));
+        }
+
         if (is_main)
         {
-            if (jsvm_node_type == "internal")
-            {
-                tids[ P_MODULE.condition ] = spawn(&condition_thread, text(P_MODULE.condition), node_id);
-                wait_starting_thread(P_MODULE.condition, tids);
-
-                register(text(P_MODULE.condition), tids[ P_MODULE.condition ]);
-                Tid tid_condition = locate(text(P_MODULE.condition));
-            }
-            else if (jsvm_node_type == "external")
+            if (jsvm_node_type == "external")
             {
                 Resources listeners = node.resources.get("vsrv:listener", Resources.init);
                 foreach (listener_uri; listeners)
@@ -250,12 +253,15 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
                     {
                         if (transport.data() == "http")
                         {
-                            ushort http_port     = cast(ushort)connection.getFirstInteger("vsrv:port", 8080);
-                            auto   js_worker_pid =
-                                spawnProcess([ "./veda-js-worker", "--role", "js_worker", "--listener_http_port", "8081", "--write_storage_node",
-                                               "http://127.0.0.1:" ~ text(http_port) ]);
+                            core.thread.Thread.sleep(100.msecs);
+                            string spawned_process_port = "8081";
+                            ushort http_port            = cast(ushort)connection.getFirstInteger("vsrv:port", 8080);
+                            auto   js_worker_pid        =
+                                spawnProcess([ "./veda-js-worker", "--role", "js_worker", "--listener_http_port", spawned_process_port,
+                                               "--write_storage_node",
+                                               "http://127.0.0.1:" ~ text(http_port), "--systicket=", sticket.id ]);
 
-                            set_g_external_js_vm_url("http://127.0.0.1:" ~ text(http_port));
+                            set_g_external_js_vm_url("http://127.0.0.1:" ~ spawned_process_port);
                         }
                     }
                 }

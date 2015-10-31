@@ -19,7 +19,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ proccess_name, "log", "API");
+        _log = new logger("veda-core-" ~ process_name, "log", "API");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -60,7 +60,6 @@ static this() {
     }
 }
 
-
 //////////////////////////////////////////////////// Rest API /////////////////////////////////////////////////////////////////
 
 interface VedaStorageRest_API {
@@ -88,8 +87,11 @@ interface VedaStorageRest_API {
     @path("is_ticket_valid") @method(HTTPMethod.GET)
     bool is_ticket_valid(string ticket);
 
-    @path("wait_pmodule") @method(HTTPMethod.GET)
-    long wait_pmodule(int pmodule_id);
+    @path("get_operation_state") @method(HTTPMethod.GET)
+    long get_operation_state(int module_id);
+
+    @path("wait_module") @method(HTTPMethod.GET)
+    long wait_module(int module_id, long op_id);
 
     @path("set_trace") @method(HTTPMethod.GET)
     void set_trace(int idx, bool state);
@@ -110,19 +112,19 @@ interface VedaStorageRest_API {
     Json get_individual(string ticket, string uri);
 
     @path("put_individual") @method(HTTPMethod.PUT)
-    int put_individual(string ticket, Json individual, bool wait_for_indexing, bool prepare_events, string event_id);
+    OpResult put_individual(string ticket, Json individual, bool prepare_events, string event_id);
 
     @path("remove_from_individual") @method(HTTPMethod.PUT)
-    int remove_from_individual(string ticket, Json individual, bool wait_for_indexing, bool prepare_events, string event_id);
+    OpResult remove_from_individual(string ticket, Json individual, bool prepare_events, string event_id);
 
     @path("set_in_individual") @method(HTTPMethod.PUT)
-    int set_in_individual(string ticket, Json individual, bool wait_for_indexing, bool prepare_events, string event_id);
+    OpResult set_in_individual(string ticket, Json individual, bool prepare_events, string event_id);
 
     @path("add_to_individual") @method(HTTPMethod.PUT)
-    int add_to_individual(string ticket, Json individual, bool wait_for_indexing, bool prepare_events, string event_id);
+    OpResult add_to_individual(string ticket, Json individual, bool prepare_events, string event_id);
 
     @path("trigger") @method(HTTPMethod.PUT)
-    int trigger(string ticket, string event_type, string event_id, Json individual, Json prev_state);
+    int trigger(string ticket, string event_type, string event_id, Json individual, Json prev_state, long op_id);
 }
 
 
@@ -441,33 +443,14 @@ class VedaStorageRest : VedaStorageRest_API
         return ticket;
     }
 
-    long wait_pmodule(int module_id)
+    long get_operation_state(int module_id)
     {
-        ResultCode rc = ResultCode.OK;
-        int        recv_worker_id;
+        return context.get_operation_state(cast(P_MODULE)module_id);
+    }
 
-        long       res = -1;
-
-        Worker     *worker = allocate_worker();
-
-        std.concurrency.send(worker.tid, Command.Wait, Function.PModule, module_id, worker.id, std.concurrency.thisTid);
-        yield();
-        std.concurrency.receive((long _res, int _recv_worker_id) { res = _res; recv_worker_id = _recv_worker_id; });
-
-        if (recv_worker_id == worker.id)
-        {
-            worker.complete = false;
-            worker.ready    = true;
-
-            if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc);
-        }
-        else
-        {
-            res = put_another_get_my(recv_worker_id, res, rc, worker);
-        }
-
-        return res;
+    long wait_module(int module_id, long op_id)
+    {
+        return context.wait_thread(cast(P_MODULE)module_id, op_id);
     }
 
     void set_trace(int idx, bool state)
@@ -640,83 +623,89 @@ class VedaStorageRest : VedaStorageRest_API
             return Json.init;
     }
 
-    int put_individual(string _ticket, Json individual_json, bool wait_for_indexing, bool prepare_events, string event_id)
+    OpResult put_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
     {
         Ticket     *ticket = context.get_ticket(_ticket);
 
+        OpResult   res;
         ResultCode rc = ticket.result;
 
         if (rc == ResultCode.OK)
         {
             Individual indv = json_to_individual(individual_json);
-            rc = context.put_individual(ticket, indv.uri, indv, wait_for_indexing, prepare_events, event_id == "" ? null : event_id);
+            res = context.put_individual(ticket, indv.uri, indv, prepare_events, event_id == "" ? null : event_id);
         }
 
-        if (rc != ResultCode.OK)
-            throw new HTTPStatusException(rc);
+        if (res.result != ResultCode.OK)
+            throw new HTTPStatusException(res.result);
 
-        return rc.to!int;
+        return res;
     }
 
-    int add_to_individual(string _ticket, Json individual_json, bool wait_for_indexing, bool prepare_events, string event_id)
+    OpResult add_to_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
     {
         Ticket     *ticket = context.get_ticket(_ticket);
 
+        OpResult   res;
         ResultCode rc = ticket.result;
 
         if (rc == ResultCode.OK)
         {
             Individual indv = json_to_individual(individual_json);
-            rc = context.add_to_individual(ticket, indv.uri, indv, wait_for_indexing, prepare_events, event_id == "" ? null : event_id);
+            res = context.add_to_individual(ticket, indv.uri, indv, prepare_events, event_id == "" ? null : event_id);
         }
 
-        if (rc != ResultCode.OK)
+        if (res.result != ResultCode.OK)
             throw new HTTPStatusException(rc);
 
-        return rc.to!int;
+        return res;
     }
 
-    int set_in_individual(string _ticket, Json individual_json, bool wait_for_indexing, bool prepare_events, string event_id)
+    OpResult set_in_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
     {
         Ticket     *ticket = context.get_ticket(_ticket);
 
+        OpResult   res;
         ResultCode rc = ticket.result;
 
         if (rc == ResultCode.OK)
         {
             Individual indv = json_to_individual(individual_json);
-            rc = context.set_in_individual(ticket, indv.uri, indv, wait_for_indexing, prepare_events, event_id == "" ? null : event_id);
+            res = context.set_in_individual(ticket, indv.uri, indv, prepare_events, event_id == "" ? null : event_id);
         }
 
-        if (rc != ResultCode.OK)
+        if (res.result != ResultCode.OK)
             throw new HTTPStatusException(rc);
 
-        return rc.to!int;
+        return res;
     }
 
-    int remove_from_individual(string _ticket, Json individual_json, bool wait_for_indexing, bool prepare_events, string event_id)
+    OpResult remove_from_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
     {
         Ticket     *ticket = context.get_ticket(_ticket);
 
+        OpResult   res;
         ResultCode rc = ticket.result;
 
         if (rc == ResultCode.OK)
         {
             Individual indv = json_to_individual(individual_json);
-            rc = context.remove_from_individual(ticket, indv.uri, indv, wait_for_indexing, prepare_events, event_id == "" ? null : event_id);
+            res = context.remove_from_individual(ticket, indv.uri, indv, prepare_events, event_id == "" ? null : event_id);
         }
 
-        if (rc != ResultCode.OK)
+        if (res.result != ResultCode.OK)
             throw new HTTPStatusException(rc);
 
-        return rc.to!int;
+        return res;
     }
 
-    int trigger(string _ticket, string event_type, string event_id, Json individual_json, Json prev_state_json)
+    int trigger(string _ticket, string event_type, string event_id, Json individual_json, Json prev_state_json, long op_id)
     {
-        Ticket *ticket = context.get_ticket(_ticket);
+        //writeln ("REST: trigger #1 ", "op_id=", op_id, " *", process_name);
+        Ticket     *ticket = context.get_ticket(_ticket);
 
         ResultCode rc = ticket.result;
+
         if (rc == ResultCode.OK)
         {
             Individual indv = json_to_individual(individual_json);
@@ -734,15 +723,15 @@ class VedaStorageRest : VedaStorageRest_API
             if (prev_state_json != Json.init)
                 prev_state_indv = json_to_individual(individual_json);
 
-            veda.core.bus_event.trigger_script(ticket, ev_type, &indv, &prev_state_indv, context, event_id);
+            veda.core.bus_event.trigger_script(ticket, ev_type, &indv, &prev_state_indv, context, event_id, op_id);
 
             rc = ResultCode.OK;
         }
         if (rc != ResultCode.OK)
         {
-            writeln("@@6 rc=", rc);
             throw new HTTPStatusException(rc);
         }
+        //writeln ("REST: trigger #e ", "op_id=", op_id, " *", process_name);
 
         return rc.to!int;
     }

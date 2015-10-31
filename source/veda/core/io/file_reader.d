@@ -18,7 +18,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ proccess_name, "log", "FILE");
+        _log = new logger("veda-core-" ~ process_name, "log", "FILE");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -218,7 +218,7 @@ void processed(Context context, bool is_load)
 
                         if (indv_in_storage == Individual.init || indv.compare(indv_in_storage) == false)
                         {
-                            ResultCode res = context.put_individual(&sticket, indv.uri, indv, false);
+                            ResultCode res = context.put_individual(&sticket, indv.uri, indv).result;
                             if (trace_msg[ 33 ] == 1)
                                 log.trace("store, uri=%s %s", indv.uri, indv);
 
@@ -244,7 +244,7 @@ void processed(Context context, bool is_load)
         }
     }
 
-    context.set_reload_signal_to_local_thread("search");
+//    context.set_reload_signal_to_local_thread("search");
 
     core.memory.GC.collect();
 

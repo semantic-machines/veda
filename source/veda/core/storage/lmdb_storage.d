@@ -18,7 +18,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ proccess_name, "log", "LMDB");
+        _log = new logger("veda-core-" ~ process_name, "log", "LMDB");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

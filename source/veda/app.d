@@ -11,7 +11,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ proccess_name, "log", "frontend");
+        _log = new logger("veda-core-" ~ process_name, "log", "frontend");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -85,10 +85,12 @@ shared static this()
     string role;
     ushort listener_http_port = 8081;
     string write_storage_node = "http://localhost:8080";
+    string sys_ticket_id;
 
     readOption("role", &role, "set role, if role is empty, then ignore params: [listener_http_port] and [write_storage_node]");
     readOption("listener_http_port", &listener_http_port, "default: 8081");
     readOption("write_storage_node", &write_storage_node, "default: http://127.0.0.1:8080");
+    readOption("systicket", &sys_ticket_id, "");
 
     string[ string ] properties;
 
@@ -110,7 +112,7 @@ shared static this()
     }
     else
     {
-    	set_g_proccess_name(role);
+        set_g_process_name(role);
     }
 
 //    http_port    = properties.as!(string)("node_id");
@@ -122,7 +124,7 @@ shared static this()
     veda.core.context.Context core_context;
 
     if (write_storage_node !is null)
-    	set_g_external_write_storage_url (write_storage_node);
+        set_g_external_write_storage_url(write_storage_node);
 
     core_context = veda.core.server.init_core(node_id, role, listener_http_port, write_storage_node);
     if (core_context is null)
@@ -131,9 +133,19 @@ shared static this()
         return;
     }
 
-    Ticket                sticket      = core_context.sys_ticket();
+    Ticket sticket;
+    if (sys_ticket_id !is null)
+    {
+        sticket = *core_context.get_ticket(sys_ticket_id);
+        set_global_systicket(sticket);
+    }
+    else
+    {
+        sticket = core_context.sys_ticket();
+    }
+
     ushort                count_thread = 1;
-        
+
     std.concurrency.Tid[] pool;
     for (int i = 0; i < count_thread; i++)
     {
@@ -144,6 +156,7 @@ shared static this()
     if (role !is null)
     {
         start_http_listener(core_context, pool, listener_http_port);
+//        start_http_listener(core_context, pool, 8555);
     }
     else
     {
@@ -166,6 +179,7 @@ shared static this()
                 }
             }
         }
+//                    start_http_listener(core_context, pool, 8111);
     }
 }
 

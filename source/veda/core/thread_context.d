@@ -27,7 +27,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ proccess_name, "log", "API");
+        _log = new logger("veda-core-" ~ process_name, "log", "API");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -41,8 +41,8 @@ string g_str_script_out;
 /// реализация интерфейса Context
 class PThreadContext : Context
 {
-    int local_count_put;
-    int local_count_indexed;
+    long local_count_put;
+    long local_count_indexed;
 
     bool[ P_MODULE ] is_traced_module;
 
@@ -103,6 +103,8 @@ class PThreadContext : Context
         is_traced_module[ P_MODULE.fulltext_indexer ] = true;
         is_traced_module[ P_MODULE.condition ]        = true;
 
+        getConfiguration();
+
         _vql = new search.vql.VQL(this);
 
         onto = new Onto(this);
@@ -111,18 +113,16 @@ class PThreadContext : Context
         local_count_put     = get_count_put();
         local_count_indexed = get_count_indexed();
 
-        getConfiguration();
-
         log.trace_log_and_console("NEW CONTEXT [%s], external: write storage=[%s], js_vm=[%s]", context_name, external_write_storage_url,
-                                      external_js_vm_url);
+                                  external_js_vm_url);
     }
 
     @property
-    public Ticket sys_ticket()
+    public Ticket sys_ticket(bool is_new = false)
     {
         Ticket ticket = get_global_systicket();
 
-        if (ticket == Ticket.init)
+        if (ticket == Ticket.init || ticket.user_uri == "" || is_new)
         {
             try
             {
@@ -130,11 +130,15 @@ class PThreadContext : Context
             }
             catch (Exception ex)
             {
-                ticket.user_uri = "v-a:VedaSystem";
+                printPrettyTrace(stderr);
+                log.trace("context.sys_ticket:EX!%s", ex.msg);
             }
+
+            if (ticket.user_uri == "")
+                ticket.user_uri = "v-a:VedaSystem";
+
             set_global_systicket(ticket);
         }
-        //writeln("###2 sys ticket=", ticket);
         return ticket;
     }
 
@@ -149,7 +153,7 @@ class PThreadContext : Context
             if (node.getStatus() != ResultCode.OK)
                 node = Individual.init;
 
-            set_g_external_write_storage_url (node.getFirstLiteral("vsrv:write_storage_node"));
+            set_g_external_write_storage_url(node.getFirstLiteral("vsrv:write_storage_node"));
 //            external_js_vm         = node.getFirstLiteral("vsrv:jsvm_node");
         }
         return node;
@@ -190,7 +194,7 @@ class PThreadContext : Context
             {
                 if (extension(o.name) == ".js")
                 {
-                    writeln(" load script:", o);
+                    log.trace(" load script:%s", o);
                     auto str_js        = cast(ubyte[]) read(o.name);
                     auto str_js_script = script_vm.compile(cast(char *)(cast(char[])str_js ~ "\0"));
                     if (str_js_script !is null)
@@ -515,7 +519,7 @@ class PThreadContext : Context
 
         if (now - local_time_check_indexed > timeout)
         {
-            int count_indexed = get_count_indexed();
+            long count_indexed = get_count_indexed();
             //writeln ("@ft_check_for_reload:count_indexed=", count_indexed);
             //writeln ("@ft_check_for_reload:local_count_indexed=", local_count_indexed);
 
@@ -727,17 +731,12 @@ class PThreadContext : Context
         {
             if (external_write_storage_url !is null)
             {
-            	string url = external_write_storage_url ~ "/authenticate";
+                string url = external_write_storage_url ~ "/authenticate";
                 try
                 {
-                    Json req_body = Json.emptyObject;
-                    req_body[ "login" ]    = login;
-                    req_body[ "password" ] = password;
-
                     requestHTTP(url ~ "?login=" ~ login ~ "&password=" ~ password,
                                 (scope req) {
                                     req.method = HTTPMethod.GET;
-//								writeln ("req:", req.toString ());
                                 },
                                 (scope res) {
                                     auto res_json = res.readJson();
@@ -1118,20 +1117,25 @@ class PThreadContext : Context
         }
     }
 
-    private ResultCode store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool wait_for_indexing, bool prepare_events, string event_id)
+    private OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id)
     {
-trace_msg[ 27 ] = 1;
-    	
+        //writeln("context:store_individual #1 ", process_name);
         StopWatch sw; sw.start;
+
+        OpResult  res = OpResult(ResultCode.Fail_Store, -1);
 
         if (indv !is null && (indv.uri is null || indv.uri.length < 2))
         {
             log.trace("Ex! store_subject:%s", indv);
-            return ResultCode.Unprocessable_Entity;
+            res.result = ResultCode.Unprocessable_Entity;
+            return res;
         }
-
         if (indv is null || indv.resources.length == 0)
-            return ResultCode.No_Content;
+        {
+            res.result = ResultCode.No_Content;
+            return res;
+        }
+        //writeln("context:store_individual #2 ", process_name);
 
         try
         {
@@ -1141,47 +1145,54 @@ trace_msg[ 27 ] = 1;
                     log.trace("[%s] store_individual use EXTERNAL", name);
 
                 string url;
+                //string _external_write_storage_url_ = "http://127.0.0.1:8111";
+
                 if (cmd == CMD.PUT)
                     url = external_write_storage_url ~ "/put_individual";
+                else if (cmd == CMD.ADD)
+                    url = external_write_storage_url ~ "/add_to_individual";
+                else if (cmd == CMD.SET)
+                    url = external_write_storage_url ~ "/set_in_individual";
+                else if (cmd == CMD.REMOVE)
+                    url = external_write_storage_url ~ "/remove_from_individual";
 
+                //writeln("context:store_individual use EXTERNAL #3, url=", url, " ", process_name);
+
+                Json req_body = Json.emptyObject;
                 try
                 {
-                    Json req_body = Json.emptyObject;
-                    req_body[ "ticket" ]            = ticket.id;
-                    req_body[ "individual" ]        = individual_to_json(*indv);
-                    req_body[ "wait_for_indexing" ] = wait_for_indexing;
-                    req_body[ "prepare_events" ]    = prepare_events;
-                    req_body[ "event_id" ]          = event_id;
+                    req_body[ "ticket" ]         = ticket.id;
+                    req_body[ "individual" ]     = individual_to_json(*indv);
+                    req_body[ "prepare_events" ] = prepare_events;
+                    req_body[ "event_id" ]       = event_id;
 
                     requestHTTP(url,
                                 (scope req) {
                                     req.method = HTTPMethod.PUT;
                                     req.writeJsonBody(req_body);
-                                    writeln("req:", req.toString());
+                                    //writeln("req:", text (req_body));
                                 },
-                                (scope res) {
-                                    auto res_json = res.readJson();
-                                    if (res_json[ "result" ] == 200)
-                                    {
-                                        ticket.id = res_json[ "id" ].get!string;
-                                        ticket.user_uri = res_json[ "user_uri" ].get!string;
-                                        ticket.end_time = res_json[ "end_time" ].get!long;
-                                        ticket.result = ResultCode.OK;
-                                    }
+                                (scope result) {
+                                    //logInfo("Response: %s", text(result.statusCode));
+                                    res.result = cast(ResultCode)result.statusCode;
                                 }
                                 );
-                    return ResultCode.OK;
+
+//                    res = ResultCode.OK;
+                    //    writeln("context:store_individual #4 ", process_name);
+
+                    return res;
                 }
                 catch (Exception ex)
                 {
-                    writeln("ERR! authenticate:", ex.msg, ", url=", url);
-                    return ResultCode.Internal_Server_Error;
+                    writeln("ERR! external put_individual:", ex.msg, ", url=", url, ", req_body=", text(req_body));
+                    res.result = ResultCode.Internal_Server_Error;
+                    return res;
                 }
             }
             else
             {
-                if (trace_msg[ 27 ] == 1)
-                    log.trace("[%s] store_individual", name);
+                //  writeln("context:store_individual #5 ", process_name);
 
                 Tid    tid_subject_manager;
                 Tid    tid_acl;
@@ -1200,14 +1211,20 @@ trace_msg[ 27 ] = 1;
                     // before storing the data, expected availability acl_manager.
                     wait_thread(P_MODULE.acl_manager);
                     if (this.acl_indexes.isExistMemberShip(indv) == true)
-                        return ResultCode.Duplicate_Key;
+                    {
+                        res.result = ResultCode.Duplicate_Key;
+                        return res;
+                    }
                 }
                 else if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
                 {
                     // before storing the data, expected availability acl_manager.
                     wait_thread(P_MODULE.acl_manager);
                     if (this.acl_indexes.isExistPermissionStatement(indv) == true)
-                        return ResultCode.Duplicate_Key;
+                    {
+                        res.result = ResultCode.Duplicate_Key;
+                        return res;
+                    }
                 }
 
                 EVENT ev = EVENT.NONE;
@@ -1223,14 +1240,21 @@ trace_msg[ 27 ] = 1;
                                     ev = _ev;
                                 prev_state = _prev_state;
                                 ss_as_cbor = _new_state;
+                                res.op_id = get_count_put();
                             });
                 }
 
                 if (ev == EVENT.NOT_READY)
-                    return ResultCode.Not_Ready;
+                {
+                    res.result = ResultCode.Not_Ready;
+                    return res;
+                }
 
                 if (ev == EVENT.ERROR)
-                    return ResultCode.Fail_Store;
+                {
+                    res.result = ResultCode.Fail_Store;
+                    return res;
+                }
 
                 if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
                 {
@@ -1240,9 +1264,7 @@ trace_msg[ 27 ] = 1;
 
                         if (tid_search_manager != Tid.init)
                         {
-                            push_signal("search", Clock.currStdTime() / 10000);
-
-                            send(tid_search_manager, CMD.PUT, ss_as_cbor);
+                            send(tid_search_manager, CMD.PUT, ss_as_cbor, res.op_id);
                         }
                     }
                     else
@@ -1251,15 +1273,13 @@ trace_msg[ 27 ] = 1;
 
                         if (tid_search_manager != Tid.init)
                         {
-                            push_signal("search", Clock.currStdTime() / 10000);
-
-                            send(tid_search_manager, CMD.DELETE, ss_as_cbor);
+                            send(tid_search_manager, CMD.DELETE, ss_as_cbor, res.op_id);
                         }
                     }
 
                     if (prepare_events == true)
                     {
-                        bus_event_after(ticket, indv, rdfType, ss_as_cbor, prev_state, ev, this, event_id);
+                        bus_event_after(ticket, indv, rdfType, ss_as_cbor, prev_state, ev, this, event_id, res.op_id);
                     }
 
                     Tid tid_fanout = getTid(P_MODULE.fanout);
@@ -1268,81 +1288,158 @@ trace_msg[ 27 ] = 1;
                         send(tid_fanout, CMD.PUT, prev_state, ss_as_cbor);
                     }
 
+                    res.result = ResultCode.OK;
 
-                    if (wait_for_indexing)
-                    {
-                        //writeln ("wait-for-indexing");
-                        wait_thread(P_MODULE.fulltext_indexer);
-                    }
-
-                    return ResultCode.OK;
+                    return res;
                 }
                 else
                 {
                     log.trace("Ex! store_subject:%s", ev);
-                    return ResultCode.Internal_Server_Error;
+
+                    res.result = ResultCode.Internal_Server_Error;
+                    return res;
                 }
             }
         }
         finally
         {
+            //writeln("context:store_individual #e ", process_name);
+            if (trace_msg[ 27 ] == 1)
+                log.trace("[%s] store_individual [%s] = %s", name, indv.uri, res);
+
             stat(CMD.PUT, sw);
         }
     }
 
-    public ResultCode put_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents,
-                                     string event_id)
+    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id)
     {
         individual.uri = uri;
-        return store_individual(CMD.PUT, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
+        return store_individual(CMD.PUT, ticket, &individual, prepareEvents, event_id);
     }
 
-    public ResultCode add_to_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents,
-                                        string event_id)
+    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id)
     {
         individual.uri = uri;
-        return store_individual(CMD.ADD, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
+        return store_individual(CMD.ADD, ticket, &individual, prepareEvents, event_id);
     }
 
-    public ResultCode set_in_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents,
-                                        string event_id)
+    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id)
     {
         individual.uri = uri;
-        return store_individual(CMD.SET, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
+        return store_individual(CMD.SET, ticket, &individual, prepareEvents, event_id);
     }
 
-    public ResultCode remove_from_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents,
-                                             string event_id)
+    public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id)
     {
         individual.uri = uri;
-        return store_individual(CMD.REMOVE, ticket, &individual, wait_for_indexing, prepareEvents, event_id);
+        return store_individual(CMD.REMOVE, ticket, &individual, prepareEvents, event_id);
     }
 
 /////////////////////////////////////////////////////////////////////////////
-
-    public void wait_thread(P_MODULE thread_id)
+    public long get_operation_state(P_MODULE module_id)
     {
-        if (thread_id == id)
-            return;
+        long res = -1;
 
-        StopWatch sw; sw.start;
 
-        try
+        if (module_id == P_MODULE.condition)
         {
-            Tid tid = this.getTid(thread_id);
-
-            if (tid != Tid.init)
+            if (external_js_vm_url !is null)
             {
-                //writeln(name, " WAIT READY THREAD ", thread_id);
-                send(tid, CMD.NOP, thisTid);
-                receive((bool res) {});
-                //writeln("OK");
+                //writeln("context: get_operation_state: #1 EXTERNAL ", text(module_id), " ", process_name);
+                string url = external_js_vm_url ~ "/get_operation_state?module_id=" ~ text(cast(int)module_id);
+//                string url = "http://127.0.0.1:8555" ~ "/get_operation_state?module_id=" ~ text(cast(int)module_id);
+                try
+                {
+                    requestHTTP(url,
+                                (scope req) {
+                                    req.method = HTTPMethod.GET;
+                                },
+                                (scope h_res) {
+                                    auto res_as_str = h_res.bodyReader.readAllUTF8();
+                                    res = to!long (res_as_str);
+                                    //writeln("context: get_operation_state: #3 EXTERNAL ", text(module_id), ", url=", url, ",res=", res, " *", process_name);
+                                }
+                                );
+                }
+                catch (Exception ex)
+                {
+                    writeln("EX!get_operation_state:", ex.msg, ", url=", url);
+                }
+                //writeln("context: get_operation_state: #E EXTERNAL ", text(module_id), " ", process_name);
+            }
+            else
+            {
+                long _op_id = get_scripts_op_id;
+                //writeln("context: get_operation_state: #E ", text(module_id), "op_id=", _op_id, " *", process_name);
+                //core.thread.Thread.sleep(100.msecs);
+                return _op_id;
             }
         }
-        finally
+        else if (module_id == P_MODULE.acl_manager)
         {
-            stat(CMD.GET, sw);
+            return get_acl_manager_op_id;
         }
+        else if (module_id == P_MODULE.fulltext_indexer)
+        {
+            return get_count_indexed;
+        }
+        else if (module_id == P_MODULE.subject_manager)
+        {
+            return get_count_put;
+        }
+
+        return res;
+    }
+
+
+    public long wait_thread(P_MODULE module_id, long op_id = 0)
+    {
+        if (module_id == id)
+            return -1;
+
+/*
+                if (module_id == P_MODULE.fulltext_indexer)
+                {
+                Tid tid = this.getTid(module_id);
+                if (tid != Tid.init)
+                {
+                        //writeln ("SEND COMMIT");
+                        send(tid, CMD.COMMIT, "", thisTid);
+                        core.thread.Thread.sleep(10.msecs);
+                        }
+        }
+ */
+        if (external_js_vm_url !is null && module_id == P_MODULE.condition)
+        {
+            for (int i = 0; i < 200; i++)
+            {
+                long in_module_op_id = get_operation_state(module_id);
+
+                //if (i > 1)
+                //	writeln (module_id, ", ", i, ", op_id=", op_id, ", in_module_op_id=", in_module_op_id);
+
+                if (in_module_op_id >= op_id || in_module_op_id == -1)
+                    return 0;
+
+                core.thread.Thread.sleep(10.msecs);
+            }
+        }
+        else
+        {
+            //writeln("context: wait_thread: #1 ", text(module_id), " ", process_name);
+            Tid tid = this.getTid(module_id);
+            if (tid != Tid.init)
+            {
+                //writeln("context: wait_thread: #2 send ", text(module_id), " ", process_name);
+                send(tid, CMD.NOP, thisTid);
+                //                receiveTimeout(1000.msecs, (bool res) {});
+                //writeln("context: wait_thread: #3 recv ", text(module_id), " ", process_name);
+                receive((bool res) {});
+            }
+        }
+
+        return 0;
+        //writeln("context: wait_thread: #e ", text(module_id), " ", process_name);
     }
 
     public void set_trace(int idx, bool state)

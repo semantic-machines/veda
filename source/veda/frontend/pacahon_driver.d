@@ -13,7 +13,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ proccess_name, "pacahon_driver", "API");
+        _log = new logger("veda-core-" ~ process_name, "pacahon_driver", "API");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

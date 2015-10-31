@@ -15,7 +15,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ proccess_name, "log", "V8D");
+        _log = new logger("veda-core-" ~ process_name, "log", "V8D");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -28,6 +28,7 @@ Context g_context;
 _Buff   g_prev_state;
 _Buff   g_document;
 _Buff   g_user;
+_Buff   g_ticket;
 
 _Buff   tmp_individual;
 
@@ -75,7 +76,7 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
                 log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
                 return ResultCode.Unprocessable_Entity;
             }
-            return g_context.put_individual(ticket, indv.uri, indv, false, true, event_id);
+            return g_context.put_individual(ticket, indv.uri, indv, true, event_id).result;
         }
         return ResultCode.Service_Unavailable;
     }
@@ -107,7 +108,7 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
                 log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
                 return ResultCode.Unprocessable_Entity;
             }
-            return g_context.add_to_individual(ticket, indv.uri, indv, false, true, event_id);
+            return g_context.add_to_individual(ticket, indv.uri, indv, true, event_id).result;
         }
         return ResultCode.Service_Unavailable;
     }
@@ -139,7 +140,7 @@ extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_lengt
                 log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
                 return ResultCode.Unprocessable_Entity;
             }
-            return g_context.set_in_individual(ticket, indv.uri, indv, false, true, event_id);
+            return g_context.set_in_individual(ticket, indv.uri, indv, true, event_id).result;
         }
         return ResultCode.Service_Unavailable;
     }
@@ -171,7 +172,7 @@ extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_
                 log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
                 return ResultCode.Unprocessable_Entity;
             }
-            return g_context.remove_from_individual(ticket, indv.uri, indv, false, true, event_id);
+            return g_context.remove_from_individual(ticket, indv.uri, indv, true, event_id).result;
         }
         return ResultCode.Service_Unavailable;
     }
@@ -191,8 +192,12 @@ extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
         {
             return &g_user;
         }
-        else
-            return null;
+        else if (var_name == "$ticket")
+        {
+            return &g_ticket;
+        }
+
+        return null;
     }
     finally
     {

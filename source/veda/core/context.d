@@ -125,6 +125,12 @@ public enum ResultCode
     Duplicate_Key         = 1022
 }
 
+public struct OpResult
+{
+    ResultCode result;
+    long       op_id;
+}
+
 /**
  * Обьект - сессионный тикет
  */
@@ -190,8 +196,10 @@ interface Context
     string get_individual_from_storage(string uri);
     Onto get_onto();
 
+    public long get_operation_state(P_MODULE thread_id);
+
     @property
-    public Ticket sys_ticket();
+    public Ticket sys_ticket(bool is_new = false);
 
 
     // *************************************************** external API ? *********************************** //
@@ -296,15 +304,10 @@ interface Context
        Returns:
                 Код результата операции
      */
-    public ResultCode put_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
-                                     string event_id = null);
-
-    public ResultCode add_to_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
-                                        string event_id = null);
-    public ResultCode set_in_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
-                                        string event_id = null);
-    public ResultCode remove_from_individual(Ticket *ticket, string uri, Individual individual, bool wait_for_indexing, bool prepareEvents = true,
-                                             string event_id = null);
+    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents = true, string event_id = null);
+    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents = true, string event_id = null);
+    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents = true, string event_id = null);
+    public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents = true, string event_id = null);
 
     // ////////////////////////////////////////////// AUTHORIZATION ////////////////////////////////////////////
     /**
@@ -335,8 +338,9 @@ interface Context
        Ожидать, пока освободится процесс
        Params:
                  thread_id = id процесса из перечисления P_MODULE
+                 op_id - id операции изменения данных, если не указанно то ожидание организуется через внутреннюю очередь модуля
      */
-    public void wait_thread(P_MODULE thread_id);
+    public long wait_thread(P_MODULE module_id, long op_id = 0);
 
     /**
        Включить/выключить отладочные сообщения
@@ -373,31 +377,73 @@ interface Context
 
 import core.atomic;
 
-private shared int count_put = 0;
+private shared long count_put = 0;
 
-public void inc_count_put(int delta = 1)
+public void inc_count_put(long delta = 1)
 {
     atomicOp !"+=" (count_put, delta);
 }
 
-public int get_count_put()
+public long get_count_put()
 {
     return atomicLoad(count_put);
 }
 
+///
 
-private shared int count_indexed = 0;
+private shared long scripts_op_id = 0;
 
-public void inc_count_indexed(int delta = 1)
+public void set_scripts_op_id(long data)
 {
-    atomicOp !"+=" (count_indexed, delta);
+    atomicStore(scripts_op_id, data);
 }
 
-public int get_count_indexed()
+public long get_scripts_op_id()
+{
+    return atomicLoad(scripts_op_id);
+}
+
+///
+
+private shared long indexer_op_id = 0;
+
+public void set_indexer_op_id(long data)
+{
+    atomicStore(indexer_op_id, data);
+}
+
+public long get_indexer_op_id()
+{
+    return atomicLoad(indexer_op_id);
+}
+
+////
+
+private shared long acl_manager_op_id = 0;
+
+public void set_acl_manager_op_id(long data)
+{
+    atomicStore(acl_manager_op_id, data);
+}
+
+public long get_acl_manager_op_id()
+{
+    return atomicLoad(acl_manager_op_id);
+}
+
+////
+
+private shared long count_indexed = 0;
+
+public void set_count_indexed(long data)
+{
+    atomicStore(count_indexed, data);
+}
+
+public long get_count_indexed()
 {
     return atomicLoad(count_indexed);
 }
-
 
 /////////////////////////////// global_systicket //////////////////////////
 
@@ -446,24 +492,24 @@ public void set_g_external_write_storage_url(string new_data)
     atomicStore(g_external_write_storage_url, new_data);
 }
 
-    private string         _external_write_storage_url;
-    private string         _external_js_vm_url;
+private string _external_write_storage_url;
+private string _external_js_vm_url;
 
- @property
-    string external_js_vm_url()
-    {
-    	if (_external_js_vm_url is null)
-    		_external_js_vm_url = get_g_external_js_vm_url();
-    		
-        return _external_js_vm_url;
-    }
+@property
+string external_js_vm_url()
+{
+    if (_external_js_vm_url is null)
+        _external_js_vm_url = get_g_external_js_vm_url();
 
- @property
-    string external_write_storage_url()
-    {
-    	if (_external_write_storage_url is null)
-    		_external_write_storage_url = get_g_external_write_storage_url();
-    		
-        return _external_write_storage_url;
-    }
+    return _external_js_vm_url;
+}
+
+@property
+string external_write_storage_url()
+{
+    if (_external_write_storage_url is null)
+        _external_write_storage_url = get_g_external_write_storage_url();
+
+    return _external_write_storage_url;
+}
 
