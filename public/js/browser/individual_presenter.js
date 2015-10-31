@@ -340,6 +340,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				about.defineProperty(rel_uri);
 			}
 			
+			template.on("edit", function () {
+				if ( !individual.hasValue(rel_uri) && isEmbedded/* && spec && spec["v-ui:minCardinality"][0] >= 1*/ ) {
+					var emptyValue = new veda.IndividualModel();
+					if ( individual.properties[rel_uri].hasValue("rdfs:range") ) {
+						emptyValue["rdf:type"] = individual.properties[rel_uri]["rdfs:range"].slice(0);
+					}
+					individual[rel_uri] = [emptyValue];
+				}
+			});
+
 			var values = about[rel_uri], rendered = {}, counter = 0;
 			
 			relContainer.empty();
