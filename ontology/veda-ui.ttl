@@ -535,11 +535,26 @@ v-ui:LabelBlockTemplate
 
 v-ui:LabelTemplateWithEditLink
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с меткой"@ru ;
+  rdfs:label "Шаблон с меткой на страницу редактирования"@ru ;
   rdfs:label "Template with label"@en ;
   v-ui:template """
   <span>  
   # <a href="#/@///edit"><span id="label" property="rdfs:label"></span></a>
+  </span>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+  	  template.first().first().first().text(individual.id);
+    }
+  </script>
+  """ ;
+.
+v-ui:LabelTemplateWithLink
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с меткой на страницу просмотра"@ru ;
+  rdfs:label "Template with label"@en ;
+  v-ui:template """
+  <span>  
+  <a href="#/@"><span id="label" property="rdfs:label"></span></a>
   </span>
   <script>
     if (!individual.hasValue("rdfs:label")) {

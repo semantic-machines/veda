@@ -1952,6 +1952,13 @@ v-wf:DecisionRemake
 	rdfs:label "доработать"@ru ;
 .	
 
+v-wf:DecisionNotForMe
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "исполнитель не я"@ru ;
+.	
+
 v-wf:DecisionBreak
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
