@@ -1086,6 +1086,12 @@ v-s:sum_decimal
   rdfs:label "сумма"@ru ;
   rdfs:range xsd:decimal ;
 .
+v-s:cost
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "cost"@en ;
+  rdfs:label "цена"@ru ;
+  rdfs:range xsd:decimal ;
+.
 v-s:summary
   rdf:type owl:DatatypeProperty ;
   rdfs:label "summary"@en ;

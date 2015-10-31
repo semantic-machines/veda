@@ -472,6 +472,14 @@ s-wf:map_user_task_form_label_instruction
         rdfs:label "user_task_form_label=поручение"@ru ;        
 .
 
+s-wf:map_user_task_form_label_remake
+        rdf:type v-wf:Mapping ;
+	rdfs:isDefinedBy s-wfc: ;
+        v-wf:mapToVariable s-wf:user_task_form_label ;
+        v-wf:mappingExpression  "newStr ('Доработать документ')" ;
+        rdfs:label "user_task_form_label=доработать"@ru ;        
+.
+
 s-wf:var_coordinator_3
         rdf:type v-wf:VarDefine ;
 	rdfs:isDefinedBy s-wfc: ;
@@ -496,7 +504,7 @@ s-wf:map_possibleDecision_for_idea
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:possibleDecision ;
-        v-wf:mappingExpression  "[newUri ('v-wf:DecisionAgreedToExecute'), newUri ('v-wf:DecisionAgreedToProject'), newUri('v-wf:DecisionRejected')]" ;
+        v-wf:mappingExpression  "[newUri ('v-wf:DecisionAgreedToExecute'), newUri ('v-wf:DecisionAgreedToProject'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionRemake'), newUri('v-wf:DecisionNotForMe')]" ;
 	rdfs:label "варианты ответа для идеи 5"^^xsd:string;
 .
 
