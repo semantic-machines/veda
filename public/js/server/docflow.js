@@ -1103,9 +1103,12 @@ function prepare_start_form(ticket, document)
     if (isTrace)
     {
         trace_journal_uri = create_new_journal(ticket, getTraceJournalUri(new_process_uri), new_process_uri, _net['rdfs:label']);
-        traceToJournal(ticket, trace_journal_uri, "started new process", toJson(new_process));
         
-		new_process['v-wf:traceJournal'] = newUri (trace_journal_uri);
+        if (trace_journal_uri)
+        {
+			traceToJournal(ticket, trace_journal_uri, "started new process", toJson(new_process));        
+			new_process['v-wf:traceJournal'] = newUri (trace_journal_uri);
+		}	
     }
 
     put_individual(ticket, new_process, _event_id);

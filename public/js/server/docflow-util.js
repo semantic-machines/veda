@@ -812,8 +812,11 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
 				new_process['v-wf:isTrace'] = newBool(true);
 
 				var trace_journal_uri = getTraceJournalUri(new_process_uri);
-				create_new_journal(ticket, trace_journal_uri, null, _started_net['rdfs:label']);
-				new_process['v-wf:traceJournal'] = newUri (trace_journal_uri);				
+				if (trace_journal_uri)
+				{
+					create_new_journal(ticket, trace_journal_uri, null, _started_net['rdfs:label']);
+					new_process['v-wf:traceJournal'] = newUri (trace_journal_uri);				
+				}
 			}
 			
             put_individual(ticket, new_process, _event_id);
