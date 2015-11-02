@@ -4,7 +4,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 	
 	var deletedAlertTmpl = $("#deleted-individual-alert-template").html();
 	
-	//var c = 0;
+	//var c = 0; 
 	
 	veda.on("individual:loaded", function (individual, container, template, mode) {
 		
