@@ -141,27 +141,24 @@
 		}
 	};
 	
-	// Numerator control
-	$.fn.veda_numerator = function( options ) {
-		var opts = $.extend( {}, $.fn.veda_numerator.defaults, options ),
+	// Numeration control
+	$.fn.veda_numeration = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_numeration.defaults, options ),
 			control = veda_literal_input.call(this, opts),
 			input = $("input", control),
 			individual = opts.individual,
 			property_uri = opts.property_uri,
-			button = $(".get-numerator-value", control);
+			button = $(".get-numeration-value", control);
 
 		button.on("click", function () {
 			var prop = new veda.IndividualModel(property_uri);			
-			if (prop['v-s:hasNumeratorMapper']) {
-				for (var mapkey in prop['v-s:hasNumeratorMapper']) {
-					var map = prop['v-s:hasNumeratorMapper'][mapkey];
+			if (prop['v-s:hasNumerationMapper']) {
+				for (var mapkey in prop['v-s:hasNumerationMapper']) {
+					var map = prop['v-s:hasNumerationMapper'][mapkey];
 					if (map['v-s:numerationClass'][0].id == individual['rdf:type'][0].id) {
-						var numertor = map['v-s:hasNumeratorRule'][0];
-						console.log('>> '+map['v-s:hasNumeratorRule'][0].id);
-						
-					    var scope = eval(numertor['v-s:numeratorScope'][0].toString())(null, individual);
-					    var nextValue = eval(numertor['v-s:numeratorGetNextValue'][0].toString())(null, scope);
-					    
+						var numertor = map['v-s:hasNumerationRule'][0];
+					    var scope = eval(numertor['v-s:numerationScope'][0].toString())(null, individual);
+					    var nextValue = eval(numertor['v-s:numerationGetNextValue'][0].toString())(null, scope);
 					    individual[property_uri] = [nextValue];
 					}
 				}
@@ -172,8 +169,8 @@
 		
 		return this;
 	};
-	$.fn.veda_numerator.defaults = {
-		template: $("#numerator-control-template").html(),
+	$.fn.veda_numeration.defaults = {
+		template: $("#numeration-control-template").html(),
 		parser: function (input) {
 			var int = parseInt( input.replace(",", "."), 10 );
 			return !isNaN(int) ? new Number(int) : null;
