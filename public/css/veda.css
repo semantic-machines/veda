@@ -125,10 +125,10 @@ fieldset[disabled] .form-control {
 	float: left; 
 }
 .breadcrumb1 li a {
-	color: black;
+	color: white;
 	text-decoration: none; 
 	padding: 10px 0 10px 55px;
-	background: lightgreen;                   /* fallback color */
+	background: #27ae60;                   /* fallback color */
 	position: relative; 
 	display: block;
 	float: left;
@@ -137,7 +137,7 @@ fieldset[disabled] .form-control {
 	color: white;
 	text-decoration: none; 
 	padding: 10px 0 10px 55px;
-	background: darkgreen;                   /* fallback color */
+	background: #e74c3c;                   /* fallback color */
 	position: relative; 
 	display: block;
 	float: left;
@@ -158,7 +158,7 @@ fieldset[disabled] .form-control {
 	height: 0;
 	border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
 	border-bottom: 50px solid transparent;
-	border-left: 30px solid lightgreen;
+	border-left: 30px solid #27ae60;
 	position: absolute;
 	top: 50%;
 	margin-top: -50px; 
@@ -172,7 +172,7 @@ fieldset[disabled] .form-control {
 	height: 0;
 	border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
 	border-bottom: 50px solid transparent;
-	border-left: 30px solid darkgreen;
+	border-left: 30px solid #e74c3c;
 	position: absolute;
 	top: 50%;
 	margin-top: -50px; 
@@ -220,17 +220,17 @@ fieldset[disabled] .form-control {
 }
 .breadcrumb1 li a:hover { 
 	color:white;
-	background: green; 
+	background: #2ecc71; 
 }
 .breadcrumb1 li a:hover:after { 
-	border-left-color: green!important; 
+	border-left-color: #2ecc71!important; 
 }
 .breadcrumb1 li.active a:hover { 
 	color:white;
-	background: darkgreen; 
+	background: #e74c3c; 
 }
 .breadcrumb1 li.active a:hover:after { 
-	border-left-color: darkgreen!important; 
+	border-left-color: #e74c3c!important; 
 }
 .breadcrumb1 li.disabled a:hover { 
 	color: dimgray;
