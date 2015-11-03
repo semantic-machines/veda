@@ -86,8 +86,6 @@ class XapianReader : SearchReader
     public int get(Ticket *ticket, string str_query, string str_sort, string _db_names, int count_authorize,
                    void delegate(string uri) add_out_element, bool inner_get)
     {
-        context.ft_check_for_reload(&reopen_db);
-
         int[ string ] key2slot = context.get_key2slot();
 
         if (key2slot == (int[ string ]).init)
@@ -138,6 +136,9 @@ class XapianReader : SearchReader
 
         if (trace_msg[ 322 ] == 1)
             log.trace("[%s][Q:%X] TTA [%s]", context.get_name(), cast(void *)str_query, tta.toString());
+
+    	log.trace ("@xapian_reader:get #1 [%s]", str_query);
+        context.ft_check_for_reload(&reopen_db);
 
         Database_QueryParser db_qp = get_dbqp(db_names);
 

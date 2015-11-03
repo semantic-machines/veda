@@ -516,7 +516,7 @@ class PThreadContext : Context
     public bool ft_check_for_reload(void delegate() load)
     {
         long now = Clock.currStdTime() / 10000000;
-        log.trace ("@ft_check_for_reload: #1");
+//        log.trace ("@ft_check_for_reload: #1");
 
         if (now - local_time_check_indexed > timeout)
         {
@@ -526,11 +526,10 @@ class PThreadContext : Context
 
             if (count_indexed - local_count_indexed > 0)
             {
-                //writeln ("@ft_check_for_reload:execute load");
+                log.trace ("@ft_check_for_reload:execute load");
                 local_time_check_indexed = now;
                 local_count_indexed      = count_indexed;
                 load();
-            	log.trace ("@ft_check_for_reload:!load");
                 return true;
             }
         }
