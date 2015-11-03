@@ -22,7 +22,7 @@ basic.getDrivers().forEach (function (drv) {
 	     });
 	  })
 	  ,
-	  60000
+	  90000
 	).then
 	(
 	  null,
