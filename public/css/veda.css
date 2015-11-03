@@ -120,8 +120,6 @@ fieldset[disabled] .form-control {
 	margin: 20px 0px 10px -20px;
 	list-style: none; 
 	overflow: hidden; 
-	font: 12px Helvetica, Arial, Sans-Serif;
-	font-weight: bold;
 }
 .breadcrumb1 li { 
 	float: left; 
