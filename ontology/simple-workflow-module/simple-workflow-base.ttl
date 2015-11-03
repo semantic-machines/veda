@@ -592,95 +592,94 @@ s-wf:UserTaskFormTemplate
   rdfs:label "Шаблон для класса Форма ответа на задачу"@ru ;
   v-ui:forClass s-wf:UserTaskForm ;
   v-ui:template """
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="row">
-          <div class="col-md-6">
-	        <span about="s-wf:UserTaskForm" property="rdfs:label"></span>
-  	      </div>  
-          <div class="col-md-6 text-right text-muted">
-                <a href="#/@"><span property="@">ID</span></a>
-	      </div>  
-	    </div>
-      </div>
-      <div class="panel-body">
-        <div class="row">
-          <div class="col-md-12">
-			<h3 about="@" property="rdfs:label"></h3>
-          </div>
-        </div>
-        <div class="row">
-            <div class="col-md-3">
-               <strong about="v-wf:from" property="rdfs:label" class="text-muted"></strong>
-               <div about="@" rel="v-wf:from" template="v-ui:LabelTemplate"></div>
-            </div>
-            <div class="col-md-3">
-               <strong about="v-wf:to" property="rdfs:label" class="text-muted"></strong>
-               <div about="@" rel="v-wf:to" template="v-ui:LabelTemplate"></div>
-            </div>
-            <div class="col-md-3">
-               <strong about="v-s:description" property="rdfs:label" class="text-muted"></strong>
-               <div about="@" property="v-s:description"></div>
-            </div>            
-            <div class="col-md-3">
-               <strong about="v-wf:dateGiven" property="rdfs:label" class="text-muted"></strong>
-               <div about="@" property="v-wf:dateGiven"></div>
-            </div>
-        </div>
-        <hr />
-        <div class="row">
-            <div class="col-md-12">
-               <strong about="v-wf:takenDecision" property="rdfs:label" class="text-muted"></strong>
-               <div about="@" rel="v-wf:takenDecision" class="view -edit -search">
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<div class="row">
+			<div class="col-md-6">
+				<span about="s-wf:UserTaskForm" property="rdfs:label"></span>
+			</div>  
+			<div class="col-md-6 text-right text-muted">
+				<a href="#/@"><span property="@">ID</span></a>
+			</div>  
+		</div>
+	</div>
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-md-12">
+				<h3 about="@" property="rdfs:label"></h3>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<strong about="v-wf:from" property="rdfs:label" class="text-muted"></strong>
+				<div about="@" rel="v-wf:from" template="v-ui:LabelTemplate"></div>
+			</div>
+			<div class="col-md-3">
+			   <strong about="v-wf:to" property="rdfs:label" class="text-muted"></strong>
+			   <div about="@" rel="v-wf:to" template="v-ui:LabelTemplate"></div>
+			</div>
+			<div class="col-md-3">
+				<strong about="v-s:description" property="rdfs:label" class="text-muted"></strong>
+				<div about="@" property="v-s:description"></div>
+			</div>            
+			<div class="col-md-3">
+				<strong about="v-wf:dateGiven" property="rdfs:label" class="text-muted"></strong>
+				<div about="@" property="v-wf:dateGiven"></div>
+			</div>
+		</div>
+		<hr />
+		<div class="row">
+			<div class="col-md-12">
+				<strong about="v-wf:takenDecision" property="rdfs:label" class="text-muted"></strong>
+				<div about="@" rel="v-wf:takenDecision" class="view -edit -search">
 					<span about="@" rel="rdf:type" template="v-ui:LabelTemplate"></span>
-               </div>
-               <select id="decision-control" class="-view edit search form-control"></select>
-               <div about="@" rel="v-wf:takenDecision" embedded="true"></div>
-            </div>
-        </div>
-        <hr />
-        <div class="row">
-            <div class="col-md-12">
-               <strong about="v-wf:onDocument" property="rdfs:label" class="text-muted"></strong>
-               <div about="@" rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate"></div>
-            </div>
-        </div>
-      </div>
-      <div class="panel-footer">
-        <button type="button" class="action btn btn-warning view edit -search" id="send" about="v-b:Send" property="rdfs:label"/>
-        <button type="button" class="action btn btn-success" id="save" about="v-b:Save" property="rdfs:label"/>
+				</div>
+				<select id="decision-control" class="-view edit search form-control"></select>
+				<div about="@" rel="v-wf:takenDecision" embedded="true"></div>
+			</div>
+		</div>
+		<hr />
+		<div class="row">
+			<div class="col-md-12">
+				<strong about="v-wf:onDocument" property="rdfs:label" class="text-muted"></strong>
+				<div about="@" rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate"></div>
+			</div>
+		</div>
+	</div>
+	<div class="panel-footer">
+		<button type="button" class="action btn btn-warning view edit -search" id="send" about="v-b:Send" property="rdfs:label"/>
+		<button type="button" class="action btn btn-success" id="save" about="v-b:Save" property="rdfs:label"/>
 		<button type="button" class="action btn btn-warning view -edit -search" id="rightsOrigin" about="v-b:RightsOrigin" property="rdfs:label"/>
-      </div>
-    </div>
-    <script type="text/javascript">
-      $('#send').on('click', function () {
+	</div>
+</div>
+<script type="text/javascript">
+	$('#send').on('click', function () {
 		individual.trigger("send");
-	  });
-	  
-	  $('#rightsOrigin').on('click', function () {
+	});
+	
+	$('#rightsOrigin').on('click', function () {
 		individual.trigger("showRights");
-	  });
-	  
-      template.trigger("edit");
-      var control = $("select#decision-control");
-      if (individual.hasValue("v-wf:possibleDecisionClass")) {
-        individual["v-wf:possibleDecisionClass"].map( function (value, index) {
-	      control.append( $("<option>", {value: index, text: value["rdfs:label"].join(", ")}) );
+	});
+	var control = $("select#decision-control");
+	if (individual.hasValue("v-wf:possibleDecisionClass")) {
+		individual["v-wf:possibleDecisionClass"].map( function (value, index) {
+			control.append( $("<option>", {value: index, text: value["rdfs:label"].join(", ")}) );
 		});
-      }
-      control.on("change", function () {
-	    var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
-	    var decision = createDecision(type);
-	    individual["v-wf:takenDecision"] = [ decision ];
-	  });
-      control.trigger("change");
-	  function createDecision(type) {
-   	    var decision = new veda.IndividualModel();
-	    decision["rdf:type"] = [ type ];
-	    decision["rdfs:label"] = type["rdfs:label"];
-	    return decision;
-	  }
-    </script>
+	}
+	control.on("change", function () {
+		var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
+		var decision = createDecision(type);
+		individual["v-wf:takenDecision"] = [ decision ];
+	});
+	control.trigger("change");
+	template.trigger("edit");
+	function createDecision(type) {
+		var decision = new veda.IndividualModel();
+		decision["rdf:type"] = [ type ];
+		decision["rdfs:label"] = type["rdfs:label"];
+		return decision;
+	}
+</script>
   """ ;
   .
 
