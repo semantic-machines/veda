@@ -40,4 +40,4 @@ script:
 # Stop deamon and show log
 after_script:
   - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
-  - cat $PWD/veda.log
+  - cat $PWD/*.log          

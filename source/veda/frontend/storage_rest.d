@@ -450,9 +450,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     long wait_module(int module_id, long op_id)
     {
-    	writeln ("@API:wait_module #1", text (cast(P_MODULE)op_id));
     	long res = context.wait_thread(cast(P_MODULE)module_id, op_id);
-    	writeln ("@API:wait_module #2", text (cast(P_MODULE)op_id));
         return res;
     }
 

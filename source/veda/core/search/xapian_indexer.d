@@ -694,7 +694,7 @@ private class IndexerContext
 
     void commit_all_db()
     {
-    	writeln ("@indexer: commit_all_db");
+    	log.trace ("@indexer: commit_all_db");
     	
         indexer_base_db.commit(&err);
         indexer_system_db.commit(&err);
@@ -900,7 +900,7 @@ void xapian_indexer(string thread_name, string _node_id)
                         else
                         {
                             if (cmd == CMD.NOP)
-                        		writeln ("@indexer: NOP #1");
+                        		log.trace ("@indexer: NOP #1");
                             // если ожидают окончания операции для indexer, то вероятнее всего собираются сразу-же читать из поиска
                             // следовательно нужно сделать коммит
                             if (ictx.key2slot.length - ictx.last_size_key2slot > 0)
@@ -915,7 +915,7 @@ void xapian_indexer(string thread_name, string _node_id)
                             ictx.last_counter_after_timed_commit = ictx.counter;
 
                             if (cmd == CMD.NOP)
-                        		writeln ("@indexer: NOP #2");
+                        		log.trace ("@indexer: NOP #2");
 
                             if (cmd == CMD.NOP)
                                 send(tid_response_reciever, true);
