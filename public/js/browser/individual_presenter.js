@@ -650,7 +650,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				{
 					if (individual.hasValue('v-s:isDraftOf') && individual.id == individual['v-s:isDraftOf'][0].id) {
 						// Individual is draft itself
-						template.addClass("mode-edit").removeClass("mode-view mode-search");
+						container.empty();
+						individual.present(container, undefined, "edit");
 					} else {
 						// Create new draft
 						var clone = individual.clone();
@@ -677,17 +678,46 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			$save.unbind("click");
 			$save.on("click", function (e) {
 				if (individual.is('v-s:Versioned')) {
-					if (individual.hasValue('v-s:hasDraft')) {
+					if (individual.hasValue('v-s:isDraftOf')) {
+						// original document exists
+						var originalId = individual['v-s:isDraftOf'][0].id;
+
+						// add new version
+						individual['v-s:isDraftOf'] = [];
+						individual['v-s:actualVersion'] = [originalId];
+						individual.save();
 						
+						// remove 'v-s:hasDraft' on old original
+						var original = new veda.IndividualModel();
+						original['v-s:hasDraft'] = [];
+						original.save();
 						
+						container.empty();
+						individual.present(container, undefined, "view");
+					} else {
+						// first save of draft
+						individual['v-s:isDraftOf'] = [];
+						individual['v-s:actualVersion'] = [individual];
+						individual.save();
+						
+						container.empty();
+						individual.present(container, undefined, "view");
 					}
 				} else {
+					// rewrite original document
 					var draftId = individual.id;
 					individual['v-s:hasDraft'] = [];
 					var originalId = individual['v-s:isDraftOf'][0].id;
 					individual.id = originalId;
 					individual.save();
 					
+					// + delete draft
+					individual.id = draftId;
+					individual['v-s:deleted'] = [new Boolean(true)];
+					individual.save();
+					
+					container.empty();
+					individual.present(container, undefined, "view");
 				}
 			});
 		}
