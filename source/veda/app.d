@@ -205,7 +205,7 @@ void start_http_listener(Context core_context, ref std.concurrency.Tid[] pool, u
 
     registerRestInterface(router, vsr);
 
-    log.trace("============ROUTES=============");
+    log.trace("=========== ROUTES ============");
     auto routes = router.getAllRoutes();
     log.trace("GET:");
     foreach (route; routes)
