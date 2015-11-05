@@ -691,7 +691,7 @@ private class IndexerContext
 
     void commit_all_db()
     {
-    	log.trace ("@indexer: commit_all_db");
+    	log.trace ("@indexer: commit_all_db, counter=", counter);
     	
         indexer_base_db.commit(&err);
         indexer_system_db.commit(&err);
@@ -958,12 +958,14 @@ void xapian_indexer(string thread_name, string _node_id)
                             ictx.index_msg(msg, false, op_id);
                             ictx.counter = op_id;
         					set_count_indexed(op_id);
+       						log.trace ("set_count_indexed=", op_id); 
                         }
                         else if (cmd == CMD.DELETE)
                         {
                             ictx.index_msg(msg, true, op_id);
         					ictx.counter = op_id;
         					set_count_indexed(op_id);                            
+       						log.trace ("set_count_indexed=", op_id); 
                         }
                         //writeln ("@@XAPIAN INDEXER END op_id=", op_id);
                     },
