@@ -15,10 +15,7 @@ private
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, storage.lmdb_storage;
     import az.acl;
 
-    import vibe.data.json;
-    import vibe.core.log;
-    import vibe.http.client;
-    import vibe.stream.operations;
+    import vibe.data.json, vibe.core.log, vibe.http.client, vibe.stream.operations;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -526,7 +523,7 @@ class PThreadContext : Context
             local_time_check_indexed = now;
             if (count_indexed > local_count_indexed)
             {
-                log.trace ("@ft_check_for_reload:execute reload: %s", text (load));
+                log.trace ("@ft_check_for_reload:execute reload");
                 local_count_indexed      = count_indexed;
                 load();
                 return true;

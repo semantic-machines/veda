@@ -309,7 +309,8 @@ class XapianReader : SearchReader
 
     public void reopen_db()
     {
-        //writeln ("@REOPEN");
+       	log.trace ("@FTR:reopen_db");
+
         foreach (el; using_dbqp.values)
         {
             el.db.reopen(&err);
