@@ -688,7 +688,7 @@ private class IndexerContext
             destroy_Document(doc);
         }
 
-            } finally
+        } finally
     	{
         if (trace_msg[ 221 ] == 1)
             log.trace("FT: end");
