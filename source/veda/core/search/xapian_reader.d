@@ -137,7 +137,7 @@ class XapianReader : SearchReader
         if (trace_msg[ 322 ] == 1)
             log.trace("[%s][Q:%X] TTA [%s]", context.get_name(), cast(void *)str_query, tta.toString());
 
-    	log.trace ("@xapian_reader:get #1 [%s]", str_query);
+        log.trace("@xapian_reader:get #1 [%s]", str_query);
         context.ft_check_for_reload(&reopen_db);
 
         Database_QueryParser db_qp = get_dbqp(db_names);
@@ -309,7 +309,7 @@ class XapianReader : SearchReader
 
     public void reopen_db()
     {
-       	log.trace ("@FTR:reopen_db");
+        log.trace("@FTR:reopen_db");
 
         foreach (el; using_dbqp.values)
         {

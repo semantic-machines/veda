@@ -137,267 +137,267 @@ private class IndexerContext
 
     void index_msg(string msg, bool is_deleted, long op_id)
     {
-    	        Individual indv;
+        Individual indv;
 
-    	try
-    	{
-    	
-        if (cbor2individual(&indv, msg) < 0)
+        try
         {
-            log.trace("!ERR:invalid individual:[%s]", msg);
-            return;
-        }
-
-        if (iproperty is null)
-        {
-            if (context is null)
-                context = new PThreadContext(node_id, thread_name, P_MODULE.fulltext_indexer);
-            iproperty = new IndexerProperty(context);
-        }
-
-        iproperty.load(false);
-
-        //writeln("prepare msg counter:", counter, ", subject:", ss.subject);
-
-        if (indv.uri !is null && indv.resources.length > 0)
-        {
-            OutBuffer      all_text = new OutBuffer();
-            XapianDocument doc      = new_Document(&err);
-            indexer.set_document(doc, &err);
-
-            if (trace_msg[ 220 ] == 1)
-                log.trace("index document:[%s]", indv.uri);
-
-            Resources types = indv.getResources(rdf__type);
-
-            // используем информацию о типе, для определения, в какой базе следует проводить индексацию
-            string dbname = "base";
-            foreach (_type; types)
+            if (cbor2individual(&indv, msg) < 0)
             {
-                if (_type.uri == "vdi:ClassIndex")
-                {
-                    iproperty.add_schema_data(indv);
-                }
-
-                dbname = iproperty.get_dbname_of_class(_type.uri);
-                if (dbname != "base")
-                    break;
+                log.trace("!ERR:invalid individual:[%s]", msg);
+                return;
             }
 
-            if (dbname == "not-indexed")
-                return;
-
-            foreach (predicate, resources; indv.resources)
+            if (iproperty is null)
             {
-                string prefix;
-                //int slot = get_slot_and_set_if_not_found(predicate, key2slot);
+                if (context is null)
+                    context = new PThreadContext(node_id, thread_name, P_MODULE.fulltext_indexer);
+                iproperty = new IndexerProperty(context);
+            }
 
-                //all_text.write('|');
+            iproperty.load(false);
 
-                string type = "xsd__string";
+            //writeln("prepare msg counter:", counter, ", subject:", ss.subject);
 
-                string p_text_ru = "";
-                string p_text_en = "";
+            if (indv.uri !is null && indv.resources.length > 0)
+            {
+                OutBuffer      all_text = new OutBuffer();
+                XapianDocument doc      = new_Document(&err);
+                indexer.set_document(doc, &err);
 
-                void index_double(string predicate, Resource oo)
+                if (trace_msg[ 220 ] == 1)
+                    log.trace("index document:[%s]", indv.uri);
+
+                Resources types = indv.getResources(rdf__type);
+
+                // используем информацию о типе, для определения, в какой базе следует проводить индексацию
+                string dbname = "base";
+                foreach (_type; types)
                 {
-                    int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
-
-                    prefix = "X" ~ text(slot_L1) ~ "X";
-
-                    decimal dd     = oo.get!decimal();
-                    double  l_data = dd.toDouble();
-                    doc.add_value(slot_L1, l_data, &err);
-                    prefix = "X" ~ text(slot_L1) ~ "D";
-                    indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
-
-                    if (trace_msg[ 220 ] == 1)
-                        log.trace("index [DataType.Double] :[%s], prefix=%s[%s]", text(l_data), prefix,
-                                  predicate);
-                }
-
-                void index_boolean(string predicate, Resource oo)
-                {
-                    int    slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
-
-                    string data = "F";
-
-                    prefix = "X" ~ text(slot_L1) ~ "D";
-
-                    if (oo.get!bool() == true)
-                        data = "T";
-
-                    indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
-                    doc.add_value(slot_L1, data.ptr, data.length, &err);
-
-                    if (trace_msg[ 220 ] == 1)
-                        log.trace("index [DataType.Boolean] :[%s], prefix=%s[%s]", data, prefix,
-                                  predicate);
-                }
-
-                void index_integer(string predicate, Resource oo)
-                {
-                    int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
-
-                    prefix = "X" ~ text(slot_L1) ~ "X";
-
-                    double l_data = cast(double)(oo.get!long ());
-                    doc.add_value(slot_L1, l_data, &err);
-                    prefix = "X" ~ text(slot_L1) ~ "D";
-                    indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
-
-                    if (trace_msg[ 220 ] == 1)
-                        log.trace("index [DataType.Integer] :[%s], prefix=%s[%s]", text(l_data), prefix,
-                                  predicate);
-                }
-
-                void index_string(string predicate, Resource oo)
-                {
-                    string data;
-
-                    data = oo.literal;
-                    if (data.length < 1)
-                        return;
-
-                    // if (resources.length > 1)
+                    if (_type.uri == "vdi:ClassIndex")
                     {
-                        if (oo.lang == LANG.RU)
-                            p_text_ru ~= oo.literal;
-                        else if (oo.lang == LANG.EN)
-                            p_text_en ~= oo.literal;
+                        iproperty.add_schema_data(indv);
                     }
 
-                    int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
-                    prefix = "X" ~ text(slot_L1) ~ "X";
-
-                    if (trace_msg[ 220 ] == 1)
-                        log.trace("index_literal:[%s], lang=%s, prefix=%s[%s]", data, oo.lang, prefix,
-                                  predicate);
-
-                    indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
-                    doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
-
-                    all_text.write(data);
-                    all_text.write('|');
+                    dbname = iproperty.get_dbname_of_class(_type.uri);
+                    if (dbname != "base")
+                        break;
                 }
 
-                void index_string_for_first_wildcard(string predicate, Resource oo)
+                if (dbname == "not-indexed")
+                    return;
+
+                foreach (predicate, resources; indv.resources)
                 {
-                    char[] data = oo.literal.dup;
+                    string prefix;
+                    //int slot = get_slot_and_set_if_not_found(predicate, key2slot);
 
-                    if (data.length < 1)
-                        return;
+                    //all_text.write('|');
 
-                    reverse(data);
+                    string type = "xsd__string";
 
-                    int slot_L1 = get_slot_and_set_if_not_found(predicate ~ "#F", key2slot);
-                    prefix = "X" ~ text(slot_L1) ~ "X";
+                    string p_text_ru = "";
+                    string p_text_en = "";
 
-                    if (trace_msg[ 220 ] == 1)
-                        log.trace("revers index_literal:[%s], lang=%s, prefix=%s[%s]", data, oo.lang, prefix,
-                                  predicate);
+                    void index_double(string predicate, Resource oo)
+                    {
+                        int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
 
-                    indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
+                        prefix = "X" ~ text(slot_L1) ~ "X";
+
+                        decimal dd     = oo.get!decimal();
+                        double  l_data = dd.toDouble();
+                        doc.add_value(slot_L1, l_data, &err);
+                        prefix = "X" ~ text(slot_L1) ~ "D";
+                        indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
+
+                        if (trace_msg[ 220 ] == 1)
+                            log.trace("index [DataType.Double] :[%s], prefix=%s[%s]", text(l_data), prefix,
+                                      predicate);
+                    }
+
+                    void index_boolean(string predicate, Resource oo)
+                    {
+                        int    slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
+
+                        string data = "F";
+
+                        prefix = "X" ~ text(slot_L1) ~ "D";
+
+                        if (oo.get!bool() == true)
+                            data = "T";
+
+                        indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
+                        doc.add_value(slot_L1, data.ptr, data.length, &err);
+
+                        if (trace_msg[ 220 ] == 1)
+                            log.trace("index [DataType.Boolean] :[%s], prefix=%s[%s]", data, prefix,
+                                      predicate);
+                    }
+
+                    void index_integer(string predicate, Resource oo)
+                    {
+                        int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
+
+                        prefix = "X" ~ text(slot_L1) ~ "X";
+
+                        double l_data = cast(double)(oo.get!long ());
+                        doc.add_value(slot_L1, l_data, &err);
+                        prefix = "X" ~ text(slot_L1) ~ "D";
+                        indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
+
+                        if (trace_msg[ 220 ] == 1)
+                            log.trace("index [DataType.Integer] :[%s], prefix=%s[%s]", text(l_data), prefix,
+                                      predicate);
+                    }
+
+                    void index_string(string predicate, Resource oo)
+                    {
+                        string data;
+
+                        data = oo.literal;
+                        if (data.length < 1)
+                            return;
+
+                        // if (resources.length > 1)
+                        {
+                            if (oo.lang == LANG.RU)
+                                p_text_ru ~= oo.literal;
+                            else if (oo.lang == LANG.EN)
+                                p_text_en ~= oo.literal;
+                        }
+
+                        int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
+                        prefix = "X" ~ text(slot_L1) ~ "X";
+
+                        if (trace_msg[ 220 ] == 1)
+                            log.trace("index_literal:[%s], lang=%s, prefix=%s[%s]", data, oo.lang, prefix,
+                                      predicate);
+
+                        indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
+                        doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
+
+                        all_text.write(data);
+                        all_text.write('|');
+                    }
+
+                    void index_string_for_first_wildcard(string predicate, Resource oo)
+                    {
+                        char[] data = oo.literal.dup;
+
+                        if (data.length < 1)
+                            return;
+
+                        reverse(data);
+
+                        int slot_L1 = get_slot_and_set_if_not_found(predicate ~ "#F", key2slot);
+                        prefix = "X" ~ text(slot_L1) ~ "X";
+
+                        if (trace_msg[ 220 ] == 1)
+                            log.trace("revers index_literal:[%s], lang=%s, prefix=%s[%s]", data, oo.lang, prefix,
+                                      predicate);
+
+                        indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
 //                                        doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
 
-                    //all_text.write(data);
-                    //all_text.write('|');
-                }
+                        //all_text.write(data);
+                        //all_text.write('|');
+                    }
 
-                void prepare_index(ref Individual idx, Resource rs, string ln, int level = 0)
-                {
-                    if (rs.type == DataType.String)
+                    void prepare_index(ref Individual idx, Resource rs, string ln, int level = 0)
                     {
-                        Resources indexed_field_as_fwildcardZ =
-                            idx.getResources("vdi:indexed_field_as_fwildcard");
-
-                        if (indexed_field_as_fwildcardZ != Resources.init)
+                        if (rs.type == DataType.String)
                         {
-                            foreach (indexed_field_as_fwildcard; indexed_field_as_fwildcardZ)
-                            {
-                                //writeln("indexed_field_as_fwildcard = ", indexed_field_as_fwildcard, ", rs=", rs.literal);
+                            Resources indexed_field_as_fwildcardZ =
+                                idx.getResources("vdi:indexed_field_as_fwildcard");
 
-                                index_string_for_first_wildcard(predicate, rs);
+                            if (indexed_field_as_fwildcardZ != Resources.init)
+                            {
+                                foreach (indexed_field_as_fwildcard; indexed_field_as_fwildcardZ)
+                                {
+                                    //writeln("indexed_field_as_fwildcard = ", indexed_field_as_fwildcard, ", rs=", rs.literal);
+
+                                    index_string_for_first_wildcard(predicate, rs);
+                                }
                             }
                         }
-                    }
-                    else if (rs.type == DataType.Uri)
-                    {
-                        try
+                        else if (rs.type == DataType.Uri)
                         {
-                            // 1. считать индивид по ссылке
-                            Individual inner_indv = context.get_individual(ticket, rs.uri);
-
-                            //string tab; for (int i = 0; i < level; i++)
-                            //    tab ~= "	";
-
-                            //writeln (tab);
-                            //writeln (tab, "@inner_indv = ", inner_indv);
-                            //writeln (tab, "@idx = ", idx);
-                            foreach (predicate, values; idx.resources)
+                            try
                             {
-                                //writeln (tab, "@@@5 predicate = ", predicate);
-                                if (predicate == "vdi:inherited_index")
+                                // 1. считать индивид по ссылке
+                                Individual inner_indv = context.get_individual(ticket, rs.uri);
+
+                                //string tab; for (int i = 0; i < level; i++)
+                                //    tab ~= "	";
+
+                                //writeln (tab);
+                                //writeln (tab, "@inner_indv = ", inner_indv);
+                                //writeln (tab, "@idx = ", idx);
+                                foreach (predicate, values; idx.resources)
                                 {
-                                    foreach (value; values)
+                                    //writeln (tab, "@@@5 predicate = ", predicate);
+                                    if (predicate == "vdi:inherited_index")
                                     {
-                                        //writeln (tab, "@@@5.0 value = ", value);
-                                        // ссылка на наследуемый индекс, переходим вниз
-                                        Individual inhr_idx = iproperty.get_index(value.uri);
-                                        //writeln (tab, "@@@5.1 inhr_idx = ", inhr_idx);
-                                        if (inhr_idx != Individual.init)
+                                        foreach (value; values)
                                         {
-                                            Resources forProperties =
-                                                inhr_idx.getResources("vdi:forProperty");
-                                            if (forProperties != Resources.init)
+                                            //writeln (tab, "@@@5.0 value = ", value);
+                                            // ссылка на наследуемый индекс, переходим вниз
+                                            Individual inhr_idx = iproperty.get_index(value.uri);
+                                            //writeln (tab, "@@@5.1 inhr_idx = ", inhr_idx);
+                                            if (inhr_idx != Individual.init)
                                             {
-                                                foreach (forProperty; forProperties)
+                                                Resources forProperties =
+                                                    inhr_idx.getResources("vdi:forProperty");
+                                                if (forProperties != Resources.init)
                                                 {
-                                                    //writeln (tab, "@@@5.2 forProperty = ", forProperty);
-                                                    Resources links =
-                                                        inner_indv.getResources(forProperty.uri);
-                                                    //writeln (tab, "@@@5.3 links = ", links);
-                                                    foreach (link; links)
+                                                    foreach (forProperty; forProperties)
                                                     {
-                                                        prepare_index(inhr_idx, link,
-                                                                      ln ~ "." ~ forProperty.uri,
-                                                                      level + 1);
+                                                        //writeln (tab, "@@@5.2 forProperty = ", forProperty);
+                                                        Resources links =
+                                                            inner_indv.getResources(forProperty.uri);
+                                                        //writeln (tab, "@@@5.3 links = ", links);
+                                                        foreach (link; links)
+                                                        {
+                                                            prepare_index(inhr_idx, link,
+                                                                          ln ~ "." ~ forProperty.uri,
+                                                                          level + 1);
+                                                        }
                                                     }
                                                 }
-                                            }
-                                            else
-                                            {
-                                                // в этом индексе не указанно на какое свойство будет индексация,
-                                                // значит берем поля указанные vdi:indexed_field в текущем индивиде
-                                                Resources indexed_fields =
-                                                    inhr_idx.getResources("vdi:indexed_field");
-                                                if (indexed_fields != Resources.init)
+                                                else
                                                 {
-                                                    foreach (indexed_field; indexed_fields)
+                                                    // в этом индексе не указанно на какое свойство будет индексация,
+                                                    // значит берем поля указанные vdi:indexed_field в текущем индивиде
+                                                    Resources indexed_fields =
+                                                        inhr_idx.getResources("vdi:indexed_field");
+                                                    if (indexed_fields != Resources.init)
                                                     {
-                                                        Resources rrc =
-                                                            inner_indv.getResources(indexed_field.uri);
-                                                        foreach (rc; rrc)
+                                                        foreach (indexed_field; indexed_fields)
                                                         {
-                                                            if (trace_msg[ 213 ] == 1)
-                                                                log.trace("index %s = %s ", ln ~ "." ~ indexed_field.uri,
-                                                                          rc);
+                                                            Resources rrc =
+                                                                inner_indv.getResources(indexed_field.uri);
+                                                            foreach (rc; rrc)
+                                                            {
+                                                                if (trace_msg[ 213 ] == 1)
+                                                                    log.trace("index %s = %s ", ln ~ "." ~ indexed_field.uri,
+                                                                              rc);
 
-                                                            if (rc.type == DataType.String)
-                                                            {
-                                                                index_string(ln ~ "." ~ indexed_field.uri, rc);
-                                                            }
-                                                            else if (rc.type == DataType.Integer)
-                                                            {
-                                                                index_integer(ln ~ "." ~ indexed_field.uri, rc);
-                                                            }
-                                                            else if (rc.type == DataType.Boolean)
-                                                            {
-                                                                index_boolean(ln ~ "." ~ indexed_field.uri, rc);
-                                                            }
-                                                            else if (rc.type == DataType.Decimal)
-                                                            {
-                                                                index_double(ln ~ "." ~ indexed_field.uri, rc);
+                                                                if (rc.type == DataType.String)
+                                                                {
+                                                                    index_string(ln ~ "." ~ indexed_field.uri, rc);
+                                                                }
+                                                                else if (rc.type == DataType.Integer)
+                                                                {
+                                                                    index_integer(ln ~ "." ~ indexed_field.uri, rc);
+                                                                }
+                                                                else if (rc.type == DataType.Boolean)
+                                                                {
+                                                                    index_boolean(ln ~ "." ~ indexed_field.uri, rc);
+                                                                }
+                                                                else if (rc.type == DataType.Decimal)
+                                                                {
+                                                                    index_double(ln ~ "." ~ indexed_field.uri, rc);
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -407,266 +407,265 @@ private class IndexerContext
                                     }
                                 }
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("prepare index:" ~ ex.msg);
+                            catch (Exception ex)
+                            {
+                                throw new Exception("prepare index:" ~ ex.msg);
+                            }
                         }
                     }
-                }
 
-                foreach (oo; resources)
-                {
-                    if (oo.literal !is null)
+                    foreach (oo; resources)
                     {
-                        // если это относится к class_property__2__indiviual, следует обновить
-
-                        if (predicate != rdf__type)
+                        if (oo.literal !is null)
                         {
-                            // используем информацию о типе
-                            foreach (_type; types)
+                            // если это относится к class_property__2__indiviual, следует обновить
+
+                            if (predicate != rdf__type)
                             {
-                                // в онтологии найти для данного класса и для данного предиката
-                                // информацию об индексировании
-                                Individual idx = iproperty.get_index(_type.uri, predicate);
-                                if (idx != Individual.init)
+                                // используем информацию о типе
+                                foreach (_type; types)
                                 {
-                                    //writeln("@@@A class= ", _type.uri, ", predicate=", predicate);
-
-                                    //writeln("@@@A 1 _type.uri ~ predicate= ", _type.uri ~ predicate);
-                                    //writeln("@@@A idx=", idx.uri);
-                                    prepare_index(idx, oo, predicate);
-                                }
-                                else
-                                {
-                                    idx = iproperty.get_index_of_property(predicate);
-
+                                    // в онтологии найти для данного класса и для данного предиката
+                                    // информацию об индексировании
+                                    Individual idx = iproperty.get_index(_type.uri, predicate);
                                     if (idx != Individual.init)
                                     {
-                                        //writeln("@@@B class= ", _type.uri, ", predicate=", predicate);
+                                        //writeln("@@@A class= ", _type.uri, ", predicate=", predicate);
 
-                                        // для предиката
-                                        //writeln("@@@B 3");
-                                        //writeln("@@@B idx=", idx.uri);
-
-                                        // индексируем по найденному idx
+                                        //writeln("@@@A 1 _type.uri ~ predicate= ", _type.uri ~ predicate);
+                                        //writeln("@@@A idx=", idx.uri);
                                         prepare_index(idx, oo, predicate);
+                                    }
+                                    else
+                                    {
+                                        idx = iproperty.get_index_of_property(predicate);
+
+                                        if (idx != Individual.init)
+                                        {
+                                            //writeln("@@@B class= ", _type.uri, ", predicate=", predicate);
+
+                                            // для предиката
+                                            //writeln("@@@B 3");
+                                            //writeln("@@@B idx=", idx.uri);
+
+                                            // индексируем по найденному idx
+                                            prepare_index(idx, oo, predicate);
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    if (oo.type == DataType.Boolean)
-                    {
-                        index_boolean(predicate, oo);
-                    }
-                    else if (oo.type == DataType.Integer)
-                    {
-                        index_integer(predicate, oo);
-                    }
-                    else if (oo.type == DataType.Decimal)
-                    {
-                        index_double(predicate, oo);
-                    }
-                    else if (oo.type == DataType.String)
-                    {
-                        index_string(predicate, oo);
-                    }
-                    else if (oo.type == DataType.Uri)
-                    {
-                        if (oo.literal !is null)
+                        if (oo.type == DataType.Boolean)
+                        {
+                            index_boolean(predicate, oo);
+                        }
+                        else if (oo.type == DataType.Integer)
+                        {
+                            index_integer(predicate, oo);
+                        }
+                        else if (oo.type == DataType.Decimal)
+                        {
+                            index_double(predicate, oo);
+                        }
+                        else if (oo.type == DataType.String)
+                        {
+                            index_string(predicate, oo);
+                        }
+                        else if (oo.type == DataType.Uri)
+                        {
+                            if (oo.literal !is null)
+                            {
+                                int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
+                                prefix = "X" ~ text(slot_L1) ~ "X";
+
+                                string data = to_lower_and_replace_delimeters(oo.literal);
+
+                                if (trace_msg[ 220 ] == 1)
+                                    log.trace("index [DataType.Uri] :[%s], prefix=%s[%s]", data, prefix, predicate);
+                                indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
+
+                                doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
+
+                                all_text.write(data);
+                                all_text.write('|');
+                            }
+                        }
+                        else if (oo.type == DataType.Datetime)
                         {
                             int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
                             prefix = "X" ~ text(slot_L1) ~ "X";
 
-                            string data = to_lower_and_replace_delimeters(oo.literal);
-
-                            if (trace_msg[ 220 ] == 1)
-                                log.trace("index [DataType.Uri] :[%s], prefix=%s[%s]", data, prefix, predicate);
+                            long   l_data   = oo.get!long ();
+                            long   std_time = unixTimeToStdTime(l_data);
+                            string data     = SysTime(std_time).toISOString();
                             indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
 
-                            doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
-
-                            all_text.write(data);
-                            all_text.write('|');
-                        }
-                    }
-                    else if (oo.type == DataType.Datetime)
-                    {
-                        int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
-                        prefix = "X" ~ text(slot_L1) ~ "X";
-
-                        long   l_data   = oo.get!long ();
-                        long   std_time = unixTimeToStdTime(l_data);
-                        string data     = SysTime(std_time).toISOString();
-                        indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
-
-                        doc.add_value(slot_L1, l_data, &err);
-                        //   slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".Datetime", key2slot);
-                        prefix = "X" ~ text(slot_L1) ~ "D";
-                        indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
-
-                        if (trace_msg[ 220 ] == 1)
-                            log.trace("index [DataType.Datetime] :[%s][%s], prefix=%s[%s]", data, text(l_data), prefix,
-                                      predicate);
-                    }
-                }
-
-                if (resources.length > 1)
-                {
-                    if (p_text_ru.length > 0)
-                    {
-                        int slot_L1 = get_slot_and_set_if_not_found(predicate ~ "_ru", key2slot);
-                        prefix = "X" ~ text(slot_L1) ~ "X";
-
-                        indexer.index_text(p_text_ru.ptr, p_text_ru.length, prefix.ptr, prefix.length, &err);
-
-                        if (trace_msg[ 220 ] == 1)
-                            log.trace("index as ru text:[%s]", p_text_ru);
-
-                        doc.add_value(slot_L1, p_text_ru.ptr, p_text_ru.length, &err);
-                        //writeln ("slot:", slot_L1, ", value:", p_text_ru);
-                    }
-
-                    if (p_text_en.length > 0)
-                    {
-                        int slot_L1 = get_slot_and_set_if_not_found(predicate ~ "_en", key2slot);
-                        prefix = "X" ~ text(slot_L1) ~ "X";
-
-                        indexer.index_text(p_text_en.ptr, p_text_en.length, prefix.ptr, prefix.length, &err);
-
-                        if (trace_msg[ 220 ] == 1)
-                            log.trace("index as en text:[%s]", p_text_en);
-
-                        doc.add_value(slot_L1, p_text_en.ptr, p_text_en.length, &err);
-                        //writeln ("slot:", slot_L1, ", value:", p_text_en);
-                    }
-                }
-
-                int slot_L1;
-
-                if (type == xsd__string)
-                {
-                    bool sp = true;
-                    foreach (oo; resources)
-                    {
-                        if (oo.type == DataType.String && (oo.lang == LANG.RU || oo.lang == LANG.NONE))
-                        {
-                            if (sp == true)
-                            {
-                                slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".text_ru", key2slot);
-                                prefix  = "X" ~ text(slot_L1) ~ "X";
-
-                                sp = false;
-                            }
-
-                            doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
-                            indexer.index_text(oo.literal.ptr, oo.literal.length, prefix.ptr, prefix.length, &err);
+                            doc.add_value(slot_L1, l_data, &err);
+                            //   slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".Datetime", key2slot);
+                            prefix = "X" ~ text(slot_L1) ~ "D";
+                            indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
 
                             if (trace_msg[ 220 ] == 1)
-                                log.trace("index as (ru or none) xsd:string [%s]", oo.literal);
-
-                            all_text.write(oo.literal);
-                            all_text.write('|');
-
-                            //writeln ("slot:", slot_L1, ", value:", oo.literal);
+                                log.trace("index [DataType.Datetime] :[%s][%s], prefix=%s[%s]", data, text(l_data), prefix,
+                                          predicate);
                         }
                     }
 
-                    sp = true;
-                    foreach (oo; resources)
+                    if (resources.length > 1)
                     {
-                        if (oo.type == DataType.String && oo.lang == LANG.EN)
+                        if (p_text_ru.length > 0)
                         {
-                            if (sp == true)
-                            {
-                                slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".text_en", key2slot);
-                                prefix  = "X" ~ text(slot_L1) ~ "X";
+                            int slot_L1 = get_slot_and_set_if_not_found(predicate ~ "_ru", key2slot);
+                            prefix = "X" ~ text(slot_L1) ~ "X";
 
-                                sp = false;
-                            }
-
-                            doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
-                            indexer.index_text(oo.literal.ptr, oo.literal.length, prefix.ptr, prefix.length, &err);
+                            indexer.index_text(p_text_ru.ptr, p_text_ru.length, prefix.ptr, prefix.length, &err);
 
                             if (trace_msg[ 220 ] == 1)
-                                log.trace("index as (en) xsd:string [%s]", oo.literal);
+                                log.trace("index as ru text:[%s]", p_text_ru);
 
-                            all_text.write(oo.literal);
-                            all_text.write('|');
-                            //writeln ("slot:", slot_L1, ", value:", oo.literal);
+                            doc.add_value(slot_L1, p_text_ru.ptr, p_text_ru.length, &err);
+                            //writeln ("slot:", slot_L1, ", value:", p_text_ru);
                         }
+
+                        if (p_text_en.length > 0)
+                        {
+                            int slot_L1 = get_slot_and_set_if_not_found(predicate ~ "_en", key2slot);
+                            prefix = "X" ~ text(slot_L1) ~ "X";
+
+                            indexer.index_text(p_text_en.ptr, p_text_en.length, prefix.ptr, prefix.length, &err);
+
+                            if (trace_msg[ 220 ] == 1)
+                                log.trace("index as en text:[%s]", p_text_en);
+
+                            doc.add_value(slot_L1, p_text_en.ptr, p_text_en.length, &err);
+                            //writeln ("slot:", slot_L1, ", value:", p_text_en);
+                        }
+                    }
+
+                    int slot_L1;
+
+                    if (type == xsd__string)
+                    {
+                        bool sp = true;
+                        foreach (oo; resources)
+                        {
+                            if (oo.type == DataType.String && (oo.lang == LANG.RU || oo.lang == LANG.NONE))
+                            {
+                                if (sp == true)
+                                {
+                                    slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".text_ru", key2slot);
+                                    prefix  = "X" ~ text(slot_L1) ~ "X";
+
+                                    sp = false;
+                                }
+
+                                doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
+                                indexer.index_text(oo.literal.ptr, oo.literal.length, prefix.ptr, prefix.length, &err);
+
+                                if (trace_msg[ 220 ] == 1)
+                                    log.trace("index as (ru or none) xsd:string [%s]", oo.literal);
+
+                                all_text.write(oo.literal);
+                                all_text.write('|');
+
+                                //writeln ("slot:", slot_L1, ", value:", oo.literal);
+                            }
+                        }
+
+                        sp = true;
+                        foreach (oo; resources)
+                        {
+                            if (oo.type == DataType.String && oo.lang == LANG.EN)
+                            {
+                                if (sp == true)
+                                {
+                                    slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".text_en", key2slot);
+                                    prefix  = "X" ~ text(slot_L1) ~ "X";
+
+                                    sp = false;
+                                }
+
+                                doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
+                                indexer.index_text(oo.literal.ptr, oo.literal.length, prefix.ptr, prefix.length, &err);
+
+                                if (trace_msg[ 220 ] == 1)
+                                    log.trace("index as (en) xsd:string [%s]", oo.literal);
+
+                                all_text.write(oo.literal);
+                                all_text.write('|');
+                                //writeln ("slot:", slot_L1, ", value:", oo.literal);
+                            }
+                        }
+                    }
+                    else if (type == xsd__decimal)
+                    {
+                        slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".decimal", key2slot);
+                        prefix  = "X" ~ text(slot_L1) ~ "X";
+
+                        foreach (oo; resources)
+                        {
+                            if (oo.type == DataType.String)
+                            {
+                                double data = to!double (oo.literal);
+                                doc.add_value(slot_L1, data, &err);
+                                all_text.write(oo.literal);
+                                all_text.write('|');
+
+                                indexer.index_data(data, prefix.ptr, prefix.length, &err);
+                            }
+                        }
+                    }
+                    else if (type == xsd__dateTime)
+                    {
+                        slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".dateTime", key2slot);
+                        prefix  = "X" ~ text(slot_L1) ~ "X";
+
+                        foreach (oo; resources)
+                        {
+                            if (oo.type == DataType.String)
+                            {
+                                long data = stringToTime(oo.literal);
+                                doc.add_value(slot_L1, data, &err);
+                                all_text.write(oo.literal);
+                                all_text.write('|');
+
+                                indexer.index_data(data, prefix.ptr, prefix.length, &err);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //writeln ("not type for:", pp.predicate);
                     }
                 }
-                else if (type == xsd__decimal)
+
+                string data = all_text.toString;
+                //writeln("@index = ", data);
+
+                indexer.index_text(data.ptr, data.length, &err);
+                if (trace_msg[ 221 ] == 1)
+                    log.trace("index all text [%s]", data);
+
+                string uuid = "uid_" ~ to_lower_and_replace_delimeters(indv.uri);
+                doc.add_boolean_term(uuid.ptr, uuid.length, &err);
+                doc.set_data(indv.uri.ptr, indv.uri.length, &err);
+
+                if (is_deleted)
                 {
-                    slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".decimal", key2slot);
-                    prefix  = "X" ~ text(slot_L1) ~ "X";
-
-                    foreach (oo; resources)
-                    {
-                        if (oo.type == DataType.String)
-                        {
-                            double data = to!double (oo.literal);
-                            doc.add_value(slot_L1, data, &err);
-                            all_text.write(oo.literal);
-                            all_text.write('|');
-
-                            indexer.index_data(data, prefix.ptr, prefix.length, &err);
-                        }
-                    }
+                    indexer_deleted_db.replace_document(uuid.ptr, uuid.length, doc, &err);
+                    doc = new_Document(&err);
+                    indexer.set_document(doc, &err);
                 }
-                else if (type == xsd__dateTime)
+
+                if (dbname == "system")
                 {
-                    slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".dateTime", key2slot);
-                    prefix  = "X" ~ text(slot_L1) ~ "X";
-
-                    foreach (oo; resources)
-                    {
-                        if (oo.type == DataType.String)
-                        {
-                            long data = stringToTime(oo.literal);
-                            doc.add_value(slot_L1, data, &err);
-                            all_text.write(oo.literal);
-                            all_text.write('|');
-
-                            indexer.index_data(data, prefix.ptr, prefix.length, &err);
-                        }
-                    }
+                    indexer_system_db.replace_document(uuid.ptr, uuid.length, doc, &err);
                 }
                 else
                 {
-                    //writeln ("not type for:", pp.predicate);
+                    indexer_base_db.replace_document(uuid.ptr, uuid.length, doc, &err);
                 }
-            }
-
-            string data = all_text.toString;
-            //writeln("@index = ", data);
-
-            indexer.index_text(data.ptr, data.length, &err);
-            if (trace_msg[ 221 ] == 1)
-                log.trace("index all text [%s]", data);
-
-            string uuid = "uid_" ~ to_lower_and_replace_delimeters(indv.uri);
-            doc.add_boolean_term(uuid.ptr, uuid.length, &err);
-            doc.set_data(indv.uri.ptr, indv.uri.length, &err);
-
-            if (is_deleted)
-            {
-                indexer_deleted_db.replace_document(uuid.ptr, uuid.length, doc, &err);
-                doc = new_Document(&err);
-                indexer.set_document(doc, &err);
-            }
-
-            if (dbname == "system")
-            {
-                indexer_system_db.replace_document(uuid.ptr, uuid.length, doc, &err);
-            }
-            else
-            {
-                indexer_base_db.replace_document(uuid.ptr, uuid.length, doc, &err);
-            }
 
 //            if (counter % 100 == 0)
 //            {
@@ -674,46 +673,44 @@ private class IndexerContext
 //                    log.trace("prepare msg counter:%d,slot size=%d", counter, key2slot.length);
 //            }
 
-            if (counter % 5000 == 0)
-            {
-                if (trace_msg[ 212 ] == 1)
-                    log.trace("commit index..");
+                if (counter % 5000 == 0)
+                {
+                    if (trace_msg[ 212 ] == 1)
+                        log.trace("commit index..");
 
-                if (key2slot.length > 0)
-                    store__key2slot(key2slot, tid_subject_manager);
+                    if (key2slot.length > 0)
+                        store__key2slot(key2slot, tid_subject_manager);
 
-                commit_all_db();
+                    commit_all_db();
+                }
+
+                destroy_Document(doc);
             }
-
-            destroy_Document(doc);
-        }
-
         } finally
-    	{
-        if (trace_msg[ 221 ] == 1)
-            log.trace("FT: end");
-       						//log.trace ("@FT:indexing=%d, uri=%s", counter, indv.uri);
-                            counter = op_id;
-    	}
-    
+        {
+            if (trace_msg[ 221 ] == 1)
+                log.trace("FT: end");
+            //log.trace ("@FT:indexing=%d, uri=%s", counter, indv.uri);
+            counter = op_id;
+        }
     }
 
     void commit_all_db()
-    { 	
+    {
         indexer_base_db.commit(&err);
         if (err != 0)
-			log.trace ("EX! FT:commit:base fail=%d", counter);        
-        
+            log.trace("EX! FT:commit:base fail=%d", counter);
+
         indexer_system_db.commit(&err);
         if (err != 0)
-			log.trace ("EX! FT:commit:system fail=%d", counter);        
+            log.trace("EX! FT:commit:system fail=%d", counter);
 
         indexer_deleted_db.commit(&err);
         if (err != 0)
-			log.trace ("EX! FT:commit:deleted fail=%d", counter);        
+            log.trace("EX! FT:commit:deleted fail=%d", counter);
 
-       	set_count_indexed(counter);
-		log.trace ("@FT:commit=%d", counter);
+        set_count_indexed(counter);
+        log.trace("@FT:commit=%d", counter);
     }
 }
 
@@ -913,8 +910,8 @@ void xapian_indexer(string thread_name, string _node_id)
                         else
                         {
                             //if (cmd == CMD.NOP)
-                        	//	log.trace ("@indexer: NOP #1");
-                        	
+                            //	log.trace ("@indexer: NOP #1");
+
                             // если ожидают окончания операции для indexer, то вероятнее всего собираются сразу-же читать из поиска
                             // следовательно нужно сделать коммит
                             if (ictx.key2slot.length - ictx.last_size_key2slot > 0)
@@ -929,7 +926,7 @@ void xapian_indexer(string thread_name, string _node_id)
                             ictx.last_counter_after_timed_commit = ictx.counter;
 
                             //if (cmd == CMD.NOP)
-                        	//	log.trace ("@indexer: NOP #2");
+                            //	log.trace ("@indexer: NOP #2");
 
                             if (cmd == CMD.NOP)
                                 send(tid_response_reciever, true);
