@@ -163,7 +163,7 @@ class Authorization : LmdbStorage
     {
         void reopen_db()
         {
-            log.trace("@ACL:reopen_db");
+            //log.trace("@ACL:reopen_db");
             this.reopen_db();
             subject_groups_cache[ ticket.user_uri ] = string[].init;
         }

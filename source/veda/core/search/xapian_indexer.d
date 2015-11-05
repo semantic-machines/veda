@@ -710,7 +710,7 @@ private class IndexerContext
             log.trace("EX! FT:commit:deleted fail=%d", counter);
 
         set_count_indexed(counter);
-        log.trace("@FT:commit=%d", counter);
+        //log.trace("@FT:commit=%d", counter);
     }
 }
 
