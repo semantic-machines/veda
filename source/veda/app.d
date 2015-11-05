@@ -19,9 +19,7 @@ logger log()
 
 void view_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
 {
-    res.renderCompat!("view_error.dt",
-                      HTTPServerRequest, "req",
-                      HTTPServerErrorInfo, "error")(req, error);
+    res.render!("view_error.dt", req, error);
 }
 
 void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
