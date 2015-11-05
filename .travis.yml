@@ -29,7 +29,7 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
   - start-stop-daemon --start --verbose --chdir $PWD --make-pidfile --pidfile $PWD/veda-pid --background --startas /bin/bash -- -c "exec ./veda >> $PWD/veda.log 2>&1"
-  - sleep 60  # give Web server some time to bind to sockets, load startup data, etc
+  - sleep 90  # give Web server some time to bind to sockets, load startup data, etc
 
 # Run API & integration test
 script:
