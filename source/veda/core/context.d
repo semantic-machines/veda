@@ -181,6 +181,7 @@ interface Context
 //    void store_subject(Subject ss, bool prepareEvents = true);
     public bool check_for_reload(string interthread_signal_id, void delegate() load);
     public bool ft_check_for_reload(void delegate() load);
+    public bool acl_check_for_reload(void delegate() load);
 
 //    /////////////////////////////////////////// <- oykumena -> ///////////////////////////////////////////////
 

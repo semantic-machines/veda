@@ -183,7 +183,7 @@ class Authorization : LmdbStorage
         string  str;
         int     rc;
 
-        context.ft_check_for_reload(&reopen_db);
+        context.acl_check_for_reload(&reopen_db);
 
         if (db_is_open.get(path, false) == false)
             return res;
@@ -395,8 +395,8 @@ void acl_manager(string thread_name, string db_path)
                 {
                     if (cmd == CMD.PUT)
                     {
-                        set_acl_manager_op_id(op_id);
-
+                    	try
+                    	{
                         Individual ind;
                         if (cbor2individual(&ind, msg) < 0)
                         {
@@ -503,7 +503,12 @@ void acl_manager(string thread_name, string db_path)
                                 if (trace_msg[ 101 ] == 1)
                                     log.trace("[acl index] (%s) MemberShip: %s : %s", text(res), rs.uri, outbuff.toString());
                             }
+                    	}
                         }
+                        finally
+                    	{
+                    		set_acl_manager_op_id(op_id);	
+                    	}
                     }
                 },
                 (CMD cmd, Tid tid_response_reciever)

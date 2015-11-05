@@ -37,7 +37,6 @@ string g_str_script_out;
 class PThreadContext : Context
 {
     long local_count_put;
-    long local_count_indexed;
 
     bool[ P_MODULE ] is_traced_module;
 
@@ -106,7 +105,7 @@ class PThreadContext : Context
         onto.load();
 
         local_count_put     = get_count_put();
-        local_count_indexed = get_count_indexed();
+        ft_local_count = get_count_indexed();
 
         log.trace_log_and_console("NEW CONTEXT [%s], external: write storage=[%s], js_vm=[%s]", context_name, external_write_storage_url,
                                   external_js_vm_url);
@@ -507,23 +506,36 @@ class PThreadContext : Context
                       signal.time_update);
     }
 
-    long local_time_check_indexed = 0;
+    long ft_local_count;
+    long ft_local_time_check = 0;
     public bool ft_check_for_reload(void delegate() load)
+    {
+    	 return _check_for_reload(ft_local_time_check, ft_local_count, &get_count_indexed, load);
+    }
+
+    long acl_local_count;
+    long acl_local_time_check = 0;
+    public bool acl_check_for_reload(void delegate() load)
+    {
+    	 return _check_for_reload(acl_local_time_check, acl_local_count, &get_acl_manager_op_id, load);
+    }
+
+    public bool _check_for_reload(ref long local_time_check, ref long local_count, long function () get_now_count, void delegate() load)
     {
         long now = Clock.currStdTime() / 10000000;
 
 //        log.trace ("@ft_check_for_reload: #1");
 
-        if (now - local_time_check_indexed > timeout)
+        if (now - local_time_check > timeout)
         {
-            long count_indexed = get_count_indexed();
-            log.trace("@ft_check_for_reload:count_indexed=%d, local_count_indexed=%d", count_indexed, local_count_indexed);
+            long count_now = get_now_count();
+            log.trace("@_check_for_reload:count_now=%d, local_count=%d", count_now, local_count);
 
-            local_time_check_indexed = now;
-            if (count_indexed > local_count_indexed)
+            local_time_check = now;
+            if (count_now > local_count)
             {
-                log.trace("@ft_check_for_reload:execute reload");
-                local_count_indexed = count_indexed;
+                log.trace("__check_for_reload:execute reload");
+                local_count = count_now;
                 load();
                 return true;
             }
