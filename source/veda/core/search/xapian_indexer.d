@@ -137,8 +137,11 @@ private class IndexerContext
 
     void index_msg(string msg, bool is_deleted, long op_id)
     {
-        Individual indv;
+    	        Individual indv;
 
+    	try
+    	{
+    	
         if (cbor2individual(&indv, msg) < 0)
         {
             log.trace("!ERR:invalid individual:[%s]", msg);
@@ -687,6 +690,13 @@ private class IndexerContext
 
         if (trace_msg[ 221 ] == 1)
             log.trace("index end");
+            } finally
+    	{
+                            counter = op_id;
+        					set_count_indexed(op_id);
+       						log.trace ("set_count_indexed=%s", op_id, ", uri=", indv.uri);     		
+    	}
+    
     }
 
     void commit_all_db()
@@ -956,16 +966,10 @@ void xapian_indexer(string thread_name, string _node_id)
                         if (cmd == CMD.PUT)
                         {
                             ictx.index_msg(msg, false, op_id);
-                            ictx.counter = op_id;
-        					set_count_indexed(op_id);
-       						log.trace ("set_count_indexed=%s", op_id); 
                         }
                         else if (cmd == CMD.DELETE)
                         {
                             ictx.index_msg(msg, true, op_id);
-        					ictx.counter = op_id;
-        					set_count_indexed(op_id);                            
-       						log.trace ("set_count_indexed=%s", op_id); 
                         }
                         //writeln ("@@XAPIAN INDEXER END op_id=", op_id);
                     },
