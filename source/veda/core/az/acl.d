@@ -177,7 +177,7 @@ class Authorization : LmdbStorage
 
         //writeln ("@p request_access=", request_access);
 
-        //if (trace_msg[ 111 ] == 1)
+        if (trace_msg[ 111 ] == 1)
             log.trace("authorize %s", uri);
 
         MDB_txn *txn_r;
