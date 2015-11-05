@@ -694,7 +694,7 @@ private class IndexerContext
     	{
                             counter = op_id;
         					set_count_indexed(op_id);
-       						log.trace ("set_count_indexed=%s", op_id, ", uri=", indv.uri);     		
+       						log.trace ("set_count_indexed=%s, uri=%s", op_id, indv.uri);     		
     	}
     
     }
