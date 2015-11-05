@@ -526,7 +526,7 @@ class PThreadContext : Context
             local_time_check_indexed = now;
             if (count_indexed > local_count_indexed)
             {
-                log.trace ("@ft_check_for_reload:execute reload");
+                log.trace ("@ft_check_for_reload:execute reload: %s", text (load));
                 local_count_indexed      = count_indexed;
                 load();
                 return true;
