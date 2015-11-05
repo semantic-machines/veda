@@ -7,15 +7,13 @@ module veda.core.thread_context;
 private
 {
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path;
-    import type;
+    import vibe.data.json, vibe.core.log, vibe.http.client, vibe.stream.operations;
     import bind.xapian_d_header, bind.v8d_header;
     import io.mq_client;
     import util.container, util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, veda.core.util.individual8json;
-    import veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.interthread_signals, veda.core.log_msg;
+    import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.interthread_signals, veda.core.log_msg;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, storage.lmdb_storage;
     import az.acl;
-
-    import vibe.data.json, vibe.core.log, vibe.http.client, vibe.stream.operations;
 }
 
 // ////// logger ///////////////////////////////////////////

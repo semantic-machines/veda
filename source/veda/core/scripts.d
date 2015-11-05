@@ -8,8 +8,7 @@ private
     import std.json, std.stdio, std.string, std.array, std.datetime, std.concurrency, std.conv, std.file;
     import core.thread;
     import util.container, util.utils, util.logger, util.cbor, veda.core.util.cbor8individual;
-    import type;
-    import veda.onto.individual, veda.onto.resource, veda.onto.onto;
+    import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.onto;
     import veda.core.know_predicates, veda.core.context, veda.core.define, veda.core.thread_context, veda.core.log_msg;
     import search.vel, search.vql;
     import bind.v8d_header;

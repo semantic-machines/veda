@@ -5,8 +5,7 @@ module veda.core.util.cbor8json;
 
 private import std.outbuffer, std.stdio, std.string, std.conv, std.datetime;
 private import vibe.data.json;
-private import type;
-private import veda.onto.resource, veda.onto.individual;
+private import veda.type, veda.onto.resource, veda.onto.individual;
 private import onto.lang;
 private import util.cbor;
 

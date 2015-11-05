@@ -4,8 +4,7 @@
 module util.individual2html;
 
 private import std.outbuffer, std.stdio, std.string, std.conv;
-private import type;
-private import veda.onto.resource, veda.onto.individual, onto.lang;
+private import veda.type, veda.onto.resource, veda.onto.individual, onto.lang;
 import backtrace.backtrace;
 import Backtrace = backtrace.backtrace;
 

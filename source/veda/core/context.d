@@ -9,11 +9,9 @@
 module veda.core.context;
 
 private import std.concurrency, std.datetime;
-private import type;
 private import util.container;
 private import search.vel;
-private import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.define;
-
+private import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.define;
 private import bind.v8d_header;
 
 /// Имена процессов

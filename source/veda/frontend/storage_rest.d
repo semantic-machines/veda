@@ -1,16 +1,10 @@
 module veda.storage_rest;
 
-import vibe.d;
-import veda.pacahon_driver;
-
 import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file;
-import core.vararg;
-import core.stdc.stdarg;
-import vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
+import core.vararg, core.stdc.stdarg;
+import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
-
-import type;
-import veda.core.context, veda.core.know_predicates, veda.core.define;
+import veda.pacahon_driver, veda.type, veda.core.context, veda.core.know_predicates, veda.core.define;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang, veda.core.util.individual8json;
 
 // ////// logger ///////////////////////////////////////////
@@ -450,7 +444,8 @@ class VedaStorageRest : VedaStorageRest_API
 
     long wait_module(int module_id, long op_id)
     {
-    	long res = context.wait_thread(cast(P_MODULE)module_id, op_id);
+        long res = context.wait_thread(cast(P_MODULE)module_id, op_id);
+
         return res;
     }
 

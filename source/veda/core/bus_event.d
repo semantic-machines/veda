@@ -6,9 +6,8 @@ module veda.core.bus_event;
 private import std.outbuffer, std.stdio, std.concurrency, std.datetime, std.conv;
 private import vibe.data.json, vibe.core.log, vibe.http.client, vibe.stream.operations;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
-private import type;
 private import util.container, util.logger, util.utils, veda.core.util.cbor8individual, veda.core.util.individual8json, veda.core.util.cbor8json;
-private import veda.core.know_predicates, veda.core.context, veda.core.define;
+private import veda.type, veda.core.know_predicates, veda.core.context, veda.core.define;
 private import veda.onto.individual, veda.onto.resource;
 
 // ////// logger ///////////////////////////////////////////

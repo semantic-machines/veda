@@ -7,11 +7,8 @@ module az.acl;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
-    import veda.onto.individual, veda.onto.resource;
-    import veda.core.bind.lmdb_header;
+    import veda.type, veda.onto.individual, veda.onto.resource, veda.core.bind.lmdb_header,veda.core.context, veda.core.define, veda.core.know_predicates, veda.core.log_msg;
     import util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, util.logger;
-    import type;
-    import veda.core.context, veda.core.define, veda.core.know_predicates, veda.core.log_msg;
     import storage.lmdb_storage;
 }
 
@@ -166,7 +163,7 @@ class Authorization : LmdbStorage
     {
         void reopen_db()
         {
-        	log.trace ("@ACL:reopen_db");
+            log.trace("@ACL:reopen_db");
             this.reopen_db();
             subject_groups_cache[ ticket.user_uri ] = string[].init;
         }
@@ -398,8 +395,8 @@ void acl_manager(string thread_name, string db_path)
                 {
                     if (cmd == CMD.PUT)
                     {
-                    	set_acl_manager_op_id (op_id);
-                    	
+                        set_acl_manager_op_id(op_id);
+
                         Individual ind;
                         if (cbor2individual(&ind, msg) < 0)
                         {

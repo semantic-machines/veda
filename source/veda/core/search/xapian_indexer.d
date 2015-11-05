@@ -6,7 +6,7 @@ module search.xapian_indexer;
 
 private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.algorithm;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
-private import type;
+private import veda.type;
 private import bind.xapian_d_header;
 private import util.utils, util.cbor, veda.core.util.cbor8individual, util.logger;
 private import veda.onto.onto, veda.onto.resource, onto.lang, veda.onto.individual;

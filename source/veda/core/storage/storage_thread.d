@@ -6,11 +6,8 @@ module storage.storage_thread;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
-    import veda.core.bind.lmdb_header;
-    import type;
     import util.logger, util.utils, util.cbor, veda.core.util.cbor8individual;
-    import veda.core.context, veda.core.define, veda.core.log_msg;
-    import veda.onto.individual, veda.onto.resource;
+    import veda.type, veda.core.bind.lmdb_header, veda.core.context, veda.core.define, veda.core.log_msg, veda.onto.individual, veda.onto.resource;
     import search.vel;
     import storage.lmdb_storage;
 }

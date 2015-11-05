@@ -5,7 +5,7 @@
 module veda.core.fanout;
 
 private import std.concurrency, std.stdio, std.conv, std.utf;
-private import type, veda.core.context;
+private import veda.type, veda.core.context;
 private import util.logger, util.cbor, veda.core.util.cbor8individual;
 private import storage.lmdb_storage, veda.core.thread_context;
 private import veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;

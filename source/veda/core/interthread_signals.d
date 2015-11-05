@@ -5,9 +5,7 @@ module veda.core.interthread_signals;
 
 import core.thread, std.conv, std.concurrency, std.stdio, std.datetime;
 version (linux) import core.stdc.stdlib;
-private import type;
-import veda.core.context;
-import veda.core.define;
+private import veda.type, veda.core.context, veda.core.define;
 
 public void interthread_signals_thread(string thread_name)
 {
@@ -59,7 +57,7 @@ public void interthread_signals_thread(string thread_name)
                         //writeln("@set signal ", key, "=", value);
                     }
                 },
-                (type.std.concurrency.OwnerTerminated ot)
+                (std.concurrency.OwnerTerminated ot)
                 {
                     writeln(thread_name, ": OWNER THREAD TERMINATED, APOPTOSIS !");
                     system(cast(char *)("kill -kill " ~ text(getpid()) ~ "\0"));
