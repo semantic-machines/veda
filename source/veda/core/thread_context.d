@@ -529,12 +529,12 @@ class PThreadContext : Context
         if (now - local_time_check > timeout)
         {
             long count_now = get_now_count();
-            log.trace("@_check_for_reload:count_now=%d, local_count=%d", count_now, local_count);
+            //log.trace("@_check_for_reload:count_now=%d, local_count=%d", count_now, local_count);
 
             local_time_check = now;
             if (count_now > local_count)
             {
-                log.trace("__check_for_reload:execute reload");
+                //log.trace("__check_for_reload:execute reload");
                 local_count = count_now;
                 load();
                 return true;
