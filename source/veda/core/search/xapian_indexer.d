@@ -701,8 +701,16 @@ private class IndexerContext
     void commit_all_db()
     { 	
         indexer_base_db.commit(&err);
+        if (err != 0)
+			log.trace ("@EX! FT:commit:base fail=%d", counter);        
+        
         indexer_system_db.commit(&err);
+        if (err != 0)
+			log.trace ("@EX! FT:commit:system fail=%d", counter);        
+
         indexer_deleted_db.commit(&err);
+        if (err != 0)
+			log.trace ("@EX! FT:commit:deleted fail=%d", counter);        
 
        	set_count_indexed(counter);
 		log.trace ("@FT:commit=%d", counter);
