@@ -692,7 +692,7 @@ private class IndexerContext
     	{
         if (trace_msg[ 221 ] == 1)
             log.trace("FT: end");
-       						log.trace ("@FT:indexing=%d, uri=%s", counter, indv.uri);
+       						//log.trace ("@FT:indexing=%d, uri=%s", counter, indv.uri);
                             counter = op_id;
     	}
     
