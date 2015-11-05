@@ -688,28 +688,24 @@ private class IndexerContext
             destroy_Document(doc);
         }
 
-        if (trace_msg[ 221 ] == 1)
-            log.trace("index end");
             } finally
     	{
-       						log.trace ("@@FT:indexing=%d, uri=%s", counter, indv.uri);
+        if (trace_msg[ 221 ] == 1)
+            log.trace("index end");
+//       						log.trace ("@@FT:indexing=%d, uri=%s", counter, indv.uri);
                             counter = op_id;
     	}
     
     }
 
     void commit_all_db()
-    {
-    	log.trace ("@indexer: commit_all_db, counter=%s", counter);
-    	
+    { 	
         indexer_base_db.commit(&err);
         indexer_system_db.commit(&err);
         indexer_deleted_db.commit(&err);
 
-        					set_count_indexed(counter);
-       						log.trace ("@@FT:commit=%d", counter);
-       						     		    		
-//        set_count_indexed(counter);
+       	set_count_indexed(counter);
+//		log.trace ("@@FT:commit=%d", counter);
     }
 }
 
