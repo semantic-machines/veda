@@ -692,9 +692,8 @@ private class IndexerContext
             log.trace("index end");
             } finally
     	{
+       						log.trace ("@@FT:indexing=%d, uri=%s", counter, indv.uri);
                             counter = op_id;
-        					set_count_indexed(op_id);
-       						log.trace ("set_count_indexed=%s, uri=%s", op_id, indv.uri);     		
     	}
     
     }
@@ -707,6 +706,9 @@ private class IndexerContext
         indexer_system_db.commit(&err);
         indexer_deleted_db.commit(&err);
 
+        					set_count_indexed(counter);
+       						log.trace ("@@FT:commit=%d", counter);
+       						     		    		
 //        set_count_indexed(counter);
     }
 }
