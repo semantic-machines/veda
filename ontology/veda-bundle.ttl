@@ -116,6 +116,11 @@ v-b:Delete
   rdfs:label "Удалить"@ru ;
   rdfs:label "Delete"@en ;
 .
+v-b:Create
+  rdf:type v-b:Bundle ;
+  rdfs:label "Создать"@ru ;
+  rdfs:label "Create"@en ;
+.
 v-b:CreateReport
   rdf:type v-b:Bundle ;
   rdfs:label "Сформировать отчёт"@ru ;
