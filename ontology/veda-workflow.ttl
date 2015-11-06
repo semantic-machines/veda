@@ -2078,7 +2078,7 @@ v-wf:DecisionRedirectTemplateSpec3
   v-ui:forProperty v-wf:to, rdfs:comment ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Person')"
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"
 .
 
 v-wf:startingJournalMap
