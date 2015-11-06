@@ -116,6 +116,11 @@ v-b:Delete
   rdfs:label "Удалить"@ru ;
   rdfs:label "Delete"@en ;
 .
+v-b:DeleteDraft
+  rdf:type v-b:Bundle ;
+  rdfs:label "Удалить черновик"@ru ;
+  rdfs:label "Delete draft"@en ;
+.
 v-b:Create
   rdf:type v-b:Bundle ;
   rdfs:label "Создать"@ru ;
