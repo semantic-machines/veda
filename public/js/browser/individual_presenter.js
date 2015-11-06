@@ -705,16 +705,22 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					}
 				} else {
 					// rewrite original document
-					var draftId = individual.id;
-					individual['v-s:hasDraft'] = [];
-					var originalId = individual['v-s:isDraftOf'][0].id;
-					individual.id = originalId;
-					individual.save();
-					
-					// + delete draft
-					individual.id = draftId;
-					individual['v-s:deleted'] = [new Boolean(true)];
-					individual.save();
+					if (individual.hasValue('v-s:isDraftOf')) {
+						var draftId = individual.id;
+						individual['v-s:hasDraft'] = [];
+						var originalId = individual['v-s:isDraftOf'][0].id;
+						individual.id = originalId;
+						individual.save();
+						
+						// + delete draft
+						individual.id = draftId;
+						individual['v-s:deleted'] = [new Boolean(true)];
+						individual.save();
+					} else {
+						individual['v-s:isDraftOf'] = [];
+						individual['v-s:hasDraftf'] = [];
+						individual.save();
+					}
 					
 					container.empty();
 					individual.present(container, undefined, "view");
