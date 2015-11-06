@@ -403,6 +403,29 @@ function transformation(ticket, individuals, transform, executor, work_order)
     	            out_data0_el[name] = out_data0_el_arr;
     	        }
     	    })();
+
+            var putFrontValue = (function ()
+    	    {
+    	        return function (name)
+    	        {
+    	            var out_data0_el_arr = out_data0_el[name];
+
+    	            if (!out_data0_el_arr)
+    	                out_data0_el_arr = [];
+    	            if (iteratedObject[key2] == '@')
+    	            {
+    	                out_data0_el_arr.unshift(
+    	                {
+    	                    data: element,
+    	                    type: _Uri
+    	                });
+    	            }
+    	            else
+    	                out_data0_el_arr.unshift(element);
+
+    	            out_data0_el[name] = out_data0_el_arr;
+    	        }
+    	    })();
     	    
             var putElement = (function ()
     	    {

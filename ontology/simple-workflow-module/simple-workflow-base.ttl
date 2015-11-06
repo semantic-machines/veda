@@ -701,13 +701,13 @@ v-wf:DecisionGoReview
 
 s-wf:tr_actor_form
         rdf:type v-wf:Transform ;
-	v-wf:transformRule s-wf:rul_tr_form_1 ;	
+	v-wf:transformRule s-wf:rul_tr_form_0 ;	
 	v-wf:transformRule s-wf:rul_tr_form_2 ;	
 	v-wf:transformRule s-wf:rul_tr_form_3 ;	
 	v-wf:transformRule s-wf:rul_tr_form_4 ;	
 	v-wf:transformRule s-wf:rul_tr_form_5 ;	
 	v-wf:transformRule s-wf:rul_tr_form_6 ;
-	v-wf:transformRule s-wf:rul_tr_form_7 ;
+	v-wf:transformRule s-wf:rul_tr_form_1 ;
 	v-wf:transformRule s-wf:rul_tr_form_8 ;
 	v-wf:transformRule s-wf:rul_tr_form_9 ;
 	rdfs:isDefinedBy s-wf: ;
@@ -729,7 +729,8 @@ s-wf:rul_tr_form_2
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
-	v-wf:aggregate	"putString ('rdfs:label', 'по документу ' + getElement ()[0].data)";
+#	v-wf:aggregate	"putString ('rdfs:label', 'по документу [' + getElement ()[0].data + ']')";
+	v-wf:aggregate	"putFieldOfIndividFromElement ('rdfs:label', 'rdfs:label')"; 	
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
 	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
 	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
@@ -780,11 +781,11 @@ s-wf:rul_tr_form_6
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:rul_tr_form_7
+s-wf:rul_tr_form_0
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'user_task_form_label')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putValue ('rdfs:label')";
+	v-wf:aggregate	"putFrontValue ('rdfs:label')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
 	rdfs:label "установить rdfs:label из переменной user_task_form_label"@ru ;	
