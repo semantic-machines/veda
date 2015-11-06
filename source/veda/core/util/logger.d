@@ -169,6 +169,7 @@ private class LoggerQueue
     private void open_new_file()
     {
         count = 0;
+                
         _time tt     = time(null);
         tm    *ptm   = localtime(&tt);
         int   year   = ptm.tm_year + 1900;
@@ -178,7 +179,7 @@ private class LoggerQueue
         int   minute = ptm.tm_min;
         int   second = ptm.tm_sec;
         auto  now    = Clock.currTime();
-        int   usecs  = now.fracSec.usecs;
+        int   usecs  = cast (int)now.fracSecs().split ().usecs;
 
         auto  writer = appender!string();
 
@@ -216,7 +217,7 @@ private class LoggerQueue
         int   minute = ptm.tm_min;
         int   second = ptm.tm_sec;
         auto  now    = Clock.currTime();
-        int   usecs  = now.fracSec.usecs;
+        int   usecs  = cast (int)now.fracSecs().split ().usecs;
 
         count++;
 
@@ -251,7 +252,7 @@ private class LoggerQueue
         int   minute = ptm.tm_min;
         int   second = ptm.tm_sec;
         auto  now    = Clock.currTime();
-        int   usecs  = now.fracSec.usecs;
+        int   usecs  = cast (int)now.fracSecs().split ().usecs;
 
         count++;
         if (ff is null || prev_time > 0 && day != prev_time || count > 1_000_000)

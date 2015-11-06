@@ -28,41 +28,6 @@ logger log()
 
 logger io_msg;
 
-// Called upon a signal from Linux
-extern (C) public void sighandler0(int sig) nothrow @system
-{
-    try
-    {
-        log.trace_log_and_console("signal %d caught...\n", sig);
-        system(cast(char *)("kill -kill " ~ text(getpid()) ~ "\0"));
-        //Runtime.terminate();
-    }
-    catch (Exception ex)
-    {
-    }
-}
-
-extern (C) public void sighandler1(int sig) nothrow @system
-{
-    try
-    {
-        printPrettyTrace(stderr);
-
-        string err;
-        if (sig == SIGBUS)
-            err = "SIGBUS";
-        else if (sig == SIGSEGV)
-            err = "SIGSEGV";
-
-        log.trace_log_and_console("signal %s caught...\n", err);
-        system(cast(char *)("kill -kill " ~ text(getpid()) ~ "\0"));
-        //Runtime.terminate();
-    }
-    catch (Exception ex)
-    {
-    }
-}
-
 static this()
 {
     io_msg = new logger("pacahon", "io", "server");
@@ -120,6 +85,15 @@ bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
 }
 //		import io.zmq_io;
 
+extern(C) void handleTermination(int signal)
+{
+       writefln("!Caught signal: %s", signal);
+       
+       system(cast(char *)("kill -kill " ~ text(getpid()) ~ "\0"));
+
+    //   getTrace();
+       exit(signal);
+}
 
 Context init_core(string node_id, string role, ushort listener_http_port, string write_storage_node)
 {
@@ -134,6 +108,10 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
     io_msg = new logger("pacahon", "io", "server");
     Tid[ P_MODULE ] tids;
 
+	//core.thread.Thread.getThis.isDaemon (true);
+	
+	bsd_signal(SIGINT, &handleTermination);
+	
     try
     {
 //        log.trace_log_and_console("\nPACAHON %s.%s.%s\nSOURCE: commit=%s date=%s\n", veda.core.myversion.major, veda.core.myversion.minor,
