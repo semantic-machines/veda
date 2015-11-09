@@ -33,6 +33,11 @@ v-ft:query
   rdfs:domain v-ft:FunctionTasks ;
   rdfs:range xsd:string ;
 .
+v-ft:sortOrder
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:FunctionTasks ;
+  rdfs:range xsd:string ;
+.
 v-ft:FunctionTasksModel
   rdf:type v-s:ClassModel ;
   rdfs:label "v-ft:FunctionTasks class template"@en ;
@@ -48,18 +53,21 @@ v-ft:Inbox
   rdfs:label "Inbox"@en ;
   rdfs:label "Входящие"@ru ;
   v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$1'"^^xsd:string ;
+  v-ft:sortOrder "'v-wf:dateGiven' asc"^^xsd:string ;
 .
 v-ft:Outbox
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Outbox"@en ;
   rdfs:label "Исходящие"@ru ;
   v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$1'"^^xsd:string ;
+  v-ft:sortOrder "'v-wf:dateGiven' asc"^^xsd:string ;
 .
 v-ft:Completed
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Completed"@en ;
   rdfs:label "Выполненные"@ru ;
   v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$1'"^^xsd:string ;  
+  v-ft:sortOrder "'v-wf:dateGiven' asc"^^xsd:string ;
 .
 v-ft:TasksNotFound
   rdf:type v-b:Bundle ;
@@ -74,26 +82,76 @@ v-ft:FunctionTasksTemplate
   v-ui:template """
 <div class="container-fluid">
 	<h3 property="rdfs:label"></h3>
-	<ul id="tasks">
-		<li about="v-ft:TasksNotFound" property="rdfs:label"></li>
-	</ul>
+	<table class="table table-condensed table-bordered table-striped">
+		<thead>
+			<tr>
+				<th width="20px"><span class="fa fa-search"></span></th>
+				<th width="15%">
+					<a href="#" class="btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes"></a>
+					<span about="v-wf:from" property="rdfs:label"></span>
+				</th>
+				<th width="15%">
+					<a href="#" class="btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes"></a>
+					<span about="v-wf:to" property="rdfs:label"></span>
+				</th>
+				<th>
+					<a href="#" class="btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes"></a>
+					<span about="v-s:description" property="rdfs:label"></span>
+				</th>
+				<th>
+					<a href="#" class="btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes"></a>
+					<span about="v-wf:onDocument" property="rdfs:label"></span>
+				</th>
+				<th width="10%">
+					<a href="#" class="btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes"></a>
+					<span about="v-wf:dateGiven" property="rdfs:label"></span>
+				</th>
+			</tr>
+		</thead>
+		<tbody id="tasks">
+			<tr>
+				<td colspan="6">
+					<span about="v-ft:TasksNotFound" property="rdfs:label"></span>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="text-center">
+		<ul class="pagination" id="pager"></ul>
+	</div>
+	<br />
 </div>
 <script>
 	var tasks = new veda.IndividualModel();
 	tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
 	tasks["v-fs:fulltextQuery"] = individual["v-ft:query"].slice(0);
+	tasks["v-fs:sortOrder"] = individual["v-ft:sortOrder"].slice(0);
 	var result = tasks.search();
-	var tmpl = new veda.IndividualModel("v-ui:LabelLinkTemplate");
+	var tmpl = new veda.IndividualModel("v-ft:InboxTaskTemplate");
 	var cnt = $("#tasks", template);
 	if (result.length) {
 		cnt.empty();
 		result.map(function (uri) {
-			var res_cnt = $("<li>");
 			var ind = new veda.IndividualModel(uri);
-			ind.present(res_cnt, tmpl);
-			cnt.append(res_cnt);
+			ind.present(cnt, tmpl);
 		});
 	}
 </script>
   """ ;
+.
+
+v-ft:InboxTaskTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Template for table of inbox tasks"@en ;
+  rdfs:label "Шаблон для таблицы входящих задач"@ru ;
+  v-ui:template """
+<tr>
+	<td><a href="#/@"><span class="fa fa-search"></span></a></td>
+	<td rel="v-wf:from" template="v-ui:LabelTemplate"></td>
+	<td rel="v-wf:to" template="v-ui:LabelTemplate"></td>
+	<td><a href="#/@" property="v-s:description"></a></td>
+	<td rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate"></td>
+	<td property="v-wf:dateGiven"></td>
+</tr>
+  """
 .

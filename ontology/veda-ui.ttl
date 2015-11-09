@@ -510,7 +510,7 @@ v-ui:LabelTemplate
   rdfs:label "Шаблон с меткой"@ru ;
   rdfs:label "Template with label"@en ;
   v-ui:template """
-  <span property="rdfs:label"></span>
+  <span about="@" property="rdfs:label"></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
   	  template.text(individual.id);
@@ -590,7 +590,7 @@ v-ui:ClassNameLabelTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <span><a href="#/@"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span id="label" property="rdfs:label"></span></a></span>
+  <a href="#/@"><span about="@" rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span id="label" property="rdfs:label"></span></a>
   <script>
     if (!individual.hasValue("rdfs:label")) {
   	  $("#label", template).text(individual.id);
