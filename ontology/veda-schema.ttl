@@ -1577,12 +1577,7 @@ v-s:YearNumeration8
 .
 v-s:NumerationEvent
   rdf:type v-s:Event ;
-  v-s:author v-a:VedaSystemAccount ;
-  v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
-  v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:script """
-  print(">1>"+(!document['v-s:isDraftOf']));
-  print(">2>"+(document['v-s:isDraftOf'].length==0));
   if (!document['v-s:isDraftOf'] || document['v-s:isDraftOf'].length==0) {
 	  print("NUMERATION EVENT"); 
 	  var result = numerate(ticket, document, prev_state, _event_id);
