@@ -1052,6 +1052,7 @@
 	$.fn.veda_link = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_link.defaults, options ),
 			control = $(opts.template),
+			template = this.attr("template") || "{rdfs:label}";
 			individual = opts.individual,
 			spec = opts.spec,
 			placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
@@ -1127,7 +1128,7 @@
 					},
 					displayKey: function (individual) {
 						var result;
-						try { result = riot.render("{rdfs:label}", individual); }
+						try { result = riot.render(template, individual); }
 						catch (ex) { result = individual.id; }
 						return result === "" ? individual.id : result;
 					}
