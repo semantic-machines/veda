@@ -140,18 +140,6 @@ v-asp:PsHasAspect
   v-ui:tooltip "Required, single value. Link to instance of Personal aspect class"@en ;
   v-ui:queryPrefix "('rdf:type'=='v-asp:PersonalAspect')"^^xsd:string ;
 .
-v-asp:PsHasBusinessAspect
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация делового аспекта класса Персональный аспект"@ru ;
-  rdfs:label "Business aspect specification for Personal aspect class"@en ;
-  v-ui:forClass v-asp:PersonalAspect ;
-  v-ui:forProperty v-asp:hasBusinessAspect ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "10"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Необязательно к заполнению, множественное значений. Ссылка на субъект класса Деловой аспект."@ru ;
-  v-ui:tooltip "non-required, multply value. Link to instance of business aspect class"@en ;
-  v-ui:queryPrefix "('rdf:type'=='v-asp:BusinessAspect' || 'rdf:type'=='mnd-s-asppd:ProjectManagementAspect')"^^xsd:string ;
-.
 
 v-asp:ViewDetails
   rdf:type v-b:Bundle ;

@@ -16,11 +16,8 @@
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
-@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
 @prefix s-wf: <http://semantic-machines.com/veda/simple-workflow/> .
-@prefix mnd-s-pdr: <http://semantic-machines.com/veda/mondi-schema-pdr/> .
 @prefix v-asp: <http://semantic-machines.com/veda/veda-aspect/> .
-@prefix mnd-s-asppd: <http://semantic-machines.com/veda/mondi-schema-asppd/> .
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
 
 <http://semantic-machines.com/veda/test-data>
@@ -116,26 +113,6 @@ td:AndreyBychin
   v-ui:hasPreferences td:Preferences_AndreyBychin ;
   rdfs:label "Andrey Bychin"@en ;
   rdfs:label "Андрей Бычин"@ru ;
-.
-mnd-s-asppd:Membership1509021134
-  rdf:type v-s:Membership ;
-  v-s:memberOf mnd-s-asppd:AllUserAsppd ;
-  v-s:resource td:AndreyBychin ;
-  rdfs:label "Membership1509021134"@en ;
-  rdfs:label "Бычин в группу все пользователи аспекта АСППД"@ru ;
-.
-td:Permission1509021132
-  rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject mnd-s-asppd:d090fb801e73c9fa73b10d9fd98851005 ;
-  v-s:permissionSubject td:AndreyBychin ;
-  v-s:canRead "true"^^xsd:boolean ;
-  v-s:canUpdate "true"^^xsd:boolean ;
-  v-s:created "2015-09-02T00:45:33"^^xsd:dateTime ;
-  v-s:published "2015-09-02T00:45:33"^^xsd:dateTime ;
-  v-s:startTime "2015-09-02T00:45:33"^^xsd:dateTime ;
-  rdfs:label "Read. Bychin. IdeaDoc."@en ;
-  rdfs:label "Чтение. Бычин. Экземпляр идеи."@ru ;
-  rdfs:comment "Запись о выдаче прав Бычину на чтение экземпляра Идеи" ;
 .
 
 td:AndreyBychin-Analyst2
@@ -486,15 +463,6 @@ td:AleksandraKhvostikova
   v-asp:hasAspect v-asp:PersonalAspectKhvostia ;        
   v-s:hasImage td:khvostiaImage;
 .
-td:khvostiaImage v-s:fileSize "89722"^^xsd:integer;
-    v-s:fileUri "Khvostia"^^xsd:string;
-    v-s:author td:AleksandraKhvostikova;
-    v-s:created "2015-08-31T11:54:39.000Z"^^xsd:dateTime;
-    v-s:fileName "Khvostia.jpg"^^xsd:string;
-    a v-s:File;
-    v-s:filePath "/mnd-s-asppd"^^xsd:string ;
-.
-
 td:AleksandraKhvostikova-Analyst1
   rdf:type v-s:Appointment ;
   v-s:author td:AleksandraKhvostikova-Analyst ;
@@ -1261,20 +1229,6 @@ v-asp:PersonalAspectKarpovr
 	rdfs:label "Персональный аспект 1"@ru ;
 	rdfs:label "Personal aspect 1"@en ;
 .
-v-asp:PersonalAspectKhvostia
-	rdf:type v-asp:PersonalAspect ;
-	v-s:owner td:AleksandraKhvostikova ;
-	rdfs:label "Персональный аспект Хвостикова"@ru ;
-	rdfs:label "Personal aspect Khvostikova"@en ;
-#	v-asp:hasFavorite ;
-#	v-asp:hasBlank ;
-#	v-asp:hasRegistry ;
-	v-asp:hasBusinessAspect mnd-s-asppd:ProjectManagementAspect1 ;
-#	v-asp:hasReport ;
-#	v-asp:hasArbitraryLink ;
-#	v-asp:hasWidget ;
-.
-
 
 v-wf:UserTaskForm1
 	rdf:type s-wf:UserTaskForm ;

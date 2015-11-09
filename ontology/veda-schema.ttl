@@ -1585,3 +1585,18 @@ v-s:NumerationEvent
   }
 """
 .
+
+v-s:Action
+  rdf:type owl:Class ;
+  rdfs:label "Action"@en ;
+  rdfs:label "Мероприятие"@ru ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
+.
+
+v-s:hasAction
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "action"@en ;
+  rdfs:label "мероприятие"@ru ;
+  rdfs:range v-s:Action ;
+.
