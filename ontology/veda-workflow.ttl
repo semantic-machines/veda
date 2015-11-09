@@ -1896,6 +1896,27 @@ v-wf:Decision
 	rdfs:label "решение"@ru ;
 .
 
+v-wf:DecisionAnswerToYourQuestion
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "Ответ на ваш вопрос"@ru ;
+.	
+
+v-wf:DecisionControll
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "Принять отчет по поручению"@ru ;
+.	
+
+v-wf:DecisionNotRequireReview
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "Не требует рассмотрения"@ru ;
+.	
+
 v-wf:DecisionAgreed
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
