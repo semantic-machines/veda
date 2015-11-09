@@ -1577,6 +1577,7 @@ v-s:YearNumeration8
 .
 v-s:NumerationEvent
   rdf:type v-s:Event ;
+  v-s:filter v-s:NumerationEvent ;
   v-s:script """
   if (!document['v-s:isDraftOf'] || document['v-s:isDraftOf'].length==0) {
 	  print("NUMERATION EVENT"); 
