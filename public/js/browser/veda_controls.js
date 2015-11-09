@@ -1052,7 +1052,7 @@
 	$.fn.veda_link = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_link.defaults, options ),
 			control = $(opts.template),
-			template = this.attr("template") || "{rdfs:label}";
+			template = this.attr("template") || "{rdfs:label}",
 			individual = opts.individual,
 			spec = opts.spec,
 			placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
@@ -1152,7 +1152,11 @@
 				if (doc_rel_uri === rel_uri) {
 					if (isSingle) {
 						if (values.length) {
-							typeAhead.typeahead("val", riot.render("{rdfs:label}", values[0]) );
+							try { 
+								typeAhead.typeahead("val", riot.render(template, values[0]) ); 
+							} catch (e) {
+								typeAhead.typeahead("val", ""); 
+							}
 						} else {
 							typeAhead.typeahead("val", "" );
 						}
