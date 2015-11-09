@@ -1,8 +1,6 @@
 {
 	"name": "veda",
-	"description": "A simple vibe.d server application.",
-	"copyright": "Copyright © 2014, karpovr",
-	"authors": ["karpovr"],
+	"description": "veda",
 	"dependencies": {
 		"vibe-d": "0.7.26",
 		"pacahon_third_party": "1.0.8", 
