@@ -294,7 +294,7 @@ v-fs:FulltextRequestModel
 		self.trigger("beforeSearch");
 		self.result = query(veda.ticket, q, sort, databases, reopen);
 		self.count = self.result.length;
-		self.trigger("afterSearch");
+		self.trigger("afterSearch", self.result);
 		return self.result;
 	};
 	// Search if query defined

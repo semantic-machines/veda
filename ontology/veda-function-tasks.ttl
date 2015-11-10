@@ -87,23 +87,23 @@ v-ft:FunctionTasksTemplate
 			<tr>
 				<th width="20px"><span class="fa fa-search"></span></th>
 				<th width="15%">
-					<a href="#" class="btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes"></a>
+					<a id="v-wf:from" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes"></a>
 					<span about="v-wf:from" property="rdfs:label"></span>
 				</th>
 				<th width="15%">
-					<a href="#" class="btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes"></a>
+					<a id="v-wf:to" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes"></a>
 					<span about="v-wf:to" property="rdfs:label"></span>
 				</th>
 				<th>
-					<a href="#" class="btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes"></a>
+					<a id="v-s:description" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes"></a>
 					<span about="v-s:description" property="rdfs:label"></span>
 				</th>
 				<th>
-					<a href="#" class="btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes"></a>
+					<a id="v-wf:onDocument" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes"></a>
 					<span about="v-wf:onDocument" property="rdfs:label"></span>
 				</th>
 				<th width="10%">
-					<a href="#" class="btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes"></a>
+					<a id="v-wf:dateGiven" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes"></a>
 					<span about="v-wf:dateGiven" property="rdfs:label"></span>
 				</th>
 			</tr>
@@ -126,15 +126,56 @@ v-ft:FunctionTasksTemplate
 	tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
 	tasks["v-fs:fulltextQuery"] = individual["v-ft:query"].slice(0);
 	tasks["v-fs:sortOrder"] = individual["v-ft:sortOrder"].slice(0);
-	var result = tasks.search();
+	
+	tasks.on("afterSearch", renderTasks);
+	template.on("remove", function () {
+		tasks.off("afterSearch", renderTasks);
+	});
+	
 	var tmpl = new veda.IndividualModel("v-ft:InboxTaskTemplate");
 	var cnt = $("#tasks", template);
-	if (result.length) {
-		cnt.empty();
-		result.map(function (uri) {
-			var ind = new veda.IndividualModel(uri);
-			ind.present(cnt, tmpl);
+	var sorts = $("th > a", template);
+	sorts.on("click", function (e) {
+		e.preventDefault();
+		var sortOrder = $(this);
+		var dir = sortOrder.hasClass("glyphicon-sort-by-attributes-alt") ? " asc" : " desc";
+		sortOrder.toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");					
+		if (this.id === "v-s:description") {
+			tasks["v-fs:sortOrder"] = ["'" + this.id + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir];
+		} else {
+			tasks["v-fs:sortOrder"] = ["'" + this.id + "'" + dir];
+		}
+		tasks.search();
+		return false;
+	});
+
+	tasks.search();
+	
+	function renderTasks(result) {
+		var sortBy = dir = "";
+		if ( tasks.hasValue("v-fs:sortOrder") ) {
+			var t = tasks["v-fs:sortOrder"][0].split(" ");
+			sortBy = t[0]; dir = t[1];
+		}
+
+		sorts.each(function () {
+			var sortOrder = $(this);
+			if (sortBy.indexOf(this.id) >= 0) {
+				sortOrder.removeClass("text-muted");
+				if (dir === "desc") sortOrder.removeClass("glyphicon-sort-by-attributes").addClass("glyphicon-sort-by-attributes-alt");
+			} else {
+				sortOrder.addClass("text-muted");
+			}
 		});
+
+		if (result.length) {
+			cnt.empty();
+			result.map(function (uri) {
+				var ind = new veda.IndividualModel(uri);
+				ind.present(cnt, tmpl);
+			});
+		}
+		
 	}
 </script>
   """ ;
