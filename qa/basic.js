@@ -261,7 +261,7 @@ module.exports = {
 		// Проверяем что тип появился на экране
 		driver.wait
 		(
-		  webdriver.until.elementIsVisible(driver.findElement({css:'div[rel="v-fs:typeToSearch"] span[resource="'+templateRdfType+'"]'})),
+		  webdriver.until.elementIsVisible(driver.findElement({css:'div[rel="v-fs:typeToSearch"] span[about="'+templateRdfType+'"]'})),
 		  FAST_OPERATION
 		);
 	}
