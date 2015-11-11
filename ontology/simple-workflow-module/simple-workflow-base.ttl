@@ -986,6 +986,19 @@ s-wf:map_task_date_to_2_actor_task
 	rdfs:label "описание задачи из формы решения пользователя"@ru ;
 .
 
+s-wf:map_actor_2_result_decision
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_actor ;
+	v-wf:mappingExpression """
+	
+	get_properties_chain (process.getLocalVariable('result_decision'), 
+							[{$get:'v-wf:to'}] 
+						 )
+	
+	""";
+	rdfs:label "исполнитель из формы решения пользователя"@ru ;
+.
+
 ##########################################################################################################################################
 
 
@@ -1258,7 +1271,8 @@ d:abc5142af-b501-1ec6-8ee0-acb767f078a4
 	v-wf:hasFlow d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e;
     v-wf:locationY "637"^^xsd:integer;
     a v-wf:Task;
-    rdfs:label "установить переменную actor"^^xsd:string;
+    rdfs:label "установить переменную actor из *result_decision[wf:to]"^^xsd:string;
+    v-wf:completedMapping s-wf:map_actor_2_result_decision;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-10T18:08:39.175Z"^^xsd:dateTime;
     v-wf:locationX "480"^^xsd:integer.

@@ -925,7 +925,7 @@ function traversal(indv, query, pos_in_path, result)
 {
     var condition = query[pos_in_path];
 
-    //print('@@@ traversal#0 condition=', toJson(condition), ", indv=", toJson(indv));
+    print('@@@ traversal#0 condition=', toJson(condition), ", indv=", toJson(indv));
 
     var op_get;
     var op_go;
@@ -949,15 +949,16 @@ function traversal(indv, query, pos_in_path, result)
 
         for (var i in ffs)
         {
-            //print('@@@ traversal#2 ffs[i]=', ffs[i].data);
+            print('@@@ traversal#2 ffs[i]=', ffs[i].data);
             var doc = get_individual(ticket, ffs[i].data);
-            //print('@@@ traversal#4 doc=', toJson(doc));
+            print('@@@ traversal#4 doc=', toJson(doc));
             traversal(doc, query, pos_in_path + 1, result);
         }
     }
 
     if (op_get)
     {
+		print ("@1 op_get=", op_get);
         var is_get = true;
         if (op_eq)
         {
@@ -989,14 +990,20 @@ function traversal(indv, query, pos_in_path, result)
                 }
             }
         }
+        else
+        {
+			is_get = true;
+		}
 
         if (is_get)
         {
+		print ("@2 op_get=", op_get);
             var ffs = indv[op_get];
-
+		print ("@3 op_get=", ffs);
+ 
             for (var i in ffs)
             {
-                //print('@@@ traversal#3 push ', ffs[i].data);
+                print('@@@ traversal#3 push ', ffs[i].data);
                 result.push(ffs[i]);
             }
         }
