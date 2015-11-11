@@ -63,10 +63,18 @@ s-wf:var_coordinator
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:var_coordinator_lc
+s-wf:var_actor
         rdf:type v-wf:VarDefine ;
-	v-wf:varDefineName "coordinator_lc" ;
-        rdfs:label "список согласующих локальный"@ru ;
+	v-wf:varDefineName "actor" ;
+        rdfs:label "исполнители"@ru ;
+	v-wf:varDefineScope v-wf:Net ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:var_add_request_actor
+        rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "add_request_actor" ;
+        rdfs:label "исполнители дополнительного запроса"@ru ;
 	v-wf:varDefineScope v-wf:Net ;
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -150,6 +158,13 @@ s-wf:map_initiator
         rdf:type v-wf:Mapping ;
         v-wf:mapToVariable s-wf:var_initiator ;
         v-wf:mappingExpression  "process.getInputVariable ('initiator')" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_initiator_from_actor
+        rdf:type v-wf:Mapping ;
+        v-wf:mapToVariable s-wf:var_initiator ;
+        v-wf:mappingExpression  "process.getLocalVariable ('actor')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -699,16 +714,24 @@ v-wf:DecisionGoReview
 .
 
 #----------------------- Coordination Net ------------------------------
+s-wf:tr_actor_add_request_form
+    rdf:type v-wf:Transform ;
+	v-wf:transformRule s-wf:rul_tr_form_1 ;	
+    v-wf:transformRule s-wf:rul_tr_form_2 ;
+	rdfs:isDefinedBy s-wf: ;
+    rdfs:label "трансформация создания пользовательской формы дополнительного запроса по задаче"@ru ;		
+.		
+
 
 s-wf:tr_actor_form
-        rdf:type v-wf:Transform ;
-	v-wf:transformRule s-wf:rul_tr_form_0 ;	
+    rdf:type v-wf:Transform ;
+	v-wf:transformRule s-wf:rul_tr_form_1 ;
+	v-wf:transformRule s-wf:rul_tr_form_a ;	
 	v-wf:transformRule s-wf:rul_tr_form_2 ;	
 	v-wf:transformRule s-wf:rul_tr_form_3 ;	
 	v-wf:transformRule s-wf:rul_tr_form_4 ;	
 	v-wf:transformRule s-wf:rul_tr_form_5 ;	
 	v-wf:transformRule s-wf:rul_tr_form_6 ;
-	v-wf:transformRule s-wf:rul_tr_form_1 ;
 	v-wf:transformRule s-wf:rul_tr_form_8 ;
 	v-wf:transformRule s-wf:rul_tr_form_9 ;
 	rdfs:isDefinedBy s-wf: ;
@@ -717,29 +740,28 @@ s-wf:tr_actor_form
 
 s-wf:rul_tr_form_1
 	rdf:type v-wf:Rule ;
-	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'initiator')" ;
-	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putValue ('v-wf:from')"; 	
-	v-wf:grouping	"1";
-	rdfs:isDefinedBy s-wf: ;
-	rdfs:label "определение инициатора"@ru ;		
-.
-s-wf:rul_tr_form_2
-	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'docId')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
-#	v-wf:aggregate	"putString ('rdfs:label', 'по документу [' + getElement ()[0].data + ']')";
 	v-wf:aggregate	"putFieldOfIndividFromElement ('rdfs:label', 'rdfs:label')"; 	
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
 	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
 	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
 	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
-#	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionRedirect')"; 	
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
     rdfs:label "варианты ответа"@ru ;	
+.
+
+s-wf:rul_tr_form_2
+	rdf:type v-wf:Rule ;
+	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'initiator')" ;
+	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
+	v-wf:aggregate	"putValue ('v-wf:from')"; 	
+	v-wf:grouping	"1";
+	rdfs:isDefinedBy s-wf: ;
+	rdfs:label "от кого = инициатор"@ru ;		
 .
 
 s-wf:rul_tr_form_3
@@ -782,7 +804,7 @@ s-wf:rul_tr_form_6
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:rul_tr_form_0
+s-wf:rul_tr_form_a
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'user_task_form_label')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
@@ -975,15 +997,15 @@ s-wf:transformation_uri
 .
 #---------- Net Coordination
 
-s-wf:def_exec_coordinator
+s-wf:def_exec_actor
 	rdf:type v-wf:ExecutorDefinition ;
-	v-wf:executorExpression "process.getLocalVariable ('coordinator_lc')" ;
+	v-wf:executorExpression "process.getLocalVariable ('actor')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:def_exec_initiator
 	rdf:type v-wf:ExecutorDefinition ;
-	v-wf:executorExpression "process.getLocalVariable ('initiator')" ;
+	v-wf:executorExpression "process.getInputVariable ('initiator')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -994,13 +1016,6 @@ s-wf:map_set_if_result
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:map_set_other_coordinator
-	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_coordinator_lc ;
-	v-wf:mappingExpression	"task_result.getValue ('result_data')";
-	rdfs:isDefinedBy s-wf: ;
-.
-
 s-wf:map_set_result_decision
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_result_decision ;
@@ -1008,10 +1023,17 @@ s-wf:map_set_result_decision
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:map_set_coordinator
+s-wf:map_set_actor_from_executor
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_coordinator_lc ;
+	v-wf:mapToVariable s-wf:var_actor ;
 	v-wf:mappingExpression	"process.getExecutor ()";
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_set_add_request_actor_from_initiator
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_add_request_actor ;
+	v-wf:mappingExpression	"process.getInputVariable ('initiator')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -1054,32 +1076,36 @@ s-wf:map_jrn_decision_b
 s-wf:net_coordination a v-wf:Net;
 	rdfs:isDefinedBy s-wf: ;
     v-wf:inputVariable s-wf:var_doc_id, s-wf:var_initiator, s-wf:var_coordinator, s-wf:var_coordinator_level;
-    v-wf:localVariable s-wf:var_result, s-wf:var_coordinator_lc, s-wf:var_result_decision;
+    v-wf:localVariable s-wf:var_result, s-wf:var_actor, s-wf:var_add_request_actor, s-wf:var_result_decision;
     v-wf:consistsOf s-wf:nc_ic, s-wf:nc_t1, s-wf:nc_t2, s-wf:nc_t3, s-wf:nc_oc, s-wf:nc_f_ic_t1, s-wf:nc_f_t1_t2, s-wf:nc_f_t3_t1, s-wf:nc_f_t2_oc, s-wf:nc_f_t2_t1;
-	v-wf:consistsOf d:ae4ab4555-476f-1ec5-2a4d-438da0398113, d:abaa42215-965f-a032-aada-31be82a54e95, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23;
-    v-wf:consistsOf d:a1a8914b5-6b13-39dc-21fd-d8a12487d79b, d:a65787936-f51e-a83c-f537-95eaaa02c21a, d:afdd3ebd0-7934-8d38-1f68-158a05f0330d;    
+	v-wf:consistsOf s-wf:c1, d:abaa42215-965f-a032-aada-31be82a54e95, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23;
+    v-wf:consistsOf s-wf:additional_user_response, d:a65787936-f51e-a83c-f537-95eaaa02c21a, d:afdd3ebd0-7934-8d38-1f68-158a05f0330d;    
+    v-wf:consistsOf d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e, d:a3d7c838c-df12-e9ec-48c6-a96f3bb7e13f, d:abc5142af-b501-1ec6-8ee0-acb767f078a4;
     rdfs:label "универсальный маршрут 1"@ru;
     v-wf:completedMapping s-wf:map_set_result_from_local, s-wf:map_set_result_decision_from_local;
 .
 
-d:ae4ab4555-476f-1ec5-2a4d-438da0398113 v-wf:locationY "548"^^xsd:integer;
+s-wf:c1 v-wf:hasFlow d:abaa42215-965f-a032-aada-31be82a54e95;
+    v-wf:locationY "548"^^xsd:integer;
     a v-wf:Condition;
-    v-wf:hasFlow d:abaa42215-965f-a032-aada-31be82a54e95;
+    rdfs:label "c1"@ru;
     v-s:author td:RomanKarpov-Analyst1;
-    v-s:created "2015-11-09T12:51:20.153Z"^^xsd:dateTime;
-    v-wf:locationX "556"^^xsd:integer.
+    v-s:created "2015-11-09T12:51:20.000Z"^^xsd:dateTime;
+    v-wf:locationX "556"^^xsd:integer;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow-base/>.
 
 d:abaa42215-965f-a032-aada-31be82a54e95 a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-09T12:51:20.156Z"^^xsd:dateTime;
     v-wf:flowsInto s-wf:nc_t1.
 
-d:a1a8914b5-6b13-39dc-21fd-d8a12487d79b 
+s-wf:additional_user_response 
 	v-wf:hasFlow d:afdd3ebd0-7934-8d38-1f68-158a05f0330d, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23;
-    v-wf:join v-wf:None;
+	v-wf:split v-wf:XOR;    
     v-wf:locationY "356"^^xsd:integer;
     a v-wf:Task;
-    v-wf:split v-wf:None;
+	v-wf:startDecisionTransform s-wf:tr_actor_add_request_form;
+	v-wf:startingMapping s-wf:map_doc_id, s-wf:map_set_add_request_actor_from_initiator, s-wf:map_initiator_from_actor;   
     rdfs:label "дополнительная реакция"^^xsd:string;
     v-wf:executor s-wf:def_exec_initiator;
     v-s:author td:RomanKarpov-Analyst1;
@@ -1087,15 +1113,17 @@ d:a1a8914b5-6b13-39dc-21fd-d8a12487d79b
     v-wf:locationX "630"^^xsd:integer;
     rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow/>.
 
-d:a65787936-f51e-a83c-f537-95eaaa02c21a a v-wf:Flow;
+d:a65787936-f51e-a83c-f537-95eaaa02c21a 
+	a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-09T12:51:20.163Z"^^xsd:dateTime;
-    v-wf:flowsInto d:a1a8914b5-6b13-39dc-21fd-d8a12487d79b.
+    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionRedirect')) == false && is_some_content_value (task.getInputVariable ('possible_add_decision'), [newUri ('v-wf:DecisionRemake')]) == false"^^xsd:string;
+    v-wf:flowsInto s-wf:additional_user_response.
 
 d:afdd3ebd0-7934-8d38-1f68-158a05f0330d a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-09T12:51:20.166Z"^^xsd:dateTime;
-    v-wf:flowsInto d:ae4ab4555-476f-1ec5-2a4d-438da0398113.
+    v-wf:flowsInto s-wf:c1.
 
 d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23 a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
@@ -1151,11 +1179,12 @@ s-wf:nc_t2 a v-wf:Task;
     v-wf:startDecisionTransform s-wf:tr_actor_form;
     v-wf:completeDecisionTransform s-wf:tr_taken_decision;
     v-wf:hasFlow s-wf:nc_f_t2_t1, s-wf:nc_f_t2_oc, d:a65787936-f51e-a83c-f537-95eaaa02c21a;
-    v-wf:executor s-wf:def_exec_coordinator;
+    v-wf:executor s-wf:def_exec_actor;
     rdfs:label "согласование"^^xsd:string;
     v-wf:expectedResultType s-wf:UserTaskForm;
-    v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coord_level, s-wf:map_possibleDecision, s-wf:map_user_task_form_label, s-wf:map_t2_sm1, s-wf:map_t2_sm2;
-    v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_other_coordinator, s-wf:map_set_result_decision;
+    v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coord_level, s-wf:map_user_task_form_label, s-wf:map_t2_sm1, s-wf:map_t2_sm2;
+    v-wf:startingMapping s-wf:map_possibleDecision, s-wf:map_possible_add_decision;
+    v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision;
     v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
     v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
 .
@@ -1181,15 +1210,16 @@ s-wf:map_t2_sm2
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:nc_t3 a v-wf:Task;
-	rdfs:isDefinedBy s-wf: ;
-    v-wf:locationX "392"^^xsd:integer;
-    v-wf:locationY "521"^^xsd:integer;
+s-wf:nc_t3 
+	v-wf:hasFlow s-wf:nc_f_t3_t1;
+    v-wf:locationY "517"^^xsd:integer;
+    a v-wf:Task;
+    rdfs:label "подготовить задание и установить переменную actor значением исполнителя из текущего процесса"^^xsd:string;
     v-wf:belongsTo s-wf:net_coordination;
-    v-wf:hasFlow s-wf:nc_f_t3_t1;
-    rdfs:label "установить исполнителя и подготовить задание"^^xsd:string;
-    v-wf:completedMapping s-wf:map_set_coordinator, s-wf:map_description_task_2_actor_task, s-wf:map_task_date_to_2_actor_task;    
-    .
+    v-wf:completedMapping s-wf:map_set_actor_from_executor, s-wf:map_description_task_2_actor_task, s-wf:map_task_date_to_2_actor_task;
+    v-wf:locationX "373"^^xsd:integer;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow-base/>.
+
 
 s-wf:nc_oc v-wf:locationY "431"^^xsd:integer;
     a v-wf:OutputCondition;
@@ -1211,18 +1241,32 @@ s-wf:nc_f_t1_t2 a v-wf:Flow;
 s-wf:nc_f_t3_t1 a v-wf:Flow;
     rdfs:isDefinedBy s-wf: ;
     v-wf:belongsTo s-wf:net_coordination;
-    v-wf:flowsInto d:ae4ab4555-476f-1ec5-2a4d-438da0398113;
+    v-wf:flowsInto s-wf:c1;
     .
 
 s-wf:nc_f_t2_oc a v-wf:Flow;
     rdfs:isDefinedBy s-wf: ;
     v-wf:flowsInto s-wf:nc_oc;
-    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionRedirect')) == false"^^xsd:string.
+    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionRedirect')) == false && task_result.is_all_executors_taken_decision ('result', task.getInputVariable ('possible_add_decision')) == false"^^xsd:string.
 
 s-wf:nc_f_t2_t1 a v-wf:Flow;
-    rdfs:isDefinedBy s-wf: ;
-    v-wf:flowsInto d:ae4ab4555-476f-1ec5-2a4d-438da0398113;
-    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionRedirect')) == true"^^xsd:string.
+    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionRedirect')) == true"^^xsd:string;
+    v-wf:flowsInto d:abc5142af-b501-1ec6-8ee0-acb767f078a4;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow-base/>.
+
+d:abc5142af-b501-1ec6-8ee0-acb767f078a4 
+	v-wf:hasFlow d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e;
+    v-wf:locationY "637"^^xsd:integer;
+    a v-wf:Task;
+    rdfs:label "установить переменную actor"^^xsd:string;
+    v-s:author td:RomanKarpov-Analyst1;
+    v-s:created "2015-11-10T18:08:39.175Z"^^xsd:dateTime;
+    v-wf:locationX "480"^^xsd:integer.
+
+d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e a v-wf:Flow;
+    v-s:author td:RomanKarpov-Analyst1;
+    v-s:created "2015-11-10T18:08:39.178Z"^^xsd:dateTime;
+    v-wf:flowsInto s-wf:c1.
 
 #---- ---- -----
 

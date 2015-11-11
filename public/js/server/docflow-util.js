@@ -69,14 +69,15 @@ function WorkItemResult(_work_item_result)
 
     this.compare = function(var_name, value)
     {
+		if (!value || value.length < 1)
+			return false;
+			
         //print ("@@@compareTaskResult this.work_item_result=", toJson (this.work_item_result));
         //print ("@@@compareTaskResult value=", toJson (value));
         //print ("@@@compareTaskResult var_name=", toJson (var_name));
         if (!this.work_item_result || this.work_item_result.length == 0)
             return false;
 
-        if (value.length > 0)
-        {
             //	print ("@@@compareTaskResult 1");
             var true_count = 0;
             for (var i in this.work_item_result)
@@ -100,7 +101,6 @@ function WorkItemResult(_work_item_result)
                     }
                 }
             }
-        }
 
         return false;
     };
@@ -108,12 +108,15 @@ function WorkItemResult(_work_item_result)
 
     this.is_all_executors_taken_decision = function(var_name, value)
     {
+		if (!value || value.length < 1)
+			return false;
+			
         var count_agreed = 0;
         for (var i = 0; i < this.work_item_result.length; i++)
         {
             var wirv = this.work_item_result[i][var_name];
 
-            print("@@@is_all_executors_taken_decision: wiri=" + toJson(wirv), ", value=", toJson(value));
+            //print("@@@is_all_executors_taken_decision: wiri=" + toJson(wirv), ", value=", toJson(value));
 
             if (wirv && wirv.length > 0 && wirv[0].data == value[0].data && wirv[0].type == value[0].type)
                 count_agreed++;
@@ -121,7 +124,7 @@ function WorkItemResult(_work_item_result)
 
         if (count_agreed == this.work_item_result.length)
         {
-            print("@@@is_some_executor_taken_decision: TRUE");
+            //print("@@@is_some_executor_taken_decision: TRUE");
             return true;
         }
         else
@@ -131,15 +134,18 @@ function WorkItemResult(_work_item_result)
 
     this.is_some_executor_taken_decision = function(var_name, value)
     {
+		if (!value || value.length < 1)
+			return false;
+			
         for (var i = 0; i < this.work_item_result.length; i++)
         {
             var wirv = this.work_item_result[i][var_name];
 
-            print("@@@is_some_executor_taken_decision: wiri=" + toJson(wirv), ", value=", toJson(value));
+            //print("@@@is_some_executor_taken_decision: wiri=" + toJson(wirv), ", value=", toJson(value));
 
             if (wirv && wirv.length > 0 && wirv[0].data == value[0].data && wirv[0].type == value[0].type)
             {
-                print("@@@is_some_executor_taken_decision: TRUE");
+                //print("@@@is_some_executor_taken_decision: TRUE");
                 return true;
             }
         }
@@ -149,6 +155,25 @@ function WorkItemResult(_work_item_result)
 
 
 }
+
+    function is_some_content_value(src, b)
+    {
+        for (var i = 0; i < src.length; i++)
+        {			
+			for (var j = 0; j < b.length; j++)
+			{
+				if (src[i].type == b[j].type && src[i].data == b[j].data)
+				{
+//					print("@@@is_some_content_value: TRUE");
+					return true;
+				}
+			}
+        }
+
+//					print("@@@is_some_content_value: FALSE");
+        return false;
+    }
+
 
 function Context(_src_data, _ticket)
 {
@@ -395,15 +420,17 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
                 var find_local_var;
                 if (local_vars)
                 {
-                    //print("[WORKFLOW][generate_variable]: ищем переменную среди локальных");
+                    //print("[WORKFLOW][generate_variable]: ищем переменную [", variable_name, "] среди локальных процесса:" + _process['@'] + ", local_vars=", toJson (local_vars));
 
                     // найдем среди локальных переменных процесса, такую переменную
                     // если нашли, то новая переменная должна перезаписать переменную процесса
-
                     for (var i = 0; i < local_vars.length; i++)
                     {
+                        //print ("@@ local_var_uri=", toJson (local_vars[i]));
                         var local_var = get_individual(ticket, local_vars[i].data);
                         if (!local_var) continue;
+                        
+                        //print ("@@ local_var=", toJson (local_var));
 
                         var var_name = getFirstValue(local_var['v-wf:variableName']);
                         if (!var_name) continue;
@@ -416,23 +443,40 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
                     }
 
                     if (find_local_var)
-                        new_variable['@'] = find_local_var['@'];
+                    {
+						// нашли, обновим значение в локальной переменной						
+						find_local_var['v-wf:variableValue'] = value;
+//						print ("find_local_var=", toJson (find_local_var));
+						put_individual (ticket, find_local_var, _event_id);
+						
+//                        new_variable['@'] = find_local_var['@'];
+                    }    
                 }
+                else
+					local_vars = [];
 
                 if (!find_local_var)
                 {
-                    //print("[WORKFLOW][generate_variable]: не, найдена, привязать новую к процессу:" + _process['@']);
+                    //print("[WORKFLOW][generate_variable]: переменная [", variable_name, "] не, найдена, привязать новую к процессу:" + _process['@']);
 
-                    // если не нашли то привязать новую переменную к процессу
+                    // если не нашли то сделать копию и привязать ее переменную к процессу
+                    var new_variable_for_local = get_new_variable(variable_name, value)
+					put_individual (ticket, new_variable_for_local, _event_id);
+                    
                     var add_to_document = {
                         '@': _process['@'],
                         'v-wf:localVars': [
                         {
-                            data: new_variable['@'],
+                            data: new_variable_for_local['@'],
                             type: _Uri
                         }]
                     };
                     add_to_individual(ticket, add_to_document, _event_id);
+                    
+                    local_vars.push (newUri (new_variable_for_local['@'])[0]);
+                    _process['v-wf:localVars'] = local_vars;
+                    
+                    //print("[WORKFLOW][generate_variable]: _process= ", toJson (_process['v-wf:localVars']));
                 }
 
             }
@@ -708,7 +752,7 @@ function create_new_trace_subjournal(parent_uri, net_element_impl, label, type)
         }];
         new_journal_record['rdfs:label'] = [
         {
-            data: 'запущен элемент сети',
+            data: label,
             type: _String
         }];
         new_journal_record['v-s:subJournal'] = [

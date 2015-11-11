@@ -218,6 +218,7 @@ function logToJournal(ticket, journal_uri, journal_record)
 
 function traceToJournal(ticket, journal_uri, label, _data)
 {
+	//print("@@@ traceToJournal, journal_uri=" + journal_uri + " #1");
 	var journal_record = newJournalRecord(journal_uri);
 	
 	journal_record['rdf:type'] = [
@@ -239,6 +240,5 @@ function traceToJournal(ticket, journal_uri, label, _data)
 	logToJournal(ticket, journal_uri, journal_record);
 	
 	//print("@@@ traceToJournal, journal_uri=" + journal_uri + ", " + toJson(journal_record));
-
 }	
 
