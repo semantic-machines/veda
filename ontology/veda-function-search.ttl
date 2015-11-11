@@ -788,9 +788,12 @@ v-fs:AttributiveRequestTemplate
 			for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
 				(function (i) {
 					setTimeout(function () {
-						var _tmpl = tmpl.replace("###", i+1);
+						var _tmpl = $(tmpl.replace("###", i+1));
 						var result = new veda.IndividualModel( self.result[i] );
 						result.present(tBody, _tmpl);
+						_tmpl.dblclick(function (e) {
+							riot.route("#/" + result.id);
+						});
 					}, 0);
 				}(i));
 			}
