@@ -123,10 +123,15 @@ v-ft:FunctionTasksTemplate
 	<br />
 </div>
 <script>
-	var tasks = individual.tasks ? individual.tasks : individual.tasks = new veda.IndividualModel();
-	tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
-	tasks["v-fs:fulltextQuery"] = individual["v-ft:query"].slice(0);
-	tasks["v-fs:sortOrder"] = individual["v-ft:sortOrder"].slice(0);
+	var tasks;
+	if (!individual.tasks) {
+		tasks = new veda.IndividualModel();
+		tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
+		tasks["v-fs:fulltextQuery"] = individual["v-ft:query"].slice(0);
+		tasks["v-fs:sortOrder"] = individual["v-ft:sortOrder"].slice(0);
+	} else {
+		tasks = individual.tasks;
+	}
 	
 	tasks.on("afterSearch", renderTasks);
 	template.on("remove", function () {
