@@ -24,8 +24,8 @@
 
 v-ft:FunctionTasks
   rdf:type owl:Class ;
-  rdfs:label "Function Inbox"@en ;
-  rdfs:label "Функция Входящие"@ru ;
+  rdfs:label "Function 'Tasks'"@en ;
+  rdfs:label "Функция 'Задачи'"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
 v-ft:query
@@ -85,32 +85,33 @@ v-ft:FunctionTasksTemplate
 	<table class="table table-condensed table-bordered table-striped">
 		<thead>
 			<tr>
+				<th width="20px">#</span></th>
 				<th width="20px"><span class="fa fa-search"></span></th>
 				<th width="15%">
-					<a id="v-wf:from" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes"></a>
+					<a id="v-wf:from" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
 					<span about="v-wf:from" property="rdfs:label"></span>
 				</th>
 				<th width="15%">
-					<a id="v-wf:to" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes"></a>
+					<a id="v-wf:to" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
 					<span about="v-wf:to" property="rdfs:label"></span>
 				</th>
 				<th>
-					<a id="v-s:description" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes"></a>
+					<a id="v-s:description" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
 					<span about="v-s:description" property="rdfs:label"></span>
 				</th>
 				<th>
-					<a id="v-wf:onDocument" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes"></a>
+					<a id="v-wf:onDocument" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
 					<span about="v-wf:onDocument" property="rdfs:label"></span>
 				</th>
 				<th width="10%">
-					<a id="v-wf:dateGiven" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes"></a>
+					<a id="v-wf:dateGiven" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
 					<span about="v-wf:dateGiven" property="rdfs:label"></span>
 				</th>
 			</tr>
 		</thead>
 		<tbody id="tasks">
 			<tr>
-				<td colspan="6">
+				<td colspan="7">
 					<span about="v-ft:TasksNotFound" property="rdfs:label"></span>
 				</td>
 			</tr>
@@ -122,7 +123,7 @@ v-ft:FunctionTasksTemplate
 	<br />
 </div>
 <script>
-	var tasks = new veda.IndividualModel();
+	var tasks = individual.tasks ? individual.tasks : individual.tasks = new veda.IndividualModel();
 	tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
 	tasks["v-fs:fulltextQuery"] = individual["v-ft:query"].slice(0);
 	tasks["v-fs:sortOrder"] = individual["v-ft:sortOrder"].slice(0);
@@ -132,9 +133,11 @@ v-ft:FunctionTasksTemplate
 		tasks.off("afterSearch", renderTasks);
 	});
 	
-	var tmpl = new veda.IndividualModel("v-ft:InboxTaskTemplate");
+	var tmplInd = new veda.IndividualModel("v-ft:InboxTaskTemplate");
+	var tmpl = tmplInd["v-ui:template"][0].toString();
 	var cnt = $("#tasks", template);
 	var sorts = $("th > a", template);
+	var pager = $("#pager", template);
 	sorts.on("click", function (e) {
 		e.preventDefault();
 		var sortOrder = $(this);
@@ -152,30 +155,61 @@ v-ft:FunctionTasksTemplate
 	tasks.search();
 	
 	function renderTasks(result) {
-		var sortBy = dir = "";
-		if ( tasks.hasValue("v-fs:sortOrder") ) {
-			var t = tasks["v-fs:sortOrder"][0].split(" ");
-			sortBy = t[0]; dir = t[1];
-		}
-
-		sorts.each(function () {
-			var sortOrder = $(this);
-			if (sortBy.indexOf(this.id) >= 0) {
-				sortOrder.removeClass("text-muted");
-				if (dir === "desc") sortOrder.removeClass("glyphicon-sort-by-attributes").addClass("glyphicon-sort-by-attributes-alt");
-			} else {
-				sortOrder.addClass("text-muted");
-			}
-		});
-
 		if (result.length) {
+			
 			cnt.empty();
-			result.map(function (uri) {
-				var ind = new veda.IndividualModel(uri);
-				ind.present(cnt, tmpl);
+			pager.empty();
+			
+			var sortBy = dir = "";
+			if ( tasks.hasValue("v-fs:sortOrder") ) {
+				var t = tasks["v-fs:sortOrder"][0].split(" ");
+				sortBy = t[0]; dir = t[1];
+			}
+
+			sorts.each(function () {
+				var sortOrder = $(this);
+				if (sortBy.indexOf(this.id) >= 0) {
+					sortOrder.removeClass("text-muted");
+					if (dir === "desc") sortOrder.removeClass("glyphicon-sort-by-attributes").addClass("glyphicon-sort-by-attributes-alt");
+				} else {
+					sortOrder.addClass("text-muted");
+				}
 			});
+
+			tasks.page = tasks.page || 0;
+			if (tasks.count < tasks.page * veda.user.displayedElements) {
+				tasks.page = Math.floor(tasks.count / veda.user.displayedElements) + 1 * (tasks.count % veda.user.displayedElements ? 1 : 0) - 1;
+			}
+			
+			for (var i = tasks.page * veda.user.displayedElements; i < (tasks.page + 1) * veda.user.displayedElements && i < tasks.count; i++) {
+				(function (i) {
+					setTimeout(function () {
+						var _tmpl = tmpl.replace("###", i+1);
+						var result = new veda.IndividualModel( tasks.result[i] );
+						result.present(cnt, _tmpl);
+					}, 0);
+				}(i));
+			}
+			
+			// Show pager
+			for (var pg = 0; pg < Math.floor(tasks.count / veda.user.displayedElements) + 1 * (tasks.count % veda.user.displayedElements ? 1 : 0); pg++) {
+				var $pg = $("<li/>")
+					.attr("class", pg === tasks.page ? "active" : "")
+					.appendTo(pager);
+				var $a = $("<a/>", {
+					"text" : pg + 1,
+					"click": (function (pg) {
+						if (pg === tasks.page) return $.noop;
+						return function (event) {
+							event.preventDefault();
+							tasks.page = pg;
+							tasks.trigger("afterSearch", tasks.result);
+						}
+					})(pg),
+					"href" : ""
+				}).appendTo($pg);
+			}
 		}
-		
 	}
 </script>
   """ ;
@@ -187,6 +221,7 @@ v-ft:InboxTaskTemplate
   rdfs:label "Шаблон для таблицы входящих задач"@ru ;
   v-ui:template """
 <tr>
+	<td>###</td>
 	<td><a href="#/@"><span class="fa fa-search"></span></a></td>
 	<td rel="v-wf:from" template="v-ui:LabelTemplate"></td>
 	<td rel="v-wf:to" template="v-ui:LabelTemplate"></td>
@@ -194,5 +229,11 @@ v-ft:InboxTaskTemplate
 	<td rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate"></td>
 	<td property="v-wf:dateGiven"></td>
 </tr>
+<script>
+	template.dblclick(function (e) {
+		riot.route("#/" + individual.id);
+		e.stopPropagation();
+	});
+</script>
   """
 .
