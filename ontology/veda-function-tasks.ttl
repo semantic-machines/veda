@@ -7,6 +7,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
+@prefix v-a: <http://semantic-machines.com/veda/veda-admin/> .
 
 <http://semantic-machines.com/veda/veda-function-tasks>
   rdf:type owl:Ontology ;
@@ -241,4 +242,12 @@ v-ft:InboxTaskTemplate
 	});
 </script>
   """
+.
+
+v-ft:TasksMembership
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:ReadResGroup ;
+  v-s:resource v-ft:Inbox ;
+  v-s:resource v-ft:Outbox ;
+  v-s:resource v-ft:Completed ;
 .
