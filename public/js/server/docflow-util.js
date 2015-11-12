@@ -69,38 +69,38 @@ function WorkItemResult(_work_item_result)
 
     this.compare = function(var_name, value)
     {
-		if (!value || value.length < 1)
-			return false;
-			
+        if (!value || value.length < 1)
+            return false;
+
         //print ("@@@compareTaskResult this.work_item_result=", toJson (this.work_item_result));
         //print ("@@@compareTaskResult value=", toJson (value));
         //print ("@@@compareTaskResult var_name=", toJson (var_name));
         if (!this.work_item_result || this.work_item_result.length == 0)
             return false;
 
-            //	print ("@@@compareTaskResult 1");
-            var true_count = 0;
-            for (var i in this.work_item_result)
+        //	print ("@@@compareTaskResult 1");
+        var true_count = 0;
+        for (var i in this.work_item_result)
+        {
+            //	print ("@@@compareTaskResult 2");
+            var wirv = this.work_item_result[i][var_name];
+            if (wirv && wirv.length == value.length)
             {
-                //	print ("@@@compareTaskResult 2");
-                var wirv = this.work_item_result[i][var_name];
-                if (wirv && wirv.length == value.length)
+                //	print ("@@@compareTaskResult 3");
+                for (var j in wirv)
                 {
-                    //	print ("@@@compareTaskResult 3");
-                    for (var j in wirv)
+                    //	print ("@@@compareTaskResult 4");
+                    for (var k in value)
                     {
-                        //	print ("@@@compareTaskResult 4");
-                        for (var k in value)
-                        {
-                            if (wirv[j].data == value[k].data && wirv[j].type == value[k].type)
-                                true_count++;
+                        if (wirv[j].data == value[k].data && wirv[j].type == value[k].type)
+                            true_count++;
 
-                        }
-                        if (true_count == value.length)
-                            return true;
                     }
+                    if (true_count == value.length)
+                        return true;
                 }
             }
+        }
 
         return false;
     };
@@ -108,9 +108,9 @@ function WorkItemResult(_work_item_result)
 
     this.is_all_executors_taken_decision = function(var_name, value)
     {
-		if (!value || value.length < 1)
-			return false;
-			
+        if (!value || value.length < 1)
+            return false;
+
         var count_agreed = 0;
         for (var i = 0; i < this.work_item_result.length; i++)
         {
@@ -134,9 +134,9 @@ function WorkItemResult(_work_item_result)
 
     this.is_some_executor_taken_decision = function(var_name, value)
     {
-		if (!value || value.length < 1)
-			return false;
-			
+        if (!value || value.length < 1)
+            return false;
+
         for (var i = 0; i < this.work_item_result.length; i++)
         {
             var wirv = this.work_item_result[i][var_name];
@@ -156,23 +156,23 @@ function WorkItemResult(_work_item_result)
 
 }
 
-    function is_some_content_value(src, b)
+function is_some_content_value(src, b)
+{
+    for (var i = 0; i < src.length; i++)
     {
-        for (var i = 0; i < src.length; i++)
-        {			
-			for (var j = 0; j < b.length; j++)
-			{
-				if (src[i].type == b[j].type && src[i].data == b[j].data)
-				{
-//					print("@@@is_some_content_value: TRUE");
-					return true;
-				}
-			}
+        for (var j = 0; j < b.length; j++)
+        {
+            if (src[i].type == b[j].type && src[i].data == b[j].data)
+            {
+                //					print("@@@is_some_content_value: TRUE");
+                return true;
+            }
         }
-
-//					print("@@@is_some_content_value: FALSE");
-        return false;
     }
+
+    //					print("@@@is_some_content_value: FALSE");
+    return false;
+}
 
 
 function Context(_src_data, _ticket)
@@ -429,7 +429,7 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
                         //print ("@@ local_var_uri=", toJson (local_vars[i]));
                         var local_var = get_individual(ticket, local_vars[i].data);
                         if (!local_var) continue;
-                        
+
                         //print ("@@ local_var=", toJson (local_var));
 
                         var var_name = getFirstValue(local_var['v-wf:variableName']);
@@ -444,16 +444,16 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
 
                     if (find_local_var)
                     {
-						// нашли, обновим значение в локальной переменной						
-						find_local_var['v-wf:variableValue'] = value;
-//						print ("find_local_var=", toJson (find_local_var));
-						put_individual (ticket, find_local_var, _event_id);
-						
-//                        new_variable['@'] = find_local_var['@'];
-                    }    
+                        // нашли, обновим значение в локальной переменной						
+                        find_local_var['v-wf:variableValue'] = value;
+                        //						print ("find_local_var=", toJson (find_local_var));
+                        put_individual(ticket, find_local_var, _event_id);
+
+                        //                        new_variable['@'] = find_local_var['@'];
+                    }
                 }
                 else
-					local_vars = [];
+                    local_vars = [];
 
                 if (!find_local_var)
                 {
@@ -461,8 +461,8 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
 
                     // если не нашли то сделать копию и привязать ее переменную к процессу
                     var new_variable_for_local = get_new_variable(variable_name, value)
-					put_individual (ticket, new_variable_for_local, _event_id);
-                    
+                    put_individual(ticket, new_variable_for_local, _event_id);
+
                     var add_to_document = {
                         '@': _process['@'],
                         'v-wf:localVars': [
@@ -472,10 +472,10 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
                         }]
                     };
                     add_to_individual(ticket, add_to_document, _event_id);
-                    
-                    local_vars.push (newUri (new_variable_for_local['@'])[0]);
+
+                    local_vars.push(newUri(new_variable_for_local['@'])[0]);
                     _process['v-wf:localVars'] = local_vars;
-                    
+
                     //print("[WORKFLOW][generate_variable]: _process= ", toJson (_process['v-wf:localVars']));
                 }
 
@@ -498,8 +498,8 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
 {
     try
     {
-		var _trace_info = [];
-				
+        var _trace_info = [];
+
         var new_vars = [];
         if (!mapping) return [];
 
@@ -550,8 +550,8 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
                         {
                             put_individual(ticket, new_variable, _event_id);
 
-							if (trace_journal_uri)
-								_trace_info.push(new_variable);								
+                            if (trace_journal_uri)
+                                _trace_info.push(new_variable);
 
                             new_vars.push(
                             {
@@ -569,19 +569,19 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
                 }
                 catch (e)
                 {
-					if (trace_journal_uri)
-						traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", "err: expression: " + expression + "\n" + e.stack);							
+                    if (trace_journal_uri)
+                        traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", "err: expression: " + expression + "\n" + e.stack);
                 }
             }
             else
             {
-				if (trace_journal_uri)
-					traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", "map not found :" + mapping[i].data);							
+                if (trace_journal_uri)
+                    traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", "map not found :" + mapping[i].data);
             }
         }
 
-		if (trace_journal_uri)
-			traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", trace_comment + " = '" + getUris (mapping) + "' \n\nout = \n" + toJson(_trace_info));							
+        if (trace_journal_uri)
+            traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", trace_comment + " = '" + getUris(mapping) + "' \n\nout = \n" + toJson(_trace_info));
 
         return new_vars;
     }
@@ -666,28 +666,28 @@ function create_new_journal(ticket, new_journal_uri, process_uri, label)
 {
     try
     {
-	var exists_journal = get_individual (ticket, new_journal_uri);
-	
-	if (!exists_journal)
-	{
-        var new_journal = {
-            '@': new_journal_uri,
-            'rdf:type': [
-            {
-                data: 'v-s:Journal',
-                type: _Uri
-            }]
-        };
+        var exists_journal = get_individual(ticket, new_journal_uri);
 
-		if (process_uri)
-            new_journal['v-wf:onProcess'] = newUri (process_uri);
-		
-        if (label)
-            new_journal['rdfs:label'] = label;
+        if (!exists_journal)
+        {
+            var new_journal = {
+                '@': new_journal_uri,
+                'rdf:type': [
+                {
+                    data: 'v-s:Journal',
+                    type: _Uri
+                }]
+            };
 
-        put_individual(ticket, new_journal, _event_id);
-		//print ("@@@ create new journal, =", toJson (new_journal))
-	}
+            if (process_uri)
+                new_journal['v-wf:onProcess'] = newUri(process_uri);
+
+            if (label)
+                new_journal['rdfs:label'] = label;
+
+            put_individual(ticket, new_journal, _event_id);
+            //print ("@@@ create new journal, =", toJson (new_journal))
+        }
 
         return new_journal_uri;
     }
@@ -762,14 +762,14 @@ function create_new_trace_subjournal(parent_uri, net_element_impl, label, type)
         }];
         logToJournal(ticket, parent_journal_uri, new_journal_record);
 
-		put_individual(ticket, new_journal_record, _event_id);
+        put_individual(ticket, new_journal_record, _event_id);
 
-		var add_to_net_element_impl = {
-        '@': net_element_impl['@'],
-        'v-wf:traceJournal': newUri (new_sub_journal_uri)
+        var add_to_net_element_impl = {
+            '@': net_element_impl['@'],
+            'v-wf:traceJournal': newUri(new_sub_journal_uri)
         };
 
-		add_to_individual(ticket, add_to_net_element_impl, _event_id);
+        add_to_individual(ticket, add_to_net_element_impl, _event_id);
 
         return new_sub_journal_uri;
     }
@@ -807,8 +807,8 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
         else
             use_net = f_executor;
 
-		if (parent_trace_journal_uri)
-			traceToJournal(ticket, parent_trace_journal_uri, "[WO2.4] executor= " + getUri(f_executor) + " used net", getUri(use_net));							
+        if (parent_trace_journal_uri)
+            traceToJournal(ticket, parent_trace_journal_uri, "[WO2.4] executor= " + getUri(f_executor) + " used net", getUri(use_net));
 
         //var ctx = new Context(work_item, ticket);
         //ctx.print_variables ('v-wf:inVars');
@@ -850,19 +850,19 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
             if (f_useSubNet)
                 new_process['v-wf:executor'] = f_executor;
 
-			if (parent_trace_journal_uri)
-			{
-				traceToJournal(ticket, parent_trace_journal_uri, "new_process=", getUri(use_net), toJson(new_process));							
-				new_process['v-wf:isTrace'] = newBool(true);
+            if (parent_trace_journal_uri)
+            {
+                traceToJournal(ticket, parent_trace_journal_uri, "new_process=", getUri(use_net), toJson(new_process));
+                new_process['v-wf:isTrace'] = newBool(true);
 
-				var trace_journal_uri = getTraceJournalUri(new_process_uri);
-				if (trace_journal_uri)
-				{
-					create_new_journal(ticket, trace_journal_uri, null, _started_net['rdfs:label']);
-					new_process['v-wf:traceJournal'] = newUri (trace_journal_uri);				
-				}
-			}
-			
+                var trace_journal_uri = getTraceJournalUri(new_process_uri);
+                if (trace_journal_uri)
+                {
+                    create_new_journal(ticket, trace_journal_uri, null, _started_net['rdfs:label']);
+                    new_process['v-wf:traceJournal'] = newUri(trace_journal_uri);
+                }
+            }
+
             put_individual(ticket, new_process, _event_id);
 
             var journal_uri = getJournalUri(new_process_uri);
@@ -890,7 +890,7 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
                 data: new_process_uri,
                 type: _Uri
             }];
-                        
+
             put_individual(ticket, document, _event_id);
         }
     }
@@ -910,13 +910,13 @@ function get_properties_chain(var1, query)
         return res;
 
     var doc;
-//    print('@@@get_properties_chain#1 var1=', toJson(var1));
+    //    print('@@@get_properties_chain#1 var1=', toJson(var1));
     doc = get_individual(ticket, getUri(var1));
 
     if (doc)
         traversal(doc, query, 0, res);
 
-//    print('@@@get_properties_chain #2 res=', toJson(res));
+    //    print('@@@get_properties_chain #2 res=', toJson(res));
 
     return res;
 }
@@ -925,7 +925,7 @@ function traversal(indv, query, pos_in_path, result)
 {
     var condition = query[pos_in_path];
 
-    print('@@@ traversal#0 condition=', toJson(condition), ", indv=", toJson(indv));
+    //print('@@@ traversal#0 condition=', toJson(condition), ", indv=", toJson(indv));
 
     var op_get;
     var op_go;
@@ -949,16 +949,16 @@ function traversal(indv, query, pos_in_path, result)
 
         for (var i in ffs)
         {
-            print('@@@ traversal#2 ffs[i]=', ffs[i].data);
+            //print('@@@ traversal#2 ffs[i]=', ffs[i].data);
             var doc = get_individual(ticket, ffs[i].data);
-            print('@@@ traversal#4 doc=', toJson(doc));
+            //print('@@@ traversal#4 doc=', toJson(doc));
             traversal(doc, query, pos_in_path + 1, result);
         }
     }
 
     if (op_get)
     {
-		print ("@1 op_get=", op_get);
+        //print ("@1 op_get=", op_get);
         var is_get = true;
         if (op_eq)
         {
@@ -981,7 +981,7 @@ function traversal(indv, query, pos_in_path, result)
                         if (A[i].type == B[0].type && A[i].data == B[0].data)
                         {
                             is_get = true;
-                    //print("###3 A == B");
+                            //print("###3 A == B");
                             break;
                         }
 
@@ -992,18 +992,18 @@ function traversal(indv, query, pos_in_path, result)
         }
         else
         {
-			is_get = true;
-		}
+            is_get = true;
+        }
 
         if (is_get)
         {
-		print ("@2 op_get=", op_get);
+            //print ("@2 op_get=", op_get);
             var ffs = indv[op_get];
-		print ("@3 op_get=", ffs);
- 
+            //print ("@3 op_get=", ffs);
+
             for (var i in ffs)
             {
-                print('@@@ traversal#3 push ', ffs[i].data);
+                //print('@@@ traversal#3 push ', ffs[i].data);
                 result.push(ffs[i]);
             }
         }

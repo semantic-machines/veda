@@ -434,20 +434,6 @@ s-wf:executor_from_coordinator
 	rdfs:label "исполнители из переменной coordinator"@ru ;
 .
 
-s-wf:possibleDecision
-        rdf:type v-wf:VarDefine ;
-	v-wf:varDefineName "possibleDecision" ;
-        rdfs:label "возможные варианты решения"@ru ;
-	rdfs:isDefinedBy s-wf: ;
-.
-
-s-wf:possible_add_decision
-        rdf:type v-wf:VarDefine ;
-	v-wf:varDefineName "possible_add_decision" ;
-        rdfs:label "возможные дополнительные варианты решения"@ru ;
-	rdfs:isDefinedBy s-wf: ;
-.
-
 s-wf:user_task_form_label
         rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "user_task_form_label" ;
@@ -507,26 +493,12 @@ s-wf:map_coordinator1
         v-wf:mappingExpression  "process.getInputVariable ('coordinatorLevel1')" ;
 .
 
-s-wf:map_possibleDecision_for_instruction
+s-wf:map_possible_decision_for_instruction
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wfc: ;
-        v-wf:mapToVariable s-wf:possibleDecision ;
+        v-wf:mapToVariable s-wf:possible_decision ;
         v-wf:mappingExpression  "[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect')]" ;
     rdfs:label "варианты ответа для исполнения"^^xsd:string;
-.
-
-s-wf:map_possibleDecision
-        rdf:type v-wf:Mapping ;
-	rdfs:isDefinedBy s-wfc: ;
-        v-wf:mapToVariable s-wf:possibleDecision ;
-        v-wf:mappingExpression  "process.getInputVariable ('possibleDecision')" ;
-.
-
-s-wf:map_possible_add_decision
-        rdf:type v-wf:Mapping ;
-	rdfs:isDefinedBy s-wfc: ;
-        v-wf:mapToVariable s-wf:possible_add_decision ;
-        v-wf:mappingExpression  "process.getInputVariable ('possible_add_decision')" ;
 .
 
 s-wf:map_coordinator1_1

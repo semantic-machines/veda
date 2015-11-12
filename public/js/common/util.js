@@ -122,7 +122,9 @@ function get_property_chain (ticket, first, rest)
 
 function is_exist (individual, field, value)
 {
-        var ff = individual[field];
+	if (!individual)
+		return false;
+    var ff = individual[field];
 	if (ff)
 	{
 	    for (var i = 0; i < ff.length; i++) 

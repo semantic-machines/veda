@@ -129,7 +129,48 @@ s-wf:var_coordination_level
         rdfs:label "уровень согласования"@ru ;
 .
 
+s-wf:possible_decision
+        rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "possible_decision" ;
+        rdfs:label "возможные варианты решения"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:decision_route_to_add_reaction
+        rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "decision_route_to_add_reaction" ;
+        rdfs:label "решение для перехода к дополнительной реакции пользователя"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:possible_decision_for_add_reaction
+        rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "possible_decision_for_add_reaction" ;
+        rdfs:label "возможные дополнительные варианты решения"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+
+
 # --------------------------------
+
+s-wf:map_possible_decision
+        rdf:type v-wf:Mapping ;
+        v-wf:mapToVariable s-wf:possible_decision ;
+        v-wf:mappingExpression  "process.getInputVariable ('possible_decision')" ;
+.
+
+s-wf:map_decision_route_to_add_reaction
+        rdf:type v-wf:Mapping ;
+        v-wf:mapToVariable s-wf:decision_route_to_add_reaction ;
+        v-wf:mappingExpression  "process.getInputVariable ('decision_route_to_add_reaction')" ;
+.
+
+s-wf:map_possible_decision_for_add_reaction
+        rdf:type v-wf:Mapping ;
+        v-wf:mapToVariable s-wf:possible_decision_for_add_reaction ;
+        v-wf:mappingExpression  "process.getInputVariable ('possible_decision_for_add_reaction')" ;
+.
 
 s-wf:map_decision_of_set_responsible
 	rdf:type v-wf:Mapping ;
@@ -718,9 +759,21 @@ s-wf:tr_actor_add_request_form
     rdf:type v-wf:Transform ;
 	v-wf:transformRule s-wf:rul_tr_form_1 ;	
     v-wf:transformRule s-wf:rul_tr_form_2 ;
+    v-wf:transformRule s-wf:rul_tr_form_6a ;
+    v-wf:transformRule s-wf:rul_tr_form_9 ;
 	rdfs:isDefinedBy s-wf: ;
     rdfs:label "трансформация создания пользовательской формы дополнительного запроса по задаче"@ru ;		
 .		
+
+s-wf:rul_tr_form_6a
+	rdf:type v-wf:Rule ;
+	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'possible_decision_for_add_reaction')" ;
+	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
+	v-wf:aggregate	"putValue ('v-wf:possibleDecisionClass')"; 	
+	v-wf:grouping	"1";
+	rdfs:label "установить возможные варианты ответов"@ru ;	
+	rdfs:isDefinedBy s-wf: ;
+.
 
 
 s-wf:tr_actor_form
@@ -796,7 +849,7 @@ s-wf:rul_tr_form_5
 
 s-wf:rul_tr_form_6
 	rdf:type v-wf:Rule ;
-	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'possibleDecision')" ;
+	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'possible_decision')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
 	v-wf:aggregate	"putValue ('v-wf:possibleDecisionClass')"; 	
 	v-wf:grouping	"1";
@@ -962,7 +1015,14 @@ s-wf:map_description_task_2_actor_task
 						  )
 	
 	""";
-	rdfs:label "описание задачи из формы решения пользователя"@ru ;
+	rdfs:label "описание задачи из формы решения пользователя [actor_task]"@ru ;
+.
+
+s-wf:map_actor_task_description_from_LV_result_decision
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_actor_task_description ;
+	v-wf:mappingExpression "get_properties_chain (process.getLocalVariable('result_decision'), [{$get:'rdfs:comment'}] )";
+	rdfs:label "описание задачи из формы решения пользователя [result_decision]"@ru ;
 .
 
 s-wf:var_actor_task_date_to 
@@ -1029,10 +1089,17 @@ s-wf:map_set_if_result
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:map_set_result_decision
+s-wf:map_set_result_decision_from_TR_result_data
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_result_decision ;
 	v-wf:mappingExpression	"task_result.getValue ('result_data')";
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_set_actor_task_description_from_TR_result_data
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_actor_task_description ;
+	v-wf:mappingExpression "get_properties_chain (task_result.getValue ('result_data'), [{$get:'rdfs:comment'}])";
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -1112,35 +1179,23 @@ d:abaa42215-965f-a032-aada-31be82a54e95 a v-wf:Flow;
     v-s:created "2015-11-09T12:51:20.156Z"^^xsd:dateTime;
     v-wf:flowsInto s-wf:nc_t1.
 
-s-wf:additional_user_response 
-	v-wf:hasFlow d:afdd3ebd0-7934-8d38-1f68-158a05f0330d, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23;
-	v-wf:split v-wf:XOR;    
-    v-wf:locationY "356"^^xsd:integer;
-    a v-wf:Task;
-	v-wf:startDecisionTransform s-wf:tr_actor_add_request_form;
-	v-wf:startingMapping s-wf:map_doc_id, s-wf:map_set_add_request_actor_from_initiator, s-wf:map_initiator_from_actor;   
-    rdfs:label "дополнительная реакция"^^xsd:string;
-    v-wf:executor s-wf:def_exec_initiator;
-    v-s:author td:RomanKarpov-Analyst1;
-    v-s:created "2015-11-09T12:51:20.000Z"^^xsd:dateTime;
-    v-wf:locationX "630"^^xsd:integer;
-    rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow/>.
-
 d:a65787936-f51e-a83c-f537-95eaaa02c21a 
 	a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-09T12:51:20.163Z"^^xsd:dateTime;
-    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionRedirect')) == false && is_some_content_value (task.getInputVariable ('possible_add_decision'), [newUri ('v-wf:DecisionRemake')]) == false"^^xsd:string;
+    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', task.getInputVariable ('decision_route_to_add_reaction')) == true"^^xsd:string;
     v-wf:flowsInto s-wf:additional_user_response.
 
 d:afdd3ebd0-7934-8d38-1f68-158a05f0330d a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-09T12:51:20.166Z"^^xsd:dateTime;
+    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionBreak')) == false"^^xsd:string;   
     v-wf:flowsInto s-wf:c1.
 
 d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23 a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-09T14:25:56.755Z"^^xsd:dateTime;
+    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionBreak')) == true"^^xsd:string;       
     v-wf:flowsInto s-wf:nc_oc.
 
 s-wf:map_set_result_from_local
@@ -1196,11 +1251,28 @@ s-wf:nc_t2 a v-wf:Task;
     rdfs:label "согласование"^^xsd:string;
     v-wf:expectedResultType s-wf:UserTaskForm;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coord_level, s-wf:map_user_task_form_label, s-wf:map_t2_sm1, s-wf:map_t2_sm2;
-    v-wf:startingMapping s-wf:map_possibleDecision, s-wf:map_possible_add_decision;
-    v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision;
+    v-wf:startingMapping s-wf:map_possible_decision, s-wf:map_decision_route_to_add_reaction;
+    v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data;
     v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
     v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
 .
+
+s-wf:additional_user_response 
+	v-wf:hasFlow d:afdd3ebd0-7934-8d38-1f68-158a05f0330d, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23;
+	v-wf:split v-wf:XOR;    
+    v-wf:locationY "356"^^xsd:integer;
+    a v-wf:Task;
+	v-wf:startDecisionTransform s-wf:tr_actor_add_request_form;
+    v-wf:completeDecisionTransform s-wf:tr_taken_decision;    
+	v-wf:startingMapping s-wf:map_doc_id, s-wf:map_set_add_request_actor_from_initiator, s-wf:map_initiator_from_actor, s-wf:map_possible_decision_for_add_reaction;   
+    v-wf:startingMapping s-wf:map_actor_task_description_from_LV_result_decision;
+    v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_set_actor_task_description_from_TR_result_data;
+    rdfs:label "дополнительная реакция"^^xsd:string;
+    v-wf:executor s-wf:def_exec_initiator;
+    v-s:author td:RomanKarpov-Analyst1;
+    v-s:created "2015-11-09T12:51:20.000Z"^^xsd:dateTime;
+    v-wf:locationX "630"^^xsd:integer;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow/>.
 
 s-wf:map_set_decision_from_local
 	rdf:type v-wf:Mapping ;
@@ -1260,7 +1332,7 @@ s-wf:nc_f_t3_t1 a v-wf:Flow;
 s-wf:nc_f_t2_oc a v-wf:Flow;
     rdfs:isDefinedBy s-wf: ;
     v-wf:flowsInto s-wf:nc_oc;
-    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionRedirect')) == false && task_result.is_all_executors_taken_decision ('result', task.getInputVariable ('possible_add_decision')) == false"^^xsd:string.
+    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionRedirect')) == false && task_result.is_all_executors_taken_decision ('result', task.getInputVariable ('decision_route_to_add_reaction')) == false"^^xsd:string.
 
 s-wf:nc_f_t2_t1 a v-wf:Flow;
     v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionRedirect')) == true"^^xsd:string;

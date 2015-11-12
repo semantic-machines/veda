@@ -1973,6 +1973,13 @@ v-wf:DecisionRemake
 	rdfs:label "доработать"@ru ;
 .	
 
+v-wf:DecisionRemaked
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "доработанно"@ru ;
+.	
+
 v-wf:DecisionNotForMe
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
@@ -2047,6 +2054,7 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionAchieved ;
   v-ui:forClass v-wf:DecisionRejected ;
   v-ui:forClass v-wf:DecisionRemake ;
+  v-ui:forClass v-wf:DecisionRemaked ;
   v-ui:forClass v-wf:DecisionNotPerformed ;
   v-ui:forClass v-wf:DecisionAgreedToProject ;  
   v-ui:template """
