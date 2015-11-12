@@ -347,7 +347,7 @@ v-s:DraftAllowed
   rdf:type owl:Class ;
   rdfs:label "Draft allowed"@en ;
   rdfs:label "Возможно создание черновика"@ru ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Versioned ;
 .
 v-s:hasDraft
   rdf:type owl:ObjectProperty ;
@@ -1263,6 +1263,13 @@ v-s:actor
   rdfs:domain v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted ;
   rdfs:label "действующее лицо"@ru ;
   rdfs:range v-s:Person ;
+.
+v-s:documentVersion
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted ;
+  rdfs:label "Версия до изменения"@ru ;
+  rdfs:label "Version"@en ;
+  rdfs:range v-s:Versioned ;
 .
 v-s:DocumentCreated
   rdf:type owl:Class ;

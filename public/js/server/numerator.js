@@ -71,8 +71,8 @@ function numerate(ticket, individual, oldstate, _event_id) {
 					    || !oldstate['v-s:deleted'] 
 					    || (!(individual['v-s:deleted'].data =='true' && oldstate['v-s:deleted'].data == 'false')))) {
 					// scope and numbers are not changed
-					if ((!individual['v-s:deleted'] || individual['v-s:deleted'].data =='false') && 
-						(oldstate['v-s:deleted'] && oldstate['v-s:deleted'].data == 'true')) {
+					if ((!oldstate['v-s:deleted'] || oldstate['v-s:deleted'].data =='false') && 
+						(individual['v-s:deleted'] && individual['v-s:deleted'].data == 'true')) {
 						// document deleted
 						revoke(ticket, scope, parseInt(individual[key][0].data), _event_id);
 						return {'sucess': true, 'result':'VALUE REVOKED'};

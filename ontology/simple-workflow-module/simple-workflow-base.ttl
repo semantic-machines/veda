@@ -709,13 +709,6 @@ s-wf:UserTaskFormTemplate
 	</div>
 </div>
 <script type="text/javascript">
-	$('#send').on('click', function () {
-		individual.trigger("send");
-	});
-	
-	$('#rightsOrigin').on('click', function () {
-		individual.trigger("showRights");
-	});
 	var control = $("select#decision-control");
 	if (individual.hasValue("v-wf:possibleDecisionClass")) {
 		individual["v-wf:possibleDecisionClass"].map( function (value, index) {

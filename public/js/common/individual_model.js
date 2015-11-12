@@ -316,6 +316,7 @@ veda.Module(function (veda) { "use strict";
 		put_individual(veda.ticket, self._.individual);
 		self._.original_individual = JSON.stringify(self._.individual);
 		self._.sync = true;
+		if (self._.cache) veda.cache[self.id] = self;
 		self.trigger("individual:afterSave", self._.original_individual);
 		return this;
 	};
@@ -420,9 +421,9 @@ veda.Module(function (veda) { "use strict";
 	 * Clone individual with different (generated) id
 	 * @return {veda.IndividualModel} clone of this individual with different id.
 	 */
-	proto.clone = function () {
+	proto.clone = function (uri) {
 		var self = this;
-		var clone = new veda.IndividualModel();
+		var clone = (typeof uri == "undefined")?new veda.IndividualModel():new veda.IndividualModel(uri);
 		Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
 			if (property_uri === "rdf:type") return;
 			if (property_uri === "v-s:deleted") return;

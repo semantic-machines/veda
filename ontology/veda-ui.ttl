@@ -1222,16 +1222,24 @@ v-ui:DocumentEventTemplate
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
-	<div class="col-md-3 col-sm-3 event-type">
+	<div class="col-md-2 col-sm-3 event-type">
 	  <span rel="rdf:type" template="v-ui:LabelTemplate"></span>
 	</div>
-	<div class="col-md-7 col-sm-6 event-desc">
+	<div class="col-md-4 col-sm-6 event-desc">
 	  <div property="rdfs:label"></div>
       <span class="actor">
         <span about="v-s:actor" property="rdfs:label"></span>: 
 	    <em rel="v-s:actor" template="v-ui:LabelTemplate"></em>
 	  </span>
 	</div>
+	<div class="col-md-4 col-sm-6 event-desc">
+	  <div property="rdfs:label"></div>
+      <span class="document">
+        <span about="v-s:documentVersion" property="rdfs:label"></span>: 
+	    <em rel="v-s:documentVersion" template="v-ui:LabelTemplateWithLink"></em>
+	  </span>
+	</div>
+	
 	<div class="col-md-2 col-sm-3 event-date text-right">
 	  <span property="v-s:created"></span>
 	</div>
