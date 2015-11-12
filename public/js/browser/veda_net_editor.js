@@ -292,6 +292,7 @@ jsWorkflow.ready = jsPlumb.ready;
             				instance.select({target:workItem['v-wf:forNetElement'][0].id, source:previousWorkItem['v-wf:forNetElement'][0].id}).each(function(e) {
             					e.addClass('process-path-highlight');
             					var pathCounterLabel = (e.getOverlay("pathCounter")!=undefined)?e.getOverlay("pathCounter").getLabel():'';
+            					e.removeOverlay("pathCounter");
                         		e.addOverlay(["Label", { label: ((pathCounterLabel!='')?pathCounterLabel+',':'')+(max_process_depth-depth), location:0.5, id: "pathCounter", cssClass:'pathCounterLabel'} ]);            					
             				});
             			}
