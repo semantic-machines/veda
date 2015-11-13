@@ -210,8 +210,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			$save = $("#save.action", wrapper),
 			$showRights = $("#showRights.action", wrapper),
 			$cancel = $("#cancel.action", wrapper),
-			$delete = $("#delete.action", wrapper),
-			$search = $("#search.action", wrapper);
+			$delete = $("#delete.action", wrapper);
 
 		// Check rights to manage buttons		
 		// Update
@@ -250,16 +249,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 		if (individual.hasValue("v-s:deleted") && individual["v-s:deleted"][0]) $delete.hide();
 		
-		// Search
-		$search.on("click", function (e) {
-			var query = queryFromIndividual(individual);
-			var params = individual;
-			// Create Search instance
-			var search = new veda.SearchModel(query);
-			// Place individual to params tab in Search container
-			params.present($("#params-" + search.id, search.view), undefined, "search");
-		});
-
 		// Apply mode class to template to show/hide elements in different modes
 		function modeHandler (e) {
 			mode = e.type;
@@ -1014,63 +1003,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 	}
 	
 });
-
-function queryFromIndividual(individual) {
-	// Serialize individual as search query
-	var query;
-	var allProps = Object.getOwnPropertyNames(individual.properties)
-		.map(function (property_uri) {
-			var property = individual.properties[property_uri];
-			var values = individual[property_uri].filter(function(item){return !!item && !!item.valueOf();});
-			// Filter rdfs:Resource type
-			if (property_uri === "rdf:type") { 
-				values = individual[property_uri].filter(function(item){ return item.id !== "rdfs:Resource" });
-			}
-			var oneProp;
-			switch (property["rdfs:range"][0].id) {
-				case "xsd:integer": 
-				case "xsd:nonNegativeInteger":
-				case "xsd:decimal":
-					oneProp =
-						values.length === 1 ? "'" + property_uri + "'==[" + values[0] + "," + values[0] + "]" :
-						values.length > 1 ? "'" + property_uri + "'==[" + values[0] + "," + values[values.length-1] + "]" :
-						undefined;
-					break;
-				case "xsd:dateTime": 
-					oneProp =
-						values.length === 1 ? "'" + property_uri + "'==[" + values[0].toISOString().substring(0,19) + "," + values[0].toISOString().substring(0,19) + "]" :
-						values.length > 1 ? "'" + property_uri + "'==[" + values[0].toISOString().substring(0,19) + "," + values[values.length-1].toISOString().substring(0,19) + "]" :
-						undefined;
-					break;
-				case "xsd:boolean": 
-				case "xsd:string": 
-				case "rdfs:Literal": 
-					oneProp = values
-						.filter(function(item){return !!item && !!item.valueOf();})
-						.map( function (value) {
-							return "'" + property_uri + "'=='" + value + "'";
-						})
-						.join("||");
-					break;
-				default:
-					oneProp = values
-						.filter( function (value) {
-							return value instanceof veda.IndividualModel;
-						})
-						.map( function (value) {
-							return "'" + property_uri + "'=='" + value.id + "'";
-						})
-						.join("||");
-					break;
-			}
-			return oneProp ? "(" + oneProp + ")" : undefined;
-		})
-		.filter(function(item){return !!item;})
-		.join("&&");
-	query = allProps ? "(" + allProps + ")" : undefined;
-	return query;
-}
-
 
 function changeHash(individualId, mode) {
 	var hash = "#/"+individualId+(mode?("///"+mode):"");
