@@ -20,6 +20,9 @@ body {
   border-top-right-radius: 0;
   border-top-left-radius: 0;
 }
+div#main {
+  margin-bottom:40px;
+}
 .huge {
   font-size: 32px;
   font-weight: bold;

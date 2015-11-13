@@ -646,7 +646,6 @@ td:PersonTemplate1
         <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
         <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
         <!--button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button--!>
-        <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
       </div>
     </div>
   </div>
@@ -698,7 +697,6 @@ td:AppointmentTemplate1
         <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
         <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
         <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
-        <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
       </div--!>
     </div>
   </div>
@@ -759,9 +757,6 @@ td:AccountTemplate1
 	      </div>
         </div>
       </div>
-      <div class="panel-footer">
-        <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
-      </div>
     </div>
   </div>
   """ ;
@@ -817,7 +812,6 @@ td:PreferencesTemplate1
     <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
     <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
-    <button type="button" class="action btn btn-primary -view -edit search" id="search">Найти</button>
   </div-->
 </div>
 

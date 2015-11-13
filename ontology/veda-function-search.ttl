@@ -92,6 +92,13 @@ v-fs:typeToSearch
   rdfs:range owl:Class ;
   rdfs:range rdfs:Class ;
 .
+v-fs:resultTemplate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "шаблон отображения результатов"@ru ;
+  rdfs:label "result template"@en ;
+  rdfs:domain v-fs:AttributiveRequest ;
+  rdfs:range xsd:string ;
+.
 v-fs:TypeToSearchSpecFT
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:FulltextRequest"@ru ;
