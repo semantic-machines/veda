@@ -1523,25 +1523,25 @@ v-s:NumerationScopeClass
 v-s:numerationCommitedInterval
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:NumerationScopeClass ;
-  rdfs:range v-s:NumerationCommitedInterval;  
+  rdfs:range v-s:NumerationCommitedIntervalClass;  
   rdfs:label "Numeration commited interval"@en ;
   rdfs:label "Занятый интервал"@ru ;
 .
-v-s:NumerationCommitedInterval
+v-s:NumerationCommitedIntervalClass
   rdf:type owl:Class ;
   rdfs:label "Numeration commited interval"@en ;
   rdfs:label "Занятый интервал"@ru ;
 . 
 v-s:numerationCommitedIntervalBegin
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:NumerationCommitedInterval ;
+  rdfs:domain v-s:NumerationCommitedIntervalClass ;
   rdfs:label "начало занятого интервала нумерации"@ru ;
   rdfs:label "numeration commited interval begin"@en ;
   rdfs:range xsd:integer ;
 .
 v-s:numerationCommitedIntervalEnd
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:NumerationCommitedInterval ;
+  rdfs:domain v-s:NumerationCommitedIntervalClass ;
   rdfs:label "конец занятого интервала нумерации"@ru ;
   rdfs:label "numeration commited interval end"@en ;
   rdfs:range xsd:integer ;
