@@ -638,7 +638,6 @@ function getNextValueSimple(ticket, scope, FIRST_VALUE) {
 		scope['v-s:numerationCommitedInterval'].forEach(function(interval) 
 		{
 			interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
-			console.log(interval);
 			if (interval['v-s:numerationCommitedIntervalEnd'][0] > max) 
 			{
 				max = interval['v-s:numerationCommitedIntervalEnd'][0]; 
