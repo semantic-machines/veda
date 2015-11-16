@@ -1011,7 +1011,7 @@ s-wf:map_description_task_2_actor_task
 	v-wf:mappingExpression """
 	
 	get_properties_chain (process.getInputVariable('actor_task'), 
-							[{$go:'v-s:hasAction'}, {$get:'v-s:description', $eq:{'v-s:responsible':process.getExecutor ()}}] 
+							[{$go:'cmn-s:hasAction'}, {$get:'v-s:description', $eq:{'v-s:responsible':process.getExecutor ()}}] 
 						  )
 	
 	""";
@@ -1039,7 +1039,7 @@ s-wf:map_task_date_to_2_actor_task
 	v-wf:mappingExpression """
 	
 	get_properties_chain (process.getInputVariable('actor_task'), 
-							[{$go:'v-s:hasAction'}, {$get:'v-s:dateTo', $eq:{'v-s:responsible':process.getExecutor ()}}] 
+							[{$go:'cmn-s:hasAction'}, {$get:'v-s:dateTo', $eq:{'v-s:responsible':process.getExecutor ()}}] 
 						  )
 	
 	""";

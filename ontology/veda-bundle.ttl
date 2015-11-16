@@ -136,11 +136,6 @@ v-b:PrintBlank
   rdfs:label "Печатный бланк"@ru ;
   rdfs:label "Print blank"@en ;
 .
-v-b:CreateReport_ProjectOrder
-  rdf:type v-b:Bundle ;
-  rdfs:label "Project Order"@ru ;
-  rdfs:label "Project Order"@en ;
-.
 
 v-b:RightsOrigin
   rdf:type v-b:Bundle ;

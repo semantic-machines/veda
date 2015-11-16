@@ -1172,6 +1172,7 @@ v-s:year
   rdfs:range xsd:integer ;
 .
 ################################ REPORTS START ####################################################
+
 v-s:ReportsForClass
   rdf:type owl:Class ;
   rdfs:isDefinedBy v-s: ;
@@ -1478,8 +1479,8 @@ v-s:hasNumerationMapper
 .
 v-s:NumerationMapper
   rdf:type owl:Class ;
-  rdfs:label "Numeration rule"@en ;
-  rdfs:label "Правило автонумерации"@ru ;
+  rdfs:label "Link template and numeration rule"@en ;
+  rdfs:label "Связка шаблона и правила автонумерации"@ru ;
 .
 v-s:numerationClass
   rdf:type owl:ObjectProperty ;
