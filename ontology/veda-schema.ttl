@@ -1514,14 +1514,14 @@ v-s:numerationGetNextValue
   rdfs:label "script, returns next uncommited value for numeration scope"@en ;
   rdfs:range xsd:string ;
 .
-v-s:NumerationScope
+v-s:NumerationScopeClass
   rdf:type owl:Class ;
   rdfs:label "Numeration scope"@en ;
   rdfs:label "Пространство автонумерации"@ru ;
 . 
 v-s:numerationCommitedInterval
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:NumerationScope ;
+  rdfs:domain v-s:NumerationScopeClass ;
   rdfs:range v-s:NumerationCommitedInterval;  
   rdfs:label "Numeration commited interval"@en ;
   rdfs:label "Занятый интервал"@ru ;

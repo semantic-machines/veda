@@ -120,7 +120,7 @@ function createScope(ticket, scopeId) {
         '@': scopeId,
         'rdfs:label' : [{data: scopeId, type: _String}],
         'rdf:type': [{
-        	data: 'v-s:NumerationScope',
+        	data: 'v-s:NumerationScopeClass',
             type: _Uri
         }]
     };
