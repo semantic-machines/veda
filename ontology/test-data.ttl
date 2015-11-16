@@ -1235,3 +1235,68 @@ v-wf:UserTaskForm1
 	v-wf:from td:RomanKarpov-Analyst1 ;  		
 .
 
+
+
+td:Membership_Borivskaya
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:SuperAdmin ;
+  v-s:resource d:mondi_appointment_00056542_71024462 ;
+  rdfs:label "Borivskaya - syperadmin"@en ;
+  rdfs:label "Боривская - супер админ"@ru ;
+.
+td:Membership_Skosyreva
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:SuperAdmin ;
+  v-s:resource d:mondi_appointment_00069581_71024480 ;
+  rdfs:label "Skosyreva - syperadmin"@en ;
+  rdfs:label "Скосырева - супер админ"@ru ;
+.
+td:Membership_Povazhanova
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:SuperAdmin ;
+  v-s:resource d:mondi_appointment_00051823_71016924 ;
+  rdfs:label "Povazhanova - syperadmin"@en ;
+  rdfs:label "Поважанова - супер админ"@ru ;
+.
+td:Membership_Moskokov
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:SuperAdmin ;
+  v-s:resource d:mondi_appointment_00047444_71000751 ;
+  rdfs:label "Moskokov - syperadmin"@en ;
+  rdfs:label "Москоков - супер админ"@ru ;
+.
+td:Membership_Tashirev
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:SuperAdmin ;
+  v-s:resource d:mondi_appointment_00050793_71014339 ;
+  rdfs:label "Tashirev - syperadmin"@en ;
+  rdfs:label "Таширев - супер админ"@ru ;
+.
+td:Membership_Bulatov
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:SuperAdmin ;
+  v-s:resource d:mondi_appointment_00046782_71017299 ;
+  rdfs:label "Bulatov - syperadmin"@en ;
+  rdfs:label "Булатов - супер админ"@ru ;
+.
+td:Membership_Rashev
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:SuperAdmin ;
+  v-s:resource d:mondi_appointment_00061000_71022821 ;
+  rdfs:label "Rashev - syperadmin"@en ;
+  rdfs:label "Рашев - супер админ"@ru ;
+.
+td:Membership_Belyaeva
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:SuperAdmin ;
+  v-s:resource d:mondi_appointment_00061407_71024489 ;
+  rdfs:label "Belyaeva - syperadmin"@en ;
+  rdfs:label "Беляева - супер админ"@ru ;
+.
+td:Membership_VasilyeY
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:SuperAdmin ;
+  v-s:resource d:mondi_appointment_00065058_71020185 ;
+  rdfs:label "VasilyeY - syperadmin"@en ;
+  rdfs:label "Васильевский - супер админ"@ru ;
+.

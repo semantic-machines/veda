@@ -2092,6 +2092,7 @@ v-wf:DecisionRedirectTemplateSpec2
   v-ui:forClass v-wf:DecisionApprove ;
   v-ui:forClass v-wf:DecisionReview ;
   v-ui:forClass v-wf:DecisionBreak ;
+  v-ui:forClass v-wf:DecisionRemaked ;
   v-ui:forClass v-wf:DecisionExamined ;
   v-ui:forClass v-wf:DecisionAchieved ;
   v-ui:forClass v-wf:DecisionAgreedToProject ;   
