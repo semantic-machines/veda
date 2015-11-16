@@ -20,8 +20,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 				if (!individual.hasValue("v-s:hasStatusWorkflow")) {
 					individual.defineProperty("v-s:hasStatusWorkflow");
 					individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
-					individual.save();
-					//$('[resource="'+individual.id+'"]').find("#save").trigger("click");
+					$('[resource="'+individual.id+'"]').find("#save").trigger("click");
 					var individualNode = $('[resource="'+individual.id+'"]');
 					individualNode.find("#send").remove();
 					individualNode.find("#edit").remove();
