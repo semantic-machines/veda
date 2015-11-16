@@ -631,6 +631,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 		});
 		
+		if (individual.is('v-s:Versioned')) {
+			if (individual.hasValue('v-s:actualVersion') && individual['v-s:actualVersion'][0].id!=individual.id) {			
+				//Put draft sign
+				$('[about="'+individual.id+'"][property="rdfs:label"]', wrapper).append('<span class="glyphicon glyphicon-camera draftsign" style="font-size: 10px;">');
+			}	
+		}
 		if (individual.is('v-s:DraftAllowed')) {
 			var $draft = $("#draft.action", wrapper);			 
 			$draft.unbind("click");
