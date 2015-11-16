@@ -1009,13 +1009,52 @@ s-wf:var_actor_task_comment
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:map_description_task_2_actor_task
+s-wf:map_actor_task_comment_4_actor_task
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_actor_task_action ;
+	v-wf:mapToVariable s-wf:var_actor_task_comment ;
 	v-wf:mappingExpression """
 	
 	get_properties_chain (process.getInputVariable('actor_task'), 
 							[{$go:'cmn-s:hasAction'}, {$get:'v-s:description', $eq:{'v-s:responsible':process.getExecutor ()}}] 
+						  )
+	
+	""";
+	rdfs:label "описание задачи из формы решения пользователя [actor_task]"@ru ;
+.
+
+s-wf:map_initiator_4_actor_task
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_initiator ;
+	v-wf:mappingExpression """
+	
+	get_properties_chain (process.getInputVariable('actor_task'), 
+							[{$go:'cmn-s:hasAction'}, {$get:'v-s:author', $eq:{'v-s:responsible':process.getExecutor ()}}] 
+						  )
+	
+	""";
+	rdfs:label "описание задачи из формы решения пользователя [actor_task]"@ru ;
+.
+
+s-wf:map_actor_task_date_to_4_actor_task
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_actor_task_date_to ;
+	v-wf:mappingExpression """
+	
+	get_properties_chain (process.getInputVariable('actor_task'), 
+							[{$go:'cmn-s:hasAction'}, {$get:'v-s:dateTo', $eq:{'v-s:responsible':process.getExecutor ()}}] 
+						  )
+	
+	""";
+	rdfs:label "описание задачи из формы решения пользователя [actor_task]"@ru ;
+.
+
+s-wf:map_actor_task_date_to_4_actor_task
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_actor_task_date_to ;
+	v-wf:mappingExpression """
+	
+	get_properties_chain (process.getInputVariable('actor_task'), 
+							[{$go:'cmn-s:hasAction'}, {$get:'v-s:date_to', $eq:{'v-s:responsible':process.getExecutor ()}}] 
 						  )
 	
 	""";
@@ -1335,6 +1374,7 @@ s-wf:nc_t3
     v-wf:belongsTo s-wf:net_coordination;
     v-wf:completedMapping s-wf:map_set_actor_from_executor, s-wf:map_PI_actor_task_date_to_4_actor_task_date_to;
     v-wf:completedMapping s-wf:map_PI_actor_task_action_4_actor_task_action, s-wf:map_PI_actor_task_comment_4_actor_task_comment;
+    v-wf:completedMapping s-wf:map_actor_task_date_to_4_actor_task, s-wf:map_actor_task_comment_4_actor_task, s-wf:map_initiator_4_actor_task;
     v-wf:locationX "373"^^xsd:integer;
     rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow-base/>.
 
