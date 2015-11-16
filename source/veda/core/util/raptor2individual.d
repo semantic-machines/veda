@@ -2,7 +2,7 @@ module util.raptor2individual;
 
 import std.string, std.stdio : writeln;
 import bind.libraptor_header;
-import veda.type, veda.onto.individual, veda.onto.resource, veda.core.context, veda.core.define;
+import veda.type, veda.onto.individual, veda.onto.resource, veda.core.define;
 import onto.lang;
 import util.utils;
 
@@ -181,13 +181,13 @@ extern (C) void prepare_triple(void *user_data, raptor_statement *triple)
 }
 
 
-public Individual *[ string ] ttl2individuals(string file_name, Context context)
+public Individual *[ string ] ttl2individuals(string file_name, ref string[string] in_prefixes, out string[string] out_prefixes)
 {
     Individual *[ string ] res;
 
     file_name ~= "\0";
-    prefixes = context.get_prefix_map();
-
+//    prefixes = context.get_prefix_map();
+	prefixes = in_prefixes;
     raptor_parser *rdf_parser = null;
     char          *uri_string;
     raptor_uri    *uri;
@@ -208,7 +208,8 @@ public Individual *[ string ] ttl2individuals(string file_name, Context context)
     base_uri   = raptor_uri_copy(uri);
 
     raptor_parser_parse_file(rdf_parser, uri, base_uri);
-    context.add_prefix_map(prefixes);
+    //context.add_prefix_map(prefixes);
+    out_prefixes = prefixes;
 
     res = _individuals.dup;
 

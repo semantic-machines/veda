@@ -73,22 +73,20 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
 }
 
 SysTime[ string ] file_modification_time;
+Individual[ string ] individuals;
+string[] order_in_load = [ "vdi:", "v-a:", "vsrv:", "rdf:", "rdfs:", "owl:", "v-s:", "v-wf:", "v-ui:", "*", "td:" ];
 
-void processed(Context context, bool is_load)
+bool read_ttl (Context context, bool is_load)
 {
-    Individual[ string ] individuals;
-    string[] order_in_load = [ "vdi:", "v-a:", "vsrv:", "rdf:", "rdfs:", "owl:", "v-s:", "v-wf:", "v-ui:", "*", "td:" ];
     string[ string ] filename_2_prefix;
     Individual *[ string ][ string ] individuals_2_filename;
     Set!string files_to_load;
-    Ticket sticket = context.sys_ticket();
+    bool is_reload = false;
 
     auto   oFiles = dirEntries(path, SpanMode.depth);
 
     if (trace_msg[ 29 ] == 1)
-        log.trace("load directory sequence");
-
-    bool is_reload = false;
+        log.trace("read *.ttl from %s", path);
 
     foreach (o; oFiles)
     {
@@ -126,8 +124,15 @@ void processed(Context context, bool is_load)
         foreach (filename; files_to_load)
         {
             log.trace("prepare_file %s", filename);
-
-            auto l_individuals = ttl2individuals(filename, context);
+			string[string] prefixes;
+			
+			if (context !is null)
+				prefixes = context.get_prefix_map ();
+				
+            auto l_individuals = ttl2individuals(filename, prefixes, prefixes);
+            
+            if (context !is null)
+            	context.add_prefix_map (prefixes);
 
             foreach (uri, indv; l_individuals)
             {
@@ -173,13 +178,25 @@ void processed(Context context, bool is_load)
                 }
             }
         }
+	}
+    
+    return is_reload;	
+}
 
+void processed(Context context, bool is_load)
+{
+    Ticket sticket = context.sys_ticket();
+
+	bool is_reload = read_ttl (context, is_load);
+
+    if (is_reload && is_load)
+	{		
         //writeln("@@1 ontohashes_2_filename=", ontohashes_2_filename);
         //writeln("@@2 filename_2_prefix=", filename_2_prefix);
         //writeln("@@3 modifed_2_file=", modifed_2_file);
 
         // load index onto
-        idx = 0;
+        int idx = 0;
         foreach (pos; order_in_load)
         {
             foreach (uri, indv; individuals)

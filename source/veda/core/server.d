@@ -108,8 +108,6 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
     io_msg = new logger("pacahon", "io", "server");
     Tid[ P_MODULE ] tids;
 
-	//core.thread.Thread.getThis.isDaemon (true);
-	
 	bsd_signal(SIGINT, &handleTermination);
 	
     try
