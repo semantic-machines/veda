@@ -598,3 +598,16 @@ v-a:Permission_1
   v-s:permissionObject v-s:AllResourcesGroup ;
   v-s:permissionSubject v-a:VedaSystem ;
 .
+
+v-a:Permission_2
+  rdf:type v-s:PermissionStatement ;
+  v-s:author v-a:VedaSystem ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:created "2014-01-30T16:45:33"^^xsd:dateTime ;
+  v-s:permissionObject v-a:ReadResGroup ;
+  v-s:permissionSubject v-a:ReadUser ;
+  v-s:published "2014-01-30T16:45:33"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
+  rdfs:label "Permissions record rr"@en ;
+  rdfs:label "Запись о выдаче прав rr"@ru ;
+.
