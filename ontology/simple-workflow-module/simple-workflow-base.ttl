@@ -1081,6 +1081,13 @@ s-wf:map_task_date_to_2_actor_task
 	rdfs:label "описание задачи из формы решения пользователя"@ru ;
 .
 
+s-wf:map_PI_actor_task_4_actor_task
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_actor_task ;	
+	v-wf:mappingExpression	"process.getInputVariable ('actor_task')" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:map_PI_actor_task_date_to_4_actor_task_date_to
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_actor_task_date_to ;	
@@ -1210,24 +1217,25 @@ s-wf:map_jrn_decision_b
 
 
 s-wf:net_coordination a v-wf:Net;
-	rdfs:isDefinedBy s-wf: ;
-    v-wf:inputVariable s-wf:var_doc_id, s-wf:var_initiator, s-wf:var_coordinator, s-wf:var_coordinator_level;
-    v-wf:localVariable s-wf:var_result, s-wf:var_actor, s-wf:var_add_request_actor, s-wf:var_result_decision, s-wf:var_actor_task_date_to, s-wf:var_actor_task_comment, s-wf:var_actor_task_action;
-    v-wf:consistsOf s-wf:nc_ic, s-wf:nc_t1, s-wf:nc_t2, s-wf:nc_t3, s-wf:nc_oc, s-wf:nc_f_ic_t1, s-wf:nc_f_t1_t2, s-wf:nc_f_t3_t1, s-wf:nc_f_t2_oc, s-wf:nc_f_t2_t1;
-	v-wf:consistsOf s-wf:c1, d:abaa42215-965f-a032-aada-31be82a54e95, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23;
-    v-wf:consistsOf s-wf:additional_user_response, d:a65787936-f51e-a83c-f537-95eaaa02c21a, d:afdd3ebd0-7934-8d38-1f68-158a05f0330d;    
-    v-wf:consistsOf d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e, d:a3d7c838c-df12-e9ec-48c6-a96f3bb7e13f, d:abc5142af-b501-1ec6-8ee0-acb767f078a4;
     rdfs:label "универсальный маршрут 1"@ru;
+    v-wf:consistsOf s-wf:nc_ic, s-wf:nc_t1, s-wf:nc_t2, s-wf:nc_t3, s-wf:nc_oc, s-wf:nc_f_ic_t1, s-wf:nc_f_t1_t2, s-wf:nc_f_t3_t1;
+    v-wf:consistsOf s-wf:nc_f_t2_oc, s-wf:nc_f_t2_t1, s-wf:c1, d:abaa42215-965f-a032-aada-31be82a54e95, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23;
+    v-wf:consistsOf s-wf:additional_user_response, d:a65787936-f51e-a83c-f537-95eaaa02c21a, d:afdd3ebd0-7934-8d38-1f68-158a05f0330d, d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e;
+    v-wf:consistsOf d:a3d7c838c-df12-e9ec-48c6-a96f3bb7e13f, d:abc5142af-b501-1ec6-8ee0-acb767f078a4, d:a16bb1fd3-64eb-a7bb-501d-889b2aa4500d, d:aec10d9da-789d-fd65-a094-bd4ed7b14822;
+    v-wf:consistsOf d:a8b89a22d-23b9-1c1c-c5dc-3443fd3972de;
     v-wf:completedMapping s-wf:map_set_result_from_local, s-wf:map_set_result_decision_from_local;
-.
+    v-wf:inputVariable s-wf:var_doc_id, s-wf:var_initiator, s-wf:var_coordinator, s-wf:var_coordinator_level;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow/>;
+    v-wf:localVariable s-wf:var_result, s-wf:var_actor, s-wf:var_add_request_actor, s-wf:var_result_decision, s-wf:var_actor_task_date_to;
+    v-wf:localVariable s-wf:var_actor_task_comment, s-wf:var_actor_task_action.
 
 s-wf:c1 v-wf:hasFlow d:abaa42215-965f-a032-aada-31be82a54e95;
-    v-wf:locationY "548"^^xsd:integer;
+    v-wf:locationY "528"^^xsd:integer;
     a v-wf:Condition;
     rdfs:label "c1"@ru;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-09T12:51:20.000Z"^^xsd:dateTime;
-    v-wf:locationX "556"^^xsd:integer;
+    v-wf:locationX "552"^^xsd:integer;
     rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow-base/>.
 
 d:abaa42215-965f-a032-aada-31be82a54e95 a v-wf:Flow;
@@ -1275,19 +1283,53 @@ s-wf:map_set_result_decision_from_local
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:nc_ic a v-wf:InputCondition;
-	rdfs:isDefinedBy s-wf: ;
-    v-wf:locationX "264"^^xsd:integer;
-    v-wf:locationY "512"^^xsd:integer;
-    v-wf:belongsTo s-wf:net_coordination;
-    v-wf:hasFlow s-wf:nc_f_ic_t1;
+s-wf:nc_ic v-wf:hasFlow s-wf:nc_f_ic_t1;
+    v-wf:locationY "511"^^xsd:integer;
+    a v-wf:InputCondition;
     rdfs:label "c1s"^^xsd:string;
-.
+    v-wf:belongsTo s-wf:net_coordination;
+    v-wf:locationX "108"^^xsd:integer;
+    rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow/>.
+
+
+s-wf:nc_t3 
+    v-wf:hasFlow s-wf:nc_f_t3_t1, d:aec10d9da-789d-fd65-a094-bd4ed7b14822;
+    v-wf:join v-wf:None;
+    v-wf:locationY "516"^^xsd:integer;
+    a v-wf:Task;
+    v-wf:split v-wf:XOR;
+    rdfs:label "установить: actor = [исполнитель текущего процесса], actor_task_date_to, actor_task_action, actor_task_comment"^^xsd:string;
+    v-wf:belongsTo s-wf:net_coordination;
+    v-wf:completedMapping s-wf:map_set_actor_from_executor, s-wf:map_PI_actor_task_date_to_4_actor_task_date_to, s-wf:map_PI_actor_task_action_4_actor_task_action;
+    v-wf:completedMapping s-wf:map_PI_actor_task_comment_4_actor_task_comment;
+    v-wf:locationX "248"^^xsd:integer.
+
+d:aec10d9da-789d-fd65-a094-bd4ed7b14822 a v-wf:Flow;
+    v-s:author td:RomanKarpov-Analyst1;
+    v-s:created "2015-11-17T11:54:51.991Z"^^xsd:dateTime;
+    v-wf:predicate "task.getInputVariable ('actor_task') != undefined"^^xsd:string;   
+    v-wf:flowsInto d:a16bb1fd3-64eb-a7bb-501d-889b2aa4500d.
+    
+s-wf:nc_f_t3_t1 a v-wf:Flow;
+    rdfs:isDefinedBy s-wf: ;
+    v-wf:belongsTo s-wf:net_coordination;
+    v-wf:predicate "task.getInputVariable ('actor_task') == undefined"^^xsd:string;  
+    v-wf:flowsInto s-wf:c1;
+    .    
+    
+d:a16bb1fd3-64eb-a7bb-501d-889b2aa4500d v-wf:hasFlow d:a8b89a22d-23b9-1c1c-c5dc-3443fd3972de;
+    v-wf:locationY "388"^^xsd:integer;
+    a v-wf:Task;
+    rdfs:label "установить параметры из переменной actor_task"^^xsd:string;
+    v-s:author td:RomanKarpov-Analyst1;
+    v-wf:completedMapping s-wf:map_actor_task_date_to_4_actor_task, s-wf:map_actor_task_comment_4_actor_task, s-wf:map_initiator_4_actor_task;    
+    v-s:created "2015-11-17T11:54:51.988Z"^^xsd:dateTime;
+    v-wf:locationX "381"^^xsd:integer.
 
 s-wf:nc_t1 a v-wf:Task;
 	rdfs:isDefinedBy s-wf: ;
     v-wf:locationX "660"^^xsd:integer;
-    v-wf:locationY "465"^^xsd:integer;
+    v-wf:locationY "515"^^xsd:integer;
     v-wf:belongsTo s-wf:net_coordination;
     v-wf:hasFlow s-wf:nc_f_t1_t2;
     v-wf:executor s-wf:codelet_down_right;
@@ -1358,19 +1400,6 @@ s-wf:map_t2_sm3
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:nc_t3 
-	v-wf:hasFlow s-wf:nc_f_t3_t1;
-    v-wf:locationY "517"^^xsd:integer;
-    a v-wf:Task;
-    rdfs:label "подготовить задание и установить переменную actor значением исполнителя из текущего процесса"^^xsd:string;
-    v-wf:belongsTo s-wf:net_coordination;
-    v-wf:completedMapping s-wf:map_set_actor_from_executor, s-wf:map_PI_actor_task_date_to_4_actor_task_date_to;
-    v-wf:completedMapping s-wf:map_PI_actor_task_action_4_actor_task_action, s-wf:map_PI_actor_task_comment_4_actor_task_comment;
-    v-wf:completedMapping s-wf:map_actor_task_date_to_4_actor_task, s-wf:map_actor_task_comment_4_actor_task, s-wf:map_initiator_4_actor_task;
-    v-wf:locationX "373"^^xsd:integer;
-    rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow-base/>.
-
-
 s-wf:nc_oc v-wf:locationY "431"^^xsd:integer;
     a v-wf:OutputCondition;
     rdfs:label "c2c"^^xsd:string;
@@ -1387,12 +1416,6 @@ s-wf:nc_f_t1_t2 a v-wf:Flow;
     rdfs:isDefinedBy s-wf: ;
     v-wf:belongsTo s-wf:net_coordination;
     v-wf:flowsInto s-wf:nc_t2.
-
-s-wf:nc_f_t3_t1 a v-wf:Flow;
-    rdfs:isDefinedBy s-wf: ;
-    v-wf:belongsTo s-wf:net_coordination;
-    v-wf:flowsInto s-wf:c1;
-    .
 
 s-wf:nc_f_t2_oc a v-wf:Flow;
     rdfs:isDefinedBy s-wf: ;
@@ -1418,6 +1441,12 @@ d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-10T18:08:39.178Z"^^xsd:dateTime;
     v-wf:flowsInto s-wf:c1.
+
+d:a8b89a22d-23b9-1c1c-c5dc-3443fd3972de a v-wf:Flow;
+    v-s:author td:RomanKarpov-Analyst1;
+    v-s:created "2015-11-17T11:54:51.993Z"^^xsd:dateTime;
+    v-wf:flowsInto s-wf:c1.
+
 
 #---- ---- -----
 
