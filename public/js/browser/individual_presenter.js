@@ -208,7 +208,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Actions
 		var $edit = $("#edit.action", wrapper),
 			$save = $("#save.action", wrapper),
-			$showRights = $("#showRights.action", wrapper),
+			$showRights = $("#rightsOrigin.action", wrapper),
 			$cancel = $("#cancel.action", wrapper),
 			$delete = $("#delete.action", wrapper);
 
