@@ -160,6 +160,11 @@ private class IndexerContext
 
             if (indv.uri !is null && indv.resources.length > 0)
             {
+                string actualVersion = indv.getFirstLiteral("v-s:actualVersion");
+
+                if (actualVersion !is null && actualVersion != indv.uri)
+                    return;
+
                 OutBuffer      all_text = new OutBuffer();
                 XapianDocument doc      = new_Document(&err);
                 indexer.set_document(doc, &err);
