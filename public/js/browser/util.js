@@ -218,7 +218,7 @@ veda.Module(function Util(veda) { "use strict";
 	 */
 	veda.Util.send = function (individual, transformId) {
 		if (transformId !== undefined) {
-			var startForm = buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
+			var startForm = veda.Util.buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
 	    	riot.route("#/individual/" + startForm.id + "/#main//edit", true);
 		} else {
 			var s = new veda.SearchModel("'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
@@ -240,7 +240,7 @@ veda.Module(function Util(veda) { "use strict";
 				$('[resource="'+individual.id+'"]').find("#save").trigger("click");
 				Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
 					var res = s.results[res_id];
-					var startForm = buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
+					var startForm = veda.Util.buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
 	            	riot.route("#/" + startForm.id + "///edit", true);
 				});
 			} else {
