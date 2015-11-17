@@ -8,7 +8,8 @@ import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib;
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path, std.utf,
        std.stdio : writeln;
 import util.container, util.cbor, util.utils, util.logger, util.raptor2individual, veda.core.util.cbor8individual;
-import veda.type, veda.onto.individual, veda.onto.resource, veda.core.context, veda.core.thread_context, veda.core.define, veda.core.know_predicates, veda.core.log_msg;
+import veda.type, veda.onto.individual, veda.onto.resource, veda.core.context, veda.core.thread_context, veda.core.define, veda.core.know_predicates,
+       veda.core.log_msg;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -73,17 +74,17 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
 }
 
 SysTime[ string ] file_modification_time;
-Individual[ string ] individuals;
 string[] order_in_load = [ "vdi:", "v-a:", "vsrv:", "rdf:", "rdfs:", "owl:", "v-s:", "v-wf:", "v-ui:", "*", "td:" ];
 
-bool read_ttl (Context context, bool is_load)
+Individual[ string ] read_ttl(Context context, bool is_load)
 {
+    Individual[ string ] individuals;
     string[ string ] filename_2_prefix;
     Individual *[ string ][ string ] individuals_2_filename;
     Set!string files_to_load;
     bool is_reload = false;
 
-    auto   oFiles = dirEntries(path, SpanMode.depth);
+    auto oFiles = dirEntries(path, SpanMode.depth);
 
     if (trace_msg[ 29 ] == 1)
         log.trace("read *.ttl from %s", path);
@@ -124,15 +125,15 @@ bool read_ttl (Context context, bool is_load)
         foreach (filename; files_to_load)
         {
             log.trace("prepare_file %s", filename);
-			string[string] prefixes;
-			
-			if (context !is null)
-				prefixes = context.get_prefix_map ();
-				
-            auto l_individuals = ttl2individuals(filename, prefixes, prefixes);
-            
+            string[ string ] prefixes;
+
             if (context !is null)
-            	context.add_prefix_map (prefixes);
+                prefixes = context.get_prefix_map();
+
+            auto l_individuals = ttl2individuals(filename, prefixes, prefixes);
+
+            if (context !is null)
+                context.add_prefix_map(prefixes);
 
             foreach (uri, indv; l_individuals)
             {
@@ -178,19 +179,19 @@ bool read_ttl (Context context, bool is_load)
                 }
             }
         }
-	}
-    
-    return is_reload;	
+    }
+
+    return individuals;
 }
 
 void processed(Context context, bool is_load)
 {
     Ticket sticket = context.sys_ticket();
 
-	bool is_reload = read_ttl (context, is_load);
+    Individual[ string ] individuals = read_ttl(context, is_load);
 
-    if (is_reload && is_load)
-	{		
+    if (individuals.length > 0 && is_load)
+    {
         //writeln("@@1 ontohashes_2_filename=", ontohashes_2_filename);
         //writeln("@@2 filename_2_prefix=", filename_2_prefix);
         //writeln("@@3 modifed_2_file=", modifed_2_file);
@@ -291,9 +292,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
                    doc_filename,
                    "<html><body><head><meta charset=\"utf-8\"/><link href=\"css/bootstrap.min.css\" rel=\"stylesheet\"/><style=\"padding: 0px 0px 30px;\"></head>\n");
         }
-        catch (Exception ex)
-        {
-        }
+        catch (Exception ex) {}
 
         foreach (ss; ss_list)
         {
@@ -310,7 +309,11 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
                 ss.addResource("rdfs:isDefinedBy", Resource(DataType.Uri, onto_name));
             }
 
-            append(doc_filename, individual2html(ss));
+            try
+            {
+                append(doc_filename, individual2html(ss));
+            }
+            catch (Exception ex) {}
 
             long       pos_path_delimiter = indexOf(ss.uri, '/');
 
@@ -324,7 +327,11 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
                 log.trace("apply, uri=%s %s", ss.uri, ss1);
         }
 
-        append(doc_filename, "\n</body></html>");
+        try
+        {
+            append(doc_filename, "\n</body></html>");
+        }
+        catch (Exception ex) {}
 
         //context.reopen_ro_subject_storage_db ();
         if (trace_msg[ 33 ] == 1)
