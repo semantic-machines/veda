@@ -720,7 +720,7 @@ s-wf:UserTaskFormTemplate
 		var decision = createDecision(type);
 		individual["v-wf:takenDecision"] = [ decision ];
 	});
-	if (!individual.hasValue("v-wf:takenDecision")) {
+	if (!individual.hasValue("v-wf:takenDecision") || !individual.isSync()) {
 		control.trigger("change");
 		template.trigger("edit");
 	} else {
