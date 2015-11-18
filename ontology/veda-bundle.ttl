@@ -171,3 +171,8 @@ v-b:SearchRequest
   rdfs:label "Поисковый запрос"@ru ;
   rdfs:label "Search request"@en ;
 .
+v-b:DocumentIsVersion
+  rdf:type v-b:Bundle ;
+  rdfs:label "Документ устарел. Существует более поздняя версия данного документа"@ru ;
+  rdfs:label "Document expired. New version of this document exists."@en ;
+.

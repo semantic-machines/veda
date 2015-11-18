@@ -127,6 +127,22 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				$('#send', wrapper).remove();
 			} 
 		}
+		if (container.prop("id") === "main" && individual.is('v-s:Versioned') && individual.hasValue('v-s:actualVersion') && individual['v-s:actualVersion'][0].id !== individual.id) {
+			var versionBundle = new veda.IndividualModel('v-b:DocumentIsVersion');
+			var actualVersionClass = new veda.IndividualModel('v-s:actualVersion');
+			var previousVersionClass = new veda.IndividualModel('v-s:previousVersion');
+			var nextVersionClass = new veda.IndividualModel('v-s:nextVersion');
+			var $versionToolbar = $('<div />', {
+	   			   "class" : "lert alert-warning no-margin",
+	   			   "style" : "padding:5px;",
+	   			   "role" : "alert",
+         		   "html" : ('<div>'+versionBundle['rdfs:label']+'</div>')
+         		   		   +('<div>'+actualVersionClass['rdfs:label']+' : <a href="/#/'+individual['v-s:actualVersion'][0].id+'">'+individual['v-s:actualVersion'][0]['rdfs:label'][0]+'</a></div>')
+	   		   			   +(individual.hasValue('v-s:previousVersion')?('<div>'+previousVersionClass['rdfs:label']+' : <a href="/#/'+individual['v-s:previousVersion'][0].id+'">'+individual['v-s:previousVersion'][0]['rdfs:label'][0]+'</a></div>'):'')
+		   		           +((individual.hasValue('v-s:nextVersion') && individual['v-s:nextVersion'][0].id !== individual['v-s:actualVersion'][0].id)?('<div>'+nextVersionClass['rdfs:label']+' : <a href="/#/'+individual['v-s:nextVersion'][0].id+'">'+individual['v-s:nextVersion'][0]['rdfs:label'][0]+'</a></div>'):'')
+         	   });
+			$('#main').prepend($versionToolbar);
+		}
 		
 		// Cleanup memory
 		/*template.on("remove", function (event) {
@@ -708,7 +724,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 												
 						// Before
 						var previousId = individual.hasValue('v-s:isDraftOf')?
-												(individual['v-s:isDraftOf'][0].hasValue('v-s:PreviousVersion')?
+												(individual['v-s:isDraftOf'][0].hasValue('v-s:previousVersion')?
 												 individual['v-s:isDraftOf'][0]['v-s:previousVersion'][0].id:
 												 null):
 												(individual.hasValue('v-s:previousVersion')?
@@ -716,6 +732,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 												 null);
 						var actualId = individual.hasValue('v-s:isDraftOf')?individual['v-s:isDraftOf'][0].id:individual.id;
 						var versionId = (actualId==individual.id)?veda.Util.genUri():individual.id;
+						console.log('previousId > '+previousId);
 						
 						// After
 						var actual = individual.clone();						
@@ -735,7 +752,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						// Save draft as old version
 						version['v-s:isDraftOf'] = [];
 						version['v-s:hasDraft'] = [];
-						version['v-s:previousVersion'] = [previous]
+						version['v-s:previousVersion'] = [previous];
+						version['v-s:actualVersion'] = [actual];
 						version['v-s:nextVersion'] = [actual];
 						version.save();
 						
