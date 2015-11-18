@@ -14,8 +14,6 @@
 @prefix v-df: <http://semantic-machines.com/veda/veda-docflow/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix mnd-s-asppd: <http://semantic-machines.com/veda/mondi-schema-asppd/> .
-@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
 @prefix cmn-s: <http://semantic-machines.com/veda/common-schema/> .
 
 <http://semantic-machines.com/veda/veda-docflow>
@@ -255,16 +253,4 @@ v-df:PsDescriptionInDecision
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Текст без ограничений."@ru ;
   rdfs:label "Comment propertys specification for IdeaRouteStartForm"@en ;
   rdfs:label "Спецификация комментария в поручении стартовой формы"@ru ;
-.
-
-mnd-s-asppd:PsAction_dateTo
-  rdf:type v-ui:DatetimePropertySpecification ;
-  rdfs:label "Спецификация контрольной даты для класса IdeaRouteStartForm"@ru ;
-  rdfs:label "Preferences property specification for dateFrom in mnd-s-pdr"@en ;
-  v-ui:forClass cmn-s:Action ;
-  v-ui:forProperty v-s:dateTo ;
-  v-ui:minCardinality "1"^^xsd:integer ;
-  v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
-  v-ui:tooltip "Required, single value. Format: 2011-08-19"@en ;
 .
