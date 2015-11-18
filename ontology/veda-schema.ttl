@@ -773,6 +773,7 @@ v-s:hasBaseDoc
 .
 v-s:hasChief
   rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:OrganizationUnit ;
   rdfs:label "chief"@en ;
   rdfs:label "непосредственный руководитель"@ru ;
   rdfs:range v-s:Appointment ;
