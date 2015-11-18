@@ -1,3 +1,5 @@
+# берет новые исходники из github, но не собирает
+
 sudo apt-get update
 
 # Get right version of DMD
