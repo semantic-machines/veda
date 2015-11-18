@@ -27,7 +27,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			
 			template.on("invalid", inValidHandler);
 			
-			$send.on("click", function () {veda.Util.send(individual);});
+			$send.on("click", function () {veda.Util.send(individual, template);});
 			
 			$createReport.on("click", function () {veda.Util.createReport(individual);});
 			

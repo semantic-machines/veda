@@ -216,7 +216,7 @@ veda.Module(function Util(veda) { "use strict";
 	 *  - Find transformation to start form or use transformation specified by `transformId` parameter
 	 *  - Apply transformation and redirect to start form. 
 	 */
-	veda.Util.send = function (individual, transformId) {
+	veda.Util.send = function (individual, template, transformId) {
 		if (transformId !== undefined) {
 			var startForm = veda.Util.buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
 	    	riot.route("#/individual/" + startForm.id + "/#main//edit", true);
@@ -226,7 +226,8 @@ veda.Module(function Util(veda) { "use strict";
 				if (!individual.hasValue("v-s:hasStatusWorkflow")) {
 					individual.defineProperty("v-s:hasStatusWorkflow");
 					individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
-					$('[resource="'+individual.id+'"]').find("#save").trigger("click");
+					//$('[resource="'+individual.id+'"]').find("#save").trigger("click");
+					template.trigger('save');
 					var individualNode = $('[resource="'+individual.id+'"]');
 					individualNode.find("#send").remove();
 					individualNode.find("#edit").remove();

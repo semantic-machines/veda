@@ -1268,7 +1268,7 @@ v-s:actor
 v-s:documentVersion
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted ;
-  rdfs:label "Версия до изменения"@ru ;
+  rdfs:label "Версия"@ru ;
   rdfs:label "Version"@en ;
   rdfs:range v-s:Versioned ;
 .

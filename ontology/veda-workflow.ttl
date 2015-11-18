@@ -2015,6 +2015,13 @@ v-wf:DecisionNotPerformed
 	rdfs:label "не выполнено"@ru ;
 .	
 
+v-wf:DecisionConfirm
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "подтверждено"@ru ;
+.	
+
 v-wf:DecisionRedirect
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
