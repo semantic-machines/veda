@@ -703,16 +703,24 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			{
 				$save.unbind("click");
 				$save.on("click", function (e) {
-					if (individual.hasValue('v-s:isDraftOf')) {
+					// if (individual.hasValue('v-s:isDraftOf')) {
 						// When we publish a draft
-						
+												
 						// Before
-						var actualId = individual['v-s:isDraftOf'][0].id;
+						var previousId = individual.hasValue('v-s:isDraftOf')?
+												(individual['v-s:isDraftOf'][0].hasValue('v-s:PreviousVersion')?
+												 individual['v-s:isDraftOf'][0]['v-s:previousVersion'][0].id:
+												 null):
+												(individual.hasValue('v-s:previousVersion')?
+												 individual['v-s:previousVersion'][0].id:
+												 null);
+						var actualId = individual.hasValue('v-s:isDraftOf')?individual['v-s:isDraftOf'][0].id:individual.id;
 						var versionId = (actualId==individual.id)?veda.Util.genUri():individual.id;
 						
 						// After
-						var version = (new veda.IndividualModel(actualId)).clone();
-						var actual = individual.clone(); 
+						var actual = individual.clone();						
+						var version = individual.clone();
+						var previous = previousId!=null?new veda.IndividualModel(previousId):null;
 						actual.id = actualId;
 						version.id = versionId;
 						
@@ -724,17 +732,24 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						actual['v-s:nextVersion'] = [];
 						actual.save();
 							
-						// Save original as old version
+						// Save draft as old version
 						version['v-s:isDraftOf'] = [];
 						version['v-s:hasDraft'] = [];
-						// version['v-s:previousVersion'] NO CHANGE
-						// version['v-s:actualVersion'] NO CHANGE
+						version['v-s:previousVersion'] = [previous]
 						version['v-s:nextVersion'] = [actual];
 						version.save();
 						
+						// Update draft version
+						if (previous!=null) 
+						{
+							previous['v-s:nextVersion'] = [version];
+							previous.save();
+						}
+						
 						container.empty();
 						actual.present(container, undefined, "view");
-						changeHash(actual.id);
+						changeHash(actualId);
+					/*	
 					} else {
 						// When we publish an original
 						// Before
@@ -767,6 +782,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						actual.present(container, undefined, "view");
 						changeHash(actual.id);
 					}
+					*/
 				});			
 			}
 			$delete.unbind("click");
