@@ -666,46 +666,66 @@ s-wf:UserTaskFormTemplate
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-3">
-				<strong about="v-wf:from" property="rdfs:label" class="text-muted"></strong>
-				<div about="@" rel="v-wf:from" template="v-ui:LabelTemplate"></div>
-			</div>
-			<div class="col-md-3">
-			   <strong about="v-wf:to" property="rdfs:label" class="text-muted"></strong>
-			   <div about="@" rel="v-wf:to" template="v-ui:LabelTemplate"></div>
-			</div>
-			<div class="col-md-3">
-				<strong about="v-s:description" property="rdfs:label" class="text-muted"></strong>
-				<div about="@" property="v-s:description"></div>
-			</div>            
-			<div class="col-md-3">
-				<strong about="v-wf:dateGiven" property="rdfs:label" class="text-muted"></strong>
-				<div about="@" property="v-wf:dateGiven"></div>
-			</div>
-		</div>
-		<hr />
-		<div class="row">
-			<div class="col-md-12">
-				<strong about="v-wf:takenDecision" property="rdfs:label" class="text-muted"></strong>
-				<div about="@" rel="v-wf:takenDecision" class="view -edit -search">
-					<span about="@" rel="rdf:type" template="v-ui:LabelTemplate"></span>
+			<div class="col-md-8 col-sm-8 col-xs-6">		
+				<div class="row">
+					<div class="col-md-3">
+						<strong about="v-wf:from" property="rdfs:label" class="text-muted"></strong>
+						<div about="@" rel="v-wf:from" template="v-ui:LabelTemplate"></div>
+					</div>
+					<div class="col-md-3">
+					   <strong about="v-wf:to" property="rdfs:label" class="text-muted"></strong>
+					   <div about="@" rel="v-wf:to" template="v-ui:LabelTemplate"></div>
+					</div>
+					<div class="col-md-3">
+						<strong about="v-s:description" property="rdfs:label" class="text-muted"></strong>
+						<div about="@" property="v-s:description"></div>
+					</div>            
+					<div class="col-md-3">
+						<strong about="v-wf:dateGiven" property="rdfs:label" class="text-muted"></strong>
+						<div about="@" property="v-wf:dateGiven"></div>
+					</div>
 				</div>
-				<select id="decision-control" class="-view edit search form-control"></select>
-				<div about="@" rel="v-wf:takenDecision" embedded="true"></div>
+				<hr />
+				<div class="row">
+					<div class="col-md-8">
+						<strong about="v-wf:takenDecision" property="rdfs:label" class="text-muted"></strong>
+						<div about="@" rel="v-wf:takenDecision" class="view -edit -search">
+							<span about="@" rel="rdf:type" template="v-ui:LabelTemplate"></span>
+						</div>
+						<select id="decision-control" class="-view edit search form-control"></select>
+						<div about="@" rel="v-wf:takenDecision" embedded="true"></div>
+					</div>
+				</div>
 			</div>
+			<div class="col-md-4 col-sm-4 col-xs-6" style="padding-left:15px; border-left:1px dotted #ccc;">
+				<div class="row">
+					<div class="col-md-6">
+						<!-- strong about="v-wf:onDocument" property="rdfs:label" class="text-muted"></strong -->
+						<div about="@" rel="v-wf:onDocument" embedded="false">
+							<div>
+								<strong about="mnd-s-asppd:ideaName" property="rdfs:label" class="text-muted"></strong>
+								<div property="mnd-s-asppd:ideaName" class="view -edit -search"></div>
+								<br>			
+								<strong about="mnd-s-asppd:ideaDescription" property="rdfs:label" class="text-muted"></strong>
+								<div property="mnd-s-asppd:ideaDescription" class="view -edit -search"></div>
+								<br>
+								<strong about="mnd-s-asppd:ideaComment" property="rdfs:label" class="text-muted"></strong>
+								<div property="mnd-s-asppd:ideaComment" class="view -edit -search"></div>
+								<br>
+								<strong about="mnd-s-asppd:hasContractKindForIdea" property="rdfs:label" class="text-muted"></strong>
+								<div rel="mnd-s-asppd:hasContractKindForIdea" template="v-ui:LabelTemplate" class="view edit search"></div>
+							</div>
+						</div>				
+					</div>
+				</div>
+			</div>				
 		</div>
-		<hr />
-		<div class="row">
-			<div class="col-md-12">
-				<strong about="v-wf:onDocument" property="rdfs:label" class="text-muted"></strong>
-				<div about="@" rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate"></div>
-			</div>
-		</div>
-	</div>
+	</div>	
+	
 	<div class="panel-footer">
 		<button type="button" class="action btn btn-warning -view edit -search" id="send" about="v-b:Send" property="rdfs:label"/>
-		<button type="button" class="action btn btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/>
-		<button type="button" class="action btn btn-warning view -edit -search" id="rightsOrigin" about="v-b:RightsOrigin" property="rdfs:label"/>
+		<!-- button type="button" class="action btn btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/ -->
+		<!-- button type="button" class="action btn btn-warning view -edit -search" id="rightsOrigin" about="v-b:RightsOrigin" property="rdfs:label"/ -->
 	</div>
 </div>
 <script type="text/javascript">
