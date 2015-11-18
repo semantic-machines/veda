@@ -210,7 +210,7 @@ v-fs:NothingFound
 v-fs:SetResultsTable
   rdf:type v-b:Bundle ;
   rdfs:label "Set results table"@en ;
-  rdfs:label "Настройте таблицу результатов"@ru ;
+  rdfs:label "Настройте таблицу отображения результатов"@ru ;
 .
 v-fs:GenericTable
   rdf:type v-b:Bundle ;
@@ -225,7 +225,7 @@ v-fs:CustomTable
 v-fs:DragColumns
   rdf:type v-b:Bundle ;
   rdfs:label "Drag columns from generic table"@en ;
-  rdfs:label "Перетащите столбцы из таблицы по-умолчанию. Укажите порядок сортировки."@ru ;
+  rdfs:label "Перетащите столбцы из таблицы по-умолчанию."@ru ;
 .
 v-fs:SearchTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -398,8 +398,9 @@ v-fs:FulltextRequestTemplate
 			</div>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="mgmt-ft">
-			<p about="rdfs:label" property="rdfs:label" class="-view edit"></p>
-			<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
+			<em about="rdfs:label" property="rdfs:label" class="text-muted"></em>
+			<p property="rdfs:label" class="view -edit -search"></p>
+			<veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
 			<br>
 			<div>
 				<button type="button" class="action btn btn-primary view -edit" id="edit" about="v-b:Edit" property="rdfs:label"/>
@@ -635,7 +636,6 @@ v-fs:AttributiveRequestTemplate
 			<button type="button" id="find" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
 			<hr>
 			<h4 about="v-fs:SetResultsTable" property="rdfs:label"></h4>
-			<button class="btn btn-sm btn-danger" id="clear-custom" about="v-b:Reset" property="rdfs:label"></button>
 			<div id="set-result-template" class="table-responsive">
 				<table id="generic-table" class="table table-condensed table-bordered">
 					<caption about="v-fs:GenericTable" property="rdfs:label"></caption>
@@ -649,6 +649,8 @@ v-fs:AttributiveRequestTemplate
 					</thead>
 				</table>
 			</div>
+			<br>
+			<button class="btn btn-danger" id="clear-custom" about="v-b:Reset" property="rdfs:label"></button>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="results-at">
 			<div id="search-results">
@@ -665,8 +667,9 @@ v-fs:AttributiveRequestTemplate
 			</div>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="mgmt-at">
-			<p about="rdfs:label" property="rdfs:label" class="-view edit"></p>
-			<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
+			<em about="rdfs:label" property="rdfs:label" class="text-muted"></em>
+			<p property="rdfs:label" class="view -edit -search"></p>
+			<veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
 			<br>
 			<div>
 				<button type="button" class="action btn btn-primary view -edit" id="edit" about="v-b:Edit" property="rdfs:label"/>
@@ -683,7 +686,6 @@ v-fs:AttributiveRequestTemplate
 		params = $("a#params-pill-at", template),
 		results = $("a#results-pill-at", template),
 		pager = $("#pager", template),
-		resultsList = $("#results-list", template),
 		resultsCount = $("#results-count", template),
 		find = $("#find", template),
 		fulltext = $("#fulltext", template),
@@ -693,7 +695,7 @@ v-fs:AttributiveRequestTemplate
 		genericHead = $("thead#generic-head", template),
 		customHead = $("thead#custom-head", template),
 		clearCustom = $("#clear-custom", template),
-		head, tmpl;
+		head, rest, tmpl;
 	
 	// Autofocus on query field
 	params.on("shown.bs.tab", function () {
@@ -719,24 +721,24 @@ v-fs:AttributiveRequestTemplate
 	self.on("beforeSearch", beforeSearch);
 	self.on("afterSearch", afterSearch);
 	self.on("individual:afterSave", updateAspect);
-	self.on("individual:propertyModified", showForm);
+	self.on("individual:propertyModified", typeChanged);
 	template.on("remove", function () {
 		self.off("beforeSearch", beforeSearch);
 		self.off("afterSearch", afterSearch);
 		self.off("individual:afterSave", updateAspect);	
-		self.off("individual:propertyModified", showForm);
+		self.off("individual:propertyModified", typeChanged);
 	});
 
 	// Present form if defined
 	if (self.form) { 
-		showForm("v-fs:typeToSearch", self.form["rdf:type"]);
+		typeChanged("v-fs:typeToSearch", self["v-fs:typeToSearch"]);
 	}
 
 	// Present results if query defined
 	if (self.count) { self.trigger("afterSearch"); }
 	
 	// Display search form
-	function showForm(property_uri, types) {
+	function typeChanged(property_uri, types) {
 		if (property_uri === "v-fs:typeToSearch") {
 			formHolder.empty();
 			self.form.present(formHolder, undefined, "search");
@@ -746,22 +748,55 @@ v-fs:AttributiveRequestTemplate
 	
 	// Set result table
 	function setResultTable(types) {
-		if ( !self.hasValue("v-fs:resultTemplate") ) {
-			genericHead.html( gen_head(types[0]) );
+		if ( self.hasValue("v-fs:resultTemplate") ) {
+			head = $( self["v-fs:resultTemplate"][0].toString() );
+			customHead.html( head );
+			rest = $( self["v-fs:resultTemplateRest"][0].toString() );
+			genericHead.html( rest );
+		} else {
+			head = gen_head(types[0]);
+			genericHead.html(head);
 			customHead.empty();
 			var placeholder = (new veda.IndividualModel("v-fs:DragColumns")).present(customHead, '<tr><td><span class="text-muted" about="v-fs:DragColumns" property="rdfs:label"></span></td></tr>');
-		} else {
-			genericHead.html( self["v-fs:resultTemplateRest"][0].toString() );
-			customHead.html( self["v-fs:resultTemplate"][0].toString() );
 		}
+		tHead.html( head.clone() );
+		
+		// Sorting
+		var sortBy = dir = "";
+		if ( self.hasValue("v-fs:sortOrder") ) {
+			var t = self["v-fs:sortOrder"][0].split(" ");
+			sortBy = t[0]; dir = t[1];
+		}
+		$("a.sort", tHead).each( function () {
+			var a = $(this);
+			var property_uri = a.parent().attr("id");
+			if (sortBy.indexOf(property_uri) >= 0) {
+				a.removeClass("text-muted");
+				if (dir === "desc") a.removeClass("glyphicon-sort-by-attributes").addClass("glyphicon-sort-by-attributes-alt");
+			}			
+			a.click(function (e) {
+				e.preventDefault();
+				var $this = $(this);
+				$("a.sort", tHead).addClass("text-muted");
+				var dir = $this.hasClass("glyphicon-sort-by-attributes-alt") ? " asc" : " desc";
+				$this.removeClass("text-muted").toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");
+				self["v-fs:sortOrder"] = ["'" + property_uri + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir + " , " + "'" + property_uri + "'" + dir];
+				self.search();
+				return false;
+			});
+		});
+		tmpl = gen_row(head)[0].outerHTML;
+		
 		$("thead#generic-head > tr").sortable({
 			connectWith: "thead#custom-head > tr",
 			placeholder: "danger",
 			receive: function () {
 				self["v-fs:resultTemplateRest"] = [ this.outerHTML ];
+				setResultTable(types);
 			},
 			remove: function () {
 				self["v-fs:resultTemplateRest"] = [ this.outerHTML ];
+				setResultTable(types);
 			}
 		});
 		$("thead#custom-head > tr").sortable({
@@ -769,9 +804,11 @@ v-fs:AttributiveRequestTemplate
 			placeholder: "danger",
 			receive: function () {
 				self["v-fs:resultTemplate"] = [ this.outerHTML ];
+				setResultTable(types);
 			},
 			remove: function () {
 				self["v-fs:resultTemplate"] = [ this.outerHTML ];
+				setResultTable(types);
 			}
 		});
 	}
@@ -788,15 +825,11 @@ v-fs:AttributiveRequestTemplate
 		asp.save();
 	}
 	
+	// Generic header from class
 	function gen_head(type) {
 		var props = Object.getOwnPropertyNames(type.domainProperties);
 		var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
 		var tr = $("<tr><th id='count' width='20px'>#</th><th id='zoom' width='20px'><span class='glyphicon glyphicon-search'></span></th></tr>"); 
-		var sortBy = dir = "";
-		if ( self.hasValue("v-fs:sortOrder") ) {
-			var t = self["v-fs:sortOrder"][0].split(" ");
-			sortBy = t[0]; dir = t[1];
-		}
 		var header = props.map( function (property_uri) {
 			if (property_uri === "rdf:type" || property_uri === "v-s:deleted") { return ""; }
 			var property = type.domainProperties[property_uri];
@@ -806,23 +839,7 @@ v-fs:AttributiveRequestTemplate
 			});
 			var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : undefined;
 			if (literals.indexOf(range) >= 0) {
-				var sortOrder = $("<a>", {href:""}).addClass("btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes");
-				if (sortBy.indexOf(property_uri) >= 0) {
-					sortOrder.removeClass("text-muted");
-					if (dir === "desc") sortOrder.removeClass("glyphicon-sort-by-attributes").addClass("glyphicon-sort-by-attributes-alt");
-				}
-				sortOrder.click(function (e) {
-					e.preventDefault();
-					var dir = sortOrder.hasClass("glyphicon-sort-by-attributes-alt") ? " asc" : " desc";
-					sortOrder.toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");					
-					if (range === "rdfs:Literal" || range === "xsd:string") {
-						self["v-fs:sortOrder"] = ["'" + property_uri + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir + " , " + "'" + property_uri + "'" + dir];
-					} else {
-						self["v-fs:sortOrder"] = ["'" + property_uri + "'" + dir];
-					}
-					self.search();
-					return false;
-				});
+				var sortOrder = $("<a>", {href:""}).addClass("sort btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes");
 				th.prepend(sortOrder);
 			}
 			tr.append(th);
@@ -830,6 +847,7 @@ v-fs:AttributiveRequestTemplate
 		return tr;
 	}
 
+	// Generate row from header
 	function gen_row(head) {
 		var hd = $(head);
 		var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
@@ -858,19 +876,11 @@ v-fs:AttributiveRequestTemplate
 	// Present results
 	function beforeSearch() {
 		notFound.hide();
-		resultsList.empty();
+		tBody.empty();
 		pager.empty();
 		resultsCount.text(0);
 	}
 	function afterSearch() {
-		resultsList.empty();
-		if ( self.hasValue("v-fs:resultTemplate") ) {
-			head = $( self["v-fs:resultTemplate"][0].toString() );
-		} else {
-			head = gen_head(self["v-fs:typeToSearch"][0]);
-		}
-		tmpl = gen_row(head)[0].outerHTML;
-		tHead.empty().append(head);
 		tBody.empty();
 		pager.empty();
 		resultsCount.text(self.count);
