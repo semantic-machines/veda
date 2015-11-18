@@ -902,6 +902,21 @@ jsWorkflow.ready = jsPlumb.ready;
             	riot.route("#/" + net.id + "///edit", true);
             });
             
+            $('.copy-net-element').on('click', function() {
+            	if (typeof selectedElementId !== "undefined") {
+            		var individual = new veda.IndividualModel(selectedElementId);
+            		if (individual.hasValue('rdf:type')) {
+            			if (individual['rdf:type'][0].id === 'v-wf:Task' || individual['rdf:type'][0].id === 'v-wf:Condition') {
+            				individual = individual.clone();
+            				individual['v-wf:locationX'] = [individual['v-wf:locationX'][0]+50];
+            				individual['v-wf:locationY'] = [individual['v-wf:locationY'][0]+50];
+            				individual['v-wf:hasFlow'] = [];
+            				instance.createState(individual);
+            			}
+            		}
+            	}
+            });
+            
             /* ZOOM [BEGIN] */
             $('.zoom-in').on('click', function() {
             	if (net['currentScale']<1) return instance.changeScale(net['currentScale'] + 0.1);
