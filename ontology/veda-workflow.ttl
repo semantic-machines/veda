@@ -2064,6 +2064,7 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionRemaked ;
   v-ui:forClass v-wf:DecisionNotPerformed ;
   v-ui:forClass v-wf:DecisionAgreedToProject ;  
+  v-ui:forClass v-wf:DecisionConfirm ;    
   v-ui:template """
 <div>
 	<br>
@@ -2085,6 +2086,7 @@ v-wf:DecisionRedirectTemplateSpec1
   v-ui:forClass v-wf:DecisionRejected ;
   v-ui:forClass v-wf:DecisionRemake ;
   v-ui:forClass v-wf:DecisionNotPerformed ;
+  v-ui:forClass v-wf:DecisionConfirm ;      
 .
 
 v-wf:DecisionRedirectTemplateSpec2
