@@ -99,10 +99,17 @@ v-fs:resultTemplate
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:string ;
 .
+v-fs:resultTemplateRest
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "шаблон отображения результатов"@ru ;
+  rdfs:label "result template"@en ;
+  rdfs:domain v-fs:AttributiveRequest ;
+  rdfs:range xsd:string ;
+.
 v-fs:TypeToSearchSpecFT
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:FulltextRequest"@ru ;
-  rdfs:label "v-fs:typeToSearch property specification for class v-fs:AttributiveRequest"@en ;
+  rdfs:label "v-fs:typeToSearch property specification for class v-fs:FulltextRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:forProperty v-fs:typeToSearch ;
   v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
@@ -110,7 +117,7 @@ v-fs:TypeToSearchSpecFT
 .
 v-fs:TypeToSearchSpecAT
   rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:FulltextRequest"@ru ;
+  rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:AttributiveRequest"@ru ;
   rdfs:label "v-fs:typeToSearch property specification for class v-fs:AttributiveRequest"@en ;
   v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:forProperty v-fs:typeToSearch ;
@@ -199,6 +206,26 @@ v-fs:NothingFound
   rdf:type v-b:Bundle ;
   rdfs:label "Nothing found for your request. Please refine the query."@en ;
   rdfs:label "По Вашему запросу ничего не найдено. Пожалуйста, уточните запрос."@ru ;
+.
+v-fs:SetResultsTable
+  rdf:type v-b:Bundle ;
+  rdfs:label "Set results table"@en ;
+  rdfs:label "Настройте таблицу результатов"@ru ;
+.
+v-fs:GenericTable
+  rdf:type v-b:Bundle ;
+  rdfs:label "Generic table"@en ;
+  rdfs:label "Таблица по-умолчанию"@ru ;
+.
+v-fs:CustomTable
+  rdf:type v-b:Bundle ;
+  rdfs:label "Custom table"@en ;
+  rdfs:label "Таблица для отображения"@ru ;
+.
+v-fs:DragColumns
+  rdf:type v-b:Bundle ;
+  rdfs:label "Drag columns from generic table"@en ;
+  rdfs:label "Перетащите столбцы из таблицы по-умолчанию. Укажите порядок сортировки."@ru ;
 .
 v-fs:SearchTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -329,7 +356,7 @@ v-fs:FulltextRequestTemplate
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:template """
 <div role="tabpanel">
-	<h4 about="@" property="rdfs:label"></h4>
+	<h3 about="@" property="rdfs:label"></h3>
 	<!-- Nav tabs -->
 	<ul class="nav nav-tabs" role="tablist">
 		<li role="presentation" class="active"><a id="params-pill-ft" href="#params-ft" about="v-fs:Params" property="rdfs:label" aria-controls="params-ft" role="tab" data-toggle="tab"></a></li>
@@ -587,7 +614,7 @@ v-fs:AttributiveRequestTemplate
   v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:template """
 <div role="tabpanel">
-	<h4 about="@" property="rdfs:label"></h4>
+	<h3 about="@" property="rdfs:label"></h3>
 	<!-- Nav tabs -->
 	<ul class="nav nav-tabs" role="tablist">
 		<li role="presentation" class="active"><a id="params-pill-at" href="#params-at" about="v-fs:Params" property="rdfs:label" aria-controls="params-at" role="tab" data-toggle="tab"></a></li>
@@ -606,13 +633,29 @@ v-fs:AttributiveRequestTemplate
 			<br>
 			<div id="form-holder"></div>
 			<button type="button" id="find" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
+			<hr>
+			<h4 about="v-fs:SetResultsTable" property="rdfs:label"></h4>
+			<button class="btn btn-sm btn-danger" id="clear-custom" about="v-b:Reset" property="rdfs:label"></button>
+			<div id="set-result-template" class="table-responsive">
+				<table id="generic-table" class="table table-condensed table-bordered">
+					<caption about="v-fs:GenericTable" property="rdfs:label"></caption>
+					<thead id="generic-head"></thead>
+				</table>
+
+				<table id="custom-table" class="table table-condensed table-bordered">
+					<caption about="v-fs:CustomTable" property="rdfs:label"></caption>
+					<thead id="custom-head">
+						<tr><td><span class="text-muted" about="v-fs:DragColumns" property="rdfs:label"></span></td></tr>
+					</thead>
+				</table>
+			</div>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="results-at">
 			<div id="search-results">
 				<div class="table-responsive">
-					<table id="results-tbl" class="table table-condensed table-striped">
-						<thead></thead>
-						<tbody></tbody>
+					<table id="results-tbl" class="table table-condensed table-striped table-bordered">
+						<thead id="results-head"></thead>
+						<tbody id="results-body"></tbody>
 					</table>
 				</div>
 				<div class="text-center">
@@ -645,8 +688,11 @@ v-fs:AttributiveRequestTemplate
 		find = $("#find", template),
 		fulltext = $("#fulltext", template),
 		formHolder = $("#form-holder", template),
-		tHead = $("thead", template),
-		tBody = $("tbody", template),
+		tHead = $("thead#results-head", template),
+		tBody = $("tbody#results-body", template),
+		genericHead = $("thead#generic-head", template),
+		customHead = $("thead#custom-head", template),
+		clearCustom = $("#clear-custom", template),
 		head, tmpl;
 	
 	// Autofocus on query field
@@ -663,6 +709,12 @@ v-fs:AttributiveRequestTemplate
 		self.search();
 	});
 	
+	clearCustom.click(function () {
+		self["v-fs:resultTemplate"] = [];
+		self["v-fs:resultTemplateRest"] = [];
+		setResultTable( self["v-fs:typeToSearch"] );
+	});
+	
 	// Define and clean handlers
 	self.on("beforeSearch", beforeSearch);
 	self.on("afterSearch", afterSearch);
@@ -675,19 +727,53 @@ v-fs:AttributiveRequestTemplate
 		self.off("individual:propertyModified", showForm);
 	});
 
-	// Present results if query defined
-	if (self.count) { self.trigger("afterSearch"); }
-
 	// Present form if defined
 	if (self.form) { 
-		self.form.present(formHolder, undefined, "search"); 
+		showForm("v-fs:typeToSearch", self.form["rdf:type"]);
 	}
+
+	// Present results if query defined
+	if (self.count) { self.trigger("afterSearch"); }
 	
+	// Display search form
 	function showForm(property_uri, types) {
 		if (property_uri === "v-fs:typeToSearch") {
 			formHolder.empty();
 			self.form.present(formHolder, undefined, "search");
+			setResultTable(types);
 		}
+	}
+	
+	// Set result table
+	function setResultTable(types) {
+		if ( !self.hasValue("v-fs:resultTemplate") ) {
+			genericHead.html( gen_head(types[0]) );
+			customHead.empty();
+			var placeholder = (new veda.IndividualModel("v-fs:DragColumns")).present(customHead, '<tr><td><span class="text-muted" about="v-fs:DragColumns" property="rdfs:label"></span></td></tr>');
+		} else {
+			genericHead.html( self["v-fs:resultTemplateRest"][0].toString() );
+			customHead.html( self["v-fs:resultTemplate"][0].toString() );
+		}
+		$("thead#generic-head > tr").sortable({
+			connectWith: "thead#custom-head > tr",
+			placeholder: "danger",
+			receive: function () {
+				self["v-fs:resultTemplateRest"] = [ this.outerHTML ];
+			},
+			remove: function () {
+				self["v-fs:resultTemplateRest"] = [ this.outerHTML ];
+			}
+		});
+		$("thead#custom-head > tr").sortable({
+			connectWith: "thead#generic-head > tr",
+			placeholder: "danger",
+			receive: function () {
+				self["v-fs:resultTemplate"] = [ this.outerHTML ];
+			},
+			remove: function () {
+				self["v-fs:resultTemplate"] = [ this.outerHTML ];
+			}
+		});
 	}
 
 	// Update user aspect when search request was saved
@@ -704,8 +790,8 @@ v-fs:AttributiveRequestTemplate
 	
 	function gen_head(type) {
 		var props = Object.getOwnPropertyNames(type.domainProperties);
-		var sortable = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
-		var tr = $("<tr><th>#</th><th><span class='glyphicon glyphicon-search'></span></th></tr>"); 
+		var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
+		var tr = $("<tr><th id='count' width='20px'>#</th><th id='zoom' width='20px'><span class='glyphicon glyphicon-search'></span></th></tr>"); 
 		var sortBy = dir = "";
 		if ( self.hasValue("v-fs:sortOrder") ) {
 			var t = self["v-fs:sortOrder"][0].split(" ");
@@ -716,11 +802,11 @@ v-fs:AttributiveRequestTemplate
 			var property = type.domainProperties[property_uri];
 			var th = $("<th>", {
 				"id": property_uri,
-				"text": property["rdfs:label"].join(", "),
+				"text": property["rdfs:label"].join(", ")
 			});
 			var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : undefined;
-			if (sortable.indexOf(range) >= 0) {
-				var sortOrder = $("<a>", {href:"#"}).addClass("btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes");
+			if (literals.indexOf(range) >= 0) {
+				var sortOrder = $("<a>", {href:""}).addClass("btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes");
 				if (sortBy.indexOf(property_uri) >= 0) {
 					sortOrder.removeClass("text-muted");
 					if (dir === "desc") sortOrder.removeClass("glyphicon-sort-by-attributes").addClass("glyphicon-sort-by-attributes-alt");
@@ -730,7 +816,7 @@ v-fs:AttributiveRequestTemplate
 					var dir = sortOrder.hasClass("glyphicon-sort-by-attributes-alt") ? " asc" : " desc";
 					sortOrder.toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");					
 					if (range === "rdfs:Literal" || range === "xsd:string") {
-						self["v-fs:sortOrder"] = ["'" + property_uri + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir];
+						self["v-fs:sortOrder"] = ["'" + property_uri + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir + " , " + "'" + property_uri + "'" + dir];
 					} else {
 						self["v-fs:sortOrder"] = ["'" + property_uri + "'" + dir];
 					}
@@ -744,23 +830,29 @@ v-fs:AttributiveRequestTemplate
 		return tr;
 	}
 
-	function gen_tmpl(type) {
-		var props = Object.getOwnPropertyNames(type.domainProperties);
+	function gen_row(head) {
+		var hd = $(head);
 		var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
-		var tmpl = props.map( function (property_uri) {
-			if (property_uri === "rdf:type" || property_uri === "v-s:deleted") { return ""; }
-			var property = type.domainProperties[property_uri];
-			var res;
-			var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : undefined;
-			if (literals.indexOf(range) >= 0) {
-				res = ["<td about='@' property='", property_uri, "'>", "</td>"];
+		var row = $("<tr>");
+		hd.children().each( function () {
+			var td = $("<td>");
+			if (this.id === "count") {
+				td.text("###");
+			} else if (this.id === "zoom") {
+				td.html("<a href='#/@'><span class='glyphicon glyphicon-search'></span></a>");
 			} else {
-				res = ["<td about='@' rel='", property_uri, "' template='v-ui:LabelLinkTemplate'>", "</td>"];
+				td.attr("about", "@");
+				var property = new veda.IndividualModel( this.id );
+				var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : undefined;
+				if (literals.indexOf(range) >= 0) {
+					td.attr("property", property.id);
+				} else {
+					td.attr("rel", property.id).attr("template", "v-ui:LabelLinkTemplate");
+				}
 			}
-			return res.join("");
-		}).join("");
-		var res = ["<tr>", "<td>###</td><td><a href='#/@'><span class='glyphicon glyphicon-search'></span></a></td>", tmpl, "</tr>"].join("");
-		return res;
+			td.appendTo(row);
+		});
+		return row;
 	}
 	
 	// Present results
@@ -772,8 +864,12 @@ v-fs:AttributiveRequestTemplate
 	}
 	function afterSearch() {
 		resultsList.empty();
-		head = gen_head(self["v-fs:typeToSearch"][0]);
-		tmpl = gen_tmpl(self["v-fs:typeToSearch"][0]);
+		if ( self.hasValue("v-fs:resultTemplate") ) {
+			head = $( self["v-fs:resultTemplate"][0].toString() );
+		} else {
+			head = gen_head(self["v-fs:typeToSearch"][0]);
+		}
+		tmpl = gen_row(head)[0].outerHTML;
 		tHead.empty().append(head);
 		tBody.empty();
 		pager.empty();
