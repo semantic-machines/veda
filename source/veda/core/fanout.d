@@ -99,6 +99,12 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
 {
     try
     {
+       string actualVersion = new_indv.getFirstLiteral("v-s:actualVersion");
+
+       if (actualVersion !is null && actualVersion != new_indv.uri)
+       		return;
+    
+    	
         Resources types        = new_indv.getResources("rdf:type");
         bool      need_prepare = false;
 
