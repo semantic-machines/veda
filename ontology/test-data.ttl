@@ -1236,47 +1236,4 @@ v-wf:UserTaskForm1
 	v-wf:from td:RomanKarpov-Analyst1 ;  		
 .
 
-td:GeneralDirector a v-s:Position;
-	v-s:parentUnit d:a9d6db0bf-5761-424e-e98e-4141102fe026;
-    rdfs:label "Генеральный директор ООО "Монди Сейлз СНГ""@ru;
-    rdfs:isDefinedBy <http://semantic-machines.com/veda/test-data/>.
 
-d:a9d6db0bf-5761-424e-e98e-4141102fe026 
-	a v-s:Organization;
-    rdfs:label "ООО \"Монди Сейлз СНГ\""^^xsd:string.
-
-d:abb400b2d-4eda-80bf-a1c3-f735e3461016 
-	a v-s:Person;
-	v-ui:hasPreferences d:a0f3819c3-67fa-1082-c077-41ac74db2a2b;
-    v-s:firstName "Алексей"^^xsd:string;
-    v-s:hasAccount d:a3dd79768-8fb3-da91-b7d6-be159d99c209;
-    v-s:birthday "2015-11-17T21:00:00.000Z"^^xsd:dateTime;
-    v-s:middleName "Александрович"^^xsd:string;
-    v-s:hasAppointment td:AleksandraKhvostikova-Analyst1;
-    v-s:lastName "Шамин"^^xsd:string.
-
-d:a3dd79768-8fb3-da91-b7d6-be159d99c209 
-	a v-s:Account;
-    v-s:owner d:abb400b2d-4eda-80bf-a1c3-f735e3461016;
-    v-s:login "SHAMINA"^^xsd:string;
-    v-s:mailbox "alexey.shamin@mondigroup.com"^^xsd:string;
-    rdfs:label "Шамин"^^xsd:string.
-
-
-######################## Лавыгина для процесса #######################
-
-d:mondi_employee_00003653 v-s:firstName "Ирина"@ru;
-    a v-s:Person;
-    v-s:hasAccount d:mondi_account_lavyginai;
-    rdfs:label "Ирина Лавыгина"@ru;
-    v-s:author d:mondi_appointment_00003653_71000220;
-    v-s:middleName "Николаевна"@ru;
-    v-s:hasAppointment d:mondi_appointment_00003653_71000220;
-    v-s:lastName "Лавыгина"@ru.
-
-d:mondi_appointment_00003653_71000220 v-s:valid "true"^^xsd:boolean;
-    v-s:employee d:mondi_employee_00003653;
-    a v-s:Appointment;
-    v-s:occupation d:mondi_position_71000220;
-    v-s:official "true"^^xsd:boolean;
-    rdfs:label "Ирина Лавыгина : Начальник отдела"@ru.
