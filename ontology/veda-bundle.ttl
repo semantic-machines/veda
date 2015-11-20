@@ -136,11 +136,6 @@ v-b:CreateReport
   rdfs:label "Сформировать отчёт"@ru ;
   rdfs:label "Create report"@en ;
 .
-v-b:DeleteDraft
-  rdf:type v-b:Bundle ;
-  rdfs:label "Удалить черновик"@ru ;
-  rdfs:label "Delete draft"@en ;
-.
 v-b:PrintBlank
   rdf:type v-b:Bundle ;
   rdfs:label "Печатный бланк"@ru ;
