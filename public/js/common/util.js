@@ -413,15 +413,17 @@ function transformation(ticket, individuals, transform, executor, work_order)
     	            var out_data0_el_arr = out_data0_el[name];
     	            if (!out_data0_el_arr)
     	                out_data0_el_arr = [];
-    	            
+    	                	            
     	            var curelem = (typeof window === "undefined")?
     	            				get_individual(ticket, element.data?element.data:element):
     	            					new veda.IndividualModel(element.data?element.data:element);
     	            for (var i=0; i<path.length-1; i++) {
+    	            	if (!curelem || !curelem[path[i]]) return;
     	            	curelem = (typeof window === "undefined")?
     	            				get_individual(ticket, curelem[path[i]].data?curelem[path[i]].data:curelem[path[i]]):
     	            					new veda.IndividualModel(curelem[path[i]][0]);
-    	            }    	                	            
+    	            }
+    	            if (!curelem || !curelem[path[path.length-1]]) return;
     	            out_data0_el_arr.push(
    	                {
    	                    data: (typeof window === "undefined")?curelem[path[path.length-1]].data:curelem[path[path.length-1]][0],
