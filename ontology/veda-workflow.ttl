@@ -497,7 +497,12 @@ v-wf:SimpleNetTemplate
 		</td>
 	</tr>	
   </table>
-</div>  
+</div>
+<script>
+	$('#taskTemplateProperties [rel="v-wf:inputVariable"] [typeof="v-wf:VarDefine"]').draggable({
+		revert:true
+	});
+</script>  
   """ ;
 .
 
