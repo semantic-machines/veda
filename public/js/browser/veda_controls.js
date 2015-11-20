@@ -53,6 +53,17 @@
 			var value = opts.parser( this.value, this );
 			change(value);
 		});
+
+		if (isSingle) {
+			var prev;
+			input.on("keyup", function () {
+				var value = opts.parser( this.value, this );
+				if (this.value !== prev) {
+					change(value);
+					prev = this.value;
+				}
+			});
+		}
 		
 		this.on("veda_focus", function (e) {
 			input.trigger("focus");
