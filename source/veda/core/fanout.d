@@ -141,6 +141,7 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
 
                         foreach (rs; rss)
                         {
+                    		mysql_conn.query("SET NAMES 'utf8'");
                             mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, new_indv.uri,
                                              rs.asString().toUTF8(), text(rs.lang));
                         }
@@ -248,7 +249,7 @@ private void connect_to_mysql(Context context)
                                               connection.getFirstLiteral("vsrv:credentional"),
                                               database_name);
 
-                    mysql_conn.query("SET NAMES utf8;");
+                    mysql_conn.query("SET NAMES 'utf8'");
 
                     //writeln("@@@@1 CONNECT TO MYSQL IS OK ", text(mysql_conn));
                 }
