@@ -328,6 +328,7 @@ jsWorkflow.ready = jsPlumb.ready;
              */
             bindStateEvents = function(windows) {
                 windows.find('.state-name').droppable({
+                	hoverClass: 'dragHover',
                 	drop: function( event, ui ) {
                 		var varId = ui.draggable.attr('resource');
                 		var taskId = windows.attr('id');
