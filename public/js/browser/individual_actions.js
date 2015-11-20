@@ -16,22 +16,21 @@ veda.Module(function IndividualActions(veda) { "use strict";
 				$createReport.removeAttr("disabled");
 				e.stopPropagation();
 			}
-		
 			function inValidHandler(e) { 
 				$send.attr("disabled", "disabled"); 
 				$createReport.attr("disabled", "disabled"); 
 				e.stopPropagation();
 			}
-			
 			template.on("valid", validHandler);
-			
 			template.on("invalid", inValidHandler);
-			
-			$send.on("click", function () {veda.Util.send(individual, template);});
-			
+
+			$send.on("click", function () { veda.Util.send(individual, template); });
 			$createReport.on("click", function () {veda.Util.createReport(individual);});
-			
 			$showRights.on("click", function () {veda.Util.showRights(individual);});
+			
+			template.one("remove", function () {
+				individual.off("individual:templateReady", actionsHandler);
+			});
 		}
 		individual.on("individual:templateReady", actionsHandler);
 	});
