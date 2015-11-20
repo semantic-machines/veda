@@ -309,6 +309,27 @@ function transformation(ticket, individuals, transform, executor, work_order)
             out_data0_el[name] = out_data0_el_arr;
         }
     })();
+    
+    var putDatetime = (function ()
+    {
+        return function (name, value)
+        {
+            var out_data0_el_arr;
+
+            out_data0_el_arr = out_data0_el[name];
+
+            if (!out_data0_el_arr)
+                out_data0_el_arr = [];
+
+            out_data0_el_arr.push(
+            {
+                data: value,
+                type: _Datetime
+            });
+
+            out_data0_el[name] = out_data0_el_arr;
+        }
+    })();    	            
 
     var putBoolean = (function ()
     {
