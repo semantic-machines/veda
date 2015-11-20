@@ -972,6 +972,7 @@
 				var f = new veda.IndividualModel();
 				f["rdf:type"] = [ veda.ontology["v-s:File"] ];
 				f["v-s:fileName"] = [ file.name ];
+				f["rdfs:label"] = [ file.name ];
 				f["v-s:fileSize"] = [ file.size ];
 				f["v-s:fileUri"] = [ uri ];
 				f["v-s:filePath"] = [ path ];
@@ -1025,6 +1026,7 @@
 						var f = new veda.IndividualModel();
 						f["rdf:type"] = [ veda.ontology["v-s:File"] ];
 						f["v-s:fileName"] = [ name ];
+						f["rdfs:label"] = [ name ];
 						f["v-s:fileUri"] = [ uri ];
 						f["v-s:filePath"] = [ path ];
 						f.save();
