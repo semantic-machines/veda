@@ -302,13 +302,39 @@ jsWorkflow.ready = jsPlumb.ready;
             	}
             };
             
+            instance.addVarProperty = function(stateId, varId) {
+            	var variable = new veda.IndividualModel(varId);
+                
+                var individualM = new veda.IndividualModel(); // create individual (Mapping)
+                
+                individualM.defineProperty("rdf:type");
+                individualM.defineProperty("v-wf:mapsTo");
+                individualM.defineProperty("v-wf:mappingExpression");
+                
+           		individualM["rdf:type"] = [veda.ontology["v-wf:Mapping"]];
+           		individualM["v-wf:mapToVariable"] = [variable];
+                individualM['v-wf:mappingExpression'] = ["process.getInputVariable ('"+variable["v-wf:varDefineName"][0]+"')"];
+                
+                veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
+                	state['v-wf:inputVariable'] = state['v-wf:inputVariable'].concat([variable]); // <- Add new Variable to State
+                	state['v-wf:startingMapping'] = state['v-wf:startingMapping'].concat([individualM]); // <- Add new Mapping to State
+                });
+            }
+            
             /**
              *Bind required functional to State elements
              *@method bindStateEvents
              *@param {Object} windows List of all State elements
              */
             bindStateEvents = function(windows) {
-                
+                windows.find('.state-name').droppable({
+                	drop: function( event, ui ) {
+                		var varId = ui.draggable.attr('resource');
+                		var taskId = windows.attr('id');
+                		instance.addVarProperty(taskId, varId);
+                    }
+                });
+            	
                 windows.bind("click", function(e) {
                 	
                     var _this = this, currentElement = $(_this), alreadySelected = currentElement.hasClass('w_active');
@@ -948,6 +974,10 @@ jsWorkflow.ready = jsPlumb.ready;
             /* ZOOM [END] */
 
             /* NET MENU [END] */
+            
+            /* PLUGIN FEATURES [BEGIN] */
+            // Drag'n'drop variables to tasks
+            /* PLUGIN FEATURES [END]*/
             
             return instance;
         };
