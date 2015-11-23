@@ -224,7 +224,28 @@ private static int read_element(Json *individual, ubyte[] src, out string _key, 
             pos += read_type_value(src[ pos..$ ], &exponent);
 
             resource_json[ "type" ] = text(DataType.Decimal);
-            resource_json[ "data" ] = decimal(mantissa.v_long, exponent.v_long).toDouble();
+            
+            string str_mantissa = text (mantissa.v_long);
+            string str_res;
+            double res; 
+             
+            if (exponent.v_long < 0)
+            { 
+            	try
+            	{
+            		str_res = str_mantissa[0 .. str_mantissa.length - exponent.v_long*-1] ~ "." ~ str_mantissa[str_mantissa.length - exponent.v_long*-1..$];            	            	
+            		res = to!double (str_res);
+            	}
+            	catch (Exception ex)
+            	{
+            		res = decimal(mantissa.v_long, exponent.v_long).toDouble();            		
+            	}
+            }	
+            else	
+            	res = decimal(mantissa.v_long, exponent.v_long).toDouble();
+            
+            resource_json[ "data" ] = res;
+                        
             resources ~= resource_json;
             (*individual)[ predicate_uri ] = resources;
         }
