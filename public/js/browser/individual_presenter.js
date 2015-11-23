@@ -724,6 +724,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			{
 				$save.unbind("click");
 				$save.on("click", function (e) {
+					template.trigger("save");
 					// Before
 					var previousId = individual.hasValue('v-s:isDraftOf')?
 											(individual['v-s:isDraftOf'][0].hasValue('v-s:previousVersion')?
