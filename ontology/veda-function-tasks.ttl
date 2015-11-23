@@ -139,7 +139,7 @@ v-ft:FunctionTasksTemplate
 		tasks.off("afterSearch", renderTasks);
 	});
 	
-	var tmplInd = new veda.IndividualModel("v-ft:InboxTaskTemplate");
+	var tmplInd = new veda.IndividualModel("v-ft:TaskTemplate");
 	var tmpl = tmplInd["v-ui:template"][0].toString();
 	var cnt = $("#tasks", template);
 	var sorts = $("th > a", template);
@@ -221,10 +221,10 @@ v-ft:FunctionTasksTemplate
   """ ;
 .
 
-v-ft:InboxTaskTemplate
+v-ft:TaskTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Template for table of inbox tasks"@en ;
-  rdfs:label "Шаблон для таблицы входящих задач"@ru ;
+  rdfs:label "Task template for table of tasks"@en ;
+  rdfs:label "Шаблон задачи для таблицы задач"@ru ;
   v-ui:template """
 <tr>
 	<td>###</td>

@@ -127,13 +127,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				$('#send', wrapper).remove();
 			} 
 		}
-		if (container.prop("id") === "main" && individual.is('v-s:Versioned') && individual.hasValue('v-s:actualVersion') && individual['v-s:actualVersion'][0].id !== individual.id) {
+		if (container.prop("id") === "main" 
+			&& individual.is('v-s:Versioned') 
+			&& individual.hasValue('v-s:actualVersion') 
+			&& individual['v-s:actualVersion'][0].id !== individual.id 
+			&& !individual.hasValue("v-s:isDraftOf")
+		) {
 			var versionBundle = new veda.IndividualModel('v-b:DocumentIsVersion');
 			var actualVersionClass = new veda.IndividualModel('v-s:actualVersion');
 			var previousVersionClass = new veda.IndividualModel('v-s:previousVersion');
 			var nextVersionClass = new veda.IndividualModel('v-s:nextVersion');
 			var $versionToolbar = $('<div />', {
-	   			   "class" : "lert alert-warning no-margin",
+	   			   "class" : "alert alert-warning margin-sm",
 	   			   "style" : "padding:5px;",
 	   			   "role" : "alert",
          		   "html" : ('<div>'+versionBundle['rdfs:label']+'</div>')
