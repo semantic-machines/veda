@@ -401,7 +401,6 @@ v-df:QuestionRouteStartFormToNet
   v-wf:transformRule v-df:rul_QuestionTransform3 ;
   v-wf:transformRule v-df:rul_QuestionTransform4 ;
   v-wf:transformRule v-df:rul_QuestionTransform5 ;  
-  v-wf:transformRule v-df:rul_QuestionTransform6 ;  
   rdfs:isDefinedBy v-df: ;
 .
 v-df:rul_QuestionTransform0
@@ -420,10 +419,10 @@ v-df:rul_QuestionTransform1
 .
 v-df:rul_QuestionTransform2
 	rdf:type v-wf:Rule ;
-	v-wf:segregateElement "contentName('mnd-s-asppd:ideaRouteStartForm_customer')" ;
+	v-wf:segregateElement "contentName('v-s:hasAppointmentTo')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'coordinator')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor')"; 	
 .
 v-df:rul_QuestionTransform3
 	rdf:type v-wf:Rule ;
@@ -446,13 +445,7 @@ v-df:rul_QuestionTransform5
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'initiator')"; 	
 .
-v-df:rul_QuestionTransform6
-	rdf:type v-wf:Rule ;
-	v-wf:segregateElement "contentName('mnd-s-asppd:ideaRouteStartForm_financialController')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'financial_controller')"; 	
-.
+
 
 # -- ТРАНСФОРМАЦИЯ ИЗ ФОРМЫ ЗАДАЧИ ИСПОЛНИТЬ ПОРУЧЕНИЕ В СЕТЬ --
 v-df:InstructionRouteStartFormToNet
@@ -464,7 +457,6 @@ v-df:InstructionRouteStartFormToNet
   v-wf:transformRule v-df:rul_InstructionTransform3 ;  
   v-wf:transformRule v-df:rul_InstructionTransform4 ;  
   v-wf:transformRule v-df:rul_InstructionTransform5 ;  
-  v-wf:transformRule v-df:rul_InstructionTransform6 ;  
   rdfs:isDefinedBy v-df: ;
 .
 v-df:rul_InstructionTransform0
@@ -483,10 +475,10 @@ v-df:rul_InstructionTransform1
 .
 v-df:rul_InstructionTransform2
 	rdf:type v-wf:Rule ;
-	v-wf:segregateElement "contentName('mnd-s-asppd:ideaRouteStartForm_customer')" ;
+	v-wf:segregateElement "contentName('v-s:hasAppointmentTo')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'coordinator')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor')"; 	
 .
 v-df:rul_InstructionTransform3
 	rdf:type v-wf:Rule ;
@@ -508,13 +500,6 @@ v-df:rul_InstructionTransform5
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'initiator')"; 	
-.
-v-df:rul_InstructionTransform6
-	rdf:type v-wf:Rule ;
-	v-wf:segregateElement "contentName('mnd-s-asppd:ideaRouteStartForm_financialController')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'financial_controller')"; 	
 .
 
 
