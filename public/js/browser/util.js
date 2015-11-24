@@ -218,8 +218,8 @@ veda.Module(function Util(veda) { "use strict";
 	 */
 	veda.Util.send = function (individual, template, transformId) {
 		if (transformId !== undefined) {
-			var startForm = veda.Util.buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
-	    	riot.route("#/individual/" + startForm.id + "/#main//edit", true);
+			var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
+	    	riot.route("#/" + startForm.id + "///edit", true);
 		} else {
 			var s = new veda.SearchModel("'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
 			if (Object.getOwnPropertyNames(s.results).length == 0) {
@@ -245,7 +245,20 @@ veda.Module(function Util(veda) { "use strict";
 	            	riot.route("#/" + startForm.id + "///edit", true);
 				});
 			} else {
-				alert('Несколько стартовых трансформаций. Меня жизнь к такому не готовила.');
+				var sendDropdown = $('[resource="'+individual.id+'"] #send + .dropdown-menu');
+				sendDropdown.addClass('dropup').addClass('dropdown-toggle');
+				if (sendDropdown.html()== '') {
+					Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
+						var res = s.results[res_id];
+						$("<li/>", {
+			   			   "style" : "cursor:pointer",    
+	                 	   "html" : "<a href='#'>"+new veda.IndividualModel(res_id)['rdfs:label'][0]+"</a>",
+	                 	   "click": (function (e) {
+	                 		  veda.Util.send(individual, null, res['v-s:hasTransformation'][0].id);
+	                 	   })
+	                  	}).appendTo(sendDropdown);
+					});
+				}
 			}
 		}			
 	}
@@ -313,14 +326,14 @@ veda.Module(function Util(veda) { "use strict";
 				$('[resource="'+individual.id+'"]').find("#createReport").dropdown('toggle');
 				veda.Util.redirectToReport(individual, Object.getOwnPropertyNames(s.results)[0]);
 			} else {
-				var reportsDropdown = $('[resource="'+individual.id+'"]').find("#chooseReport");
+				var reportsDropdown = $('[resource="'+individual.id+'"] #chooseReport + .dropdown-menu');
 				if (reportsDropdown.html()== '') {
 					Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
 						$("<li/>", {
 			   			   "style" : "cursor:pointer",    
-	                 	   "text" : report['rdfs:label'][0],
+	                 	   "html" : "<a href='#'>"+new veda.IndividualModel(res_id)['rdfs:label'][0]+"</a>",
 	                 	   "click": (function (e) {
-	                 		  veda.Util.redirectToReport(individual, Object.getOwnPropertyNames(res_id)[0]);
+	                 		  veda.Util.redirectToReport(individual, res_id);
 	                 	   })
 	                  	}).appendTo(reportsDropdown);
 					});				

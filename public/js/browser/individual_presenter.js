@@ -735,7 +735,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 											 null);
 					var actualId = individual.hasValue('v-s:isDraftOf')?individual['v-s:isDraftOf'][0].id:individual.id;
 					var versionId = (actualId==individual.id)?veda.Util.genUri():individual.id;
-					console.log('previousId > '+previousId);
 					
 					// After
 					var actual = individual.clone();						
