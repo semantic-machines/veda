@@ -162,7 +162,7 @@ private class IndexerContext
             {
                 string actualVersion = indv.getFirstLiteral("v-s:actualVersion");
 
-                if (actualVersion !is null && actualVersion != indv.uri)
+                if (is_deleted == false && actualVersion !is null && actualVersion != indv.uri)
                     return;
 
                 OutBuffer      all_text = new OutBuffer();
