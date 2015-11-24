@@ -37,45 +37,32 @@ basic.getDrivers().forEach (function (drv) {
 	basic.chooseFromDropdown(driver, 'v-s:hasAppointment', 'Роман Карпов', 'Роман Карпов : Аналитик');
 //	driver.findElement({css:'[property="v-s:lastName"] + veda-control input'}).click();
 
-	console.trace ("@1");
-	
 	// Документ становится возможно сохранить
-	driver.wait
-	(
-	  webdriver.until.elementIsEnabled(driver.findElement({id:'save'})),
-	  basic.FAST_OPERATION
-	);
+//	driver.wait
+//	(
+//	  webdriver.until.elementIsEnabled(driver.findElement({id:'save'})),
+//	  basic.FAST_OPERATION
+//	);
 	
-	console.trace ("@2");
 	driver.executeScript("document.getElementById('save').scrollIntoView(true);");
-
-	console.trace ("@3");
 
 	// Нажимаем сохранить
 	driver.findElement({id:'save'}).click();
 	
-	console.trace ("@4");
-
 	// Проверяем что сохранение успешно
 	// Переходим на страницу просмотра документа
 	driver.findElement({css:'div[id="object"] > [typeof="v-s:Person"]'}).getAttribute('resource').then(function (individualId) {
 		basic.openPage(driver, drv, '#/'+individualId);	
 	});
 	
-	console.trace ("@5");
-
 	// Смотрим что в нём содержится введённый ранее текст
 	driver.findElement({css:'div[property="v-s:middleName"] span[class="value-holder"]'}).getText().then(function (txt) {
 		assert(txt == timeStamp);
 	});
 
-	console.trace ("@6");
-	
 	// Открываем поисковый бланк
 	basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
 	
-	console.trace ("@7");
-
 	// Вводим текст запроса
 	driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input'}).sendKeys(timeStamp);
 	
