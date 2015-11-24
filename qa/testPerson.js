@@ -38,11 +38,11 @@ basic.getDrivers().forEach (function (drv) {
 //	driver.findElement({css:'[property="v-s:lastName"] + veda-control input'}).click();
 	
 	// Документ становится возможно сохранить
-	driver.wait
-	(
-	  webdriver.until.elementIsEnabled(driver.findElement({id:'save'})),
-	  basic.FAST_OPERATION
-	);
+//	driver.wait
+//	(
+//	  webdriver.until.elementIsEnabled(driver.findElement({id:'save'})),
+//	  basic.FAST_OPERATION
+//	);
 	
 	driver.executeScript("document.getElementById('save').scrollIntoView(true);");
 	
