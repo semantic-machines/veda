@@ -99,12 +99,13 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
 {
     try
     {
-       string actualVersion = new_indv.getFirstLiteral("v-s:actualVersion");
+        bool   is_deleted = new_indv.isExist("v-s:deleted", true);
 
-       if (actualVersion !is null && actualVersion != new_indv.uri)
-       		return;
-    
-    	
+        string actualVersion = new_indv.getFirstLiteral("v-s:actualVersion");
+
+        if (is_deleted == false && actualVersion !is null && actualVersion != new_indv.uri)
+            return;
+
         Resources types        = new_indv.getResources("rdf:type");
         bool      need_prepare = false;
 
@@ -131,25 +132,29 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
                     log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
                 }
             }
-            foreach (predicate, rss; new_indv.resources)
-            {
-                try
-                {
-                    if (rss.length > 0)
-                    {
-                        create_table_if_not_exists(predicate, rss[ 0 ]);
 
-                        foreach (rs; rss)
+            if (is_deleted == false)
+            {
+                foreach (predicate, rss; new_indv.resources)
+                {
+                    try
+                    {
+                        if (rss.length > 0)
                         {
-                    		mysql_conn.query("SET NAMES 'utf8'");
-                            mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, new_indv.uri,
-                                             rs.asString().toUTF8(), text(rs.lang));
+                            create_table_if_not_exists(predicate, rss[ 0 ]);
+
+                            foreach (rs; rss)
+                            {
+                                mysql_conn.query("SET NAMES 'utf8'");
+                                mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, new_indv.uri,
+                                                 rs.asString().toUTF8(), text(rs.lang));
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+                    catch (Exception ex)
+                    {
+                        log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+                    }
                 }
             }
         }
