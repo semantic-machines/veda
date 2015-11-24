@@ -165,6 +165,373 @@ v-df:ApprovalTaskTemplate
 """ ;
 .
 
+
+# -- СТАРТОВЫЕ ФОРМЫ СТАНДРАТНЫХ ЗАДАЧ --
+
+v-df:QuestionRouteStartForm
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy v-df: ;
+  rdfs:label "Question document"@en ;
+  rdfs:label "Задать вопрос"@ru ;
+  rdfs:comment "Задача задать вопрос"@ru ;  
+  rdfs:subClassOf v-wf:StartForm ;  
+.
+v-df:InstructionRouteStartForm
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy v-df: ;
+  rdfs:label "Instruction document"@en ;
+  rdfs:label "Исполнить поручение"@ru ;
+  rdfs:comment "Задача bcgjkybnm gjhextybt"@ru ;  
+  rdfs:subClassOf v-wf:StartForm ;  
+.
+
+v-s:hasAppointmentTo
+  rdfs:domain v-df:QuestionRouteStartForm ;
+  rdfs:domain v-df:InstructionRouteStartForm ;    
+.
+v-df:PsStartForm_hasAppointmentTo ;
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-df:QuestionRouteStartForm ;
+  v-ui:forClass v-df:InstructionRouteStartForm ;  
+  v-ui:forProperty v-s:hasAppointmentTo ;
+  v-ui:maxCardinality 10 ;
+  v-ui:minCardinality 0 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
+  v-ui:tooltip "Non-required, single value. Link to instance of Appointment class"@en ;
+  v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Назначение."@ru ;
+  rdfs:label "Task sender property specification for Question task class"@en ;
+  rdfs:label "Спецификация исполнителя задачи для класса Стартовая форма задачи question"@ru ;
+.
+
+v-s:dateTo
+  rdfs:domain v-df:QuestionRouteStartForm ;
+  rdfs:domain v-df:InstructionRouteStartForm ;    
+.
+v-df:PsStartForm_dateTo
+  rdf:type v-ui:DatetimePropertySpecification ;
+  v-ui:forClass v-df:QuestionRouteStartForm ;
+  v-ui:forClass v-df:InstructionRouteStartForm ;  
+  v-ui:forProperty v-s:dateTo ;
+  v-ui:minCardinality "0"^^xsd:integer ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:tooltip "Required, single value. Format: 2011-08-19"@en ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
+  rdfs:label "Preferences property specification for dateFrom QuestionRouteStartForm class"@en ;
+  rdfs:label "Спецификация контрольной даты для класса QuestionRouteStartForm"@ru ;
+.
+v-s:count
+  rdfs:domain v-df:QuestionRouteStartForm ;
+  rdfs:domain v-df:InstructionRouteStartForm ;
+.
+v-df:PsCountForStartForm
+  rdf:type v-ui:IntegerPropertySpecification ;
+  rdfs:label "Спецификация количества дней для класса QuestionRouteStartForm"@ru ;
+  rdfs:label "Count day property specification for QuestionRouteStartForm"@en ;
+  v-ui:forClass v-df:QuestionRouteStartForm ;
+  v-ui:forClass v-df:InstructionRouteStartForm ;  
+  v-ui:forProperty v-s:count ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  v-ui:tooltip "Необязательно к заполнению, единичное значение. Целое число."@ru ;
+  v-ui:tooltip "Required, single value. Integer"@en ;
+.
+v-wf:processedDocument
+  rdfs:domain v-df:QuestionRouteStartForm ;
+  rdfs:domain v-df:InstructionRouteStartForm ;    
+.
+v-df:PsStartForm_processedDocument
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-df:QuestionRouteStartForm ;
+  v-ui:forClass v-df:InstructionRouteStartForm ;    
+  v-ui:forProperty v-wf:processedDocument ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  v-ui:tooltip "Non-required, multy value. Link"@en ;
+  v-ui:tooltip "Необязательно к заполнению, множественное значение. Ссылка на объект."@ru ;
+  rdfs:label "Task by document property specification for QuestionRouteStartForm class"@en ;
+  rdfs:label "Спецификация ссылки на документ для класса Стартовая форма задачи задать вопрос"@ru ;
+.
+v-df:PsStartForm_comment
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-df:QuestionRouteStartForm ;
+  v-ui:forClass v-df:InstructionRouteStartForm ;    
+  v-ui:forProperty rdfs:comment ;
+  rdfs:label "Спецификация к свойству комментарий для QuestionRouteStartForm"@ru ;
+  rdfs:label "Spec for comment for QuestionRouteStartFormclass"@en ;
+  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+.
+
+
+# -- ШАБЛОН ФОРМЫ ЗАДАЧИ ЗАДАТЬ ВОПРОС --
+v-df:QuestionRouteStartFormTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-df:QuestionRouteStartForm ;
+  rdfs:label "QuestionRouteStartForm template"@en ;
+  rdfs:label "Шаблон формы задачи задать вопрос"@ru ;
+  v-ui:template """
+    <div class="panel panel-default">
+      <div class="panel-body">
+        
+			<div class="row">
+			  <div class="col-md-12">
+				<h3><span about="v-df:QuestionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>    
+			  </div>
+			</div>
+			<br>
+
+			<div class="row">
+			  <div class="col-md-6">
+					<em about="v-wf:processedDocument" property="rdfs:label" class="text-muted"></em>            
+					<div rel="v-wf:processedDocument" template="v-ui:LabelTemplate" class="view -edit -search"></div>
+					<veda-control rel="v-wf:processedDocument" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
+			  </div>			  
+			</div>           
+
+			<br>
+						
+			<div class="row">
+			  <div class="col-md-3">
+					<em about="v-s:hasAppointmentTo" property="rdfs:label" class="text-muted"></em>            
+					<div rel="v-s:hasAppointmentTo" template="v-ui:LabelTemplate" class="view -edit -search"></div>
+					<veda-control rel="v-s:hasAppointmentTo" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
+			  </div>
+			  <div class="col-md-2">
+					<em about="v-s:dateTo" property="rdfs:label" class="text-muted"></em>            
+					<div property="v-s:dateTo" class="view -edit -search"></div>
+					<veda-control property="v-s:dateTo" type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>            
+			  </div>			  
+			  <div class="col-md-1">
+					<em about="v-s:count" property="rdfs:label" class="text-muted"></em>
+					<div property="v-s:count" class="view -edit -search"></div>
+					<veda-control property="v-s:count" type="integer" class="-view edit search"></veda-control>
+			  </div>       			  
+			</div>            		
+				
+			<br>
+
+			<div class="row">
+			  <div class="col-md-6">
+					<em about="rdfs:comment" property="rdfs:label" class="text-muted"></em>            
+					<veda-control property="rdfs:comment" type="multilingualText"></veda-control>					
+			  </div>		
+			</div>
+
+			<br><br>
+			<div class="well well-sm">
+			  <button type="button" class="action btn btn-warning" id="send" about="v-b:Send" property="rdfs:label"/>
+			  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
+			</div>    
+	  </div>		
+	</div>			
+""" ;
+.
+
+# -- ШАБЛОН ФОРМЫ ЗАДАЧИ ИСПОЛНИТЬ ПОРУЧЕНИЕ --
+v-df:InstructionRouteStartFormTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-df:InstructionRouteStartForm ;
+  rdfs:label "InstructionRouteStartForm template"@en ;
+  rdfs:label "Шаблон формы задачи исполнить поручение"@ru ;
+  v-ui:template """
+    <div class="panel panel-default">
+      <div class="panel-body">
+        
+			<div class="row">
+			  <div class="col-md-12">
+				<h3><span about="v-df:InstructionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>    
+			  </div>
+			</div>
+			<br>
+
+			<div class="row">
+			  <div class="col-md-6">
+					<em about="v-wf:processedDocument" property="rdfs:label" class="text-muted"></em>            
+					<div rel="v-wf:processedDocument" template="v-ui:LabelTemplate" class="view -edit -search"></div>
+					<veda-control rel="v-wf:processedDocument" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
+			  </div>			  
+			</div>           
+
+			<br>
+						
+			<div class="row">
+			  <div class="col-md-3">
+					<em about="v-s:hasAppointmentTo" property="rdfs:label" class="text-muted"></em>            
+					<div rel="v-s:hasAppointmentTo" template="v-ui:LabelTemplate" class="view -edit -search"></div>
+					<veda-control rel="v-s:hasAppointmentTo" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
+			  </div>
+			  <div class="col-md-2">
+					<em about="v-s:dateTo" property="rdfs:label" class="text-muted"></em>            
+					<div property="v-s:dateTo" class="view -edit -search"></div>
+					<veda-control property="v-s:dateTo" type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>            
+			  </div>			  
+			  <div class="col-md-1">
+					<em about="v-s:count" property="rdfs:label" class="text-muted"></em>
+					<div property="v-s:count" class="view -edit -search"></div>
+					<veda-control property="v-s:count" type="integer" class="-view edit search"></veda-control>
+			  </div>       			  
+			</div>            		
+				
+			<br>
+
+			<div class="row">
+			  <div class="col-md-6">
+					<em about="rdfs:comment" property="rdfs:label" class="text-muted"></em>            
+					<veda-control property="rdfs:comment" type="multilingualText"></veda-control>					
+			  </div>		
+			</div>
+
+			<br><br>
+			<div class="well well-sm">
+			  <button type="button" class="action btn btn-warning" id="send" about="v-b:Send" property="rdfs:label"/>
+			  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
+			</div>    
+	  </div>		
+	</div>			
+""" ;
+.
+
+# -- ТРАНСФОРМАЦИЯ ИЗ ФОРМЫ ЗАДАЧИ ЗАДАТЬ ВОПРОС В СЕТЬ --
+v-df:QuestionRouteStartFormToNet
+  rdfs:label "Трансформация из СтФ Задать вопрос в стандартную сеть процесса"^^xsd:string;
+  rdf:type v-wf:Transform ;
+  v-wf:transformRule v-df:rul_QuestionTransform0 ;  
+  v-wf:transformRule v-df:rul_QuestionTransform1 ;
+  v-wf:transformRule v-df:rul_QuestionTransform2 ;
+  v-wf:transformRule v-df:rul_QuestionTransform3 ;
+  v-wf:transformRule v-df:rul_QuestionTransform4 ;
+  v-wf:transformRule v-df:rul_QuestionTransform5 ;  
+  v-wf:transformRule v-df:rul_QuestionTransform6 ;  
+  rdfs:isDefinedBy v-df: ;
+.
+v-df:rul_QuestionTransform0
+	rdf:type v-wf:Rule ;
+	rdfs:isDefinedBy mnd-s-asppd: ;
+	v-wf:segregateElement "contentName('@')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'startForm_id')"; 	
+.
+v-df:rul_QuestionTransform1
+	rdf:type v-wf:Rule ;
+	rdfs:isDefinedBy mnd-s-asppd: ;
+	v-wf:segregateElement "contentName('v-wf:processedDocument')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'docId')"; 	
+.
+v-df:rul_QuestionTransform2
+	rdf:type v-wf:Rule ;
+	rdfs:isDefinedBy mnd-s-asppd: ;
+	v-wf:segregateElement "contentName('mnd-s-asppd:ideaRouteStartForm_customer')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'coordinator')"; 	
+.
+v-df:rul_QuestionTransform3
+	rdf:type v-wf:Rule ;
+	rdfs:isDefinedBy mnd-s-asppd: ;
+	v-wf:segregateElement "contentName('rdfs:comment')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'taskComment')"; 	
+.
+v-df:rul_QuestionTransform4
+	rdf:type v-wf:Rule ;
+	rdfs:isDefinedBy mnd-s-asppd: ;
+	v-wf:segregateElement "contentName('v-s:dateTo')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'taskDateTo')"; 	
+.
+v-df:rul_QuestionTransform5
+	rdf:type v-wf:Rule ;
+	rdfs:isDefinedBy mnd-s-asppd: ;
+	v-wf:segregateElement "contentName('v-s:author')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'initiator')"; 	
+.
+v-df:rul_QuestionTransform6
+	rdf:type v-wf:Rule ;
+	rdfs:isDefinedBy mnd-s-asppd: ;
+	v-wf:segregateElement "contentName('mnd-s-asppd:ideaRouteStartForm_financialController')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'financial_controller')"; 	
+.
+
+# -- ТРАНСФОРМАЦИЯ ИЗ ФОРМЫ ЗАДАЧИ ИСПОЛНИТЬ ПОРУЧЕНИЕ В СЕТЬ --
+v-df:InstructionRouteStartFormToNet
+  rdfs:label "Трансформация из СтФ исполнить поручение в стандартную сеть процесса"^^xsd:string;
+  rdf:type v-wf:Transform ;
+  v-wf:transformRule v-df:rul_InstructionTransform0 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform1 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform2 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform3 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform4 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform5 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform6 ;  
+  rdfs:isDefinedBy v-df: ;
+.
+v-df:rul_InstructionTransform0
+	rdf:type v-wf:Rule ;
+	rdfs:isDefinedBy mnd-s-asppd: ;
+	v-wf:segregateElement "contentName('@')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'startForm_id')"; 	
+.
+v-df:rul_InstructionTransform1
+	rdf:type v-wf:Rule ;
+	rdfs:isDefinedBy mnd-s-asppd: ;
+	v-wf:segregateElement "contentName('v-wf:processedDocument')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'docId')"; 	
+.
+v-df:rul_InstructionTransform2
+	rdf:type v-wf:Rule ;
+	rdfs:isDefinedBy mnd-s-asppd: ;
+	v-wf:segregateElement "contentName('mnd-s-asppd:ideaRouteStartForm_customer')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'coordinator')"; 	
+.
+v-df:rul_InstructionTransform3
+	rdf:type v-wf:Rule ;
+	rdfs:isDefinedBy mnd-s-asppd: ;
+	v-wf:segregateElement "contentName('rdfs:comment')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'taskComment')"; 	
+.
+v-df:rul_InstructionTransform4
+	rdf:type v-wf:Rule ;
+	rdfs:isDefinedBy mnd-s-asppd: ;
+	v-wf:segregateElement "contentName('v-s:dateTo')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'taskDateTo')"; 	
+.
+v-df:rul_InstructionTransform5
+	rdf:type v-wf:Rule ;
+	rdfs:isDefinedBy mnd-s-asppd: ;
+	v-wf:segregateElement "contentName('v-s:author')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'initiator')"; 	
+.
+v-df:rul_InstructionTransform6
+	rdf:type v-wf:Rule ;
+	rdfs:isDefinedBy mnd-s-asppd: ;
+	v-wf:segregateElement "contentName('mnd-s-asppd:ideaRouteStartForm_financialController')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'financial_controller')"; 	
+.
+
+
 # -- ФОРМА ОТВЕТА ЗАДАЧИ ИДЕЯ В РЕАЛИЗАЦИЮ --
 
 cmn-s:hasAction
