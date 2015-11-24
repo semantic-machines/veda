@@ -35,10 +35,8 @@ basic.getDrivers().forEach (function (drv) {
 	driver.executeScript("document.querySelector('[rel=\"v-s:hasAppointment\"] + veda-control input').scrollIntoView(true);");
 	
 	basic.chooseFromDropdown(driver, 'v-s:hasAppointment', 'Роман Карпов', 'Роман Карпов : Аналитик');
-	driver.findElement({css:'[property="v-s:lastName"] + veda-control input'}).click();
+//	driver.findElement({css:'[property="v-s:lastName"] + veda-control input'}).click();
 	
-	driver.findElement({id:'save'}).click();
-
 	// Документ становится возможно сохранить
 	driver.wait
 	(
