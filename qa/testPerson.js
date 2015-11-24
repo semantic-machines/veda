@@ -68,10 +68,14 @@ basic.getDrivers().forEach (function (drv) {
 	driver.findElement({css:'div[property="v-s:middleName"] span[class="value-holder"]'}).getText().then(function (txt) {
 		assert(txt == timeStamp);
 	});
+
+	console.trace ("@6");
 	
 	// Открываем поисковый бланк
 	basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
 	
+	console.trace ("@7");
+
 	// Вводим текст запроса
 	driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input'}).sendKeys(timeStamp);
 	
