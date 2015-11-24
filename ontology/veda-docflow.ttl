@@ -189,7 +189,7 @@ v-s:hasAppointmentTo
   rdfs:domain v-df:QuestionRouteStartForm ;
   rdfs:domain v-df:InstructionRouteStartForm ;    
 .
-v-df:PsStartForm_hasAppointmentTo ;
+v-df:PsStartForm_hasAppointmentTo 
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
   v-ui:forClass v-df:InstructionRouteStartForm ;  
@@ -406,7 +406,6 @@ v-df:QuestionRouteStartFormToNet
 .
 v-df:rul_QuestionTransform0
 	rdf:type v-wf:Rule ;
-	rdfs:isDefinedBy mnd-s-asppd: ;
 	v-wf:segregateElement "contentName('@')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
@@ -414,7 +413,6 @@ v-df:rul_QuestionTransform0
 .
 v-df:rul_QuestionTransform1
 	rdf:type v-wf:Rule ;
-	rdfs:isDefinedBy mnd-s-asppd: ;
 	v-wf:segregateElement "contentName('v-wf:processedDocument')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
@@ -422,7 +420,6 @@ v-df:rul_QuestionTransform1
 .
 v-df:rul_QuestionTransform2
 	rdf:type v-wf:Rule ;
-	rdfs:isDefinedBy mnd-s-asppd: ;
 	v-wf:segregateElement "contentName('mnd-s-asppd:ideaRouteStartForm_customer')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
@@ -430,7 +427,6 @@ v-df:rul_QuestionTransform2
 .
 v-df:rul_QuestionTransform3
 	rdf:type v-wf:Rule ;
-	rdfs:isDefinedBy mnd-s-asppd: ;
 	v-wf:segregateElement "contentName('rdfs:comment')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
@@ -438,7 +434,6 @@ v-df:rul_QuestionTransform3
 .
 v-df:rul_QuestionTransform4
 	rdf:type v-wf:Rule ;
-	rdfs:isDefinedBy mnd-s-asppd: ;
 	v-wf:segregateElement "contentName('v-s:dateTo')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
@@ -446,7 +441,6 @@ v-df:rul_QuestionTransform4
 .
 v-df:rul_QuestionTransform5
 	rdf:type v-wf:Rule ;
-	rdfs:isDefinedBy mnd-s-asppd: ;
 	v-wf:segregateElement "contentName('v-s:author')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
@@ -454,7 +448,6 @@ v-df:rul_QuestionTransform5
 .
 v-df:rul_QuestionTransform6
 	rdf:type v-wf:Rule ;
-	rdfs:isDefinedBy mnd-s-asppd: ;
 	v-wf:segregateElement "contentName('mnd-s-asppd:ideaRouteStartForm_financialController')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
@@ -476,7 +469,6 @@ v-df:InstructionRouteStartFormToNet
 .
 v-df:rul_InstructionTransform0
 	rdf:type v-wf:Rule ;
-	rdfs:isDefinedBy mnd-s-asppd: ;
 	v-wf:segregateElement "contentName('@')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
@@ -484,7 +476,6 @@ v-df:rul_InstructionTransform0
 .
 v-df:rul_InstructionTransform1
 	rdf:type v-wf:Rule ;
-	rdfs:isDefinedBy mnd-s-asppd: ;
 	v-wf:segregateElement "contentName('v-wf:processedDocument')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
@@ -492,7 +483,6 @@ v-df:rul_InstructionTransform1
 .
 v-df:rul_InstructionTransform2
 	rdf:type v-wf:Rule ;
-	rdfs:isDefinedBy mnd-s-asppd: ;
 	v-wf:segregateElement "contentName('mnd-s-asppd:ideaRouteStartForm_customer')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
@@ -500,7 +490,6 @@ v-df:rul_InstructionTransform2
 .
 v-df:rul_InstructionTransform3
 	rdf:type v-wf:Rule ;
-	rdfs:isDefinedBy mnd-s-asppd: ;
 	v-wf:segregateElement "contentName('rdfs:comment')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
@@ -508,7 +497,6 @@ v-df:rul_InstructionTransform3
 .
 v-df:rul_InstructionTransform4
 	rdf:type v-wf:Rule ;
-	rdfs:isDefinedBy mnd-s-asppd: ;
 	v-wf:segregateElement "contentName('v-s:dateTo')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
@@ -516,7 +504,6 @@ v-df:rul_InstructionTransform4
 .
 v-df:rul_InstructionTransform5
 	rdf:type v-wf:Rule ;
-	rdfs:isDefinedBy mnd-s-asppd: ;
 	v-wf:segregateElement "contentName('v-s:author')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
@@ -524,7 +511,6 @@ v-df:rul_InstructionTransform5
 .
 v-df:rul_InstructionTransform6
 	rdf:type v-wf:Rule ;
-	rdfs:isDefinedBy mnd-s-asppd: ;
 	v-wf:segregateElement "contentName('mnd-s-asppd:ideaRouteStartForm_financialController')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
