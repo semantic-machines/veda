@@ -684,7 +684,7 @@ td:AppointmentTemplate1
         <div class="row">
           <div class="col-md-6">
             <div rel="v-s:employee" template="v-ui:LabelTemplate"></div>
-            <veda-control rel="v-s:employee" type="link" class="-view edit search fullsearch fulltext"></veda-control>
+            <veda-control rel="v-s:employee" type="link" class="-view edit search fullsearch fulltext full"></veda-control>
           </div>
           <div class="col-md-6">
             <div rel="v-s:occupation" template="v-ui:LabelTemplate"></div>

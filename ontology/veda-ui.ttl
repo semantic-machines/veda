@@ -336,6 +336,27 @@ v-ui:queryPrefix
   rdfs:label "query prefix"@en ;
   rdfs:range xsd:string ;
 .
+v-ui:root
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:label "корень"@ru ;
+  rdfs:label "root"@en ;
+  rdfs:range rdfs:Resource ;
+.
+v-ui:inEdge
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:label "входящее ребро"@ru ;
+  rdfs:label "in edge"@en ;
+  rdfs:range owl:ObjectProperty ;
+.
+v-ui:outEdge
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:label "исходящее ребро"@ru ;
+  rdfs:label "out edge"@en ;
+  rdfs:range owl:ObjectProperty ;
+.
 v-ui:Language
   rdf:type owl:Class ;
   rdfs:label "Language"@en ;

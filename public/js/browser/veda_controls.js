@@ -1070,11 +1070,15 @@
 			spec = opts.spec,
 			placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
 			queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : undefined,
+			root = spec && spec.hasValue("v-ui:root") ? spec["v-ui:root"][0] : undefined,
+			inEdge = spec && spec.hasValue("v-ui:inEdge") ? spec["v-ui:inEdge"][0] : undefined,
+			outEdge = spec && spec.hasValue("v-ui:outEdge") ? spec["v-ui:outEdge"][0] : undefined,
 			rel_uri = opts.rel_uri,
 			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
 			create = $("#create", control),
 			dropdown = $("#dropdown", control),
 			fulltext = $("#fulltext", control),
+			tree = $("#tree", control),
 			fullsearch = $("#fullsearch", control);
 
 		if (!queryPrefix) {
@@ -1110,11 +1114,32 @@
 		// Dropdown feature
 		if ( (this.hasClass("dropdown") || this.hasClass("full")) && queryPrefix ) {
 			dropdown.click(function () {
+				var minLength = typeAhead.data().ttTypeahead.minLength;
+				typeAhead.data().ttTypeahead.minLength = 0;
 				typeAhead.data().ttTypeahead.input.trigger("queryChanged", "");
 				typeAhead.focus();
+				typeAhead.data().ttTypeahead.minLength = minLength;
 			});
 		} else {
 			dropdown.remove();
+		}
+
+		// Tree feature
+		if ( 
+			(this.hasClass("tree") || this.hasClass("full")) 
+			&& (root && (inEdge || outEdge)) 
+		) {
+			var tmpl = $("#search-modal-template").html();
+			tree.click(function () {
+				var $modal = $(tmpl);
+				$modal.on('hidden.bs.modal', function (e) {
+					$modal.remove();
+				});
+				$modal.modal();	
+				$("body").append($modal);
+			});
+		} else {
+			tree.remove();
 		}
 
 		// Fulltext search feature
@@ -1124,7 +1149,7 @@
 
 			var typeAhead = fulltext.typeahead (
 				{
-					minLength: 0,
+					minLength: 3,
 					highlight: true
 				},
 				{

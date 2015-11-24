@@ -117,6 +117,23 @@ fieldset[disabled] .form-control {
   padding: 0;
 }
 
+@media (min-width: 768px) {
+  .modal-sm {
+    width: 300px;
+  }
+}
+@media (min-width: 992px) and (max-width: 1100) {
+  .modal-lg {
+    width: 900px;
+  }
+}
+@media (min-width: 1250px) {
+  .modal-lg {
+    width: 1200px;
+  }
+}
+
+
 /* breadcrumb1 */
 
 .breadcrumb1 { 
