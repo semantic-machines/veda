@@ -1130,9 +1130,9 @@
 			//&& (root && (inEdge || outEdge)) 
 		) {
 			var treeTmpl = (new veda.IndividualModel("v-ui:TreeTemplate"))["v-ui:template"][0];
-			var mdl = $("#search-modal-template").html();
+			var modal = $("#search-modal-template").html();
 			tree.click(function () {
-				var $modal = $(mdl);
+				var $modal = $(modal);
 				var cntr = $(".modal-body", $modal);
 				$modal.on('hidden.bs.modal', function (e) {
 					$modal.remove();
