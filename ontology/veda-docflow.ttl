@@ -293,7 +293,7 @@ v-df:QuestionRouteStartFormTemplate
 			<div class="row">
 			  <div class="col-md-3">
 					<em about="v-s:hasAppointmentTo" property="rdfs:label" class="text-muted"></em>            
-					<div rel="v-s:hasAppointmentTo" template="v-ui:LabelTemplate" class="view -edit -search"></div>
+					<div rel="v-s:hasAppointmentTo" template="v-ui:LabelTemplate" class="view edit -search"></div>
 					<veda-control rel="v-s:hasAppointmentTo" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
 			  </div>
 			  <div class="col-md-2">
@@ -357,7 +357,7 @@ v-df:InstructionRouteStartFormTemplate
 			<div class="row">
 			  <div class="col-md-3">
 					<em about="v-s:hasAppointmentTo" property="rdfs:label" class="text-muted"></em>            
-					<div rel="v-s:hasAppointmentTo" template="v-ui:LabelTemplate" class="view -edit -search"></div>
+					<div rel="v-s:hasAppointmentTo" template="v-ui:LabelTemplate" class="view edit -search"></div>
 					<veda-control rel="v-s:hasAppointmentTo" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
 			  </div>
 			  <div class="col-md-2">
