@@ -313,7 +313,8 @@ v-df:QuestionRouteStartFormTemplate
 			<div class="row">
 			  <div class="col-md-6">
 					<em about="rdfs:comment" property="rdfs:label" class="text-muted"></em>            
-					<veda-control property="rdfs:comment" type="multilingualText"></veda-control>					
+					<div property="rdfs:comment" class="view -edit -search"></div>
+					<veda-control property="rdfs:comment" type="multilingualText" class="-view edit search"></veda-control>					
 			  </div>		
 			</div>
 
@@ -376,8 +377,9 @@ v-df:InstructionRouteStartFormTemplate
 
 			<div class="row">
 			  <div class="col-md-6">
-					<em about="rdfs:comment" property="rdfs:label" class="text-muted"></em>            
-					<veda-control property="rdfs:comment" type="multilingualText"></veda-control>					
+					<em about="rdfs:comment" property="rdfs:label" class="text-muted"></em>        
+					<div property="rdfs:comment" class="view -edit -search"></div>
+					<veda-control property="rdfs:comment" type="multilingualText" class="-view edit search"></veda-control>					
 			  </div>		
 			</div>
 
