@@ -44,10 +44,10 @@ basic.getDrivers().forEach (function (drv) {
 //	  basic.FAST_OPERATION
 //	);
 	
-	driver.executeScript("document.getElementById('save').scrollIntoView(true);");
+	//driver.executeScript("document.getElementById('save').scrollIntoView(true);");
 
 	// Нажимаем сохранить
-	driver.findElement({id:'save'}).click();
+	driver.findElement({css:'div.panel-footer > button#save'}).click();
 	
 	// Проверяем что сохранение успешно
 	// Переходим на страницу просмотра документа
