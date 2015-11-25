@@ -351,6 +351,64 @@ function transformation(ticket, individuals, transform, executor, work_order)
             out_data0_el[name] = out_data0_el_arr;
         }
     })();
+    
+    var setBoolean = (function ()
+    {
+        return function (name, value)
+        {
+            var out_data0_el_arr;
+
+            out_data0_el_arr = [];
+
+            out_data0_el_arr.push(
+            {
+                data: value,
+                type: _Bool
+            });
+
+            out_data0_el[name] = out_data0_el_arr;
+        }
+    })();            
+    
+            
+   var putInteger = (function ()
+    {
+        return function (name, value)
+        {
+            var out_data0_el_arr;
+
+            out_data0_el_arr = out_data0_el[name];
+
+            if (!out_data0_el_arr)
+                out_data0_el_arr = [];
+
+            out_data0_el_arr.push(
+            {
+                data: value,
+                type: _Integer
+            });
+
+            out_data0_el[name] = out_data0_el_arr;
+        }
+    })();
+
+    var setInteger = (function ()
+    {
+        return function (name, value)
+        {
+            var out_data0_el_arr;
+
+            out_data0_el_arr = [];
+
+            out_data0_el_arr.push(
+            {
+                data: value,
+                type: _Integer
+            });
+
+            out_data0_el[name] = out_data0_el_arr;
+        }
+    })();            
             
     var putExecutor = (function ()
     {
