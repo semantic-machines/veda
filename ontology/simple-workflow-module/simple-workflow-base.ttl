@@ -789,7 +789,7 @@ s-wf:tr_actor_add_request_form
 	v-wf:transformRule s-wf:rul_tr_form_1 ;	
     v-wf:transformRule s-wf:rul_tr_form_2 ;
     v-wf:transformRule s-wf:rul_tr_form_6a ;
-    v-wf:transformRule s-wf:rul_tr_form_9 ;
+    v-wf:transformRule s-wf:rul_tr_form_9a ;
 	rdfs:isDefinedBy s-wf: ;
     rdfs:label "трансформация создания пользовательской формы дополнительного запроса по задаче"@ru ;		
 .		
@@ -802,6 +802,16 @@ s-wf:rul_tr_form_6a
 	v-wf:grouping	"1";
 	rdfs:label "установить возможные варианты ответов"@ru ;	
 	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:rul_tr_form_9a
+	rdf:type v-wf:Rule ;
+	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'actor_task_description')" ;
+	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
+	v-wf:aggregate	"putValue ('v-s:description')";
+	v-wf:grouping	"1";
+	rdfs:isDefinedBy s-wf: ;
+	rdfs:label "установить v-s:description из переменной s-wf:var_actor_task_action"@ru ;	
 .
 
 
@@ -1025,7 +1035,6 @@ s-wf:map_decision_of_set_responsible_2_actor_task
 	rdfs:isDefinedBy s-wf: ;
 .
 
-
 s-wf:var_actor_task_action 
     rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "actor_task_action" ;
@@ -1039,6 +1048,14 @@ s-wf:var_actor_task_comment
 	v-wf:varDefineName "actor_task_comment" ;
 	v-wf:varDefineScope v-wf:Net ;
 	rdfs:label "var actor task comment" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:var_actor_task_description
+    rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "actor_task_description" ;
+	v-wf:varDefineScope v-wf:Net ;
+	rdfs:label "var actor task description" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
