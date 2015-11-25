@@ -968,15 +968,16 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:startingMapping" type="link" class="VCstartingMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingMapping">
 	  			<div deleteButton="hide" class="VCstartingMapping">
-	  				#<a href="#/@">
-			  			<span about="@" rel="v-wf:mapToVariable">
-							<span>
-								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-							</span>
-						</span> =
-						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					</a>
+	  				<p>
+						#<a href="#/@">
+							<span about="@" rel="v-wf:mapToVariable">
+								<span>
+									<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+								</span>
+							</span> =
+							<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						</a>
+					</p>
 				<div>
 			</div>
 		</td>
