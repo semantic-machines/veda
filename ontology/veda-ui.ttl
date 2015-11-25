@@ -1338,3 +1338,16 @@ v-ui:PermissionStatementTemplate
 	</script>
   """ ;
 .
+v-ui:TreeTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для древовоидных структур"@ru ;
+  rdfs:label "Template for tree-like structures"@en ;
+  v-ui:template """
+<div>
+	<a href="#/@" about="@" property="rdfs:label"></a>
+</div>
+<script>
+	console.log("tree template", individual);
+</script>
+  """ ;
+.

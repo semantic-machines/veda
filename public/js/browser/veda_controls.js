@@ -1127,16 +1127,19 @@
 		// Tree feature
 		if ( 
 			(this.hasClass("tree") || this.hasClass("full")) 
-			&& (root && (inEdge || outEdge)) 
+			//&& (root && (inEdge || outEdge)) 
 		) {
-			var tmpl = $("#search-modal-template").html();
+			var treeTmpl = (new veda.IndividualModel("v-ui:TreeTemplate"))["v-ui:template"][0];
+			var mdl = $("#search-modal-template").html();
 			tree.click(function () {
-				var $modal = $(tmpl);
+				var $modal = $(mdl);
+				var cntr = $(".modal-body", $modal);
 				$modal.on('hidden.bs.modal', function (e) {
 					$modal.remove();
 				});
 				$modal.modal();	
 				$("body").append($modal);
+				individual.present(cntr, treeTmpl);
 			});
 		} else {
 			tree.remove();
