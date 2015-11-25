@@ -44,7 +44,7 @@ basic.getDrivers().forEach (function (drv) {
 //	  basic.FAST_OPERATION
 //	);
 	
-	//driver.executeScript("document.getElementById('save').scrollIntoView(true);");
+	driver.executeScript("document.getElementById('save').scrollIntoView(true);");
 
 	// Нажимаем сохранить
 	driver.findElement({css:'div.panel-footer > button#save'}).click();
