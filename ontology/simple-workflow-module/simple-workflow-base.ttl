@@ -1206,10 +1206,16 @@ s-wf:map_set_actor_task_description_from_TR_result_data
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:map_set_actor_from_executor
+s-wf:map_set_actor_from_executor_or_PI_actor
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_actor ;
-	v-wf:mappingExpression	"process.getExecutor ()";
+	v-wf:mappingExpression	
+    """
+        if (process.getInputVariable ('actor'))
+            process.getInputVariable ('actor');
+        else
+            process.getExecutor ();
+    """;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -1262,7 +1268,7 @@ s-wf:net_coordination a v-wf:Net;
     v-wf:consistsOf s-wf:nc_f_t2_oc, s-wf:nc_f_t2_t1, s-wf:c1, d:abaa42215-965f-a032-aada-31be82a54e95, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23;
     v-wf:consistsOf s-wf:additional_user_response, d:a65787936-f51e-a83c-f537-95eaaa02c21a, d:afdd3ebd0-7934-8d38-1f68-158a05f0330d, d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e;
     v-wf:consistsOf d:a3d7c838c-df12-e9ec-48c6-a96f3bb7e13f, d:abc5142af-b501-1ec6-8ee0-acb767f078a4, d:a16bb1fd3-64eb-a7bb-501d-889b2aa4500d, d:aec10d9da-789d-fd65-a094-bd4ed7b14822;
-    v-wf:consistsOf d:a8b89a22d-23b9-1c1c-c5dc-3443fd3972de;
+    v-wf:consistsOf d:a8b89a22d-23b9-1c1c-c5dc-3443fd3972de, d:a8a52f5c1-84fb-0976-794a-5c66b93258e7, d:a74e1dea7-75e9-9d5f-b942-d1a7f2b91b2b, d:a6caa3c11-9333-4270-549f-e899df057223;
     v-wf:completedMapping s-wf:map_set_result_from_local, s-wf:map_set_result_decision_from_local;
     v-wf:inputVariable s-wf:var_doc_id, s-wf:var_initiator, s-wf:var_coordinator, s-wf:var_coordinator_level;
     rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow/>;
@@ -1293,7 +1299,7 @@ d:a65787936-f51e-a83c-f537-95eaaa02c21a
 d:afdd3ebd0-7934-8d38-1f68-158a05f0330d a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-09T12:51:20.166Z"^^xsd:dateTime;
-    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionBreak')) == false"^^xsd:string;   
+    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionBreak')) == false && task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAchieved')) == false"^^xsd:string;
     v-wf:flowsInto s-wf:c1.
 
 d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23 a v-wf:Flow;
@@ -1340,7 +1346,7 @@ s-wf:nc_t3
     v-wf:split v-wf:XOR;
     rdfs:label "установить: actor = [исполнитель текущего процесса], actor_task_date_to, actor_task_action, actor_task_comment"^^xsd:string;
     v-wf:belongsTo s-wf:net_coordination;
-    v-wf:completedMapping s-wf:map_set_actor_from_executor, s-wf:map_PI_actor_task_date_to_4_actor_task_date_to, s-wf:map_PI_actor_task_action_4_actor_task_action;
+    v-wf:completedMapping s-wf:map_set_actor_from_executor_or_PI_actor, s-wf:map_PI_actor_task_date_to_4_actor_task_date_to, s-wf:map_PI_actor_task_action_4_actor_task_action;
     v-wf:completedMapping s-wf:map_PI_actor_task_comment_4_actor_task_comment;
     v-wf:locationX "248"^^xsd:integer.
 
@@ -1396,7 +1402,7 @@ s-wf:nc_t2 a v-wf:Task;
 .
 
 s-wf:additional_user_response 
-	v-wf:hasFlow d:afdd3ebd0-7934-8d38-1f68-158a05f0330d, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23;
+    v-wf:hasFlow d:afdd3ebd0-7934-8d38-1f68-158a05f0330d, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23, d:a74e1dea7-75e9-9d5f-b942-d1a7f2b91b2b;
 	v-wf:split v-wf:XOR;    
     v-wf:locationY "356"^^xsd:integer;
     a v-wf:Task;
@@ -1486,6 +1492,25 @@ d:a8b89a22d-23b9-1c1c-c5dc-3443fd3972de a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-17T11:54:51.993Z"^^xsd:dateTime;
     v-wf:flowsInto s-wf:c1.
+
+d:a8a52f5c1-84fb-0976-794a-5c66b93258e7 v-wf:locationY "326"^^xsd:integer;
+    a v-wf:Condition;
+    v-wf:hasFlow d:a6caa3c11-9333-4270-549f-e899df057223;
+    v-s:author td:RomanKarpov-Analyst1;
+    v-s:created "2015-11-25T09:21:02.217Z"^^xsd:dateTime;
+    rdfs:label "нормальное завершение"^^xsd:string;
+    v-wf:locationX "883"^^xsd:integer.
+
+d:a74e1dea7-75e9-9d5f-b942-d1a7f2b91b2b a v-wf:Flow;
+    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAchieved')) == true "^^xsd:string;
+    v-s:author td:RomanKarpov-Analyst1;
+    v-s:created "2015-11-25T09:21:02.220Z"^^xsd:dateTime;
+    v-wf:flowsInto d:a8a52f5c1-84fb-0976-794a-5c66b93258e7.
+
+d:a6caa3c11-9333-4270-549f-e899df057223 a v-wf:Flow;
+    v-s:author td:RomanKarpov-Analyst1;
+    v-s:created "2015-11-25T09:21:02.222Z"^^xsd:dateTime;
+    v-wf:flowsInto s-wf:nc_oc.
 
 
 #---- ---- -----

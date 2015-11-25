@@ -401,6 +401,10 @@ v-df:QuestionRouteStartFormToNet
   v-wf:transformRule v-df:rul_QuestionTransform3 ;
   v-wf:transformRule v-df:rul_QuestionTransform4 ;
   v-wf:transformRule v-df:rul_QuestionTransform5 ;  
+  v-wf:transformRule v-df:rul_QuestionTransform6_0 ;  
+  v-wf:transformRule v-df:rul_QuestionTransform6_1 ;  
+  v-wf:transformRule v-df:rul_QuestionTransform6_2 ;  
+  v-wf:transformRule v-df:rul_QuestionTransform7 ;  
   rdfs:isDefinedBy v-df: ;
 .
 v-df:rul_QuestionTransform0
@@ -429,14 +433,14 @@ v-df:rul_QuestionTransform3
 	v-wf:segregateElement "contentName('rdfs:comment')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'taskComment')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_comment')"; 	
 .
 v-df:rul_QuestionTransform4
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-s:dateTo')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'taskDateTo')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_date_to')"; 	
 .
 v-df:rul_QuestionTransform5
 	rdf:type v-wf:Rule ;
@@ -445,6 +449,35 @@ v-df:rul_QuestionTransform5
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'initiator')"; 	
 .
+v-df:rul_QuestionTransform6_0
+	rdf:type v-wf:Rule ;
+	v-wf:segregateElement "contentName('@')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'possible_decision')"; 	
+.
+v-df:rul_QuestionTransform6_1
+	rdf:type v-wf:Rule ;
+	v-wf:segregateElement "contentName('@')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'possible_decision_for_add_reaction')"; 	
+.
+v-df:rul_QuestionTransform6_2
+	rdf:type v-wf:Rule ;
+	v-wf:segregateElement "contentName('@')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'decision_route_to_add_reaction')"; 	
+.
+v-df:rul_QuestionTransform7
+	rdf:type v-wf:Rule ;
+	v-wf:segregateElement "contentName('@')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableValue', 'задать вопрос')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_action')"; 	
+.
+
 
 
 # -- ТРАНСФОРМАЦИЯ ИЗ ФОРМЫ ЗАДАЧИ ИСПОЛНИТЬ ПОРУЧЕНИЕ В СЕТЬ --
@@ -452,11 +485,15 @@ v-df:InstructionRouteStartFormToNet
   rdfs:label "Трансформация из СтФ исполнить поручение в стандартную сеть процесса"^^xsd:string;
   rdf:type v-wf:Transform ;
   v-wf:transformRule v-df:rul_InstructionTransform0 ;  
-  v-wf:transformRule v-df:rul_InstructionTransform1 ;  
-  v-wf:transformRule v-df:rul_InstructionTransform2 ;  
-  v-wf:transformRule v-df:rul_InstructionTransform3 ;  
-  v-wf:transformRule v-df:rul_InstructionTransform4 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform1 ;
+  v-wf:transformRule v-df:rul_InstructionTransform2 ;
+  v-wf:transformRule v-df:rul_InstructionTransform3 ;
+  v-wf:transformRule v-df:rul_InstructionTransform4 ;
   v-wf:transformRule v-df:rul_InstructionTransform5 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform6_0 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform6_1 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform6_2 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform7 ;  
   rdfs:isDefinedBy v-df: ;
 .
 v-df:rul_InstructionTransform0
@@ -485,14 +522,14 @@ v-df:rul_InstructionTransform3
 	v-wf:segregateElement "contentName('rdfs:comment')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'taskComment')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_comment')"; 	
 .
 v-df:rul_InstructionTransform4
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-s:dateTo')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'taskDateTo')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_date_to')"; 	
 .
 v-df:rul_InstructionTransform5
 	rdf:type v-wf:Rule ;
@@ -501,7 +538,35 @@ v-df:rul_InstructionTransform5
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'initiator')"; 	
 .
-
+v-df:rul_InstructionTransform6_0
+	rdf:type v-wf:Rule ;
+	v-wf:segregateElement "contentName('@')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')"; 	
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionRemake')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'possible_decision')"; 	
+.
+v-df:rul_InstructionTransform6_1
+	rdf:type v-wf:Rule ;
+	v-wf:segregateElement "contentName('@')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'possible_decision_for_add_reaction')"; 	
+.
+v-df:rul_InstructionTransform6_2
+	rdf:type v-wf:Rule ;
+	v-wf:segregateElement "contentName('@')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'decision_route_to_add_reaction')"; 	
+.
+v-df:rul_InstructionTransform7
+	rdf:type v-wf:Rule ;
+	v-wf:segregateElement "contentName('@')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableValue', 'выдать поручение')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_action')"; 	
+.
 
 # -- ФОРМА ОТВЕТА ЗАДАЧИ ИДЕЯ В РЕАЛИЗАЦИЮ --
 
