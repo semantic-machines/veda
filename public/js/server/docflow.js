@@ -479,6 +479,7 @@ function prepare_work_order(ticket, document)
                             {
                                 var task_result = new WorkItemResult(work_item_result);
                                 var task = new Context(work_item, ticket);
+                                var process = new Context(_process, ticket);
                                 var res1 = eval(expression);
 
                                 if (trace_journal_uri)

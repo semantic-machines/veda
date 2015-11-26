@@ -27,21 +27,22 @@
 # -----------------------------------------------
 
 s-wf:var_initiator
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "initiator" ;
-        rdfs:label "Инициатор"@ru ;
+    rdfs:label "Инициатор"@ru ;
+	v-wf:varDefineScope v-wf:Net ;        
 	rdfs:isDefinedBy s-wf: ;
 .
 s-wf:var_task_comment
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "taskComment" ;
-        rdfs:label "комментарий к задаче"@ru ;
+    rdfs:label "комментарий к задаче"@ru ;
 	rdfs:isDefinedBy s-wf: ;
 .
 s-wf:var_dateTo
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "taskDateTo" ;
-        rdfs:label "контрольный срок задачи"@ru ;
+    rdfs:label "контрольный срок задачи"@ru ;
 	rdfs:isDefinedBy s-wf: ;
 .
 s-wf:var_actor_task_add_to_date_to
@@ -219,6 +220,13 @@ s-wf:map_initiator_from_actor
         rdf:type v-wf:Mapping ;
         v-wf:mapToVariable s-wf:var_initiator ;
         v-wf:mappingExpression  "process.getLocalVariable ('actor')" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_initiator_4_PLV_initiator
+        rdf:type v-wf:Mapping ;
+        v-wf:mapToVariable s-wf:var_initiator ;
+        v-wf:mappingExpression  "process.getLocalVariable ('initiator')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -1012,6 +1020,7 @@ s-wf:src_uri
 	v-wf:varDefineName "src_uri" ;
         rdfs:label "документ-источник"@ru ;
 .
+
 s-wf:map_docID_to_src
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:src_uri ;	
@@ -1087,19 +1096,6 @@ s-wf:map_actor_task_date_to_4_actor_task
 	v-wf:mappingExpression """	
 	get_properties_chain (process.getInputVariable('actor_task'), 
 							[{$go:'cmn-s:hasAction'}, {$get:'v-s:dateTo', $eq:{'v-s:responsible':process.getExecutor ()}}] )	
-	""";
-	rdfs:label "описание задачи из формы решения пользователя [actor_task]"@ru ;
-.
-
-s-wf:map_actor_task_date_to_4_actor_task
-	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_actor_task_date_to ;
-	v-wf:mappingExpression """
-	
-	get_properties_chain (process.getInputVariable('actor_task'), 
-							[{$go:'cmn-s:hasAction'}, {$get:'v-s:date_to', $eq:{'v-s:responsible':process.getExecutor ()}}] 
-						  )
-	
 	""";
 	rdfs:label "описание задачи из формы решения пользователя [actor_task]"@ru ;
 .
@@ -1364,19 +1360,19 @@ s-wf:nc_t3
     rdfs:label "установить: actor = [исполнитель текущего процесса], actor_task_date_to, actor_task_action, actor_task_comment"^^xsd:string;
     v-wf:belongsTo s-wf:net_coordination;
     v-wf:completedMapping s-wf:map_set_actor_from_executor_or_PI_actor, s-wf:map_PI_actor_task_date_to_4_actor_task_date_to, s-wf:map_PI_actor_task_action_4_actor_task_action;
-    v-wf:completedMapping s-wf:map_PI_actor_task_comment_4_actor_task_comment;
+    v-wf:completedMapping s-wf:map_PI_actor_task_comment_4_actor_task_comment, s-wf:map_initiator;
     v-wf:locationX "248"^^xsd:integer.
 
 d:aec10d9da-789d-fd65-a094-bd4ed7b14822 a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-17T11:54:51.991Z"^^xsd:dateTime;
-    v-wf:predicate "task.getInputVariable ('actor_task') != undefined"^^xsd:string;   
+    v-wf:predicate "process.getInputVariable ('actor_task') != undefined"^^xsd:string;   
     v-wf:flowsInto d:a16bb1fd3-64eb-a7bb-501d-889b2aa4500d.
     
 s-wf:nc_f_t3_t1 a v-wf:Flow;
     rdfs:isDefinedBy s-wf: ;
     v-wf:belongsTo s-wf:net_coordination;
-    v-wf:predicate "task.getInputVariable ('actor_task') == undefined"^^xsd:string;  
+    v-wf:predicate "process.getInputVariable ('actor_task') == undefined"^^xsd:string;  
     v-wf:flowsInto s-wf:c1;
     .    
     
@@ -1409,7 +1405,7 @@ s-wf:nc_t2 a v-wf:Task;
     v-wf:hasFlow s-wf:nc_f_t2_t1, s-wf:nc_f_t2_oc, d:a65787936-f51e-a83c-f537-95eaaa02c21a;
     rdfs:label "согласование"^^xsd:string;
     v-wf:expectedResultType s-wf:UserTaskForm;
-    v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_t2_sm2, s-wf:map_t2_sm3;
+    v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_t2_sm2, s-wf:map_t2_sm3;
     v-wf:startingMapping s-wf:map_possible_decision, s-wf:map_decision_route_to_add_reaction;
     v-wf:executor s-wf:def_exec_actor;
     v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data;
