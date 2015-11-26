@@ -483,7 +483,7 @@ function prepare_work_order(ticket, document)
                                 var res1 = eval(expression);
 
                                 if (trace_journal_uri)
-                                    traceToJournal(ticket, trace_journal_uri, "in flow expression", toJson(expression) + ", res =", toJson(res1));
+                                    traceToJournal(ticket, trace_journal_uri, "in flow expression", toJson(expression) + ", res =" + toJson(res1));
 
                                 if (res1 === true)
                                 {

@@ -1504,6 +1504,7 @@ d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e a v-wf:Flow;
 d:a8b89a22d-23b9-1c1c-c5dc-3443fd3972de a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-17T11:54:51.993Z"^^xsd:dateTime;
+    v-wf:predicate  "true";
     v-wf:flowsInto s-wf:c1.
 
 d:a8a52f5c1-84fb-0976-794a-5c66b93258e7 v-wf:locationY "326"^^xsd:integer;
