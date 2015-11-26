@@ -1342,6 +1342,13 @@ s-wf:map_set_result_decision_from_local
 	rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_now_plus_30_4_actor_task_date_to
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_actor_task_date_to ;	
+	v-wf:mappingExpression	"newDate (new Date (), 30)";
+	rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:nc_ic v-wf:hasFlow s-wf:nc_f_ic_t1;
     v-wf:locationY "511"^^xsd:integer;
     a v-wf:InputCondition;
