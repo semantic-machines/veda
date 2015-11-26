@@ -1129,6 +1129,10 @@
 			(this.hasClass("tree") || this.hasClass("full")) 
 			//&& (root && (inEdge || outEdge)) 
 		) {
+			/*individual.treeConfig = {
+				inEdge: inEdge,
+				outEdge: outEdge
+			};*/
 			var treeTmpl = (new veda.IndividualModel("v-ui:TreeTemplate"))["v-ui:template"][0];
 			var modal = $("#search-modal-template").html();
 			tree.click(function () {

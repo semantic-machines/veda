@@ -1338,16 +1338,72 @@ v-ui:PermissionStatementTemplate
 	</script>
   """ ;
 .
+
+# BEGIN Tree templates
+
 v-ui:TreeTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для древовоидных структур"@ru ;
   rdfs:label "Template for tree-like structures"@en ;
   v-ui:template """
-<div>
-	<a href="#/@" about="@" property="rdfs:label"></a>
+<div class="row">
+	<div class="col-md-4" style="border-right:1px dotted #ccc;">
+		<ul class="root" style="list-style:none; margin-left:-40px"></ul>
+	</div>
+	<div class="col-md-8" id="tree-item-container" style="border-left:1px dotted #ccc; margin-left:-1px">
+	</div>
 </div>
 <script>
-	console.log("tree template", individual);
+	var root = $(".root", template);
+	var tmpl = new veda.IndividualModel("v-ui:TreeItemTemplate");
+	individual.present(root, tmpl);
 </script>
   """ ;
 .
+v-ui:TreeItemTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для элемента древовоидных структур"@ru ;
+  rdfs:label "Template for item in tree-like structures"@en ;
+  v-ui:template """
+<li>
+	<a class="expand glyphicon glyphicon-chevron-right"></a>
+	<span class="prop"></span>
+	<a class="lnk" href="#" about="@" property="rdfs:label"></a>
+	<br>
+	<ul class="children hide" style="list-style:none"></ul> 
+</li>
+<script>
+	var expand = $("a.expand", template),
+		children = $(".children", template),
+		link = $("a.lnk", template),
+		cnt = $("#tree-item-container"),
+		tmpl = (new veda.IndividualModel("v-ui:TreeItemTemplate"))["v-ui:template"][0].toString();
+	link.click(function (e) {
+		cnt.empty();
+		e.preventDefault();
+		individual.present(cnt);
+	});
+	expand.click(function () {
+		expand.toggleClass("glyphicon-chevron-right glyphicon-chevron-down");
+		children.toggleClass("show hide");
+		if (!children.children().length) {
+			for (property_uri in individual.properties) {
+				if ( individual.hasValue(property_uri) 
+				     && individual[property_uri][0] instanceof veda.IndividualModel 
+				     && !(individual[property_uri][0].id in veda.ontology) 
+				) {
+					var property = individual.properties[property_uri];
+					individual[property_uri].map(function (value) {
+						var $tmpl = $(tmpl);
+						$(".prop", $tmpl).attr("about", property_uri).attr("property", "rdfs:label");
+						value.present(children, $tmpl);
+					});
+				}
+			}
+		}
+	});
+</script>
+  """ ;
+.
+
+# END Tree templates
