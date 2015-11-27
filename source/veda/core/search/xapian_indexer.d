@@ -419,6 +419,11 @@ private class IndexerContext
                         }
                     }
 
+					if (resources.length > 0)
+					{
+                    	index_boolean(predicate ~ ".isExists", Resource (true));
+					}
+
                     foreach (oo; resources)
                     {
                         if (oo.literal !is null)
