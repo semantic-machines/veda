@@ -1128,12 +1128,12 @@
 		// Tree feature
 		if ( 
 			(this.hasClass("tree") || this.hasClass("full")) 
-			//&& (root && (inEdge || outEdge)) 
+			&& (root && (inEdge || outEdge)) 
 		) {
-			/*individual.treeConfig = {
+			root.treeConfig = {
 				inEdge: inEdge,
 				outEdge: outEdge
-			};*/
+			};
 			var treeTmpl = (new veda.IndividualModel("v-ui:TreeTemplate"))["v-ui:template"][0];
 			var modal = $("#search-modal-template").html();
 			tree.click(function () {
@@ -1144,7 +1144,7 @@
 				});
 				$modal.modal();	
 				$("body").append($modal);
-				individual.present(cntr, treeTmpl);
+				root.present(cntr, treeTmpl);
 			});
 		} else {
 			tree.remove();
