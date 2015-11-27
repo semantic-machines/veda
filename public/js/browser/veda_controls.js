@@ -56,11 +56,12 @@
 
 		if (isSingle) {
 			var prev;
-			input.on("keyup", function () {
-				var value = opts.parser( this.value, this );
-				if (this.value !== prev) {
-					change(value);
-					prev = this.value;
+			input.keyup( function (e) {
+				if (e.which !== 188 && e.which !== 190 && e.which !== 110 ) {
+					if (this.value !== prev) {
+						prev = this.value;
+						input.change();
+					}
 				}
 			});
 		}
