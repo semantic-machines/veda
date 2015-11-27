@@ -1345,7 +1345,7 @@ s-wf:map_set_result_decision_from_local
 s-wf:map_now_plus_30_4_actor_task_date_to
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_actor_task_date_to ;	
-	v-wf:mappingExpression	"newDate (new Date (), 30)";
+	v-wf:mappingExpression	"newDate (addDay (new Date (), 30))";
 	rdfs:isDefinedBy s-wf: ;
 .
 
