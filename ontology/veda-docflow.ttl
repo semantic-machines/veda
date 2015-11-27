@@ -586,6 +586,8 @@ v-df:PsHasAction
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Action."@ru ;
   rdfs:label "Project phases shedule property specification for Project class"@en ;
   rdfs:label "Спецификация ссылки на мероприятие для класса Согласовано в реализацию"@ru ;
+  v-ui:placeholder "добавьте мероприятие"@ru ;
+  v-ui:placeholder "add action"@en ;
 .
 
 v-df:DecisionTemplate2

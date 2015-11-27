@@ -717,29 +717,15 @@ s-wf:UserTaskFormTemplate
 						<div about="@" rel="v-wf:takenDecision" embedded="true"></div>
 					</div>
 				</div>
-			</div>
-			<div class="col-md-4 col-sm-4 col-xs-6" style="padding-left:15px; border-left:1px dotted #ccc;">
+				<hr />
 				<div class="row">
-					<div class="col-md-6">
-						<!-- strong about="v-wf:onDocument" property="rdfs:label" class="text-muted"></strong -->
-						<div about="@" rel="v-wf:onDocument" embedded="false">
-							<div>
-								<strong about="mnd-s-asppd:ideaName" property="rdfs:label" class="text-muted"></strong>
-								<div property="mnd-s-asppd:ideaName" class="view -edit -search"></div>
-								<br>			
-								<strong about="mnd-s-asppd:ideaDescription" property="rdfs:label" class="text-muted"></strong>
-								<div property="mnd-s-asppd:ideaDescription" class="view -edit -search"></div>
-								<br>
-								<strong about="mnd-s-asppd:ideaComment" property="rdfs:label" class="text-muted"></strong>
-								<div property="mnd-s-asppd:ideaComment" class="view -edit -search"></div>
-								<br>
-								<strong about="mnd-s-asppd:hasContractKindForIdea" property="rdfs:label" class="text-muted"></strong>
-								<div rel="mnd-s-asppd:hasContractKindForIdea" template="v-ui:LabelTemplate" class="view edit search"></div>
-							</div>
-						</div>				
+					<div class="col-md-12">
+						<strong about="v-wf:onDocument" property="rdfs:label" class="text-muted"></strong>					
+						<div rel="v-wf:onDocument" template="v-ui:LabelTemplate" class="view -edit -search">
 					</div>
 				</div>
-			</div>				
+			</div>
+
 		</div>
 	</div>	
 	
@@ -776,7 +762,7 @@ s-wf:UserTaskFormTemplate
 </script>
   """ ;
   .
-
+  
 v-wf:DecisionGoSign
         rdfs:subClassOf v-wf:Decision ;
         rdf:type owl:Class ;
