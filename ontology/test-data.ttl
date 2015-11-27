@@ -828,7 +828,8 @@ td:PropertySpecification5
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:root td:MondiSyktyvkar ;
   v-ui:inEdge v-s:parentUnit ;
-  v-ui:outEdge v-s:childUnit ;
+  v-ui:inEdge v-s:occupation ;
+#  v-ui:outEdge v-s:childUnit ;
 .
 td:PropertySpecification6
   rdf:type v-ui:ObjectPropertySpecification ;

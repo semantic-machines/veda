@@ -1387,19 +1387,33 @@ v-ui:TreeItemTemplate
 		expand.toggleClass("glyphicon-chevron-right glyphicon-chevron-down");
 		children.toggleClass("show hide");
 		if (!children.children().length) {
-			for (property_uri in individual.properties) {
-				if ( individual.hasValue(property_uri) 
-				     && individual[property_uri][0] instanceof veda.IndividualModel 
-				     && !(individual[property_uri][0].id in veda.ontology) 
-				) {
-					var property = individual.properties[property_uri];
-					individual[property_uri].map(function (value) {
+			if (individual.treeConfig && individual.treeConfig.outEdge) {
+				individual.treeConfig.outEdge.map(function (property) {
+					individual[property.id].map(function (value) {
 						var $tmpl = $(tmpl);
-						$(".prop", $tmpl).attr("about", property_uri).attr("property", "rdfs:label");
+						value.treeConfig = individual.treeConfig;
 						value.present(children, $tmpl);
 					});
-				}
+				});
 			}
+			if (individual.treeConfig && individual.treeConfig.inEdge) {
+				var query = individual.treeConfig.inEdge.map(function (property) {
+					return "'" + property.id + "'=='" + individual.id + "'";
+				}).join(" || ");
+				var search = new veda.IndividualModel();
+				search["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
+				search["v-fs:fulltextQuery"] = [ query ];
+				search.search();
+				search.result.map( function (uri) {
+					var $tmpl = $(tmpl);
+					var item = new veda.IndividualModel(uri);
+					item.treeConfig = individual.treeConfig;
+					item.present(children, $tmpl);
+				});
+			}
+		}
+		if (!children.children().length) {
+			expand.remove();
 		}
 	});
 </script>
