@@ -948,6 +948,7 @@ jsWorkflow.ready = jsPlumb.ready;
             				individual['v-wf:locationY'] = [individual['v-wf:locationY'][0]+50];
             				individual['v-wf:hasFlow'] = [];
             				instance.createState(individual);
+                           	net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]);
             			}
             		}
             	}
