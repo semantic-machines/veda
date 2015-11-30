@@ -889,13 +889,14 @@ jsWorkflow.ready = jsPlumb.ready;
             
             $('#workflow-export-ttl').on('click', function() {
            		var list = new veda.IndividualListModel(net, net['v-wf:consistsOf']);
+           		/* temporary commented
 	        	net['v-wf:consistsOf'].forEach(function(element) {
 	        		element['rdf:type'].forEach(function (rdfType) {
 		        		if (rdfType.id === 'v-wf:Task') {
 		        			collectEntities(element, list);
 		        		}
 	        		});
-	        	});
+	        	}); */
     			collectEntities(net, list);
            		veda.Util.exportTTL(list);
             });
