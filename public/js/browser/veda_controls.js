@@ -54,7 +54,7 @@
 			change(value);
 		});
 
-		if (isSingle) {
+/*		if (isSingle) {
 			var prev;
 			input.keyup( function (e) {
 				if (e.which !== 188 && e.which !== 190 && e.which !== 110 ) {
@@ -65,7 +65,7 @@
 				}
 			});
 		}
-		
+*/		
 		this.on("veda_focus", function (e) {
 			input.trigger("focus");
 			e.stopPropagation();
