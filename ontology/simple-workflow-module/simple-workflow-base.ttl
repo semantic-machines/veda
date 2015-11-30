@@ -704,52 +704,36 @@ s-wf:UserTaskFormTemplate
 		</div>
 	</div>
 	<div class="panel-body">
+		<h3 about="@" property="rdfs:label"></h3>
 		<div class="row">
-			<div class="col-md-12">
-				<h3 about="@" property="rdfs:label"></h3>
+			<div class="col-md-3">
+				<strong about="v-wf:from" property="rdfs:label" class="text-muted"></strong>
+				<div about="@" rel="v-wf:from" template="v-ui:LabelTemplate"></div>
+			</div>
+			<div class="col-md-3">
+			   <strong about="v-wf:to" property="rdfs:label" class="text-muted"></strong>
+			   <div about="@" rel="v-wf:to" template="v-ui:LabelTemplate"></div>
+			</div>
+			<div class="col-md-3">
+				<strong about="v-s:description" property="rdfs:label" class="text-muted"></strong>
+				<div about="@" property="v-s:description"></div>
+			</div>            
+			<div class="col-md-3">
+				<strong about="v-wf:dateGiven" property="rdfs:label" class="text-muted"></strong>
+				<div about="@" property="v-wf:dateGiven"></div>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-md-8 col-sm-8 col-xs-6">		
-				<div class="row">
-					<div class="col-md-3">
-						<strong about="v-wf:from" property="rdfs:label" class="text-muted"></strong>
-						<div about="@" rel="v-wf:from" template="v-ui:LabelTemplate"></div>
-					</div>
-					<div class="col-md-3">
-					   <strong about="v-wf:to" property="rdfs:label" class="text-muted"></strong>
-					   <div about="@" rel="v-wf:to" template="v-ui:LabelTemplate"></div>
-					</div>
-					<div class="col-md-3">
-						<strong about="v-s:description" property="rdfs:label" class="text-muted"></strong>
-						<div about="@" property="v-s:description"></div>
-					</div>            
-					<div class="col-md-3">
-						<strong about="v-wf:dateGiven" property="rdfs:label" class="text-muted"></strong>
-						<div about="@" property="v-wf:dateGiven"></div>
-					</div>
-				</div>
-				<hr />
-				<div class="row">
-					<div class="col-md-8">
-						<strong about="v-wf:takenDecision" property="rdfs:label" class="text-muted"></strong>
-						<div about="@" rel="v-wf:takenDecision" class="view -edit -search">
-							<span about="@" rel="rdf:type" template="v-ui:LabelTemplate"></span>
-						</div>
-						<select id="decision-control" class="-view edit search form-control"></select>
-						<div about="@" rel="v-wf:takenDecision" embedded="true"></div>
-					</div>
-				</div>
-				<hr />
-				<div class="row">
-					<div class="col-md-12">
-						<strong about="v-wf:onDocument" property="rdfs:label" class="text-muted"></strong>					
-						<div rel="v-wf:onDocument" template="v-ui:LabelTemplate" class="view -edit -search">
-					</div>
-				</div>
-			</div>
-
+		<hr />
+		<strong about="v-wf:takenDecision" property="rdfs:label" class="text-muted"></strong>
+		<div class="radio decision">
+			<label>
+				<input type="radio" name="decisionRadios">
+			</label>
 		</div>
+		<div about="@" rel="v-wf:takenDecision" embedded="true"></div>
+		<hr />
+		<strong about="v-wf:onDocument" property="rdfs:label" class="text-muted"></strong>
+		<div about="@" rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate" class="view edit -search"></div>
 	</div>	
 	
 	<div class="panel-footer">
@@ -759,19 +743,34 @@ s-wf:UserTaskFormTemplate
 	</div>
 </div>
 <script type="text/javascript">
-	var control = $("select#decision-control");
+	var radioTmpl = $(".radio.decision", template);
 	if (individual.hasValue("v-wf:possibleDecisionClass")) {
 		individual["v-wf:possibleDecisionClass"].map( function (value, index) {
-			control.append( $("<option>", {value: index, text: value["rdfs:label"].join(", ")}) );
+			var tmpl = radioTmpl.clone().insertBefore(radioTmpl);
+			var input = $("input", tmpl).val(index);
+			if ( 
+				individual.hasValue("v-wf:takenDecision") 
+				&& individual.isSync() 
+				&& individual["v-wf:takenDecision"][0]["rdf:type"][0].id === individual["v-wf:possibleDecisionClass"][index].id
+			) {
+				input.prop("checked", true);
+			}
+			$("label", tmpl).append(value["rdfs:label"].join(", "));
+			input.change(function () {
+				var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
+				var decision = createDecision(type);
+				individual["v-wf:takenDecision"] = [ decision ];
+			});
 		});
 	}
-	control.on("change", function () {
-		var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
-		var decision = createDecision(type);
-		individual["v-wf:takenDecision"] = [ decision ];
+	radioTmpl.remove();
+	template.on("view edit search", function (e) {
+		e.type === "view" ? $(".radio.decision", template).addClass("disabled").find("input").prop("disabled", true) :
+		e.type === "edit" ? $(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false) : 
+							$(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false);
 	});
 	if (!individual.hasValue("v-wf:takenDecision") || !individual.isSync()) {
-		control.trigger("change");
+		$(".radio.decision input", template).first().prop("checked", true).change();
 		template.trigger("edit");
 	} else {
 		template.trigger("view");
