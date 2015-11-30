@@ -54,18 +54,20 @@
 			change(value);
 		});
 
-/*		if (isSingle) {
+		if (isSingle) {
 			var prev;
 			input.keyup( function (e) {
+				individual.off("individual:propertyModified", singleValueHandler);
 				if (e.which !== 188 && e.which !== 190 && e.which !== 110 ) {
 					if (this.value !== prev) {
 						prev = this.value;
 						input.change();
 					}
 				}
+				individual.on("individual:propertyModified", singleValueHandler);				
 			});
 		}
-*/		
+		
 		this.on("veda_focus", function (e) {
 			input.trigger("focus");
 			e.stopPropagation();
