@@ -826,10 +826,16 @@ td:PropertySpecification5
   v-ui:forProperty v-s:employee ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:root td:MondiSyktyvkar ;
-  v-ui:inEdge v-s:parentUnit ;
-  v-ui:inEdge v-s:occupation ;
-#  v-ui:outEdge v-s:childUnit ;
+  v-ui:treeRoot td:MondiSyktyvkar ;
+  v-ui:treeRoot td:MondiSyktyvkar ;
+  v-ui:treeInProperty v-s:parentUnit ;
+  v-ui:treeInProperty v-s:occupation ;
+  v-ui:treeAllowedClass v-s:Organization ;
+  v-ui:treeAllowedClass v-s:Department ;
+  v-ui:treeAllowedClass v-s:Appointment ;
+  v-ui:treeDisplayedProperty v-s:firstName ;
+  v-ui:treeDisplayedProperty v-s:lastName ;
+  v-ui:treeDisplayedProperty v-s:occupation ;
 .
 td:PropertySpecification6
   rdf:type v-ui:ObjectPropertySpecification ;

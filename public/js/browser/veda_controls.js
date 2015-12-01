@@ -1073,9 +1073,11 @@
 			spec = opts.spec,
 			placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
 			queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : undefined,
-			root = spec && spec.hasValue("v-ui:root") ? spec["v-ui:root"][0] : undefined,
-			inEdge = spec && spec.hasValue("v-ui:inEdge") ? spec["v-ui:inEdge"] : undefined,
-			outEdge = spec && spec.hasValue("v-ui:outEdge") ? spec["v-ui:outEdge"] : undefined,
+			root = spec && spec.hasValue("v-ui:treeRoot") ? spec["v-ui:treeRoot"] : undefined,
+			inProperty = spec && spec.hasValue("v-ui:treeInProperty") ? spec["v-ui:treeInProperty"] : undefined,
+			outProperty = spec && spec.hasValue("v-ui:treeOutProperty") ? spec["v-ui:treeOutProperty"] : undefined,
+			allowedClass = spec && spec.hasValue("v-ui:treeAllowedClass") ? spec["v-ui:treeAllowedClass"] : undefined,
+			displayedProperty = spec && spec.hasValue("v-ui:treeDisplayedProperty") ? spec["v-ui:treeDisplayedProperty"] : undefined,
 			rel_uri = opts.rel_uri,
 			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
 			create = $("#create", control),
@@ -1130,11 +1132,14 @@
 		// Tree feature
 		if ( 
 			(this.hasClass("tree") || this.hasClass("full")) 
-			&& (root && (inEdge || outEdge)) 
+			&& (root && (inProperty || outProperty)) 
 		) {
-			root.treeConfig = {
-				inEdge: inEdge,
-				outEdge: outEdge
+			individual.treeConfig = {
+				root: root,
+				inProperty: inProperty,
+				outProperty: outProperty,
+				allowedClass: allowedClass,
+				displayedProperty: displayedProperty
 			};
 			var treeTmpl = (new veda.IndividualModel("v-ui:TreeTemplate"))["v-ui:template"][0];
 			var modal = $("#search-modal-template").html();
@@ -1146,7 +1151,7 @@
 				});
 				$modal.modal();	
 				$("body").append($modal);
-				root.present(cntr, treeTmpl);
+				individual.present(cntr, treeTmpl);
 			});
 		} else {
 			tree.remove();

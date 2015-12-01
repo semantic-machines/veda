@@ -336,27 +336,44 @@ v-ui:queryPrefix
   rdfs:label "query prefix"@en ;
   rdfs:range xsd:string ;
 .
-v-ui:root
+v-ui:treeRoot
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
   rdfs:label "корень"@ru ;
   rdfs:label "root"@en ;
   rdfs:range rdfs:Resource ;
 .
-v-ui:inEdge
+v-ui:treeInProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "входящее ребро"@ru ;
+  rdfs:label "входящая ветвь"@ru ;
   rdfs:label "in edge"@en ;
   rdfs:range owl:ObjectProperty ;
 .
-v-ui:outEdge
+v-ui:treeOutProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "исходящее ребро"@ru ;
+  rdfs:label "исходящая ветвь"@ru ;
   rdfs:label "out edge"@en ;
   rdfs:range owl:ObjectProperty ;
 .
+v-ui:treeAllowedClass
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:label "разрешенный класс"@ru ;
+  rdfs:label "allowed class"@en ;
+  rdfs:range owl:Class ;
+  rdfs:range rdfs:Class ;
+.
+v-ui:treeDisplayedProperty
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:label "отображаемое свойство"@ru ;
+  rdfs:label "displayed property"@en ;
+  rdfs:range owl:ObjectProperty ;
+  rdfs:range owl:DatatypeProperty ;
+.
+
 v-ui:Language
   rdf:type owl:Class ;
   rdfs:label "Language"@en ;
@@ -609,7 +626,7 @@ v-ui:ClassNameLabelTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <a href="#/@"><span about="@" rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span id="label" property="rdfs:label"></span></a>
+  <span><a href="#/@"><span about="@" rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span id="label" property="rdfs:label"></span></a></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
   	  $("#label", template).text(individual.id);
@@ -1354,9 +1371,12 @@ v-ui:TreeTemplate
 	</div>
 </div>
 <script>
-	var root = $(".root", template);
+	var rootCnt = $(".root", template);
 	var tmpl = new veda.IndividualModel("v-ui:TreeItemTemplate");
-	individual.present(root, tmpl);
+	individual.treeConfig.root.map( function (root) {
+		root.treeConfig = individual.treeConfig;
+		root.present(rootCnt, tmpl);
+	});
 </script>
   """ ;
 .
@@ -1387,17 +1407,19 @@ v-ui:TreeItemTemplate
 		expand.toggleClass("glyphicon-chevron-right glyphicon-chevron-down");
 		children.toggleClass("show hide");
 		if (!children.children().length) {
-			if (individual.treeConfig && individual.treeConfig.outEdge) {
-				individual.treeConfig.outEdge.map(function (property) {
-					individual[property.id].map(function (value) {
-						var $tmpl = $(tmpl);
-						value.treeConfig = individual.treeConfig;
-						value.present(children, $tmpl);
-					});
+			if (individual.treeConfig && individual.treeConfig.outProperty) {
+				individual.treeConfig.outProperty.map(function (property) {
+					if (individual.hasValue(property.id)) {
+						individual[property.id].map(function (value) {
+							var $tmpl = $(tmpl);
+							value.treeConfig = individual.treeConfig;
+							value.present(children, $tmpl);
+						});
+					}
 				});
 			}
-			if (individual.treeConfig && individual.treeConfig.inEdge) {
-				var query = individual.treeConfig.inEdge.map(function (property) {
+			if (individual.treeConfig && individual.treeConfig.inProperty) {
+				var query = individual.treeConfig.inProperty.map(function (property) {
 					return "'" + property.id + "'=='" + individual.id + "'";
 				}).join(" || ");
 				var search = new veda.IndividualModel();
