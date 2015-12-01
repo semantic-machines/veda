@@ -301,6 +301,14 @@ test("#007 Individual store and read, test datatype", function() {
 			data : 7.6,
 			type : _Decimal
 		} ],
+		'v-s:test_decimal6' : [ {
+			data : 0.07,
+			type : _Decimal
+		} ],
+		'v-s:test_decimal7' : [ {
+			data : 0.007,
+			type : _Decimal
+		} ],
 		'v-s:created' : [ {
 			data : new Date (),
 			type : _Datetime
