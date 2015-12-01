@@ -116,6 +116,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				
 				//Hide send button
 				$('#send', wrapper).remove();
+				
+				//Hide cancel button
+				$('#cancel', wrapper).remove();
 
 			} else if (individual.hasValue('v-s:hasDraft')) {			
 				//TODO Put link to draft version
@@ -720,6 +723,23 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				}
 			});
 			
+			if (individual.hasValue('v-s:isDraftOf')) 
+			{
+				$delete.unbind("click");
+				$delete.on("click", function (e) {
+					individual['v-s:deleted'] = [new Boolean(true)];
+					individual.save();
+					
+					var actual = individual['v-s:isDraftOf'][0];
+					actual['v-s:hasDraft'] = [];
+					actual.save();
+					
+					container.empty();
+					actual.present(container, undefined, "view");
+					changeHash(actual.id);
+				});
+			}
+			
 			if (individual.hasValue('v-s:isDraftOf') || individual.is('v-s:Versioned')) 
 			{
 				$save.unbind("click");
@@ -771,20 +791,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					changeHash(actualId);
 				});			
 			}
-			$delete.unbind("click");
-			$delete.on("click", function (e) {
-				if (individual.hasValue('v-s:isDraftOf')) {
-					individual.delete();
-					var original = new veda.IndividualModel(individual['v-s:isDraftOf'][0].id);
-					container.empty();
-					original.present(container, undefined, "view");
-					changeHash(original.id);
-				} else {
-					individual.delete();
-					container.empty();
-					individual.present(container, undefined, "view");
-				}
-			});
 		}
 
 		return template;
