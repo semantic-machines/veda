@@ -4,7 +4,7 @@ import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file;
 import core.vararg, core.stdc.stdarg;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
-import veda.pacahon_driver, veda.type, veda.core.context, veda.core.know_predicates, veda.core.define;
+import veda.pacahon_driver, veda.type, veda.core.context, veda.core.know_predicates, veda.core.define, veda.core.log_msg;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang, veda.core.util.individual8json;
 
 // ////// logger ///////////////////////////////////////////
@@ -13,7 +13,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "API");
+        _log = new logger("veda-core-" ~ process_name, "log", "REST");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -586,6 +586,9 @@ class VedaStorageRest : VedaStorageRest_API
 
     Json get_individual(string _ticket, string uri)
     {
+       	if (trace_msg[ 500 ] == 1)
+        	log.trace("get_individual #start : %s ", uri);
+    	
         ResultCode rc;
         int        recv_worker_id;
 
@@ -606,12 +609,20 @@ class VedaStorageRest : VedaStorageRest_API
             worker.ready    = true;
 
             if (rc != ResultCode.OK)
+            {
+       			if (trace_msg[ 500 ] == 1)
+        			log.trace("get_individual #!ERR : %s ", text (rc));
+        			
                 throw new HTTPStatusException(rc);
+            }    
         }
         else
         {
             res = put_another_get_my(recv_worker_id, res, rc, worker);
         }
+
+		if (trace_msg[ 500 ] == 1)
+			log.trace("get_individual #end : %s, res.length=%d", text (rc), res.length);
 
         if (res.length > 0)
             return res[ 0 ];

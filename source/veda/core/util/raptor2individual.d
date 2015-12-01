@@ -181,13 +181,13 @@ extern (C) void prepare_triple(void *user_data, raptor_statement *triple)
 }
 
 
-public Individual *[ string ] ttl2individuals(string file_name, ref string[string] in_prefixes, out string[string] out_prefixes)
+public Individual *[ string ] ttl2individuals(string file_name, ref string[ string ] in_prefixes, out string[ string ] out_prefixes)
 {
     Individual *[ string ] res;
 
     file_name ~= "\0";
 //    prefixes = context.get_prefix_map();
-	prefixes = in_prefixes;
+    prefixes = in_prefixes;
     raptor_parser *rdf_parser = null;
     char          *uri_string;
     raptor_uri    *uri;
