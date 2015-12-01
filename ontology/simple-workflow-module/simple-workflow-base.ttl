@@ -694,14 +694,7 @@ s-wf:UserTaskFormTemplate
   v-ui:template """
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<div class="row">
-			<div class="col-md-6">
-				<span about="s-wf:UserTaskForm" property="rdfs:label"></span>
-			</div>  
-			<div class="col-md-6 text-right text-muted">
-				<a href="#/@"><span property="@">ID</span></a>
-			</div>  
-		</div>
+		<span about="s-wf:UserTaskForm" property="rdfs:label"></span>
 	</div>
 	<div class="panel-body">
 		<h3 about="@" property="rdfs:label"></h3>
