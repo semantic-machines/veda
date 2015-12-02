@@ -990,15 +990,16 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:completedMapping" type="link" class="VCcompletedMapping fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedMapping">
 	  			<div deleteButton="hide" class="VCcompletedMapping">
-	  				#<a href="#/@">
-			  			<span about="@" rel="v-wf:mapToVariable">
-							<span>
-								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-							</span>
-						</span> =
-						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					</a>
+	  				<p>
+						#<a href="#/@">
+							<span about="@" rel="v-wf:mapToVariable">
+								<span>
+									<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+								</span>
+							</span> =
+							<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						</a>
+					</p>
 				<div>
 			</div>
 		</td>
@@ -1011,15 +1012,16 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:startingExecutorJournalMap" type="link" class="VCstartingExecutorJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingExecutorJournalMap">
 	  			<div deleteButton="hide" class="VCstartingExecutorJournalMap">
-	  				#<a href="#/@">
-			  			<span about="@" rel="v-wf:mapToVariable">
-							<span>
-								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-							</span>
-						</span> =
-						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					</a>
+	  				<p>
+						#<a href="#/@">
+							<span about="@" rel="v-wf:mapToVariable">
+								<span>
+									<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+								</span>
+							</span> =
+							<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						</a>
+					</p>
 				<div>
 			</div>
 		</td>
@@ -1032,15 +1034,16 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:completedExecutorJournalMap" type="link" class="VCcompletedExecutorJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedExecutorJournalMap">
 	  			<div deleteButton="hide" class="VCcompletedExecutorJournalMap">
-	  				#<a href="#/@">
-			  			<span about="@" rel="v-wf:mapToVariable">
-							<span>
-								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-							</span>
-						</span> =
-						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					</a>
+	  				<p>
+						#<a href="#/@">
+							<span about="@" rel="v-wf:mapToVariable">
+								<span>
+									<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+								</span>
+							</span> =
+							<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						</a>
+					</p>
 				<div>
 			</div>
 		</td>
@@ -1053,15 +1056,16 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:startingJournalMap" type="link" class="VCstartingJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingJournalMap">
 	  			<div deleteButton="hide" class="VCstartingJournalMap">
-		  			#<a href="#/@">
-			  			<span about="@" rel="v-wf:mapToVariable">
-							<span>
-								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-							</span>
-						</span> =
-						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					</a>
+		  			<p>
+						#<a href="#/@">
+							<span about="@" rel="v-wf:mapToVariable">
+								<span>
+									<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+								</span>
+							</span> =
+							<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						</a>
+					</p>
 				<div>
 			</div>
 		</td>
@@ -1074,15 +1078,16 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:completedJournalMap" type="link" class="VCcompletedJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedJournalMap">
 	  			<div deleteButton="hide" class="VCcompletedJournalMap">
-	  				#<a href="#/@">
-			  			<span about="@" rel="v-wf:mapToVariable">
-							<span>
-								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-							</span>
-						</span> =
-						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					</a>
+	  				<p>
+						#<a href="#/@">
+							<span about="@" rel="v-wf:mapToVariable">
+								<span>
+									<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+								</span>
+							</span> =
+							<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						</a>
+					</p>
 				<div>
 			</div>
 		</td>
@@ -1095,15 +1100,16 @@ v-wf:TaskTemplateAsProperties
   			<veda-control rel="v-wf:wosResultsMapping" type="link" class="VCwosResultsMapping fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:wosResultsMapping">
 	  			<div deleteButton="hide" class="VCwosResultsMapping">
-	  				#<a href="#/@">
-			  			<span about="@" rel="v-wf:mapToVariable">
-							<span>
-								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-							</span>
-						</span> =
-						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					</a>
+	  				<p>
+						#<a href="#/@">
+							<span about="@" rel="v-wf:mapToVariable">
+								<span>
+									<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+								</span>
+							</span> =
+							<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						</a>
+					</p>
 				<div>
 			</div>
 		</td>
