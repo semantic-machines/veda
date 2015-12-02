@@ -181,3 +181,8 @@ v-b:SendInstruction
   rdfs:label "Выдать поручение"@ru ;
   rdfs:label "Send instruction"@en ;
 .
+v-b:atLeastOneFilled
+  rdf:type v-b:Bundle ;
+  rdfs:label "Хотя ты одно из значений должно быть заполнено"@ru ;
+  rdfs:label "At least one value must be filled"@en ;
+.
