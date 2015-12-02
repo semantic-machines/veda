@@ -252,7 +252,7 @@ veda.Module(function Util(veda) { "use strict";
 						var res = s.results[res_id];
 						$("<li/>", {
 			   			   "style" : "cursor:pointer",    
-	                 	   "html" : "<a href='#'>"+new veda.IndividualModel(res_id)['rdfs:label'][0]+"</a>",
+	                 	   "html" : "<a>"+new veda.IndividualModel(res_id)['rdfs:label'][0]+"</a>",
 	                 	   "click": (function (e) {
 	                 		  veda.Util.send(individual, null, res['v-s:hasTransformation'][0].id);
 	                 	   })
