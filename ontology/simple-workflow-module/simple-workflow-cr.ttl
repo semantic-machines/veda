@@ -434,6 +434,21 @@ s-wf:executor_from_coordinator
 	rdfs:label "исполнители из переменной coordinator"@ru ;
 .
 
+s-wf:executor_4m_PLV_coordinator
+	rdf:type v-wf:ExecutorDefinition ;
+	rdfs:isDefinedBy s-wfc: ;
+	v-wf:executorExpression "process.getLocalVariable ('coordinator')" ;
+	rdfs:label "исполнители из local process variable coordinator" ;
+.
+
+s-wf:map_coordinator_4_PLV_coordinator
+    rdf:type v-wf:Mapping ;
+    v-wf:mapToVariable s-wf:var_coordinator ;
+    v-wf:mappingExpression  "process.getInputVariable ('coordinator')" ;
+    rdfs:label "coordinator = process.input.coordinator" ;        
+.
+
+
 s-wf:user_task_form_label
         rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "user_task_form_label" ;
