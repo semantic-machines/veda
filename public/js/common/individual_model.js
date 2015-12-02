@@ -302,7 +302,9 @@ veda.Module(function (veda) { "use strict";
 	 */
 	proto.save = function() {
 		var self = this;
+		self.valid = true;
 		self.trigger("individual:beforeSave");
+		if (!self.valid) return false;
 		// Do not save individual to server if nothing changed
 		//if (self._.sync) return;
 		Object.keys(self._.individual).reduce(function (acc, property_uri) {
