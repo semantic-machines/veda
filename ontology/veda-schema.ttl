@@ -956,6 +956,7 @@ v-s:initiator
 v-s:parentUnit
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
+  rdfs:domain v-s:Appointment ;
   rdfs:label "parent unit"@en ;
   rdfs:label "родительская единица"@ru ;
   rdfs:range v-s:OrganizationUnit ;

@@ -683,14 +683,24 @@ td:AppointmentTemplate1
         <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
         <div class="row">
           <div class="col-md-6">
-            <div rel="v-s:employee" template="v-ui:LabelTemplate"></div>
+            <em about="v-s:employee" property="rdfs:label" class="text-muted"></em>
+            <div rel="v-s:employee" template="v-ui:LabelTemplate" class="view -edit search"></div>
             <veda-control rel="v-s:employee" type="link" class="-view edit search fullsearch fulltext full"></veda-control>
           </div>
           <div class="col-md-6">
-            <div rel="v-s:occupation" template="v-ui:LabelTemplate"></div>
+            <em about="v-s:occupation" property="rdfs:label" class="text-muted"></em>
+            <div rel="v-s:occupation" template="v-ui:LabelTemplate" class="view -edit search"></div>
             <veda-control rel="v-s:occupation" type="link" class="-view edit search fullsearch fulltext"></veda-control>
           </div>
         </div>
+        <br>
+        <div class="row">
+          <div class="col-md-6">
+            <em about="v-s:parentUnit" property="rdfs:label" class="text-muted"></em>
+            <div rel="v-s:parentUnit" template="v-ui:LabelTemplate" class="view -edit search"></div>
+            <veda-control rel="v-s:parentUnit" type="link" class="-view edit search fullsearch fulltext"></veda-control>
+          </div>
+        </div>        
       </div>
       <!--div class="panel-footer">
         <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
@@ -844,6 +854,16 @@ td:PropertySpecification6
   v-ui:forClass v-s:Appointment ;
   v-ui:forProperty v-s:occupation ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+.
+td:PsParentUnitForAppointment
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация родительского подразделения для класса Назначение"@ru ;
+  rdfs:label "ParentUnit property specification for Appointment class"@en ;
+  v-ui:forClass v-s:Appointment ;
+  v-ui:forProperty v-s:parentUnit ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Department')"^^xsd:string ;
+  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
 .
 td:PropertySpecification7
