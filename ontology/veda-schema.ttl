@@ -907,6 +907,13 @@ v-s:occupation
   rdfs:label "занимает должность"@ru ;
   rdfs:range v-s:Position ;
 .
+v-s:occupation
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Appointment ;
+  rdfs:label "occupation"@en ;
+  rdfs:label "занимает должность"@ru ;
+  rdfs:range v-s:Position ;
+.
 v-s:official
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Appointment ;
@@ -1609,4 +1616,18 @@ v-s:hasAction
   rdfs:label "action"@en ;
   rdfs:label "мероприятие"@ru ;
   rdfs:range v-s:Action ;
+.
+
+v-s:AppointmentSaveEvent
+  rdf:type v-s:Event ;
+  v-s:filter v-s:Appointment ;
+  v-s:script """
+  if (document['v-s:occupation'] && document['v-s:occupation'].length>0) {
+  		var occupation = get_individual(ticket, document['v-s:occupation'][0].data);  		
+  		if (occupation['v-s:parentUnit'] && occupation['v-s:parentUnit'].length>0) {
+  			document['v-s:parentUnit'] = occupation['v-s:parentUnit']; 
+  			put_individual (ticket, document, _event_id);
+  		}  
+  }
+"""
 .
