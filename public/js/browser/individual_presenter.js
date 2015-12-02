@@ -39,7 +39,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			if (typeof template === "string") template = $( template );
 			var $scripts = template.filter("script");
 			$scripts.map(function () { scripts.push( $(this).text() ); });
-			//template = template.first();
 			template = template.filter("*:not(script)");
 			rendered.push({
 				template: renderTemplate(individual, container, template, specs, mode),
@@ -102,6 +101,22 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		// Unwrapped templates support
 		var wrapper = $("<div>").append(template);
+		
+		var view = $(".view", wrapper);
+		var edit = $(".edit", wrapper);
+		var search = $(".search", wrapper);
+		var _view = $(".-view", wrapper);
+		var _edit = $(".-edit", wrapper);
+		var _search = $(".-search", wrapper);
+		function showHideHandler (e) {
+			switch (e.type) {
+				case "view": view.show(); _view.hide(); break;
+				case "edit": edit.show(); _edit.hide(); break;
+				case "search": search.show(); _search.hide(); break;
+			}
+			e.stopPropagation();
+		}
+		template.on("view edit search", showHideHandler);
 
 		// Additional buttons change for drafts 
 		if (individual.is('v-s:DraftAllowed')) {
@@ -185,6 +200,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		
 		function showRightsHandler (e) {
 			individual.trigger("showRights");
+			e.stopPropagation();
 		}
 		template.on("showRights", showRightsHandler);
 
@@ -336,7 +352,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			// Re-render all property values at propertyModified event from model
 			function propertyModifiedHandler(doc_property_uri) {
 				if (doc_property_uri === property_uri) {
-					renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls);
+					renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode);
 				}
 			}
 			individual.on("individual:propertyModified", propertyModifiedHandler);
@@ -378,7 +394,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				about.defineProperty(rel_uri);
 			}
 			
-			template.on("edit", function () {
+			template.on("edit", function (e) {
 				if ( !individual.hasValue(rel_uri) && isEmbedded/* && spec && spec["v-ui:minCardinality"][0] >= 1*/ ) {
 					var emptyValue = new veda.IndividualModel();
 					if ( individual.properties[rel_uri].hasValue("rdfs:range") ) {
@@ -386,6 +402,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					}
 					individual[rel_uri] = [emptyValue];
 				}
+				e.stopPropagation();
 			});
 
 			var values = about[rel_uri], rendered = {}, counter = 0;
@@ -405,7 +422,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 								return;
 							}
 							setTimeout (function () {
-								var renderedTmpl = renderRelationValue (about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, mode, isAbout);
+								var renderedTmpl = renderRelationValue (about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode);
 								rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
 							}, 0);
 						});
@@ -556,7 +573,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				individual.off("individual:propertyModified", propertyModifiedHandler);
 			});
 
-			function assignDefaultValue () {
+			function assignDefaultValue (e) {
 				if ( spec && !individual.hasValue(property_uri) ) {
 					var defaultValue;
 					switch (property["rdfs:range"][0].id) {
@@ -579,7 +596,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					}
 					if (defaultValue) individual[property_uri] = [ defaultValue ];
 				}
-				return false;
+				e.stopPropagation();
 			}
 			template.on("edit", assignDefaultValue);
 			
@@ -635,11 +652,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				individual.off("individual:propertyModified", propertyModifiedHandler);
 			});
 
-			function assignDefaultObjectValue () {
+			function assignDefaultObjectValue (e) {
 				if ( spec && spec.hasValue("v-ui:defaultObjectValue") && !individual.hasValue(rel_uri) ) {
 					individual[rel_uri] = [ spec["v-ui:defaultObjectValue"][0] ];
 				}
-				return false;
+				e.stopPropagation();
 			}
 			template.on("edit", assignDefaultObjectValue);
 			
@@ -815,15 +832,23 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		return formatted;
 	}
 
-	function renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls) {
+	function renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode) {
 		propertyContainer.empty();
 		individual[property_uri].map( function (value, i) {
 			var valueHolder = $("<span class='value-holder'/>");
 			propertyContainer.append(valueHolder.text( formatValue(value) ));
-			var wrapper = $("<div id='prop-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
+			var wrapper = $("<div id='prop-actions' class='btn-group btn-group-xs' role='group'></div>");
 			var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
 			var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
 			wrapper.append(btnEdit, btnRemove);
+			
+			template.on("view edit search", function (e) {
+				if (e.type === "view") wrapper.hide();
+				else wrapper.show();
+				e.stopPropagation();
+			});
+			if (mode === "view") { wrapper.hide(); }
+			
 			btnRemove.click(function () {
 				individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
 			});
@@ -851,7 +876,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		});
 	}
 	
-	function renderRelationValue(individual, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, mode, isAbout) {
+	function renderRelationValue(individual, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode) {
 		var valTemplate;
 		if (isEmbedded) {
 			if (relTemplate) {
@@ -881,7 +906,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
 			var btnRemove = $("<button class='btn btn-default button-delete'><span class='glyphicon glyphicon-remove'></span></button>");
 			wrapper.append(btnRemove);
-			
+			template.on("view edit search", function (e) {
+				if (e.type === "view") wrapper.hide();
+				else wrapper.show();
+				e.stopPropagation();
+			});
+			if (mode === "view") { wrapper.hide(); }
+
 			if (valTemplate.prop("tagName") !== "SPAN") {
 				wrapper.addClass("block");
 			}

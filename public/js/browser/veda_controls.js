@@ -1141,7 +1141,7 @@
 				allowedClass: allowedClass,
 				displayedProperty: displayedProperty
 			};
-			var treeTmpl = (new veda.IndividualModel("v-ui:TreeTemplate"))["v-ui:template"][0];
+			var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
 			var modal = $("#search-modal-template").html();
 			tree.click(function () {
 				var $modal = $(modal);
