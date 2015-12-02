@@ -62,7 +62,7 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
         }
         catch (Throwable thw)
         {
-            log.trace("file_reader_thread Ex:", thw.msg);
+            log.trace("file_reader_thread Ex: %s", thw.msg);
         }
 
         if (checktime > 0)
@@ -192,10 +192,6 @@ void processed(Context context, bool is_load)
 
     if (individuals.length > 0 && is_load)
     {
-        //writeln("@@1 ontohashes_2_filename=", ontohashes_2_filename);
-        //writeln("@@2 filename_2_prefix=", filename_2_prefix);
-        //writeln("@@3 modifed_2_file=", modifed_2_file);
-
         // load index onto
         int idx = 0;
         foreach (pos; order_in_load)
@@ -205,7 +201,7 @@ void processed(Context context, bool is_load)
                 if (indv != Individual.init)
                 {
                     string isDefinedBy = indv.getFirstLiteral("rdfs:isDefinedBy");
-//        log.trace("load directory sequence 2...pos=%s", pos);
+
                     bool   is_next = false;
                     if (pos == "*")
                     {
@@ -230,7 +226,7 @@ void processed(Context context, bool is_load)
                         individuals[ uri ] = Individual.init;
 
                         Individual indv_in_storage = context.get_individual(&sticket, uri);
-                        //log.trace("in storage, uri=%s \n%s", indv_in_storage.uri, text(indv_in_storage));
+//                        log.trace("in storage, uri=%s \n%s", indv_in_storage.uri, text(indv_in_storage));
 
                         if (indv_in_storage == Individual.init || indv.compare(indv_in_storage) == false)
                         {
@@ -249,14 +245,17 @@ void processed(Context context, bool is_load)
 
             //    context.reopen_ro_subject_storage_db();
             //    context.reopen_ro_fulltext_indexer_db();
-
-            Tid tid_condition_manager = context.getTid(P_MODULE.condition);
-            if (tid_condition_manager != Tid.init)
+            try
             {
-                core.thread.Thread.sleep(dur!("seconds")(1));
-                send(tid_condition_manager, CMD.RELOAD, thisTid);
-                receive((bool res) {});
+                Tid tid_condition_manager = context.getTid(P_MODULE.condition);
+                if (tid_condition_manager != Tid.init)
+                {
+                    core.thread.Thread.sleep(dur!("seconds")(1));
+                    send(tid_condition_manager, CMD.RELOAD, thisTid);
+                    receive((bool res) {});
+                }
             }
+            catch (Exception ex) {}
         }
     }
 
@@ -272,12 +271,10 @@ import util.individual2html;
 
 private void prepare_list(ref Individual[ string ] individuals, Individual *[] ss_list, Context context, string onto_name)
 {
-    // 2. попутно находит системный аккаунт (veda)
     try
     {
         if (trace_msg[ 30 ] == 1)
             log.trace("ss_list.count=%d", ss_list.length);
-
 
         string prefix;
         string i_uri;
@@ -287,7 +284,6 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
         try
         {
             remove(doc_filename);
-
             append(
                    doc_filename,
                    "<html><body><head><meta charset=\"utf-8\"/><link href=\"css/bootstrap.min.css\" rel=\"stylesheet\"/><style=\"padding: 0px 0px 30px;\"></head>\n");
@@ -336,7 +332,6 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
         //context.reopen_ro_subject_storage_db ();
         if (trace_msg[ 33 ] == 1)
             log.trace("prepare_list end");
-        //writeln ("file_reader::prepare_file end");
     }
     catch (Exception ex)
     {
