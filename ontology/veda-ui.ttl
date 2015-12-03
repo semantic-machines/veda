@@ -1363,87 +1363,93 @@ v-ui:TreeTemplate
   rdfs:label "Шаблон для древовоидных структур"@ru ;
   rdfs:label "Template for tree-like structures"@en ;
   v-ui:template """
-<div class="row">
-	<div class="col-md-4" style="border-right:1px dotted #ccc;">
-		<ul class="root" style="list-style:none; margin-left:-40px"></ul>
-	</div>
-	<div class="col-md-8" id="tree-item-container" style="border-left:1px dotted #ccc; margin-left:-1px">
-		<table id="table" class="table table-condensed table-bordered table-striped">
-			<thead id="thead"></thead>
-			<tbody id="tbody"></tbody>
-		</table>
-	</div>
-</div>
+<table class="table table-condensed table-bordered table-striped">
+	<thead id="thead"></thead>
+	<tbody id="tbody"></tbody>
+</table>
 <script>
-	var rootCnt = $(".root", template);
-	var tmpl = new veda.IndividualModel("v-ui:TreeItemTemplate");
-	individual.treeConfig.root.map( function (root) {
-		root.treeConfig = individual.treeConfig;
-		root.present(rootCnt, tmpl);
-	});
-</script>
-  """ ;
-.
-v-ui:TreeItemTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для элемента древовоидных структур"@ru ;
-  rdfs:label "Template for item in tree-like structures"@en ;
-  v-ui:template """
-<li>
-	<a class="expand glyphicon glyphicon-chevron-right"></a>
-	<span class="prop"></span>
-	<a class="lnk" href="#" about="@" property="rdfs:label"></a>
-	<br>
-	<ul class="children hide" style="list-style:none"></ul> 
-</li>
-<script>
-	var expand = $("a.expand", template),
-		children = $(".children", template),
-		link = $("a.lnk", template),
-		cnt = $("#tree-item-container"),
-		tmpl = new veda.IndividualModel("v-ui:TreeItemTemplate"),
-		thead = $("#thead"),
-		tbody = $("#tbody"),
-		headTmpl, rowTmpl,
+	var tbody = $("#tbody", template),
+		thead = $("#thead", template),
+		headTmpl = "<th width='1px'><input type='checkbox' id='select-col' disabled /></th>";
+		rowTmpl = "<td><input type='checkbox' class='select-row' /></td>",
 		literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
 		
-	individual.treeConfig.displayedProperty.map( function (property) {
+	individual.treeConfig.displayedProperty.map( function (property, index) {
 		headTmpl += "<th>" + property["rdfs:label"].join(", ") + "</th>";
-		if ( literals.indexOf(property["rdfs:range"][0].id) >= 0 ) {
-			rowTmpl += "<td about='@' property='" + property.id + "'></td>";
+		var isLiteral = (literals.indexOf(property["rdfs:range"][0].id) >= 0);
+		if ( index === 0 ) {
+			if (isLiteral) {
+				rowTmpl += "<td><div class='spacer'></div><a class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' property='" + property.id + "'></span></td>";
+			} else {
+				rowTmpl += "<td><div class='spacer'></div><a class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' rel='" + property.id + "' template='v-ui:LabelTemplate'></span></td>";
+			}	
+			return;
 		} else {
-			rowTmpl += "<td about='@' rel='" + property.id + "' template='v-ui:LabelTemplate'></td>";
+			if ( isLiteral ) {
+				rowTmpl += "<td about='@' property='" + property.id + "'></td>";
+			} else {
+				rowTmpl += "<td about='@' rel='" + property.id + "' template='v-ui:LabelTemplate'></td>";
+			}
 		}
 	});
 	headTmpl = "<tr>" + headTmpl + "</tr>";
-	rowTmpl = "<tr>" + rowTmpl + "</tr>";
 	thead.html(headTmpl);
+	individual.treeConfig.rowTmpl = rowTmpl;
 	
-	link.click(function (e) {
-		tbody.empty();
-		e.preventDefault();
-		renderRow(individual);
-		getOut().map(renderRow);
-		getIn().map(renderRow);
+	template.on("click", "a.expand", function () {
+		var that = $(this),
+			thatRow = that.parents("tr"),
+			thatLvl = parseInt( thatRow.attr("data-level") ),
+			uri = thatRow.attr("resource"),
+			self = new veda.IndividualModel(uri);
+
+		that.toggleClass("expanded glyphicon-chevron-right glyphicon-chevron-down");
+		
+		if ( that.hasClass("expanded") ) {
+			var nextLvl = parseInt( thatRow.next().attr("data-level") );
+			if ( nextLvl > thatLvl ) {
+				thatRow.nextUntil("[data-level=" + thatLvl + "]").show();
+			} else {
+				getOut(self).map(render);
+				getIn(self).map(render);
+				var newNextLvl = parseInt(thatRow.next().attr("data-level"));
+				if ( isNaN(newNextLvl) || newNextLvl <= thatLvl ) {
+					that.prev().css("width", 16 * (thatLvl + 1) - 2);
+					that.remove();
+				}
+			}
+		} else {
+			thatRow.nextAll().each( function () {
+				var that = $(this),
+					lvl = parseInt( that.attr("data-level") );
+				if ( isNaN(lvl) || lvl <= thatLvl) return false;
+				that.hide();
+			});
+		}
+		
+		function render(item) {
+			var	cont = $("<div>"),
+			tmpl = $("<tr>").attr("data-level", thatLvl + 1).append(rowTmpl);
+			$(".spacer", tmpl).css({"width": 16 * (thatLvl + 1) + "px", "display": "inline-block"});
+			item.present(cont, tmpl);
+			thatRow.after( cont.html() );
+		}
 	});
-	expand.click(function () {
-		expand.toggleClass("glyphicon-chevron-right glyphicon-chevron-down");
-		children.toggleClass("show hide");
-		if (!children.children().length) {
-			getOut().map(renderLeaf);
-			getIn().map(renderLeaf);
-		}
-		if (!children.children().length) {
-			expand.remove();
-		}
+
+	individual.treeConfig.root.map( function (root) {
+		var rootTmpl = $("<tr>").attr("data-level", 0).append(rowTmpl);
+		root.present(tbody, rootTmpl);
+	});
+	template.one("remove", function () {
+		delete individual[treeConfig];
 	});
 	
-	function getOut() {
+	function getOut(self) {
 		var res = [];
 		if (individual.treeConfig && individual.treeConfig.outProperty) {
 			individual.treeConfig.outProperty.map(function (property) {
-				if (individual.hasValue(property.id)) {
-					individual[property.id].map(function (value) {
+				if (self.hasValue(property.id)) {
+					self[property.id].map(function (value) {
 						res.push(value);
 					});
 				}
@@ -1451,11 +1457,12 @@ v-ui:TreeItemTemplate
 		}
 		return res;
 	}
-	function getIn() {
+	
+	function getIn(self) {
 		var res = [];
 		if (individual.treeConfig && individual.treeConfig.inProperty) {
 			var query = individual.treeConfig.inProperty.map(function (property) {
-				return "'" + property.id + "'=='" + individual.id + "'";
+				return "'" + property.id + "'=='" + self.id + "'";
 			}).join(" || ");
 			var search = new veda.IndividualModel();
 			search["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
@@ -1467,15 +1474,7 @@ v-ui:TreeItemTemplate
 		}
 		return res;
 	}
-	function renderLeaf(value) {
-		value.treeConfig = individual.treeConfig;
-		value.present(children, tmpl);
-	}
-	function renderRow(value) {
-		value.present(tbody, rowTmpl);
-	}
 </script>
   """ ;
 .
-
 # END Tree templates

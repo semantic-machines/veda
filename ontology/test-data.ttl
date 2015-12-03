@@ -839,6 +839,8 @@ td:PropertySpecification5
   v-ui:treeRoot td:MondiSyktyvkar ;
   v-ui:treeRoot td:MondiSyktyvkar ;
   v-ui:treeInProperty v-s:parentUnit ;
+  v-ui:treeOutProperty v-s:occupation ;
+  v-ui:treeOutProperty v-s:employee ;
 #  v-ui:treeInProperty v-s:parentUnit ;
   v-ui:treeDisplayedProperty rdfs:label ;
   v-ui:treeDisplayedProperty v-s:firstName ;
