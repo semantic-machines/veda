@@ -11,7 +11,8 @@ private
     import bind.xapian_d_header, bind.v8d_header;
     import io.mq_client;
     import util.container, util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, veda.core.util.individual8json;
-    import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.interthread_signals, veda.core.log_msg;
+    import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.interthread_signals,
+           veda.core.log_msg;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, storage.lmdb_storage;
     import az.acl;
 }
@@ -104,8 +105,8 @@ class PThreadContext : Context
         onto = new Onto(this);
         onto.load();
 
-        local_count_put     = get_count_put();
-        ft_local_count = get_count_indexed();
+        local_count_put = get_count_put();
+        ft_local_count  = get_count_indexed();
 
         log.trace_log_and_console("NEW CONTEXT [%s], external: write storage=[%s], js_vm=[%s]", context_name, external_write_storage_url,
                                   external_js_vm_url);
@@ -451,7 +452,7 @@ class PThreadContext : Context
         }
     }
 
-    private void stat(CMD command_type, ref StopWatch sw, string func = __FUNCTION__) nothrow
+    public void stat(CMD command_type, ref StopWatch sw, string func = __FUNCTION__) nothrow
     {
         try
         {
@@ -510,17 +511,17 @@ class PThreadContext : Context
     long ft_local_time_check = 0;
     public bool ft_check_for_reload(void delegate() load)
     {
-    	 return _check_for_reload(ft_local_time_check, ft_local_count, &get_count_indexed, load);
+        return _check_for_reload(ft_local_time_check, ft_local_count, &get_count_indexed, load);
     }
 
     long acl_local_count;
     long acl_local_time_check = 0;
     public bool acl_check_for_reload(void delegate() load)
     {
-    	 return _check_for_reload(acl_local_time_check, acl_local_count, &get_acl_manager_op_id, load);
+        return _check_for_reload(acl_local_time_check, acl_local_count, &get_acl_manager_op_id, load);
     }
 
-    public bool _check_for_reload(ref long local_time_check, ref long local_count, long function () get_now_count, void delegate() load)
+    public bool _check_for_reload(ref long local_time_check, ref long local_count, long function() get_now_count, void delegate() load)
     {
         long now = Clock.currStdTime() / 10000000;
 
@@ -876,7 +877,7 @@ class PThreadContext : Context
     // //////////////////////////////////////////// INDIVIDUALS IO /////////////////////////////////////
     public Individual[] get_individuals_via_query(Ticket *ticket, string query_str)
     {
-        StopWatch sw; sw.start;
+//        StopWatch sw; sw.start;
 
         if (trace_msg[ 26 ] == 1)
         {
@@ -902,8 +903,8 @@ class PThreadContext : Context
         }
         finally
         {
-            stat(CMD.GET, sw);
-
+//            stat(CMD.GET, sw);
+//
             if (trace_msg[ 26 ] == 1)
                 log.trace("get_individuals_via_query: end, query_str=%s", query_str);
         }
@@ -963,7 +964,7 @@ class PThreadContext : Context
 
     public immutable(string)[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str = null)
     {
-        StopWatch sw; sw.start;
+        //StopWatch sw; sw.start;
 
         try
         {
@@ -981,13 +982,13 @@ class PThreadContext : Context
         }
         finally
         {
-            stat(CMD.GET, sw);
+//            stat(CMD.GET, sw);
         }
     }
 
     public Individual get_individual(Ticket *ticket, string uri)
     {
-        StopWatch sw; sw.start;
+        //       StopWatch sw; sw.start;
 
         if (trace_msg[ 25 ] == 1)
         {
@@ -1032,7 +1033,7 @@ class PThreadContext : Context
         }
         finally
         {
-            stat(CMD.GET, sw);
+//            stat(CMD.GET, sw);
             if (trace_msg[ 25 ] == 1)
                 log.trace("get_individual: end, uri=%s", uri);
         }

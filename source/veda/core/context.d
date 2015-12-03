@@ -205,7 +205,7 @@ interface Context
     ref string[ string ] get_prefix_map();
     void add_prefix_map(ref string[ string ] arg);
     long get_last_update_time();
-
+	public void stat(CMD command_type, ref StopWatch sw, string func = __FUNCTION__) nothrow;
     // *************************************************** external API *********************************** //
     /**
        Выполнить скрипт

@@ -519,37 +519,46 @@ class VedaStorageRest : VedaStorageRest_API
 
     string[] query(string ticket, string _query, string sort = null, string databases = null, bool reopen = false)
     {
-        ResultCode rc;
-        int        recv_worker_id;
+        StopWatch sw; sw.start;
 
-        string[]   individuals_ids;
-
-        Worker     *worker = allocate_worker();
-
-        std.concurrency.send(worker.tid, Command.Get, Function.IndividualsIdsToQuery, _query, sort, databases, ticket, reopen, worker.id,
-                             std.concurrency.thisTid);
-        yield();
-
-        std.concurrency.receive((immutable(
-                                           string)[] _individuals_ids, ResultCode _rc, int _recv_worker_id) { individuals_ids =
-                                                                                                                  cast(string[])
-                                                                                                                  _individuals_ids;
-                                                                                                              rc = _rc; recv_worker_id =
-                                                                                                                  _recv_worker_id; });
-
-        if (recv_worker_id == worker.id)
+        try
         {
-            worker.complete = false;
-            worker.ready    = true;
+            ResultCode rc;
+            int        recv_worker_id;
 
-            if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc);
+            string[]   individuals_ids;
+
+            Worker     *worker = allocate_worker();
+
+            std.concurrency.send(worker.tid, Command.Get, Function.IndividualsIdsToQuery, _query, sort, databases, ticket, reopen, worker.id,
+                                 std.concurrency.thisTid);
+            yield();
+
+            std.concurrency.receive((immutable(
+                                               string)[] _individuals_ids, ResultCode _rc, int _recv_worker_id) { individuals_ids =
+                                                                                                                      cast(string[])
+                                                                                                                      _individuals_ids;
+                                                                                                                  rc = _rc; recv_worker_id =
+                                                                                                                      _recv_worker_id; });
+
+            if (recv_worker_id == worker.id)
+            {
+                worker.complete = false;
+                worker.ready    = true;
+
+                if (rc != ResultCode.OK)
+                    throw new HTTPStatusException(rc);
+            }
+            else
+            {
+                individuals_ids = put_another_get_my(recv_worker_id, individuals_ids, rc, worker);
+            }
+            return individuals_ids;
         }
-        else
+        finally
         {
-            individuals_ids = put_another_get_my(recv_worker_id, individuals_ids, rc, worker);
+            context.stat(CMD.GET, sw);
         }
-        return individuals_ids;
     }
 
     Json[] get_individuals(string ticket, string[] uris)
@@ -586,48 +595,59 @@ class VedaStorageRest : VedaStorageRest_API
 
     Json get_individual(string _ticket, string uri)
     {
-       	if (trace_msg[ 500 ] == 1)
-        	log.trace("get_individual #start : %s ", uri);
-    	
-        ResultCode rc;
-        int        recv_worker_id;
+        StopWatch sw; sw.start;
 
-        Json[]     res;
-
-        Worker     *worker = allocate_worker();
-
-        std.concurrency.send(worker.tid, Command.Get, Function.Individual, uri, "", _ticket, worker.id, std.concurrency.thisTid);
-        yield();
-        std.concurrency.receive((immutable(
-                                           Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;
-                                                                                                recv_worker_id = _recv_worker_id; });
-
-        if (recv_worker_id == worker.id)
+        try
         {
-            //writeln ("free worker ", worker.id);
-            worker.complete = false;
-            worker.ready    = true;
+            if (trace_msg[ 500 ] == 1)
+                log.trace("get_individual #start : %s ", uri);
 
-            if (rc != ResultCode.OK)
+            ResultCode rc;
+            int        recv_worker_id;
+
+            Json[]     res;
+
+            Worker     *worker = allocate_worker();
+
+            std.concurrency.send(worker.tid, Command.Get, Function.Individual, uri, "", _ticket, worker.id, std.concurrency.thisTid);
+            yield();
+            std.concurrency.receive((immutable(
+                                               Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;
+                                                                                                    recv_worker_id = _recv_worker_id; });
+
+            if (recv_worker_id == worker.id)
             {
-       			if (trace_msg[ 500 ] == 1)
-        			log.trace("get_individual #!ERR : %s ", text (rc));
-        			
-                throw new HTTPStatusException(rc);
-            }    
+                //writeln ("free worker ", worker.id);
+                worker.complete = false;
+                worker.ready    = true;
+
+                if (rc != ResultCode.OK)
+                {
+                    if (trace_msg[ 500 ] == 1)
+                        log.trace("get_individual #!ERR : %s ", text(rc));
+
+                    throw new HTTPStatusException(rc);
+                }
+            }
+            else
+            {
+                res = put_another_get_my(recv_worker_id, res, rc, worker);
+            }
+
+            if (trace_msg[ 500 ] == 1)
+                log.trace("get_individual #end : %s, res.length=%d", text(rc), res.length);
+
+            if (res.length > 0)
+                return res[ 0 ];
+            else
+                return Json.init;
         }
-        else
+        finally
         {
-            res = put_another_get_my(recv_worker_id, res, rc, worker);
+            context.stat(CMD.GET, sw);
+            if (trace_msg[ 25 ] == 1)
+                log.trace("get_individual: end, uri=%s", uri);
         }
-
-		if (trace_msg[ 500 ] == 1)
-			log.trace("get_individual #end : %s, res.length=%d", text (rc), res.length);
-
-        if (res.length > 0)
-            return res[ 0 ];
-        else
-            return Json.init;
     }
 
     OpResult put_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
