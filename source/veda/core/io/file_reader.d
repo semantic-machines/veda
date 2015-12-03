@@ -2,7 +2,7 @@
  * загрузка индивидов в базу данных из *.ttl
  * генерация doc/onto
  */
-module io.file_reader;
+module veda.core.io.file_reader;
 
 import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib;
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path, std.utf,
@@ -30,13 +30,7 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
     core.thread.Thread tr = core.thread.Thread.getThis();
     tr.name = std.conv.text(id);
 
-    try
-    {
-        mkdir("ontology");
-    }
-    catch (Exception ex)
-    {
-    }
+    try { mkdir("ontology"); } catch (Exception ex) {}
 
     ubyte[] out_data;
 
@@ -281,18 +275,19 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 
         string doc_filename = docs_onto_path ~ "/" ~ onto_name[ 0..$ - 1 ] ~ ".html";
 
-        try
-        {
-            remove(doc_filename);
-            append(
-                   doc_filename,
-                   "<html><body><head><meta charset=\"utf-8\"/><link href=\"css/bootstrap.min.css\" rel=\"stylesheet\"/><style=\"padding: 0px 0px 30px;\"></head>\n");
-        }
-        catch (Exception ex) {}
+        if (context !is null)
+            try
+            {
+                remove(doc_filename);
+                append(
+                       doc_filename,
+                       "<html><body><head><meta charset=\"utf-8\"/><link href=\"css/bootstrap.min.css\" rel=\"stylesheet\"/><style=\"padding: 0px 0px 30px;\"></head>\n");
+            }
+            catch (Exception ex) {}
 
         foreach (ss; ss_list)
         {
-            if (ss.isExist(rdf__type, owl__Ontology))
+            if (ss.isExist(rdf__type, owl__Ontology) && context !is null)
             {
                 prefix = context.get_prefix_map.get(ss.uri, null);
                 Resources ress = Resources.init;
@@ -305,11 +300,12 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
                 ss.addResource("rdfs:isDefinedBy", Resource(DataType.Uri, onto_name));
             }
 
-            try
-            {
-                append(doc_filename, individual2html(ss));
-            }
-            catch (Exception ex) {}
+            if (context !is null)
+                try
+                {
+                    append(doc_filename, individual2html(ss));
+                }
+                catch (Exception ex) {}
 
             long       pos_path_delimiter = indexOf(ss.uri, '/');
 
@@ -323,11 +319,12 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
                 log.trace("apply, uri=%s %s", ss.uri, ss1);
         }
 
-        try
-        {
-            append(doc_filename, "\n</body></html>");
-        }
-        catch (Exception ex) {}
+        if (context !is null)
+            try
+            {
+                append(doc_filename, "\n</body></html>");
+            }
+            catch (Exception ex) {}
 
         //context.reopen_ro_subject_storage_db ();
         if (trace_msg[ 33 ] == 1)

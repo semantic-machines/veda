@@ -8,7 +8,7 @@ private
     import core.thread, std.stdio, std.string, std.c.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process;
     version (linux) import std.c.linux.linux, core.stdc.stdlib;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
-    import io.mq_client, io.rabbitmq_client, io.file_reader;
+    import io.mq_client, io.rabbitmq_client, veda.core.io.file_reader;
     import util.logger, util.utils, util.load_info;
     import veda.core.scripts, veda.core.context, veda.core.know_predicates, veda.core.log_msg, veda.core.thread_context;
     import veda.core.define, veda.core.interthread_signals;
@@ -249,7 +249,7 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (is_main)
         {
-            tids[ P_MODULE.file_reader ] = spawn(&io.file_reader.file_reader_thread, P_MODULE.file_reader, node_id, 5);
+            tids[ P_MODULE.file_reader ] = spawn(&veda.core.io.file_reader.file_reader_thread, P_MODULE.file_reader, node_id, 5);
             wait_starting_thread(P_MODULE.file_reader, tids);
 
 //        io.file_reader.processed(core_context);
