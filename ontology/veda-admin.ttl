@@ -51,6 +51,7 @@ v-a:test_node
 	vsrv:checktime_onto_files "20"^^xsd:integer ;
 	vsrv:listener v-a:test_conn_http;
 	vsrv:jsvm_node "external";
+	vsrv:fts_node "external";
 	vsrv:role "main";
 	rdfs:label "тестовая конфигурация" ;
 .	
