@@ -813,6 +813,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				});			
 			}
 		}
+		// standard tasts
+		var stasks = $('#standard-tasks', template);
+		stasks.append($('<li/>', {
+			style:'cursor:pointer', 
+			click: function() {veda.Util.send(individual, null, 'v-wf:questionRouteStartForm')},
+			html: '<a>'+(new veda.IndividualModel('v-b:SendQuestion')['rdfs:label'][0])+'</a>'
+		}));
+		stasks.append($('<li/>', {
+			style:'cursor:pointer', 
+			click: function() {veda.Util.send(individual, null, 'v-wf:instructionRouteStartForm')},
+			html: '<a>'+(new veda.IndividualModel('v-b:SendInstruction')['rdfs:label'][0])+'</a>'
+		}));
 
 		return template;
 	}

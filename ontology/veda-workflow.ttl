@@ -6,6 +6,7 @@
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-df: <http://semantic-machines.com/veda/veda-docflow/> .
 
 <http://semantic-machines.com/veda/veda-workflow>
 	rdfs:isDefinedBy v-wf: ;
@@ -2563,3 +2564,79 @@ v-ui:TraceEventTemplate
   """ ;
 .
 
+v-wf:questionRouteStartFormLinkRule
+  rdf:type v-s:DocumentLinkRules;
+  rdfs:label "Задать вопрос"@ru ;
+  rdfs:label "Ask a question"@en ;
+  v-s:classTo v-df:QuestionRouteStartForm;
+  v-s:hasTransformation v-wf:questionRouteStartForm;
+  v-s:isRoute "true"^^xsd:boolean;
+.
+v-wf:instructionRouteStartFormLinkRule
+  rdf:type v-s:DocumentLinkRules;
+  rdfs:label "Исполнить поручение"@ru ;
+  rdfs:label "Execute instruction"@en ;
+  v-s:classTo v-df:InstructionRouteStartForm;
+  v-s:hasTransformation v-wf:instructionRouteStartForm;
+  v-s:isRoute "true"^^xsd:boolean;
+.
+
+v-wf:questionRouteStartForm
+  rdf:type v-wf:Transform ;
+  v-wf:transformRule v-wf:rule1question ;
+  v-wf:transformRule v-wf:rule2question ;
+  v-wf:transformRule v-wf:rule3question ;  
+  rdfs:isDefinedBy v-wf: ;
+.
+v-wf:rule1question
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate "putValue ('v-wf:processedDocument')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping	"1";    
+.
+v-wf:rule2question
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:segregateElement "contentName('@')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping	"1";    
+.
+v-wf:rule3question
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putUri ('rdf:type', 'v-df:QuestionRouteStartForm')" ;
+  v-wf:aggregate "putUri ('v-wf:useTransformation', 'v-df:QuestionRouteStartFormToNet')" ;
+  v-wf:segregateElement "contentName('@')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping	"1";  
+.
+
+v-wf:instructionRouteStartForm
+  rdf:type v-wf:Transform ;
+  v-wf:transformRule v-wf:rule1instruction ;
+  v-wf:transformRule v-wf:rule2instruction ;
+  v-wf:transformRule v-wf:rule3instruction ;  
+  rdfs:isDefinedBy v-wf: ;
+.
+v-wf:rule1instruction
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate "putValue ('v-wf:processedDocument')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping	"1";    
+.
+v-wf:rule2instruction
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:segregateElement "contentName('@')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping	"1";    
+.
+v-wf:rule3instruction
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putUri ('rdf:type', 'v-df:InstructionRouteStartForm')" ;
+  v-wf:aggregate "putUri ('v-wf:useTransformation', 'v-df:InstructionRouteStartFormToNet')" ;
+  v-wf:segregateElement "contentName('@')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping	"1";  
+. 
