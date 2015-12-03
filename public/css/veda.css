@@ -476,6 +476,10 @@ veda-control {
 	border:2px solid #FF0000;	
 }
 
+.jsplumb-drag-selected {
+	border:2px solid #FFA500;	
+}
+
 .aLabel {
 	-webkit-transition:background-color 0.25s ease-in;
 	-moz-transition:background-color 0.25s ease-in;

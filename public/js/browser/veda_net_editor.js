@@ -173,7 +173,7 @@ jsWorkflow.ready = jsPlumb.ready;
             }
             
             // Fill info panel on flow click
-            instance.bind("click", function(transition) {
+            instance.bind("click", function(transition) {            	
             	var _this = this;
             	veda["workflow"+elementId+"-selectedElement"] = _this.id;
             	instance.defocus();
@@ -337,9 +337,14 @@ jsWorkflow.ready = jsPlumb.ready;
                 });
             	
                 windows.bind("click", function(e) {
-                	
                     var _this = this, currentElement = $(_this), alreadySelected = currentElement.hasClass('w_active');
                 	veda["workflow"+elementId+"-selectedElement"] = _this.id;
+               	    if (e.shiftKey) {
+               	    	currentElement.addClass('jsplumb-drag-selected');
+               	    	instance.addToDragSelection(currentElement);
+               	    	e.stopPropagation();
+               	    	return;
+               	    }
 
                     if (!alreadySelected) {
 	                    instance.defocus();
@@ -438,13 +443,12 @@ jsWorkflow.ready = jsPlumb.ready;
 	                	riot.route("#/" + $(_this).attr('id')+"///edit", true);
 	                });
 	
-	                // Initialize State elements as draggable.  
 	                instance.draggable(windows, {
-	                  drag: function (event, ui) { //gets called on every drag
+	                  drag: function (event) { //gets called on every drag
 	                	  $("#workflow-context-menu").hide();
-	                	  var target = new veda.IndividualModel(event.target.id);
-	                   	  target['v-wf:locationX'] = [new Number(Math.round(ui.position.left-canvasSizePx/2))];
-	                   	  target['v-wf:locationY'] = [new Number(Math.round(ui.position.top-canvasSizePx/2))];
+	                	  var target = new veda.IndividualModel(event.el.id);
+	                   	  target['v-wf:locationX'] = [new Number(Math.round(event.pos[0]-canvasSizePx/2))];
+	                   	  target['v-wf:locationY'] = [new Number(Math.round(event.pos[1]-canvasSizePx/2))];
 	                  }
 	            	});
                 }
@@ -762,6 +766,8 @@ jsWorkflow.ready = jsPlumb.ready;
             
             instance.defocus = function() {
             	props.empty();
+       	    	instance.clearDragSelection();
+       	    	$('.jsplumb-drag-selected').removeClass('jsplumb-drag-selected');
             	$("#workflow-context-menu").hide();
             	$.each(instance.getAllConnections(), function (idx, connection) {
             		connection.removeClass('process-path-highlight');
