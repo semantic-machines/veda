@@ -907,13 +907,6 @@ v-s:occupation
   rdfs:label "занимает должность"@ru ;
   rdfs:range v-s:Position ;
 .
-v-s:occupation
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Appointment ;
-  rdfs:label "occupation"@en ;
-  rdfs:label "занимает должность"@ru ;
-  rdfs:range v-s:Position ;
-.
 v-s:official
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Appointment ;

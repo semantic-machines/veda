@@ -839,13 +839,10 @@ td:PropertySpecification5
   v-ui:treeRoot td:MondiSyktyvkar ;
   v-ui:treeRoot td:MondiSyktyvkar ;
   v-ui:treeInProperty v-s:parentUnit ;
-  v-ui:treeInProperty v-s:occupation ;
-  v-ui:treeAllowedClass v-s:Organization ;
-  v-ui:treeAllowedClass v-s:Department ;
-  v-ui:treeAllowedClass v-s:Appointment ;
+#  v-ui:treeInProperty v-s:parentUnit ;
+  v-ui:treeDisplayedProperty rdfs:label ;
   v-ui:treeDisplayedProperty v-s:firstName ;
   v-ui:treeDisplayedProperty v-s:lastName ;
-  v-ui:treeDisplayedProperty v-s:occupation ;
 .
 td:PropertySpecification6
   rdf:type v-ui:ObjectPropertySpecification ;

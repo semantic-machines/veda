@@ -165,9 +165,7 @@ v-asp:PersonalAspectTemplate
 					<div rel="v-s:hasImage" template="v-ui:ImageTemplate"></div>
 					<br/>
 					<a href="#/@">
-						<p>
-							<span class="glyphicon glyphicon-user"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:lastName"></span>
-						</p>
+						<span class="glyphicon glyphicon-user"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:lastName"></span>
 					</a>
 				</div>
 			</div>

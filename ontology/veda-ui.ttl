@@ -1368,6 +1368,10 @@ v-ui:TreeTemplate
 		<ul class="root" style="list-style:none; margin-left:-40px"></ul>
 	</div>
 	<div class="col-md-8" id="tree-item-container" style="border-left:1px dotted #ccc; margin-left:-1px">
+		<table id="table" class="table table-condensed table-bordered table-striped">
+			<thead id="thead"></thead>
+			<tbody id="tbody"></tbody>
+		</table>
 	</div>
 </div>
 <script>
@@ -1397,47 +1401,79 @@ v-ui:TreeItemTemplate
 		children = $(".children", template),
 		link = $("a.lnk", template),
 		cnt = $("#tree-item-container"),
-		tmpl = (new veda.IndividualModel("v-ui:TreeItemTemplate"))["v-ui:template"][0].toString();
+		tmpl = new veda.IndividualModel("v-ui:TreeItemTemplate"),
+		thead = $("#thead"),
+		tbody = $("#tbody"),
+		headTmpl, rowTmpl,
+		literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
+		
+	individual.treeConfig.displayedProperty.map( function (property) {
+		headTmpl += "<th>" + property["rdfs:label"].join(", ") + "</th>";
+		if ( literals.indexOf(property["rdfs:range"][0].id) >= 0 ) {
+			rowTmpl += "<td about='@' property='" + property.id + "'></td>";
+		} else {
+			rowTmpl += "<td about='@' rel='" + property.id + "' template='v-ui:LabelTemplate'></td>";
+		}
+	});
+	headTmpl = "<tr>" + headTmpl + "</tr>";
+	rowTmpl = "<tr>" + rowTmpl + "</tr>";
+	thead.html(headTmpl);
+	
 	link.click(function (e) {
-		cnt.empty();
+		tbody.empty();
 		e.preventDefault();
-		individual.present(cnt);
+		renderRow(individual);
+		getOut().map(renderRow);
+		getIn().map(renderRow);
 	});
 	expand.click(function () {
 		expand.toggleClass("glyphicon-chevron-right glyphicon-chevron-down");
 		children.toggleClass("show hide");
 		if (!children.children().length) {
-			if (individual.treeConfig && individual.treeConfig.outProperty) {
-				individual.treeConfig.outProperty.map(function (property) {
-					if (individual.hasValue(property.id)) {
-						individual[property.id].map(function (value) {
-							var $tmpl = $(tmpl);
-							value.treeConfig = individual.treeConfig;
-							value.present(children, $tmpl);
-						});
-					}
-				});
-			}
-			if (individual.treeConfig && individual.treeConfig.inProperty) {
-				var query = individual.treeConfig.inProperty.map(function (property) {
-					return "'" + property.id + "'=='" + individual.id + "'";
-				}).join(" || ");
-				var search = new veda.IndividualModel();
-				search["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
-				search["v-fs:fulltextQuery"] = [ query ];
-				search.search();
-				search.result.map( function (uri) {
-					var $tmpl = $(tmpl);
-					var item = new veda.IndividualModel(uri);
-					item.treeConfig = individual.treeConfig;
-					item.present(children, $tmpl);
-				});
-			}
+			getOut().map(renderLeaf);
+			getIn().map(renderLeaf);
 		}
 		if (!children.children().length) {
 			expand.remove();
 		}
 	});
+	
+	function getOut() {
+		var res = [];
+		if (individual.treeConfig && individual.treeConfig.outProperty) {
+			individual.treeConfig.outProperty.map(function (property) {
+				if (individual.hasValue(property.id)) {
+					individual[property.id].map(function (value) {
+						res.push(value);
+					});
+				}
+			});
+		}
+		return res;
+	}
+	function getIn() {
+		var res = [];
+		if (individual.treeConfig && individual.treeConfig.inProperty) {
+			var query = individual.treeConfig.inProperty.map(function (property) {
+				return "'" + property.id + "'=='" + individual.id + "'";
+			}).join(" || ");
+			var search = new veda.IndividualModel();
+			search["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
+			search["v-fs:fulltextQuery"] = [ query ];
+			search.search();
+			search.result.map( function (uri) {
+				res.push( new veda.IndividualModel(uri) );
+			});
+		}
+		return res;
+	}
+	function renderLeaf(value) {
+		value.treeConfig = individual.treeConfig;
+		value.present(children, tmpl);
+	}
+	function renderRow(value) {
+		value.present(tbody, rowTmpl);
+	}
 </script>
   """ ;
 .
