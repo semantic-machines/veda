@@ -87,7 +87,7 @@ function prepare_work_order(ticket, document)
 
         var f_executor = document['v-wf:executor'];
         var executor = get_individual(ticket, getUri(f_executor));
-        //if (!executor) return;
+        if (f_executor && !executor) return;
 
         var f_forWorkItem = getUri(document['v-wf:forWorkItem']);
         var work_item = get_individual(ticket, f_forWorkItem);
