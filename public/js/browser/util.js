@@ -217,6 +217,9 @@ veda.Module(function Util(veda) { "use strict";
 	 *  - Apply transformation and redirect to start form. 
 	 */
 	veda.Util.send = function (individual, template, transformId) {
+		individual.valid = true;
+		individual.trigger("individual:beforeSave");
+		if (!individual.valid) return;		
 		if (transformId !== undefined) {
 			var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
 	    	riot.route("#/" + startForm.id + "///edit", true);
@@ -392,5 +395,27 @@ veda.Module(function Util(veda) { "use strict";
 			rightRecord.present(holder);
 			holder.appendTo($(".modal-body", container));
 		});			
+	}
+	
+	veda.Util.editSource = function (individual, attribute, mode) {
+		// Ignore individuals without id
+		if (individual.id === undefined || individual.id === '' || individual.id === '_') return;
+		var container = $($("#edit-source-modal-template").html());
+		container.modal();
+
+		$("body").append(container);
+		
+		var	editor = CodeMirror($('.modal-body', container), {
+			value: individual.hasValue(attribute) ? individual[attribute][0].toString() : "",
+			mode: mode,
+			matchBrackets: true,
+			autoCloseBrackets: true,
+			matchTags: true,
+			autoCloseTags: true,
+			lineNumbers: true
+		});
+		setTimeout( function () {
+			editor.refresh();
+		}, 100);
 	}
 });

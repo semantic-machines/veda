@@ -884,11 +884,13 @@
 		opts.change = function (value) {
 			individual[property_uri] = [value];
 		}
+		if (typeof self.attr('mode') !== "undefined") opts.sourceMode = self.attr('mode');
 		if (property_uri === "v-s:script") opts.sourceMode = "javascript";
 		if (property_uri === "v-ui:template") opts.sourceMode = "htmlmixed";
 		var	editor = CodeMirror(editorEl, {
 			value: opts.value,
 			mode: opts.sourceMode,
+			lineWrapping: true,
 			matchBrackets: true,
 			autoCloseBrackets: true,
 			matchTags: true,
