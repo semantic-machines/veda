@@ -1152,6 +1152,13 @@
 				$modal.modal();	
 				$("body").append($modal);
 				individual.present(cntr, treeTmpl);
+			
+				$("#ok", $modal).click( function (e) {
+					var selected = cntr.data("selected");
+					select( selected.map(function (uri) {
+						return new veda.IndividualModel(uri);
+					}) );
+				});
 			});
 		} else {
 			tree.remove();
@@ -1245,7 +1252,7 @@
 				$("body").append($modal);
 				var srch = new veda.SearchModel(undefined, $(".modal-body", $modal), queryPrefix);
 				// Add found values
-				$("button#ok", $modal).on("click", function (e) {
+				$("#ok", $modal).on("click", function (e) {
 					$(this).off("click");
 					var selected = [];
 					for (var uri in srch.selected) {

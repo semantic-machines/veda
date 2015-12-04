@@ -1356,23 +1356,25 @@ v-ui:PermissionStatementTemplate
   """ ;
 .
 
-# BEGIN Tree templates
-
 v-ui:TreeTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для древовоидных структур"@ru ;
   rdfs:label "Template for tree-like structures"@en ;
   v-ui:template """
-<table class="table table-condensed table-bordered table-striped">
-	<thead id="thead"></thead>
-	<tbody id="tbody"></tbody>
-</table>
+<div class="table-responsive">
+	<table class="table table-condensed table-striped">
+		<thead id="thead"></thead>
+		<tbody id="tbody"></tbody>
+	</table>
+</div>
 <script>
 	var tbody = $("#tbody", template),
 		thead = $("#thead", template),
-		headTmpl = "<th width='1px'><input type='checkbox' id='select-col' disabled /></th>";
+		headTmpl = "<th width='1px'><input type='checkbox' id='select-col' /></th>";
 		rowTmpl = "<td><input type='checkbox' class='select-row' /></td>",
 		literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
+		
+	container.data("selected", []);
 		
 	individual.treeConfig.displayedProperty.map( function (property, index) {
 		headTmpl += "<th>" + property["rdfs:label"].join(", ") + "</th>";
@@ -1434,6 +1436,30 @@ v-ui:TreeTemplate
 			item.present(cont, tmpl);
 			thatRow.after( cont.html() );
 		}
+		return false;
+	});
+	
+	template.on("click", "th > input", function () {
+		$("td > input:visible", tbody).click();
+	});
+	
+	template.on("click", "td", function () {
+		var row = $(this).parent();
+		$("input", row).click();
+	});
+
+	template.on("click", "td > input", function (e) {
+		var row = $(this).parents("tr"),
+			uri = row.attr("resource"),
+			selected = container.data("selected");
+		if ( $(this).prop("checked") ) {
+			selected.push(uri);
+		} else {
+			var index = selected.indexOf(uri);
+			selected.splice(index, 1);
+		}
+		container.data("selected", selected);
+		e.stopPropagation();
 	});
 
 	individual.treeConfig.root.map( function (root) {
@@ -1477,4 +1503,4 @@ v-ui:TreeTemplate
 </script>
   """ ;
 .
-# END Tree templates
+
