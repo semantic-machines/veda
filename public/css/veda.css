@@ -1,8 +1,49 @@
 body {
   overflow-x: hidden;
   font-family:"Ubuntu",Tahoma,"Helvetica Neue",Helvetica,Arial,sans-serif;
-  /*background-color: #fcfcfc;*/
+  color: #233333;
 }
+
+/* Gray tooltip */
+.tooltip-inner {
+  background-color: #333333;
+}
+.tooltip.top .tooltip-arrow {
+  border-top-color: #333333;
+}
+.tooltip.top-left .tooltip-arrow {
+  border-top-color: #333333;
+}
+.tooltip.top-right .tooltip-arrow {
+  border-top-color: #333333;
+}
+.tooltip.right .tooltip-arrow {
+  border-right-color: #333333;
+}
+.tooltip.left .tooltip-arrow {
+  border-left-color: #333333;
+}
+.tooltip.bottom .tooltip-arrow {
+  border-bottom-color: #333333;
+}
+.tooltip.bottom-left .tooltip-arrow {
+  border-bottom-color: #333333;
+}
+.tooltip.bottom-right .tooltip-arrow {
+  border-bottom-color: #333333;
+}
+
+em {
+  font-weight: bold;
+  font-style: normal;
+  color: #555;
+  display: inline-block;
+}
+/*em::first-letter {
+  color: #711;
+  font-size: 130%;
+  font-variant: small-caps;
+}*/
 
 #credentials {
     max-width: 330px;

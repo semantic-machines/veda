@@ -428,21 +428,21 @@ v-ui:ClassTemplateTemplate
       <div class="col-md-4">
         <span about="v-ui:ClassTemplate" property="rdfs:label"></span>
       </div>
-      <div class="col-md-8 text-right text-muted">
+      <div class="col-md-8 text-right">
         <a href="#/@"><span property="@"></span></a>
       </div>  
     </div>
   </div>
   <div class="panel-body">
-    <strong about="rdfs:label" property="rdfs:label" class="text-muted -view edit search"></strong>
+    <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
     <h3 property="rdfs:label"></h3>
     <veda-control property="rdfs:label" type="multilingualString" class="-view edit search"></veda-control>
 	<br class="-view edit search">
-    <strong about="rdfs:comment" property="rdfs:label" class="text-muted -view edit search"></strong>
+    <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
     <div><em property="rdfs:comment"></em></div>
     <veda-control property="rdfs:comment" type="multilingualString" class="-view edit search"></veda-control>
     <br class="-view edit search">
-	<strong about="v-ui:forClass" property="rdfs:label" class="text-muted"></strong>
+	<em about="v-ui:forClass" property="rdfs:label"></em>
 	<div rel="v-ui:forClass" template="v-ui:ClassNameLabelTemplate"></div>
 	<veda-control rel="v-ui:forClass" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
 	<br>
@@ -480,7 +480,7 @@ v-ui:ResourceTemplate
 		<div class="row">
 			<div class="col-md-4 className">
 			<span about="rdfs:Resource" property="rdfs:label"></span></div>
-			<div class="col-md-8 text-right text-muted">
+			<div class="col-md-8 text-right">
 				<a href="#/@"><span property="@"></span></a>
 			</div>  
 		</div>
@@ -489,7 +489,7 @@ v-ui:ResourceTemplate
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-md-3 col-xs-5 text-right">
-					<strong about="rdf:type" property="rdfs:label" class="text-muted"></strong>
+					<em about="rdf:type" property="rdfs:label"></em>
 				</div>
 				<div class="col-md-9 col-xs-7">
 					<div rel="rdf:type" template="v-ui:LabelTemplate"></div>
@@ -499,7 +499,7 @@ v-ui:ResourceTemplate
 			<hr class="margin-sm">
 			<div class="row">
 				<div class="col-md-3 col-xs-5 text-right">
-					<strong about="rdfs:label" property="rdfs:label" class="text-muted"></strong>
+					<em about="rdfs:label" property="rdfs:label"></em>
 				</div>
 				<div class="col-md-9 col-xs-7">
 					<span property="rdfs:label"></span>
@@ -509,7 +509,7 @@ v-ui:ResourceTemplate
 			<hr class="margin-sm">
 			<div class="row">
 				<div class="col-md-3 col-xs-5 text-right">
-					<strong about="rdfs:comment" property="rdfs:label" class="text-muted"></strong>
+					<em about="rdfs:comment" property="rdfs:label"></em>
 				</div>
 				<div class="col-md-9 col-xs-7">
 					<div property="rdfs:comment"></div>
@@ -654,11 +654,11 @@ v-ui:SavedSearchTemplate
   v-ui:forClass v-s:SavedSearch ;
   v-ui:template """
   <div>
-        <strong about="rdfs:label" property="rdfs:label" class="text-muted"></strong>
+        <em about="rdfs:label" property="rdfs:label"></em>
         <div property="rdfs:label"></div>
         <div class="row">
           <div class="col-md-12">
-               <strong about="v-s:query" property="rdfs:label" class="text-muted"></strong>
+               <em about="v-s:query" property="rdfs:label"></em>
                <div property="v-s:query"></div>
           </div>
         </div>
@@ -1004,17 +1004,17 @@ v-ui:TestUITemplate
       <div class="col-md-4">
         <span about="v-ui:TestUIClass" property="rdfs:label"></span>
       </div>
-      <div class="col-md-8 text-right text-muted">
+      <div class="col-md-8 text-right">
         <a href="#/@"><span property="@"></span></a>
       </div>  
     </div>
   </div>
   <div class="panel-body">
-    <strong about="rdfs:label" property="rdfs:label" class="text-muted -view edit search"></strong>
+    <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
     <h3 property="rdfs:label"></h3>
     <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
 	<br class="-view edit search">
-    <strong about="rdfs:comment" property="rdfs:label" class="text-muted -view edit search"></strong>
+    <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
     <div><em property="rdfs:comment"></em></div>
     <veda-control property="rdfs:comment" type="string" class="-view edit search"></veda-control>
     <br class="-view edit search">
@@ -1022,14 +1022,14 @@ v-ui:TestUITemplate
 	<div class="checkbox">
 		<label>
 			<veda-control property="v-ui:testBoolean" type="booleanCheckbox"></veda-control>
-			<strong about="v-ui:testBoolean" property="rdfs:label" class="text-muted"></strong>
+			<em about="v-ui:testBoolean" property="rdfs:label"></em>
 		</label>
 	</div>
-	<!--strong class="text-muted" about="v-ui:testBoolean" property="rdfs:label"></strong>
+	<!--em about="v-ui:testBoolean" property="rdfs:label"></em>
 	<veda-control property="v-ui:testBoolean" type="booleanCheckbox"></veda-control-->
     <hr>
 
-	<strong about="v-ui:testString" property="rdfs:label" class="text-muted"></strong>
+	<em about="v-ui:testString" property="rdfs:label"></em>
     <div property="v-ui:testString"></div>
 	<veda-control property="v-ui:testString" type="string" class="-view edit search"></veda-control>
 	<veda-control property="v-ui:testString" type="multilingualString" class="-view edit search"></veda-control>
@@ -1038,7 +1038,7 @@ v-ui:TestUITemplate
 	<veda-control property="v-ui:testString" type="stringSelect" class="-view edit search"></veda-control>
     <hr>
 
-	<strong about="v-ui:testInteger" property="rdfs:label" class="text-muted"></strong>
+	<em about="v-ui:testInteger" property="rdfs:label"></em>
     <div property="v-ui:testInteger"></div>
 	<veda-control property="v-ui:testInteger" type="integer" class="-view edit search"></veda-control>
 	<veda-control property="v-ui:testInteger" type="integerSelect" class="-view edit search"></veda-control>
@@ -1046,19 +1046,19 @@ v-ui:TestUITemplate
 	<veda-control property="v-ui:testInteger" type="integerRadio"></veda-control>
     <hr>
 
-	<strong about="v-ui:testDecimal" property="rdfs:label" class="text-muted"></strong>
+	<em about="v-ui:testDecimal" property="rdfs:label"></em>
     <div property="v-ui:testDecimal"></div>
 	<veda-control property="v-ui:testDecimal" type="decimal" class="-view edit search"></veda-control>
 	<veda-control property="v-ui:testDecimal" type="decimalSelect" class="-view edit search"></veda-control>
     <hr>
 
-	<strong about="v-ui:testDatetime" property="rdfs:label" class="text-muted"></strong>
+	<em about="v-ui:testDatetime" property="rdfs:label"></em>
     <div property="v-ui:testDatetime" class="view -edit -search"></div>
     <veda-control property="v-ui:testDatetime" type="dateTime" class="-view edit search"></veda-control>
     <veda-control property="v-ui:testDatetime" type="datetimeSelect" class="-view edit search"></veda-control>
     <hr>
 
-	<strong about="v-ui:testLink" property="rdfs:label" class="text-muted"></strong>
+	<em about="v-ui:testLink" property="rdfs:label"></em>
 	<div rel="v-ui:testLink" template="v-ui:ClassNameLabelTemplate"></div>
 	<veda-control rel="v-ui:testLink" type="link" class="-view edit search full"></veda-control>
 	<veda-control rel="v-ui:testLink" type="objectCheckbox" template="v-ui:LabelTemplate"></veda-control>
@@ -1066,14 +1066,14 @@ v-ui:TestUITemplate
 	<veda-control rel="v-ui:testLink" type="objectSelect" class="-view edit search" template="v-ui:ClassNameLabelTemplate"></veda-control>
 	
 	<!--hr>
-	<strong about="v-ui:template" property="rdfs:label" class="text-muted"></strong>
+	<em about="v-ui:template" property="rdfs:label"></em>
 	<veda-control property="v-ui:template" type="source"></veda-control>
 	<hr>
-	<strong about="v-s:script" property="rdfs:label" class="text-muted"></strong>	
+	<em about="v-s:script" property="rdfs:label"></em>	
 	<veda-control property="v-s:script" type="source"></veda-control-->
 	
 	<hr>
-	<strong about="v-ui:testFile" property="rdfs:label" class="text-muted"></strong>	
+	<em about="v-ui:testFile" property="rdfs:label"></em>	
 	<div rel="v-ui:testFile" template="v-ui:FileTemplate" class="view edit -search"></div>
 	<br>
 	<veda-control rel="v-ui:testFile" type="file" class="-view edit -search"></veda-control>

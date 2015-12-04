@@ -2050,11 +2050,11 @@ v-wf:DecisionRedirectTemplate
   v-ui:template """
 <div>
 	<br>
-	<strong about="v-wf:to" property="rdfs:label" class="text-muted"></strong>
+	<em about="v-wf:to" property="rdfs:label"></em>
 	<div rel="v-wf:to" template="v-ui:LabelTemplate" class="view -edit -search"></div>
 	<veda-control rel="v-wf:to" type="link" class="-view edit search fulltext dropdown"></veda-control>
 	<br>
-	<strong about="rdfs:comment" property="rdfs:label" class="text-muted"></strong>
+	<em about="rdfs:comment" property="rdfs:label"></em>
 	<div property="rdfs:comment" class="view -edit -search"></div>
 	<veda-control property="rdfs:comment" type="string" class="-view edit search"></veda-control>
 </div>
@@ -2081,7 +2081,7 @@ v-wf:DecisionTemplate1
   v-ui:template """
 <div>
 	<br>
-	<strong about="rdfs:comment" property="rdfs:label" class="text-muted"></strong>
+	<em about="rdfs:comment" property="rdfs:label"></em>
 	<div property="rdfs:comment" class="view -edit -search"></div>
 	<veda-control property="rdfs:comment" type="string" class="-view edit search"></veda-control>
 </div>

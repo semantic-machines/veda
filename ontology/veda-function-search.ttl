@@ -398,7 +398,7 @@ v-fs:FulltextRequestTemplate
 			</div>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="mgmt-ft">
-			<em about="rdfs:label" property="rdfs:label" class="text-muted"></em>
+			<em about="rdfs:label" property="rdfs:label"></em>
 			<p property="rdfs:label" class="view -edit -search"></p>
 			<veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
 			<br>
@@ -468,7 +468,7 @@ v-fs:FulltextRequestTemplate
 		var props = "<div>";
 		for (var i = 0, uri; (uri = allprops && allprops[i]); i++) {
 			if ( individual.hasValue(uri) ) {
-				props += "<span about='" + uri + "' property='rdfs:label' class='text-muted'></span>: "
+				props += "<em about='" + uri + "' property='rdfs:label'></em>: "
 				if (individual[uri][0] instanceof veda.IndividualModel) {
 					props += "<span about='@' rel='" + uri + "' template='v-ui:LabelLinkTemplate'></span>; "
 				} else {
@@ -645,7 +645,7 @@ v-fs:AttributiveRequestTemplate
 				<table id="custom-table" class="table table-condensed table-bordered">
 					<caption about="v-fs:CustomTable" property="rdfs:label"></caption>
 					<thead id="custom-head">
-						<tr><td><span class="text-muted" about="v-fs:DragColumns" property="rdfs:label"></span></td></tr>
+						<tr><td><em about="v-fs:DragColumns" property="rdfs:label"></em></td></tr>
 					</thead>
 				</table>
 			</div>
@@ -667,7 +667,7 @@ v-fs:AttributiveRequestTemplate
 			</div>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="mgmt-at">
-			<em about="rdfs:label" property="rdfs:label" class="text-muted"></em>
+			<em about="rdfs:label" property="rdfs:label"></em>
 			<p property="rdfs:label" class="view -edit -search"></p>
 			<veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
 			<br>
@@ -757,7 +757,7 @@ v-fs:AttributiveRequestTemplate
 			head = gen_head(types[0]);
 			genericHead.html(head);
 			customHead.empty();
-			var placeholder = (new veda.IndividualModel("v-fs:DragColumns")).present(customHead, '<tr><td><span class="text-muted" about="v-fs:DragColumns" property="rdfs:label"></span></td></tr>');
+			var placeholder = (new veda.IndividualModel("v-fs:DragColumns")).present(customHead, '<tr><td><em about="v-fs:DragColumns" property="rdfs:label"></em></td></tr>');
 		}
 		tHead.html( head.clone() );
 		

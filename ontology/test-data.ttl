@@ -587,7 +587,7 @@ td:PersonTemplate1
           <div class="col-md-6">
 	        <span about="v-s:Person" property="rdfs:label">Персона</span>
   	      </div>  
-          <div class="col-md-6 text-right text-muted">
+          <div class="col-md-6 text-right">
   	        <a href="#/@"><span property="@">ID</span></a>
   	        <a href="#/graph/@"><span class="glyphicon glyphicon-link"></span></a>
 	      </div>  
@@ -610,22 +610,22 @@ td:PersonTemplate1
 				</div>
 				<div class="row">
 					<div class="col-md-3">
-						<strong about="v-s:lastName" property="rdfs:label" class="text-muted">Фамилия</strong>
+						<em about="v-s:lastName" property="rdfs:label">Фамилия</em>
 						<div property="v-s:lastName"><br></div>
 						<veda-control property="v-s:lastName" type="string" class="-view edit search"></veda-control>
 					</div>
 					<div class="col-md-3">
-						<strong about="v-s:firstName" property="rdfs:label" class="text-muted">Имя</strong>
+						<em about="v-s:firstName" property="rdfs:label">Имя</em>
 						<div property="v-s:firstName"><br></div>
 						<veda-control property="v-s:firstName" type="string" class="-view edit search"></veda-control>
 					</div>
 					<div class="col-md-3">
-						<strong about="v-s:middleName" property="rdfs:label" class="text-muted">Отчество</strong>
+						<em about="v-s:middleName" property="rdfs:label">Отчество</em>
 						<div property="v-s:middleName"><br></div>
 						<veda-control property="v-s:middleName" type="string" class="-view edit search"></veda-control>
 					</div>
 						<div class="col-md-3">
-						<strong about="v-s:birthday" property="rdfs:label" class="text-muted">День рождения</strong>
+						<em about="v-s:birthday" property="rdfs:label">День рождения</em>
 						<div property="v-s:birthday"><br></div>
 						<veda-control property="v-s:birthday" type="dateTime" class="-view edit search"></veda-control>
 					</div>
@@ -680,7 +680,7 @@ td:AppointmentTemplate1
           <div class="col-md-6">
 	        <span about="v-s:Appointment" property="rdfs:label">Имя класса</span>
   	      </div>  
-          <div class="col-md-6 text-right text-muted">
+          <div class="col-md-6 text-right">
   	        <a href="#/@"><span property="@">ID</span></a>
 	      </div>  
 	    </div>
@@ -690,12 +690,12 @@ td:AppointmentTemplate1
         <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
         <div class="row">
           <div class="col-md-6">
-            <em about="v-s:employee" property="rdfs:label" class="text-muted"></em>
+            <em about="v-s:employee" property="rdfs:label"></em>
             <div rel="v-s:employee" template="v-ui:LabelTemplate" class="view -edit search"></div>
             <veda-control rel="v-s:employee" type="link" class="-view edit search fullsearch fulltext full"></veda-control>
           </div>
           <div class="col-md-6">
-            <em about="v-s:occupation" property="rdfs:label" class="text-muted"></em>
+            <em about="v-s:occupation" property="rdfs:label"></em>
             <div rel="v-s:occupation" template="v-ui:LabelTemplate" class="view -edit search"></div>
             <veda-control rel="v-s:occupation" type="link" class="-view edit search fullsearch fulltext"></veda-control>
           </div>
@@ -703,7 +703,7 @@ td:AppointmentTemplate1
         <br>
         <div class="row">
           <div class="col-md-6">
-            <em about="v-s:parentUnit" property="rdfs:label" class="text-muted"></em>
+            <em about="v-s:parentUnit" property="rdfs:label"></em>
             <div rel="v-s:parentUnit" template="v-ui:LabelTemplate" class="view -edit search"></div>
             <veda-control rel="v-s:parentUnit" type="link" class="-view edit search fullsearch fulltext"></veda-control>
           </div>
@@ -745,7 +745,7 @@ td:AccountTemplate1
           <div class="col-md-6">
 	        <span about="v-s:Account" property="rdfs:label">Имя класса</span>
   	      </div>  
-          <div class="col-md-6 text-right text-muted">
+          <div class="col-md-6 text-right">
             <a href="#/@"><span property="@">ID</span></a>
 	      </div>  
 	    </div>
@@ -755,7 +755,7 @@ td:AccountTemplate1
         <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
         <div class="row">
             <div class="col-md-12">
-               <strong about="v-s:owner" property="rdfs:label" class="text-muted">Владелец</strong>
+               <em about="v-s:owner" property="rdfs:label">Владелец</em>
                <div rel="v-s:owner" template="v-ui:LabelTemplate"></div>
                <veda-control rel="v-s:owner" type="link" class="-view edit search fullsearch fulltext"></veda-control>
             </div>
@@ -763,12 +763,12 @@ td:AccountTemplate1
         <br />
         <div class="row">
           <div class="col-md-6">
-               <strong about="v-s:mailbox" property="rdfs:label" class="text-muted">E-mail</strong>
+               <em about="v-s:mailbox" property="rdfs:label">E-mail</em>
                <div property="v-s:mailbox"><br></div>
                <veda-control property="v-s:mailbox" type="string" class="-view edit search"></veda-control>
           </div>
           <div class="col-md-6">
-               <strong about="v-s:login" property="rdfs:label" class="text-muted">Логин</strong>
+               <em about="v-s:login" property="rdfs:label">Логин</em>
                <div property="v-s:login"><br></div>
                <veda-control property="v-s:login" type="string" class="-view edit search"></veda-control>
 	      </div>
@@ -802,14 +802,14 @@ td:PreferencesTemplate1
       <div class="col-md-4">
         <span about="v-ui:Preferences" property="rdfs:label">Предпочтения</span>
       </div>
-      <div class="col-md-8 text-right text-muted">
+      <div class="col-md-8 text-right">
         <a href="#/@"><span property="@">ID</span></a>
       </div>  
     </div>
   </div>
   <div class="panel-body">
     <div>
-      <strong about="v-ui:preferredLanguage" property="rdfs:label" class="text-muted">Язык</strong>:
+      <em about="v-ui:preferredLanguage" property="rdfs:label">Язык</em>:
       <ul>
         <li rel="v-ui:preferredLanguage" template="v-ui:LabelTemplate"></li>
         <!--li rel="v-ui:preferredLanguage">
@@ -820,7 +820,7 @@ td:PreferencesTemplate1
         </li-->
       </ul>
       <veda-control rel="v-ui:preferredLanguage" type="link" class="-view edit search fulltext dropdown"></veda-control>
-      <strong about="v-ui:displayedElements" property="rdfs:label" class="text-muted">Отображать элементов</strong>: 
+      <em about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</em>: 
       <span property="v-ui:displayedElements"></span>
       <veda-control property="v-ui:displayedElements" type="integer" class="-view edit search"></veda-control>
     </div>

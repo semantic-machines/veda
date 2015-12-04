@@ -377,7 +377,7 @@ s-wf:ComplexRouteStartForm_Template
           <div class="col-md-6">
 	        <span about="s-wf:ComplexRouteStartForm" property="rdfs:label" />
   	      </div>  
-          <div class="col-md-6 text-right text-muted">
+          <div class="col-md-6 text-right">
                 <a href="#/@"><span property="@">ID</span></a>
 	      </div>  
 	    </div>
@@ -385,49 +385,49 @@ s-wf:ComplexRouteStartForm_Template
       <div class="panel-body">
         <div class="row">
             <div class="col-md-4">
-               <strong about="v-wf:processInitiator" property="rdfs:label" class="text-muted"></strong>
+               <em about="v-wf:processInitiator" property="rdfs:label"></em>
                <div rel="v-wf:processInitiator" template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
             </div>
             <div class="col-md-4">
-               <strong about="v-wf:processedDocument" property="rdfs:label" class="text-muted"></strong>
+               <em about="v-wf:processedDocument" property="rdfs:label"></em>
                <div rel="v-wf:processedDocument" template="v-ui:ClassNameLabelTemplate"></div>
             </div>
             <div class="col-md-4">
-               <strong about="v-wf:forNet" property="rdfs:label" class="text-muted"></strong>
+               <em about="v-wf:forNet" property="rdfs:label"></em>
                <div rel="v-wf:forNet" template="v-ui:ClassNameLabelTemplate"></div>
             </div>
             <div class="col-md-4">
-               <strong about="v-wf:isProcess" property="rdfs:label" class="text-muted"></strong>
+               <em about="v-wf:isProcess" property="rdfs:label"></em>
                <div rel="v-wf:isProcess" template="v-ui:ClassNameLabelTemplate"></div>
             </div>
             <div class="col-md-4">
-               <strong about="v-wf:useTransformation" property="rdfs:label" class="text-muted"></strong>
+               <em about="v-wf:useTransformation" property="rdfs:label"></em>
                <div rel="v-wf:useTransformation" template="v-ui:ClassNameLabelTemplate"></div>
             </div>
         </div>
         <hr />
         <div class="row">
             <div class="col-md-4">
-               <strong about="s-wf:ComplexRouteStartForm_coordinator1" property="rdfs:label" class="text-muted"></strong>
+               <em about="s-wf:ComplexRouteStartForm_coordinator1" property="rdfs:label"></em>
                <div rel="s-wf:ComplexRouteStartForm_coordinator1" template="td:AppointmentTemplate2"></div>
             </div>
             <div class="col-md-4">
-               <strong about="s-wf:ComplexRouteStartForm_coordinator2" property="rdfs:label" class="text-muted"></strong>
+               <em about="s-wf:ComplexRouteStartForm_coordinator2" property="rdfs:label"></em>
                <div rel="s-wf:ComplexRouteStartForm_coordinator2" template="td:AppointmentTemplate2"></div>
             </div>
             <div class="col-md-4">
-               <strong about="s-wf:ComplexRouteStartForm_coordinator3" property="rdfs:label" class="text-muted"></strong>
+               <em about="s-wf:ComplexRouteStartForm_coordinator3" property="rdfs:label"></em>
                <div rel="s-wf:ComplexRouteStartForm_coordinator3" template="td:AppointmentTemplate2"></div>
             </div>
         </div>
         <hr />
         <div class="row">
             <div class="col-md-4">
-               <strong about="s-wf:ComplexRouteStartForm_reviewer" property="rdfs:label" class="text-muted"></strong>
+               <em about="s-wf:ComplexRouteStartForm_reviewer" property="rdfs:label"></em>
                <div rel="s-wf:ComplexRouteStartForm_reviewer" template="td:AppointmentTemplate2"></div>
             </div>
             <div class="col-md-4">
-               <strong about="s-wf:ComplexRouteStartForm_signer" property="rdfs:label" class="text-muted"></strong>
+               <em about="s-wf:ComplexRouteStartForm_signer" property="rdfs:label"></em>
                <div rel="s-wf:ComplexRouteStartForm_signer" template="td:AppointmentTemplate2"></div>
             </div>
         </div>
@@ -701,24 +701,24 @@ s-wf:UserTaskFormTemplate
 		<h3 about="@" property="rdfs:label"></h3>
 		<div class="row">
 			<div class="col-md-3">
-				<strong about="v-wf:from" property="rdfs:label" class="text-muted"></strong>
+				<em about="v-wf:from" property="rdfs:label"></em>
 				<div about="@" rel="v-wf:from" template="v-ui:LabelTemplate"></div>
 			</div>
 			<div class="col-md-3">
-			   <strong about="v-wf:to" property="rdfs:label" class="text-muted"></strong>
+			   <em about="v-wf:to" property="rdfs:label"></em>
 			   <div about="@" rel="v-wf:to" template="v-ui:LabelTemplate"></div>
 			</div>
 			<div class="col-md-3">
-				<strong about="v-s:description" property="rdfs:label" class="text-muted"></strong>
+				<em about="v-s:description" property="rdfs:label"></em>
 				<div about="@" property="v-s:description"></div>
 			</div>            
 			<div class="col-md-3">
-				<strong about="v-wf:dateGiven" property="rdfs:label" class="text-muted"></strong>
+				<em about="v-wf:dateGiven" property="rdfs:label"></em>
 				<div about="@" property="v-wf:dateGiven"></div>
 			</div>
 		</div>
 		<hr />
-		<strong about="v-wf:takenDecision" property="rdfs:label" class="text-muted"></strong>
+		<em about="v-wf:takenDecision" property="rdfs:label"></em>
 		<div class="radio decision">
 			<label>
 				<input type="radio" name="decisionRadios">
@@ -726,7 +726,7 @@ s-wf:UserTaskFormTemplate
 		</div>
 		<div about="@" rel="v-wf:takenDecision" embedded="true"></div>
 		<hr />
-		<strong about="v-wf:onDocument" property="rdfs:label" class="text-muted"></strong>
+		<em about="v-wf:onDocument" property="rdfs:label"></em>
 		<div about="@" rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate" class="view edit -search"></div>
 	</div>	
 	

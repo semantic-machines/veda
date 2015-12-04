@@ -479,10 +479,23 @@
 				individual[property_uri] = [new Boolean(true) ];
 			}
 		});
-		
+
 		this.on("view edit search", function (e) {
 			e.stopPropagation();
-			e.type === "view" ? input.attr("disabled", "disabled") : input.removeAttr("disabled");
+			if (e.type === "view") {
+				input.attr("disabled", "disabled")
+				control.parents("label").tooltip("destroy");
+			} else {
+				input.removeAttr("disabled");
+				if (spec && spec.hasValue("v-ui:tooltip")) {
+					control.parents("label").tooltip({
+						title: spec["v-ui:tooltip"].join(", "),
+						placement: "bottom",
+						container: control,
+						trigger: "hover"
+					});
+				}
+			}
 		});
 		this.append(control);
 		return this;
