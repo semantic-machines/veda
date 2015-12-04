@@ -125,6 +125,7 @@ td:AndreyBychin-Analyst2
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Andrey Bychin : Analyst"@en ;
   rdfs:label "Андрей Бычин : Аналитик"@ru ;
+  v-s:parentUnit td:ApplicationDevelopmentGroup ;  
 .
 
 td:AndreyBychin-ExecutiveDirector
@@ -138,6 +139,7 @@ td:AndreyBychin-ExecutiveDirector
   v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Андрей Бычин : Исполнительный директор"@ru ;
+  v-s:parentUnit td:SemanticMachines ;  
 .
 
 td:ApplicationDevelopmentGroup
@@ -474,6 +476,7 @@ td:AleksandraKhvostikova-Analyst1
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Александра Хвостикова : Аналитик"@ru ;
   rdfs:label "Aleksandra Khvostikova : Analyst"@en ;  
+  v-s:parentUnit td:ApplicationDevelopmentGroup ;
 .
 
 td:RomanKarpov-Analyst1
@@ -484,6 +487,7 @@ td:RomanKarpov-Analyst1
   v-s:occupation td:Analyst1 ;
   v-s:published "2014-01-30T15:22:33"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:22:33"^^xsd:dateTime ;
+  v-s:parentUnit td:ApplicationDevelopmentGroup ;
   rdfs:label "Роман Карпов : Аналитик"@ru ;
 .
 
@@ -497,6 +501,7 @@ td:RomanKarpov-CommercialDirector
   v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Роман Карпов : Коммерческий директор"@ru ;
+  v-s:parentUnit td:SemanticMachines ;
 .
 
 td:SemanticMachines
@@ -539,6 +544,7 @@ td:ValeriyBushenev-Programmer1
   v-s:published "2014-01-30T15:12:15"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:12:15"^^xsd:dateTime ;
   rdfs:label "Валерий Бушенев : Программист"@ru ;
+  v-s:parentUnit td:ApplicationDevelopmentGroup ;
 .
 
 td:ValeriyBushenev-Programmer1
@@ -556,6 +562,7 @@ td:ValeriyBushenev-TechnicalDirector
   v-s:published "2014-01-30T15:30:21"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:30:21"^^xsd:dateTime ;
   rdfs:label "Валерий Бушенев : Технический директор"@ru ;
+  v-s:parentUnit td:SemanticMachines ;
 .
 
 td:SavedSearch1
