@@ -1,7 +1,3 @@
-# baseURI: http://semantic-machines.com/veda/simple-workflow-base
-# imports: http://semantic-machines.com/veda/veda-workflow
-
-# c14n-version: 3
 @prefix s-wfb: <http://semantic-machines.com/veda/simple-workflow-base/> .
 @prefix : <http://semantic-machines.com/veda/simple-workflow/> .
 @prefix s-wf: <http://semantic-machines.com/veda/simple-workflow/> .
@@ -52,15 +48,15 @@ s-wf:var_actor_task_add_to_date_to
 	rdfs:isDefinedBy s-wf: ;
 .
 s-wf:var_doc_id
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "docId" ;
-        rdfs:label "id документа"@ru ;
+    rdfs:label "id документа"@ru ;
 	rdfs:isDefinedBy s-wf: ;
 .
 s-wf:var_startForm_id
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "startForm_id" ;
-        rdfs:label "id стартовой формы"@ru ;
+    rdfs:label "id стартовой формы"@ru ;
 	rdfs:isDefinedBy s-wf: ;
 .
 s-wf:var_coordinator
@@ -72,31 +68,31 @@ s-wf:var_coordinator
 .
 
 s-wf:var_actor
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "actor" ;
-        rdfs:label "исполнители"@ru ;
+    rdfs:label "исполнители"@ru ;
 	v-wf:varDefineScope v-wf:Net ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:var_add_request_actor
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "add_request_actor" ;
-        rdfs:label "исполнители дополнительного запроса"@ru ;
+    rdfs:label "исполнители дополнительного запроса"@ru ;
 	v-wf:varDefineScope v-wf:Net ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:var_result_decision
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "result_decision" ;
-        rdfs:label "полученное решение пользователя"@ru ;
+    rdfs:label "полученное решение пользователя"@ru ;
 	v-wf:varDefineScope v-wf:Net ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:var_decision_of_set_responsible
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "decision_of_set_responsible" ;
         rdfs:label "решение о назначении исполнителей"@ru ;
 	v-wf:varDefineScope v-wf:Net ;
@@ -946,35 +942,34 @@ s-wf:rul_tr_form_9
 	rdfs:label "установить v-s:description из переменной s-wf:var_actor_task_action"@ru ;	
 .
 
-
 # ------------- journal ------------------------
 
 s-wf:var_journal_to
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	rdfs:isDefinedBy s-wf: ;
 	v-wf:varDefineName "v-wf:executor" ;
-        rdfs:label "кому"@ru ;
+    rdfs:label "кому"@ru ;
 .
 
 s-wf:var_journal_initiator
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	rdfs:isDefinedBy s-wf: ;
 	v-wf:varDefineName "v-wf:initiator" ;
-        rdfs:label "инициатор"@ru ;
+    rdfs:label "инициатор"@ru ;
 .
 
 s-wf:var_journal_msg
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	rdfs:isDefinedBy s-wf: ;
 	v-wf:varDefineName "rdfs:label" ;
-        rdfs:label "сообщение"@ru ;
+    rdfs:label "сообщение"@ru ;
 .
 
 s-wf:var_journal_decision
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	rdfs:isDefinedBy s-wf: ;
 	v-wf:varDefineName "v-wf:takenDecision" ;
-        rdfs:label "решение"@ru ;
+    rdfs:label "решение"@ru ;
 .
 
 s-wf:var_journal_ev_type
