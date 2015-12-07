@@ -186,3 +186,8 @@ v-b:atLeastOneFilled
   rdfs:label "Хотя ты одно из значений должно быть заполнено"@ru ;
   rdfs:label "At least one value must be filled"@en ;
 .
+v-b:numerationErrorValueIsUnavailable
+  rdf:type v-b:Bundle ;
+  rdfs:label "Данное значение занято"@ru ;
+  rdfs:label "This value is already reserved"@en ;
+.
