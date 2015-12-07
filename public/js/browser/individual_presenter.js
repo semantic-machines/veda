@@ -725,6 +725,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					} else {
 						// Create new draft
 						var clone = individual.clone();
+						clone['v-s:actualVersion'] = [individual];
 						clone['v-s:hasDraft'] = [];
 						clone['v-s:isDraftOf'] = [individual];
 						clone.save();
