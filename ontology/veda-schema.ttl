@@ -1624,3 +1624,12 @@ v-s:AppointmentSaveEvent
   }
 """
 .
+
+v-s:coauthor
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain rdfs:Resource ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "co-author"@en ;
+  rdfs:label "соавтор"@ru ;
+  rdfs:range v-s:Appointment ;
+.

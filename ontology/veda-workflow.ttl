@@ -1941,7 +1941,7 @@ v-wf:DecisionAgreedToProject
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdf:type owl:Class ;
-	rdfs:label "согласовано в проект"@ru ;
+	rdfs:label "начать проект"@ru ;
 .	
 
 v-wf:DecisionAgreedToExecute

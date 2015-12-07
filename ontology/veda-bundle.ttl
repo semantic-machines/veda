@@ -98,8 +98,8 @@ v-b:Draft
 .
 v-b:toDraft
   rdf:type v-b:Bundle ;
-  rdfs:label "Сохранить"@ru ;
-  rdfs:label "Save"@en ;
+  rdfs:label "Сохранить в черновик"@ru ;
+  rdfs:label "Save to draft"@en ;
 .
 v-b:Find
   rdf:type v-b:Bundle ;
