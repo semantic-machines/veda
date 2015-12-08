@@ -219,27 +219,25 @@ veda.Module(function Util(veda) { "use strict";
 	veda.Util.send = function (individual, template, transformId) {
 		individual.valid = true;
 		individual.trigger("individual:beforeSave");
-		if (!individual.valid) return;		
+		if (!individual.valid) return;
+		
+		individual.defineProperty("v-s:hasStatusWorkflow");
+		individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
+		//$('[resource="'+individual.id+'"]').find("#save").trigger("click");
+		template.trigger('save');
+		
 		if (transformId !== undefined) {
 			var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
 	    	riot.route("#/" + startForm.id + "///edit", true);
 		} else {
 			var s = new veda.SearchModel("'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
 			if (Object.getOwnPropertyNames(s.results).length == 0) {
-				if (!individual.hasValue("v-s:hasStatusWorkflow")) {
-					individual.defineProperty("v-s:hasStatusWorkflow");
-					individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
-					//$('[resource="'+individual.id+'"]').find("#save").trigger("click");
-					template.trigger('save');
-					var individualNode = $('[resource="'+individual.id+'"]');
-					individualNode.find("#send").remove();
-					individualNode.find("#edit").remove();
-					individualNode.find("#save").remove();
-					individualNode.find("#cancel").remove();
-					individualNode.find("#delete").remove();
-				} else {
-					alert("Документ уже отправлен");
-				}
+				var individualNode = $('[resource="'+individual.id+'"]');
+				individualNode.find("#send").remove();
+				individualNode.find("#edit").remove();
+				individualNode.find("#save").remove();
+				individualNode.find("#cancel").remove();
+				individualNode.find("#delete").remove();
 			} else if (Object.getOwnPropertyNames(s.results).length == 1) {
 				$('[resource="'+individual.id+'"]').find("#save").trigger("click");
 				Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
