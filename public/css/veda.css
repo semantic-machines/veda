@@ -34,6 +34,7 @@ body {
 }
 
 em {
+  margin-bottom: 5px;
   font-weight: bold;
   font-style: normal;
   color: #555;
@@ -449,6 +450,7 @@ veda-control {
   top:0px; 
   right:0px; 
   z-index:100;
+  padding:inherit;
 }
 .red-outline {
   outline: 3px dashed #faa!important;
