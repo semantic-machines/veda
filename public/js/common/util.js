@@ -782,6 +782,7 @@ function isNumerationValueAvailable(scope, value) {
 		throw "not implemented";
 	} else 
 	{
+		if (typeof scope === 'undefined') return true;
 		for (var i=0; i<scope['v-s:numerationCommitedInterval'].length; i++) 
 		{
 			var interval = new veda.IndividualModel(scope['v-s:numerationCommitedInterval'][i].id, undefined, undefined, undefined, false);
