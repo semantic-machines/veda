@@ -26,6 +26,16 @@ v-b:Bundle
   rdfs:label "Текстовая константа"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
+v-b:Back
+  rdf:type v-b:Bundle ;
+  rdfs:label "Назад"@ru ;
+  rdfs:label "Back"@en ;
+.
+v-b:Forward
+  rdf:type v-b:Bundle ;
+  rdfs:label "Вперед"@ru ;
+  rdfs:label "Forward"@en ;
+.
 v-b:Chief
   rdf:type v-b:Bundle ;
   rdfs:label "Руководитель"@ru ;

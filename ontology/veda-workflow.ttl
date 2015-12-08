@@ -1477,7 +1477,7 @@ v-wf:DecisionFormTemplate
   rdfs:comment "Пустой шаблон сделан специально, поскольку индивиды этого класса не должны вводиться пользователями"@ru ;
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
-<div>
+<!--div>
 	<strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
 	<div id="traceJournal">
 		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
@@ -1488,7 +1488,7 @@ v-wf:DecisionFormTemplate
 </div>
 <script>
 	if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
-</script>  
+</script-->
   """ ;
   .
 

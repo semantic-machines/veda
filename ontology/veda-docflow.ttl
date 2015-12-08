@@ -599,7 +599,6 @@ v-df:DecisionTemplate2
   v-ui:template """
 <div>
 	<br>
-	<em about="cmn-s:hasAction" property="rdfs:label"></em>
 	<div rel="cmn-s:hasAction" template="v-df:ActionInDecisionTemplate" embedded="true"></div>
 	<veda-control rel="cmn-s:hasAction" type="link" class="-view edit search fullsearch fulltext create"></veda-control>
 </div>
@@ -614,25 +613,22 @@ v-df:ActionInDecisionTemplate
 # v-ui:forClass cmn-s:Action ;   
   v-ui:template """
 <div>
-	<div class="panel panel-info">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<span about="cmn-s:hasAction" property="rdfs:label"></span>
+		</div>
 		<div class="panel-body">
-			<div class="row">
-				<div class="col-md-4">
-					<em about="v-s:responsible" property="rdfs:label"></em>
-					<div rel="v-s:responsible" template="v-ui:LabelTemplate" class="view -edit -search"></div>
-					<veda-control rel="v-s:responsible" type="link" class="fulltext dropdown -view edit search"></veda-control>
-				</div>
-				<div class="col-md-4">
-					<em about="v-s:description" property="rdfs:label"></em>
-					<div property="v-s:description" class="view -edit -search"></div>
-					<veda-control property="v-s:description" type="text" class="-view edit search"></veda-control>
-				</div>
-				<div class="col-md-4">
-					<em about="v-s:dateTo" property="rdfs:label"></em>
-					<div property="v-s:dateTo" class="view -edit -search"></div>
-					<veda-control property="v-s:dateTo" type="dateTime" class="-view edit search"></veda-control>
-				</div>				
-			</div>
+			<em about="v-s:responsible" property="rdfs:label"></em>
+			<div rel="v-s:responsible" template="v-ui:LabelTemplate" class="view -edit -search"></div>
+			<veda-control rel="v-s:responsible" type="link" class="fulltext dropdown -view edit search"></veda-control>
+			<br>
+			<em about="v-s:description" property="rdfs:label"></em>
+			<div property="v-s:description" class="view -edit -search"></div>
+			<veda-control property="v-s:description" type="text" class="-view edit search"></veda-control>
+			<br>
+			<em about="v-s:dateTo" property="rdfs:label"></em>
+			<div property="v-s:dateTo" class="view -edit -search"></div>
+			<veda-control property="v-s:dateTo" type="dateTime" class="-view edit search"></veda-control>
 		</div>
 	</div>
 </div>

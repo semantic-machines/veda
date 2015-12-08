@@ -842,7 +842,7 @@ s-wf:rul_tr_form_1
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'docId')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
-	v-wf:aggregate	"putFieldOfIndividFromElement ('rdfs:label', 'rdfs:label')"; 	
+#	v-wf:aggregate	"putFieldOfIndividFromElement ('rdfs:label', 'rdfs:label')"; 	
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
 	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
 	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
