@@ -790,7 +790,7 @@ function isNumerationValueAvailable(scope, value) {
 			{
 				return false;
 				max = interval['v-s:numerationCommitedIntervalEnd'][0]; 
-			}			
+			}
 		}
 		return true;
 	}
