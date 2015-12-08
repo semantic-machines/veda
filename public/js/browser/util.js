@@ -274,16 +274,16 @@ veda.Module(function Util(veda) { "use strict";
 		var startForm = new veda.IndividualModel();
 		Object.getOwnPropertyNames(transfromResult[0]).forEach(function (key)
 		{
-			if (key != '@') 
+			if (key !== '@') 
 			{
-				startForm.defineProperty(key);
+				if (key !== 'rdf:type') startForm.defineProperty(key);
 				if (!Array.isArray(transfromResult[0][key])) {
 					transfromResult[0][key] = [transfromResult[0][key]];
 				} 
 				for (var i in transfromResult[0][key]) 
 				{
 					var value = null;
-					if (key == 'rdf:type')
+					if (key === 'rdf:type')
 					{
 						value = veda.ontology[transfromResult[0][key][i].data];
 					} else  
