@@ -30,7 +30,7 @@
  
 function numerate(ticket, individual, oldstate, _event_id) {
   try {
-	if (individual['v-s:actualVersion'] && individual['v-s:actualVersion'][0].data != individual['@']) return;  
+	if (individual['v-s:actualVersion'] && individual['v-s:actualVersion'][0].data != individual['@']) return;
 	for (var key in individual) {
 		var property = get_individual(ticket, key);
 		if (property['v-s:hasNumerationMapper']) {
@@ -55,7 +55,9 @@ function numerate(ticket, individual, oldstate, _event_id) {
 			}
 			//print ('5'+scopeId);
 			
-			if (oldstate === "undefined" || !(oldstate[key] && oldstate[key][0].data > 0)) {
+			//print('5+'+oldstate['v-s:isDraftOf']);
+			//print('5.1+'+oldstate['v-s:isDraftOf'][0].data);
+			if (typeof oldstate === "undefined" || !(oldstate[key] && oldstate[key][0].data > 0) || (oldstate['v-s:isDraftOf'] && oldstate['v-s:isDraftOf'][0].data.length > 0)) {
 				if (commitValue(ticket, scope, parseInt(individual[key][0].data), _event_id)) {
 					return {'sucess': true , 'result':'VALUE IS COMMITED'};
 				} else {
