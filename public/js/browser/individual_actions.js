@@ -7,8 +7,8 @@ veda.Module(function IndividualActions(veda) { "use strict";
 	
 	veda.on("individual:loaded", function (individual, container, template, mode) {
 		function actionsHandler(template) {
-			var $send = template.find("#send"); 
-			var $createReport = template.find("#createReport");
+			var $send = template.find("#send").add(template.find(".sendbutton")); 
+			var $createReport = template.find("#createReport").add(template.find(".create-report-button"));
 			var $showRights = template.find("#rightsOrigin");
 			
 			function validHandler(e) { 
