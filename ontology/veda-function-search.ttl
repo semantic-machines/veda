@@ -859,10 +859,11 @@ v-fs:AttributiveRequestTemplate
 			} else if (this.id === "zoom") {
 				td.html("<a href='#/@'><span class='glyphicon glyphicon-search'></span></a>");
 			} else {
-				td.attr("about", "@");
 				var property = new veda.IndividualModel( this.id );
 				var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : undefined;
-				if (literals.indexOf(range) >= 0) {
+				if (range === "xsd:boolean") {
+					td.html( "<veda-control type='booleanCheckbox' property='" + property.id + "'></veda-control>" );
+				} else if (literals.indexOf(range) >= 0) {
 					td.attr("property", property.id);
 				} else {
 					td.attr("rel", property.id).attr("template", "v-ui:LabelLinkTemplate");
