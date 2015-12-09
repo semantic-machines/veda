@@ -696,7 +696,7 @@ v-s:firstName
   rdfs:comment "Имя персоны."@ru ;
   rdfs:domain v-s:Person ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "firstName"@en ;
+  rdfs:label "first name"@en ;
   rdfs:label "имя"@ru ;
   rdfs:range xsd:string ;
 .
@@ -852,7 +852,7 @@ v-s:lastName
   rdfs:comment "Фамилия персоны"@ru ;
   rdfs:domain v-s:Person ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "lastName"@en ;
+  rdfs:label "last name"@en ;
   rdfs:label "фамилия"@ru ;
   rdfs:range xsd:string ;
 .

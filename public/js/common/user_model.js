@@ -14,24 +14,28 @@ veda.Module(function (veda) { "use strict";
 				return acc;
 			}, {});
 		
-		var defaults = {
-			language : {"RU": self.availableLanguages["RU"]},
-			displayedElements : 10
-		};
-		
-		try { 
+		if ( self.hasValue("v-ui:hasPreferences") ) {
 			self.preferences = self["v-ui:hasPreferences"][0];
-
-			self.language = self.preferences["v-ui:preferredLanguage"].reduce( function (acc, lang) {
-				acc[lang["rdf:value"][0]] = self.availableLanguages[lang["rdf:value"][0]];
-				return acc;
-			}, {} );
-
-			self.displayedElements = self.preferences.hasValue("v-ui:displayedElements") ? self.preferences["v-ui:displayedElements"][0] : defaults.displayedElements;
-		} catch (e) {
-			self.language = defaults.language;
-			self.displayedElements = defaults.displayedElements;
+			if ( !self.preferences.hasValue("v-ui:preferredLanguage") || !self.preferences.hasValue("v-ui:displayedElements")) {
+				self.preferences["v-ui:preferredLanguage"] = [ self.availableLanguages["RU"] ];
+				self.preferences["v-ui:displayedElements"] = [ 10 ];
+				self.preferences.save();
+			}
+		} else {
+			self.preferences = new veda.IndividualModel();
+			self.preferences["rdf:type"] = [ new veda.IndividualModel("v-ui:Preferences") ];
+			self.preferences["rdfs:label"] = [ "Preferences_" + self.id ];
+			self.preferences["v-ui:preferredLanguage"] = [ self.availableLanguages["RU"] ];
+			self.preferences["v-ui:displayedElements"] = [ 10 ];
+			self.preferences.save();
+			self["v-ui:hasPreferences"] = [ self.preferences ];
+			self.save();
 		}
+		self.language = self.preferences["v-ui:preferredLanguage"].reduce( function (acc, lang) {
+			acc[lang["rdf:value"][0]] = self.availableLanguages[lang["rdf:value"][0]];
+			return acc;
+		}, {} );
+		self.displayedElements = self.preferences["v-ui:displayedElements"][0];
 
 		if ( self.hasValue("v-asp:hasAspect") ) {
 			self.aspect = self["v-asp:hasAspect"][0];
@@ -52,21 +56,19 @@ veda.Module(function (veda) { "use strict";
 			self.save();
 			veda.appointment = self["v-s:defaultAppointment"][0];
 		}
+ 
+		self.preferences.on("individual:propertyModified", function (property_uri, values) {
+			if (property_uri === "v-ui:displayedElements") {
+				self.displayedElements = values[0];
+			} 
+			if (property_uri === "v-ui:preferredLanguage") {
+				self.language = values.reduce( function (acc, lang) {
+					acc[lang["rdf:value"][0]] = self.availableLanguages[lang["rdf:value"][0]];
+					return acc;
+				}, {} );
+			}
+		});
 
-		if (self.preferences) { 
-			self.preferences.on("individual:propertyModified", function (property_uri, values) {
-				if (property_uri === "v-ui:displayedElements") {
-					self.displayedElements = values[0];
-				} 
-				if (property_uri === "v-ui:preferredLanguage") {
-					self.language = values.reduce( function (acc, lang) {
-						acc[lang["rdf:value"][0]] = self.availableLanguages[lang["rdf:value"][0]];
-						return acc;
-					}, {} );
-				}
-			});
-		}
-		
 		self.toggleLanguage = function(language_val) {
 			
 			if (language_val in self.language && Object.keys(self.language).length == 1) return;

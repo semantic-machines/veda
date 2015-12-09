@@ -773,7 +773,7 @@ function getNextValueSimple(ticket, scope, FIRST_VALUE) {
 }
 
 function isNumerationValueAvailable(scope, value) {
-	if (typeof scope == 'string') 
+	if (typeof scope === 'string') 
 	{
 		scope = new veda.IndividualModel(scope, undefined, undefined, undefined, false);
 	}
@@ -786,7 +786,7 @@ function isNumerationValueAvailable(scope, value) {
 		for (var i=0; i<scope['v-s:numerationCommitedInterval'].length; i++) 
 		{
 			var interval = new veda.IndividualModel(scope['v-s:numerationCommitedInterval'][i].id, undefined, undefined, undefined, false);
-			if (interval['v-s:numerationCommitedIntervalBegin'][0] <=value && value <= interval['v-s:numerationCommitedIntervalEnd'][0]) 
+			if (interval['v-s:numerationCommitedIntervalBegin'][0] <= value && value <= interval['v-s:numerationCommitedIntervalEnd'][0]) 
 			{
 				return false;
 				max = interval['v-s:numerationCommitedIntervalEnd'][0]; 
