@@ -7,18 +7,24 @@ veda.Module(function IndividualActions(veda) { "use strict";
 	
 	veda.on("individual:loaded", function (individual, container, template, mode) {
 		function actionsHandler(template) {
-			var $send = template.find("#send").add(template.find(".sendbutton")); 
-			var $createReport = template.find("#createReport").add(template.find(".create-report-button"));
+			var $send = template.find("#send"); 
+			var $sendButtons = template.find(".sendbutton"); 
+			var $createReport = template.find("#createReport");
+			var $createReportButtons = template.find(".create-report-button");
 			var $showRights = template.find("#rightsOrigin");
 			
 			function validHandler(e) { 
 				$send.removeAttr("disabled");
+				$sendButtons.removeAttr("disabled");
 				$createReport.removeAttr("disabled");
+				$createReportButtons.removeAttr("disabled");
 				e.stopPropagation();
 			}
 			function inValidHandler(e) { 
 				$send.attr("disabled", "disabled"); 
+				$sendButtons.attr("disabled", "disabled"); 
 				$createReport.attr("disabled", "disabled"); 
+				$createReportButtons.attr("disabled", "disabled"); 
 				e.stopPropagation();
 			}
 			template.on("valid", validHandler);

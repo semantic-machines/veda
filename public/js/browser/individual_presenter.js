@@ -818,12 +818,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		var stasks = $('#standard-tasks', template);
 		stasks.append($('<li/>', {
 			style:'cursor:pointer', 
-			click: function() {veda.Util.send(individual, null, 'v-wf:questionRouteStartForm')},
+			click: function() {veda.Util.send(individual, template, 'v-wf:questionRouteStartForm')},
 			html: '<a>'+(new veda.IndividualModel('v-b:SendQuestion')['rdfs:label'][0])+'</a>'
 		}));
 		stasks.append($('<li/>', {
 			style:'cursor:pointer', 
-			click: function() {veda.Util.send(individual, null, 'v-wf:instructionRouteStartForm')},
+			click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm')},
 			html: '<a>'+(new veda.IndividualModel('v-b:SendInstruction')['rdfs:label'][0])+'</a>'
 		}));
 

@@ -255,7 +255,7 @@ veda.Module(function Util(veda) { "use strict";
 			   			   "style" : "cursor:pointer",    
 	                 	   "html" : "<a>"+new veda.IndividualModel(res_id)['rdfs:label'][0]+"</a>",
 	                 	   "click": (function (e) {
-	                 		  veda.Util.send(individual, null, res['v-s:hasTransformation'][0].id);
+	                 		  veda.Util.send(individual, template, res['v-s:hasTransformation'][0].id);
 	                 	   })
 	                  	}).appendTo(sendDropdown);
 					});
