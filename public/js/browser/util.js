@@ -238,6 +238,9 @@ veda.Module(function Util(veda) { "use strict";
 				individualNode.find("#save").remove();
 				individualNode.find("#cancel").remove();
 				individualNode.find("#delete").remove();
+				if (individual.hasValue('v-wf:processedDocument')) {
+					veda.Util.showMessage("Документ успешно отправлен", "", 5000, individual['v-wf:processedDocument'][0], "view");
+				}
 			} else if (Object.getOwnPropertyNames(s.results).length == 1) {
 				$('[resource="'+individual.id+'"]').find("#save").trigger("click");
 				Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
@@ -395,25 +398,22 @@ veda.Module(function Util(veda) { "use strict";
 		});			
 	}
 	
-	veda.Util.editSource = function (individual, attribute, mode) {
-		// Ignore individuals without id
-		if (individual.id === undefined || individual.id === '' || individual.id === '_') return;
-		var container = $($("#edit-source-modal-template").html());
+	veda.Util.showMessage = function (message, cssClass, timeout, redirectIndividual, redirectIndividualMode) {
+		var container = $($("#notification-modal-template").html());
 		container.modal();
-
-		$("body").append(container);
 		
-		var	editor = CodeMirror($('.modal-body', container), {
-			value: individual.hasValue(attribute) ? individual[attribute][0].toString() : "",
-			mode: mode,
-			matchBrackets: true,
-			autoCloseBrackets: true,
-			matchTags: true,
-			autoCloseTags: true,
-			lineNumbers: true
-		});
+		$("body").append(container);
+
+		$("<div/>", {
+			'text': message,
+			'class': cssClass
+//			'onclick': function () {redirectIndividual.present(container, undefined, redirectIndividualMode);}
+		}).appendTo($(".modal-body", container));
 		setTimeout( function () {
-			editor.refresh();
-		}, 100);
+			container.modal('hide');
+			var main = $('#main');
+			main.empty();
+			redirectIndividual.present(main, undefined, redirectIndividualMode);
+		}, timeout);
 	}
 });
