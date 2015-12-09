@@ -841,7 +841,7 @@ td:PropertySpecification5
   rdfs:label "Employee property specification for Appointment class"@en ;
   v-ui:forClass v-s:Appointment ;
   v-ui:forProperty v-s:employee ;
-  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:treeRoot td:MondiSyktyvkar ;
   v-ui:treeRoot td:MondiSyktyvkar ;
@@ -854,7 +854,7 @@ td:PropertySpecification6
   rdfs:label "Employee property specification for Appointment class"@en ;
   v-ui:forClass v-s:Appointment ;
   v-ui:forProperty v-s:occupation ;
-  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
 .
 td:PsParentUnitForAppointment

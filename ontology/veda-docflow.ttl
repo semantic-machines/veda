@@ -281,11 +281,12 @@ v-df:QuestionRouteStartFormTemplate
 			<br>
 
 			<div class="row">
-			  <div class="col-md-6">
-					<em about="v-wf:processedDocument" property="rdfs:label"></em>            
-					<div rel="v-wf:processedDocument" template="v-ui:LabelTemplate" class="view -edit -search"></div>
-					<veda-control rel="v-wf:processedDocument" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
-			  </div>			  
+				<div class="col-md-2">
+					<em about="v-wf:processedDocument" property="rdfs:label"></em>
+				</div>
+				<div class="col-md-10">
+					<div about="@" rel="v-wf:processedDocument" template="v-ui:LabelTemplateWithLink" class="view edit search"></div>
+				</div>
 			</div>           
 
 			<br>
@@ -314,7 +315,7 @@ v-df:QuestionRouteStartFormTemplate
 			  <div class="col-md-6">
 					<em about="rdfs:comment" property="rdfs:label"></em>            
 					<div property="rdfs:comment" class="view -edit -search"></div>
-					<veda-control property="rdfs:comment" type="multilingualText" class="-view edit search"></veda-control>					
+					<veda-control property="rdfs:comment" type="text" class="-view edit search"></veda-control>					
 			  </div>		
 			</div>
 
@@ -346,13 +347,14 @@ v-df:InstructionRouteStartFormTemplate
 			<br>
 
 			<div class="row">
-			  <div class="col-md-6">
-					<em about="v-wf:processedDocument" property="rdfs:label"></em>            
-					<div rel="v-wf:processedDocument" template="v-ui:LabelTemplate" class="view -edit -search"></div>
-					<veda-control rel="v-wf:processedDocument" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
-			  </div>			  
+				<div class="col-md-2">
+					<em about="v-wf:processedDocument" property="rdfs:label"></em>
+				</div>
+				<div class="col-md-10">
+					<div about="@" rel="v-wf:processedDocument" template="v-ui:LabelTemplateWithLink" class="view edit search"></div>
+				</div>
 			</div>           
-
+			
 			<br>
 						
 			<div class="row">
@@ -379,7 +381,7 @@ v-df:InstructionRouteStartFormTemplate
 			  <div class="col-md-6">
 					<em about="rdfs:comment" property="rdfs:label"></em>        
 					<div property="rdfs:comment" class="view -edit -search"></div>
-					<veda-control property="rdfs:comment" type="multilingualText" class="-view edit search"></veda-control>					
+					<veda-control property="rdfs:comment" type="text" class="-view edit search"></veda-control>					
 			  </div>		
 			</div>
 

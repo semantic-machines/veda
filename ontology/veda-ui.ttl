@@ -1152,7 +1152,7 @@ v-ui:ImageSimpleTemplateTransparent
   rdfs:label "Шаблон для изображения без ссылки прозрачный фон"@ru ;
   rdfs:label "Image template without link transparent"@en ;
   v-ui:template """
-<img width="100%" style="max-width:200px;"></img>
+<img width="100%"></img>
 <script>
 	 template.attr("src", "/files/" + individual.id);
 </script>
