@@ -16,7 +16,7 @@
 
 		input.attr("placeholder", placeholder);
 		
-		var singleValueHandler = function (doc_property_uri, values) {
+		function singleValueHandler (doc_property_uri, values) {
 			if (doc_property_uri === property_uri) {
 				input.val( values[0] );
 			}
@@ -158,11 +158,55 @@
 	// Numeration control
 	$.fn.veda_numeration = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_numeration.defaults, options ),
-			control = veda_literal_input.call(this, opts),
-			input = $("input", control),
-			individual = opts.individual,
+			control = $(opts.template),
+			spec = opts.spec,
+			placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
+			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
 			property_uri = opts.property_uri,
+			individual = opts.individual,
+			input = $(".form-control", control),
 			button = $(".get-numeration-value", control);
+
+		input.attr("placeholder", placeholder);
+		
+		function singleValueHandler (doc_property_uri, values) {
+			if (doc_property_uri === property_uri) {
+				input.val( values[0] );
+			}
+		}
+		
+		var change = function (value) {
+			individual[property_uri] = [value];
+		};
+
+		input.val(individual[property_uri][0]);
+		individual.on("individual:propertyModified", singleValueHandler);
+		control.one("remove", function () {
+			individual.off("individual:propertyModified", singleValueHandler);
+		});
+			
+		if (spec && spec.hasValue("v-ui:tooltip")) {
+			control.tooltip({
+				title: spec["v-ui:tooltip"].join(", "),
+				placement: "bottom",
+				container: control,
+				trigger: "focus"
+			});
+		}
+
+		input.on("change focusout", function () {
+			var value = opts.parser( this.value, this );
+			change(value);
+		});
+
+		this.on("view edit search", function (e) {
+			e.stopPropagation();
+		});
+		
+		this.val = function (value) {
+			if (!value) return input.val();
+			return input.val(value);
+		}
 
 		button.on("click", function () {
 			var prop = new veda.IndividualModel(property_uri);			
@@ -180,7 +224,6 @@
 		});
 		
 		this.append(control);
-		
 		return this;
 	};
 	$.fn.veda_numeration.defaults = {
