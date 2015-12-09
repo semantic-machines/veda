@@ -201,8 +201,17 @@ jsWorkflow.ready = jsPlumb.ready;
             	else propsHead.text(about.id);
             });
             
-            instance.bind("beforeDetach", function(connection) {
-           		return connection.targetId.indexOf('jsPlumb') === 0;
+            instance.bind("connectionMoved", function(info, originalEvent) {
+            	if (info.originalSourceId !== info.newSourceId) {
+	            	net['v-wf:consistsOf'].forEach(function(state) {
+	        			if (state.id === info.originalSourceId) {
+	        				state['v-wf:hasFlow'] = veda.Util.removeSubIndividual(state, 'v-wf:hasFlow', info.connection.id);            				
+	        			}
+	        			if (state.id === info.newSourceId) {
+	        				state['v-wf:hasFlow'] = state.hasValue('v-wf:hasFlow')? state['v-wf:hasFlow'].concat([new veda.IndividualModel(info.connection.id)]):[new veda.IndividualModel(info.connection.id)];            				
+	        			}
+	        		});            
+            	}
             });
             
             // Handle creating new flow event
@@ -484,6 +493,10 @@ jsWorkflow.ready = jsPlumb.ready;
                 instance.makeSource(windows, {
                     filter: ".ep",
                     anchor: possibleOutAnchors,
+                    dragOptions : {
+                    	isSource:false,
+                		isTarget:true
+                    },
                     connector: [
 						"Straight", {
                     	stub: 30,
@@ -511,8 +524,11 @@ jsWorkflow.ready = jsPlumb.ready;
                 
                 instance.makeTarget(windows, {
                     dropOptions: {
+                    	isSource:true,
+                		isTarget:false,
                         hoverClass: "dragHover"
                     },
+                	reattach: true,
                     anchor: possibleInAnchors,
                     paintStyle:{ 
                         strokeStyle:"#225588",
@@ -991,10 +1007,6 @@ jsWorkflow.ready = jsPlumb.ready;
             /* ZOOM [END] */
 
             /* NET MENU [END] */
-            
-            /* PLUGIN FEATURES [BEGIN] */
-            // Drag'n'drop variables to tasks
-            /* PLUGIN FEATURES [END]*/
             
             return instance;
         };
