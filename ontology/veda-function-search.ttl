@@ -470,9 +470,9 @@ v-fs:FulltextRequestTemplate
 			if ( individual.hasValue(uri) ) {
 				props += "<em about='" + uri + "' property='rdfs:label'></em>: "
 				if (individual[uri][0] instanceof veda.IndividualModel) {
-					props += "<span about='@' rel='" + uri + "' template='v-ui:LabelLinkTemplate'></span>; "
+					props += "<span rel='" + uri + "' template='v-ui:LabelLinkTemplate'></span>; "
 				} else {
-					props += "<span about='@' property='" + uri + "'></span>; "
+					props += "<span property='" + uri + "'></span>; "
 				}
 			}
 		}
