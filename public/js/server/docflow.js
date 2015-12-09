@@ -21,6 +21,13 @@ function prepare_decision_form(ticket, document)
         var _work_order = get_individual(ticket, getUri(f_onWorkOrder));
         if (!_work_order) return;
 
+        var f_executor = _work_order['v-wf:executor'];
+        var executor;
+        
+        if (f_executor && f_executor.length > 0)
+        	executor = f_executor[0];
+
+//        print ("@@@executor=", toJson (executor));	
         //print("[WORKFLOW][DF1].1");
 
         var f_forWorkItem = _work_order['v-wf:forWorkItem'];
@@ -50,7 +57,7 @@ function prepare_decision_form(ticket, document)
         //print("[WORKFLOW][DF1].4 transform=", toJson(transform));
         //print("[WORKFLOW][DF1].4 _work_order=", toJson(_work_order));
 
-        var process_output_vars = transformation(ticket, decision_form, transform, null, f_onWorkOrder);
+        var process_output_vars = transformation(ticket, decision_form, transform, executor, f_onWorkOrder);
 
         //print("[WORKFLOW][DF1].5 transform_result=", toJson(process_output_vars));
         var new_vars = store_items_and_set_minimal_rights(ticket, process_output_vars);
