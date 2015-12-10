@@ -96,8 +96,7 @@ jsWorkflow.ready = jsPlumb.ready;
        			'height': canvasSizePx +'px',
        			'width': canvasSizePx+'px'
        		});
-        	$('body').css('height','100vh');
-        	$('#main').addClass('calculated-height');
+        	$('.workflow-wrapper').addClass('calculated-height');
         	$('#'+workflowData).draggable({
                 drag: function (event, ui) {
                   instance.moveCanvas(ui.position.left, ui.position.top);	

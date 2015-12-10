@@ -515,6 +515,11 @@ v-wf:NetTemplate
   v-ui:forClass v-wf:Net ;
   v-ui:template """
 <div class="workflow-wrapper">
+	<style>
+		#main {
+			margin-bottom: 0px;
+		}
+	</style>
 	<div class="row">
 		<div id="schema" class="col-md-8">
 			<div class="workflow-canvas-wrapper">
@@ -623,6 +628,11 @@ v-wf:ProcessTemplate
   v-ui:forClass v-wf:Process ;
   v-ui:template """
 <div class="workflow-wrapper">
+	<style>
+		#main {
+			margin-bottom: 0px;
+		}
+	</style>
 	<div class="row">
 		<div id="schema" class="col-md-8">
 			<div class="workflow-canvas-wrapper">
@@ -2049,7 +2059,6 @@ v-wf:DecisionRedirectTemplate
   v-ui:forClass v-wf:DecisionRedirect ;
   v-ui:template """
 <div>
-	<br>
 	<em about="v-wf:to" property="rdfs:label"></em>
 	<div rel="v-wf:to" template="v-ui:LabelTemplate" class="view -edit -search"></div>
 	<veda-control rel="v-wf:to" type="link" class="-view edit search fulltext dropdown"></veda-control>
@@ -2080,7 +2089,6 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionAgreedToProject ;  
   v-ui:template """
 <div>
-	<br>
 	<em about="rdfs:comment" property="rdfs:label"></em>
 	<div property="rdfs:comment" class="view -edit -search"></div>
 	<veda-control property="rdfs:comment" type="text" class="-view edit search"></veda-control>

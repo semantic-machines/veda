@@ -600,7 +600,6 @@ v-df:DecisionTemplate2
   v-ui:forClass v-wf:DecisionAgreedToExecute ;    
   v-ui:template """
 <div>
-	<br>
 	<div rel="cmn-s:hasAction" template="v-df:ActionInDecisionTemplate" embedded="true"></div>
 	<veda-control rel="cmn-s:hasAction" type="link" class="-view edit search fullsearch fulltext create"></veda-control>
 </div>

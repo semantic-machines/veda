@@ -62,8 +62,8 @@ em {
   border-top-right-radius: 0;
   border-top-left-radius: 0;
 }
-div#main {
-  /*margin-bottom:40px;*/
+#main {
+  margin-bottom:40px;
 }
 .huge {
   font-size: 32px;
@@ -606,8 +606,6 @@ path {
 
 .workflow-wrapper {
     height: 100%;
-	overflow-x:hidden;
-    overflow-y:hidden;
 }
 
 .workflow-canvas-wrapper {	
