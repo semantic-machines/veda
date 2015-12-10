@@ -62,8 +62,8 @@ jsWorkflow.ready = jsPlumb.ready;
             	if (net['rdf:type'][0].id == 'v-wf:Process') {
             		mode='view';
             		process = net;
-            		elementId = process.id;
             		net = (net.hasValue('v-wf:instanceOf'))?net['v-wf:instanceOf'][0]:[];            		
+            		elementId = net.id;
             	}
             }
 
