@@ -148,7 +148,7 @@ function is_exist (individual, field, value)
  */
 function transformation(ticket, individuals, transform, executor, work_order)
 {
-  try {	
+	try {	
     var out_data0 = {};
 
     if (Array.isArray(individuals) !== true) {
@@ -156,21 +156,28 @@ function transformation(ticket, individuals, transform, executor, work_order)
     }
 
     var rules = transform['v-wf:transformRule'];
-
+    
     if (!rules)
         return;
 
 	if (typeof window === "undefined") 
 	{
+		//print ("@B start transform");
+		var tmp_rules = [];
+//    	print ("rules_in=", toJson (rules));
+//		print ("individuals=", toJson (individuals));
 		for (var i in rules)
 		{
-    		rules[i] = get_individual(ticket, rules[i].data);
-    		if (!rules[i])
+			var rul = get_individual(ticket, rules[i].data);
+    		if (!rul)
 			{
-				print ("not read rule [", toJson (rules[i]), "]");
+				print ("not read rule [", toJson (rul), "]");
 				continue;
-			}				
+			}
+    		else
+        		tmp_rules.push (rul);    			
     	}
+		rules = tmp_rules;
     }
 
     var out_data0_el = {};
@@ -234,25 +241,16 @@ function transformation(ticket, individuals, transform, executor, work_order)
             out_data0_el[name] = out_data0_el_arr;
         }
     })();
-    
-    var setUri = (function ()
+
+    var setUri = function (name, value)
     {
-        return function (name, value)
-        {
-            var out_data0_el_arr;
-
-            out_data0_el_arr = [];
-
-            out_data0_el_arr.push(
-            {
-                data: value,
-                type: _Uri
-            });
-
-            out_data0_el[name] = out_data0_el_arr;
-        }
-    })();    
-
+        out_data0_el[name] = [{data: value, type: _Uri}];
+        
+    	//if (typeof window === "undefined") 
+    	//	print ("@1 out_data0_el=", toJson (out_data0_el));
+//    		print ("@1 out_data0_el[",name, "]=", toJson (out_data0_el[name]));
+    }
+    
     var putString = (function ()
     {
         return function (name, value)
@@ -375,9 +373,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
     {
         return function (name, value)
         {
-            var out_data0_el_arr;
-
-            out_data0_el_arr = out_data0_el[name];
+            var out_data0_el_arr = out_data0_el[name];
 
             if (!out_data0_el_arr)
                 out_data0_el_arr = [];
@@ -414,7 +410,22 @@ function transformation(ticket, individuals, transform, executor, work_order)
     {
         return function (name)
         {
-            out_data0_el[name] = [executor];
+            var out_data0_el_arr = out_data0_el[name];
+
+            if (!out_data0_el_arr)
+                out_data0_el_arr = [];
+        	
+        	if (Array.isArray(executor) === true)
+        	{	
+        	    for (var key3 in executor)
+        	    {
+            		out_data0_el_arr.push(executor[key3]);    	            	    	
+        	    }
+        	}	
+        	else
+        		out_data0_el_arr.push(executor);
+        	
+            out_data0_el[name] = out_data0_el_arr;
         }
     })();
 
@@ -422,7 +433,22 @@ function transformation(ticket, individuals, transform, executor, work_order)
     {
         return function (name)
         {
-            out_data0_el[name] = [work_order];
+            var out_data0_el_arr = out_data0_el[name];
+
+            if (!out_data0_el_arr)
+                out_data0_el_arr = [];
+        	
+        	if (Array.isArray(work_order) === true)
+        	{	
+        	    for (var key3 in work_order)
+        	    {
+            		out_data0_el_arr.push(work_order[key3]);    	            	    	
+        	    }
+        	}	
+        	else
+        		out_data0_el_arr.push(work_order);
+        	
+            out_data0_el[name] = out_data0_el_arr;
         }
     })();
     /* PUT functions [END] */
@@ -488,6 +514,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
 
     	            if (!out_data0_el_arr)
     	                out_data0_el_arr = [];
+    	            
     	            if (iteratedObject[key2] == '@')
     	            {
     	                out_data0_el_arr.push(
@@ -497,9 +524,19 @@ function transformation(ticket, individuals, transform, executor, work_order)
     	                });
     	            }
     	            else
-    	                out_data0_el_arr.push(element);
+    	            {
+    	            	if (Array.isArray(element) === true)
+    	            	{	
+    	            	    for (var key3 in element)
+    	            	    {
+        	            		out_data0_el_arr.push(element[key3]);    	            	    	
+    	            	    }
+    	            	}	
+    	            	else
+    	            		out_data0_el_arr.push(element);    	            		
+    	            }    
 
-    	            out_data0_el[name] = out_data0_el_arr;
+    	            out_data0_el[name] = out_data0_el_arr;    	            
     	        }
     	    })();
             
@@ -548,7 +585,17 @@ function transformation(ticket, individuals, transform, executor, work_order)
     	                });
     	            }
     	            else
-    	                out_data0_el_arr.unshift(element);
+   	            	{
+    	            	if (Array.isArray(element) === true)
+    	            	{	
+    	            	    for (var key3 in element)
+    	            	    {
+        	            		out_data0_el_arr.unshift(element[key3]);    	            	    	
+    	            	    }
+    	            	}	
+    	            	else
+    	            		out_data0_el_arr.unshift(element);
+   	            	}   
 
     	            out_data0_el[name] = out_data0_el_arr;
     	        }
@@ -567,7 +614,16 @@ function transformation(ticket, individuals, transform, executor, work_order)
 
     	            if (!out_data0_el_arr)
     	                out_data0_el_arr = [];
-   	                out_data0_el_arr.push(element);
+    	            
+	            	if (Array.isArray(element) === true)
+	            	{	
+	            	    for (var key3 in element)
+	            	    {
+    	            		out_data0_el_arr.push(element[key3]);    	            	    	
+	            	    }
+	            	}	
+	            	else
+	            		out_data0_el_arr.push(element);
 
     	            out_data0_el[name] = out_data0_el_arr;
     	        }
@@ -705,13 +761,14 @@ function transformation(ticket, individuals, transform, executor, work_order)
         }
     }
 
+    //if (typeof window === "undefined") 
+	//	print("@E out_data0=", toJson (out_data0));
+    
     var out_data = [];
     for (var key in out_data0)
     {
         out_data.push(out_data0[key]);
     }
-
-    //print ("#e out_data=", toJson (out_data));
 
     return out_data;
   } catch(e) {
