@@ -826,6 +826,7 @@ v-wf:DecisionGoReview
 s-wf:tr_actor_add_request_form
     rdf:type v-wf:Transform ;
 	v-wf:transformRule s-wf:rul_tr_form_1 ;	
+	v-wf:transformRule s-wf:rul_tr_form_1a ;	
     v-wf:transformRule s-wf:rul_tr_form_2 ;
     v-wf:transformRule s-wf:rul_tr_form_6a ;
     v-wf:transformRule s-wf:rul_tr_form_9a ;
@@ -1308,13 +1309,14 @@ s-wf:map_jrn_msg_nce_t2_b_ev
 .
 
 s-wf:map_jrn_decision_b
-        rdf:type v-wf:Mapping ;
+    rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wf: ;
-        v-wf:mapToVariable s-wf:var_journal_decision ;
-        v-wf:mappingExpression "order.getOutVariable ('result_data')" ;
+    v-wf:mapToVariable s-wf:var_journal_decision ;
+    v-wf:mappingExpression "order.getOutVariable ('result_data')" ;
 .
 
-s-wf:net_coordination a v-wf:Net;
+s-wf:net_coordination 
+    a v-wf:Net;
     rdfs:label "универсальный маршрут 1"@ru;
     v-wf:consistsOf s-wf:nc_ic, s-wf:nc_t1, s-wf:nc_t2, s-wf:nc_t3, s-wf:nc_oc, s-wf:nc_f_ic_t1, s-wf:nc_f_t1_t2, s-wf:nc_f_t3_t1;
     v-wf:consistsOf s-wf:nc_f_t2_oc, s-wf:nc_f_t2_t1, s-wf:c1, d:abaa42215-965f-a032-aada-31be82a54e95, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23;
@@ -1438,7 +1440,8 @@ d:a16bb1fd3-64eb-a7bb-501d-889b2aa4500d v-wf:hasFlow d:a8b89a22d-23b9-1c1c-c5dc-
     v-s:created "2015-11-17T11:54:51.988Z"^^xsd:dateTime;
     v-wf:locationX "381"^^xsd:integer.
 
-s-wf:nc_t1 a v-wf:Task;
+s-wf:nc_t1 
+    a v-wf:Task;
 	rdfs:isDefinedBy s-wf: ;
     v-wf:locationX "660"^^xsd:integer;
     v-wf:locationY "515"^^xsd:integer;
@@ -1448,7 +1451,8 @@ s-wf:nc_t1 a v-wf:Task;
     rdfs:label "установить права"^^xsd:string;
 .
 
-s-wf:nc_t2 a v-wf:Task;
+s-wf:nc_t2 
+    a v-wf:Task;
     v-wf:locationX "865"^^xsd:integer;
     v-wf:locationY "529"^^xsd:integer;
     v-wf:split v-wf:XOR;
@@ -1468,14 +1472,14 @@ s-wf:nc_t2 a v-wf:Task;
 .
 
 s-wf:additional_user_response 
+    a v-wf:Task;
     v-wf:hasFlow d:afdd3ebd0-7934-8d38-1f68-158a05f0330d, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23, d:a74e1dea7-75e9-9d5f-b942-d1a7f2b91b2b;
 	v-wf:split v-wf:XOR;    
     v-wf:locationY "356"^^xsd:integer;
-    a v-wf:Task;
 	v-wf:startDecisionTransform s-wf:tr_actor_add_request_form;
     v-wf:completeDecisionTransform s-wf:tr_taken_decision;    
 	v-wf:startingMapping s-wf:map_doc_id, s-wf:map_set_add_request_actor_from_initiator, s-wf:map_initiator_from_actor, s-wf:map_possible_decision_for_add_reaction;   
-    v-wf:startingMapping s-wf:map_actor_task_description_from_LV_result_decision;
+    v-wf:startingMapping s-wf:map_actor_task_description_from_LV_result_decision, s-wf:map_decision_form_type_4_PIV_decision_form_type;
     v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_set_actor_task_description_from_TR_result_data;
     rdfs:label "дополнительная реакция"^^xsd:string;
     v-wf:executor s-wf:def_exec_initiator;
