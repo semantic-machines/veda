@@ -1123,6 +1123,34 @@ v-ui:ImageTemplate
 </script>
   """ ;
 .
+v-ui:ModalImageTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для изображения"@ru ;
+  rdfs:label "Image template"@en ;
+  v-ui:template """
+<div>
+	<a id="link" href="#"><img class="img-thumbnail"></img></a>
+	<div class="modal" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<img width="100%"></img>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	 $("img", template).attr("src", "/files/" + individual.id);
+	 var modal;
+	 $("#link", template).click(function (e) {
+		e.preventDefault();
+		if (!modal) modal = $("#modal").modal();
+		modal.modal("show");
+	 });
+</script>
+  """ ;
+.
 v-ui:ImageSimpleTemplateWithoutBorder
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для изображения"@ru ;
