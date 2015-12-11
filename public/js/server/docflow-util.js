@@ -185,6 +185,11 @@ function Context(_src_data, _ticket)
         return this.src_data['v-wf:executor'];
     };
 
+    this.getLabel = function()
+    {
+        return this.src_data['rdfs:label'];
+    };
+
     this.get_results = function()
     {
         return this.src_data;
@@ -698,16 +703,21 @@ function create_new_journal(ticket, new_journal_uri, process_uri, label)
 
 }
 
-function mapToJournal(map_container, ticket, _process, _task, _order)
+function mapToJournal(map_container, ticket, _process, _task, _order, task_label)
 {
     try
     {
-        //print ("@mapToJournal.1");
+        print ("@mapToJournal.1 task_label=", toJson (task_label));
         if (map_container)
         {
             //* выполнить маппинг для журнала 
             var journalVars = [];
 
+            if (_task)
+            	_task['rdfs:label'] = task_label;
+            
+            print ("@mapToJournal.1 task=", toJson (_task));            
+            
             journalVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, null);
             if (journalVars)
             {

@@ -49,7 +49,8 @@ function newStr(_data)
     return [
     {
         data: _data,
-        type: _String
+        type: _String,
+        lang: 0
     }];
 }
 

@@ -772,7 +772,10 @@ function prepare_work_item(ticket, document)
             if (executor_list.length == 0)
                 executor_list.push(null);
             else
-                mapToJournal(netElement['v-wf:startingJournalMap'], ticket, _process, document);
+            {
+            	print ("@@@ netElement=", toJson (netElement));
+                mapToJournal(netElement['v-wf:startingJournalMap'], ticket, _process, document, null, netElement['rdfs:label']);
+            }    
 
             var work_order_list = [];
             var work_order_uri_list = [];

@@ -588,6 +588,13 @@ s-wf:map_jrn_msg_t3_b_ev
         v-wf:mappingExpression  "newUri ('v-wf:TaskGiven')" ;
 .
 
+s-wf:map_jrn_ev_type_4_TaskGiven
+        rdf:type v-wf:Mapping ;
+	rdfs:isDefinedBy s-wfc: ;
+        v-wf:mapToVariable s-wf:var_journal_ev_type ;
+        v-wf:mappingExpression  "newUri ('v-wf:TaskGiven')" ;
+.
+
 s-wf:map_jrn_msg_t3_e
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wfc: ;
@@ -603,6 +610,13 @@ s-wf:map_jrn_msg_t6_e
 .
 
 s-wf:map_jrn_msg_t3_e_ev
+        rdf:type v-wf:Mapping ;
+	rdfs:isDefinedBy s-wfc: ;
+        v-wf:mapToVariable s-wf:var_journal_ev_type ;
+        v-wf:mappingExpression  "newUri ('v-wf:TaskCompleted')" ;
+.
+
+s-wf:map_jrn_ev_type_4_TaskCompleted
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:var_journal_ev_type ;

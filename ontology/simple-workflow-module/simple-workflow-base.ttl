@@ -1034,6 +1034,20 @@ s-wf:map_journal_to
 	rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_journal_msg_4_task_label_start
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_journal_msg ;	
+	v-wf:mappingExpression	"newStr (task.getLabel ())" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_journal_msg_4_task_label_complete
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_journal_msg ;	
+	v-wf:mappingExpression	"newStr (task.getLabel ())" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:map_journal_initiator
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_journal_initiator ;	
