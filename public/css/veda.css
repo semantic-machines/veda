@@ -37,14 +37,20 @@ em {
   margin-bottom: 5px;
   font-weight: bold;
   font-style: normal;
-  color: #555;
+  /*color: #555;*/
+  /*color: #222;*/
   display: inline-block;
 }
-/*em::first-letter {
+em::first-letter {
   color: #711;
-  font-size: 130%;
+  /*color: #000;*/
+  font-size: 150%;
   font-variant: small-caps;
-}*/
+}
+
+.nav-right > li {
+  float: right;
+}
 
 #credentials {
     max-width: 330px;

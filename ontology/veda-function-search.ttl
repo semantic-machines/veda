@@ -149,8 +149,8 @@ v-fs:LabelSpec
 .
 v-fs:RequestMgmt
   rdf:type v-b:Bundle ;
-  rdfs:label "Request management"@en ;
-  rdfs:label "Управление запросом"@ru ;
+  rdfs:label "Remember"@en ;
+  rdfs:label "Запомнить"@ru ;
 .
 v-fs:SavedRequests
   rdf:type v-b:Bundle ;
@@ -184,8 +184,8 @@ v-fs:ChooseType
 .
 v-fs:Params
   rdf:type v-b:Bundle ;
-  rdfs:label "Parameters"@en ;
-  rdfs:label "Параметры"@ru ;
+  rdfs:label "What we search for?"@en ;
+  rdfs:label "Что ищем?"@ru ;
 .
 v-fs:Find
   rdf:type v-b:Bundle ;
@@ -194,8 +194,8 @@ v-fs:Find
 .
 v-fs:Results
   rdf:type v-b:Bundle ;
-  rdfs:label "Results"@en ;
-  rdfs:label "Результаты"@ru ;
+  rdfs:label "What we found"@en ;
+  rdfs:label "Что нашли"@ru ;
 .
 v-fs:Empty
   rdf:type v-b:Bundle ;
@@ -356,12 +356,13 @@ v-fs:FulltextRequestTemplate
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:template """
 <div role="tabpanel">
-	<h3 about="@" property="rdfs:label"></h3>
+	<br>
 	<!-- Nav tabs -->
-	<ul class="nav nav-tabs" role="tablist">
-		<li role="presentation" class="active"><a id="params-pill-ft" href="#params-ft" about="v-fs:Params" property="rdfs:label" aria-controls="params-ft" role="tab" data-toggle="tab"></a></li>
-		<li role="presentation"><a id="results-pill-ft" href="#results-ft" aria-controls="results-ft" role="tab" data-toggle="tab"><span href="#params-ft" about="v-fs:Results" property="rdfs:label"></span> <span class="badge" id="results-count">0</span></a></li>
+	<ul class="nav nav-tabs nav-right" role="tablist">
+		<li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
 		<li role="presentation"><a href="#mgmt-ft" about="v-fs:RequestMgmt" property="rdfs:label" aria-controls="mgmt-ft" role="tab" data-toggle="tab"></a></li>
+		<li role="presentation"><a id="results-pill-ft" href="#results-ft" aria-controls="results-ft" role="tab" data-toggle="tab"><span href="#params-ft" about="v-fs:Results" property="rdfs:label"></span> <span class="badge" id="results-count">0</span></a></li>
+		<li role="presentation" class="active"><a id="params-pill-ft" href="#params-ft" about="v-fs:Params" property="rdfs:label" aria-controls="params-ft" role="tab" data-toggle="tab"></a></li>
 	</ul>
 	<br />
 	<!-- Tab panes -->
@@ -615,12 +616,13 @@ v-fs:AttributiveRequestTemplate
   v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:template """
 <div role="tabpanel">
-	<h3 about="@" property="rdfs:label"></h3>
+	<br>
 	<!-- Nav tabs -->
-	<ul class="nav nav-tabs" role="tablist">
-		<li role="presentation" class="active"><a id="params-pill-at" href="#params-at" about="v-fs:Params" property="rdfs:label" aria-controls="params-at" role="tab" data-toggle="tab"></a></li>
-		<li role="presentation"><a id="results-pill-at" href="#results-at" aria-controls="results-at" role="tab" data-toggle="tab"><span href="#params-at" about="v-fs:Results" property="rdfs:label"></span> <span class="badge" id="results-count">0</span></a></li>
+	<ul class="nav nav-tabs nav-right" role="tablist">
+		<li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
 		<li role="presentation"><a href="#mgmt-at" about="v-fs:RequestMgmt" property="rdfs:label" aria-controls="mgmt-at" role="tab" data-toggle="tab"></a></li>
+		<li role="presentation"><a id="results-pill-at" href="#results-at" aria-controls="results-at" role="tab" data-toggle="tab"><span href="#params-at" about="v-fs:Results" property="rdfs:label"></span> <span class="badge" id="results-count">0</span></a></li>
+		<li role="presentation" class="active"><a id="params-pill-at" href="#params-at" about="v-fs:Params" property="rdfs:label" aria-controls="params-at" role="tab" data-toggle="tab"></a></li>
 	</ul>
 	<br />
 	<!-- Tab panes -->

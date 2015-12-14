@@ -87,20 +87,19 @@ v-ft:FunctionTasksTemplate
 		<thead>
 			<tr>
 				<th width="20px">#</span></th>
-				<th width="20px"><span class="fa fa-search"></span></th>
-				<th width="15%">
+				<th width="10%">
 					<a id="v-wf:from" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
 					<span about="v-wf:from" property="rdfs:label"></span>
 				</th>
-				<th width="15%">
+				<th width="10%">
 					<a id="v-wf:to" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
 					<span about="v-wf:to" property="rdfs:label"></span>
 				</th>
 				<th>
-					<a id="v-s:description" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
+					<a id="rdfs:label" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
 					<span about="v-s:description" property="rdfs:label"></span>
 				</th>
-				<th>
+				<th width="40%">
 					<a id="v-wf:onDocument" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
 					<span about="v-wf:onDocument" property="rdfs:label"></span>
 				</th>
@@ -228,11 +227,13 @@ v-ft:TaskTemplate
   v-ui:template """
 <tr>
 	<td>###</td>
-	<td><a href="#/@"><span class="fa fa-search"></span></a></td>
 	<td rel="v-wf:from" template="v-ui:LabelTemplate"></td>
 	<td rel="v-wf:to" template="v-ui:LabelTemplate"></td>
-	<td><a href="#/@" property="v-s:description"></a></td>
-	<td rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate"></td>
+	<td>
+		<a href="#/@" property="rdfs:label"></a>
+		<p><span property="v-s:description"></span></p>
+	</td>
+	<td rel="v-wf:onDocument" template="v-ui:LabelTemplate"></td>
 	<td property="v-wf:dateGiven"></td>
 </tr>
 <script>
