@@ -232,9 +232,11 @@ function newJournalRecord(journal_uri)
     return new_journal_record;
 }
 
-function logToJournal(ticket, journal_uri, journal_record)
+function logToJournal(ticket, journal_uri, journal_record, jr_type)
 {
-    //print("@@@ logToJournal, new_journal_record=" + toJson(journal_record));
+	if (!jr_type)
+		print("@@@ logToJournal, new_journal_record=" + toJson(journal_record));
+	
     put_individual(ticket, journal_record, _event_id);
 
     var add_to_journal = {
@@ -246,8 +248,10 @@ function logToJournal(ticket, journal_uri, journal_record)
         }]
     };
 
-    //print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
-    add_to_individual(ticket, add_to_journal, _event_id);
+	if (!jr_type)
+		print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
+
+	add_to_individual(ticket, add_to_journal, _event_id);
 }
 
 function traceToJournal(ticket, journal_uri, label, _data)
@@ -271,7 +275,7 @@ function traceToJournal(ticket, journal_uri, label, _data)
         type: _String
     }];
 
-    logToJournal(ticket, journal_uri, journal_record);
+    logToJournal(ticket, journal_uri, journal_record, true);
 
     //print("@@@ traceToJournal, journal_uri=" + journal_uri + ", " + toJson(journal_record));
 }

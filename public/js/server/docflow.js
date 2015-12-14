@@ -108,6 +108,8 @@ function prepare_work_order(ticket, document)
         if (trace_journal_uri)
             traceToJournal(ticket, trace_journal_uri, "обработка рабочего задания", toJson(document));
 
+        // create_new_subjournal(f_forWorkItem, _work_order, "prepare_work_order:" + _work_order['@'], 'v-wf:WorkOrderStarted')
+        
         var f_inVars = work_item['v-wf:inVars'];
         if (!f_inVars)
             f_inVars = [];
@@ -296,7 +298,8 @@ function prepare_work_order(ticket, document)
 
                     //print("[WORKFLOW][WO2.0] transform_link=" + toJson(net_element['v-wf:startDecisionTransform']));
                     //print("[WORKFLOW][WO2.1] work_item_inVars=" + toJson(work_item_inVars));
-                    mapToJournal(net_element['v-wf:startingExecutorJournalMap'], ticket, _process, work_item, _work_order);
+                    //print ("@@@1 net_element['v-wf:startingExecutorJournalMap']=", toJson (net_element['v-wf:startingExecutorJournalMap']), ", @=", net_element['@']));
+                    mapToJournal(net_element['v-wf:startingExecutorJournalMap'], ticket, _process, work_item, _work_order, null, trace_journal_uri, 'v-wf:startingExecutorJournalMap');
 
                     var transform_link = getUri(net_element['v-wf:startDecisionTransform']);
                     if (!transform_link) return;
@@ -611,6 +614,8 @@ function prepare_work_item(ticket, document)
         }
 
         trace_journal_uri = create_new_trace_subjournal(forProcess, work_item, netElement['@'] + "' - [" + getStrings(netElement['rdfs:label']) + "] - " + work_item['@'], 'v-wf:WorkItemStarted')
+
+        //create_new_subjournal(forProcess, work_item, getStrings(netElement['rdfs:label']) + work_item['@'], 'v-wf:WorkItemStarted')
 
         var f_join = netElement['v-wf:join'];
         if (f_join && getUri(f_join) == "v-wf:AND")
@@ -1137,7 +1142,6 @@ function prepare_start_form(ticket, document)
     }
 
     put_individual(ticket, new_process, _event_id);
-
 
     create_new_journal(ticket, getJournalUri(new_process_uri), new_process_uri, _net['rdfs:label']);
 
