@@ -301,10 +301,19 @@ veda.Module(function (veda) { "use strict";
 	 * Save current individual to database
 	 */
 	proto.save = function() {
+		return this.saveIndividual(false);
+	}
+	
+	proto.draft = function() {
+		return this.saveIndividual(true);
+	}
+		
+	proto.saveIndividual = function(draft) {
 		var self = this;
 		self.valid = true;
 		self.trigger("individual:beforeSave");
 		if (!self.valid) return false;
+
 		// Do not save individual to server if nothing changed
 		//if (self._.sync) return;
 		Object.keys(self._.individual).reduce(function (acc, property_uri) {
@@ -315,11 +324,62 @@ veda.Module(function (veda) { "use strict";
 			if (!acc[property_uri].length) delete acc[property_uri];
 			return acc;
 		}, self._.individual);
-		put_individual(veda.ticket, self._.individual);
+		put_individual(veda.ticket, self._.individual);		
 		self._.original_individual = JSON.stringify(self._.individual);
 		self._.sync = true;
 		if (self._.cache) veda.cache[self.id] = self;
 		self.trigger("individual:afterSave", self._.original_individual);
+		
+		if (!draft && (self.hasValue('v-s:isDraftOf') || self.is('v-s:Versioned'))) 
+		{
+			// Before
+			var previousId = self.hasValue('v-s:isDraftOf')?
+									(self['v-s:isDraftOf'][0].hasValue('v-s:previousVersion')?
+									 self['v-s:isDraftOf'][0]['v-s:previousVersion'][0].id:
+									 null):
+									(self.hasValue('v-s:previousVersion')?
+									 self['v-s:previousVersion'][0].id:
+									 null);
+			var actualId = self.hasValue('v-s:isDraftOf')?self['v-s:isDraftOf'][0].id:self.id;
+			var versionId = (actualId==self.id)?veda.Util.genUri():self.id;
+			
+			// After
+			var actual = self.clone();						
+			var version = self.clone();
+			var previous = previousId!=null?new veda.IndividualModel(previousId):null;
+			actual.id = actualId;
+			version.id = versionId;
+			
+			// Save draft as actual version
+			delete actual['v-s:isDraftOf'];
+			delete actual['v-s:hasDraft'];
+			actual['v-s:previousVersion'] = [version];
+			actual['v-s:actualVersion'] = [actual];
+			delete actual['v-s:nextVersion'];
+			put_individual(veda.ticket, actual._.individual);		
+				
+			// Save draft as old version
+			delete version['v-s:isDraftOf'];
+			delete version['v-s:hasDraft'];
+			if (previous!=null) {
+				version['v-s:previousVersion'] = [previous];
+			} else {
+				delete version['v-s:previousVersion'];
+			}
+			version['v-s:actualVersion'] = [actual];
+			version['v-s:nextVersion'] = [actual];
+			put_individual(veda.ticket, version._.individual);		
+			
+			// Update draft version
+			if (previous!=null) 
+			{
+				previous['v-s:nextVersion'] = [version];
+				put_individual(veda.ticket, previous._.individual);		
+			}
+			this.redirectToIndividual = actual;
+			this.redirectToMode = 'view';
+		}
+
 		return this;
 	};
 
@@ -432,10 +492,19 @@ veda.Module(function (veda) { "use strict";
 			clone.defineProperty(property_uri, undefined, function (values) {
 				clone.trigger("individual:propertyModified", property_uri, values);
 			});
-			clone[property_uri] = self[property_uri].slice(0);
+			if (self[property_uri].length>0) 
+			{
+				clone[property_uri] = self[property_uri].slice(0);
+			}
 		});
-		clone["rdf:type"] = self["rdf:type"].slice(0);
-		clone["v-s:deleted"] = self["v-s:deleted"].slice(0);
+		if (self["rdf:type"].length>0) 
+		{
+			clone["rdf:type"] = self["rdf:type"].slice(0);
+		}
+		if (self["v-s:deleted"].length>0)
+		{
+			clone["v-s:deleted"] = self["v-s:deleted"].slice(0);
+		}
 		return clone;
 	};
 

@@ -187,12 +187,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				
 		// Define handlers
 		function saveHandler (e) {
-			individual.save();
-			template.trigger("view");
-			// Change location.hash if individual was presented in #main container
-			if (container.prop("id") === "main") {
-				var hash = ["#", individual.id].join("/");
-				if (hash !== location.hash) riot.route(hash, false);
+			var saveResult = individual.save();
+			if (saveResult.redirectToIndividual) {
+				container.empty();
+				saveResult.redirectToIndividual.present(container, undefined, saveResult.redirectToMode);
+				changeHash(saveResult.redirectToIndividual.id);				
+			} else {
+				template.trigger("view");
+				// Change location.hash if individual was presented in #main container
+				if (container.prop("id") === "main") {
+					var hash = ["#", individual.id].join("/");
+					if (hash !== location.hash) riot.route(hash, false);
+				}
 			}
 			e.stopPropagation();
 		}
@@ -689,7 +695,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					// If `v-s:isDraftOf` is empty, then current individual is "draftonly" individual
 					individual['v-s:isDraftOf'] = [individual];
 				}
-				individual.save();
+				individual.draft();
 				container.empty();
 				individual.present(container, undefined, "view");
 				changeHash(individual.id);
@@ -758,61 +764,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				});
 			}
 			
-			if (individual.hasValue('v-s:isDraftOf') || individual.is('v-s:Versioned')) 
-			{
-				$save.unbind("click");
-				$save.on("click", function (e) {
-					individual.valid = true;
-					individual.trigger("individual:beforeSave");
-					if (!individual.valid) return;
-
-					template.trigger("save");
-					// Before
-					var previousId = individual.hasValue('v-s:isDraftOf')?
-											(individual['v-s:isDraftOf'][0].hasValue('v-s:previousVersion')?
-											 individual['v-s:isDraftOf'][0]['v-s:previousVersion'][0].id:
-											 null):
-											(individual.hasValue('v-s:previousVersion')?
-											 individual['v-s:previousVersion'][0].id:
-											 null);
-					var actualId = individual.hasValue('v-s:isDraftOf')?individual['v-s:isDraftOf'][0].id:individual.id;
-					var versionId = (actualId==individual.id)?veda.Util.genUri():individual.id;
-					
-					// After
-					var actual = individual.clone();						
-					var version = individual.clone();
-					var previous = previousId!=null?new veda.IndividualModel(previousId):null;
-					actual.id = actualId;
-					version.id = versionId;
-					
-					// Save draft as actual version
-					actual['v-s:isDraftOf'] = [];
-					actual['v-s:hasDraft'] = [];
-					actual['v-s:previousVersion'] = [version];
-					actual['v-s:actualVersion'] = [actual];
-					actual['v-s:nextVersion'] = [];
-					actual.save();
-						
-					// Save draft as old version
-					version['v-s:isDraftOf'] = [];
-					version['v-s:hasDraft'] = [];
-					version['v-s:previousVersion'] = [previous];
-					version['v-s:actualVersion'] = [actual];
-					version['v-s:nextVersion'] = [actual];
-					version.save();
-					
-					// Update draft version
-					if (previous!=null) 
-					{
-						previous['v-s:nextVersion'] = [version];
-						previous.save();
-					}
-					
-					container.empty();
-					actual.present(container, undefined, "view");
-					changeHash(actualId);
-				});			
-			}
 		}
 		// standard tasts
 		var stasks = $('#standard-tasks', template);
