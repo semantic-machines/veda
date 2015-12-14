@@ -108,7 +108,7 @@ function prepare_work_order(ticket, document)
         if (trace_journal_uri)
             traceToJournal(ticket, trace_journal_uri, "обработка рабочего задания", toJson(document));
 
-        // create_new_subjournal(f_forWorkItem, _work_order, "prepare_work_order:" + _work_order['@'], 'v-wf:WorkOrderStarted')
+        //create_new_subjournal(f_forWorkItem, _work_order, _work_order['@'], 'v-wf:WorkOrderStarted')
         
         var f_inVars = work_item['v-wf:inVars'];
         if (!f_inVars)
@@ -203,7 +203,7 @@ function prepare_work_order(ticket, document)
                                     }
                                     else
                                     {
-                                        // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
+                                   getStrings(netElement['rdfs:label'])     // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
                                         task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, result0, true, trace_journal_uri, 'v-wf:completedMapping');
                                         print("[PWO]completedMapping2, task_output_vars=", toJson(task_output_vars));
                                     }
@@ -615,7 +615,7 @@ function prepare_work_item(ticket, document)
 
         trace_journal_uri = create_new_trace_subjournal(forProcess, work_item, netElement['@'] + "' - [" + getStrings(netElement['rdfs:label']) + "] - " + work_item['@'], 'v-wf:WorkItemStarted')
 
-        //create_new_subjournal(forProcess, work_item, getStrings(netElement['rdfs:label']) + work_item['@'], 'v-wf:WorkItemStarted')
+        //create_new_subjournal(forProcess, work_item, getStrings(netElement['rdfs:label']), 'v-wf:WorkItemStarted')
 
         var f_join = netElement['v-wf:join'];
         if (f_join && getUri(f_join) == "v-wf:AND")

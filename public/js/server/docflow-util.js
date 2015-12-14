@@ -782,6 +782,16 @@ function _create_new_subjournal(is_trace, parent_uri, el_uri, label, jtype)
         parent_journal_uri = getJournalUri(parent_uri);    	
    	}
 
+    var pj = get_individual(ticket, parent_journal_uri);
+    if (!pj)
+    	create_new_journal(ticket, parent_journal_uri, parent_uri, null);
+    
+    
+    pj = get_individual(ticket, parent_journal_uri);
+    if (!pj)
+    	print ("!!!! PARENT JOURNAL IS NOT EXISTS parent_uri=", parent_uri);
+    
+    
    	var new_journal_record = newJournalRecord(parent_journal_uri);
    	
     create_new_journal(ticket, new_sub_journal_uri, null, label);
@@ -789,17 +799,15 @@ function _create_new_subjournal(is_trace, parent_uri, el_uri, label, jtype)
     new_journal_record['rdfs:label'] = [{ data: label, type: _String }];
     new_journal_record['v-s:subJournal'] = [{ data: new_sub_journal_uri, type: _Uri}];
     logToJournal(ticket, parent_journal_uri, new_journal_record, true);
-
+    
     put_individual(ticket, new_journal_record, _event_id);
 
-    var add_to_net_element_impl;
-        
+    var set_journal_to_element;        
     if (is_trace == true)
-      	add_to_net_element_impl = {'@': el_uri, 'v-wf:traceJournal': newUri(new_sub_journal_uri)};
+    	set_journal_to_element = {'@': el_uri, 'v-wf:traceJournal': newUri(new_sub_journal_uri)};
     else
-       	add_to_net_element_impl = {'@': el_uri, 'v-wf:journal': newUri(new_sub_journal_uri)};
-
-    add_to_individual(ticket, add_to_net_element_impl, _event_id);
+    	set_journal_to_element = {'@': el_uri, 'v-wf:journal': newUri(new_sub_journal_uri)};
+    add_to_individual(ticket, set_journal_to_element, _event_id);
 
     return new_sub_journal_uri;
 }
