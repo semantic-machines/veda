@@ -133,7 +133,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				$('#send', wrapper).remove();
 				
 				//Hide cancel button
-				$('#cancel', wrapper).remove();
+				//$('#cancel', wrapper).remove();
 
 			} else if (individual.hasValue('v-s:hasDraft')) {			
 				//TODO Put link to draft version
