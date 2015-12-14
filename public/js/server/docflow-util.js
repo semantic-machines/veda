@@ -707,16 +707,13 @@ function mapToJournal(map_container, ticket, _process, _task, _order, task_label
 {
     try
     {
-        print ("@mapToJournal.1 task_label=", toJson (task_label));
         if (map_container)
         {
             //* выполнить маппинг для журнала 
             var journalVars = [];
 
-            if (_task)
+            if (_task && task_label)
             	_task['rdfs:label'] = task_label;
-            
-            print ("@mapToJournal.1 task=", toJson (_task));            
             
             journalVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, null);
             if (journalVars)

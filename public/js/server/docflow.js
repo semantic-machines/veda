@@ -773,7 +773,6 @@ function prepare_work_item(ticket, document)
                 executor_list.push(null);
             else
             {
-            	print ("@@@ netElement=", toJson (netElement));
                 mapToJournal(netElement['v-wf:startingJournalMap'], ticket, _process, document, null, netElement['rdfs:label']);
             }    
 
