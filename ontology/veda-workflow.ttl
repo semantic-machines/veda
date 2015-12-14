@@ -1961,6 +1961,13 @@ v-wf:DecisionAgreedToExecute
 	rdfs:label "согласовано в реализацию"@ru ;
 .	
 
+v-wf:DecisionAgreedToExecuteComment
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "согласовано в реализацию"@ru ;
+.	
+
 v-wf:DecisionSign
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
@@ -2051,6 +2058,14 @@ v-wf:DecisionRedirect
 	rdf:type owl:Class ;
 	rdfs:label "перенаправить другому"@ru ;
 .	
+
+v-wf:DecisionСalculationsPerformed
+        rdfs:subClassOf v-wf:Decision ;
+        rdfs:isDefinedBy v-wf: ;
+        rdf:type owl:Class ;
+        rdfs:label "расчет выполнен"@ru ;
+.
+
 v-wf:DecisionRedirectTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -2087,6 +2102,8 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionNotPerformed ;
   v-ui:forClass v-wf:DecisionConfirm ;
   v-ui:forClass v-wf:DecisionAgreedToProject ;  
+  v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;   
+  v-ui:forClass v-wf:DecisionСalculationsPerformed ;
   v-ui:template """
 <div>
 	<em about="rdfs:comment" property="rdfs:label"></em>
@@ -2126,6 +2143,8 @@ v-wf:DecisionRedirectTemplateSpec2
   v-ui:forClass v-wf:DecisionAchieved ;
   v-ui:forClass v-wf:DecisionAgreedToProject ;
   v-ui:forClass v-wf:DecisionConfirm ;   
+  v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;   
+  v-ui:forClass v-wf:DecisionСalculationsPerformed ;
 .
 
 v-wf:DecisionRedirectTemplateSpec3

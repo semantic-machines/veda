@@ -86,6 +86,11 @@ v-b:Send
   rdfs:label "Отправить"@ru ;
   rdfs:label "Send"@en ;
 .
+v-b:Next
+  rdf:type v-b:Bundle ;
+  rdfs:label "Далее"@ru ;
+  rdfs:label "Next"@en ;
+.
 v-b:Edit
   rdf:type v-b:Bundle ;
   rdfs:label "Редактировать"@ru ;
