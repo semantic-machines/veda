@@ -830,6 +830,7 @@ s-wf:tr_actor_add_request_form
     v-wf:transformRule s-wf:rul_tr_form_2 ;
     v-wf:transformRule s-wf:rul_tr_form_6a ;
     v-wf:transformRule s-wf:rul_tr_form_9a ;
+    v-wf:transformRule s-wf:rul_tr_form_a ;
 	rdfs:isDefinedBy s-wf: ;
     rdfs:label "трансформация создания пользовательской формы дополнительного запроса по задаче"@ru ;		
 .		
@@ -1159,6 +1160,16 @@ s-wf:map_actor_task_description_from_LV_result_decision
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_actor_task_description ;
 	v-wf:mappingExpression "get_properties_chain (process.getLocalVariable('result_decision'), [{$get:'rdfs:comment'}] )";
+	rdfs:label "описание задачи из формы решения пользователя [result_decision]"@ru ;
+.
+
+s-wf:map_actor_task_action_4LV_result_decision
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_actor_task_action ;
+	v-wf:mappingExpression """
+	get_properties_chain (process.getLocalVariable('result_decision'), 
+                            [{$go:'rdf:type'}, {$get:'rdfs:label'}] )	
+    """;
 	rdfs:label "описание задачи из формы решения пользователя [result_decision]"@ru ;
 .
 
@@ -1493,7 +1504,7 @@ s-wf:additional_user_response
 	v-wf:startDecisionTransform s-wf:tr_actor_add_request_form;
     v-wf:completeDecisionTransform s-wf:tr_taken_decision;    
 	v-wf:startingMapping s-wf:map_doc_id, s-wf:map_set_add_request_actor_from_initiator, s-wf:map_initiator_from_actor, s-wf:map_possible_decision_for_add_reaction;   
-    v-wf:startingMapping s-wf:map_actor_task_description_from_LV_result_decision, s-wf:map_decision_form_type_4_PIV_decision_form_type;
+    v-wf:startingMapping s-wf:map_actor_task_description_from_LV_result_decision, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_action_4LV_result_decision;
     v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_set_actor_task_description_from_TR_result_data;
     rdfs:label "дополнительная реакция"^^xsd:string;
     v-wf:executor s-wf:def_exec_initiator;
