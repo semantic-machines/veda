@@ -492,16 +492,16 @@ veda.Module(function (veda) { "use strict";
 			clone.defineProperty(property_uri, undefined, function (values) {
 				clone.trigger("individual:propertyModified", property_uri, values);
 			});
-			if (self[property_uri].length>0) 
+			if (self.hasValue(property_uri)) 
 			{
 				clone[property_uri] = self[property_uri].slice(0);
 			}
 		});
-		if (self["rdf:type"].length>0) 
+		if (self.hasValue("rdf:type")) 
 		{
 			clone["rdf:type"] = self["rdf:type"].slice(0);
 		}
-		if (self["v-s:deleted"].length>0)
+		if (self.hasValue("v-s:deleted"))
 		{
 			clone["v-s:deleted"] = self["v-s:deleted"].slice(0);
 		}
