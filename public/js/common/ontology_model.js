@@ -16,7 +16,7 @@ veda.Module(function (veda) { "use strict";
 		"owl:deprecated",
 		"owl:differentFrom",
 		"owl:members",
-		"owl:sameAs",
+		//"owl:sameAs",
 		"owl:topObjectProperty",
 		"owl:topDataProperty",
 		"owl:versionInfo",

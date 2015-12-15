@@ -752,6 +752,9 @@ v-fs:AttributiveRequestTemplate
 	function setResultTable(types) {
 		if ( self.hasValue("v-fs:resultTemplate") ) {
 			head = $( self["v-fs:resultTemplate"][0].toString() );
+			$(".rdfs-label", head).each(function () {
+				this.textContent = (new veda.IndividualModel(this.parentNode.id))["rdfs:label"].join(", ");
+			});
 			customHead.html( head );
 			rest = $( self["v-fs:resultTemplateRest"][0].toString() );
 			genericHead.html( rest );
@@ -835,10 +838,7 @@ v-fs:AttributiveRequestTemplate
 		var header = props.map( function (property_uri) {
 			if (property_uri === "rdf:type" || property_uri === "v-s:deleted") { return ""; }
 			var property = type.domainProperties[property_uri];
-			var th = $("<th>", {
-				"id": property_uri,
-				"text": property["rdfs:label"].join(", ")
-			});
+			var th = $("<th id='" + property_uri + "'><span class='rdfs-label'>" + property["rdfs:label"].join(", ") + "</span></th>");
 			var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : undefined;
 			if (literals.indexOf(range) >= 0) {
 				var sortOrder = $("<a>", {href:""}).addClass("sort btn btn-xs btn-link text-muted glyphicon glyphicon-sort-by-attributes");
