@@ -183,7 +183,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 			e.stopPropagation();
 		}
-		template.on("view edit search save cancel delete recover showRights", syncEmbedded);
+		template.on("view edit search save cancel delete recover", syncEmbedded);
 				
 		// Define handlers
 		function saveHandler (e) {
