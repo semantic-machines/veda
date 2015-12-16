@@ -249,8 +249,9 @@ veda.Module(function Util(veda) { "use strict";
 				individualNode.find("#save").remove();
 				individualNode.find("#cancel").remove();
 				individualNode.find("#delete").remove();
-				if (individual.hasValue('v-wf:processedDocument')) {
-					veda.Util.showMessage("Документ успешно отправлен", "", 5000, individual['v-wf:processedDocument'][0].id, "view");
+				if (individual.hasValue('v-wf:processedDocument') || individual.hasValue('v-wf:onDocument')) {
+					veda.Util.showMessage("Документ успешно отправлен", "", 5000, 
+							individual.hasValue('v-wf:processedDocument')?individual['v-wf:processedDocument'][0].id:individual['v-wf:onDocument'][0].id, "view");
 				}
 			} else if (Object.getOwnPropertyNames(s.results).length == 1) {
 				$('[resource="'+individual.id+'"]').find("#save").trigger("click");
@@ -414,20 +415,29 @@ veda.Module(function Util(veda) { "use strict";
 		container.modal();
 		
 		$("body").append(container);
-
-		$("<div/>", {
-			'text': message,
-			'class': cssClass
-//			'onclick': function () {redirectIndividual.present(container, undefined, redirectIndividualMode);}
-		}).appendTo($(".modal-body", container));
-		setTimeout( function () {
+		
+		var redirectAlreadyCalled = false;
+		function redirectAfterTimeout() {
+			if (redirectAlreadyCalled) return;
+			redirectAlreadyCalled = true;
 			container.modal('hide');
 			var main = $('#main');
 			main.empty();
 			if (typeof redirectIndividual === 'string') {
 				redirectIndividual = new veda.IndividualModel(redirectIndividual, null, null, null, false);
 			}
-			redirectIndividual.present(main, undefined, redirectIndividualMode);
+			redirectIndividual.present(main, undefined, redirectIndividualMode);			
+		}
+		
+		var $notification = $("<div/>", {
+			'text': message,
+			'class': cssClass
+		});
+		$notification.appendTo($(".modal-body", container));
+		$notification.on("click", function() {redirectAfterTimeout();});
+		
+		setTimeout( function () {
+			redirectAfterTimeout();
 		}, timeout);
 	}
 });
