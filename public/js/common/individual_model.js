@@ -301,6 +301,10 @@ veda.Module(function (veda) { "use strict";
 	 * Save current individual to database
 	 */
 	proto.save = function() {
+		var self = this;
+		self.valid = true;
+		self.trigger("individual:beforeSave");
+		if (!self.valid) return false;
 		return this.saveIndividual(false);
 	}
 	
@@ -309,11 +313,6 @@ veda.Module(function (veda) { "use strict";
 	}
 		
 	proto.saveIndividual = function(draft) {
-		var self = this;
-		self.valid = true;
-		self.trigger("individual:beforeSave");
-		if (!self.valid) return false;
-
 		// Do not save individual to server if nothing changed
 		//if (self._.sync) return;
 		Object.keys(self._.individual).reduce(function (acc, property_uri) {

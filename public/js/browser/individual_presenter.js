@@ -183,7 +183,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 			e.stopPropagation();
 		}
-		template.on("view edit search save cancel delete recover", syncEmbedded);
+		template.on("view edit search save cancel delete recover draft", syncEmbedded);
 				
 		// Define handlers
 		function saveHandler (e) {
@@ -203,6 +203,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			e.stopPropagation();
 		}
 		template.on("save", saveHandler);
+		
+		function draftHandler (e) {
+			if (!individual.hasValue('v-s:isDraftOf')) {
+				// If `v-s:isDraftOf` is empty, then current individual is "draftonly" individual
+				individual['v-s:isDraftOf'] = [individual];
+			}
+			individual.draft();
+			e.stopPropagation();
+		}
+		template.on("draft", draftHandler);
 		
 		function showRightsHandler (e) {
 			individual.trigger("showRights");
@@ -691,11 +701,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var $draft = $("#draft.action", wrapper);			 
 			$draft.unbind("click");
 			$draft.on("click", function () {
-				if (!individual.hasValue('v-s:isDraftOf')) {
-					// If `v-s:isDraftOf` is empty, then current individual is "draftonly" individual
-					individual['v-s:isDraftOf'] = [individual];
-				}
-				individual.draft();
+				template.trigger('draft');
 				container.empty();
 				individual.present(container, undefined, "view");
 				changeHash(individual.id);
