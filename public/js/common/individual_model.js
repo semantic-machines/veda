@@ -351,30 +351,30 @@ veda.Module(function (veda) { "use strict";
 			version.id = versionId;
 			
 			// Save draft as actual version
-			delete actual['v-s:isDraftOf'];
-			delete actual['v-s:hasDraft'];
+			actual['v-s:isDraftOf'] = [];
+			actual['v-s:hasDraft'] = [];
 			actual['v-s:previousVersion'] = [version];
 			actual['v-s:actualVersion'] = [actual];
-			delete actual['v-s:nextVersion'];
-			put_individual(veda.ticket, actual._.individual);		
+			actual['v-s:nextVersion'] = [];
+			actual.saveIndividual(true);
 				
 			// Save draft as old version
-			delete version['v-s:isDraftOf'];
-			delete version['v-s:hasDraft'];
+			version['v-s:isDraftOf'] = [];
+			version['v-s:hasDraft'] = [];
 			if (previous!=null) {
 				version['v-s:previousVersion'] = [previous];
 			} else {
-				delete version['v-s:previousVersion'];
+				version['v-s:previousVersion'] = [];
 			}
 			version['v-s:actualVersion'] = [actual];
 			version['v-s:nextVersion'] = [actual];
-			put_individual(veda.ticket, version._.individual);		
+			version.saveIndividual(true);
 			
 			// Update draft version
 			if (previous!=null) 
 			{
 				previous['v-s:nextVersion'] = [version];
-				put_individual(veda.ticket, previous._.individual);		
+				previous.saveIndividual(true);
 			}
 			this.redirectToIndividual = actual;
 			this.redirectToMode = 'view';
@@ -484,27 +484,9 @@ veda.Module(function (veda) { "use strict";
 	 * @return {veda.IndividualModel} clone of this individual with different id.
 	 */
 	proto.clone = function (uri) {
-		var self = this;
-		var clone = (typeof uri == "undefined")?new veda.IndividualModel():new veda.IndividualModel(uri);
-		Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
-			if (property_uri === "rdf:type") return;
-			if (property_uri === "v-s:deleted") return;
-			clone.defineProperty(property_uri, undefined, function (values) {
-				clone.trigger("individual:propertyModified", property_uri, values);
-			});
-			if (self.hasValue(property_uri)) 
-			{
-				clone[property_uri] = self[property_uri].slice(0);
-			}
-		});
-		if (self.hasValue("rdf:type")) 
-		{
-			clone["rdf:type"] = self["rdf:type"].slice(0);
-		}
-		if (self.hasValue("v-s:deleted"))
-		{
-			clone["v-s:deleted"] = self["v-s:deleted"].slice(0);
-		}
+		var individual = JSON.parse( JSON.stringify(this._.individual) );
+		individual["@"] = veda.Util.genUri();
+		var clone = new veda.IndividualModel(individual); 
 		return clone;
 	};
 

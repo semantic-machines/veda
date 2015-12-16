@@ -37,15 +37,17 @@ em {
   margin-bottom: 5px;
   font-weight: bold;
   font-style: normal;
-  /*color: #555;*/
-  /*color: #222;*/
   display: inline-block;
 }
 em::first-letter {
   color: #711;
-  /*color: #000;*/
-  font-size: 150%;
+  /*color: #ec6607;*/
+  color: #763304;
+  /*color: #591303;*/
+  font-weight: bold;
+  font-size: 140%;
   font-variant: small-caps;
+  line-height: 50%;
 }
 
 .nav-right > li {
