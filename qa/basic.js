@@ -104,22 +104,22 @@ module.exports = {
 	 */
 	login: function (driver, login, password, assertUserFirstName, assertUserLastName) {
 		// Вводим логин и пароль 
-		driver.findElement({css:'input[id="login"]'}).sendKeys(login).thenCatch(function (e) {basic.errorHandler(e, "Cannot input login")});
-		driver.findElement({css:'input[id="password"]'}).sendKeys(password).thenCatch(function (e) {basic.errorHandler(e, "Cannot input password")});
-		driver.findElement({css:'button[id="submit"]'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot submit login/password")});
-		driver.findElement({css:'button[id="submit"]'}).sendKeys(webdriver.Key.ENTER).thenCatch(function (e) {}).thenCatch(function (e) {basic.errorHandler(e, "Cannot press enter")});
+		driver.findElement({css:'input[id="login"]'}).sendKeys(login).thenCatch(function (e) {errorHandler(e, "Cannot input login")});
+		driver.findElement({css:'input[id="password"]'}).sendKeys(password).thenCatch(function (e) {errorHandler(e, "Cannot input password")});
+		driver.findElement({css:'button[id="submit"]'}).click().thenCatch(function (e) {errorHandler(e, "Cannot submit login/password")});
+		driver.findElement({css:'button[id="submit"]'}).sendKeys(webdriver.Key.ENTER).thenCatch(function (e) {}).thenCatch(function (e) {errorHandler(e, "Cannot press enter")});
 		
 		// Проверям что мы залогинены корректно
 		driver.wait
 		(
 		  webdriver.until.elementTextContains(driver.findElement({id:'user-info'}), assertUserFirstName),
 		  FAST_OPERATION
-		).thenCatch(function (e) {basic.errorHandler(e, "Cannot find user first name")});
+		).thenCatch(function (e) {errorHandler(e, "Cannot find user first name")});
 		driver.wait
 		(
 		  webdriver.until.elementTextContains(driver.findElement({id:'user-info'}), assertUserLastName),
 		  FAST_OPERATION
-		).thenCatch(function (e) {basic.errorHandler(e, "Cannot find user last name")});
+		).thenCatch(function (e) {errorHandler(e, "Cannot find user last name")});
 	},
 	/**
 	 * Заполнить ссылочный атрибут значением из выпадающего списка 
@@ -130,7 +130,7 @@ module.exports = {
 	 */
 	chooseFromDropdown: function(driver, attribute, valueToSearch, valueToChoose) {
 		driver.findElement({css:'div[rel="'+attribute+'"] + veda-control input[id="fulltext"]'}).sendKeys(valueToSearch)
-		      .thenCatch(function (e) {basic.errorHandler(e, "Cannot find attribute `"+attribute+"`")});
+		      .thenCatch(function (e) {errorHandler(e, "Cannot find attribute `"+attribute+"`")});
 		
 		// Проверяем что запрашивамый объект появился в выпадающем списке
 		driver.wait
@@ -143,7 +143,7 @@ module.exports = {
 			  });
 		  },
 		  FAST_OPERATION
-		).thenCatch(function (e) {basic.errorHandler(e, "Cannot find `"+valueToSearch+"` from dropdown")});
+		).thenCatch(function (e) {errorHandler(e, "Cannot find `"+valueToSearch+"` from dropdown")});
 		
 		// Кликаем на запрашиваемый тип в выпавшем списке		
 		driver.findElements({css:'div[rel="'+attribute+'"] + veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
@@ -157,7 +157,7 @@ module.exports = {
 					}
 				});
 			}).then(function(x) { x[0].click();});
-		}).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `"+valueToChoose+"` from dropdown")});
+		}).thenCatch(function (e) {errorHandler(e, "Cannot click on `"+valueToChoose+"` from dropdown")});
 	},
 	/**
 	 * Открыть форму создания документа определённого шаблона
@@ -168,29 +168,29 @@ module.exports = {
 	openCreateDocumentForm: function (driver, templateName, templateRdfType) {
 		// Клик `Документ` в главном меню
 		driver.findElement({id:'settings'}).click()
-		      .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button")});
+		      .thenCatch(function (e) {errorHandler(e, "Cannot click on settings button")});
 
 		// Проверяем что открылось подменю 
 		driver.wait
 		(
 		  webdriver.until.elementIsVisible(driver.findElement({css:'li[id="settings"] li[id="create"]'})),
 		  FAST_OPERATION
-		).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `create` button inside settings")});
+		).thenCatch(function (e) {errorHandler(e, "Seems there is no `create` button inside settings")});
 
 		// Клик `Создать`
 		driver.findElement({css:'li[id="settings"] li[id="create"]'}).click()
-			  .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `create` button")});
+			  .thenCatch(function (e) {errorHandler(e, "Cannot click on `create` button")});
 
 		// Проверяем что открылась страница создания документов
 		driver.wait
 		(
 		  webdriver.until.elementIsVisible(driver.findElement({css:'div[resource="v-fc:Create"]'})),
 		  FAST_OPERATION
-		).thenCatch(function (e) {basic.errorHandler(e, "Create template was not opened")});
+		).thenCatch(function (e) {errorHandler(e, "Create template was not opened")});
 
 		// Вводим запрашиваемый тип документа
 		driver.findElement({id:'fulltext'}).sendKeys(templateName)
-		      .thenCatch(function (e) {basic.errorHandler(e, "Cannot enter template name")});
+		      .thenCatch(function (e) {errorHandler(e, "Cannot enter template name")});
 
 		// Проверяем что запрашиваемый тип появился в выпадающем списке
 		driver.wait
@@ -203,21 +203,21 @@ module.exports = {
 			  });
 		  },
 		  FAST_OPERATION
-		).thenCatch(function (e) {basic.errorHandler(e, "Dropdown doesnt contains value `"+templateName+"`")});
+		).thenCatch(function (e) {errorHandler(e, "Dropdown doesnt contains value `"+templateName+"`")});
 
 		// Кликаем на запрашиваемый тип в выпавшем списке
 		driver.findElements({css:'veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
 			webdriver.promise.filter(suggestions, function(suggestion) {
 				return suggestion.getText().then(function(txt){ return txt == templateName });
 			}).then(function(x) { x[0].click();});
-		}).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `"+templateName+"` from dropdown")});
+		}).thenCatch(function (e) {errorHandler(e, "Cannot click on `"+templateName+"` from dropdown")});
 		
 		// Проверяем что тип появился на экране
 		driver.wait
 		(
 		  webdriver.until.elementIsVisible(driver.findElement({css:'span[about="'+templateRdfType+'"]'})),
 		  FAST_OPERATION
-		).thenCatch(function (e) {basic.errorHandler(e, "Seems that create operation not works properly")});
+		).thenCatch(function (e) {errorHandler(e, "Seems that create operation not works properly")});
 	},	
 	/**
 	 * Открыть форму полнотекстового поиска, при этом выбрать поиск внутри определённого шаблона
@@ -228,25 +228,25 @@ module.exports = {
 	openFulltextSearchDocumentForm: function (driver, templateName, templateRdfType) {
 		// Клик `Документ` в главном меню
 		driver.findElement({css:'li[id="settings"]'}).click()
-		      .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button")});
+		      .thenCatch(function (e) {errorHandler(e, "Cannot click on settings button")});
 
 		// Проверяем что открылось подменю 
 		driver.wait
 		(
 		  webdriver.until.elementIsVisible(driver.findElement({css:'li[id="settings"] li[id="search"]'})),
 		  FAST_OPERATION
-		).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `search` button inside settings")});
+		).thenCatch(function (e) {errorHandler(e, "Seems there is no `search` button inside settings")});
 
 		// Клик `Поиск`
 		driver.findElement({css:'li[id="settings"] li[id="search"]'}).click()
-		      .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `search` button")});
+		      .thenCatch(function (e) {errorHandler(e, "Cannot click on `search` button")});
 
 		// Проверяем что открылась страница поиска
 		driver.wait
 		(
 		  webdriver.until.elementIsVisible(driver.findElement({css:'div[resource="v-fs:Search"]'})),
 		  FAST_OPERATION
-		).thenCatch(function (e) {basic.errorHandler(e, "Search template was not opened")});
+		).thenCatch(function (e) {errorHandler(e, "Search template was not opened")});
 
 		// Вводим запрашиваемый тип документа
 		driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).sendKeys(templateName);
@@ -262,20 +262,20 @@ module.exports = {
 			  });
 		  },
 		  FAST_OPERATION
-		).thenCatch(function (e) {basic.errorHandler(e, "Dropdown doesnt contains value `"+templateName+"`")});
+		).thenCatch(function (e) {errorHandler(e, "Dropdown doesnt contains value `"+templateName+"`")});
 		
 		// Кликаем на запрашиваемый тип в выпавшем списке
 		driver.findElements({css:'veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
 			webdriver.promise.filter(suggestions, function(suggestion) {
 				return suggestion.getText().then(function(txt){ return txt == templateName });
 			}).then(function(x) { x[0].click();});
-		}).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `"+templateName+"` from dropdown")});
+		}).thenCatch(function (e) {errorHandler(e, "Cannot click on `"+templateName+"` from dropdown")});
 		
 		// Проверяем что тип появился на экране
 		driver.wait
 		(
 		  webdriver.until.elementIsVisible(driver.findElement({css:'div[rel="v-fs:typeToSearch"] span[about="'+templateRdfType+'"]'})),
 		  FAST_OPERATION
-		).thenCatch(function (e) {basic.errorHandler(e, "Seems that find operation not works properly")});
+		).thenCatch(function (e) {errorHandler(e, "Seems that find operation not works properly")});
 	}
 };
