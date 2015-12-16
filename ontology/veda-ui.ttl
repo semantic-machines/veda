@@ -1093,7 +1093,7 @@ v-ui:FileTemplate
   rdfs:label "File template"@en ;
   v-ui:forClass v-s:File ;
   v-ui:template """
-<div>
+<div style="word-wrap: break-word;">
 	<a href="/files/@"><span id="icon" class="label label-primary"></span> <span property="v-s:fileName" class="view -edit search"></span>, <span id="fileSize"></span></a>
 </div>
 <script>
