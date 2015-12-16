@@ -1,7 +1,7 @@
 addons:
   sauce_connect:
-    username: Itiua
-    access_key: 660aeb73-b835-4f4a-aaff-17ecdf19a845
+    username: semanticmachines
+    access_key: 0fdd3d85-3d51-4fd5-89ed-10980baa57a5
 
 env:
   global:
