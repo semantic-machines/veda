@@ -71,7 +71,7 @@ function prepare_decision_form(ticket, document)
             put_individual(ticket, document, _event_id);
 
             //print("[WORKFLOW][DF1].5 completedExecutorJournalMap");
-            mapToJournal(net_element['v-wf:completedExecutorJournalMap'], ticket, _process, work_item, _work_order);
+            mapToJournal(net_element['v-wf:completedExecutorJournalMap'], ticket, _process, work_item, _work_order, null, journal_uri);
             //print("[WORKFLOW][DF1].6 completedExecutorJournalMap");
         }
     }
@@ -108,7 +108,7 @@ function prepare_work_order(ticket, document)
         if (trace_journal_uri)
             traceToJournal(ticket, trace_journal_uri, "обработка рабочего задания", toJson(document));
 
-        //create_new_subjournal(f_forWorkItem, _work_order, _work_order['@'], 'v-wf:WorkOrderStarted')
+        var journal_uri = create_new_subjournal(f_forWorkItem, _work_order['@'], null, 'v-wf:WorkOrderStarted')
         
         var f_inVars = work_item['v-wf:inVars'];
         if (!f_inVars)
@@ -299,7 +299,7 @@ function prepare_work_order(ticket, document)
                     //print("[WORKFLOW][WO2.0] transform_link=" + toJson(net_element['v-wf:startDecisionTransform']));
                     //print("[WORKFLOW][WO2.1] work_item_inVars=" + toJson(work_item_inVars));
                     //print ("@@@1 net_element['v-wf:startingExecutorJournalMap']=", toJson (net_element['v-wf:startingExecutorJournalMap']), ", @=", net_element['@']));
-                    mapToJournal(net_element['v-wf:startingExecutorJournalMap'], ticket, _process, work_item, _work_order, null, trace_journal_uri, 'v-wf:startingExecutorJournalMap');
+                    mapToJournal(net_element['v-wf:startingExecutorJournalMap'], ticket, _process, work_item, _work_order, null, journal_uri, trace_journal_uri, 'v-wf:startingExecutorJournalMap');
 
                     var transform_link = getUri(net_element['v-wf:startDecisionTransform']);
                     if (!transform_link) return;
@@ -441,7 +441,7 @@ function prepare_work_order(ticket, document)
                 else
                 {
                     //print("[WORKFLOW][WO4.0.0] completedJournalMap");
-                    mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item);
+                    mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item, null, null, journal_uri);
                 }
             }
 
@@ -612,10 +612,10 @@ function prepare_work_item(ticket, document)
                 return;
             }
         }
-
+    
         trace_journal_uri = create_new_trace_subjournal(forProcess, work_item, netElement['@'] + "' - [" + getStrings(netElement['rdfs:label']) + "] - " + work_item['@'], 'v-wf:WorkItemStarted')
 
-        //create_new_subjournal(forProcess, work_item, getStrings(netElement['rdfs:label']), 'v-wf:WorkItemStarted')
+        var journal_uri = create_new_subjournal(forProcess, work_item['@'], netElement['rdfs:label'], 'v-wf:WorkItemStarted')
 
         var f_join = netElement['v-wf:join'];
         if (f_join && getUri(f_join) == "v-wf:AND")
@@ -778,7 +778,7 @@ function prepare_work_item(ticket, document)
                 executor_list.push(null);
             else
             {
-                mapToJournal(netElement['v-wf:startingJournalMap'], ticket, _process, document, null, netElement['rdfs:label']);
+                mapToJournal(netElement['v-wf:startingJournalMap'], ticket, _process, document, null, netElement['rdfs:label'], journal_uri);
             }    
 
             var work_order_list = [];

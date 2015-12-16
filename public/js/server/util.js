@@ -234,8 +234,8 @@ function newJournalRecord(journal_uri)
 
 function logToJournal(ticket, journal_uri, journal_record, jr_type)
 {
-	if (!jr_type)
-		print("@@@ logToJournal, new_journal_record=" + toJson(journal_record));
+	//if (!jr_type)
+	//	print("@@@ logToJournal, new_journal_record=" + toJson(journal_record));
 	
     put_individual(ticket, journal_record, _event_id);
 
@@ -248,8 +248,8 @@ function logToJournal(ticket, journal_uri, journal_record, jr_type)
         }]
     };
 
-	if (!jr_type)
-		print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
+	//if (!jr_type)
+	//	print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
 
 	add_to_individual(ticket, add_to_journal, _event_id);
 }
