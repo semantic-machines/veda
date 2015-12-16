@@ -74,7 +74,18 @@ veda.Module(function Util(veda) { "use strict";
 			} else {
 				triple.subject = N3.Util.expandPrefixedName(individual.id, prefixes);
 			}
+			// rdf:type first!
+			triple.predicate = N3.Util.expandPrefixedName("rdf:type", prefixes);
+			individual["rdf:type"].map(function (value) {
+				if (value.id.indexOf(":") == value.id.length-1) {
+					triple.object = prefixes[value.id.substring(0, value.id.length - 1)];
+				} else {
+					triple.object = N3.Util.expandPrefixedName(value.id, prefixes);
+				}
+				writer.addTriple(triple);
+			});
 			Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
+				if (property_uri === "rdf:type") { return; }
 				triple.predicate = N3.Util.expandPrefixedName(property_uri, prefixes);
 				individual[property_uri].map(function (value) {
 					if (value instanceof Number || typeof value === "number" ) {
