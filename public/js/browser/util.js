@@ -194,12 +194,19 @@ veda.Module(function Util(veda) { "use strict";
 							undefined;
 						break;
 					case "xsd:boolean": 
+						oneProp = values
+							.filter(function(item){return !!item && !!item.valueOf();})
+							.map( function (value) {
+								return "'" + property_uri + "'=='" + value + "'";
+							})
+							.join("||");
+						break;
 					case "xsd:string": 
 					case "rdfs:Literal": 
 						oneProp = values
 							.filter(function(item){return !!item && !!item.valueOf();})
 							.map( function (value) {
-								return "'" + property_uri + "'=='" + value + "'";
+								return "'" + property_uri + "'=='" + value + "*'";
 							})
 							.join("||");
 						break;
