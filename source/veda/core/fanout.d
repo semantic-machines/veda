@@ -146,8 +146,19 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
                             foreach (rs; rss)
                             {
                                 mysql_conn.query("SET NAMES 'utf8'");
-                                mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, new_indv.uri,
+                                
+                                if (rs.type == DataType.Boolean)
+                                {
+                                	if (rs.get!bool == true)
+                                		mysql_conn.query("INSERT INTO `?` (doc_id, value) VALUES (?, ?)", predicate, new_indv.uri, 1);
+                                	else	
+                                		mysql_conn.query("INSERT INTO `?` (doc_id, value) VALUES (?, ?)", predicate, new_indv.uri, 0);
+                                }
+								else
+								{
+                                	mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, new_indv.uri,
                                                  rs.asString().toUTF8(), text(rs.lang));
+                                }	
                             }
                         }
                     }
