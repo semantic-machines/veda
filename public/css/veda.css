@@ -668,4 +668,10 @@ svg.process-path-highlight path
 	
 /*	width: auto 100% !important; */
 }
+
+.ui-dialog {
+	background-color:#FFFFFF; 
+	border: 1px solid black;
+	text-align:center;
+}
 /* [END] NET EDITOR */

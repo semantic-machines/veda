@@ -310,7 +310,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	}
             };
             
-            instance.addVarProperty = function(stateId, varId) {
+            instance.addVarProperty = function(stateId, mapping, varId) {
             	var variable = new veda.IndividualModel(varId);
                 
                 var individualM = new veda.IndividualModel(); // create individual (Mapping)
@@ -324,8 +324,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 individualM['v-wf:mappingExpression'] = ["process.getInputVariable ('"+variable["v-wf:varDefineName"][0]+"')"];
                 
                 veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
-                	state['v-wf:inputVariable'] = state['v-wf:inputVariable'].concat([variable]); // <- Add new Variable to State
-                	state['v-wf:startingMapping'] = state['v-wf:startingMapping'].concat([individualM]); // <- Add new Mapping to State
+                	state[mapping] = state[mapping].concat([individualM]); // <- Add new Mapping to State
                 });
             }
             
@@ -340,7 +339,42 @@ jsWorkflow.ready = jsPlumb.ready;
                 	drop: function( event, ui ) {
                 		var varId = ui.draggable.attr('resource');
                 		var taskId = windows.attr('id');
-                		instance.addVarProperty(taskId, varId);
+                		var $div = $("<div />");
+                		$div.appendTo($('#main'));
+            			$div.dialog({
+            				modal: true,
+            				resizable: false,
+            				buttons: {
+            					"v-wf:startingMapping": function() {
+            						instance.addVarProperty(taskId, "v-wf:startingMapping", varId);
+            						$(this).dialog("close");
+            					},
+            					"v-wf:completedMapping": function() {
+            						instance.addVarProperty(taskId, "v-wf:completedMapping", varId);
+            						$(this).dialog("close");
+            					},
+            					"v-wf:wosResultsMapping": function() {
+            						instance.addVarProperty(taskId, "v-wf:wosResultsMapping", varId);
+            						$(this).dialog("close");
+            					},
+            					"v-wf:startingJournalMap": function() {
+            						instance.addVarProperty(taskId, "v-wf:startingJournalMap", varId);
+            						$(this).dialog("close");
+            					},
+            					"v-wf:completedJournalMap": function() {
+            						instance.addVarProperty(taskId, "v-wf:completedJournalMap", varId);
+            						$(this).dialog("close");
+            					},
+            					"v-wf:startingExecutorJournalMap": function() {
+            						instance.addVarProperty(taskId, "v-wf:startingExecutorJournalMap", varId);
+            						$(this).dialog("close");
+            					},
+            					"v-wf:completedExecutorJournalMap": function() {
+            						instance.addVarProperty(taskId, "v-wf:completedExecutorJournalMap", varId);
+            						$(this).dialog("close");
+            					}
+            				}
+            			});                		
                     }
                 });
             	
