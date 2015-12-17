@@ -313,6 +313,7 @@ veda.Module(function (veda) { "use strict";
 	}
 		
 	proto.saveIndividual = function(draft) {
+		var self = this;
 		// Do not save individual to server if nothing changed
 		//if (self._.sync) return;
 		Object.keys(self._.individual).reduce(function (acc, property_uri) {
