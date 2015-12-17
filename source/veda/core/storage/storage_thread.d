@@ -169,7 +169,7 @@ public void individuals_manager(string thread_name, string db_path, string node_
                                 else if (cmd == CMD.REMOVE)
                                 {
                                     // remove predicate or value in set
-                                    // !!! not implemented
+                                    indv.remove_Resources(predicate, arg.getResources(predicate));
                                 }
                             }
 
