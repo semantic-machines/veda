@@ -348,30 +348,37 @@ jsWorkflow.ready = jsPlumb.ready;
             					"v-wf:startingMapping": function() {
             						instance.addVarProperty(taskId, "v-wf:startingMapping", varId);
             						$(this).dialog("close");
+            						$('#'+veda.Util.escape4$(taskId)).trigger("click");
             					},
             					"v-wf:completedMapping": function() {
             						instance.addVarProperty(taskId, "v-wf:completedMapping", varId);
             						$(this).dialog("close");
+            						$('#'+veda.Util.escape4$(taskId)).trigger("click");
             					},
             					"v-wf:wosResultsMapping": function() {
             						instance.addVarProperty(taskId, "v-wf:wosResultsMapping", varId);
             						$(this).dialog("close");
+            						$('#'+veda.Util.escape4$(taskId)).trigger("click");
             					},
             					"v-wf:startingJournalMap": function() {
             						instance.addVarProperty(taskId, "v-wf:startingJournalMap", varId);
             						$(this).dialog("close");
+            						$('#'+veda.Util.escape4$(taskId)).trigger("click");
             					},
             					"v-wf:completedJournalMap": function() {
             						instance.addVarProperty(taskId, "v-wf:completedJournalMap", varId);
             						$(this).dialog("close");
+            						$('#'+veda.Util.escape4$(taskId)).trigger("click");
             					},
             					"v-wf:startingExecutorJournalMap": function() {
             						instance.addVarProperty(taskId, "v-wf:startingExecutorJournalMap", varId);
             						$(this).dialog("close");
+            						$('#'+veda.Util.escape4$(taskId)).trigger("click");
             					},
             					"v-wf:completedExecutorJournalMap": function() {
             						instance.addVarProperty(taskId, "v-wf:completedExecutorJournalMap", varId);
             						$(this).dialog("close");
+            						$('#'+veda.Util.escape4$(taskId)).trigger("click");
             					}
             				}
             			});                		
