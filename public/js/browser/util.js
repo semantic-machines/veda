@@ -257,7 +257,7 @@ veda.Module(function Util(veda) { "use strict";
 				individualNode.find("#cancel").remove();
 				individualNode.find("#delete").remove();
 				if (individual.hasValue('v-wf:processedDocument') || individual.hasValue('v-wf:onDocument')) {
-					veda.Util.showMessage("Документ успешно отправлен", "", 5000, 
+					veda.Util.showMessage("МОЛОДЕЦ! ИДЕЯ ОТПРАВЛЕНА НА РАССМОТРЕНИЕ! <img src='/files/mnd-s-asppd:SendIdea' />", "", 5000, 
 							individual.hasValue('v-wf:processedDocument')?individual['v-wf:processedDocument'][0].id:individual['v-wf:onDocument'][0].id, "view");
 				}
 			} else if (Object.getOwnPropertyNames(s.results).length == 1) {
@@ -437,7 +437,7 @@ veda.Module(function Util(veda) { "use strict";
 		}
 		
 		var $notification = $("<div/>", {
-			'text': message,
+			'html': message,
 			'class': cssClass
 		});
 		$notification.appendTo($(".modal-body", container));
