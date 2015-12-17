@@ -707,7 +707,7 @@ function mapToJournal(map_container, ticket, _process, _task, _order, msg, journ
 {
     try
     {
-        if (map_container)
+        if (journal_uri && map_container)
         {
         	var process_uri = _process['@'];
         	
@@ -1022,4 +1022,42 @@ function traversal(indv, query, pos_in_path, result)
         }
     }
 
+}
+
+function remove_empty_branches_from_journal (journal_uri)
+{
+	var jrn = get_individual(ticket, journal_uri);
+	if (!jrn["v-s:childRecord"])
+	{
+		var parent_jrn_uri = getUri (jrn["v-s:parentJournal"]);
+		if (parent_jrn_uri)
+		{	
+			var parent_jrn = get_individual(ticket, parent_jrn_uri);
+			
+			var child_records = parent_jrn['v-s:childRecord'];
+			
+			for (var i = 0; i < child_records.length; i++)
+            {
+				var chr_uri = child_records[i].data;
+				var chr = get_individual(ticket, chr_uri);    
+				if (getUri (chr["v-s:subJournal"]) == journal_uri)
+				{
+        		    var remove_from_journal = {
+        		            '@': parent_jrn_uri,
+        		            'v-s:childRecord': [
+        		            {
+        		                data: chr_uri,
+        		                type: _Uri
+        		            }]
+        		        };
+        		    remove_from_individual(ticket, remove_from_journal, _event_id);
+					        				
+					print ("@@@@@@@@ parent_jrn=", toJson (parent_jrn), ", remove_from_journal=", toJson (remove_from_journal));
+					break;
+				}
+				
+            }
+		}
+	}
+	
 }

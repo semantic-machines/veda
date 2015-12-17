@@ -71,7 +71,7 @@ function prepare_decision_form(ticket, document)
             put_individual(ticket, document, _event_id);
 
             //print("[WORKFLOW][DF1].5 completedExecutorJournalMap");
-            mapToJournal(net_element['v-wf:completedExecutorJournalMap'], ticket, _process, work_item, _work_order, null, journal_uri);
+            mapToJournal(net_element['v-wf:completedExecutorJournalMap'], ticket, _process, work_item, _work_order, null, getJournalUri(_work_order['@']));
             //print("[WORKFLOW][DF1].6 completedExecutorJournalMap");
         }
     }
@@ -108,7 +108,7 @@ function prepare_work_order(ticket, document)
         if (trace_journal_uri)
             traceToJournal(ticket, trace_journal_uri, "обработка рабочего задания", toJson(document));
 
-        var journal_uri = create_new_subjournal(f_forWorkItem, _work_order['@'], null, 'v-wf:WorkOrderStarted')
+        var journal_uri;
         
         var f_inVars = work_item['v-wf:inVars'];
         if (!f_inVars)
@@ -127,6 +127,7 @@ function prepare_work_order(ticket, document)
 
         if (!f_local_outVars)
         {
+        	journal_uri = create_new_subjournal(f_forWorkItem, _work_order['@'], null, 'v-wf:WorkOrderStarted')
             // берем только необработанные рабочие задания
             if (!executor)
             {
@@ -430,6 +431,9 @@ function prepare_work_order(ticket, document)
 
         if (is_goto_to_next_task)
         {
+           	journal_uri = getJournalUri(_work_order['@']); 
+        	
+        	
             // переход к новой задаче  prepare[[wo][wo][wo]] ----> new [wi]
 
             if (work_item_result.length > 0)
@@ -564,6 +568,8 @@ function prepare_work_order(ticket, document)
 
             put_individual(ticket, work_item, _event_id);
             //print("[WORKFLOW][WOe] update work_item=", toJson(work_item));
+            
+            remove_empty_branches_from_journal (journal_uri);
         }
     }
     catch (e)
@@ -609,13 +615,13 @@ function prepare_work_item(ticket, document)
                 if (trace_journal_uri)
                     traceToJournal(ticket, trace_journal_uri, "prepare_work_item:completed, exit", work_item['@']);
 
+                remove_empty_branches_from_journal (getJournalUri(work_item['@']));                
+                
                 return;
             }
         }
     
         trace_journal_uri = create_new_trace_subjournal(forProcess, work_item, netElement['@'] + "' - [" + getStrings(netElement['rdfs:label']) + "] - " + work_item['@'], 'v-wf:WorkItemStarted')
-
-        var journal_uri = create_new_subjournal(forProcess, work_item['@'], netElement['rdfs:label'], 'v-wf:WorkItemStarted')
 
         var f_join = netElement['v-wf:join'];
         if (f_join && getUri(f_join) == "v-wf:AND")
@@ -689,9 +695,13 @@ function prepare_work_item(ticket, document)
         var is_goto_to_next_task = false;
         var task_output_vars = [];
 
+        var journal_uri;
+
         if (is_exist(netElement, 'rdf:type', 'v-wf:Task'))
         {
-            if (trace_journal_uri)
+            journal_uri = create_new_subjournal(forProcess, work_item['@'], netElement['rdfs:label'], 'v-wf:WorkItemStarted');
+
+        	if (trace_journal_uri)
                 traceToJournal(ticket, trace_journal_uri, "Is task");
 
             //* выполнить стартовый маппинг переменных	
