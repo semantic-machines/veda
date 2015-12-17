@@ -243,6 +243,9 @@ veda.Module(function Util(veda) { "use strict";
 		individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
 		//$('[resource="'+individual.id+'"]').find("#save").trigger("click");
 		template.trigger('save');
+		if (individual.redirectToIndividual) {
+			individual = individual.redirectToIndividual;
+		}
 		
 		if (transformId !== undefined) {
 			var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
