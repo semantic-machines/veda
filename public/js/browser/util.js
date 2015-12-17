@@ -172,7 +172,7 @@ veda.Module(function Util(veda) { "use strict";
 		var allProps = Object.getOwnPropertyNames(individual.properties)
 			.map(function (property_uri) {
 				var property = individual.properties[property_uri];
-				var values = individual[property_uri].filter(function(item){return !!item && !!item.valueOf();});
+				var values = individual[property_uri];//.filter(function(item){return !!item && !!item.valueOf();});
 				// Filter rdfs:Resource type
 				if (property_uri === "rdf:type") { 
 					values = individual[property_uri].filter(function(item){ return item.id !== "rdfs:Resource" });
@@ -195,7 +195,7 @@ veda.Module(function Util(veda) { "use strict";
 						break;
 					case "xsd:boolean": 
 						oneProp = values
-							.filter(function(item){return !!item && !!item.valueOf();})
+							//.filter(function(item){return !!item && !!item.valueOf();})
 							.map( function (value) {
 								return "'" + property_uri + "'=='" + value + "'";
 							})
