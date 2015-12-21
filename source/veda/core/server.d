@@ -8,7 +8,7 @@ private
     import core.thread, std.stdio, std.string, std.c.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process;
     version (linux) import std.c.linux.linux, core.stdc.stdlib;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
-    import io.mq_client, io.rabbitmq_client, veda.core.io.file_reader;
+    import io.mq_client, veda.core.io.file_reader;
     import util.logger, util.utils, util.load_info;
     import veda.core.scripts, veda.core.context, veda.core.know_predicates, veda.core.log_msg, veda.core.thread_context;
     import veda.core.define, veda.core.interthread_signals;
