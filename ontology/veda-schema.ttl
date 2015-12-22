@@ -516,7 +516,7 @@ v-s:country
 v-s:created
   rdf:type owl:DatatypeProperty ;
   rdfs:domain rdfs:Resource ;
-  rdfs:label "creation date"@en ;
+  rdfs:label "entry date"@en ;
   rdfs:label "дата создания"@ru ;
   rdfs:range xsd:dateTime ;
 .
