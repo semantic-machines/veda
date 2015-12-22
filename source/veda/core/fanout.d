@@ -26,7 +26,17 @@ logger log()
         _log = new logger("veda-core-" ~ process_name, "log", "FANOUT");
     return _log;
 }
+
 // ////// ////// ///////////////////////////////////////////
+public void send_put(Context ctx, string cur_state, string prev_state, long op_id)
+{
+    Tid tid_fanout = ctx.getTid(P_MODULE.fanout);
+
+    if (tid_fanout != Tid.init)
+    {
+        send(tid_fanout, CMD.PUT, prev_state, cur_state);
+    }
+}
 
 void fanout_thread(string thread_name, string _node_id)
 {
@@ -101,9 +111,9 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
     {
         bool   is_deleted = new_indv.isExist("v-s:deleted", true);
 
-        string actualVersion = new_indv.getFirstLiteral("v-s:actualVersion");
-		string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
-		string previousVersion_new = new_indv.getFirstLiteral("v-s:previousVersion");		
+        string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");
+        string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
+        string previousVersion_new  = new_indv.getFirstLiteral("v-s:previousVersion");
 
         if (is_deleted == false && actualVersion !is null && actualVersion != new_indv.uri && previousVersion_prev == previousVersion_new)
             return;
@@ -148,19 +158,19 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
                             foreach (rs; rss)
                             {
                                 mysql_conn.query("SET NAMES 'utf8'");
-                                
+
                                 if (rs.type == DataType.Boolean)
                                 {
-                                	if (rs.get!bool == true)
-                                		mysql_conn.query("INSERT INTO `?` (doc_id, value) VALUES (?, ?)", predicate, new_indv.uri, 1);
-                                	else	
-                                		mysql_conn.query("INSERT INTO `?` (doc_id, value) VALUES (?, ?)", predicate, new_indv.uri, 0);
+                                    if (rs.get!bool == true)
+                                        mysql_conn.query("INSERT INTO `?` (doc_id, value) VALUES (?, ?)", predicate, new_indv.uri, 1);
+                                    else
+                                        mysql_conn.query("INSERT INTO `?` (doc_id, value) VALUES (?, ?)", predicate, new_indv.uri, 0);
                                 }
-								else
-								{
-                                	mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, new_indv.uri,
-                                                 rs.asString().toUTF8(), text(rs.lang));
-                                }	
+                                else
+                                {
+                                    mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, new_indv.uri,
+                                                     rs.asString().toUTF8(), text(rs.lang));
+                                }
                             }
                         }
                     }

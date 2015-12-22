@@ -1273,16 +1273,10 @@ class PThreadContext : Context
                     	search.xapian_indexer.send_delete (this, ss_as_cbor, prev_state, res.op_id);
 
                     if (prepare_events == true)
-                    {
                         bus_event_after(ticket, indv, rdfType, ss_as_cbor, prev_state, ev, this, event_id, res.op_id);
-                    }
 
-                    Tid tid_fanout = getTid(P_MODULE.fanout);
-                    if (tid_fanout != Tid.init)
-                    {
-                        send(tid_fanout, CMD.PUT, prev_state, ss_as_cbor);
-                    }
-
+					veda.core.fanout.send_put (this, ss_as_cbor, prev_state, res.op_id);
+					
                     res.result = ResultCode.OK;
 
                     return res;
