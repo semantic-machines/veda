@@ -1273,7 +1273,7 @@ class PThreadContext : Context
 
                         if (tid_search_manager != Tid.init)
                         {
-                            send(tid_search_manager, CMD.PUT, ss_as_cbor, res.op_id);
+                            send(tid_search_manager, CMD.PUT, ss_as_cbor, prev_state, res.op_id);
                         }
                     }
                     else
@@ -1282,7 +1282,7 @@ class PThreadContext : Context
 
                         if (tid_search_manager != Tid.init)
                         {
-                            send(tid_search_manager, CMD.DELETE, ss_as_cbor, res.op_id);
+                            send(tid_search_manager, CMD.DELETE, ss_as_cbor, prev_state, res.op_id);
                         }
                     }
 

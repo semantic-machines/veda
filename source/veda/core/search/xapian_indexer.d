@@ -135,18 +135,28 @@ private class IndexerContext
         }
     }
 
-    void index_msg(string msg, bool is_deleted, long op_id)
+    void index_msg(string msg, string prev_msg, bool is_deleted, long op_id)
     {
         Individual indv;
+        Individual prev_indv;
 
         try
         {
             if (cbor2individual(&indv, msg) < 0)
             {
-                log.trace("!ERR:invalid individual:[%s]", msg);
+                log.trace("!ERR:index_msg invalid individual:[%s]", msg);
                 return;
             }
 
+			if (prev_msg !is null)
+			{
+            	if (cbor2individual(&prev_indv, prev_msg) < 0)
+            	{
+                	log.trace("!ERR:index_msg, prev_state: invalid individual:[%s]", msg);
+                	return;
+            	}
+            }	
+            
             if (iproperty is null)
             {
                 if (context is null)
@@ -161,8 +171,10 @@ private class IndexerContext
             if (indv.uri !is null && indv.resources.length > 0)
             {
                 string actualVersion = indv.getFirstLiteral("v-s:actualVersion");
+				string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
+				string previousVersion_new = indv.getFirstLiteral("v-s:previousVersion");		
 
-                if (is_deleted == false && actualVersion !is null && actualVersion != indv.uri)
+                if (is_deleted == false && actualVersion !is null && actualVersion != indv.uri &&  previousVersion_prev == previousVersion_new)
                     return;
 
                 OutBuffer      all_text = new OutBuffer();
@@ -974,16 +986,16 @@ void xapian_indexer(string thread_name, string _node_id)
                             }
                         }
                     },
-                    (CMD cmd, string msg, long op_id)
+                    (CMD cmd, string msg, string prev_msg, long op_id)
                     {
                         //writeln ("@@XAPIAN INDEXER START op_id=", op_id);
                         if (cmd == CMD.PUT)
                         {
-                            ictx.index_msg(msg, false, op_id);
+                            ictx.index_msg(msg, prev_msg, false, op_id);
                         }
                         else if (cmd == CMD.DELETE)
                         {
-                            ictx.index_msg(msg, true, op_id);
+                            ictx.index_msg(msg, prev_msg, true, op_id);
                         }
                         //writeln ("@@XAPIAN INDEXER END op_id=", op_id);
                     },

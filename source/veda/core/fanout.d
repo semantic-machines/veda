@@ -102,8 +102,10 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
         bool   is_deleted = new_indv.isExist("v-s:deleted", true);
 
         string actualVersion = new_indv.getFirstLiteral("v-s:actualVersion");
+		string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
+		string previousVersion_new = new_indv.getFirstLiteral("v-s:previousVersion");		
 
-        if (is_deleted == false && actualVersion !is null && actualVersion != new_indv.uri)
+        if (is_deleted == false && actualVersion !is null && actualVersion != new_indv.uri && previousVersion_prev == previousVersion_new)
             return;
 
         Resources types        = new_indv.getResources("rdf:type");
