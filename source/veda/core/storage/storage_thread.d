@@ -23,6 +23,26 @@ logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
+public bool send_put(Context ctx, CMD cmd, string cur_state, out string new_state, out string prev_state, out long op_id, out EVENT ev)
+{
+    Tid tid_subject_manager = ctx.getTid(P_MODULE.subject_manager);
+
+    if (tid_subject_manager != Tid.init)
+    {
+        send(tid_subject_manager, cmd, cur_state, thisTid);
+        receive((EVENT _ev, string _prev_state, string _new_state, Tid from)
+                {
+                    if (from == ctx.getTid(P_MODULE.subject_manager))
+                        ev = _ev;
+                    prev_state = _prev_state;
+                    new_state = _new_state;
+                    op_id = get_count_put();
+                    return true;
+                });
+    }
+    return false;
+}
+
 
 public void individuals_manager(string thread_name, string db_path, string node_id)
 {

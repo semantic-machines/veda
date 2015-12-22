@@ -1236,22 +1236,10 @@ class PThreadContext : Context
                     }
                 }
 
-                EVENT ev = EVENT.NONE;
-
-                tid_subject_manager = getTid(P_MODULE.subject_manager);
+                EVENT  ev = EVENT.NONE;
                 string prev_state;
-                if (tid_subject_manager != Tid.init)
-                {
-                    send(tid_subject_manager, cmd, ss_as_cbor, thisTid);
-                    receive((EVENT _ev, string _prev_state, string _new_state, Tid from)
-                            {
-                                if (from == getTid(P_MODULE.subject_manager))
-                                    ev = _ev;
-                                prev_state = _prev_state;
-                                ss_as_cbor = _new_state;
-                                res.op_id = get_count_put();
-                            });
-                }
+
+                storage.storage_thread.send_put(this, cmd, ss_as_cbor, ss_as_cbor, prev_state, res.op_id, ev);
 
                 if (ev == EVENT.NOT_READY)
                 {
@@ -1268,15 +1256,15 @@ class PThreadContext : Context
                 if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
                 {
                     if (indv.isExist(veda_schema__deleted, true) == false)
-                    	search.xapian_indexer.send_put (this, ss_as_cbor, prev_state, res.op_id);
+                        search.xapian_indexer.send_put(this, ss_as_cbor, prev_state, res.op_id);
                     else
-                    	search.xapian_indexer.send_delete (this, ss_as_cbor, prev_state, res.op_id);
+                        search.xapian_indexer.send_delete(this, ss_as_cbor, prev_state, res.op_id);
 
                     if (prepare_events == true)
                         bus_event_after(ticket, indv, rdfType, ss_as_cbor, prev_state, ev, this, event_id, res.op_id);
 
-					veda.core.fanout.send_put (this, ss_as_cbor, prev_state, res.op_id);
-					
+                    veda.core.fanout.send_put(this, ss_as_cbor, prev_state, res.op_id);
+
                     res.result = ResultCode.OK;
 
                     return res;
