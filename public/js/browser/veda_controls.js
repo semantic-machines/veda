@@ -7,12 +7,12 @@
 	var veda_literal_input = function( options ) {
 		var opts = $.extend( {}, veda_literal_input.defaults, options ),
 			control = $(opts.template),
+			input = $(".form-control", control),
 			spec = opts.spec,
-			placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
+			placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : input.attr("placeholder"),
 			isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
 			property_uri = opts.property_uri,
-			individual = opts.individual,
-			input = $(".form-control", control);
+			individual = opts.individual;
 
 		input.attr("placeholder", placeholder);
 		
