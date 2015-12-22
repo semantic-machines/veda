@@ -1268,23 +1268,9 @@ class PThreadContext : Context
                 if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
                 {
                     if (indv.isExist(veda_schema__deleted, true) == false)
-                    {
-                        Tid tid_search_manager = getTid(P_MODULE.fulltext_indexer);
-
-                        if (tid_search_manager != Tid.init)
-                        {
-                            send(tid_search_manager, CMD.PUT, ss_as_cbor, prev_state, res.op_id);
-                        }
-                    }
+                    	search.xapian_indexer.send_put (this, ss_as_cbor, prev_state, res.op_id);
                     else
-                    {
-                        Tid tid_search_manager = getTid(P_MODULE.fulltext_indexer);
-
-                        if (tid_search_manager != Tid.init)
-                        {
-                            send(tid_search_manager, CMD.DELETE, ss_as_cbor, prev_state, res.op_id);
-                        }
-                    }
+                    	search.xapian_indexer.send_delete (this, ss_as_cbor, prev_state, res.op_id);
 
                     if (prepare_events == true)
                     {

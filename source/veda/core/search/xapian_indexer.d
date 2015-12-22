@@ -27,6 +27,25 @@ logger log()
 
 protected byte err;
 
+public void send_put(Context ctx, string cur_state, string prev_state, long op_id)
+{
+    Tid tid_search_manager = ctx.getTid(P_MODULE.fulltext_indexer);
+
+    if (tid_search_manager != Tid.init)
+    {
+        send(tid_search_manager, CMD.PUT, cur_state, prev_state, op_id);
+    }
+}
+
+public void send_delete(Context ctx, string cur_state, string prev_state, long op_id)
+{
+    Tid tid_search_manager = ctx.getTid(P_MODULE.fulltext_indexer);
+
+    if (tid_search_manager != Tid.init)
+    {
+        send(tid_search_manager, CMD.DELETE, cur_state, prev_state, op_id);
+    }
+}
 
 public void xapian_thread_context(string thread_name)
 {
@@ -148,15 +167,15 @@ private class IndexerContext
                 return;
             }
 
-			if (prev_msg !is null)
-			{
-            	if (cbor2individual(&prev_indv, prev_msg) < 0)
-            	{
-                	log.trace("!ERR:index_msg, prev_state: invalid individual:[%s]", msg);
-                	return;
-            	}
-            }	
-            
+            if (prev_msg !is null)
+            {
+                if (cbor2individual(&prev_indv, prev_msg) < 0)
+                {
+                    log.trace("!ERR:index_msg, prev_state: invalid individual:[%s]", msg);
+                    return;
+                }
+            }
+
             if (iproperty is null)
             {
                 if (context is null)
@@ -170,11 +189,11 @@ private class IndexerContext
 
             if (indv.uri !is null && indv.resources.length > 0)
             {
-                string actualVersion = indv.getFirstLiteral("v-s:actualVersion");
-				string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
-				string previousVersion_new = indv.getFirstLiteral("v-s:previousVersion");		
+                string actualVersion        = indv.getFirstLiteral("v-s:actualVersion");
+                string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
+                string previousVersion_new  = indv.getFirstLiteral("v-s:previousVersion");
 
-                if (is_deleted == false && actualVersion !is null && actualVersion != indv.uri &&  previousVersion_prev == previousVersion_new)
+                if (is_deleted == false && actualVersion !is null && actualVersion != indv.uri && previousVersion_prev == previousVersion_new)
                     return;
 
                 OutBuffer      all_text = new OutBuffer();
@@ -431,10 +450,10 @@ private class IndexerContext
                         }
                     }
 
-					if (resources.length > 0)
-					{
-                    	index_boolean(predicate ~ ".isExists", Resource (true));
-					}
+                    if (resources.length > 0)
+                    {
+                        index_boolean(predicate ~ ".isExists", Resource(true));
+                    }
 
                     foreach (oo; resources)
                     {

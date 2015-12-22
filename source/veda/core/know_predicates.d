@@ -24,19 +24,14 @@ public const string veda_schema__memberOf = "v-s:memberOf";
 public const string veda_schema__Membership = "v-s:Membership";
 public const string veda_schema__owner = "v-s:owner";
 public const string veda_schema__fullUrl = "v-s:fullUrl";
-
 public const string rdf__type = "rdf:type";
-public const string rdfs__Class = "rdfs:Class";
 public const string rdfs__subClassOf = "rdfs:subClassOf";
-
 public const string xsd__string = "xsd:string";
 public const string xsd__boolean = "xsd:boolean";
 public const string xsd__dateTime = "xsd:dateTime";
 public const string xsd__decimal = "xsd:decimal";
-
 public const string ticket__Ticket               = "ticket:Ticket";
 public const string ticket__accessor             = "ticket:accessor";
-public const string ticket__parentUnitOfAccessor = "ticket:parentUnitOfAccessor";
 public const string ticket__when                 = "ticket:when";
 public const string ticket__duration             = "ticket:duration";
 
