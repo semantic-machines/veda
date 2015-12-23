@@ -22,6 +22,17 @@ logger log()
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
+public string backup (Context ctx)
+{
+	string backup_id;
+	
+    Tid  tid_subject_manager = ctx.getTid(P_MODULE.subject_manager);
+    send(tid_subject_manager, CMD.BACKUP, "", thisTid);
+    receive((string res) { backup_id = res; });
+    
+    return backup_id;	
+}
+
 
 public bool send_put(Context ctx, CMD cmd, string cur_state, out string new_state, out string prev_state, out long op_id, out EVENT ev)
 {

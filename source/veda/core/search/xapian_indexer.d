@@ -27,6 +27,15 @@ logger log()
 
 protected byte err;
 
+public string backup (Context ctx, string backup_id)
+{
+	string res;
+    Tid tid_fulltext_indexer = ctx.getTid(P_MODULE.fulltext_indexer);
+    send(tid_fulltext_indexer, CMD.BACKUP, backup_id, thisTid);
+    receive((string _res) { res = _res; });
+	return res;
+}
+
 public void send_put(Context ctx, string cur_state, string prev_state, long op_id)
 {
     Tid tid_search_manager = ctx.getTid(P_MODULE.fulltext_indexer);

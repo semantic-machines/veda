@@ -35,6 +35,17 @@ logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
+public string backup (Context ctx, string backup_id)
+{
+	string res;
+	
+    Tid    tid_acl_manager = ctx.getTid(P_MODULE.acl_manager);
+    send(tid_acl_manager, CMD.BACKUP, backup_id, thisTid);
+    receive((string _res) { res = _res; });
+                
+    return res;            
+}
+
 /// Хранение, чтение PermissionStatement, Membership
 class Authorization : LmdbStorage
 {

@@ -1266,20 +1266,14 @@ class PThreadContext : Context
         {
             bool result = false;
 
-            Tid  tid_subject_manager = getTid(P_MODULE.subject_manager);
-
-            send(tid_subject_manager, CMD.BACKUP, "", thisTid);
-            string backup_id;
-            receive((string res) { backup_id = res; });
+			string backup_id = storage.storage_thread.backup (this);
 
             if (backup_id != "")
             {
                 result = true;
 
-                string res;
-                Tid    tid_acl_manager = getTid(P_MODULE.acl_manager);
-                send(tid_acl_manager, CMD.BACKUP, backup_id, thisTid);
-                receive((string _res) { res = _res; });
+                string res = az.acl.backup (this, backup_id);
+
                 if (res == "")
                     result = false;
                 else
@@ -1291,9 +1285,8 @@ class PThreadContext : Context
                         result = false;
                     else
                     {
-                        Tid tid_fulltext_indexer = getTid(P_MODULE.fulltext_indexer);
-                        send(tid_fulltext_indexer, CMD.BACKUP, backup_id, thisTid);
-                        receive((string _res) { res = _res; });
+						res = search.xapian_indexer.backup (this, backup_id);
+						
                         if (res == "")
                             result = false;
                     }
