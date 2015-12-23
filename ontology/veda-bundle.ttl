@@ -196,6 +196,11 @@ v-b:SendInstruction
   rdfs:label "Выдать поручение"@ru ;
   rdfs:label "Send instruction"@en ;
 .
+v-b:Total
+  rdf:type v-b:Bundle ;
+  rdfs:label "Всего"@ru ;
+  rdfs:label "Total"@en ;
+.
 v-b:atLeastOneFilled
   rdf:type v-b:Bundle ;
   rdfs:label "Хотя ты одно из значений должно быть заполнено"@ru ;
