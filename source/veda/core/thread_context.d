@@ -170,18 +170,6 @@ class PThreadContext : Context
         return onto;
     }
 
-    public long get_last_update_time()
-    {
-        long lut;
-
-        send(getTid(P_MODULE.xapian_thread_context), CMD.GET, CNAME.LAST_UPDATE_TIME, thisTid);
-        receive((long tm)
-                {
-                    lut = tm;
-                });
-        return lut;
-    }
-
     private void reload_scripts()
     {
         Script[] scripts;
@@ -611,10 +599,10 @@ class PThreadContext : Context
                 if (login == null || login.length < 1 || password == null || password.length < 6)
                     return ticket;
 
-                if (this.getTid(P_MODULE.subject_manager) != Tid.init)
-                    this.wait_thread(P_MODULE.subject_manager);
-                if (this.getTid(P_MODULE.fulltext_indexer) != Tid.init)
-                    this.wait_thread(P_MODULE.fulltext_indexer);
+                //if (this.getTid(P_MODULE.subject_manager) != Tid.init)
+                //    this.wait_thread(P_MODULE.subject_manager);
+                //if (this.getTid(P_MODULE.fulltext_indexer) != Tid.init)
+                //    this.wait_thread(P_MODULE.fulltext_indexer);
 
                 Ticket       sticket         = sys_ticket;
                 Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
