@@ -11,8 +11,7 @@ private
     import io.mq_client, veda.core.io.file_reader;
     import util.logger, util.utils, util.load_info;
     import veda.core.scripts, veda.core.context, veda.core.know_predicates, veda.core.log_msg, veda.core.thread_context;
-    import veda.core.define, veda.core.interthread_signals;
-    import veda.type, az.acl, storage.storage_thread, search.xapian_indexer, veda.onto.individual, veda.onto.resource;
+    import veda.core.define, veda.type, az.acl, storage.storage_thread, search.xapian_indexer, veda.onto.individual, veda.onto.resource;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -85,14 +84,14 @@ bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
 }
 //		import io.zmq_io;
 
-extern(C) void handleTermination(int signal)
+extern (C) void handleTermination(int signal)
 {
-       writefln("!Caught signal: %s", signal);
-       
-       system(cast(char *)("kill -kill " ~ text(getpid()) ~ "\0"));
+    writefln("!Caught signal: %s", signal);
+
+    system(cast(char *)("kill -kill " ~ text(getpid()) ~ "\0"));
 
     //   getTrace();
-       exit(signal);
+    exit(signal);
 }
 
 Context init_core(string node_id, string role, ushort listener_http_port, string write_storage_node)
@@ -108,8 +107,8 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
     io_msg = new logger("pacahon", "io", "server");
     Tid[ P_MODULE ] tids;
 
-	bsd_signal(SIGINT, &handleTermination);
-	
+    bsd_signal(SIGINT, &handleTermination);
+
     try
     {
 //        log.trace_log_and_console("\nPACAHON %s.%s.%s\nSOURCE: commit=%s date=%s\n", veda.core.myversion.major, veda.core.myversion.minor,
@@ -154,10 +153,6 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
         }
 
         log.trace("init core: is_main=%s, jsvm_node_type=%s", text(is_main), jsvm_node_type);
-
-
-        tids[ P_MODULE.interthread_signals ] = spawn(&interthread_signals_thread, text(P_MODULE.interthread_signals));
-        wait_starting_thread(P_MODULE.interthread_signals, tids);
 
         if (is_main)
         {

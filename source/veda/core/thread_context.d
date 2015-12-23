@@ -11,8 +11,7 @@ private
     import bind.xapian_d_header, bind.v8d_header;
     import io.mq_client;
     import util.container, util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, veda.core.util.individual8json;
-    import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.interthread_signals,
-           veda.core.log_msg;
+    import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.log_msg;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, storage.lmdb_storage;
     import az.acl;
 }
@@ -154,11 +153,18 @@ class PThreadContext : Context
         return node;
     }
 
+    private long local_count_onto_update = -1;
+
     public Onto get_onto()
     {
         if (onto !is null)
         {
-            check_for_reload("onto", &onto.load);
+            long g_count_onto_update = get_count_onto_update();
+            if (g_count_onto_update > local_count_onto_update)
+            {
+                local_count_onto_update = g_count_onto_update;
+                onto.load();
+            }
         }
 
         return onto;
@@ -284,7 +290,13 @@ class PThreadContext : Context
     {
         if (onto !is null)
         {
-            check_for_reload("onto", &onto.load);
+            long g_count_onto_update = get_count_onto_update();
+            if (g_count_onto_update > local_count_onto_update)
+            {
+                local_count_onto_update = g_count_onto_update;
+                onto.load();
+            }
+
             return onto.get_individuals;
         }
         else
@@ -307,45 +319,6 @@ class PThreadContext : Context
 
         return res;
     }
-// /////////////////////////////////////////// oykumena ///////////////////////////////////////////////////
-
-    public void push_signal(string key, long value)
-    {
-        try
-        {
-            Tid tid_interthread_signals = getTid(P_MODULE.interthread_signals);
-
-            if (tid_interthread_signals != Tid.init)
-            {
-                send(tid_interthread_signals, CMD.PUT, key, value);
-            }
-
-            set_reload_signal_to_local_thread(key);
-        }
-        catch (Exception ex)
-        {
-            writeln(__FUNCTION__ ~ "", ex.msg);
-        }
-    }
-
-    public void push_signal(string key, string value)
-    {
-        try
-        {
-            Tid tid_interthread_signals = getTid(P_MODULE.interthread_signals);
-
-            if (tid_interthread_signals != Tid.init)
-            {
-                send(tid_interthread_signals, CMD.PUT, key, value);
-            }
-        }
-        catch (Exception ex)
-        {
-            writeln(__FUNCTION__ ~ "", ex.msg);
-        }
-    }
-
-// /////////////////////////////////////////////////////////////////////////////////////////////
 
     public Tid getTid(P_MODULE tid_id)
     {
@@ -478,34 +451,7 @@ class PThreadContext : Context
         }
     }
 
-    // ////////////////////////////////////////////////////////////////////////////////
-    struct Signal
-    {
-        long time_update = 0;
-        long time_check  = 0;
-    }
-
-    Signal *[ string ] signals;
-
-    int timeout = 10;
-
-    public void set_reload_signal_to_local_thread(string interthread_signal_id)
-    {
-        Signal *signal = signals.get(interthread_signal_id, null);
-
-        if (signal == null)
-        {
-            signal                           = new Signal;
-            signals[ interthread_signal_id ] = signal;
-        }
-
-        long now = Clock.currStdTime() / 10000000;
-        signal.time_update = now;
-
-        if (trace_msg[ 19 ] == 1)
-            log.trace("[%s] SET RELOAD LOCAL SIGNAL [%s], signal.time_update=%d", name, interthread_signal_id,
-                      signal.time_update);
-    }
+    int  timeout = 10;
 
     long ft_local_count;
     long ft_local_time_check = 0;
@@ -543,115 +489,6 @@ class PThreadContext : Context
         }
         return false;
     }
-
-    public bool check_for_reload(string interthread_signal_id, void delegate() load)
-    {
-        Signal *local = signals.get(interthread_signal_id, null);
-
-        long   now = Clock.currStdTime() / 10000000;
-
-        if (local == null)
-        {
-            if (trace_msg[ 19 ] == 1)
-                log.trace("[%s] NEW SIGNAL OBJ for [%s] ", name, interthread_signal_id);
-
-            local                            = new Signal;
-            local.time_update                = now;
-            local.time_check                 = now - timeout - 1;
-            signals[ interthread_signal_id ] = local;
-        }
-
-
-        if (now - local.time_check > timeout)
-        {
-            if (trace_msg[ 19 ] == 1)
-                log.trace("[%s] CHECK FOR RELOAD #1 [%s], (now-local.time_update)=%d, (now-local.time_check)=%d", name,
-                          interthread_signal_id, now - local.time_update, now - local.time_check);
-
-            if (local.time_update > local.time_check)
-            {
-                if (trace_msg[ 19 ] == 1)
-                    log.trace("[%s] NOW RELOAD FOR [%s], local.time_update=%d > local.time_check=%d", name, interthread_signal_id,
-                              local.time_update, local.time_check);
-
-                local.time_check  = now;
-                local.time_update = now;
-
-                load();
-
-                return true;
-            }
-            else
-            {
-                local.time_check = now;
-
-                long stored_time_signal = look_integer_signal(interthread_signal_id) / 1000;
-                if (stored_time_signal == 0)
-                    return false;
-
-                if (trace_msg[ 19 ] == 1)
-                    log.trace("[%s] CHECK FOR RELOAD #2 [%s], stored_time_signal=%d, local.time_update=%d, delta=%d",
-                              name, interthread_signal_id, stored_time_signal, local.time_update, stored_time_signal - local.time_update);
-
-                if (local.time_update < stored_time_signal)
-                {
-                    if (trace_msg[ 19 ] == 1)
-                        log.trace("[%s] NOW RELOAD FOR [%s], local.time_update=%d < stored_time_signal=%d", name, interthread_signal_id,
-                                  local.time_update, stored_time_signal);
-
-                    local.time_update = stored_time_signal;
-
-                    load();
-
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public long look_integer_signal(string key)
-    {
-        Tid myTid                   = thisTid;
-        Tid tid_interthread_signals = getTid(P_MODULE.interthread_signals);
-
-        if (tid_interthread_signals !is Tid.init)
-        {
-            send(tid_interthread_signals, CMD.GET, key, DataType.Integer, myTid);
-
-            long res;
-
-            receive((long msg)
-                    {
-                        res = msg;
-                    });
-
-            return res;
-        }
-        return 0;
-    }
-
-    public string look_string_signal(string key)
-    {
-        Tid myTid                   = thisTid;
-        Tid tid_interthread_signals = getTid(P_MODULE.interthread_signals);
-
-        if (tid_interthread_signals !is Tid.init)
-        {
-            send(tid_interthread_signals, CMD.GET, key, DataType.String, myTid);
-
-            string res;
-
-            receive((string msg)
-                    {
-                        res = msg;
-                    });
-
-            return res;
-        }
-        return null;
-    }
-
 
     // *************************************************** external api *********************************** //
 

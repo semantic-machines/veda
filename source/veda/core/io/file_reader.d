@@ -253,8 +253,6 @@ void processed(Context context, bool is_load)
         }
     }
 
-//    context.set_reload_signal_to_local_thread("search");
-
     core.memory.GC.collect();
 
     if (trace_msg[ 29 ] == 1)

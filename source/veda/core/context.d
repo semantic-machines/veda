@@ -44,9 +44,6 @@ public enum P_MODULE : byte
     /// Вывод статистики
     print_statistic            = 8,
 
-    /// Межпроцессные сигналы
-    interthread_signals        = 9,
-
     /// Загрузка из файлов
     file_reader                = 10,
 
@@ -178,18 +175,9 @@ interface Context
 
     int[ string ] get_key2slot();
 
-//    void store_subject(Subject ss, bool prepareEvents = true);
-    public bool check_for_reload(string interthread_signal_id, void delegate() load);
     public bool ft_check_for_reload(void delegate() load);
     public bool acl_check_for_reload(void delegate() load);
 
-//    /////////////////////////////////////////// <- oykumena -> ///////////////////////////////////////////////
-
-    void push_signal(string key, long value);
-    void push_signal(string key, string value);
-    long look_integer_signal(string key);
-    string look_string_signal(string key);
-    void set_reload_signal_to_local_thread(string interthread_signal_id);
     bool authorize(string uri, Ticket *ticket, ubyte request_acess);
     Individual[] get_individuals_via_query(Ticket *ticket, string query_str);
     string get_individual_from_storage(string uri);
@@ -205,7 +193,7 @@ interface Context
     ref string[ string ] get_prefix_map();
     void add_prefix_map(ref string[ string ] arg);
     long get_last_update_time();
-	public void stat(CMD command_type, ref StopWatch sw, string func = __FUNCTION__) nothrow;
+    public void stat(CMD command_type, ref StopWatch sw, string func = __FUNCTION__) nothrow;
     // *************************************************** external API *********************************** //
     /**
        Выполнить скрипт
@@ -375,6 +363,20 @@ interface Context
 //////////////////////////////////////////////////////////////////////////
 
 import core.atomic;
+
+private shared long count_onto_update = 0;
+
+public void inc_count_onto_update(long delta = 1)
+{
+    atomicOp !"+=" (count_onto_update, delta);
+}
+
+public long get_count_onto_update()
+{
+    return atomicLoad(count_onto_update);
+}
+
+///
 
 private shared long count_put = 0;
 

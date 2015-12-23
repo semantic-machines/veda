@@ -23,7 +23,7 @@ logger log()
 
 int count;
 
-void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] rdfType, string subject_as_cbor, string prev_state, EVENT ev_type,
+void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] rdfType, string new_state, string prev_state, EVENT ev_type,
                      Context context,
                      string event_id, long op_id)
 {
@@ -36,10 +36,10 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
 
     if (ev_type == EVENT.CREATE || ev_type == EVENT.UPDATE)
     {
-        if (rdfType.anyExist(owl_tags) == true)
+        if (rdfType.anyExist(owl_tags) == true && new_state != prev_state)
         {
             // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-            context.push_signal("onto", Clock.currStdTime() / 10000);
+            inc_count_onto_update();
         }
 
         if (rdfType.anyExist(veda_schema__PermissionStatement) == true || rdfType.anyExist(veda_schema__Membership) == true)
@@ -47,7 +47,7 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
             Tid tid_acl = context.getTid(P_MODULE.acl_manager);
             if (tid_acl != Tid.init)
             {
-                send(tid_acl, CMD.PUT, ev_type, subject_as_cbor, op_id);
+                send(tid_acl, CMD.PUT, ev_type, new_state, op_id);
             }
         }
 
@@ -104,7 +104,7 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
                 if (rdfType.anyExist(veda_schema__Event))
                 {
                     // изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
-                    send(tid_condition, CMD.RELOAD, subject_as_cbor, thisTid);
+                    send(tid_condition, CMD.RELOAD, new_state, thisTid);
                     receive((bool){});
                 }
 
@@ -119,7 +119,7 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
 
                     if (ticket !is null)
                         user_uri = ticket.user_uri;
-                    send(tid_condition, user_uri, ev_type, subject_as_cbor, prev_state, types, individual.uri, event_id, op_id);
+                    send(tid_condition, user_uri, ev_type, new_state, prev_state, types, individual.uri, event_id, op_id);
                 }
                 catch (Exception ex)
                 {
