@@ -898,9 +898,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			btnRemove.mouseleave(function () {
 				valTemplate.removeClass("red-outline");
 			});
-			valTemplate.css("position", "relative");
-			// It is important to append buttons skipping script element in template!
-			valTemplate.not("script").append(wrapper);
+			if (valTemplate.prop("tagName") === "TR") {
+				var td = $("td", valTemplate).last();
+				td.css("position", "relative").append(wrapper);
+			} else {
+				valTemplate.css("position", "relative");
+				// It is important to append buttons skipping script element in template!
+				valTemplate.not("script").append(wrapper);
+			}
 		}
 		return valTemplate;
 	}

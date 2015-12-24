@@ -201,6 +201,16 @@ v-b:Total
   rdfs:label "Всего"@ru ;
   rdfs:label "Total"@en ;
 .
+v-b:Plan
+  rdf:type v-b:Bundle ;
+  rdfs:label "План"@ru ;
+  rdfs:label "Plan"@en ;
+.
+v-b:Fact
+  rdf:type v-b:Bundle ;
+  rdfs:label "Факт"@ru ;
+  rdfs:label "Fact"@en ;
+.
 v-b:atLeastOneFilled
   rdf:type v-b:Bundle ;
   rdfs:label "Хотя ты одно из значений должно быть заполнено"@ru ;
