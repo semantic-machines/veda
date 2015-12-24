@@ -177,7 +177,7 @@ veda.Module(function (veda) { "use strict";
 			
 			set: function (value) { 
 				self._.sync = false;
-				self._.values[property_uri] = value.filter(function (i) { return !!i; });
+				self._.values[property_uri] = value.filter(function (i) { return i !== null; });
 				self._.individual[property_uri] = self._.values[property_uri].concat(filteredStrings).map( serializer );
 				if (setterCB) setterCB(self._.values[property_uri]);
 				else self.trigger("individual:propertyModified", property_uri, value);
