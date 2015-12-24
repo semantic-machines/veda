@@ -652,9 +652,16 @@ class VedaStorageRest : VedaStorageRest_API
 
     OpResult put_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
     {
+        OpResult   res;
+        
+		long count_prep_put = search.xapian_indexer.get_count_prep_put ();
+		long count_recv_put = search.xapian_indexer.get_count_recv_put ();
+	
+		if (count_recv_put - count_prep_put > 2000)
+            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
+	    	
         Ticket     *ticket = context.get_ticket(_ticket);
 
-        OpResult   res;
         ResultCode rc = ticket.result;
 
         if (rc == ResultCode.OK)
