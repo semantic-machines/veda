@@ -27,13 +27,14 @@ logger log()
 
 protected byte err;
 
-public string backup (Context ctx, string backup_id)
+public string backup(Context ctx, string backup_id)
 {
-	string res;
-    Tid tid_fulltext_indexer = ctx.getTid(P_MODULE.fulltext_indexer);
+    string res;
+    Tid    tid_fulltext_indexer = ctx.getTid(P_MODULE.fulltext_indexer);
+
     send(tid_fulltext_indexer, CMD.BACKUP, backup_id, thisTid);
     receive((string _res) { res = _res; });
-	return res;
+    return res;
 }
 
 /////////////////////////////////////////////////////////////
@@ -43,7 +44,7 @@ private shared long _count_recv_put = 0;
 
 private long inc_count_recv_put(long delta = 1)
 {
- 	return atomicOp !"+=" (_count_recv_put, delta);	
+    return atomicOp !"+=" (_count_recv_put, delta);
 }
 
 public long get_count_recv_put()
@@ -57,7 +58,7 @@ private shared long _count_prep_put = 0;
 
 private long inc_count_prep_put(long delta = 1)
 {
- 	return atomicOp !"+=" (_count_prep_put, delta);	
+    return atomicOp !"+=" (_count_prep_put, delta);
 }
 
 public long get_count_prep_put()
@@ -73,7 +74,7 @@ public void send_put(Context ctx, string cur_state, string prev_state, long op_i
     if (tid_search_manager != Tid.init)
     {
         send(tid_search_manager, CMD.PUT, cur_state, prev_state, op_id);
-		inc_count_recv_put ();
+        inc_count_recv_put();
     }
 }
 
@@ -84,7 +85,7 @@ public void send_delete(Context ctx, string cur_state, string prev_state, long o
     if (tid_search_manager != Tid.init)
     {
         send(tid_search_manager, CMD.DELETE, cur_state, prev_state, op_id);
-		inc_count_recv_put ();
+        inc_count_recv_put();
     }
 }
 
@@ -1057,8 +1058,8 @@ void xapian_indexer(string thread_name, string _node_id)
                         {
                             ictx.index_msg(msg, prev_msg, true, op_id);
                         }
-                        
-                        inc_count_prep_put ();
+
+                        inc_count_prep_put();
                         //writeln ("@@XAPIAN INDEXER END op_id=", op_id);
                     },
                     (CMD cmd, int arg, bool arg2)

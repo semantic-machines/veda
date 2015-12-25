@@ -787,7 +787,7 @@ class PThreadContext : Context
         acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, trace);
     }
 
-    public immutable(string)[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str = null)
+    public immutable(string)[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str, int top, int limit)
     {
         //StopWatch sw; sw.start;
 
@@ -802,7 +802,7 @@ class PThreadContext : Context
             }
 
             immutable(string)[] res;
-            vql.get(ticket, query_str, sort_str, db_str, 100000, res);
+            vql.get(ticket, query_str, sort_str, db_str, top, limit, res);
             return res;
         }
         finally
@@ -1264,15 +1264,15 @@ class PThreadContext : Context
 
         try
         {
-            bool result = false;
+            bool   result = false;
 
-			string backup_id = storage.storage_thread.backup (this);
+            string backup_id = storage.storage_thread.backup(this);
 
             if (backup_id != "")
             {
                 result = true;
 
-                string res = az.acl.backup (this, backup_id);
+                string res = az.acl.backup(this, backup_id);
 
                 if (res == "")
                     result = false;
@@ -1285,8 +1285,8 @@ class PThreadContext : Context
                         result = false;
                     else
                     {
-						res = search.xapian_indexer.backup (this, backup_id);
-						
+                        res = search.xapian_indexer.backup(this, backup_id);
+
                         if (res == "")
                             result = false;
                     }

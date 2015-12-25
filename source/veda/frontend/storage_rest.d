@@ -97,7 +97,7 @@ interface VedaStorageRest_API {
     long count_individuals();
 
     @path("query") @method(HTTPMethod.GET)
-    string[] query(string ticket, string query, string sort = null, string databases = null, bool reopen = false);
+    string[] query(string ticket, string query, string sort = null, string databases = null, bool reopen = false, int top = 10000, int limit = 10000);
 
     @path("get_individuals") @method(HTTPMethod.POST)
     Json[] get_individuals(string ticket, string[] uris);
@@ -517,7 +517,7 @@ class VedaStorageRest : VedaStorageRest_API
         return res;
     }
 
-    string[] query(string ticket, string _query, string sort = null, string databases = null, bool reopen = false)
+    string[] query(string ticket, string _query, string sort = null, string databases = null, bool reopen = false, int top = 10000, int limit = 10000)
     {
         StopWatch sw; sw.start;
 
@@ -530,16 +530,16 @@ class VedaStorageRest : VedaStorageRest_API
 
             Worker     *worker = allocate_worker();
 
-            std.concurrency.send(worker.tid, Command.Get, Function.IndividualsIdsToQuery, _query, sort, databases, ticket, reopen, worker.id,
-                                 std.concurrency.thisTid);
+            std.concurrency.send(worker.tid, Command.Get, Function.IndividualsIdsToQuery, _query, sort, databases, ticket, reopen,
+                                 top, limit, worker.id, std.concurrency.thisTid);
+
             yield();
 
             std.concurrency.receive((immutable(
-                                               string)[] _individuals_ids, ResultCode _rc, int _recv_worker_id) { individuals_ids =
-                                                                                                                      cast(string[])
-                                                                                                                      _individuals_ids;
-                                                                                                                  rc = _rc; recv_worker_id =
-                                                                                                                      _recv_worker_id; });
+                                               string)[] _individuals_ids, ResultCode _rc, int _recv_worker_id)
+                                    { individuals_ids = cast(string[])_individuals_ids;
+                                      rc = _rc; recv_worker_id =
+                                          _recv_worker_id; });
 
             if (recv_worker_id == worker.id)
             {

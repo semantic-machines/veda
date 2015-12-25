@@ -84,8 +84,8 @@ public enum ResultCode
     Unprocessable_Entity  = 422,
 
     /// 429
-	Too_Many_Requests	  = 429,	
-	
+    Too_Many_Requests     = 429,
+
     /// 471
     Ticket_expired        = 471,
 
@@ -243,7 +243,7 @@ interface Context
        Returns:
                 список авторизованных uri
      */
-    public immutable(string)[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str = null);
+    public immutable(string)[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str, int top, int limit);
 
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_subject_storage_db();

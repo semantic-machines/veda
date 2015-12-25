@@ -27,7 +27,7 @@ protected byte err;
 // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 interface SearchReader
 {
-    public int get(Ticket *ticket, string str_query, string str_sort, string db_names, int count_authorize,
+    public int get(Ticket *ticket, string str_query, string str_sort, string db_names, int top, int limit,
                    void delegate(string uri) add_out_element, bool inner_get);
 
     public void reopen_db();
@@ -83,7 +83,7 @@ class XapianReader : SearchReader
     }
 
 
-    public int get(Ticket *ticket, string str_query, string str_sort, string _db_names, int count_authorize,
+    public int get(Ticket *ticket, string str_query, string str_sort, string _db_names, int top, int limit,
                    void delegate(string uri) add_out_element, bool inner_get)
     {
         int[ string ] key2slot = context.get_key2slot();
@@ -200,7 +200,7 @@ class XapianReader : SearchReader
             state = -1;
             while (state < 0)
             {
-                state = exec_xapian_query_and_queue_authorize(ticket, xapian_enquire, count_authorize, add_out_element,
+                state = exec_xapian_query_and_queue_authorize(ticket, xapian_enquire, top, limit, add_out_element,
                                                               context);
                 if (state < 0)
                 {

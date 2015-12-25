@@ -105,7 +105,8 @@ public void core_thread(string node_id, string write_storage_node)
                         }
                     }
                 },
-                (Command cmd, Function fn, string arg1, string arg2, string arg3, string _ticket, bool reopen, int worker_id, Tid tid)
+                (Command cmd, Function fn, string query, string sort, string databases, string _ticket, bool reopen, int top, int limit,
+                 int worker_id, Tid tid)
                 {
                     if (tid != Tid.init)
                     {
@@ -122,7 +123,8 @@ public void core_thread(string node_id, string write_storage_node)
                                 {
                                     if (reopen)
                                         context.reopen_ro_fulltext_indexer_db();
-                                    res = context.get_individuals_ids_via_query(ticket, arg1, arg2, arg3);
+
+                                    res = context.get_individuals_ids_via_query(ticket, query, sort, databases, top, limit);
                                 }
                             }
                             catch (Exception ex) { writeln(ex.msg); }
@@ -136,10 +138,10 @@ public void core_thread(string node_id, string write_storage_node)
                     {
                         if (cmd == Command.Get && fn == Function.Individual)
                         {
-       						if (trace_msg[ 500 ] == 1)
-        						log.trace("get_individual #start : %s ", arg1);
-        						
-        	                ResultCode rc = ResultCode.Internal_Server_Error;
+                            if (trace_msg[ 500 ] == 1)
+                                log.trace("get_individual #start : %s ", arg1);
+
+                            ResultCode rc = ResultCode.Internal_Server_Error;
 
                             immutable(Json)[] res = Json[].init;
 
@@ -178,8 +180,8 @@ public void core_thread(string node_id, string write_storage_node)
                             }
                             catch (Exception ex) { writeln(ex.msg); }
 
-       						if (trace_msg[ 500 ] == 1)
-        						log.trace("get_individual #e : %s ", arg1);
+                            if (trace_msg[ 500 ] == 1)
+                                log.trace("get_individual #e : %s ", arg1);
 
                             send(tid, res, rc, worker_id);
                         }
