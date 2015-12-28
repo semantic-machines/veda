@@ -298,21 +298,25 @@ veda.Module(function (veda) { "use strict";
 
 	/**
 	 * @method
-	 * Save current individual to database
+	 * Save current individual to database (with validation and adding new version)
 	 */
 	proto.save = function() {
 		var self = this;
 		self.valid = true;
 		self.trigger("individual:beforeSave");
 		if (!self.valid) return false;
-		return this.saveIndividual(false);
-	}
-	
-	proto.draft = function() {
 		return this.saveIndividual(true);
 	}
+	
+	/**
+	 * @method
+	 * Save current individual without validation and without adding new version
+	 */
+	proto.draft = function() {
+		return this.saveIndividual(false);
+	}
 		
-	proto.saveIndividual = function(draft) {
+	proto.saveIndividual = function(createVersion) {
 		var self = this;
 		// Do not save individual to server if nothing changed
 		//if (self._.sync) return;
@@ -330,7 +334,7 @@ veda.Module(function (veda) { "use strict";
 		if (self._.cache) veda.cache[self.id] = self;
 		self.trigger("individual:afterSave", self._.original_individual);
 		
-		if (!draft && (self.hasValue('v-s:isDraftOf') || self.is('v-s:Versioned'))) 
+		if (createVersion && (self.hasValue('v-s:isDraftOf') || self.is('v-s:Versioned'))) 
 		{
 			// Before
 			var previousId = self.hasValue('v-s:isDraftOf')?
@@ -356,7 +360,7 @@ veda.Module(function (veda) { "use strict";
 			actual['v-s:previousVersion'] = [version];
 			actual['v-s:actualVersion'] = [actual];
 			actual['v-s:nextVersion'] = [];
-			actual.saveIndividual(true);
+			actual.saveIndividual(false);
 				
 			// Save draft as old version
 			version['v-s:isDraftOf'] = [];
@@ -368,13 +372,13 @@ veda.Module(function (veda) { "use strict";
 			}
 			version['v-s:actualVersion'] = [actual];
 			version['v-s:nextVersion'] = [actual];
-			version.saveIndividual(true);
+			version.saveIndividual(false);
 			
 			// Update draft version
 			if (previous!=null) 
 			{
 				previous['v-s:nextVersion'] = [version];
-				previous.saveIndividual(true);
+				previous.saveIndividual(false);
 			}
 			this.redirectToIndividual = actual;
 			this.redirectToMode = 'view';
@@ -412,7 +416,7 @@ veda.Module(function (veda) { "use strict";
 	proto.delete = function () {
 		this.trigger("individual:beforeDelete");
 		this["v-s:deleted"] = [new Boolean(true)];
-		this.save();
+		this.saveIndividual(false);
 		this.trigger("individual:afterDelete");
 		return this;
 	};
@@ -424,7 +428,7 @@ veda.Module(function (veda) { "use strict";
 	proto.recover = function () {
 		this.trigger("individual:beforeRecover");
 		this["v-s:deleted"] = [];
-		this.save();
+		this.saveIndividual(false);
 		this.trigger("individual:afterRecover");
 		return this;
 	};

@@ -19,7 +19,7 @@ veda.Module(function (veda) { "use strict";
 			if ( !self.preferences.hasValue("v-ui:preferredLanguage") || !self.preferences.hasValue("v-ui:displayedElements")) {
 				self.preferences["v-ui:preferredLanguage"] = [ self.availableLanguages["RU"] ];
 				self.preferences["v-ui:displayedElements"] = [ 10 ];
-				self.preferences.save();
+				self.preferences.saveIndividual(false);
 			}
 		} else {
 			self.preferences = new veda.IndividualModel();
@@ -27,9 +27,9 @@ veda.Module(function (veda) { "use strict";
 			self.preferences["rdfs:label"] = [ "Preferences_" + self.id ];
 			self.preferences["v-ui:preferredLanguage"] = [ self.availableLanguages["RU"] ];
 			self.preferences["v-ui:displayedElements"] = [ 10 ];
-			self.preferences.save();
+			self.preferences.saveIndividual(false);
 			self["v-ui:hasPreferences"] = [ self.preferences ];
-			self.save();
+			self.saveIndividual(false);
 		}
 		self.language = self.preferences["v-ui:preferredLanguage"].reduce( function (acc, lang) {
 			acc[lang["rdf:value"][0]] = self.availableLanguages[lang["rdf:value"][0]];
@@ -44,16 +44,16 @@ veda.Module(function (veda) { "use strict";
 			self.aspect["rdf:type"] = [ veda.ontology["v-asp:PersonalAspect"] ];
 			self.aspect["v-s:owner"] = [ self ];
 			self.aspect["rdfs:label"] = [ "PersonalAspect_" + self.id ];
-			self.aspect.save();
+			self.aspect.saveIndividual(false);
 			self["v-asp:hasAspect"] = [ self.aspect ];
-			self.save();
+			self.saveIndividual(false);
 		}
 		
 		if (self.hasValue("v-s:defaultAppointment")) {
 			veda.appointment = self["v-s:defaultAppointment"][0];
 		} else if (self.hasValue("v-s:hasAppointment")) {
 			self["v-s:defaultAppointment"] = [ self["v-s:hasAppointment"][0] ];
-			self.save();
+			self.saveIndividual(false);
 			veda.appointment = self["v-s:defaultAppointment"][0];
 		}
  
@@ -79,7 +79,7 @@ veda.Module(function (veda) { "use strict";
 				return self.language[language_val];
 			});
 
-			self.preferences.save();
+			self.preferences.saveIndividual(false);
 			veda.trigger("language:changed");
 		};
 			

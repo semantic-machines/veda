@@ -221,8 +221,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		template.on("showRights", showRightsHandler);
 
 		function cancelHandler (e) {
-			template.trigger("view");
-			individual.reset();
+			if (individual.is('v-s:Versioned') && individual.hasValue('v-s:isDraftOf')) {
+				var actual = new veda.IndividualModel(individual['v-s:isDraftOf'][0]);
+				actual['v-s:hasDraft'] = [];
+				actual.saveIndividual(false);
+				individual['v-s:deleted'] = [new Boolean(true)];
+				individual.saveIndividual(false);
+				
+				container.empty();
+				actual.present(container, undefined, "view");
+				changeHash(actual.id);				
+			} else {
+				template.trigger("view");
+				individual.reset();
+			}
 			e.stopPropagation();
 		}
 		template.on("cancel", cancelHandler);
@@ -740,11 +752,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						clone['v-s:actualVersion'] = [individual];
 						clone['v-s:hasDraft'] = [];
 						clone['v-s:isDraftOf'] = [individual];
-						clone.save();
+						clone.saveIndividual(false);
 	
 						// Add link to draft
 						individual['v-s:hasDraft'] = [clone];
-						individual.save();
+						individual.saveIndividual(false);
 						
 						container.empty();
 						clone.present(container, undefined, "edit");
@@ -758,11 +770,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				$delete.unbind("click");
 				$delete.on("click", function (e) {
 					individual['v-s:deleted'] = [new Boolean(true)];
-					individual.save();
+					individual.saveIndividual(false);
 					
 					var actual = individual['v-s:isDraftOf'][0];
 					actual['v-s:hasDraft'] = [];
-					actual.save();
+					actual.saveIndividual(false);
 					
 					container.empty();
 					actual.present(container, undefined, "view");
