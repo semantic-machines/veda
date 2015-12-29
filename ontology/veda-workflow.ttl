@@ -1535,25 +1535,48 @@ v-wf:possibleDecisionClass
 .
 
 v-wf:onDocument
-        rdf:type owl:ObjectProperty ;
+    rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "по документу"@ru ;
-        rdfs:domain v-wf:DecisionForm ;
-        rdfs:range rdfs:Resource ;
+    rdfs:label "по документу"@ru ;
+    rdfs:domain v-wf:DecisionForm ;
+    rdfs:range rdfs:Resource ;
 .
+
 v-wf:from
-        rdf:type owl:ObjectProperty ;
+    rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "от кого"@ru ;
-        rdfs:domain v-wf:DecisionForm ;
-        rdfs:range v-s:Appointment ;
+    rdfs:label "от кого"@ru ;
+    rdfs:domain v-wf:DecisionForm ;
+    rdfs:domain v-s:Deliverable ;
+    rdfs:range v-s:Appointment ;
 .
-v-wf:dateGiven
-        rdf:type owl:DatatypeProperty ;
+
+v-wf:to
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "контрольный срок"@ru ;
-        rdfs:domain v-wf:DecisionForm ;
-        rdfs:range xsd:dateTime ;
+	rdfs:label "кому"@ru ;
+	rdfs:label "whom"@en ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:domain v-wf:DecisionRedirect ;
+	rdfs:domain v-s:JournalRecord ;
+    rdfs:domain v-s:Deliverable ;
+	rdfs:range v-s:Appointment ;
+.
+
+v-wf:replyTo
+	rdf:type owl:ObjectProperty ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "reply to" ;
+    rdfs:domain v-s:Deliverable ;
+	rdfs:range v-s:Appointment ;
+.
+
+v-wf:dateGiven
+    rdf:type owl:DatatypeProperty ;
+	rdfs:isDefinedBy v-wf: ;
+    rdfs:label "контрольный срок"@ru ;
+    rdfs:domain v-wf:DecisionForm ;
+    rdfs:range xsd:dateTime ;
 .
 
 
@@ -2199,6 +2222,7 @@ v-wf:onProcess
   rdfs:label "к процессу"@ru ;
   rdfs:range v-wf:Process ;
 .
+
 v-wf:initiator
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
@@ -2207,19 +2231,11 @@ v-wf:initiator
   rdfs:label "initiator"@en ;
   rdfs:range v-s:Appointment ;
 .
+
 v-wf:executor
   rdfs:domain v-wf:TaskGiven, v-wf:TaskCompleted ;
 .
-v-wf:to
-  rdf:type owl:ObjectProperty ;
-  rdfs:isDefinedBy v-wf: ;
-  rdfs:label "кому"@ru ;
-  rdfs:label "whom"@en ;
-  rdfs:domain v-wf:DecisionForm ;
-  rdfs:domain v-wf:DecisionRedirect ;
-  rdfs:domain v-s:JournalRecord ;
-  rdfs:range v-s:Appointment ;
-.
+
 v-wf:isProcess
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;

@@ -39,6 +39,14 @@ vsrv:push_individual_by_event
   rdfs:range vsrv:Connection ;
 .    
 
+vsrv:send_an_email_individual_by_event
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain vsrv:Node ;
+  rdfs:isDefinedBy vsrv: ;
+  rdfs:label "send an e-mail individual by event" ;
+  rdfs:range vsrv:Connection ;
+.    
+
 vsrv:name
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vsrv:Node, vsrv:Connection ;

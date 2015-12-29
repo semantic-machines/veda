@@ -10,12 +10,18 @@ private import util.logger, util.cbor, veda.core.util.cbor8individual;
 private import storage.lmdb_storage, veda.core.thread_context;
 private import veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
 private import mysql.d;
+private import smtp.client, smtp.mailsender, smtp.message;
 
+//////
 Mysql      mysql_conn;
+string     database_name;
+//////
+MailSender smtp_conn;
+//////
+
 string     node_id;
 Context    context;
 Individual node;
-string     database_name;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -83,12 +89,16 @@ void fanout_thread(string thread_name, string _node_id)
                             else
                             {
                                 if (node == Individual.init)
+                                {
                                     connect_to_mysql(context);
+                                    connect_to_smtp(context);
+                                }
 
                                 if (mysql_conn !is null)
-                                {
                                     push_to_mysql(prev_indv, new_indv);
-                                }
+
+                                if (smtp_conn !is null)
+                                    push_to_smtp(prev_indv, new_indv);
                             }
                         }
                     },
@@ -100,6 +110,111 @@ void fanout_thread(string thread_name, string _node_id)
         }
     }
 }
+
+///////////////////////////////////////// SMTP FANOUT ///////////////////////////////////////////////////////////////////
+private Resources extract_email(ref Ticket sticket, string ap_uri)
+{
+    if (ap_uri is null || ap_uri.length < 1)
+        return null;
+
+    Individual ap = context.get_individual(&sticket, ap_uri);
+
+    if (ap.getStatus() != ResultCode.OK)
+        return null;
+
+    string p_uri = ap.getFirstLiteral("v-s:employee");
+    if (p_uri is null)
+        return null;
+
+    Individual p = context.get_individual(&sticket, p_uri);
+    if (p.getStatus() != ResultCode.OK)
+        return null;
+
+    string ac_uri = p.getFirstLiteral("v-s:hasAccount");
+    if (ac_uri is null)
+        return null;
+
+    Individual ac = context.get_individual(&sticket, ac_uri);
+    if (ac.getStatus() != ResultCode.OK)
+        return null;
+
+    return ac.resources[ "v-s:mailbox" ];
+}
+
+
+private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
+{
+    try
+    {
+        Ticket sticket = context.sys_ticket();
+
+        bool   is_deleted = new_indv.isExist("v-s:deleted", true);
+
+        string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");
+        string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
+        string previousVersion_new  = new_indv.getFirstLiteral("v-s:previousVersion");
+
+        if (is_deleted == false && actualVersion !is null && actualVersion != new_indv.uri && previousVersion_prev == previousVersion_new)
+            return;
+
+        Resources types        = new_indv.getResources("rdf:type");
+        bool      need_prepare = false;
+
+        foreach (type; types)
+        {
+            if (context.get_onto().isSubClasses(type.uri, [ "v-s:Deliverable" ]))
+            {
+                need_prepare = true;
+                break;
+            }
+        }
+
+
+        if (need_prepare)
+        {
+            if (is_deleted == false)
+            {
+                string from         = new_indv.getFirstLiteral("v-wf:from");
+                string to           = new_indv.getFirstLiteral("v-wf:to");
+                string subject      = new_indv.getFirstLiteral("v-s:subject");
+                string reply_to     = new_indv.getFirstLiteral("v-wf:replyTo");
+                string message_body = new_indv.getFirstLiteral("v-s:messageBody");
+
+                if (from !is null && to !is null)
+                {
+                    Resources email_from     = extract_email(sticket, from);
+                    Resources email_to       = extract_email(sticket, to);
+                    Resources email_reply_to = extract_email(sticket, reply_to);
+
+                    if (from.length > 0 && to.length > 0)
+                    {
+                        auto message = SmtpMessage(
+                                                   Recipient(email_from[ 0 ].get!string, "From"),
+                                                   [ Recipient(email_to[ 0 ].get!string, "To") ],
+                                                   subject,
+                                                   message_body,
+                                                   email_reply_to[ 0 ].get!string,
+                                                   );
+
+                        // Smart method to send message.
+                        // Performs message transmission sequence with error checking.
+                        // In case message cannot be sent, `rset` method is called implicitly.
+                        write(smtp_conn.send(message));
+                        writeln("@to email:", message);
+                    }
+                }
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+    }
+
+    //writeln("@@fanout indv.uri=", indv.uri);
+//            sender.quit();
+}
+
 
 ///////////////////////////////////////////// MYSQL FANOUT ///////////////////////////////////////////////////////////////////
 
@@ -250,6 +365,45 @@ private void create_table_if_not_exists(string predicate, Resource rs)
     else
     {
         isExistsTable[ predicate ] = true;
+    }
+}
+
+private void connect_to_smtp(Context context)
+{
+    Ticket sticket = context.sys_ticket();
+
+    node = context.getConfiguration();
+    Resources gates = node.resources.get("vsrv:send_an_email_individual_by_event", Resources.init);
+    foreach (gate; gates)
+    {
+        Individual connection = context.get_individual(&sticket, gate.uri);
+
+        Resource   transport = connection.getFirstResource("vsrv:transport");
+        if (transport != Resource.init)
+        {
+            if (transport.data() == "smtp")
+            {
+                try
+                {
+                    smtp_conn = new MailSender(connection.getFirstLiteral("vsrv:host"), cast(ushort)connection.getFirstInteger("vsrv:port"));
+
+                    string login = connection.getFirstLiteral("vsrv:login");
+                    string pass  = connection.getFirstLiteral("vsrv:credentional");
+
+                    if (login !is null && login.length > 0)
+                        smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
+
+                    // Connecting to server
+                    auto result = smtp_conn.connect();
+                    if (!result.success)
+                        smtp_conn = null;
+                }
+                catch (Exception ex)
+                {
+                    log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+                }
+            }
+        }
     }
 }
 

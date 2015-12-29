@@ -28,6 +28,15 @@
 # owl:versionInfo "1.3" ;
 .
 
+td:email-test
+  rdf:type v-s:Email;
+  v-wf:from td:AleksandraKhvostikova-Analyst1;
+  v-wf:to td:ValeriyBushenev-Programmer1;
+  v-wf:replyTo td:RomanKarpov-Analyst1;
+  v-s:subject "test";
+  v-s:messageBody "test1 test2 TEST3";
+.
+
 td:AdministrativeDocument
   rdf:type owl:Class ;
   rdfs:label "Administrative document"@en ;
@@ -154,7 +163,7 @@ td:ApplicationDevelopmentGroup
 td:BushenevV
   rdf:type v-s:Account ;
   v-s:login "BushenevVT"^^xsd:string ;
-  v-s:mailbox "valeriy.bushenev@mondigroup.com"^^xsd:string ;
+  v-s:mailbox "valeriy.bushenev@gmail.com"^^xsd:string ;
   v-s:owner td:ValeriyBushenev ;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "BushenevV" ;
@@ -530,6 +539,7 @@ td:ValeriyBushenev
   v-s:lastName "Бушенев"@ru ;
   v-s:middleName "Alexandrovitch"@en ;
   v-s:middleName "Александрович"@ru ;
+  v-s:hasAccount td:BushenevV ;
   v-ui:hasPreferences td:Preferences_ValeriyBushenev ;
   rdfs:label "Valeriy Bushenev"@en ;
   rdfs:label "Валерий Бушенев"@ru ;

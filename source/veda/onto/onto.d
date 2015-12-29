@@ -51,10 +51,7 @@ class Onto
 
     public bool isSubClasses(string _class_uri, string[] _subclasses_uri)
     {
-        //writeln ("@@@0 _class_uri=", _class_uri, ", _subclasses_uri=", _subclasses_uri);
         OfSubClasses subclasses = ofClass.get(_class_uri, null);
-
-        //writeln ("@@@1 subclasses=", subclasses);
 
         if (subclasses !is null)
         {
@@ -67,10 +64,9 @@ class Onto
                     return true;
             }
 
-            // не нашли, ищем глубже
-            foreach (_subclass_uri; _subclasses_uri)
+            foreach (_subclass; subclasses.keys)
             {
-                bool res = isSubClasses(_subclass_uri, _subclasses_uri);
+                bool res = isSubClasses(_subclass, _subclasses_uri);
                 if (res)
                     return true;
             }
