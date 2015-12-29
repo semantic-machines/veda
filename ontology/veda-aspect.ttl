@@ -37,6 +37,13 @@ v-asp:Aspect
 	rdfs:label "Аспект"@ru ;
 .
 
+v-asp:WelcomeAspect 
+	rdf:type owl:Class ;
+	rdfs:label "Welcome aspect"@en ;
+	rdfs:label "Приветственный аспект"@ru ;
+	rdfs:subClassOf v-asp:Aspect ;
+.
+
 v-asp:PersonalAspect 
 	rdf:type owl:Class ;
 	rdfs:label "Personal aspect"@en ;
@@ -52,11 +59,11 @@ v-asp:BusinessAspect
 .
 
 v-s:hasImage
-  rdfs:domain v-asp:BusinessAspect ;
+  rdfs:domain v-asp:Aspect ;
 .
 
 v-s:hasLogo
-  rdfs:domain v-asp:BusinessAspect ;
+  rdfs:domain v-asp:Aspect ;
 .
 
 v-asp:hasFavorite
@@ -158,174 +165,215 @@ v-asp:PersonalAspectTemplate
   rdfs:label "Template for Personal aspect class"@en ;
   v-ui:forClass v-asp:PersonalAspect ;
   v-ui:template """
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-md-2">
-				<div about="@" rel="v-s:owner">
-					<div rel="v-s:hasImage" template="v-ui:ImageTemplate"></div>
-					<br/>
-					<a href="#/@">
-						<span class="glyphicon glyphicon-user"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:lastName"></span>
-					</a>
-				</div>
-			</div>
-			<div class="col-md-10">
-				<h3><span about="v-b:MyPage" property="rdfs:label"></span></h3>
-				
-				<hr/>
-				
-				<div rel="v-asp:hasWidget"></div>
-				<div class="row">
-					<div class="col-lg-3 col-md-6">
-						<div class="panel panel-success">
-							<div class="panel-heading">
-								<div class="row">
-									<div class="col-xs-3">
-										<i class="fa fa-tasks fa-5x"></i>
-									</div>
-									<div class="col-xs-9 text-right">
-										<div class="huge">12</div>
-										<div about="v-asp:NewTasks" property="rdfs:label"></div>
-									</div>
-								</div>
-							</div>
-							<a href="#">
-								<div class="panel-body">
-									<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
-									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-									<div class="clearfix"></div>
-								</div>
-							</a>
-						</div>
-					</div>
-					<div class="col-lg-3 col-md-6">
-						<div class="panel panel-info">
-							<div class="panel-heading">
-								<div class="row">
-									<div class="col-xs-3">
-										<i class="fa fa-comments fa-5x"></i>
-									</div>
-									<div class="col-xs-9 text-right">
-										<div class="huge">26</div>
-										<div>New Comments!</div>
-									</div>
-								</div>
-							</div>
-							<a href="#">
-								<div class="panel-body">
-									<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
-									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-									<div class="clearfix"></div>
-								</div>
-							</a>
-						</div>
-					</div>
-					<div class="col-lg-3 col-md-6">
-						<div class="panel panel-warning">
-							<div class="panel-heading">
-								<div class="row">
-									<div class="col-xs-3">
-										<i class="fa fa-shopping-cart fa-5x"></i>
-									</div>
-									<div class="col-xs-9 text-right">
-										<div class="huge">124</div>
-										<div>New Orders!</div>
-									</div>
-								</div>
-							</div>
-							<a href="#">
-								<div class="panel-body">
-									<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
-									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-									<div class="clearfix"></div>
-								</div>
-							</a>
-						</div>
-					</div>
-					<div class="col-lg-3 col-md-6">
-						<div class="panel panel-danger">
-							<div class="panel-heading">
-								<div class="row">
-									<div class="col-xs-3">
-										<i class="fa fa-support fa-5x"></i>
-									</div>
-									<div class="col-xs-9 text-right">
-										<div class="huge">13</div>
-										<div>Support Tickets!</div>
-									</div>
-								</div>
-							</div>
-							<a href="#">
-								<div class="panel-body">
-									<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
-									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-									<div class="clearfix"></div>
-								</div>
-							</a>
-						</div>
-					</div>
-				</div>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-2">
+			<div about="@" rel="v-s:owner">
+				<div rel="v-s:hasImage" template="v-ui:ImageTemplate"></div>
+				<br/>
+				<a href="#/@">
+					<span class="glyphicon glyphicon-user"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:lastName"></span>
+				</a>
 			</div>
 		</div>
-		
-		<hr/>
-		
-		<div class="row">
-			<div class="col-md-4">
-				<div class="panel panel-warning">
-					<div class="panel-heading">
-						<h4 class="no-margin"><i class="fa fa-eye"></i> <strong about="v-b:Aspects" property="rdfs:label"></strong></h4>
-					</div>
-					<div class="panel-body">
-						<div rel="v-asp:hasBusinessAspect">
-							<div>
-								<a href="#/@" class="btn btn-warning btn-lg btn-block"><span property="rdfs:label"></span></a>
-								<br>
-							</div>								
-						</div>
-						<veda-control type="link" rel="v-asp:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-4">
-				<div class="panel panel-success">
-					<div class="panel-heading">
-						<h4 class="no-margin"><i class="fa fa-file-text-o"></i> <strong about="v-b:Blanks" property="rdfs:label"></strong></h4>
-					</div>
-					<div class="panel-body">
-						<div rel="v-asp:hasBlank">
-							<div>
-								<a href="#/@" class="btn btn-success btn-lg btn-block"><span property="rdfs:label"></span></a>
-								<br>
+		<div class="col-md-10">
+			<h3><span about="v-b:MyPage" property="rdfs:label"></span></h3>
+			
+			<hr/>
+			
+			<div rel="v-asp:hasWidget"></div>
+			<div class="row">
+				<div class="col-lg-3 col-md-6">
+					<div class="panel panel-success">
+						<div class="panel-heading">
+							<div class="row">
+								<div class="col-xs-3">
+									<i class="fa fa-tasks fa-5x"></i>
+								</div>
+								<div class="col-xs-9 text-right">
+									<div class="huge">12</div>
+									<div about="v-asp:NewTasks" property="rdfs:label"></div>
+								</div>
 							</div>
 						</div>
-						<veda-control type="link" rel="v-asp:hasBlank" class="fulltext dropdown -view edit"></veda-control>
+						<a href="#">
+							<div class="panel-body">
+								<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
+								<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+								<div class="clearfix"></div>
+							</div>
+						</a>
 					</div>
 				</div>
-			</div>
-			<div class="col-md-4">
-				<div class="panel panel-info">
-					<div class="panel-heading">
-						<h4 class="no-margin"><i class="fa fa-table"></i> <strong about="v-b:Registries" property="rdfs:label"></strong></h4>
-					</div>
-					<div class="panel-body">
-						<div rel="v-asp:hasRegistry">
-							<div>
-								<a href="#/@" class="btn btn-info btn-lg btn-block"><span property="rdfs:label"></span></a>
-								<br>
+				<div class="col-lg-3 col-md-6">
+					<div class="panel panel-info">
+						<div class="panel-heading">
+							<div class="row">
+								<div class="col-xs-3">
+									<i class="fa fa-comments fa-5x"></i>
+								</div>
+								<div class="col-xs-9 text-right">
+									<div class="huge">26</div>
+									<div>New Comments!</div>
+								</div>
 							</div>
 						</div>
-						<veda-control type="link" rel="v-asp:hasRegistry" class="fulltext dropdown -view edit"></veda-control>
+						<a href="#">
+							<div class="panel-body">
+								<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
+								<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+								<div class="clearfix"></div>
+							</div>
+						</a>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="panel panel-warning">
+						<div class="panel-heading">
+							<div class="row">
+								<div class="col-xs-3">
+									<i class="fa fa-shopping-cart fa-5x"></i>
+								</div>
+								<div class="col-xs-9 text-right">
+									<div class="huge">124</div>
+									<div>New Orders!</div>
+								</div>
+							</div>
+						</div>
+						<a href="#">
+							<div class="panel-body">
+								<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
+								<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+								<div class="clearfix"></div>
+							</div>
+						</a>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="panel panel-danger">
+						<div class="panel-heading">
+							<div class="row">
+								<div class="col-xs-3">
+									<i class="fa fa-support fa-5x"></i>
+								</div>
+								<div class="col-xs-9 text-right">
+									<div class="huge">13</div>
+									<div>Support Tickets!</div>
+								</div>
+							</div>
+						</div>
+						<a href="#">
+							<div class="panel-body">
+								<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
+								<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+								<div class="clearfix"></div>
+							</div>
+						</a>
 					</div>
 				</div>
 			</div>
-		</div>
-		
-		<div class="well well-sm">
-			<button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-b:Edit" property="rdfs:label"/>
-			<button type="button" class="action btn btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/>
-			<button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
 		</div>
 	</div>
+	
+	<hr/>
+	
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-warning">
+				<div class="panel-heading">
+					<h4 class="no-margin"><i class="fa fa-eye"></i> <strong about="v-b:Aspects" property="rdfs:label"></strong></h4>
+				</div>
+				<div class="panel-body">
+					<div rel="v-asp:hasBusinessAspect">
+						<div>
+							<a href="#/@" class="btn btn-warning btn-lg btn-block"><span property="rdfs:label"></span></a>
+							<br>
+						</div>								
+					</div>
+					<veda-control type="link" rel="v-asp:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-success">
+				<div class="panel-heading">
+					<h4 class="no-margin"><i class="fa fa-file-text-o"></i> <strong about="v-b:Blanks" property="rdfs:label"></strong></h4>
+				</div>
+				<div class="panel-body">
+					<div rel="v-asp:hasBlank">
+						<div>
+							<a href="#/@" class="btn btn-success btn-lg btn-block"><span property="rdfs:label"></span></a>
+							<br>
+						</div>
+					</div>
+					<veda-control type="link" rel="v-asp:hasBlank" class="fulltext dropdown -view edit"></veda-control>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<h4 class="no-margin"><i class="fa fa-table"></i> <strong about="v-b:Registries" property="rdfs:label"></strong></h4>
+				</div>
+				<div class="panel-body">
+					<div rel="v-asp:hasRegistry">
+						<div>
+							<a href="#/@" class="btn btn-info btn-lg btn-block"><span property="rdfs:label"></span></a>
+							<br>
+						</div>
+					</div>
+					<veda-control type="link" rel="v-asp:hasRegistry" class="fulltext dropdown -view edit"></veda-control>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="well well-sm">
+		<button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-b:Edit" property="rdfs:label"/>
+		<button type="button" class="action btn btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/>
+		<button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
+	</div>
+</div>
+  """ ;
+.
+
+v-asp:WelcomeAspectTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Приветственный аспект"@ru ;
+  rdfs:label "Template for Welcome aspect class"@en ;
+  v-ui:forClass v-asp:WelcomeAspect ;
+  v-ui:template """
+<div>
+	<style>
+	</style>
+	<div class="jumbotron">
+		<div class="row">
+			<div class="col-md-7">
+				<h1>Добро пожаловать <br>в Optiflow!</h1>
+				<p>Для начала работы выберите доступный аспект системы.</p>
+				<p>Аспект - это предварительно настроенная для Вашего удобства точка зрения на систему.</p>
+				<p>Аспекты могут содержать в себе настроенные бланки документов, реестры, аналитические отчеты и многое другое для получения быстрого доступа к функциям системы.</p>
+			</div>
+			<div class="col-md-5">
+				<div rel="v-s:hasImage" template="v-ui:ImageSimpleTemplate"></div>
+			</div>
+		</div>
+	</div>
+	<h1 class="text-center">Доступные аспекты</h1>
+	<br>
+	<div class="row">
+		<div class="col-sm-6 col-md-4" about="mnd-s-asppd:ProjectManagementAspect1">
+			<div class="thumbnail">
+				<a href="#/@" rel="v-s:hasImage" template="v-ui:ImageSimpleTemplateWithoutBorder"></a>
+				<div class="caption">
+					<h3>Управление проектами</h3>
+					<p>Аспект управления проектами и инновационными идеями.</p>
+					<p rel="v-asp:hasBlank" template="v-ui:LabelBlockLinkTemplate"></p>
+					<p><a href="#/@" class="btn btn-primary" role="button">Перейти</a></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
   """ ;
 .

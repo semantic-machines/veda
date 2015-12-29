@@ -414,6 +414,9 @@ v-ui:IconPersonTemplate
 		</span>
 	</span>
 </a>
+<script>
+	template.attr("href", "#/" + individual["v-asp:hasAspect"][0].id);
+</script>
 """ ;
 .
 v-ui:ClassTemplateTemplate
@@ -1119,7 +1122,7 @@ v-ui:ImageTemplate
 	<a href="/files/@"><img class="img-thumbnail"></img></a>
 </div>
 <script>
-	 $("img", template).attr("src", "/files/" + individual.id);
+	 template.attr("src", "/files/" + individual.id);
 </script>
   """ ;
 .
@@ -1156,7 +1159,7 @@ v-ui:ImageSimpleTemplateWithoutBorder
   rdfs:label "Шаблон для изображения"@ru ;
   rdfs:label "Image template"@en ;
   v-ui:template """
-<img></img>
+<img width="100%"></img>
 <script>
 	 template.attr("src", "/files/" + individual.id);
 </script>

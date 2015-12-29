@@ -93,10 +93,10 @@ footer {
 .navbar .nav {
   margin:2px 0px;
 }
-.navbar-brand {
+/*.navbar-brand {
   font-size: 20px;
   padding: 0px 15px;
-}
+}*/
 .navbar a, .navbar .navbar-text  {
   color: #666;
 }

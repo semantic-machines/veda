@@ -29,6 +29,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	
 	// Triggered in veda.init()
 	veda.one("started", function () {
+		var welcome = new veda.IndividualModel("d:Welcome");
 		// Router function
 		riot.route( function (hash) {
 			var hash_tokens = hash.slice(2).split("/");
@@ -37,7 +38,8 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			if (page !== "") {
 				veda.load(page, params);
 			} else {
-				veda.user.aspect.present("#main");
+				//veda.user.aspect.present("#main");
+				welcome.present("#main");
 			}
 		});
 	});	
