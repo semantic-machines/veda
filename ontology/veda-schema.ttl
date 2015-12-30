@@ -28,6 +28,7 @@ v-s:AND
   rdfs:label "AND"@en ;
   rdfs:label "И"@ru ;
 .
+
 v-s:Absence
   rdf:type owl:Class ;
   rdfs:label "Absence"@en ;
@@ -69,32 +70,43 @@ v-s:Ascending
   rdfs:label "Ascending"@en ;
   rdfs:label "По возрастанию"@ru ;
 .
+
 v-s:AuthorizationStatement
   rdf:type owl:Class ;
   rdfs:label "Authorization statement"@en ;
   rdfs:label "Запись авторизации"@ru ;
   rdfs:subClassOf v-s:Document ;
 .
+
 v-s:ClassModel
   rdf:type owl:Class ;
   rdfs:label "Class model"@en ;
   rdfs:label "Модель класса"@ru ;
 .
+
 v-s:Codelet
   rdf:type owl:Class ;
   rdfs:label "Codelet"@en ;
   rdfs:label "Исполняемый Код"@ru ;
 .
+
 v-s:Container
   rdf:type owl:Class ;
   rdfs:label "Контейнер"@ru ;
 .
+
+v-s:TemplateForText
+  rdf:type owl:Class ;
+  rdfs:label "Шаблон для текста"@ru ;
+.
+
 v-s:DelegationStatement
   rdf:type owl:Class ;
   rdfs:label "Delegation record"@en ;
   rdfs:label "Запись о делегировании"@ru ;
   rdfs:subClassOf v-s:AuthorizationStatement ;
 .
+
 v-s:Department
   rdf:type owl:Class ;
   rdfs:comment "Department"@en ;
@@ -105,6 +117,7 @@ v-s:Department
   owl:disjointWith v-s:Organization ;
   owl:disjointWith v-s:Position ;
 .
+
 v-s:Descending
   rdf:type v-s:SortDirection ;
   rdfs:label "Descending"@en ;
@@ -119,6 +132,7 @@ v-s:Dictionary
   rdfs:label "Словарь"@ru ;
   rdfs:subClassOf v-s:Document ;
 .
+
 v-s:Document
   rdf:type owl:Class ;
   rdfs:comment "A document"@en ;
@@ -135,11 +149,13 @@ v-s:Empty
   rdfs:label "Empty"@en ;
   rdfs:label "Пусто"@ru ;
 .
+
 v-s:Event
   rdf:type owl:Class ;
   rdfs:label "Event"@en ;
   rdfs:label "Событие"@ru ;
 .
+
 v-s:File
   rdf:type owl:Class ;
   rdfs:comment "File description"@en ;
@@ -157,32 +173,38 @@ v-s:Group
   rdfs:label "Группа"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
+
 v-s:HRRecord
   rdf:type owl:Class ;
   rdfs:label "HR record"@en ;
   rdfs:label "Кадровая запись"@ru ;
   rdfs:subClassOf v-s:Document ;
 .
+
 v-s:LastMonth
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "Last month"@en ;
   rdfs:label "Прошлый месяц"@ru ;
 .
+
 v-s:LastQuarter
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "Last quarter"@en ;
   rdfs:label "Прошлый квартал"@ru ;
 .
+
 v-s:LastWeek
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "Last week"@en ;
   rdfs:label "Прошлая неделя"@ru ;
 .
+
 v-s:LastYear
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "Last year"@en ;
   rdfs:label "Прошлый год"@ru ;
 .
+
 v-s:Level
   rdf:type owl:Class ;
   rdfs:label "Level"@en ;
@@ -195,27 +217,32 @@ v-s:LogicalOperator
   rdfs:label "Логический оператор"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
+
 v-s:Membership
   rdf:type owl:Class ;
   rdfs:label "Membership"@en ;
   rdfs:label "Принадлежность"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
+
 v-s:NOT
   rdf:type v-s:LogicalOperator ;
   rdfs:label "NOT"@en ;
   rdfs:label "НЕ"@ru ;
 .
+
 v-s:NotEmpty
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "Not empty"@en ;
   rdfs:label "Не пусто"@ru ;
 .
+
 v-s:OR
   rdf:type v-s:LogicalOperator ;
   rdfs:label "OR"@en ;
   rdfs:label "ИЛИ"@ru ;
 .
+
 v-s:Organization
   rdf:type owl:Class ;
   rdfs:comment "An organization"@en ;
@@ -227,6 +254,7 @@ v-s:Organization
   owl:disjointWith v-s:Department ;
   owl:disjointWith v-s:Position ;
 .
+
 v-s:OrganizationUnit
   rdf:type owl:Class ;
   rdfs:comment "An organization unit (organization, department, business unit etc.)"@en ;
@@ -236,6 +264,7 @@ v-s:OrganizationUnit
   rdfs:subClassOf owl:Thing ;
   rdfs:subClassOf v-s:Exportable ;
 .
+
 v-s:PermissionStatement
   rdf:type owl:Class ;
   rdfs:comment "Permissions record defines access rigths for individuals of one class to individuals of another class."@en ;
@@ -244,6 +273,7 @@ v-s:PermissionStatement
   rdfs:label "Запись о выдаче прав"@ru ;
   rdfs:subClassOf v-s:AuthorizationStatement ;
 .
+
 v-s:Person
   rdf:type owl:Class ;
   rdfs:comment "A person." ;
@@ -705,6 +735,7 @@ v-s:fileUri
   rdfs:label "file URI"@en ;
   rdfs:range xsd:string ;
 .
+
 v-s:filter
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Event ;
@@ -712,6 +743,7 @@ v-s:filter
   rdfs:label "фильтр"@ru ;
   rdfs:range rdfs:Resource ;
 .
+
 v-s:firstName
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "The first name of a person."@en ;
@@ -722,18 +754,21 @@ v-s:firstName
   rdfs:label "имя"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:foreignRegistrationDate
   rdf:type owl:DatatypeProperty ;
   rdfs:label "foreign registration date"@en ;
   rdfs:label "чужая регистрационная дата"@ru ;
   rdfs:range xsd:date ;
 .
+
 v-s:foreignRegistrationNumber
   rdf:type owl:DatatypeProperty ;
   rdfs:label "foreign registration number"@en ;
   rdfs:label "чужой регистрационный номер"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:fullUrl
   rdf:type owl:DatatypeProperty ;
   rdfs:domain owl:Ontology ;
@@ -741,6 +776,7 @@ v-s:fullUrl
   rdfs:label "полный URL"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:hasAccount
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
@@ -749,18 +785,21 @@ v-s:hasAccount
   rdfs:label "учетная запись"@ru ;
   rdfs:range v-s:Account ;
 .
+
 v-s:hasAddDoc
   rdf:type owl:ObjectProperty ;
   rdfs:label "add document"@en ;
   rdfs:label "связанные документы"@ru ;
   rdfs:range v-s:Document ;
 .
+
 v-s:hasAppointmentCopy
   rdf:type owl:ObjectProperty ;
   rdfs:label "appointment copy"@en ;
   rdfs:label "в копию"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
 v-s:hasAppointment
   rdf:type owl:ObjectProperty ;
   rdfs:label "appointment"@en ;
@@ -768,6 +807,7 @@ v-s:hasAppointment
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Person ;
 .
+
 v-s:defaultAppointment
   rdf:type owl:ObjectProperty ;
   rdfs:label "default appointment"@en ;
@@ -775,24 +815,28 @@ v-s:defaultAppointment
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Person ;
 .
+
 v-s:hasAppointmentFrom
   rdf:type owl:ObjectProperty ;
   rdfs:label "appointment from"@en ;
   rdfs:label "от кого"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
 v-s:hasAppointmentTo
   rdf:type owl:ObjectProperty ;
   rdfs:label "appointment to"@en ;
   rdfs:label "кому"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
 v-s:hasBaseDoc
   rdf:type owl:ObjectProperty ;
   rdfs:label "base doc"@en ;
   rdfs:label "документ основание"@ru ;
   rdfs:range v-s:Document ;
 .
+
 v-s:hasChief
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
@@ -800,54 +844,63 @@ v-s:hasChief
   rdfs:label "непосредственный руководитель"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
 v-s:hasDeveloper
   rdf:type owl:ObjectProperty ;
   rdfs:label "developer"@en ;
   rdfs:label "разработчик"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
 v-s:hasFunctionalChief
   rdf:type owl:ObjectProperty ;
   rdfs:label "functional chief"@en ;
   rdfs:label "функциональный руководитель"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
 v-s:hasHeadOfMember
   rdf:type owl:ObjectProperty ;
   rdfs:label "head of member"@en ;
   rdfs:label "руководитель группы участников"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
 v-s:hasLevel
   rdf:type owl:ObjectProperty ;
   rdfs:label "level"@en ;
   rdfs:label "уровень"@ru ;
   rdfs:range v-s:Level ;
 .
+
 v-s:hasManager
   rdf:type owl:ObjectProperty ;
   rdfs:label "manager"@en ;
   rdfs:label "лидер"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
 v-s:hasMember
   rdf:type owl:ObjectProperty ;
   rdfs:label "member"@en ;
   rdfs:label "участники"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
 v-s:hasParentLink
   rdf:type owl:ObjectProperty ;
   rdfs:label "parent document"@en ;
   rdfs:label "ссылка на родительский документ"@ru ;
   rdfs:range rdfs:Resource ;
 .
+
 v-s:hasRecipient
   rdf:type owl:ObjectProperty ;
   rdfs:label "recipient"@en ;
   rdfs:label "список рассылки"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
 v-s:hasStatusWorkflow
   rdf:type owl:ObjectProperty ;
   rdfs:label "status workflow"@en ;
@@ -856,18 +909,21 @@ v-s:hasStatusWorkflow
   rdfs:domain rdfs:Resource ;
   rdfs:subPropertyOf v-s:status ;
 .
+
 v-s:hasYesNo
   rdf:type owl:ObjectProperty ;
   rdfs:label "yes no"@en ;
   rdfs:label "да нет"@ru ;
   rdfs:range v-s:YesNo ;
 .
+
 v-s:label
   rdf:type owl:DatatypeProperty ;
   rdfs:label "label"@en ;
   rdfs:label "метка. сокращение"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:lastName
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "The last name of a person."@en ;
@@ -878,12 +934,14 @@ v-s:lastName
   rdfs:label "фамилия"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:legalAddress
   rdf:type owl:DatatypeProperty ;
   rdfs:label "legal address"@en ;
   rdfs:label "юридический адрес"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:login
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Account ;
@@ -891,6 +949,7 @@ v-s:login
   rdfs:label "логин"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:mailbox
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "Mailbox"@en ;
@@ -901,6 +960,7 @@ v-s:mailbox
   rdfs:label "адрес эл. почты"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:memberOf
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Membership ;
@@ -908,6 +968,7 @@ v-s:memberOf
   rdfs:label "член группы"@ru ;
   rdfs:range v-s:Group ;
 .
+
 v-s:middleName
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Person ;
@@ -915,6 +976,7 @@ v-s:middleName
   rdfs:label "отчество"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:nextVersion
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Versioned ;
@@ -922,6 +984,7 @@ v-s:nextVersion
   rdfs:label "следующая версия"@ru ;
   rdfs:range v-s:Versioned ;
 .
+
 v-s:occupation
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Appointment ;
@@ -929,6 +992,7 @@ v-s:occupation
   rdfs:label "занимает должность"@ru ;
   rdfs:range v-s:Position ;
 .
+
 v-s:official
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Appointment ;
@@ -936,6 +1000,7 @@ v-s:official
   rdfs:label "официально"@ru ;
   rdfs:range xsd:boolean ;
 .
+
 v-s:onProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:SearchRestriction ;
@@ -944,6 +1009,7 @@ v-s:onProperty
   rdfs:range owl:DatatypeProperty ;
   rdfs:range owl:ObjectProperty ;
 .
+
 v-s:operator
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:SearchRestriction ;
@@ -951,6 +1017,7 @@ v-s:operator
   rdfs:label "оператор"@ru ;
   rdfs:range v-s:LogicalOperator ;
 .
+
 v-s:orderBy
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:SortOrder ;
@@ -959,6 +1026,7 @@ v-s:orderBy
   rdfs:range owl:DatatypeProperty ;
   rdfs:range owl:ObjectProperty ;
 .
+
 v-s:owner
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Account ;
@@ -968,6 +1036,7 @@ v-s:owner
   rdfs:range v-s:OrganizationUnit ;
   rdfs:range v-s:Person ;
 .
+
 v-s:initiator
   rdf:type owl:ObjectProperty ;
   rdfs:label "initiator"@en ;
@@ -975,6 +1044,7 @@ v-s:initiator
   rdfs:range v-s:OrganizationUnit ;
   rdfs:range v-s:Person ;
 .
+
 v-s:parentUnit
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
@@ -984,6 +1054,7 @@ v-s:parentUnit
   rdfs:range v-s:OrganizationUnit ;
   owl:inverseOf v-s:childUnit ;
 .
+
 v-s:password
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Account ;
@@ -991,6 +1062,7 @@ v-s:password
   rdfs:label "пароль"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:permissionObject
   rdf:type owl:ObjectProperty ;
   rdfs:comment "An object to which rights are granted."@en ;
@@ -1000,6 +1072,7 @@ v-s:permissionObject
   rdfs:label "ресурс полномочий"@ru ;
   rdfs:range rdfs:Resource ;
 .
+
 v-s:permissionSubject
   rdf:type owl:ObjectProperty ;
   rdfs:comment "Subject whom rights are granted."@en ;
@@ -1009,6 +1082,7 @@ v-s:permissionSubject
   rdfs:label "субъект полномочий"@ru ;
   rdfs:range rdfs:Resource ;
 .
+
 v-s:postalAddress
   rdf:type owl:DatatypeProperty ;
   rdfs:label "postal address"@en ;
@@ -1030,6 +1104,20 @@ v-s:messageBody
   rdfs:range xsd:string ;
 .
 
+v-s:templateBody
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "тело шаблона" ;
+  rdfs:range v-s:TemplateForText ;
+  rdfs:range xsd:string ;
+.
+
+v-s:templateSubject
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "тема шаблона" ;
+  rdfs:range v-s:TemplateForText ;
+  rdfs:range xsd:string ;
+.
+
 v-s:previousVersion
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Versioned ;
@@ -1037,6 +1125,7 @@ v-s:previousVersion
   rdfs:label "предыдущая версия"@ru ;
   rdfs:range v-s:Versioned ;
 .
+
 v-s:query
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:SavedSearch ;
@@ -1044,12 +1133,14 @@ v-s:query
   rdfs:label "запрос"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:reason
   rdf:type owl:DatatypeProperty ;
   rdfs:label "reason"@en ;
   rdfs:label "причина"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:registrationDate
   rdf:type owl:DatatypeProperty ;
   rdfs:label "registration date of document"@en ;

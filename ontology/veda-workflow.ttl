@@ -2199,6 +2199,22 @@ v-wf:completedJournalMap
 	rdfs:range v-wf:Mapping ;
 .
 
+v-wf:startingMessageMap
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "начальное преобразование для отправки сообщений"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:Mapping ;
+.
+
+v-wf:completedMessageMap
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "конечное преобразование для отправки сообщений"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:Mapping ;
+.
+
 v-wf:startingExecutorJournalMap
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;

@@ -37,6 +37,12 @@ td:email-test
   v-s:messageBody "test1 test2 TEST3";
 .
 
+td:text-template1
+	rdf:type v-s:TemplateForText
+	v-s:templateSubject "text @var1 text"
+	v-s:templateBody "text @var2 text"
+.	
+
 td:AdministrativeDocument
   rdf:type owl:Class ;
   rdfs:label "Administrative document"@en ;
