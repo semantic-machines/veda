@@ -215,9 +215,13 @@ v-a:Event_1_1
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:filter v-s:Journaling ;
   v-s:script """
+  
+// No journaling for technical changes 
 // No journaling for draft
-// No journaling for draft original 
-if (!((document['v-s:isDraftOf'] && document['v-s:isDraftOf'].length>0) || (document['v-s:hasDraft'] && document['v-s:hasDraft'].length>0))) {
+if (!(document['v-s:isDraftOf'] && document['v-s:isDraftOf'].length>0
+      || (document['v-s:hasDraft'] && document['v-s:hasDraft'].length>0))
+    && !isTecnicalChange(document, prev_state)) {
+    
 	var ff = get_property_chain(ticket, document, 'v-s:author', 'v-s:employee');
 	if (ff)
 	{
@@ -322,9 +326,6 @@ if (!((document['v-s:isDraftOf'] && document['v-s:isDraftOf'].length>0) || (docu
 	
 	    }
 	}
-} else {
-	print('v-s:isDraftOf >>> '+toJson(document['v-s:isDraftOf']));
-	print('v-s:hasDraft >>> '+toJson(document['v-s:hasDraft']));
 }
 """ ;
   rdfs:comment "скрипт автоматической выдачи прав авторам"@ru ;

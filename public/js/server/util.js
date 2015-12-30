@@ -251,7 +251,13 @@ function logToJournal(ticket, journal_uri, journal_record, jr_type)
 	//if (!jr_type)
 	//	print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
 
-	add_to_individual(ticket, add_to_journal, _event_id);
+    var before = get_individual(ticket, journal_uri);
+    print('BEFORE : '+toJson(before))
+	
+    add_to_individual(ticket, add_to_journal, _event_id);
+    
+    var after = get_individual(ticket, journal_uri);
+    print('AFTER : '+toJson(after))
 }
 
 function traceToJournal(ticket, journal_uri, label, _data)
@@ -278,4 +284,44 @@ function traceToJournal(ticket, journal_uri, label, _data)
     logToJournal(ticket, journal_uri, journal_record, true);
 
     //print("@@@ traceToJournal, journal_uri=" + journal_uri + ", " + toJson(journal_record));
+}
+
+function isTecnicalChange(newdoc, olddoc) {
+	if (newdoc['v-s:actualVersion'] && newdoc['v-s:actualVersion'][0].data != newdoc['@']) {
+		olddoc = get_individual(ticket, newdoc['v-s:actualVersion'][0].data);
+	}
+	if (!olddoc) return false;
+
+	for (var key in newdoc) {
+		if (key === '@') continue;
+		
+		if ((newdoc[key] && !olddoc[key])  // добвили
+		     || (newdoc[key] && !olddoc[key]) // удалили
+		     || (newdoc[key].length !== olddoc[key].length) // изменили количество
+		    ) 
+		{ 	
+			if (!isTechnicalAttribute(key)) {
+				// в нетехническом атрибуте
+				return false;				
+			}
+		} else {
+			for (var item in newdoc[key]) {
+				if (newdoc[key][item].data.valueOf() != olddoc[key][item].data.valueOf() && !isTechnicalAttribute(key)) { // поменялось одно из значений в нетехническом атрибуте
+					return false;		
+				} 
+			}
+		}
+	}
+	
+	return true;
+}
+
+function isTechnicalAttribute(attName) {
+//	if (attName === 'v-s:actualVersion') return true;
+//	if (attName === 'v-s:previousVersion') return true;
+//	if (attName === 'v-s:nextVersion') return true;
+	if (attName === 'v-s:isDraftOf') return true;
+	if (attName === 'v-s:hasDraft') return true;
+	if (attName === 'v-s:hasStatusWorkflow') return true;
+	return false;
 }
