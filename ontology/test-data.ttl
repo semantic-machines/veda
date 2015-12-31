@@ -38,9 +38,19 @@ td:email-test
 .
 
 td:text-template1
-	rdf:type v-s:TemplateForText
-	v-s:templateSubject "text @var1 text"
-	v-s:templateBody "text @var2 text"
+	rdf:type v-s:TemplateForText ;
+	v-s:templateSubject "СЭД Задача: Исполнить поручение по документу: @document-representation-ru@" ;
+	v-s:templateBody 
+	"""
+от пользователя: @fromuser@  Вам поступило поручение по документу: @document-representation-ru@
+Комментарий: @comment@
+
+Используйте ссылки для перехода на нужные страницы:
+
+документ: @document_uri@
+задача: @inbox_uri@
+все входящие задачи: @inboxlist_uri@	
+	""";
 .	
 
 td:AdministrativeDocument
