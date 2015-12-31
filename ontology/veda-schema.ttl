@@ -1118,6 +1118,14 @@ v-s:templateSubject
   rdfs:range xsd:string ;
 .
 
+v-s:templateLanguage
+  rdf:type owl:ObjectProperty ;
+  rdfs:range v-s:TemplateForText ;
+  rdfs:label "template language"@en ;
+  rdfs:label "язык используемый в шаблоне"@ru ;
+  rdfs:range v-ui:Language ;
+.
+
 v-s:previousVersion
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Versioned ;

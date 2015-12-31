@@ -39,10 +39,11 @@ td:email-test
 
 td:text-template1
 	rdf:type v-s:TemplateForText ;
-	v-s:templateSubject "СЭД Задача: Исполнить поручение по документу: @document-representation-ru@" ;
+	v-s:templateLanguage v-ui:RU ;
+	v-s:templateSubject "СЭД Задача: Исполнить поручение по документу: @document-representation@" ;
 	v-s:templateBody 
 	"""
-от пользователя: @fromuser@  Вам поступило поручение по документу: @document-representation-ru@
+от пользователя: @fromuser@  Вам поступило поручение по документу: @document-representation@
 Комментарий: @comment@
 
 Используйте ссылки для перехода на нужные страницы:
