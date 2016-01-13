@@ -37,13 +37,6 @@ v-asp:Aspect
 	rdfs:label "Аспект"@ru ;
 .
 
-v-asp:WelcomeAspect 
-	rdf:type owl:Class ;
-	rdfs:label "Welcome aspect"@en ;
-	rdfs:label "Приветственный аспект"@ru ;
-	rdfs:subClassOf v-asp:Aspect ;
-.
-
 v-asp:PersonalAspect 
 	rdf:type owl:Class ;
 	rdfs:label "Personal aspect"@en ;
@@ -332,47 +325,6 @@ v-asp:PersonalAspectTemplate
 		<button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-b:Edit" property="rdfs:label"/>
 		<button type="button" class="action btn btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/>
 		<button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
-	</div>
-</div>
-  """ ;
-.
-
-v-asp:WelcomeAspectTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса Приветственный аспект"@ru ;
-  rdfs:label "Template for Welcome aspect class"@en ;
-  v-ui:forClass v-asp:WelcomeAspect ;
-  v-ui:template """
-<div>
-	<style>
-	</style>
-	<div class="jumbotron">
-		<div class="row">
-			<div class="col-md-7">
-				<h1>Добро пожаловать <br>в Optiflow!</h1>
-				<p>Для начала работы выберите доступный аспект системы.</p>
-				<p>Аспект - это предварительно настроенная для Вашего удобства точка зрения на систему.</p>
-				<p>Аспекты могут содержать в себе настроенные бланки документов, реестры, аналитические отчеты и многое другое для получения быстрого доступа к функциям системы.</p>
-			</div>
-			<div class="col-md-5">
-				<div rel="v-s:hasImage" template="v-ui:ImageSimpleTemplate"></div>
-			</div>
-		</div>
-	</div>
-	<h1 class="text-center">Доступные аспекты</h1>
-	<br>
-	<div class="row">
-		<div class="col-sm-6 col-md-4" about="mnd-s-asppd:ProjectManagementAspect1">
-			<div class="thumbnail">
-				<a href="#/@" rel="v-s:hasImage" template="v-ui:ImageSimpleTemplateWithoutBorder"></a>
-				<div class="caption">
-					<h3>Управление проектами</h3>
-					<p>Аспект управления проектами и инновационными идеями.</p>
-					<p rel="v-asp:hasBlank" template="v-ui:LabelBlockLinkTemplate"></p>
-					<p><a href="#/@" class="btn btn-primary" role="button">Перейти</a></p>
-				</div>
-			</div>
-		</div>
 	</div>
 </div>
   """ ;

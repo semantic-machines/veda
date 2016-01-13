@@ -41,92 +41,8 @@
 		<meta http-equiv="cache-control" content="no-cache" />
 	</head>
 	<body>
-		<div id="menu">
-			<nav role="navigation" class="navbar" id="navigation">
-				<div class="container-fluid" id="nav-container">
-					<button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
-						<span class="glyphicon glyphicon-menu-hamburger"></span>
-					</button>
-					<a class="navbar-brand" href="#/d:Welcome">
-						<img id="logo" alt="logo" src="./img/logo">
-					</a>
-					<div class="collapse navbar-collapse" id="navbar-collapse">
-						<p class="navbar-text" id="current-individual"></p>
-						<div id="user-menu"></div>
-						<ul class="nav navbar-nav navbar-right">
-							<li id="user-info"></li>
-							<li class="dropdown" id="settings">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="fa fa-cog fa-lg"></span> <span class="caret"></span></a>
-								<ul class="dropdown-menu" role="menu">
-									<li id="inbox">	
-										<a href="#/v-ft:Inbox">Входящие</a>
-									</li>
-									<li id="outbox">	
-										<a href="#/v-ft:Outbox">Исходящие</a>
-									</li>
-									<li id="completed">	
-										<a href="#/v-ft:Completed">Выполненные</a>
-									</li>
-									<li class="divider"></li>
-									<li id="create">	
-										<a href="#/v-fc:Create">Создать</a>
-									</li>
-									<li id="search">
-										<a href="#/v-fs:Search">Найти</a>
-									</li>
-									<li class="divider"></li>
-									<li id="find">
-										<a href="#/search">Поиск</a>
-									</li>
-									<li class="divider"></li>
-									<li id="graph">	
-										<a href="#/graph">Граф</a>
-									</li>
-									<li id="console">	
-										<a href="#/console">Консоль</a>
-									</li>
-									<li id="tests">
-										<a href="/tests">Тесты</a>
-									</li>
-									<li class="divider"></li>
-									<li>
-										<a id="clear-storage">
-											<span class="glyphicon glyphicon-trash"></span> Очистить данные
-										</a>
-									</li>
-									<li class="divider"></li>
-									<li>
-										<a id="logout">
-											<span class="glyphicon glyphicon glyphicon-log-out"></span> Выйти
-										</a>
-									</li>
-								</ul>
-							</li>
-						</ul>
-						<!--p id="user-info" class="navbar-text navbar-right"></p-->
-						<div class="navbar-right btn-group" id="preferred-language"></div>
-					</div>
-				</div>
-			</nav>
-		</div>
-		
-		<!-- Main container -->
-		<div id="main" class="container-fluid"></div>
-		
+		<div id="app"></div>
 		<div id="login-holder" class="hidden" style="background-color:#eee"></div>
-		
-		<!-- Footer -->
-		<div id="footer">
-			<nav style="min-height:12px;" class="navbar navbar-fixed-bottom" id="copyright">
-				<footer>
-					<div class="container-fluid" style="background-color: white; border-top: 1px solid lightgray">
-						<a href="http://www.semantic-machines.com">© Смысловые машины.</a>
-						<span>Лицензия</span>
-						<a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
-					</div>
-				</footer>
-			</nav>
-		</div>
 
 		<!-- Templates -->
 
@@ -803,7 +719,6 @@
 		<script type="text/javascript" src="/js/browser/search_sort.js"></script>
 		<script type="text/javascript" src="/js/browser/search_selected_actions.js"></script>
 		<script type="text/javascript" src="/js/browser/user_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/menu_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/graph_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/veda_net_editor.js"></script>
 		<script type="text/javascript" src="/js/browser/app_presenter.js"></script>
