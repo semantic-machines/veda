@@ -1119,10 +1119,10 @@ v-ui:ImageTemplate
   rdfs:label "Image template"@en ;
   v-ui:template """
 <div>
-	<a href="/files/@"><img class="img-thumbnail"></img></a>
+	<a href="/files/@"><img class="img-thumbnail"></a>
 </div>
 <script>
-	 template.attr("src", "/files/" + individual.id);
+	 $("img", template).attr("src", "/files/" + individual.id);
 </script>
   """ ;
 .
@@ -1132,12 +1132,12 @@ v-ui:ModalImageTemplate
   rdfs:label "Image template"@en ;
   v-ui:template """
 <div>
-	<a id="link" href="#"><img class="img-thumbnail"></img></a>
+	<a id="link" href="#"><img class="img-thumbnail"></a>
 	<div class="modal" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-body">
-					<img width="100%"></img>
+					<img width="100%">
 				</div>
 			</div>
 		</div>
@@ -1159,7 +1159,7 @@ v-ui:ImageSimpleTemplateWithoutBorder
   rdfs:label "Шаблон для изображения"@ru ;
   rdfs:label "Image template"@en ;
   v-ui:template """
-<img width="100%"></img>
+<img width="100%">
 <script>
 	 template.attr("src", "/files/" + individual.id);
 </script>
@@ -1171,7 +1171,7 @@ v-ui:ImageSimpleTemplate
   rdfs:label "Image template without link"@en ;
   v-ui:template """
 <div>
-	<img class="img-thumbnail"></img>
+	<img class="img-thumbnail">
 </div>
 <script>
 	 $("img", template).attr("src", "/files/" + individual.id);
@@ -1183,7 +1183,7 @@ v-ui:ImageSimpleTemplateTransparent
   rdfs:label "Шаблон для изображения без ссылки прозрачный фон"@ru ;
   rdfs:label "Image template without link transparent"@en ;
   v-ui:template """
-<img width="100%"></img>
+<img width="100%">
 <script>
 	 template.attr("src", "/files/" + individual.id);
 </script>
@@ -1195,7 +1195,7 @@ v-ui:ImageTemplateTransparent
   rdfs:label "Image template with link transparent"@en ;
   v-ui:template """
 <div>
-	<a href="/files/@"><img width="100%"></img></a>
+	<a href="/files/@"><img width="100%"></a>
 </div>
 <script>
 	 $("img", template).attr("src", "/files/" + individual.id);
