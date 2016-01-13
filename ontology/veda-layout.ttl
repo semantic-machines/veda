@@ -275,7 +275,7 @@ v-l:WelcomeAspectTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Приветственный аспект"@ru ;
   rdfs:label "Template for Welcome aspect class"@en ;
-  v-ui:forClass v-asp:WelcomeAspect ;
+  v-ui:forClass v-l:WelcomeAspect ;
   v-ui:template """
 <div>
 	<style>
@@ -339,7 +339,7 @@ v-l:Logo
   v-s:filePath "/"^^xsd:string ;
 .
 v-l:Welcome
-  rdf:type v-asp:WelcomeAspect ;
+  rdf:type v-l:WelcomeAspect ;
   rdfs:label "Welcome"@en ;
   rdfs:label "Добро пожаловать"@ru ;
   v-s:hasImage v-l:WelcomeBackground ;
