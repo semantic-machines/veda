@@ -70,17 +70,12 @@ veda.Module(function (veda) { "use strict";
 		});
 
 		self.toggleLanguage = function(language_val) {
-			
 			if (language_val in self.language && Object.keys(self.language).length == 1) return;
-					
 			language_val in self.language ? delete self.language[language_val] : self.language[language_val] = self.availableLanguages[language_val];
-			
 			self.preferences["v-ui:preferredLanguage"] = Object.keys(self.language).map ( function (language_val) {
 				return self.language[language_val];
 			});
-
 			self.preferences.saveIndividual(false);
-			veda.trigger("language:changed");
 		};
 			
 		return self;
