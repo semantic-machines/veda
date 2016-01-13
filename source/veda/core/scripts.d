@@ -170,16 +170,13 @@ public void condition_thread(string thread_name, string node_id)
                                         try
                                         {
                                             if (trace_msg[ 300 ] == 1)
-                                                log.trace("exec script : %s ", script_id);
-
-                                            // writeln("scripts B #2 ", script_id, " *", process_name);
+                                                log.trace("start exec script : %s ", script_id);
 
                                             count++;
                                             script_vm.run(script.compiled_script);
 
-                                            // writeln("scripts B #3 ", script_id, " *", process_name);
                                             if (trace_msg[ 300 ] == 1)
-                                                log.trace("end exec script");
+                                                log.trace("end exec script : %s ", script_id);
                                         }
                                         catch (Exception ex)
                                         {
