@@ -59,6 +59,18 @@ v-s:hasLogo
   rdfs:domain v-asp:Aspect ;
 .
 
+v-s:hasHeading
+  rdfs:domain v-asp:Aspect ;
+.
+
+v-s:hasParagraph
+  rdfs:domain v-asp:Aspect ;
+.
+
+v-s:hasLogo
+  rdfs:domain v-asp:Aspect ;
+.
+
 v-asp:hasFavorite
 	rdf:type owl:ObjectProperty ;
 	rdfs:domain v-asp:Aspect ;

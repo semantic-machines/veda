@@ -240,6 +240,16 @@ v-l:HeaderTemplate
 
 ### FOOTER ###
 
+v-l:SemanticMachines
+	rdf:type v-b:Bundle ;
+	rdfs:label "Semantic machines"@en ;
+	rdfs:label "Смысловые машины"@ru ;
+.
+v-l:License
+	rdf:type v-b:Bundle ;
+	rdfs:label "License"@en ;
+	rdfs:label "Лицензия"@ru ;
+.
 v-l:Footer
 	rdf:type owl:Class ;
 	rdfs:label "footer"@en ;
@@ -254,8 +264,8 @@ v-l:FooterTemplate
 <nav style="min-height:12px;" class="navbar navbar-fixed-bottom" id="copyright">
 	<footer>
 		<div class="container-fluid" style="background-color: white; border-top: 1px solid lightgray">
-			<a href="http://www.semantic-machines.com">© Смысловые машины.</a>
-			<span>Лицензия</span>
+			<a href="http://www.semantic-machines.com">© <span about="v-l:SemanticMachines" property="rdfs:label"></span>.</a>
+			<span about="v-l:License" property="rdfs:label"></span>
 			<a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
 		</div>
 	</footer>
@@ -283,10 +293,8 @@ v-l:WelcomeAspectTemplate
 	<div class="jumbotron">
 		<div class="row">
 			<div class="col-md-7">
-				<h1>Добро пожаловать <br>в Optiflow!</h1>
-				<p>Для начала работы выберите доступный аспект системы.</p>
-				<p>Аспект - это предварительно настроенная для Вашего удобства точка зрения на систему.</p>
-				<p>Аспекты могут содержать в себе настроенные бланки документов, реестры, аналитические отчеты и многое другое для получения быстрого доступа к функциям системы.</p>
+				<h1 about="@" property="v-asp:hasHeading"></h1>
+				<p about="@" property="v-asp:hasParagraph"></p>
 			</div>
 			<div class="col-md-5">
 				<div rel="v-s:hasImage" template="v-ui:ImageSimpleTemplate"></div>
@@ -343,6 +351,14 @@ v-l:Welcome
   rdfs:label "Welcome"@en ;
   rdfs:label "Добро пожаловать"@ru ;
   v-s:hasImage v-l:WelcomeBackground ;
+  v-asp:hasHeading "Добро пожаловать в Optiflow!"@ru ;
+  v-asp:hasHeading "Welcome to Optiflow!"@en ;
+  v-asp:hasParagraph "Для начала работы выберите доступный аспект системы."@ru ;
+  v-asp:hasParagraph "Аспект - это предварительно настроенная для Вашего удобства точка зрения на систему."@ru ;
+  v-asp:hasParagraph "Аспекты могут содержать в себе настроенные бланки документов, реестры, аналитические отчеты и многое другое для получения быстрого доступа к функциям системы."@ru ;
+  v-asp:hasParagraph "To start using the system please choose an aspect."@en ;
+  v-asp:hasParagraph "Aspect is a convenient point of view to the system predefined for specific processes."@en ;
+  v-asp:hasParagraph "An aspect may contain document blanks, registries, reports and much more to provide you with quick access to system's functions."@en ;
 .
 v-l:WelcomeBackground 
   a v-s:File;

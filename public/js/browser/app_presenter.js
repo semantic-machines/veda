@@ -32,7 +32,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 				welcome.present("#main");
 			}
 		});
-		riot.route(location.hash, true);
+		riot.route(location.hash, true);		
 	});
 	
 	// Login invitation
