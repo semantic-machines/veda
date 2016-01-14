@@ -755,7 +755,7 @@ class VedaStorageRest : VedaStorageRest_API
 
             Individual prev_state_indv;
             if (prev_state_json != Json.init)
-                prev_state_indv = json_to_individual(individual_json);
+                prev_state_indv = json_to_individual(prev_state_json);
 
             veda.core.bus_event.trigger_script(ticket, ev_type, &indv, &prev_state_indv, context, event_id, op_id);
 

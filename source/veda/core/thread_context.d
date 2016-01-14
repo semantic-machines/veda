@@ -993,36 +993,49 @@ class PThreadContext : Context
                 //writeln("context:store_individual use EXTERNAL #3, url=", url, " ", process_name);
 
                 Json req_body = Json.emptyObject;
-                try
+                req_body[ "ticket" ]         = ticket.id;
+                req_body[ "individual" ]     = individual_to_json(*indv);
+                req_body[ "prepare_events" ] = prepare_events;
+                req_body[ "event_id" ]       = event_id;
+
+                int max_count_retry = 100;
+                int count_retry     = 0;
+
+                while (count_retry < max_count_retry)
                 {
-                    req_body[ "ticket" ]         = ticket.id;
-                    req_body[ "individual" ]     = individual_to_json(*indv);
-                    req_body[ "prepare_events" ] = prepare_events;
-                    req_body[ "event_id" ]       = event_id;
+                    count_retry++;
+                    try
+                    {
+                        requestHTTP(url,
+                                    (scope req) {
+                                        req.method = HTTPMethod.PUT;
+                                        req.writeJsonBody(req_body);
+                                        //writeln("req:", text (req_body));
+                                    },
+                                    (scope result) {
+                                        //logInfo("Response: %s", text(result.statusCode));
+                                        res.result = cast(ResultCode)result.statusCode;
+                                    }
+                                    );
 
-                    requestHTTP(url,
-                                (scope req) {
-                                    req.method = HTTPMethod.PUT;
-                                    req.writeJsonBody(req_body);
-                                    //writeln("req:", text (req_body));
-                                },
-                                (scope result) {
-                                    //logInfo("Response: %s", text(result.statusCode));
-                                    res.result = cast(ResultCode)result.statusCode;
-                                }
-                                );
+                        if (res.result != ResultCode.Too_Many_Requests)
+                            count_retry = max_count_retry;
 
-//                    res = ResultCode.OK;
-                    //    writeln("context:store_individual #4 ", process_name);
-
-                    return res;
+                        if (res.result == ResultCode.Too_Many_Requests)
+                            core.thread.Thread.sleep(dur!("msecs")(10));
+                    }
+                    catch (Exception ex)
+                    {
+                        writeln("ERR! external put_individual:", ex.msg, ", url=", url, ", req_body=", text(req_body));
+                        res.result = ResultCode.Internal_Server_Error;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    writeln("ERR! external put_individual:", ex.msg, ", url=", url, ", req_body=", text(req_body));
-                    res.result = ResultCode.Internal_Server_Error;
-                    return res;
-                }
+
+                if (res.result != ResultCode.OK && res.result != ResultCode.Duplicate_Key)
+                    writeln("ERR! external put_individual:", res.result, ", url=", url, ", req_body=", text(req_body));
+
+
+                return res;
             }
             else
             {
