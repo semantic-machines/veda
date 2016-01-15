@@ -325,6 +325,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 
                 veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
                 	state[mapping] = state[mapping].concat([individualM]); // <- Add new Mapping to State
+                	net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individualM]);
                 });
             }
             
