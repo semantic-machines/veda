@@ -49,7 +49,7 @@ v-fs:AttributiveRequest
 .
 v-fs:Search
   rdf:type v-fs:FunctionSearch ;
-  rdfs:label "Search"@en ;
+  rdfs:label "Find"@en ;
   rdfs:label "Найти"@ru ;
 .
 v-fs:fulltextQuery

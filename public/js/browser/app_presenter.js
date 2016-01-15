@@ -17,11 +17,6 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	});
 
 	// Triggered in veda.init()
-	veda.on("started", function () {
-		var main = new veda.IndividualModel("v-l:Main");
-		main.present("#app");
-	});
-
 	veda.one("started", function () {
 		var welcome = new veda.IndividualModel("v-l:Welcome");
 		// Router function
@@ -35,7 +30,11 @@ veda.Module(function AppPresenter(veda) { "use strict";
 				welcome.present("#main");
 			}
 		});
-		riot.route(location.hash, true);		
+	});
+	veda.on("started", function () {
+		var main = new veda.IndividualModel("v-l:Main");
+		main.present("#app");
+		riot.route(location.hash, true);
 	});
 	
 	// Login invitation

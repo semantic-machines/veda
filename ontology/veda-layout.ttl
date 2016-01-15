@@ -13,49 +13,88 @@
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
 
 <http://semantic-machines.com/veda/veda-layout>
-  rdf:type owl:Ontology ;
-  rdfs:label "Veda system layout ontology"@en ;
-  rdfs:label "Онтология разметки системы Веда"@ru ;
-  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
-  owl:imports <http://semantic-machines.com/veda/veda-ui> ;
-  owl:imports rdf: ;
-  owl:imports rdfs: ;
-  owl:imports <http://www.w3.org/2002/07/owl> ;
-#  owl:versionInfo "0.2" ;
+	rdf:type owl:Ontology ;
+	rdfs:label "Veda system layout ontology"@en ;
+	rdfs:label "Онтология разметки системы Веда"@ru ;
+	owl:imports <http://semantic-machines.com/veda/veda-schema> ;
+	owl:imports <http://semantic-machines.com/veda/veda-ui> ;
+	owl:imports rdf: ;
+	owl:imports rdfs: ;
+	owl:imports <http://www.w3.org/2002/07/owl> ;
+	#owl:versionInfo "0.2" ;
 .
 
-### PAGE ### 
+### MAIN PAGE ### 
 
-v-l:Page 
+v-l:MainPage 
 	rdf:type owl:Class ;
 	rdfs:label "Page"@en ;
 	rdfs:label "Страница"@ru ;
 .
-v-l:hasHeader
-	rdf:type owl:ObjectProperty ;
-	rdfs:domain v-l:Page ;
-	rdfs:range rdfs:Resource ;
-	rdfs:label "колонтитул"@ru ;
-	rdfs:label "header"@en ;
-.
-v-l:hasFooter
-	rdf:type owl:ObjectProperty ;
-	rdfs:domain v-l:Page ;
-	rdfs:range rdfs:Resource ;
-	rdfs:label "нижний колонтитул"@ru ;
-	rdfs:label "footer"@en ;
-.
-v-l:PageTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса Страница"@ru ;
-  rdfs:label "Template for Page class"@en ;
-  v-ui:forClass v-l:Page ;
-  v-ui:template """
+v-l:MainPageTemplate
+	rdf:type v-ui:ClassTemplate ;
+	rdfs:label "Шаблон для класса Страница"@ru ;
+	rdfs:label "Template for Page class"@en ;
+	v-ui:forClass v-l:MainPage ;
+	v-ui:template """
 <div class="page">
-	<div about="@" rel="v-l:hasHeader"></div>
+	<nav role="navigation" class="navbar" id="navigation">
+		<div class="container-fluid" id="nav-container">
+			<button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+				<span class="glyphicon glyphicon-menu-hamburger"></span>
+			</button>
+			<a class="navbar-brand" href="#" about="v-l:Logo" template="v-ui:ImageSimpleTemplateWithoutBorder"></a>
+			<div class="collapse navbar-collapse" id="navbar-collapse">
+				<p class="navbar-text" id="current-individual"></p>
+				<div id="user-menu"></div>
+				<ul class="nav navbar-nav navbar-right">
+					<li id="user-info"></li>
+					<li id="menu" class="dropdown" about="v-l:MainMenu" template="v-l:MenuTemplate"></li>
+				</ul>
+				<div class="navbar-right btn-group" id="preferred-language"></div>
+			</div>
+		</div>
+	</nav>
+	
 	<div id="main" class="container-fluid" about="v-l:Welcome"></div>
-	<div about="@" rel="v-l:hasFooter"></div>
+	
+	<nav style="min-height:12px;" class="navbar navbar-fixed-bottom" id="copyright">
+		<footer>
+			<div class="container-fluid" style="background-color: white; border-top: 1px solid lightgray">
+				<a href="http://www.semantic-machines.com">© <span about="v-l:SemanticMachines" property="rdfs:label"></span>.</a>
+				<span about="v-l:License" property="rdfs:label"></span>
+				<a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
+			</div>
+		</footer>
+	</nav>
 </div>
+<script>
+	var languageTemplate = $("#language-template").html();
+	var userInfo = $("#user-info", template);
+	var languageSelector = $("#preferred-language", template);
+
+	// Render languages
+	var languages = "";
+	Object.keys(veda.user.availableLanguages).map ( function (language_uri) {
+		languages += riot.render(languageTemplate, veda.user.availableLanguages[language_uri]);
+	});
+	languageSelector.html(languages);
+	
+	// Render user
+	userInfo.empty();
+	var userTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
+	veda.user.present(userInfo, userTmpl);
+
+	var $languages = $("label", languageSelector);
+	$languages.each( function() {
+		if (this.id in veda.user.language) $(this).addClass("active");
+		$(this).on("click", function() { 
+			veda.user.toggleLanguage(this.id);
+			location.reload();
+			//this.id in veda.user.language ? $(this).addClass("active") : $(this).removeClass("active");
+		});
+	});
+</script>
   """ ;
 .
 
@@ -175,70 +214,54 @@ v-l:PsMenuItem
 	v-ui:queryPrefix "('rdf:type' == 'v-l:Menu')"^^xsd:string ;
 .
 
-### HEADER ###
+### WELCOME ###
 
-v-l:Header
+v-l:WelcomeAspect 
 	rdf:type owl:Class ;
-	rdfs:label "footer"@en ;
-	rdfs:label "нижний колонтитул"@ru ;
+	rdfs:label "Welcome aspect"@en ;
+	rdfs:label "Приветственный аспект"@ru ;
+	rdfs:subClassOf v-asp:Aspect ;
 .
-v-s:hasImage
-	rdfs:domain v-l:Header ;
-.
-v-l:HeaderTemplate
+v-l:WelcomeAspectTemplate
 	rdf:type v-ui:ClassTemplate ;
-	rdfs:label "Header template"@en ;
-	rdfs:label "Шаблон колонтитула"@ru ;
-	v-ui:forClass v-l:Header ;
+	rdfs:label "Шаблон для класса Приветственный аспект"@ru ;
+	rdfs:label "Template for Welcome aspect class"@en ;
+	v-ui:forClass v-l:WelcomeAspect ;
 	v-ui:template """
-<nav role="navigation" class="navbar" id="navigation">
-	<div class="container-fluid" id="nav-container">
-		<button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
-			<span class="glyphicon glyphicon-menu-hamburger"></span>
-		</button>
-		<a class="navbar-brand" href="#" about="@" rel="v-s:hasImage" template="v-ui:ImageSimpleTemplateWithoutBorder"></a>
-		<div class="collapse navbar-collapse" id="navbar-collapse">
-			<p class="navbar-text" id="current-individual"></p>
-			<div id="user-menu"></div>
-			<ul class="nav navbar-nav navbar-right">
-				<li id="user-info"></li>
-				<li id="menu" class="dropdown" about="v-l:MainMenu" template="v-l:MenuTemplate"></li>
-			</ul>
-			<div class="navbar-right btn-group" id="preferred-language"></div>
+<div>
+	<style>
+	</style>
+	<div class="jumbotron">
+		<div class="row">
+			<div class="col-md-7">
+				<h1 about="v-l:WelcomeToOptiflow" property="rdfs:label"></h1>
+				<p style="white-space: pre-wrap;" about="v-l:AspectDescription" property="rdfs:label"></p>
+			</div>
+			<div class="col-md-5">
+				<div about="v-l:WelcomeBackground" template="v-ui:ImageSimpleTemplate"></div>
+			</div>
 		</div>
 	</div>
-</nav>
-<script>
-	var languageTemplate = $("#language-template").html();
-	var userInfo = $("#user-info", template);
-	var languageSelector = $("#preferred-language", template);
-
-	// Render languages
-	var languages = "";
-	Object.keys(veda.user.availableLanguages).map ( function (language_uri) {
-		languages += riot.render(languageTemplate, veda.user.availableLanguages[language_uri]);
-	});
-	languageSelector.html(languages);
-	
-	// Render user
-	userInfo.empty();
-	var userTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
-	veda.user.present(userInfo, userTmpl);
-
-	var $languages = $("label", languageSelector);
-	$languages.each( function() {
-		if (this.id in veda.user.language) $(this).addClass("active");
-		$(this).on("click", function() { 
-			veda.user.toggleLanguage(this.id);
-			location.reload();
-			//this.id in veda.user.language ? $(this).addClass("active") : $(this).removeClass("active");
-		});
-	});
-</script>
-	"""
+	<h1 class="text-center" about="v-l:AvailableAspects" property="rdfs:label"></h1>
+	<br>
+	<div class="row">
+		<div class="col-sm-6 col-md-4" about="mnd-s-asppd:ProjectManagementAspect1">
+			<div class="thumbnail">
+				<a href="#/@" rel="v-s:hasImage" template="v-ui:ImageSimpleTemplateWithoutBorder"></a>
+				<div class="caption">
+					<h3 property="rdfs:label"></h3>
+					<p property="rdfs:comment"></p>
+					<p rel="v-asp:hasBlank" template="v-ui:LabelBlockLinkTemplate"></p>
+					<p><a href="#/@" class="btn btn-primary" role="button" about="v-b:Proceed" property="rdfs:label"></a></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+  """ ;
 .
 
-### FOOTER ###
+### STRINGS ###
 
 v-l:SemanticMachines
 	rdf:type v-b:Bundle ;
@@ -250,121 +273,49 @@ v-l:License
 	rdfs:label "License"@en ;
 	rdfs:label "Лицензия"@ru ;
 .
-v-l:Footer
-	rdf:type owl:Class ;
-	rdfs:label "footer"@en ;
-	rdfs:label "нижний колонтитул"@ru ;
+v-l:WelcomeToOptiflow
+	rdf:type v-b:Bundle ;
+	rdfs:label "Добро пожаловать в Optiflow!"@ru ;
+	rdfs:label "Welcome to Optiflow!"@en ;
 .
-v-l:FooterTemplate
-	rdf:type v-ui:ClassTemplate ;
-	rdfs:label "Footer template"@en ;
-	rdfs:label "Шаблон нижнего колонтитула"@ru ;
-	v-ui:forClass v-l:Footer ;
-	v-ui:template """
-<nav style="min-height:12px;" class="navbar navbar-fixed-bottom" id="copyright">
-	<footer>
-		<div class="container-fluid" style="background-color: white; border-top: 1px solid lightgray">
-			<a href="http://www.semantic-machines.com">© <span about="v-l:SemanticMachines" property="rdfs:label"></span>.</a>
-			<span about="v-l:License" property="rdfs:label"></span>
-			<a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
-		</div>
-	</footer>
-</nav>
-	"""
-.	
-
-### WELCOME ###
-
-v-l:WelcomeAspect 
-	rdf:type owl:Class ;
-	rdfs:label "Welcome aspect"@en ;
-	rdfs:label "Приветственный аспект"@ru ;
-	rdfs:subClassOf v-asp:Aspect ;
+v-l:AspectDescription
+	rdf:type v-b:Bundle ;
+	rdfs:label """Для начала работы выберите доступный аспект системы.
+Аспект - это предварительно настроенная для Вашего удобства точка зрения на систему.
+Аспекты могут содержать в себе настроенные бланки документов, реестры, аналитические отчеты и многое другое для получения быстрого доступа к функциям системы."""@ru ;
+	rdfs:label """To start using the system please choose an aspect.
+Aspect is a convenient point of view to the system predefined for specific processes.
+An aspect may contain document blanks, registries, reports and much more to provide you with quick access to system's functions."""@en ;
 .
-v-l:WelcomeAspectTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса Приветственный аспект"@ru ;
-  rdfs:label "Template for Welcome aspect class"@en ;
-  v-ui:forClass v-l:WelcomeAspect ;
-  v-ui:template """
-<div>
-	<style>
-	</style>
-	<div class="jumbotron">
-		<div class="row">
-			<div class="col-md-7">
-				<h1 about="@" property="v-asp:hasHeading"></h1>
-				<p about="@" property="v-asp:hasParagraph"></p>
-			</div>
-			<div class="col-md-5">
-				<div rel="v-s:hasImage" template="v-ui:ImageSimpleTemplate"></div>
-			</div>
-		</div>
-	</div>
-	<h1 class="text-center">Доступные аспекты</h1>
-	<br>
-	<div class="row">
-		<div class="col-sm-6 col-md-4" about="mnd-s-asppd:ProjectManagementAspect1">
-			<div class="thumbnail">
-				<a href="#/@" rel="v-s:hasImage" template="v-ui:ImageSimpleTemplateWithoutBorder"></a>
-				<div class="caption">
-					<h3>Управление проектами</h3>
-					<p>Аспект управления проектами и инновационными идеями.</p>
-					<p rel="v-asp:hasBlank" template="v-ui:LabelBlockLinkTemplate"></p>
-					<p><a href="#/@" class="btn btn-primary" role="button">Перейти</a></p>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-  """ ;
+v-l:AvailableAspects
+	rdf:type v-b:Bundle ;
+	rdfs:label "Доступные аспекты"@ru ;
+	rdfs:label "Available aspects"@en ;
 .
 
 ### INDIVIDUALS ###
 
 v-l:Main
-	rdf:type v-l:Page ;
+	rdf:type v-l:MainPage ;
 	rdfs:label "Main page"@en ;
 	rdfs:label "Главная страница"@ru ;
-	v-l:hasHeader v-l:MainHeader ;
-	v-l:hasFooter v-l:MainFooter ;
-.
-v-l:MainFooter
-	rdf:type v-l:Footer ;
-	rdfs:label "Main footer"@en ;
-	rdfs:label "Главный нижний колонтитул"@ru ;
-.
-v-l:MainHeader
-	rdf:type v-l:Header ;
-	rdfs:label "Main header"@en ;
-	rdfs:label "Главный колонтитул"@ru ;
-	v-s:hasImage v-l:Logo ;
-.
-v-l:Logo 
-  a v-s:File;
-  v-s:fileUri "logo.png"^^xsd:string ;
-  v-s:fileName "logo.png"^^xsd:string;
-  v-s:filePath "/"^^xsd:string ;
 .
 v-l:Welcome
-  rdf:type v-l:WelcomeAspect ;
-  rdfs:label "Welcome"@en ;
-  rdfs:label "Добро пожаловать"@ru ;
-  v-s:hasImage v-l:WelcomeBackground ;
-  v-asp:hasHeading "Добро пожаловать в Optiflow!"@ru ;
-  v-asp:hasHeading "Welcome to Optiflow!"@en ;
-  v-asp:hasParagraph "Для начала работы выберите доступный аспект системы."@ru ;
-  v-asp:hasParagraph "Аспект - это предварительно настроенная для Вашего удобства точка зрения на систему."@ru ;
-  v-asp:hasParagraph "Аспекты могут содержать в себе настроенные бланки документов, реестры, аналитические отчеты и многое другое для получения быстрого доступа к функциям системы."@ru ;
-  v-asp:hasParagraph "To start using the system please choose an aspect."@en ;
-  v-asp:hasParagraph "Aspect is a convenient point of view to the system predefined for specific processes."@en ;
-  v-asp:hasParagraph "An aspect may contain document blanks, registries, reports and much more to provide you with quick access to system's functions."@en ;
+	rdf:type v-l:WelcomeAspect ;
+	rdfs:label "Welcome"@en ;
+	rdfs:label "Добро пожаловать"@ru ;
+.
+v-l:Logo 
+	a v-s:File;
+	v-s:fileUri "logo.png"^^xsd:string ;
+	v-s:fileName "logo.png"^^xsd:string;
+	v-s:filePath "/"^^xsd:string ;
 .
 v-l:WelcomeBackground 
-  a v-s:File;
-  v-s:fileUri "welcome-background.jpg"^^xsd:string ;
-  v-s:fileName "welcome-background.jpg"^^xsd:string;
-  v-s:filePath "/"^^xsd:string ;
+	a v-s:File;
+	v-s:fileUri "welcome-background.jpg"^^xsd:string ;
+	v-s:fileName "welcome-background.jpg"^^xsd:string;
+	v-s:filePath "/"^^xsd:string ;
 .
 v-l:MainMenu
 	rdf:type v-l:Menu ;
@@ -464,4 +415,26 @@ v-l:Exit
 	v-l:action """
 veda.logout();
 	"""
+.
+
+v-fs:MainPageObjectsMembership
+	rdf:type v-s:Membership ;
+	v-s:memberOf v-a:ReadResGroup ;
+	v-s:resource v-l:Main
+	v-s:resource v-l:Logo 
+	v-s:resource v-l:Welcome
+	v-s:resource v-l:WelcomeBackground
+	v-s:resource v-l:MainMenu
+	v-s:resource v-l:Divider
+	v-s:resource v-l:Inbox
+	v-s:resource v-l:Outbox
+	v-s:resource v-l:Completed
+	v-s:resource v-l:Create
+	v-s:resource v-l:Find
+	v-s:resource v-l:Search
+	v-s:resource v-l:Graph
+	v-s:resource v-l:Console
+	v-s:resource v-l:Tests
+	v-s:resource v-l:Clear
+	v-s:resource v-l:Exit
 .

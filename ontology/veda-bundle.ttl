@@ -91,6 +91,11 @@ v-b:Next
   rdfs:label "Далее"@ru ;
   rdfs:label "Next"@en ;
 .
+v-b:Proceed
+  rdf:type v-b:Bundle ;
+  rdfs:label "Перейти"@ru ;
+  rdfs:label "Proceed"@en ;
+.
 v-b:Edit
   rdf:type v-b:Bundle ;
   rdfs:label "Редактировать"@ru ;
