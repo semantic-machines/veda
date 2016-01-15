@@ -237,12 +237,12 @@ module.exports = {
 		// Проверяем что открылось подменю 
 		driver.wait
 		(
-		  webdriver.until.elementIsVisible(driver.findElement({css:'li[id="settings"] li[resource="v-l:Find"]'})),
+		  webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Find"]'})),
 		  FAST_OPERATION
 		).thenCatch(function (e) {errrorHandlerFunction(e, "Seems there is no `search` button inside settings")});
 
 		// Клик `Поиск`
-		driver.findElement({css:'li[id="settings"] li[resource="v-l:Find"]'}).click()
+		driver.findElement({css:'li[id="menu"] li[resource="v-l:Find"]'}).click()
 		      .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `search` button")});
 
 		// Проверяем что открылась страница поиска
