@@ -171,18 +171,18 @@ module.exports = {
 	 */
 	openCreateDocumentForm: function (driver, templateName, templateRdfType) {
 		// Клик `Документ` в главном меню
-		driver.findElement({id:'settings'}).click()
+		driver.findElement({id:'menu'}).click()
 		      .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on settings button")});
 
 		// Проверяем что открылось подменю 
 		driver.wait
 		(
-		  webdriver.until.elementIsVisible(driver.findElement({css:'li[id="settings"] li[id="create"]'})),
+		  webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Create"]'})),
 		  FAST_OPERATION
-		).thenCatch(function (e) {errrorHandlerFunction(e, "Seems there is no `create` button inside settings")});
+		).thenCatch(function (e) {errrorHandlerFunction(e, "Seems there is no `create` button inside menu")});
 
 		// Клик `Создать`
-		driver.findElement({css:'li[id="settings"] li[id="create"]'}).click()
+		driver.findElement({css:'li[id="menu"] li[resource="v-l:Create"]'}).click()
 			  .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `create` button")});
 
 		// Проверяем что открылась страница создания документов
@@ -231,18 +231,18 @@ module.exports = {
 	 */
 	openFulltextSearchDocumentForm: function (driver, templateName, templateRdfType) {
 		// Клик `Документ` в главном меню
-		driver.findElement({css:'li[id="settings"]'}).click()
+		driver.findElement({css:'li[id="menu"]'}).click()
 		      .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on settings button")});
 
 		// Проверяем что открылось подменю 
 		driver.wait
 		(
-		  webdriver.until.elementIsVisible(driver.findElement({css:'li[id="settings"] li[id="search"]'})),
+		  webdriver.until.elementIsVisible(driver.findElement({css:'li[id="settings"] li[resource="v-l:Find"]'})),
 		  FAST_OPERATION
 		).thenCatch(function (e) {errrorHandlerFunction(e, "Seems there is no `search` button inside settings")});
 
 		// Клик `Поиск`
-		driver.findElement({css:'li[id="settings"] li[id="search"]'}).click()
+		driver.findElement({css:'li[id="settings"] li[resource="v-l:Find"]'}).click()
 		      .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `search` button")});
 
 		// Проверяем что открылась страница поиска
