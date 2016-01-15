@@ -17,9 +17,12 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	});
 
 	// Triggered in veda.init()
-	veda.one("started", function () {
+	veda.on("started", function () {
 		var main = new veda.IndividualModel("v-l:Main");
 		main.present("#app");
+	});
+
+	veda.one("started", function () {
 		var welcome = new veda.IndividualModel("v-l:Welcome");
 		// Router function
 		riot.route( function (hash) {
