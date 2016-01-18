@@ -193,6 +193,7 @@ module.exports = {
 		).thenCatch(function (e) {errrorHandlerFunction(e, "Create template was not opened")});
 
 		// Вводим запрашиваемый тип документа
+		driver.findElement({id:'fulltext'}).clear();
 		driver.findElement({id:'fulltext'}).sendKeys(templateName)
 		      .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot enter template name")});
 
@@ -217,6 +218,7 @@ module.exports = {
 		}).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `"+templateName+"` from dropdown")});
 		
 		// Проверяем что тип появился на экране
+		if (templateRdfType === 'v-wf:Net') return; // Имеет нестандартный шаблон
 		driver.wait
 		(
 		  webdriver.until.elementIsVisible(driver.findElement({css:'span[about="'+templateRdfType+'"]'})),
@@ -253,6 +255,7 @@ module.exports = {
 		).thenCatch(function (e) {errrorHandlerFunction(e, "Search template was not opened")});
 
 		// Вводим запрашиваемый тип документа
+		driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).clear();
 		driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).sendKeys(templateName);
 		
 		// Проверяем что запрашиваемый тип появился в выпадающем списке

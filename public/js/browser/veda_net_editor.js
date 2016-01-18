@@ -633,7 +633,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	var stateElement = '';
             	switch (type) {
     			case 'v-wf:InputCondition':    				
-    				stateElement = '<div class="w state-io-condition" ' + 
+    				stateElement = '<div class="w state-io-condition state-io-condition-input" ' + 
     				    'id="' + state.id + '" ' + 
     				    'style="font-size:20px;padding-top:10px;'+ 
     				    'left:' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px;' +
@@ -642,7 +642,7 @@ jsWorkflow.ready = jsPlumb.ready;
 					    (mode=='edit'?'<div class="ep">':'')+'</div></div>';
     				break;
     			case 'v-wf:OutputCondition':
-    				stateElement = '<div class="w state-io-condition" ' +
+    				stateElement = '<div class="w state-io-condition state-io-condition-output" ' +
     				    'id="' + state.id + '" ' +
     				    'style="font-size:20px;padding-top:10px;' +
     				    'left:' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px;' + 
