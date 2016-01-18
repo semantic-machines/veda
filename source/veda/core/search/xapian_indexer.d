@@ -231,9 +231,13 @@ private class IndexerContext
 
             if (indv.uri !is null && indv.resources.length > 0)
             {
+            	string isDraftOf 			= indv.getFirstLiteral("v-s:isDraftOf");
                 string actualVersion        = indv.getFirstLiteral("v-s:actualVersion");
                 string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
                 string previousVersion_new  = indv.getFirstLiteral("v-s:previousVersion");
+				
+				if (isDraftOf !is null)
+					return;
 
                 if (is_deleted == false && actualVersion !is null && actualVersion != indv.uri && previousVersion_prev == previousVersion_new)
                     return;
