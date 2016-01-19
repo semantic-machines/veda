@@ -87,7 +87,7 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
                                 //logInfo("Response: %s", res.bodyReader.readAllUTF8());
                             }
                             );
-*/                            
+ */
                 //  writeln ("EXECUTE SCRIPT USE EXTERNAL: #E  uri=", individual.uri, ", url=", url, " *", process_name);
             }
             catch (Exception ex)
@@ -99,13 +99,13 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
         {
             //log.trace("EXECUTE SCRIPT: event:%s uri:[%s]", ev_type, individual.uri);
 
-            Tid tid_condition = context.getTid(P_MODULE.condition);
-            if (tid_condition != Tid.init)
+            Tid tid_scripts = context.getTid(P_MODULE.scripts);
+            if (tid_scripts != Tid.init)
             {
                 if (rdfType.anyExist(veda_schema__Event))
                 {
                     // изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
-                    send(tid_condition, CMD.RELOAD, new_state, thisTid);
+                    send(tid_scripts, CMD.RELOAD, new_state, thisTid);
                     receive((bool){});
                 }
 
@@ -120,7 +120,7 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
 
                     if (ticket !is null)
                         user_uri = ticket.user_uri;
-                    send(tid_condition, user_uri, ev_type, new_state, prev_state, types, individual.uri, event_id, op_id);
+                    send(tid_scripts, user_uri, ev_type, new_state, prev_state, types, individual.uri, event_id, op_id);
                 }
                 catch (Exception ex)
                 {
@@ -136,9 +136,9 @@ ResultCode trigger_script(Ticket *ticket, EVENT ev_type, Individual *individual,
 {
     try
     {
-        Tid tid_condition = context.getTid(P_MODULE.condition);
+        Tid tid_scripts = context.getTid(P_MODULE.scripts);
 
-        if (tid_condition != Tid.init)
+        if (tid_scripts != Tid.init)
         {
             Resource[ string ] rdfType;
             setMapResources(individual.resources.get(rdf__type, Resources.init), rdfType);
@@ -152,7 +152,7 @@ ResultCode trigger_script(Ticket *ticket, EVENT ev_type, Individual *individual,
             if (rdfType.anyExist(veda_schema__Event))
             {
                 // изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
-                send(tid_condition, CMD.RELOAD, subject_as_cbor, thisTid);
+                send(tid_scripts, CMD.RELOAD, subject_as_cbor, thisTid);
                 receive((bool){});
             }
 
@@ -166,7 +166,7 @@ ResultCode trigger_script(Ticket *ticket, EVENT ev_type, Individual *individual,
             if (ticket !is null)
                 user_uri = ticket.user_uri;
 
-            send(tid_condition, user_uri, ev_type, subject_as_cbor, prev_state, types, individual.uri, event_id, op_id);
+            send(tid_scripts, user_uri, ev_type, subject_as_cbor, prev_state, types, individual.uri, event_id, op_id);
 
             return ResultCode.OK;
         }

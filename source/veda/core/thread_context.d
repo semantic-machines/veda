@@ -6,7 +6,8 @@ module veda.core.thread_context;
 
 private
 {
-    import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path, std.json;
+    import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
+           std.json;
     //import vibe.data.json, vibe.core.log, vibe.http.client, vibe.stream.operations;
     import bind.xapian_d_header, bind.v8d_header;
     import io.mq_client;
@@ -95,7 +96,7 @@ class PThreadContext : Context
         is_traced_module[ P_MODULE.subject_manager ]  = true;
         is_traced_module[ P_MODULE.acl_manager ]      = true;
         is_traced_module[ P_MODULE.fulltext_indexer ] = true;
-        is_traced_module[ P_MODULE.condition ]        = true;
+        is_traced_module[ P_MODULE.scripts ]          = true;
 
         getConfiguration();
 
@@ -568,7 +569,7 @@ class PThreadContext : Context
                 string url = external_write_storage_url ~ "/authenticate";
                 try
                 {
-/*                	
+/*
                     requestHTTP(url ~ "?login=" ~ login ~ "&password=" ~ password,
                                 (scope req) {
                                     req.method = HTTPMethod.GET;
@@ -584,7 +585,7 @@ class PThreadContext : Context
                                     }
                                 }
                                 );
-*/                                
+ */
                 }
                 catch (Exception ex)
                 {
@@ -1019,7 +1020,7 @@ class PThreadContext : Context
                                         res.result = cast(ResultCode)result.statusCode;
                                     }
                                     );
-*/
+ */
                         if (res.result != ResultCode.Too_Many_Requests)
                             count_retry = max_count_retry;
 
@@ -1158,7 +1159,7 @@ class PThreadContext : Context
         long res = -1;
 
 
-        if (module_id == P_MODULE.condition)
+        if (module_id == P_MODULE.scripts)
         {
             if (external_js_vm_url !is null)
             {
@@ -1177,7 +1178,7 @@ class PThreadContext : Context
                                     //writeln("context: get_operation_state: #3 EXTERNAL ", text(module_id), ", url=", url, ",res=", res, " *", process_name);
                                 }
                                 );
-*/                                
+ */
                 }
                 catch (Exception ex)
                 {
@@ -1227,7 +1228,7 @@ class PThreadContext : Context
                         }
         }
  */
-        if (external_js_vm_url !is null && module_id == P_MODULE.condition)
+        if (external_js_vm_url !is null && module_id == P_MODULE.scripts)
         {
             for (int i = 0; i < 200; i++)
             {

@@ -241,11 +241,11 @@ void processed(Context context, bool is_load)
             //    context.reopen_ro_fulltext_indexer_db();
             try
             {
-                Tid tid_condition_manager = context.getTid(P_MODULE.condition);
-                if (tid_condition_manager != Tid.init)
+                Tid tid_scripts_manager = context.getTid(P_MODULE.scripts);
+                if (tid_scripts_manager != Tid.init)
                 {
                     core.thread.Thread.sleep(dur!("seconds")(1));
-                    send(tid_condition_manager, CMD.RELOAD, thisTid);
+                    send(tid_scripts_manager, CMD.RELOAD, thisTid);
                     receive((bool res) {});
                 }
             }
