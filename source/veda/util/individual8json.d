@@ -1,60 +1,21 @@
-module veda.core.util.individual8json;
+module veda.util.individual8json;
 
-import std.conv, std.stdio, std.json, std.datetime;
+import std.conv, std.stdio;
+import vibe.d;
 import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang;
 
 static LANG[ string ] Lang;
 static DataType[ string ] Resource_type;
 
-public string getString(ref JSONValue src, string key)
-{
-    JSONValue res = src[ key ];
-
-    if (res.type == JSON_TYPE.STRING)
-        return res.str;
-
-    return null;
-}
-
-public long getLong(ref JSONValue src, string key)
-{
-    JSONValue res = src[ key ];
-
-    if (res.type == JSON_TYPE.INTEGER)
-        return res.integer();
-
-    return 0;
-}
-
-public bool getBool(ref JSONValue src, string key)
-{
-    JSONValue res = src[ key ];
-
-    if (res.type == JSON_TYPE.TRUE)
-        return true;
-
-    return false;
-}
-
-public float getFloat(ref JSONValue src, string key)
-{
-    JSONValue res = src[ key ];
-
-    if (res.type == JSON_TYPE.FLOAT)
-        return res.floating();
-
-    return 0;
-}
-
-JSONValue individual_to_json(immutable(Individual)individual)
+Json individual_to_json(immutable(Individual)individual)
 {
 //    writeln ("\nINDIVIDUAL->:", individual);
-    JSONValue json;
+    Json json = Json.emptyObject;
 
     json[ "@" ] = individual.uri;
     foreach (property_name, property_values; individual.resources)
     {
-        JSONValue resources_json;
+        Json resources_json = Json.emptyArray;
         foreach (property_value; property_values)
             resources_json ~= resource_to_json(cast(Resource)property_value);
         json[ property_name ] = resources_json;
@@ -63,15 +24,15 @@ JSONValue individual_to_json(immutable(Individual)individual)
     return json;
 }
 
-JSONValue individual_to_json(Individual individual)
+Json individual_to_json(Individual individual)
 {
 //    writeln ("\nINDIVIDUAL->:", individual);
-    JSONValue json;
+    Json json = Json.emptyObject;
 
     json[ "@" ] = individual.uri;
     foreach (property_name, property_values; individual.resources)
     {
-        JSONValue resources_json;
+        Json resources_json = Json.emptyArray;
         foreach (property_value; property_values)
             resources_json ~= resource_to_json(cast(Resource)property_value);
         json[ property_name ] = resources_json;
@@ -80,20 +41,19 @@ JSONValue individual_to_json(Individual individual)
     return json;
 }
 
-Individual json_to_individual(ref JSONValue individual_json)
+Individual json_to_individual(const Json individual_json)
 {
 //    writeln ("\nJSON->:", individual_json);
     Individual individual = Individual.init;
 
-    foreach (string property_name, property_values; individual_json)
+    foreach (string property_name, ref const property_values; individual_json)
     {
         if (property_name == "@")
         {
-            individual.uri = property_name;
-            continue;
+            individual.uri = individual_json[ property_name ].get!string; continue;
         }
         Resource[] resources = Resource[].init;
-        foreach (size_t index, property_value; property_values)
+        foreach (property_value; property_values)
             resources ~= json_to_resource(property_value);
         individual.resources[ property_name ] = resources;
     }
@@ -101,11 +61,11 @@ Individual json_to_individual(ref JSONValue individual_json)
     return individual;
 }
 
-JSONValue resource_to_json(Resource resource)
+Json resource_to_json(Resource resource)
 {
-    JSONValue resource_json;
+    Json   resource_json = Json.emptyObject;
 
-    string    data = resource.data;
+    string data = resource.data;
 
     resource_json[ "type" ] = text(resource.type);
 
@@ -145,61 +105,65 @@ JSONValue resource_to_json(Resource resource)
 //	writeln ("@v #r->j #2 val=", st.toISOExtString());
     }
     else
-        resource_json[ "data" ] = JSONValue.init;
+        resource_json[ "data" ] = Json.undefined;
 
     return resource_json;
 }
 
-Resource json_to_resource(JSONValue resource_json)
+Resource json_to_resource(const Json resource_json)
 {
     Resource resource = Resource.init;
 
     DataType type;
 
-    if (resource_json[ "type" ].type == JSON_TYPE.INTEGER)
-        type = cast(DataType)resource_json.getLong("type");
+    if (resource_json[ "type" ].type is Json.Type.Int)
+        type = cast(DataType)resource_json[ "type" ].get!long;
     else
-        type = Resource_type.get(resource_json.getString("type"), DataType.String);
+        type = Resource_type.get(resource_json[ "type" ].get!string, DataType.String);
 
     auto data_type = resource_json[ "data" ].type;
 
     if (type == DataType.String)
     {
-        if (resource_json[ "lang" ].type == JSON_TYPE.STRING)
-            resource.lang = Lang.get(resource_json.getString("lang"), Lang[ "NONE" ]);
-        resource.data = resource_json.getString("data");
+        if (resource_json[ "lang" ].type is Json.Type.string)
+            resource.lang = Lang.get(resource_json[ "lang" ].get!string, Lang[ "NONE" ]);
+        resource.data = resource_json[ "data" ].get!string;
     }
     else if (type == DataType.Boolean)
     {
-        if (data_type == JSON_TYPE.TRUE || data_type == JSON_TYPE.FALSE)
+        if (data_type is Json.Type.Bool)
         {
-            resource = resource_json.getBool("data");
+            bool bb = resource_json[ "data" ].get!bool;
+            if (bb == true)
+                resource = true;
+            else
+                resource = false;
         }
     }
     else if (type == DataType.Uri)
     {
-        resource.data = resource_json.getString("data");
+        resource.data = resource_json[ "data" ].get!string;
     }
     else if (type == DataType.Decimal)
     {
-        if (data_type == JSON_TYPE.FLOAT)
+        if (data_type is Json.Type.Float)
         {
-            resource = decimal(resource_json.getFloat("data"));
+            resource = decimal(resource_json[ "data" ].get!double);
         }
-        else if (data_type == JSON_TYPE.INTEGER)
+        else if (data_type is Json.Type.Int)
         {
-            resource = resource_json.getLong("data");
+            resource = resource_json[ "data" ].get!long;
         }
     }
     else if (type == DataType.Integer)
     {
-        resource = resource_json.getLong("data");
+        resource = resource_json[ "data" ].get!long;
     }
     else if (type == DataType.Datetime)
     {
         try
         {
-            string val = resource_json.getString("data");
+            string val = resource_json[ "data" ].get!string;
 //	    writeln ("@v j->r #0 ", val);
             long   tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
             resource = tm;

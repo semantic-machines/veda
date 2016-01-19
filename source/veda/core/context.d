@@ -36,7 +36,7 @@ public enum P_MODULE : byte
     statistic_data_accumulator = 5,
 
     /// Запуск внешних скриптов
-    condition                  = 6,
+    scripts                    = 6,
 
     /// Сохранение накопленных данных в полнотекстовом индексаторе
     commiter                   = 7,
@@ -50,6 +50,8 @@ public enum P_MODULE : byte
     zmq_listener               = 11,
 
     fanout                     = 12,
+
+    nanomsg_listener           = 13,
 
     nop                        = 99
 }
