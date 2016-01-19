@@ -6,8 +6,8 @@ module veda.core.thread_context;
 
 private
 {
-    import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path;
-    import vibe.data.json, vibe.core.log, vibe.http.client, vibe.stream.operations;
+    import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path, std.json;
+    //import vibe.data.json, vibe.core.log, vibe.http.client, vibe.stream.operations;
     import bind.xapian_d_header, bind.v8d_header;
     import io.mq_client;
     import util.container, util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, veda.core.util.individual8json;
@@ -568,6 +568,7 @@ class PThreadContext : Context
                 string url = external_write_storage_url ~ "/authenticate";
                 try
                 {
+/*                	
                     requestHTTP(url ~ "?login=" ~ login ~ "&password=" ~ password,
                                 (scope req) {
                                     req.method = HTTPMethod.GET;
@@ -583,6 +584,7 @@ class PThreadContext : Context
                                     }
                                 }
                                 );
+*/                                
                 }
                 catch (Exception ex)
                 {
@@ -992,7 +994,7 @@ class PThreadContext : Context
 
                 //writeln("context:store_individual use EXTERNAL #3, url=", url, " ", process_name);
 
-                Json req_body = Json.emptyObject;
+                JSONValue req_body;
                 req_body[ "ticket" ]         = ticket.id;
                 req_body[ "individual" ]     = individual_to_json(*indv);
                 req_body[ "prepare_events" ] = prepare_events;
@@ -1006,7 +1008,7 @@ class PThreadContext : Context
                     count_retry++;
                     try
                     {
-                        requestHTTP(url,
+/*                        requestHTTP(url,
                                     (scope req) {
                                         req.method = HTTPMethod.PUT;
                                         req.writeJsonBody(req_body);
@@ -1017,7 +1019,7 @@ class PThreadContext : Context
                                         res.result = cast(ResultCode)result.statusCode;
                                     }
                                     );
-
+*/
                         if (res.result != ResultCode.Too_Many_Requests)
                             count_retry = max_count_retry;
 
@@ -1165,7 +1167,7 @@ class PThreadContext : Context
 //                string url = "http://127.0.0.1:8555" ~ "/get_operation_state?module_id=" ~ text(cast(int)module_id);
                 try
                 {
-                    requestHTTP(url,
+/*                    requestHTTP(url,
                                 (scope req) {
                                     req.method = HTTPMethod.GET;
                                 },
@@ -1175,6 +1177,7 @@ class PThreadContext : Context
                                     //writeln("context: get_operation_state: #3 EXTERNAL ", text(module_id), ", url=", url, ",res=", res, " *", process_name);
                                 }
                                 );
+*/                                
                 }
                 catch (Exception ex)
                 {

@@ -50,6 +50,8 @@ public enum P_MODULE : byte
     zmq_listener               = 11,
 
     fanout                     = 12,
+    
+    nanomsg_listener		   = 13,
 
     nop                        = 99
 }

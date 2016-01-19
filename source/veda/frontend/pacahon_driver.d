@@ -4,7 +4,7 @@ import std.stdio, std.datetime, std.conv, std.string, std.variant, std.concurren
 import vibe.data.json;
 import veda.core.server, veda.core.context, veda.core.thread_context, veda.core.know_predicates, veda.core.define;
 import veda.type, veda.onto.onto, onto.lang, veda.onto.individual, veda.onto.resource, veda.core.log_msg;
-import veda.core.util.cbor8json, veda.core.util.individual8json;
+import veda.util.cbor8json, veda.util.individual8json;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;

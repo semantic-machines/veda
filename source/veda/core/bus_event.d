@@ -3,8 +3,8 @@
  */
 module veda.core.bus_event;
 
-private import std.outbuffer, std.stdio, std.concurrency, std.datetime, std.conv;
-private import vibe.data.json, vibe.core.log, vibe.http.client, vibe.stream.operations;
+private import std.outbuffer, std.stdio, std.concurrency, std.datetime, std.conv, std.json;
+//private import vibe.data.json, vibe.core.log, vibe.http.client, vibe.stream.operations;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import util.container, util.logger, util.utils, veda.core.util.cbor8individual, veda.core.util.individual8json, veda.core.util.cbor8json;
 private import veda.type, veda.core.know_predicates, veda.core.context, veda.core.define;
@@ -53,12 +53,12 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
 
         if (external_js_vm_url !is null)
         {
-            Json req_body = Json.emptyObject;
+            JSONValue req_body;
             try
             {
-                Json indv_json = individual_to_json(*individual);
+                JSONValue indv_json = individual_to_json(*individual);
 
-                Json prev_state_json = Json.emptyObject;
+                JSONValue prev_state_json;
 
                 if (prev_state !is null)
                     cbor2json(&prev_state_json, prev_state);
@@ -77,7 +77,7 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
                 string url = external_js_vm_url ~ "/trigger";
 
                 // writeln ("EXECUTE SCRIPT USE EXTERNAL: #1  uri=", individual.uri, ", url=", url, " *", process_name);
-
+/*
                 requestHTTP(url,
                             (scope req) {
                                 req.method = HTTPMethod.PUT;
@@ -87,6 +87,7 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
                                 //logInfo("Response: %s", res.bodyReader.readAllUTF8());
                             }
                             );
+*/                            
                 //  writeln ("EXECUTE SCRIPT USE EXTERNAL: #E  uri=", individual.uri, ", url=", url, " *", process_name);
             }
             catch (Exception ex)

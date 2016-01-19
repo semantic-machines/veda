@@ -5,7 +5,7 @@ import core.vararg, core.stdc.stdarg;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
 import veda.pacahon_driver, veda.type, veda.core.context, veda.core.know_predicates, veda.core.define, veda.core.log_msg;
-import veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang, veda.core.util.individual8json;
+import veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang, veda.util.individual8json;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
