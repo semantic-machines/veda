@@ -24,6 +24,7 @@
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
 #  owl:versionInfo "1.0" ;
+  v-s:loadPriority 1 ;
 .
 
 #####################################################
@@ -457,7 +458,7 @@ v-a:Event_4
 	/* Available variables:
 	 * ticket = superuser ticket
 	 * document = captured document
-	 * user_uri = user who's actions triggered event
+	 * user_uri = user whose actions triggered event
 	 * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
 	 */
 	

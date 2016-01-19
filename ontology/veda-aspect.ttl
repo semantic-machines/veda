@@ -29,6 +29,7 @@
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
 #  owl:versionInfo "1.1" ;
+  v-s:loadPriority 9 ;
 .
 
 v-asp:Aspect 

@@ -25,6 +25,7 @@
   owl:imports rdfs: ;
   owl:imports owl: ;
 #  owl:DversionInfo "1.2" ;
+  v-s:loadPriority 9 ;
 .
 
 v-df:ApprovalTask

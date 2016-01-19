@@ -21,6 +21,17 @@
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
 #  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+v-s:loadPriority
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain owl:Ontology ;
+  rdfs:label "ontology load priority"@en ;
+  rdfs:label "приоритет загрузки онтологии"@ru ;
+  rdfs:comment "Приоритет загрузки используется сервером при чтении ttl-файлов для определения порядка загрузки онтологий в базу данных"@ru ;
+  rdfs:comment "Load proprity is used by server when reading ttl files to determine ontology load sequence to DB"@en ;
+  rdfs:range xsd:integer ;
 .
 
 v-s:AND

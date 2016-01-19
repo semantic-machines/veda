@@ -16,6 +16,7 @@
   rdfs:label "Mondi ontology. Dictionary - YesNo"@en ;
   rdfs:label "Онтология Монди. Справочник Да Нет"@ru ;
   owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
+  v-s:loadPriority 10 ;
 .
 
 # Да нет

@@ -17,6 +17,7 @@
   owl:imports rdfs: ;
   owl:imports owl: ;
 #  owl:DversionInfo "1.2" ;
+  v-s:loadPriority 7 ;
 .
 v-wf:Net
 	rdf:type owl:Class ;

@@ -25,6 +25,7 @@
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
 #  owl:versionInfo "0.2" ;
+  v-s:loadPriority 9 ;
 .
 
 ########## SEARCH FUNCTION ###########

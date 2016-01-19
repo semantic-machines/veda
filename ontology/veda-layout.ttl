@@ -22,6 +22,7 @@
 	owl:imports rdfs: ;
 	owl:imports <http://www.w3.org/2002/07/owl> ;
 	#owl:versionInfo "0.2" ;
+	v-s:loadPriority 9 ;
 .
 
 ### MAIN PAGE ### 
@@ -176,9 +177,11 @@ v-l:MenuItemViewTemplate
 			var lnk = $("#lnk", stcTmpl);
 			lnk.attr("href", individual["v-l:staticLink"][0])
 			   .click(function (e) {
-					e.preventDefault();
-					var action = new Function("veda", individual["v-l:action"][0]);
-					action(veda);
+					if (individual.hasValue("v-l:action")) {
+						e.preventDefault();
+						var action = new Function("veda", individual["v-l:action"][0]);
+						action(veda);
+					}
 			   });
 		} else {
 			stcTmpl.remove();

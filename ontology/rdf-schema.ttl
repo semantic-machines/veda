@@ -121,4 +121,6 @@ rdfs: a owl:Ontology ;
     rdfs:label "The RDF Schema vocabulary (RDFS)"@en ;
     rdfs:label "Словарь RDF Schema (RDFS)"@ru ;
     owl:versionInfo "1.1" ;
-    rdfs:seeAlso <http://www.w3.org/2000/01/rdf-schema-more> .
+    rdfs:seeAlso <http://www.w3.org/2000/01/rdf-schema-more> ;
+    v-s:loadPriority 4 ;
+.
