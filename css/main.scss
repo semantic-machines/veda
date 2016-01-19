@@ -12,6 +12,11 @@ $base-font-weight: 400;
 $small-font-size:  $base-font-size * 0.875;
 $base-line-height: 1.5;
 
+body {
+    background:  #1a2d4a url("../img/background2.png");
+    base-background-repeat: repeat-x;
+}
+
 $spacing-unit:     30px;
 
 $text-color:       #111;
