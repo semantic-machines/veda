@@ -1,7 +1,57 @@
 body {
   overflow-x: hidden;
   font-family:"Ubuntu",Tahoma,"Helvetica Neue",Helvetica,Arial,sans-serif;
-  /*background-color: #fcfcfc;*/
+  color: #233333;
+}
+
+/* Gray tooltip */
+.tooltip-inner {
+  background-color: #333333;
+}
+.tooltip.top .tooltip-arrow {
+  border-top-color: #333333;
+}
+.tooltip.top-left .tooltip-arrow {
+  border-top-color: #333333;
+}
+.tooltip.top-right .tooltip-arrow {
+  border-top-color: #333333;
+}
+.tooltip.right .tooltip-arrow {
+  border-right-color: #333333;
+}
+.tooltip.left .tooltip-arrow {
+  border-left-color: #333333;
+}
+.tooltip.bottom .tooltip-arrow {
+  border-bottom-color: #333333;
+}
+.tooltip.bottom-left .tooltip-arrow {
+  border-bottom-color: #333333;
+}
+.tooltip.bottom-right .tooltip-arrow {
+  border-bottom-color: #333333;
+}
+
+em {
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-style: normal;
+  display: inline-block;
+}
+em::first-letter {
+  color: #711;
+  /*color: #ec6607;*/
+  color: #763304;
+  /*color: #591303;*/
+  font-weight: bold;
+  font-size: 140%;
+  font-variant: small-caps;
+  line-height: 50%;
+}
+
+.nav-right > li {
+  float: right;
 }
 
 #credentials {
@@ -19,6 +69,9 @@ body {
 #credentials input#password {
   border-top-right-radius: 0;
   border-top-left-radius: 0;
+}
+#main {
+  margin-bottom:40px;
 }
 .huge {
   font-size: 32px;
@@ -40,10 +93,10 @@ footer {
 .navbar .nav {
   margin:2px 0px;
 }
-.navbar-brand {
+/*.navbar-brand {
   font-size: 20px;
   padding: 0px 15px;
-}
+}*/
 .navbar a, .navbar .navbar-text  {
   color: #666;
 }
@@ -114,10 +167,27 @@ fieldset[disabled] .form-control {
   padding: 0;
 }
 
+@media (min-width: 768px) {
+  .modal-sm {
+    width: 300px;
+  }
+}
+@media (min-width: 992px) and (max-width: 1100) {
+  .modal-lg {
+    width: 900px;
+  }
+}
+@media (min-width: 1250px) {
+  .modal-lg {
+    width: 1200px;
+  }
+}
+
+
 /* breadcrumb1 */
 
 .breadcrumb1 { 
-	margin: 20px 0px 10px -20px;
+	margin: 20px 0px 10px -40px;
 	list-style: none; 
 	overflow: hidden; 
 }
@@ -125,10 +195,10 @@ fieldset[disabled] .form-control {
 	float: left; 
 }
 .breadcrumb1 li a {
-	color: black;
+	color: white;
 	text-decoration: none; 
-	padding: 10px 0 10px 55px;
-	background: lightgreen;                   /* fallback color */
+	padding: 10px 10px 10px 55px;
+	background: #27ae60;
 	position: relative; 
 	display: block;
 	float: left;
@@ -136,78 +206,84 @@ fieldset[disabled] .form-control {
 .breadcrumb1 li.active a {
 	color: white;
 	text-decoration: none; 
-	padding: 10px 0 10px 55px;
-	background: darkgreen;                   /* fallback color */
+	padding: 10px 10px 10px 55px;
+	background: #e74c3c;
 	position: relative; 
 	display: block;
 	float: left;
 }
 .breadcrumb1 li.disabled a {
 	color: dimgray;
-	text-decoration: none; 
-	padding: 10px 0 10px 55px;
-	background: lightgray;                   /* fallback color */
+	text-decoration: none;
+	padding: 10px 10px 10px 55px;
+	background: lightgray;
 	position: relative; 
 	display: block;
 	float: left;
 }
-.breadcrumb1 li a:after { 
-	content: " "; 
-	display: block; 
-	width: 0; 
-	height: 0;
-	border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
-	border-bottom: 50px solid transparent;
-	border-left: 30px solid lightgreen;
-	position: absolute;
-	top: 50%;
-	margin-top: -50px; 
-	left: 100%;
-	z-index: 2; 
-}	
-.breadcrumb1 li.active a:after { 
-	content: " "; 
-	display: block; 
-	width: 0; 
-	height: 0;
-	border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
-	border-bottom: 50px solid transparent;
-	border-left: 30px solid darkgreen;
-	position: absolute;
-	top: 50%;
-	margin-top: -50px; 
-	left: 100%;
-	z-index: 2; 
-}	
-.breadcrumb1 li.disabled a:after { 
-	content: " "; 
-	display: block; 
-	width: 0; 
-	height: 0;
-	border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
-	border-bottom: 50px solid transparent;
-	border-left: 30px solid lightgray;
-	position: absolute;
-	top: 50%;
-	margin-top: -50px; 
-	left: 100%;
-	z-index: 2; 
-}	
-.breadcrumb1 li a:before { 
-	content: " "; 
-	display: block; 
-	width: 0; 
-	height: 0;
-	border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
-	border-bottom: 50px solid transparent;
-	border-left: 30px solid white;
-	position: absolute;
-	top: 50%;
-	margin-top: -50px; 
-	margin-left: 6px;
-	left: 100%;
-	z-index: 1; 
-}	
+@media (min-width: 1024px) {
+	.breadcrumb1 li a:after { 
+		content: " "; 
+		display: block; 
+		width: 0; 
+		height: 0;
+		border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
+		border-bottom: 50px solid transparent;
+		border-left: 30px solid #27ae60;
+		position: absolute;
+		top: 50%;
+		margin-top: -50px; 
+		left: 100%;
+		z-index: 2; 
+		overflow: hidden; 
+	}	
+	.breadcrumb1 li.active a:after { 
+		content: " "; 
+		display: block; 
+		width: 0; 
+		height: 0;
+		border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
+		border-bottom: 50px solid transparent;
+		border-left: 30px solid #e74c3c;
+		position: absolute;
+		top: 50%;
+		margin-top: -50px; 
+		left: 100%;
+		z-index: 2; 
+		overflow: hidden; 	
+	}	
+	.breadcrumb1 li.disabled a:after { 
+		content: " "; 
+		display: block; 
+		width: 0; 
+		height: 0;
+		border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
+		border-bottom: 50px solid transparent;
+		border-left: 30px solid lightgray;
+		position: absolute;
+		top: 50%;
+		margin-top: -50px; 
+		left: 100%;
+		z-index: 2; 
+		overflow: hidden; 	
+	}	
+	.breadcrumb1 li a:before { 
+		content: " "; 
+		display: block; 
+		width: 0; 
+		height: 0;
+		border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
+		border-bottom: 50px solid transparent;
+		border-left: 30px solid white;
+		position: absolute;
+		top: 50%;
+		margin-top: -50px; 
+		margin-left: 6px;
+		left: 100%;
+		z-index: 1; 
+		overflow: hidden; 	
+	}	
+}
 .breadcrumb1 li:first-child a {
 	padding-left: 20px;
 	border-top-left-radius: 4px;
@@ -215,22 +291,22 @@ fieldset[disabled] .form-control {
 }
 .breadcrumb1 li:last-child a {
 	padding-right: 20px;
-	border-top-right-radius: 4px;
-	border-bottom-right-radius: 4px;
+/*	border-top-right-radius: 4px;
+	border-bottom-right-radius: 4px;*/
 }
 .breadcrumb1 li a:hover { 
 	color:white;
-	background: green; 
+	background: #2ecc71; 
 }
 .breadcrumb1 li a:hover:after { 
-	border-left-color: green!important; 
+	border-left-color: #2ecc71!important; 
 }
 .breadcrumb1 li.active a:hover { 
 	color:white;
-	background: darkgreen; 
+	background: #e74c3c; 
 }
 .breadcrumb1 li.active a:hover:after { 
-	border-left-color: darkgreen!important; 
+	border-left-color: #e74c3c!important; 
 }
 .breadcrumb1 li.disabled a:hover { 
 	color: dimgray;
@@ -382,196 +458,11 @@ veda-control {
   top:0px; 
   right:0px; 
   z-index:100;
+  padding:inherit;
 }
 .red-outline {
   outline: 3px dashed #faa!important;
   outline-offset: 3px!important;
-}
-
-/* Template elements visibility in different modes. Works up to 10 levels deep for embedded templates */
-
-.mode-view .view, 
-.mode-edit .edit, 
-.mode-search .search,
-
-[class*="mode-"] .mode-view .view, 
-[class*="mode-"] .mode-edit .edit, 
-[class*="mode-"] .mode-search .search,
-
-[class*="mode-"] [class*="mode-"] .mode-view .view, 
-[class*="mode-"] [class*="mode-"] .mode-edit .edit, 
-[class*="mode-"] [class*="mode-"] .mode-search .search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .search
-{
-  visibility: visible;
-  position: relative;
-}
-
-.mode-view .-view,
-.mode-edit .-edit, 
-.mode-search .-search ,
-
-[class*="mode-"] .mode-view .-view, 
-[class*="mode-"] .mode-edit .-edit, 
-[class*="mode-"] .mode-search .-search ,
-
-[class*="mode-"] [class*="mode-"] .mode-view .-view, 
-[class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
-[class*="mode-"] [class*="mode-"] .mode-search .-search ,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search ,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view .-view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit .-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search .-search
-{
-  visibility: hidden;
-  position: absolute;
-}
-
-.mode-view   [class*="mode-"] > #rel-actions.view, 
-.mode-edit   [class*="mode-"] > #rel-actions.edit, 
-.mode-search [class*="mode-"] > #rel-actions.search,
-
-[class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
-[class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
-[class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search,
-
-[class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
-[class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
-[class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.search
-{
-  visibility: visible;
-  position: relative;
-}
-
-.mode-view   [class*="mode-"] > #rel-actions.-view, 
-.mode-edit   [class*="mode-"] > #rel-actions.-edit, 
-.mode-search [class*="mode-"] > #rel-actions.-search,
-
-[class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
-[class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
-[class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search,
-
-[class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
-[class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
-[class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search,
-
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-view   [class*="mode-"] > #rel-actions.-view, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-edit   [class*="mode-"] > #rel-actions.-edit, 
-[class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] [class*="mode-"] .mode-search [class*="mode-"] > #rel-actions.-search
-{
-  visibility: hidden;
-  position: absolute;
-}
-
-.view > #prop-actions.view,
-.edit > #prop-actions.edit,
-.search > #prop-actions.search
-{
-  visibility: visible;
-  position: relative;
-}
-
-.view > #prop-actions.-view,
-.edit > #prop-actions.-edit,
-.search > #prop-actions.-search
-{
-  visibility: hidden;
-  position: absolute;
 }
 
 
@@ -634,6 +525,10 @@ veda-control {
 .w_active {
 	color: #FF0000;
 	border:2px solid #FF0000;	
+}
+
+.jsplumb-drag-selected {
+	border:2px solid #FFA500;	
 }
 
 .aLabel {
@@ -718,15 +613,13 @@ path {
 }
 
 .workflow-wrapper {
-	height: 100%;
-	overflow-x:hidden;
-    overflow-y:hidden;
+    height: 100%;
 }
 
 .workflow-canvas-wrapper {	
-    height: -moz-calc(100% - 45px);
-    height: -webkit-calc(100% - 45px);
-    height: calc(100% - 45px);
+    height: -moz-calc(100% - 65px);
+    height: -webkit-calc(100% - 65px);
+    height: calc(100% - 65px);
 	border: 1px solid #ddd;
     border-radius: 5px;	
 	overflow-x:hidden;
@@ -774,5 +667,11 @@ svg.process-path-highlight path
 .properties-editor {
 	
 /*	width: auto 100% !important; */
+}
+
+.ui-dialog {
+	background-color:#FFFFFF; 
+	border: 1px solid black;
+	text-align:center;
 }
 /* [END] NET EDITOR */

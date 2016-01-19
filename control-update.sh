@@ -1,3 +1,5 @@
+# Собирает и запускает
+
 echo "= UPDATE = "
 date
 if wget -q -O - "$@" https://api.travis-ci.org/repos/semantic-machines/veda/cc.xml?branch=master | grep 'lastBuildStatus="Success"'; then

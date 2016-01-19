@@ -12,7 +12,6 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
-@prefix mnd-s-sa: <http://semantic-machines.com/veda/mondi-schema-safety-audit/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://semantic-machines.com/veda/veda-index>
@@ -24,6 +23,7 @@
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "3.7" ;
+  v-s:loadPriority 0 ;
 .
 vdi:ClassIndex
   rdf:type owl:Class ;
@@ -94,13 +94,6 @@ vdi:index_02
   vdi:indexed_to "not-indexed" ;
 .
 
-vdi:index_0
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass mnd-s-sa:SafetyAudit ;
-  vdi:forProperty mnd-s-sa:recipient ;
-  vdi:inherited_index vdi:index_2 ;
-  vdi:inherited_index vdi:index_3 ;
-.
 vdi:index_1
   rdf:type vdi:ClassIndex ;
   vdi:forProperty v-s:author ;

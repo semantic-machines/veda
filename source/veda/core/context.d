@@ -9,11 +9,9 @@
 module veda.core.context;
 
 private import std.concurrency, std.datetime;
-private import type;
 private import util.container;
 private import search.vel;
-private import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.define;
-
+private import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.define;
 private import bind.v8d_header;
 
 /// Имена процессов
@@ -38,7 +36,7 @@ public enum P_MODULE : byte
     statistic_data_accumulator = 5,
 
     /// Запуск внешних скриптов
-    condition                  = 6,
+    scripts                    = 6,
 
     /// Сохранение накопленных данных в полнотекстовом индексаторе
     commiter                   = 7,
@@ -46,15 +44,14 @@ public enum P_MODULE : byte
     /// Вывод статистики
     print_statistic            = 8,
 
-    /// Межпроцессные сигналы
-    interthread_signals        = 9,
-
     /// Загрузка из файлов
     file_reader                = 10,
 
     zmq_listener               = 11,
 
     fanout                     = 12,
+
+    nanomsg_listener           = 13,
 
     nop                        = 99
 }
@@ -87,6 +84,9 @@ public enum ResultCode
 
     /// 422
     Unprocessable_Entity  = 422,
+
+    /// 429
+    Too_Many_Requests     = 429,
 
     /// 471
     Ticket_expired        = 471,
@@ -180,17 +180,9 @@ interface Context
 
     int[ string ] get_key2slot();
 
-//    void store_subject(Subject ss, bool prepareEvents = true);
-    public bool check_for_reload(string interthread_signal_id, void delegate() load);
     public bool ft_check_for_reload(void delegate() load);
+    public bool acl_check_for_reload(void delegate() load);
 
-//    /////////////////////////////////////////// <- oykumena -> ///////////////////////////////////////////////
-
-    void push_signal(string key, long value);
-    void push_signal(string key, string value);
-    long look_integer_signal(string key);
-    string look_string_signal(string key);
-    void set_reload_signal_to_local_thread(string interthread_signal_id);
     bool authorize(string uri, Ticket *ticket, ubyte request_acess);
     Individual[] get_individuals_via_query(Ticket *ticket, string query_str);
     string get_individual_from_storage(string uri);
@@ -205,8 +197,7 @@ interface Context
     // *************************************************** external API ? *********************************** //
     ref string[ string ] get_prefix_map();
     void add_prefix_map(ref string[ string ] arg);
-    long get_last_update_time();
-
+    public void stat(CMD command_type, ref StopWatch sw, string func = __FUNCTION__) nothrow;
     // *************************************************** external API *********************************** //
     /**
        Выполнить скрипт
@@ -254,7 +245,7 @@ interface Context
        Returns:
                 список авторизованных uri
      */
-    public immutable(string)[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str = null);
+    public immutable(string)[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str, int top, int limit);
 
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_subject_storage_db();
@@ -376,6 +367,20 @@ interface Context
 //////////////////////////////////////////////////////////////////////////
 
 import core.atomic;
+
+private shared long count_onto_update = 0;
+
+public void inc_count_onto_update(long delta = 1)
+{
+    atomicOp !"+=" (count_onto_update, delta);
+}
+
+public long get_count_onto_update()
+{
+    return atomicLoad(count_onto_update);
+}
+
+///
 
 private shared long count_put = 0;
 

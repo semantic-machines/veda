@@ -177,7 +177,7 @@ veda.Module(function (veda) { "use strict";
 			
 			set: function (value) { 
 				self._.sync = false;
-				self._.values[property_uri] = value.filter(function (i) { return !!i; });
+				self._.values[property_uri] = value.filter(function (i) { return i !== null; });
 				self._.individual[property_uri] = self._.values[property_uri].concat(filteredStrings).map( serializer );
 				if (setterCB) setterCB(self._.values[property_uri]);
 				else self.trigger("individual:propertyModified", property_uri, value);
@@ -290,19 +290,34 @@ veda.Module(function (veda) { "use strict";
 			if (property_uri === "v-s:deleted") return;
 			self.defineProperty(property_uri);
 		});
-		if (self._.init) self.init();
 		if (self._.cache) veda.cache[self.id] = self;
+		if (self._.init) self.init();
 		self.trigger("individual:afterLoad", self);
 		return this;
 	};
 
 	/**
 	 * @method
-	 * Save current individual to database
+	 * Save current individual to database (with validation and adding new version)
 	 */
 	proto.save = function() {
 		var self = this;
+		self.valid = true;
 		self.trigger("individual:beforeSave");
+		if (!self.valid) return false;
+		return this.saveIndividual(true);
+	}
+	
+	/**
+	 * @method
+	 * Save current individual without validation and without adding new version
+	 */
+	proto.draft = function() {
+		return this.saveIndividual(false);
+	}
+		
+	proto.saveIndividual = function(createVersion) {
+		var self = this;
 		// Do not save individual to server if nothing changed
 		//if (self._.sync) return;
 		Object.keys(self._.individual).reduce(function (acc, property_uri) {
@@ -313,10 +328,62 @@ veda.Module(function (veda) { "use strict";
 			if (!acc[property_uri].length) delete acc[property_uri];
 			return acc;
 		}, self._.individual);
-		put_individual(veda.ticket, self._.individual);
+		put_individual(veda.ticket, self._.individual);		
 		self._.original_individual = JSON.stringify(self._.individual);
 		self._.sync = true;
+		if (self._.cache) veda.cache[self.id] = self;
 		self.trigger("individual:afterSave", self._.original_individual);
+		
+		if (createVersion && (self.hasValue('v-s:isDraftOf') || self.is('v-s:Versioned'))) 
+		{
+			// Before
+			var previousId = self.hasValue('v-s:isDraftOf')?
+									(self['v-s:isDraftOf'][0].hasValue('v-s:previousVersion')?
+									 self['v-s:isDraftOf'][0]['v-s:previousVersion'][0].id:
+									 null):
+									(self.hasValue('v-s:previousVersion')?
+									 self['v-s:previousVersion'][0].id:
+									 null);
+			var actualId = self.hasValue('v-s:isDraftOf')?self['v-s:isDraftOf'][0].id:self.id;
+			var versionId = (actualId==self.id)?veda.Util.genUri():self.id;
+			
+			// After
+			var actual = self.clone();						
+			var version = self.clone();
+			var previous = previousId!=null?new veda.IndividualModel(previousId):null;
+			actual.id = actualId;
+			version.id = versionId;
+			
+			// Save draft as actual version
+			actual['v-s:isDraftOf'] = [];
+			actual['v-s:hasDraft'] = [];
+			actual['v-s:previousVersion'] = [version];
+			actual['v-s:actualVersion'] = [actual];
+			actual['v-s:nextVersion'] = [];
+			actual.saveIndividual(false);
+				
+			// Save draft as old version
+			version['v-s:isDraftOf'] = [];
+			version['v-s:hasDraft'] = [];
+			if (previous!=null) {
+				version['v-s:previousVersion'] = [previous];
+			} else {
+				version['v-s:previousVersion'] = [];
+			}
+			version['v-s:actualVersion'] = [actual];
+			version['v-s:nextVersion'] = [actual];
+			version.saveIndividual(false);
+			
+			// Update draft version
+			if (previous!=null) 
+			{
+				previous['v-s:nextVersion'] = [version];
+				previous.saveIndividual(false);
+			}
+			this.redirectToIndividual = actual;
+			this.redirectToMode = 'view';
+		}
+
 		return this;
 	};
 
@@ -349,7 +416,7 @@ veda.Module(function (veda) { "use strict";
 	proto.delete = function () {
 		this.trigger("individual:beforeDelete");
 		this["v-s:deleted"] = [new Boolean(true)];
-		this.save();
+		this.saveIndividual(false);
 		this.trigger("individual:afterDelete");
 		return this;
 	};
@@ -361,7 +428,7 @@ veda.Module(function (veda) { "use strict";
 	proto.recover = function () {
 		this.trigger("individual:beforeRecover");
 		this["v-s:deleted"] = [];
-		this.save();
+		this.saveIndividual(false);
 		this.trigger("individual:afterRecover");
 		return this;
 	};
@@ -420,19 +487,10 @@ veda.Module(function (veda) { "use strict";
 	 * Clone individual with different (generated) id
 	 * @return {veda.IndividualModel} clone of this individual with different id.
 	 */
-	proto.clone = function () {
-		var self = this;
-		var clone = new veda.IndividualModel();
-		Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
-			if (property_uri === "rdf:type") return;
-			if (property_uri === "v-s:deleted") return;
-			clone.defineProperty(property_uri, undefined, function (values) {
-				clone.trigger("individual:propertyModified", property_uri, values);
-			});
-			clone[property_uri] = self[property_uri].slice(0);
-		});
-		clone["rdf:type"] = self["rdf:type"].slice(0);
-		clone["v-s:deleted"] = self["v-s:deleted"].slice(0);
+	proto.clone = function (uri) {
+		var individual = JSON.parse( JSON.stringify(this._.individual) );
+		individual["@"] = veda.Util.genUri();
+		var clone = new veda.IndividualModel(individual); 
 		return clone;
 	};
 

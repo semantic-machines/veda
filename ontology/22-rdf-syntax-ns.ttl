@@ -3,6 +3,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 
 rdf:Alt a rdfs:Class ;
     rdfs:label "Alt" ;
@@ -116,5 +117,7 @@ rdf: a owl:Ontology ;
     dc:title "The RDF Vocabulary (RDF)" ;
     rdfs:label "The RDF Vocabulary (RDF)"@en ;
     rdfs:label "Словарь RDF"@ru ;
-    rdfs:seeAlso <http://www.w3.org/2000/01/rdf-schema-more> .
+    rdfs:seeAlso <http://www.w3.org/2000/01/rdf-schema-more> ;
+    v-s:loadPriority 3 ;
+    .
 

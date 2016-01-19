@@ -16,7 +16,7 @@ veda.Module(function (veda) { "use strict";
 		"owl:deprecated",
 		"owl:differentFrom",
 		"owl:members",
-		"owl:sameAs",
+		//"owl:sameAs",
 		"owl:topObjectProperty",
 		"owl:topDataProperty",
 		"owl:versionInfo",
@@ -57,6 +57,7 @@ veda.Module(function (veda) { "use strict";
 			} else {
 				// Get ontology from local storage
 				Object.keys(storage).map(function (key) {
+					if (key === "v-g:OntoVsn") return;
 					var individual = JSON.parse(storage[key]);
 					self[key] = new veda.IndividualModel( individual, undefined, undefined, undefined, true, false );
 				});

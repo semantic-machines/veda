@@ -1,17 +1,11 @@
 module veda.storage_rest;
 
-import vibe.d;
-import veda.pacahon_driver;
-
 import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file;
-import core.vararg;
-import core.stdc.stdarg;
-import vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
+import core.vararg, core.stdc.stdarg;
+import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
-
-import type;
-import veda.core.context, veda.core.know_predicates, veda.core.define;
-import veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang, veda.core.util.individual8json;
+import veda.pacahon_driver, veda.type, veda.core.context, veda.core.know_predicates, veda.core.define, veda.core.log_msg;
+import veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang, veda.util.individual8json;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -19,7 +13,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "API");
+        _log = new logger("veda-core-" ~ process_name, "log", "REST");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -103,7 +97,7 @@ interface VedaStorageRest_API {
     long count_individuals();
 
     @path("query") @method(HTTPMethod.GET)
-    string[] query(string ticket, string query, string sort = null, string databases = null, bool reopen = false);
+    string[] query(string ticket, string query, string sort = null, string databases = null, bool reopen = false, int top = 10000, int limit = 10000);
 
     @path("get_individuals") @method(HTTPMethod.POST)
     Json[] get_individuals(string ticket, string[] uris);
@@ -450,7 +444,9 @@ class VedaStorageRest : VedaStorageRest_API
 
     long wait_module(int module_id, long op_id)
     {
-        return context.wait_thread(cast(P_MODULE)module_id, op_id);
+        long res = context.wait_thread(cast(P_MODULE)module_id, op_id);
+
+        return res;
     }
 
     void set_trace(int idx, bool state)
@@ -521,39 +517,48 @@ class VedaStorageRest : VedaStorageRest_API
         return res;
     }
 
-    string[] query(string ticket, string _query, string sort = null, string databases = null, bool reopen = false)
+    string[] query(string ticket, string _query, string sort = null, string databases = null, bool reopen = false, int top = 10000, int limit = 10000)
     {
-        ResultCode rc;
-        int        recv_worker_id;
+        StopWatch sw; sw.start;
 
-        string[]   individuals_ids;
-
-        Worker     *worker = allocate_worker();
-
-        std.concurrency.send(worker.tid, Command.Get, Function.IndividualsIdsToQuery, _query, sort, databases, ticket, reopen, worker.id,
-                             std.concurrency.thisTid);
-        yield();
-
-        std.concurrency.receive((immutable(
-                                           string)[] _individuals_ids, ResultCode _rc, int _recv_worker_id) { individuals_ids =
-                                                                                                                  cast(string[])
-                                                                                                                  _individuals_ids;
-                                                                                                              rc = _rc; recv_worker_id =
-                                                                                                                  _recv_worker_id; });
-
-        if (recv_worker_id == worker.id)
+        try
         {
-            worker.complete = false;
-            worker.ready    = true;
+            ResultCode rc;
+            int        recv_worker_id;
 
-            if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc);
+            string[]   individuals_ids;
+
+            Worker     *worker = allocate_worker();
+
+            std.concurrency.send(worker.tid, Command.Get, Function.IndividualsIdsToQuery, _query, sort, databases, ticket, reopen,
+                                 top, limit, worker.id, std.concurrency.thisTid);
+
+            yield();
+
+            std.concurrency.receive((immutable(
+                                               string)[] _individuals_ids, ResultCode _rc, int _recv_worker_id)
+                                    { individuals_ids = cast(string[])_individuals_ids;
+                                      rc = _rc; recv_worker_id =
+                                          _recv_worker_id; });
+
+            if (recv_worker_id == worker.id)
+            {
+                worker.complete = false;
+                worker.ready    = true;
+
+                if (rc != ResultCode.OK)
+                    throw new HTTPStatusException(rc);
+            }
+            else
+            {
+                individuals_ids = put_another_get_my(recv_worker_id, individuals_ids, rc, worker);
+            }
+            return individuals_ids;
         }
-        else
+        finally
         {
-            individuals_ids = put_another_get_my(recv_worker_id, individuals_ids, rc, worker);
+            context.stat(CMD.GET, sw);
         }
-        return individuals_ids;
     }
 
     Json[] get_individuals(string ticket, string[] uris)
@@ -590,44 +595,73 @@ class VedaStorageRest : VedaStorageRest_API
 
     Json get_individual(string _ticket, string uri)
     {
-        ResultCode rc;
-        int        recv_worker_id;
+        StopWatch sw; sw.start;
 
-        Json[]     res;
-
-        Worker     *worker = allocate_worker();
-
-        std.concurrency.send(worker.tid, Command.Get, Function.Individual, uri, "", _ticket, worker.id, std.concurrency.thisTid);
-        yield();
-        std.concurrency.receive((immutable(
-                                           Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;
-                                                                                                recv_worker_id = _recv_worker_id; });
-
-        if (recv_worker_id == worker.id)
+        try
         {
-            //writeln ("free worker ", worker.id);
-            worker.complete = false;
-            worker.ready    = true;
+            if (trace_msg[ 500 ] == 1)
+                log.trace("get_individual #start : %s ", uri);
 
-            if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc);
+            ResultCode rc;
+            int        recv_worker_id;
+
+            Json[]     res;
+
+            Worker     *worker = allocate_worker();
+
+            std.concurrency.send(worker.tid, Command.Get, Function.Individual, uri, "", _ticket, worker.id, std.concurrency.thisTid);
+            yield();
+            std.concurrency.receive((immutable(
+                                               Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;
+                                                                                                    recv_worker_id = _recv_worker_id; });
+
+            if (recv_worker_id == worker.id)
+            {
+                //writeln ("free worker ", worker.id);
+                worker.complete = false;
+                worker.ready    = true;
+
+                if (rc != ResultCode.OK)
+                {
+                    if (trace_msg[ 500 ] == 1)
+                        log.trace("get_individual #!ERR : %s ", text(rc));
+
+                    throw new HTTPStatusException(rc);
+                }
+            }
+            else
+            {
+                res = put_another_get_my(recv_worker_id, res, rc, worker);
+            }
+
+            if (trace_msg[ 500 ] == 1)
+                log.trace("get_individual #end : %s, res.length=%d", text(rc), res.length);
+
+            if (res.length > 0)
+                return res[ 0 ];
+            else
+                return Json.init;
         }
-        else
+        finally
         {
-            res = put_another_get_my(recv_worker_id, res, rc, worker);
+            context.stat(CMD.GET, sw);
+            if (trace_msg[ 25 ] == 1)
+                log.trace("get_individual: end, uri=%s", uri);
         }
-
-        if (res.length > 0)
-            return res[ 0 ];
-        else
-            return Json.init;
     }
 
     OpResult put_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
     {
+        OpResult res;
+
+        long     count_prep_put = search.xapian_indexer.get_count_prep_put();
+        long     count_recv_put = search.xapian_indexer.get_count_recv_put();
+
+        if (count_recv_put - count_prep_put > 1000)
+            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
+
         Ticket     *ticket = context.get_ticket(_ticket);
 
-        OpResult   res;
         ResultCode rc = ticket.result;
 
         if (rc == ResultCode.OK)
@@ -721,7 +755,7 @@ class VedaStorageRest : VedaStorageRest_API
 
             Individual prev_state_indv;
             if (prev_state_json != Json.init)
-                prev_state_indv = json_to_individual(individual_json);
+                prev_state_indv = json_to_individual(prev_state_json);
 
             veda.core.bus_event.trigger_script(ticket, ev_type, &indv, &prev_state_indv, context, event_id, op_id);
 

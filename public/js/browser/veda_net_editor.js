@@ -62,8 +62,8 @@ jsWorkflow.ready = jsPlumb.ready;
             	if (net['rdf:type'][0].id == 'v-wf:Process') {
             		mode='view';
             		process = net;
-            		elementId = process.id;
             		net = (net.hasValue('v-wf:instanceOf'))?net['v-wf:instanceOf'][0]:[];            		
+            		elementId = net.id;
             	}
             }
 
@@ -96,8 +96,7 @@ jsWorkflow.ready = jsPlumb.ready;
        			'height': canvasSizePx +'px',
        			'width': canvasSizePx+'px'
        		});
-        	$('body').css('height','100vh');
-        	$('#main').addClass('calculated-height');
+        	$('.workflow-wrapper').addClass('calculated-height');
         	$('#'+workflowData).draggable({
                 drag: function (event, ui) {
                   instance.moveCanvas(ui.position.left, ui.position.top);	
@@ -173,7 +172,7 @@ jsWorkflow.ready = jsPlumb.ready;
             }
             
             // Fill info panel on flow click
-            instance.bind("click", function(transition) {
+            instance.bind("click", function(transition) {            	
             	var _this = this;
             	veda["workflow"+elementId+"-selectedElement"] = _this.id;
             	instance.defocus();
@@ -201,8 +200,17 @@ jsWorkflow.ready = jsPlumb.ready;
             	else propsHead.text(about.id);
             });
             
-            instance.bind("beforeDetach", function(connection) {
-           		return connection.targetId.indexOf('jsPlumb') === 0;
+            instance.bind("connectionMoved", function(info, originalEvent) {
+            	if (info.originalSourceId !== info.newSourceId) {
+	            	net['v-wf:consistsOf'].forEach(function(state) {
+	        			if (state.id === info.originalSourceId) {
+	        				state['v-wf:hasFlow'] = veda.Util.removeSubIndividual(state, 'v-wf:hasFlow', info.connection.id);            				
+	        			}
+	        			if (state.id === info.newSourceId) {
+	        				state['v-wf:hasFlow'] = state.hasValue('v-wf:hasFlow')? state['v-wf:hasFlow'].concat([new veda.IndividualModel(info.connection.id)]):[new veda.IndividualModel(info.connection.id)];            				
+	        			}
+	        		});            
+            	}
             });
             
             // Handle creating new flow event
@@ -292,6 +300,7 @@ jsWorkflow.ready = jsPlumb.ready;
             				instance.select({target:workItem['v-wf:forNetElement'][0].id, source:previousWorkItem['v-wf:forNetElement'][0].id}).each(function(e) {
             					e.addClass('process-path-highlight');
             					var pathCounterLabel = (e.getOverlay("pathCounter")!=undefined)?e.getOverlay("pathCounter").getLabel():'';
+            					e.removeOverlay("pathCounter");
                         		e.addOverlay(["Label", { label: ((pathCounterLabel!='')?pathCounterLabel+',':'')+(max_process_depth-depth), location:0.5, id: "pathCounter", cssClass:'pathCounterLabel'} ]);            					
             				});
             			}
@@ -301,17 +310,91 @@ jsWorkflow.ready = jsPlumb.ready;
             	}
             };
             
+            instance.addVarProperty = function(stateId, mapping, varId) {
+            	var variable = new veda.IndividualModel(varId);
+                
+                var individualM = new veda.IndividualModel(); // create individual (Mapping)
+                
+                individualM.defineProperty("rdf:type");
+                individualM.defineProperty("v-wf:mapsTo");
+                individualM.defineProperty("v-wf:mappingExpression");
+                
+           		individualM["rdf:type"] = [veda.ontology["v-wf:Mapping"]];
+           		individualM["v-wf:mapToVariable"] = [variable];
+                individualM['v-wf:mappingExpression'] = ["process.getInputVariable ('"+variable["v-wf:varDefineName"][0]+"')"];
+                
+                veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
+                	state[mapping] = state[mapping].concat([individualM]); // <- Add new Mapping to State
+                	net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individualM]);
+                });
+            }
+            
             /**
              *Bind required functional to State elements
              *@method bindStateEvents
              *@param {Object} windows List of all State elements
              */
             bindStateEvents = function(windows) {
-                
+                windows.find('.state-name').droppable({
+                	hoverClass: 'dragHover',
+                	drop: function( event, ui ) {
+                		var varId = ui.draggable.attr('resource');
+                		var taskId = windows.attr('id');
+                		var $div = $("<div />");
+                		$div.appendTo($('#main'));
+            			$div.dialog({
+            				modal: true,
+            				resizable: false,
+            				buttons: {
+            					"v-wf:startingMapping": function() {
+            						instance.addVarProperty(taskId, "v-wf:startingMapping", varId);
+            						$(this).dialog("close");
+            						$('#'+veda.Util.escape4$(taskId)).trigger("click");
+            					},
+            					"v-wf:completedMapping": function() {
+            						instance.addVarProperty(taskId, "v-wf:completedMapping", varId);
+            						$(this).dialog("close");
+            						$('#'+veda.Util.escape4$(taskId)).trigger("click");
+            					},
+            					"v-wf:wosResultsMapping": function() {
+            						instance.addVarProperty(taskId, "v-wf:wosResultsMapping", varId);
+            						$(this).dialog("close");
+            						$('#'+veda.Util.escape4$(taskId)).trigger("click");
+            					},
+            					"v-wf:startingJournalMap": function() {
+            						instance.addVarProperty(taskId, "v-wf:startingJournalMap", varId);
+            						$(this).dialog("close");
+            						$('#'+veda.Util.escape4$(taskId)).trigger("click");
+            					},
+            					"v-wf:completedJournalMap": function() {
+            						instance.addVarProperty(taskId, "v-wf:completedJournalMap", varId);
+            						$(this).dialog("close");
+            						$('#'+veda.Util.escape4$(taskId)).trigger("click");
+            					},
+            					"v-wf:startingExecutorJournalMap": function() {
+            						instance.addVarProperty(taskId, "v-wf:startingExecutorJournalMap", varId);
+            						$(this).dialog("close");
+            						$('#'+veda.Util.escape4$(taskId)).trigger("click");
+            					},
+            					"v-wf:completedExecutorJournalMap": function() {
+            						instance.addVarProperty(taskId, "v-wf:completedExecutorJournalMap", varId);
+            						$(this).dialog("close");
+            						$('#'+veda.Util.escape4$(taskId)).trigger("click");
+            					}
+            				}
+            			});                		
+                    }
+                });
+            	
                 windows.bind("click", function(e) {
-                	
                     var _this = this, currentElement = $(_this), alreadySelected = currentElement.hasClass('w_active');
                 	veda["workflow"+elementId+"-selectedElement"] = _this.id;
+               	    if (e.shiftKey) {
+               	    	currentElement.addClass('jsplumb-drag-selected');
+               	    	instance.addToDragSelection(currentElement);
+               	    	e.stopPropagation();
+               	    	return;
+               	    }
 
                     if (!alreadySelected) {
 	                    instance.defocus();
@@ -410,13 +493,12 @@ jsWorkflow.ready = jsPlumb.ready;
 	                	riot.route("#/" + $(_this).attr('id')+"///edit", true);
 	                });
 	
-	                // Initialize State elements as draggable.  
 	                instance.draggable(windows, {
-	                  drag: function (event, ui) { //gets called on every drag
+	                  drag: function (event) { //gets called on every drag
 	                	  $("#workflow-context-menu").hide();
-	                	  var target = new veda.IndividualModel(event.target.id);
-	                   	  target['v-wf:locationX'] = [new Number(Math.round(ui.position.left-canvasSizePx/2))];
-	                   	  target['v-wf:locationY'] = [new Number(Math.round(ui.position.top-canvasSizePx/2))];
+	                	  var target = new veda.IndividualModel(event.el.id);
+	                   	  target['v-wf:locationX'] = [new Number(Math.round(event.pos[0]-canvasSizePx/2))];
+	                   	  target['v-wf:locationY'] = [new Number(Math.round(event.pos[1]-canvasSizePx/2))];
 	                  }
 	            	});
                 }
@@ -452,6 +534,10 @@ jsWorkflow.ready = jsPlumb.ready;
                 instance.makeSource(windows, {
                     filter: ".ep",
                     anchor: possibleOutAnchors,
+                    dragOptions : {
+                    	isSource:false,
+                		isTarget:true
+                    },
                     connector: [
 						"Straight", {
                     	stub: 30,
@@ -479,8 +565,11 @@ jsWorkflow.ready = jsPlumb.ready;
                 
                 instance.makeTarget(windows, {
                     dropOptions: {
+                    	isSource:true,
+                		isTarget:false,
                         hoverClass: "dragHover"
                     },
+                	reattach: true,
                     anchor: possibleInAnchors,
                     paintStyle:{ 
                         strokeStyle:"#225588",
@@ -544,7 +633,7 @@ jsWorkflow.ready = jsPlumb.ready;
             	var stateElement = '';
             	switch (type) {
     			case 'v-wf:InputCondition':    				
-    				stateElement = '<div class="w state-io-condition" ' + 
+    				stateElement = '<div class="w state-io-condition state-io-condition-input" ' + 
     				    'id="' + state.id + '" ' + 
     				    'style="font-size:20px;padding-top:10px;'+ 
     				    'left:' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px;' +
@@ -553,7 +642,7 @@ jsWorkflow.ready = jsPlumb.ready;
 					    (mode=='edit'?'<div class="ep">':'')+'</div></div>';
     				break;
     			case 'v-wf:OutputCondition':
-    				stateElement = '<div class="w state-io-condition" ' +
+    				stateElement = '<div class="w state-io-condition state-io-condition-output" ' +
     				    'id="' + state.id + '" ' +
     				    'style="font-size:20px;padding-top:10px;' +
     				    'left:' + (canvasSizePx/2+state['v-wf:locationX'][0]) + 'px;' + 
@@ -734,6 +823,8 @@ jsWorkflow.ready = jsPlumb.ready;
             
             instance.defocus = function() {
             	props.empty();
+       	    	instance.clearDragSelection();
+       	    	$('.jsplumb-drag-selected').removeClass('jsplumb-drag-selected');
             	$("#workflow-context-menu").hide();
             	$.each(instance.getAllConnections(), function (idx, connection) {
             		connection.removeClass('process-path-highlight');
@@ -861,6 +952,15 @@ jsWorkflow.ready = jsPlumb.ready;
             
             $('#workflow-export-ttl').on('click', function() {
            		var list = new veda.IndividualListModel(net, net['v-wf:consistsOf']);
+           		/* temporary commented
+	        	net['v-wf:consistsOf'].forEach(function(element) {
+	        		element['rdf:type'].forEach(function (rdfType) {
+		        		if (rdfType.id === 'v-wf:Task') {
+		        			collectEntities(element, list);
+		        		}
+	        		});
+	        	}); */
+    			collectEntities(net, list);
            		veda.Util.exportTTL(list);
             });
 
@@ -901,6 +1001,22 @@ jsWorkflow.ready = jsPlumb.ready;
             	riot.route("#/" + net.id + "///edit", true);
             });
             
+            $('.copy-net-element').on('click', function() {
+            	if (typeof selectedElementId !== "undefined") {
+            		var individual = new veda.IndividualModel(selectedElementId);
+            		if (individual.hasValue('rdf:type')) {
+            			if (individual['rdf:type'][0].id === 'v-wf:Task' || individual['rdf:type'][0].id === 'v-wf:Condition') {
+            				individual = individual.clone();
+            				individual['v-wf:locationX'] = [individual['v-wf:locationX'][0]+50];
+            				individual['v-wf:locationY'] = [individual['v-wf:locationY'][0]+50];
+            				individual['v-wf:hasFlow'] = [];
+            				instance.createState(individual);
+                           	net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]);
+            			}
+            		}
+            	}
+            });
+            
             /* ZOOM [BEGIN] */
             $('.zoom-in').on('click', function() {
             	if (net['currentScale']<1) return instance.changeScale(net['currentScale'] + 0.1);
@@ -937,5 +1053,28 @@ jsWorkflow.ready = jsPlumb.ready;
         };
     });
 })();
+
+function collectEntities(element, list) {
+	var props = Object.getOwnPropertyNames(element);
+    for (var key = 0; key < props.length; key++)
+    {
+    	var prop = props[key];
+    	if (element[prop] && Array.isArray(element[prop])) {
+    		element[prop].forEach(function(subelement) {
+    			if (typeof subelement.hasValue === 'function' && subelement.hasValue('rdf:type')) 
+    			{
+    				subelement['rdf:type'].forEach(function (subRdfType) {
+    					if (subRdfType.id == 'v-wf:VarDefine' || subRdfType.id == 'v-wf:Transform' || subRdfType.id == 'v-wf:Mapping') {
+    						list.add(subelement);
+    					}
+    					if (subRdfType.id == 'v-wf:Mapping') {
+    						list.add(subelement['v-wf:mapToVariable'][0]);
+    					}
+    				});
+    			}
+    		});
+    	}
+    }
+}
 
 //[END] Block of net editor

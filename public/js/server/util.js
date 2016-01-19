@@ -38,52 +38,79 @@ function newDocument(type, fields)
 function newUri(uri)
 {
     return [
-        {
-            data: uri,
-            type: _Uri
+    {
+        data: uri,
+        type: _Uri
     }];
 }
 
 function newStr(_data)
 {
     return [
-        {
-            data: _data,
-            type: _String
+    {
+        data: _data,
+        type: _String,
+        lang: 0
     }];
 }
 
 function newBool(_data)
 {
     return [
-        {
-            data: _data,
-            type: _Bool
+    {
+        data: _data,
+        type: _Bool
     }];
+}
+
+function newDate(_data)
+{
+    return [
+    {
+        data: _data,
+        type: _Datetime
+    }];
+}
+
+function addDay(_data, _days)
+{
+    if (!_data)
+        _data = new Date();
+
+    try
+    {
+        _data.setDate(_data.getDate() + _days);
+    }
+    catch (e)
+    {
+        print(e);
+    }
+
+    return _data;
 }
 
 function getStrings(field)
 {
-	var res = [];
+    var res = [];
     if (field)
     {
-		for (var i in field)
-		{
-			res.push (field[i].data);
-		}
+        for (var i in field)
+        {
+            res.push(field[i].data);
+        }
     }
     return res;
 }
 
 function getUris(field)
 {
-	var res = [];
+    var res = [];
     if (field)
     {
-		for (var i in field)
-		{
-			res.push (field[i].data);
-		}
+        for (var i in field)
+        {
+            res.push(field[i].data);
+        }
     }
     return res;
 }
@@ -100,6 +127,13 @@ function getFirstValue(field)
 {
     if (field && field.length > 0)
     {
+        if (field[0].type == _Integer)
+        {
+            return parseInt(field[0].data, 10);
+        }
+        else if (field[0].type == _Datetime)
+            return new Date(field[0].data);
+
         return field[0].data;
     }
 }
@@ -126,34 +160,34 @@ function addRight(ticket, rights, subj_uri, obj_uri)
     var new_permission = {
         '@': genUri(),
         'rdf:type': [
-            {
-                data: 'v-s:PermissionStatement',
-                type: _Uri
+        {
+            data: 'v-s:PermissionStatement',
+            type: _Uri
         }],
         'v-s:canDelete': [
-            {
-                data: d,
-                type: _Bool
+        {
+            data: d,
+            type: _Bool
         }],
         'v-s:canRead': [
-            {
-                data: r,
-                type: _Bool
+        {
+            data: r,
+            type: _Bool
         }],
         'v-s:canUpdate': [
-            {
-                data: u,
-                type: _Bool
+        {
+            data: u,
+            type: _Bool
         }],
         'v-s:permissionObject': [
-            {
-                data: obj_uri,
-                type: _Uri
+        {
+            data: obj_uri,
+            type: _Uri
         }],
         'v-s:permissionSubject': [
-            {
-                data: subj_uri,
-                type: _Uri
+        {
+            data: subj_uri,
+            type: _Uri
         }]
     };
     put_individual(ticket, new_permission, _event_id);
@@ -180,65 +214,114 @@ function newJournalRecord(journal_uri)
     var new_journal_record = {
         '@': new_journal_record_uri,
         'rdf:type': [
-            {
-                data: 'v-s:JournalRecord',
-                type: _Uri
-    }],
+        {
+            data: 'v-s:JournalRecord',
+            type: _Uri
+        }],
         'v-s:parentJournal': [
-            {
-                data: journal_uri,
-                type: _Uri
-    }],
+        {
+            data: journal_uri,
+            type: _Uri
+        }],
         'v-s:created': [
-            {
-                data: new Date (),
-                type: _Datetime
-    }]	
+        {
+            data: new Date(),
+            type: _Datetime
+        }]
     };
     return new_journal_record;
 }
 
-function logToJournal(ticket, journal_uri, journal_record)
+function logToJournal(ticket, journal_uri, journal_record, jr_type)
 {
-    //print("@@@ logToJournal, new_journal_record=" + toJson(journal_record));
+	//if (!jr_type)
+	//	print("@@@ logToJournal, new_journal_record=" + toJson(journal_record));
+	
     put_individual(ticket, journal_record, _event_id);
 
     var add_to_journal = {
         '@': journal_uri,
         'v-s:childRecord': [
-            {
-                data: journal_record['@'],
-                type: _Uri
-    }]
+        {
+            data: journal_record['@'],
+            type: _Uri
+        }]
     };
 
-    //print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
+	//if (!jr_type)
+	//	print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
+
+    var before = get_individual(ticket, journal_uri);
+    print('BEFORE : '+toJson(before))
+	
     add_to_individual(ticket, add_to_journal, _event_id);
+    
+    var after = get_individual(ticket, journal_uri);
+    print('AFTER : '+toJson(after))
 }
 
 function traceToJournal(ticket, journal_uri, label, _data)
 {
-	var journal_record = newJournalRecord(journal_uri);
-	
-	journal_record['rdf:type'] = [
-            {
-                data: 'v-wf:TraceRecord',
-                type: _Uri
-    }];	
-	journal_record['rdfs:label'] = [
-            {
-                data: label,
-                type: _String
-    }];
-	journal_record['rdfs:comment'] = [
-            {
-                data: _data,
-                type: _String
-    }];
-    
-	logToJournal(ticket, journal_uri, journal_record);
-	
-	//print("@@@ traceToJournal, journal_uri=" + journal_uri + ", " + toJson(journal_record));
+    //print("@@@ traceToJournal, journal_uri=" + journal_uri + " #1");
+    var journal_record = newJournalRecord(journal_uri);
 
-}	
+    journal_record['rdf:type'] = [
+    {
+        data: 'v-wf:TraceRecord',
+        type: _Uri
+    }];
+    journal_record['rdfs:label'] = [
+    {
+        data: label,
+        type: _String
+    }];
+    journal_record['rdfs:comment'] = [
+    {
+        data: _data,
+        type: _String
+    }];
 
+    logToJournal(ticket, journal_uri, journal_record, true);
+
+    //print("@@@ traceToJournal, journal_uri=" + journal_uri + ", " + toJson(journal_record));
+}
+
+function isTecnicalChange(newdoc, olddoc) {
+	if (newdoc['v-s:actualVersion'] && newdoc['v-s:actualVersion'][0].data != newdoc['@']) {
+		olddoc = get_individual(ticket, newdoc['v-s:actualVersion'][0].data);
+	}
+	if (!olddoc) return false;
+
+	for (var key in newdoc) {
+		if (key === '@') continue;
+		
+		if ((newdoc[key] && !olddoc[key])  // добвили
+		     || (newdoc[key] && !olddoc[key]) // удалили
+		     || (newdoc[key].length !== olddoc[key].length) // изменили количество
+		    ) 
+		{ 	
+			if (!isTechnicalAttribute(key)) {
+				// в нетехническом атрибуте
+				return false;				
+			}
+		} else {
+			for (var item in newdoc[key]) {
+				if (newdoc[key][item].data.valueOf() != olddoc[key][item].data.valueOf() && !isTechnicalAttribute(key)) { // поменялось одно из значений в нетехническом атрибуте
+					return false;		
+				} 
+			}
+		}
+	}
+	
+	return true;
+}
+
+function isTechnicalAttribute(attName) {
+//	if (attName === 'v-s:actualVersion') return true;
+//	if (attName === 'v-s:previousVersion') return true;
+//	if (attName === 'v-s:nextVersion') return true;
+	if (attName === 'v-s:isDraftOf') return true;
+	if (attName === 'v-s:hasDraft') return true;
+	if (attName === 'v-s:hasStatusWorkflow') return true;
+	return false;
+}

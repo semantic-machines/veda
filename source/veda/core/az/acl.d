@@ -7,11 +7,8 @@ module az.acl;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
-    import veda.onto.individual, veda.onto.resource;
-    import veda.core.bind.lmdb_header;
+    import veda.type, veda.onto.individual, veda.onto.resource, veda.core.bind.lmdb_header,veda.core.context, veda.core.define, veda.core.know_predicates, veda.core.log_msg;
     import util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, util.logger;
-    import type;
-    import veda.core.context, veda.core.define, veda.core.know_predicates, veda.core.log_msg;
     import storage.lmdb_storage;
 }
 
@@ -37,6 +34,17 @@ logger log()
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
+
+public string backup (Context ctx, string backup_id)
+{
+	string res;
+	
+    Tid    tid_acl_manager = ctx.getTid(P_MODULE.acl_manager);
+    send(tid_acl_manager, CMD.BACKUP, backup_id, thisTid);
+    receive((string _res) { res = _res; });
+                
+    return res;            
+}
 
 /// Хранение, чтение PermissionStatement, Membership
 class Authorization : LmdbStorage
@@ -166,6 +174,7 @@ class Authorization : LmdbStorage
     {
         void reopen_db()
         {
+            //log.trace("@ACL:reopen_db");
             this.reopen_db();
             subject_groups_cache[ ticket.user_uri ] = string[].init;
         }
@@ -185,7 +194,7 @@ class Authorization : LmdbStorage
         string  str;
         int     rc;
 
-        context.ft_check_for_reload(&reopen_db);
+        context.acl_check_for_reload(&reopen_db);
 
         if (db_is_open.get(path, false) == false)
             return res;
@@ -397,8 +406,8 @@ void acl_manager(string thread_name, string db_path)
                 {
                     if (cmd == CMD.PUT)
                     {
-                    	set_acl_manager_op_id (op_id);
-                    	
+                    	try
+                    	{
                         Individual ind;
                         if (cbor2individual(&ind, msg) < 0)
                         {
@@ -505,7 +514,12 @@ void acl_manager(string thread_name, string db_path)
                                 if (trace_msg[ 101 ] == 1)
                                     log.trace("[acl index] (%s) MemberShip: %s : %s", text(res), rs.uri, outbuff.toString());
                             }
+                    	}
                         }
+                        finally
+                    	{
+                    		set_acl_manager_op_id(op_id);	
+                    	}
                     }
                 },
                 (CMD cmd, Tid tid_response_reciever)

@@ -7,6 +7,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
+@prefix v-a: <http://semantic-machines.com/veda/veda-admin/> .
 
 <http://semantic-machines.com/veda/veda-function-tasks>
   rdf:type owl:Ontology ;
@@ -18,17 +19,23 @@
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "0.1" ;
+  v-s:loadPriority 9 ;
 .
 
 ########## TASKS FUNCTION ###########
 
 v-ft:FunctionTasks
   rdf:type owl:Class ;
-  rdfs:label "Function Inbox"@en ;
-  rdfs:label "Функция Входящие"@ru ;
+  rdfs:label "Function 'Tasks'"@en ;
+  rdfs:label "Функция 'Задачи'"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
 v-ft:query
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:FunctionTasks ;
+  rdfs:range xsd:string ;
+.
+v-ft:sortOrder
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ft:FunctionTasks ;
   rdfs:range xsd:string ;
@@ -48,18 +55,21 @@ v-ft:Inbox
   rdfs:label "Inbox"@en ;
   rdfs:label "Входящие"@ru ;
   v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$1'"^^xsd:string ;
+  v-ft:sortOrder "'v-wf:dateGiven' asc"^^xsd:string ;
 .
 v-ft:Outbox
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Outbox"@en ;
   rdfs:label "Исходящие"@ru ;
   v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$1'"^^xsd:string ;
+  v-ft:sortOrder "'v-wf:dateGiven' asc"^^xsd:string ;
 .
 v-ft:Completed
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Completed"@en ;
   rdfs:label "Выполненные"@ru ;
   v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$1'"^^xsd:string ;  
+  v-ft:sortOrder "'v-wf:dateGiven' asc"^^xsd:string ;
 .
 v-ft:TasksNotFound
   rdf:type v-b:Bundle ;
@@ -74,26 +84,172 @@ v-ft:FunctionTasksTemplate
   v-ui:template """
 <div class="container-fluid">
 	<h3 property="rdfs:label"></h3>
-	<ul id="tasks">
-		<li about="v-ft:TasksNotFound" property="rdfs:label"></li>
-	</ul>
+	<table class="table table-condensed table-bordered table-striped">
+		<thead>
+			<tr>
+				<th width="20px">#</span></th>
+				<th width="10%">
+					<a id="v-wf:from" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
+					<span about="v-wf:from" property="rdfs:label"></span>
+				</th>
+				<th width="10%">
+					<a id="v-wf:to" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
+					<span about="v-wf:to" property="rdfs:label"></span>
+				</th>
+				<th>
+					<a id="rdfs:label" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
+					<span about="v-s:description" property="rdfs:label"></span>
+				</th>
+				<th width="40%">
+					<a id="v-wf:onDocument" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
+					<span about="v-wf:onDocument" property="rdfs:label"></span>
+				</th>
+				<th width="10%">
+					<a id="v-wf:dateGiven" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
+					<span about="v-wf:dateGiven" property="rdfs:label"></span>
+				</th>
+			</tr>
+		</thead>
+		<tbody id="tasks">
+			<tr>
+				<td colspan="7">
+					<span about="v-ft:TasksNotFound" property="rdfs:label"></span>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="text-center">
+		<ul class="pagination" id="pager"></ul>
+	</div>
+	<br />
 </div>
 <script>
-	var tasks = new veda.IndividualModel();
-	tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
-	tasks["v-fs:fulltextQuery"] = individual["v-ft:query"].slice(0);
-	var result = tasks.search();
-	var tmpl = new veda.IndividualModel("v-ui:LabelLinkTemplate");
+	var tasks;
+	if (!individual.tasks) {
+		tasks = new veda.IndividualModel();
+		tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
+		tasks["v-fs:fulltextQuery"] = individual["v-ft:query"].slice(0);
+		tasks["v-fs:sortOrder"] = individual["v-ft:sortOrder"].slice(0);
+	} else {
+		tasks = individual.tasks;
+	}
+	
+	tasks.on("afterSearch", renderTasks);
+	template.on("remove", function () {
+		tasks.off("afterSearch", renderTasks);
+	});
+	
+	var tmplInd = new veda.IndividualModel("v-ft:TaskTemplate");
+	var tmpl = tmplInd["v-ui:template"][0].toString();
 	var cnt = $("#tasks", template);
-	if (result.length) {
-		cnt.empty();
-		result.map(function (uri) {
-			var res_cnt = $("<li>");
-			var ind = new veda.IndividualModel(uri);
-			ind.present(res_cnt, tmpl);
-			cnt.append(res_cnt);
-		});
+	var sorts = $("th > a", template);
+	var pager = $("#pager", template);
+	sorts.on("click", function (e) {
+		e.preventDefault();
+		var sortOrder = $(this);
+		var dir = sortOrder.hasClass("glyphicon-sort-by-attributes-alt") ? " asc" : " desc";
+		sortOrder.toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");					
+		if (this.id === "v-s:description") {
+			tasks["v-fs:sortOrder"] = ["'" + this.id + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir];
+		} else {
+			tasks["v-fs:sortOrder"] = ["'" + this.id + "'" + dir];
+		}
+		tasks.search();
+		return false;
+	});
+
+	tasks.search();
+	
+	function renderTasks(result) {
+		if (result.length) {
+			
+			cnt.empty();
+			pager.empty();
+			
+			var sortBy = dir = "";
+			if ( tasks.hasValue("v-fs:sortOrder") ) {
+				var t = tasks["v-fs:sortOrder"][0].split(" ");
+				sortBy = t[0]; dir = t[1];
+			}
+
+			sorts.each(function () {
+				var sortOrder = $(this);
+				if (sortBy.indexOf(this.id) >= 0) {
+					sortOrder.removeClass("text-muted");
+					if (dir === "desc") sortOrder.removeClass("glyphicon-sort-by-attributes").addClass("glyphicon-sort-by-attributes-alt");
+				} else {
+					sortOrder.addClass("text-muted");
+				}
+			});
+
+			tasks.page = tasks.page || 0;
+			if (tasks.count < tasks.page * veda.user.displayedElements) {
+				tasks.page = Math.floor(tasks.count / veda.user.displayedElements) + 1 * (tasks.count % veda.user.displayedElements ? 1 : 0) - 1;
+			}
+			
+			for (var i = tasks.page * veda.user.displayedElements; i < (tasks.page + 1) * veda.user.displayedElements && i < tasks.count; i++) {
+				(function (i) {
+					setTimeout(function () {
+						var _tmpl = tmpl.replace("###", i+1);
+						var result = new veda.IndividualModel( tasks.result[i] );
+						result.present(cnt, _tmpl);
+					}, 0);
+				}(i));
+			}
+			
+			// Show pager
+			for (var pg = 0; pg < Math.floor(tasks.count / veda.user.displayedElements) + 1 * (tasks.count % veda.user.displayedElements ? 1 : 0); pg++) {
+				var $pg = $("<li/>")
+					.attr("class", pg === tasks.page ? "active" : "")
+					.appendTo(pager);
+				var $a = $("<a/>", {
+					"text" : pg + 1,
+					"click": (function (pg) {
+						if (pg === tasks.page) return $.noop;
+						return function (event) {
+							event.preventDefault();
+							tasks.page = pg;
+							tasks.trigger("afterSearch", tasks.result);
+						}
+					})(pg),
+					"href" : ""
+				}).appendTo($pg);
+			}
+		}
 	}
 </script>
   """ ;
+.
+
+v-ft:TaskTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Task template for table of tasks"@en ;
+  rdfs:label "Шаблон задачи для таблицы задач"@ru ;
+  v-ui:template """
+<tr>
+	<td>###</td>
+	<td rel="v-wf:from" template="v-ui:LabelTemplate"></td>
+	<td rel="v-wf:to" template="v-ui:LabelTemplate"></td>
+	<td>
+		<a href="#/@" property="rdfs:label"></a>
+		<p><span property="v-s:description"></span></p>
+	</td>
+	<td rel="v-wf:onDocument" template="v-ui:LabelTemplate"></td>
+	<td property="v-wf:dateGiven"></td>
+</tr>
+<script>
+	template.dblclick(function (e) {
+		riot.route("#/" + individual.id);
+		e.stopPropagation();
+	});
+</script>
+  """
+.
+
+v-ft:TasksMembership
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-a:ReadResGroup ;
+  v-s:resource v-ft:Inbox ;
+  v-s:resource v-ft:Outbox ;
+  v-s:resource v-ft:Completed ;
 .

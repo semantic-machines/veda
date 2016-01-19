@@ -17,6 +17,7 @@
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
 #  owl:versionInfo "0.2" ;
+  v-s:loadPriority 9 ;
 .
 
 ########## CREATE FUNCTION ###########
@@ -35,8 +36,8 @@ v-fc:Blank
 .
 v-fc:BlankMgmt
   rdf:type v-b:Bundle ;
-  rdfs:label "Управление бланком"@ru ;
-  rdfs:label "Blank management"@en ;
+  rdfs:label "Запомнить"@ru ;
+  rdfs:label "Remember"@en ;
 .
 v-fc:SavedBlanks
   rdf:type v-b:Bundle ;
@@ -152,11 +153,12 @@ v-fc:BlankTemplate
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
 <div role="tabpanel">
-	<h4 about="@" property="rdfs:label"></h4>
+	<br>
 	<!-- Nav tabs -->
-	<ul class="nav nav-tabs" role="tablist">
-		<li role="presentation" class="active"><a id="blank-pill" href="#blank" about="v-fc:Blank" property="rdfs:label" aria-controls="blank" role="tab" data-toggle="tab"></a></li>
+	<ul class="nav nav-tabs nav-right" role="tablist">
+		<li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
 		<li role="presentation"><a id="mgmt-pill" href="#mgmt" about="v-fc:BlankMgmt" property="rdfs:label" aria-controls="mgmt" role="tab" data-toggle="tab"></a></li>
+		<li role="presentation" class="active"><a id="blank-pill" href="#blank" about="v-fc:Blank" property="rdfs:label" aria-controls="blank" role="tab" data-toggle="tab"></a></li>
 	</ul>
 	<br />
 	<!-- Tab panes -->
@@ -165,8 +167,9 @@ v-fc:BlankTemplate
 			<div id="object"></div>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="mgmt">
-			<p about="rdfs:label" property="rdfs:label" class="-view edit"></p>
-			<veda-control type="string" property="rdfs:label" class="-view edit"></veda-control>
+			<em about="rdfs:label" property="rdfs:label"></em>
+			<p property="rdfs:label" class="view -edit search"></p>
+			<veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
 			<br>
 			<div>
 				<button type="button" class="action btn btn-primary view -edit" id="edit" about="v-b:Edit" property="rdfs:label"/>

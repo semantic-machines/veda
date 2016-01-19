@@ -13,6 +13,7 @@
   owl:imports rdfs: ;
   owl:imports owl: ;
   owl:versionInfo "1.0" ;
+  v-s:loadPriority 2 ;
 .
 
 vsrv:Node
@@ -36,6 +37,14 @@ vsrv:push_individual_by_event
   rdfs:domain vsrv:Node ;
   rdfs:isDefinedBy vsrv: ;
   rdfs:label "push individual by event" ;
+  rdfs:range vsrv:Connection ;
+.    
+
+vsrv:send_an_email_individual_by_event
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain vsrv:Node ;
+  rdfs:isDefinedBy vsrv: ;
+  rdfs:label "send an e-mail individual by event" ;
   rdfs:range vsrv:Connection ;
 .    
 
@@ -70,7 +79,15 @@ vsrv:jsvm_node
   rdf:type owl:ObjectProperty ;
   rdfs:domain vsrv:Node ;
   rdfs:isDefinedBy vsrv: ;
-  rdfs:label "адрес ноды с JSVM" ;
+  rdfs:label "адрес ноды JavaScript VM" ;
+  rdfs:range vsrv:Connection ;
+.
+
+vsrv:fts_node
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain vsrv:Node ;
+  rdfs:isDefinedBy vsrv: ;
+  rdfs:label "адрес ноды Full Text Search" ;
   rdfs:range vsrv:Connection ;
 .
 

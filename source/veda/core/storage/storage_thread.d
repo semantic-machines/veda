@@ -6,11 +6,8 @@ module storage.storage_thread;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
-    import veda.core.bind.lmdb_header;
-    import type;
     import util.logger, util.utils, util.cbor, veda.core.util.cbor8individual;
-    import veda.core.context, veda.core.define, veda.core.log_msg;
-    import veda.onto.individual, veda.onto.resource;
+    import veda.type, veda.core.bind.lmdb_header, veda.core.context, veda.core.define, veda.core.log_msg, veda.onto.individual, veda.onto.resource;
     import search.vel;
     import storage.lmdb_storage;
 }
@@ -25,6 +22,37 @@ logger log()
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
+public string backup (Context ctx)
+{
+	string backup_id;
+	
+    Tid  tid_subject_manager = ctx.getTid(P_MODULE.subject_manager);
+    send(tid_subject_manager, CMD.BACKUP, "", thisTid);
+    receive((string res) { backup_id = res; });
+    
+    return backup_id;	
+}
+
+
+public bool send_put(Context ctx, CMD cmd, string cur_state, out string new_state, out string prev_state, out long op_id, out EVENT ev)
+{
+    Tid tid_subject_manager = ctx.getTid(P_MODULE.subject_manager);
+
+    if (tid_subject_manager != Tid.init)
+    {
+        send(tid_subject_manager, cmd, cur_state, thisTid);
+        receive((EVENT _ev, string _prev_state, string _new_state, Tid from)
+                {
+                    if (from == ctx.getTid(P_MODULE.subject_manager))
+                        ev = _ev;
+                    prev_state = _prev_state;
+                    new_state = _new_state;
+                    op_id = get_count_put();
+                    return true;
+                });
+    }
+    return false;
+}
 
 
 public void individuals_manager(string thread_name, string db_path, string node_id)
@@ -172,7 +200,7 @@ public void individuals_manager(string thread_name, string db_path, string node_
                                 else if (cmd == CMD.REMOVE)
                                 {
                                     // remove predicate or value in set
-                                    // !!! not implemented
+                                    indv.remove_Resources(predicate, arg.getResources(predicate));
                                 }
                             }
 

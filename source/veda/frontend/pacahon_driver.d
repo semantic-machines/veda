@@ -3,9 +3,8 @@ module veda.pacahon_driver;
 import std.stdio, std.datetime, std.conv, std.string, std.variant, std.concurrency;
 import vibe.data.json;
 import veda.core.server, veda.core.context, veda.core.thread_context, veda.core.know_predicates, veda.core.define;
-import type;
-import veda.onto.onto, onto.lang, veda.onto.individual, veda.onto.resource;
-import veda.core.util.cbor8json, veda.core.util.individual8json;
+import veda.type, veda.onto.onto, onto.lang, veda.onto.individual, veda.onto.resource, veda.core.log_msg;
+import veda.util.cbor8json, veda.util.individual8json;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -13,7 +12,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "pacahon_driver", "API");
+        _log = new logger("veda-core-" ~ process_name, "pacahon_driver", "DRIVER");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -106,7 +105,8 @@ public void core_thread(string node_id, string write_storage_node)
                         }
                     }
                 },
-                (Command cmd, Function fn, string arg1, string arg2, string arg3, string _ticket, bool reopen, int worker_id, Tid tid)
+                (Command cmd, Function fn, string query, string sort, string databases, string _ticket, bool reopen, int top, int limit,
+                 int worker_id, Tid tid)
                 {
                     if (tid != Tid.init)
                     {
@@ -123,7 +123,8 @@ public void core_thread(string node_id, string write_storage_node)
                                 {
                                     if (reopen)
                                         context.reopen_ro_fulltext_indexer_db();
-                                    res = context.get_individuals_ids_via_query(ticket, arg1, arg2, arg3);
+
+                                    res = context.get_individuals_ids_via_query(ticket, query, sort, databases, top, limit);
                                 }
                             }
                             catch (Exception ex) { writeln(ex.msg); }
@@ -137,6 +138,9 @@ public void core_thread(string node_id, string write_storage_node)
                     {
                         if (cmd == Command.Get && fn == Function.Individual)
                         {
+                            if (trace_msg[ 500 ] == 1)
+                                log.trace("get_individual #start : %s ", arg1);
+
                             ResultCode rc = ResultCode.Internal_Server_Error;
 
                             immutable(Json)[] res = Json[].init;
@@ -175,6 +179,9 @@ public void core_thread(string node_id, string write_storage_node)
                                 }
                             }
                             catch (Exception ex) { writeln(ex.msg); }
+
+                            if (trace_msg[ 500 ] == 1)
+                                log.trace("get_individual #e : %s ", arg1);
 
                             send(tid, res, rc, worker_id);
                         }

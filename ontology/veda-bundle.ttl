@@ -10,6 +10,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 
 <http://semantic-machines.com/veda/veda-bundle>
   rdf:type owl:Ontology ;
@@ -19,12 +20,23 @@
   owl:imports rdfs: ;
   owl:imports <http://www.w3.org/2002/07/owl> ;
 #  owl:versionInfo "0.1" ;
+  v-s:loadPriority 9 ;
 .
 v-b:Bundle
   rdf:type owl:Class ;
   rdfs:label "Bundle"@en ;
   rdfs:label "Текстовая константа"@ru ;
   rdfs:subClassOf owl:Thing ;
+.
+v-b:Back
+  rdf:type v-b:Bundle ;
+  rdfs:label "Назад"@ru ;
+  rdfs:label "Back"@en ;
+.
+v-b:Forward
+  rdf:type v-b:Bundle ;
+  rdfs:label "Вперед"@ru ;
+  rdfs:label "Forward"@en ;
 .
 v-b:Chief
   rdf:type v-b:Bundle ;
@@ -76,6 +88,16 @@ v-b:Send
   rdfs:label "Отправить"@ru ;
   rdfs:label "Send"@en ;
 .
+v-b:Next
+  rdf:type v-b:Bundle ;
+  rdfs:label "Далее"@ru ;
+  rdfs:label "Next"@en ;
+.
+v-b:Proceed
+  rdf:type v-b:Bundle ;
+  rdfs:label "Перейти"@ru ;
+  rdfs:label "Proceed"@en ;
+.
 v-b:Edit
   rdf:type v-b:Bundle ;
   rdfs:label "Редактировать"@ru ;
@@ -98,8 +120,8 @@ v-b:Draft
 .
 v-b:toDraft
   rdf:type v-b:Bundle ;
-  rdfs:label "Сохранить"@ru ;
-  rdfs:label "Save"@en ;
+  rdfs:label "Сохранить в черновик"@ru ;
+  rdfs:label "Save to draft"@en ;
 .
 v-b:Find
   rdf:type v-b:Bundle ;
@@ -116,6 +138,21 @@ v-b:Delete
   rdfs:label "Удалить"@ru ;
   rdfs:label "Delete"@en ;
 .
+v-b:DeleteDraft
+  rdf:type v-b:Bundle ;
+  rdfs:label "Удалить черновик"@ru ;
+  rdfs:label "Delete draft"@en ;
+.
+v-b:Clear
+  rdf:type v-b:Bundle ;
+  rdfs:label "Очистить"@ru ;
+  rdfs:label "Clear"@en ;
+.
+v-b:Create
+  rdf:type v-b:Bundle ;
+  rdfs:label "Создать"@ru ;
+  rdfs:label "Create"@en ;
+.
 v-b:CreateReport
   rdf:type v-b:Bundle ;
   rdfs:label "Сформировать отчёт"@ru ;
@@ -131,11 +168,15 @@ v-b:CreateReport_ProjectOrder
   rdfs:label "Project Order"@ru ;
   rdfs:label "Project Order"@en ;
 .
-
 v-b:RightsOrigin
   rdf:type v-b:Bundle ;
   rdfs:label "Права доступа"@ru ;
   rdfs:label "Access rights"@en ;
+.
+v-b:Reset
+  rdf:type v-b:Bundle ;
+  rdfs:label "Сбросить"@ru ;
+  rdfs:label "Reset"@en ;
 .
 v-b:Instruction
   rdf:type v-b:Bundle ;
@@ -146,4 +187,44 @@ v-b:SearchRequest
   rdf:type v-b:Bundle ;
   rdfs:label "Поисковый запрос"@ru ;
   rdfs:label "Search request"@en ;
+.
+v-b:DocumentIsVersion
+  rdf:type v-b:Bundle ;
+  rdfs:label "Документ устарел. Существует более поздняя версия данного документа"@ru ;
+  rdfs:label "Document expired. New version of this document exists."@en ;
+.
+v-b:SendQuestion
+  rdf:type v-b:Bundle ;
+  rdfs:label "Задать вопрос"@ru ;
+  rdfs:label "Send question"@en ;
+.
+v-b:SendInstruction
+  rdf:type v-b:Bundle ;
+  rdfs:label "Выдать поручение"@ru ;
+  rdfs:label "Send instruction"@en ;
+.
+v-b:Total
+  rdf:type v-b:Bundle ;
+  rdfs:label "Всего"@ru ;
+  rdfs:label "Total"@en ;
+.
+v-b:Plan
+  rdf:type v-b:Bundle ;
+  rdfs:label "План"@ru ;
+  rdfs:label "Plan"@en ;
+.
+v-b:Fact
+  rdf:type v-b:Bundle ;
+  rdfs:label "Факт"@ru ;
+  rdfs:label "Fact"@en ;
+.
+v-b:atLeastOneFilled
+  rdf:type v-b:Bundle ;
+  rdfs:label "Хотя ты одно из значений должно быть заполнено"@ru ;
+  rdfs:label "At least one value must be filled"@en ;
+.
+v-b:numerationErrorValueIsUnavailable
+  rdf:type v-b:Bundle ;
+  rdfs:label "Данное значение занято"@ru ;
+  rdfs:label "This value is already reserved"@en ;
 .

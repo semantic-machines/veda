@@ -4,10 +4,10 @@ veda.Module(function ConsolePresenter(veda) { "use strict";
 
 	//Get template
 	var template = $("#console-template").html();
-	var container = $("#main");
 	
 	veda.on("console:loaded", function (console) {
 		
+		var container = $("#main");
 		container.empty();
 
 		// Render View

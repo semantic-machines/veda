@@ -19,9 +19,7 @@ logger log()
 
 void view_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error)
 {
-    res.renderCompat!("view_error.dt",
-                      HTTPServerRequest, "req",
-                      HTTPServerErrorInfo, "error")(req, error);
+    res.render!("view_error.dt", req, error);
 }
 
 void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
@@ -153,9 +151,11 @@ shared static this()
         core.thread.Thread.sleep(dur!("msecs")(10));
     }
 
+    bool is_exist_listener = false;
+
     if (role !is null)
     {
-        start_http_listener(core_context, pool, listener_http_port);
+        is_exist_listener = start_http_listener(core_context, pool, listener_http_port);
 //        start_http_listener(core_context, pool, 8555);
     }
     else
@@ -175,67 +175,80 @@ shared static this()
                 if (transport.data() == "http")
                 {
                     ushort http_port = cast(ushort)connection.getFirstInteger("vsrv:port", 8080);
-                    start_http_listener(core_context, pool, http_port);
+                    is_exist_listener = start_http_listener(core_context, pool, http_port);
                 }
             }
         }
 //                    start_http_listener(core_context, pool, 8111);
     }
+
+    if (is_exist_listener == false)
+    {
+        start_http_listener(core_context, pool, 8080);
+    }
 }
 
-void start_http_listener(Context core_context, ref std.concurrency.Tid[] pool, ushort http_port)
+bool start_http_listener(Context core_context, ref std.concurrency.Tid[] pool, ushort http_port)
 {
-    VedaStorageRest vsr = new VedaStorageRest(pool, core_context);
-
-    auto            settings = new HTTPServerSettings;
-
-    settings.port           = http_port;
-    settings.maxRequestSize = 1024 * 1024 * 1000;
-    //settings.bindAddresses = ["::1", "127.0.0.1", "172.17.35.148"];
-    //settings.bindAddresses = ["127.0.0.1"];
-    settings.errorPageHandler = toDelegate(&view_error);
-    //settings.options = HTTPServerOption.parseURL|HTTPServerOption.distribute;
-
-    auto router = new URLRouter;
-    router.get("/files/*", &vsr.fileManager);
-    router.get("*", serveStaticFiles("public"));
-    router.get("/", serveStaticFile("public/index.html"));
-    router.get("/tests", serveStaticFile("public/tests.html"));
-    router.post("/files", &uploadFile);
-
-    registerRestInterface(router, vsr);
-
-    log.trace("=========== ROUTES ============");
-    auto routes = router.getAllRoutes();
-    log.trace("GET:");
-    foreach (route; routes)
+    try
     {
-        if (route.method == HTTPMethod.GET)
-            log.trace(route.pattern);
-    }
+        VedaStorageRest vsr = new VedaStorageRest(pool, core_context);
 
-    log.trace("PUT:");
-    foreach (route; routes)
+        auto            settings = new HTTPServerSettings;
+
+        settings.port           = http_port;
+        settings.maxRequestSize = 1024 * 1024 * 1000;
+        //settings.bindAddresses = ["::1", "127.0.0.1", "172.17.35.148"];
+        //settings.bindAddresses = ["127.0.0.1"];
+        settings.errorPageHandler = toDelegate(&view_error);
+        //settings.options = HTTPServerOption.parseURL|HTTPServerOption.distribute;
+
+        auto router = new URLRouter;
+        router.get("/files/*", &vsr.fileManager);
+        router.get("*", serveStaticFiles("public"));
+        router.get("/", serveStaticFile("public/index.html"));
+        router.get("/tests", serveStaticFile("public/tests.html"));
+        router.post("/files", &uploadFile);
+
+        registerRestInterface(router, vsr);
+
+        log.trace("=========== ROUTES ============");
+        auto routes = router.getAllRoutes();
+        log.trace("GET:");
+        foreach (route; routes)
+        {
+            if (route.method == HTTPMethod.GET)
+                log.trace(route.pattern);
+        }
+
+        log.trace("PUT:");
+        foreach (route; routes)
+        {
+            if (route.method == HTTPMethod.PUT)
+                log.trace(route.pattern);
+        }
+
+        log.trace("POST:");
+        foreach (route; routes)
+        {
+            if (route.method == HTTPMethod.POST)
+                log.trace(route.pattern);
+        }
+
+        log.trace("DELETE:");
+        foreach (route; routes)
+        {
+            if (route.method == HTTPMethod.DELETE)
+                log.trace(route.pattern);
+        }
+        log.trace("===============================");
+
+        listenHTTP(settings, router);
+        log.trace("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
+        return true;
+    }
+    catch (Exception ex)
     {
-        if (route.method == HTTPMethod.PUT)
-            log.trace(route.pattern);
     }
-
-    log.trace("POST:");
-    foreach (route; routes)
-    {
-        if (route.method == HTTPMethod.POST)
-            log.trace(route.pattern);
-    }
-
-    log.trace("DELETE:");
-    foreach (route; routes)
-    {
-        if (route.method == HTTPMethod.DELETE)
-            log.trace(route.pattern);
-    }
-    log.trace("===============================");
-
-    listenHTTP(settings, router);
-    log.trace("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
+    return false;
 }

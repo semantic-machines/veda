@@ -6,7 +6,7 @@ module veda.onto.resource;
 
 import std.conv, std.stdio, std.datetime, std.string;
 import onto.lang;
-import type;
+import veda.type;
 
 enum ResourceOrigin : ubyte
 {

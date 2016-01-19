@@ -5,6 +5,8 @@
   font-family: monospace;
   height: 300px;
   color: black;
+  overflow-x: scroll;
+  word-wrap: break-word;
 }
 
 /* PADDING */

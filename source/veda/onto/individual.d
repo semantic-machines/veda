@@ -118,6 +118,33 @@ public struct Individual
         resources[ uri ] = new_rss;
     }
 
+    void remove_Resources(string uri, Resources in_rss)
+    {
+        Resources new_rss;
+        
+		Resources rss = resources.get(uri, Resources.init);
+        foreach (rs; rss)
+        {        				
+        	bool is_found = false;        
+        	foreach (in_rs; in_rss)
+        	{
+        		if (in_rs == rs)
+        		{
+        			is_found = true;
+        			break;
+        		}
+        	}
+        	
+        	if (is_found != true)
+           		new_rss ~= rs;
+        }	
+
+		if (new_rss.length == 0)
+        	resources.remove (uri);
+		else
+        	resources[ uri ] = new_rss;
+    }
+
     void add_unique_Resources(string uri, Resources in_rss)
     {
         Resources new_rss;

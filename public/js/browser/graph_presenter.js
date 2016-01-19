@@ -2,7 +2,6 @@
 
 veda.Module(function GraphPresenter(veda) { "use strict";
 
-	var container = $("#main");
 	var tmpl = $("#graph-template").html();
 	
 	veda.on("load:graph", function (uri) {
@@ -186,6 +185,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		var nodes = new vis.DataSet(), edges = new vis.DataSet();
 		var body = $("body");
 		var select = {nodes: [], edges: []};
+		var container = $("#main");
 		container.empty();
 		container.prepend( $(tmpl) );
 		var graph = $("#graph", container);
@@ -274,7 +274,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		addNode(root);
 		addOutLinks(root.id);
 		
-		var height = ( $("#copyright").offset().top - graph.offset().top ) + "px";
+		var height = ( $(window).height() - graph.offset().top - 40) + "px";
 		var options = {
 			width: "100%",
 			height: height,

@@ -1,34 +1,24 @@
 // Veda application Presenter
 
 veda.Module(function AppPresenter(veda) { "use strict";
-
-	// Listen to logout click
-	$("#logout").on("click", function (e) {
-		$("#current-user").html("");
-		delCookie("user_uri"); delCookie("ticket"); delCookie("end_time");
-		veda.logout();
-	});
 	
 	// Prevent empty links routing
 	$("body").on("click", "[href='']", function (e) {
 		e.preventDefault();
 	});
+	
+	// Route on link click
+	$("body").on("click", "[href^='#/']", function (e) {
+		e.preventDefault();
+		var forced, 
+			hash = $(this).attr("href");
+		forced = (hash === location.hash ? false : true);
+		return riot.route(hash, forced);
+	});
 
-	// Clear local storage
-	$("#clear-storage").on("click", function (e) {
-		localStorage.clear();
-		location.reload();
-	});
-	
-	// Toggle language
-	veda.on("language:changed", function () {
-		//veda.init();
-		//riot.route(location.hash, true);
-		location.reload();
-	});
-	
 	// Triggered in veda.init()
 	veda.one("started", function () {
+		var welcome = new veda.IndividualModel("v-l:Welcome");
 		// Router function
 		riot.route( function (hash) {
 			var hash_tokens = hash.slice(2).split("/");
@@ -37,23 +27,14 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			if (page !== "") {
 				veda.load(page, params);
 			} else {
-				veda.user.aspect.present("#main");
+				welcome.present("#main");
 			}
 		});
-	});	
-
-	veda.on("started", function () {		
-		// Forced route to current hash
-		riot.route(location.hash, true);
 	});
-
-	// Route on link click
-	$("body").on("click", "[href^='#/']", function (e) {
-		e.preventDefault();
-		var forced, 
-			hash = $(this).attr("href");
-		forced = (hash === location.hash ? false : true);
-		return riot.route(hash, forced);
+	veda.on("started", function () {
+		var main = new veda.IndividualModel("v-l:Main");
+		main.present("#app");
+		riot.route(location.hash, true);
 	});
 	
 	// Login invitation
@@ -77,7 +58,9 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			veda.trigger("login:failed");
 		}
 	});
+	
 	veda.on("login:failed", function () {
+		delCookie("user_uri"); delCookie("ticket"); delCookie("end_time");
 		loginContainer.removeClass("hidden");
 	});
 

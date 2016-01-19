@@ -1,7 +1,7 @@
 addons:
   sauce_connect:
-    username: Itiua
-    access_key: 660aeb73-b835-4f4a-aaff-17ecdf19a845
+    username: semanticmachines
+    access_key: 0fdd3d85-3d51-4fd5-89ed-10980baa57a5
 
 env:
   global:
@@ -9,7 +9,7 @@ env:
     - secure: s1BV5JjhQIIdasowuMW2OqH5LjvN3tnU+sEGdz4HxWpHufgFUeNBVzu13S85qSxdch55lCyB4ft58PAX3q0wHFPYvBEwkvMlSFny7LeiytW9HZ/fkCG+Dwh6H6OEK1jKQriXZrYLQm4m6gnnAQYsUpDhxP12YejyyBbfaVW73Og=
 
 language: d
-d: dmd-2.068.2
+d: dmd-2.069.0
 
 # Load all dependencies
 # Compile vibe-d before main project to prevent OutOfMemory issue
@@ -29,7 +29,7 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
   - start-stop-daemon --start --verbose --chdir $PWD --make-pidfile --pidfile $PWD/veda-pid --background --startas /bin/bash -- -c "exec ./veda >> $PWD/veda.log 2>&1"
-  - sleep 60  # give Web server some time to bind to sockets, load startup data, etc
+  - sleep 90  # give Web server some time to bind to sockets, load startup data, etc
 
 # Run API & integration test
 script:
@@ -40,4 +40,4 @@ script:
 # Stop deamon and show log
 after_script:
   - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
-  - cat $PWD/veda.log
+  - cat $PWD/*.log          

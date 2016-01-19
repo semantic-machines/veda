@@ -1,11 +1,11 @@
 /**
  * Общие определения
 
-   Copyright: © 2014 Semantic Machines
+   Copyright: © 2014-2015 Semantic Machines
    License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
    Authors: Valeriy Bushenev
  */
-module type;
+module veda.type;
 
 import std.math, std.stdio, std.conv, std.string;
 

@@ -8,11 +8,10 @@ private
     import core.thread, std.stdio, std.string, std.c.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process;
     version (linux) import std.c.linux.linux, core.stdc.stdlib;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
-    import io.mq_client, io.rabbitmq_client, io.file_reader;
+    import io.mq_client, veda.core.io.file_reader;
     import util.logger, util.utils, util.load_info;
     import veda.core.scripts, veda.core.context, veda.core.know_predicates, veda.core.log_msg, veda.core.thread_context;
-    import veda.core.define, veda.core.interthread_signals;
-    import type, az.acl, storage.storage_thread, search.xapian_indexer, veda.onto.individual, veda.onto.resource;
+    import veda.core.define, veda.type, az.acl, storage.storage_thread, search.xapian_indexer, veda.onto.individual, veda.onto.resource;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -27,41 +26,6 @@ logger log()
 // ////// ////// ///////////////////////////////////////////
 
 logger io_msg;
-
-// Called upon a signal from Linux
-extern (C) public void sighandler0(int sig) nothrow @system
-{
-    try
-    {
-        log.trace_log_and_console("signal %d caught...\n", sig);
-        system(cast(char *)("kill -kill " ~ text(getpid()) ~ "\0"));
-        //Runtime.terminate();
-    }
-    catch (Exception ex)
-    {
-    }
-}
-
-extern (C) public void sighandler1(int sig) nothrow @system
-{
-    try
-    {
-        printPrettyTrace(stderr);
-
-        string err;
-        if (sig == SIGBUS)
-            err = "SIGBUS";
-        else if (sig == SIGSEGV)
-            err = "SIGSEGV";
-
-        log.trace_log_and_console("signal %s caught...\n", err);
-        system(cast(char *)("kill -kill " ~ text(getpid()) ~ "\0"));
-        //Runtime.terminate();
-    }
-    catch (Exception ex)
-    {
-    }
-}
 
 static this()
 {
@@ -120,6 +84,15 @@ bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
 }
 //		import io.zmq_io;
 
+extern (C) void handleTermination(int signal)
+{
+    writefln("!Caught signal: %s", signal);
+
+    system(cast(char *)("kill -kill " ~ text(getpid()) ~ "\0"));
+
+    //   getTrace();
+    exit(signal);
+}
 
 Context init_core(string node_id, string role, ushort listener_http_port, string write_storage_node)
 {
@@ -133,6 +106,8 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
 
     io_msg = new logger("pacahon", "io", "server");
     Tid[ P_MODULE ] tids;
+
+    bsd_signal(SIGINT, &handleTermination);
 
     try
     {
@@ -178,10 +153,6 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
         }
 
         log.trace("init core: is_main=%s, jsvm_node_type=%s", text(is_main), jsvm_node_type);
-
-
-        tids[ P_MODULE.interthread_signals ] = spawn(&interthread_signals_thread, text(P_MODULE.interthread_signals));
-        wait_starting_thread(P_MODULE.interthread_signals, tids);
 
         if (is_main)
         {
@@ -232,11 +203,11 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
 
         if (jsvm_node_type == "internal" || jsvm_node_type == "")
         {
-            tids[ P_MODULE.condition ] = spawn(&condition_thread, text(P_MODULE.condition), node_id);
-            wait_starting_thread(P_MODULE.condition, tids);
+            tids[ P_MODULE.scripts ] = spawn(&scripts_thread, text(P_MODULE.scripts), node_id);
+            wait_starting_thread(P_MODULE.scripts, tids);
 
-            register(text(P_MODULE.condition), tids[ P_MODULE.condition ]);
-            Tid tid_condition = locate(text(P_MODULE.condition));
+            register(text(P_MODULE.scripts), tids[ P_MODULE.scripts ]);
+            Tid tid_scripts = locate(text(P_MODULE.scripts));
         }
 
         if (is_main)
@@ -273,7 +244,7 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (is_main)
         {
-            tids[ P_MODULE.file_reader ] = spawn(&io.file_reader.file_reader_thread, P_MODULE.file_reader, node_id, 5);
+            tids[ P_MODULE.file_reader ] = spawn(&veda.core.io.file_reader.file_reader_thread, P_MODULE.file_reader, node_id, 5);
             wait_starting_thread(P_MODULE.file_reader, tids);
 
 //        io.file_reader.processed(core_context);

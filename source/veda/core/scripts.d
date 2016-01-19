@@ -8,8 +8,7 @@ private
     import std.json, std.stdio, std.string, std.array, std.datetime, std.concurrency, std.conv, std.file;
     import core.thread;
     import util.container, util.utils, util.logger, util.cbor, veda.core.util.cbor8individual;
-    import type;
-    import veda.onto.individual, veda.onto.resource, veda.onto.onto;
+    import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.onto;
     import veda.core.know_predicates, veda.core.context, veda.core.define, veda.core.thread_context, veda.core.log_msg;
     import search.vel, search.vql;
     import bind.v8d_header;
@@ -39,11 +38,11 @@ private Context context;
 private         ScriptInfo[ string ] scripts;
 private VQL     vql;
 
-public void condition_thread(string thread_name, string node_id)
+public void scripts_thread(string thread_name, string node_id)
 {
     core.thread.Thread.getThis().name = thread_name;
 
-    context   = new PThreadContext(node_id, thread_name, P_MODULE.condition);
+    context   = new PThreadContext(node_id, thread_name, P_MODULE.scripts);
     g_context = context;
 
     vql = new VQL(context);
@@ -73,7 +72,7 @@ public void condition_thread(string thread_name, string node_id)
                                 Individual ss;
                                 if (cbor2individual(&ss, arg) > 0)
                                 {
-                                    prepare_condition(ss, script_vm);
+                                    prepare_scripts(ss, script_vm);
                                     send(to, true);
                                 }
                             }
@@ -171,20 +170,17 @@ public void condition_thread(string thread_name, string node_id)
                                         try
                                         {
                                             if (trace_msg[ 300 ] == 1)
-                                                log.trace("exec script : %s ", script_id);
-
-                                            // writeln("scripts B #2 ", script_id, " *", process_name);
+                                                log.trace("start exec script : %s ", script_id);
 
                                             count++;
                                             script_vm.run(script.compiled_script);
 
-                                            // writeln("scripts B #3 ", script_id, " *", process_name);
                                             if (trace_msg[ 300 ] == 1)
-                                                log.trace("end exec script");
+                                                log.trace("end exec script : %s ", script_id);
                                         }
                                         catch (Exception ex)
                                         {
-                                            log.trace_log_and_console("EX!condition.receive : %s", ex.msg);
+                                            log.trace_log_and_console("EX!scripts.receive : %s", ex.msg);
                                         }
                                     }
                                 }
@@ -202,7 +198,7 @@ public void condition_thread(string thread_name, string node_id)
                             if (cmd == CMD.SET_TRACE)
                                 set_trace(arg, arg2);
                         },
-                        (Variant v) { log.trace_log_and_console(thread_name ~ "::condition_thread::Received some other type." ~ text(v)); });
+                        (Variant v) { log.trace_log_and_console(thread_name ~ "::scripts_thread::Received some other type." ~ text(v)); });
             }
             catch (Exception ex)
             {
@@ -238,7 +234,7 @@ public void load()
 
     foreach (ss; res)
     {
-        prepare_condition(ss, script_vm);
+        prepare_scripts(ss, script_vm);
     }
 
     //writeln ("@2");
@@ -246,22 +242,30 @@ public void load()
     log.trace("end load db scripts, count=%d ", res.length);
 }
 
-private void prepare_condition(Individual ss, ScriptVM script_vm)
+private void prepare_scripts(Individual ss, ScriptVM script_vm)
 {
     if (trace_msg[ 310 ] == 1)
-        log.trace("prepare_condition uri=%s", ss.uri);
+        log.trace("prepare_scripts uri=%s", ss.uri);
 
     JSONValue nil;
     try
     {
-        string condition_text = ss.getFirstResource(veda_schema__script).literal;
-        if (condition_text.length <= 0)
+        string scripts_text = ss.getFirstResource(veda_schema__script).literal;
+        if (scripts_text.length <= 0)
             return;
 
         string str_script =
-            "var ticket = get_env_str_var ('$ticket'); var user_uri = get_env_str_var ('$user'); var prev_state = get_individual (ticket, '$prev_state'); var document = get_individual (ticket, '$document'); if (document) { var _script_id = '"
-            ~ ss.uri ~
-            "'; var _event_id = document['@'] + _script_id; " ~ condition_text ~ "}";
+              "var ticket = get_env_str_var ('$ticket');"
+            ~ "var user_uri = get_env_str_var ('$user');"
+            ~ "var prev_state = get_individual (ticket, '$prev_state');"
+            ~ "var document = get_individual (ticket, '$document');"
+            ~ "if (document) {"
+            	~ "var _script_id = '" ~ ss.uri ~ "';"
+            	~ "var _event_id = document['@'] + _script_id;"
+            	~ "script();"
+            ~ "};"
+            ~ "function script() {" ~ scripts_text ~ "};"
+            ;
         try
         {
             ScriptInfo script = ScriptInfo.init;
@@ -272,7 +276,7 @@ private void prepare_condition(Individual ss, ScriptVM script_vm)
             if (trace_msg[ 310 ] == 1)
                 log.trace("#compile script.id=%s, text=%s", script.id, script.str_script);
 
-            //writeln("condition_text:", condition_text);
+            //writeln("scripts_text:", scripts_text);
 
             Resources filters = ss.getResources(veda_schema__filter);
 

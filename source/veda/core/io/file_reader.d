@@ -2,15 +2,14 @@
  * загрузка индивидов в базу данных из *.ttl
  * генерация doc/onto
  */
-module io.file_reader;
+module veda.core.io.file_reader;
 
 import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib;
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path, std.utf,
        std.stdio : writeln;
-import type;
-import util.container, util.cbor, util.utils, util.logger, util.raptor2individual, veda.core.util.cbor8individual;
-import veda.onto.individual, veda.onto.resource;
-import veda.core.context, veda.core.thread_context, veda.core.define, veda.core.know_predicates, veda.core.log_msg;
+import util.container, util.cbor, util.utils, util.logger, veda.core.util.raptor2individual, veda.core.util.cbor8individual;
+import veda.type, veda.onto.individual, veda.onto.resource, veda.core.context, veda.core.thread_context, veda.core.define, veda.core.know_predicates,
+       veda.core.log_msg;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -31,13 +30,7 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
     core.thread.Thread tr = core.thread.Thread.getThis();
     tr.name = std.conv.text(id);
 
-    try
-    {
-        mkdir("ontology");
-    }
-    catch (Exception ex)
-    {
-    }
+    try { mkdir("ontology"); } catch (Exception ex) {}
 
     ubyte[] out_data;
 
@@ -63,7 +56,7 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
         }
         catch (Throwable thw)
         {
-            log.trace("file_reader_thread Ex:", thw.msg);
+            log.trace("file_reader_thread Ex: %s", thw.msg);
         }
 
         if (checktime > 0)
@@ -75,22 +68,20 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
 }
 
 SysTime[ string ] file_modification_time;
+long[ string ]    prefix_2_priority;
 
-void processed(Context context, bool is_load)
+Individual[ string ] read_ttl(Context context, bool is_load)
 {
     Individual[ string ] individuals;
-    string[] order_in_load = [ "vdi:", "v-a:", "vsrv:", "rdf:", "rdfs:", "owl:", "v-s:", "v-wf:", "v-ui:", "*", "td:" ];
     string[ string ] filename_2_prefix;
     Individual *[ string ][ string ] individuals_2_filename;
     Set!string files_to_load;
-    Ticket sticket = context.sys_ticket();
+    bool is_reload = false;
 
-    auto   oFiles = dirEntries(path, SpanMode.depth);
+    auto oFiles = dirEntries(path, SpanMode.depth);
 
     if (trace_msg[ 29 ] == 1)
-        log.trace("load directory sequence");
-
-    bool is_reload = false;
+        log.trace("read *.ttl from %s", path);
 
     foreach (o; oFiles)
     {
@@ -127,15 +118,26 @@ void processed(Context context, bool is_load)
     {
         foreach (filename; files_to_load)
         {
-            log.trace("prepare_file %s", filename);
+            string[ string ] prefixes;
 
-            auto l_individuals = ttl2individuals(filename, context);
+            if (context !is null)
+                prefixes = context.get_prefix_map();
+
+            auto l_individuals = ttl2individuals(filename, prefixes, prefixes);
+
+            if (context !is null)
+                context.add_prefix_map(prefixes);
 
             foreach (uri, indv; l_individuals)
             {
                 if (indv.isExist(rdf__type, owl__Ontology))
                 {
                     filename_2_prefix[ indv.uri ] = filename;
+                    long loadPriority = indv.getFirstInteger("v-s:loadPriority", -1);
+
+                    if (loadPriority >= 0)
+                        prefix_2_priority[ indv.uri ] = loadPriority;
+
                     break;
                 }
             }
@@ -143,78 +145,56 @@ void processed(Context context, bool is_load)
             individuals_2_filename[ filename ] = l_individuals;
         }
 
-        int idx = 0;
-        foreach (pos; order_in_load)
+        for (int priority = 0; priority < 100; priority++)
         {
+            string prepared_filename;
+
             foreach (onto_name, filename; filename_2_prefix)
             {
-                bool is_next = false;
-                if (pos == "*")
+                long cur_priority = prefix_2_priority.get(onto_name, 99);
+                if (priority == cur_priority)
                 {
-                    is_next = true;
-                    for (int i = idx; i < order_in_load.length; i++)
-                    {
-                        if (onto_name == order_in_load[ i ])
-                        {
-                            is_next = false;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    if (onto_name == pos)
-                        is_next = true;
-                }
+                    log.trace("prepare_file %s, priority=%d", filename, priority);
 
-                if (is_next == true)
-                {
                     auto indvs = individuals_2_filename.get(filename, null);
                     if (indvs !is null)
                         prepare_list(individuals, indvs.values, context, onto_name);
+                    prepared_filename = filename;
                 }
             }
+            filename_2_prefix.remove(prepared_filename);
         }
+    }
 
-        //writeln("@@1 ontohashes_2_filename=", ontohashes_2_filename);
-        //writeln("@@2 filename_2_prefix=", filename_2_prefix);
-        //writeln("@@3 modifed_2_file=", modifed_2_file);
+    return individuals;
+}
 
-        // load index onto
-        idx = 0;
-        foreach (pos; order_in_load)
+void processed(Context context, bool is_load)
+{
+    Ticket sticket = context.sys_ticket();
+
+    Individual[ string ] individuals = read_ttl(context, is_load);
+
+    if (individuals.length > 0 && is_load)
+    {
+        for (int priority = 0; priority < 100; priority++)
         {
+            bool is_loaded = false;
+
             foreach (uri, indv; individuals)
             {
                 if (indv != Individual.init)
                 {
                     string isDefinedBy = indv.getFirstLiteral("rdfs:isDefinedBy");
-//        log.trace("load directory sequence 2...pos=%s", pos);
-                    bool   is_next = false;
-                    if (pos == "*")
-                    {
-                        is_next = true;
-                        for (int i = idx; i < order_in_load.length; i++)
-                        {
-                            if (isDefinedBy == order_in_load[ i ])
-                            {
-                                is_next = false;
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (isDefinedBy == pos)
-                            is_next = true;
-                    }
 
-                    if (is_next == true)
+                    long   cur_priority = prefix_2_priority.get(isDefinedBy, 99);
+
+                    if (priority == cur_priority)
                     {
                         individuals[ uri ] = Individual.init;
 
                         Individual indv_in_storage = context.get_individual(&sticket, uri);
-                        //log.trace("in storage, uri=%s \n%s", indv_in_storage.uri, text(indv_in_storage));
+//                        log.trace("in storage, uri=%s \n%s", indv_in_storage.uri, text(indv_in_storage));
 
                         if (indv_in_storage == Individual.init || indv.compare(indv_in_storage) == false)
                         {
@@ -226,25 +206,29 @@ void processed(Context context, bool is_load)
                             if (res != ResultCode.OK)
                                 log.trace("individual =%s, not store, errcode =%s", indv.uri, text(res));
                         }
+                        is_loaded = true;
                     }
                 }
             }
-            idx++;
 
-            //    context.reopen_ro_subject_storage_db();
-            //    context.reopen_ro_fulltext_indexer_db();
-
-            Tid tid_condition_manager = context.getTid(P_MODULE.condition);
-            if (tid_condition_manager != Tid.init)
+            if (is_loaded)
             {
-                core.thread.Thread.sleep(dur!("seconds")(1));
-                send(tid_condition_manager, CMD.RELOAD, thisTid);
-                receive((bool res) {});
+                //    context.reopen_ro_subject_storage_db();
+                //    context.reopen_ro_fulltext_indexer_db();
+                try
+                {
+                    Tid tid_scripts_manager = context.getTid(P_MODULE.scripts);
+                    if (tid_scripts_manager != Tid.init)
+                    {
+                        core.thread.Thread.sleep(dur!("seconds")(1));
+                        send(tid_scripts_manager, CMD.RELOAD, thisTid);
+                        receive((bool res) {});
+                    }
+                }
+                catch (Exception ex) {}
             }
         }
     }
-
-//    context.set_reload_signal_to_local_thread("search");
 
     core.memory.GC.collect();
 
@@ -256,33 +240,29 @@ import util.individual2html;
 
 private void prepare_list(ref Individual[ string ] individuals, Individual *[] ss_list, Context context, string onto_name)
 {
-    // 2. попутно находит системный аккаунт (veda)
     try
     {
         if (trace_msg[ 30 ] == 1)
             log.trace("ss_list.count=%d", ss_list.length);
-
 
         string prefix;
         string i_uri;
 
         string doc_filename = docs_onto_path ~ "/" ~ onto_name[ 0..$ - 1 ] ~ ".html";
 
-        try
-        {
-            remove(doc_filename);
-
-            append(
-                   doc_filename,
-                   "<html><body><head><meta charset=\"utf-8\"/><link href=\"css/bootstrap.min.css\" rel=\"stylesheet\"/><style=\"padding: 0px 0px 30px;\"></head>\n");
-        }
-        catch (Exception ex)
-        {
-        }
+        if (context !is null)
+            try
+            {
+                remove(doc_filename);
+                append(
+                       doc_filename,
+                       "<html><body><head><meta charset=\"utf-8\"/><link href=\"css/bootstrap.min.css\" rel=\"stylesheet\"/><style=\"padding: 0px 0px 30px;\"></head>\n");
+            }
+            catch (Exception ex) {}
 
         foreach (ss; ss_list)
         {
-            if (ss.isExist(rdf__type, owl__Ontology))
+            if (ss.isExist(rdf__type, owl__Ontology) && context !is null)
             {
                 prefix = context.get_prefix_map.get(ss.uri, null);
                 Resources ress = Resources.init;
@@ -295,7 +275,12 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
                 ss.addResource("rdfs:isDefinedBy", Resource(DataType.Uri, onto_name));
             }
 
-            append(doc_filename, individual2html(ss));
+            if (context !is null)
+                try
+                {
+                    append(doc_filename, individual2html(ss));
+                }
+                catch (Exception ex) {}
 
             long       pos_path_delimiter = indexOf(ss.uri, '/');
 
@@ -309,12 +294,16 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
                 log.trace("apply, uri=%s %s", ss.uri, ss1);
         }
 
-        append(doc_filename, "\n</body></html>");
+        if (context !is null)
+            try
+            {
+                append(doc_filename, "\n</body></html>");
+            }
+            catch (Exception ex) {}
 
         //context.reopen_ro_subject_storage_db ();
         if (trace_msg[ 33 ] == 1)
             log.trace("prepare_list end");
-        //writeln ("file_reader::prepare_file end");
     }
     catch (Exception ex)
     {

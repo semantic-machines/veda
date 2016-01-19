@@ -6,19 +6,15 @@ module veda.core.thread_context;
 
 private
 {
-    import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path;
-    import type;
+    import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
+           std.json;
+    //import vibe.data.json, vibe.core.log, vibe.http.client, vibe.stream.operations;
     import bind.xapian_d_header, bind.v8d_header;
     import io.mq_client;
     import util.container, util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, veda.core.util.individual8json;
-    import veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.interthread_signals, veda.core.log_msg;
+    import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.log_msg;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, storage.lmdb_storage;
     import az.acl;
-
-    import vibe.data.json;
-    import vibe.core.log;
-    import vibe.http.client;
-    import vibe.stream.operations;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -42,7 +38,6 @@ string g_str_script_out;
 class PThreadContext : Context
 {
     long local_count_put;
-    long local_count_indexed;
 
     bool[ P_MODULE ] is_traced_module;
 
@@ -101,7 +96,7 @@ class PThreadContext : Context
         is_traced_module[ P_MODULE.subject_manager ]  = true;
         is_traced_module[ P_MODULE.acl_manager ]      = true;
         is_traced_module[ P_MODULE.fulltext_indexer ] = true;
-        is_traced_module[ P_MODULE.condition ]        = true;
+        is_traced_module[ P_MODULE.scripts ]          = true;
 
         getConfiguration();
 
@@ -110,8 +105,8 @@ class PThreadContext : Context
         onto = new Onto(this);
         onto.load();
 
-        local_count_put     = get_count_put();
-        local_count_indexed = get_count_indexed();
+        local_count_put = get_count_put();
+        ft_local_count  = get_count_indexed();
 
         log.trace_log_and_console("NEW CONTEXT [%s], external: write storage=[%s], js_vm=[%s]", context_name, external_write_storage_url,
                                   external_js_vm_url);
@@ -159,26 +154,21 @@ class PThreadContext : Context
         return node;
     }
 
+    private long local_count_onto_update = -1;
+
     public Onto get_onto()
     {
         if (onto !is null)
         {
-            check_for_reload("onto", &onto.load);
+            long g_count_onto_update = get_count_onto_update();
+            if (g_count_onto_update > local_count_onto_update)
+            {
+                local_count_onto_update = g_count_onto_update;
+                onto.load();
+            }
         }
 
         return onto;
-    }
-
-    public long get_last_update_time()
-    {
-        long lut;
-
-        send(getTid(P_MODULE.xapian_thread_context), CMD.GET, CNAME.LAST_UPDATE_TIME, thisTid);
-        receive((long tm)
-                {
-                    lut = tm;
-                });
-        return lut;
     }
 
     private void reload_scripts()
@@ -289,7 +279,13 @@ class PThreadContext : Context
     {
         if (onto !is null)
         {
-            check_for_reload("onto", &onto.load);
+            long g_count_onto_update = get_count_onto_update();
+            if (g_count_onto_update > local_count_onto_update)
+            {
+                local_count_onto_update = g_count_onto_update;
+                onto.load();
+            }
+
             return onto.get_individuals;
         }
         else
@@ -312,45 +308,6 @@ class PThreadContext : Context
 
         return res;
     }
-// /////////////////////////////////////////// oykumena ///////////////////////////////////////////////////
-
-    public void push_signal(string key, long value)
-    {
-        try
-        {
-            Tid tid_interthread_signals = getTid(P_MODULE.interthread_signals);
-
-            if (tid_interthread_signals != Tid.init)
-            {
-                send(tid_interthread_signals, CMD.PUT, key, value);
-            }
-
-            set_reload_signal_to_local_thread(key);
-        }
-        catch (Exception ex)
-        {
-            writeln(__FUNCTION__ ~ "", ex.msg);
-        }
-    }
-
-    public void push_signal(string key, string value)
-    {
-        try
-        {
-            Tid tid_interthread_signals = getTid(P_MODULE.interthread_signals);
-
-            if (tid_interthread_signals != Tid.init)
-            {
-                send(tid_interthread_signals, CMD.PUT, key, value);
-            }
-        }
-        catch (Exception ex)
-        {
-            writeln(__FUNCTION__ ~ "", ex.msg);
-        }
-    }
-
-// /////////////////////////////////////////////////////////////////////////////////////////////
 
     public Tid getTid(P_MODULE tid_id)
     {
@@ -457,7 +414,7 @@ class PThreadContext : Context
         }
     }
 
-    private void stat(CMD command_type, ref StopWatch sw, string func = __FUNCTION__) nothrow
+    public void stat(CMD command_type, ref StopWatch sw, string func = __FUNCTION__) nothrow
     {
         try
         {
@@ -483,166 +440,44 @@ class PThreadContext : Context
         }
     }
 
-    // ////////////////////////////////////////////////////////////////////////////////
-    struct Signal
-    {
-        long time_update = 0;
-        long time_check  = 0;
-    }
+    int  timeout = 10;
 
-    Signal *[ string ] signals;
-
-    int timeout = 10;
-
-    public void set_reload_signal_to_local_thread(string interthread_signal_id)
-    {
-        Signal *signal = signals.get(interthread_signal_id, null);
-
-        if (signal == null)
-        {
-            signal                           = new Signal;
-            signals[ interthread_signal_id ] = signal;
-        }
-
-        long now = Clock.currStdTime() / 10000000;
-        signal.time_update = now;
-
-        if (trace_msg[ 19 ] == 1)
-            log.trace("[%s] SET RELOAD LOCAL SIGNAL [%s], signal.time_update=%d", name, interthread_signal_id,
-                      signal.time_update);
-    }
-
-    long local_time_check_indexed = 0;
+    long ft_local_count;
+    long ft_local_time_check = 0;
     public bool ft_check_for_reload(void delegate() load)
     {
+        return _check_for_reload(ft_local_time_check, ft_local_count, &get_count_indexed, load);
+    }
+
+    long acl_local_count;
+    long acl_local_time_check = 0;
+    public bool acl_check_for_reload(void delegate() load)
+    {
+        return _check_for_reload(acl_local_time_check, acl_local_count, &get_acl_manager_op_id, load);
+    }
+
+    public bool _check_for_reload(ref long local_time_check, ref long local_count, long function() get_now_count, void delegate() load)
+    {
         long now = Clock.currStdTime() / 10000000;
 
-        if (now - local_time_check_indexed > timeout)
-        {
-            long count_indexed = get_count_indexed();
-            //writeln ("@ft_check_for_reload:count_indexed=", count_indexed);
-            //writeln ("@ft_check_for_reload:local_count_indexed=", local_count_indexed);
+//        log.trace ("@ft_check_for_reload: #1");
 
-            if (count_indexed - local_count_indexed > 0)
+        if (now - local_time_check > timeout)
+        {
+            long count_now = get_now_count();
+            //log.trace("@_check_for_reload:count_now=%d, local_count=%d", count_now, local_count);
+
+            local_time_check = now;
+            if (count_now > local_count)
             {
-                //writeln ("@ft_check_for_reload:execute load");
-                local_time_check_indexed = now;
-                local_count_indexed      = count_indexed;
+                //log.trace("__check_for_reload:execute reload");
+                local_count = count_now;
                 load();
                 return true;
             }
         }
         return false;
     }
-
-    public bool check_for_reload(string interthread_signal_id, void delegate() load)
-    {
-        Signal *local = signals.get(interthread_signal_id, null);
-
-        long   now = Clock.currStdTime() / 10000000;
-
-        if (local == null)
-        {
-            if (trace_msg[ 19 ] == 1)
-                log.trace("[%s] NEW SIGNAL OBJ for [%s] ", name, interthread_signal_id);
-
-            local                            = new Signal;
-            local.time_update                = now;
-            local.time_check                 = now - timeout - 1;
-            signals[ interthread_signal_id ] = local;
-        }
-
-
-        if (now - local.time_check > timeout)
-        {
-            if (trace_msg[ 19 ] == 1)
-                log.trace("[%s] CHECK FOR RELOAD #1 [%s], (now-local.time_update)=%d, (now-local.time_check)=%d", name,
-                          interthread_signal_id, now - local.time_update, now - local.time_check);
-
-            if (local.time_update > local.time_check)
-            {
-                if (trace_msg[ 19 ] == 1)
-                    log.trace("[%s] NOW RELOAD FOR [%s], local.time_update=%d > local.time_check=%d", name, interthread_signal_id,
-                              local.time_update, local.time_check);
-
-                local.time_check  = now;
-                local.time_update = now;
-
-                load();
-
-                return true;
-            }
-            else
-            {
-                local.time_check = now;
-
-                long stored_time_signal = look_integer_signal(interthread_signal_id) / 1000;
-                if (stored_time_signal == 0)
-                    return false;
-
-                if (trace_msg[ 19 ] == 1)
-                    log.trace("[%s] CHECK FOR RELOAD #2 [%s], stored_time_signal=%d, local.time_update=%d, delta=%d",
-                              name, interthread_signal_id, stored_time_signal, local.time_update, stored_time_signal - local.time_update);
-
-                if (local.time_update < stored_time_signal)
-                {
-                    if (trace_msg[ 19 ] == 1)
-                        log.trace("[%s] NOW RELOAD FOR [%s], local.time_update=%d < stored_time_signal=%d", name, interthread_signal_id,
-                                  local.time_update, stored_time_signal);
-
-                    local.time_update = stored_time_signal;
-
-                    load();
-
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public long look_integer_signal(string key)
-    {
-        Tid myTid                   = thisTid;
-        Tid tid_interthread_signals = getTid(P_MODULE.interthread_signals);
-
-        if (tid_interthread_signals !is Tid.init)
-        {
-            send(tid_interthread_signals, CMD.GET, key, DataType.Integer, myTid);
-
-            long res;
-
-            receive((long msg)
-                    {
-                        res = msg;
-                    });
-
-            return res;
-        }
-        return 0;
-    }
-
-    public string look_string_signal(string key)
-    {
-        Tid myTid                   = thisTid;
-        Tid tid_interthread_signals = getTid(P_MODULE.interthread_signals);
-
-        if (tid_interthread_signals !is Tid.init)
-        {
-            send(tid_interthread_signals, CMD.GET, key, DataType.String, myTid);
-
-            string res;
-
-            receive((string msg)
-                    {
-                        res = msg;
-                    });
-
-            return res;
-        }
-        return null;
-    }
-
 
     // *************************************************** external api *********************************** //
 
@@ -734,6 +569,7 @@ class PThreadContext : Context
                 string url = external_write_storage_url ~ "/authenticate";
                 try
                 {
+/*
                     requestHTTP(url ~ "?login=" ~ login ~ "&password=" ~ password,
                                 (scope req) {
                                     req.method = HTTPMethod.GET;
@@ -749,6 +585,7 @@ class PThreadContext : Context
                                     }
                                 }
                                 );
+ */
                 }
                 catch (Exception ex)
                 {
@@ -765,10 +602,10 @@ class PThreadContext : Context
                 if (login == null || login.length < 1 || password == null || password.length < 6)
                     return ticket;
 
-                if (this.getTid(P_MODULE.subject_manager) != Tid.init)
-                    this.wait_thread(P_MODULE.subject_manager);
-                if (this.getTid(P_MODULE.fulltext_indexer) != Tid.init)
-                    this.wait_thread(P_MODULE.fulltext_indexer);
+                //if (this.getTid(P_MODULE.subject_manager) != Tid.init)
+                //    this.wait_thread(P_MODULE.subject_manager);
+                //if (this.getTid(P_MODULE.fulltext_indexer) != Tid.init)
+                //    this.wait_thread(P_MODULE.fulltext_indexer);
 
                 Ticket       sticket         = sys_ticket;
                 Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
@@ -868,7 +705,7 @@ class PThreadContext : Context
     // //////////////////////////////////////////// INDIVIDUALS IO /////////////////////////////////////
     public Individual[] get_individuals_via_query(Ticket *ticket, string query_str)
     {
-        StopWatch sw; sw.start;
+//        StopWatch sw; sw.start;
 
         if (trace_msg[ 26 ] == 1)
         {
@@ -894,8 +731,8 @@ class PThreadContext : Context
         }
         finally
         {
-            stat(CMD.GET, sw);
-
+//            stat(CMD.GET, sw);
+//
             if (trace_msg[ 26 ] == 1)
                 log.trace("get_individuals_via_query: end, query_str=%s", query_str);
         }
@@ -953,9 +790,9 @@ class PThreadContext : Context
         acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, trace);
     }
 
-    public immutable(string)[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str = null)
+    public immutable(string)[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str, int top, int limit)
     {
-        StopWatch sw; sw.start;
+        //StopWatch sw; sw.start;
 
         try
         {
@@ -968,18 +805,18 @@ class PThreadContext : Context
             }
 
             immutable(string)[] res;
-            vql.get(ticket, query_str, sort_str, db_str, 100000, res);
+            vql.get(ticket, query_str, sort_str, db_str, top, limit, res);
             return res;
         }
         finally
         {
-            stat(CMD.GET, sw);
+//            stat(CMD.GET, sw);
         }
     }
 
     public Individual get_individual(Ticket *ticket, string uri)
     {
-        StopWatch sw; sw.start;
+        //       StopWatch sw; sw.start;
 
         if (trace_msg[ 25 ] == 1)
         {
@@ -1024,7 +861,7 @@ class PThreadContext : Context
         }
         finally
         {
-            stat(CMD.GET, sw);
+//            stat(CMD.GET, sw);
             if (trace_msg[ 25 ] == 1)
                 log.trace("get_individual: end, uri=%s", uri);
         }
@@ -1158,37 +995,50 @@ class PThreadContext : Context
 
                 //writeln("context:store_individual use EXTERNAL #3, url=", url, " ", process_name);
 
-                Json req_body = Json.emptyObject;
-                try
+                JSONValue req_body;
+                req_body[ "ticket" ]         = ticket.id;
+                req_body[ "individual" ]     = individual_to_json(*indv);
+                req_body[ "prepare_events" ] = prepare_events;
+                req_body[ "event_id" ]       = event_id;
+
+                int max_count_retry = 100;
+                int count_retry     = 0;
+
+                while (count_retry < max_count_retry)
                 {
-                    req_body[ "ticket" ]         = ticket.id;
-                    req_body[ "individual" ]     = individual_to_json(*indv);
-                    req_body[ "prepare_events" ] = prepare_events;
-                    req_body[ "event_id" ]       = event_id;
+                    count_retry++;
+                    try
+                    {
+/*                        requestHTTP(url,
+                                    (scope req) {
+                                        req.method = HTTPMethod.PUT;
+                                        req.writeJsonBody(req_body);
+                                        //writeln("req:", text (req_body));
+                                    },
+                                    (scope result) {
+                                        //logInfo("Response: %s", text(result.statusCode));
+                                        res.result = cast(ResultCode)result.statusCode;
+                                    }
+                                    );
+ */
+                        if (res.result != ResultCode.Too_Many_Requests)
+                            count_retry = max_count_retry;
 
-                    requestHTTP(url,
-                                (scope req) {
-                                    req.method = HTTPMethod.PUT;
-                                    req.writeJsonBody(req_body);
-                                    //writeln("req:", text (req_body));
-                                },
-                                (scope result) {
-                                    //logInfo("Response: %s", text(result.statusCode));
-                                    res.result = cast(ResultCode)result.statusCode;
-                                }
-                                );
-
-//                    res = ResultCode.OK;
-                    //    writeln("context:store_individual #4 ", process_name);
-
-                    return res;
+                        if (res.result == ResultCode.Too_Many_Requests)
+                            core.thread.Thread.sleep(dur!("msecs")(10));
+                    }
+                    catch (Exception ex)
+                    {
+                        writeln("ERR! external put_individual:", ex.msg, ", url=", url, ", req_body=", text(req_body));
+                        res.result = ResultCode.Internal_Server_Error;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    writeln("ERR! external put_individual:", ex.msg, ", url=", url, ", req_body=", text(req_body));
-                    res.result = ResultCode.Internal_Server_Error;
-                    return res;
-                }
+
+                if (res.result != ResultCode.OK && res.result != ResultCode.Duplicate_Key)
+                    writeln("ERR! external put_individual:", res.result, ", url=", url, ", req_body=", text(req_body));
+
+
+                return res;
             }
             else
             {
@@ -1227,22 +1077,10 @@ class PThreadContext : Context
                     }
                 }
 
-                EVENT ev = EVENT.NONE;
-
-                tid_subject_manager = getTid(P_MODULE.subject_manager);
+                EVENT  ev = EVENT.NONE;
                 string prev_state;
-                if (tid_subject_manager != Tid.init)
-                {
-                    send(tid_subject_manager, cmd, ss_as_cbor, thisTid);
-                    receive((EVENT _ev, string _prev_state, string _new_state, Tid from)
-                            {
-                                if (from == getTid(P_MODULE.subject_manager))
-                                    ev = _ev;
-                                prev_state = _prev_state;
-                                ss_as_cbor = _new_state;
-                                res.op_id = get_count_put();
-                            });
-                }
+
+                storage.storage_thread.send_put(this, cmd, ss_as_cbor, ss_as_cbor, prev_state, res.op_id, ev);
 
                 if (ev == EVENT.NOT_READY)
                 {
@@ -1259,34 +1097,14 @@ class PThreadContext : Context
                 if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
                 {
                     if (indv.isExist(veda_schema__deleted, true) == false)
-                    {
-                        Tid tid_search_manager = getTid(P_MODULE.fulltext_indexer);
-
-                        if (tid_search_manager != Tid.init)
-                        {
-                            send(tid_search_manager, CMD.PUT, ss_as_cbor, res.op_id);
-                        }
-                    }
+                        search.xapian_indexer.send_put(this, ss_as_cbor, prev_state, res.op_id);
                     else
-                    {
-                        Tid tid_search_manager = getTid(P_MODULE.fulltext_indexer);
-
-                        if (tid_search_manager != Tid.init)
-                        {
-                            send(tid_search_manager, CMD.DELETE, ss_as_cbor, res.op_id);
-                        }
-                    }
+                        search.xapian_indexer.send_delete(this, ss_as_cbor, prev_state, res.op_id);
 
                     if (prepare_events == true)
-                    {
                         bus_event_after(ticket, indv, rdfType, ss_as_cbor, prev_state, ev, this, event_id, res.op_id);
-                    }
 
-                    Tid tid_fanout = getTid(P_MODULE.fanout);
-                    if (tid_fanout != Tid.init)
-                    {
-                        send(tid_fanout, CMD.PUT, prev_state, ss_as_cbor);
-                    }
+                    veda.core.fanout.send_put(this, ss_as_cbor, prev_state, res.op_id);
 
                     res.result = ResultCode.OK;
 
@@ -1341,7 +1159,7 @@ class PThreadContext : Context
         long res = -1;
 
 
-        if (module_id == P_MODULE.condition)
+        if (module_id == P_MODULE.scripts)
         {
             if (external_js_vm_url !is null)
             {
@@ -1350,7 +1168,7 @@ class PThreadContext : Context
 //                string url = "http://127.0.0.1:8555" ~ "/get_operation_state?module_id=" ~ text(cast(int)module_id);
                 try
                 {
-                    requestHTTP(url,
+/*                    requestHTTP(url,
                                 (scope req) {
                                     req.method = HTTPMethod.GET;
                                 },
@@ -1360,6 +1178,7 @@ class PThreadContext : Context
                                     //writeln("context: get_operation_state: #3 EXTERNAL ", text(module_id), ", url=", url, ",res=", res, " *", process_name);
                                 }
                                 );
+ */
                 }
                 catch (Exception ex)
                 {
@@ -1409,7 +1228,7 @@ class PThreadContext : Context
                         }
         }
  */
-        if (external_js_vm_url !is null && module_id == P_MODULE.condition)
+        if (external_js_vm_url !is null && module_id == P_MODULE.scripts)
         {
             for (int i = 0; i < 200; i++)
             {
@@ -1462,22 +1281,16 @@ class PThreadContext : Context
 
         try
         {
-            bool result = false;
+            bool   result = false;
 
-            Tid  tid_subject_manager = getTid(P_MODULE.subject_manager);
-
-            send(tid_subject_manager, CMD.BACKUP, "", thisTid);
-            string backup_id;
-            receive((string res) { backup_id = res; });
+            string backup_id = storage.storage_thread.backup(this);
 
             if (backup_id != "")
             {
                 result = true;
 
-                string res;
-                Tid    tid_acl_manager = getTid(P_MODULE.acl_manager);
-                send(tid_acl_manager, CMD.BACKUP, backup_id, thisTid);
-                receive((string _res) { res = _res; });
+                string res = az.acl.backup(this, backup_id);
+
                 if (res == "")
                     result = false;
                 else
@@ -1489,9 +1302,8 @@ class PThreadContext : Context
                         result = false;
                     else
                     {
-                        Tid tid_fulltext_indexer = getTid(P_MODULE.fulltext_indexer);
-                        send(tid_fulltext_indexer, CMD.BACKUP, backup_id, thisTid);
-                        receive((string _res) { res = _res; });
+                        res = search.xapian_indexer.backup(this, backup_id);
+
                         if (res == "")
                             result = false;
                     }

@@ -27,7 +27,7 @@ protected byte err;
 // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 interface SearchReader
 {
-    public int get(Ticket *ticket, string str_query, string str_sort, string db_names, int count_authorize,
+    public int get(Ticket *ticket, string str_query, string str_sort, string db_names, int top, int limit,
                    void delegate(string uri) add_out_element, bool inner_get);
 
     public void reopen_db();
@@ -83,11 +83,9 @@ class XapianReader : SearchReader
     }
 
 
-    public int get(Ticket *ticket, string str_query, string str_sort, string _db_names, int count_authorize,
+    public int get(Ticket *ticket, string str_query, string str_sort, string _db_names, int top, int limit,
                    void delegate(string uri) add_out_element, bool inner_get)
     {
-        context.ft_check_for_reload(&reopen_db);
-
         int[ string ] key2slot = context.get_key2slot();
 
         if (key2slot == (int[ string ]).init)
@@ -138,6 +136,9 @@ class XapianReader : SearchReader
 
         if (trace_msg[ 322 ] == 1)
             log.trace("[%s][Q:%X] TTA [%s]", context.get_name(), cast(void *)str_query, tta.toString());
+
+        //log.trace("@xapian_reader:get #1 [%s]", str_query);
+        context.ft_check_for_reload(&reopen_db);
 
         Database_QueryParser db_qp = get_dbqp(db_names);
 
@@ -199,7 +200,7 @@ class XapianReader : SearchReader
             state = -1;
             while (state < 0)
             {
-                state = exec_xapian_query_and_queue_authorize(ticket, xapian_enquire, count_authorize, add_out_element,
+                state = exec_xapian_query_and_queue_authorize(ticket, xapian_enquire, top, limit, add_out_element,
                                                               context);
                 if (state < 0)
                 {
@@ -308,7 +309,8 @@ class XapianReader : SearchReader
 
     public void reopen_db()
     {
-        //writeln ("@REOPEN");
+        //log.trace("@FTR:reopen_db");
+
         foreach (el; using_dbqp.values)
         {
             el.db.reopen(&err);

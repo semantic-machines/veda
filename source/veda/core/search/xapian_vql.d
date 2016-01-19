@@ -6,13 +6,9 @@ module search.xapian_vql;
 
 import std.string, std.concurrency, std.stdio, std.datetime, std.conv, std.algorithm;
 import bind.xapian_d_header;
-import util.utils;
-import util.cbor;
+import util.utils, util.cbor;
 import search.vel;
-import type;
-import veda.core.context;
-import veda.core.define;
-import veda.core.log_msg;
+import veda.type, veda.core.context, veda.core.define, veda.core.log_msg;
 import storage.lmdb_storage;
 
 // ////// logger ///////////////////////////////////////////
@@ -484,10 +480,17 @@ public string transform_vql_to_xapian(TTA tta, string p_op, out string l_token, 
 
 public int exec_xapian_query_and_queue_authorize(Ticket *ticket,
                                                  XapianEnquire xapian_enquire,
-                                                 int count_authorize,
+                                                 int top,
+                                                 int limit,
                                                  void delegate(string uri) add_out_element,
                                                  Context context)
 {
+    if (top == 0)
+        top = 10000;
+
+    if (limit == 0)
+        limit = 10000;
+
     int       read_count = 0;
     StopWatch sw;
 
@@ -497,7 +500,7 @@ public int exec_xapian_query_and_queue_authorize(Ticket *ticket,
     byte err;
 
     //writeln (cast(void*)xapian_enquire, " count_authorize=", count_authorize);
-    XapianMSet matches = xapian_enquire.get_mset(0, count_authorize, &err);
+    XapianMSet matches = xapian_enquire.get_mset(0, limit, &err);
     if (err < 0)
     {
         log.trace("exec_xapian_query_and_queue_authorize:get_mset, err=(%d)", err);
@@ -535,6 +538,8 @@ public int exec_xapian_query_and_queue_authorize(Ticket *ticket,
             {
                 add_out_element(subject_id);
                 read_count++;
+                if (read_count >= top)
+                    break;
             }
 
             it.next(&err);

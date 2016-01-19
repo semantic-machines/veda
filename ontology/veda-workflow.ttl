@@ -1,9 +1,3 @@
-# baseURI: http://semantic-machines.com/veda/veda-workflow
-# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
-# imports: http://www.w3.org/2000/01/rdf-schema#
-# imports: http://www.w3.org/2002/07/owl
-
-# c14n-version: 3
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -12,6 +6,7 @@
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-df: <http://semantic-machines.com/veda/veda-docflow/> .
 
 <http://semantic-machines.com/veda/veda-workflow>
 	rdfs:isDefinedBy v-wf: ;
@@ -22,6 +17,7 @@
   owl:imports rdfs: ;
   owl:imports owl: ;
 #  owl:DversionInfo "1.2" ;
+  v-s:loadPriority 7 ;
 .
 v-wf:Net
 	rdf:type owl:Class ;
@@ -438,21 +434,21 @@ v-wf:SimpleNetTemplate
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
   		<td><span about="rdfs:label" property="rdfs:label"></span></td>
 		<td>
-			<veda-control id="VClabel" type="string" property="rdfs:label" class="view edit properties-editor" style="display:none;"></veda-control>
+			<veda-control id="VClabel" type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
 			<div id="viewVClabel" about="@" property="rdfs:label"></div>
 		</td>
 	</tr>
 	<tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
   		<td><span about="rdfs:comment" property="rdfs:label"></span></td>
 		<td>
-			<veda-control id="VCcomment" type="string" property="rdfs:comment" class="-view edit properties-editor" style="display:none;"></veda-control>
+			<veda-control id="VCcomment" type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
 			<div id="viewVCcomment" about="@" property="rdfs:comment"></div>
 		</td>
 	</tr>
 	<tr onclick="javascript: $('.VCinputVariable').show(); $('.viewVCinputVariable').hide();">
   		<td><span about="v-wf:inputVariable" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control about="@" rel="v-wf:inputVariable" type="link" class="VCinputVariable view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control about="@" rel="v-wf:inputVariable" type="link" class="VCinputVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div class="VCinputVariable" rel="v-wf:inputVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
   			<div class="viewVCinputVariable" about="@" rel="v-wf:inputVariable" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
@@ -460,7 +456,7 @@ v-wf:SimpleNetTemplate
 	<tr onclick="javascript: $('.VCoutputVariable').show(); $('.viewVCoutputVariable').hide();">
   		<td><span about="v-wf:outputVariable" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control about="@" rel="v-wf:outputVariable" type="link" class="VCoutputVariable view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control about="@" rel="v-wf:outputVariable" type="link" class="VCoutputVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div class="VCoutputVariable" rel="v-wf:outputVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
   			<div class="viewVCoutputVariable" about="@" rel="v-wf:outputVariable" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
@@ -468,7 +464,7 @@ v-wf:SimpleNetTemplate
 	<tr onclick="javascript: $('.VClocalVariable').show(); $('.viewVClocalVariable').hide();">
   		<td><span about="v-wf:localVariable" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control about="@" rel="v-wf:localVariable" type="link" class="VClocalVariable view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control about="@" rel="v-wf:localVariable" type="link" class="VClocalVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div class="VClocalVariable" rel="v-wf:localVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
   			<div class="viewVClocalVariable" about="@" rel="v-wf:localVariable" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
@@ -476,7 +472,7 @@ v-wf:SimpleNetTemplate
 	<tr onclick="javascript: $('.VCinputOutputVariable').show(); $('.viewVCinputOutputVariable').hide();">
   		<td><span about="v-wf:inputOutputVariable" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control about="@" rel="v-wf:inputOutputVariable" type="link" class="VCinputOutputVariable view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control about="@" rel="v-wf:inputOutputVariable" type="link" class="VCinputOutputVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div class="VCinputOutputVariable" rel="v-wf:inputOutputVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
   			<div class="viewVCinputOutputVariable" about="@" rel="v-wf:inputOutputVariable" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
@@ -486,7 +482,7 @@ v-wf:SimpleNetTemplate
 			<span about="v-wf:completedMapping" property="rdfs:label"></span>
 		</td>
   		<td>
-  			<veda-control rel="v-wf:completedMapping" type="link" class="VCcompletedMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control rel="v-wf:completedMapping" type="link" class="VCcompletedMapping fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedMapping">
 	  			<div deleteButton="hide" class="VCcompletedMapping">
 	  				#<a href="#/@">
@@ -503,7 +499,12 @@ v-wf:SimpleNetTemplate
 		</td>
 	</tr>	
   </table>
-</div>  
+</div>
+<script>
+	$('#taskTemplateProperties [rel="v-wf:inputVariable"] [typeof="v-wf:VarDefine"]').draggable({
+		revert:true
+	});
+</script>  
   """ ;
 .
 
@@ -515,6 +516,11 @@ v-wf:NetTemplate
   v-ui:forClass v-wf:Net ;
   v-ui:template """
 <div class="workflow-wrapper">
+	<style>
+		#main {
+			margin-bottom: 0px;
+		}
+	</style>
 	<div class="row">
 		<div id="schema" class="col-md-8">
 			<div class="workflow-canvas-wrapper">
@@ -533,7 +539,10 @@ v-wf:NetTemplate
 								</button>
 								<button type="button" class="btn btn-sm btn-default edit-state">
 									<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-								</button>								
+								</button>	
+								<button type="button" class="btn btn-sm btn-default copy-net-element">
+									<span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>
+								</button>															
 								<button type="button" class="btn btn-sm btn-default delete-state">
 									<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
 								</button>
@@ -620,6 +629,11 @@ v-wf:ProcessTemplate
   v-ui:forClass v-wf:Process ;
   v-ui:template """
 <div class="workflow-wrapper">
+	<style>
+		#main {
+			margin-bottom: 0px;
+		}
+	</style>
 	<div class="row">
 		<div id="schema" class="col-md-8">
 			<div class="workflow-canvas-wrapper">
@@ -837,35 +851,35 @@ v-wf:TaskTemplateAsProperties
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
   		<td><span about="rdfs:label" property="rdfs:label"></span></td>
 		<td>
-			<veda-control id="VClabel" type="string" property="rdfs:label" class="-view edit properties-editor" style="display:none;"></veda-control>
+			<veda-control id="VClabel" type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
 			<div id="viewVClabel" about="@" property="rdfs:label"></div>
 		</td>
 	</tr>
 	<tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
   		<td><span about="rdfs:comment" property="rdfs:label"></span></td>
 		<td>
-			<veda-control id="VCcomment" type="string" property="rdfs:comment" class="-view edit properties-editor" style="display:none;"></veda-control>
+			<veda-control id="VCcomment" type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
 			<div id="viewVCcomment" about="@" property="rdfs:comment"></div>
 		</td>
 	</tr>
 	<tr onclick="javascript: $('#VCjoin').show(); $('#viewVCjoin').hide();">
   		<td><span about="v-wf:join" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control id="VCjoin" rel="v-wf:join" type="objectSelect" class="-view edit search fulltext dropdown properties-editor" style="display:none;"></veda-control>
+  			<veda-control id="VCjoin" rel="v-wf:join" type="objectSelect" class="fulltext dropdown properties-editor" style="display:none;"></veda-control>
 			<div id="viewVCjoin" about="@" rel="v-wf:join" template="v-ui:LabelTemplate"></div>
   		</td>
 	</tr>
 	<tr onclick="javascript: $('#VCsplit').show(); $('#viewVCsplit').hide();">
   		<td><span about="v-wf:split" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control id="VCsplit" rel="v-wf:split" type="objectSelect" class="-view edit search fulltext dropdown properties-editor" style="display:none;"></veda-control>
+  			<veda-control id="VCsplit" rel="v-wf:split" type="objectSelect" class="fulltext dropdown properties-editor" style="display:none;"></veda-control>
 			<div id="viewVCsplit" about="@" rel="v-wf:split" template="v-ui:LabelTemplate"></div>
   		</td>
 	</tr>
 	<tr onclick="javascript: $('.VCdecisionForm').show(); $('.viewVCdecisionForm').hide();">
   		<td><span about="v-wf:taskDecisionForm" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control about="@" rel="v-wf:taskDecisionForm" type="link" class="VCdecisionForm -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control about="@" rel="v-wf:taskDecisionForm" type="link" class="VCdecisionForm fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div class="VCdecisionForm" rel="v-wf:taskDecisionForm" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
   			<div about="@" class="viewVCdecisionForm" about="@" rel="v-wf:taskDecisionForm" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
@@ -873,7 +887,7 @@ v-wf:TaskTemplateAsProperties
 	<tr onclick="javascript: $('.VCstartDecisionTransform').show(); $('.viewVCstartDecisionTransform').hide();">
 		<td><span about="v-wf:startDecisionTransform" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control about="@" rel="v-wf:startDecisionTransform" type="link" class="VCstartDecisionTransform -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control about="@" rel="v-wf:startDecisionTransform" type="link" class="VCstartDecisionTransform fulltext dropdown create properties-editor" style="display:none;"></veda-control>
 		    <div class="VCstartDecisionTransform" rel="v-wf:startDecisionTransform" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
 		    <div class="viewVCstartDecisionTransform" about="@" rel="v-wf:startDecisionTransform" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
@@ -881,7 +895,7 @@ v-wf:TaskTemplateAsProperties
 	<tr onclick="javascript: $('.VCcompleteDecisionTransform').show(); $('.viewVCcompleteDecisionTransform').hide();">
 		<td><span about="v-wf:completeDecisionTransform" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control about="@" rel="v-wf:completeDecisionTransform" type="link" class="VCcompleteDecisionTransform -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control about="@" rel="v-wf:completeDecisionTransform" type="link" class="VCcompleteDecisionTransform fulltext dropdown create properties-editor" style="display:none;"></veda-control>
 		    <div class="VCcompleteDecisionTransform" rel="v-wf:completeDecisionTransform" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
 		    <div class="viewVCcompleteDecisionTransform" about="@" rel="v-wf:completeDecisionTransform" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
@@ -889,7 +903,7 @@ v-wf:TaskTemplateAsProperties
 	<tr onclick="javascript: $('.VCexecutor').show(); $('.viewVCexecutor').hide();">
   		<td><span about="v-wf:executor" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control about="@" rel="v-wf:executor" type="link" class="VCexecutor -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control about="@" rel="v-wf:executor" type="link" class="VCexecutor fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div class="VCexecutor" rel="v-wf:executor" style="display:none;">
 	  			<div>
 	  				#<a href="#/@///edit">
@@ -913,7 +927,7 @@ v-wf:TaskTemplateAsProperties
 	<tr onclick="javascript: $('.VCexpectedResultType').show(); $('.viewVCexpectedResultType').hide();">
   		<td><span about="v-wf:expectedResultType" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control about="@" rel="v-wf:expectedResultType" type="link" class="VCexpectedResultType -view edit search fulltext dropdown properties-editor" style="display:none;"></veda-control>
+  			<veda-control about="@" rel="v-wf:expectedResultType" type="link" class="VCexpectedResultType fulltext dropdown properties-editor" style="display:none;"></veda-control>
   			<div class="VCexpectedResultType" rel="v-wf:expectedResultType" template="v-ui:LabelTemplate" style="display:none;"></div>
   			<div class="viewVCexpectedResultType" about="@" rel="v-wf:expectedResultType" template="v-ui:LabelTemplate"></div>
   		</td>
@@ -921,7 +935,7 @@ v-wf:TaskTemplateAsProperties
 	<tr onclick="javascript: $('.VCinputVariable').show(); $('.viewVCinputVariable').hide();">
   		<td><span about="v-wf:inputVariable" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control about="@" rel="v-wf:inputVariable" type="link" class="VCinputVariable -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control about="@" rel="v-wf:inputVariable" type="link" class="VCinputVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div class="VCinputVariable" rel="v-wf:inputVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
   			<div about="@" class="viewVCinputVariable" rel="v-wf:inputVariable" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
@@ -929,7 +943,7 @@ v-wf:TaskTemplateAsProperties
 	<tr onclick="javascript: $('.VCoutputVariable').show(); $('.viewVCoutputVariable').hide();">
   		<td><span about="v-wf:outputVariable" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control about="@" rel="v-wf:outputVariable" type="link" class="VCoutputVariable -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control about="@" rel="v-wf:outputVariable" type="link" class="VCoutputVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div class="VCoutputVariable" rel="v-wf:outputVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
   			<div about="@" class="viewVCoutputVariable" rel="v-wf:outputVariable" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
@@ -937,7 +951,7 @@ v-wf:TaskTemplateAsProperties
 	<tr onclick="javascript: $('.VCinputOutputVariable').show(); $('.viewVCinputOutputVariable').hide();">
   		<td><span about="v-wf:inputOutputVariable" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control about="@" rel="v-wf:inputOutputVariable" type="link" class="VCinputOutputVariable -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control about="@" rel="v-wf:inputOutputVariable" type="link" class="VCinputOutputVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div class="VCinputOutputVariable" rel="v-wf:inputOutputVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
   			<div about="@" class="viewVCinputOutputVariable" rel="v-wf:inputOutputVariable" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
@@ -945,7 +959,7 @@ v-wf:TaskTemplateAsProperties
 	<tr onclick="javascript: $('.VClocalVariable').show(); javascript: $('.viewVClocalVariable').hide();">
   		<td><span about="v-wf:localVariable" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control about="@" rel="v-wf:localVariable" type="link" class="VClocalVariable -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control about="@" rel="v-wf:localVariable" type="link" class="VClocalVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div class="VClocalVariable" rel="v-wf:localVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
   			<div about="@" class="viewVClocalVariable" rel="v-wf:localVariable" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
@@ -953,7 +967,7 @@ v-wf:TaskTemplateAsProperties
 	<tr onclick="javascript: $('#VCsubNet').show(); $('#viewVCsubNet').hide();">
   		<td><span about="v-wf:subNet" property="rdfs:label"></span></td>
   		<td>
-  			<veda-control id="VCsubNet" rel="v-wf:subNet" type="link" class="-view edit search fulltext dropdown properties-editor" style="display:none;"></veda-control>
+  			<veda-control id="VCsubNet" rel="v-wf:subNet" type="link" class="fulltext dropdown properties-editor" style="display:none;"></veda-control>
   			<div class="VCsubNet" rel="v-wf:subNet" template="v-ui:LabelTemplate" style="display:none;"></div>
   			<div class="viewVCsubNet" about="@" rel="v-wf:subNet" template="v-ui:LabelTemplate"></div>
   		</td>
@@ -963,18 +977,19 @@ v-wf:TaskTemplateAsProperties
 			<span about="v-wf:startingMapping" property="rdfs:label"></span>
 		</td>
   		<td>
-  			<veda-control rel="v-wf:startingMapping" type="link" class="VCstartingMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control rel="v-wf:startingMapping" type="link" class="VCstartingMapping fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingMapping">
 	  			<div deleteButton="hide" class="VCstartingMapping">
-	  				#<a href="#/@">
-			  			<span about="@" rel="v-wf:mapToVariable">
-							<span>
-								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-							</span>
-						</span> =
-						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					</a>
+	  				<p>
+						#<a href="#/@">
+							<span about="@" rel="v-wf:mapToVariable">
+								<span>
+									<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+								</span>
+							</span> =
+							<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						</a>
+					</p>
 				<div>
 			</div>
 		</td>
@@ -984,18 +999,19 @@ v-wf:TaskTemplateAsProperties
 			<span about="v-wf:completedMapping" property="rdfs:label"></span>
 		</td>
   		<td>
-  			<veda-control rel="v-wf:completedMapping" type="link" class="VCcompletedMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control rel="v-wf:completedMapping" type="link" class="VCcompletedMapping fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedMapping">
 	  			<div deleteButton="hide" class="VCcompletedMapping">
-	  				#<a href="#/@">
-			  			<span about="@" rel="v-wf:mapToVariable">
-							<span>
-								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-							</span>
-						</span> =
-						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					</a>
+	  				<p>
+						#<a href="#/@">
+							<span about="@" rel="v-wf:mapToVariable">
+								<span>
+									<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+								</span>
+							</span> =
+							<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						</a>
+					</p>
 				<div>
 			</div>
 		</td>
@@ -1005,18 +1021,19 @@ v-wf:TaskTemplateAsProperties
 			<span about="v-wf:startingExecutorJournalMap" property="rdfs:label"></span>
 		</td>
   		<td>
-  			<veda-control rel="v-wf:startingExecutorJournalMap" type="link" class="VCstartingExecutorJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control rel="v-wf:startingExecutorJournalMap" type="link" class="VCstartingExecutorJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingExecutorJournalMap">
 	  			<div deleteButton="hide" class="VCstartingExecutorJournalMap">
-	  				#<a href="#/@">
-			  			<span about="@" rel="v-wf:mapToVariable">
-							<span>
-								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-							</span>
-						</span> =
-						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					</a>
+	  				<p>
+						#<a href="#/@">
+							<span about="@" rel="v-wf:mapToVariable">
+								<span>
+									<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+								</span>
+							</span> =
+							<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						</a>
+					</p>
 				<div>
 			</div>
 		</td>
@@ -1026,18 +1043,19 @@ v-wf:TaskTemplateAsProperties
 			<span about="v-wf:completedExecutorJournalMap" property="rdfs:label"></span>
 		</td>
   		<td>
-  			<veda-control rel="v-wf:completedExecutorJournalMap" type="link" class="VCcompletedExecutorJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control rel="v-wf:completedExecutorJournalMap" type="link" class="VCcompletedExecutorJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedExecutorJournalMap">
 	  			<div deleteButton="hide" class="VCcompletedExecutorJournalMap">
-	  				#<a href="#/@">
-			  			<span about="@" rel="v-wf:mapToVariable">
-							<span>
-								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-							</span>
-						</span> =
-						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					</a>
+	  				<p>
+						#<a href="#/@">
+							<span about="@" rel="v-wf:mapToVariable">
+								<span>
+									<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+								</span>
+							</span> =
+							<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						</a>
+					</p>
 				<div>
 			</div>
 		</td>
@@ -1047,18 +1065,19 @@ v-wf:TaskTemplateAsProperties
 			<span about="v-wf:startingJournalMap" property="rdfs:label"></span>
 		</td>
   		<td>
-  			<veda-control rel="v-wf:startingJournalMap" type="link" class="VCstartingJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control rel="v-wf:startingJournalMap" type="link" class="VCstartingJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:startingJournalMap">
 	  			<div deleteButton="hide" class="VCstartingJournalMap">
-		  			#<a href="#/@">
-			  			<span about="@" rel="v-wf:mapToVariable">
-							<span>
-								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-							</span>
-						</span> =
-						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					</a>
+		  			<p>
+						#<a href="#/@">
+							<span about="@" rel="v-wf:mapToVariable">
+								<span>
+									<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+								</span>
+							</span> =
+							<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						</a>
+					</p>
 				<div>
 			</div>
 		</td>
@@ -1068,18 +1087,19 @@ v-wf:TaskTemplateAsProperties
 			<span about="v-wf:completedJournalMap" property="rdfs:label"></span>
 		</td>
   		<td>
-  			<veda-control rel="v-wf:completedJournalMap" type="link" class="VCcompletedJournalMap -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control rel="v-wf:completedJournalMap" type="link" class="VCcompletedJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:completedJournalMap">
 	  			<div deleteButton="hide" class="VCcompletedJournalMap">
-	  				#<a href="#/@">
-			  			<span about="@" rel="v-wf:mapToVariable">
-							<span>
-								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-							</span>
-						</span> =
-						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					</a>
+	  				<p>
+						#<a href="#/@">
+							<span about="@" rel="v-wf:mapToVariable">
+								<span>
+									<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+								</span>
+							</span> =
+							<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						</a>
+					</p>
 				<div>
 			</div>
 		</td>
@@ -1089,18 +1109,19 @@ v-wf:TaskTemplateAsProperties
 			<span about="v-wf:wosResultsMapping" property="rdfs:label"></span>
 		</td>
   		<td>
-  			<veda-control rel="v-wf:wosResultsMapping" type="link" class="VCwosResultsMapping -view edit search fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<veda-control rel="v-wf:wosResultsMapping" type="link" class="VCwosResultsMapping fulltext dropdown create properties-editor" style="display:none;"></veda-control>
   			<div rel="v-wf:wosResultsMapping">
 	  			<div deleteButton="hide" class="VCwosResultsMapping">
-	  				#<a href="#/@">
-			  			<span about="@" rel="v-wf:mapToVariable">
-							<span>
-								<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
-							</span>
-						</span> =
-						<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
-						[<span about="@" property="@" template="v-ui:LabelTemplateWithEditLink"></span>]
-					</a>
+	  				<p>
+						#<a href="#/@">
+							<span about="@" rel="v-wf:mapToVariable">
+								<span>
+									<span about="@" property="v-wf:varDefineName" template="v-ui:LabelTemplateWithEditLink"></span>
+								</span>
+							</span> =
+							<span about="@" property="v-wf:mappingExpression" template="v-ui:LabelTemplateWithEditLink"></span>
+						</a>
+					</p>
 				<div>
 			</div>
 		</td>
@@ -1109,10 +1130,12 @@ v-wf:TaskTemplateAsProperties
 		<td about="v-wf:hasFlow" property="rdfs:label"></td>
 		<td about="@" rel="v-wf:hasFlow">
 			<div>
-				#<a href="#/@">
-				    <strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
-				    [<span about="@" property="v-wf:predicate"></span>]
-			    </a>
+				<p>
+					#<a href="#/@">
+						<strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
+						[<span about="@" property="v-wf:predicate"></span>]
+					</a>
+				</p>
 			</div>
 		</td>
 	</tr>
@@ -1174,14 +1197,14 @@ v-wf:ConditionTemplateAsProperties
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
   		<td><span about="rdfs:label" property="rdfs:label"></span></td>
 		<td>
-			<veda-control id="VClabel" type="string" property="rdfs:label" class="-view edit properties-editor" style="display:none;"></veda-control>
+			<veda-control id="VClabel" type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
 			<div id="viewVClabel" about="@" property="rdfs:label"></div>
 		</td>
 	</tr>
 	<tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
   		<td><span about="rdfs:comment" property="rdfs:label"></span></td>
 		<td>
-			<veda-control id="VCcomment" type="string" property="rdfs:comment" class="-view edit properties-editor" style="display:none;"></veda-control>
+			<veda-control id="VCcomment" type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
 			<div id="viewVCcomment" about="@" property="rdfs:comment"></div>
 		</td>
 	</tr>
@@ -1240,21 +1263,21 @@ v-wf:FlowTemplateAsProperties
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
   		<td><span about="rdfs:label" property="rdfs:label"></span></td>
 		<td>
-			<veda-control id="VClabel" type="string" property="rdfs:label" class="view edit properties-editor" style="display:none;"></veda-control>
+			<veda-control id="VClabel" type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
 			<div id="viewVClabel" about="@" property="rdfs:label"></div>
 		</td>
 	</tr>
 	<tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
   		<td><span about="rdfs:comment" property="rdfs:label"></span></td>
 		<td>
-			<veda-control id="VCcomment" type="string" property="rdfs:comment" class="view edit properties-editor" style="display:none;"></veda-control>
+			<veda-control id="VCcomment" type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
 			<div id="viewVCcomment" about="@" property="rdfs:comment"></div>
 		</td>
 	</tr>
-	<tr onclick="javascript: $('#VCpredicate').show(); $('#viewVCpredicate').hide();">
+	<tr onclick="javascript: $('#VCpredicate').show().trigger('edit'); $('#viewVCpredicate').hide();">
   		<td><span about="v-wf:predicate" property="rdfs:label"></span></td>
 		<td>
-			<veda-control id="VCpredicate" type="string" property="v-wf:predicate" class="view edit properties-editor" style="display:none;"></veda-control>
+			<veda-control id="VCpredicate" type="source" mode="javascript" property="v-wf:predicate" class="properties-editor" style="display:none;width:75%"></veda-control>
 			<div id="viewVCpredicate" about="@" property="v-wf:predicate"></div>
 		</td>
 	</tr>		
@@ -1276,10 +1299,11 @@ v-wf:FlowTemplateAsProperties
         $.each(veda.net.getAllConnections(), function (idx, connection) 
         {
            if(connection.id === individual.id) {
+              var value = (typeof values[0] === 'undefined')?'':values[0];
            	  if (connection.getOverlay('flowLabel') == undefined) {
-           	    connection.addOverlay(["Label", { label: values[0], location:0.5, id: "flowLabel"} ]);
+           	    connection.addOverlay(["Label", { label: value, location:0.5, id: "flowLabel"} ]);
            	  } else {
-           	    connection.getOverlay('flowLabel').setLabel(values[0]);
+           	    connection.getOverlay('flowLabel').setLabel(value);
            	  }
            }
         });
@@ -1464,7 +1488,7 @@ v-wf:DecisionFormTemplate
   rdfs:comment "Пустой шаблон сделан специально, поскольку индивиды этого класса не должны вводиться пользователями"@ru ;
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
-<div>
+<!--div>
 	<strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
 	<div id="traceJournal">
 		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
@@ -1475,7 +1499,7 @@ v-wf:DecisionFormTemplate
 </div>
 <script>
 	if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
-</script>  
+</script-->
   """ ;
   .
 
@@ -1512,25 +1536,48 @@ v-wf:possibleDecisionClass
 .
 
 v-wf:onDocument
-        rdf:type owl:ObjectProperty ;
+    rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "по документу"@ru ;
-        rdfs:domain v-wf:DecisionForm ;
-        rdfs:range rdfs:Resource ;
+    rdfs:label "по документу"@ru ;
+    rdfs:domain v-wf:DecisionForm ;
+    rdfs:range rdfs:Resource ;
 .
+
 v-wf:from
-        rdf:type owl:ObjectProperty ;
+    rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "от кого"@ru ;
-        rdfs:domain v-wf:DecisionForm ;
-        rdfs:range v-s:Appointment ;
+    rdfs:label "от кого"@ru ;
+    rdfs:domain v-wf:DecisionForm ;
+    rdfs:domain v-s:Deliverable ;
+    rdfs:range v-s:Appointment ;
 .
-v-wf:dateGiven
-        rdf:type owl:DatatypeProperty ;
+
+v-wf:to
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "контрольный срок"@ru ;
-        rdfs:domain v-wf:DecisionForm ;
-        rdfs:range xsd:dateTime ;
+	rdfs:label "кому"@ru ;
+	rdfs:label "whom"@en ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:domain v-wf:DecisionRedirect ;
+	rdfs:domain v-s:JournalRecord ;
+    rdfs:domain v-s:Deliverable ;
+	rdfs:range v-s:Appointment ;
+.
+
+v-wf:replyTo
+	rdf:type owl:ObjectProperty ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "reply to" ;
+    rdfs:domain v-s:Deliverable ;
+	rdfs:range v-s:Appointment ;
+.
+
+v-wf:dateGiven
+    rdf:type owl:DatatypeProperty ;
+	rdfs:isDefinedBy v-wf: ;
+    rdfs:label "контрольный срок"@ru ;
+    rdfs:domain v-wf:DecisionForm ;
+    rdfs:range xsd:dateTime ;
 .
 
 
@@ -1896,6 +1943,27 @@ v-wf:Decision
 	rdfs:label "решение"@ru ;
 .
 
+v-wf:DecisionAnswerToYourQuestion
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "Ответ на ваш вопрос"@ru ;
+.	
+
+v-wf:DecisionControll
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "Принять отчет по поручению"@ru ;
+.	
+
+v-wf:DecisionNotRequireReview
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "Не требует рассмотрения"@ru ;
+.	
+
 v-wf:DecisionAgreed
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1907,10 +1975,17 @@ v-wf:DecisionAgreedToProject
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdf:type owl:Class ;
-	rdfs:label "согласовано в проект"@ru ;
+	rdfs:label "начать проект"@ru ;
 .	
 
 v-wf:DecisionAgreedToExecute
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "согласовано в реализацию"@ru ;
+.	
+
+v-wf:DecisionAgreedToExecuteComment
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdf:type owl:Class ;
@@ -1952,6 +2027,13 @@ v-wf:DecisionRemake
 	rdfs:label "доработать"@ru ;
 .	
 
+v-wf:DecisionRemaked
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "доработанно"@ru ;
+.	
+
 v-wf:DecisionNotForMe
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1987,12 +2069,27 @@ v-wf:DecisionNotPerformed
 	rdfs:label "не выполнено"@ru ;
 .	
 
+v-wf:DecisionConfirm
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdf:type owl:Class ;
+	rdfs:label "подтверждено"@ru ;
+.	
+
 v-wf:DecisionRedirect
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdf:type owl:Class ;
 	rdfs:label "перенаправить другому"@ru ;
 .	
+
+v-wf:DecisionСalculationsPerformed
+        rdfs:subClassOf v-wf:Decision ;
+        rdfs:isDefinedBy v-wf: ;
+        rdf:type owl:Class ;
+        rdfs:label "расчет выполнен"@ru ;
+.
+
 v-wf:DecisionRedirectTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -2001,14 +2098,13 @@ v-wf:DecisionRedirectTemplate
   v-ui:forClass v-wf:DecisionRedirect ;
   v-ui:template """
 <div>
-	<br>
-	<strong about="v-wf:to" property="rdfs:label" class="text-muted"></strong>
+	<em about="v-wf:to" property="rdfs:label"></em>
 	<div rel="v-wf:to" template="v-ui:LabelTemplate" class="view -edit -search"></div>
 	<veda-control rel="v-wf:to" type="link" class="-view edit search fulltext dropdown"></veda-control>
 	<br>
-	<strong about="rdfs:comment" property="rdfs:label" class="text-muted"></strong>
+	<em about="rdfs:comment" property="rdfs:label"></em>
 	<div property="rdfs:comment" class="view -edit -search"></div>
-	<veda-control property="rdfs:comment" type="string" class="-view edit search"></veda-control>
+	<veda-control property="rdfs:comment" type="text" class="-view edit search"></veda-control>
 </div>
   """ ;
 .
@@ -2026,14 +2122,17 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionAchieved ;
   v-ui:forClass v-wf:DecisionRejected ;
   v-ui:forClass v-wf:DecisionRemake ;
+  v-ui:forClass v-wf:DecisionRemaked ;
   v-ui:forClass v-wf:DecisionNotPerformed ;
+  v-ui:forClass v-wf:DecisionConfirm ;
   v-ui:forClass v-wf:DecisionAgreedToProject ;  
+  v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;   
+  v-ui:forClass v-wf:DecisionСalculationsPerformed ;
   v-ui:template """
 <div>
-	<br>
-	<strong about="rdfs:comment" property="rdfs:label" class="text-muted"></strong>
+	<em about="rdfs:comment" property="rdfs:label"></em>
 	<div property="rdfs:comment" class="view -edit -search"></div>
-	<veda-control property="rdfs:comment" type="string" class="-view edit search"></veda-control>
+	<veda-control property="rdfs:comment" type="text" class="-view edit search"></veda-control>
 </div>
   """ ;
 .
@@ -2063,9 +2162,13 @@ v-wf:DecisionRedirectTemplateSpec2
   v-ui:forClass v-wf:DecisionApprove ;
   v-ui:forClass v-wf:DecisionReview ;
   v-ui:forClass v-wf:DecisionBreak ;
+  v-ui:forClass v-wf:DecisionRemaked ;
   v-ui:forClass v-wf:DecisionExamined ;
   v-ui:forClass v-wf:DecisionAchieved ;
-  v-ui:forClass v-wf:DecisionAgreedToProject ;   
+  v-ui:forClass v-wf:DecisionAgreedToProject ;
+  v-ui:forClass v-wf:DecisionConfirm ;   
+  v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;   
+  v-ui:forClass v-wf:DecisionСalculationsPerformed ;
 .
 
 v-wf:DecisionRedirectTemplateSpec3
@@ -2078,7 +2181,7 @@ v-wf:DecisionRedirectTemplateSpec3
   v-ui:forProperty v-wf:to, rdfs:comment ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Person')"
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"
 .
 
 v-wf:startingJournalMap
@@ -2093,6 +2196,22 @@ v-wf:completedJournalMap
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "конечное преобразование для журнала"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:Mapping ;
+.
+
+v-wf:startingMessageMap
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "начальное преобразование для отправки сообщений"@ru ;
+	rdfs:domain v-wf:Task ;
+	rdfs:range v-wf:Mapping ;
+.
+
+v-wf:completedMessageMap
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "конечное преобразование для отправки сообщений"@ru ;
 	rdfs:domain v-wf:Task ;
 	rdfs:range v-wf:Mapping ;
 .
@@ -2120,6 +2239,7 @@ v-wf:onProcess
   rdfs:label "к процессу"@ru ;
   rdfs:range v-wf:Process ;
 .
+
 v-wf:initiator
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
@@ -2128,19 +2248,11 @@ v-wf:initiator
   rdfs:label "initiator"@en ;
   rdfs:range v-s:Appointment ;
 .
+
 v-wf:executor
   rdfs:domain v-wf:TaskGiven, v-wf:TaskCompleted ;
 .
-v-wf:to
-  rdf:type owl:ObjectProperty ;
-  rdfs:isDefinedBy v-wf: ;
-  rdfs:label "кому"@ru ;
-  rdfs:label "whom"@en ;
-  rdfs:domain v-wf:DecisionForm ;
-  rdfs:domain v-wf:DecisionRedirect ;
-  rdfs:domain v-s:JournalRecord ;
-  rdfs:range v-s:Appointment ;
-.
+
 v-wf:isProcess
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
@@ -2366,6 +2478,7 @@ v-ui:SubProcessStartedEventTemplate
     $("div[rel='v-s:subJournal']", template).toggle();
     $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
+  $("#exp", template).click();  
 </script>
   """ ;
 .
@@ -2401,6 +2514,7 @@ v-ui:WorkItemStartedEventTemplate
     $("div[rel='v-s:subJournal']", template).toggle();
     $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
+  $("#exp", template).click();  
 </script>
   """ ;
 .
@@ -2436,6 +2550,7 @@ v-ui:WorkOrderStartedEventTemplate
     $("div[rel='v-s:subJournal']", template).toggle();
     $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
+  $("#exp", template).click();  
 </script>
   """ ;
 .
@@ -2471,6 +2586,7 @@ v-ui:DecisionFormStartedEventTemplate
     $("div[rel='v-s:subJournal']", template).toggle();
     $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
+  $("#exp", template).click();
 </script>
   """ ;
 .
@@ -2508,3 +2624,79 @@ v-ui:TraceEventTemplate
   """ ;
 .
 
+v-wf:questionRouteStartFormLinkRule
+  rdf:type v-s:DocumentLinkRules;
+  rdfs:label "Задать вопрос"@ru ;
+  rdfs:label "Ask a question"@en ;
+  v-s:classTo v-df:QuestionRouteStartForm;
+  v-s:hasTransformation v-wf:questionRouteStartForm;
+  v-s:isRoute "true"^^xsd:boolean;
+.
+v-wf:instructionRouteStartFormLinkRule
+  rdf:type v-s:DocumentLinkRules;
+  rdfs:label "Исполнить поручение"@ru ;
+  rdfs:label "Execute instruction"@en ;
+  v-s:classTo v-df:InstructionRouteStartForm;
+  v-s:hasTransformation v-wf:instructionRouteStartForm;
+  v-s:isRoute "true"^^xsd:boolean;
+.
+
+v-wf:questionRouteStartForm
+  rdf:type v-wf:Transform ;
+  v-wf:transformRule v-wf:rule1question ;
+  v-wf:transformRule v-wf:rule2question ;
+  v-wf:transformRule v-wf:rule3question ;  
+  rdfs:isDefinedBy v-wf: ;
+.
+v-wf:rule1question
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate "putValue ('v-wf:processedDocument')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping	"1";    
+.
+v-wf:rule2question
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:segregateElement "contentName('@')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping	"1";    
+.
+v-wf:rule3question
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putUri ('rdf:type', 'v-df:QuestionRouteStartForm')" ;
+  v-wf:aggregate "putUri ('v-wf:useTransformation', 'v-df:QuestionRouteStartFormToNet')" ;
+  v-wf:segregateElement "contentName('@')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping	"1";  
+.
+
+v-wf:instructionRouteStartForm
+  rdf:type v-wf:Transform ;
+  v-wf:transformRule v-wf:rule1instruction ;
+  v-wf:transformRule v-wf:rule2instruction ;
+  v-wf:transformRule v-wf:rule3instruction ;  
+  rdfs:isDefinedBy v-wf: ;
+.
+v-wf:rule1instruction
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate "putValue ('v-wf:processedDocument')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping	"1";    
+.
+v-wf:rule2instruction
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:segregateElement "contentName('@')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping	"1";    
+.
+v-wf:rule3instruction
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putUri ('rdf:type', 'v-df:InstructionRouteStartForm')" ;
+  v-wf:aggregate "putUri ('v-wf:useTransformation', 'v-df:InstructionRouteStartFormToNet')" ;
+  v-wf:segregateElement "contentName('@')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping	"1";  
+. 

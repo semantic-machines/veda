@@ -108,11 +108,12 @@ veda.Module(function Backend(veda) { "use strict";
 		return call_server(undefined, params, success, fail);
 	}
 
-	window.query = function (ticket, q, sort, databases, reopen, success, fail) {
+	window.query = function (ticket, q, sort, databases, reopen, top, limit, success, fail) {
 		var params = {
 			type: "GET",
 			url: "query",
-			data: { "ticket": ticket, "query": q, "sort": sort || null, "databases" : databases || null, "reopen" : reopen || false }
+			data: { "ticket": ticket, "query": q, "sort": sort || null, "databases" : databases || null, "reopen" : reopen || false, 
+					"top" : top || 0, "limit" : limit || 0}
 		};
 		return call_server(ticket, params, success, fail);
 	}
