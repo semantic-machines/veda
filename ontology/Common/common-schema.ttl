@@ -16,6 +16,7 @@
   rdfs:label "Общая онтология"@ru ;
   owl:imports <http://semantic-machines.com/veda/veda-schema> ;
   owl:imports <http://semantic-machines.com/veda/veda-ui> ;
+  v-s:loadPriority 20 ;
 .
 cmn-s:Action
   rdf:type owl:Class ;

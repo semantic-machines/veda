@@ -19,8 +19,9 @@
   owl:imports <http://semantic-machines.com/veda/veda-workflow-cr> ;
 #  owl:versionInfo "1.4" ;
   rdfs:label "simple workflow ontology"@en ;
-	rdfs:isDefinedBy s-wfc: ;
-  rdfs:label "Онтология бизнес процессов Монди"@ru ;
+  rdfs:isDefinedBy s-wfc: ;
+  rdfs:label "Онтология бизнес процессов"@ru ;
+  v-s:loadPriority 21 ;
 .
 
 # --- begin ----------------------- NET Complex Route --------------------------------------- #
