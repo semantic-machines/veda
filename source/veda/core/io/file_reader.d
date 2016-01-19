@@ -68,7 +68,7 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
 }
 
 SysTime[ string ] file_modification_time;
-string[] order_in_load = [ "vdi:", "v-a:", "vsrv:", "rdf:", "rdfs:", "owl:", "v-s:", "v-wf:", "v-ui:", "*", "td:" ];
+long[ string ]    prefix_2_priority;
 
 Individual[ string ] read_ttl(Context context, bool is_load)
 {
@@ -118,7 +118,6 @@ Individual[ string ] read_ttl(Context context, bool is_load)
     {
         foreach (filename; files_to_load)
         {
-            log.trace("prepare_file %s", filename);
             string[ string ] prefixes;
 
             if (context !is null)
@@ -134,6 +133,11 @@ Individual[ string ] read_ttl(Context context, bool is_load)
                 if (indv.isExist(rdf__type, owl__Ontology))
                 {
                     filename_2_prefix[ indv.uri ] = filename;
+                    long loadPriority = indv.getFirstInteger("v-s:loadPriority", -1);
+
+                    if (loadPriority >= 0)
+                        prefix_2_priority[ indv.uri ] = loadPriority;
+
                     break;
                 }
             }
@@ -141,37 +145,24 @@ Individual[ string ] read_ttl(Context context, bool is_load)
             individuals_2_filename[ filename ] = l_individuals;
         }
 
-        int idx = 0;
-        foreach (pos; order_in_load)
+        for (int priority = 0; priority < 100; priority++)
         {
+            string prepared_filename;
+
             foreach (onto_name, filename; filename_2_prefix)
             {
-                bool is_next = false;
-                if (pos == "*")
+                long cur_priority = prefix_2_priority.get(onto_name, 99);
+                if (priority == cur_priority)
                 {
-                    is_next = true;
-                    for (int i = idx; i < order_in_load.length; i++)
-                    {
-                        if (onto_name == order_in_load[ i ])
-                        {
-                            is_next = false;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    if (onto_name == pos)
-                        is_next = true;
-                }
+                    log.trace("prepare_file %s, priority=%d", filename, priority);
 
-                if (is_next == true)
-                {
                     auto indvs = individuals_2_filename.get(filename, null);
                     if (indvs !is null)
                         prepare_list(individuals, indvs.values, context, onto_name);
+                    prepared_filename = filename;
                 }
             }
+            filename_2_prefix.remove(prepared_filename);
         }
     }
 
@@ -186,36 +177,19 @@ void processed(Context context, bool is_load)
 
     if (individuals.length > 0 && is_load)
     {
-        // load index onto
-        int idx = 0;
-        foreach (pos; order_in_load)
+        for (int priority = 0; priority < 100; priority++)
         {
+            bool is_loaded = false;
+
             foreach (uri, indv; individuals)
             {
                 if (indv != Individual.init)
                 {
                     string isDefinedBy = indv.getFirstLiteral("rdfs:isDefinedBy");
 
-                    bool   is_next = false;
-                    if (pos == "*")
-                    {
-                        is_next = true;
-                        for (int i = idx; i < order_in_load.length; i++)
-                        {
-                            if (isDefinedBy == order_in_load[ i ])
-                            {
-                                is_next = false;
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (isDefinedBy == pos)
-                            is_next = true;
-                    }
+                    long   cur_priority = prefix_2_priority.get(isDefinedBy, 99);
 
-                    if (is_next == true)
+                    if (priority == cur_priority)
                     {
                         individuals[ uri ] = Individual.init;
 
@@ -232,24 +206,27 @@ void processed(Context context, bool is_load)
                             if (res != ResultCode.OK)
                                 log.trace("individual =%s, not store, errcode =%s", indv.uri, text(res));
                         }
+                        is_loaded = true;
                     }
                 }
             }
-            idx++;
 
-            //    context.reopen_ro_subject_storage_db();
-            //    context.reopen_ro_fulltext_indexer_db();
-            try
+            if (is_loaded)
             {
-                Tid tid_scripts_manager = context.getTid(P_MODULE.scripts);
-                if (tid_scripts_manager != Tid.init)
+                //    context.reopen_ro_subject_storage_db();
+                //    context.reopen_ro_fulltext_indexer_db();
+                try
                 {
-                    core.thread.Thread.sleep(dur!("seconds")(1));
-                    send(tid_scripts_manager, CMD.RELOAD, thisTid);
-                    receive((bool res) {});
+                    Tid tid_scripts_manager = context.getTid(P_MODULE.scripts);
+                    if (tid_scripts_manager != Tid.init)
+                    {
+                        core.thread.Thread.sleep(dur!("seconds")(1));
+                        send(tid_scripts_manager, CMD.RELOAD, thisTid);
+                        receive((bool res) {});
+                    }
                 }
+                catch (Exception ex) {}
             }
-            catch (Exception ex) {}
         }
     }
 
