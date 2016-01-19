@@ -10,6 +10,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 
 <http://semantic-machines.com/veda/veda-bundle>
   rdf:type owl:Ontology ;

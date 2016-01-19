@@ -10,6 +10,7 @@
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
 @prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
+@prefix v-a: <http://semantic-machines.com/veda/veda-admin/> .
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
 
 <http://semantic-machines.com/veda/veda-layout>
@@ -423,21 +424,21 @@ veda.logout();
 v-fs:MainPageObjectsMembership
 	rdf:type v-s:Membership ;
 	v-s:memberOf v-a:ReadResGroup ;
-	v-s:resource v-l:Main
-	v-s:resource v-l:Logo 
-	v-s:resource v-l:Welcome
-	v-s:resource v-l:WelcomeBackground
-	v-s:resource v-l:MainMenu
-	v-s:resource v-l:Divider
-	v-s:resource v-l:Inbox
-	v-s:resource v-l:Outbox
-	v-s:resource v-l:Completed
-	v-s:resource v-l:Create
-	v-s:resource v-l:Find
-	v-s:resource v-l:Search
-	v-s:resource v-l:Graph
-	v-s:resource v-l:Console
-	v-s:resource v-l:Tests
-	v-s:resource v-l:Clear
-	v-s:resource v-l:Exit
+	v-s:resource v-l:Main ;
+	v-s:resource v-l:Logo ;
+	v-s:resource v-l:Welcome ;
+	v-s:resource v-l:WelcomeBackground ;
+	v-s:resource v-l:MainMenu ;
+	v-s:resource v-l:Divider ;
+	v-s:resource v-l:Inbox ;
+	v-s:resource v-l:Outbox ;
+	v-s:resource v-l:Completed ;
+	v-s:resource v-l:Create ;
+	v-s:resource v-l:Find ;
+	v-s:resource v-l:Search ;
+	v-s:resource v-l:Graph ;
+	v-s:resource v-l:Console ;
+	v-s:resource v-l:Tests ;
+	v-s:resource v-l:Clear ;
+	v-s:resource v-l:Exit ;
 .
