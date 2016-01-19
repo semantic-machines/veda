@@ -255,9 +255,17 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
             return;
 
         string str_script =
-            "var ticket = get_env_str_var ('$ticket'); var user_uri = get_env_str_var ('$user'); var prev_state = get_individual (ticket, '$prev_state'); var document = get_individual (ticket, '$document'); if (document) { var _script_id = '"
-            ~ ss.uri ~
-            "'; var _event_id = document['@'] + _script_id; " ~ scripts_text ~ "}";
+              "var ticket = get_env_str_var ('$ticket');"
+            ~ "var user_uri = get_env_str_var ('$user');"
+            ~ "var prev_state = get_individual (ticket, '$prev_state');"
+            ~ "var document = get_individual (ticket, '$document');"
+            ~ "if (document) {"
+            	~ "var _script_id = '" ~ ss.uri ~ "';"
+            	~ "var _event_id = document['@'] + _script_id;"
+            	~ "script();"
+            ~ "};"
+            ~ "function script() {" ~ scripts_text ~ "};"
+            ;
         try
         {
             ScriptInfo script = ScriptInfo.init;
