@@ -233,15 +233,15 @@ if (vs_author) {
 			addRight(ticket, [can_read, can_update, can_delete], getUri(vs_author), doc_uri); 
 			//print('#2 author = person, doc_uri = ' + doc_uri + ', person = ' + getUri(vs_author)); 
 		} else {
-			var ff = get_property_chain (ticket, document, 'v-s:author', 'v-s:employee');
+			var ff = get_property_chain (ticket, document, 'v-s:author', 'v-s:occupation');
 			if (ff) {
-				var employee_uri = getUri (ff['field']);
+				var position_uri = getUri (ff['field']);
 				var first_doc = ff['first'];
 				if (first_doc) {
 					doc_uri = first_doc['@'];	
-					if (employee_uri) {
-						//print('#3 author = appointment, doc_uri = ' + doc_uri + ', person = ' + employee_uri);
-						addRight(ticket, [can_read, can_update, can_delete], employee_uri, doc_uri);
+					if (position_uri) {
+						//print('#3 author = appointment, doc_uri = ' + doc_uri + ', person = ' + position_uri);
+						addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri);
 					}
 				}
 			}
