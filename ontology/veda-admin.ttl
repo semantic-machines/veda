@@ -240,7 +240,7 @@ if (vs_author) {
 				if (first_doc) {
 					doc_uri = first_doc['@'];	
 					if (position_uri) {
-						//print('#3 author = appointment, doc_uri = ' + doc_uri + ', person = ' + position_uri);
+						//print('#3 author = appointment, doc_uri = ' + doc_uri + ', position = ' + position_uri);
 						addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri);
 					}
 				}
