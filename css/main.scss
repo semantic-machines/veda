@@ -16,6 +16,20 @@ body {
     base-background-repeat: repeat-x;
 }
 
+.teammate {
+    padding-top: 30px;
+    clear:both;
+}
+.teammate-img {
+    padding: 10px;
+    float: left;
+    width: 150px;
+    height: 150px;
+    border-radius: 100%;
+    background: #eee no-repeat center;
+    background-size: cover;
+}
+
 $spacing-unit:     30px;
 
 $text-color:       #111;
