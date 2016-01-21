@@ -16,40 +16,6 @@ body {
     base-background-repeat: repeat-x;
 }
 
-.navbar {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}
-
-.navbar li {
-    float: left;
-    padding: 10px;
-}
-
-.navbar a {
-    border: 2px solid #65b37a;
-    color: #FFF;
-}
-
-.navbar a:after {
-    opacity: 0;
-    background-image: -webkit-linear-gradient( transparent 50%, rgba(101,179,122,0.2) 50%);
-    background-image: -moz-linear-gradient(transparent 50%, rgba(101,179,122,0.2) 50%);
-    background-size: 10px 10px;
-    -moz-transform: translateX(-50%) translateY(-50%) rotate(25deg);
-    -ms-transform: translateX(-50%) translateY(-50%) rotate(25deg);
-    -webkit-transform: translateX(-50%) translateY(-50%) rotate(25deg);
-    transform: translateX(-50%) translateY(-50%) rotate(25deg);
-}
-
-.navbar a:hover:after {
-    height: 600% !important;
-    opacity: 1;
-    color: #FFF;
-}
-
 $spacing-unit:     30px;
 
 $text-color:       #111;
@@ -61,7 +27,7 @@ $grey-color-light: lighten($grey-color, 40%);
 $grey-color-dark:  darken($grey-color, 25%);
 
 // Width of the content area
-$content-width:    800px;
+$content-width:    1200px;
 
 $on-palm:          600px;
 $on-laptop:        800px;

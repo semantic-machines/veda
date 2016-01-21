@@ -3,13 +3,18 @@ layout: default
 ---
 
 <div class="home">
+  <h1 class="page-heading">Добро пожаловать: </h1>
 
-  <h1 class="page-heading">Posts</h1>
+Everti vocibus consectetuer ei sea, antiopam forensibus eum ne. Nam homero dissentiunt ut, eirmod cetero facilisi et sit. No eripuit aliquando scriptorem est, te nam propriae detracto appetere. Ut idque quaestio salutatus his, mei vulputate accommodare ad. Vel delectus salutatus ad, vel autem denique reformidans ut.
+
+Sea no vitae sanctus molestiae, eu unum dissentias disputando has. Quo epicuri recusabo ea, vim et erat quodsi oblique. Eos te homero accusam percipitur, no quo malis habemus petentium. Ei cum debet debitis minimum. Fabellas consequat pro ad, tollit audiam ornatus te sed, an eum delenit laboramus.
+
+  <h1 class="page-heading">Последние обновления: </h1>
 
   <ul class="post-list">
     {% for post in site.posts %}
       <li>
-        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+        <span class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
 
         <h2>
           <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
@@ -17,7 +22,4 @@ layout: default
       </li>
     {% endfor %}
   </ul>
-
-  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
-
 </div>
