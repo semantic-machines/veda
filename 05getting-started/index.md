@@ -33,7 +33,7 @@ dub
 ./veda
 {% endhighlight %}
 6) Далее откройте веб-интерфейс VEDA при помощи вашего любимого браузера:
-{% highlight txt %}
+{% highlight bash %}
 http://localhost:8080/
 {% endhighlight %}
 
