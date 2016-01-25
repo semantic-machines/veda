@@ -1,27 +1,15 @@
-# baseURI: http://semantic-machines.com/veda/veda-ui
-# imports: http://semantic-machines.com/veda/veda-schema
-# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
-# imports: http://www.w3.org/2000/01/rdf-schema#
-# imports: http://www.w3.org/2002/07/owl
-
-# c14n-version: 3
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
-@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
 
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 <http://semantic-machines.com/veda/veda-ui>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system user interface ontology"@en ;
   rdfs:label "Онтология пользовательского интерфейса системы Веда"@ru ;
-  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
-  owl:imports rdf: ;
-  owl:imports rdfs: ;
-  owl:imports <http://www.w3.org/2002/07/owl> ;
 #  owl:versionInfo "3.4" ;
   v-s:loadPriority 8 ;
 .
@@ -416,7 +404,7 @@ v-ui:IconPersonTemplate
 	</span>
 </a>
 <script>
-	template.attr("href", "#/" + individual["v-asp:hasAspect"][0].id);
+	template.attr("href", "#/" + individual["v-s:hasAspect"][0].id);
 </script>
 """ ;
 .
@@ -453,10 +441,10 @@ v-ui:ClassTemplateTemplate
 	<veda-control property="v-ui:template" type="source"></veda-control>
   </div>
   <div class="panel-footer">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-b:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-b:Delete" property="rdfs:label"/>
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
 </div>
   """ ;
@@ -523,10 +511,10 @@ v-ui:ResourceTemplate
 		</div>
 	</div>
 	<div class="panel-footer">
-		<button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-b:Edit" property="rdfs:label"/>
-		<button type="button" class="action btn btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/>
-		<button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
-		<button type="button" class="action btn btn-link view edit -search" id="delete" about="v-b:Delete" property="rdfs:label"/>
+		<button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+		<button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+		<button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+		<button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
 	</div>
 </div>
   """ ;
@@ -667,10 +655,10 @@ v-ui:SavedSearchTemplate
           </div>
         </div>
         <br/>
-        <button type="button" class="action btn btn-sm btn-primary view -edit -search" id="edit" about="v-b:Edit" property="rdfs:label"/>
-        <button type="button" class="action btn btn-sm btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/>
-        <button type="button" class="action btn btn-sm btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
-        <button type="button" class="action btn btn-sm btn-link view edit -search" id="delete" about="v-b:Delete" property="rdfs:label"/>
+        <button type="button" class="action btn btn-sm btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+        <button type="button" class="action btn btn-sm btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+        <button type="button" class="action btn btn-sm btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+        <button type="button" class="action btn btn-sm btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
   """ ;
 .
@@ -681,7 +669,7 @@ v-ui:SearchRequestTemplate
   v-ui:forClass v-s:SearchRequest ;
   v-ui:template """
 	<div>
-		<h4 about="v-b:SearchRequest" property="rdfs:label"/>
+		<h4 about="v-s:SearchRequest" property="rdfs:label"/>
 		<div class="row">
 			<div class="col-md-12">
 				<strong about="rdfs:label" property="rdfs:label"/>
@@ -710,8 +698,8 @@ v-ui:SearchRequestTemplate
 			</div>
 		</div>
 		<br/>
-        <button type="button" class="action btn btn-primary" id="edit" about="v-b:Edit" property="rdfs:label"/>
-        <button type="button" class="action btn btn-success" id="save" about="v-b:Save" property="rdfs:label"/>
+        <button type="button" class="action btn btn-primary" id="edit" about="v-s:Edit" property="rdfs:label"/>
+        <button type="button" class="action btn btn-success" id="save" about="v-s:Save" property="rdfs:label"/>
 	</div>
   """ ;
 .
@@ -1083,10 +1071,10 @@ v-ui:TestUITemplate
 	<veda-control rel="v-ui:testFile" type="file" class="-view edit -search"></veda-control>
   </div>
   <div class="panel-footer">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-b:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-b:Delete" property="rdfs:label"/>
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
 </div>
   """ ;

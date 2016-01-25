@@ -1,29 +1,20 @@
-# baseURI: http://semantic-machines.com/veda/veda-docflow
-# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
-# imports: http://www.w3.org/2000/01/rdf-schema#
-# imports: http://www.w3.org/2002/07/owl
-
-# c14n-version: 3
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
-@prefix v-a: <http://semantic-machines.com/veda/veda-admin/> .
-@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
-@prefix v-df: <http://semantic-machines.com/veda/veda-docflow/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix cmn-s: <http://semantic-machines.com/veda/common-schema/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
 
+
+@prefix v-df: <http://semantic-machines.com/veda/veda-docflow/> .
 <http://semantic-machines.com/veda/veda-docflow>
   rdfs:isDefinedBy v-df: ;
   rdf:type owl:Ontology ;
   rdfs:label "Veda system docflow ontology"@en ;
   rdfs:label "Онтология процессов документооборота системы Veda"@ru ;
-  owl:imports rdf: ;
-  owl:imports rdfs: ;
-  owl:imports owl: ;
 #  owl:DversionInfo "1.2" ;
   v-s:loadPriority 9 ;
 .
@@ -154,11 +145,11 @@ v-df:ApprovalTaskTemplate
 
 			<br><br>
 			<div class="well well-sm">
-			  <button type="button" class="action btn btn-warning" id="send" about="v-b:Send" property="rdfs:label"/>
-			  <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-b:Edit" property="rdfs:label"/>
-			  <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/>
-			  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
-			  <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-b:Delete" property="rdfs:label"/>
+			  <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+			  <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+			  <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+			  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+			  <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
 			</div>    
 		
 	  </div>		
@@ -322,8 +313,8 @@ v-df:QuestionRouteStartFormTemplate
 
 			<br><br>
 			<div class="well well-sm">
-			  <button type="button" class="action btn btn-warning" id="send" about="v-b:Send" property="rdfs:label"/>
-			  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
+			  <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+			  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
 			</div>    
 	  </div>		
 	</div>			
@@ -388,8 +379,8 @@ v-df:InstructionRouteStartFormTemplate
 
 			<br><br>
 			<div class="well well-sm">
-			  <button type="button" class="action btn btn-warning" id="send" about="v-b:Send" property="rdfs:label"/>
-			  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
+			  <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+			  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
 			</div>    
 	  </div>		
 	</div>			

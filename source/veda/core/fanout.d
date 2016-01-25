@@ -373,22 +373,22 @@ private void connect_to_smtp(Context context)
     Ticket sticket = context.sys_ticket();
 
     node = context.getConfiguration();
-    Resources gates = node.resources.get("vsrv:send_an_email_individual_by_event", Resources.init);
+    Resources gates = node.resources.get("v-s:send_an_email_individual_by_event", Resources.init);
     foreach (gate; gates)
     {
         Individual connection = context.get_individual(&sticket, gate.uri);
 
-        Resource   transport = connection.getFirstResource("vsrv:transport");
+        Resource   transport = connection.getFirstResource("v-s:transport");
         if (transport != Resource.init)
         {
             if (transport.data() == "smtp")
             {
                 try
                 {
-                    smtp_conn = new MailSender(connection.getFirstLiteral("vsrv:host"), cast(ushort)connection.getFirstInteger("vsrv:port"));
+                    smtp_conn = new MailSender(connection.getFirstLiteral("v-s:host"), cast(ushort)connection.getFirstInteger("v-s:port"));
 
-                    string login = connection.getFirstLiteral("vsrv:login");
-                    string pass  = connection.getFirstLiteral("vsrv:credentional");
+                    string login = connection.getFirstLiteral("v-s:login");
+                    string pass  = connection.getFirstLiteral("v-s:credentional");
 
                     if (login !is null && login.length > 0)
                         smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
@@ -412,23 +412,23 @@ private void connect_to_mysql(Context context)
     Ticket sticket = context.sys_ticket();
 
     node = context.getConfiguration();
-    Resources gates = node.resources.get("vsrv:push_individual_by_event", Resources.init);
+    Resources gates = node.resources.get("v-s:push_individual_by_event", Resources.init);
     foreach (gate; gates)
     {
         Individual connection = context.get_individual(&sticket, gate.uri);
 
-        Resource   transport = connection.getFirstResource("vsrv:transport");
+        Resource   transport = connection.getFirstResource("v-s:transport");
         if (transport != Resource.init)
         {
             if (transport.data() == "mysql")
             {
                 try
                 {
-                    database_name = connection.getFirstLiteral("vsrv:sql_database");
-                    mysql_conn    = new Mysql(connection.getFirstLiteral("vsrv:host"),
-                                              cast(uint)connection.getFirstInteger("vsrv:port"),
-                                              connection.getFirstLiteral("vsrv:login"),
-                                              connection.getFirstLiteral("vsrv:credentional"),
+                    database_name = connection.getFirstLiteral("v-s:sql_database");
+                    mysql_conn    = new Mysql(connection.getFirstLiteral("v-s:host"),
+                                              cast(uint)connection.getFirstInteger("v-s:port"),
+                                              connection.getFirstLiteral("v-s:login"),
+                                              connection.getFirstLiteral("v-s:credentional"),
                                               database_name);
 
                     mysql_conn.query("SET NAMES 'utf8'");

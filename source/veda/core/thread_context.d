@@ -121,7 +121,7 @@ class PThreadContext : Context
         {
             try
             {
-                ticket = create_new_ticket("v-a:VedaSystem");
+                ticket = create_new_ticket("cfg:VedaSystem");
             }
             catch (Exception ex)
             {
@@ -130,7 +130,7 @@ class PThreadContext : Context
             }
 
             if (ticket.user_uri == "")
-                ticket.user_uri = "v-a:VedaSystem";
+                ticket.user_uri = "cfg:VedaSystem";
 
             set_global_systicket(ticket);
         }
@@ -148,8 +148,8 @@ class PThreadContext : Context
             if (node.getStatus() != ResultCode.OK)
                 node = Individual.init;
 
-            set_g_external_write_storage_url(node.getFirstLiteral("vsrv:write_storage_node"));
-//            external_js_vm         = node.getFirstLiteral("vsrv:jsvm_node");
+            set_g_external_write_storage_url(node.getFirstLiteral("v-s:write_storage_node"));
+//            external_js_vm         = node.getFirstLiteral("v-s:jsvm_node");
         }
         return node;
     }

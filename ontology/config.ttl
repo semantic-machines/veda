@@ -1,147 +1,134 @@
-# baseURI: http://semantic-machines.com/veda/veda-admin
-# imports: http://semantic-machines.com/veda/veda-schema
-# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
-# imports: http://www.w3.org/2000/01/rdf-schema#
-# imports: http://www.w3.org/2002/07/owl
-
-# c14n-version: 3
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix v-a: <http://semantic-machines.com/veda/veda-admin/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
-@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix vsrv: <http://semantic-machines.com/veda/veda-server/> .
 
-<http://semantic-machines.com/veda/veda-admin>
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+<http://semantic-machines.com/veda/config>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system administrator ontology"@en ;
   rdfs:label "Онтология администратора системы Веда"@ru ;
-  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
-  owl:imports rdf: ;
-  owl:imports rdfs: ;
-  owl:imports <http://www.w3.org/2002/07/owl> ;
 #  owl:versionInfo "1.0" ;
   v-s:loadPriority 1 ;
 .
 
 #####################################################
 
-v-a:standart_node
-	rdf:type vsrv:Node ;
-	vsrv:count_thread "4"^^xsd:integer ;
-	vsrv:checktime_onto_files "30"^^xsd:integer ;
-	vsrv:listener v-a:conn_http;
-	vsrv:role "main";
+cfg:standart_node
+	rdf:type v-s:Node ;
+	v-s:count_thread "4"^^xsd:integer ;
+	v-s:checktime_onto_files "30"^^xsd:integer ;
+	v-s:listener cfg:conn_http;
+	v-s:role "main";
 	rdfs:label "стандартная конфигурация" ;
 .	
 
-v-a:js_worker_node
-	rdf:type vsrv:Node ;
-	vsrv:role "js_worker";
-	vsrv:listener v-a:conn_http_8081;
-	vsrv:write_storage_node v-a:test_conn_http;
+cfg:js_worker_node
+	rdf:type v-s:Node ;
+	v-s:role "js_worker";
+	v-s:listener cfg:conn_http_8081;
+	v-s:write_storage_node cfg:test_conn_http;
 	rdfs:label "js worker node" ;
 .	
 
-v-a:test_node
-	rdf:type vsrv:Node ;
-	vsrv:count_thread "4"^^xsd:integer ;
-	vsrv:checktime_onto_files "20"^^xsd:integer ;
-	vsrv:listener v-a:test_conn_http;
-	vsrv:jsvm_node "external";
-	vsrv:fts_node "external";
-	vsrv:role "main";
+cfg:test_node
+	rdf:type v-s:Node ;
+	v-s:count_thread "4"^^xsd:integer ;
+	v-s:checktime_onto_files "20"^^xsd:integer ;
+	v-s:listener cfg:test_conn_http;
+	v-s:jsvm_node "external";
+	v-s:fts_node "external";
+	v-s:role "main";
 	rdfs:label "тестовая конфигурация" ;
 .	
 
-v-a:developer_node
-	rdf:type vsrv:Node ;
-	vsrv:count_thread "4"^^xsd:integer ;
-	vsrv:checktime_onto_files "1"^^xsd:integer ;
-	vsrv:listener v-a:conn_http;
-	vsrv:role "main";
-#	vsrv:push_individual_by_event v-a:conn_mysql1;
-	vsrv:send_an_email_individual_by_event v-a:conn_smtp1;
+cfg:developer_node
+	rdf:type v-s:Node ;
+	v-s:count_thread "4"^^xsd:integer ;
+	v-s:checktime_onto_files "1"^^xsd:integer ;
+	v-s:listener cfg:conn_http;
+	v-s:role "main";
+#	v-s:push_individual_by_event cfg:conn_mysql1;
+	v-s:send_an_email_individual_by_event cfg:conn_smtp1;
 	rdfs:label "конфигурация разработчика" ;
 .	
 
-v-a:conn_http
-	rdf:type vsrv:Connection ;
-	vsrv:name "http-server" ;
+cfg:conn_http
+	rdf:type v-s:Connection ;
+	v-s:name "http-server" ;
 	rdfs:label "http server" ;
-	vsrv:port "8080"^^xsd:integer ;
-	vsrv:transport "http" ;
+	v-s:port "8080"^^xsd:integer ;
+	v-s:transport "http" ;
 .
 
-v-a:conn_http_8081
-	rdf:type vsrv:Connection ;
-	vsrv:name "http-server" ;
+cfg:conn_http_8081
+	rdf:type v-s:Connection ;
+	v-s:name "http-server" ;
 	rdfs:label "http server" ;
-	vsrv:port "8081"^^xsd:integer ;
-	vsrv:transport "http" ;
+	v-s:port "8081"^^xsd:integer ;
+	v-s:transport "http" ;
 .
 
-v-a:test_conn_http
-	rdf:type vsrv:Connection ;
-	vsrv:name "http-server" ;
+cfg:test_conn_http
+	rdf:type v-s:Connection ;
+	v-s:name "http-server" ;
 	rdfs:label "http server" ;
-	vsrv:port "8080"^^xsd:integer ;
-	vsrv:transport "http" ;
+	v-s:port "8080"^^xsd:integer ;
+	v-s:transport "http" ;
 .
 
-v-a:conn_rabbitmq1 
-	rdf:type vsrv:Connection ;
-	vsrv:name "funout" ;
+cfg:conn_rabbitmq1 
+	rdf:type v-s:Connection ;
+	v-s:name "funout" ;
 	rdfs:label "connect to rabbitmq server" ;
-	vsrv:host "127.0.0.1" ;
-	vsrv:port "5672"^^xsd:integer ;
-	vsrv:transport "rabbitmq" ;
-	vsrv:queue "fanout" ;
-	vsrv:login "guest" ;
-	vsrv:credentional "guest" ;
-	vsrv:amqp_vhost	"veda" ;
-	vsrv:amqp_routingkey "";	
+	v-s:host "127.0.0.1" ;
+	v-s:port "5672"^^xsd:integer ;
+	v-s:transport "rabbitmq" ;
+	v-s:queue "fanout" ;
+	v-s:login "guest" ;
+	v-s:credentional "guest" ;
+	v-s:amqp_vhost	"veda" ;
+	v-s:amqp_routingkey "";	
 .
 
-v-a:conn_mysql1
-	rdf:type vsrv:Connection ;
-	vsrv:name "funout" ;
+cfg:conn_mysql1
+	rdf:type v-s:Connection ;
+	v-s:name "funout" ;
 	rdfs:label "connect to msql" ;
-	vsrv:host "test" ;
-	vsrv:port "3306"^^xsd:integer ;
-	vsrv:transport "mysql" ;
-	vsrv:login "ba" ;
-	vsrv:credentional ",f,ehtxyfz69" ;
-	vsrv:sql_database "veda_db" ;
+	v-s:host "test" ;
+	v-s:port "3306"^^xsd:integer ;
+	v-s:transport "mysql" ;
+	v-s:login "ba" ;
+	v-s:credentional ",f,ehtxyfz69" ;
+	v-s:sql_database "veda_db" ;
 .
 
-v-a:conn_smtp1
-	rdf:type vsrv:Connection ;
-	vsrv:name "smtp" ;
+cfg:conn_smtp1
+	rdf:type v-s:Connection ;
+	v-s:name "smtp" ;
 	rdfs:label "connect to smtp" ;
-	vsrv:host "smtp_point" ;
-	vsrv:port "25"^^xsd:integer ;
-	vsrv:transport "smtp" ;
+	v-s:host "smtp_point" ;
+	v-s:port "25"^^xsd:integer ;
+	v-s:transport "smtp" ;
 .
 
 #####################################################
 
-v-a:SuperAdmin
+cfg:SuperAdmin
   rdf:type v-s:Group ;
   rdfs:label "Super admin"@en ;
   rdfs:label "Супер админ"@ru ;
 .
 
-v-a:ReadUser
+cfg:ReadUser
   rdf:type v-s:Group ;
   rdfs:label "Read User"@en ;
   rdfs:label "Пользователи имеющие право на чтение"@ru ;
 .
 
-v-a:ReadResGroup
+cfg:ReadResGroup
   rdf:type v-s:Group ;
   rdfs:label "Resource group to read"@en ;
   rdfs:label "Группа ресурсов для чтения"@ru ;
@@ -150,9 +137,9 @@ v-a:ReadResGroup
 
 
 # --------------------------- обработка событий => привязка человека к группе должности ------------------------------
-v-a:Event_0
+cfg:Event_0
   rdf:type v-s:Event ;
-  v-s:author v-a:VedaSystemAccount ;
+  v-s:author cfg:VedaSystemAccount ;
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:filter v-s:Appointment ;
@@ -177,7 +164,7 @@ var uri = 'd:membership_' + person_uri.split(':').join('_') + '_' + position_uri
 	'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
 	'v-s:memberOf' : [{data: position_uri, type : _Uri}],
 	'v-s:resource'  : [{data: person_uri, type : _Uri}],
-	'rdfs:comment'  : [{data: 'создано автоматически в обработчике v-a:Event_0', type : _String}],
+	'rdfs:comment'  : [{data: 'создано автоматически в обработчике cfg:Event_0', type : _String}],
 };
 
 if (document['v-s:deleted'] && document['v-s:deleted'][0] && document['v-s:deleted'][0].data === true) {
@@ -189,9 +176,9 @@ put_individual (ticket, new_membership, _event_id);
 .
 
 # --------------------------- обработка событий => создание записей о правах ------------------------------
-v-a:Event_1
+cfg:Event_1
   rdf:type v-s:Event ;
-  v-s:author v-a:VedaSystemAccount ;
+  v-s:author cfg:VedaSystemAccount ;
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:script """
@@ -209,9 +196,9 @@ if (isDefinedBy) {
 	var new_membership = {
 		'@' : genUri (), 
 		'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
-		'v-s:memberOf' : [{data: 'v-a:ReadResGroup', type : _Uri}],
+		'v-s:memberOf' : [{data: 'cfg:ReadResGroup', type : _Uri}],
 		'v-s:resource'  : [{data: doc_uri, type : _Uri}],
-		'rdfs:comment'  : [{data: 'выдан v-a:Event_1', type : _String}]
+		'rdfs:comment'  : [{data: 'выдан cfg:Event_1', type : _String}]
 	};
 	put_individual (ticket, new_membership, _event_id);
 }
@@ -255,9 +242,9 @@ if (vs_author) {
 .
 
 # --------------------------- обработка событий => создание Журнала документа ------------------------------
-v-a:Event_1_1
+cfg:Event_1_1
   rdf:type v-s:Event ;
-  v-s:author v-a:VedaSystemAccount ;
+  v-s:author cfg:VedaSystemAccount ;
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:filter v-s:Journaling ;
@@ -284,7 +271,7 @@ if (!(document['v-s:isDraftOf'] && document['v-s:isDraftOf'].length>0
 	    if (employee_uri)
 	    {
 	        var journal_uri = getJournalUri(document['@']);
-	        //print('v-a:Event_1_1:journal journal_uri=' + journal_uri);
+	        //print('cfg:Event_1_1:journal journal_uri=' + journal_uri);
 	        var exist_journal = get_individual(ticket, journal_uri);
 			//print('0>'+exist_journal);
 	        if (exist_journal)
@@ -387,9 +374,9 @@ if (!(document['v-s:isDraftOf'] && document['v-s:isDraftOf'].length>0
   rdfs:label "Событие_1"@ru ;
 .
 
-v-a:Event_2
+cfg:Event_2
   rdf:type v-s:Event ;
-  v-s:author v-a:VedaSystemAccount ;
+  v-s:author cfg:VedaSystemAccount ;
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:filter v-s:Department ;
@@ -412,9 +399,9 @@ var new_membership =
 {
 	'@' : guid (), 
 	'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
-	'v-s:memberOf' : [{data: 'v-a:ReadResGroup', type : _Uri}],
+	'v-s:memberOf' : [{data: 'cfg:ReadResGroup', type : _Uri}],
 	'v-s:resource'  : [{data: doc_uri, type : _Uri}],
-	'rdfs:comment'  : [{data: "выдан v-a:Event_2", type : _String}]
+	'rdfs:comment'  : [{data: "выдан cfg:Event_2", type : _String}]
 };
 
 if (deleted && deleted[0].data == true)
@@ -433,9 +420,9 @@ new_membership =
 {
 	'@' : guid (), 
 	'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
-	'v-s:memberOf' : [{data: 'v-a:ReadUser', type : _Uri}],
+	'v-s:memberOf' : [{data: 'cfg:ReadUser', type : _Uri}],
 	'v-s:resource'  : [{data: doc_uri, type : _Uri}],
-	'rdfs:comment'  : [{data: "выдан v-a:Event_2", type : _String}]
+	'rdfs:comment'  : [{data: "выдан cfg:Event_2", type : _String}]
 };
 res = put_individual (ticket, new_membership, _event_id);
 if (res != 200 && res != 1022)
@@ -448,9 +435,9 @@ if (res != 200 && res != 1022)
   rdfs:label "Событие_2"@ru ;
 .
 
-v-a:Event_3
+cfg:Event_3
   rdf:type v-s:Event ;
-  v-s:author v-a:VedaSystemAccount ;
+  v-s:author cfg:VedaSystemAccount ;
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:filter rdf:Property ;
@@ -470,7 +457,7 @@ v-a:Event_3
   v-s:filter v-ui:StringPropertySpecification ;
   v-s:filter v-ui:BooleanPropertySpecification ;
   v-s:filter v-ui:ObjectPropertySpecification ;
-  v-s:filter v-b:Bundle ;
+  v-s:filter v-s:Bundle ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -485,9 +472,9 @@ var new_membership =
 {
 	'@' : guid (), 
 	'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
-	'v-s:memberOf' : [{data: 'v-a:ReadResGroup', type : _Uri}],
+	'v-s:memberOf' : [{data: 'cfg:ReadResGroup', type : _Uri}],
 	'v-s:resource'  : [{data: doc_uri, type : _Uri}],
-	'rdfs:comment'  : [{data: "выдан v-a:Event_3", type : _String}]
+	'rdfs:comment'  : [{data: "выдан cfg:Event_3", type : _String}]
 };
 
 put_individual (ticket, new_membership, _event_id);
@@ -497,9 +484,9 @@ put_individual (ticket, new_membership, _event_id);
   rdfs:label "Событие_3"@ru ;
 .
 
-v-a:Event_4
+cfg:Event_4
   rdf:type v-s:Event ;
-  v-s:author v-a:VedaSystemAccount ;
+  v-s:author cfg:VedaSystemAccount ;
   v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
   v-s:filter rdf:Property ;
@@ -657,36 +644,36 @@ switch (type) {
 
 # -------------------------------------------------------------------------------------------------
 
-v-a:VedaSystem
+cfg:VedaSystem
   rdf:type v-s:Person ;
-  v-s:actualVersion v-a:VedaSystem ;
+  v-s:actualVersion cfg:VedaSystem ;
   v-s:birthday "2014-03-05"^^xsd:dateTime ;
   v-s:firstName "Veda"@en ;
   v-s:firstName "Веда"@ru ;
-  v-s:hasAccount v-a:VedaSystemAccount ;
+  v-s:hasAccount cfg:VedaSystemAccount ;
   v-s:lastName "System"@en ;
   v-s:lastName "Система"@ru ;
   rdfs:label "Veda System"@en ;
   rdfs:label "Система Веда"@ru ;
 .
 
-v-a:Permission_1
+cfg:Permission_1
   rdf:type v-s:PermissionStatement ;
   v-s:canCreate "true"^^xsd:boolean ;
   v-s:canDelete "true"^^xsd:boolean ;
   v-s:canRead "true"^^xsd:boolean ;
   v-s:canUpdate "true"^^xsd:boolean ;
   v-s:permissionObject v-s:AllResourcesGroup ;
-  v-s:permissionSubject v-a:VedaSystem ;
+  v-s:permissionSubject cfg:VedaSystem ;
 .
 
-v-a:Permission_2
+cfg:Permission_2
   rdf:type v-s:PermissionStatement ;
-  v-s:author v-a:VedaSystem ;
+  v-s:author cfg:VedaSystem ;
   v-s:canRead "true"^^xsd:boolean ;
   v-s:created "2014-01-30T16:45:33"^^xsd:dateTime ;
-  v-s:permissionObject v-a:ReadResGroup ;
-  v-s:permissionSubject v-a:ReadUser ;
+  v-s:permissionObject cfg:ReadResGroup ;
+  v-s:permissionSubject cfg:ReadUser ;
   v-s:published "2014-01-30T16:45:33"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
   rdfs:label "Permissions record rr"@en ;

@@ -1,8 +1,3 @@
-# baseURI: http://semantic-machines.com/veda/test-data
-# imports: http://semantic-machines.com/veda/mondi-schema
-# imports: http://semantic-machines.com/veda/veda-schema
-
-# c14n-version: 3
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
 @prefix : <http://semantic-machines.com/veda/test-data/> .
 @prefix d: <http://semantic-machines.com/veda/data/> .
@@ -12,19 +7,18 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
-@prefix v-a: <http://semantic-machines.com/veda/veda-admin/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
 @prefix s-wf: <http://semantic-machines.com/veda/simple-workflow/> .
-@prefix v-asp: <http://semantic-machines.com/veda/veda-aspect/> .
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
 
 <http://semantic-machines.com/veda/test-data>
   rdf:type owl:Ontology ;
   rdfs:label "Mondi individuals ontology"@en ;
   rdfs:label "Онтология индивидов Монди"@ru ;
-  owl:imports <http://semantic-machines.com/veda/mondi-schema> ;
 # owl:versionInfo "1.3" ;
 .
 
@@ -267,7 +261,7 @@ td:Membership_1
 
 td:Membership_2
   rdf:type v-s:Membership ;
-  v-s:memberOf v-a:SuperAdmin ;
+  v-s:memberOf cfg:SuperAdmin ;
   v-s:resource td:RomanKarpov-CommercialDirector ;
   rdfs:label "Membership_2"@en ;
   rdfs:label "Членство_2"@ru ;
@@ -283,14 +277,14 @@ td:Membership_4
 
 td:Membership_5
   rdf:type v-s:Membership ;
-  v-s:memberOf v-a:SuperAdmin ;
+  v-s:memberOf cfg:SuperAdmin ;
   v-s:resource td:RomanKarpov ;
   rdfs:label "Membership_5"@en ;
   rdfs:label "Членство_5"@ru ;
 .
 td:Membership_55
   rdf:type v-s:Membership ;
-  v-s:memberOf v-a:SuperAdmin ;
+  v-s:memberOf cfg:SuperAdmin ;
   v-s:resource td:AleksandraKhvostikova ;
   rdfs:label "Membership_55"@en ;
   rdfs:label "Членство_55"@ru ;
@@ -306,7 +300,7 @@ td:Membership_6
 td:Membership_7
   rdf:type v-s:Membership ;
   v-s:memberOf td:ResGroup_1 ;
-  v-s:resource v-a:Event_1 ;
+  v-s:resource cfg:Event_1 ;
   rdfs:label "Membership_7"@en ;
   rdfs:label "Членство_7"@ru ;
 .
@@ -329,7 +323,7 @@ td:Membership_10
 
 td:Membership_11
   rdf:type v-s:Membership ;
-  v-s:memberOf v-a:ReadUser ;
+  v-s:memberOf cfg:ReadUser ;
   v-s:resource td:ValeriyBushenev ;
   rdfs:label "Membership_11"@en ;
   rdfs:label "Членство_11"@ru ;
@@ -345,7 +339,7 @@ td:Membership_11_1
 
 td:Membership_12
   rdf:type v-s:Membership ;
-  v-s:memberOf v-a:ReadUser ;
+  v-s:memberOf cfg:ReadUser ;
   v-s:resource td:AleksandraKhvostikova ;
   rdfs:label "Membership_12"@en ;
   rdfs:label "Членство_12"@ru ;
@@ -361,7 +355,7 @@ td:Membership_13
 
 td:Membership_14
   rdf:type v-s:Membership ;
-  v-s:memberOf v-a:ReadUser ;
+  v-s:memberOf cfg:ReadUser ;
   v-s:resource td:AndreyBychin ;
   rdfs:label "Membership_14"@en ;
   rdfs:label "Членство_14"@ru ;
@@ -383,7 +377,7 @@ td:Permission_1
   v-s:canUpdate "true"^^xsd:boolean ;
   v-s:created "2014-01-30T16:45:33"^^xsd:dateTime ;
   v-s:permissionObject v-s:AllResourcesGroup ;
-  v-s:permissionSubject v-a:SuperAdmin ;
+  v-s:permissionSubject cfg:SuperAdmin ;
   v-s:published "2014-01-30T16:45:33"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
   rdfs:label "Permissions record_1"@en ;
@@ -471,7 +465,7 @@ td:RomanKarpov
   rdfs:label "Roman Karpov"@en ;
   rdfs:label "Роман Карпов"@ru ;
   v-s:hasAppointment td:RomanKarpov-Analyst1 ;
-  v-asp:hasAspect v-asp:PersonalAspectKarpovr ;      
+  v-s:hasAspect v-s:PersonalAspectKarpovr ;      
 .
 td:AleksandraKhvostikova
   rdf:type v-s:Person ;
@@ -488,7 +482,7 @@ td:AleksandraKhvostikova
   rdfs:label "Aleksandra Khvostikova"@en ;
   rdfs:label "Александра Хвостикова"@ru ;
   v-s:hasAppointment td:AleksandraKhvostikova-Analyst1 ;
-  v-asp:hasAspect v-asp:PersonalAspectKhvostia ;        
+  v-s:hasAspect v-s:PersonalAspectKhvostia ;        
   v-s:hasImage td:khvostiaImage;
 .
 td:AleksandraKhvostikova-Analyst1
@@ -736,12 +730,12 @@ td:AppointmentTemplate1
           </div>
         </div>        
       </div>
-      <!--div class="panel-footer">
+      <div class="panel-footer">
         <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
         <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
         <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
         <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
-      </div--!>
+      </div>
     </div>
   </div>
   """ ;
@@ -1032,7 +1026,7 @@ td:SortOrder1
 
 # -------- стартовая форма маршрута ----------------
 td:ComplexRouteStartForm1
-    v-s:author v-a:VedaSystemAccount ;
+    v-s:author cfg:VedaSystemAccount ;
 	rdf:type s-wf:ComplexRouteStartForm ; 
 	rdf:type v-wf:StartForm ; 
 	v-wf:forNet s-wf:net_complex_route ;
@@ -1050,26 +1044,26 @@ td:ComplexRouteStartForm1
 
 :b435740-f19e-7731-03ef-e7cb2203f8c4 
 	a v-s:SavedSearch;
-    v-s:author v-a:VedaSystemAccount ;
+    v-s:author cfg:VedaSystemAccount ;
     v-s:query "'rdf:type' == 'v-wf:Process'"^^xsd:string;
     rdfs:label "экземпляры маршрута"^^xsd:string;
     v-s:created "2015-03-23T13:27:18.000Z"^^xsd:dateTime.
 
 :b435740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
-	v-s:author v-a:VedaSystemAccount ;
+	v-s:author cfg:VedaSystemAccount ;
     v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false "^^xsd:string;
     rdfs:label "общий инбокс: новые задачи"^^xsd:string;
     v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
 
 :b555740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
-	v-s:author v-a:VedaSystemAccount ;
+	v-s:author cfg:VedaSystemAccount ;
     v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true "^^xsd:string;
     rdfs:label "общий инбокс: выполненые задачи"^^xsd:string;
     v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
 
 td:Membership_002
   rdf:type v-s:Membership ;
-  v-s:memberOf v-a:ReadResGroup ;
+  v-s:memberOf cfg:ReadResGroup ;
   v-s:resource :b435740-f19e-7731-03ef-e7cb2203f8c4 ;
   rdfs:label "Membership 002"@en ;
   rdfs:label "Членство 002"@ru ;
@@ -1077,7 +1071,7 @@ td:Membership_002
 
 td:Membership_003
   rdf:type v-s:Membership ;
-  v-s:memberOf v-a:ReadResGroup ;
+  v-s:memberOf cfg:ReadResGroup ;
   v-s:resource :b435740-119e-1731-13ef-e7cb2203f8c4 ;
   rdfs:label "Membership 003"@en ;
   rdfs:label "Членство 003"@ru ;
@@ -1085,7 +1079,7 @@ td:Membership_003
 
 td:Membership_004
   rdf:type v-s:Membership ;
-  v-s:memberOf v-a:ReadResGroup ;
+  v-s:memberOf cfg:ReadResGroup ;
   v-s:resource :b555740-119e-1731-13ef-e7cb2203f8c4 ;
   rdfs:label "Membership 004"@en ;
   rdfs:label "Членство 004"@ru ;
@@ -1276,8 +1270,8 @@ td:Membership_004
 
 ##############################################################################################
 
-v-asp:PersonalAspectKarpovr
-	rdf:type v-asp:PersonalAspect ;
+v-s:PersonalAspectKarpovr
+	rdf:type v-s:PersonalAspect ;
 	v-s:owner td:RomanKarpov ;
 	rdfs:label "Персональный аспект 1"@ru ;
 	rdfs:label "Personal aspect 1"@en ;

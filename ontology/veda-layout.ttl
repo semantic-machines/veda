@@ -4,24 +4,17 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix v-asp: <http://semantic-machines.com/veda/veda-aspect/> .
-@prefix v-l: <http://semantic-machines.com/veda/veda-layout/> .
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
-@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
-@prefix v-a: <http://semantic-machines.com/veda/veda-admin/> .
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
 
+@prefix v-l: <http://semantic-machines.com/veda/veda-layout/> .
 <http://semantic-machines.com/veda/veda-layout>
 	rdf:type owl:Ontology ;
 	rdfs:label "Veda system layout ontology"@en ;
 	rdfs:label "Онтология разметки системы Веда"@ru ;
-	owl:imports <http://semantic-machines.com/veda/veda-schema> ;
-	owl:imports <http://semantic-machines.com/veda/veda-ui> ;
-	owl:imports rdf: ;
-	owl:imports rdfs: ;
-	owl:imports <http://www.w3.org/2002/07/owl> ;
 	#owl:versionInfo "0.2" ;
 	v-s:loadPriority 9 ;
 .
@@ -224,7 +217,7 @@ v-l:WelcomeAspect
 	rdf:type owl:Class ;
 	rdfs:label "Welcome aspect"@en ;
 	rdfs:label "Приветственный аспект"@ru ;
-	rdfs:subClassOf v-asp:Aspect ;
+	rdfs:subClassOf v-s:Aspect ;
 .
 v-l:WelcomeAspectTemplate
 	rdf:type v-ui:ClassTemplate ;
@@ -238,26 +231,8 @@ v-l:WelcomeAspectTemplate
 	<div class="jumbotron">
 		<div class="row">
 			<div class="col-md-7">
-				<h1 about="v-l:WelcomeToOptiflow" property="rdfs:label"></h1>
-				<p style="white-space: pre-wrap;" about="v-l:AspectDescription" property="rdfs:label"></p>
-			</div>
-			<div class="col-md-5">
-				<div about="v-l:WelcomeBackground" template="v-ui:ImageSimpleTemplate"></div>
-			</div>
-		</div>
-	</div>
-	<h1 class="text-center" about="v-l:AvailableAspects" property="rdfs:label"></h1>
-	<br>
-	<div class="row">
-		<div class="col-sm-6 col-md-4" about="mnd-s-asppd:ProjectManagementAspect1">
-			<div class="thumbnail">
-				<a href="#/@" rel="v-s:hasImage" template="v-ui:ImageSimpleTemplateWithoutBorder"></a>
-				<div class="caption">
-					<h3 property="rdfs:label"></h3>
-					<p property="rdfs:comment"></p>
-					<p rel="v-asp:hasBlank" template="v-ui:LabelBlockLinkTemplate"></p>
-					<p><a href="#/@" class="btn btn-primary" role="button" about="v-b:Proceed" property="rdfs:label"></a></p>
-				</div>
+				<h1 about="v-l:WelcomeToVeda" property="rdfs:label"></h1>
+				<p style="white-space: pre-wrap;" about="v-l:VedaDescription" property="rdfs:label"></p>
 			</div>
 		</div>
 	</div>
@@ -268,33 +243,24 @@ v-l:WelcomeAspectTemplate
 ### STRINGS ###
 
 v-l:SemanticMachines
-	rdf:type v-b:Bundle ;
+	rdf:type v-s:Bundle ;
 	rdfs:label "Semantic machines"@en ;
 	rdfs:label "Смысловые машины"@ru ;
 .
 v-l:License
-	rdf:type v-b:Bundle ;
+	rdf:type v-s:Bundle ;
 	rdfs:label "License"@en ;
 	rdfs:label "Лицензия"@ru ;
 .
-v-l:WelcomeToOptiflow
-	rdf:type v-b:Bundle ;
-	rdfs:label "Добро пожаловать в Optiflow!"@ru ;
-	rdfs:label "Welcome to Optiflow!"@en ;
+v-l:WelcomeToVeda
+	rdf:type v-s:Bundle ;
+	rdfs:label "Добро пожаловать в Veda!"@ru ;
+	rdfs:label "Welcome to Veda!"@en ;
 .
-v-l:AspectDescription
-	rdf:type v-b:Bundle ;
-	rdfs:label """Для начала работы выберите доступный аспект системы.
-Аспект - это предварительно настроенная для Вашего удобства точка зрения на систему.
-Аспекты могут содержать в себе настроенные бланки документов, реестры, аналитические отчеты и многое другое для получения быстрого доступа к функциям системы."""@ru ;
-	rdfs:label """To start using the system please choose an aspect.
-Aspect is a convenient point of view to the system predefined for specific processes.
-An aspect may contain document blanks, registries, reports and much more to provide you with quick access to system's functions."""@en ;
-.
-v-l:AvailableAspects
-	rdf:type v-b:Bundle ;
-	rdfs:label "Доступные аспекты"@ru ;
-	rdfs:label "Available aspects"@en ;
+v-l:VedaDescription
+	rdf:type v-s:Bundle ;
+	rdfs:label """Veda - это платформа для разработки web-приложений уровня предприятий."""@ru ;
+	rdfs:label """Veda - enterprise application development platform."""@en ;
 .
 
 ### INDIVIDUALS ###
@@ -313,12 +279,6 @@ v-l:Logo
 	a v-s:File;
 	v-s:fileUri "logo.png"^^xsd:string ;
 	v-s:fileName "logo.png"^^xsd:string;
-	v-s:filePath "/"^^xsd:string ;
-.
-v-l:WelcomeBackground 
-	a v-s:File;
-	v-s:fileUri "welcome-background.jpg"^^xsd:string ;
-	v-s:fileName "welcome-background.jpg"^^xsd:string;
 	v-s:filePath "/"^^xsd:string ;
 .
 v-l:MainMenu
@@ -421,13 +381,12 @@ veda.logout();
 	"""
 .
 
-v-fs:MainPageObjectsMembership
+v-l:MainPageObjectsMembership
 	rdf:type v-s:Membership ;
-	v-s:memberOf v-a:ReadResGroup ;
+	v-s:memberOf cfg:ReadResGroup ;
 	v-s:resource v-l:Main ;
 	v-s:resource v-l:Logo ;
 	v-s:resource v-l:Welcome ;
-	v-s:resource v-l:WelcomeBackground ;
 	v-s:resource v-l:MainMenu ;
 	v-s:resource v-l:Divider ;
 	v-s:resource v-l:Inbox ;

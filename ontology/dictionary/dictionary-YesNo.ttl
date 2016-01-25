@@ -1,16 +1,11 @@
-# baseURI: http://semantic-machines.com/veda/dictionary-YesNo
-# imports: http://semantic-machines.com/veda/mondi-schema
-# imports: http://semantic-machines.com/veda/veda-schema
-
-# c14n-version: 2
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
-@prefix d-yn: <http://semantic-machines.com/veda/dictionary-YesNo/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+@prefix d-yn: <http://semantic-machines.com/veda/dictionary-YesNo/> .
 <http://semantic-machines.com/veda/dictionary-YesNo>
   rdf:type owl:Ontology ;
   rdfs:label "Mondi ontology. Dictionary - YesNo"@en ;

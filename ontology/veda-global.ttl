@@ -4,15 +4,12 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-g: <http://semantic-machines.com/veda/veda-global/> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
-@prefix v-a: <http://semantic-machines.com/veda/veda-admin/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
 
 <http://semantic-machines.com/veda/veda-global>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system global objects ontology"@en ;
   rdfs:label "Онтология глобальных объектов системы Веда"@ru ;
-  owl:imports rdf: ;
-  owl:imports rdfs: ;
-  owl:imports <http://www.w3.org/2002/07/owl> ;
 #  owl:versionInfo "0.1" ;
   v-s:loadPriority 9 ;
 .
@@ -60,7 +57,7 @@ v-g:GlobalsPermission1
   rdf:type v-s:PermissionStatement ;
   v-s:canRead "true"^^xsd:boolean ;
   v-s:permissionObject v-g:GlobalsGroup ;
-  v-s:permissionSubject v-a:ReadUser ;
+  v-s:permissionSubject cfg:ReadUser ;
   rdfs:label "Globals permission1"@en ;
   rdfs:label "Запись о выдаче прав для глобалов1"@ru ;
 .

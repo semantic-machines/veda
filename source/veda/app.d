@@ -162,19 +162,19 @@ shared static this()
     {
         Individual node = core_context.get_individual(&sticket, node_id);
 
-        count_thread = cast(ushort)node.getFirstInteger("vsrv:count_thread", 4);
+        count_thread = cast(ushort)node.getFirstInteger("v-s:count_thread", 4);
 
-        Resources listeners = node.resources.get("vsrv:listener", Resources.init);
+        Resources listeners = node.resources.get("v-s:listener", Resources.init);
         foreach (listener_uri; listeners)
         {
             Individual connection = core_context.get_individual(&sticket, listener_uri.uri);
 
-            Resource   transport = connection.getFirstResource("vsrv:transport");
+            Resource   transport = connection.getFirstResource("v-s:transport");
             if (transport != Resource.init)
             {
                 if (transport.data() == "http")
                 {
-                    ushort http_port = cast(ushort)connection.getFirstInteger("vsrv:port", 8080);
+                    ushort http_port = cast(ushort)connection.getFirstInteger("v-s:port", 8080);
                     is_exist_listener = start_http_listener(core_context, pool, http_port);
                 }
             }

@@ -121,8 +121,8 @@ public void scripts_thread(string thread_name, string node_id)
                                 }
                                 else
                                 {
-                                    g_user.data = cast(char *)"v-a:VedaSystem";
-                                    g_user.length = "v-a:VedaSystem".length;
+                                    g_user.data = cast(char *)"cfg:VedaSystem";
+                                    g_user.length = "cfg:VedaSystem".length;
                                 }
 
                                 string sticket = context.sys_ticket().id;

@@ -37,15 +37,15 @@ veda.Module(function (veda) { "use strict";
 		}, {} );
 		self.displayedElements = self.preferences["v-ui:displayedElements"][0];
 
-		if ( self.hasValue("v-asp:hasAspect") ) {
-			self.aspect = self["v-asp:hasAspect"][0];
+		if ( self.hasValue("v-s:hasAspect") ) {
+			self.aspect = self["v-s:hasAspect"][0];
 		} else {
 			self.aspect = new veda.IndividualModel();
-			self.aspect["rdf:type"] = [ veda.ontology["v-asp:PersonalAspect"] ];
+			self.aspect["rdf:type"] = [ veda.ontology["v-s:PersonalAspect"] ];
 			self.aspect["v-s:owner"] = [ self ];
 			self.aspect["rdfs:label"] = [ "PersonalAspect_" + self.id ];
 			self.aspect.saveIndividual(false);
-			self["v-asp:hasAspect"] = [ self.aspect ];
+			self["v-s:hasAspect"] = [ self.aspect ];
 			self.saveIndividual(false);
 		}
 		
@@ -55,6 +55,8 @@ veda.Module(function (veda) { "use strict";
 			self["v-s:defaultAppointment"] = [ self["v-s:hasAppointment"][0] ];
 			self.saveIndividual(false);
 			veda.appointment = self["v-s:defaultAppointment"][0];
+		} else {
+			veda.appointment = undefined;
 		}
  
 		self.preferences.on("individual:propertyModified", function (property_uri, values) {
