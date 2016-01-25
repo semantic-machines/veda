@@ -9,5 +9,5 @@ if [ ! -f ./ontology/config.ttl ]
 then
   cp ./ontology/config.ttl.cfg ./ontology/config.ttl
 fi
-dub --build=release
+dub build --build=release
 #./veda
