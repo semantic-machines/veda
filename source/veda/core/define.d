@@ -29,7 +29,7 @@ public void set_g_process_name(string new_data)
 
 
 
-string[] access_list_predicates = [ veda_schema__canCreate, veda_schema__canRead, veda_schema__canUpdate, veda_schema__canDelete ];
+string[] access_list_predicates = [ "v-s:canCreate", "v-s:canRead", "v-s:canUpdate", "v-s:canDelete" ];
 
 enum CNAME : byte
 {
