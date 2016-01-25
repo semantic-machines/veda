@@ -7,4 +7,8 @@ rm dub.selections.json
 #./veda
 ln -s veda veda-fts-worker
 ln -s veda veda-js-worker
+if [ ! -f ./ontology/config.ttl ]
+then
+  cp ./ontology/config.ttl.cfg ./ontology/config.ttl
+fi
 dub --build=debug --config=trace-app

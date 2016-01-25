@@ -20,7 +20,7 @@ veda.Module(function (veda) { "use strict";
 		"owl:topObjectProperty",
 		"owl:topDataProperty",
 		"owl:versionInfo",
-		"rdf:value",
+		//"rdf:value",
 		"rdfs:isDefinedBy",
 		"rdfs:member",
 		"rdfs:seeAlso"
@@ -46,18 +46,18 @@ veda.Module(function (veda) { "use strict";
 			// ... from server
 			getOntology();
 		} else {
-			// Check whether server & local v-g:OntoVsn objects are equal
-			var clientVsn = storage["v-g:OntoVsn"];
-			var serverVsn = JSON.stringify( get_individual(veda.ticket, "v-g:OntoVsn") );
+			// Check whether server & local cfg:OntoVsn objects are equal
+			var clientVsn = storage["cfg:OntoVsn"];
+			var serverVsn = JSON.stringify( get_individual(veda.ticket, "cfg:OntoVsn") );
 			if ( clientVsn !== serverVsn ) {
 				// Get ontology from server
 				storage.clear();
-				storage["v-g:OntoVsn"] = serverVsn;
+				storage["cfg:OntoVsn"] = serverVsn;
 				getOntology();
 			} else {
 				// Get ontology from local storage
 				Object.keys(storage).map(function (key) {
-					if (key === "v-g:OntoVsn") return;
+					if (key === "cfg:OntoVsn") return;
 					var individual = JSON.parse(storage[key]);
 					self[key] = new veda.IndividualModel( individual, undefined, undefined, undefined, true, false );
 				});
