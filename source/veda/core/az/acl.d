@@ -192,8 +192,6 @@ class Authorization : LmdbStorage
         if (ticket is null)
             return request_access;
 
-        //writeln ("@p request_access=", request_access);
-
         if (trace_msg[ 111 ] == 1)
             log.trace("authorize %s", uri);
 
@@ -338,7 +336,7 @@ class Authorization : LmdbStorage
                                 str = cast(string)(data.mv_data[ 0..data.mv_size ]);
 
                                 if (trace_msg[ 112 ] == 1)
-                                    log.trace("for [%s] found %s", acl_key, text (getAccessListFromByte (cast(ubyte)str[ 0 ])));
+                                    log.trace("for [%s] found %s", acl_key, text(getAccessListFromByte(cast(ubyte)str[ 0 ])));
 
                                 if (str !is null && str.length > 0)
                                 {
@@ -357,17 +355,13 @@ class Authorization : LmdbStorage
                 }
             }
 
-			//log.trace ("count_permissions = %d", count_permissions);
-
             // found can rights
             for (int pos = 0; pos < count_permissions; pos++)
             {
-                ubyte permission = (0xFF & buff_permissions[ pos ]);
-								
+                ubyte permission = (0x0F & buff_permissions[ pos ]);
+
                 if (permission == 0)
                     continue;
-
-				//log.trace ("permission[%d]=%s", pos, text (getAccessListFromByte(permission)));
 
                 foreach (int idx, access; access_list)
                 {
@@ -392,12 +386,12 @@ class Authorization : LmdbStorage
             // found can't rights
             for (int pos = 0; pos < count_permissions; pos++)
             {
-                ubyte permission = (0xFF00 & buff_permissions[ pos ]) >> 4;
+                ubyte permission = (0xF0 & buff_permissions[ pos ]) >> 4;
 
                 if (permission == 0)
                     continue;
-                    
-                foreach (int idx, access; denied_list)
+
+                foreach (int idx, access; access_list)
                 {
                     if ((request_access & access) != 0)
                     {
@@ -408,15 +402,13 @@ class Authorization : LmdbStorage
                             if (trace !is null)
                                 trace(buff_object_group[ pos ], buff_subject_group[ pos ], access_list_predicates[ idx ]);
 
-                            res = cast(ubyte)(res | !set_bit);
-
+                            res = res & ~set_bit;
                             //if (res == request_access && trace is null)
                             //    break;
                         }
                     }
                 }
             }
-            
         }catch (Exception ex)
         {
             writeln("EX!,", ex.msg);
@@ -437,26 +429,26 @@ class Authorization : LmdbStorage
     }
 }
 
-private Access[] getAccessListFromByte (ubyte permission)
+private Access[] getAccessListFromByte(ubyte permission)
 {
-	Access[] res;
-		
-                foreach (int idx, access; access_list)
-                {
-                        ubyte set_bit = cast(ubyte)(access & permission);
+    Access[] res;
 
-                        if (set_bit > 0)
-                        	res ~= access;
-                }		
-                foreach (int idx, access; denied_list)
-                {
-                        ubyte set_bit = cast(ubyte)(access & permission);
+    foreach (int idx, access; access_list)
+    {
+        ubyte set_bit = cast(ubyte)(access & permission);
 
-                        if (set_bit > 0)
-                        	res ~= access;
-                }		
-		
-	return res;
+        if (set_bit > 0)
+            res ~= access;
+    }
+    foreach (int idx, access; denied_list)
+    {
+        ubyte set_bit = cast(ubyte)(access & permission);
+
+        if (set_bit > 0)
+            res ~= access;
+    }
+
+    return res;
 }
 
 void acl_manager(string thread_name, string db_path)
@@ -517,36 +509,40 @@ void acl_manager(string thread_name, string db_path)
                                 }
 
                                 Resource canCreate = ind.getFirstResource("v-s:canCreate");
-                                if (canCreate !is Resource.init && canCreate == true)
-                                    access = access | Access.can_create;
-
-                                Resource canDelete = ind.getFirstResource("v-s:canDelete");
-                                if (canDelete !is Resource.init && canDelete == true)
-                                    access = access | Access.can_delete;
+                                if (canCreate !is Resource.init)
+                                {
+                                    if (canCreate == true)
+                                        access = access | Access.can_create;
+                                    else
+                                        access = access | Access.cant_create;
+                                }
 
                                 Resource canRead = ind.getFirstResource("v-s:canRead");
-                                if (canRead !is Resource.init && canRead == true)
-                                    access = access | Access.can_read;
+                                if (canRead !is Resource.init)
+                                {
+                                    if (canRead == true)
+                                        access = access | Access.can_read;
+                                    else
+                                        access = access | Access.cant_read;
+                                }
 
                                 Resource canUpdate = ind.getFirstResource("v-s:canUpdate");
-                                if (canUpdate !is Resource.init && canUpdate == true)
-                                    access = access | Access.can_update;
+                                if (canUpdate !is Resource.init)
+                                {
+                                    if (canUpdate == true)
+                                        access = access | Access.can_update;
+                                    else
+                                        access = access | Access.cant_update;
+                                }
 
-                                Resource cantCreate = ind.getFirstResource("v-s:cantCreate");
-                                if (cantCreate !is Resource.init && cantCreate == true)
-                                    access = access | Access.cant_create;
-
-                                Resource cantDelete = ind.getFirstResource("v-s:cantDelete");
-                                if (cantDelete !is Resource.init && cantDelete == true)
-                                    access = access | Access.cant_delete;
-
-                                Resource cantRead = ind.getFirstResource("v-s:cantRead");
-                                if (cantRead !is Resource.init && cantRead == true)
-                                    access = access | Access.cant_read;
-
-                                Resource cantUpdate = ind.getFirstResource("v-s:cantUpdate");
-                                if (cantUpdate !is Resource.init && cantUpdate == true)
-                                    access = access | Access.cant_update;
+                                Resource canDelete = ind.getFirstResource("v-s:canDelete");
+                                if (canDelete !is Resource.init)
+                                {
+                                    if (canDelete == true)
+                                        access = access | Access.can_delete;
+                                    else
+                                        access = access | Access.cant_delete;
+                                }
 
                                 ResultCode res = storage.put(permissionObject.uri ~ "+" ~ permissionSubject.uri, "" ~ access);
 
