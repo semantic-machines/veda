@@ -118,9 +118,17 @@ void print_statistic(string thread_name, Tid _statistic_data_accumulator)
                 cps_r = (cast(float)delta_count_read / wt) * 1000 * 1000;
             }
 
+            long ft_count_prep_put = search.xapian_indexer.get_count_prep_put();
+            long ft_count_recv_put = search.xapian_indexer.get_count_recv_put();
+
+            long sc_count_prep_put = veda.core.scripts.get_count_prep_put();
+            long sc_count_recv_put = veda.core.scripts.get_count_recv_put();
+
             auto writer = appender!string();
-            formattedWrite(writer, "%s | r/w :%7d/%5d | cps/thr:%9.1f | work time:%7d µs | processed r/w: %7d/%5d | t.w.t. : %7d ms",
-                           now, read_count, write_count, cps, delta_worked_time, delta_count_read, delta_count_write, worked_time / 1000);
+            formattedWrite(writer, "%s|r/w :%7d/%5d|cps/thr:%9.1f|wt:%7d µs|tp r/w: %7d/%5d|t.w.t. : %7d ms|FTS:%7d/%7d/%7d|SCR:%7d/%7d/%7d",
+                           now, read_count, write_count, cps, delta_worked_time, delta_count_read, delta_count_write, worked_time / 1000,
+                           ft_count_recv_put, ft_count_prep_put, ft_count_recv_put - ft_count_prep_put, sc_count_recv_put, sc_count_prep_put,
+                           sc_count_recv_put - sc_count_prep_put);
 
             log.trace("cps(r/w):%8.1f/%8.1f", cps_r, cps_w);
 

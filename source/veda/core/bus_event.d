@@ -98,35 +98,7 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
         else
         {
             //log.trace("EXECUTE SCRIPT: event:%s uri:[%s]", ev_type, individual.uri);
-
-            Tid tid_scripts = context.getTid(P_MODULE.scripts);
-            if (tid_scripts != Tid.init)
-            {
-                if (rdfType.anyExist(veda_schema__Event))
-                {
-                    // изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
-                    send(tid_scripts, CMD.RELOAD, new_state, thisTid);
-                    receive((bool){});
-                }
-
-                try
-                {
-                    immutable(string)[] types;
-
-                    foreach (key; rdfType.keys)
-                        types ~= key;
-
-                    string user_uri;
-
-                    if (ticket !is null)
-                        user_uri = ticket.user_uri;
-                    send(tid_scripts, user_uri, ev_type, new_state, prev_state, types, individual.uri, event_id, op_id);
-                }
-                catch (Exception ex)
-                {
-                    writeln("EX!bus_event:", ex.msg);
-                }
-            }
+            veda.core.scripts.send_put(context, ticket, ev_type, new_state, prev_state, rdfType, individual, event_id, op_id);
         }
     }
 }

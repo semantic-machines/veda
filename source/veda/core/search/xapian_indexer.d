@@ -37,36 +37,6 @@ public string backup(Context ctx, string backup_id)
     return res;
 }
 
-/////////////////////////////////////////////////////////////
-import core.atomic;
-
-private shared long _count_recv_put = 0;
-
-private long inc_count_recv_put(long delta = 1)
-{
-    return atomicOp !"+=" (_count_recv_put, delta);
-}
-
-public long get_count_recv_put()
-{
-    return atomicLoad(_count_recv_put);
-}
-
-////////////////////////////
-
-private shared long _count_prep_put = 0;
-
-private long inc_count_prep_put(long delta = 1)
-{
-    return atomicOp !"+=" (_count_prep_put, delta);
-}
-
-public long get_count_prep_put()
-{
-    return atomicLoad(_count_prep_put);
-}
-/////////////////////////////////////////////////////////////
-
 public void send_put(Context ctx, string cur_state, string prev_state, long op_id)
 {
     Tid tid_search_manager = ctx.getTid(P_MODULE.fulltext_indexer);
@@ -231,13 +201,13 @@ private class IndexerContext
 
             if (indv.uri !is null && indv.resources.length > 0)
             {
-            	string isDraftOf 			= indv.getFirstLiteral("v-s:isDraftOf");
+                string isDraftOf            = indv.getFirstLiteral("v-s:isDraftOf");
                 string actualVersion        = indv.getFirstLiteral("v-s:actualVersion");
                 string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
                 string previousVersion_new  = indv.getFirstLiteral("v-s:previousVersion");
-				
-				if (isDraftOf !is null)
-					return;
+
+                if (isDraftOf !is null)
+                    return;
 
                 if (is_deleted == false && actualVersion !is null && actualVersion != indv.uri && previousVersion_prev == previousVersion_new)
                     return;
@@ -1097,4 +1067,34 @@ private int get_slot_and_set_if_not_found(string field, ref int[ string ] key2sl
     return slot;
 }
 
+///////////////////////////// STAT //////////////////////////////
+
+import core.atomic;
+
+private shared long _count_recv_put = 0;
+
+private long inc_count_recv_put(long delta = 1)
+{
+    return atomicOp !"+=" (_count_recv_put, delta);
+}
+
+public long get_count_recv_put()
+{
+    return atomicLoad(_count_recv_put);
+}
+
+////////////////////////////
+
+private shared long _count_prep_put = 0;
+
+private long inc_count_prep_put(long delta = 1)
+{
+    return atomicOp !"+=" (_count_prep_put, delta);
+}
+
+public long get_count_prep_put()
+{
+    return atomicLoad(_count_prep_put);
+}
+/////////////////////////////////////////////////////////////
 
