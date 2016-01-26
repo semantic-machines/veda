@@ -43,7 +43,7 @@ basic.getDrivers().forEach (function (drv) {
 	// Документ становится возможно сохранить
 	driver.wait
 	(
-	  webdriver.until.elementIsEnabled(driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#save'}),
+	  webdriver.until.elementIsEnabled(driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#save'})),
 	  basic.FAST_OPERATION
 	).thenCatch(function (e) {basic.errorHandler(e, "Cannot find save button")});
 	
