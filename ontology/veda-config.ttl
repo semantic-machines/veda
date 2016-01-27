@@ -184,3 +184,11 @@ v-s:role
   rdfs:label "node_role" ;
   rdfs:range xsd:string ;
 .    
+
+v-s:useTemplate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Connection ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "использовать шаблон" ;
+  rdfs:range v-s:TemplateForText ;
+.
