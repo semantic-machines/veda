@@ -388,7 +388,7 @@ private void connect_to_smtp(Context context)
                     smtp_conn = new MailSender(connection.getFirstLiteral("v-s:host"), cast(ushort)connection.getFirstInteger("v-s:port"));
 
                     string login = connection.getFirstLiteral("v-s:login");
-                    string pass  = connection.getFirstLiteral("v-s:credentional");
+                    string pass  = connection.getFirstLiteral("v-s:password");
 
                     if (login !is null && login.length > 0)
                         smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
@@ -428,7 +428,7 @@ private void connect_to_mysql(Context context)
                     mysql_conn    = new Mysql(connection.getFirstLiteral("v-s:host"),
                                               cast(uint)connection.getFirstInteger("v-s:port"),
                                               connection.getFirstLiteral("v-s:login"),
-                                              connection.getFirstLiteral("v-s:credentional"),
+                                              connection.getFirstLiteral("v-s:password"),
                                               database_name);
 
                     mysql_conn.query("SET NAMES 'utf8'");
