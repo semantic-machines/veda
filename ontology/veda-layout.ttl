@@ -38,7 +38,7 @@ v-l:MainPageTemplate
 			<button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
 				<span class="glyphicon glyphicon-menu-hamburger"></span>
 			</button>
-			<a class="navbar-brand" href="#"><img src="veda-logo.png"></a>
+			<a class="navbar-brand" href="#"><img src="/img/veda-logo.png"></a>
 			<div class="collapse navbar-collapse" id="navbar-collapse">
 				<p class="navbar-text" id="current-individual"></p>
 				<div id="user-menu"></div>
