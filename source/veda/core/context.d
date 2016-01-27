@@ -188,6 +188,9 @@ interface Context
     string get_individual_from_storage(string uri);
     Onto get_onto();
 
+    public string get_ticket_from_storage(string ticket_id);
+    public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null);
+
     public long get_operation_state(P_MODULE thread_id);
 
     @property
