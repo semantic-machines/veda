@@ -162,19 +162,11 @@ v-s:amqp_routingkey
 .    
 
 v-s:login
-  rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Connection ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "login" ;
-  rdfs:range xsd:string ;
 .    
 
-v-s:credentional
-  rdf:type owl:DatatypeProperty ;
+v-s:password
   rdfs:domain v-s:Connection ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "password" ;
-  rdfs:range xsd:string ;
 .    
 
 v-s:queue
