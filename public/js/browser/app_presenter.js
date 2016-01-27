@@ -60,10 +60,23 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			veda.trigger("login:failed");
 		}
 	});
+	var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider"),
+		ntlm = ntlmProvider.hasValue("rdf:value"),
+		iframe = $("<iframe>", {"class": "hidden"});
+	if (ntlm) {
+		var ntlmAddress = ntlmProvider["rdf:value"][0];
+		iframe.appendTo(loginContainer);
+	}
 	
 	veda.on("login:failed", function () {
 		delCookie("user_uri"); delCookie("ticket"); delCookie("end_time");
 		loginContainer.removeClass("hidden");
+		if (ntlm) {
+			iframe.one("load", function () {
+				console.log("ntlm frame", iframe);
+			});
+			iframe.attr("src", ntlmAddress);
+		}
 	});
 
 	// Initialize application if ticket is valid
