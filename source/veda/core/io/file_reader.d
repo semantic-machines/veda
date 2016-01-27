@@ -234,6 +234,11 @@ void processed(Context context, bool is_load)
 
     if (trace_msg[ 29 ] == 1)
         log.trace("file_reader::processed end");
+        
+    string guest_ticket = context.get_ticket_from_storage("guest");
+    
+    if (guest_ticket is null)    
+		context.create_new_ticket("cfg:Guest", "4000000", "guest");    
 }
 
 import util.individual2html;

@@ -509,7 +509,7 @@ class PThreadContext : Context
         }
     }
 
-    private Ticket create_new_ticket(string user_id)
+    public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null)
     {
         Ticket ticket;
 
@@ -523,12 +523,17 @@ class PThreadContext : Context
 
         new_ticket.resources[ rdf__type ] ~= Resource(ticket__Ticket);
 
-        UUID new_id = randomUUID();
-        new_ticket.uri = new_id.toString();
+        if (ticket_id !is null)
+            new_ticket.uri = ticket_id;
+        else
+        {
+            UUID new_id = randomUUID();
+            new_ticket.uri = new_id.toString();
+        }
 
         new_ticket.resources[ ticket__accessor ] ~= Resource(user_id);
         new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
-        new_ticket.resources[ ticket__duration ] ~= Resource("40000");
+        new_ticket.resources[ ticket__duration ] ~= Resource(duration);
 
         if (trace_msg[ 18 ] == 1)
             log.trace("authenticate, ticket__accessor=%s", user_id);
@@ -635,13 +640,22 @@ class PThreadContext : Context
         }
     }
 
+    public string get_ticket_from_storage(string ticket_id)
+    {
+        return tickets_storage.find(ticket_id);
+    }
+
     public Ticket *get_ticket(string ticket_id)
     {
         //StopWatch sw; sw.start;
 
         try
         {
-            Ticket *tt = user_of_ticket.get(ticket_id, null);
+            Ticket *tt;
+            if (ticket_id is null || ticket_id == "")
+                ticket_id = "guest";
+
+            tt = user_of_ticket.get(ticket_id, null);
 
             if (tt is null)
             {
@@ -649,7 +663,7 @@ class PThreadContext : Context
                 int    duration = 0;
 
                 string ticket_str = tickets_storage.find(ticket_id);
-                if (ticket_str !is null && ticket_str.length > 128)
+                if (ticket_str !is null && ticket_str.length > 120)
                 {
                     tt = new Ticket;
                     Individual ticket;
