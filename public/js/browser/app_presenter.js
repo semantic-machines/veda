@@ -79,18 +79,18 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		delCookie("user_uri"); delCookie("ticket"); delCookie("end_time");
 		if (ntlm) {
 			iframe.one("load", function () {
-				var body = iframe.contents().find("body"),
-					ticket = $("#ticket", body).text(),
-					user_uri = $("#user_uri", body).text(),
-					end_time = $("#end_time", body).text();
-				if (ticket && user_uri && end_time) {
-					var authResult = {
-						ticket: ticket,
-						user_uri: user_uri,
-						end_time: end_time
-					};
+				try {
+					var body = iframe.contents().find("body"),
+						ticket = $("#ticket", body).text(),
+						user_uri = $("#user_uri", body).text(),
+						end_time = $("#end_time", body).text(),
+						authResult = {
+							ticket: ticket,
+							user_uri: user_uri,
+							end_time: end_time
+						};
 					veda.trigger("login:success", authResult);
-				} else {
+				} catch (e) {
 					loginContainer.removeClass("hidden");
 				}
 			});
