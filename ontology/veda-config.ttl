@@ -215,6 +215,6 @@ v-s:appBuildDate
   rdfs:isDefinedBy v-s: ;
   rdfs:label "дата сборки приложения"@ru ;
   rdfs:label "build date of the application"@en ;
-  rdfs:range xsd:string ;
+  rdfs:range xsd:dateTime ;
 .
 

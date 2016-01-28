@@ -17,7 +17,7 @@
 			self.ticket = res.id;
 			if (!self.ticket) return;
 			self.user_uri = res.user_uri;
-			self.end_time =  Math.floor((res.end_time - 621355968000000000) / 10000 );
+			self.end_time = Math.floor((res.end_time - 621355968000000000) / 10000 );
 			self.init();
 			return {
 				ticket: self.ticket, 

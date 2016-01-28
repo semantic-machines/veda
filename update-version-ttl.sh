@@ -12,7 +12,8 @@ git log -1 --pretty=format:"
 
 v-s:vedaInfo 
     rdf:type v-s:AppInfo;	
-    v-s:appBuildVersion \"%h\"; v-s:appBuildDate \"%ad\"; 
+    v-s:appBuildVersion \"%h\"; 
+    v-s:appBuildDate \"%ad\"^^xsd:dateTime; 
     rdfs:label \"Veda\".
 
 v-s:appInfoPermission1
@@ -22,4 +23,4 @@ v-s:appInfoPermission1
   v-s:permissionSubject v-s:AllResourcesGroup ;
 .
 
-">ontology/veda-version.ttl
+" --date=short > ontology/veda-version.ttl
