@@ -218,3 +218,18 @@ v-s:appBuildDate
   rdfs:range xsd:dateTime ;
 .
 
+v-s:appUrl
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AppInfo ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "app url"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:appInboxUrl
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AppInfo ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "app inbox url"@ru ;
+  rdfs:range xsd:string ;
+.
