@@ -742,6 +742,54 @@ function mapToJournal(map_container, ticket, _process, _task, _order, msg, journ
 
 }
 
+/*
+ * функция mapToMessage, генерирует индивид/сообщение с помощью шаблонизатора mustache (http://mustache.github.io/)
+ * 
+ * 		! для работы требуется заполненная переменная $template, которая указывает на шаблон (индивид типа v-s:TemplateForText)
+ *		
+ * 		из шаблона используются поля:
+ * 			v-s:templateLanguage - указание какой язык выбран для генерации текста
+ *			v-s:templateSubject  - шаблон для заголовка 
+ *			v-s:templateBody 	 - шаблон для тела
+ */
+
+function mapToMessage(map_container, ticket, _process, _task, _order, msg, journal_uri, trace_journal_uri, trace_comment)
+{
+    try
+    {
+        if (journal_uri && map_container)
+        {
+        	var process_uri = _process['@'];
+        	
+            //* выполнить маппинг для сообщения
+            var messageVars = [];
+            
+            messageVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, trace_journal_uri, trace_comment);
+            if (messageVars)
+            {            	
+				var new_message_uri = genUri();
+				var new_message = {'@': new_message_uri};
+            
+                for (var idx = 0; idx < journalVars.length; idx++)
+                {
+                    var jvar = messageVars[idx];
+                    var name = getFirstValue(jvar['v-wf:variableName']);
+                    var value = jvar['v-wf:variableValue'];
+                    new_message[name] = value;
+                }                
+				put_individual(ticket, new_message, _event_id);
+                                
+        		print("@@@ mapToMessage=" + toJson(new_message));
+            }
+        }
+    }
+    catch (e)
+    {
+        print(e.stack);
+    }
+
+}
+
 
 function create_new_subjournal(parent_uri, el_uri, label, jtype)
 {
