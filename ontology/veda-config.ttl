@@ -192,3 +192,29 @@ v-s:useTemplate
   rdfs:label "использовать шаблон" ;
   rdfs:range v-s:TemplateForText ;
 .
+
+v-s:AppInfo
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Application info"@en ;
+  rdfs:label "Информация о приложении"@ru ;
+.
+
+v-s:appBuildVersion
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AppInfo ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "версия приложения"@ru ;
+  rdfs:label "version of the application"@en ;
+  rdfs:range xsd:string ;
+.
+
+v-s:appBuildDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AppInfo ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "дата сборки приложения"@ru ;
+  rdfs:label "build date of the application"@en ;
+  rdfs:range xsd:string ;
+.
+
