@@ -1966,14 +1966,14 @@ v-s:hasAction
 .
 
 
-### ????????????????????
+### добавляем Назначение ссылку на подразделение (связка через должность) 
 v-s:AppointmentSaveEvent
   rdf:type v-s:Event ;
   v-s:filter v-s:Appointment ;
   v-s:script """
   if (document['v-s:occupation'] && document['v-s:occupation'].length>0) {
   		var occupation = get_individual(ticket, document['v-s:occupation'][0].data);  		
-  		if (occupation['v-s:parentUnit'] && occupation['v-s:parentUnit'].length>0) {
+  		if (occupation && occupation['v-s:parentUnit'] && occupation['v-s:parentUnit'].length>0) {
   			document['v-s:parentUnit'] = occupation['v-s:parentUnit']; 
   			put_individual (ticket, document, _event_id);
   		}  
