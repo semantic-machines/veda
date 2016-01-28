@@ -709,17 +709,17 @@ function mapToJournal(map_container, ticket, _process, _task, _order, msg, journ
     {
         if (journal_uri && map_container)
         {
-        	var process_uri = _process['@'];
-        	
+            var process_uri = _process['@'];
+
             //* выполнить маппинг для журнала 
             var journalVars = [];
 
             if (_task && msg)
-            	_task['rdfs:label'] = msg;
-            
+                _task['rdfs:label'] = msg;
+
             journalVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, trace_journal_uri, trace_comment);
             if (journalVars)
-            {            	
+            {
                 var new_journal_record = newJournalRecord(journal_uri);
                 for (var idx = 0; idx < journalVars.length; idx++)
                 {
@@ -727,10 +727,10 @@ function mapToJournal(map_container, ticket, _process, _task, _order, msg, journ
                     var name = getFirstValue(jvar['v-wf:variableName']);
                     var value = jvar['v-wf:variableValue'];
                     new_journal_record[name] = value;
-                }                
+                }
                 logToJournal(ticket, journal_uri, new_journal_record);
-                
-        		//print("@@@ logToJournal[" + journal_uri + "], new_journal_record=" + toJson(new_journal_record));
+
+                //print("@@@ logToJournal[" + journal_uri + "], new_journal_record=" + toJson(new_journal_record));
 
             }
         }
@@ -759,27 +759,64 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
     {
         if (journal_uri && map_container)
         {
-        	var process_uri = _process['@'];
-        	
+            var process_uri = _process['@'];
+
             //* выполнить маппинг для сообщения
             var messageVars = [];
-            
+
             messageVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, trace_journal_uri, trace_comment);
             if (messageVars)
-            {            	
-				var new_message_uri = genUri();
-				var new_message = {'@': new_message_uri};
-            
+            {
+                var new_message_uri = genUri();
+                var new_message = {
+                    '@': new_message_uri
+                };
+                var template;
+
                 for (var idx = 0; idx < journalVars.length; idx++)
                 {
                     var jvar = messageVars[idx];
                     var name = getFirstValue(jvar['v-wf:variableName']);
                     var value = jvar['v-wf:variableValue'];
-                    new_message[name] = value;
-                }                
-				put_individual(ticket, new_message, _event_id);
-                                
-        		print("@@@ mapToMessage=" + toJson(new_message));
+
+                    if (name == $template)
+                        template = get_individual(ticket, getUri(value));
+
+                    if (name.indexOf(':') > 0)
+                        new_message[name] = value;
+                }
+
+                if (template)
+                {
+                    var lang = template['v-s:templateLanguage'];
+                    var subject = getFirstValue(template['v-s:templateSubject']);
+                    var body = getFirstValue(template['v-s:templateBody']);
+
+                    if (!lang)
+                        lang = 'ru';
+
+                    var view = {};
+
+                    for (var idx = 0; idx < journalVars.length; idx++)
+                    {
+                        var jvar = messageVars[idx];
+                        var name = getFirstValue(jvar['v-wf:variableName']);
+                        var value = jvar['v-wf:variableValue'];
+
+                        view[name] = getFirstValueUseLang(value, lang);
+                    }
+
+                    var output_subject = Mustache.render(subject, view);
+                    var output_body = Mustache.render(body, view);
+
+                    new_message['v-s:subject'] = output_subject;
+                    new_message['v-s:messageBody'] = output_body;
+
+                    put_individual(ticket, new_message, _event_id);
+                }
+
+
+                print("@@@ mapToMessage=" + toJson(new_message));
             }
         }
     }
@@ -793,69 +830,84 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
 
 function create_new_subjournal(parent_uri, el_uri, label, jtype)
 {
-	return _create_new_subjournal(false, parent_uri, el_uri, label, jtype)
+    return _create_new_subjournal(false, parent_uri, el_uri, label, jtype)
 }
 
 function create_new_trace_subjournal(parent_uri, net_element_impl, label, jtype)
 {
-	var new_sub_journal_uri;
+    var new_sub_journal_uri;
     var isTrace;
-    
-   	isTrace = net_element_impl['v-wf:isTrace'];
-    
+
+    isTrace = net_element_impl['v-wf:isTrace'];
+
     if (!isTrace || isTrace && getFirstValue(isTrace) == false)
-    	return undefined;
+        return undefined;
 
     var el_uri = net_element_impl['@'];
-  
+
     new_sub_journal_uri = _create_new_subjournal(true, parent_uri, el_uri, label, jtype)
-    
-    var set_journal_to_element;        
-   	set_journal_to_element = {'@': el_uri, 'v-wf:traceJournal': newUri(new_sub_journal_uri)};
+
+    var set_journal_to_element;
+    set_journal_to_element = {
+        '@': el_uri,
+        'v-wf:traceJournal': newUri(new_sub_journal_uri)
+    };
     add_to_individual(ticket, set_journal_to_element, _event_id);
-    
+
     return new_sub_journal_uri;
 }
 
 function _create_new_subjournal(is_trace, parent_uri, el_uri, label, jtype)
-{	    	
-    var new_sub_journal_uri;        
+{
+    var new_sub_journal_uri;
     var parent_journal_uri;
 
     if (is_trace == true)
-   	{
-        new_sub_journal_uri = getTraceJournalUri(el_uri);        
+    {
+        new_sub_journal_uri = getTraceJournalUri(el_uri);
         parent_journal_uri = getTraceJournalUri(parent_uri);
-   	}
+    }
     else
-   	{
-        new_sub_journal_uri = getJournalUri(el_uri);        
-        parent_journal_uri = getJournalUri(parent_uri);    	
-   	}
+    {
+        new_sub_journal_uri = getJournalUri(el_uri);
+        parent_journal_uri = getJournalUri(parent_uri);
+    }
 
     var cj = get_individual(ticket, new_sub_journal_uri);
     if (cj)
     {
-    	print ("!!!!!!!!!! journal ["+new_sub_journal_uri+"] already exists");
-    	return new_sub_journal_uri;
+        print("!!!!!!!!!! journal [" + new_sub_journal_uri + "] already exists");
+        return new_sub_journal_uri;
     }
     else
-    	create_new_journal(ticket, new_sub_journal_uri, parent_journal_uri, label);
-     
-  	var journal_record = newJournalRecord(parent_journal_uri);
-   	journal_record['rdf:type'] = [{ data: jtype, type: _Uri }];    
-   	if (label)
-   	{
-    		if (Array.isArray(label))
-    			journal_record['rdfs:label'] = label;
-    		else
-    			journal_record['rdfs:label'] = [{ data: label, type: _String }];
-   	}	    
-   	journal_record['v-s:subJournal'] = [{ data: new_sub_journal_uri, type: _Uri}];
-   	logToJournal(ticket, parent_journal_uri, journal_record, true);
-    
-   	put_individual(ticket, journal_record, _event_id);   
-    
+        create_new_journal(ticket, new_sub_journal_uri, parent_journal_uri, label);
+
+    var journal_record = newJournalRecord(parent_journal_uri);
+    journal_record['rdf:type'] = [
+    {
+        data: jtype,
+        type: _Uri
+    }];
+    if (label)
+    {
+        if (Array.isArray(label))
+            journal_record['rdfs:label'] = label;
+        else
+            journal_record['rdfs:label'] = [
+            {
+                data: label,
+                type: _String
+            }];
+    }
+    journal_record['v-s:subJournal'] = [
+    {
+        data: new_sub_journal_uri,
+        type: _Uri
+    }];
+    logToJournal(ticket, parent_journal_uri, journal_record, true);
+
+    put_individual(ticket, journal_record, _event_id);
+
     return new_sub_journal_uri;
 }
 
@@ -941,11 +993,11 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
                     create_new_journal(ticket, trace_journal_uri, null, _started_net['rdfs:label']);
                     new_process['v-wf:traceJournal'] = newUri(trace_journal_uri);
                 }
-            }            
+            }
             put_individual(ticket, new_process, _event_id);
 
             create_new_subjournal(parent_process_uri, new_process_uri, 'запущен подпроцесс', 'v-wf:SubProcessStarted');
-            
+
             document['v-wf:isProcess'] = [
             {
                 data: new_process_uri,
@@ -1072,40 +1124,40 @@ function traversal(indv, query, pos_in_path, result)
 
 }
 
-function remove_empty_branches_from_journal (journal_uri)
+function remove_empty_branches_from_journal(journal_uri)
 {
-	var jrn = get_individual(ticket, journal_uri);
-	if (!jrn["v-s:childRecord"])
-	{
-		var parent_jrn_uri = getUri (jrn["v-s:parentJournal"]);
-		if (parent_jrn_uri)
-		{	
-			var parent_jrn = get_individual(ticket, parent_jrn_uri);
-			
-			var child_records = parent_jrn['v-s:childRecord'];
-			
-			for (var i = 0; i < child_records.length; i++)
+    var jrn = get_individual(ticket, journal_uri);
+    if (!jrn["v-s:childRecord"])
+    {
+        var parent_jrn_uri = getUri(jrn["v-s:parentJournal"]);
+        if (parent_jrn_uri)
+        {
+            var parent_jrn = get_individual(ticket, parent_jrn_uri);
+
+            var child_records = parent_jrn['v-s:childRecord'];
+
+            for (var i = 0; i < child_records.length; i++)
             {
-				var chr_uri = child_records[i].data;
-				var chr = get_individual(ticket, chr_uri);    
-				if (getUri (chr["v-s:subJournal"]) == journal_uri)
-				{
-        		    var remove_from_journal = {
-        		            '@': parent_jrn_uri,
-        		            'v-s:childRecord': [
-        		            {
-        		                data: chr_uri,
-        		                type: _Uri
-        		            }]
-        		        };
-        		    remove_from_individual(ticket, remove_from_journal, _event_id);
-					        				
-					print ("@@@@@@@@ parent_jrn=", toJson (parent_jrn), ", remove_from_journal=", toJson (remove_from_journal));
-					break;
-				}
-				
+                var chr_uri = child_records[i].data;
+                var chr = get_individual(ticket, chr_uri);
+                if (getUri(chr["v-s:subJournal"]) == journal_uri)
+                {
+                    var remove_from_journal = {
+                        '@': parent_jrn_uri,
+                        'v-s:childRecord': [
+                        {
+                            data: chr_uri,
+                            type: _Uri
+                        }]
+                    };
+                    remove_from_individual(ticket, remove_from_journal, _event_id);
+
+                    print("@@@@@@@@ parent_jrn=", toJson(parent_jrn), ", remove_from_journal=", toJson(remove_from_journal));
+                    break;
+                }
+
             }
-		}
-	}
-	
+        }
+    }
+
 }

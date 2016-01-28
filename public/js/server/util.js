@@ -138,6 +138,16 @@ function getFirstValue(field)
     }
 }
 
+function getFirstValueUseLang(field, lang)
+{
+	for (var i in field)
+    {
+		if (field[i].lang == lang)
+			return field[i].data;
+    }
+    return null;
+}
+
 function addRight(ticket, rights, subj_uri, obj_uri)
 {
     var c = false,
