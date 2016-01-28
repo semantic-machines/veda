@@ -75,6 +75,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			iframe.one("load", function () {
 				console.log("ntlm frame", iframe);
 			});
+			document.domain = "" + document.domain;
 			iframe.attr("src", ntlmAddress);
 		}
 	});
