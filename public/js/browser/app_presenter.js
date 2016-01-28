@@ -60,6 +60,8 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			veda.trigger("login:failed");
 		}
 	});
+	
+	// NTLM auth
 	var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider"),
 		ntlm = ntlmProvider.hasValue("rdf:value"),
 		iframe = $("<iframe>", {"class": "hidden"});
@@ -68,15 +70,34 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		iframe.appendTo(loginContainer);
 	}
 	
-	veda.on("login:failed", function () {
+	veda.on("logout", function () {
 		delCookie("user_uri"); delCookie("ticket"); delCookie("end_time");
 		loginContainer.removeClass("hidden");
+	});
+	
+	veda.on("login:failed", function () {
+		delCookie("user_uri"); delCookie("ticket"); delCookie("end_time");
 		if (ntlm) {
 			iframe.one("load", function () {
-				console.log("ntlm frame", iframe);
+				var body = iframe.contents().find("body"),
+					ticket = $("#ticket", body).text(),
+					user_uri = $("#user_uri", body).text(),
+					end_time = $("#end_time", body).text();
+				if (ticket && user_uri && end_time) {
+					var authResult = {
+						ticket: ticket,
+						user_uri: user_uri,
+						end_time: end_time
+					};
+					veda.trigger("login:success", authResult);
+				} else {
+					loginContainer.removeClass("hidden");
+				}
 			});
-			document.domain = "" + document.domain;
+			document.domain = document.domain;
 			iframe.attr("src", ntlmAddress);
+		} else {
+			loginContainer.removeClass("hidden");
 		}
 	});
 

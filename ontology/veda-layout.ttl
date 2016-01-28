@@ -376,7 +376,7 @@ v-l:Exit
 	rdfs:label "Выйти"@ru ;
 	v-l:staticLink "#"^^xsd:string ;
 	v-l:action """
-veda.logout();
+veda.trigger("logout");
 	"""
 .
 
