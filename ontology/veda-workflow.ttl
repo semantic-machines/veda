@@ -16,6 +16,15 @@
 #  owl:DversionInfo "1.2" ;
   v-s:loadPriority 7 ;
 .
+
+v-wf:appInboxUrl
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AppInfo ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "app inbox url"@ru ;
+  rdfs:range xsd:string ;
+.
+
 v-wf:Net
 	rdf:type owl:Class ;
 	rdfs:isDefinedBy v-wf: ;

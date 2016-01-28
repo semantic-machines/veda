@@ -11,10 +11,9 @@ git log -1 --pretty=format:"
     v-s:loadPriority 1.
 
 v-s:vedaInfo 
-    rdf:type v-s:AppInfo;	
     v-s:appBuildVersion \"%h\"; 
     v-s:appBuildDate \"%ad\"^^xsd:dateTime; 
-    rdfs:label \"Veda\".
+.
 
 v-s:appInfoPermission1
   rdf:type v-s:PermissionStatement ;
