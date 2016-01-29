@@ -339,7 +339,6 @@ function prepare_work_order(ticket, document)
                     };
                     add_to_individual(ticket, add_to_document, _event_id);
 
-					mapToMessage(map_container, ticket, _process, _task, _order, msg, trace_journal_uri, trace_comment);
                     mapToMessage(net_element['v-wf:startingMessageMap'], ticket, _process, work_item, _work_order, null, journal_uri, trace_journal_uri, 'v-wf:startingMessageMap');
 					
                     //print("[WORKFLOW][WO2.3] transform_result=" + toJson(transform_result));

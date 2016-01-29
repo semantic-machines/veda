@@ -1152,7 +1152,7 @@ function remove_empty_branches_from_journal(journal_uri)
                     };
                     remove_from_individual(ticket, remove_from_journal, _event_id);
 
-                    print("@@@@@@@@ parent_jrn=", toJson(parent_jrn), ", remove_from_journal=", toJson(remove_from_journal));
+                    //print("@@@@@@@@ parent_jrn=", toJson(parent_jrn), ", remove_from_journal=", toJson(remove_from_journal));
                     break;
                 }
 
