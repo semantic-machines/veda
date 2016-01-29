@@ -171,8 +171,6 @@ s-wf:possible_decision_for_add_reaction
 	rdfs:isDefinedBy s-wf: ;
 .
 
-
-
 # --------------------------------
 
 s-wf:map_possible_decision
@@ -1628,3 +1626,64 @@ s-wf:Membership_000
   v-s:resource s-wf:executor_signer, s-wf:executor_initiator, s-wf:executor_reviewer;
   rdfs:label "Membership base net_complex_route";
 .
+
+# define vars for message template -------
+
+s-wf:document-representation
+    rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "document-representation" ;
+    rdfs:label "document-representation"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:from
+    rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "from" ;
+    rdfs:label "from"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:comment
+    rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "comment" ;
+    rdfs:label "comment"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:document_url
+    rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "document_url" ;
+    rdfs:label "document_url"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:task_url
+    rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "task_url" ;
+    rdfs:label "task_url"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:inbox_url
+    rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "inbox_url" ;
+    rdfs:label "inbox_url"@ru ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:text-template1
+	rdf:type v-s:TemplateForText ;
+	v-s:templateLanguage v-ui:RU ;
+	v-s:templateSubject "СЭД Задача: Исполнить поручение по документу: {{document-representation}}" ;
+	v-s:templateBody 
+	"""
+от пользователя: {{from}}  Вам поступило поручение по документу: {{document-representation}}
+Комментарий: {{comment}}
+
+Используйте ссылки для перехода на нужные страницы:
+
+документ: {{document_url}}
+задача: {{task_url}}
+все входящие задачи: {{inbox_url}}
+	""";
+.	
