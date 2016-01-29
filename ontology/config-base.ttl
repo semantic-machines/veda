@@ -1,0 +1,599 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-l: <http://semantic-machines.com/veda/veda-layout/> .
+@prefix m-l: <http://semantic-machines.com/veda/mondi-layout/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+@prefix cfgb: <http://semantic-machines.com/veda/config-base/> .
+<http://semantic-machines.com/veda/config-base>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system administrator ontology"@en ;
+  rdfs:label "Онтология администратора системы Веда"@ru ;
+#  owl:versionInfo "1.0" ;
+  v-s:loadPriority 1 ;
+.
+
+cfg:Guest
+  rdf:type v-s:Person ;
+  v-s:firstName "Guest"@en ;
+  v-s:firstName "Гость"@ru ;
+  v-s:hasAccount cfg:GuestAccount ;
+  rdfs:label "Guest"@en ;
+  rdfs:label "Гость"@ru ;
+.
+
+cfg:GuestAccount
+  rdf:type v-s:Account ;
+  rdfs:label "Guest account"@en ;
+  rdfs:label "Гостевая учетная запись"@ru ;
+.
+
+
+cfg:SuperAdmin
+  rdf:type v-s:Group ;
+  rdfs:label "Super admin"@en ;
+  rdfs:label "Супер админ"@ru ;
+.
+
+cfg:ReadUser
+  rdf:type v-s:Group ;
+  rdfs:label "Read User"@en ;
+  rdfs:label "Пользователи имеющие право на чтение"@ru ;
+.
+
+cfg:ReadResGroup
+  rdf:type v-s:Group ;
+  rdfs:label "Resource group to read"@en ;
+  rdfs:label "Группа ресурсов для чтения"@ru ;
+.
+
+# --------------------------- обработка событий => привязка человека к группе должности ------------------------------
+cfg:Event_0
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystemAccount ;
+  v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:filter v-s:Appointment ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ */
+
+var doc = document,
+	person_uri = getUri(document['v-s:employee']),
+	position_uri = getUri(document['v-s:occupation']);
+
+if (!person_uri || !position_uri) return;
+
+var uri = 'd:membership_' + person_uri.split(':').join('_') + '_' + position_uri.split(':').join('_'),
+	new_membership = {
+	'@' : uri, 
+	'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
+	'v-s:memberOf' : [{data: position_uri, type : _Uri}],
+	'v-s:resource'  : [{data: person_uri, type : _Uri}],
+	'rdfs:comment'  : [{data: 'создано автоматически в обработчике cfg:Event_0', type : _String}],
+};
+
+if (document['v-s:deleted'] && document['v-s:deleted'][0] && document['v-s:deleted'][0].data === true) {
+	new_membership['v-s:deleted'] = [{data: true, type : _Boolean}];
+}
+
+put_individual (ticket, new_membership, _event_id);
+  """
+.
+
+# --------------------------- обработка событий => создание записей о правах ------------------------------
+cfg:Event_1
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystemAccount ;
+  v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ */
+
+var doc_uri = document['@'];
+var isDefinedBy = document['rdfs:isDefinedBy'];
+if (isDefinedBy) {
+	var new_membership = {
+		'@' : genUri (), 
+		'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
+		'v-s:memberOf' : [{data: 'cfg:ReadResGroup', type : _Uri}],
+		'v-s:resource'  : [{data: doc_uri, type : _Uri}],
+		'rdfs:comment'  : [{data: 'выдан cfg:Event_1', type : _String}]
+	};
+	put_individual (ticket, new_membership, _event_id);
+}
+
+var vs_owner = document['v-s:owner'];
+if (vs_owner) {
+	addRight(ticket, [can_read, can_update, can_delete], getUri(vs_owner), doc_uri);
+	//print('#1 owner, doc_uri = ' + doc_uri + ', person = ' + getUri(vs_owner)); 
+}
+
+var vs_author = document["v-s:author"];
+if (vs_author) {
+    var author = get_individual(ticket, getUri(vs_author));
+    if (author) {
+		
+		var author_type = getUri(author['rdf:type']);
+		
+		if (author_type == 'v-s:Person') {
+			addRight(ticket, [can_read, can_update, can_delete], getUri(vs_author), doc_uri); 
+			//print('#2 author = person, doc_uri = ' + doc_uri + ', person = ' + getUri(vs_author)); 
+		} else {
+			var ff = get_property_chain (ticket, document, 'v-s:author', 'v-s:occupation');
+			if (ff) {
+				var position_uri = getUri (ff['field']);
+				var first_doc = ff['first'];
+				if (first_doc) {
+					doc_uri = first_doc['@'];	
+					if (position_uri) {
+						//print('#3 author = appointment, doc_uri = ' + doc_uri + ', position = ' + position_uri);
+						addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri);
+					}
+				}
+			}
+		}
+    }
+}
+  """ ;
+  rdfs:comment "скрипт автоматической выдачи прав авторам (v-s:author) и владельцам (v-s:owner)";
+  rdfs:label "Event 1"@en ;
+  rdfs:label "Событие 1"@ru ;
+.
+
+# --------------------------- обработка событий => создание Журнала документа ------------------------------
+cfg:Event_1_1
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystemAccount ;
+  v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:filter v-s:Journaling ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ */
+
+// No journaling for technical changes 
+// No journaling for draft
+if (!(document['v-s:isDraftOf'] && document['v-s:isDraftOf'].length>0
+      || (document['v-s:hasDraft'] && document['v-s:hasDraft'].length>0))
+    && !isTecnicalChange(document, prev_state)) {
+    
+	var ff = get_property_chain(ticket, document, 'v-s:author', 'v-s:employee');
+	if (ff)
+	{
+	    var employee_uri = getUri(ff['field']);
+		//print('0>'+employee_uri);
+	    if (employee_uri)
+	    {
+	        var journal_uri = getJournalUri(document['@']);
+	        //print('cfg:Event_1_1:journal journal_uri=' + journal_uri);
+	        var exist_journal = get_individual(ticket, journal_uri);
+			//print('0>'+exist_journal);
+	        if (exist_journal)
+	        {
+		        // UPDATE DOCUMENT
+		        var journal_record = newJournalRecord(journal_uri);
+		        if (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data == document['@']) {
+		        	journal_record['v-s:documentVersion'] = document['v-s:previousVersion'];	      
+		        }
+		        
+		        if ((!prev_state['v-s:deleted'] || prev_state['v-s:deleted'].data =='false') && 
+							(document['v-s:deleted'] && document['v-s:deleted'].data == 'true')) {
+		            journal_record['rdf:type'] = [{data: 'v-s:DocumentDeleted',type: _Uri}];
+		        } else {
+		            journal_record['rdf:type'] = [{data: 'v-s:DocumentUpdated',type: _Uri}];	        
+		        }
+		        
+			    journal_record['v-s:actor'] = [
+		                        {
+		                            data: user_uri,
+		                            type: _Uri
+		     			}];
+					    	
+		        //print("?*?"+toJson(journal_record));		
+			    logToJournal(ticket, journal_uri, journal_record);
+	        }
+	        else
+	        {
+	            // CREATE DOCUMENT		
+	            var new_journal = {
+	                '@': journal_uri,
+	                'rdf:type': [
+	                    {
+	                        data: 'v-s:Journal',
+	                        type: _Uri
+	                }],
+	                'v-s:onDocument': [
+	                    {
+	                        data: document['@'],
+	                        type: _Uri
+	                }],
+		    		'v-s:actor': [
+	                        {
+	                            data: user_uri,
+	                            type: _Uri
+	     			}]		
+	            };
+	            put_individual(ticket, new_journal, _event_id);
+	            
+	            var journal_record = newJournalRecord(new_journal);
+	            if (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data == document['@']) {
+		        	journal_record['v-s:documentVersion'] = document['v-s:previousVersion'];	      
+		        }	            
+	            journal_record['rdf:type'] = [{data: 'v-s:DocumentCreated', type: _Uri}];
+				journal_record['v-s:actor'] = [{data: user_uri, type: _Uri}];
+			    logToJournal(ticket, journal_uri, journal_record);
+	
+	            var new_journal_permission = {
+	                '@': genUri(),
+	                'rdf:type': [
+	                    {
+	                        data: 'v-s:PermissionStatement',
+	                        type: _Uri
+	                }],
+	                'v-s:canDelete': [
+	                    {
+	                        data: true,
+	                        type: _Bool
+	                }],
+	                'v-s:canRead': [
+	                    {
+	                        data: true,
+	                        type: _Bool
+	                }],
+	                'v-s:canUpdate': [
+	                    {
+	                        data: true,
+	                        type: _Bool
+	                }],
+	                'v-s:permissionObject': [
+	                    {
+	                        data: journal_uri,
+	                        type: _Uri
+	                }],
+	                'v-s:permissionSubject': [
+	                    {
+	                        data: employee_uri,
+	                        type: _Uri
+	                }]
+	            };
+	            put_individual(ticket, new_journal_permission, _event_id);
+	        }
+	
+	    }
+	}
+}
+  """ ;
+  rdfs:comment "скрипт автоматической выдачи прав авторам"@ru ;
+  rdfs:label "Event_1"@en ;
+  rdfs:label "Событие_1"@ru ;
+.
+
+cfg:Event_2
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystemAccount ;
+  v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:filter v-s:Department ;
+  v-s:filter v-s:Position ;
+  v-s:filter v-s:Appointment ;
+  v-s:filter v-s:Person ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ */
+
+// print ('@@1 =', toJson (document));
+var deleted = document['v-s:deleted'];
+var doc_uri = document['@'];	
+var new_membership = 
+{
+	'@' : guid (), 
+	'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
+	'v-s:memberOf' : [{data: 'cfg:ReadResGroup', type : _Uri}],
+	'v-s:resource'  : [{data: doc_uri, type : _Uri}],
+	'rdfs:comment'  : [{data: "выдан cfg:Event_2", type : _String}]
+};
+
+if (deleted && deleted[0].data == true)
+{
+//print ('IS DELETED');
+new_membership['v-s:deleted'] = deleted;
+}
+var res = put_individual (ticket, new_membership, _event_id);
+if (res != 200 && res != 1022)
+print ('res=', res, ' @@1 =', toJson (new_membership));			
+
+var type = document['rdf:type'];
+if (type && getUri (type) == 'v-s:Person')
+{
+new_membership = 
+{
+	'@' : guid (), 
+	'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
+	'v-s:memberOf' : [{data: 'cfg:ReadUser', type : _Uri}],
+	'v-s:resource'  : [{data: doc_uri, type : _Uri}],
+	'rdfs:comment'  : [{data: "выдан cfg:Event_2", type : _String}]
+};
+res = put_individual (ticket, new_membership, _event_id);
+if (res != 200 && res != 1022)
+	print ('res=', res, ' @@2 =', toJson (new_membership));			
+
+}
+  """ ;
+  rdfs:comment "скрипт автоматической выдачи прав на чтение для оргструктуры + перенос атрибута v-s:deleted"@ru ;
+  rdfs:label "Event_2"@en ;
+  rdfs:label "Событие_2"@ru ;
+.
+
+cfg:Event_3
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystemAccount ;
+  v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:filter rdf:Property ;
+  v-s:filter rdfs:Class ;
+  v-s:filter rdfs:Datatype ;
+  v-s:filter owl:Class ;
+  v-s:filter owl:Ontology ;
+  v-s:filter owl:DatatypeProperty ;
+  v-s:filter owl:ObjectProperty ;
+  v-s:filter owl:Restriction ;
+  v-s:filter v-s:ClassModel ;
+  v-s:filter v-ui:ClassTemplate ;
+  v-s:filter v-ui:PropertySpecification ;
+  v-s:filter v-ui:IntegerPropertySpecification ;
+  v-s:filter v-ui:DecimalPropertySpecification ;
+  v-s:filter v-ui:DatetimePropertySpecification ;
+  v-s:filter v-ui:StringPropertySpecification ;
+  v-s:filter v-ui:BooleanPropertySpecification ;
+  v-s:filter v-ui:ObjectPropertySpecification ;
+  v-s:filter v-s:Bundle ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ */
+
+var doc_uri = document['@'];	
+var new_membership = 
+{
+	'@' : guid (), 
+	'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
+	'v-s:memberOf' : [{data: 'cfg:ReadResGroup', type : _Uri}],
+	'v-s:resource'  : [{data: doc_uri, type : _Uri}],
+	'rdfs:comment'  : [{data: "выдан cfg:Event_3", type : _String}]
+};
+
+put_individual (ticket, new_membership, _event_id);
+  """ ;
+  rdfs:comment "скрипт автоматической выдачи прав на чтение для всех онтологий и UI настроек"@ru ;
+  rdfs:label "Event_3"@en ;
+  rdfs:label "Событие_3"@ru ;
+.
+
+cfg:Event_4
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystemAccount ;
+  v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:filter rdf:Property ;
+  v-s:filter rdfs:Class ;
+  v-s:filter rdfs:Datatype ;
+  v-s:filter owl:Class ;
+  v-s:filter owl:Ontology ;
+  v-s:filter owl:DatatypeProperty ;
+  v-s:filter owl:ObjectProperty ;
+  v-s:filter owl:Restriction ;
+  v-s:filter v-s:ClassModel ;
+  v-s:filter v-ui:ClassTemplate ;
+  v-s:filter v-ui:PropertySpecification ;
+  v-s:filter v-ui:IntegerPropertySpecification ;
+  v-s:filter v-ui:DecimalPropertySpecification ;
+  v-s:filter v-ui:DatetimePropertySpecification ;
+  v-s:filter v-ui:StringPropertySpecification ;
+  v-s:filter v-ui:BooleanPropertySpecification ;
+  v-s:filter v-ui:ObjectPropertySpecification ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ */
+
+// Update ontology vsn
+var vsn = {
+	"@" : "cfg:OntoVsn", 
+	"rdf:type" : [{data: "rdfs:Resource", type : _Uri}],
+	"rdf:value" : [{data: guid(), type : _String}]
+};
+put_individual (ticket, vsn, _event_id);
+
+/*	// Process ontology objects
+function hasValue(doc, prop, val) {
+	var any = !!(doc[prop] && doc[prop].length);
+	if (!val) return any;
+	return !!(any && doc[prop].filter(function (i) {
+		return (i.type === val.type && i.data === val.data);
+	}).length);
+}
+
+// owl:Thing && rdfs:Resource domain properties
+var stopList = [
+	//"rdf:type",
+	//"rdfs:comment",
+	//"rdfs:label",
+	//"v-s:deleted",
+	"owl:annotatedProperty",
+	"owl:annotatedSource",
+	"owl:annotatedTarget",
+	"owl:bottomDataProperty",
+	"owl:bottomObjectProperty",
+	"owl:deprecated",
+	"owl:differentFrom",
+	"owl:members",
+	"owl:sameAs",
+	"owl:topObjectProperty",
+	"owl:topDataProperty",
+	"owl:versionInfo",
+	"rdf:value",
+	"rdfs:isDefinedBy",
+	"rdfs:member",
+	"rdfs:seeAlso"
+];
+
+var doc = document;
+var type = document["rdf:type"][0].data;
+var uri = document["@"];
+switch (type) {
+	// Process classes
+	case "rdfs:Class":
+	case "owl:Class":
+		if ( uri === "rdfs:Resource" ) break;
+		// If class is not a subclass of another then make it a subclass of rdfs:Resource
+		if ( !hasValue(doc, "rdfs:subClassOf") ) {
+			doc["rdfs:subClassOf"] = [{data: "rdfs:Resource", type: _Uri}];
+		}
+		doc["rdfs:subClassOf"].map( function ( i ) {
+			var cls = {
+				"@": i.data,
+				"v-ui:hasSubClass": [{data: uri, type: _Uri}]
+			}
+			add_to_individual(ticket, cls, _event_id);
+		});
+		break;
+	// Process properties
+	case "rdf:Property" :
+	case "owl:DatatypeProperty" :
+	case "owl:ObjectProperty" :
+	case "owl:OntologyProperty" :
+	case "owl:AnnotationProperty" :
+		if (stopList.indexOf(uri) >= 0) break;
+		if ( hasValue(doc, "rdfs:domain") ) {
+			doc["rdfs:domain"].map( function ( i ) {
+				var cls = {
+					"@": i.data,
+					"v-ui:hasProperty": [{data: uri, type: _Uri}]
+				}
+				add_to_individual(ticket, cls, _event_id);
+			});
+		}
+		break;
+	// Process specifications
+	case "v-ui:PropertySpecification" :
+	case "v-ui:IntegerPropertySpecification" :
+	case "v-ui:DecimalPropertySpecification" :
+	case "v-ui:DatetimePropertySpecification" :
+	case "v-ui:StringPropertySpecification" :
+	case "v-ui:BooleanPropertySpecification" :
+	case "v-ui:ObjectPropertySpecification" :
+		if ( hasValue(doc, "v-ui:forClass") ) {
+			doc["v-ui:forClass"].map( function ( i ) {
+				var cls = {
+					"@": i.data,
+					"v-ui:hasSpecification": [{data: uri, type: _Uri}]
+				}
+				add_to_individual(ticket, cls, _event_id);
+			});
+		}
+		break;
+	// Process models
+	case "v-s:ClassModel" :
+		if ( hasValue(doc, "v-ui:forClass") ) {
+			doc["v-ui:forClass"].map( function ( i ) {
+				var cls = {
+					"@": i.data,
+					"v-ui:hasModel": [{data: uri, type: _Uri}]
+				}
+				add_to_individual(ticket, cls, _event_id);
+			});
+		}
+		break;
+	// Process templates
+	case "v-ui:ClassTemplate" :
+		if ( hasValue(doc, "v-ui:forClass") ) {
+			doc["v-ui:forClass"].map( function ( i ) {
+				var cls = {
+					"@": i.data,
+					"v-ui:hasTemplate": [{data: uri, type: _Uri}]
+				}
+				add_to_individual(ticket, cls, _event_id);
+			});
+		}
+		break;
+}*/
+  """ ;
+  rdfs:comment "Скрипт обработки индивидов онтологии"@ru ;
+  rdfs:label "Event_4"@en ;
+  rdfs:label "Событие_4"@ru ;
+.
+
+# -------------------------------------------------------------------------------------------------
+
+cfg:VedaSystem
+  rdf:type v-s:Person ;
+  v-s:actualVersion cfg:VedaSystem ;
+  v-s:birthday "2014-03-05"^^xsd:dateTime ;
+  v-s:firstName "Veda"@en ;
+  v-s:firstName "Веда"@ru ;
+  v-s:hasAccount cfg:VedaSystemAccount ;
+  v-s:lastName "System"@en ;
+  v-s:lastName "Система"@ru ;
+  rdfs:label "Veda System"@en ;
+  rdfs:label "Система Веда"@ru ;
+.
+
+cfg:Permission_1
+  rdf:type v-s:PermissionStatement ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:canDelete "true"^^xsd:boolean ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:canUpdate "true"^^xsd:boolean ;
+  v-s:permissionObject v-s:AllResourcesGroup ;
+  v-s:permissionSubject cfg:VedaSystem ;
+.
+
+cfg:Permission_2
+  rdf:type v-s:PermissionStatement ;
+  v-s:author cfg:VedaSystem ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:created "2014-01-30T16:45:33"^^xsd:dateTime ;
+  v-s:permissionObject cfg:ReadResGroup ;
+  v-s:permissionSubject cfg:ReadUser ;
+  v-s:published "2014-01-30T16:45:33"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
+  rdfs:label "Permissions record rr"@en ;
+  rdfs:label "Запись о выдаче прав rr"@ru ;
+.
+
+
