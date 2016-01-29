@@ -89,7 +89,11 @@ veda.Module(function AppPresenter(veda) { "use strict";
 							user_uri: user_uri,
 							end_time: end_time
 						};
-					veda.trigger("login:success", authResult);
+					if (ticket && user_uri && end_time) {
+						veda.trigger("login:success", authResult);
+					}  else {
+						loginContainer.removeClass("hidden");
+					}
 				} catch (e) {
 					loginContainer.removeClass("hidden");
 				}
