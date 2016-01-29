@@ -44,8 +44,11 @@ function newUri(uri)
     }];
 }
 
-function newStr(_data)
+function newStr(_data, _lang)
 {
+	if (!_lang)
+		_lang = 0;
+		
     return [
     {
         data: _data,

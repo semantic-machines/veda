@@ -801,7 +801,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                         var jvar = messageVars[idx];
                         var name = getFirstValue(jvar['v-wf:variableName']);
 
-                        if (name == '$template')
+                        if (name == '$template' || name.indexOf(':') > 0)
                             continue;
 
                         var values = jvar['v-wf:variableValue'];
@@ -846,8 +846,8 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                     var output_subject = Mustache.render(subject, view).replace (/&#x2F;/g, '/');
                     var output_body = Mustache.render(body, view).replace (/&#x2F;/g, '/');
 
-                    new_message['v-s:subject'] = output_subject;
-                    new_message['v-s:messageBody'] = output_body;
+                    new_message['v-s:subject'] = newStr (output_subject, lang);
+                    new_message['v-s:messageBody'] = newStr (output_body, lang);
 
                     put_individual(ticket, new_message, _event_id);
                 }
