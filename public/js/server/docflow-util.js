@@ -773,19 +773,18 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                 };
                 var template;
 
-                for (var idx = 0; idx < journalVars.length; idx++)
+                for (var idx = 0; idx < messageVars.length; idx++)
                 {
                     var jvar = messageVars[idx];
                     var name = getFirstValue(jvar['v-wf:variableName']);
                     var value = jvar['v-wf:variableValue'];
 
-                    if (name == $template)
+                    if (name == '$template')
                         template = get_individual(ticket, getUri(value));
 
                     if (name.indexOf(':') > 0)
                         new_message[name] = value;
                 }
-
                 if (template)
                 {
                     var lang = template['v-s:templateLanguage'];
@@ -797,17 +796,55 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
 
                     var view = {};
 
-                    for (var idx = 0; idx < journalVars.length; idx++)
+                    for (var idx = 0; idx < messageVars.length; idx++)
                     {
                         var jvar = messageVars[idx];
                         var name = getFirstValue(jvar['v-wf:variableName']);
-                        var value = jvar['v-wf:variableValue'];
 
-                        view[name] = getFirstValueUseLang(value, lang);
+                        if (name == '$template')
+                            continue;
+
+                        var values = jvar['v-wf:variableValue'];
+
+                        var araa = [];
+
+                        for (var val_idx in values)
+                        {
+                            var value = values[val_idx];
+
+                            if (value.type == _Uri)
+                            {
+                                var inner_indv = get_individual(ticket, value.data);
+
+                                //print("@@@43 inner_indv=", toJson (inner_indv));
+                                value = getFirstValueUseLang(inner_indv['rdfs:label'], lang);
+
+                                if (!value)
+                                    value = getFirstValue(inner_indv['rdfs:label']);
+
+                                araa.push(value);
+                            }
+                            else
+                            {
+                                var aa = "";
+
+                                if (value.lang == lang)
+                                    aa = value.data;
+
+                                if (!aa)
+                                    aa = value.data;
+
+                                araa.push(aa);
+                            }
+                        }
+
+                        view[name] = araa;
                     }
 
-                    var output_subject = Mustache.render(subject, view);
-                    var output_body = Mustache.render(body, view);
+                    print("@@@50 view=", toJson(view));
+
+                    var output_subject = Mustache.render(subject, view).replace (/&#x2F;/g, '/');
+                    var output_body = Mustache.render(body, view).replace (/&#x2F;/g, '/');
 
                     new_message['v-s:subject'] = output_subject;
                     new_message['v-s:messageBody'] = output_body;

@@ -1484,10 +1484,12 @@ s-wf:nc_t2
     v-wf:startDecisionTransform s-wf:tr_actor_form;
     v-wf:completeDecisionTransform s-wf:tr_taken_decision;
     v-wf:hasFlow s-wf:nc_f_t2_t1, s-wf:nc_f_t2_oc, d:a65787936-f51e-a83c-f537-95eaaa02c21a;
-    rdfs:label "согласование"^^xsd:string;
+    rdfs:label "согласование";
     v-wf:expectedResultType s-wf:UserTaskForm;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_t2_sm2, s-wf:map_t2_sm3;
     v-wf:startingMapping s-wf:map_possible_decision, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type;
+	v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId;
+	v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl;
     v-wf:executor s-wf:def_exec_actor;
     v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data;
 	rdfs:isDefinedBy s-wf: ;
@@ -1627,57 +1629,102 @@ s-wf:Membership_000
   rdfs:label "Membership base net_complex_route";
 .
 
-# define vars for message template -------
-
-s-wf:document-representation
-    rdf:type v-wf:VarDefine ;
-	v-wf:varDefineName "document-representation" ;
-    rdfs:label "document-representation"@ru ;
+# ----------- define vars for message template -------
+s-wf:map_msg_template_4_SV_default_template
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_msg_template ;	
+	v-wf:mappingExpression	"newUri ('s-wf:msg-default-template')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:from
+s-wf:map_from_4_TIV_initiator
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_from ;	
+	v-wf:mappingExpression	"task.getInputVariable ('initiator')";
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_document_4_TIV_docId
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_document ;	
+	v-wf:mappingExpression	"task.getInputVariable ('docId')";
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_comment_4_TIV_actor_task_action
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_comment ;	
+	v-wf:mappingExpression	"task.getInputVariable ('actor_task_action')";
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_inbox_url_4_vedaInfo_appInboxUrl
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_inbox_url ;	
+	rdfs:isDefinedBy s-wf: ;
+    v-wf:mappingExpression  
+    """
+	get_properties_chain (newUri ('v-s:vedaInfo'), 
+							[{$get:'v-wf:appInboxUrl'}])	
+	""";
+.
+
+s-wf:var_msg_template
+    rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "$template" ;
+    rdfs:label "var $template" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:var_document
+    rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "document" ;
+    rdfs:label "var document" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:var_from
     rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "from" ;
-    rdfs:label "from"@ru ;
+    rdfs:label "var from" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:comment
+s-wf:var_comment
     rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "comment" ;
-    rdfs:label "comment"@ru ;
+    rdfs:label "var comment" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:document_url
+s-wf:var_document_url
     rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "document_url" ;
-    rdfs:label "document_url"@ru ;
+    rdfs:label "var document_url" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:task_url
+s-wf:var_task_url
     rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "task_url" ;
-    rdfs:label "task_url"@ru ;
+    rdfs:label "var task_url" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:inbox_url
+s-wf:var_inbox_url
     rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "inbox_url" ;
-    rdfs:label "inbox_url"@ru ;
+    rdfs:label "var inbox_url" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:text-template1
+s-wf:msg-default-template
 	rdf:type v-s:TemplateForText ;
 	v-s:templateLanguage v-ui:RU ;
-	v-s:templateSubject "СЭД Задача: Исполнить поручение по документу: {{document-representation}}" ;
+	v-s:templateSubject "СЭД Задача: Исполнить поручение по документу: {{document}}" ;
 	v-s:templateBody 
 	"""
-от пользователя: {{from}}  Вам поступило поручение по документу: {{document-representation}}
+от пользователя: {{from}}  Вам поступило поручение по документу: {{document}}
 Комментарий: {{comment}}
 
 Используйте ссылки для перехода на нужные страницы:
@@ -1687,3 +1734,4 @@ s-wf:text-template1
 все входящие задачи: {{inbox_url}}
 	""";
 .	
+
