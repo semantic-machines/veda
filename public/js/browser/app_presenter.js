@@ -47,21 +47,38 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	var submit = $("#submit", loginContainer);
 	submit.click( function (e) {
 		e.preventDefault();
-		// Successful authentication calls veda.init() in model
+		var authResult;
 		try {
 			errorMsg.addClass("hidden");
-			var authResult = veda.login( $("#login", loginContainer).val(), Sha256.hash( $("#password", loginContainer).val() ) );
-			setCookie("user_uri", authResult.user_uri, { path: "/", expires: new Date(parseInt(authResult.user_uri)) });
-			setCookie("ticket", authResult.ticket, { path: "/", expires: new Date(parseInt(authResult.user_uri)) });
-			setCookie("end_time", authResult.end_time, { path: "/", expires: new Date(parseInt(authResult.user_uri)) });
+			// Successful authentication calls veda.init() in model
+			authResult = veda.login( $("#login", loginContainer).val(), Sha256.hash( $("#password", loginContainer).val() ) );
 			loginContainer.addClass("hidden");
-		} catch (e) {
+			veda.trigger("login:success", authResult);
+		} catch (ex1) {
+			if (ntlm) {
+				var params = {
+					type: "POST",
+					url: ntlmAddress + "ad/",
+					data: {
+						"login": $("#login", loginContainer).val(),
+						"password": $("#password", loginContainer).val()
+					},
+					async: false
+				};
+				try {
+					authResult = $.ajax(params);
+					authResult = JSON.parse( authResult.responseText );
+					loginContainer.addClass("hidden");
+					veda.trigger("login:success", authResult);
+					return;
+				} catch (ex2) {}
+			}
 			errorMsg.removeClass("hidden");
 			veda.trigger("login:failed");
-		}
+		}		
 	});
-	
-	// NTLM auth
+
+	// NTLM auth using iframe
 	var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider"),
 		ntlm = ntlmProvider.hasValue("rdf:value"),
 		iframe = $("<iframe>", {"class": "hidden"});
@@ -69,14 +86,11 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		var ntlmAddress = ntlmProvider["rdf:value"][0];
 		iframe.appendTo(loginContainer);
 	}
-	
-	veda.on("logout", function () {
-		delCookie("user_uri"); delCookie("ticket"); delCookie("end_time");
-		loginContainer.removeClass("hidden");
-	});
-	
+
 	veda.on("login:failed", function () {
-		delCookie("user_uri"); delCookie("ticket"); delCookie("end_time");
+		delCookie("user_uri"); 
+		delCookie("ticket"); 
+		delCookie("end_time");
 		if (ntlm) {
 			iframe.one("load", function () {
 				try {
@@ -110,7 +124,17 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		veda.user_uri = authResult.user_uri;
 		veda.ticket = authResult.ticket;
 		veda.end_time = authResult.end_time;
+		setCookie("ticket", authResult.ticket, { path: "/", expires: new Date(parseInt(authResult.user_uri)) });
+		setCookie("user_uri", authResult.user_uri, { path: "/", expires: new Date(parseInt(authResult.user_uri)) });
+		setCookie("end_time", authResult.end_time, { path: "/", expires: new Date(parseInt(authResult.user_uri)) });
 		veda.init();
+	});
+
+	veda.on("logout", function () {
+		delCookie("ticket"); 
+		delCookie("user_uri"); 
+		delCookie("end_time");
+		loginContainer.removeClass("hidden");
 	});
 
 	// Check if ticket in cookies is valid
@@ -120,8 +144,8 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	
 	if ( ticket && user_uri && end_time && is_ticket_valid(ticket) ) { 
 		veda.trigger("login:success", {
-			user_uri: user_uri,
 			ticket: ticket, 
+			user_uri: user_uri,
 			end_time: end_time
 		});
 	} else { 
