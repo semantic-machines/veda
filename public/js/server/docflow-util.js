@@ -180,6 +180,11 @@ function Context(_src_data, _ticket)
     this.src_data = _src_data;
     this.ticket = _ticket;
 
+	this.getDecisionForms = function()
+	{
+        return this.src_data['v-wf:decisionFormList'];		
+	};
+	
     this.getExecutor = function()
     {
         return this.src_data['v-wf:executor'];

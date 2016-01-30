@@ -1490,7 +1490,7 @@ s-wf:nc_t2
     v-wf:startingMapping s-wf:map_possible_decision, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type;
 	v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
 	v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
-	v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email;
+	v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
     v-wf:executor s-wf:def_exec_actor;
     v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data;
 	rdfs:isDefinedBy s-wf: ;
@@ -1634,7 +1634,7 @@ s-wf:Membership_000
 s-wf:map_msg_template_4_SV_default_template
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_msg_template ;	
-	v-wf:mappingExpression	"newUri ('s-wf:msg-default-template')";
+	v-wf:mappingExpression	"newUri ('s-wf:msg-template-optiflow')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -1694,6 +1694,23 @@ s-wf:map_vf_to_4_O_executor
 	rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_to_4_O_executor
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_to ;	
+	v-wf:mappingExpression	"order.getExecutor ()";
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_task_url_4_O_DecisionForms
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_task_url;	
+    v-wf:mappingExpression  
+    """
+	newStr (getFirstValue (get_properties_chain (newUri ('v-s:vedaInfo'), [{$get:'v-s:appUrl'}])) + "/" + getFirstValue(order.getDecisionForms ()))
+	""";
+	rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:map_rdf_type_4_v_s_Email
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_rdf_type ;	
@@ -1728,6 +1745,13 @@ s-wf:var_from
     rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "from" ;
     rdfs:label "var from" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:var_to
+    rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "to" ;
+    rdfs:label "var to" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -1790,3 +1814,35 @@ s-wf:msg-default-template
 	""";
 .	
 
+
+s-wf:msg-template-optiflow
+	rdf:type v-s:TemplateForText ;
+	v-s:templateLanguage v-ui:RU ;
+	v-s:templateSubject "OptiFlow Задача: Поручение по документу: {{document}}" ;
+	v-s:templateBody 
+	"""
+Твои идеи. Сделано с умом
+
+Уважаемый пользователь: {{to}}
+Вы получили на рассмотрение предложение по повышению эффективности работы нашей 
+компании в системе OptiFlow {{task_url}}
+
+Пожалуйста, оцените его эффективность и примите решение по реализации. Помните, что в 
+приоритете те предложения, которые 
+1. Направлены на повышение качества выпускаемой продукции
+2. Приведут к сокращению себестоимости выпускаемой продукции
+3. Направлены на повышение уровня безопасности и улучшение условий труда
+4. Могут быть реализованы с небольшими затратами  
+5. Применимы в других подразделениях, на аналогичном оборудовании или операциях
+6. Оригинальны и просты 
+7. Могут быть реализованы собственными силами
+
+Используйте ссылки для перехода на нужные страницы:
+документ: {{document_url}} 
+задача: {{task_url}} 
+все входящие задачи: {{inbox_url}} 
+
+На принятие решения по поступившему предложению у Вас есть 30 дней
+Данное сообщение является автоматической рассылкой. Отвечать на него не нужно
+	""";
+.	

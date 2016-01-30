@@ -338,6 +338,7 @@ function prepare_work_order(ticket, document)
                         'v-wf:decisionFormList': decisionFormList
                     };
                     add_to_individual(ticket, add_to_document, _event_id);
+					_work_order['v-wf:decisionFormList'] = decisionFormList;
 
                     mapToMessage(net_element['v-wf:startingMessageMap'], ticket, _process, work_item, _work_order, null, journal_uri, trace_journal_uri, 'v-wf:startingMessageMap');
 					
