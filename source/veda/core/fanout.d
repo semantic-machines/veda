@@ -104,7 +104,7 @@ void fanout_thread(string thread_name, string _node_id)
                     },
                     (Variant v) { writeln(thread_name, "::fanout_thread::Received some other type.", v); });
         }
-        catch (Exception ex)
+        catch (Throwable ex)
         {
             log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
         }
@@ -394,6 +394,9 @@ private void connect_to_smtp(Context context)
                 {
                     smtp_conn = new MailSender(connection.getFirstLiteral("v-s:host"), cast(ushort)connection.getFirstInteger("v-s:port"));
 
+					if (smtp_conn is null)
+						return;
+
                     string login = connection.getFirstLiteral("v-s:login");
                     string pass  = connection.getFirstLiteral("v-s:password");
 
@@ -407,9 +410,9 @@ private void connect_to_smtp(Context context)
                     else
                         log.trace("success connection to SMTP server: [%s]", connection);
                 }
-                catch (Exception ex)
+                catch (Throwable ex)
                 {
-                    log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+                    log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s], connection=[%s]", ex.line, ex.file, ex.msg, connection);
                 }
             }
         }
@@ -444,7 +447,7 @@ private void connect_to_mysql(Context context)
 
                     //writeln("@@@@1 CONNECT TO MYSQL IS OK ", text(mysql_conn));
                 }
-                catch (Exception ex)
+                catch (Throwable ex)
                 {
                     log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
                 }
