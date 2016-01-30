@@ -43,17 +43,23 @@
 	<body>
 		<div id="app"></div>
 		<div id="login-holder" class="hidden" style="background-color:#eee"></div>
-		<!-- Error alert -->
-		<div id="error-alert" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-		  <div class="modal-dialog modal-lg">
+		
+		<!-- Error modal -->
+		<div id="error-modal" class="modal fade" tabindex="-1" role="dialog">
+		  <div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
 			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			        <h4 class="modal-title">Ой, ошибка / Oops, error</h4>
+			        <h3 class="modal-title">Ой, ошибка / Oops, error</h3>
 			    </div>		  
 			    <div class="modal-body">
-			    	<span id="error-alert-message" />
+			    	<p id="error-message"></p>
+			    	<hr>
+			    	<code id="error-description"></code>
 			    </div>
+			    <div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+				</div>
 		    </div>
 		  </div>
 		</div> 
