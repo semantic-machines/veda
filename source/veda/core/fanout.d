@@ -49,7 +49,7 @@ void fanout_thread(string thread_name, string _node_id)
     node_id = _node_id;
     scope (exit)
     {
-        log.trace("ERR! indexer thread dead (exit)");
+        log.trace("ERR! fanout_thread dead (exit)");
     }
 
     core.thread.Thread.getThis().name = thread_name;
@@ -150,9 +150,13 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
 
         bool   is_deleted = new_indv.isExist("v-s:deleted", true);
 
+        string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
         string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");
         string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
         string previousVersion_new  = new_indv.getFirstLiteral("v-s:previousVersion");
+
+        if (isDraftOf !is null)
+            return;
 
         if (is_deleted == false && actualVersion !is null && actualVersion != new_indv.uri && previousVersion_prev == previousVersion_new)
             return;
@@ -182,24 +186,21 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
 
                 if (from !is null && to !is null)
                 {
-                    Resources email_from     = extract_email(sticket, from);
-                    Resources email_to       = extract_email(sticket, to);
-                    Resources email_reply_to = extract_email(sticket, reply_to);
+                    string email_from     = extract_email(sticket, from).getFirstString();
+                    string email_to       = extract_email(sticket, to).getFirstString();
+                    string email_reply_to = extract_email(sticket, reply_to).getFirstString();
 
                     if (from.length > 0 && to.length > 0)
                     {
                         auto message = SmtpMessage(
-                                                   Recipient(email_from[ 0 ].get!string, "From"),
-                                                   [ Recipient(email_to[ 0 ].get!string, "To") ],
+                                                   Recipient(email_from, "From"),
+                                                   [ Recipient(email_to, "To") ],
                                                    subject,
                                                    message_body,
-                                                   email_reply_to[ 0 ].get!string,
+                                                   email_reply_to,
                                                    );
 
-                        // Smart method to send message.
-                        // Performs message transmission sequence with error checking.
-                        // In case message cannot be sent, `rset` method is called implicitly.
-                        write(smtp_conn.send(message));
+                        //write(smtp_conn.send(message));
                         writeln("@to email:", message);
                     }
                 }
@@ -226,9 +227,13 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
     {
         bool   is_deleted = new_indv.isExist("v-s:deleted", true);
 
+        string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
         string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");
         string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
         string previousVersion_new  = new_indv.getFirstLiteral("v-s:previousVersion");
+
+        if (isDraftOf !is null)
+            return;
 
         if (is_deleted == false && actualVersion !is null && actualVersion != new_indv.uri && previousVersion_prev == previousVersion_new)
             return;
@@ -393,10 +398,12 @@ private void connect_to_smtp(Context context)
                     if (login !is null && login.length > 0)
                         smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
 
-                    // Connecting to server
+                    // Connecting to smtp server
                     auto result = smtp_conn.connect();
                     if (!result.success)
                         smtp_conn = null;
+                    else
+                        log.trace("success connection to SMTP server: [%s]", connection);
                 }
                 catch (Exception ex)
                 {
