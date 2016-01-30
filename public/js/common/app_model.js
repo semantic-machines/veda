@@ -58,10 +58,22 @@
 		
 		self.on("error", function (error) {
 			switch (error.status) {
+				case 0:
+					alert("Операция не выполнена. Сервер недоступен. Пожалуйста, попробуйте позже или обратитесь в службу тех. поддержки. / Operation failed. Server is unavailable. Please try again later or call support team. \n Error: "+JSON.stringify(error));
+					console.log ? console.log("Error:", JSON.stringify(error)) : null;
+					break;
+				case 422:
+					console.log ? console.log("Error:", JSON.stringify(error)) : null;
+					break;
+				case 429:
+					alert("Операция не выполнена. Данные не сохранены. Пожалуйста, попробуйте позже или обратитесь в службу тех. поддержки. / Operation failed. Data wasn't saved. Please try again later or call support team. \n Error: "+JSON.stringify(error));
+					console.log ? console.log("Error:", JSON.stringify(error)) : null;
+					break;
 				case 471: 
 					self.logout(); 
 					break;
 				default: 
+					alert("Операция не выполнена. Пожалуйста, позвоните в службу тех. поддержки. / Operation failed. Please call support team. Error: "+JSON.stringify(error));
 					console.log ? console.log("Error:", JSON.stringify(error)) : null;
 			}
 		});
