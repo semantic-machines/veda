@@ -63,6 +63,7 @@
 					console.log ? console.log("Error:", JSON.stringify(error)) : null;
 					break;
 				case 422:
+				case 472:
 					console.log ? console.log("Error:", JSON.stringify(error)) : null;
 					break;
 				case 429:
