@@ -56,29 +56,6 @@
 			self.trigger("started");
 		};
 		
-		self.on("error", function (error) {
-			switch (error.status) {
-				case 0:
-					alert("Операция не выполнена. Сервер недоступен. Пожалуйста, оставайтесь на этой странице и обратитесь в службу тех. поддержки. / Operation failed. Server is unavailable. Please keep this page open and call support team. \n\n Error: "+JSON.stringify(error));
-					console.log ? console.log("Error:", JSON.stringify(error)) : null;
-					break;
-				case 422:
-				case 472:
-					console.log ? console.log("Error:", JSON.stringify(error)) : null;
-					break;
-				case 429:
-					alert("Операция не выполнена. Данные не сохранены. Пожалуйста,  оставайтесь на этой странице и обратитесь в службу тех. поддержки. / Operation failed. Data wasn't saved. Please keep this page open and call support team. \n\n Error: "+JSON.stringify(error));
-					console.log ? console.log("Error:", JSON.stringify(error)) : null;
-					break;
-				case 471: 
-					self.logout(); 
-					break;
-				default: 
-					alert("Операция не выполнена. Пожалуйста, оставайтесь на этой странице и обратитесь в службу тех. поддержки. / Operation failed. Please keep this page open and call support team. \n\n Error: "+JSON.stringify(error));
-					console.log ? console.log("Error:", JSON.stringify(error)) : null;
-			}
-		});
-		
 		return self;
 	};
 	

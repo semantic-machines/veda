@@ -43,6 +43,20 @@
 	<body>
 		<div id="app"></div>
 		<div id="login-holder" class="hidden" style="background-color:#eee"></div>
+		<!-- Error alert -->
+		<div id="error-alert" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+		  <div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">Ой, ошибка / Oops, error</h4>
+			    </div>		  
+			    <div class="modal-body">
+			    	<span id="error-alert-message" />
+			    </div>
+		    </div>
+		  </div>
+		</div> 
 
 		<!-- Templates -->
 
@@ -648,7 +662,6 @@
 				</div>
 			</div>
 		</script>
-
 		<!-- Javascript -->
 
 		<!-- Utils & UI -->

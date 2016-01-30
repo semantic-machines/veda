@@ -152,4 +152,29 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		veda.trigger("login:failed");
 	}
 	
+	veda.on("error", function (error) {
+		switch (error.status) {
+			case 0:
+				console.log ? console.log("Error:", JSON.stringify(error)) : null;
+				$('#error-alert-message').html("Операция не выполнена. Сервер недоступен. Пожалуйста, оставайтесь на этой странице и обратитесь в службу тех. поддержки. <br/><br/> Operation failed. Server is unavailable. Please keep this page open and call support team. <br/><br/> Error: "+JSON.stringify(error));
+				$('#error-alert').modal('show');
+				break;
+			case 422:
+			case 472:
+				console.log ? console.log("Error:", JSON.stringify(error)) : null;
+				break;
+			case 429:
+				console.log ? console.log("Error:", JSON.stringify(error)) : null;
+				$('#error-alert-message').html("Операция не выполнена. Данные не сохранены. Пожалуйста,  оставайтесь на этой странице и обратитесь в службу тех. поддержки. <br/><br/> Operation failed. Data wasn't saved. Please keep this page open and call support team. <br/><br/> Error: "+JSON.stringify(error));
+				$('#error-alert').modal('show');
+				break;
+			case 471: 
+				veda.logout(); 
+				break;
+			default: 
+				$('#error-alert-message').html("Операция не выполнена. Пожалуйста, оставайтесь на этой странице и обратитесь в службу тех. поддержки. <br/><br/> Operation failed. Please keep this page open and call support team. <br/><br/> Error: "+JSON.stringify(error));
+				$('#error-alert').modal('show');
+				console.log ? console.log("Error:", JSON.stringify(error)) : null;
+		}
+	});
 });
