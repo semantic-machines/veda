@@ -8,6 +8,7 @@
 @prefix v-l: <http://semantic-machines.com/veda/veda-layout/> .
 @prefix m-l: <http://semantic-machines.com/veda/mondi-layout/> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
+@prefix td: <http://semantic-machines.com/veda/test-data/> .
 
 @prefix cfgb: <http://semantic-machines.com/veda/config-base/> .
 <http://semantic-machines.com/veda/config-base>
