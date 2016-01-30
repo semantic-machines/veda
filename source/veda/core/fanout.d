@@ -158,8 +158,9 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
         if (isDraftOf !is null)
             return;
 
-        if (is_deleted == false && actualVersion !is null && actualVersion != new_indv.uri && previousVersion_prev == previousVersion_new)
-            return;
+        if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri || 
+           	(previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
+                return;
 
         Resources types        = new_indv.getResources("rdf:type");
         bool      need_prepare = false;
@@ -235,8 +236,9 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
         if (isDraftOf !is null)
             return;
 
-        if (is_deleted == false && actualVersion !is null && actualVersion != new_indv.uri && previousVersion_prev == previousVersion_new)
-            return;
+        if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri || 
+           	(previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
+                return;
 
         Resources types        = new_indv.getResources("rdf:type");
         bool      need_prepare = false;
