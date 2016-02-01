@@ -584,6 +584,11 @@ cfg:VedaSystemAccount
   rdfs:label "Учетная запись системы Веда"@ru ;
 .
 
+cfg:VedaSystemAppointment
+  rdf:type v-s:Appointment ;
+  v-s:employee cfg:VedaSystem ;
+.
+
 cfg:Permission_1
   rdf:type v-s:PermissionStatement ;
   v-s:canCreate "true"^^xsd:boolean ;

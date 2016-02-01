@@ -1648,7 +1648,7 @@ s-wf:map_from_4_TIV_initiator
 s-wf:map_wf_from_4_TIV_initiator
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_wf_from ;	
-	v-wf:mappingExpression	"task.getInputVariable ('initiator')";
+	v-wf:mappingExpression	"newUri ('cfg:VedaSystemAppointment')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -1821,6 +1821,7 @@ s-wf:msg-template-optiflow
 	v-s:templateSubject "OptiFlow Задача: Поручение по документу: {{document}}" ;
 	v-s:templateBody 
 	"""
+<html><body>
 Твои идеи. Сделано с умом
 
 Уважаемый пользователь: {{to}}
@@ -1843,6 +1844,9 @@ s-wf:msg-template-optiflow
 все входящие задачи: {{inbox_url}} 
 
 На принятие решения по поступившему предложению у Вас есть 30 дней
-Данное сообщение является автоматической рассылкой. Отвечать на него не нужно
-	""";
+Данное сообщение является автоматической рассылкой. Отвечать на него не нужно.
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA
+AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO
+9TXL0Y4OHwAAAABJRU5ErkJggg==" alt="Red dot" />
+</body></html>""";
 .	
