@@ -4,13 +4,13 @@
 
 module veda.core.fanout;
 
-private import std.concurrency, std.stdio, std.conv, std.utf;
+private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file;
 private import veda.type, veda.core.context;
 private import util.logger, util.cbor, veda.core.util.cbor8individual;
 private import storage.lmdb_storage, veda.core.thread_context;
 private import veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
 private import mysql.d;
-private import smtp.client, smtp.mailsender, smtp.message;
+private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment;
 
 //////
 Mysql      mysql_conn;
@@ -141,6 +141,48 @@ private Resources extract_email(ref Ticket sticket, string ap_uri)
     return ac.resources[ "v-s:mailbox" ];
 }
 
+string scptn = "src=\"cid:";
+
+private string uri_2_cid(string src)
+{
+    return src.replace(":", "_").replace("-", "_");
+}
+
+private string extract_cids(string _src, out string[] attachment_ids)
+{
+    char[] src = (cast(char[])_src).dup;
+
+    long   b_pos = 0;
+    long   e_pos = 0;
+
+    while (b_pos < src.length && e_pos < src.length)
+    {
+        b_pos = src.indexOf(scptn, e_pos);
+
+        if (b_pos <= 0)
+            break;
+
+        b_pos += scptn.length;
+
+        e_pos = src.indexOf("\"", b_pos);
+        if (e_pos <= 0)
+            break;
+
+        char[] attachment_id = src[ b_pos..e_pos ];
+        attachment_ids ~= attachment_id.dup;
+
+        foreach (idx, ch; attachment_id)
+        {
+            if (ch == ':' || ch == '-')
+                attachment_id[ idx ] = '_';
+        }
+
+        if (b_pos == e_pos)
+            break;
+    }
+
+    return cast(string)src;
+}
 
 private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
 {
@@ -158,9 +200,9 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
         if (isDraftOf !is null)
             return;
 
-        if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri || 
-           	(previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
-                return;
+        if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri ||
+                                    (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
+            return;
 
         Resources types        = new_indv.getResources("rdf:type");
         bool      need_prepare = false;
@@ -193,6 +235,11 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
 
                     if (from.length > 0 && to.length > 0)
                     {
+                        string[] attachment_ids;
+                        message_body = extract_cids(message_body, attachment_ids);
+
+                        writeln("@1 attachment_ids=", attachment_ids);
+
                         auto message = SmtpMessage(
                                                    Recipient(email_from, "From"),
                                                    [ Recipient(email_to, "To") ],
@@ -201,10 +248,16 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
                                                    email_reply_to,
                                                    );
 
+                        auto bytes      = cast(ubyte[]) read("logo.png");
+                        auto attachment = SmtpAttachment("logo.png", bytes, "m_l_OptiflowLogoOrange");
+                        message.attach(attachment);
+
                         smtp.reply.SmtpReply res = smtp_conn.send(message);
-                        
+
+                        log.trace("mail=%s", message.toString());
+
                         if (!res.success)
-                        	log.trace ("FAIL send email: %s, result %s", message, text (res));
+                            log.trace("FAIL send email: %s, result %s", message, text(res));
                     }
                 }
             }
@@ -238,9 +291,9 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
         if (isDraftOf !is null)
             return;
 
-        if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri || 
-           	(previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
-                return;
+        if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri ||
+                                    (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
+            return;
 
         Resources types        = new_indv.getResources("rdf:type");
         bool      need_prepare = false;
@@ -396,8 +449,8 @@ private void connect_to_smtp(Context context)
                 {
                     smtp_conn = new MailSender(connection.getFirstLiteral("v-s:host"), cast(ushort)connection.getFirstInteger("v-s:port"));
 
-					if (smtp_conn is null)
-						return;
+                    if (smtp_conn is null)
+                        return;
 
                     string login = connection.getFirstLiteral("v-s:login");
                     string pass  = connection.getFirstLiteral("v-s:password");
