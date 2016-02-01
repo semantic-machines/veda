@@ -1634,7 +1634,7 @@ s-wf:Membership_000
 s-wf:map_msg_template_4_SV_default_template
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_msg_template ;	
-	v-wf:mappingExpression	"newUri ('s-wf:msg-template-optiflow')";
+	v-wf:mappingExpression	"newUri ('m-l:msg-template-optiflow')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -1812,41 +1812,4 @@ s-wf:msg-default-template
 задача: {{task_url}} 
 все входящие задачи: {{inbox_url}} 
 	""";
-.	
-
-
-s-wf:msg-template-optiflow
-	rdf:type v-s:TemplateForText ;
-	v-s:templateLanguage v-ui:RU ;
-	v-s:templateSubject "OptiFlow Задача: Поручение по документу: {{document}}" ;
-	v-s:templateBody 
-	"""
-<html><body>
-Твои идеи. Сделано с умом
-
-Уважаемый пользователь: {{to}}
-Вы получили на рассмотрение предложение по повышению эффективности работы нашей 
-компании в системе OptiFlow {{task_url}}
-
-Пожалуйста, оцените его эффективность и примите решение по реализации. Помните, что в 
-приоритете те предложения, которые 
-1. Направлены на повышение качества выпускаемой продукции
-2. Приведут к сокращению себестоимости выпускаемой продукции
-3. Направлены на повышение уровня безопасности и улучшение условий труда
-4. Могут быть реализованы с небольшими затратами  
-5. Применимы в других подразделениях, на аналогичном оборудовании или операциях
-6. Оригинальны и просты 
-7. Могут быть реализованы собственными силами
-
-Используйте ссылки для перехода на нужные страницы:
-документ: {{document_url}} 
-задача: {{task_url}} 
-все входящие задачи: {{inbox_url}} 
-
-На принятие решения по поступившему предложению у Вас есть 30 дней
-Данное сообщение является автоматической рассылкой. Отвечать на него не нужно.
-<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA
-AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO
-9TXL0Y4OHwAAAABJRU5ErkJggg==" alt="Red dot" />
-</body></html>""";
 .	
