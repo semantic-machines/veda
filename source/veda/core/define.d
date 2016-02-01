@@ -63,6 +63,7 @@ enum EVENT : byte
     NOT_READY = 6
 }
 
+const string attachments_db_path = "./data/files";
 const string docs_onto_path      = "./public/docs/onto";
 const string dbs_backup          = "./backup";
 const string dbs_data            = "./data";

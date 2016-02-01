@@ -238,8 +238,6 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
                         string[] attachment_ids;
                         message_body = extract_cids(message_body, attachment_ids);
 
-                        writeln("@1 attachment_ids=", attachment_ids);
-
                         auto message = SmtpMessage(
                                                    Recipient(email_from, "From"),
                                                    [ Recipient(email_to, "To") ],
@@ -248,16 +246,35 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
                                                    email_reply_to,
                                                    );
 
-                        auto bytes      = cast(ubyte[]) read("logo.png");
-                        auto attachment = SmtpAttachment("logo.png", bytes, "m_l_OptiflowLogoOrange");
-                        message.attach(attachment);
+                        foreach (attachment_id; attachment_ids)
+                        {
+                            //writeln("@1 attachment_id=", attachment_ids);
+                            Individual file_info = context.get_individual(&sticket, attachment_id);
+                            if (file_info !is Individual.init)
+                            {
+                                string path     = file_info.getFirstResource("v-s:filePath").get!string;
+                                string file_uri = file_info.getFirstResource("v-s:fileUri").get!string;
+                                if (path !is null && file_uri !is null && file_uri.length > 0)
+                                {
+                                    if (path.length > 0)
+                                        path = path ~ "/";
+
+                                    string full_path = attachments_db_path ~ "/" ~ path ~ file_uri;
+
+                                    auto   bytes = cast(ubyte[]) read(full_path);
+
+
+                                    auto attachment = SmtpAttachment(file_uri, bytes, uri_2_cid(attachment_id));
+                                    message.attach(attachment);
+                                }
+                            }
+                        }
 
                         smtp.reply.SmtpReply res = smtp_conn.send(message);
 
-                        log.trace("mail=%s", message.toString());
+                        //log.trace("mail=%s", message.toString());
 
-                        if (!res.success)
-                            log.trace("FAIL send email: %s, result %s", message, text(res));
+                        log.trace("send email: %s, result %s", new_indv.uri, text(res));                            
                     }
                 }
             }

@@ -25,8 +25,6 @@ public const string veda_schema__fileSize      = "v-s:fileSize";
 public const string veda_schema__fileThumbnail = "v-s:fileThumbnail";
 public const string veda_schema__fileURI       = "v-s:fileURI";
 
-const string        attachments_db_path = "./data/files";
-
 static this() {
     Lang =
     [
