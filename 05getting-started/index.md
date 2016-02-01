@@ -8,6 +8,9 @@ permalink: /05gettingstarted/
 
 1. [Установка на Ubuntu 14.04 LTS 64-Bit](#ubuntu)
 1. [Установка на Docker](#docker)
+1. [Создание структуры : "Служебная записка"](#memo-create)
+1. [Создание кастомного шаблона : "Служебная записка"](#memo-template)
+1. [Создание маршрута документооборота : "Служебная записка"](#memo-workflow)
 
 <h1 id="ubuntu" class="page-heading">Установка на Ubuntu 14.04 LTS 64-Bit</h1>
 
@@ -32,21 +35,23 @@ dub
 {% highlight bash %}
 ./veda
 {% endhighlight %}
-6) Далее откройте веб-интерфейс VEDA при помощи вашего любимого браузера:
+6) Откройте веб-интерфейс VEDA при помощи вашего любимого браузера:
 {% highlight bash %}
 http://localhost:8080/
 {% endhighlight %}
 
 <h1 id="docker" class="page-heading">Установка на Docker</h1>
+1) Создайте папку, в которой будут хранится данные veda:
+{% highlight bash %}
+mkdir veda
+cd veda
+{% endhighlight %}
+2) Запустите Docker контейнер
+{% highlight bash %}
+docker run --rm -p 8080:8080 -v $PWD:/veda/data -ti semanticmachines/veda /bin/bash -c "cd /veda && ./veda"
+{% endhighlight %}
+3) Откройте веб-интерфейс VEDA при помощи вашего любимого браузера:
+{% highlight bash %}
+http://localhost:8080/
+{% endhighlight %}
 
-Graeco pertinax usu te, ad qui odio veniam fabellas. Delectus apeirian periculis nam an, mei ut labores luptatum verterem. Ne usu recteque philosophia. 
-
-Ea volumus accusam eum, error quaeque at nec, mea te placerat deseruisse. Ne eum populo commune neglegentur, ne sea idque graeci sadipscing. Consequat aliquando qui id, no nusquam suavitate philosophia pro. 
-
-Est et vidit malis disputando, case habemus et qui, duis nominati principes quo te. Tempor invenire corrumpit mei no. Essent ancillae adipiscing qui ne. Accusata mediocrem philosophia in eum. 
-
-Eum epicuri adipiscing id, ex solet concludaturque vis, usu id sale posse zril. Vel probo patrioque cu, an postea intellegat sea. Per in omnis menandri efficiantur. 
-
-Inani cetero ius an. Sed euismod facilisis temporibus cu. Aliquid scripserit referrentur eum te. Mel oporteat vivendum conceptam an. Sed ex justo civibus insolens.
-
-Eum no sumo purto omnium. Et tota scripta vel. Feugait disputati
