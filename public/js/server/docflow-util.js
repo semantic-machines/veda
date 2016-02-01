@@ -846,7 +846,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                         view[name] = araa;
                     }
 
-                    print("@@@50 view=", toJson(view));
+                    //print("@@@50 view=", toJson(view));
 
                     var output_subject = Mustache.render(subject, view).replace (/&#x2F;/g, '/');
                     var output_body = Mustache.render(body, view).replace (/&#x2F;/g, '/');
@@ -858,7 +858,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                 }
 
 
-                print("@@@ mapToMessage=" + toJson(new_message));
+                //print("@@@ mapToMessage=" + toJson(new_message));
             }
         }
     }
