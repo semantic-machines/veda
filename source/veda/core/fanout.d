@@ -201,8 +201,10 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
                                                    email_reply_to,
                                                    );
 
-                        write(smtp_conn.send(message));
-                        //writeln("@to email:", message);
+                        smtp.reply.SmtpReply res = smtp_conn.send(message);
+                        
+                        if (!res.success)
+                        	log.trace ("FAIL send email: %s, result %s", message, text (res));
                     }
                 }
             }
