@@ -210,13 +210,13 @@ public void scripts_thread(string thread_name, string node_id)
                                         try
                                         {
                                             if (trace_msg[ 300 ] == 1)
-                                                log.trace("start exec script : %s ", script_id);
+                                                log.trace("start exec script : %s %s", script_id, individual_id);
 
                                             count++;
                                             script_vm.run(script.compiled_script);
 
                                             if (trace_msg[ 300 ] == 1)
-                                                log.trace("end exec script : %s ", script_id);
+                                                log.trace("end exec script : %s %s", script_id, individual_id);
                                         }
                                         catch (Exception ex)
                                         {
