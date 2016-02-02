@@ -1,0 +1,172 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-schema>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system ontology"@en ;
+  rdfs:label "Онтология системы Veda"@ru ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+v-s:Numeration
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:AuthorizedClass ;
+  rdfs:label "Parent class for Numeration feature"@en ;
+  rdfs:label "Родительский класс для возможностей нумерации"@ru ;
+.
+v-s:hasNumerationMapper
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain owl:DatatypeProperty ;
+  rdfs:label "ссылка на связку: тип индивида + правило нумерации"@ru ;
+  rdfs:label "link to mapper: type of individual + numeration rule"@en ;
+  rdfs:range v-s:NumerationMapper;
+.
+v-s:NumerationMapper
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Numeration ;
+  rdfs:label "Link template and numeration rule"@en ;
+  rdfs:label "Связка шаблона и правила автонумерации"@ru ;
+.
+v-s:numerationClass
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:NumerationMapper ;
+  rdfs:label "ссылка на тип индивида"@ru ;
+  rdfs:label "link to numeration rule"@en ;
+  rdfs:range owl:Class;
+.
+v-s:hasNumerationRule
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:NumerationMapper ;
+  rdfs:label "ссылка на правило нумерации"@ru ;
+  rdfs:label "link to numeration rule"@en ;
+  rdfs:range v-s:NumerationRule;
+.
+v-s:NumerationRule
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Numeration ;
+  rdfs:label "Numeration rule"@en ;
+  rdfs:label "Правило автонумерации"@ru ;
+.
+v-s:numerationScope
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:NumerationRule ;
+  rdfs:label "скрипт, возвращает пространство нумерации"@ru ;
+  rdfs:label "script, returns numeration scope"@en ;
+  rdfs:range xsd:string ;
+.
+v-s:numerationGetNextValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:NumerationRule ;
+  rdfs:label "скрипт, возвращает следующее незанятое значение из пространства нумерации"@ru ;
+  rdfs:label "script, returns next uncommited value for numeration scope"@en ;
+  rdfs:range xsd:string ;
+.
+v-s:NumerationScopeClass
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Numeration ;
+  rdfs:label "Numeration scope"@en ;
+  rdfs:label "Пространство автонумерации"@ru ;
+. 
+v-s:numerationCommitedInterval
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:NumerationScopeClass ;
+  rdfs:range v-s:NumerationCommitedIntervalClass;  
+  rdfs:label "Numeration commited interval"@en ;
+  rdfs:label "Занятый интервал"@ru ;
+.
+v-s:NumerationCommitedIntervalClass
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Numeration ;
+  rdfs:label "Numeration commited interval"@en ;
+  rdfs:label "Занятый интервал"@ru ;
+. 
+v-s:numerationCommitedIntervalBegin
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:NumerationCommitedIntervalClass ;
+  rdfs:label "начало занятого интервала нумерации"@ru ;
+  rdfs:label "numeration commited interval begin"@en ;
+  rdfs:range xsd:integer ;
+.
+v-s:numerationCommitedIntervalEnd
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:NumerationCommitedIntervalClass ;
+  rdfs:label "конец занятого интервала нумерации"@ru ;
+  rdfs:label "numeration commited interval end"@en ;
+  rdfs:range xsd:integer ;
+.
+v-s:SimpleNumeration
+  rdf:type v-s:NumerationRule ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Нумерация в пределах шаблона"@ru ;
+  rdfs:label "Numeration with type as scope"@en ;
+  v-s:numerationScope """
+(function (ticket, individual) 
+{
+    if (!individual['rdf:type']) return '';
+	return "numeration-scope:"+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id);
+})
+""" ;
+  v-s:numerationGetNextValue """  
+(function getNextValue(ticket, scope) {
+	return getNextValueSimple(ticket, scope, 1);
+})
+""" ;  
+.
+v-s:YearNumeration8
+  rdf:type v-s:NumerationRule ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Нумерация в пределах шаблона"@ru ;
+  rdfs:label "Numeration with type as scope"@en ;
+  v-s:numerationScope """
+(function (ticket, individual) 
+{
+    if (!individual['rdf:type']) return '';
+	return "numeration-scope:"+(new Date()).getFullYear()+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id);
+})
+""" ;
+  v-s:numerationGetNextValue """  
+(function getNextValue(ticket, scope) {
+	return getNextValueSimple(ticket, scope, (new Date()).getFullYear()*10000+1);
+})
+""" ;  
+.
+v-s:NumerationEvent
+  rdf:type v-s:Event ;
+  v-s:filter v-s:NumerationEvent ;
+  v-s:script """
+  if (!document['v-s:isDraftOf'] || document['v-s:isDraftOf'].length==0) {
+	  print("NUMERATION EVENT"); 
+	  var result = numerate(ticket, document, prev_state, _event_id);
+	  print("RESULT : " +toJson(result));
+  }
+"""
+.
+v-s:Permission1602021330
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:NumerationScopeClass  ;
+  v-s:permissionSubject cfg:ReadUser ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:created "2016-02-02T13:31:33"^^xsd:dateTime ;
+  v-s:published "2016-02-02T13:31:33"^^xsd:dateTime ;
+  v-s:startTime "2016-02-02T13:31:33"^^xsd:dateTime ;
+  rdfs:label "Read. All read user. All NumerationScopeClass."@en ;
+  rdfs:label "Чтение. Все пользователи. Все документы класса Пространство автонумерации"@ru ;
+  rdfs:comment "Запись о выдаче прав группе всех пользователей на чтение группы всех документов класса Пространство автонумерации" ;  
+.
+v-s:Permission1602021335
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:NumerationCommitedIntervalClass  ;
+  v-s:permissionSubject cfg:ReadUser ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:created "2016-02-02T13:35:33"^^xsd:dateTime ;
+  v-s:published "2016-02-02T13:35:33"^^xsd:dateTime ;
+  v-s:startTime "2016-02-02T13:35:33"^^xsd:dateTime ;
+  rdfs:label "Read. All read user. All NumerationCommitedIntervalClass."@en ;
+  rdfs:label "Чтение. Все пользователи. Все документы класса Занятый интервал"@ru ;
+  rdfs:comment "Запись о выдаче прав группе всех пользователей на чтение группы всех документов класса Занятый интервал" ;  
+.
