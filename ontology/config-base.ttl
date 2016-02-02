@@ -314,7 +314,7 @@ var deleted = document['v-s:deleted'];
 var doc_uri = document['@'];	
 var new_membership = 
 {
-	'@' : guid (), 
+	'@' : genUri(), 
 	'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
 	'v-s:memberOf' : [{data: 'cfg:ReadResGroup', type : _Uri}],
 	'v-s:resource'  : [{data: doc_uri, type : _Uri}],
@@ -335,7 +335,7 @@ if (type && getUri (type) == 'v-s:Person')
 {
 new_membership = 
 {
-	'@' : guid (), 
+	'@' : genUri(), 
 	'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
 	'v-s:memberOf' : [{data: 'cfg:ReadUser', type : _Uri}],
 	'v-s:resource'  : [{data: doc_uri, type : _Uri}],
@@ -387,7 +387,7 @@ cfg:Event_3
 var doc_uri = document['@'];	
 var new_membership = 
 {
-	'@' : guid (), 
+	'@' : genUri(), 
 	'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
 	'v-s:memberOf' : [{data: 'cfg:ReadResGroup', type : _Uri}],
 	'v-s:resource'  : [{data: doc_uri, type : _Uri}],
@@ -558,6 +558,39 @@ switch (type) {
   rdfs:comment "Скрипт обработки индивидов онтологии"@ru ;
   rdfs:label "Event_4"@en ;
   rdfs:label "Событие_4"@ru ;
+.
+
+cfg:Event_5
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystemAccount ;
+  v-s:created "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:published "2014-01-31T15:28:18"^^xsd:dateTime ;
+  v-s:filter v-s:AuthorizedClass ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ */
+var doc_uri = document["@"];
+var _classes = document["rdf:type"];
+_classes.map(function (i) {
+	var _class_uri = i.data;
+	var member = {
+		'@' : genUri(),
+		'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
+		'v-s:memberOf' : [{data: i.data, type : _Uri}],
+		'v-s:resource'  : [{data: doc_uri, type : _Uri}],
+		'rdfs:comment'  : [{data: "выдан cfg:Event_5", type : _String}]
+	};
+	put_individual (ticket, member, _event_id);
+});
+  """ ;
+  rdfs:comment "скрипт включения индивидов в группу своего класса для авторизации по классу"@ru ;
+  rdfs:label "Event_5"@en ;
+  rdfs:label "Событие_5"@ru ;
 .
 
 # -------------------------------------------------------------------------------------------------
