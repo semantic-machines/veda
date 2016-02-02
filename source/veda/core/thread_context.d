@@ -192,14 +192,14 @@ class PThreadContext : Context
                     {
                         scripts ~= str_js_script;
                         script_file_name ~= o.name;
-                    }    
+                    }
                 }
             }
         }
 
         foreach (idx, script; scripts)
         {
-        	writeln ("script=", script_file_name[idx]);
+            writeln("script=", script_file_name[ idx ]);
             script_vm.run(script);
         }
     }

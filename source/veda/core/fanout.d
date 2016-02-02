@@ -263,7 +263,7 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
 
                                     auto   bytes = cast(ubyte[]) read(full_path);
 
-                                    auto attachment = SmtpAttachment(file_uri, bytes, uri_2_cid(attachment_id));
+                                    auto   attachment = SmtpAttachment(file_uri, bytes, uri_2_cid(attachment_id));
                                     message.attach(attachment);
                                 }
                             }
@@ -273,7 +273,7 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
 
                         //log.trace("mail=%s", message.toString());
 
-                        log.trace("send email: %s, result %s", new_indv.uri, text(res));                            
+                        log.trace("send email: %s, result %s", new_indv.uri, text(res));
                     }
                 }
             }
