@@ -113,20 +113,23 @@ class Onto
         foreach (indv; l_individuals)
         {
             individuals[ indv.uri ] = indv;
+        }
+
+        foreach (indv; l_individuals)
+        {
             if (indv.anyExist("rdf:type", [ "owl:Class", "rdfs:Class" ]))
             {
                 string       type_uri = indv.uri;
-//				writeln ("# class=", type_uri);
-                OfSubClasses icl = ofClass.get(type_uri, null);
+                OfSubClasses icl      = ofClass.get(type_uri, null);
                 if (icl is null)
                 {
                     OfSubClasses sc = OfSubClasses.init;
                     prepare_subclasses(sc, individuals, type_uri);
                     ofClass[ type_uri ] = sc;
-//                      writeln ("# subClasses for class ", type_uri, ", = ", sc);
                 }
             }
         }
+
 //if (l_individuals.length > 100)
 //core.thread.Thread.sleep(dur!("seconds")(10));
         if (trace_msg[ 20 ] == 1)
