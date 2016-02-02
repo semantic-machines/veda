@@ -340,13 +340,15 @@ struct Resource
     }
 }
 
-string getFirstString (Resources rss)
+string getFirstString(Resources rss)
 {
-	if (rss is null)
-		return null;		
-	if (rss.length == 0)
-		return null;
-	return rss[ 0 ].get!string;	
+    if (rss is null)
+        return null;
+
+    if (rss.length == 0)
+        return null;
+
+    return rss[ 0 ].get!string;
 }
 
 bool anyExist(Resources rss, string[] objects)

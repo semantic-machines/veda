@@ -209,8 +209,8 @@ private class IndexerContext
                 if (isDraftOf !is null)
                     return;
 
-                if (is_deleted == false && (actualVersion !is null && actualVersion != indv.uri || 
-                	(previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
+                if (is_deleted == false && (actualVersion !is null && actualVersion != indv.uri ||
+                                            (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
                     return;
 
                 OutBuffer      all_text = new OutBuffer();

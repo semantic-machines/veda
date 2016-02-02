@@ -199,7 +199,7 @@ class PThreadContext : Context
 
         foreach (idx, script; scripts)
         {
-            writeln("script=", script_file_name[ idx ]);
+            writeln("init script=", script_file_name[ idx ]);
             script_vm.run(script);
         }
     }
