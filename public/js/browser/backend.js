@@ -11,7 +11,7 @@ veda.Module(function Backend(veda) { "use strict";
 		if( !(success && fail) ) {
 			params.async = false;
 			var res = $.ajax(params);
-			if (res.status >= 400) { 
+			if (res.status >= 400 || res.status == 0) { 
 				veda.trigger("error", {status: res.status, description: res.statusText});
 				throw {status: res.status, description: res.statusText};
 			}
@@ -148,7 +148,7 @@ veda.Module(function Backend(veda) { "use strict";
 			t2 = Date.now();
 			get_summary_time += t2 - t1;
 			
-			if (result.status >= 400) {
+			if (result.status >= 400 || result.status == 0) {
 				veda.trigger("error", {status: result.status, description: result.statusText});
 				throw {status: result.status, description: result.statusText};
 			}

@@ -21,7 +21,7 @@ before_install:
 
 # Build
 install:
-  - dub build --build=debug
+  - ./m.sh
 
 # Run service as daemon and GUI
 before_script:

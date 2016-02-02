@@ -97,7 +97,7 @@ extern (C) void handleTermination(int signal)
 Context init_core(string node_id, string role, ushort listener_http_port, string write_storage_node)
 {
     if ((node_id is null || node_id.length < 2) && role is null)
-        node_id = "v-a:standart_node";
+        node_id = "cfg:standart_node";
 
     log.trace("init_core: node_id=[%s], role=[%s], listener_http_port=%d, write_storage_node=%s", node_id, role, listener_http_port,
               write_storage_node);
@@ -129,7 +129,7 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
             {
                 Resources roles;
                 log.trace_log_and_console("VEDA NODE CONFIGURATION: [%s]", node);
-                roles = node.resources.get("vsrv:role", Resources.init);
+                roles = node.resources.get("v-s:role", Resources.init);
                 if (roles.length == 0)
                     is_main = true;
                 else
@@ -137,7 +137,7 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
                     is_js_worker = roles.anyExist([ "js_worker" ]);
                     is_main      = roles.anyExist([ "main" ]);
                 }
-                jsvm_node_type = node.getFirstLiteral("vsrv:jsvm_node");
+                jsvm_node_type = node.getFirstLiteral("v-s:jsvm_node");
             }
         }
         else
@@ -214,19 +214,19 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
         {
             if (jsvm_node_type == "external")
             {
-                Resources listeners = node.resources.get("vsrv:listener", Resources.init);
+                Resources listeners = node.resources.get("v-s:listener", Resources.init);
                 foreach (listener_uri; listeners)
                 {
                     Individual connection = core_context.get_individual(&sticket, listener_uri.uri);
 
-                    Resource   transport = connection.getFirstResource("vsrv:transport");
+                    Resource   transport = connection.getFirstResource("v-s:transport");
                     if (transport != Resource.init)
                     {
                         if (transport.data() == "http")
                         {
                             core.thread.Thread.sleep(100.msecs);
                             string spawned_process_port = "8081";
-                            ushort http_port            = cast(ushort)connection.getFirstInteger("vsrv:port", 8080);
+                            ushort http_port            = cast(ushort)connection.getFirstInteger("v-s:port", 8080);
                             auto   js_worker_pid        =
                                 spawnProcess([ "./veda-js-worker", "--role", "js_worker", "--listener_http_port", spawned_process_port,
                                                "--write_storage_node",

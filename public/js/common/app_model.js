@@ -17,8 +17,7 @@
 			self.ticket = res.id;
 			if (!self.ticket) return;
 			self.user_uri = res.user_uri;
-			self.end_time =  Math.floor((res.end_time - 621355968000000000) / 10000 );
-			self.init();
+			self.end_time = Math.floor((res.end_time - 621355968000000000) / 10000 );
 			return {
 				ticket: self.ticket, 
 				user_uri: self.user_uri, 
@@ -30,7 +29,7 @@
 			self.user_uri = self.ticket = self.end_time = "";
 			self.cache = {};
 			self.ontology = {};
-			self.trigger("login:failed");
+			//self.trigger("login:failed");
 		};
 		
 		self.load = function (page, params) {
@@ -56,16 +55,6 @@
 			self.user = new veda.UserModel(self.user_uri);
 			self.trigger("started");
 		};
-		
-		self.on("error", function (error) {
-			switch (error.status) {
-				case 471: 
-					self.logout(); 
-					break;
-				default: 
-					console.log ? console.log("Error:", JSON.stringify(error)) : null;
-			}
-		});
 		
 		return self;
 	};

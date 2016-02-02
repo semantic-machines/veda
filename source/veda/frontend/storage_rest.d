@@ -25,8 +25,6 @@ public const string veda_schema__fileSize      = "v-s:fileSize";
 public const string veda_schema__fileThumbnail = "v-s:fileThumbnail";
 public const string veda_schema__fileURI       = "v-s:fileURI";
 
-const string        attachments_db_path = "./data/files";
-
 static this() {
     Lang =
     [
@@ -393,16 +391,16 @@ class VedaStorageRest : VedaStorageRest_API
         indv_res.addResource(rdf__type, Resource(DataType.Uri, veda_schema__PermissionStatement));
 
         if ((res & Access.can_read) > 0)
-            indv_res.addResource(veda_schema__canRead, Resource(true));
+            indv_res.addResource("v-s:canRead", Resource(true));
 
         if ((res & Access.can_update) > 0)
-            indv_res.addResource(veda_schema__canUpdate, Resource(true));
+            indv_res.addResource("v-s:canUpdate", Resource(true));
 
         if ((res & Access.can_delete) > 0)
-            indv_res.addResource(veda_schema__canDelete, Resource(true));
+            indv_res.addResource("v-s:canDelete", Resource(true));
 
         if ((res & Access.can_create) > 0)
-            indv_res.addResource(veda_schema__canCreate, Resource(true));
+            indv_res.addResource("v-s:canCreate", Resource(true));
 
 
         Json json = individual_to_json(indv_res);
@@ -654,10 +652,13 @@ class VedaStorageRest : VedaStorageRest_API
     {
         OpResult res;
 
-        long     count_prep_put = search.xapian_indexer.get_count_prep_put();
-        long     count_recv_put = search.xapian_indexer.get_count_recv_put();
+        long     fts_count_prep_put = search.xapian_indexer.get_count_prep_put();
+        long     fts_count_recv_put = search.xapian_indexer.get_count_recv_put();
 
-        if (count_recv_put - count_prep_put > 1000)
+        long     scr_count_prep_put = veda.core.scripts.get_count_prep_put();
+        long     scr_count_recv_put = veda.core.scripts.get_count_recv_put();
+
+        if (fts_count_recv_put - fts_count_prep_put > 200 || scr_count_recv_put - scr_count_prep_put > 200)
             throw new HTTPStatusException(ResultCode.Too_Many_Requests);
 
         Ticket     *ticket = context.get_ticket(_ticket);

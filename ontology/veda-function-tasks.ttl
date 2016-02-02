@@ -1,24 +1,18 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
-@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
-@prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
-@prefix v-a: <http://semantic-machines.com/veda/veda-admin/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
 
+@prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
 <http://semantic-machines.com/veda/veda-function-tasks>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system function 'Tasks' ontology"@en ;
   rdfs:label "Онтология функции 'Задачи' системы Веда"@ru ;
-  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
-  owl:imports <http://semantic-machines.com/veda/veda-ui> ;
-  owl:imports rdf: ;
-  owl:imports rdfs: ;
-  owl:imports <http://www.w3.org/2002/07/owl> ;
-  owl:versionInfo "0.1" ;
+#  owl:versionInfo "0.1" ;
   v-s:loadPriority 9 ;
 .
 
@@ -55,24 +49,24 @@ v-ft:Inbox
   rdfs:label "Inbox"@en ;
   rdfs:label "Входящие"@ru ;
   v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$1'"^^xsd:string ;
-  v-ft:sortOrder "'v-wf:dateGiven' asc"^^xsd:string ;
+  v-ft:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
 .
 v-ft:Outbox
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Outbox"@en ;
   rdfs:label "Исходящие"@ru ;
   v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$1'"^^xsd:string ;
-  v-ft:sortOrder "'v-wf:dateGiven' asc"^^xsd:string ;
+  v-ft:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
 .
 v-ft:Completed
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Completed"@en ;
   rdfs:label "Выполненные"@ru ;
   v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$1'"^^xsd:string ;  
-  v-ft:sortOrder "'v-wf:dateGiven' asc"^^xsd:string ;
+  v-ft:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
 .
 v-ft:TasksNotFound
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Tasks not found"@en ;
   rdfs:label "Задачи не найдены"@ru ;
 .
@@ -248,7 +242,7 @@ v-ft:TaskTemplate
 
 v-ft:TasksMembership
   rdf:type v-s:Membership ;
-  v-s:memberOf v-a:ReadResGroup ;
+  v-s:memberOf cfg:ReadResGroup ;
   v-s:resource v-ft:Inbox ;
   v-s:resource v-ft:Outbox ;
   v-s:resource v-ft:Completed ;

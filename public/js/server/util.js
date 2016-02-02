@@ -44,8 +44,11 @@ function newUri(uri)
     }];
 }
 
-function newStr(_data)
+function newStr(_data, _lang)
 {
+	if (!_lang)
+		_lang = 0;
+		
     return [
     {
         data: _data,
@@ -136,6 +139,16 @@ function getFirstValue(field)
 
         return field[0].data;
     }
+}
+
+function getFirstValueUseLang(field, lang)
+{
+	for (var i in field)
+    {
+		if (field[i].lang == lang)
+			return field[i].data;
+    }
+    return null;
 }
 
 function addRight(ticket, rights, subj_uri, obj_uri)
@@ -251,13 +264,13 @@ function logToJournal(ticket, journal_uri, journal_record, jr_type)
 	//if (!jr_type)
 	//	print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
 
-    var before = get_individual(ticket, journal_uri);
-    print('BEFORE : '+toJson(before))
+//    var before = get_individual(ticket, journal_uri);
+//    print('BEFORE : '+toJson(before))
 	
     add_to_individual(ticket, add_to_journal, _event_id);
     
-    var after = get_individual(ticket, journal_uri);
-    print('AFTER : '+toJson(after))
+//    var after = get_individual(ticket, journal_uri);
+//    print('AFTER : '+toJson(after))
 }
 
 function traceToJournal(ticket, journal_uri, label, _data)

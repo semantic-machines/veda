@@ -1,8 +1,5 @@
 /* Riot 1.0.2, @license MIT, (c) 2014 Muut Inc + contributors */
 
-//KarpovR: Run in pure V8 without node.js
-var exports = exports || {}, riot = riot || exports;
-
 (function(riot) { "use strict";
 
 riot.observable = function(el) {
@@ -145,4 +142,4 @@ riot.render = function(tmpl, data, escape_fn) {
   };
 
 })();
-})(typeof window !== "undefined" ? window.riot = {} : exports);
+})(typeof window !== "undefined" ? window.riot = {} : this.riot = {});

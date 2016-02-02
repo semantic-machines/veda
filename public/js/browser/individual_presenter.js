@@ -127,10 +127,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			if (individual.hasValue('v-s:isDraftOf')) {
 				//TODO Put link to actual version
 				//Rename edit button
-				$('#edit', wrapper).attr('about', 'v-b:ContinueEdit');
+				$('#edit', wrapper).attr('about', 'v-s:ContinueEdit');
 				
 				//Rename delete button
-				$('#delete', wrapper).attr('about', 'v-b:DeleteDraft');
+				$('#delete', wrapper).attr('about', 'v-s:DeleteDraft');
 				
 				//Hide send button
 				$('#send', wrapper).remove();
@@ -142,7 +142,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				//TODO Put link to draft version
 				
 				//Rename edit button
-				$('#edit', wrapper).attr('about', 'v-b:ContinueEdit');
+				$('#edit', wrapper).attr('about', 'v-s:ContinueEdit');
 								
 				//Hide send button
 				$('#send', wrapper).remove();
@@ -154,7 +154,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			&& individual['v-s:actualVersion'][0].id !== individual.id 
 			&& !individual.hasValue("v-s:isDraftOf")
 		) {
-			var versionBundle = new veda.IndividualModel('v-b:DocumentIsVersion');
+			var versionBundle = new veda.IndividualModel('v-s:DocumentIsVersion');
 			var actualVersionClass = new veda.IndividualModel('v-s:actualVersion');
 			var previousVersionClass = new veda.IndividualModel('v-s:previousVersion');
 			var nextVersionClass = new veda.IndividualModel('v-s:nextVersion');
@@ -791,12 +791,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		stasks.append($('<li/>', {
 			style:'cursor:pointer', 
 			click: function() {veda.Util.send(individual, template, 'v-wf:questionRouteStartForm')},
-			html: '<a>'+(new veda.IndividualModel('v-b:SendQuestion')['rdfs:label'][0])+'</a>'
+			html: '<a>'+(new veda.IndividualModel('v-s:SendQuestion')['rdfs:label'][0])+'</a>'
 		}));
 		stasks.append($('<li/>', {
 			style:'cursor:pointer', 
 			click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm')},
-			html: '<a>'+(new veda.IndividualModel('v-b:SendInstruction')['rdfs:label'][0])+'</a>'
+			html: '<a>'+(new veda.IndividualModel('v-s:SendInstruction')['rdfs:label'][0])+'</a>'
 		}));
 
 		return template;

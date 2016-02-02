@@ -29,7 +29,7 @@ public void set_g_process_name(string new_data)
 
 
 
-string[] access_list_predicates = [ veda_schema__canCreate, veda_schema__canRead, veda_schema__canUpdate, veda_schema__canDelete ];
+string[] access_list_predicates = [ "v-s:canCreate", "v-s:canRead", "v-s:canUpdate", "v-s:canDelete" ];
 
 enum CNAME : byte
 {
@@ -63,6 +63,7 @@ enum EVENT : byte
     NOT_READY = 6
 }
 
+const string attachments_db_path = "./data/files";
 const string docs_onto_path      = "./public/docs/onto";
 const string dbs_backup          = "./backup";
 const string dbs_data            = "./data";

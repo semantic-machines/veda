@@ -1,27 +1,15 @@
-# baseURI: http://semantic-machines.com/veda/vi-index
-# imports: http://semantic-machines.com/veda/veda-schema
-# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
-# imports: http://www.w3.org/2000/01/rdf-schema#
-# imports: http://www.w3.org/2002/07/owl
-# imports: http://semantic-machines.com/veda/mondi-schema-safety-audit
-
-# c14n-version: 3
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
-@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
 <http://semantic-machines.com/veda/veda-index>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system data index ontology"@en ;
   rdfs:label "Онтология индексирования данных системы Веда"@ru ;
-  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
-  owl:imports rdf: ;
-  owl:imports rdfs: ;
-  owl:imports <http://www.w3.org/2002/07/owl> ;
   owl:versionInfo "3.7" ;
   v-s:loadPriority 0 ;
 .

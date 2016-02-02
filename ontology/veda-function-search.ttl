@@ -1,29 +1,16 @@
-# baseURI: http://semantic-machines.com/veda/veda-ui
-# imports: http://semantic-machines.com/veda/veda-schema
-# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
-# imports: http://www.w3.org/2000/01/rdf-schema#
-# imports: http://www.w3.org/2002/07/owl
-
-# c14n-version: 3
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix v-a: <http://semantic-machines.com/veda/veda-admin/> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
-@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
 
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 <http://semantic-machines.com/veda/veda-function-search>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system function 'Search' ontology"@en ;
   rdfs:label "Онтология функции 'Поиск' системы Веда"@ru ;
-  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
-  owl:imports <http://semantic-machines.com/veda/veda-ui> ;
-  owl:imports rdf: ;
-  owl:imports rdfs: ;
-  owl:imports <http://www.w3.org/2002/07/owl> ;
 #  owl:versionInfo "0.2" ;
   v-s:loadPriority 9 ;
 .
@@ -149,82 +136,82 @@ v-fs:LabelSpec
   v-ui:minCardinality "1"^^xsd:integer ;
 .
 v-fs:RequestMgmt
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Remember"@en ;
   rdfs:label "Запомнить"@ru ;
 .
 v-fs:SavedRequests
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Saved requests"@en ;
   rdfs:label "Сохраненные запросы"@ru ;
 .
 v-fs:Fulltext
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Fulltext"@en ;
   rdfs:label "Полнотекстовый"@ru ;
 .
 v-fs:Attributive
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Attributive"@en ;
   rdfs:label "Атрибутивный"@ru ;
 .
 v-fs:Request
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Request"@en ;
   rdfs:label "Запрос"@ru ;
 .
 v-fs:EnterQuery
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Enter query"@en ;
   rdfs:label "Введите запрос"@ru ;
 .
 v-fs:ChooseType
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Choose type to search"@en ;
   rdfs:label "Выберите тип объекта"@ru ;
 .
 v-fs:Params
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "What we search for?"@en ;
   rdfs:label "Что ищем?"@ru ;
 .
 v-fs:Find
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Find"@en ;
   rdfs:label "Найти"@ru ;
 .
 v-fs:Results
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "What we found"@en ;
   rdfs:label "Что нашли"@ru ;
 .
 v-fs:Empty
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Empty!"@en ;
   rdfs:label "Пусто!"@ru ;
 .
 v-fs:NothingFound
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Nothing found for your request. Please refine the query."@en ;
   rdfs:label "По Вашему запросу ничего не найдено. Пожалуйста, уточните запрос."@ru ;
 .
 v-fs:SetResultsTable
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Set results table"@en ;
   rdfs:label "Настройте таблицу отображения результатов"@ru ;
 .
 v-fs:GenericTable
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Generic table"@en ;
   rdfs:label "Таблица по-умолчанию"@ru ;
 .
 v-fs:CustomTable
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Custom table"@en ;
   rdfs:label "Таблица для отображения"@ru ;
 .
 v-fs:DragColumns
-  rdf:type v-b:Bundle ;
+  rdf:type v-s:Bundle ;
   rdfs:label "Drag columns from generic table"@en ;
   rdfs:label "Перетащите столбцы из таблицы по-умолчанию."@ru ;
 .
@@ -291,7 +278,7 @@ v-fs:SearchTemplate
 		*/
 		var regsHolder = $("#saved", template),
 			asp = veda.user.aspect,
-			regs = asp["v-asp:hasRegistry"];
+			regs = asp["v-s:hasRegistry"];
 		if (regs) {
 			regs.map( function (reg) {
 				var cont = $("<li>").appendTo(regsHolder);
@@ -405,9 +392,9 @@ v-fs:FulltextRequestTemplate
 			<veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
 			<br>
 			<div>
-				<button type="button" class="action btn btn-primary view -edit" id="edit" about="v-b:Edit" property="rdfs:label"/>
-				<button type="button" class="action btn btn-success -view edit" id="save" about="v-b:Save" property="rdfs:label"/>
-				<button type="button" class="action btn btn-link view -edit" id="delete" about="v-b:Delete" property="rdfs:label"/>
+				<button type="button" class="action btn btn-primary view -edit" id="edit" about="v-s:Edit" property="rdfs:label"/>
+				<button type="button" class="action btn btn-success -view edit" id="save" about="v-s:Save" property="rdfs:label"/>
+				<button type="button" class="action btn btn-link view -edit" id="delete" about="v-s:Delete" property="rdfs:label"/>
 			</div>
 		</div>
 	</div>
@@ -455,11 +442,11 @@ v-fs:FulltextRequestTemplate
 	// Update user aspect when search request was saved
 	function updateAspect() {
 		if (self["v-s:deleted"][0] == true) {
-			asp["v-asp:hasRegistry"] = asp["v-asp:hasRegistry"].filter( function (i) { return i.id !== self.id;});
+			asp["v-s:hasRegistry"] = asp["v-s:hasRegistry"].filter( function (i) { return i.id !== self.id;});
 		} else if (
-			!asp["v-asp:hasRegistry"].filter( function (i) {return i.id === self.id;}).length
+			!asp["v-s:hasRegistry"].filter( function (i) {return i.id === self.id;}).length
 		) {
-			asp["v-asp:hasRegistry"] = asp["v-asp:hasRegistry"].concat(self);
+			asp["v-s:hasRegistry"] = asp["v-s:hasRegistry"].concat(self);
 		}
 		asp.save();
 	}
@@ -653,7 +640,7 @@ v-fs:AttributiveRequestTemplate
 				</table>
 			</div>
 			<br>
-			<button class="btn btn-danger" id="clear-custom" about="v-b:Reset" property="rdfs:label"></button>
+			<button class="btn btn-danger" id="clear-custom" about="v-s:Reset" property="rdfs:label"></button>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="results-at">
 			<div id="search-results">
@@ -675,9 +662,9 @@ v-fs:AttributiveRequestTemplate
 			<veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
 			<br>
 			<div>
-				<button type="button" class="action btn btn-primary view -edit" id="edit" about="v-b:Edit" property="rdfs:label"/>
-				<button type="button" class="action btn btn-success -view edit" id="save" about="v-b:Save" property="rdfs:label"/>
-				<button type="button" class="action btn btn-link view -edit" id="delete" about="v-b:Delete" property="rdfs:label"/>
+				<button type="button" class="action btn btn-primary view -edit" id="edit" about="v-s:Edit" property="rdfs:label"/>
+				<button type="button" class="action btn btn-success -view edit" id="save" about="v-s:Save" property="rdfs:label"/>
+				<button type="button" class="action btn btn-link view -edit" id="delete" about="v-s:Delete" property="rdfs:label"/>
 			</div>
 		</div>
 	</div>
@@ -822,11 +809,11 @@ v-fs:AttributiveRequestTemplate
 	// Update user aspect when search request was saved
 	function updateAspect() {
 		if (self["v-s:deleted"][0] == true) {
-			asp["v-asp:hasRegistry"] = asp["v-asp:hasRegistry"].filter( function (i) { return i.id !== self.id;});
+			asp["v-s:hasRegistry"] = asp["v-s:hasRegistry"].filter( function (i) { return i.id !== self.id;});
 		} else if (
-			!asp["v-asp:hasRegistry"].filter( function (i) {return i.id === self.id;}).length
+			!asp["v-s:hasRegistry"].filter( function (i) {return i.id === self.id;}).length
 		) {
-			asp["v-asp:hasRegistry"] = asp["v-asp:hasRegistry"].concat(self);
+			asp["v-s:hasRegistry"] = asp["v-s:hasRegistry"].concat(self);
 		}
 		asp.save();
 	}
@@ -940,6 +927,6 @@ v-fs:AttributiveRequestTemplate
 .
 v-fs:SearchMembership
   rdf:type v-s:Membership ;
-  v-s:memberOf v-a:ReadResGroup ;
+  v-s:memberOf cfg:ReadResGroup ;
   v-s:resource v-fs:Search ;
 .

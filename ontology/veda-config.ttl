@@ -1,0 +1,227 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+
+@prefix vsrv: <http://semantic-machines.com/veda/veda-server/> .
+<http://semantic-machines.com/veda/veda-server>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda server properties ontology"@en ;
+  rdfs:label "Онтология настроек сервера системы Веда"@ru ;
+#  owl:versionInfo "1.0" ;
+  v-s:loadPriority 2 ;
+.
+
+v-s:Node
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Node"@en ;
+  rdfs:label "Нода"@ru ;
+.
+
+v-s:count_thread
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Node ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "количество процессов для паралельной обработки"@ru ;
+  rdfs:label "count thread"@en ;
+  rdfs:range xsd:integer ;
+.    
+
+v-s:push_individual_by_event
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Node ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "push individual by event" ;
+  rdfs:range v-s:Connection ;
+.    
+
+v-s:send_an_email_individual_by_event
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Node ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "send an e-mail individual by event" ;
+  rdfs:range v-s:Connection ;
+.    
+
+v-s:name
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Node, v-s:Connection ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "имя"@ru ;
+  rdfs:label "name"@en ;
+  rdfs:range xsd:string ;
+.    
+
+v-s:checktime_onto_files
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Node ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "период между проверками изменений в файлах онтологии, секунд"@ru ;
+  rdfs:label "checktime for onto files, sec."@en ;
+  rdfs:range xsd:integer ;
+.    
+
+v-s:listener
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Node ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "слушатель канала"@ru ;
+  rdfs:label "listener channel"@en ;
+  rdfs:range v-s:Connection ;
+.
+
+v-s:jsvm_node
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Node ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "адрес ноды JavaScript VM" ;
+  rdfs:range v-s:Connection ;
+.
+
+v-s:fts_node
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Node ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "адрес ноды Full Text Search" ;
+  rdfs:range v-s:Connection ;
+.
+
+v-s:write_storage_node
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Node ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "адрес write ноды" ;
+  rdfs:range v-s:Connection ;
+.
+
+v-s:Connection
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Connection"@en ;
+  rdfs:label "Соединение"@ru ;        
+.
+    
+v-s:transport
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Connection ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "слушатель канала"@ru ;
+  rdfs:label "listener channel"@en ;
+  rdfs:range xsd:string ;
+.    
+
+v-s:point
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Connection ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "точка подключения"@ru ;
+  rdfs:label "connection point"@en ;
+  rdfs:range xsd:string ;
+.    
+
+v-s:host
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Connection ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "host";
+  rdfs:range xsd:string ;
+.    
+
+v-s:port
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Connection ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "port";
+  rdfs:range xsd:integer ;
+.    
+
+v-s:sql_database
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Connection ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "database name" ;
+  rdfs:range xsd:string ;
+.    
+
+v-s:amqp_vhost
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Connection ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "amqp vhost" ;
+  rdfs:range xsd:string ;
+.    
+
+v-s:amqp_routingkey
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Connection ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "amqp routing key" ;
+  rdfs:range xsd:string ;
+.    
+
+v-s:login
+  rdfs:domain v-s:Connection ;
+.    
+
+v-s:password
+  rdfs:domain v-s:Connection ;
+.    
+
+v-s:queue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Connection ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "queue" ;
+  rdfs:range xsd:string ;
+.    
+
+v-s:role
+  rdf:type owl:DatatypeProperty ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:domain v-s:Node ;
+  rdfs:label "node_role" ;
+  rdfs:range xsd:string ;
+.    
+
+v-s:useTemplate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Connection ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "использовать шаблон" ;
+  rdfs:range v-s:TemplateForText ;
+.
+
+v-s:AppInfo
+  rdf:type owl:Class ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Application info"@en ;
+  rdfs:label "Информация о приложении"@ru ;
+.
+
+v-s:appBuildVersion
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AppInfo ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "версия приложения"@ru ;
+  rdfs:label "version of the application"@en ;
+  rdfs:range xsd:string ;
+.
+
+v-s:appBuildDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AppInfo ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "дата сборки приложения"@ru ;
+  rdfs:label "build date of the application"@en ;
+  rdfs:range xsd:dateTime ;
+.
+
+v-s:appUrl
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AppInfo ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "app url"@ru ;
+  rdfs:range xsd:string ;
+.

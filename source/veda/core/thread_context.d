@@ -121,7 +121,7 @@ class PThreadContext : Context
         {
             try
             {
-                ticket = create_new_ticket("v-a:VedaSystem");
+                ticket = create_new_ticket("cfg:VedaSystem");
             }
             catch (Exception ex)
             {
@@ -130,7 +130,7 @@ class PThreadContext : Context
             }
 
             if (ticket.user_uri == "")
-                ticket.user_uri = "v-a:VedaSystem";
+                ticket.user_uri = "cfg:VedaSystem";
 
             set_global_systicket(ticket);
         }
@@ -148,8 +148,8 @@ class PThreadContext : Context
             if (node.getStatus() != ResultCode.OK)
                 node = Individual.init;
 
-            set_g_external_write_storage_url(node.getFirstLiteral("vsrv:write_storage_node"));
-//            external_js_vm         = node.getFirstLiteral("vsrv:jsvm_node");
+            set_g_external_write_storage_url(node.getFirstLiteral("v-s:write_storage_node"));
+//            external_js_vm         = node.getFirstLiteral("v-s:jsvm_node");
         }
         return node;
     }
@@ -174,6 +174,7 @@ class PThreadContext : Context
     private void reload_scripts()
     {
         Script[] scripts;
+        string[] script_file_name;
         writeln("-");
 
         foreach (path; [ "./public/js/server", "./public/js/common" ])
@@ -188,13 +189,17 @@ class PThreadContext : Context
                     auto str_js        = cast(ubyte[]) read(o.name);
                     auto str_js_script = script_vm.compile(cast(char *)(cast(char[])str_js ~ "\0"));
                     if (str_js_script !is null)
+                    {
                         scripts ~= str_js_script;
+                        script_file_name ~= o.name;
+                    }
                 }
             }
         }
 
-        foreach (script; scripts)
+        foreach (idx, script; scripts)
         {
+            writeln("init script=", script_file_name[ idx ]);
             script_vm.run(script);
         }
     }
@@ -509,7 +514,7 @@ class PThreadContext : Context
         }
     }
 
-    private Ticket create_new_ticket(string user_id)
+    public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null)
     {
         Ticket ticket;
 
@@ -523,12 +528,17 @@ class PThreadContext : Context
 
         new_ticket.resources[ rdf__type ] ~= Resource(ticket__Ticket);
 
-        UUID new_id = randomUUID();
-        new_ticket.uri = new_id.toString();
+        if (ticket_id !is null)
+            new_ticket.uri = ticket_id;
+        else
+        {
+            UUID new_id = randomUUID();
+            new_ticket.uri = new_id.toString();
+        }
 
         new_ticket.resources[ ticket__accessor ] ~= Resource(user_id);
         new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
-        new_ticket.resources[ ticket__duration ] ~= Resource("40000");
+        new_ticket.resources[ ticket__duration ] ~= Resource(duration);
 
         if (trace_msg[ 18 ] == 1)
             log.trace("authenticate, ticket__accessor=%s", user_id);
@@ -635,13 +645,22 @@ class PThreadContext : Context
         }
     }
 
+    public string get_ticket_from_storage(string ticket_id)
+    {
+        return tickets_storage.find(ticket_id);
+    }
+
     public Ticket *get_ticket(string ticket_id)
     {
         //StopWatch sw; sw.start;
 
         try
         {
-            Ticket *tt = user_of_ticket.get(ticket_id, null);
+            Ticket *tt;
+            if (ticket_id is null || ticket_id == "")
+                ticket_id = "guest";
+
+            tt = user_of_ticket.get(ticket_id, null);
 
             if (tt is null)
             {
@@ -649,7 +668,7 @@ class PThreadContext : Context
                 int    duration = 0;
 
                 string ticket_str = tickets_storage.find(ticket_id);
-                if (ticket_str !is null && ticket_str.length > 128)
+                if (ticket_str !is null && ticket_str.length > 120)
                 {
                     tt = new Ticket;
                     Individual ticket;

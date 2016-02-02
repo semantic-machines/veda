@@ -1,9 +1,3 @@
-# baseURI: http://semantic-machines.com/veda/veda-schema
-# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns
-# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
-# imports: http://www.w3.org/2000/01/rdf-schema#
-# imports: http://www.w3.org/2002/07/owl 
- 
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -16,14 +10,11 @@
   rdf:type owl:Ontology ;
   rdfs:label "Veda system ontology"@en ;
   rdfs:label "Онтология системы Veda"@ru ;
-  owl:imports <http://www.w3.org/1999/02/22-rdf-syntax-ns> ;
-  owl:imports rdf: ;
-  owl:imports rdfs: ;
-  owl:imports <http://www.w3.org/2002/07/owl> ;
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
 
+### veda-config
 v-s:loadPriority
   rdf:type owl:DatatypeProperty ;
   rdfs:domain owl:Ontology ;
@@ -34,12 +25,15 @@ v-s:loadPriority
   rdfs:range xsd:integer ;
 .
 
-v-s:AND
-  rdf:type v-s:LogicalOperator ;
-  rdfs:label "AND"@en ;
-  rdfs:label "И"@ru ;
+### veda-core
+v-s:Bundle
+  rdf:type owl:Class ;
+  rdfs:label "Bundle"@en ;
+  rdfs:label "Текстовая константа"@ru ;
+  rdfs:subClassOf owl:Thing ;
 .
 
+### veda-org
 v-s:Absence
   rdf:type owl:Class ;
   rdfs:label "Absence"@en ;
@@ -48,6 +42,7 @@ v-s:Absence
   owl:disjointWith v-s:Appointment ;
 .
 
+### veda-core
 v-s:Account
   rdf:type owl:Class ;
   rdfs:label "Account"@en ;
@@ -55,12 +50,14 @@ v-s:Account
   rdfs:subClassOf owl:Thing ;
 .
 
+### veda-core
 v-s:AllResourcesGroup
   rdf:type v-s:Group ;
   rdfs:label "All resources"@ru ;
   rdfs:label "Все ресурсы"@ru ;
 .
 
+### veda-org
 v-s:Appointment
   rdf:type owl:Class ;
   rdfs:label "Appointment"@en ;
@@ -69,6 +66,7 @@ v-s:Appointment
   owl:disjointWith v-s:Absence ;
 .
 
+### veda-core
 v-s:Email
   rdf:type owl:Class ;
   rdfs:label "e-mail"@en ;
@@ -76,48 +74,40 @@ v-s:Email
   rdfs:subClassOf v-s:Deliverable ;
 .
 
+### veda-function-search
 v-s:Ascending
   rdf:type v-s:SortDirection ;
   rdfs:label "Ascending"@en ;
   rdfs:label "По возрастанию"@ru ;
 .
 
-v-s:AuthorizationStatement
-  rdf:type owl:Class ;
-  rdfs:label "Authorization statement"@en ;
-  rdfs:label "Запись авторизации"@ru ;
-  rdfs:subClassOf v-s:Document ;
-.
-
+### veda-ui
 v-s:ClassModel
   rdf:type owl:Class ;
   rdfs:label "Class model"@en ;
   rdfs:label "Модель класса"@ru ;
 .
 
+### veda-core
 v-s:Codelet
   rdf:type owl:Class ;
   rdfs:label "Codelet"@en ;
   rdfs:label "Исполняемый Код"@ru ;
 .
 
+### veda-core
 v-s:Container
   rdf:type owl:Class ;
   rdfs:label "Контейнер"@ru ;
 .
 
+### veda-core
 v-s:TemplateForText
   rdf:type owl:Class ;
   rdfs:label "Шаблон для текста"@ru ;
 .
 
-v-s:DelegationStatement
-  rdf:type owl:Class ;
-  rdfs:label "Delegation record"@en ;
-  rdfs:label "Запись о делегировании"@ru ;
-  rdfs:subClassOf v-s:AuthorizationStatement ;
-.
-
+### veda-org
 v-s:Department
   rdf:type owl:Class ;
   rdfs:comment "Department"@en ;
@@ -129,11 +119,14 @@ v-s:Department
   owl:disjointWith v-s:Position ;
 .
 
+### veda-function-search
 v-s:Descending
   rdf:type v-s:SortDirection ;
   rdfs:label "Descending"@en ;
   rdfs:label "По убыванию"@ru ;
 .
+
+### veda-generic
 v-s:Dictionary
   rdf:type owl:Class ;
   rdfs:comment "Dictionary"@en ;
@@ -144,6 +137,7 @@ v-s:Dictionary
   rdfs:subClassOf v-s:Document ;
 .
 
+### veda-generic
 v-s:Document
   rdf:type owl:Class ;
   rdfs:comment "A document"@en ;
@@ -155,18 +149,22 @@ v-s:Document
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Exportable ;
 .
+
+### veda-function-search
 v-s:Empty
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "Empty"@en ;
   rdfs:label "Пусто"@ru ;
 .
 
+### veda-core
 v-s:Event
   rdf:type owl:Class ;
   rdfs:label "Event"@en ;
   rdfs:label "Событие"@ru ;
 .
 
+### veda-core
 v-s:File
   rdf:type owl:Class ;
   rdfs:comment "File description"@en ;
@@ -176,6 +174,8 @@ v-s:File
   rdfs:label "Файл"@ru ;
   rdfs:subClassOf v-s:Exportable ;  
 .
+
+### veda-core
 v-s:Group
   rdf:type owl:Class ;
   rdfs:comment "Group of resources"@en ;
@@ -185,6 +185,7 @@ v-s:Group
   rdfs:subClassOf owl:Thing ;
 .
 
+### veda-org
 v-s:HRRecord
   rdf:type owl:Class ;
   rdfs:label "HR record"@en ;
@@ -192,43 +193,43 @@ v-s:HRRecord
   rdfs:subClassOf v-s:Document ;
 .
 
+### veda-function-search
 v-s:LastMonth
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "Last month"@en ;
   rdfs:label "Прошлый месяц"@ru ;
 .
 
+### veda-function-search
 v-s:LastQuarter
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "Last quarter"@en ;
   rdfs:label "Прошлый квартал"@ru ;
 .
 
+### veda-function-search
 v-s:LastWeek
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "Last week"@en ;
   rdfs:label "Прошлая неделя"@ru ;
 .
 
+### veda-function-search
 v-s:LastYear
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "Last year"@en ;
   rdfs:label "Прошлый год"@ru ;
 .
 
+### veda-generic
 v-s:Level
   rdf:type owl:Class ;
   rdfs:label "Level"@en ;
   rdfs:label "Уровень"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
 .
-v-s:LogicalOperator
-  rdf:type owl:Class ;
-  rdfs:label "Logical operator"@en ;
-  rdfs:label "Логический оператор"@ru ;
-  rdfs:subClassOf owl:Thing ;
-.
 
+### veda-core
 v-s:Membership
   rdf:type owl:Class ;
   rdfs:label "Membership"@en ;
@@ -236,24 +237,14 @@ v-s:Membership
   rdfs:subClassOf owl:Thing ;
 .
 
-v-s:NOT
-  rdf:type v-s:LogicalOperator ;
-  rdfs:label "NOT"@en ;
-  rdfs:label "НЕ"@ru ;
-.
-
+### veda-function-search
 v-s:NotEmpty
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "Not empty"@en ;
   rdfs:label "Не пусто"@ru ;
 .
 
-v-s:OR
-  rdf:type v-s:LogicalOperator ;
-  rdfs:label "OR"@en ;
-  rdfs:label "ИЛИ"@ru ;
-.
-
+### veda-org
 v-s:Organization
   rdf:type owl:Class ;
   rdfs:comment "An organization"@en ;
@@ -266,6 +257,7 @@ v-s:Organization
   owl:disjointWith v-s:Position ;
 .
 
+### veda-org
 v-s:OrganizationUnit
   rdf:type owl:Class ;
   rdfs:comment "An organization unit (organization, department, business unit etc.)"@en ;
@@ -276,15 +268,16 @@ v-s:OrganizationUnit
   rdfs:subClassOf v-s:Exportable ;
 .
 
+### veda-core
 v-s:PermissionStatement
   rdf:type owl:Class ;
   rdfs:comment "Permissions record defines access rigths for individuals of one class to individuals of another class."@en ;
   rdfs:comment "Запись о выдаче прав описывает права индивидов одного класса по отношению к индивидам другого класса."@ru ;
   rdfs:label "Permissions record"@en ;
   rdfs:label "Запись о выдаче прав"@ru ;
-  rdfs:subClassOf v-s:AuthorizationStatement ;
 .
 
+### veda-core
 v-s:Person
   rdf:type owl:Class ;
   rdfs:comment "A person." ;
@@ -295,6 +288,8 @@ v-s:Person
   rdfs:subClassOf owl:Thing ;
   rdfs:subClassOf v-s:Exportable ;  
 .
+
+### veda-org
 v-s:Position
   rdf:type owl:Class ;
   rdfs:label "Position"@en ;
@@ -304,6 +299,8 @@ v-s:Position
   owl:disjointWith v-s:Department ;
   owl:disjointWith v-s:Organization ;
 .
+
+### veda-function-search
 v-s:SavedSearch
   rdf:type owl:Class ;
   rdfs:label "Saved search"@en ;
@@ -311,98 +308,134 @@ v-s:SavedSearch
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Journaling ;
 .
+
+### veda-function-search
 v-s:SearchRequest
   rdf:type owl:Class ;
   rdfs:label "Search request"@en ;
   rdfs:label "Поисковый запрос"@ru ;
   rdfs:subClassOf v-s:Document ;
 .
+
+### veda-function-search
 v-s:SearchRestriction
   rdf:type owl:Class ;
   rdfs:label "Search restriction"@en ;
   rdfs:label "Ограничение поиска"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
+
+### veda-function-search
 v-s:SortDirection
   rdf:type owl:Class ;
   rdfs:label "Sort direction"@en ;
   rdfs:label "Направление сортировки"@ru ;
 .
+
+### veda-function-search
 v-s:SortOrder
   rdf:type owl:Class ;
   rdfs:label "Sort order"@en ;
   rdfs:label "Порядок сортировки"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
+
+### veda-function-search
 v-s:SpecialSearchValues
   rdf:type owl:Class ;
   rdfs:label "Logical operator"@en ;
   rdfs:label "Логический оператор"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
+
+### veda-workflow
 v-s:StatusWorkflow
   rdf:type owl:Class ;
   rdfs:label "StatusWorkflow"@en ;
   rdfs:label "Статус документооборота"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
 .
+
+### veda-workflow
 v-s:ToBeSent
   rdf:type v-s:StatusWorkflow ;
   rdfs:label "To be sent"@en ;
   rdfs:label "Ожидает отправки"@ru ;
 .
+
+### veda-workflow
 v-s:IsSent
   rdf:type v-s:StatusWorkflow ;
   rdfs:label "Is sent"@en ;
   rdfs:label "Отправлено"@ru ;
 .
+
+### veda-workflow
 v-s:DoNotSent
   rdf:type v-s:StatusWorkflow ;
   rdfs:label "Do Not Send"@en ;
   rdfs:label "Не отправлять"@ru ;
 .
+
+### veda-workflow
 v-s:ThisMonth
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "This month"@en ;
   rdfs:label "Этот месяц"@ru ;
 .
+
+### veda-function-search
 v-s:ThisQuarter
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "This quarter"@en ;
   rdfs:label "Этот квартал"@ru ;
 .
+
+### veda-function-search
 v-s:ThisWeek
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "This week"@en ;
   rdfs:label "Эта неделя"@ru ;
 .
+
+### veda-function-search
 v-s:ThisYear
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "This year"@en ;
   rdfs:label "Этот год"@ru ;
 .
+
+### veda-function-search
 v-s:Today
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "Today"@en ;
   rdfs:label "Сегодня"@ru ;
 .
+
+### veda-core
 v-s:Transform
   rdf:type owl:Class ;
   rdfs:label "для переливки из старой системы"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
+
+### veda-core
 v-s:Versioned
   rdf:type owl:Class ;
   rdfs:label "Versioned thing"@en ;
   rdfs:label "Версионная сущность"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
+
+### veda-core
 v-s:DraftAllowed
   rdf:type owl:Class ;
   rdfs:label "Draft allowed"@en ;
   rdfs:label "Возможно создание черновика"@ru ;
   rdfs:subClassOf v-s:Versioned ;
 .
+
+### veda-core
 v-s:hasDraft
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:DraftAllowed ;
@@ -410,6 +443,8 @@ v-s:hasDraft
   rdfs:label "имеет черновик"@ru ;
   rdfs:range v-s:DraftAllowed ;
 .
+
+### veda-core
 v-s:isDraftOf
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:DraftAllowed ;
@@ -418,6 +453,7 @@ v-s:isDraftOf
   rdfs:range v-s:DraftAllowed ;
 .
 
+### veda-core
 v-s:Exportable
   rdf:type owl:Class ;
   rdfs:label "Exportable thing"@en ;
@@ -425,25 +461,31 @@ v-s:Exportable
   rdfs:subClassOf owl:Thing ;
 .
 
+### veda-core
 v-s:Deliverable
   rdf:type owl:Class ;
   rdfs:label "Сущность подлежащая доставке" ;
   rdfs:label "Exportable thing"@en ;
-  rdfs:label "Выгружаемая сущность"@ru ;
+  rdfs:label "Экспортируемая сущность"@ru ;
   rdfs:subClassOf owl:Thing ;
 .
 
+### veda-generic
 v-s:YesNo
   rdf:type owl:Class ;
   rdfs:label "Yes No"@en ;
   rdfs:label "Да Нет"@ru ;
   rdfs:subClassOf v-s:Dictionary ;
 .
+
+### veda-function-search
 v-s:Yesterday
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "Yesterday"@en ;
   rdfs:label "Вчера"@ru ;
 .
+
+### veda-core
 v-s:actualVersion
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Versioned ;
@@ -451,6 +493,8 @@ v-s:actualVersion
   rdfs:label "актуальная версия"@ru ;
   rdfs:range v-s:Versioned ;
 .
+
+### veda-generic
 v-s:alternativeTitle
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Level ;
@@ -458,6 +502,8 @@ v-s:alternativeTitle
   rdfs:label "описание"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-generic
 v-s:attachment
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Document ;
@@ -465,6 +511,8 @@ v-s:attachment
   rdfs:label "вложение"@ru ;
   rdfs:range v-s:File ;
 .
+
+### veda-core
 v-s:author
   rdf:type owl:ObjectProperty ;
   rdfs:domain rdfs:Resource ;
@@ -473,6 +521,8 @@ v-s:author
   rdfs:label "автор"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
+### veda-core
 v-s:birthday
   rdf:type owl:DatatypeProperty ;
   rdf:type owl:FunctionalProperty ;
@@ -484,6 +534,8 @@ v-s:birthday
   rdfs:label "день рождения"@ru ;
   rdfs:range xsd:dateTime ;
 .
+
+### veda-ui
 v-s:hasImage
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Person ;
@@ -492,6 +544,8 @@ v-s:hasImage
   rdfs:label "image"@en ;
   rdfs:range v-s:File ;
 .
+
+### veda-ui
 v-s:hasLogo
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-s: ;
@@ -499,6 +553,8 @@ v-s:hasLogo
   rdfs:label "logo"@en ;
   rdfs:range v-s:File ;
 .
+
+### veda-core
 v-s:canCreate
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
@@ -506,6 +562,8 @@ v-s:canCreate
   rdfs:label "можно создавать"@ru ;
   rdfs:range xsd:boolean ;
 .
+
+### veda-core
 v-s:canDelete
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
@@ -513,6 +571,8 @@ v-s:canDelete
   rdfs:label "можно удалять"@ru ;
   rdfs:range xsd:boolean ;
 .
+
+### veda-core
 v-s:canRead
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
@@ -520,6 +580,8 @@ v-s:canRead
   rdfs:label "можно читать"@ru ;
   rdfs:range xsd:boolean ;
 .
+
+### veda-core
 v-s:canUpdate
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
@@ -527,6 +589,8 @@ v-s:canUpdate
   rdfs:label "можно изменять"@ru ;
   rdfs:range xsd:boolean ;
 .
+
+### veda-org
 v-s:childUnit
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
@@ -535,48 +599,64 @@ v-s:childUnit
   rdfs:range v-s:OrganizationUnit ;
   owl:inverseOf v-s:parentUnit ;
 .
+
+### veda-org
 v-s:city
   rdf:type owl:DatatypeProperty ;
   rdfs:label "city"@en ;
   rdfs:label "город"@ru ;
   rdfs:range xsd:string ;
 .
+
+### выпилить
 v-s:comment
   rdf:type owl:DatatypeProperty ;
   rdfs:label "comment"@en ;
   rdfs:label "комментарий"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-org
 v-s:contactInfo
   rdf:type owl:DatatypeProperty ;
   rdfs:label "contact info"@en ;
   rdfs:label "контактные данные"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-generic
 v-s:contributor
   rdf:type owl:ObjectProperty ;
   rdfs:label "contributor"@en ;
   rdfs:label "содействующий"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
+### veda-generic
 v-s:controller
   rdf:type owl:ObjectProperty ;
   rdfs:label "controller"@en ;
   rdfs:label "контроллер"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
+### veda-generic
 v-s:count
   rdf:type owl:DatatypeProperty ;
   rdfs:label "count"@en ;
   rdfs:label "количество"@ru ;
   rdfs:range xsd:integer ;
 .
+
+### veda-generic
 v-s:country
   rdf:type owl:DatatypeProperty ;
   rdfs:label "country"@en ;
   rdfs:label "страна"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-core
 v-s:created
   rdf:type owl:DatatypeProperty ;
   rdfs:domain rdfs:Resource ;
@@ -584,24 +664,32 @@ v-s:created
   rdfs:label "дата создания"@ru ;
   rdfs:range xsd:dateTime ;
 .
+
+### veda-generic
 v-s:dateBack
   rdf:type owl:DatatypeProperty ;
   rdfs:label "date back"@en ;
   rdfs:label "дата возврата"@ru ;
   rdfs:range xsd:dateTime ;
 .
+
+### veda-generic
 v-s:dateFact
   rdf:type owl:DatatypeProperty ;
   rdfs:label "date of fact"@en ;
   rdfs:label "дата фактическая"@ru ;
   rdfs:range xsd:dateTime ;
 .
+
+### veda-generic
 v-s:dateFrom
   rdf:type owl:DatatypeProperty ;
   rdfs:label "date start"@en ;
   rdfs:label "дата начала"@ru ;
   rdfs:range xsd:dateTime ;
 .
+
+### veda-generic
 v-s:datePlan
   rdf:type owl:DatatypeProperty ;
   rdfs:label "date plan"@en ;
@@ -609,6 +697,7 @@ v-s:datePlan
   rdfs:range xsd:dateTime ;
 .
 
+### veda-generic
 v-s:published
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Document ;
@@ -617,6 +706,7 @@ v-s:published
   rdfs:range xsd:dateTime ;
 .
 
+### veda-generic
 v-s:publisher
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Document ;
@@ -625,32 +715,23 @@ v-s:publisher
   rdfs:range v-s:Appointment ;
 .
 
+### veda-generic
 v-s:dateTo
   rdf:type owl:DatatypeProperty ;
   rdfs:label "date finish"@en ;
   rdfs:label "дата окончания"@ru ;
   rdfs:range xsd:dateTime ;
 .
+
+### veda-generic
 v-s:decision
   rdf:type owl:DatatypeProperty ;
   rdfs:label "decision"@en ;
   rdfs:label "решение"@ru ;
   rdfs:range xsd:string ;
 .
-v-s:delegateTo
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:DelegationStatement ;
-  rdfs:label "delegate to"@en ;
-  rdfs:label "кому делегирует"@ru ;
-  rdfs:range v-s:Person ;
-.
-v-s:delegates
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:DelegationStatement ;
-  rdfs:label "who delegates"@en ;
-  rdfs:label "кто делегирует"@ru ;
-  rdfs:range v-s:OrganizationUnit ;
-.
+
+### veda-core
 v-s:deleted
   rdf:type owl:DatatypeProperty ;
   rdfs:domain rdfs:Resource ;
@@ -658,24 +739,32 @@ v-s:deleted
   rdfs:label "удален"@ru ;
   rdfs:range xsd:boolean ;
 .
+
+### veda-generic
 v-s:description
   rdf:type owl:ObjectProperty ;
   rdfs:label "description"@en ;
   rdfs:label "описание"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-core
 v-s:destClass
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Transform ;
   rdfs:label "название класса, в который вписываем"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-core
 v-s:destProperty
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Transform ;
   rdfs:label "название свойства, в которое вписываем"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-function-search
 v-s:direction
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:SortOrder ;
@@ -683,12 +772,16 @@ v-s:direction
   rdfs:label "направление сортировки"@ru ;
   rdfs:range v-s:SortDirection ;
 .
+
+### veda-generic
 v-s:duration
   rdf:type owl:DatatypeProperty ;
   rdfs:label "duration"@en ;
   rdfs:label "длительность"@ru ;
   rdfs:range xsd:integer ;
 .
+
+### veda-org
 v-s:employee
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:HRRecord ;
@@ -696,15 +789,18 @@ v-s:employee
   rdfs:label "работник"@ru ;
   rdfs:range v-s:Person ;
 .
+
+### veda-org
 v-s:endTime
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:DelegationStatement ;
   rdfs:domain v-s:HRRecord ;
   rdfs:domain v-s:PermissionStatement ;
   rdfs:label "end time"@en ;
   rdfs:label "время окончания"@ru ;
   rdfs:range xsd:dateTime ;
 .
+
+### veda-generic
 v-s:fileDescription
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:File ;
@@ -712,6 +808,8 @@ v-s:fileDescription
   rdfs:label "описание файла"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-generic
 v-s:fileName
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:File ;
@@ -719,6 +817,8 @@ v-s:fileName
   rdfs:label "имя файла"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-generic
 v-s:fileSize
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:File ;
@@ -726,6 +826,8 @@ v-s:fileSize
   rdfs:label "размер файла"@ru ;
   rdfs:range xsd:integer ;
 .
+
+### veda-generic
 v-s:fileThumbnail
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:File ;
@@ -733,6 +835,8 @@ v-s:fileThumbnail
   rdfs:label "миниатюра"@ru ;
   rdfs:range v-s:File ;
 .
+
+### veda-generic
 v-s:filePath
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:File ;
@@ -740,6 +844,8 @@ v-s:filePath
   rdfs:label "file path"@en ;
   rdfs:range xsd:string ;
 .
+
+### veda-generic
 v-s:fileUri
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:File ;
@@ -748,6 +854,7 @@ v-s:fileUri
   rdfs:range xsd:string ;
 .
 
+### veda-core
 v-s:filter
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Event ;
@@ -756,6 +863,7 @@ v-s:filter
   rdfs:range rdfs:Resource ;
 .
 
+### veda-core
 v-s:firstName
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "The first name of a person."@en ;
@@ -767,6 +875,7 @@ v-s:firstName
   rdfs:range xsd:string ;
 .
 
+### veda-generic
 v-s:foreignRegistrationDate
   rdf:type owl:DatatypeProperty ;
   rdfs:label "foreign registration date"@en ;
@@ -774,6 +883,7 @@ v-s:foreignRegistrationDate
   rdfs:range xsd:date ;
 .
 
+### veda-generic
 v-s:foreignRegistrationNumber
   rdf:type owl:DatatypeProperty ;
   rdfs:label "foreign registration number"@en ;
@@ -781,6 +891,7 @@ v-s:foreignRegistrationNumber
   rdfs:range xsd:string ;
 .
 
+### veda-core
 v-s:fullUrl
   rdf:type owl:DatatypeProperty ;
   rdfs:domain owl:Ontology ;
@@ -789,6 +900,7 @@ v-s:fullUrl
   rdfs:range xsd:string ;
 .
 
+### veda-core
 v-s:hasAccount
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
@@ -798,6 +910,7 @@ v-s:hasAccount
   rdfs:range v-s:Account ;
 .
 
+### veda-generic
 v-s:hasAddDoc
   rdf:type owl:ObjectProperty ;
   rdfs:label "add document"@en ;
@@ -805,6 +918,7 @@ v-s:hasAddDoc
   rdfs:range v-s:Document ;
 .
 
+### veda-generic
 v-s:hasAppointmentCopy
   rdf:type owl:ObjectProperty ;
   rdfs:label "appointment copy"@en ;
@@ -812,6 +926,7 @@ v-s:hasAppointmentCopy
   rdfs:range v-s:Appointment ;
 .
 
+### veda-org
 v-s:hasAppointment
   rdf:type owl:ObjectProperty ;
   rdfs:label "appointment"@en ;
@@ -820,6 +935,7 @@ v-s:hasAppointment
   rdfs:domain v-s:Person ;
 .
 
+### veda-org
 v-s:defaultAppointment
   rdf:type owl:ObjectProperty ;
   rdfs:label "default appointment"@en ;
@@ -828,6 +944,7 @@ v-s:defaultAppointment
   rdfs:domain v-s:Person ;
 .
 
+### veda-generic
 v-s:hasAppointmentFrom
   rdf:type owl:ObjectProperty ;
   rdfs:label "appointment from"@en ;
@@ -835,6 +952,7 @@ v-s:hasAppointmentFrom
   rdfs:range v-s:Appointment ;
 .
 
+### veda-generic
 v-s:hasAppointmentTo
   rdf:type owl:ObjectProperty ;
   rdfs:label "appointment to"@en ;
@@ -842,6 +960,7 @@ v-s:hasAppointmentTo
   rdfs:range v-s:Appointment ;
 .
 
+### veda-generic
 v-s:hasBaseDoc
   rdf:type owl:ObjectProperty ;
   rdfs:label "base doc"@en ;
@@ -849,6 +968,7 @@ v-s:hasBaseDoc
   rdfs:range v-s:Document ;
 .
 
+### veda-generic
 v-s:hasChief
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
@@ -857,6 +977,7 @@ v-s:hasChief
   rdfs:range v-s:Appointment ;
 .
 
+### veda-generic
 v-s:hasDeveloper
   rdf:type owl:ObjectProperty ;
   rdfs:label "developer"@en ;
@@ -864,6 +985,7 @@ v-s:hasDeveloper
   rdfs:range v-s:Appointment ;
 .
 
+### veda-generic
 v-s:hasFunctionalChief
   rdf:type owl:ObjectProperty ;
   rdfs:label "functional chief"@en ;
@@ -871,6 +993,7 @@ v-s:hasFunctionalChief
   rdfs:range v-s:Appointment ;
 .
 
+### veda-generic
 v-s:hasHeadOfMember
   rdf:type owl:ObjectProperty ;
   rdfs:label "head of member"@en ;
@@ -878,6 +1001,7 @@ v-s:hasHeadOfMember
   rdfs:range v-s:Appointment ;
 .
 
+### veda-generic
 v-s:hasLevel
   rdf:type owl:ObjectProperty ;
   rdfs:label "level"@en ;
@@ -885,6 +1009,7 @@ v-s:hasLevel
   rdfs:range v-s:Level ;
 .
 
+### veda-generic
 v-s:hasManager
   rdf:type owl:ObjectProperty ;
   rdfs:label "manager"@en ;
@@ -892,6 +1017,7 @@ v-s:hasManager
   rdfs:range v-s:Appointment ;
 .
 
+### veda-generic
 v-s:hasMember
   rdf:type owl:ObjectProperty ;
   rdfs:label "member"@en ;
@@ -899,6 +1025,7 @@ v-s:hasMember
   rdfs:range v-s:Appointment ;
 .
 
+### veda-generic
 v-s:hasParentLink
   rdf:type owl:ObjectProperty ;
   rdfs:label "parent document"@en ;
@@ -906,6 +1033,7 @@ v-s:hasParentLink
   rdfs:range rdfs:Resource ;
 .
 
+### veda-generic
 v-s:hasRecipient
   rdf:type owl:ObjectProperty ;
   rdfs:label "recipient"@en ;
@@ -913,6 +1041,7 @@ v-s:hasRecipient
   rdfs:range v-s:Appointment ;
 .
 
+### veda-core
 v-s:hasStatusWorkflow
   rdf:type owl:ObjectProperty ;
   rdfs:label "status workflow"@en ;
@@ -922,6 +1051,7 @@ v-s:hasStatusWorkflow
   rdfs:subPropertyOf v-s:status ;
 .
 
+### veda-generic
 v-s:hasYesNo
   rdf:type owl:ObjectProperty ;
   rdfs:label "yes no"@en ;
@@ -929,6 +1059,7 @@ v-s:hasYesNo
   rdfs:range v-s:YesNo ;
 .
 
+### выпилить
 v-s:label
   rdf:type owl:DatatypeProperty ;
   rdfs:label "label"@en ;
@@ -936,6 +1067,7 @@ v-s:label
   rdfs:range xsd:string ;
 .
 
+### veda-core
 v-s:lastName
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "The last name of a person."@en ;
@@ -947,6 +1079,7 @@ v-s:lastName
   rdfs:range xsd:string ;
 .
 
+### veda-generic
 v-s:legalAddress
   rdf:type owl:DatatypeProperty ;
   rdfs:label "legal address"@en ;
@@ -954,6 +1087,7 @@ v-s:legalAddress
   rdfs:range xsd:string ;
 .
 
+### veda-core
 v-s:login
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Account ;
@@ -962,6 +1096,7 @@ v-s:login
   rdfs:range xsd:string ;
 .
 
+### veda-core
 v-s:mailbox
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "Mailbox"@en ;
@@ -973,6 +1108,7 @@ v-s:mailbox
   rdfs:range xsd:string ;
 .
 
+### veda-core
 v-s:memberOf
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Membership ;
@@ -981,6 +1117,7 @@ v-s:memberOf
   rdfs:range v-s:Group ;
 .
 
+### veda-core
 v-s:middleName
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Person ;
@@ -989,6 +1126,7 @@ v-s:middleName
   rdfs:range xsd:string ;
 .
 
+### veda-core
 v-s:nextVersion
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Versioned ;
@@ -997,6 +1135,7 @@ v-s:nextVersion
   rdfs:range v-s:Versioned ;
 .
 
+### veda-org
 v-s:occupation
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Appointment ;
@@ -1005,6 +1144,7 @@ v-s:occupation
   rdfs:range v-s:Position ;
 .
 
+### veda-org
 v-s:official
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Appointment ;
@@ -1013,6 +1153,7 @@ v-s:official
   rdfs:range xsd:boolean ;
 .
 
+### выпилить
 v-s:onProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:SearchRestriction ;
@@ -1022,6 +1163,7 @@ v-s:onProperty
   rdfs:range owl:ObjectProperty ;
 .
 
+### выпилить
 v-s:operator
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:SearchRestriction ;
@@ -1030,6 +1172,7 @@ v-s:operator
   rdfs:range v-s:LogicalOperator ;
 .
 
+### veda-function-search
 v-s:orderBy
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:SortOrder ;
@@ -1039,6 +1182,7 @@ v-s:orderBy
   rdfs:range owl:ObjectProperty ;
 .
 
+### veda-core
 v-s:owner
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Account ;
@@ -1049,6 +1193,7 @@ v-s:owner
   rdfs:range v-s:Person ;
 .
 
+### veda-generic
 v-s:initiator
   rdf:type owl:ObjectProperty ;
   rdfs:label "initiator"@en ;
@@ -1057,6 +1202,7 @@ v-s:initiator
   rdfs:range v-s:Person ;
 .
 
+### veda-org
 v-s:parentUnit
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
@@ -1067,6 +1213,7 @@ v-s:parentUnit
   owl:inverseOf v-s:childUnit ;
 .
 
+### veda-core
 v-s:password
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Account ;
@@ -1075,6 +1222,7 @@ v-s:password
   rdfs:range xsd:string ;
 .
 
+### veda-core
 v-s:permissionObject
   rdf:type owl:ObjectProperty ;
   rdfs:comment "An object to which rights are granted."@en ;
@@ -1085,6 +1233,7 @@ v-s:permissionObject
   rdfs:range rdfs:Resource ;
 .
 
+### veda-core
 v-s:permissionSubject
   rdf:type owl:ObjectProperty ;
   rdfs:comment "Subject whom rights are granted."@en ;
@@ -1095,6 +1244,7 @@ v-s:permissionSubject
   rdfs:range rdfs:Resource ;
 .
 
+### veda-org
 v-s:postalAddress
   rdf:type owl:DatatypeProperty ;
   rdfs:label "postal address"@en ;
@@ -1102,6 +1252,7 @@ v-s:postalAddress
   rdfs:range xsd:string ;
 .
 
+### veda-core
 v-s:subject
   rdf:type owl:DatatypeProperty ;
   rdfs:label "subject" ;
@@ -1109,6 +1260,7 @@ v-s:subject
   rdfs:range xsd:string ;
 .
 
+### veda-core
 v-s:messageBody
   rdf:type owl:DatatypeProperty ;
   rdfs:label "message body" ;
@@ -1116,6 +1268,7 @@ v-s:messageBody
   rdfs:range xsd:string ;
 .
 
+### veda-core
 v-s:templateBody
   rdf:type owl:DatatypeProperty ;
   rdfs:label "тело шаблона" ;
@@ -1123,6 +1276,7 @@ v-s:templateBody
   rdfs:range xsd:string ;
 .
 
+### veda-core
 v-s:templateSubject
   rdf:type owl:DatatypeProperty ;
   rdfs:label "тема шаблона" ;
@@ -1130,6 +1284,7 @@ v-s:templateSubject
   rdfs:range xsd:string ;
 .
 
+### veda-core
 v-s:templateLanguage
   rdf:type owl:ObjectProperty ;
   rdfs:range v-s:TemplateForText ;
@@ -1138,6 +1293,7 @@ v-s:templateLanguage
   rdfs:range v-ui:Language ;
 .
 
+### veda-core
 v-s:previousVersion
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Versioned ;
@@ -1146,6 +1302,7 @@ v-s:previousVersion
   rdfs:range v-s:Versioned ;
 .
 
+### veda-function-search
 v-s:query
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:SavedSearch ;
@@ -1154,6 +1311,7 @@ v-s:query
   rdfs:range xsd:string ;
 .
 
+### veda-generic
 v-s:reason
   rdf:type owl:DatatypeProperty ;
   rdfs:label "reason"@en ;
@@ -1161,18 +1319,23 @@ v-s:reason
   rdfs:range xsd:string ;
 .
 
+### veda-generic
 v-s:registrationDate
   rdf:type owl:DatatypeProperty ;
   rdfs:label "registration date of document"@en ;
   rdfs:label "дата составления или регистрации документа"@ru ;
   rdfs:range xsd:dateTime ;
 .
+
+### veda-generic
 v-s:registrationNumber
   rdf:type owl:DatatypeProperty ;
   rdfs:label "registration number"@en ;
   rdfs:label "регистрационный номер"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-core
 v-s:resource
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Membership ;
@@ -1181,12 +1344,16 @@ v-s:resource
   rdfs:label "ресурс"@ru ;
   rdfs:range rdfs:Resource ;
 .
+
+### veda-generic
 v-s:responsible
   rdf:type owl:ObjectProperty ;
   rdfs:label "responsible"@en ;
   rdfs:label "ответсвенное лицо"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
+### veda-function-search
 v-s:restriction
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:SearchRequest ;
@@ -1194,6 +1361,8 @@ v-s:restriction
   rdfs:label "ограничение"@ru ;
   rdfs:range v-s:SearchRestriction ;
 .
+
+### veda-core
 v-s:script
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:ClassModel ;
@@ -1203,6 +1372,8 @@ v-s:script
   rdfs:label "скрипт"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-function-search
 v-s:selectedType
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:SearchRequest ;
@@ -1211,6 +1382,8 @@ v-s:selectedType
   rdfs:range rdfs:Class ;
   rdfs:range owl:Class ;
 .
+
+### veda-function-search
 v-s:sort
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:SearchRequest ;
@@ -1218,6 +1391,8 @@ v-s:sort
   rdfs:label "сортировка"@ru ;
   rdfs:range v-s:SortOrder ;
 .
+
+### veda-function-search
 v-s:soughtValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:SearchRestriction ;
@@ -1225,63 +1400,82 @@ v-s:soughtValue
   rdfs:label "искомое значение"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-core
 v-s:srcClassName
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Transform ;
   rdfs:label "id шаблона, из которого берем"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-core
 v-s:srcPropertyName
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Transform ;
   rdfs:label "имя аттрибута, которое берем"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-core
 v-s:startTime
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:DelegationStatement ;
   rdfs:domain v-s:HRRecord ;
   rdfs:domain v-s:PermissionStatement ;
   rdfs:label "start time"@en ;
   rdfs:label "время начала"@ru ;
   rdfs:range xsd:dateTime ;
 .
+
+### veda-generic
 v-s:status
   rdf:type owl:ObjectProperty ;
   rdfs:label "status"@en ;
   rdfs:label "статус"@ru ;
   rdfs:range rdfs:Resource ;
 .
+
+### veda-generic
 v-s:sum
   rdf:type owl:DatatypeProperty ;
   rdfs:label "sum"@en ;
   rdfs:label "сумма"@ru ;
   rdfs:range xsd:integer ;
 .
+
+### veda-generic
 v-s:sum_decimal
   rdf:type owl:DatatypeProperty ;
   rdfs:label "sum"@en ;
   rdfs:label "сумма"@ru ;
   rdfs:range xsd:decimal ;
 .
+
+### veda-generic
 v-s:cost
   rdf:type owl:DatatypeProperty ;
   rdfs:label "cost"@en ;
   rdfs:label "цена"@ru ;
   rdfs:range xsd:decimal ;
 .
+
+### veda-generic
 v-s:summary
   rdf:type owl:DatatypeProperty ;
   rdfs:label "summary"@en ;
   rdfs:label "вывод"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-generic
 v-s:tags
   rdf:type owl:DatatypeProperty ;
   rdfs:label "tags"@en ;
   rdfs:label "ключевые слова"@ru ;
   rdfs:range xsd:string ;
 .
+
+### kill
 v-s:test
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Person ;
@@ -1289,12 +1483,16 @@ v-s:test
   rdfs:label "test"@ru ;
   rdfs:range v-fs:Search ;
 .
+
+### veda-generic
 v-s:theme
   rdf:type owl:DatatypeProperty ;
   rdfs:label "theme"@en ;
   rdfs:label "тема"@ru ;
   rdfs:range xsd:string ;
 .
+
+### kill
 v-s:title
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Dictionary ;
@@ -1302,6 +1500,8 @@ v-s:title
   rdfs:label "наименование"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-org
 v-s:valid
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Appointment ;
@@ -1309,12 +1509,16 @@ v-s:valid
   rdfs:label "действительно"@ru ;
   rdfs:range xsd:boolean ;
 .
+
+### veda-generic
 v-s:versionNumber
   rdf:type owl:DatatypeProperty ;
   rdfs:label "version number"@en ;
   rdfs:label "номер версии"@ru ;
   rdfs:range xsd:string ;
 .
+
+### veda-generic
 v-s:year
   rdf:type owl:DatatypeProperty ;
   rdfs:label "year"@en ;
@@ -1609,11 +1813,11 @@ v-s:DocumentLinkRulesTemplate
 
     <br><br>
     <div class="well well-sm">
-      <button type="button" class="action btn btn-warning" id="send" about="v-b:Send" property="rdfs:label"/>
-      <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-b:Edit" property="rdfs:label"/>
-      <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/>
-      <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
-      <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-b:Delete" property="rdfs:label"/>
+      <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+      <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+      <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+      <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+      <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     </div>
 
   </div>
@@ -1744,6 +1948,7 @@ v-s:NumerationEvent
 """
 .
 
+### veda-generic
 v-s:Action
   rdf:type owl:Class ;
   rdfs:label "Action"@en ;
@@ -1752,6 +1957,7 @@ v-s:Action
   rdfs:subClassOf v-s:Versioned ;
 .
 
+### veda-generic
 v-s:hasAction
   rdf:type owl:ObjectProperty ;
   rdfs:label "action"@en ;
@@ -1759,13 +1965,15 @@ v-s:hasAction
   rdfs:range v-s:Action ;
 .
 
+
+### добавляем Назначение ссылку на подразделение (связка через должность) 
 v-s:AppointmentSaveEvent
   rdf:type v-s:Event ;
   v-s:filter v-s:Appointment ;
   v-s:script """
   if (document['v-s:occupation'] && document['v-s:occupation'].length>0) {
   		var occupation = get_individual(ticket, document['v-s:occupation'][0].data);  		
-  		if (occupation['v-s:parentUnit'] && occupation['v-s:parentUnit'].length>0) {
+  		if (occupation && occupation['v-s:parentUnit'] && occupation['v-s:parentUnit'].length>0) {
   			document['v-s:parentUnit'] = occupation['v-s:parentUnit']; 
   			put_individual (ticket, document, _event_id);
   		}  
@@ -1773,6 +1981,7 @@ v-s:AppointmentSaveEvent
 """
 .
 
+### veda-generic
 v-s:coauthor
   rdf:type owl:ObjectProperty ;
   rdfs:domain rdfs:Resource ;

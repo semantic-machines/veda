@@ -1,175 +1,137 @@
-# baseURI: http://semantic-machines.com/veda/veda-aspect
-# imports: http://semantic-machines.com/veda/veda-schema
-# imports: http://semantic-machines.com/veda/veda-ui
-# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
-# imports: http://www.w3.org/2000/01/rdf-schema#
-# imports: http://www.w3.org/2002/07/owl
-
-# c14n-version: 3
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
-@prefix v-asp: <http://semantic-machines.com/veda/veda-aspect/> .
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
-@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+@prefix v-asp: <http://semantic-machines.com/veda/veda-aspect/> .
 <http://semantic-machines.com/veda/veda-aspect>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system aspect ontology"@en ;
   rdfs:label "Онтология аспекта системы Веда"@ru ;
-  owl:imports <http://semantic-machines.com/veda/veda-schema> ;
-  owl:imports <http://semantic-machines.com/veda/veda-ui> ;
-  owl:imports <http://semantic-machines.com/veda/test-data> ;
-  owl:imports rdf: ;
-  owl:imports rdfs: ;
-  owl:imports <http://www.w3.org/2002/07/owl> ;
 #  owl:versionInfo "1.1" ;
   v-s:loadPriority 9 ;
 .
 
-v-asp:Aspect 
+v-s:Aspect 
 	rdf:type owl:Class ;
 	rdfs:label "Aspect"@en ;
 	rdfs:label "Аспект"@ru ;
 .
 
-v-asp:PersonalAspect 
+v-s:PersonalAspect 
 	rdf:type owl:Class ;
 	rdfs:label "Personal aspect"@en ;
 	rdfs:label "Персональный аспект"@ru ;
-	rdfs:subClassOf v-asp:Aspect ;
+	rdfs:subClassOf v-s:Aspect ;
 .
 
-v-asp:BusinessAspect 
+v-s:BusinessAspect 
 	rdf:type owl:Class ;
 	rdfs:label "Business aspect"@en ;
 	rdfs:label "Деловой аспект"@ru ;
-	rdfs:subClassOf v-asp:Aspect ;
+	rdfs:subClassOf v-s:Aspect ;
 .
 
 v-s:hasImage
-  rdfs:domain v-asp:Aspect ;
+  rdfs:domain v-s:Aspect ;
 .
 
 v-s:hasLogo
-  rdfs:domain v-asp:Aspect ;
+  rdfs:domain v-s:Aspect ;
 .
 
-v-s:hasHeading
-  rdfs:domain v-asp:Aspect ;
-.
-
-v-s:hasParagraph
-  rdfs:domain v-asp:Aspect ;
-.
-
-v-s:hasLogo
-  rdfs:domain v-asp:Aspect ;
-.
-
-v-asp:hasFavorite
+v-s:hasFavorite
 	rdf:type owl:ObjectProperty ;
-	rdfs:domain v-asp:Aspect ;
+	rdfs:domain v-s:Aspect ;
 	rdfs:range rdfs:Resource ;
 	rdfs:label "favorite"@en ;
 	rdfs:label "избранное"@ru ;
 .
 
-v-asp:hasBlank
+v-s:hasBlank
 	rdf:type owl:ObjectProperty ;
-	rdfs:domain v-asp:Aspect ;
+	rdfs:domain v-s:Aspect ;
 	rdfs:range v-fc:Blank ;
 	rdfs:label "blank"@en ;
 	rdfs:label "бланк"@ru ;
 .
 
-v-asp:hasRegistry
+v-s:hasRegistry
 	rdf:type owl:ObjectProperty ;
-	rdfs:domain v-asp:Aspect ;
+	rdfs:domain v-s:Aspect ;
 	rdfs:range v-fs:FulltextRequest ;
 	rdfs:range v-fs:AttributiveRequest ;
 	rdfs:label "registry"@en ;
 	rdfs:label "реестр"@ru ;
 .
 
-v-asp:hasReport
+v-s:hasReport
 	rdf:type owl:ObjectProperty ;
-	rdfs:domain v-asp:Aspect ;
+	rdfs:domain v-s:Aspect ;
 	rdfs:range rdfs:Resource ;
 	rdfs:label "report"@en ;
 	rdfs:label "отчет"@ru ;
 .
 
-v-asp:hasArbitraryLink
+v-s:hasArbitraryLink
 	rdf:type owl:ObjectProperty ;
-	rdfs:domain v-asp:Aspect ;
+	rdfs:domain v-s:Aspect ;
 	rdfs:range rdfs:Resource ;
 	rdfs:label "arbitrary link"@en ;
 	rdfs:label "произвольная ссылка"@ru ;
 .
 
-v-asp:hasWidget
+v-s:hasWidget
 	rdf:type owl:ObjectProperty ;
-	rdfs:domain v-asp:Aspect ;
+	rdfs:domain v-s:Aspect ;
 	rdfs:range rdfs:Resource ;
 	rdfs:label "widget"@en ;
 	rdfs:label "виджет"@ru ;
 .
 
 v-s:owner
-  rdfs:domain v-asp:PersonalAspect ;
+  rdfs:domain v-s:PersonalAspect ;
 .
 
-v-asp:hasBusinessAspect
+v-s:hasBusinessAspect
 	rdf:type owl:ObjectProperty ;
-	rdfs:domain v-asp:Aspect ;
-	rdfs:range v-asp:BusinessAspect ;
+	rdfs:domain v-s:Aspect ;
+	rdfs:range v-s:BusinessAspect ;
 	rdfs:label "related business aspect"@en ;
 	rdfs:label "связанный деловой аспект"@ru ;
 .
 
-v-asp:hasAspect
+v-s:hasAspect
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Person ;
   rdfs:label "персональный аспект"@ru ;
   rdfs:label "personal aspect"@ru ;
-  rdfs:range v-asp:PersonalAspect ;
+  rdfs:range v-s:PersonalAspect ;
 .
 
-v-asp:PsHasAspect
+v-s:PsHasAspect
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация персонального аспекта класса Персона"@ru ;
   rdfs:label "Personal aspect specification for Person class"@en ;
   v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-asp:hasAspect ;
+  v-ui:forProperty v-s:hasAspect ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:tooltip "Обязательно к заполнению, единичное значений. Ссылка на субъект класса Персональный аспект."@ru ;
   v-ui:tooltip "Required, single value. Link to instance of Personal aspect class"@en ;
-  v-ui:queryPrefix "('rdf:type'=='v-asp:PersonalAspect')"^^xsd:string ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:PersonalAspect')"^^xsd:string ;
 .
 
-v-asp:ViewDetails
-  rdf:type v-b:Bundle ;
-  rdfs:label "Подробнее"@ru ;
-  rdfs:label "View details"@en ;
-.
-v-asp:NewTasks
-  rdf:type v-b:Bundle ;
-  rdfs:label "Новые задачи"@ru ;
-  rdfs:label "New tasks"@en ;
-.
-
-v-asp:PersonalAspectTemplate
+v-s:PersonalAspectTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Персональный аспект"@ru ;
   rdfs:label "Template for Personal aspect class"@en ;
-  v-ui:forClass v-asp:PersonalAspect ;
+  v-ui:forClass v-s:PersonalAspect ;
   v-ui:template """
 <div class="container-fluid">
 	<div class="row">
@@ -183,11 +145,11 @@ v-asp:PersonalAspectTemplate
 			</div>
 		</div>
 		<div class="col-md-10">
-			<h3><span about="v-b:MyPage" property="rdfs:label"></span></h3>
+			<h3><span about="v-s:MyPage" property="rdfs:label"></span></h3>
 			
 			<hr/>
 			
-			<div rel="v-asp:hasWidget"></div>
+			<div rel="v-s:hasWidget"></div>
 			<div class="row">
 				<div class="col-lg-3 col-md-6">
 					<div class="panel panel-success">
@@ -198,13 +160,13 @@ v-asp:PersonalAspectTemplate
 								</div>
 								<div class="col-xs-9 text-right">
 									<div class="huge">12</div>
-									<div about="v-asp:NewTasks" property="rdfs:label"></div>
+									<div about="v-s:NewTasks" property="rdfs:label"></div>
 								</div>
 							</div>
 						</div>
 						<a href="#">
 							<div class="panel-body">
-								<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
+								<span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
 								<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
 								<div class="clearfix"></div>
 							</div>
@@ -226,7 +188,7 @@ v-asp:PersonalAspectTemplate
 						</div>
 						<a href="#">
 							<div class="panel-body">
-								<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
+								<span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
 								<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
 								<div class="clearfix"></div>
 							</div>
@@ -248,7 +210,7 @@ v-asp:PersonalAspectTemplate
 						</div>
 						<a href="#">
 							<div class="panel-body">
-								<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
+								<span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
 								<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
 								<div class="clearfix"></div>
 							</div>
@@ -270,7 +232,7 @@ v-asp:PersonalAspectTemplate
 						</div>
 						<a href="#">
 							<div class="panel-body">
-								<span class="pull-left" about="v-asp:ViewDetails" property="rdfs:label"></span>
+								<span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
 								<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
 								<div class="clearfix"></div>
 							</div>
@@ -287,57 +249,57 @@ v-asp:PersonalAspectTemplate
 		<div class="col-md-4">
 			<div class="panel panel-warning">
 				<div class="panel-heading">
-					<h4 class="no-margin"><i class="fa fa-eye"></i> <strong about="v-b:Aspects" property="rdfs:label"></strong></h4>
+					<h4 class="no-margin"><i class="fa fa-eye"></i> <strong about="v-s:Aspects" property="rdfs:label"></strong></h4>
 				</div>
 				<div class="panel-body">
-					<div rel="v-asp:hasBusinessAspect">
+					<div rel="v-s:hasBusinessAspect">
 						<div>
 							<a href="#/@" class="btn btn-warning btn-lg btn-block"><span property="rdfs:label"></span></a>
 							<br>
 						</div>								
 					</div>
-					<veda-control type="link" rel="v-asp:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control>
+					<veda-control type="link" rel="v-s:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control>
 				</div>
 			</div>
 		</div>
 		<div class="col-md-4">
 			<div class="panel panel-success">
 				<div class="panel-heading">
-					<h4 class="no-margin"><i class="fa fa-file-text-o"></i> <strong about="v-b:Blanks" property="rdfs:label"></strong></h4>
+					<h4 class="no-margin"><i class="fa fa-file-text-o"></i> <strong about="v-s:Blanks" property="rdfs:label"></strong></h4>
 				</div>
 				<div class="panel-body">
-					<div rel="v-asp:hasBlank">
+					<div rel="v-s:hasBlank">
 						<div>
 							<a href="#/@" class="btn btn-success btn-lg btn-block"><span property="rdfs:label"></span></a>
 							<br>
 						</div>
 					</div>
-					<veda-control type="link" rel="v-asp:hasBlank" class="fulltext dropdown -view edit"></veda-control>
+					<veda-control type="link" rel="v-s:hasBlank" class="fulltext dropdown -view edit"></veda-control>
 				</div>
 			</div>
 		</div>
 		<div class="col-md-4">
 			<div class="panel panel-info">
 				<div class="panel-heading">
-					<h4 class="no-margin"><i class="fa fa-table"></i> <strong about="v-b:Registries" property="rdfs:label"></strong></h4>
+					<h4 class="no-margin"><i class="fa fa-table"></i> <strong about="v-s:Registries" property="rdfs:label"></strong></h4>
 				</div>
 				<div class="panel-body">
-					<div rel="v-asp:hasRegistry">
+					<div rel="v-s:hasRegistry">
 						<div>
 							<a href="#/@" class="btn btn-info btn-lg btn-block"><span property="rdfs:label"></span></a>
 							<br>
 						</div>
 					</div>
-					<veda-control type="link" rel="v-asp:hasRegistry" class="fulltext dropdown -view edit"></veda-control>
+					<veda-control type="link" rel="v-s:hasRegistry" class="fulltext dropdown -view edit"></veda-control>
 				</div>
 			</div>
 		</div>
 	</div>
 	
 	<div class="well well-sm">
-		<button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-b:Edit" property="rdfs:label"/>
-		<button type="button" class="action btn btn-success -view edit -search" id="save" about="v-b:Save" property="rdfs:label"/>
-		<button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-b:Cancel" property="rdfs:label"/>
+		<button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+		<button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+		<button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
 	</div>
 </div>
   """ ;

@@ -38,6 +38,46 @@ private Context context;
 private         ScriptInfo[ string ] scripts;
 private VQL     vql;
 
+public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_state, string prev_state, Resource[ string ] rdfType,
+                     Individual *individual,
+                     string event_id,
+                     long op_id)
+{
+    Tid tid_scripts = ctx.getTid(P_MODULE.scripts);
+
+    if (tid_scripts != Tid.init)
+    {
+        if (rdfType.anyExist(veda_schema__Event))
+        {
+            // изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
+            send(tid_scripts, CMD.RELOAD, new_state, thisTid);
+            receive((bool){});
+        }
+
+        try
+        {
+            immutable(string)[] types;
+
+            foreach (key; rdfType.keys)
+                types ~= key;
+
+            string user_uri;
+
+            if (ticket !is null)
+                user_uri = ticket.user_uri;
+
+            send(tid_scripts, user_uri, ev_type, new_state, prev_state, types, individual.uri, event_id, op_id);
+        }
+        catch (Exception ex)
+        {
+            writeln("EX!bus_event:", ex.msg);
+        }
+    }
+
+    veda.core.scripts.inc_count_recv_put();
+}
+
+
 public void scripts_thread(string thread_name, string node_id)
 {
     core.thread.Thread.getThis().name = thread_name;
@@ -121,8 +161,8 @@ public void scripts_thread(string thread_name, string node_id)
                                 }
                                 else
                                 {
-                                    g_user.data = cast(char *)"v-a:VedaSystem";
-                                    g_user.length = "v-a:VedaSystem".length;
+                                    g_user.data = cast(char *)"cfg:VedaSystem";
+                                    g_user.length = "cfg:VedaSystem".length;
                                 }
 
                                 string sticket = context.sys_ticket().id;
@@ -192,6 +232,7 @@ public void scripts_thread(string thread_name, string node_id)
                                 // writeln("scripts B #e *", process_name);
                             }
                             set_scripts_op_id(op_id);
+                            inc_count_prep_put();
                         },
                         (CMD cmd, int arg, bool arg2)
                         {
@@ -255,17 +296,17 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
             return;
 
         string str_script =
-              "var ticket = get_env_str_var ('$ticket');"
+            "var ticket = get_env_str_var ('$ticket');"
             ~ "var user_uri = get_env_str_var ('$user');"
             ~ "var prev_state = get_individual (ticket, '$prev_state');"
             ~ "var document = get_individual (ticket, '$document');"
             ~ "if (document) {"
-            	~ "var _script_id = '" ~ ss.uri ~ "';"
-            	~ "var _event_id = document['@'] + _script_id;"
-            	~ "script();"
+            ~ "var _script_id = '" ~ ss.uri ~ "';"
+            ~ "var _event_id = document['@'] + _script_id;"
+            ~ "script();"
             ~ "};"
             ~ "function script() {" ~ scripts_text ~ "};"
-            ;
+        ;
         try
         {
             ScriptInfo script = ScriptInfo.init;
@@ -301,3 +342,35 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
         //writeln ("@4");
     }
 }
+
+///////////////////////////// STAT //////////////////////////////
+
+import core.atomic;
+
+private shared long _count_recv_put = 0;
+
+private long inc_count_recv_put(long delta = 1)
+{
+    return atomicOp !"+=" (_count_recv_put, delta);
+}
+
+public long get_count_recv_put()
+{
+    return atomicLoad(_count_recv_put);
+}
+
+////////////////////////////
+
+private shared long _count_prep_put = 0;
+
+private long inc_count_prep_put(long delta = 1)
+{
+    return atomicOp !"+=" (_count_prep_put, delta);
+}
+
+public long get_count_prep_put()
+{
+    return atomicLoad(_count_prep_put);
+}
+/////////////////////////////////////////////////////////////
+

@@ -4,13 +4,13 @@
 
 module veda.core.fanout;
 
-private import std.concurrency, std.stdio, std.conv, std.utf;
+private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file;
 private import veda.type, veda.core.context;
 private import util.logger, util.cbor, veda.core.util.cbor8individual;
 private import storage.lmdb_storage, veda.core.thread_context;
 private import veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
 private import mysql.d;
-private import smtp.client, smtp.mailsender, smtp.message;
+private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment;
 
 //////
 Mysql      mysql_conn;
@@ -49,7 +49,7 @@ void fanout_thread(string thread_name, string _node_id)
     node_id = _node_id;
     scope (exit)
     {
-        log.trace("ERR! indexer thread dead (exit)");
+        log.trace("ERR! fanout_thread dead (exit)");
     }
 
     core.thread.Thread.getThis().name = thread_name;
@@ -104,7 +104,7 @@ void fanout_thread(string thread_name, string _node_id)
                     },
                     (Variant v) { writeln(thread_name, "::fanout_thread::Received some other type.", v); });
         }
-        catch (Exception ex)
+        catch (Throwable ex)
         {
             log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
         }
@@ -141,6 +141,48 @@ private Resources extract_email(ref Ticket sticket, string ap_uri)
     return ac.resources[ "v-s:mailbox" ];
 }
 
+string scptn = "src=\"cid:";
+
+private string uri_2_cid(string src)
+{
+    return src.replace(":", "_").replace("-", "_");
+}
+
+private string extract_cids(string _src, out string[] attachment_ids)
+{
+    char[] src = (cast(char[])_src).dup;
+
+    long   b_pos = 0;
+    long   e_pos = 0;
+
+    while (b_pos < src.length && e_pos < src.length)
+    {
+        b_pos = src.indexOf(scptn, e_pos);
+
+        if (b_pos <= 0)
+            break;
+
+        b_pos += scptn.length;
+
+        e_pos = src.indexOf("\"", b_pos);
+        if (e_pos <= 0)
+            break;
+
+        char[] attachment_id = src[ b_pos..e_pos ];
+        attachment_ids ~= attachment_id.dup;
+
+        foreach (idx, ch; attachment_id)
+        {
+            if (ch == ':' || ch == '-')
+                attachment_id[ idx ] = '_';
+        }
+
+        if (b_pos == e_pos)
+            break;
+    }
+
+    return cast(string)src;
+}
 
 private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
 {
@@ -150,11 +192,16 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
 
         bool   is_deleted = new_indv.isExist("v-s:deleted", true);
 
+        string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
         string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");
         string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
         string previousVersion_new  = new_indv.getFirstLiteral("v-s:previousVersion");
 
-        if (is_deleted == false && actualVersion !is null && actualVersion != new_indv.uri && previousVersion_prev == previousVersion_new)
+        if (isDraftOf !is null)
+            return;
+
+        if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri ||
+                                    (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
             return;
 
         Resources types        = new_indv.getResources("rdf:type");
@@ -182,25 +229,51 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
 
                 if (from !is null && to !is null)
                 {
-                    Resources email_from     = extract_email(sticket, from);
-                    Resources email_to       = extract_email(sticket, to);
-                    Resources email_reply_to = extract_email(sticket, reply_to);
+                    string email_from     = extract_email(sticket, from).getFirstString();
+                    string email_to       = extract_email(sticket, to).getFirstString();
+                    string email_reply_to = extract_email(sticket, reply_to).getFirstString();
 
                     if (from.length > 0 && to.length > 0)
                     {
+                        string[] attachment_ids;
+                        message_body = extract_cids(message_body, attachment_ids);
+
                         auto message = SmtpMessage(
-                                                   Recipient(email_from[ 0 ].get!string, "From"),
-                                                   [ Recipient(email_to[ 0 ].get!string, "To") ],
+                                                   Recipient(email_from, "From"),
+                                                   [ Recipient(email_to, "To") ],
                                                    subject,
                                                    message_body,
-                                                   email_reply_to[ 0 ].get!string,
+                                                   email_reply_to
                                                    );
 
-                        // Smart method to send message.
-                        // Performs message transmission sequence with error checking.
-                        // In case message cannot be sent, `rset` method is called implicitly.
-                        write(smtp_conn.send(message));
-                        writeln("@to email:", message);
+                        foreach (attachment_id; attachment_ids)
+                        {
+                            //writeln("@1 attachment_id=", attachment_ids);
+                            Individual file_info = context.get_individual(&sticket, attachment_id);
+                            if (file_info !is Individual.init)
+                            {
+                                string path     = file_info.getFirstResource("v-s:filePath").get!string;
+                                string file_uri = file_info.getFirstResource("v-s:fileUri").get!string;
+                                if (path !is null && file_uri !is null && file_uri.length > 0)
+                                {
+                                    if (path.length > 0)
+                                        path = path ~ "/";
+
+                                    string full_path = attachments_db_path ~ "/" ~ path ~ file_uri;
+
+                                    auto   bytes = cast(ubyte[]) read(full_path);
+
+                                    auto   attachment = SmtpAttachment(file_uri, bytes, uri_2_cid(attachment_id));
+                                    message.attach(attachment);
+                                }
+                            }
+                        }
+
+                        smtp.reply.SmtpReply res = smtp_conn.send(message);
+
+                        //log.trace("mail=%s", message.toString());
+
+                        log.trace("send email: %s, result %s", new_indv.uri, text(res));
                     }
                 }
             }
@@ -226,11 +299,16 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
     {
         bool   is_deleted = new_indv.isExist("v-s:deleted", true);
 
+        string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
         string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");
         string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
         string previousVersion_new  = new_indv.getFirstLiteral("v-s:previousVersion");
 
-        if (is_deleted == false && actualVersion !is null && actualVersion != new_indv.uri && previousVersion_prev == previousVersion_new)
+        if (isDraftOf !is null)
+            return;
+
+        if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri ||
+                                    (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
             return;
 
         Resources types        = new_indv.getResources("rdf:type");
@@ -373,34 +451,39 @@ private void connect_to_smtp(Context context)
     Ticket sticket = context.sys_ticket();
 
     node = context.getConfiguration();
-    Resources gates = node.resources.get("vsrv:send_an_email_individual_by_event", Resources.init);
+    Resources gates = node.resources.get("v-s:send_an_email_individual_by_event", Resources.init);
     foreach (gate; gates)
     {
         Individual connection = context.get_individual(&sticket, gate.uri);
 
-        Resource   transport = connection.getFirstResource("vsrv:transport");
+        Resource   transport = connection.getFirstResource("v-s:transport");
         if (transport != Resource.init)
         {
             if (transport.data() == "smtp")
             {
                 try
                 {
-                    smtp_conn = new MailSender(connection.getFirstLiteral("vsrv:host"), cast(ushort)connection.getFirstInteger("vsrv:port"));
+                    smtp_conn = new MailSender(connection.getFirstLiteral("v-s:host"), cast(ushort)connection.getFirstInteger("v-s:port"));
 
-                    string login = connection.getFirstLiteral("vsrv:login");
-                    string pass  = connection.getFirstLiteral("vsrv:credentional");
+                    if (smtp_conn is null)
+                        return;
+
+                    string login = connection.getFirstLiteral("v-s:login");
+                    string pass  = connection.getFirstLiteral("v-s:password");
 
                     if (login !is null && login.length > 0)
                         smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
 
-                    // Connecting to server
+                    // Connecting to smtp server
                     auto result = smtp_conn.connect();
                     if (!result.success)
                         smtp_conn = null;
+                    else
+                        log.trace("success connection to SMTP server: [%s]", connection);
                 }
-                catch (Exception ex)
+                catch (Throwable ex)
                 {
-                    log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+                    log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s], connection=[%s]", ex.line, ex.file, ex.msg, connection);
                 }
             }
         }
@@ -412,30 +495,30 @@ private void connect_to_mysql(Context context)
     Ticket sticket = context.sys_ticket();
 
     node = context.getConfiguration();
-    Resources gates = node.resources.get("vsrv:push_individual_by_event", Resources.init);
+    Resources gates = node.resources.get("v-s:push_individual_by_event", Resources.init);
     foreach (gate; gates)
     {
         Individual connection = context.get_individual(&sticket, gate.uri);
 
-        Resource   transport = connection.getFirstResource("vsrv:transport");
+        Resource   transport = connection.getFirstResource("v-s:transport");
         if (transport != Resource.init)
         {
             if (transport.data() == "mysql")
             {
                 try
                 {
-                    database_name = connection.getFirstLiteral("vsrv:sql_database");
-                    mysql_conn    = new Mysql(connection.getFirstLiteral("vsrv:host"),
-                                              cast(uint)connection.getFirstInteger("vsrv:port"),
-                                              connection.getFirstLiteral("vsrv:login"),
-                                              connection.getFirstLiteral("vsrv:credentional"),
+                    database_name = connection.getFirstLiteral("v-s:sql_database");
+                    mysql_conn    = new Mysql(connection.getFirstLiteral("v-s:host"),
+                                              cast(uint)connection.getFirstInteger("v-s:port"),
+                                              connection.getFirstLiteral("v-s:login"),
+                                              connection.getFirstLiteral("v-s:password"),
                                               database_name);
 
                     mysql_conn.query("SET NAMES 'utf8'");
 
                     //writeln("@@@@1 CONNECT TO MYSQL IS OK ", text(mysql_conn));
                 }
-                catch (Exception ex)
+                catch (Throwable ex)
                 {
                     log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
                 }

@@ -13,7 +13,7 @@ basic.getDrivers().forEach (function (drv) {
 	basic.openCreateDocumentForm(driver, 'Персона', 'v-s:Person');
 	
 	// Документ нельзя создать или отправить пока не заполнены обязательные поля
-	driver.findElement({id:'save'}).isEnabled().then(function (flag) {
+	driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#save'}).isEnabled().then(function (flag) {
 		assert(!flag);
 	}).thenCatch(function (e) {basic.errorHandler(e, "Save button must be inactive")});
 	
@@ -38,17 +38,17 @@ basic.getDrivers().forEach (function (drv) {
 	basic.chooseFromDropdown(driver, 'v-s:hasAppointment', 'Роман Карпов', 'Роман Карпов : Аналитик');
 //	driver.findElement({css:'[property="v-s:lastName"] + veda-control input'}).click();
 
-	driver.executeScript("$('div.panel-footer > button#save')[0].scrollIntoView(true);");
+	driver.executeScript("$('div[typeof=\"v-s:Person\"] > div.panel > div.panel-footer > button#save')[0].scrollIntoView(true);");
 
 	// Документ становится возможно сохранить
 	driver.wait
 	(
-	  webdriver.until.elementIsEnabled(driver.findElement({css:'div.panel-footer > button#save'})),
+	  webdriver.until.elementIsEnabled(driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#save'})),
 	  basic.FAST_OPERATION
 	).thenCatch(function (e) {basic.errorHandler(e, "Cannot find save button")});
 	
 	// Нажимаем сохранить
-	driver.findElement({css:'div.panel-footer > button#save'}).click()
+	driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#save'}).click()
 	      .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on save button")});
 	
 	// Проверяем что сохранение успешно

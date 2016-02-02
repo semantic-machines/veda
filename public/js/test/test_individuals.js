@@ -131,7 +131,7 @@ test(
 		});
 
 test(
-		"#005 Individual store user1, add right and read user2",
+		"#005 Individual store user1 and add right, user2 successfully read it, next user1 add denied right and no user2 fail read it",
 		function() {
 			var ticket_user1 = get_user1_ticket ();
 			ok(ticket_user1.id.length > 0);
@@ -217,6 +217,33 @@ test(
 
 			ok(compare(new_permission, right1));
 
+			permission_uri = guid();
+			new_permission = {
+					'@' : permission_uri,
+					'rdf:type' : [ {
+						data : 'v-s:PermissionStatement',
+						type : _Uri
+					} ],
+					'v-s:canRead' : [ {
+						data : false,
+						type : _Bool
+					} ],
+					'v-s:permissionObject' : [ {
+						data : new_test_doc1_uri,
+						type : _Uri
+					} ],
+					'v-s:permissionSubject' : [ {
+						data : ticket_user2.user_uri,
+						type : _Uri
+					} ]
+				};			
+			
+			res = put_individual(ticket_user1.id, new_permission); //
+			wait_module(acl_manager, res.op_id);
+			
+			try { read_individual = get_individual(ticket_user2.id, new_test_doc1_uri); }
+			catch (e) { read_individual = {}; }
+			ok(compare(new_test_doc1, read_individual) == false);
 		});
 
 test(
@@ -1026,4 +1053,5 @@ test(
 		});
 
 }
+
 

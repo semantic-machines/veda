@@ -338,7 +338,10 @@ function prepare_work_order(ticket, document)
                         'v-wf:decisionFormList': decisionFormList
                     };
                     add_to_individual(ticket, add_to_document, _event_id);
+					_work_order['v-wf:decisionFormList'] = decisionFormList;
 
+                    mapToMessage(net_element['v-wf:startingMessageMap'], ticket, _process, work_item, _work_order, null, journal_uri, trace_journal_uri, 'v-wf:startingMessageMap');
+					
                     //print("[WORKFLOW][WO2.3] transform_result=" + toJson(transform_result));
                 }
                 if (is_exist(executor, 'rdf:type', 'v-wf:Net') || f_useSubNet)

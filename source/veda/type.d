@@ -42,8 +42,12 @@ public enum Access : ubyte
 
 Access[] access_list =
 [
-    Access.can_create, Access.can_read, Access.can_update, Access.can_delete, Access.cant_create,
-    Access.cant_read, Access.cant_update, Access.cant_delete
+    Access.can_create, Access.can_read, Access.can_update, Access.can_delete
+];
+
+Access[] denied_list =
+[
+    Access.cant_create, Access.cant_read, Access.cant_update, Access.cant_delete
 ];
 
 /// Перечисление - Типы данных

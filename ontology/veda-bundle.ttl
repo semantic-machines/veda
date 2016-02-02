@@ -1,230 +1,228 @@
-# baseURI: http://semantic-machines.com/veda/veda-bundle
-# imports: http://semantic-machines.com/veda/veda-schema
-# imports: http://www.w3.org/1999/02/22-rdf-syntax-ns#
-# imports: http://www.w3.org/2000/01/rdf-schema#
-# imports: http://www.w3.org/2002/07/owl
-
-# c14n-version: 3
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 
+@prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
 <http://semantic-machines.com/veda/veda-bundle>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system data index ontology"@en ;
-  rdfs:label "Онтология индексирования данных системы Веда"@ru ;
-  owl:imports rdf: ;
-  owl:imports rdfs: ;
-  owl:imports <http://www.w3.org/2002/07/owl> ;
+  rdfs:label "Veda system bundle ontology"@en ;
+  rdfs:label "Онтология строк системы Веда"@ru ;
 #  owl:versionInfo "0.1" ;
   v-s:loadPriority 9 ;
 .
-v-b:Bundle
-  rdf:type owl:Class ;
-  rdfs:label "Bundle"@en ;
-  rdfs:label "Текстовая константа"@ru ;
-  rdfs:subClassOf owl:Thing ;
-.
-v-b:Back
-  rdf:type v-b:Bundle ;
+v-s:Back
+  rdf:type v-s:Bundle ;
   rdfs:label "Назад"@ru ;
   rdfs:label "Back"@en ;
 .
-v-b:Forward
-  rdf:type v-b:Bundle ;
+v-s:Forward
+  rdf:type v-s:Bundle ;
   rdfs:label "Вперед"@ru ;
   rdfs:label "Forward"@en ;
 .
-v-b:Chief
-  rdf:type v-b:Bundle ;
+v-s:Chief
+  rdf:type v-s:Bundle ;
   rdfs:label "Руководитель"@ru ;
   rdfs:label "Chief"@en ;
 .
-v-b:ImplementationPeriod
-  rdf:type v-b:Bundle ;
+v-s:ImplementationPeriod
+  rdf:type v-s:Bundle ;
   rdfs:label "период реализации"@ru ;
   rdfs:label "implementation period"@en ;
 .
-v-b:MyPage
-  rdf:type v-b:Bundle ;
+
+v-s:ViewDetails
+  rdf:type v-s:Bundle ;
+  rdfs:label "Подробнее"@ru ;
+  rdfs:label "View details"@en ;
+.
+v-s:NewTasks
+  rdf:type v-s:Bundle ;
+  rdfs:label "Новые задачи"@ru ;
+  rdfs:label "New tasks"@en ;
+.
+
+v-s:MyPage
+  rdf:type v-s:Bundle ;
   rdfs:label "Моя страница"@ru ;
   rdfs:label "My page"@en ;
 .
-v-b:Favorites
-  rdf:type v-b:Bundle ;
-  rdfs:label "Избранное"@ru ;
-  rdfs:label "Favorites"@en ;
-.
-v-b:Blanks
-  rdf:type v-b:Bundle ;
-  rdfs:label "Бланки"@ru ;
-  rdfs:label "Blanks"@en ;
-.
-v-b:Registries
-  rdf:type v-b:Bundle ;
-  rdfs:label "Реестры"@ru ;
-  rdfs:label "Registries"@en ;
-.
-v-b:Reports
-  rdf:type v-b:Bundle ;
-  rdfs:label "Отчеты"@ru ;
-  rdfs:label "Reports"@en ;
-.
-v-b:Aspects
-  rdf:type v-b:Bundle ;
+
+v-s:Aspects
+  rdf:type v-s:Bundle ;
   rdfs:label "Аспекты"@ru ;
   rdfs:label "Aspects"@en ;
 .
-v-b:Other
-  rdf:type v-b:Bundle ;
+
+v-s:Favorites
+  rdf:type v-s:Bundle ;
+  rdfs:label "Избранное"@ru ;
+  rdfs:label "Favorites"@en ;
+.
+v-s:Blanks
+  rdf:type v-s:Bundle ;
+  rdfs:label "Бланки"@ru ;
+  rdfs:label "Blanks"@en ;
+.
+v-s:Registries
+  rdf:type v-s:Bundle ;
+  rdfs:label "Реестры"@ru ;
+  rdfs:label "Registries"@en ;
+.
+v-s:Reports
+  rdf:type v-s:Bundle ;
+  rdfs:label "Отчеты"@ru ;
+  rdfs:label "Reports"@en ;
+.
+v-s:Other
+  rdf:type v-s:Bundle ;
   rdfs:label "Другое"@ru ;
   rdfs:label "Other"@en ;
 .
-v-b:Send
-  rdf:type v-b:Bundle ;
+v-s:Send
+  rdf:type v-s:Bundle ;
   rdfs:label "Отправить"@ru ;
   rdfs:label "Send"@en ;
 .
-v-b:Next
-  rdf:type v-b:Bundle ;
+v-s:Next
+  rdf:type v-s:Bundle ;
   rdfs:label "Далее"@ru ;
   rdfs:label "Next"@en ;
 .
-v-b:Proceed
-  rdf:type v-b:Bundle ;
+v-s:Proceed
+  rdf:type v-s:Bundle ;
   rdfs:label "Перейти"@ru ;
   rdfs:label "Proceed"@en ;
 .
-v-b:Edit
-  rdf:type v-b:Bundle ;
+v-s:Edit
+  rdf:type v-s:Bundle ;
   rdfs:label "Редактировать"@ru ;
   rdfs:label "Edit"@en ;
 .
-v-b:ContinueEdit
-  rdf:type v-b:Bundle ;
+v-s:ContinueEdit
+  rdf:type v-s:Bundle ;
   rdfs:label "Продолжить редактирование"@ru ;
   rdfs:label "Continue edit"@en ;
 .
-v-b:Save
-  rdf:type v-b:Bundle ;
+v-s:Save
+  rdf:type v-s:Bundle ;
   rdfs:label "Опубликовать"@ru ;
   rdfs:label "Publish"@en ;
 .
-v-b:Draft
-  rdf:type v-b:Bundle ;
+v-s:Draft
+  rdf:type v-s:Bundle ;
   rdfs:label "Черновик"@ru ;
   rdfs:label "Draft"@en ;
 .
-v-b:toDraft
-  rdf:type v-b:Bundle ;
+v-s:toDraft
+  rdf:type v-s:Bundle ;
   rdfs:label "Сохранить в черновик"@ru ;
   rdfs:label "Save to draft"@en ;
 .
-v-b:Find
-  rdf:type v-b:Bundle ;
+v-s:Find
+  rdf:type v-s:Bundle ;
   rdfs:label "Найти"@ru ;
   rdfs:label "Find"@en ;
 .
-v-b:Cancel
-  rdf:type v-b:Bundle ;
+v-s:Cancel
+  rdf:type v-s:Bundle ;
   rdfs:label "Отмена"@ru ;
   rdfs:label "Cancel"@en ;
 .
-v-b:Delete
-  rdf:type v-b:Bundle ;
+v-s:Delete
+  rdf:type v-s:Bundle ;
   rdfs:label "Удалить"@ru ;
   rdfs:label "Delete"@en ;
 .
-v-b:DeleteDraft
-  rdf:type v-b:Bundle ;
+v-s:DeleteDraft
+  rdf:type v-s:Bundle ;
   rdfs:label "Удалить черновик"@ru ;
   rdfs:label "Delete draft"@en ;
 .
-v-b:Clear
-  rdf:type v-b:Bundle ;
+v-s:Clear
+  rdf:type v-s:Bundle ;
   rdfs:label "Очистить"@ru ;
   rdfs:label "Clear"@en ;
 .
-v-b:Create
-  rdf:type v-b:Bundle ;
+v-s:Create
+  rdf:type v-s:Bundle ;
   rdfs:label "Создать"@ru ;
   rdfs:label "Create"@en ;
 .
-v-b:CreateReport
-  rdf:type v-b:Bundle ;
+v-s:CreateReport
+  rdf:type v-s:Bundle ;
   rdfs:label "Сформировать отчёт"@ru ;
   rdfs:label "Create report"@en ;
 .
-v-b:PrintBlank
-  rdf:type v-b:Bundle ;
+v-s:PrintBlank
+  rdf:type v-s:Bundle ;
   rdfs:label "Печатный бланк"@ru ;
   rdfs:label "Print blank"@en ;
 .
-v-b:CreateReport_ProjectOrder
-  rdf:type v-b:Bundle ;
+v-s:CreateReport_ProjectOrder
+  rdf:type v-s:Bundle ;
   rdfs:label "Project Order"@ru ;
   rdfs:label "Project Order"@en ;
 .
-v-b:RightsOrigin
-  rdf:type v-b:Bundle ;
+v-s:RightsOrigin
+  rdf:type v-s:Bundle ;
   rdfs:label "Права доступа"@ru ;
   rdfs:label "Access rights"@en ;
 .
-v-b:Reset
-  rdf:type v-b:Bundle ;
+v-s:Reset
+  rdf:type v-s:Bundle ;
   rdfs:label "Сбросить"@ru ;
   rdfs:label "Reset"@en ;
 .
-v-b:Instruction
-  rdf:type v-b:Bundle ;
+v-s:Instruction
+  rdf:type v-s:Bundle ;
   rdfs:label "Поручение"@ru ;
   rdfs:label "Instruction"@en ;
 .
-v-b:SearchRequest
-  rdf:type v-b:Bundle ;
+v-s:SearchRequest
+  rdf:type v-s:Bundle ;
   rdfs:label "Поисковый запрос"@ru ;
   rdfs:label "Search request"@en ;
 .
-v-b:DocumentIsVersion
-  rdf:type v-b:Bundle ;
+v-s:DocumentIsVersion
+  rdf:type v-s:Bundle ;
   rdfs:label "Документ устарел. Существует более поздняя версия данного документа"@ru ;
   rdfs:label "Document expired. New version of this document exists."@en ;
 .
-v-b:SendQuestion
-  rdf:type v-b:Bundle ;
+v-s:SendQuestion
+  rdf:type v-s:Bundle ;
   rdfs:label "Задать вопрос"@ru ;
   rdfs:label "Send question"@en ;
 .
-v-b:SendInstruction
-  rdf:type v-b:Bundle ;
+v-s:SendInstruction
+  rdf:type v-s:Bundle ;
   rdfs:label "Выдать поручение"@ru ;
   rdfs:label "Send instruction"@en ;
 .
-v-b:Total
-  rdf:type v-b:Bundle ;
+v-s:Total
+  rdf:type v-s:Bundle ;
   rdfs:label "Всего"@ru ;
   rdfs:label "Total"@en ;
 .
-v-b:Plan
-  rdf:type v-b:Bundle ;
+v-s:Plan
+  rdf:type v-s:Bundle ;
   rdfs:label "План"@ru ;
   rdfs:label "Plan"@en ;
 .
-v-b:Fact
-  rdf:type v-b:Bundle ;
+v-s:Fact
+  rdf:type v-s:Bundle ;
   rdfs:label "Факт"@ru ;
   rdfs:label "Fact"@en ;
 .
-v-b:atLeastOneFilled
-  rdf:type v-b:Bundle ;
+v-s:atLeastOneFilled
+  rdf:type v-s:Bundle ;
   rdfs:label "Хотя ты одно из значений должно быть заполнено"@ru ;
   rdfs:label "At least one value must be filled"@en ;
 .
-v-b:numerationErrorValueIsUnavailable
-  rdf:type v-b:Bundle ;
+v-s:numerationErrorValueIsUnavailable
+  rdf:type v-s:Bundle ;
   rdfs:label "Данное значение занято"@ru ;
   rdfs:label "This value is already reserved"@en ;
 .

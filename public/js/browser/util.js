@@ -369,8 +369,8 @@ veda.Module(function Util(veda) { "use strict";
 	}
 
 	veda.Util.redirectToReport = function (individual, reportId) {
-		var jasperServer = new veda.IndividualModel('v-g:jasperServerAddress');
-		var jasperServerAddress = jasperServer['v-g:literalValue'][0];
+		var jasperServer = new veda.IndividualModel('cfg:jasperServerAddress');
+		var jasperServerAddress = jasperServer['rdf:value'][0];
 		var report = new veda.IndividualModel(reportId);
 		
 		var form = document.createElement("form");

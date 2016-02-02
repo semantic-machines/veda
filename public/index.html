@@ -43,6 +43,26 @@
 	<body>
 		<div id="app"></div>
 		<div id="login-holder" class="hidden" style="background-color:#eee"></div>
+		
+		<!-- Error modal -->
+		<div id="error-modal" class="modal fade" tabindex="-1" role="dialog">
+		  <div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h3 class="modal-title">Ой, ошибка / Oops, error</h3>
+			    </div>		  
+			    <div class="modal-body">
+			    	<p id="error-message"></p>
+			    	<hr>
+			    	<code id="error-description"></code>
+			    </div>
+			    <div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+				</div>
+		    </div>
+		  </div>
+		</div> 
 
 		<!-- Templates -->
 
@@ -64,17 +84,6 @@
 							</div>
 						</form>
 					</div>
-				</div>
-			</div>
-		</script>
-
-		<!-- Welcome -->
-		<script type="html/template" id="wellcome-template">
-			<div class="jumbotron well">
-				<div class="container-fluid">
-					<h1><span class="text-info">Добро пожаловать в Veda!</span></h1>
-					<p span class="text-info">Veda - это крупномасштабная документоориентированная система управления предприятием</p>
-					<p><a class="btn btn-primary btn-lg" href="#/search">Поехали</a></p>
 				</div>
 			</div>
 		</script>
@@ -526,7 +535,7 @@
 					<div class="panel-footer">
 	    				<div class="btn-group dropup">
 							<button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		      					<span about="v-b:Send" property="rdfs:label"></span> 			
+		      					<span about="v-s:Send" property="rdfs:label"></span> 			
 		      					<span class="caret"></span>
             				</button>
 							<ul class="dropdown-menu" id="standard-tasks">
@@ -557,7 +566,7 @@
 			</div>
 		</script>
 
-		<!-- Graph context menus -->
+		<!-- Graph template -->
 		<script type="html/template" id="graph-template">
 
 			<button type="button" id="freeze" class="btn btn-success"><i class="glyphicon glyphicon-pause"></i></button>
@@ -659,7 +668,6 @@
 				</div>
 			</div>
 		</script>
-
 		<!-- Javascript -->
 
 		<!-- Utils & UI -->
@@ -696,7 +704,6 @@
 		<script type="text/javascript" src="/js/common/util.js"></script>
 		<script type="text/javascript" src="/js/common/veda_spa.js"></script>
 		<script type="text/javascript" src="/js/common/app_model.js"></script>
-		<script type="text/javascript" src="/js/common/register_module.js"></script>
 		<script type="text/javascript" src="/js/common/console_model.js"></script>
 		<script type="text/javascript" src="/js/common/individual_model.js"></script>
 		<script type="text/javascript" src="/js/common/individual_list_model.js"></script>
