@@ -174,6 +174,7 @@ class PThreadContext : Context
     private void reload_scripts()
     {
         Script[] scripts;
+        string[] script_file_name;
         writeln("-");
 
         foreach (path; [ "./public/js/server", "./public/js/common" ])
@@ -188,13 +189,17 @@ class PThreadContext : Context
                     auto str_js        = cast(ubyte[]) read(o.name);
                     auto str_js_script = script_vm.compile(cast(char *)(cast(char[])str_js ~ "\0"));
                     if (str_js_script !is null)
+                    {
                         scripts ~= str_js_script;
+                        script_file_name ~= o.name;
+                    }    
                 }
             }
         }
 
-        foreach (script; scripts)
+        foreach (idx, script; scripts)
         {
+        	writeln ("script=", script_file_name[idx]);
             script_vm.run(script);
         }
     }
