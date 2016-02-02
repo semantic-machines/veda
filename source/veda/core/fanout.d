@@ -243,7 +243,7 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
                                                    [ Recipient(email_to, "To") ],
                                                    subject,
                                                    message_body,
-                                                   email_reply_to,
+                                                   email_reply_to
                                                    );
 
                         foreach (attachment_id; attachment_ids)
@@ -262,7 +262,6 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
                                     string full_path = attachments_db_path ~ "/" ~ path ~ file_uri;
 
                                     auto   bytes = cast(ubyte[]) read(full_path);
-
 
                                     auto attachment = SmtpAttachment(file_uri, bytes, uri_2_cid(attachment_id));
                                     message.attach(attachment);
