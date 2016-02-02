@@ -77,6 +77,10 @@ class XapianReader : SearchReader
                 string dbn = iproperty.get_dbname_of_class(rr);
                 databasenames[ dbn ] = false;
             }
+            else if (ll == "v-s:deleted")
+            {
+                databasenames[ "deleted" ] = false;            	
+            }
         }
 
         return tta.op;
