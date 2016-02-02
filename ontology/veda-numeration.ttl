@@ -7,10 +7,11 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
 
-<http://semantic-machines.com/veda/veda-schema>
+
+<http://semantic-machines.com/veda/veda-numeration>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system ontology"@en ;
-  rdfs:label "Онтология системы Veda"@ru ;
+  rdfs:label "Veda system numeration ontology"@en ;
+  rdfs:label "Онтология нумерации системы Veda"@ru ;
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
@@ -78,7 +79,7 @@ v-s:numerationCommitedInterval
   rdfs:domain v-s:NumerationScopeClass ;
   rdfs:range v-s:NumerationCommitedIntervalClass;  
   rdfs:label "Numeration commited interval"@en ;
-  rdfs:label "Занятый интервал"@ru ;
+  rdfs:label "занятый интервал"@ru ;
 .
 v-s:NumerationCommitedIntervalClass
   rdf:type owl:Class ;
