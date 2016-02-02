@@ -7,6 +7,7 @@ var _Integer = 4;
 var _Datetime = 8;
 var _Decimal = 32;
 var _Bool = 64;
+var _Boolean = 64;
 
 function genUri()
 {
