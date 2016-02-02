@@ -161,6 +161,8 @@ veda.Module(function AppPresenter(veda) { "use strict";
 				$('#error-modal').modal('show');
 				break;
 			case 422:
+				console.log ? console.log("Error:", JSON.stringify(error)) : null;
+				break;
 			case 429:
 				console.log ? console.log("Error:", JSON.stringify(error)) : null;
 				$('#error-message').html("Операция не выполнена. Данные не сохранены. <br/> Пожалуйста,  оставайтесь на этой странице и обратитесь в службу тех. поддержки. <br/><br/> Operation failed. Data wasn't saved. <br/> Please keep this page open and call support team.");
