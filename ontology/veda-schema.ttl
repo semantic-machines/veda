@@ -1990,3 +1990,29 @@ v-s:coauthor
   rdfs:label "соавтор"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
+v-s:Permission1602021330
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:NumerationScopeClass  ;
+  v-s:permissionSubject cfg:ReadUser ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:created "2016-02-02T13:31:33"^^xsd:dateTime ;
+  v-s:published "2016-02-02T13:31:33"^^xsd:dateTime ;
+  v-s:startTime "2016-02-02T13:31:33"^^xsd:dateTime ;
+  rdfs:label "Read. All read user. All NumerationScopeClass."@en ;
+  rdfs:label "Чтение. Все пользователи. Все документы класса Пространство автонумерации"@ru ;
+  rdfs:comment "Запись о выдаче прав группе всех пользователей на чтение группы всех документов класса Пространство автонумерации" ;  
+.
+
+v-s:Permission1602021335
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:NumerationCommitedIntervalClass  ;
+  v-s:permissionSubject cfg:ReadUser ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:created "2016-02-02T13:35:33"^^xsd:dateTime ;
+  v-s:published "2016-02-02T13:35:33"^^xsd:dateTime ;
+  v-s:startTime "2016-02-02T13:35:33"^^xsd:dateTime ;
+  rdfs:label "Read. All read user. All NumerationCommitedIntervalClass."@en ;
+  rdfs:label "Чтение. Все пользователи. Все документы класса Занятый интервал"@ru ;
+  rdfs:comment "Запись о выдаче прав группе всех пользователей на чтение группы всех документов класса Занятый интервал" ;  
+.
