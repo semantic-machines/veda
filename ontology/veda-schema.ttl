@@ -148,6 +148,7 @@ v-s:Document
   rdfs:subClassOf owl:Thing ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Exportable ;
+  rdfs:subClassOf v-s:AuthorizedClass ;
 .
 
 ### veda-function-search
@@ -2015,4 +2016,12 @@ v-s:Permission1602021335
   rdfs:label "Read. All read user. All NumerationCommitedIntervalClass."@en ;
   rdfs:label "Чтение. Все пользователи. Все документы класса Занятый интервал"@ru ;
   rdfs:comment "Запись о выдаче прав группе всех пользователей на чтение группы всех документов класса Занятый интервал" ;  
+.
+
+v-s:AuthorizedClass
+  rdf:type owl:Class ;
+  rdfs:label "Authorized class"@en ;
+  rdfs:label "Авторизуемый класс"@ru ;
+  rdfs:comment "Суперкласс всех классов, индивиды которых могут авторизоваться по типу"@en ;
+  rdfs:comment "Superclass for classes whose individuals should be authorized by type"@ru ;
 .
