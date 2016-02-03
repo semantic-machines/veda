@@ -1526,6 +1526,8 @@ v-s:year
   rdfs:label "год"@ru ;
   rdfs:range xsd:integer ;
 .
+
+# veda-ui-reports (v-ui:)
 ################################ REPORTS START ####################################################
 
 v-s:ReportsForClass
@@ -1562,6 +1564,7 @@ v-s:Report
 
 ################################ REPORTS END ####################################################
 
+# veda-journal (v-s:)
 ################################ JOURNAL ####################################################
 v-s:Journal
   rdf:type owl:Class ;
@@ -1649,6 +1652,8 @@ v-s:DocumentDeleted
   rdfs:label "Document deleted"@en ;
 .
 ####################################################################################
+
+# veda-ui-clone (v-ui:)
 v-s:DocumentLinkRules
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Document ;
@@ -1752,7 +1757,7 @@ v-s:PsRulesBooleanProperty
 .
 v-s:DocumentLinkRulesTemplate
   rdf:type v-ui:ClassTemplate ;
-	rdfs:isDefinedBy v-s: ;
+  rdfs:isDefinedBy v-s: ;
   rdfs:label "Шаблон для класса Правило связи двух документов"@ru ;
   rdfs:label "Template for DocumentLinkRules"@en ;
   v-ui:forClass v-s:DocumentLinkRules ;
@@ -1782,7 +1787,6 @@ v-s:DocumentLinkRulesTemplate
 
 		  </div>
 		</div>
-		
 		<div class="row">
 		  <div class="col-md-3">
 			<em about="v-s:displayName" property="rdfs:label"></em>
@@ -1790,7 +1794,6 @@ v-s:DocumentLinkRulesTemplate
 			<veda-control property="v-s:displayName" type="multilingualText" class="-view edit search"></veda-control>
 		  </div>
 		 </div>
-		 
 		<div class="row">		 
 		  <div class="col-md-3">
 			<veda-control property="v-s:unique" type="booleanCheckbox"></veda-control>
@@ -1811,7 +1814,6 @@ v-s:DocumentLinkRulesTemplate
 		</div>		
 	</div>
     </div>
-
     <br><br>
     <div class="well well-sm">
       <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
@@ -1820,7 +1822,6 @@ v-s:DocumentLinkRulesTemplate
       <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
       <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     </div>
-
   </div>
 """ ;
 .
@@ -1868,6 +1869,7 @@ v-s:coauthor
   rdfs:range v-s:Appointment ;
 .
 
+# veda-core
 v-s:AuthorizedClass
   rdf:type owl:Class ;
   rdfs:label "Authorized class"@en ;
