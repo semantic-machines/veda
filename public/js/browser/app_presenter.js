@@ -41,16 +41,19 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	
 	// Login invitation
 	var loginTmpl = $("#login-template").html();
-	var loginContainer = $("#login-holder");
+	var loginContainer = $("#login-container");
 	loginContainer.html(loginTmpl);
 	var errorMsg = $("#login-error", loginContainer);	
 	var submit = $("#submit", loginContainer);
 	submit.click( function (e) {
 		e.preventDefault();
-		var authResult;
+		var login = $("#login", loginContainer).val(),
+			password = $("#password", loginContainer).val(),
+			hash = Sha256.hash(password),
+			authResult;
 		try {
 			errorMsg.addClass("hidden");
-			authResult = veda.login( $("#login", loginContainer).val(), Sha256.hash( $("#password", loginContainer).val() ) );
+			authResult = veda.login(login, hash);
 			veda.trigger("login:success", authResult);
 		} catch (ex1) {
 			if (ntlm) {
@@ -58,8 +61,8 @@ veda.Module(function AppPresenter(veda) { "use strict";
 					type: "POST",
 					url: ntlmAddress + "ad/",
 					data: {
-						"login": $("#login", loginContainer).val(),
-						"password": $("#password", loginContainer).val()
+						"login": login,
+						"password": password
 					},
 					async: false
 				};

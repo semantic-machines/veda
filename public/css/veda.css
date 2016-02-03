@@ -415,7 +415,7 @@ html, body {
   height:100%;
   z-index: 999999;
 }
-#login-holder {
+#login-container {
   position:absolute; 
   top:0;
   left:0;
