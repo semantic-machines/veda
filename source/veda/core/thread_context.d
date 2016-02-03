@@ -125,7 +125,7 @@ class PThreadContext : Context
             }
             catch (Exception ex)
             {
-                printPrettyTrace(stderr);
+                //printPrettyTrace(stderr);
                 log.trace("context.sys_ticket:EX!%s", ex.msg);
             }
 
