@@ -50,9 +50,8 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		var authResult;
 		try {
 			errorMsg.addClass("hidden");
-			// Successful authentication calls veda.init() in model
 			authResult = veda.login( $("#login", loginContainer).val(), Sha256.hash( $("#password", loginContainer).val() ) );
-			loginContainer.addClass("hidden");
+			//loginContainer.addClass("hidden");
 			veda.trigger("login:success", authResult);
 		} catch (ex1) {
 			if (ntlm) {
@@ -68,7 +67,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 				try {
 					authResult = $.ajax(params);
 					authResult = JSON.parse( authResult.responseText );
-					loginContainer.addClass("hidden");
+					//loginContainer.addClass("hidden");
 					veda.trigger("login:success", authResult);
 					return;
 				} catch (ex2) {}
@@ -105,7 +104,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 							end_time: end_time
 						};
 					if (ticket && user_uri && end_time) {
-						loginContainer.addClass("hidden");
+						//loginContainer.addClass("hidden");
 						veda.trigger("login:success", authResult);
 					}
 				} catch (e) {}
@@ -117,6 +116,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 
 	// Initialize application if ticket is valid
 	veda.on("login:success", function (authResult) {
+		loginContainer.addClass("hidden");
 		veda.user_uri = authResult.user_uri;
 		veda.ticket = authResult.ticket;
 		veda.end_time = authResult.end_time;
