@@ -51,7 +51,6 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		try {
 			errorMsg.addClass("hidden");
 			authResult = veda.login( $("#login", loginContainer).val(), Sha256.hash( $("#password", loginContainer).val() ) );
-			//loginContainer.addClass("hidden");
 			veda.trigger("login:success", authResult);
 		} catch (ex1) {
 			if (ntlm) {
@@ -67,7 +66,6 @@ veda.Module(function AppPresenter(veda) { "use strict";
 				try {
 					authResult = $.ajax(params);
 					authResult = JSON.parse( authResult.responseText );
-					//loginContainer.addClass("hidden");
 					veda.trigger("login:success", authResult);
 					return;
 				} catch (ex2) {}
@@ -104,7 +102,6 @@ veda.Module(function AppPresenter(veda) { "use strict";
 							end_time: end_time
 						};
 					if (ticket && user_uri && end_time) {
-						//loginContainer.addClass("hidden");
 						veda.trigger("login:success", authResult);
 					}
 				} catch (e) {}
