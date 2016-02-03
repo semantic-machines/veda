@@ -91,6 +91,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		delCookie("user_uri"); 
 		delCookie("ticket"); 
 		delCookie("end_time");
+		loginContainer.removeClass("hidden");
 		if (ntlm) {
 			iframe.one("load", function () {
 				try {
@@ -104,18 +105,13 @@ veda.Module(function AppPresenter(veda) { "use strict";
 							end_time: end_time
 						};
 					if (ticket && user_uri && end_time) {
+						loginContainer.addClass("hidden");
 						veda.trigger("login:success", authResult);
-					}  else {
-						loginContainer.removeClass("hidden");
 					}
-				} catch (e) {
-					loginContainer.removeClass("hidden");
-				}
+				} catch (e) {}
 			});
 			document.domain = document.domain;
 			iframe.attr("src", ntlmAddress);
-		} else {
-			loginContainer.removeClass("hidden");
 		}
 	});
 
