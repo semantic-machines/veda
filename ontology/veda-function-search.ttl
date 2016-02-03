@@ -312,6 +312,7 @@ v-fs:FulltextRequestModel
 	self.result  = [];
 	self.count  = 0;
 	self.selected = [];
+	self.q = q;
 	self.search = function () {
 		self.trigger("beforeSearch");
 		self.result = query(veda.ticket, q, sort, databases, reopen);
@@ -437,7 +438,9 @@ v-fs:FulltextRequestTemplate
 	});
 
 	// Present results if query defined
-	if (self.count) { self.trigger("afterSearch"); }
+	if (self.q) { 
+		self.trigger("afterSearch"); 
+	}
 
 	// Update user aspect when search request was saved
 	function updateAspect() {
@@ -483,47 +486,44 @@ v-fs:FulltextRequestTemplate
 		
 		// Nothing found
 		if (self.count === 0) {
-			params.tab("show");
 			notFound.show();
-
+		}
 		// Render results
-		} else {
-			self.page = self.page || 0;
-			if (self.count < self.page * veda.user.displayedElements) {
-				self.page = Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0) - 1;
-			}
-			resultsList.attr("start", self.page * veda.user.displayedElements + 1);
-			results.tab("show");
-			
-			for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
-				(function (i) {
-					setTimeout(function () {
-						var container = $("<li>").appendTo(resultsList);
-						var result = new veda.IndividualModel( self.result[i] );
-						var tmpl = genericTemplate(result);
-						result.present(container, tmpl);
-					}, 0);
-				}(i));
-			}
-			
-			// Show pager
-			for (var pg = 0; pg < Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0); pg++) {
-				var $pg = $("<li/>")
-					.attr("class", pg === self.page ? "active" : "")
-					.appendTo(pager);
-				var $a = $("<a/>", {
-					"text" : pg + 1,
-					"click": (function (pg) {
-						if (pg === self.page) return $.noop;
-						return function (event) {
-							event.preventDefault();
-							self.page = pg;
-							self.trigger("afterSearch");
-						}
-					})(pg),
-					"href" : ""
-				}).appendTo($pg);
-			}
+		self.page = self.page || 0;
+		if (self.count < self.page * veda.user.displayedElements) {
+			self.page = Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0) - 1;
+		}
+		resultsList.attr("start", self.page * veda.user.displayedElements + 1);
+		results.tab("show");
+		
+		for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
+			(function (i) {
+				setTimeout(function () {
+					var container = $("<li>").appendTo(resultsList);
+					var result = new veda.IndividualModel( self.result[i] );
+					var tmpl = genericTemplate(result);
+					result.present(container, tmpl);
+				}, 0);
+			}(i));
+		}
+		
+		// Show pager
+		for (var pg = 0; pg < Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0); pg++) {
+			var $pg = $("<li/>")
+				.attr("class", pg === self.page ? "active" : "")
+				.appendTo(pager);
+			var $a = $("<a/>", {
+				"text" : pg + 1,
+				"click": (function (pg) {
+					if (pg === self.page) return $.noop;
+					return function (event) {
+						event.preventDefault();
+						self.page = pg;
+						self.trigger("afterSearch");
+					}
+				})(pg),
+				"href" : ""
+			}).appendTo($pg);
 		}
 	}
 </script>
@@ -586,6 +586,7 @@ v-fs:AttributiveRequestModel
 	self.result  = [];
 	self.count  = 0;
 	self.selected = [];
+	self.q = q;
 	self.search = function () {
 		self.trigger("beforeSearch");
 		self.result = query(veda.ticket, q, sort, databases, reopen);
@@ -725,7 +726,9 @@ v-fs:AttributiveRequestTemplate
 	}
 
 	// Present results if query defined
-	if (self.count) { self.trigger("afterSearch"); }
+	if (self.q) { 
+		self.trigger("afterSearch"); 
+	}
 	
 	// Display search form
 	function typeChanged(property_uri, types) {
@@ -878,48 +881,45 @@ v-fs:AttributiveRequestTemplate
 		
 		// Nothing found
 		if (self.count === 0) {
-			params.tab("show");
 			notFound.show();
-
+		}
 		// Render results
-		} else {
-			self.page = self.page || 0;
-			if (self.count < self.page * veda.user.displayedElements) {
-				self.page = Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0) - 1;
-			}
-			results.tab("show");
-			
-			for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
-				(function (i) {
-					setTimeout(function () {
-						var _tmpl = $(tmpl.replace("###", i+1));
-						var result = new veda.IndividualModel( self.result[i] );
-						result.present(tBody, _tmpl);
-						_tmpl.dblclick(function (e) {
-							riot.route("#/" + result.id);
-						});
-					}, 0);
-				}(i));
-			}
-			
-			// Show pager
-			for (var pg = 0; pg < Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0); pg++) {
-				var $pg = $("<li/>")
-					.attr("class", pg === self.page ? "active" : "")
-					.appendTo(pager);
-				var $a = $("<a/>", {
-					"text" : pg + 1,
-					"click": (function (pg) {
-						if (pg === self.page) return $.noop;
-						return function (event) {
-							event.preventDefault();
-							self.page = pg;
-							self.trigger("afterSearch");
-						}
-					})(pg),
-					"href" : ""
-				}).appendTo($pg);
-			}
+		self.page = self.page || 0;
+		if (self.count < self.page * veda.user.displayedElements) {
+			self.page = Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0) - 1;
+		}
+		results.tab("show");
+		
+		for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
+			(function (i) {
+				setTimeout(function () {
+					var _tmpl = $(tmpl.replace("###", i+1));
+					var result = new veda.IndividualModel( self.result[i] );
+					result.present(tBody, _tmpl);
+					_tmpl.dblclick(function (e) {
+						riot.route("#/" + result.id);
+					});
+				}, 0);
+			}(i));
+		}
+		
+		// Show pager
+		for (var pg = 0; pg < Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0); pg++) {
+			var $pg = $("<li/>")
+				.attr("class", pg === self.page ? "active" : "")
+				.appendTo(pager);
+			var $a = $("<a/>", {
+				"text" : pg + 1,
+				"click": (function (pg) {
+					if (pg === self.page) return $.noop;
+					return function (event) {
+						event.preventDefault();
+						self.page = pg;
+						self.trigger("afterSearch");
+					}
+				})(pg),
+				"href" : ""
+			}).appendTo($pg);
 		}
 	}
 </script>
