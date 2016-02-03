@@ -7,13 +7,19 @@ backup_path=./backup/optiflow-backup-$TIMESTAMP
 mkdir $backup_path
 export PATH="$PATH:/sbin/"
 
-# Detele old backups
-find ./backup -mmin +7200 -delete
-
 # Stop optiflow
 ./control-stop.sh
 
+# Create backup of databases
 zip $backup_path/data.zip ./data -r -x "./data/files/*"
+
+# Craete backup of logs
+zip $backup_path/log.zip ./*.log -r
+
+# Detele old backups and logs
+find ./backup -mmin +7200 -delete
+find ./*.log -mmin +7200 -delete
+rm ./veda.log
 
 # Start optiflow
 ./control-start.sh
