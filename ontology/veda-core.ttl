@@ -1,0 +1,484 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-core>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system ontology"@en ;
+  rdfs:label "Онтология системы Veda"@ru ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+### CLASSES ###
+
+v-s:Bundle
+  rdf:type owl:Class ;
+  rdfs:label "Bundle"@en ;
+  rdfs:label "Текстовая константа"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+
+v-s:Account
+  rdf:type owl:Class ;
+  rdfs:label "Account"@en ;
+  rdfs:label "Учетная запись"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+
+v-s:Email
+  rdf:type owl:Class ;
+  rdfs:label "e-mail"@en ;
+  rdfs:label "электронное письмо"@ru ;
+  rdfs:subClassOf v-s:Deliverable ;
+.
+
+v-s:Codelet
+  rdf:type owl:Class ;
+  rdfs:label "Codelet"@en ;
+  rdfs:label "Исполняемый Код"@ru ;
+.
+
+v-s:Container
+  rdf:type owl:Class ;
+  rdfs:label "Контейнер"@ru ;
+.
+
+v-s:TemplateForText
+  rdf:type owl:Class ;
+  rdfs:label "Шаблон для текста"@ru ;
+.
+
+v-s:Event
+  rdf:type owl:Class ;
+  rdfs:label "Event"@en ;
+  rdfs:label "Событие"@ru ;
+.
+
+v-s:Group
+  rdf:type owl:Class ;
+  rdfs:comment "Group of resources"@en ;
+  rdfs:comment "Группа ресурсов"@ru ;
+  rdfs:label "Group"@en ;
+  rdfs:label "Группа"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+
+v-s:Membership
+  rdf:type owl:Class ;
+  rdfs:label "Membership"@en ;
+  rdfs:label "Принадлежность"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+
+v-s:PermissionStatement
+  rdf:type owl:Class ;
+  rdfs:comment "Permissions record defines access rigths for individuals of one class to individuals of another class."@en ;
+  rdfs:comment "Запись о выдаче прав описывает права индивидов одного класса по отношению к индивидам другого класса."@ru ;
+  rdfs:label "Permissions record"@en ;
+  rdfs:label "Запись о выдаче прав"@ru ;
+.
+
+v-s:Person
+  rdf:type owl:Class ;
+  rdfs:comment "A person." ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Person"@en ;
+  rdfs:label "Персона"@ru ;
+  rdfs:subClassOf v-s:Versioned ;
+  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Exportable ;  
+.
+
+v-s:Transform
+  rdf:type owl:Class ;
+  rdfs:label "для переливки из старой системы"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+
+v-s:Versioned
+  rdf:type owl:Class ;
+  rdfs:label "Versioned thing"@en ;
+  rdfs:label "Версионная сущность"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+
+v-s:DraftAllowed
+  rdf:type owl:Class ;
+  rdfs:label "Draft allowed"@en ;
+  rdfs:label "Возможно создание черновика"@ru ;
+  rdfs:subClassOf v-s:Versioned ;
+.
+
+v-s:Exportable
+  rdf:type owl:Class ;
+  rdfs:label "Exportable thing"@en ;
+  rdfs:label "Выгружаемая сущность"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+
+v-s:Deliverable
+  rdf:type owl:Class ;
+  rdfs:label "Сущность подлежащая доставке" ;
+  rdfs:label "Exportable thing"@en ;
+  rdfs:label "Экспортируемая сущность"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+
+v-s:AuthorizedClass
+  rdf:type owl:Class ;
+  rdfs:label "Authorized class"@en ;
+  rdfs:label "Авторизуемый класс"@ru ;
+  rdfs:comment "Суперкласс всех классов, индивиды которых могут авторизоваться по типу"@en ;
+  rdfs:comment "Superclass for classes whose individuals should be authorized by type"@ru ;
+.
+
+v-s:ClassModel
+  rdf:type owl:Class ;
+  rdfs:label "Class model"@en ;
+  rdfs:label "Модель класса"@ru ;
+.
+
+### PROPERTIES ###
+
+v-s:hasDraft
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:DraftAllowed ;
+  rdfs:label "has draft"@en ;
+  rdfs:label "имеет черновик"@ru ;
+  rdfs:range v-s:DraftAllowed ;
+.
+
+v-s:isDraftOf
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:DraftAllowed ;
+  rdfs:label "is draft of"@en ;
+  rdfs:label "является черновиком"@ru ;
+  rdfs:range v-s:DraftAllowed ;
+.
+
+v-s:actualVersion
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Versioned ;
+  rdfs:label "actual version"@en ;
+  rdfs:label "актуальная версия"@ru ;
+  rdfs:range v-s:Versioned ;
+.
+
+v-s:author
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain rdfs:Resource ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "author"@en ;
+  rdfs:label "автор"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+
+v-s:birthday
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  rdfs:comment "The birthday of this Person."@en ;
+  rdfs:comment "День рождения этой персоны"@ru ;
+  rdfs:domain v-s:Person ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "birthday"@en ;
+  rdfs:label "день рождения"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+
+v-s:canCreate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:PermissionStatement ;
+  rdfs:label "can create"@en ;
+  rdfs:label "можно создавать"@ru ;
+  rdfs:range xsd:boolean ;
+.
+
+v-s:canDelete
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:PermissionStatement ;
+  rdfs:label "can delete"@en ;
+  rdfs:label "можно удалять"@ru ;
+  rdfs:range xsd:boolean ;
+.
+
+v-s:canRead
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:PermissionStatement ;
+  rdfs:label "can read"@en ;
+  rdfs:label "можно читать"@ru ;
+  rdfs:range xsd:boolean ;
+.
+
+v-s:canUpdate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:PermissionStatement ;
+  rdfs:label "can update"@en ;
+  rdfs:label "можно изменять"@ru ;
+  rdfs:range xsd:boolean ;
+.
+
+v-s:created
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain rdfs:Resource ;
+  rdfs:label "entry date"@en ;
+  rdfs:label "дата создания"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+
+v-s:deleted
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain rdfs:Resource ;
+  rdfs:label "deleted"@en ;
+  rdfs:label "удален"@ru ;
+  rdfs:range xsd:boolean ;
+.
+
+v-s:destClass
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Transform ;
+  rdfs:label "название класса, в который вписываем"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:destProperty
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Transform ;
+  rdfs:label "название свойства, в которое вписываем"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:filter
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Event ;
+  rdfs:label "filter"@en ;
+  rdfs:label "фильтр"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+
+v-s:firstName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "The first name of a person."@en ;
+  rdfs:comment "Имя персоны."@ru ;
+  rdfs:domain v-s:Person ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "first name"@en ;
+  rdfs:label "имя"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:fullUrl
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain owl:Ontology ;
+  rdfs:label "full URL"@en ;
+  rdfs:label "полный URL"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:hasAccount
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:OrganizationUnit ;
+  rdfs:domain v-s:Person ;
+  rdfs:label "account"@en ;
+  rdfs:label "учетная запись"@ru ;
+  rdfs:range v-s:Account ;
+.
+
+v-s:lastName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "The last name of a person."@en ;
+  rdfs:comment "Фамилия персоны"@ru ;
+  rdfs:domain v-s:Person ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "last name"@en ;
+  rdfs:label "фамилия"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:login
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Account ;
+  rdfs:label "login"@en ;
+  rdfs:label "логин"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:mailbox
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "Mailbox"@en ;
+  rdfs:comment "Адрес электронной почты"@ru ;
+  rdfs:domain v-s:Account ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "mailbox"@en ;
+  rdfs:label "адрес эл. почты"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:memberOf
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Membership ;
+  rdfs:label "member of group"@en ;
+  rdfs:label "член группы"@ru ;
+  rdfs:range v-s:Group ;
+.
+
+v-s:middleName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Person ;
+  rdfs:label "middle name"@en ;
+  rdfs:label "отчество"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:nextVersion
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Versioned ;
+  rdfs:label "next version"@en ;
+  rdfs:label "следующая версия"@ru ;
+  rdfs:range v-s:Versioned ;
+.
+
+v-s:owner
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Account ;
+  rdfs:domain v-ui:Preferences ;
+  rdfs:label "owner"@en ;
+  rdfs:label "владелец"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Person ;
+.
+
+v-s:password
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Account ;
+  rdfs:label "password"@en ;
+  rdfs:label "пароль"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:permissionObject
+  rdf:type owl:ObjectProperty ;
+  rdfs:comment "An object to which rights are granted."@en ;
+  rdfs:comment "Объект, на который выдаются права."@ru ;
+  rdfs:domain v-s:PermissionStatement ;
+  rdfs:label "permission resource"@en ;
+  rdfs:label "ресурс полномочий"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+
+v-s:permissionSubject
+  rdf:type owl:ObjectProperty ;
+  rdfs:comment "Subject whom rights are granted."@en ;
+  rdfs:comment "Субъект, которому предоставляются права."@ru ;
+  rdfs:domain v-s:PermissionStatement ;
+  rdfs:label "permission subject"@en ;
+  rdfs:label "субъект полномочий"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+
+v-s:subject
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "subject" ;
+  rdfs:domain v-s:Deliverable ;
+  rdfs:range xsd:string ;
+.
+
+v-s:messageBody
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "message body" ;
+  rdfs:domain v-s:Deliverable ;
+  rdfs:range xsd:string ;
+.
+
+v-s:templateBody
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "тело шаблона" ;
+  rdfs:range v-s:TemplateForText ;
+  rdfs:range xsd:string ;
+.
+
+v-s:templateSubject
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "тема шаблона" ;
+  rdfs:range v-s:TemplateForText ;
+  rdfs:range xsd:string ;
+.
+
+v-s:templateLanguage
+  rdf:type owl:ObjectProperty ;
+  rdfs:range v-s:TemplateForText ;
+  rdfs:label "template language"@en ;
+  rdfs:label "язык используемый в шаблоне"@ru ;
+  rdfs:range v-ui:Language ;
+.
+
+v-s:previousVersion
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Versioned ;
+  rdfs:label "previous version"@en ;
+  rdfs:label "предыдущая версия"@ru ;
+  rdfs:range v-s:Versioned ;
+.
+
+v-s:resource
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Membership ;
+  rdfs:domain v-s:Container ;
+  rdfs:label "resource"@en ;
+  rdfs:label "ресурс"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+
+v-s:script
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:ClassModel ;
+  rdfs:domain v-s:Codelet ;
+  rdfs:domain v-s:Event ;
+  rdfs:label "script"@en ;
+  rdfs:label "скрипт"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:srcClassName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Transform ;
+  rdfs:label "id шаблона, из которого берем"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:srcPropertyName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Transform ;
+  rdfs:label "имя аттрибута, которое берем"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:startTime
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:HRRecord ;
+  rdfs:domain v-s:PermissionStatement ;
+  rdfs:label "start time"@en ;
+  rdfs:label "время начала"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+
+v-s:endTime
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:HRRecord ;
+  rdfs:domain v-s:PermissionStatement ;
+  rdfs:label "end time"@en ;
+  rdfs:label "время окончания"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+
+### INDIVIDUALS ###
+
+v-s:AllResourcesGroup
+  rdf:type v-s:Group ;
+  rdfs:label "All resources"@ru ;
+  rdfs:label "Все ресурсы"@ru ;
+.

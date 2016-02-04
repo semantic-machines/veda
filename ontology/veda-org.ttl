@@ -93,20 +93,6 @@ v-s:childUnit
   owl:inverseOf v-s:parentUnit ;
 .
 
-v-s:city
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "city"@en ;
-  rdfs:label "город"@ru ;
-  rdfs:range xsd:string ;
-.
-
-v-s:contactInfo
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "contact info"@en ;
-  rdfs:label "контактные данные"@ru ;
-  rdfs:range xsd:string ;
-.
-
 v-s:employee
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:HRRecord ;
