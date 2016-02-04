@@ -39,7 +39,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		if (template) {
 			if (template instanceof veda.IndividualModel) template = $( template["v-ui:template"][0].toString() );
 			if (template instanceof String) template = $( template.toString() );
-			if (typeof template === "string") template = $( template );
+			if (typeof template === "string") {
+				if (template === "generic") {
+					var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
+					template = genericTemplate(individual, _class);
+				} else if (template === "json") {
+					var pre = $("<pre>"), 
+						json = JSON.stringify(individual._.individual, null, 2);
+					pre.text(json);
+					container.html(pre);
+					return;
+				} else {
+					template = $( template );
+				}
+			}
 			var $scripts = template.filter("script");
 			$scripts.map(function () { scripts.push( $(this).text() ); });
 			template = template.filter("*:not(script)");
