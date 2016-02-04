@@ -106,7 +106,7 @@ void fanout_thread(string thread_name, string _node_id)
         }
         catch (Throwable ex)
         {
-            log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+            log.trace("fanout# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
         }
     }
 }

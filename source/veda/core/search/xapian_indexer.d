@@ -1044,9 +1044,9 @@ void xapian_indexer(string thread_name, string _node_id)
                     },
                     (Variant v) { writeln(thread_name, "::xapian_indexer::Received some other type.", v); printPrettyTrace(stderr); });
         }
-        catch (Exception ex)
+        catch (Throwable ex)
         {
-            log.trace("^^^^indexer# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+            log.trace("xapian indexer# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
         }
     }
 }

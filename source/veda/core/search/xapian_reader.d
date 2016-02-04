@@ -79,7 +79,7 @@ class XapianReader : SearchReader
             }
             else if (ll == "v-s:deleted")
             {
-                databasenames[ "deleted" ] = false;            	
+                databasenames[ "deleted" ] = false;
             }
         }
 

@@ -468,181 +468,188 @@ void acl_manager(string thread_name, string db_path)
             });
     while (true)
     {
-        receive(
-                (CMD cmd)
-                {
-                    if (cmd == CMD.COMMIT)
+        try
+        {
+            receive(
+                    (CMD cmd)
                     {
-                        storage.flush(1);
-                    }
-                },
-                (CMD cmd, EVENT type, string msg, long op_id)
-                {
-                    if (cmd == CMD.PUT)
-                    {
-                        try
+                        if (cmd == CMD.COMMIT)
                         {
-                            Individual ind;
-                            if (cbor2individual(&ind, msg) < 0)
+                            storage.flush(1);
+                        }
+                    },
+                    (CMD cmd, EVENT type, string msg, long op_id)
+                    {
+                        if (cmd == CMD.PUT)
+                        {
+                            try
                             {
-                                log.trace("!ERR:invalid individual: [%s]", msg);
-                                return;
-                            }
-
-                            Resources rdfType = ind.resources[ rdf__type ];
-
-                            if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
-                            {
-                                if (trace_msg[ 114 ] == 1)
-                                    log.trace("store PermissionStatement: [%s]", ind);
-
-                                Resource permissionObject = ind.getFirstResource(veda_schema__permissionObject);
-                                Resource permissionSubject = ind.getFirstResource(veda_schema__permissionSubject);
-
-                                ubyte access;
-
-                                // найдем предыдущие права для данной пары
-                                string str = storage.find(permissionObject.uri ~ "+" ~ permissionSubject.uri);
-                                if (str !is null && str.length > 0)
+                                Individual ind;
+                                if (cbor2individual(&ind, msg) < 0)
                                 {
-                                    access = cast(ubyte)str[ 0 ];
+                                    log.trace("!ERR:invalid individual: [%s]", msg);
+                                    return;
                                 }
 
-                                Resource canCreate = ind.getFirstResource("v-s:canCreate");
-                                if (canCreate !is Resource.init)
+                                Resources rdfType = ind.resources[ rdf__type ];
+
+                                if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
                                 {
-                                    if (canCreate == true)
-                                        access = access | Access.can_create;
-                                    else
-                                        access = access | Access.cant_create;
-                                }
+                                    if (trace_msg[ 114 ] == 1)
+                                        log.trace("store PermissionStatement: [%s]", ind);
 
-                                Resource canRead = ind.getFirstResource("v-s:canRead");
-                                if (canRead !is Resource.init)
-                                {
-                                    if (canRead == true)
-                                        access = access | Access.can_read;
-                                    else
-                                        access = access | Access.cant_read;
-                                }
+                                    Resource permissionObject = ind.getFirstResource(veda_schema__permissionObject);
+                                    Resource permissionSubject = ind.getFirstResource(veda_schema__permissionSubject);
 
-                                Resource canUpdate = ind.getFirstResource("v-s:canUpdate");
-                                if (canUpdate !is Resource.init)
-                                {
-                                    if (canUpdate == true)
-                                        access = access | Access.can_update;
-                                    else
-                                        access = access | Access.cant_update;
-                                }
+                                    ubyte access;
 
-                                Resource canDelete = ind.getFirstResource("v-s:canDelete");
-                                if (canDelete !is Resource.init)
-                                {
-                                    if (canDelete == true)
-                                        access = access | Access.can_delete;
-                                    else
-                                        access = access | Access.cant_delete;
-                                }
-
-                                ResultCode res = storage.put(permissionObject.uri ~ "+" ~ permissionSubject.uri, "" ~ access);
-
-                                if (trace_msg[ 100 ] == 1)
-                                    log.trace("[acl index] (%s) ACL: %s+%s %s", text(res), permissionObject.uri, permissionSubject.uri,
-                                              text(access));
-                            }
-                            else if (rdfType.anyExist(veda_schema__Membership) == true)
-                            {
-                                if (trace_msg[ 114 ] == 1)
-                                    log.trace("store Membership: [%s]", ind);
-
-                                bool[ string ] add_memberOf;
-                                Resources resource = ind.getResources(veda_schema__resource);
-                                Resources memberOf = ind.getResources(veda_schema__memberOf);
-
-                                foreach (mb; memberOf)
-                                    add_memberOf[ mb.uri ] = true;
-
-                                foreach (rs; resource)
-                                {
-                                    bool[ string ] new_memberOf = add_memberOf.dup;
-                                    string groups_str = storage.find(rs.uri);
-                                    if (groups_str !is null)
+                                    // найдем предыдущие права для данной пары
+                                    string str = storage.find(permissionObject.uri ~ "+" ~ permissionSubject.uri);
+                                    if (str !is null && str.length > 0)
                                     {
-                                        string[] groups = groups_str.split(";");
-                                        foreach (group; groups)
+                                        access = cast(ubyte)str[ 0 ];
+                                    }
+
+                                    Resource canCreate = ind.getFirstResource("v-s:canCreate");
+                                    if (canCreate !is Resource.init)
+                                    {
+                                        if (canCreate == true)
+                                            access = access | Access.can_create;
+                                        else
+                                            access = access | Access.cant_create;
+                                    }
+
+                                    Resource canRead = ind.getFirstResource("v-s:canRead");
+                                    if (canRead !is Resource.init)
+                                    {
+                                        if (canRead == true)
+                                            access = access | Access.can_read;
+                                        else
+                                            access = access | Access.cant_read;
+                                    }
+
+                                    Resource canUpdate = ind.getFirstResource("v-s:canUpdate");
+                                    if (canUpdate !is Resource.init)
+                                    {
+                                        if (canUpdate == true)
+                                            access = access | Access.can_update;
+                                        else
+                                            access = access | Access.cant_update;
+                                    }
+
+                                    Resource canDelete = ind.getFirstResource("v-s:canDelete");
+                                    if (canDelete !is Resource.init)
+                                    {
+                                        if (canDelete == true)
+                                            access = access | Access.can_delete;
+                                        else
+                                            access = access | Access.cant_delete;
+                                    }
+
+                                    ResultCode res = storage.put(permissionObject.uri ~ "+" ~ permissionSubject.uri, "" ~ access);
+
+                                    if (trace_msg[ 100 ] == 1)
+                                        log.trace("[acl index] (%s) ACL: %s+%s %s", text(res), permissionObject.uri, permissionSubject.uri,
+                                                  text(access));
+                                }
+                                else if (rdfType.anyExist(veda_schema__Membership) == true)
+                                {
+                                    if (trace_msg[ 114 ] == 1)
+                                        log.trace("store Membership: [%s]", ind);
+
+                                    bool[ string ] add_memberOf;
+                                    Resources resource = ind.getResources(veda_schema__resource);
+                                    Resources memberOf = ind.getResources(veda_schema__memberOf);
+
+                                    foreach (mb; memberOf)
+                                        add_memberOf[ mb.uri ] = true;
+
+                                    foreach (rs; resource)
+                                    {
+                                        bool[ string ] new_memberOf = add_memberOf.dup;
+                                        string groups_str = storage.find(rs.uri);
+                                        if (groups_str !is null)
                                         {
-                                            if (group.length > 0)
-                                                new_memberOf[ group ] = true;
+                                            string[] groups = groups_str.split(";");
+                                            foreach (group; groups)
+                                            {
+                                                if (group.length > 0)
+                                                    new_memberOf[ group ] = true;
+                                            }
                                         }
+
+                                        OutBuffer outbuff = new OutBuffer();
+                                        foreach (key; new_memberOf.keys)
+                                        {
+                                            outbuff.write(key);
+                                            outbuff.write(';');
+                                        }
+
+                                        ResultCode res = storage.put(rs.uri, outbuff.toString());
+
+                                        if (trace_msg[ 101 ] == 1)
+                                            log.trace("[acl index] (%s) MemberShip: %s : %s", text(res), rs.uri, outbuff.toString());
                                     }
-
-                                    OutBuffer outbuff = new OutBuffer();
-                                    foreach (key; new_memberOf.keys)
-                                    {
-                                        outbuff.write(key);
-                                        outbuff.write(';');
-                                    }
-
-                                    ResultCode res = storage.put(rs.uri, outbuff.toString());
-
-                                    if (trace_msg[ 101 ] == 1)
-                                        log.trace("[acl index] (%s) MemberShip: %s : %s", text(res), rs.uri, outbuff.toString());
                                 }
                             }
-                        }
-                        finally
-                        {
-                            set_acl_manager_op_id(op_id);
-                        }
-                    }
-                },
-                (CMD cmd, Tid tid_response_reciever)
-                {
-                    if (cmd == CMD.NOP)
-                        send(tid_response_reciever, true);
-                    else
-                        send(tid_response_reciever, false);
-                },
-                (CMD cmd, string msg, Tid tid_response_reciever)
-                {
-                    if (cmd == CMD.BACKUP)
-                    {
-                        try
-                        {
-                            string backup_id;
-                            if (msg.length > 0)
-                                backup_id = msg;
-
-                            if (backup_id is null)
-                                backup_id = "0";
-
-                            Result res = storage.backup(backup_id);
-                            if (res == Result.Ok)
+                            finally
                             {
-                                size_bin_log = 0;
-                                bin_log_name = get_new_binlog_name(db_path);
+                                set_acl_manager_op_id(op_id);
                             }
-                            else if (res == Result.Err)
-                            {
-                                backup_id = "";
-                            }
-                            send(tid_response_reciever, backup_id);
                         }
-                        catch (Exception ex)
-                        {
-                            send(tid_response_reciever, "");
-                        }
-                    }
-                    else
+                    },
+                    (CMD cmd, Tid tid_response_reciever)
                     {
-                        send(tid_response_reciever, "?");
-                    }
-                },
-                (CMD cmd, int arg, bool arg2)
-                {
-                    if (cmd == CMD.SET_TRACE)
-                        set_trace(arg, arg2);
-                },
-                (Variant v) { writeln(thread_name, "::acl_manager::Received some other type: [", v, "]"); });
+                        if (cmd == CMD.NOP)
+                            send(tid_response_reciever, true);
+                        else
+                            send(tid_response_reciever, false);
+                    },
+                    (CMD cmd, string msg, Tid tid_response_reciever)
+                    {
+                        if (cmd == CMD.BACKUP)
+                        {
+                            try
+                            {
+                                string backup_id;
+                                if (msg.length > 0)
+                                    backup_id = msg;
+
+                                if (backup_id is null)
+                                    backup_id = "0";
+
+                                Result res = storage.backup(backup_id);
+                                if (res == Result.Ok)
+                                {
+                                    size_bin_log = 0;
+                                    bin_log_name = get_new_binlog_name(db_path);
+                                }
+                                else if (res == Result.Err)
+                                {
+                                    backup_id = "";
+                                }
+                                send(tid_response_reciever, backup_id);
+                            }
+                            catch (Exception ex)
+                            {
+                                send(tid_response_reciever, "");
+                            }
+                        }
+                        else
+                        {
+                            send(tid_response_reciever, "?");
+                        }
+                    },
+                    (CMD cmd, int arg, bool arg2)
+                    {
+                        if (cmd == CMD.SET_TRACE)
+                            set_trace(arg, arg2);
+                    },
+                    (Variant v) { writeln(thread_name, "::acl_manager::Received some other type: [", v, "]"); });
+        }
+        catch (Throwable ex)
+        {
+            log.trace("acl manager# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+        }
     }
 }
