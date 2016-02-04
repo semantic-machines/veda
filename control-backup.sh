@@ -17,9 +17,11 @@ zip $backup_path/data.zip ./data -r -x "./data/files/*"
 zip $backup_path/log.zip ./*.log -r
 
 # Detele old backups and logs
-find ./backup -mmin +7200 -delete
-find ./*.log -mmin +7200 -delete
+find ./data/lmdb-individuals.* -delete
+find ./data/lmdb-tickets.* -delete
+find ./*.log -delete
 rm ./veda.log
+find ./backup -mmin +7200 -delete
 
 # Start optiflow
 ./control-start.sh
