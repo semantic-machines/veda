@@ -579,32 +579,6 @@ td:SavedSearch1
   rdfs:label "Saved search 1"@en ;
 .
 
-td:SearchRequest1
-  rdf:type v-s:SearchRequest ;
-  rdfs:label "Поисковый запрос 1"@ru ;
-  rdfs:label "Search request 1"@en ;
-  v-s:selectedType v-s:Person ;
-  v-s:restriction td:SearchRestriction1 ;
-  v-s:sort td:SortOrder1 ;
-.
-td:SearchRestriction1
-  rdf:type v-s:SearchRestriction ;
-  rdfs:label "Поисковый запрос 1"@ru ;
-  rdfs:label "Search restriction 1"@en ;
-  v-s:onProperty rdfs:label ;
-  v-s:soughtValue "roman"^^xsd:string ;
-  v-s:soughtValue "andrey"^^xsd:string ;
-  v-s:soughtValue "valeriy"^^xsd:string ;
-  v-s:operator v-s:OR ;
-.
-td:SortOrder1
-  rdf:type v-s:SortOrder ;
-  rdfs:label "Порядок сортировки 1"@ru ;
-  rdfs:label "Sort order 1"@en ;
-  v-s:orderBy rdfs:label ;
-  v-s:direction v-s:Ascending ;
-.
-
 # ---------------------------- Тестовые экземпляры маршрутов ------------------------------
 
 # -------- стартовая форма маршрута ----------------
