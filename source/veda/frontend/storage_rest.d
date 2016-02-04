@@ -76,6 +76,9 @@ interface VedaStorageRest_API {
     @path("authenticate") @method(HTTPMethod.GET)
     Ticket authenticate(string login, string password);
 
+    @path("get_ticket_trusted") @method(HTTPMethod.GET)
+    Ticket get_ticket_trusted(string ticket, string login);
+
     @path("is_ticket_valid") @method(HTTPMethod.GET)
     bool is_ticket_valid(string ticket);
 
@@ -433,6 +436,15 @@ class VedaStorageRest : VedaStorageRest_API
         if (ticket.result != ResultCode.OK)
             throw new HTTPStatusException(ticket.result);
         return ticket;
+    }
+
+    Ticket get_ticket_trusted(string ticket, string login)
+    {
+        Ticket new_ticket = context.get_ticket_trusted(ticket, login);
+
+        if (new_ticket.result != ResultCode.OK)
+            throw new HTTPStatusException(new_ticket.result);
+        return new_ticket;
     }
 
     long get_operation_state(int module_id)
