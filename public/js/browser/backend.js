@@ -54,6 +54,15 @@ veda.Module(function Backend(veda) { "use strict";
 		return call_server(undefined, params, success, fail);
 	}
 
+	window.get_ticket_trusted = function (ticket, login, success, fail) {
+		var params = {
+			type: "GET",
+			url: "get_ticket_trusted",
+			data: { "ticket": ticket, "login": login }
+		};
+		return call_server(undefined, params, success, fail);
+	}
+
 	window.is_ticket_valid = function (ticket, success, fail) {
 		var params = {
 			type: "GET",

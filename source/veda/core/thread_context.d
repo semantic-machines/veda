@@ -566,6 +566,56 @@ class PThreadContext : Context
         return ticket;
     }
 
+    Ticket get_ticket_trusted(string tr_ticket_id, string login)
+    {
+        Ticket ticket;
+
+        if (trace_msg[ 18 ] == 1)
+            log.trace("trusted authenticate, ticket=[%s] login=[%s]", ticket, login);
+
+        ticket.result = ResultCode.Authentication_Failed;
+
+        if (login == null || login.length < 1 || tr_ticket_id.length < 6)
+            return ticket;
+
+        Ticket *tr_ticket = get_ticket(tr_ticket_id);
+
+        if (tr_ticket.result == ResultCode.OK)
+        {
+            bool is_superadmin = false;
+
+            void trace(string resource_group, string subject_group, string right)
+            {
+                if (subject_group == "cfg:SuperAdmin")
+                    is_superadmin = true;
+            }
+
+            get_rights_origin(tr_ticket, "cfg:SuperAdmin", &trace);
+
+
+            if (is_superadmin)
+            {
+                Ticket       sticket         = sys_ticket;
+                Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
+                foreach (user; candidate_users)
+                {
+                    string user_id = user.getFirstResource(veda_schema__owner).uri;
+                    if (user_id is null)
+                        continue;
+
+                    ticket = create_new_ticket(user_id);
+
+                    return ticket;
+                }
+            }
+        }
+
+        log.trace("failed trusted authenticate, ticket=[%s] login=[%s]", ticket, login);
+
+        ticket.result = ResultCode.Authentication_Failed;
+        return ticket;
+    }
+
     public Ticket authenticate(string login, string password)
     {
         StopWatch sw; sw.start;
