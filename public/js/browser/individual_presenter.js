@@ -45,7 +45,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					template = genericTemplate(individual, _class);
 				} else if (template === "json") {
 					var pre = $("<pre>"), 
-						json = JSON.stringify(individual._.individual, null, 2);
+						json = JSON.parse(individual._.original_individual),
+						ordered = {};
+					Object.keys(json).sort().forEach(function(key) {
+						ordered[key] = json[key];
+					});
+					json = JSON.stringify(ordered, null, 2);
 					pre.text(json);
 					container.html(pre);
 					return;
