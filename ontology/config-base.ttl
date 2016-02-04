@@ -574,7 +574,7 @@ cfg:Event_5
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  */
-print("MEMBERSHIP start:");
+//print("MEMBERSHIP start:");
 var doc_uri = document["@"];
 var _classes = document["rdf:type"];
 _classes.map(function (i) {
@@ -587,7 +587,7 @@ _classes.map(function (i) {
 		'rdfs:comment'  : [{data: "выдан cfg:Event_5", type : _String}]
 	};
 	put_individual (ticket, member, _event_id);
-	print("MEMBERSHIP: ", toJson(member));
+//	print("MEMBERSHIP: ", toJson(member));
 });
   """ ;
   rdfs:comment "скрипт включения индивидов в группу своего класса для авторизации по классу"@ru ;
