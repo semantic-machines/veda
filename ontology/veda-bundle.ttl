@@ -221,3 +221,8 @@ v-s:numerationErrorValueIsUnavailable
   rdfs:label "Данное значение занято"@ru ;
   rdfs:label "This value is already reserved"@en ;
 .
+v-s:ViewJournal
+  rdf:type v-s:Bundle ;
+  rdfs:label "Журнал"@ru ;
+  rdfs:label "Journal"@en ;
+.
