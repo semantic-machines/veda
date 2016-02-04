@@ -181,11 +181,6 @@ v-s:Instruction
   rdfs:label "Поручение"@ru ;
   rdfs:label "Instruction"@en ;
 .
-v-s:SearchRequest
-  rdf:type v-s:Bundle ;
-  rdfs:label "Поисковый запрос"@ru ;
-  rdfs:label "Search request"@en ;
-.
 v-s:DocumentIsVersion
   rdf:type v-s:Bundle ;
   rdfs:label "Документ устарел. Существует более поздняя версия данного документа"@ru ;
