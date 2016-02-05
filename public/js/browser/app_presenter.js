@@ -1,7 +1,7 @@
 // Veda application Presenter
 
 veda.Module(function AppPresenter(veda) { "use strict";
-	
+
 	// Prevent empty links routing
 	$("body").on("click", "[href='']", function (e) {
 		e.preventDefault();
@@ -16,10 +16,22 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		return riot.route(hash, forced);
 	});
 
+	// App loading indicator
+	var appLoadIndicator = $("#app-load-indicator"),
+		bar = $(".progress-bar", appLoadIndicator);
+	veda.on("init", function (progress) {
+		bar.css("width", progress + "%");
+		if (progress !== 100) {
+			appLoadIndicator.removeClass("hidden");
+		} else {
+			appLoadIndicator.addClass("hidden");
+		}
+	});
+
 	// Triggered in veda.init()
 	veda.one("started", function () {
-		var welcomeUri = (new veda.IndividualModel("cfg:Welcome"))["rdf:value"][0];
-		var welcome = new veda.IndividualModel(welcomeUri);
+		var welcomeUri = (new veda.IndividualModel("cfg:Welcome"))["rdf:value"][0],
+			welcome = new veda.IndividualModel(welcomeUri);
 		// Router function
 		riot.route( function (hash) {
 			var hash_tokens = hash.slice(2).split("/");
@@ -30,7 +42,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			} else {
 				welcome.present("#main");
 			}
-		});
+		});		
 	});
 	veda.on("started", function () {
 		var layoutUri = (new veda.IndividualModel("cfg:Layout"))["rdf:value"][0];
@@ -38,6 +50,40 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		layout.present("#app");
 		riot.route(location.hash, true);
 	});
+	
+	// Error handling
+	veda.on("error", function (error) {
+		switch (error.status) {
+			case 0:
+				console.log ? console.log("Error:", JSON.stringify(error)) : null;
+				$('#error-message').html("Операция не выполнена. Сервер недоступен. <br/> Пожалуйста, оставайтесь на этой странице и обратитесь в службу тех. поддержки. <br/><br/> Operation failed. Server is unavailable. <br> Please keep this page open and call support team.");
+				$('#error-description').text( JSON.stringify(error) );
+				$('#error-modal').modal('show');
+				break;
+			case 422:
+				console.log ? console.log("Error:", JSON.stringify(error)) : null;
+				break;
+			case 429:
+				console.log ? console.log("Error:", JSON.stringify(error)) : null;
+				$('#error-message').html("Операция не выполнена. Данные не сохранены. <br/> Пожалуйста,  оставайтесь на этой странице и обратитесь в службу тех. поддержки. <br/><br/> Operation failed. Data wasn't saved. <br/> Please keep this page open and call support team.");
+				$('#error-description').text( JSON.stringify(error) );
+				$('#error-modal').modal('show');
+				break;
+			case 471: 
+				veda.logout(); 
+				break;
+			case 472:
+				console.log ? console.log("Error:", JSON.stringify(error)) : null;
+				break;
+			case 473: 
+				break; // handled in login screen
+			default: 
+				$('#error-message').html("Операция не выполнена. <br/> Пожалуйста, оставайтесь на этой странице и обратитесь в службу тех. поддержки. <br/><br/> Operation failed. <br/> Please keep this page open and call support team.");
+				$('#error-description').text( JSON.stringify(error) );
+				$('#error-modal').modal('show');
+				console.log ? console.log("Error:", JSON.stringify(error)) : null;
+		}
+	});	
 	
 	// Login invitation
 	var loginTmpl = $("#login-template").html();
@@ -83,18 +129,19 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		ntlm = ntlmProvider.hasValue("rdf:value"),
 		iframe = $("<iframe>", {"class": "hidden"});
 	if (ntlm) {
-		var ntlmAddress = ntlmProvider["rdf:value"][0];
+		var ntlmAddress = ntlmProvider["rdf:value"][0].toString();
 		iframe.appendTo(loginContainer);
 	}
 
 	veda.on("login:failed", function () {
+		$("#app").empty();
 		delCookie("user_uri"); 
 		delCookie("ticket"); 
 		delCookie("end_time");
-		loginContainer.removeClass("hidden");
 		if (ntlm) {
 			iframe.one("load", function () {
 				try {
+					loginContainer.addClass("hidden");
 					var body = iframe.contents().find("body"),
 						ticket = $("#ticket", body).text(),
 						user_uri = $("#user_uri", body).text(),
@@ -106,11 +153,17 @@ veda.Module(function AppPresenter(veda) { "use strict";
 						};
 					if (ticket && user_uri && end_time) {
 						veda.trigger("login:success", authResult);
+					} else {
+						throw "Not authenticated";
 					}
-				} catch (e) {}
+				} catch (ex) {
+					loginContainer.removeClass("hidden");
+				}
 			});
 			document.domain = document.domain;
 			iframe.attr("src", ntlmAddress);
+		} else {
+			loginContainer.removeClass("hidden");
 		}
 	});
 
@@ -126,7 +179,9 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		veda.init();
 	});
 
+	// Logout handler
 	veda.on("logout", function () {
+		$("#app").empty();
 		delCookie("ticket"); 
 		delCookie("user_uri"); 
 		delCookie("end_time");
@@ -147,37 +202,5 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	} else { 
 		veda.trigger("login:failed");
 	}
-	
-	veda.on("error", function (error) {
-		switch (error.status) {
-			case 0:
-				console.log ? console.log("Error:", JSON.stringify(error)) : null;
-				$('#error-message').html("Операция не выполнена. Сервер недоступен. <br/> Пожалуйста, оставайтесь на этой странице и обратитесь в службу тех. поддержки. <br/><br/> Operation failed. Server is unavailable. <br> Please keep this page open and call support team.");
-				$('#error-description').text( JSON.stringify(error) );
-				$('#error-modal').modal('show');
-				break;
-			case 422:
-				console.log ? console.log("Error:", JSON.stringify(error)) : null;
-				break;
-			case 429:
-				console.log ? console.log("Error:", JSON.stringify(error)) : null;
-				$('#error-message').html("Операция не выполнена. Данные не сохранены. <br/> Пожалуйста,  оставайтесь на этой странице и обратитесь в службу тех. поддержки. <br/><br/> Operation failed. Data wasn't saved. <br/> Please keep this page open and call support team.");
-				$('#error-description').text( JSON.stringify(error) );
-				$('#error-modal').modal('show');
-				break;
-			case 471: 
-				veda.logout(); 
-				break;
-			case 472:
-				console.log ? console.log("Error:", JSON.stringify(error)) : null;
-				break;
-			case 473: 
-				break; // handled in login screen
-			default: 
-				$('#error-message').html("Операция не выполнена. <br/> Пожалуйста, оставайтесь на этой странице и обратитесь в службу тех. поддержки. <br/><br/> Operation failed. <br/> Please keep this page open and call support team.");
-				$('#error-description').text( JSON.stringify(error) );
-				$('#error-modal').modal('show');
-				console.log ? console.log("Error:", JSON.stringify(error)) : null;
-		}
-	});
+
 });

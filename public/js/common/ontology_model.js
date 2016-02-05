@@ -63,7 +63,10 @@ veda.Module(function (veda) { "use strict";
 				});
 			}
 		}
-
+		
+		// Initialiazation percentage
+		veda.trigger("init", 10);
+		
 		// Allocate ontology objects
 		Object.keys(self).map( function (uri) {
 			var individual = self[uri];
@@ -109,6 +112,9 @@ veda.Module(function (veda) { "use strict";
 			}
 		});
 
+		// Initialiazation percentage
+		veda.trigger("init", 20);
+
 		// Process classes
 		Object.keys(self.classes).map( function (uri) {
 			var _class = self.classes[uri];
@@ -124,6 +130,9 @@ veda.Module(function (veda) { "use strict";
 				item.subClasses[_class.id] = _class;
 			});
 		});
+
+		// Initialiazation percentage
+		veda.trigger("init", 30);
 
 		// Process properties
 		Object.keys(self.properties).map( function (uri) {
@@ -143,6 +152,9 @@ veda.Module(function (veda) { "use strict";
 			});
 		});
 
+		// Initialiazation percentage
+		veda.trigger("init", 60);
+
 		// Process specifications
 		Object.keys(self.specs).map( function (uri) {
 			var spec = self.specs[uri];
@@ -155,6 +167,9 @@ veda.Module(function (veda) { "use strict";
 			});
 		});
 
+		// Initialiazation percentage
+		veda.trigger("init", 70);
+
 		// Process templates
 		Object.keys(self.templates).map( function (uri) {
 			var template = self.templates[uri];
@@ -163,6 +178,10 @@ veda.Module(function (veda) { "use strict";
 				item.template = template;
 			});
 		});
+
+		// Initialiazation percentage
+		veda.trigger("init", 80);
+
 
 		// Process models
 		Object.keys(self.models).map( function (uri) {
@@ -173,6 +192,8 @@ veda.Module(function (veda) { "use strict";
 			});
 		});
 
+		// Initialiazation percentage
+		veda.trigger("init", 90);
 
 		// Initialize ontology objects
 		Object.keys(self).map( function (uri) {
@@ -180,6 +201,8 @@ veda.Module(function (veda) { "use strict";
 			if (!individual || !individual.id) return;
 			individual.init();
 		});
+
+		veda.trigger("init", 100);
 
 		//var t2 = new Date();
 		//console.log("onto load", (t2-t1)/1000, "sec", storage.length);
