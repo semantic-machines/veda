@@ -77,6 +77,7 @@ public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_stat
     veda.core.scripts.inc_count_recv_put();
 }
 
+string empty_uid = "";
 
 public void scripts_thread(string thread_name, string node_id)
 {
@@ -149,6 +150,11 @@ public void scripts_thread(string thread_name, string node_id)
                                 {
                                     g_prev_state.data = cast(char *)prev_state;
                                     g_prev_state.length = cast(int)prev_state.length;
+                                }
+                                else
+                                {
+                                    g_prev_state.data = cast(char *)empty_uid;
+                                    g_prev_state.length = cast(int)empty_uid.length;                                	
                                 }
 
                                 g_document.data = cast(char *)msg;

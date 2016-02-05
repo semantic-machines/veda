@@ -323,26 +323,26 @@ var new_membership =
 
 if (deleted && deleted[0].data == true)
 {
-//print ('IS DELETED');
-new_membership['v-s:deleted'] = deleted;
+    //print ('IS DELETED');
+    new_membership['v-s:deleted'] = deleted;
 }
 var res = put_individual (ticket, new_membership, _event_id);
 if (res != 200 && res != 1022)
 print ('res=', res, ' @@1 =', toJson (new_membership));			
 
 var type = document['rdf:type'];
-if (type && getUri (type) == 'v-s:Person')
+if (type && getUri (type) == 'v-s:Person' && document['@'] != 'cfg:Guest')
 {
-new_membership = 
-{
+    new_membership = 
+    {
 	'@' : genUri(), 
 	'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
 	'v-s:memberOf' : [{data: 'cfg:ReadUser', type : _Uri}],
 	'v-s:resource'  : [{data: doc_uri, type : _Uri}],
 	'rdfs:comment'  : [{data: "выдан cfg:Event_2", type : _String}]
-};
-res = put_individual (ticket, new_membership, _event_id);
-if (res != 200 && res != 1022)
+    };
+    res = put_individual (ticket, new_membership, _event_id);
+    if (res != 200 && res != 1022)
 	print ('res=', res, ' @@2 =', toJson (new_membership));			
 
 }
