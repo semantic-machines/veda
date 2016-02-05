@@ -116,7 +116,7 @@ v-s:Draft
   rdfs:label "Черновик"@ru ;
   rdfs:label "Draft"@en ;
 .
-v-s:toDraft
+v-s:ToDraft
   rdf:type v-s:Bundle ;
   rdfs:label "Сохранить в черновик"@ru ;
   rdfs:label "Save to draft"@en ;
@@ -211,12 +211,12 @@ v-s:Fact
   rdfs:label "Факт"@ru ;
   rdfs:label "Fact"@en ;
 .
-v-s:atLeastOneFilled
+v-s:AtLeastOneFilled
   rdf:type v-s:Bundle ;
   rdfs:label "Хотя ты одно из значений должно быть заполнено"@ru ;
   rdfs:label "At least one value must be filled"@en ;
 .
-v-s:numerationErrorValueIsUnavailable
+v-s:NumerationErrorValueIsUnavailable
   rdf:type v-s:Bundle ;
   rdfs:label "Данное значение занято"@ru ;
   rdfs:label "This value is already reserved"@en ;
