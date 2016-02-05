@@ -7,16 +7,9 @@ module util.logger;
 
 private
 {
-    import std.format;
-    import std.c.stdio;
-    import std.datetime;
-
-    import std.array : appender;
-
-    import std.stdio;
-    import std.datetime;
-    import std.c.linux.linux;
-    import std.concurrency;
+    import core.stdc.time, core.stdc.stdio, core.stdc.string;
+    import std.format, std.datetime, std.array : appender;
+    import std.stdio, std.datetime, std.concurrency;
 }
 
 /// Процесс отвечающий за логгирование
@@ -116,6 +109,20 @@ public class logger
                 args = выводимые переменные
      */
     public void trace_log_and_console(Char, A ...) (in Char[] fmt, A args)
+    {
+        init_tid_logger();
+        auto writer = appender!string();
+        formattedWrite(writer, fmt, args);
+        send(tid_logger, 'C', log_name, ext, src, writer.data);
+    }
+
+    /**
+        Записать информацию в лог файл и на консоль.
+       Params:
+                fmt = разметка сообщения
+                args = выводимые переменные
+     */
+    public void trace_console(Char, A ...) (in Char[] fmt, A args)
     {
         init_tid_logger();
         auto writer = appender!string();

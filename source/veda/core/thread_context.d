@@ -610,7 +610,7 @@ class PThreadContext : Context
             }
         }
 
-        log.trace("failed trusted authenticate, ticket=[%s] login=[%s]", ticket, login);
+        log.trace("failed trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
 
         ticket.result = ResultCode.Authentication_Failed;
         return ticket;

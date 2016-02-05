@@ -1,12 +1,11 @@
 /**
- * сервер
+ * core main thread
  */
 module veda.core.server;
 
 private
 {
-    import core.thread, std.stdio, std.string, std.c.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process;
-    version (linux) import std.c.linux.linux, core.stdc.stdlib;
+    import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import io.mq_client, veda.core.io.file_reader;
     import util.logger, util.utils, util.load_info;
@@ -82,17 +81,6 @@ bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
             });
     return res;
 }
-//		import io.zmq_io;
-
-extern (C) void handleTermination(int signal)
-{
-    writefln("!Caught signal: %s", signal);
-
-    system(cast(char *)("kill -kill " ~ text(getpid()) ~ "\0"));
-
-    //   getTrace();
-    exit(signal);
-}
 
 Context init_core(string node_id, string role, ushort listener_http_port, string write_storage_node)
 {
@@ -106,8 +94,6 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
 
     io_msg = new logger("pacahon", "io", "server");
     Tid[ P_MODULE ] tids;
-
-    bsd_signal(SIGINT, &handleTermination);
 
     try
     {
