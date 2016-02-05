@@ -5,12 +5,12 @@
 module veda.core.fanout;
 
 private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file;
-private import veda.type, veda.core.context;
-private import util.logger, util.cbor, veda.core.util.cbor8individual;
-private import storage.lmdb_storage, veda.core.thread_context;
-private import veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
+private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment;
+private import veda.type, veda.core.context, veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
+private import util.logger, util.cbor, veda.core.util.cbor8individual;
+private import storage.lmdb_storage, veda.core.thread_context;
 
 //////
 Mysql      mysql_conn;
@@ -281,6 +281,7 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
     }
     catch (Exception ex)
     {
+        printPrettyTrace(stdout);
         log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
     }
 
@@ -448,82 +449,97 @@ private void create_table_if_not_exists(string predicate, Resource rs)
 
 private void connect_to_smtp(Context context)
 {
-    Ticket sticket = context.sys_ticket();
-
-    node = context.getConfiguration();
-    Resources gates = node.resources.get("v-s:send_an_email_individual_by_event", Resources.init);
-    foreach (gate; gates)
+    try
     {
-        Individual connection = context.get_individual(&sticket, gate.uri);
+        Ticket sticket = context.sys_ticket();
 
-        Resource   transport = connection.getFirstResource("v-s:transport");
-        if (transport != Resource.init)
+        node = context.getConfiguration();
+        Resources gates = node.resources.get("v-s:send_an_email_individual_by_event", Resources.init);
+        foreach (gate; gates)
         {
-            if (transport.data() == "smtp")
+            Individual connection = context.get_individual(&sticket, gate.uri);
+
+            Resource   transport = connection.getFirstResource("v-s:transport");
+            if (transport != Resource.init)
             {
-                try
+                if (transport.data() == "smtp")
                 {
-                    smtp_conn = new MailSender(connection.getFirstLiteral("v-s:host"), cast(ushort)connection.getFirstInteger("v-s:port"));
+                    try
+                    {
+                        smtp_conn = new MailSender(connection.getFirstLiteral("v-s:host"), cast(ushort)connection.getFirstInteger("v-s:port"));
 
-                    if (smtp_conn is null)
-                        return;
+                        if (smtp_conn is null)
+                            return;
 
-                    string login = connection.getFirstLiteral("v-s:login");
-                    string pass  = connection.getFirstLiteral("v-s:password");
+                        string login = connection.getFirstLiteral("v-s:login");
+                        string pass  = connection.getFirstLiteral("v-s:password");
 
-                    if (login !is null && login.length > 0)
-                        smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
+                        if (login !is null && login.length > 0)
+                            smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
 
-                    // Connecting to smtp server
-                    auto result = smtp_conn.connect();
-                    if (!result.success)
-                        smtp_conn = null;
-                    else
-                        log.trace("success connection to SMTP server: [%s]", connection);
-                }
-                catch (Throwable ex)
-                {
-                    log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s], connection=[%s]", ex.line, ex.file, ex.msg, connection);
+                        // Connecting to smtp server
+                        auto result = smtp_conn.connect();
+                        if (!result.success)
+                            smtp_conn = null;
+                        else
+                            log.trace("success connection to SMTP server: [%s]", connection);
+                    }
+                    catch (Throwable ex)
+                    {
+                        log.trace("EX! fanout.connect_to_smtp# EX:[%s], connection=[%s]", ex.toString, ex.msg, connection);
+                    }
                 }
             }
         }
+    }
+    catch (Throwable ex)
+    {
+        printPrettyTrace(stdout);
+        log.trace("EX! fanout.connect_to_smtp# EX:[%s]", ex.toString, ex.msg);
     }
 }
 
 private void connect_to_mysql(Context context)
 {
-    Ticket sticket = context.sys_ticket();
-
-    node = context.getConfiguration();
-    Resources gates = node.resources.get("v-s:push_individual_by_event", Resources.init);
-    foreach (gate; gates)
+    try
     {
-        Individual connection = context.get_individual(&sticket, gate.uri);
+        Ticket sticket = context.sys_ticket();
 
-        Resource   transport = connection.getFirstResource("v-s:transport");
-        if (transport != Resource.init)
+        node = context.getConfiguration();
+        Resources gates = node.resources.get("v-s:push_individual_by_event", Resources.init);
+        foreach (gate; gates)
         {
-            if (transport.data() == "mysql")
+            Individual connection = context.get_individual(&sticket, gate.uri);
+
+            Resource   transport = connection.getFirstResource("v-s:transport");
+            if (transport != Resource.init)
             {
-                try
+                if (transport.data() == "mysql")
                 {
-                    database_name = connection.getFirstLiteral("v-s:sql_database");
-                    mysql_conn    = new Mysql(connection.getFirstLiteral("v-s:host"),
-                                              cast(uint)connection.getFirstInteger("v-s:port"),
-                                              connection.getFirstLiteral("v-s:login"),
-                                              connection.getFirstLiteral("v-s:password"),
-                                              database_name);
+                    try
+                    {
+                        database_name = connection.getFirstLiteral("v-s:sql_database");
+                        mysql_conn    = new Mysql(connection.getFirstLiteral("v-s:host"),
+                                                  cast(uint)connection.getFirstInteger("v-s:port"),
+                                                  connection.getFirstLiteral("v-s:login"),
+                                                  connection.getFirstLiteral("v-s:password"),
+                                                  database_name);
 
-                    mysql_conn.query("SET NAMES 'utf8'");
+                        mysql_conn.query("SET NAMES 'utf8'");
 
-                    //writeln("@@@@1 CONNECT TO MYSQL IS OK ", text(mysql_conn));
-                }
-                catch (Throwable ex)
-                {
-                    log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+                        //writeln("@@@@1 CONNECT TO MYSQL IS OK ", text(mysql_conn));
+                    }
+                    catch (Throwable ex)
+                    {
+                        log.trace("EX! fanout.connect_to_mysql# EX:[%s], connection=[%s]", ex.toString(), connection);
+                    }
                 }
             }
         }
+    }
+    catch (Throwable ex)
+    {
+        log.trace("EX! fanout.connect_to_mysql# EX:[%s]", ex.toString());
     }
 }
 

@@ -213,9 +213,9 @@ class XapianReader : SearchReader
                         break;
 
                     reopen_db();
-                    log.trace("[%s][Q:%X] exec_xapian_query_and_queue_authorize, attempt=%d",
+                    log.trace("WARN! [%s][Q:%X] exec_xapian_query_and_queue_authorize, res=%d, attempt=%d",
                               context.get_name(), cast(void *)str_query,
-                              attempt_count);
+                              state, attempt_count);
                 }
             }
 
@@ -223,6 +223,11 @@ class XapianReader : SearchReader
 
             if (state > 0)
                 read_count = state;
+
+            if (state < 0)
+                log.trace("ERR! [%s][Q:%X] exec_xapian_query_and_queue_authorize, attempt=%d, query=[%s]",
+                          context.get_name(), cast(void *)str_query,
+                          attempt_count, str_query);
 
             destroy_Enquire(xapian_enquire);
             destroy_Query(query);
