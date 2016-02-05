@@ -1032,8 +1032,8 @@ v-ui:JournalTemplate
     </style>
     <h2 about="v-s:Journal" property="rdfs:label"></h2>
     <h4 id="docLnk">
-      <span about="v-wf:onDocument" property="rdfs:label"></span>: 
-      <span rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate"></span>
+      <span about="v-s:onDocument" property="rdfs:label"></span>: 
+      <span rel="v-s:onDocument" template="v-ui:ClassNameLabelTemplate"></span>
     </h4>
     <h4 id="procLnk">
       <span about="v-wf:onProcess" property="rdfs:label"></span>: 
@@ -1062,7 +1062,7 @@ v-ui:JournalTemplate
 </div>
 <script>
   if (!individual.hasValue("v-wf:onProcess")) $("#procLnk").remove();
-  if (!individual.hasValue("v-wf:onDocument")) $("#docLnk").remove();
+  if (!individual.hasValue("v-s:onDocument")) $("#docLnk").remove();
 </script>
   """ ;
 .
