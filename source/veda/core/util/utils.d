@@ -6,7 +6,7 @@ module util.utils;
 
 private
 {
-    import core.stdc.stdio, core.stdc.string, import core.sys.posix.time;
+    import core.stdc.stdio, core.stdc.string, core.sys.posix.time;
     import std.file, std.datetime, std.json, std.format, std.stdio, std.conv, std.string, std.concurrency;
     import std.ascii, std.csv, std.typecons, std.outbuffer;
     import veda.onto.individual, veda.onto.resource;
