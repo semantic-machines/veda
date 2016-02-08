@@ -30,8 +30,8 @@ basic.getDrivers().forEach (function (drv) {
 	var driver = basic.getDriver(drv);
 	basic.openPage(driver, drv);
 
-	basic.login(driver, 'karpovrt', '123', 'Роман', 'Карпов');
-//	basic.login(driver, 'bychinat', '123', 'Андрей', 'Бычин');
+//	basic.login(driver, 'karpovrt', '123', 'Роман', 'Карпов');
+	basic.login(driver, 'bychinat', '123', 'Андрей', 'Бычин');
 	
 	person.createPerson(driver, drv, 'first');
 	
