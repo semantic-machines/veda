@@ -1,10 +1,15 @@
 var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js'),
     person = require('./person.js'),
-    assert = require('assert'),
-    timeStamp = ''+Math.round(new Date()/1000);
+    assert = require('assert');
 
-function assertCounts(driver, totalCount, createCount, updateCount) {
+function assertCounts(driver, drv, totalCount, createCount, updateCount) {
+	
+	driver.findElement({css:'div[id="main"] > [typeof="v-s:Person"]'}).getAttribute('resource').then(function (individualId) {
+		driver.sleep(basic.SLOW_OPERATION);
+		basic.openPage(driver, drv, '#/'+individualId+'j?x='+Math.random());
+	}).thenCatch(function (e) {basic.errorHandler(e, "Seems person is not saved")});	
+
 	driver.findElements({css:'div.journal-record'}).then(function (result) {
 		assert.equal(totalCount, result.length);
 	}).thenCatch(function (e) {basic.errorHandler(e, "Invalid `total` journal elements count")});
@@ -23,20 +28,46 @@ basic.getDrivers().forEach (function (drv) {
 //	basic.login(driver, 'karpovrt', '123', 'Роман', 'Карпов');
 	basic.login(driver, 'bychinat', '123', 'Андрей', 'Бычин');
 	
-	// Create v-s:Versioned individual
-	
-	person.createPerson(driver, drv, timeStamp);
+	person.createPerson(driver, drv, 'first');
 	
 	// Check Journal (+1 new version)	
-	//TODO change this to "View journal" button click
-	driver.findElement({css:'div[id="main"] > [typeof="v-s:Person"]'}).getAttribute('resource').then(function (individualId) {
-		basic.openPage(driver, drv, '#/'+individualId+'j');
-	}).thenCatch(function (e) {basic.errorHandler(e, "Seems person is not saved")});
-	
-	driver.sleep(basic.SLOW_OPERATION);
-	
-	assertCounts(driver, 1, 1, 0);
+	assertCounts(driver, drv, 1, 1, 0);
 /*	
+	// Update individual	
+	// 		Return to document
+	driver.findElement({css:'[rel="v-s:onDocument"] [typeof="v-s:Person"] a'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click to return on main document")});
+	//		Click edit
+	driver.executeScript("document.querySelector('#main > div > div > div.panel-footer > #edit').scrollIntoView(true);");
+	driver.findElement({css:'#main > div > div > div.panel-footer > #edit'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Edit` button")});
+	//		Change something
+	driver.executeScript("document.querySelector('[property=\"v-s:middleName\"] + veda-control input').scrollIntoView(true);");
+	driver.findElement({css:'[property="v-s:middleName"] .glyphicon-remove'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot remove old v-s:middleName value")});
+	driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).sendKeys('second').thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for preson")});
+	driver.findElement({css:'[property="v-s:firstName"] + veda-control input'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for preson")});
+	//		Click save
+	driver.executeScript("document.querySelector('#main > div > div > div.panel-footer > #save').scrollIntoView(true);");
+	driver.findElement({css:'#main > div > div > div.panel-footer > #save'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Save` button")});
+	
+	// Check Journal (+1 new version)
+	assertCounts(driver, drv, 2, 1, 1);
+	
+	// Update nothing
+	// 		Return to document
+	driver.findElement({css:'[rel="v-s:onDocument"] [typeof="v-s:Person"] a'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click to return on main document")});
+	//		Click edit
+	driver.findElement({css:'#main > div > div > div.panel-footer > #edit'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Edit` button")});
+	//		Click save
+	driver.findElement({css:'#main > div > div > div.panel-footer > #save'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Save` button")});
+	
+	// Check Journal (no changes)
+	assertCounts(driver, drv, 2, 1, 1);
+	
 	// Update individual	
 	// 		Return to document
 	driver.findElement({css:'[rel="v-s:onDocument"] [typeof="v-s:Person"] a'}).click()
@@ -45,19 +76,14 @@ basic.getDrivers().forEach (function (drv) {
 	driver.findElement({css:'#main > div > div > div.panel-footer > #edit'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Edit` button")});
 	//		Change something
-	var somethingUnique = ''+Math.round(new Date()/1000);
-	driver.findElement({css:'div[id="object"] [property="rdfs:label"] + veda-control input'}).sendKeys("Вася Пупкин "+somethingUnique).thenCatch(function (e) {basic.errorHandler(e, "Cannot fill rdfs:label for preson")});
-	driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).sendKeys(somethingUnique).thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for preson")});
+	driver.executeScript("document.querySelector('[property=\"v-s:middleName\"] + veda-control input').scrollIntoView(true);");
+	driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).sendKeys('third').thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for preson")});
+	//		Click save
+	driver.findElement({css:'#main > div > div > div.panel-footer > #save'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Save` button")});
+	
+	// Check Journal (+1 new version)
+	assertCounts(driver, drv, 3, 1, 2);
 */	
-	// Check Journal (+1 new version)
-	
-	// Go to draft
-	
-	// Check Journal (no changes)
-	
-	// Update individual
-	
-	// Check Journal (+1 new version)
-	
 	driver.quit();	
 });
