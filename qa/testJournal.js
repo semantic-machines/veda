@@ -2,7 +2,7 @@ var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js'),
     person = require('./person.js'),
     assert = require('assert'),
-    timeStamp = ''+Math.round(+new Date()/1000);
+    timeStamp = ''+Math.round(new Date()/1000);
 
 function assertCounts(driver, totalCount, createCount, updateCount) {
 	driver.findElements({css:'div.journal-record'}).then(function (result) {
@@ -32,11 +32,23 @@ basic.getDrivers().forEach (function (drv) {
 	driver.findElement({css:'div[id="main"] > [typeof="v-s:Person"]'}).getAttribute('resource').then(function (individualId) {
 		basic.openPage(driver, drv, '#/'+individualId+'j');
 	}).thenCatch(function (e) {basic.errorHandler(e, "Seems person is not saved")});
-		
+	
+	driver.sleep(basic.SLOW_OPERATION);
+	
 	assertCounts(driver, 1, 1, 0);
-	
-	// Update individual
-	
+/*	
+	// Update individual	
+	// 		Return to document
+	driver.findElement({css:'[rel="v-s:onDocument"] [typeof="v-s:Person"] a'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click to return on main document")});
+	//		Click edit
+	driver.findElement({css:'#main > div > div > div.panel-footer > #edit'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Edit` button")});
+	//		Change something
+	var somethingUnique = ''+Math.round(new Date()/1000);
+	driver.findElement({css:'div[id="object"] [property="rdfs:label"] + veda-control input'}).sendKeys("Вася Пупкин "+somethingUnique).thenCatch(function (e) {basic.errorHandler(e, "Cannot fill rdfs:label for preson")});
+	driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).sendKeys(somethingUnique).thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for preson")});
+*/	
 	// Check Journal (+1 new version)
 	
 	// Go to draft
