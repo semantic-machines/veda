@@ -303,7 +303,10 @@ function isTecnicalChange(newdoc, olddoc) {
 	if (newdoc['v-s:actualVersion'] && newdoc['v-s:actualVersion'][0].data != newdoc['@']) {
 		olddoc = get_individual(ticket, newdoc['v-s:actualVersion'][0].data);
 	}
-	if (!olddoc) return false;
+	if (!olddoc) {
+		// print (newdoc['@']+' x ');
+		return false;
+	}
 
 	for (var key in newdoc) {
 		if (key === '@') continue;
@@ -313,13 +316,17 @@ function isTecnicalChange(newdoc, olddoc) {
 		     || (newdoc[key].length !== olddoc[key].length) // изменили количество
 		    ) 
 		{ 	
-			if (!isTechnicalAttribute(key)) {
+			if (!isTechnicalAttribute(key, olddoc[key])) {
 				// в нетехническом атрибуте
+				//print (newdoc['@']+' x '+olddoc[key]+' >1> '+newdoc[key]+' : '+key);
 				return false;				
 			}
 		} else {
 			for (var item in newdoc[key]) {
-				if (newdoc[key][item].data.valueOf() != olddoc[key][item].data.valueOf() && !isTechnicalAttribute(key)) { // поменялось одно из значений в нетехническом атрибуте
+				if (newdoc[key][item].data.valueOf() != olddoc[key][item].data.valueOf() && !isTechnicalAttribute(key, olddoc[key][item].data)) { // поменялось одно из значений в нетехническом атрибуте
+					//print ('2 old:', toJson(olddoc));
+					//print ('2 new:', toJson(newdoc));
+					//print (newdoc['@']+' x '+olddoc[key][item].data+' >2> '+newdoc[key][item].data+' : '+key);
 					return false;		
 				} 
 			}
@@ -329,10 +336,10 @@ function isTecnicalChange(newdoc, olddoc) {
 	return true;
 }
 
-function isTechnicalAttribute(attName) {
-//	if (attName === 'v-s:actualVersion') return true;
-//	if (attName === 'v-s:previousVersion') return true;
-//	if (attName === 'v-s:nextVersion') return true;
+function isTechnicalAttribute(attName, oldvalue) {
+	if (!oldvalue && attName === 'v-s:actualVersion') return true;
+	if (!oldvalue && attName === 'v-s:previousVersion') return true;
+	if (!oldvalue && attName === 'v-s:nextVersion') return true;
 	if (attName === 'v-s:isDraftOf') return true;
 	if (attName === 'v-s:hasDraft') return true;
 	if (attName === 'v-s:hasStatusWorkflow') return true;
