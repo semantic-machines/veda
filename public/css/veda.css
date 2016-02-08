@@ -39,16 +39,17 @@ em {
   font-style: normal;
   display: inline-block;
 }
-em::first-letter {
+/*em::first-letter {
+  color: #ff4d00;
   color: #711;
-  /*color: #ec6607;*/
+  color: #ec6607;
   color: #763304;
-  /*color: #591303;*/
+  color: #591303;
   font-weight: bold;
   font-size: 140%;
   font-variant: small-caps;
   line-height: 50%;
-}
+}*/
 
 .nav-right > li {
   float: right;

@@ -45,6 +45,14 @@ v-s:hasLogo
   rdfs:domain v-s:Aspect ;
 .
 
+v-s:hasDocumentDraft
+	rdf:type owl:ObjectProperty ;
+	rdfs:domain v-s:PersonalAspect ;
+	rdfs:range rdfs:Resource ;
+	rdfs:label "черновик"@en ;
+	rdfs:label "draft"@ru ;
+.
+
 v-s:hasFavorite
 	rdf:type owl:ObjectProperty ;
 	rdfs:domain v-s:Aspect ;
@@ -146,32 +154,32 @@ v-s:PersonalAspectTemplate
 		</div>
 		<div class="col-md-10">
 			<h3><span about="v-s:MyPage" property="rdfs:label"></span></h3>
-			
 			<hr/>
-			
 			<div rel="v-s:hasWidget"></div>
 			<div class="row">
 				<div class="col-lg-3 col-md-6">
-					<div class="panel panel-success">
-						<div class="panel-heading">
-							<div class="row">
-								<div class="col-xs-3">
-									<i class="fa fa-tasks fa-5x"></i>
-								</div>
-								<div class="col-xs-9 text-right">
-									<div class="huge">12</div>
-									<div about="v-s:NewTasks" property="rdfs:label"></div>
+					<!--div about="v-ft:Inbox"-->
+						<div class="panel panel-success">
+							<div class="panel-heading">
+								<div class="row">
+									<div class="col-xs-3">
+										<i class="fa fa-tasks fa-5x"></i>
+									</div>
+									<div class="col-xs-9 text-right">
+										<div class="huge">12</div>
+										<div about="v-s:NewTasks" property="rdfs:label"></div>
+									</div>
 								</div>
 							</div>
+							<a href="#">
+								<div class="panel-body">
+									<span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
+									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+									<div class="clearfix"></div>
+								</div>
+							</a>
 						</div>
-						<a href="#">
-							<div class="panel-body">
-								<span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
-								<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-								<div class="clearfix"></div>
-							</div>
-						</a>
-					</div>
+					<!--/div-->
 				</div>
 				<div class="col-lg-3 col-md-6">
 					<div class="panel panel-info">
@@ -291,6 +299,21 @@ v-s:PersonalAspectTemplate
 						</div>
 					</div>
 					<veda-control type="link" rel="v-s:hasRegistry" class="fulltext dropdown -view edit"></veda-control>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="no-margin"><i class="fa fa-file-text-o"></i> <strong about="v-s:Drafts" property="rdfs:label"></strong></h4>
+				</div>
+				<div class="panel-body">
+					<ol rel="v-s:hasDocumentDraft">
+						<li><a href="#/@" property="rdfs:label"></a></li>								
+					</ol>
+					<!--veda-control type="link" rel="v-s:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control-->
 				</div>
 			</div>
 		</div>

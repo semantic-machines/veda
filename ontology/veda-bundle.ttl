@@ -66,6 +66,11 @@ v-s:Blanks
   rdfs:label "Бланки"@ru ;
   rdfs:label "Blanks"@en ;
 .
+v-s:Drafts
+  rdf:type v-s:Bundle ;
+  rdfs:label "Черновики"@ru ;
+  rdfs:label "Drafts"@en ;
+.
 v-s:Registries
   rdf:type v-s:Bundle ;
   rdfs:label "Реестры"@ru ;
