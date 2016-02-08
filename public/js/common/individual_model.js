@@ -327,13 +327,7 @@ veda.Module(function (veda) { "use strict";
 			});
 			if (!acc[property_uri].length) delete acc[property_uri];
 			return acc;
-		}, self._.individual);
-		put_individual(veda.ticket, self._.individual);		
-		self._.original_individual = JSON.stringify(self._.individual);
-		self._.sync = true;
-		if (self._.cache) veda.cache[self.id] = self;
-		self.trigger("individual:afterSave", self._.original_individual);
-		
+		}, self._.individual);				
 		if (createVersion && (self.hasValue('v-s:isDraftOf') || self.is('v-s:Versioned'))) 
 		{
 			// Before
@@ -382,6 +376,12 @@ veda.Module(function (veda) { "use strict";
 			}
 			this.redirectToIndividual = actual;
 			this.redirectToMode = 'view';
+		} else {
+			put_individual(veda.ticket, self._.individual);		
+			self._.original_individual = JSON.stringify(self._.individual);
+			self._.sync = true;
+			if (self._.cache) veda.cache[self.id] = self;
+			self.trigger("individual:afterSave", self._.original_individual);
 		}
 
 		return this;

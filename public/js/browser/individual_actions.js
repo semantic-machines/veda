@@ -37,7 +37,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			$journal.on("click", function() {
 				var container = $('#main');
 				container.empty();
-				new veda.IndividualModel(individual.id+'j').present(container, undefined, 'view');
+				new veda.IndividualModel(individual.id+'j', null, null, null, false).present(container, undefined, 'view');
 				changeHash(individual.id+'j');	
 			});
 			
