@@ -17,10 +17,10 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	});
 
 	// App loading indicator
-	var appLoadIndicator = $("#app-load-indicator"),
-		bar = $(".progress-bar", appLoadIndicator);
+	var appLoadIndicator = $("#app-load-indicator");
+		//bar = $(".progress-bar", appLoadIndicator);
 	veda.on("init", function (progress) {
-		bar.css("width", progress + "%");
+		//bar.css("width", progress + "%");
 		if (progress !== 100) {
 			appLoadIndicator.removeClass("hidden");
 		} else {
