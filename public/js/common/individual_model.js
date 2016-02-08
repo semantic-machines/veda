@@ -93,12 +93,10 @@ veda.Module(function (veda) { "use strict";
 		self.defineProperty("v-s:author");
 		self.defineProperty("v-s:created");
 		
-		if (!uri) {
-			self.on("individual:beforeSave", function () {
-				self["v-s:created"] = [new Date()];
-				self["v-s:author"] = [ veda.appointment ? veda.appointment : veda.user ];
-			});
-		}
+		self.on("individual:beforeDraft", function () {
+			if (!self.hasValue("v-s:created")) self["v-s:created"] = [new Date()];
+			if (!self.hasValue("v-s:author")) self["v-s:author"] = [ veda.appointment ? veda.appointment : veda.user ];
+		});
 				
 		if (container) {
 			self.on("individual:afterLoad", function (individual) {
@@ -303,6 +301,7 @@ veda.Module(function (veda) { "use strict";
 	proto.save = function() {
 		var self = this;
 		self.valid = true;
+		self.trigger("individual:beforeDraft");
 		self.trigger("individual:beforeSave");
 		if (!self.valid) return false;
 		return this.saveIndividual(true);
@@ -313,6 +312,7 @@ veda.Module(function (veda) { "use strict";
 	 * Save current individual without validation and without adding new version
 	 */
 	proto.draft = function() {
+		this.trigger("individual:beforeDraft");
 		return this.saveIndividual(false);
 	}
 		
