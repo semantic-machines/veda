@@ -176,6 +176,17 @@ public void scripts_thread(string thread_name, string node_id)
                                 if (onto is null)
                                     onto = context.get_onto();
 
+                                if (event_id !is null)
+                                {
+                                    g_parent_event_id.data = cast(char *)event_id;
+                                    g_parent_event_id.length = cast(int)event_id.length;
+                                }
+                                else
+                                {
+                                    g_parent_event_id.data = cast(char *)empty_uid;
+                                    g_parent_event_id.length = cast(int)empty_uid.length;
+                                }
+
                                 if (prev_state !is null)
                                 {
                                     g_prev_state.data = cast(char *)prev_state;
@@ -245,14 +256,14 @@ public void scripts_thread(string thread_name, string node_id)
 
                                         try
                                         {
-                                            if (trace_msg[ 300 ] == 1)
-                                                log.trace("start exec script : %s %s", script_id, individual_id);
+                                            //if (trace_msg[ 300 ] == 1)
+                                            log.trace("start exec script : %s %s %d %s", script_id, individual_id, op_id, event_id);
 
                                             count++;
                                             script_vm.run(script.compiled_script);
 
-                                            if (trace_msg[ 300 ] == 1)
-                                                log.trace("end exec script : %s %s", script_id, individual_id);
+                                            //if (trace_msg[ 300 ] == 1)
+                                            log.trace("end exec script : %s", script_id);
 
 
                                             //*(cast(char*)script_vm) = 0;
@@ -337,6 +348,7 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
         string str_script =
             "var ticket = get_env_str_var ('$ticket');"
             ~ "var user_uri = get_env_str_var ('$user');"
+            ~ "var parent_event_id = get_env_str_var ('$parent_event_id');"
             ~ "var prev_state = get_individual (ticket, '$prev_state');"
             ~ "var document = get_individual (ticket, '$document');"
             ~ "if (document) {"
