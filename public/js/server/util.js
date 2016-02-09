@@ -283,14 +283,14 @@ function logToJournal(ticket, journal_uri, journal_record, jr_type)
     };
 
 	//if (!jr_type)
-		//print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
+	//	print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
 
-    var before = get_individual(ticket, journal_uri);
+    //var before = get_individual(ticket, journal_uri);
     //print('BEFORE : '+toJson(before))
 	
     add_to_individual(ticket, add_to_journal, _event_id);
     
-    var after = get_individual(ticket, journal_uri);
+    //var after = get_individual(ticket, journal_uri);
     //print('AFTER : '+toJson(after))
 }
 
