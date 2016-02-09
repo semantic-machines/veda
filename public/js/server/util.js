@@ -126,6 +126,19 @@ function getUri(field)
     }
 }
 
+function isExists (field, value)
+{
+    if (field)
+    {
+        for (var i in field)
+        {
+			if (field[i].data == value.data && field[i].type == value.type)
+				return true;
+        }
+    }
+    return false;
+}
+
 function getFirstValue(field)
 {
     if (field && field.length > 0)
@@ -261,16 +274,16 @@ function logToJournal(ticket, journal_uri, journal_record, jr_type)
         }]
     };
 
-	//if (!jr_type)
-	//	print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
+	if (!jr_type)
+		print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
 
-//    var before = get_individual(ticket, journal_uri);
-//    print('BEFORE : '+toJson(before))
+    var before = get_individual(ticket, journal_uri);
+    print('BEFORE : '+toJson(before))
 	
     add_to_individual(ticket, add_to_journal, _event_id);
     
-//    var after = get_individual(ticket, journal_uri);
-//    print('AFTER : '+toJson(after))
+    var after = get_individual(ticket, journal_uri);
+    print('AFTER : '+toJson(after))
 }
 
 function traceToJournal(ticket, journal_uri, label, _data)
