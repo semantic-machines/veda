@@ -67,14 +67,15 @@ cfg:Event_0
  * user_uri = user whose actions triggered event
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_event_id = id of the parent event that triggered this event.
  */
+
+if (parent_event_id) return;
 
 var doc = document,
 	person_uri = getUri(document['v-s:employee']),
 	position_uri = getUri(document['v-s:occupation']),
 	add = true;
-
-print("APPOINTMENT: ", toJson(doc));
 
 if (!person_uri || !position_uri) return;
 
@@ -97,9 +98,7 @@ function hierGroup(person_uri, unit_uri, add) {
 		membership['v-s:deleted'] = [{data: true, type : _Boolean}];
 	}
 	put_individual (ticket, membership, _event_id);
-	
-	print(add ? "ADD" : "DELETE", ": ", uri);
-	
+
 	var unit = get_individual(ticket, unit_uri);
 	if (unit) {
 		var parent_uri = getUri(unit["v-s:parentUnit"]);
@@ -124,6 +123,7 @@ cfg:Event_1
  * user_uri = user whose actions triggered event
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_event_id = id of the parent event that triggered this event.
  */
 
 var doc_uri = document['@'];
@@ -191,6 +191,7 @@ cfg:Event_1_1
  * user_uri = user whose actions triggered event
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_event_id = id of the parent event that triggered this event.
  */
 // No journaling for technical changes 
 // No journaling for draft
@@ -327,6 +328,7 @@ cfg:Event_2
  * user_uri = user whose actions triggered event
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_event_id = id of the parent event that triggered this event.
  */
 
 // print ('@@1 =', toJson (document));
@@ -402,6 +404,7 @@ cfg:Event_3
  * user_uri = user whose actions triggered event
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_event_id = id of the parent event that triggered this event.
  */
 
 var doc_uri = document['@'];	
@@ -451,6 +454,7 @@ cfg:Event_4
  * user_uri = user whose actions triggered event
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_event_id = id of the parent event that triggered this event.
  */
 
 // Update ontology vsn
@@ -460,120 +464,6 @@ var vsn = {
 	"rdf:value" : [{data: guid(), type : _String}]
 };
 put_individual (ticket, vsn, _event_id);
-
-/*	// Process ontology objects
-function hasValue(doc, prop, val) {
-	var any = !!(doc[prop] && doc[prop].length);
-	if (!val) return any;
-	return !!(any && doc[prop].filter(function (i) {
-		return (i.type === val.type && i.data === val.data);
-	}).length);
-}
-
-// owl:Thing && rdfs:Resource domain properties
-var stopList = [
-	//"rdf:type",
-	//"rdfs:comment",
-	//"rdfs:label",
-	//"v-s:deleted",
-	"owl:annotatedProperty",
-	"owl:annotatedSource",
-	"owl:annotatedTarget",
-	"owl:bottomDataProperty",
-	"owl:bottomObjectProperty",
-	"owl:deprecated",
-	"owl:differentFrom",
-	"owl:members",
-	"owl:sameAs",
-	"owl:topObjectProperty",
-	"owl:topDataProperty",
-	"owl:versionInfo",
-	"rdf:value",
-	"rdfs:isDefinedBy",
-	"rdfs:member",
-	"rdfs:seeAlso"
-];
-
-var doc = document;
-var type = document["rdf:type"][0].data;
-var uri = document["@"];
-switch (type) {
-	// Process classes
-	case "rdfs:Class":
-	case "owl:Class":
-		if ( uri === "rdfs:Resource" ) break;
-		// If class is not a subclass of another then make it a subclass of rdfs:Resource
-		if ( !hasValue(doc, "rdfs:subClassOf") ) {
-			doc["rdfs:subClassOf"] = [{data: "rdfs:Resource", type: _Uri}];
-		}
-		doc["rdfs:subClassOf"].map( function ( i ) {
-			var cls = {
-				"@": i.data,
-				"v-ui:hasSubClass": [{data: uri, type: _Uri}]
-			}
-			add_to_individual(ticket, cls, _event_id);
-		});
-		break;
-	// Process properties
-	case "rdf:Property" :
-	case "owl:DatatypeProperty" :
-	case "owl:ObjectProperty" :
-	case "owl:OntologyProperty" :
-	case "owl:AnnotationProperty" :
-		if (stopList.indexOf(uri) >= 0) break;
-		if ( hasValue(doc, "rdfs:domain") ) {
-			doc["rdfs:domain"].map( function ( i ) {
-				var cls = {
-					"@": i.data,
-					"v-ui:hasProperty": [{data: uri, type: _Uri}]
-				}
-				add_to_individual(ticket, cls, _event_id);
-			});
-		}
-		break;
-	// Process specifications
-	case "v-ui:PropertySpecification" :
-	case "v-ui:IntegerPropertySpecification" :
-	case "v-ui:DecimalPropertySpecification" :
-	case "v-ui:DatetimePropertySpecification" :
-	case "v-ui:StringPropertySpecification" :
-	case "v-ui:BooleanPropertySpecification" :
-	case "v-ui:ObjectPropertySpecification" :
-		if ( hasValue(doc, "v-ui:forClass") ) {
-			doc["v-ui:forClass"].map( function ( i ) {
-				var cls = {
-					"@": i.data,
-					"v-ui:hasSpecification": [{data: uri, type: _Uri}]
-				}
-				add_to_individual(ticket, cls, _event_id);
-			});
-		}
-		break;
-	// Process models
-	case "v-s:ClassModel" :
-		if ( hasValue(doc, "v-ui:forClass") ) {
-			doc["v-ui:forClass"].map( function ( i ) {
-				var cls = {
-					"@": i.data,
-					"v-ui:hasModel": [{data: uri, type: _Uri}]
-				}
-				add_to_individual(ticket, cls, _event_id);
-			});
-		}
-		break;
-	// Process templates
-	case "v-ui:ClassTemplate" :
-		if ( hasValue(doc, "v-ui:forClass") ) {
-			doc["v-ui:forClass"].map( function ( i ) {
-				var cls = {
-					"@": i.data,
-					"v-ui:hasTemplate": [{data: uri, type: _Uri}]
-				}
-				add_to_individual(ticket, cls, _event_id);
-			});
-		}
-		break;
-}*/
   """ ;
   rdfs:comment "Скрипт обработки индивидов онтологии"@ru ;
   rdfs:label "Event_4"@en ;
@@ -593,6 +483,7 @@ cfg:Event_5
  * user_uri = user whose actions triggered event
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_event_id = id of the parent event that triggered this event. 
  */
 //print("MEMBERSHIP start:");
 var doc_uri = document["@"];
