@@ -38,6 +38,29 @@ private Context context;
 private         ScriptInfo[ string ] scripts;
 private VQL     vql;
 
+public Tid start_module(string node_id)
+{
+    Tid tid = spawn(&scripts_thread, text(P_MODULE.scripts), node_id);
+
+    if (wait_starting_module(P_MODULE.scripts, tid) == false)
+        return Tid.init;
+
+    register(text(P_MODULE.scripts), tid);
+    return locate(text(P_MODULE.scripts));
+}
+
+public bool stop_module(Context ctx)
+{
+    Tid tid_scripts = ctx.getTid(P_MODULE.scripts);
+
+    if (tid_scripts != Tid.init)
+    {
+        send(tid_scripts, CMD.EXIT);
+    }
+
+    return 0;
+}
+
 public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_state, string prev_state, Resource[ string ] rdfType,
                      Individual *individual,
                      string event_id,
@@ -106,6 +129,13 @@ public void scripts_thread(string thread_name, string node_id)
                 ScriptVM script_vm = context.get_ScriptVM();
 
                 receive(
+                        (CMD cmd)
+                        {
+                            if (cmd == CMD.EXIT)
+                            {
+                                thread_term();
+                            }
+                        },
                         (CMD cmd, string arg, Tid to)
                         {
                             if (cmd == CMD.RELOAD)
@@ -154,7 +184,7 @@ public void scripts_thread(string thread_name, string node_id)
                                 else
                                 {
                                     g_prev_state.data = cast(char *)empty_uid;
-                                    g_prev_state.length = cast(int)empty_uid.length;                                	
+                                    g_prev_state.length = cast(int)empty_uid.length;
                                 }
 
                                 g_document.data = cast(char *)msg;
@@ -223,10 +253,13 @@ public void scripts_thread(string thread_name, string node_id)
 
                                             if (trace_msg[ 300 ] == 1)
                                                 log.trace("end exec script : %s %s", script_id, individual_id);
+
+
+                                            //*(cast(char*)script_vm) = 0;
                                         }
                                         catch (Exception ex)
                                         {
-                                            log.trace_log_and_console("EX!scripts.receive : %s", ex.msg);
+                                            log.trace_log_and_console("WARN! fail execute script : %s %s", script_id, ex.msg);
                                         }
                                     }
                                 }
@@ -249,13 +282,13 @@ public void scripts_thread(string thread_name, string node_id)
             }
             catch (Exception ex)
             {
-                writeln(thread_name, "EX!: receive");
+                log.trace("#%s EX! LINE:[%s], FILE:[%s], MSG:[%s]", thread_name, ex.line, ex.file, ex.msg);
             }
         }
     }
-    catch (Exception ex)
+    catch (Throwable ex)
     {
-        writeln(thread_name, "EX!: main loop");
+        log.trace("#%s ERR! LINE:[%s], FILE:[%s], MSG:[%s]", thread_name, ex.line, ex.file, ex.msg);
     }
     writeln("TERMINATED: ", thread_name);
 }

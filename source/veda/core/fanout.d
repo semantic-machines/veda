@@ -186,6 +186,8 @@ private string extract_cids(string _src, out string[] attachment_ids)
 
 private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
 {
+    SmtpMessage message;
+
     try
     {
         Ticket sticket = context.sys_ticket();
@@ -238,13 +240,13 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
                         string[] attachment_ids;
                         message_body = extract_cids(message_body, attachment_ids);
 
-                        auto message = SmtpMessage(
-                                                   Recipient(email_from, "From"),
-                                                   [ Recipient(email_to, "To") ],
-                                                   subject,
-                                                   message_body,
-                                                   email_reply_to
-                                                   );
+                        message = SmtpMessage(
+                                              Recipient(email_from, "From"),
+                                              [ Recipient(email_to, "To") ],
+                                              subject,
+                                              message_body,
+                                              email_reply_to
+                                              );
 
                         foreach (attachment_id; attachment_ids)
                         {
@@ -268,10 +270,7 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
                                 }
                             }
                         }
-
                         smtp.reply.SmtpReply res = smtp_conn.send(message);
-
-                        //log.trace("mail=%s", message.toString());
 
                         log.trace("send email: %s, result %s", new_indv.uri, text(res));
                     }
@@ -281,8 +280,7 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
     }
     catch (Exception ex)
     {
-        printPrettyTrace(stdout);
-        log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+        log.trace("#EX! fail send e-mail[%s]=%s", ex.msg, message.toString());
     }
 
     //writeln("@@fanout indv.uri=", indv.uri);

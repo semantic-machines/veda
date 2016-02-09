@@ -189,11 +189,7 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
 
         if (jsvm_node_type == "internal" || jsvm_node_type == "")
         {
-            tids[ P_MODULE.scripts ] = spawn(&scripts_thread, text(P_MODULE.scripts), node_id);
-            wait_starting_thread(P_MODULE.scripts, tids);
-
-            register(text(P_MODULE.scripts), tids[ P_MODULE.scripts ]);
-            Tid tid_scripts = locate(text(P_MODULE.scripts));
+            Tid tid_scripts = veda.core.scripts.start_module(node_id);
         }
 
         if (is_main)

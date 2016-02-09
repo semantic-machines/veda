@@ -1279,6 +1279,11 @@ class PThreadContext : Context
         return res;
     }
 
+    public long restart_module(P_MODULE module_id)
+    {
+        return 0;
+    }
+
 
     public long wait_thread(P_MODULE module_id, long op_id = 0)
     {

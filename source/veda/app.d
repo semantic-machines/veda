@@ -18,18 +18,18 @@ logger log()
 
 extern (C) void handleTermination(int _signal)
 {
-    log.trace ("!SYS: veda.app: caught signal: %s", _signal);
-    writefln ("!SYS: veda.app: caught signal: %s", _signal);
-    
-    foreach (port, listener ; listener_2_port)
+    log.trace("!SYS: veda.app: caught signal: %s", _signal);
+    writefln("!SYS: veda.app: caught signal: %s", _signal);
+
+    foreach (port, listener; listener_2_port)
     {
-    	listener.stopListening();
+        listener.stopListening();
     }
 
-	vibe.core.core.exitEventLoop();
-	
-    writeln ("!SYS: veda.app: exit");
-	kill(getpid(), SIGKILL);
+    vibe.core.core.exitEventLoop();
+
+    writeln("!SYS: veda.app: exit");
+    kill(getpid(), SIGKILL);
     exit(_signal);
 }
 
@@ -91,12 +91,12 @@ void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
 
 import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
 
-HTTPListener[ushort] listener_2_port;
+HTTPListener[ ushort ] listener_2_port;
 
 shared static this()
 {
-    bsd_signal(SIGINT, &handleTermination);	
-	
+    bsd_signal(SIGINT, &handleTermination);
+
     import etc.linux.memoryerror;
     static if (is (typeof(registerMemoryErrorHandler)))
         registerMemoryErrorHandler();
@@ -266,14 +266,15 @@ bool start_http_listener(Context core_context, ref std.concurrency.Tid[] pool, u
         log.trace("===============================");
 
         HTTPListener listener = listenHTTP(settings, router);
-        listener_2_port[http_port] = listener; 
-        
+        listener_2_port[ http_port ] = listener;
+
         log.trace("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
+
         return true;
     }
     catch (Exception ex)
     {
-    	log.trace("start_http_listener# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+        log.trace("start_http_listener# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
     }
     return false;
 }

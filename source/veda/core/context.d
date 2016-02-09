@@ -348,6 +348,13 @@ interface Context
     public long wait_thread(P_MODULE module_id, long op_id = 0);
 
     /**
+       Перезагрузить модуль
+       Params:
+                 thread_id = id процесса из перечисления P_MODULE
+     */
+    public long restart_module(P_MODULE module_id);
+
+    /**
        Включить/выключить отладочные сообщения
        Params:
                  idx   = id отладочного сообщения (0 - все сообщения)

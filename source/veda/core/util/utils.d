@@ -9,9 +9,41 @@ private
     import core.stdc.stdio, core.stdc.string, core.sys.posix.time;
     import std.file, std.datetime, std.json, std.format, std.stdio, std.conv, std.string, std.concurrency;
     import std.ascii, std.csv, std.typecons, std.outbuffer;
-    import veda.onto.individual, veda.onto.resource;
+    import veda.onto.individual, veda.onto.resource, veda.core.define;
     import util.container;
     import veda.core.know_predicates, veda.core.context;
+}
+
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
+{
+    if (_log is null)
+        _log = new logger("veda-core-" ~ process_name, "log", "UTIL");
+    return _log;
+}
+// ////// ////// ///////////////////////////////////////////
+
+
+bool wait_starting_module(P_MODULE tid_idx, Tid tid)
+{
+    bool res;
+
+    if (tid == Tid.init)
+        throw new Exception("wait_starting_thread: Tid=" ~ text(tid_idx) ~ " not found", __FILE__, __LINE__);
+
+    log.trace("START THREAD... : %s", text(tid_idx));
+    send(tid, thisTid);
+    receive((bool isReady)
+            {
+                res = isReady;
+                //if (trace_msg[ 50 ] == 1)
+                log.trace("START THREAD IS SUCCESS: %s", text(tid_idx));
+                if (res == false)
+                    log.trace("FAIL START THREAD: %s", text(tid_idx));
+            });
+    return res;
 }
 
 public string[ string ] getAsSimpleMapWithoutPrefix(Individual indv)

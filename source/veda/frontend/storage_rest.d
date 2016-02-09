@@ -88,6 +88,9 @@ interface VedaStorageRest_API {
     @path("wait_module") @method(HTTPMethod.GET)
     long wait_module(int module_id, long op_id);
 
+    @path("restart_module") @method(HTTPMethod.GET)
+    long restart_module(string ticket, int module_id);
+
     @path("set_trace") @method(HTTPMethod.GET)
     void set_trace(int idx, bool state);
 
@@ -458,6 +461,14 @@ class VedaStorageRest : VedaStorageRest_API
 
         return res;
     }
+
+    long restart_module(string ticket, int module_id)
+    {
+        long res = context.restart_module(cast(P_MODULE)module_id);
+
+        return res;
+    }
+
 
     void set_trace(int idx, bool state)
     {
