@@ -1,23 +1,26 @@
 # берет новые исходники из github, но не собирает
 
+DMD_VER=2.070.0
+DUB_VER=0.9.24
+
 sudo apt-get update
 
 # Get right version of DMD
-if ! dmd --version | grep 2.070.0 ; then    
-    wget http://downloads.dlang.org/releases/2.x/2.070.0/dmd_2.070.0-0_amd64.deb
-    sudo dpkg -i dmd_2.070.0-0_amd64.deb
-    rm dmd_2.069.0-0_amd64.deb
+if ! dmd --version | grep $DMD_VER ; then    
+    wget http://downloads.dlang.org/releases/2.x/$DMD_VER/dmd_$DMD_VER-0_amd64.deb
+    sudo dpkg -i dmd_$DMD_VER-0_amd64.deb
+    rm dmd_$DMD_VER-0_amd64.deb
 fi
 # Patch DMD
-sudo cp ./qa/patch_dmd_2_70_0/concurrency.d /usr/include/dmd/phobos/std/concurrency.d
-sudo cp ./qa/patch_dmd_2_70_0/concurrency.d ${HOME}/dmd2/src/phobos/std/concurrency.d
+sudo cp ./qa/patch_dmd_$DMD_VER/concurrency.d /usr/include/dmd/phobos/std/concurrency.d
+sudo cp ./qa/patch_dmd_$DMD_VER/concurrency.d ${HOME}/dmd2/src/phobos/std/concurrency.d
 
 # Get right version of DUB
-if ! dub --version | grep 0.9.23 ; then
-    wget http://code.dlang.org/files/dub-0.9.23-linux-x86_64.tar.gz
-    tar -xvzf dub-0.9.23-linux-x86_64.tar.gz    
+if ! dub --version | grep $DUB_VER ; then
+    wget http://code.dlang.org/files/dub-$DUB_VER-linux-x86_64.tar.gz
+    tar -xvzf dub-$DUB_VER-linux-x86_64.tar.gz    
     sudo cp ./dub /usr/bin/dub
-    rm dub-0.9.23-linux-x86_64.tar.gz
+    rm dub-$DUB_VER-linux-x86_64.tar.gz
     rm dub
 fi
 
