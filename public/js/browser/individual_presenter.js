@@ -145,10 +145,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			if (individual.hasValue('v-s:isDraftOf')) {
 				//TODO Put link to actual version
 				//Rename edit button
-				$('#edit', wrapper).attr('about', 'v-s:ContinueEdit');
+				if ($('#edit', wrapper).attr('about')) $('#edit', wrapper).attr('about', 'v-s:ContinueEdit');
 				
 				//Rename delete button
-				$('#delete', wrapper).attr('about', 'v-s:DeleteDraft');
+				if ($('#delete', wrapper).attr('about')) $('#delete', wrapper).attr('about', 'v-s:DeleteDraft');
 				
 				//Hide send button
 				$('#send', wrapper).remove();
@@ -160,7 +160,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				//TODO Put link to draft version
 				
 				//Rename edit button
-				$('#edit', wrapper).attr('about', 'v-s:ContinueEdit');
+				if ($('#edit', wrapper).attr('about')) $('#edit', wrapper).attr('about', 'v-s:ContinueEdit');
 								
 				//Hide send button
 				$('#send', wrapper).remove();
@@ -224,13 +224,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			e.stopPropagation();
 		}
 		template.on("save", saveHandler);
-		
+				
 		function draftHandler (e) {
 			if (!individual.hasValue('v-s:isDraftOf')) {
 				// If `v-s:isDraftOf` is empty, then current individual is "draftonly" individual
 				individual['v-s:isDraftOf'] = [individual];
 			}
 			individual.draft();
+			putDraftToUserAspect(individual);
 			e.stopPropagation();
 		}
 		template.on("draft", draftHandler);
@@ -774,6 +775,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						clone['v-s:hasDraft'] = [];
 						clone['v-s:isDraftOf'] = [individual];
 						clone.saveIndividual(false);
+						putDraftToUserAspect(clone);
 	
 						// Add link to draft
 						individual['v-s:hasDraft'] = [clone];

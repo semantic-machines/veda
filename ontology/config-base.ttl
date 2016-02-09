@@ -632,12 +632,12 @@ td:PersonTemplate1
         </div>
       </div>
       <div class="panel-footer">
-        <!--button type="button" class="action btn btn-warning view edit -search" id="send">Отправить</button--!>
-        <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
-        <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
-        <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+        <!--button type="button" class="action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label" /--!>
+        <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
+        <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+        <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
 		<button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />		
-        <!--button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button--!>
+        <!--button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/ --!>
       </div>
     </div>
   </div>

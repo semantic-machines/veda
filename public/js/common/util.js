@@ -889,3 +889,30 @@ function isNumerationValueAvailable(scope, value)
         return true;
     }
 }
+
+function putDraftToUserAspect(individual) {
+	if (!veda.user.aspect['v-s:hasDocumentDraft']) {
+		veda.user.aspect['v-s:hasDocumentDraft'] = [individual];
+		veda.user.aspect.save();
+	} else {
+		var alreadyInDrafts = false;
+		veda.user.aspect['v-s:hasDocumentDraft'].forEach(function(draft) {
+			alreadyInDrafts|=draft.id==individual.id;
+		});
+		if (!alreadyInDrafts) {
+			veda.user.aspect['v-s:hasDocumentDraft'] = veda.user.aspect['v-s:hasDocumentDraft'].concat([individual]);
+			veda.user.aspect.save();
+		}
+	}
+}
+
+function removeDraftFromUserAspect(individual) {
+	if (veda.user.aspect['v-s:hasDocumentDraft']) {
+		var inDrafts = false;
+		veda.user.aspect['v-s:hasDocumentDraft'] = veda.user.aspect['v-s:hasDocumentDraft'].filter( function (draft) {
+			inDrafts|=draft.id==individual.id;
+			return draft.id !== individual.id; 
+		})
+		if (inDrafts) veda.user.aspect.save();		
+	}
+}
