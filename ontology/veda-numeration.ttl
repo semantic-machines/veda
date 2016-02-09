@@ -141,9 +141,9 @@ v-s:NumerationEvent
   v-s:filter v-s:NumerationEvent ;
   v-s:script """
   if (!document['v-s:isDraftOf'] || document['v-s:isDraftOf'].length==0) {
-	  print("NUMERATION EVENT"); 
+	  //print("NUMERATION EVENT"); 
 	  var result = numerate(ticket, document, prev_state, _event_id);
-	  print("RESULT : " +toJson(result));
+	  //print("RESULT : " +toJson(result));
   }
 """
 .

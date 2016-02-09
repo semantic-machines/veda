@@ -53,7 +53,7 @@ cfg:ReadResGroup
   rdfs:label "Группа ресурсов для чтения"@ru ;
 .
 
-# --------------------------- обработка событий => привязка человека к группе должности ------------------------------
+# --------------------------- обработка событий => привязка человека к группам орг. структуры ------------------------------
 cfg:Event_0
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystemAccount ;
@@ -71,24 +71,43 @@ cfg:Event_0
 
 var doc = document,
 	person_uri = getUri(document['v-s:employee']),
-	position_uri = getUri(document['v-s:occupation']);
+	position_uri = getUri(document['v-s:occupation']),
+	add = true;
+
+print("APPOINTMENT: ", toJson(doc));
 
 if (!person_uri || !position_uri) return;
 
-var uri = 'd:membership_' + person_uri.split(':').join('_') + '_' + position_uri.split(':').join('_'),
-	new_membership = {
-	'@' : uri, 
-	'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
-	'v-s:memberOf' : [{data: position_uri, type : _Uri}],
-	'v-s:resource'  : [{data: person_uri, type : _Uri}],
-	'rdfs:comment'  : [{data: 'создано автоматически в обработчике cfg:Event_0', type : _String}],
-};
-
 if (document['v-s:deleted'] && document['v-s:deleted'][0] && document['v-s:deleted'][0].data === true) {
-	new_membership['v-s:deleted'] = [{data: true, type : _Boolean}];
+	add = false;
 }
 
-put_individual (ticket, new_membership, _event_id);
+hierGroup(person_uri, position_uri, add);
+
+function hierGroup(person_uri, unit_uri, add) {
+	var uri = 'd:membership_' + person_uri.split(':').join('_') + '_' + unit_uri.split(':').join('_'),
+		membership = {
+		'@' : uri, 
+		'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
+		'v-s:memberOf' : [{data: unit_uri, type : _Uri}],
+		'v-s:resource'  : [{data: person_uri, type : _Uri}],
+		'rdfs:comment'  : [{data: 'создано автоматически в обработчике cfg:Event_0', type : _String}],
+	};
+	if (!add) {
+		membership['v-s:deleted'] = [{data: true, type : _Boolean}];
+	}
+	put_individual (ticket, membership, _event_id);
+	
+	print(add ? "ADD" : "DELETE", ": ", uri);
+	
+	var unit = get_individual(ticket, unit_uri);
+	if (unit) {
+		var parent_uri = getUri(unit["v-s:parentUnit"]);
+		if (parent_uri) {
+			hierGroup(person_uri, parent_uri, add);
+		}
+	}
+};
   """
 .
 
@@ -239,7 +258,7 @@ if (!(document['v-s:isDraftOf'] && document['v-s:isDraftOf'].length > 0 || (docu
             type: _Uri
         }];
 
-        //		        print("?*?"+toJson(journal_record));		
+        // print("?*?"+toJson(journal_record));		
         logToJournal(ticket, journal_uri, journal_record);
         addRight(ticket, [can_read], 'cfg:ReadUser', journal_record['@']);
     }
@@ -328,8 +347,8 @@ if (deleted && deleted[0].data == true)
     new_membership['v-s:deleted'] = deleted;
 }
 var res = put_individual (ticket, new_membership, _event_id);
-if (res != 200 && res != 1022)
-print ('res=', res, ' @@1 =', toJson (new_membership));			
+//if (res != 200 && res != 1022)
+//print ('res=', res, ' @@1 =', toJson (new_membership));			
 
 var type = document['rdf:type'];
 if (type && getUri (type) == 'v-s:Person' && document['@'] != 'cfg:Guest')
@@ -343,8 +362,8 @@ if (type && getUri (type) == 'v-s:Person' && document['@'] != 'cfg:Guest')
 	'rdfs:comment'  : [{data: "выдан cfg:Event_2", type : _String}]
     };
     res = put_individual (ticket, new_membership, _event_id);
-    if (res != 200 && res != 1022)
-	print ('res=', res, ' @@2 =', toJson (new_membership));			
+    //if (res != 200 && res != 1022)
+	//print ('res=', res, ' @@2 =', toJson (new_membership));			
 
 }
   """ ;
