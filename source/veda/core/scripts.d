@@ -247,7 +247,7 @@ public void scripts_thread(string thread_name, string node_id)
                                         }
                                         //log.trace("execute script:%s", script_id);
 
-                                        if (event_id !is null && event_id.length > 1 && event_id == (individual_id ~ script_id))
+                                        if (event_id !is null && event_id.length > 1 && event_id == (individual_id ~ '+' ~ script_id))
                                         {
                                             //writeln("skip script [", script_id, "], type:", type, ", indiv.:[", individual_id, "]");
                                             continue;
@@ -353,7 +353,7 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
             ~ "var document = get_individual (ticket, '$document');"
             ~ "if (document) {"
             ~ "var _script_id = '" ~ ss.uri ~ "';"
-            ~ "var _event_id = document['@'] + _script_id;"
+            ~ "var _event_id = document['@'] + '+' + _script_id;"
             ~ "script();"
             ~ "};"
             ~ "function script() {" ~ scripts_text ~ "};"
