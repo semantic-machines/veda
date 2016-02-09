@@ -339,6 +339,8 @@ veda.Module(function (veda) { "use strict";
 									 self['v-s:previousVersion'][0].id:
 									 null);
 			var actualId = self.hasValue('v-s:isDraftOf')?self['v-s:isDraftOf'][0].id:self.id;
+			removeDraftFromUserAspect(self);
+			
 			var versionId = (actualId==self.id)?veda.Util.genUri():self.id;
 			
 			// After
@@ -355,7 +357,7 @@ veda.Module(function (veda) { "use strict";
 			actual['v-s:actualVersion'] = [actual];
 			actual['v-s:nextVersion'] = [];
 			actual.saveIndividual(false);
-				
+			
 			// Save draft as old version
 			version['v-s:isDraftOf'] = [];
 			version['v-s:hasDraft'] = [];

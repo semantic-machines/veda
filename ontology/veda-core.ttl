@@ -89,6 +89,7 @@ v-s:Person
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Person"@en ;
   rdfs:label "Персона"@ru ;
+  rdfs:subClassOf v-s:DraftAllowed ;
   rdfs:subClassOf v-s:Versioned ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf owl:Thing ;
