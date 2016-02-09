@@ -262,12 +262,24 @@ class Authorization : LmdbStorage
             string[] object_groups;
             string[] subject_groups;
 
+            MDB_val  key;
+            MDB_val  data;
+
+            // 0. читаем фильтр прав у object (uri)
+            string filter = "F+" ~ uri;
+            string filter_value;
+            key.mv_size = filter.length;
+            key.mv_data = cast(char *)filter;
+            rc          = mdb_get(txn_r, dbi, &key, &data);
+            if (rc == 0)
+            {
+                filter_value = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
+            }
+
             // 1. читаем группы object (uri)
-            MDB_val key;
             key.mv_size = uri.length;
             key.mv_data = cast(char *)uri;
 
-            MDB_val data;
             rc = mdb_get(txn_r, dbi, &key, &data);
             if (rc == 0)
             {
@@ -280,7 +292,6 @@ class Authorization : LmdbStorage
 
 
             // 2. читаем группы subject (ticket.user_uri)
-
             subject_groups = subject_groups_cache.get(ticket.user_uri, string[].init);
 
             if (subject_groups == string[].init || subject_groups.length == 0)
@@ -322,7 +333,12 @@ class Authorization : LmdbStorage
                         if (object_group.length > 1)
                         {
                             // 3. поиск подходящего acl
-                            string acl_key = object_group ~ "+" ~ subject_group;
+                            string acl_key;
+
+                            if (filter_value !is null)
+                                acl_key = object_group ~ "+" ~ filter_value ~ '+' ~ subject_group;
+                            else
+                                acl_key = object_group ~ "+" ~ subject_group;
 
                             if (trace_msg[ 112 ] == 1)
                                 log.trace("look acl_key: [%s]", acl_key);
@@ -500,11 +516,19 @@ void acl_manager(string thread_name, string db_path)
 
                                     Resource permissionObject = ind.getFirstResource(veda_schema__permissionObject);
                                     Resource permissionSubject = ind.getFirstResource(veda_schema__permissionSubject);
+                                    Resource useFilter = ind.getFirstResource(veda_schema__useFilter);
 
                                     ubyte access;
 
+                                    string key;
+
+                                    if (useFilter !is Resource.init)
+                                        key = permissionObject.uri ~ "+" ~ useFilter.uri ~ "+" ~ permissionSubject.uri;
+                                    else
+                                        key = permissionObject.uri ~ "+" ~ permissionSubject.uri;
+
                                     // найдем предыдущие права для данной пары
-                                    string str = storage.find(permissionObject.uri ~ "+" ~ permissionSubject.uri);
+                                    string str = storage.find(key);
                                     if (str !is null && str.length > 0)
                                     {
                                         access = cast(ubyte)str[ 0 ];
@@ -546,11 +570,10 @@ void acl_manager(string thread_name, string db_path)
                                             access = access | Access.cant_delete;
                                     }
 
-                                    ResultCode res = storage.put(permissionObject.uri ~ "+" ~ permissionSubject.uri, "" ~ access);
+                                    ResultCode res = storage.put(key, "" ~ access);
 
                                     if (trace_msg[ 100 ] == 1)
-                                        log.trace("[acl index] (%s) ACL: %s+%s %s", text(res), permissionObject.uri, permissionSubject.uri,
-                                                  text(access));
+                                        log.trace("[acl index] (%s) ACL: %s %s", text(res), key, text(access));
                                 }
                                 else if (rdfType.anyExist(veda_schema__Membership) == true)
                                 {
@@ -590,6 +613,18 @@ void acl_manager(string thread_name, string db_path)
                                         if (trace_msg[ 101 ] == 1)
                                             log.trace("[acl index] (%s) MemberShip: %s : %s", text(res), rs.uri, outbuff.toString());
                                     }
+                                }
+                                else if (rdfType.anyExist(veda_schema__PermissionFilter) == true)
+                                {
+                                    if (trace_msg[ 114 ] == 1)
+                                        log.trace("store PermissionFilter: [%s]", ind);
+
+                                    Resource permissionObject = ind.getFirstResource(veda_schema__permissionObject);
+
+                                    ResultCode res = storage.put("F+" ~ permissionObject.uri, ind.uri);
+
+                                    if (trace_msg[ 101 ] == 1)
+                                        log.trace("[acl index] (%s) PermissionFilter: %s : %s", text(res), permissionObject.uri, ind.uri);
                                 }
                             }
                             finally

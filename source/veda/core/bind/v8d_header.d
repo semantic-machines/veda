@@ -22,7 +22,8 @@ logger log()
 string[ string ] g_prop;
 Context g_context;
 
-_Buff   g_parent_event_id;
+_Buff   g_parent_script_id;
+_Buff   g_parent_document_id;
 _Buff   g_prev_state;
 _Buff   g_document;
 _Buff   g_user;
@@ -186,11 +187,15 @@ extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
     {
         string var_name = cast(string)_var_name[ 0.._var_name_length ];
 
-        if (var_name == "$parent_event_id")
+        if (var_name == "$parent_script_id")
         {
-            return &g_parent_event_id;
+            return &g_parent_script_id;
         }
-        if (var_name == "$user")
+        else if (var_name == "$parent_document_id")
+        {
+            return &g_parent_document_id;
+        }
+        else if (var_name == "$user")
         {
             return &g_user;
         }

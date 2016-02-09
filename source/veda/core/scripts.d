@@ -178,13 +178,29 @@ public void scripts_thread(string thread_name, string node_id)
 
                                 if (event_id !is null)
                                 {
-                                    g_parent_event_id.data = cast(char *)event_id;
-                                    g_parent_event_id.length = cast(int)event_id.length;
+                                    string[] aa = event_id.split("+");
+
+                                    if (aa.length == 2)
+                                    {
+                                        g_parent_script_id.data = cast(char *)aa[ 1 ];
+                                        g_parent_script_id.length = cast(int)aa[ 1 ].length;
+                                        g_parent_document_id.data = cast(char *)aa[ 0 ];
+                                        g_parent_document_id.length = cast(int)aa[ 0 ].length;
+                                    }
+                                    else
+                                    {
+                                        g_parent_script_id.data = cast(char *)empty_uid;
+                                        g_parent_script_id.length = cast(int)empty_uid.length;
+                                        g_parent_document_id.data = cast(char *)empty_uid;
+                                        g_parent_document_id.length = cast(int)empty_uid.length;
+                                    }
                                 }
                                 else
                                 {
-                                    g_parent_event_id.data = cast(char *)empty_uid;
-                                    g_parent_event_id.length = cast(int)empty_uid.length;
+                                    g_parent_script_id.data = cast(char *)empty_uid;
+                                    g_parent_script_id.length = cast(int)empty_uid.length;
+                                    g_parent_document_id.data = cast(char *)empty_uid;
+                                    g_parent_document_id.length = cast(int)empty_uid.length;
                                 }
 
                                 if (prev_state !is null)
@@ -348,7 +364,8 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
         string str_script =
             "var ticket = get_env_str_var ('$ticket');"
             ~ "var user_uri = get_env_str_var ('$user');"
-            ~ "var parent_event_id = get_env_str_var ('$parent_event_id');"
+            ~ "var parent_script_id = get_env_str_var ('$parent_script_id');"
+            ~ "var parent_document_id = get_env_str_var ('$parent_document_id');"
             ~ "var prev_state = get_individual (ticket, '$prev_state');"
             ~ "var document = get_individual (ticket, '$document');"
             ~ "if (document) {"

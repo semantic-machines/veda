@@ -75,6 +75,13 @@ v-s:Membership
   rdfs:subClassOf owl:Thing ;
 .
 
+v-s:PermissionFilter
+  rdf:type owl:Class ;
+  rdfs:comment "Запись о соответствии документа и фильтра записей о правах."@ru ;
+  rdfs:label "Permissions filter record"@en ;
+  rdfs:label "Фильтр прав"@ru ;
+.
+
 v-s:PermissionStatement
   rdf:type owl:Class ;
   rdfs:comment "Permissions record defines access rigths for individuals of one class to individuals of another class."@en ;
@@ -366,6 +373,7 @@ v-s:permissionObject
   rdfs:comment "An object to which rights are granted."@en ;
   rdfs:comment "Объект, на который выдаются права."@ru ;
   rdfs:domain v-s:PermissionStatement ;
+  rdfs:domain v-s:PermissionFilter ;
   rdfs:label "permission resource"@en ;
   rdfs:label "ресурс полномочий"@ru ;
   rdfs:range rdfs:Resource ;
@@ -379,6 +387,14 @@ v-s:permissionSubject
   rdfs:label "permission subject"@en ;
   rdfs:label "субъект полномочий"@ru ;
   rdfs:range rdfs:Resource ;
+.
+
+v-s:useFilter
+  rdf:type owl:ObjectProperty ;
+  rdfs:comment "Использовать фильтр." ;
+  rdfs:domain v-s:PermissionStatement ;
+  rdfs:label "Использовать фильтр" ;
+  rdfs:range v-s:PermissionFilter ;
 .
 
 v-s:subject
