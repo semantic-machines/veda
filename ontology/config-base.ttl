@@ -67,10 +67,11 @@ cfg:Event_0
  * user_uri = user whose actions triggered event
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
- * parent_event_id = id of the parent event that triggered this event.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
  */
 
-if (parent_event_id) return;
+if (parent_document_id && parent_document_id === document['@']) return;
 
 var doc = document,
 	person_uri = getUri(document['v-s:employee']),
@@ -123,7 +124,8 @@ cfg:Event_1
  * user_uri = user whose actions triggered event
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
- * parent_event_id = id of the parent event that triggered this event.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
  */
 
 var doc_uri = document['@'];
@@ -191,7 +193,8 @@ cfg:Event_1_1
  * user_uri = user whose actions triggered event
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
- * parent_event_id = id of the parent event that triggered this event.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
  */
 // No journaling for technical changes 
 // No journaling for draft
@@ -307,7 +310,7 @@ if (!(document['v-s:isDraftOf'] && document['v-s:isDraftOf'].length > 0 || (docu
     }
 }
   """ ;
-  rdfs:comment "скрипт автоматической выдачи прав авторам"@ru ;
+  rdfs:comment "Создание журнала документа"@ru ;
   rdfs:label "Event_1"@en ;
   rdfs:label "Событие_1"@ru ;
 .
@@ -328,7 +331,8 @@ cfg:Event_2
  * user_uri = user whose actions triggered event
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
- * parent_event_id = id of the parent event that triggered this event.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
  */
 
 // print ('@@1 =', toJson (document));
@@ -404,7 +408,8 @@ cfg:Event_3
  * user_uri = user whose actions triggered event
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
- * parent_event_id = id of the parent event that triggered this event.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
  */
 
 var doc_uri = document['@'];	
@@ -454,7 +459,8 @@ cfg:Event_4
  * user_uri = user whose actions triggered event
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
- * parent_event_id = id of the parent event that triggered this event.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
  */
 
 // Update ontology vsn
@@ -483,23 +489,51 @@ cfg:Event_5
  * user_uri = user whose actions triggered event
  * prev_state = user whose actions triggered event
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
- * parent_event_id = id of the parent event that triggered this event. 
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
  */
-//print("MEMBERSHIP start:");
-var doc_uri = document["@"];
-var _classes = document["rdf:type"];
-_classes.map(function (i) {
-	var _class_uri = i.data;
-	var member = {
-		'@' : doc_uri + "_m_" + _class_uri,
-		'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
-		'v-s:memberOf' : [{data: i.data, type : _Uri}],
-		'v-s:resource'  : [{data: doc_uri, type : _Uri}],
-		'rdfs:comment'  : [{data: "выдан cfg:Event_5", type : _String}]
-	};
-	put_individual (ticket, member, _event_id);
-//	print("MEMBERSHIP: ", toJson(member));
+
+if (parent_document_id && parent_document_id === document['@']) return;
+
+var doc_uri = document["@"],
+	_classes = getUris( document["rdf:type"] ),
+	add = true;
+
+if ( hasValue(document, "v-s:deleted", { data: true, type: _Boolean}) ) {
+	add = false;
+}
+
+_classes.map(function (class_uri) {
+	hierGroup(doc_uri, class_uri, add)
 });
+
+function hierGroup(doc_uri, class_uri, add) {
+	if (class_uri === "owl:Thing" || class_uri === "rdfs:Resource") return;
+	var uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + class_uri.split(':').join('_'),
+		membership = {
+			'@' : uri, 
+			'rdf:type' : [{data: 'v-s:Membership', type : _Uri}],
+			'v-s:memberOf' : [{data: class_uri, type : _Uri}],
+			'v-s:resource'  : [{data: doc_uri, type : _Uri}],
+			'rdfs:comment'  : [{data: 'создано cfg:Event_5', type : _String}],
+		};
+	if (!add) {
+		membership['v-s:deleted'] = [{data: true, type : _Boolean}];
+	}
+	put_individual (ticket, membership, _event_id);
+	
+	print( add ? "ADD" : "DELETE", ":", uri );
+
+	var _class = get_individual(ticket, class_uri);
+	if (_class) {
+		var _super = getUris(_class["rdfs:subClassOf"]);
+		if (_super) {
+			_super.map(function (class_uri) {
+				hierGroup(doc_uri, class_uri, add);	
+			});
+		}
+	}
+}
   """ ;
   rdfs:comment "скрипт включения индивидов в группу своего класса для авторизации по классу"@ru ;
   rdfs:label "Event_5"@en ;
