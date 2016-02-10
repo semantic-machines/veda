@@ -75,7 +75,19 @@ function compare(a, b)
                 else if (aa == _Bool)
                     aa = 'Boolean';
             }
-        }
+        } else (key == "lang") 
+        {
+            if (tbb == 'number' && taa == 'string')
+            {
+                if (bb == 0)
+                    bb = 'NONE';
+            }
+            else if (taa == 'number' && tbb == 'string')
+            {
+                if (aa == 0)
+                    aa = 'NONE';
+            }			
+		}	
 
         result &= compare(aa, bb);
         if (!result) return false;
@@ -934,14 +946,14 @@ function newUri(uri)
 
 function newStr(_data, _lang)
 {
-	if (!_lang)
-		_lang = 0;
+	if (!_lang || _lang == 'NONE')
+		_lang = 0;		
 		
     return [
     {
         data: _data,
         type: _String,
-        lang: 0
+        lang: _lang
     }];
 }
 
@@ -951,6 +963,24 @@ function newBool(_data)
     {
         data: _data,
         type: _Bool
+    }];
+}
+
+function newInt(_data)
+{
+    return [
+    {
+        data: _data,
+        type: _Integer
+    }];
+}
+
+function newDecimal(_data)
+{
+    return [
+    {
+        data: _data,
+        type: _Decimal
     }];
 }
 

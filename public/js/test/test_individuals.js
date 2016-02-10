@@ -108,22 +108,9 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri = "test3:" + guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': [
-                {
-                    data: 'v-s:Document',
-                    type: _Uri
-                }],
-                'v-s:author': [
-                {
-                    data: 'td:ValeriyBushenev-Programmer1',
-                    type: _Uri
-                }],
-                'v-s:test_field': [
-                {
-                    data: 'test data',
-                    lang: 'EN',
-                    type: _String
-                }]
+                'rdf:type': newUri ('v-s:Document'),
+                'v-s:author': newUri ('td:ValeriyBushenev-Programmer1'),
+                'v-s:test_field': newStr ('test data', 'EN')
             };
 
             var res = put_individual(ticket_user1.id, new_test_doc1);
@@ -158,22 +145,9 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri = guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': [
-                {
-                    data: 'v-s:Document',
-                    type: _Uri
-                }],
-                'v-s:author': [
-                {
-                    data: 'td:ValeriyBushenev-Programmer1',
-                    type: _Uri
-                }],
-                'v-s:test_field': [
-                {
-                    data: 'test data',
-                    lang: 'NONE',
-                    type: _String
-                }]
+                'rdf:type': newUri ('v-s:Document'),
+                'v-s:author': newUri ('td:ValeriyBushenev-Programmer1'),
+                'v-s:test_field': newStr ('test data', 'NONE')
             };
 
             var res = put_individual(ticket_user1.id, new_test_doc1);
@@ -242,22 +216,9 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri = guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': [
-                {
-                    data: 'v-s:Document',
-                    type: _Uri
-                }],
-                'v-s:author': [
-                {
-                    data: 'td:ValeriyBushenev-Programmer1',
-                    type: _Uri
-                }],
-                'v-s:test_field': [
-                {
-                    data: 'test data',
-                    lang: 'NONE',
-                    type: _String
-                }]
+                'rdf:type': newUri ('v-s:Document'),
+                'v-s:author': newUri ('td:ValeriyBushenev-Programmer1'),
+                'v-s:test_field': newStr ('test data', 'NONE')
             };
 
             var res = put_individual(ticket_user1.id, new_test_doc1);
@@ -280,110 +241,32 @@ for (i = 0; i < 1; i++)
         var new_test_doc1_uri = guid();
         var new_test_doc1 = {
             '@': new_test_doc1_uri,
-            'rdf:type': [
-            {
-                data: 'v-s:test-data-types',
-                type: _Uri
-            }],
-            'v-s:test_integer': [
-            {
-                data: 9223372036854775295,
-                type: _Integer
-            }],
-            'v-s:test_negative_integer': [
-            {
-                data: -144365435,
-                type: _Integer
-            }],
-            'v-s:test_decimal': [
-            {
-                data: 12.12345678912345,
-                type: _Decimal
-            }],
-            'v-s:test_negative_decimal': [
-            {
-                data: -54.89764,
-                type: _Decimal
-            }],
-            'v-s:test_decimal2': [
-            {
-                data: 0.7,
-                type: _Decimal
-            }],
-            'v-s:test_decimal3': [
-            {
-                data: 764.3,
-                type: _Decimal
-            }],
-            'v-s:test_decimal4': [
-            {
-                data: 90.8,
-                type: _Decimal
-            }],
-            'v-s:test_decimal5': [
-            {
-                data: 7.6,
-                type: _Decimal
-            }],
-            'v-s:test_decimal6': [
-            {
-                data: 0.07,
-                type: _Decimal
-            }],
-            'v-s:test_decimal7': [
-            {
-                data: 0.007,
-                type: _Decimal
-            }],
-            'v-s:created': [
-            {
-                data: new Date(),
-                type: _Datetime
-            }],
-            'v-s:test_datetime0': [
-            {
-                data: new Date("2014-01-02"),
-                type: _Datetime
-            }],
-            'v-s:test_datetime1': [
-            {
-                data: new Date("2014-01-02T20:00"),
-                type: _Datetime
-            }],
-            'v-s:test_datetime2': [
-            {
-                data: new Date("2014-01-02T20:10:24"),
-                type: _Datetime
-            }],
-            'v-s:test_datetime3': [
-            {
-                data: new Date("2014-01-02T20:10:24.768"),
-                type: _Datetime
-            }],
-            'v-s:test_datetime4': [
-            {
-                data: new Date("1960-01-02"),
-                type: _Datetime
-            }],
-            'v-s:canUpdate': [
-            {
-                data: true,
-                type: _Bool
-            }],
-            'v-s:permissionSubject': [
-            {
-                data: 'individual_2',
-                type: _Uri
-            }]
+            'rdf:type': newUri ('v-s:test-data-types'),
+            'v-s:test_integer': newInt (9223372036854775295),
+            'v-s:test_negative_integer': newInt (-144365435),
+            'v-s:test_decimal': newDecimal (12.12345678912345),
+            'v-s:test_negative_decimal': newDecimal (-54.89764),
+            'v-s:test_decimal2': newDecimal (0.7),
+            'v-s:test_decimal3': newDecimal (764.3),
+            'v-s:test_decimal4': newDecimal (90.8),
+            'v-s:test_decimal5': newDecimal (7.6),
+            'v-s:test_decimal6': newDecimal (0.07),
+            'v-s:test_decimal7': newDecimal (0.007),
+            'v-s:created': newDate (new Date()),
+            'v-s:test_datetime0': newDate (new Date("2014-01-02")),
+            'v-s:test_datetime1': newDate (new Date("2014-01-02T20:00")),
+            'v-s:test_datetime2': newDate (new Date("2014-01-02T20:10:24")),
+            'v-s:test_datetime3': newDate (new Date("2014-01-02T20:10:24.768")),
+            'v-s:test_datetime4': newDate (new Date("1960-01-02")),
+            'v-s:canUpdate': newBool (true),
+            'v-s:permissionSubject': newUri ('individual_2')
         };
 
         var res = put_individual(ticket.id, new_test_doc1);
         wait_module(subject_manager, res.op_id);
 
         var read_individual = get_individual(ticket.id, new_test_doc1_uri);
-
         ok(compare(new_test_doc1, read_individual));
-
     });
 
     test("#008 Individual of [v-s:PermissionStatement] store 3 and read 2 (check on duplicate)",
@@ -397,36 +280,12 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri = guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': [
-                {
-                    data: 'v-s:PermissionStatement',
-                    type: _Uri
-                }],
-                'v-s:canDelete': [
-                {
-                    data: true,
-                    type: _Bool
-                }],
-                'v-s:canRead': [
-                {
-                    data: true,
-                    type: _Bool
-                }],
-                'v-s:canUpdate': [
-                {
-                    data: true,
-                    type: _Bool
-                }],
-                'v-s:permissionObject': [
-                {
-                    data: permissionObject,
-                    type: _Uri
-                }],
-                'v-s:permissionSubject': [
-                {
-                    data: permissionSubject,
-                    type: _Uri
-                }]
+                'rdf:type': newUri ('v-s:PermissionStatement'),
+                'v-s:canDelete': newBool (true),
+                'v-s:canRead': newBool (true),
+                'v-s:canUpdate': newBool (true),
+                'v-s:permissionObject': newUri (permissionObject),
+                'v-s:permissionSubject': newUri (permissionSubject)
             };
 
             var res = put_individual(ticket.id, new_test_doc1);
@@ -438,11 +297,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc2 = new_test_doc1;
             var new_test_doc2_uri = guid();
             new_test_doc2['@'] = new_test_doc2_uri;
-            new_test_doc2['v-s:canRead'] = [
-            {
-                data: false,
-                type: _Bool
-            }];
+            new_test_doc2['v-s:canRead'] = newBool (false);
             var res = put_individual(ticket.id, new_test_doc2);
             wait_module(subject_manager, res.op_id);
 
@@ -452,11 +307,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc3 = new_test_doc2;
             var new_test_doc3_uri = guid();
             new_test_doc3['@'] = new_test_doc3_uri;
-            new_test_doc3['v-s:canRead'] = [
-            {
-                data: true,
-                type: _Bool
-            }];
+            new_test_doc3['v-s:canRead'] = newBool (true);
 
             try
             {
@@ -491,36 +342,12 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri = guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': [
-                {
-                    data: 'v-s:NoPermissionStatement',
-                    type: _Uri
-                }],
-                'v-s:canDelete': [
-                {
-                    data: true,
-                    type: _Bool
-                }],
-                'v-s:canRead': [
-                {
-                    data: true,
-                    type: _Bool
-                }],
-                'v-s:canUpdate': [
-                {
-                    data: true,
-                    type: _Bool
-                }],
-                'v-s:permissionObject': [
-                {
-                    data: permissionObject,
-                    type: _Uri
-                }],
-                'v-s:permissionSubject': [
-                {
-                    data: permissionSubject,
-                    type: _Uri
-                }]
+                'rdf:type': newUri ('v-s:NoPermissionStatement'),
+                'v-s:canDelete': newBool (true),
+                'v-s:canRead': newBool (true),
+                'v-s:canUpdate': newBool (true),
+                'v-s:permissionObject': newUri (permissionObject),
+                'v-s:permissionSubject': newUri (permissionSubject)
             };
 
             var res = put_individual(ticket.id, new_test_doc1);
@@ -532,11 +359,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc2 = new_test_doc1;
             var new_test_doc2_uri = guid();
             new_test_doc2['@'] = new_test_doc2_uri;
-            new_test_doc2['v-s:canRead'] = [
-            {
-                data: false,
-                type: _Bool
-            }];
+            new_test_doc2['v-s:canRead'] = newBool (false);
             var res = put_individual(ticket.id, new_test_doc2);
             wait_module(subject_manager, res.op_id);
 
@@ -546,17 +369,12 @@ for (i = 0; i < 1; i++)
             var new_test_doc3 = new_test_doc2;
             var new_test_doc3_uri = guid();
             new_test_doc3['@'] = new_test_doc3_uri;
-            new_test_doc3['v-s:canRead'] = [
-            {
-                data: true,
-                type: _Bool
-            }];
+            new_test_doc3['v-s:canRead'] = newBool (true);
             var res = put_individual(ticket.id, new_test_doc3);
             wait_module(subject_manager, res.op_id);
 
             read_individual = get_individual(ticket.id, new_test_doc3_uri);
             ok((read_individual['@'] == new_test_doc3_uri) == true);
-
         });
 
     test("#010 Individual of [v-s:Membership] store 3 and read 2 (ignore duplicate data)",
@@ -570,21 +388,9 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri = guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': [
-                {
-                    data: 'v-s:Membership',
-                    type: _Uri
-                }],
-                'v-s:memberOf': [
-                {
-                    data: memberOf,
-                    type: _Uri
-                }],
-                'v-s:resource': [
-                {
-                    data: resources,
-                    type: _Uri
-                }]
+                'rdf:type': newUri ('v-s:Membership'),
+                'v-s:memberOf': newUri (memberOf),
+                'v-s:resource': newUri (resources)
             };
 
             var res = put_individual(ticket.id, new_test_doc1);
@@ -596,11 +402,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc2 = new_test_doc1;
             var new_test_doc2_uri = guid();
             new_test_doc2['@'] = new_test_doc2_uri;
-            new_test_doc2['v-s:memberOf'] = [
-            {
-                data: guid(),
-                type: _Uri
-            }];
+            new_test_doc2['v-s:memberOf'] = newUri (guid());
             var res = put_individual(ticket.id, new_test_doc2);
             wait_module(subject_manager, res.op_id);
 
@@ -610,11 +412,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc3 = new_test_doc2;
             var new_test_doc3_uri = guid();
             new_test_doc3['@'] = new_test_doc3_uri;
-            new_test_doc3['v-s:memberOf'] = [
-            {
-                data: memberOf,
-                type: _Uri
-            }];
+            new_test_doc3['v-s:memberOf'] = newUri (memberOf);
             try
             {
                 var res = put_individual(ticket.id, new_test_doc3);
@@ -646,21 +444,9 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri = guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': [
-                {
-                    data: 'v-s:NoMembership',
-                    type: _Uri
-                }],
-                'v-s:memberOf': [
-                {
-                    data: memberOf,
-                    type: _Uri
-                }],
-                'v-s:resource': [
-                {
-                    data: resources,
-                    type: _Uri
-                }]
+                'rdf:type': newUri ('v-s:NoMembership'),
+                'v-s:memberOf': newUri (memberOf),
+                'v-s:resource': newUri (resources)
             };
 
             var res = put_individual(ticket.id, new_test_doc1);
@@ -672,11 +458,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc2 = new_test_doc1;
             var new_test_doc2_uri = guid();
             new_test_doc2['@'] = new_test_doc2_uri;
-            new_test_doc2['v-s:memberOf'] = [
-            {
-                data: guid(),
-                type: _Uri
-            }];
+            new_test_doc2['v-s:memberOf'] = newUri (guid());
             var res = put_individual(ticket.id, new_test_doc2);
             wait_module(subject_manager, res.op_id);
 
@@ -686,17 +468,12 @@ for (i = 0; i < 1; i++)
             var new_test_doc3 = new_test_doc2;
             var new_test_doc3_uri = guid();
             new_test_doc3['@'] = new_test_doc3_uri;
-            new_test_doc3['v-s:memberOf'] = [
-            {
-                data: memberOf,
-                type: _Uri
-            }];
+            new_test_doc3['v-s:memberOf'] = newUri (memberOf);
             var res = put_individual(ticket.id, new_test_doc3);
             wait_module(subject_manager, res.op_id);
 
             read_individual = get_individual(ticket.id, new_test_doc3_uri);
             ok((read_individual['@'] == new_test_doc3_uri) == true);
-
         });
 
     test(
@@ -716,116 +493,39 @@ for (i = 0; i < 1; i++)
 
             var new_test_doc1 = {
                 '@': new_test_doc1_uri_1,
-                'rdf:type': [
-                {
-                    data: 'v-s:Document',
-                    type: _Uri
-                }],
-                'v-s:author': [
-                {
-                    data: 'td:ValeriyBushenev-Programmer1',
-                    type: _Uri
-                }],
-                'v-s:test_field': [
-                {
-                    data: test_data,
-                    lang: 'NONE',
-                    type: _Uri
-                }],
-                'v-s:test_fieldA': [
-                {
-                    data: 'BBB' + test_data_uid,
-                    lang: 'NONE',
-                    type: _Uri
-                }],
-                'v-s:test_fieldB': [
-                {
-                    data: 'CCC' + test_data_uid,
-                    lang: 'NONE',
-                    type: _Uri
-                }]
+                'rdf:type': newUri ('v-s:Document'),
+                'v-s:author': newUri ('td:ValeriyBushenev-Programmer1'),
+                'v-s:test_field': newStr (test_data, 'NONE'),
+                'v-s:test_fieldA': newUri ('BBB' + test_data_uid),
+                'v-s:test_fieldB': newUri ('CCC' + test_data_uid)
             };
 
             // document content author != user1
             var new_test_doc1_uri_2 = "test12:" + guid();
             var new_test_doc2 = {
                 '@': new_test_doc1_uri_2,
-                'rdf:type': [
-                {
-                    data: 'v-s:Document',
-                    type: _Uri
-                }],
-                'v-s:author': [
-                {
-                    data: 'td:ValeriyBushenev-Programmer2',
-                    type: _Uri
-                }],
-                'v-s:test_field': [
-                {
-                    data: test_data,
-                    lang: 'NONE',
-                    type: _Uri
-                }]
+                'rdf:type': newUri ('v-s:Document'),
+                'v-s:author': newUri ('td:ValeriyBushenev-Programmer2'),
+                'v-s:test_field': newUri (test_data)
             };
 
             var new_test_doc1_uri_3 = "test12:" + guid();
             var new_test_doc3 = {
                 '@': new_test_doc1_uri_3,
-                'rdf:type': [
-                {
-                    data: 'v-s:Document',
-                    type: _Uri
-                }],
-                'v-s:author': [
-                {
-                    data: 'td:ValeriyBushenev-Programmer1',
-                    type: _Uri
-                }],
-                'v-s:test_field': [
-                {
-                    data: test_data,
-                    lang: 'NONE',
-                    type: _Uri
-                }],
-                'v-s:test_fieldA': [
-                {
-                    data: 'BBB' + test_data_uid,
-                    lang: 'NONE',
-                    type: _Uri
-                }]
+                'rdf:type': newUri ('v-s:Document'),
+                'v-s:author': newUri ('td:ValeriyBushenev-Programmer1'),
+                'v-s:test_field': newUri (test_data),
+                'v-s:test_fieldA': newUri ('BBB' + test_data_uid)
             };
 
             var new_test_doc1_uri_4 = "test12:" + guid();
             var new_test_doc4 = {
                 '@': new_test_doc1_uri_4,
-                'rdf:type': [
-                {
-                    data: 'v-s:Document',
-                    type: _Uri
-                }],
-                'v-s:author': [
-                {
-                    data: 'td:ValeriyBushenev-Programmer1',
-                    type: _Uri
-                }],
-                'v-s:test_field': [
-                {
-                    data: 'AAA' + test_data_uid,
-                    lang: 'NONE',
-                    type: _Uri
-                }],
-                'v-s:test_fieldA': [
-                {
-                    data: 'BBB' + test_data_uid,
-                    lang: 'NONE',
-                    type: _Uri
-                }],
-                'v-s:test_fieldB': [
-                {
-                    data: 'CCC' + test_data_uid,
-                    lang: 'NONE',
-                    type: _Uri
-                }]
+                'rdf:type': newUri ('v-s:Document'),
+                'v-s:author': newUri ('td:ValeriyBushenev-Programmer1'),
+                'v-s:test_field': newUri ('AAA' + test_data_uid),
+                'v-s:test_fieldA': newUri ('BBB' + test_data_uid),
+                'v-s:test_fieldB': newUri ('CCC' + test_data_uid)
             };
 
             var res = put_individual(ticket_user1.id, new_test_doc1, false);
@@ -869,148 +569,48 @@ for (i = 0; i < 1; i++)
 
             var test_group_uid = guid();
 
-            var new_test_doc1_uri = "test12:" + guid();
+            var new_test_doc1_uri = "test13:" + guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': [
-                {
-                    data: 'v-s:Document',
-                    type: _Uri
-                }],
-                'v-s:author': [
-                {
-                    data: 'td:ValeriyBushenev-Programmer1',
-                    type: _Uri
-                }],
-                'v-s:created': [
-                {
-                    data: new Date(),
-                    type: _Datetime
-                }],
-                'v-s:test_group': [
-                {
-                    data: test_group_uid,
-                    lang: 'NONE',
-                    type: _Uri
-                }],
-                'v-s:test_datetime0': [
-                {
-                    data: new Date("2014-01-01"),
-                    type: _Datetime
-                }],
-                'v-s:test_datetime1': [
-                {
-                    data: new Date("2014-05-01"),
-                    type: _Datetime
-                }]
+                'rdf:type': newUri ('v-s:Document'),
+                'v-s:author': newUri ('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date()),
+                'v-s:test_group': newUri (test_group_uid),
+                'v-s:test_datetime0': newDate (new Date("2014-01-01")),
+                'v-s:test_datetime1': newDate (new Date("2014-05-01"))
             };
 
-            var new_test_doc2_uri = "test12:" + guid();
+            var new_test_doc2_uri = "test13:" + guid();
             var new_test_doc2 = {
                 '@': new_test_doc2_uri,
-                'rdf:type': [
-                {
-                    data: 'v-s:Document',
-                    type: _Uri
-                }],
-                'v-s:author': [
-                {
-                    data: 'td:ValeriyBushenev-Programmer1',
-                    type: _Uri
-                }],
-                'v-s:created': [
-                {
-                    data: new Date(),
-                    type: _Datetime
-                }],
-                'v-s:test_group': [
-                {
-                    data: test_group_uid,
-                    lang: 'NONE',
-                    type: _Uri
-                }],
-                'v-s:test_datetime0': [
-                {
-                    data: new Date("2014-01-02"),
-                    type: _Datetime
-                }],
-                'v-s:test_datetime1': [
-                {
-                    data: new Date("2014-05-01"),
-                    type: _Datetime
-                }]
+                'rdf:type': newUri ('v-s:Document'),
+                'v-s:author': newUri ('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate (new Date()),
+                'v-s:test_group': newUri (test_group_uid),
+                'v-s:test_datetime0': newDate (new Date("2014-01-02")),
+                'v-s:test_datetime1': newDate (new Date("2014-05-01"))
             };
 
-            var new_test_doc3_uri = "test12:" + guid();
+            var new_test_doc3_uri = "test13:" + guid();
             var new_test_doc3 = {
                 '@': new_test_doc3_uri,
-                'rdf:type': [
-                {
-                    data: 'v-s:Document',
-                    type: _Uri
-                }],
-                'v-s:author': [
-                {
-                    data: 'td:ValeriyBushenev-Programmer1',
-                    type: _Uri
-                }],
-                'v-s:created': [
-                {
-                    data: new Date(),
-                    type: _Datetime
-                }],
-                'v-s:test_group': [
-                {
-                    data: test_group_uid,
-                    lang: 'NONE',
-                    type: _Uri
-                }],
-                'v-s:test_datetime0': [
-                {
-                    data: new Date("2014-01-02"),
-                    type: _Datetime
-                }],
-                'v-s:test_datetime1': [
-                {
-                    data: new Date("2014-06-11"),
-                    type: _Datetime
-                }]
+                'rdf:type': newUri ('v-s:Document'),
+                'v-s:author': newUri ('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate (new Date()),
+                'v-s:test_group': newUri (test_group_uid),
+                'v-s:test_datetime0': newDate (new Date("2014-01-02")),
+                'v-s:test_datetime1': newDate (new Date("2014-06-11"))
             };
 
-            var new_test_doc4_uri = "test12:" + guid();
+            var new_test_doc4_uri = "test13:" + guid();
             var new_test_doc4 = {
                 '@': new_test_doc4_uri,
-                'rdf:type': [
-                {
-                    data: 'v-s:Document',
-                    type: _Uri
-                }],
-                'v-s:author': [
-                {
-                    data: 'td:ValeriyBushenev-Programmer1',
-                    type: _Uri
-                }],
-                'v-s:created': [
-                {
-                    data: new Date(),
-                    type: _Datetime
-                }],
-                'v-s:test_group': [
-                {
-                    data: test_group_uid,
-                    lang: 'NONE',
-                    type: _Uri
-                }],
-                'v-s:test_datetime0': [
-                {
-                    data: new Date("2014-01-04"),
-                    type: _Datetime
-                }],
-                'v-s:test_datetime1': [
-                {
-                    data: new Date("2014-06-12"),
-                    type: _Datetime
-                }]
+                'rdf:type': newUri ('v-s:Document'),
+                'v-s:author': newUri ('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate (new Date()),
+                'v-s:test_group': newUri (test_group_uid),
+                'v-s:test_datetime0': newDate (new Date("2014-01-04")),
+                'v-s:test_datetime1': newDate (new Date("2014-06-12"))
             };
 
             var res = put_individual(ticket_user1.id, new_test_doc1, false);
@@ -1053,22 +653,9 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri = "test14:" + guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': [
-                {
-                    data: 'v-s:Document',
-                    type: _Uri
-                }],
-                'v-s:author': [
-                {
-                    data: 'td:ValeriyBushenev-Programmer1',
-                    type: _Uri
-                }],
-                'v-s:test_field': [
-                {
-                    data: 'test data',
-                    lang: 'EN',
-                    type: _String
-                }]
+                'rdf:type': newUri ('v-s:Document'),
+                'v-s:author': newUri ('td:ValeriyBushenev-Programmer1'),
+                'v-s:test_field': newStr ('test data', 'EN')
             };
 
             var res = put_individual(ticket_user1.id, new_test_doc1);
@@ -1097,11 +684,7 @@ for (i = 0; i < 1; i++)
 
             var new_test_doc1_add1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': [
-                {
-                    data: 'v-s:Document',
-                    type: _Uri
-                }],
+                'rdf:type': newUri ('v-s:Document'),
                 'v-s:author': [
                 {
                     data: 'td:ValeriyBushenev-Programmer1',
@@ -1115,12 +698,7 @@ for (i = 0; i < 1; i++)
                     data: 'td:test-q',
                     type: _Uri
                 }],
-                'v-s:test_field': [
-                {
-                    data: 'test data',
-                    lang: 'EN',
-                    type: _String
-                }]
+                'v-s:test_field': newStr ('test data','EN')
             };
 
             read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
@@ -1128,11 +706,7 @@ for (i = 0; i < 1; i++)
 
             var new_test_set1 = {
                 '@': new_test_doc1_uri,
-                'v-s:author': [
-                {
-                    data: 'td:test-e',
-                    type: _Uri
-                }]
+                'v-s:author': newUri ('td:test-e')
             };
 
             set_in_individual(ticket_user1.id, new_test_set1);
@@ -1141,26 +715,12 @@ for (i = 0; i < 1; i++)
 
             var new_test_doc1_set1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': [
-                {
-                    data: 'v-s:Document',
-                    type: _Uri
-                }],
-                'v-s:author': [
-                {
-                    data: 'td:test-e',
-                    type: _Uri
-                }],
-                'v-s:test_field': [
-                {
-                    data: 'test data',
-                    lang: 'EN',
-                    type: _String
-                }]
+                'rdf:type': newUri ('v-s:Document'),
+                'v-s:author': newUri ('td:test-e'),
+                'v-s:test_field': newStr ('test data','EN')
             };
 
             read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
             ok(compare(new_test_doc1_set1, read_individual));
         });
-
 }
