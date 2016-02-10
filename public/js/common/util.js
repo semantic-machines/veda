@@ -11,7 +11,11 @@ var _Boolean = 64;
 
 function genUri()
 {
-    return 'd:a' + guid();
+	var uid = guid();
+	if (uid[0] == '0' || uid[0] == '1' || uid[0] == '2' || uid[0] == '3'|| uid[0] == '4'|| uid[0] == '5'|| uid[0] == '6'|| uid[0] == '7' || uid[0] == '8' || uid[0] == '9')
+		return 'd:a' + uid;
+	else	
+		return 'd:' + uid;
 }
 
 function guid()
@@ -19,7 +23,7 @@ function guid()
     function s4()
     {
         return Math.floor((1 + Math.random()) * 0x10000)
-            .toString(16)
+            .toString(36)
             .substring(1);
     }
     return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
