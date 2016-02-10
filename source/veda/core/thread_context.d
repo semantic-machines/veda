@@ -1128,13 +1128,13 @@ class PThreadContext : Context
                 if (rdfType.anyExist(veda_schema__Membership) == true)
                 {
                     // before storing the data, expected availability acl_manager.
-                    wait_thread(P_MODULE.acl_manager);
+//                    wait_thread(P_MODULE.acl_manager);
                     
-                    if (indv.isExist("v-s:deleted", true) == false && this.acl_indexes.isExistMemberShip(indv) == true)
-                    {
-                        res.result = ResultCode.Duplicate_Key;
-                        return res;
-                    }
+//                    if (indv.isExist("v-s:deleted", true) == false && this.acl_indexes.isExistMemberShip(indv) == true)
+//                    {
+//                        res.result = ResultCode.Duplicate_Key;
+//                        return res;
+//                    }
                 }
                 else if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
                 {

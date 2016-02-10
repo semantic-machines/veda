@@ -377,7 +377,7 @@ for (i = 0; i < 1; i++)
             ok((read_individual['@'] == new_test_doc3_uri) == true);
         });
 
-    test("#010 Individual of [v-s:Membership] store 3 and read 2 (ignore duplicate data)",
+    test("#010 Individual of [v-s:Membership] store 3 and read 3",
         function()
         {
             var ticket = get_admin_ticket();
@@ -423,7 +423,7 @@ for (i = 0; i < 1; i++)
             {
                 read_individual = {};
             }
-            ok((read_individual['@'] == new_test_doc3_uri) == false);
+            ok((read_individual['@'] == new_test_doc3_uri) == true);
 
         });
 

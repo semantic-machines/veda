@@ -622,7 +622,7 @@ void acl_manager(string thread_name, string db_path)
                                         ResultCode res = storage.put(rs.uri, outbuff.toString());
 
                                         if (trace_msg[ 101 ] == 1)
-                                            log.trace("[acl index] (%s) MemberShip: %s : %s", text(res), rs.uri, outbuff.toString());
+                                            log.trace("[acl index] (%s) set MemberShip: %s : %s", text(res), rs.uri, outbuff.toString());
                                     }
                                 }
                                 else if (rdfType.anyExist(veda_schema__PermissionFilter) == true)
