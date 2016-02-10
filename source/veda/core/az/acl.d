@@ -61,6 +61,9 @@ class Authorization : LmdbStorage
         if (membership is null)
             return true;
 
+        if (membership.isExist("v-s:deleted", true))
+            return false;
+
         bool[ string ] add_memberOf;
 
         Resources resources = membership.getResources(veda_schema__resource);
@@ -580,16 +583,19 @@ void acl_manager(string thread_name, string db_path)
                                     if (trace_msg[ 114 ] == 1)
                                         log.trace("store Membership: [%s]", ind);
 
-                                    bool[ string ] add_memberOf;
+                                    bool is_deleted = ind.isExist("v-s:deleted", true);
+
+                                    bool[ string ] prepare_memberOf;
                                     Resources resource = ind.getResources(veda_schema__resource);
                                     Resources memberOf = ind.getResources(veda_schema__memberOf);
 
                                     foreach (mb; memberOf)
-                                        add_memberOf[ mb.uri ] = true;
+                                        prepare_memberOf[ mb.uri ] = true;
 
+                                    // для каждого из ресурсов выполним операцию добавления/удаления
                                     foreach (rs; resource)
                                     {
-                                        bool[ string ] new_memberOf = add_memberOf.dup;
+                                        bool[ string ] new_memberOf = prepare_memberOf.dup;
                                         string groups_str = storage.find(rs.uri);
                                         if (groups_str !is null)
                                         {
@@ -597,15 +603,23 @@ void acl_manager(string thread_name, string db_path)
                                             foreach (group; groups)
                                             {
                                                 if (group.length > 0)
-                                                    new_memberOf[ group ] = true;
+                                                {
+                                                    if (is_deleted)
+                                                        new_memberOf[ group ] = false;
+                                                    else
+                                                        new_memberOf[ group ] = true;
+                                                }
                                             }
                                         }
 
                                         OutBuffer outbuff = new OutBuffer();
                                         foreach (key; new_memberOf.keys)
                                         {
-                                            outbuff.write(key);
-                                            outbuff.write(';');
+                                            if (new_memberOf[ key ] == true)
+                                            {
+                                                outbuff.write(key);
+                                                outbuff.write(';');
+                                            }
                                         }
 
                                         ResultCode res = storage.put(rs.uri, outbuff.toString());
