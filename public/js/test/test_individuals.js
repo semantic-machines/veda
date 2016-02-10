@@ -4,6 +4,7 @@ module('Individuals', {});
 var _admin_ticket = '';
 var _user1_ticket = '';
 var _user2_ticket = '';
+var _event_id;
 
 function get_admin_ticket ()
 {
@@ -169,29 +170,10 @@ test(
 			read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
 
-			var permission_uri = guid();
-
-			var new_permission = {
-				'@' : permission_uri,
-				'rdf:type' : [ {
-					data : 'v-s:PermissionStatement',
-					type : _Uri
-				} ],
-				'v-s:canRead' : [ {
-					data : true,
-					type : _Bool
-				} ],
-				'v-s:permissionObject' : [ {
-					data : new_test_doc1_uri,
-					type : _Uri
-				} ],
-				'v-s:permissionSubject' : [ {
-					data : ticket_user2.user_uri,
-					type : _Uri
-				} ]
-			};
-			var res = put_individual(ticket_user1.id, new_permission); //
-			wait_module(acl_manager, res.op_id);
+			var res = addRight(ticket_user1.id, [can_read], ticket_user2.user_uri, new_test_doc1_uri);
+			var new_permission = res[0];
+			var permission_uri = new_permission['@'];
+			wait_module(acl_manager, res[1].op_id);
 
 			read_individual = get_individual(ticket_user2.id, new_test_doc1_uri);
 			ok(compare(new_test_doc1, read_individual));
@@ -205,41 +187,13 @@ test(
 
 			ok(compare(new_permission, right2));
 
-			new_permission['v-s:canUpdate'] = [{
-					data : true,
-					type : _Bool
-				}];
-
-			new_permission['v-s:canDelete'] = [{
-					data : true,
-					type : _Bool
-				}];
+			new_permission['v-s:canUpdate'] = newBool (true);
+			new_permission['v-s:canDelete'] = newBool (true);
 
 			ok(compare(new_permission, right1));
 
-			permission_uri = guid();
-			new_permission = {
-					'@' : permission_uri,
-					'rdf:type' : [ {
-						data : 'v-s:PermissionStatement',
-						type : _Uri
-					} ],
-					'v-s:canRead' : [ {
-						data : false,
-						type : _Bool
-					} ],
-					'v-s:permissionObject' : [ {
-						data : new_test_doc1_uri,
-						type : _Uri
-					} ],
-					'v-s:permissionSubject' : [ {
-						data : ticket_user2.user_uri,
-						type : _Uri
-					} ]
-				};			
-			
-			res = put_individual(ticket_user1.id, new_permission); //
-			wait_module(acl_manager, res.op_id);
+			res = addRight(ticket_user1.id, [cant_read], ticket_user2.user_uri, new_test_doc1_uri);
+			wait_module(acl_manager, res[1].op_id);
 			
 			try { read_individual = get_individual(ticket_user2.id, new_test_doc1_uri); }
 			catch (e) { read_individual = {}; }
@@ -522,7 +476,7 @@ test(
 			
 		});
 
-test("#010 Individual of [v-s:Membership] store 3 and read 2",
+test("#010 Individual of [v-s:Membership] store 3 and read 2 (ignore duplicate data)",
 		function() {
 			var ticket = get_admin_ticket ();
 
@@ -581,7 +535,7 @@ test("#010 Individual of [v-s:Membership] store 3 and read 2",
 			
 		});
 
-	test("#011 Individual of [v-s:NoMembership] store 3 and read 3",
+	test("#011 Individual of [v-s:NoMembership] store 3 and read 3 (this no membership)",
 		function() {
 			var ticket = get_admin_ticket ();
 

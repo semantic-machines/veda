@@ -916,3 +916,209 @@ function removeDraftFromUserAspect(individual) {
 		if (inDrafts) veda.user.aspect.save();		
 	}
 }
+
+/////////////// rights
+
+function newUri(uri)
+{
+    return [
+    {
+        data: uri,
+        type: _Uri
+    }];
+}
+
+function newStr(_data, _lang)
+{
+	if (!_lang)
+		_lang = 0;
+		
+    return [
+    {
+        data: _data,
+        type: _String,
+        lang: 0
+    }];
+}
+
+function newBool(_data)
+{
+    return [
+    {
+        data: _data,
+        type: _Bool
+    }];
+}
+
+function newDate(_data)
+{
+    return [
+    {
+        data: _data,
+        type: _Datetime
+    }];
+}
+
+function addDay(_data, _days)
+{
+    if (!_data)
+        _data = new Date();
+
+    try
+    {
+        _data.setDate(_data.getDate() + _days);
+    }
+    catch (e)
+    {
+        print(e);
+    }
+
+    return _data;
+}
+
+function getStrings(field)
+{
+    var res = [];
+    if (field)
+    {
+        for (var i in field)
+        {
+            res.push(field[i].data);
+        }
+    }
+    return res;
+}
+
+function getUris(field)
+{
+    var res = [];
+    if (field)
+    {
+        for (var i in field)
+        {
+            res.push(field[i].data);
+        }
+    }
+    return res;
+}
+
+function getUri(field)
+{
+    if (field && field.length > 0)
+    {
+        return field[0].data;
+    }
+}
+
+function isExists (field, value)
+{
+    if (field)
+    {
+        for (var i in field)
+        {
+			if (field[i].data == value.data && field[i].type == value.type)
+				return true;
+        }
+    }
+    return false;
+}
+
+function getFirstValue(field)
+{
+    if (field && field.length > 0)
+    {
+        if (field[0].type == _Integer)
+        {
+            return parseInt(field[0].data, 10);
+        }
+        else if (field[0].type == _Datetime)
+            return new Date(field[0].data);
+
+        return field[0].data;
+    }
+}
+
+function getFirstValueUseLang(field, lang)
+{
+	for (var i in field)
+    {
+		if (field[i].lang == lang)
+			return field[i].data;
+    }
+    return null;
+}
+
+//
+
+
+/// Создание
+var can_create = 1;
+
+/// Чтение
+var can_read = 2;
+
+/// Изменеие
+var can_update = 4;
+
+/// Удаление
+var can_delete = 8;
+
+/// Запрет создания
+var cant_create = 16;
+
+/// Запрет чтения
+var cant_read = 32;
+
+/// Запрет обновления
+var cant_update = 64;
+
+/// Запрет удаления
+var cant_delete = 128;
+
+function addRight(ticket, rights, subj_uri, obj_uri)
+{
+	var new_uri = genUri();
+    var new_permission = {
+        '@': new_uri,
+        'rdf:type': [
+        {
+            data: 'v-s:PermissionStatement',
+            type: _Uri
+        }],
+        'v-s:permissionObject': [
+        {
+            data: obj_uri,
+            type: _Uri
+        }],
+        'v-s:permissionSubject': [
+        {
+            data: subj_uri,
+            type: _Uri
+        }]
+    };
+
+    for (var i = 0; i < rights.length; i++)
+    {
+        if (rights[i] == can_read)
+			new_permission['v-s:canRead'] = newBool (true);
+        else if (rights[i] == can_update)
+			new_permission['v-s:canUpdate'] = newBool (true);
+        else if (rights[i] == can_delete)
+			new_permission['v-s:canDelete'] = newBool (true);
+        else if (rights[i] == can_create)
+			new_permission['v-s:canCreate'] = newBool (true);
+        else if (rights[i] == cant_read)
+			new_permission['v-s:canRead'] = newBool (false);
+        else if (rights[i] == cant_update)
+			new_permission['v-s:canUpdate'] = newBool (false);
+        else if (rights[i] == cant_delete)
+			new_permission['v-s:canDelete'] = newBool (false);
+        else if (rights[i] == cant_create)
+			new_permission['v-s:canCreate'] = newBool (false);
+    }
+    
+    var res = put_individual(ticket, new_permission, _event_id);
+	
+	return [new_permission, res];
+    //print("ADD RIGHT:", toJson(new_permission));
+}
