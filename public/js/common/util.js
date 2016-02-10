@@ -11,11 +11,11 @@ var _Boolean = 64;
 
 function genUri()
 {
-	var uid = guid();
-	if (uid[0] == '0' || uid[0] == '1' || uid[0] == '2' || uid[0] == '3'|| uid[0] == '4'|| uid[0] == '5'|| uid[0] == '6'|| uid[0] == '7' || uid[0] == '8' || uid[0] == '9')
-		return 'd:a' + uid;
-	else	
-		return 'd:' + uid;
+    var uid = guid();
+    if (uid[0] == '0' || uid[0] == '1' || uid[0] == '2' || uid[0] == '3' || uid[0] == '4' || uid[0] == '5' || uid[0] == '6' || uid[0] == '7' || uid[0] == '8' || uid[0] == '9')
+        return 'd:a' + uid;
+    else
+        return 'd:' + uid;
 }
 
 function guid()
@@ -75,7 +75,8 @@ function compare(a, b)
                 else if (aa == _Bool)
                     aa = 'Boolean';
             }
-        } else (key == "lang") 
+        }
+        else(key == "lang")
         {
             if (tbb == 'number' && taa == 'string')
             {
@@ -86,8 +87,8 @@ function compare(a, b)
             {
                 if (aa == 0)
                     aa = 'NONE';
-            }			
-		}	
+            }
+        }
 
         result &= compare(aa, bb);
         if (!result) return false;
@@ -906,31 +907,40 @@ function isNumerationValueAvailable(scope, value)
     }
 }
 
-function putDraftToUserAspect(individual) {
-	if (!veda.user.aspect['v-s:hasDocumentDraft']) {
-		veda.user.aspect['v-s:hasDocumentDraft'] = [individual];
-		veda.user.aspect.save();
-	} else {
-		var alreadyInDrafts = false;
-		veda.user.aspect['v-s:hasDocumentDraft'].forEach(function(draft) {
-			alreadyInDrafts|=draft.id==individual.id;
-		});
-		if (!alreadyInDrafts) {
-			veda.user.aspect['v-s:hasDocumentDraft'] = veda.user.aspect['v-s:hasDocumentDraft'].concat([individual]);
-			veda.user.aspect.save();
-		}
-	}
+function putDraftToUserAspect(individual)
+{
+    if (!veda.user.aspect['v-s:hasDocumentDraft'])
+    {
+        veda.user.aspect['v-s:hasDocumentDraft'] = [individual];
+        veda.user.aspect.save();
+    }
+    else
+    {
+        var alreadyInDrafts = false;
+        veda.user.aspect['v-s:hasDocumentDraft'].forEach(function(draft)
+        {
+            alreadyInDrafts |= draft.id == individual.id;
+        });
+        if (!alreadyInDrafts)
+        {
+            veda.user.aspect['v-s:hasDocumentDraft'] = veda.user.aspect['v-s:hasDocumentDraft'].concat([individual]);
+            veda.user.aspect.save();
+        }
+    }
 }
 
-function removeDraftFromUserAspect(individual) {
-	if (veda.user.aspect['v-s:hasDocumentDraft']) {
-		var inDrafts = false;
-		veda.user.aspect['v-s:hasDocumentDraft'] = veda.user.aspect['v-s:hasDocumentDraft'].filter( function (draft) {
-			inDrafts|=draft.id==individual.id;
-			return draft.id !== individual.id; 
-		})
-		if (inDrafts) veda.user.aspect.save();		
-	}
+function removeDraftFromUserAspect(individual)
+{
+    if (veda.user.aspect['v-s:hasDocumentDraft'])
+    {
+        var inDrafts = false;
+        veda.user.aspect['v-s:hasDocumentDraft'] = veda.user.aspect['v-s:hasDocumentDraft'].filter(function(draft)
+        {
+            inDrafts |= draft.id == individual.id;
+            return draft.id !== individual.id;
+        })
+        if (inDrafts) veda.user.aspect.save();
+    }
 }
 
 /////////////// rights
@@ -946,9 +956,9 @@ function newUri(uri)
 
 function newStr(_data, _lang)
 {
-	if (!_lang || _lang == 'NONE')
-		_lang = 0;		
-		
+    if (!_lang || _lang == 'NONE')
+        _lang = 0;
+
     return [
     {
         data: _data,
@@ -1044,14 +1054,14 @@ function getUri(field)
     }
 }
 
-function isExists (field, value)
+function isExists(field, value)
 {
     if (field)
     {
         for (var i in field)
         {
-			if (field[i].data == value.data && field[i].type == value.type)
-				return true;
+            if (field[i].data == value.data && field[i].type == value.type)
+                return true;
         }
     }
     return false;
@@ -1074,10 +1084,10 @@ function getFirstValue(field)
 
 function getFirstValueUseLang(field, lang)
 {
-	for (var i in field)
+    for (var i in field)
     {
-		if (field[i].lang == lang)
-			return field[i].data;
+        if (field[i].lang == lang)
+            return field[i].data;
     }
     return null;
 }
@@ -1109,50 +1119,52 @@ var cant_update = 64;
 /// Запрет удаления
 var cant_delete = 128;
 
+function addToGroup(ticket, group, resources)
+{
+    var new_membership_uri = genUri();
+    var new_membership = {
+        '@': new_membership_uri,
+        'rdf:type': newUri('v-s:Membership'),
+        'v-s:memberOf': newUri(group),
+        'v-s:resource': newUri(resources)
+    };
+    var res = put_individual(ticket.id, new_membership);
+
+    return [new_membership, res];
+}
+
 function addRight(ticket, rights, subj_uri, obj_uri)
 {
-	var new_uri = genUri();
+    var new_uri = genUri();
     var new_permission = {
         '@': new_uri,
-        'rdf:type': [
-        {
-            data: 'v-s:PermissionStatement',
-            type: _Uri
-        }],
-        'v-s:permissionObject': [
-        {
-            data: obj_uri,
-            type: _Uri
-        }],
-        'v-s:permissionSubject': [
-        {
-            data: subj_uri,
-            type: _Uri
-        }]
+        'rdf:type': newUri('v-s:PermissionStatement'),
+        'v-s:permissionObject': newUri(obj_uri),
+        'v-s:permissionSubject': newUri(subj_uri)
     };
 
     for (var i = 0; i < rights.length; i++)
     {
         if (rights[i] == can_read)
-			new_permission['v-s:canRead'] = newBool (true);
+            new_permission['v-s:canRead'] = newBool(true);
         else if (rights[i] == can_update)
-			new_permission['v-s:canUpdate'] = newBool (true);
+            new_permission['v-s:canUpdate'] = newBool(true);
         else if (rights[i] == can_delete)
-			new_permission['v-s:canDelete'] = newBool (true);
+            new_permission['v-s:canDelete'] = newBool(true);
         else if (rights[i] == can_create)
-			new_permission['v-s:canCreate'] = newBool (true);
+            new_permission['v-s:canCreate'] = newBool(true);
         else if (rights[i] == cant_read)
-			new_permission['v-s:canRead'] = newBool (false);
+            new_permission['v-s:canRead'] = newBool(false);
         else if (rights[i] == cant_update)
-			new_permission['v-s:canUpdate'] = newBool (false);
+            new_permission['v-s:canUpdate'] = newBool(false);
         else if (rights[i] == cant_delete)
-			new_permission['v-s:canDelete'] = newBool (false);
+            new_permission['v-s:canDelete'] = newBool(false);
         else if (rights[i] == cant_create)
-			new_permission['v-s:canCreate'] = newBool (false);
+            new_permission['v-s:canCreate'] = newBool(false);
     }
-    
+
     var res = put_individual(ticket, new_permission, _event_id);
-	
-	return [new_permission, res];
+
+    return [new_permission, res];
     //print("ADD RIGHT:", toJson(new_permission));
 }

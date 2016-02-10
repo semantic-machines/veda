@@ -385,16 +385,10 @@ for (i = 0; i < 1; i++)
             var memberOf = guid();
             var resources = guid();
 
-            var new_test_doc1_uri = guid();
-            var new_test_doc1 = {
-                '@': new_test_doc1_uri,
-                'rdf:type': newUri ('v-s:Membership'),
-                'v-s:memberOf': newUri (memberOf),
-                'v-s:resource': newUri (resources)
-            };
-
-            var res = put_individual(ticket.id, new_test_doc1);
-            wait_module(subject_manager, res.op_id);
+            var res = addToGroup(ticket, memberOf, resources)
+            var new_test_doc1 = res[0];
+            var new_test_doc1_uri = new_test_doc1['@'];
+            wait_module(subject_manager, res[1].op_id);
 
             var read_individual = get_individual(ticket.id, new_test_doc1_uri);
             ok(compare(new_test_doc1, read_individual));
@@ -440,11 +434,11 @@ for (i = 0; i < 1; i++)
 
             var memberOf = guid();
             var resources = guid();
-
+            
             var new_test_doc1_uri = guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': newUri ('v-s:NoMembership'),
+                'rdf:type': newUri ('v-s:ThisNoMembership'),
                 'v-s:memberOf': newUri (memberOf),
                 'v-s:resource': newUri (resources)
             };
