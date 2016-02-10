@@ -190,7 +190,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         while (worker is null)
         {
-            yield();
+            vibe.core.core.yield();
             worker = get_free_worker();
         }
         //writeln ("@2 allocate worker ", worker.id);
