@@ -239,7 +239,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         // цикл по ожиданию своего результата
         while (my_worker.complete == false)
-            yield();
+            vibe.core.core.yield();
 
         string[] res = my_worker.res_string_array.dup;
 
@@ -266,7 +266,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         // цикл по ожиданию своего результата
         while (my_worker.complete == false)
-            yield();
+            vibe.core.core.yield();
 
         Json[] res = my_worker.res_json_array.dup;
 
@@ -293,7 +293,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         // цикл по ожиданию своего результата
         while (my_worker.complete == false)
-            yield();
+            vibe.core.core.yield();
 
         long res = my_worker.res_long;
 
@@ -485,7 +485,7 @@ class VedaStorageRest : VedaStorageRest_API
         Worker     *worker = allocate_worker();
 
         std.concurrency.send(getFreeTid(), Command.Execute, Function.Backup, worker.id, std.concurrency.thisTid);
-        yield();
+        vibe.core.core.yield();
         std.concurrency.receive((bool _res, int _recv_worker_id) { res = _res; recv_worker_id = _recv_worker_id; });
 
         if (recv_worker_id == worker.id)
@@ -513,7 +513,7 @@ class VedaStorageRest : VedaStorageRest_API
         Worker     *worker = allocate_worker();
 
         std.concurrency.send(worker.tid, Command.Execute, Function.CountIndividuals, worker.id, std.concurrency.thisTid);
-        yield();
+        vibe.core.core.yield();
         std.concurrency.receive((long _res, int _recv_worker_id) { res = _res; recv_worker_id = _recv_worker_id; });
 
         if (recv_worker_id == worker.id)
@@ -554,7 +554,7 @@ class VedaStorageRest : VedaStorageRest_API
             std.concurrency.send(worker.tid, Command.Get, Function.IndividualsIdsToQuery, _query, sort, databases, ticket, reopen,
                                  top, limit, worker.id, std.concurrency.thisTid);
 
-            yield();
+            vibe.core.core.yield();
 
             std.concurrency.receive((immutable(
                                                string)[] _individuals_ids, ResultCode _rc, int _recv_worker_id)
@@ -592,7 +592,7 @@ class VedaStorageRest : VedaStorageRest_API
         Worker     *worker = allocate_worker();
 
         std.concurrency.send(worker.tid, Command.Get, Function.Individuals, uris.idup, ticket, worker.id, std.concurrency.thisTid);
-        yield();
+        vibe.core.core.yield();
         std.concurrency.receive((immutable(
                                            Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;
                                                                                                 recv_worker_id =
@@ -631,7 +631,7 @@ class VedaStorageRest : VedaStorageRest_API
             Worker     *worker = allocate_worker();
 
             std.concurrency.send(worker.tid, Command.Get, Function.Individual, uri, "", _ticket, worker.id, std.concurrency.thisTid);
-            yield();
+            vibe.core.core.yield();
             std.concurrency.receive((immutable(
                                                Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;
                                                                                                     recv_worker_id = _recv_worker_id; });
