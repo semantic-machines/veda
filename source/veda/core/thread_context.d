@@ -1129,7 +1129,11 @@ class PThreadContext : Context
                 {
                     // before storing the data, expected availability acl_manager.
                     wait_thread(P_MODULE.acl_manager);
-                    if (this.acl_indexes.isExistMemberShip(indv) == true)
+                    
+                    if (membership.isExist("v-s:deleted", true))
+            			return false;
+                    
+                    if (indv.isExist("v-s:deleted", true) == false && this.acl_indexes.isExistMemberShip(indv) == true)
                     {
                         res.result = ResultCode.Duplicate_Key;
                         return res;

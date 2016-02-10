@@ -61,9 +61,6 @@ class Authorization : LmdbStorage
         if (membership is null)
             return true;
 
-        if (membership.isExist("v-s:deleted", true))
-            return false;
-
         bool[ string ] add_memberOf;
 
         Resources resources = membership.getResources(veda_schema__resource);
