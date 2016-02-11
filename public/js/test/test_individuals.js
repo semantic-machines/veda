@@ -75,26 +75,48 @@ for (i = 0; i < 1; i++)
         return new_test_doc1;
     }
 
-    function test_success_read(ticket, read_indv_uri, ethalon_indv)
-    {
-        var read_individual = get_individual(ticket.id, read_indv_uri);
-        ok(compare(ethalon_indv, read_individual));
-    }
-
-    function test_fail_read(ticket, read_indv_uri, ethalon_indv)
+    function test_success_read(ticket, read_indv_uri, ethalon_indv, reopen)
     {
         var read_individual;
 
+		if (!reopen)
+			reopen = false;
+
         try
         {
-            read_individual = get_individual(ticket.id, read_indv_uri);
+            read_individual = get_individual(ticket.id, read_indv_uri, reopen);
         }
         catch (e)
         {
             read_individual = {};
         }
 
-        ok(compare(ethalon_indv, read_individual) == false);
+		var res = compare(ethalon_indv, read_individual);
+		ok(res == true);
+		
+        return res == true;
+    }
+
+    function test_fail_read(ticket, read_indv_uri, ethalon_indv, reopen)
+    {
+        var read_individual;
+
+		if (!reopen)
+			reopen = false;
+
+        try
+        {
+            read_individual = get_individual(ticket.id, read_indv_uri, true);
+        }
+        catch (e)
+        {
+            read_individual = {};
+        }
+
+		var res = compare(ethalon_indv, read_individual);
+		ok(res == false);
+		
+        return res == false;
     }
 
     test(
@@ -257,56 +279,28 @@ for (i = 0; i < 1; i++)
         ok(compare(new_test_doc1, read_individual));
     });
 
-    test("#008 Individual of [v-s:PermissionStatement] store 3 and read 2 (check on duplicate)",
+    test("#008 test [v-s:PermissionStatement]: user1 store file, user2 not read file, add right for user2, add cant read right for user2",
         function()
         {
-            var ticket = get_user1_ticket();
+            var ticket1 = get_user1_ticket();
+            var ticket2 = get_user2_ticket();
 
-            var permissionSubject = guid();
-            var permissionObject = guid();
+            var res;
+            var new_test_doc1 = create_test_document1(ticket1);
+            res = test_success_read(ticket1, new_test_doc1['@'], new_test_doc1);
+            res = test_fail_read(ticket2, new_test_doc1['@'], new_test_doc1);
+            
+            res = addRight(ticket1.id, [can_read], ticket2.user_uri, new_test_doc1['@']); 
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+           
+            res = test_success_read(ticket2, new_test_doc1['@'], new_test_doc1, true);            
 
-            var new_test_doc1_uri = guid();
-            var new_test_doc1 = {
-                '@': new_test_doc1_uri,
-                'rdf:type': newUri('v-s:PermissionStatement'),
-                'v-s:canDelete': newBool(true),
-                'v-s:canRead': newBool(true),
-                'v-s:canUpdate': newBool(true),
-                'v-s:permissionObject': newUri(permissionObject),
-                'v-s:permissionSubject': newUri(permissionSubject),
-                'v-s:author': newUri('td:ValeriyBushenev-Programmer1')
-            };
-
-            var res = put_individual(ticket.id, new_test_doc1);
-            wait_module(subject_manager, res.op_id);
-
-            var read_individual = get_individual(ticket.id, new_test_doc1_uri);
-            ok(compare(new_test_doc1, read_individual));
-
-            var new_test_doc2 = new_test_doc1;
-            var new_test_doc2_uri = guid();
-            new_test_doc2['@'] = new_test_doc2_uri;
-            new_test_doc2['v-s:canRead'] = newBool(false);
-            var res = put_individual(ticket.id, new_test_doc2);
-            wait_module(subject_manager, res.op_id);
-
-            var read_individual = get_individual(ticket.id, new_test_doc2_uri);
-            ok(compare(new_test_doc2, read_individual));
-
-            var new_test_doc3 = new_test_doc2;
-            var new_test_doc3_uri = guid();
-            new_test_doc3['@'] = new_test_doc3_uri;
-            new_test_doc3['v-s:canRead'] = newBool(true);
-
-            try
-            {
-                res = put_individual(ticket.id, new_test_doc3);
-                wait_module(subject_manager, res.op_id);
-            }
-            catch (err)
-            {}
-
-            test_fail_read(ticket, new_test_doc3_uri, new_test_doc3);
+            res = addRight(ticket1.id, [cant_read], ticket2.user_uri, new_test_doc1['@']); 
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+            
+            res = test_fail_read(ticket2, new_test_doc1['@'], new_test_doc1, true);            
         });
 
     test(
@@ -363,9 +357,30 @@ for (i = 0; i < 1; i++)
             var ticket1 = get_user1_ticket();
             var ticket2 = get_user2_ticket();
 
+            var res;
             var new_test_doc1 = create_test_document1(ticket1);
-            test_success_read(ticket1, new_test_doc1['@'], new_test_doc1)
-            test_fail_read(ticket2, new_test_doc1['@'], new_test_doc1)
+            res = test_success_read(ticket1, new_test_doc1['@'], new_test_doc1);
+            res = test_fail_read(ticket2, new_test_doc1['@'], new_test_doc1);
+            
+            var doc_group = 'g:doc_group_' + guid();
+            var user_group = 'g:user_group_' +guid();            
+            
+            res = addToGroup(ticket1, doc_group, new_test_doc1['@']);
+            res = addToGroup(ticket1, user_group, ticket2.user_uri);
+            
+            var membersip1 = res[0];                        
+
+            res = addRight(ticket1.id, [can_read], user_group, doc_group); 
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+           
+            res = test_success_read(ticket2, new_test_doc1['@'], new_test_doc1, true);
+            membersip1['v-s:deleted'] = newBool (true);
+            var res = put_individual(ticket1.id, membersip1);
+            wait_module(acl_manager, res.op_id);
+            
+            var new_test_doc3 = create_test_document1(ticket1);
+            test_fail_read(ticket2, new_test_doc1['@'], new_test_doc1, false);
         });
 
     test("#011 Individual of [v-s:NoMembership] store 3 and read 3 (this no membership)",

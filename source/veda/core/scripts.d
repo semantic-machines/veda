@@ -170,22 +170,38 @@ public void scripts_thread(string thread_name, string node_id)
                         (string user_uri, EVENT type, string msg, string prev_state, immutable(string)[] indv_types, string individual_id,
                          string event_id, long op_id)
                         {
-                            //writeln("scripts B #1 *", process_name);
-                            if (msg !is null && msg.length > 3 && script_vm !is null)
+                            try
                             {
-                                if (onto is null)
-                                    onto = context.get_onto();
-
-                                if (event_id !is null)
+                                //writeln("scripts B #1 *", process_name);
+                                if (msg !is null && msg.length > 3 && script_vm !is null)
                                 {
-                                    string[] aa = event_id.split("+");
-
-                                    if (aa.length == 2)
+                                    foreach (itype; indv_types)
                                     {
-                                        g_parent_script_id.data = cast(char *)aa[ 1 ];
-                                        g_parent_script_id.length = cast(int)aa[ 1 ].length;
-                                        g_parent_document_id.data = cast(char *)aa[ 0 ];
-                                        g_parent_document_id.length = cast(int)aa[ 0 ].length;
+                                        if (itype == veda_schema__PermissionStatement || itype == veda_schema__Membership)
+                                            return;
+                                    }
+
+                                    if (onto is null)
+                                        onto = context.get_onto();
+
+                                    if (event_id !is null)
+                                    {
+                                        string[] aa = event_id.split("+");
+
+                                        if (aa.length == 2)
+                                        {
+                                            g_parent_script_id.data = cast(char *)aa[ 1 ];
+                                            g_parent_script_id.length = cast(int)aa[ 1 ].length;
+                                            g_parent_document_id.data = cast(char *)aa[ 0 ];
+                                            g_parent_document_id.length = cast(int)aa[ 0 ].length;
+                                        }
+                                        else
+                                        {
+                                            g_parent_script_id.data = cast(char *)empty_uid;
+                                            g_parent_script_id.length = cast(int)empty_uid.length;
+                                            g_parent_document_id.data = cast(char *)empty_uid;
+                                            g_parent_document_id.length = cast(int)empty_uid.length;
+                                        }
                                     }
                                     else
                                     {
@@ -194,111 +210,107 @@ public void scripts_thread(string thread_name, string node_id)
                                         g_parent_document_id.data = cast(char *)empty_uid;
                                         g_parent_document_id.length = cast(int)empty_uid.length;
                                     }
-                                }
-                                else
-                                {
-                                    g_parent_script_id.data = cast(char *)empty_uid;
-                                    g_parent_script_id.length = cast(int)empty_uid.length;
-                                    g_parent_document_id.data = cast(char *)empty_uid;
-                                    g_parent_document_id.length = cast(int)empty_uid.length;
-                                }
 
-                                if (prev_state !is null)
-                                {
-                                    g_prev_state.data = cast(char *)prev_state;
-                                    g_prev_state.length = cast(int)prev_state.length;
-                                }
-                                else
-                                {
-                                    g_prev_state.data = cast(char *)empty_uid;
-                                    g_prev_state.length = cast(int)empty_uid.length;
-                                }
-
-                                g_document.data = cast(char *)msg;
-                                g_document.length = cast(int)msg.length;
-
-                                if (user_uri !is null)
-                                {
-                                    g_user.data = cast(char *)user_uri;
-                                    g_user.length = cast(int)user_uri.length;
-                                }
-                                else
-                                {
-                                    g_user.data = cast(char *)"cfg:VedaSystem";
-                                    g_user.length = "cfg:VedaSystem".length;
-                                }
-
-                                string sticket = context.sys_ticket().id;
-                                g_ticket.data = cast(char *)sticket;
-                                g_ticket.length = cast(int)sticket.length;
-
-                                foreach (script_id, script; scripts)
-                                {
-                                    if (script.compiled_script !is null)
+                                    if (prev_state !is null)
                                     {
-                                        //writeln("#1 exec script:", script_id, ", script.filters=", script.filters);
-                                        if (script.filters.length > 0)
-                                        {
-                                            bool any_exist = false;
-                                            foreach (indv_type; indv_types)
-                                            {
-                                                if ((indv_type in script.filters) !is null)
-                                                {
-                                                    any_exist = true;
-                                                    break;
-                                                }
+                                        g_prev_state.data = cast(char *)prev_state;
+                                        g_prev_state.length = cast(int)prev_state.length;
+                                    }
+                                    else
+                                    {
+                                        g_prev_state.data = cast(char *)empty_uid;
+                                        g_prev_state.length = cast(int)empty_uid.length;
+                                    }
 
-                                                foreach (filter; script.filters.keys)
+                                    g_document.data = cast(char *)msg;
+                                    g_document.length = cast(int)msg.length;
+
+                                    if (user_uri !is null)
+                                    {
+                                        g_user.data = cast(char *)user_uri;
+                                        g_user.length = cast(int)user_uri.length;
+                                    }
+                                    else
+                                    {
+                                        g_user.data = cast(char *)"cfg:VedaSystem";
+                                        g_user.length = "cfg:VedaSystem".length;
+                                    }
+
+                                    string sticket = context.sys_ticket().id;
+                                    g_ticket.data = cast(char *)sticket;
+                                    g_ticket.length = cast(int)sticket.length;
+
+                                    foreach (script_id, script; scripts)
+                                    {
+                                        if (script.compiled_script !is null)
+                                        {
+                                            //writeln("#1 exec script:", script_id, ", script.filters=", script.filters);
+                                            if (script.filters.length > 0)
+                                            {
+                                                bool any_exist = false;
+                                                foreach (indv_type; indv_types)
                                                 {
-                                                    if (onto.isSubClass(cast(string)indv_type, filter) == true)
+                                                    if ((indv_type in script.filters) !is null)
                                                     {
                                                         any_exist = true;
                                                         break;
                                                     }
+
+                                                    foreach (filter; script.filters.keys)
+                                                    {
+                                                        if (onto.isSubClass(cast(string)indv_type, filter) == true)
+                                                        {
+                                                            any_exist = true;
+                                                            break;
+                                                        }
+                                                    }
                                                 }
+
+                                                if (any_exist == false)
+                                                    continue;
+                                            }
+                                            //log.trace("execute script:%s", script_id);
+
+                                            if (event_id !is null && event_id.length > 1 && event_id == (individual_id ~ '+' ~ script_id))
+                                            {
+                                                //writeln("skip script [", script_id, "], type:", type, ", indiv.:[", individual_id, "]");
+                                                continue;
                                             }
 
-                                            if (any_exist == false)
-                                                continue;
-                                        }
-                                        //log.trace("execute script:%s", script_id);
 
-                                        if (event_id !is null && event_id.length > 1 && event_id == (individual_id ~ '+' ~ script_id))
-                                        {
-                                            //writeln("skip script [", script_id, "], type:", type, ", indiv.:[", individual_id, "]");
-                                            continue;
-                                        }
+                                            try
+                                            {
+                                                if (trace_msg[ 300 ] == 1)
+                                                    log.trace("start exec script : %s %s %d %s", script_id, individual_id, op_id, event_id);
 
+                                                count++;
+                                                script_vm.run(script.compiled_script);
 
-                                        try
-                                        {
-                                            if (trace_msg[ 300 ] == 1)
-                                            	log.trace("start exec script : %s %s %d %s", script_id, individual_id, op_id, event_id);
-
-                                            count++;
-                                            script_vm.run(script.compiled_script);
-
-                                            if (trace_msg[ 300 ] == 1)
-                                            	log.trace("end exec script : %s", script_id);
+                                                if (trace_msg[ 300 ] == 1)
+                                                    log.trace("end exec script : %s", script_id);
 
 
-                                            //*(cast(char*)script_vm) = 0;
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            log.trace_log_and_console("WARN! fail execute script : %s %s", script_id, ex.msg);
+                                                //*(cast(char*)script_vm) = 0;
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                log.trace_log_and_console("WARN! fail execute script : %s %s", script_id, ex.msg);
+                                            }
                                         }
                                     }
-                                }
 
 
 //                                writeln("count:", count);
 
-                                //clear_script_data_cache ();
-                                // writeln("scripts B #e *", process_name);
+                                    //clear_script_data_cache ();
+                                    // writeln("scripts B #e *", process_name);
+                                }
                             }
-                            set_scripts_op_id(op_id);
-                            inc_count_prep_put();
+                            finally
+                            {
+                                set_scripts_op_id(op_id);
+                                inc_count_prep_put();
+                            }
                         },
                         (CMD cmd, int arg, bool arg2)
                         {

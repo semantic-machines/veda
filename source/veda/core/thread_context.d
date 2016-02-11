@@ -1125,27 +1125,27 @@ class PThreadContext : Context
 
                 setMapResources(indv.resources.get(rdf__type, Resources.init), rdfType);
 
-                if (rdfType.anyExist(veda_schema__Membership) == true)
-                {
-                    // before storing the data, expected availability acl_manager.
+//                if (rdfType.anyExist(veda_schema__Membership) == true)
+//                {
+                // before storing the data, expected availability acl_manager.
 //                    wait_thread(P_MODULE.acl_manager);
-                    
+
 //                    if (indv.isExist("v-s:deleted", true) == false && this.acl_indexes.isExistMemberShip(indv) == true)
 //                    {
 //                        res.result = ResultCode.Duplicate_Key;
 //                        return res;
 //                    }
-                }
-                else if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
-                {
-                    // before storing the data, expected availability acl_manager.
-                    wait_thread(P_MODULE.acl_manager);
-                    if (this.acl_indexes.isExistPermissionStatement(indv) == true)
-                    {
-                        res.result = ResultCode.Duplicate_Key;
-                        return res;
-                    }
-                }
+//                }
+//                else if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
+//                {
+                // before storing the data, expected availability acl_manager.
+//                    wait_thread(P_MODULE.acl_manager);
+//                    if (this.acl_indexes.isExistPermissionStatement(indv) == true)
+//                    {
+//                        res.result = ResultCode.Duplicate_Key;
+//                        return res;
+//                    }
+//                }
 
                 EVENT  ev = EVENT.NONE;
                 string prev_state;

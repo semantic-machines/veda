@@ -132,7 +132,7 @@ public void core_thread(string node_id, string write_storage_node)
                         }
                     }
                 },
-                (Command cmd, Function fn, string arg1, string arg2, string _ticket, int worker_id, Tid tid)
+                (Command cmd, Function fn, string arg1, string arg2, string _ticket, bool reopen, int worker_id, Tid tid)
                 {
                     if (tid != Tid.init)
                     {
@@ -163,6 +163,12 @@ public void core_thread(string node_id, string write_storage_node)
                                     rc = ticket.result;
                                     if (rc == ResultCode.OK)
                                     {
+                                        if (reopen)
+                                        {
+                                            context.reopen_ro_acl_storage_db();
+                                            context.reopen_ro_subject_storage_db();
+                                        }
+
                                         //Individual ii = context.get_individual(ticket, arg1);
                                         string cb = context.get_individual_as_cbor(ticket, arg1, rc);
                                         if (rc == ResultCode.OK)

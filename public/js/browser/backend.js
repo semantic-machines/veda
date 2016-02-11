@@ -139,7 +139,7 @@ veda.Module(function Backend(veda) { "use strict";
 
 	window.get_count = 0, window.get_summary_time = 0;
 
-	window.get_individual = function (ticket, uri, success, fail) {
+	window.get_individual = function (ticket, uri, reopen, success, fail) {
 		
 		var t1, t2;
 		t1 = Date.now();
@@ -148,7 +148,7 @@ veda.Module(function Backend(veda) { "use strict";
 		var params = {
 			type: "GET",
 			url: "get_individual",
-			data: { "ticket": ticket, "uri": uri }
+			data: { "ticket": ticket, "uri": uri, "reopen" : reopen || false}
 		};
 		if(!success || !fail) {
 			params.async = false;

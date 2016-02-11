@@ -107,7 +107,7 @@ interface VedaStorageRest_API {
     Json[] get_individuals(string ticket, string[] uris);
 
     @path("get_individual") @method(HTTPMethod.GET)
-    Json get_individual(string ticket, string uri);
+    Json get_individual(string ticket, string uri, bool reopen = false);
 
     @path("put_individual") @method(HTTPMethod.PUT)
     OpResult put_individual(string ticket, Json individual, bool prepare_events, string event_id);
@@ -614,7 +614,7 @@ class VedaStorageRest : VedaStorageRest_API
         return res;
     }
 
-    Json get_individual(string _ticket, string uri)
+    Json get_individual(string _ticket, string uri, bool reopen = false)
     {
         StopWatch sw; sw.start;
 
@@ -630,7 +630,7 @@ class VedaStorageRest : VedaStorageRest_API
 
             Worker     *worker = allocate_worker();
 
-            std.concurrency.send(worker.tid, Command.Get, Function.Individual, uri, "", _ticket, worker.id, std.concurrency.thisTid);
+            std.concurrency.send(worker.tid, Command.Get, Function.Individual, uri, "", _ticket, reopen, worker.id, std.concurrency.thisTid);
             vibe.core.core.yield();
             std.concurrency.receive((immutable(
                                                Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;

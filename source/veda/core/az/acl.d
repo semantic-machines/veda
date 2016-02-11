@@ -175,6 +175,13 @@ class Authorization : LmdbStorage
 
     int count_permissions = 0;
 
+    override void reopen_db()
+    {
+        //log.trace("@1 ACL:reopen_db");
+        super.reopen_db();
+        subject_groups_cache = string[][ string ].init;
+    }
+
 
     ubyte authorize(string uri, Ticket *ticket, ubyte request_access, Context context, void delegate(string resource_group,
                                                                                                      string subject_group,
@@ -182,7 +189,7 @@ class Authorization : LmdbStorage
     {
         void reopen_db()
         {
-            //log.trace("@ACL:reopen_db");
+            //log.trace("@2 ACL:reopen_db");
             this.reopen_db();
             subject_groups_cache[ ticket.user_uri ] = string[].init;
         }
@@ -503,7 +510,7 @@ void acl_manager(string thread_name, string db_path)
                                 Individual ind;
                                 if (cbor2individual(&ind, msg) < 0)
                                 {
-                                    log.trace("!ERR:invalid individual: [%s]", msg);
+                                    log.trace("!ERR:invalid individual: [%s] op_id=%d", msg, op_id);
                                     return;
                                 }
 
@@ -512,7 +519,7 @@ void acl_manager(string thread_name, string db_path)
                                 if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
                                 {
                                     if (trace_msg[ 114 ] == 1)
-                                        log.trace("store PermissionStatement: [%s]", ind);
+                                    	log.trace("store PermissionStatement: [%s] op_id=%d", ind, op_id);
 
                                     Resource permissionObject = ind.getFirstResource(veda_schema__permissionObject);
                                     Resource permissionSubject = ind.getFirstResource(veda_schema__permissionSubject);
@@ -578,21 +585,21 @@ void acl_manager(string thread_name, string db_path)
                                 else if (rdfType.anyExist(veda_schema__Membership) == true)
                                 {
                                     if (trace_msg[ 114 ] == 1)
-                                        log.trace("store Membership: [%s]", ind);
+                                        log.trace("store Membership: [%s] op_id=%d", ind, op_id);
 
                                     bool is_deleted = ind.isExist("v-s:deleted", true);
 
-                                    bool[ string ] prepare_memberOf;
+                                    //if (is_deleted)
+                                    //	log.trace ("membership is deleted:%s", ind.uri);
+
                                     Resources resource = ind.getResources(veda_schema__resource);
                                     Resources memberOf = ind.getResources(veda_schema__memberOf);
-
-                                    foreach (mb; memberOf)
-                                        prepare_memberOf[ mb.uri ] = true;
 
                                     // для каждого из ресурсов выполним операцию добавления/удаления
                                     foreach (rs; resource)
                                     {
-                                        bool[ string ] new_memberOf = prepare_memberOf.dup;
+                                        bool[ string ] new_memberOf;
+
                                         string groups_str = storage.find(rs.uri);
                                         if (groups_str !is null)
                                         {
@@ -601,12 +608,17 @@ void acl_manager(string thread_name, string db_path)
                                             {
                                                 if (group.length > 0)
                                                 {
-                                                    if (is_deleted)
-                                                        new_memberOf[ group ] = false;
-                                                    else
-                                                        new_memberOf[ group ] = true;
+                                                    new_memberOf[ group ] = true;
                                                 }
                                             }
+                                        }
+
+                                        foreach (mb; memberOf)
+                                        {
+                                            if (is_deleted)
+                                                new_memberOf[ mb.uri ] = false;
+                                            else
+                                                new_memberOf[ mb.uri ] = true;
                                         }
 
                                         OutBuffer outbuff = new OutBuffer();
@@ -618,6 +630,9 @@ void acl_manager(string thread_name, string db_path)
                                                 outbuff.write(';');
                                             }
                                         }
+
+                                        //log.trace ("[%s] res:[%s] memberOf=%s", ind.uri, rs.uri, memberOf);
+                                        //log.trace ("[%s] res:[%s] new_memberOf=%s", ind.uri, rs.uri, new_memberOf);
 
                                         ResultCode res = storage.put(rs.uri, outbuff.toString());
 
