@@ -239,11 +239,3 @@ v-ft:TaskTemplate
 </script>
   """
 .
-
-v-ft:TasksMembership
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadResGroup ;
-  v-s:resource v-ft:Inbox ;
-  v-s:resource v-ft:Outbox ;
-  v-s:resource v-ft:Completed ;
-.

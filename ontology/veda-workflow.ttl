@@ -148,13 +148,6 @@ v-wf:None
 	rdfs:label "None"^^xsd:string ;
 .
 
-v-wf:Membership_wf001
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadResGroup ;
-  v-s:resource v-wf:XOR, v-wf:OR, v-wf:AND, v-wf:None;
-  rdfs:label "Membership wf 001" ;
-.
-
 v-wf:subNet
 	rdf:type rdf:Property ;
 	rdfs:isDefinedBy v-wf: ;

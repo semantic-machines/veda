@@ -118,6 +118,6 @@ rdf: a owl:Ontology ;
     rdfs:label "The RDF Vocabulary (RDF)"@en ;
     rdfs:label "Словарь RDF"@ru ;
     rdfs:seeAlso <http://www.w3.org/2000/01/rdf-schema-more> ;
-    v-s:loadPriority 3 ;
+    v-s:loadPriority 4 ;
     .
 

@@ -1622,14 +1622,6 @@ s-wf:ss1 a v-s:SavedSearch;
 
 
 
-s-wf:Membership_000
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadResGroup ;
-  v-s:resource s-wf:net_coordination, s-wf:codelet_is_run, s-wf:codelet_down_right, s-wf:codelet_restore_right, s-wf:codelet_distribution;
-  v-s:resource s-wf:executor_signer, s-wf:executor_initiator, s-wf:executor_reviewer;
-  rdfs:label "Membership base net_complex_route";
-.
-
 # ----------- define vars for message template -------
 s-wf:map_msg_template_4_SV_default_template
 	rdf:type v-wf:Mapping ;

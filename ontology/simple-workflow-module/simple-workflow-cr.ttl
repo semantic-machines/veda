@@ -867,17 +867,3 @@ s-wf:rul_t2_transform3
 	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'docId')"; 	
 .
-
-s-wf:Membership_001
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadResGroup ;
-  v-s:resource s-wf:net_complex_route, s-wf:ic1, s-wf:f_ic1_t1, s-wf:t1, s-wf:f_t1_oc1, s-wf:f_t1_t2, s-wf:t2, s-wf:f_c1_t3;
-  v-s:resource s-wf:c2, s-wf:f_c2_t8, s-wf:t3, s-wf:f_t3_c2, s-wf:f_t3_t4, s-wf:t4, s-wf:f_t4_c2, s-wf:f_t4_t5, s-wf:t5;
-  v-s:resource s-wf:f_t5_c2, s-wf:f_t5_t6, s-wf:t6, s-wf:f_t6_c2, s-wf:f_t6_t7, s-wf:t7, s-wf:f_t7_c2, s-wf:t8, s-wf:f_c3_t9;
-  v-s:resource s-wf:t9, s-wf:f_t9_oc1, s-wf:oc1, s-wf:f_t8_t3, s-wf:f_t8_t4, s-wf:f_t8_t5, s-wf:f_t8_t6, s-wf:f_t8_t7, s-wf:f_t2_t3;
-  v-s:resource s-wf:f_t8_t9, s-wf:t_instruction, s-wf:t_examination, s-wf:t_auto_instruction, s-wf:t_review, s-wf:t_distribution;
-  v-s:resource s-wf:f_tdistr_t9, s-wf:f_t7_texamin, s-wf:f_t7_treview, s-wf:f_t7_tinstr, s-wf:f_t7_tautoinstr, s-wf:f_tinstr_tdistr;
-  v-s:resource s-wf:f_treview_tdistr, s-wf:f_texam_tdistr;
-  v-s:resource s-wf:executor_def_1, s-wf:executor_def_2, s-wf:executor_def_3;
-  rdfs:label "Membership net_complex_route";
-.

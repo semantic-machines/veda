@@ -925,8 +925,3 @@ v-fs:AttributiveRequestTemplate
 </script>
   """
 .
-v-fs:SearchMembership
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadResGroup ;
-  v-s:resource v-fs:Search ;
-.
