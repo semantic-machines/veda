@@ -272,14 +272,14 @@ public void scripts_thread(string thread_name, string node_id)
 
                                         try
                                         {
-                                            //if (trace_msg[ 300 ] == 1)
-                                            log.trace("start exec script : %s %s %d %s", script_id, individual_id, op_id, event_id);
+                                            if (trace_msg[ 300 ] == 1)
+                                            	log.trace("start exec script : %s %s %d %s", script_id, individual_id, op_id, event_id);
 
                                             count++;
                                             script_vm.run(script.compiled_script);
 
-                                            //if (trace_msg[ 300 ] == 1)
-                                            log.trace("end exec script : %s", script_id);
+                                            if (trace_msg[ 300 ] == 1)
+                                            	log.trace("end exec script : %s", script_id);
 
 
                                             //*(cast(char*)script_vm) = 0;
