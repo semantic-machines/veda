@@ -548,7 +548,14 @@ _classes.map(function (class_uri) {
 });
 
 function hierGroup(doc_uri, class_uri, del) {
-	if (class_uri === "owl:Thing" || class_uri === "rdfs:Resource") return;
+	if (
+		class_uri === "owl:Thing" 
+		|| class_uri === "rdfs:Resource" 
+		|| class_uri === "v-s:Membership" 
+		|| class_uri === "v-s:PermissionStatement"
+	) {
+		return;
+	}
 	var uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + class_uri.split(':').join('_'),
 		membership = get_individual(ticket, uri);
 	
