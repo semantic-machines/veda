@@ -90,3 +90,156 @@ unittest
     assert(s.items ==[ 1, 3 ]);
 }
 
+////////////////////////////////////////////////////////
+
+struct CacheElement (T, K)
+{
+    private T data;
+    private K key;
+    long      use_count = 0;
+    long      use_time  = 0;
+    long      MRU_pos   = 0;
+}
+
+class Cache(T, K)
+{
+    long                    max_size;
+    private                 CacheElement!(T, K) *[ K ] key_2_element;
+
+    CacheElement!(T, K) *[] MRU;
+
+    this(long _max_size = 1000)
+    {
+        max_size   = _max_size;
+        MRU.length = max_size;
+    }
+
+    public void printMRU()
+    {
+        string ss;
+
+        foreach (MRU_e; MRU)
+        {
+            if (MRU_e !is null)
+            {
+                ss ~= std.conv.text(*MRU_e) ~ " ";
+            }
+        }
+        writeln("@MRU=", ss);
+    }
+
+    public void put(K, T) (K key, T src)
+    {
+        if (key_2_element.length < max_size)
+        {
+            CacheElement!(T, K) * ce = new CacheElement!(T, K)();
+            ce.data                  = src;
+            ce.MRU_pos               = key_2_element.length;
+            ce.key                   = key;
+
+            MRU[ ce.MRU_pos ]    = ce;
+            key_2_element[ key ] = ce;
+        }
+        else
+        {
+            //writeln("MAX SIZE=", key_2_element.length);
+            // найдем самый старый и малоиспользуемый элемент
+            // удалим его
+
+            long pp = key_2_element.length - 1;
+            while (pp > 0)
+            {
+                CacheElement!(T, K) * ce = MRU[ pp ];
+
+                if (ce !is null)
+                {
+                    key_2_element.remove(ce.key);
+                    put(key, src);
+                }
+
+                pp--;
+            }
+        }
+    }
+
+    public T get(K) (K key)
+    {
+        //writeln("%read ", key);
+        CacheElement!(T, K) * element;
+
+        element = key_2_element.get(key, null);
+        if (element !is null)
+        {
+            if (element.MRU_pos > 0)
+            {
+                long cur_pos  = element.MRU_pos;
+                long prev_pos = cur_pos - 1;
+                //writeln ("@cur_pos=", cur_pos, ", prev_pos=", prev_pos);
+                CacheElement!(T, K) * prev_element = MRU[ prev_pos ];
+
+                // проверим предыдущий элемент и если его частота использования меньше нашей, то поменяемся местами
+                if (prev_element.use_count <= element.use_count)
+                {
+                    MRU[ prev_pos ]      = element;
+                    element.MRU_pos      = prev_pos;
+                    MRU[ cur_pos ]       = prev_element;
+                    prev_element.MRU_pos = cur_pos;
+                }
+            }
+            element.use_count++;
+            return element.data;
+        }
+        else
+            return T.init;
+    }
+}
+
+unittest
+{
+    auto   cache = new Cache!(string, string)(3);
+    string dx;
+
+    writeln("!1");
+    cache.put("k1", "d1");
+    writeln("!2");
+    dx = cache.get!string("k1");
+    cache.printMRU();
+    writeln("!3");
+    assert(dx == "d1");
+    writeln("!4");
+
+    cache.put("k2", "d2");
+    dx = cache.get!string("k2");
+    cache.printMRU();
+    assert(dx == "d2");
+
+    dx = cache.get!string("k2");
+    cache.printMRU();
+    dx = cache.get!string("k2");
+    cache.printMRU();
+
+    cache.put("k3", "d3");
+    dx = cache.get!string("k3");
+    cache.printMRU();
+    dx = cache.get!string("k3");
+    cache.printMRU();
+    dx = cache.get!string("k3");
+    cache.printMRU();
+    dx = cache.get!string("k3");
+    cache.printMRU();
+
+    dx = cache.get!string("k2");
+    cache.printMRU();
+    dx = cache.get!string("k2");
+    cache.printMRU();
+    dx = cache.get!string("k2");
+    cache.printMRU();
+    dx = cache.get!string("k2");
+    cache.printMRU();
+
+    cache.put("k4", "d4");
+    cache.printMRU();
+    dx = cache.get!string("k1");
+    cache.printMRU();
+    assert(dx != "d1");
+}
