@@ -572,22 +572,14 @@ function hierGroup(doc_uri, class_uri, del) {
 			membership['v-s:deleted'] = [{data: true, type : _Boolean}];
 		}
 		put_individual (ticket, membership, _event_id);
-		print( del ? "DELETE" : "ADD", ":", uri );
 	} else {
-		if ( del && hasValue(membership, "v-s:deleted", {data: true, type: _Boolean}) ) {
-			print( "DELETED UPDATE", toJson(membership) );
-		} else if ( del && !hasValue(membership, "v-s:deleted", {data: true, type: _Boolean}) ) {
+		if ( del && !hasValue(membership, "v-s:deleted", {data: true, type: _Boolean}) ) {
 			membership["v-s:deleted"] = [{data: true, type: _Boolean}];
 			put_individual (ticket, membership, _event_id);
-			print( "DELETE", ":", uri, toJson(membership) );
 		} else if ( !del && hasValue(membership, "v-s:deleted", {data: true, type: _Boolean}) ) {
-			print( "ADD (before)", ":", uri, toJson(membership), hasValue(membership, "v-s:deleted", {data: true, type: _Boolean}) );
 			delete membership['v-s:deleted'];
 			put_individual (ticket, membership, _event_id);
-			print( "ADD (after)", ":", uri, toJson(membership), hasValue(membership, "v-s:deleted", {data: true, type: _Boolean}) );
-		} else if ( !del && !hasValue(membership, "v-s:deleted", {data: true, type: _Boolean}) ) {
-			print( "ACTIVE UPDATE", toJson(membership) );
-		}
+		} 
 	}
 
 	var _class = get_individual(ticket, class_uri);
