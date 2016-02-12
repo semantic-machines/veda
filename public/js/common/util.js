@@ -1119,14 +1119,29 @@ var cant_update = 64;
 /// Запрет удаления
 var cant_delete = 128;
 
-function addToGroup(ticket, group, resources)
+function addToGroup(ticket, group, resource)
 {
     var new_membership_uri = genUri();
     var new_membership = {
         '@': new_membership_uri,
         'rdf:type': newUri('v-s:Membership'),
         'v-s:memberOf': newUri(group),
-        'v-s:resource': newUri(resources)
+        'v-s:resource': newUri(resource)
+    };
+    var res = put_individual(ticket.id, new_membership);
+
+    return [new_membership, res];
+}
+
+function removeFromGroup(ticket, group, resource)
+{
+    var new_membership_uri = genUri();
+    var new_membership = {
+        '@': new_membership_uri,
+        'rdf:type': newUri('v-s:Membership'),
+        'v-s:memberOf': newUri(group),
+        'v-s:resource': newUri(resource),
+        'v-s:deleted': newBool(true)
     };
     var res = put_individual(ticket.id, new_membership);
 
