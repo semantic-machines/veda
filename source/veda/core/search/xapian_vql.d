@@ -8,8 +8,7 @@ import std.string, std.concurrency, std.stdio, std.datetime, std.conv, std.algor
 import bind.xapian_d_header;
 import util.utils, util.cbor;
 import search.vel;
-import veda.type, veda.core.context, veda.core.define, veda.core.log_msg;
-import storage.lmdb_storage;
+import veda.type, veda.core.context, veda.core.define, veda.core.log_msg, veda.core.storage.lmdb_storage;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;

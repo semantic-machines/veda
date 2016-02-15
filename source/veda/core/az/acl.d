@@ -1,5 +1,19 @@
 /**
- * авторизация
+  авторизация.
+  
+  1. при сохранении индивидов обрабатываются следующие типы:
+  		- v-s:Membership : формируются индексы для групп, представляюще собой список групп привязанный в которые входит ресурс
+  		
+ 		- v-s:PermissionStatement : 
+ 		
+ 			* в случае отсутствия фильтра прав:	
+ 				индекс состоит из ссылки на обьект авторизации + ссылка на субьекта авторизации (permissionObject.uri ~ "+" ~ permissionSubject.uri)  			
+			* если установлен фильтр прав, то ключ формируется следующим образом,
+                                        key = permissionObject.uri ~ "+" ~ useFilter.uri ~ "+" ~ permissionSubject.uri;
+                                        
+			* индекс ведет к байту содержащему crud.
+
+ 		- v-s:PermissionFilter : индекс состоящий из префикса 'F' и ссылку на permissionObject 		 		   
  */
 
 module az.acl;
@@ -10,7 +24,8 @@ private
     import veda.type, veda.onto.individual, veda.onto.resource, veda.core.bind.lmdb_header, veda.core.context, veda.core.define,
            veda.core.know_predicates, veda.core.log_msg;
     import util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, util.logger;
-    import storage.lmdb_storage;
+    import veda.core.storage.lmdb_storage;
+;
 }
 
 // ////////////// ACLManager

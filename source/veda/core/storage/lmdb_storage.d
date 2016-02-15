@@ -1,7 +1,7 @@
 /**
  * lmdb реализация хранилища
  */
-module storage.lmdb_storage;
+module veda.core.storage.lmdb_storage;
 
 private
 {
