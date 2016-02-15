@@ -8,12 +8,11 @@ private
 {
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
            std.json;
-    //import vibe.data.json, vibe.core.log, vibe.http.client, vibe.stream.operations;
     import bind.xapian_d_header, bind.v8d_header;
     import io.mq_client;
     import util.container, util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, veda.core.util.individual8json;
     import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.log_msg;
-    import veda.onto.onto, veda.onto.individual, veda.onto.resource, storage.lmdb_storage;
+    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
     import az.acl;
 }
 
@@ -1150,7 +1149,7 @@ class PThreadContext : Context
                 EVENT  ev = EVENT.NONE;
                 string prev_state;
 
-                storage.storage_thread.send_put(this, cmd, ss_as_cbor, ss_as_cbor, prev_state, res.op_id, ev);
+                veda.core.storage.storage_thread.send_put(this, cmd, ss_as_cbor, ss_as_cbor, prev_state, res.op_id, ev);
 
                 if (ev == EVENT.NOT_READY)
                 {
@@ -1358,7 +1357,7 @@ class PThreadContext : Context
         {
             bool   result = false;
 
-            string backup_id = storage.storage_thread.backup(this);
+            string backup_id = veda.core.storage.storage_thread.backup(this);
 
             if (backup_id != "")
             {

@@ -1,5 +1,19 @@
 /**
- * авторизация
+   авторизация.
+
+   1. при сохранении индивидов обрабатываются следующие типы:
+                - v-s:Membership : формируются индексы для групп, представляюще собой список групп привязанный в которые входит ресурс
+
+                - v-s:PermissionStatement :
+
+ * в случае отсутствия фильтра прав:
+                                индекс состоит из ссылки на обьект авторизации + ссылка на субьекта авторизации (permissionObject.uri ~ "+" ~ permissionSubject.uri)
+ * если установлен фильтр прав, то ключ формируется следующим образом,
+                                        key = permissionObject.uri ~ "+" ~ useFilter.uri ~ "+" ~ permissionSubject.uri;
+
+ * индекс ведет к байту содержащему crud.
+
+                - v-s:PermissionFilter : индекс состоящий из префикса 'F+' и ссылку на permissionObject
  */
 
 module az.acl;
@@ -10,7 +24,8 @@ private
     import veda.type, veda.onto.individual, veda.onto.resource, veda.core.bind.lmdb_header, veda.core.context, veda.core.define,
            veda.core.know_predicates, veda.core.log_msg;
     import util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, util.logger;
-    import storage.lmdb_storage;
+    import veda.core.storage.lmdb_storage;
+    ;
 }
 
 // ////////////// ACLManager
@@ -54,6 +69,145 @@ class Authorization : LmdbStorage
     this(string _path, DBMode mode, string _parent_thread_name)
     {
         super(_path, mode, _parent_thread_name);
+    }
+
+    void prepare_membership(Individual ind, long op_id)
+    {
+        if (trace_msg[ 114 ] == 1)
+            log.trace("store Membership: [%s] op_id=%d", ind, op_id);
+
+        bool is_deleted = ind.isExist("v-s:deleted", true);
+
+        //if (is_deleted)
+        //	log.trace ("membership is deleted:%s", ind.uri);
+
+        Resources resource = ind.getResources(veda_schema__resource);
+        Resources memberOf = ind.getResources(veda_schema__memberOf);
+
+        // для каждого из ресурсов выполним операцию добавления/удаления
+        foreach (rs; resource)
+        {
+            bool[ string ] new_memberOf;
+
+            string groups_str = this.find(rs.uri);
+            if (groups_str !is null)
+            {
+                string[] groups = groups_str.split(";");
+                foreach (group; groups)
+                {
+                    if (group.length > 0)
+                    {
+                        new_memberOf[ group ] = true;
+                    }
+                }
+            }
+
+            foreach (mb; memberOf)
+            {
+                if (is_deleted)
+                    new_memberOf[ mb.uri ] = false;
+                else
+                    new_memberOf[ mb.uri ] = true;
+            }
+
+            OutBuffer outbuff = new OutBuffer();
+            foreach (key; new_memberOf.keys)
+            {
+                if (new_memberOf[ key ] == true)
+                {
+                    outbuff.write(key);
+                    outbuff.write(';');
+                }
+            }
+
+            //log.trace ("[%s] res:[%s] memberOf=%s", ind.uri, rs.uri, memberOf);
+            //log.trace ("[%s] res:[%s] new_memberOf=%s", ind.uri, rs.uri, new_memberOf);
+
+            ResultCode res = this.put(rs.uri, outbuff.toString());
+
+            if (trace_msg[ 101 ] == 1)
+                log.trace("[acl index] (%s) set MemberShip: %s : %s", text(res), rs.uri, outbuff.toString());
+        }
+    }
+
+    void prepare_permission_filter(Individual ind, long op_id)
+    {
+        if (trace_msg[ 114 ] == 1)
+            log.trace("store PermissionFilter: [%s]", ind);
+
+        Resource   permissionObject = ind.getFirstResource(veda_schema__permissionObject);
+
+        ResultCode res = this.put("F+" ~ permissionObject.uri, ind.uri);
+
+        if (trace_msg[ 101 ] == 1)
+            log.trace("[acl index] (%s) PermissionFilter: %s : %s", text(res), permissionObject.uri, ind.uri);
+    }
+
+    void prepare_permission_statement(Individual ind, long op_id)
+    {
+        if (trace_msg[ 114 ] == 1)
+            log.trace("store PermissionStatement: [%s] op_id=%d", ind, op_id);
+
+        Resource permissionObject  = ind.getFirstResource(veda_schema__permissionObject);
+        Resource permissionSubject = ind.getFirstResource(veda_schema__permissionSubject);
+        Resource useFilter         = ind.getFirstResource(veda_schema__useFilter);
+
+        ubyte    access;
+
+        string   key;
+
+        if (useFilter !is Resource.init)
+            key = permissionObject.uri ~ "+" ~ useFilter.uri ~ "+" ~ permissionSubject.uri;
+        else
+            key = permissionObject.uri ~ "+" ~ permissionSubject.uri;
+
+        // найдем предыдущие права для данной пары
+        string str = this.find(key);
+        if (str !is null && str.length > 0)
+        {
+            access = cast(ubyte)str[ 0 ];
+        }
+
+        Resource canCreate = ind.getFirstResource("v-s:canCreate");
+        if (canCreate !is Resource.init)
+        {
+            if (canCreate == true)
+                access = access | Access.can_create;
+            else
+                access = access | Access.cant_create;
+        }
+
+        Resource canRead = ind.getFirstResource("v-s:canRead");
+        if (canRead !is Resource.init)
+        {
+            if (canRead == true)
+                access = access | Access.can_read;
+            else
+                access = access | Access.cant_read;
+        }
+
+        Resource canUpdate = ind.getFirstResource("v-s:canUpdate");
+        if (canUpdate !is Resource.init)
+        {
+            if (canUpdate == true)
+                access = access | Access.can_update;
+            else
+                access = access | Access.cant_update;
+        }
+
+        Resource canDelete = ind.getFirstResource("v-s:canDelete");
+        if (canDelete !is Resource.init)
+        {
+            if (canDelete == true)
+                access = access | Access.can_delete;
+            else
+                access = access | Access.cant_delete;
+        }
+
+        ResultCode res = this.put(key, "" ~ access);
+
+        if (trace_msg[ 100 ] == 1)
+            log.trace("[acl index] (%s) ACL: %s %s", text(res), key, text(access));
     }
 
     bool isExistMemberShip(Individual *membership)
@@ -481,7 +635,7 @@ void acl_manager(string thread_name, string db_path)
 
     core.thread.Thread.getThis().name = thread_name;
 //    writeln("SPAWN: acl manager");
-    LmdbStorage                  storage      = new LmdbStorage(acl_indexes_db_path, DBMode.RW, "acl_manager");
+    Authorization                storage      = new Authorization(acl_indexes_db_path, DBMode.RW, "acl_manager");
     string                       bin_log_name = get_new_binlog_name(db_path);
 
     // SEND ready
@@ -518,139 +672,15 @@ void acl_manager(string thread_name, string db_path)
 
                                 if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
                                 {
-                                    if (trace_msg[ 114 ] == 1)
-                                    	log.trace("store PermissionStatement: [%s] op_id=%d", ind, op_id);
-
-                                    Resource permissionObject = ind.getFirstResource(veda_schema__permissionObject);
-                                    Resource permissionSubject = ind.getFirstResource(veda_schema__permissionSubject);
-                                    Resource useFilter = ind.getFirstResource(veda_schema__useFilter);
-
-                                    ubyte access;
-
-                                    string key;
-
-                                    if (useFilter !is Resource.init)
-                                        key = permissionObject.uri ~ "+" ~ useFilter.uri ~ "+" ~ permissionSubject.uri;
-                                    else
-                                        key = permissionObject.uri ~ "+" ~ permissionSubject.uri;
-
-                                    // найдем предыдущие права для данной пары
-                                    string str = storage.find(key);
-                                    if (str !is null && str.length > 0)
-                                    {
-                                        access = cast(ubyte)str[ 0 ];
-                                    }
-
-                                    Resource canCreate = ind.getFirstResource("v-s:canCreate");
-                                    if (canCreate !is Resource.init)
-                                    {
-                                        if (canCreate == true)
-                                            access = access | Access.can_create;
-                                        else
-                                            access = access | Access.cant_create;
-                                    }
-
-                                    Resource canRead = ind.getFirstResource("v-s:canRead");
-                                    if (canRead !is Resource.init)
-                                    {
-                                        if (canRead == true)
-                                            access = access | Access.can_read;
-                                        else
-                                            access = access | Access.cant_read;
-                                    }
-
-                                    Resource canUpdate = ind.getFirstResource("v-s:canUpdate");
-                                    if (canUpdate !is Resource.init)
-                                    {
-                                        if (canUpdate == true)
-                                            access = access | Access.can_update;
-                                        else
-                                            access = access | Access.cant_update;
-                                    }
-
-                                    Resource canDelete = ind.getFirstResource("v-s:canDelete");
-                                    if (canDelete !is Resource.init)
-                                    {
-                                        if (canDelete == true)
-                                            access = access | Access.can_delete;
-                                        else
-                                            access = access | Access.cant_delete;
-                                    }
-
-                                    ResultCode res = storage.put(key, "" ~ access);
-
-                                    if (trace_msg[ 100 ] == 1)
-                                        log.trace("[acl index] (%s) ACL: %s %s", text(res), key, text(access));
+                                    storage.prepare_permission_statement(ind, op_id);
                                 }
                                 else if (rdfType.anyExist(veda_schema__Membership) == true)
                                 {
-                                    if (trace_msg[ 114 ] == 1)
-                                        log.trace("store Membership: [%s] op_id=%d", ind, op_id);
-
-                                    bool is_deleted = ind.isExist("v-s:deleted", true);
-
-                                    //if (is_deleted)
-                                    //	log.trace ("membership is deleted:%s", ind.uri);
-
-                                    Resources resource = ind.getResources(veda_schema__resource);
-                                    Resources memberOf = ind.getResources(veda_schema__memberOf);
-
-                                    // для каждого из ресурсов выполним операцию добавления/удаления
-                                    foreach (rs; resource)
-                                    {
-                                        bool[ string ] new_memberOf;
-
-                                        string groups_str = storage.find(rs.uri);
-                                        if (groups_str !is null)
-                                        {
-                                            string[] groups = groups_str.split(";");
-                                            foreach (group; groups)
-                                            {
-                                                if (group.length > 0)
-                                                {
-                                                    new_memberOf[ group ] = true;
-                                                }
-                                            }
-                                        }
-
-                                        foreach (mb; memberOf)
-                                        {
-                                            if (is_deleted)
-                                                new_memberOf[ mb.uri ] = false;
-                                            else
-                                                new_memberOf[ mb.uri ] = true;
-                                        }
-
-                                        OutBuffer outbuff = new OutBuffer();
-                                        foreach (key; new_memberOf.keys)
-                                        {
-                                            if (new_memberOf[ key ] == true)
-                                            {
-                                                outbuff.write(key);
-                                                outbuff.write(';');
-                                            }
-                                        }
-
-                                        //log.trace ("[%s] res:[%s] memberOf=%s", ind.uri, rs.uri, memberOf);
-                                        //log.trace ("[%s] res:[%s] new_memberOf=%s", ind.uri, rs.uri, new_memberOf);
-
-                                        ResultCode res = storage.put(rs.uri, outbuff.toString());
-
-                                        if (trace_msg[ 101 ] == 1)
-                                            log.trace("[acl index] (%s) set MemberShip: %s : %s", text(res), rs.uri, outbuff.toString());
-                                    }
+                                    storage.prepare_membership(ind, op_id);
                                 }
                                 else if (rdfType.anyExist(veda_schema__PermissionFilter) == true)
                                 {
-                                    if (trace_msg[ 114 ] == 1)
-                                        log.trace("store PermissionFilter: [%s]", ind);
-
-                                    Resource permissionObject = ind.getFirstResource(veda_schema__permissionObject);
-
-                                    ResultCode res = storage.put("F+" ~ permissionObject.uri, ind.uri);
-
-                                    if (trace_msg[ 101 ] == 1)
-                                        log.trace("[acl index] (%s) PermissionFilter: %s : %s", text(res), permissionObject.uri, ind.uri);
+                                    storage.prepare_permission_filter(ind, op_id);
                                 }
                             }
                             finally

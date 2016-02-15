@@ -10,7 +10,7 @@ private import mysql.d;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment;
 private import veda.type, veda.core.context, veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
 private import util.logger, util.cbor, veda.core.util.cbor8individual;
-private import storage.lmdb_storage, veda.core.thread_context;
+private import veda.core.storage.lmdb_storage, veda.core.thread_context;
 
 //////
 Mysql      mysql_conn;
