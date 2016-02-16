@@ -119,6 +119,37 @@ for (i = 0; i < 1; i++)
         return res == false;
     }
 
+	function check_rights_success(ticket, uri, expected_rights) {
+		var res = check_rights(ticket, uri, expected_rights);
+		return ok( res === true );
+	}
+
+	function check_rights_fail(ticket, uri, expected_rights) {
+		var res = check_rights(ticket, uri, expected_rights);
+		return ok( res === false );
+	}
+
+	function check_rights(ticket, uri, expected_rights) {
+		var rights = get_rights(ticket, uri);
+
+		var result = true;
+
+		for (var i = 0; i < expected_rights.length; i++) {
+			expected = expected_rights[i];
+			if (expected === can_create) {
+				result = result && ( "v-s:canCreate" in rights);
+			} else if (expected === can_read) {
+				result = result && ( "v-s:canRead" in rights);
+			} else if (expected === can_update) {
+				result = result && ( "v-s:canUpdate" in rights);
+			} else if (expected === can_delete) {
+				result = result && ( "v-s:canDelete" in rights);
+			}
+		}
+		
+		return result;
+	}
+
     test(
         "#001 Login",
         function()
@@ -735,5 +766,58 @@ for (i = 0; i < 1; i++)
             res = test_success_read(ticket2, doc1['@'], doc1, true);
             // Тест не проходит. Исправить!
             //res = test_success_read(ticket2, doc2['@'], doc2, true);
+        });
+
+    test("#017 Nested groups with restrictions",
+        function()
+        {
+            var ticket1 = get_user1_ticket();
+            var ticket2 = get_user2_ticket();
+
+            var res;
+            var doc1 = create_test_document1(ticket1);
+            var doc2 = create_test_document1(ticket1);
+            var doc3 = create_test_document1(ticket1);
+            var doc_group1_uri = 'g:doc_group_' + guid();
+            var doc_group2_uri = 'g:doc_group_' + guid();
+            var doc_group3_uri = 'g:doc_group_' + guid();
+                        
+            res = test_success_read(ticket1, doc1['@'], doc1);
+            res = test_fail_read(ticket2, doc1['@'], doc1);
+
+            res = test_success_read(ticket1, doc2['@'], doc2);
+            res = test_fail_read(ticket2, doc2['@'], doc2);
+            
+            res = test_success_read(ticket1, doc3['@'], doc3);
+            res = test_fail_read(ticket2, doc3['@'], doc3);
+            
+            res = addToGroup(ticket1, doc1['@'], doc2['@']);
+            res = addToGroup(ticket1, doc1['@'], doc3['@'], [can_read]);
+            res = addToGroup(ticket1, doc_group1_uri, doc1['@']);
+            res = addToGroup(ticket1, doc_group2_uri, doc1['@']);
+            res = addToGroup(ticket1, doc_group3_uri, doc_group1_uri);
+            res = addToGroup(ticket1, doc_group3_uri, doc_group2_uri);
+
+            res = addRight(ticket1.id, [can_read], ticket2.user_uri, doc_group3_uri);
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+
+            res = addRight(ticket1.id, [can_update], ticket2.user_uri, doc_group2_uri);
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+
+            res = addRight(ticket1.id, [can_delete], ticket2.user_uri, doc_group1_uri);
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+           
+            // Раскомментить для проверки
+            /*check_rights_success(ticket2.id, doc1['@'], [can_read, can_update, can_delete]);
+            
+            check_rights_success(ticket2.id, doc3['@'], [can_read]);
+            
+            check_rights_fail(ticket2.id, doc3['@'], [can_update]);
+
+            check_rights_fail(ticket2.id, doc3['@'], [can_delete]);
+            */
         });
 }

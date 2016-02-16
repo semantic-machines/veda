@@ -1119,7 +1119,7 @@ var cant_update = 64;
 /// Запрет удаления
 var cant_delete = 128;
 
-function addToGroup(ticket, group, resource)
+function addToGroup(ticket, group, resource, rights)
 {
     var new_membership_uri = genUri();
     var new_membership = {
@@ -1128,6 +1128,29 @@ function addToGroup(ticket, group, resource)
         'v-s:memberOf': newUri(group),
         'v-s:resource': newUri(resource)
     };
+    
+    if (rights) {
+		for (var i = 0; i < rights.length; i++)
+		{
+			if (rights[i] == can_read)
+				new_membership['v-s:canRead'] = newBool(true);
+			else if (rights[i] == can_update)
+				new_membership['v-s:canUpdate'] = newBool(true);
+			else if (rights[i] == can_delete)
+				new_membership['v-s:canDelete'] = newBool(true);
+			else if (rights[i] == can_create)
+				new_membership['v-s:canCreate'] = newBool(true);
+			else if (rights[i] == cant_read)
+				new_membership['v-s:canRead'] = newBool(false);
+			else if (rights[i] == cant_update)
+				new_membership['v-s:canUpdate'] = newBool(false);
+			else if (rights[i] == cant_delete)
+				new_membership['v-s:canDelete'] = newBool(false);
+			else if (rights[i] == cant_create)
+				new_membership['v-s:canCreate'] = newBool(false);
+		}
+	}
+    
     var res = put_individual(ticket.id, new_membership);
 
     return [new_membership, res];

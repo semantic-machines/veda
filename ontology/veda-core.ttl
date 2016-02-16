@@ -202,6 +202,7 @@ v-s:birthday
 v-s:canCreate
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
+  rdfs:domain v-s:Membership ;  
   rdfs:label "can create"@en ;
   rdfs:label "можно создавать"@ru ;
   rdfs:range xsd:boolean ;
@@ -210,6 +211,7 @@ v-s:canCreate
 v-s:canDelete
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
+  rdfs:domain v-s:Membership ;  
   rdfs:label "can delete"@en ;
   rdfs:label "можно удалять"@ru ;
   rdfs:range xsd:boolean ;
@@ -218,6 +220,7 @@ v-s:canDelete
 v-s:canRead
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
+  rdfs:domain v-s:Membership ;
   rdfs:label "can read"@en ;
   rdfs:label "можно читать"@ru ;
   rdfs:range xsd:boolean ;
@@ -226,6 +229,7 @@ v-s:canRead
 v-s:canUpdate
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
+  rdfs:domain v-s:Membership ;  
   rdfs:label "can update"@en ;
   rdfs:label "можно изменять"@ru ;
   rdfs:range xsd:boolean ;
