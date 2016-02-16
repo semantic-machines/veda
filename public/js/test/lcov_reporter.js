@@ -7,7 +7,7 @@
     var appendHtml = function ( filename,data,toHTML) {
 
         var str="";
-        str += 'SF:' + filename + '\n';
+        str += 'SF:' + filename.replace('http://localhost:8080','public') + '\n';
 
         data.source.forEach(function(line, num) {
           // increase the line number, as JS arrays are zero-based
