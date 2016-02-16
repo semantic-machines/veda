@@ -179,40 +179,7 @@ var C = 1,
 
 var admin_ticket = _get_admin_ticket();
 
-var get_count = 0;
-var get_stats = {};
-
-// p1 -> im1
-get_count = 0;
-console.log("authorize('p1', 'im1', C)", authorize('p1', 'im1', C), "get_count", get_count);
-get_count = 0;
-console.log("authorize('p1', 'im1', R)", authorize('p1', 'im1', R), "get_count", get_count);
-get_count = 0;
-console.log("authorize('p1', 'im1', U)", authorize('p1', 'im1', U), "get_count", get_count);
-get_count = 0;
-console.log("authorize('p1', 'im1', D)", authorize('p1', 'im1', D), "get_count", get_count);
-
-// p1 -> add1
-get_count = 0;
-console.log("authorize('p1', 'add1', C)", authorize('p1', 'add1', C), "get_count", get_count);
-get_count = 0;
-console.log("authorize('p1', 'add1', R)", authorize('p1', 'add1', R), "get_count", get_count);
-get_count = 0;
-console.log("authorize('p1', 'add1', U)", authorize('p1', 'add1', U), "get_count", get_count);
-get_count = 0;
-console.log("authorize('p1', 'add1', D)", authorize('p1', 'add1', D), "get_count", get_count);
-
-// p1 -> ver1
-get_count = 0;
-console.log("authorize('p1', 'ver1', C)", authorize('p1', 'ver1', C), "get_count", get_count);
-get_count = 0;
-console.log("authorize('p1', 'ver1', R)", authorize('p1', 'ver1', R), "get_count", get_count);
-get_count = 0;
-console.log("authorize('p1', 'ver1', U)", authorize('p1', 'ver1', U), "get_count", get_count);
-get_count = 0;
-console.log("authorize('p1', 'ver1', D)", authorize('p1', 'ver1', D), "get_count", get_count);
-
-console.log("get_stats", get_stats);
+// MAIN FUNCTION
 
 function authorize(subject_uri, object_uri, right) {
 	
@@ -364,3 +331,42 @@ function _get_individual(ticket, uri) {
 	
 	return result;
 }
+
+
+// TEST
+
+var get_count = 0;
+var get_stats = {};
+
+// p1 -> im1
+get_count = 0;
+console.log("authorize('p1', 'im1', C)", authorize('p1', 'im1', C), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'im1', R)", authorize('p1', 'im1', R), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'im1', U)", authorize('p1', 'im1', U), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'im1', D)", authorize('p1', 'im1', D), "get_count", get_count);
+
+// p1 -> add1
+get_count = 0;
+console.log("authorize('p1', 'add1', C)", authorize('p1', 'add1', C), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'add1', R)", authorize('p1', 'add1', R), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'add1', U)", authorize('p1', 'add1', U), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'add1', D)", authorize('p1', 'add1', D), "get_count", get_count);
+
+// p1 -> ver1
+get_count = 0;
+console.log("authorize('p1', 'ver1', C)", authorize('p1', 'ver1', C), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'ver1', R)", authorize('p1', 'ver1', R), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'ver1', U)", authorize('p1', 'ver1', U), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'ver1', D)", authorize('p1', 'ver1', D), "get_count", get_count);
+
+console.log("get_stats", get_stats);
+
