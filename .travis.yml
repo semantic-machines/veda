@@ -26,7 +26,6 @@ before_install:
 # Build
 install:
   - ./m.sh
-  - npm install
 
 # Run service as daemon and GUI
 before_script:
