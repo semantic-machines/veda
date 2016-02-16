@@ -18,10 +18,15 @@ before_install:
   - ./control-install.sh    
   - dub -v fetch vibe-d
   - npm install selenium-webdriver@2.47.0
+  - npm install -g grunt-cli
+  - npm install grunt-contrib-qunit --save-dev
+  - npm install grunt-coveralls --save-dev
+
 
 # Build
 install:
   - ./m.sh
+  - npm install
 
 # Run service as daemon and GUI
 before_script:
@@ -33,7 +38,9 @@ before_script:
 
 # Run API & integration test
 script:
-  - node ./qa/testAPI.js
+  - grunt test
+  - grunt coveralls
+#  - node ./qa/testAPI.js
   - node ./qa/testLogin.js
   - node ./qa/testPerson.js
   - node ./qa/testJournal.js
@@ -41,4 +48,5 @@ script:
 # Stop deamon and show log
 after_script:
   - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
+  - grunt coveralls
   - cat $PWD/*.log          
