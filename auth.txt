@@ -221,8 +221,8 @@ function get_permissions(resource_uri) {
 function get_resource_groups(resource_uri) {
 	
 	var result = {};
-	result[resource_uri] = [C+R+U+D];
-	return _get_resource_groups(resource_uri, result, C+R+U+D);
+	result[resource_uri] = [C|R|U|D];
+	return _get_resource_groups(resource_uri, result, C|R|U|D);
 	
 }
 
@@ -264,55 +264,55 @@ function _get_individual(ticket, uri) {
 		// objects memberships
 		case "add1_m" : 
 			result = {
-				"v-s:AllResourcesGroup" : C+R+U+D,
-				"im1": C+R+U+D
+				"v-s:AllResourcesGroup" : C|R|U|D,
+				"im1": C|R|U|D
 			}; break;
 		case "ver1_m" : 
 			result = {
-				"v-s:AllResourcesGroup" : C+R+U+D,
+				"v-s:AllResourcesGroup" : C|R|U|D,
 				"im1": R
 			}; break;
 		case "im1_m" : 
 			result = {
-				"v-s:AllResourcesGroup" : C+R+U+D,
-				"imc": C+R+U+D
+				"v-s:AllResourcesGroup" : C|R|U|D,
+				"imc": C|R|U|D
 			}; break;
 		case "imc_m" : 
 			result = {
-				"v-s:AllResourcesGroup" : C+R+U+D,
-				"doc": C+R+U+D
+				"v-s:AllResourcesGroup" : C|R|U|D,
+				"doc": C|R|U|D
 			}; break;
 		case "doc_m" : 
 			result = {
-				"v-s:AllResourcesGroup" : C+R+U+D
+				"v-s:AllResourcesGroup" : C|R|U|D
 			}; break;
 
 		// subjects memberships
 		case "p1_m" : 
 			result = {
-				"v-s:AllResourcesGroup" : C+R+U+D,
-				"pg1" : C+R+U+D,
-				"pg2" : C+R+U+D
+				"v-s:AllResourcesGroup" : C|R|U|D,
+				"pg1" : C|R|U|D,
+				"pg2" : C|R|U|D
 			}; break;
 		case "pg1_m" : 
 			result = {
-				"v-s:AllResourcesGroup" : C+R+U+D,
-				"mnd" : C+R+U+D
+				"v-s:AllResourcesGroup" : C|R|U|D,
+				"mnd" : C|R|U|D
 			}; break;
 		case "pg2_m" : 
 			result = {
-				"v-s:AllResourcesGroup" : C+R+U+D,
-				"mnd" : C+R+U+D
+				"v-s:AllResourcesGroup" : C|R|U|D,
+				"mnd" : C|R|U|D
 			}; break;
 		case "mnd_m" : 
 			result = {
-				"v-s:AllResourcesGroup" : C+R+U+D
+				"v-s:AllResourcesGroup" : C|R|U|D
 			}; break;
 		
 		// object permissions
 		case "im1_p" : 
 			result = {
-				"p1" : C+R+U
+				"p1" : C|R|U
 			}; break;
 		/*case "imc_p" : 
 			result = {
@@ -320,11 +320,11 @@ function _get_individual(ticket, uri) {
 			}; break;
 		case "doc_p" : 
 			result = {
-				"mnd" : C+R+U
+				"mnd" : C|R|U
 			}; break;
 		case "ver1_p" : 
 			result = {
-				"p1" : C+R+U+D
+				"p1" : C|R|U|D
 			}; break;
 		*/
 	}
@@ -369,4 +369,3 @@ get_count = 0;
 console.log("authorize('p1', 'ver1', D)", authorize('p1', 'ver1', D), "get_count", get_count);
 
 console.log("get_stats", get_stats);
-
