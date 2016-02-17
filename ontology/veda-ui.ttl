@@ -1081,7 +1081,7 @@ v-ui:DocumentEventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон события документа"@ru ;
   rdfs:label "Document event template"@en ;
-  v-ui:forClass v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted ;
+  v-ui:forClass v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted, v-s:ProcessStarted ;
   v-ui:template """
 <div class="journal-record">
   <hr class="margin-sm">
@@ -1102,6 +1102,10 @@ v-ui:DocumentEventTemplate
         <span about="v-s:documentVersion" property="rdfs:label"></span>: 
 	    <em rel="v-s:documentVersion" template="v-ui:LabelTemplateWithLink"></em>
 	  </span>
+      <span class="process">
+        <span about="v-s:processJournal" property="rdfs:label"></span>: 
+	    <em rel="v-s:processJournal" template="v-ui:LabelTemplateWithLink"></em>
+	  </span>
 	</div>
 	
 	<div class="col-md-2 col-sm-3 event-date text-right">
@@ -1110,7 +1114,9 @@ v-ui:DocumentEventTemplate
   </div>
 </div>
 <script>
-  if (!individual.hasValue("v-s:actor")) $("#actor", template).remove();
+  if (!individual.hasValue("v-s:actor")) $(".actor", template).remove();
+  if (!individual.hasValue("v-s:documentVersion")) $(".document", template).remove();
+  if (!individual.hasValue("v-s:processJournal")) $(".process", template).remove();
 </script>
   """ ;
 .

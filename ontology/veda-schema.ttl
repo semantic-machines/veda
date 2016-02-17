@@ -795,7 +795,7 @@ v-s:Journaling
 .
 v-s:actor
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted ;
+  rdfs:domain v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted, v-s:ProcessStarted ;
   rdfs:label "действующее лицо"@ru ;
   rdfs:range v-s:Person ;
 .
@@ -826,6 +826,19 @@ v-s:DocumentDeleted
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Документ удален"@ru ;
   rdfs:label "Document deleted"@en ;
+.
+v-s:processJournal
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:ProcessStarted ;
+  rdfs:label "Журнал процесса"@ru ;
+  rdfs:range v-s:Journal ;
+.
+v-s:ProcessStarted
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:JournalRecord ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Запущен процесс"@ru ;
+  rdfs:label "Process was started"@en ;
 .
 ####################################################################################
 

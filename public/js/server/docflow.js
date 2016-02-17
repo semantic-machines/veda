@@ -1158,10 +1158,27 @@ function prepare_start_form(ticket, document)
 
     create_new_journal(ticket, getJournalUri(new_process_uri), new_process_uri, _net['rdfs:label']);
 
+    var jrId = genUri();
+    var journalRecord = {
+		'@': jrId, 
+		'rdf:type': newUri('v-s:ProcessStarted'),
+		'v-s:actor': newUri(author_uri),
+		'v-s:processJournal': newUri(getJournalUri(new_process_uri)),
+        'v-s:created': [ { data: new Date(), type: _Datetime } ]
+    };
+    put_individual(ticket, journalRecord, _event_id);
+
+    add_to_individual(ticket, 
+		{
+    		'@': document['v-wf:processedDocument'][0].data+'j',
+    		'v-s:childRecord': newUri(jrId)
+		}, _event_id);
+
     var add_to_document = {
         '@': document['@'],
         'v-wf:isProcess': newUri(new_process_uri)
-    };
+    };    
+
     add_to_individual(ticket, add_to_document, _event_id);
 
     // возьмем автора формы и выдадим ему полные права на процесс
