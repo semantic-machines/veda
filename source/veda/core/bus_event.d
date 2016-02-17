@@ -36,21 +36,6 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
 
     if (ev_type == EVENT.CREATE || ev_type == EVENT.UPDATE)
     {
-        if (rdfType.anyExist(owl_tags) == true && new_state != prev_state)
-        {
-            // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-            inc_count_onto_update();
-        }
-
-        if (rdfType.anyExist(veda_schema__PermissionStatement) == true || rdfType.anyExist(veda_schema__Membership) == true)
-        {
-            Tid tid_acl = context.getTid(P_MODULE.acl_manager);
-            if (tid_acl != Tid.init)
-            {
-                send(tid_acl, CMD.PUT, ev_type, new_state, op_id);
-            }
-        }
-
         if (external_js_vm_url !is null)
         {
             JSONValue req_body;

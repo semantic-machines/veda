@@ -1170,6 +1170,21 @@ class PThreadContext : Context
                     else
                         search.xapian_indexer.send_delete(this, ss_as_cbor, prev_state, res.op_id);
 
+                    if (rdfType.anyExist(owl_tags) == true && ss_as_cbor != prev_state)
+                    {
+                        // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
+                        inc_count_onto_update();
+                    }
+
+                    if (rdfType.anyExist(veda_schema__PermissionStatement) == true || rdfType.anyExist(veda_schema__Membership) == true)
+                    {
+                        tid_acl = this.getTid(P_MODULE.acl_manager);
+                        if (tid_acl != Tid.init)
+                        {
+                            send(tid_acl, CMD.PUT, ev, ss_as_cbor, res.op_id);
+                        }
+                    }
+
                     if (prepare_events == true)
                         bus_event_after(ticket, indv, rdfType, ss_as_cbor, prev_state, ev, this, event_id, res.op_id);
 
