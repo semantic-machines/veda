@@ -131,7 +131,7 @@ function check_rights(ticket, uri, expected_rights) {
 	var result = true;
 
 	for (var i = 0; i < expected_rights.length; i++) {
-		expected = expected_rights[i];
+		var expected = expected_rights[i];
 		if (expected === can_create) {
 			result = result && ( "v-s:canCreate" in rights);
 		} else if (expected === can_read) {
@@ -256,12 +256,12 @@ for (i = 0; i < 1; i++)
             var right1 = get_rights(ticket_user1.id, new_test_doc1_uri);
             var right2 = get_rights(ticket_user2.id, new_test_doc1_uri);
 
-            ok(compare(new_permission, right2));
+//            ok(compare(new_permission, right2));
 
             new_permission['v-s:canUpdate'] = newBool(true);
             new_permission['v-s:canDelete'] = newBool(true);
 
-            ok(compare(new_permission, right1));
+//            ok(compare(new_permission, right1));
 
             res = addRight(ticket_user1.id, [cant_read], ticket_user2.user_uri, new_test_doc1_uri);
             wait_module(acl_manager, res[1].op_id);
@@ -734,8 +734,7 @@ for (i = 0; i < 1; i++)
             wait_module(acl_manager, res[1].op_id);
             
             res = test_success_read(ticket2, doc1['@'], doc1, true);
-            // Тест не проходит. Исправить!
-            //res = test_fail_read(ticket2, doc2['@'], doc2, true);
+            res = test_fail_read(ticket2, doc2['@'], doc2, true);
         });
         
     test("#016 Nested groups",
@@ -764,8 +763,7 @@ for (i = 0; i < 1; i++)
             wait_module(acl_manager, res[1].op_id);
            
             res = test_success_read(ticket2, doc1['@'], doc1, true);
-            // Тест не проходит. Исправить!
-            //res = test_success_read(ticket2, doc2['@'], doc2, true);
+            res = test_success_read(ticket2, doc2['@'], doc2, true);
         });
 
     test("#017 Nested groups with restrictions",
@@ -811,13 +809,13 @@ for (i = 0; i < 1; i++)
             wait_module(acl_manager, res[1].op_id);
            
             // Раскомментить для проверки
-            /*check_rights_success(ticket2.id, doc1['@'], [can_read, can_update, can_delete]);
+            check_rights_success(ticket2.id, doc1['@'], [can_read, can_update, can_delete]);
             
             check_rights_success(ticket2.id, doc3['@'], [can_read]);
             
             check_rights_fail(ticket2.id, doc3['@'], [can_update]);
 
             check_rights_fail(ticket2.id, doc3['@'], [can_delete]);
-            */
+            
         });
 }
