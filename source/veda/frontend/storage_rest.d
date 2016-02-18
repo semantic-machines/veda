@@ -185,15 +185,16 @@ class VedaStorageRest : VedaStorageRest_API
 
     private Worker *allocate_worker()
     {
-        //writeln ("@1 request worker");
         Worker *worker = get_free_worker();
 
-        while (worker is null)
-        {
-            vibe.core.core.yield();
-            worker = get_free_worker();
-        }
-        //writeln ("@2 allocate worker ", worker.id);
+//        while (worker is null)
+//        {
+//            vibe.core.core.yield();
+//            worker = get_free_worker();
+//        }
+        if (worker is null)
+            return null;
+
         worker.ready    = false;
         worker.complete = false;
         return worker;
@@ -484,6 +485,9 @@ class VedaStorageRest : VedaStorageRest_API
 
         Worker     *worker = allocate_worker();
 
+        if (worker is null)
+            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
+
         std.concurrency.send(getFreeTid(), Command.Execute, Function.Backup, worker.id, std.concurrency.thisTid);
         vibe.core.core.yield();
         std.concurrency.receive((bool _res, int _recv_worker_id) { res = _res; recv_worker_id = _recv_worker_id; });
@@ -511,6 +515,9 @@ class VedaStorageRest : VedaStorageRest_API
         long       res = -1;
 
         Worker     *worker = allocate_worker();
+
+        if (worker is null)
+            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
 
         std.concurrency.send(worker.tid, Command.Execute, Function.CountIndividuals, worker.id, std.concurrency.thisTid);
         vibe.core.core.yield();
@@ -550,6 +557,8 @@ class VedaStorageRest : VedaStorageRest_API
             string[]   individuals_ids;
 
             Worker     *worker = allocate_worker();
+            if (worker is null)
+                throw new HTTPStatusException(ResultCode.Too_Many_Requests);
 
             std.concurrency.send(worker.tid, Command.Get, Function.IndividualsIdsToQuery, _query, sort, databases, ticket, reopen,
                                  top, limit, worker.id, std.concurrency.thisTid);
@@ -590,6 +599,8 @@ class VedaStorageRest : VedaStorageRest_API
         Json[]     res;
 
         Worker     *worker = allocate_worker();
+        if (worker is null)
+            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
 
         std.concurrency.send(worker.tid, Command.Get, Function.Individuals, uris.idup, ticket, worker.id, std.concurrency.thisTid);
         vibe.core.core.yield();
@@ -629,6 +640,8 @@ class VedaStorageRest : VedaStorageRest_API
             Json[]     res;
 
             Worker     *worker = allocate_worker();
+            if (worker is null)
+                throw new HTTPStatusException(ResultCode.Too_Many_Requests);
 
             std.concurrency.send(worker.tid, Command.Get, Function.Individual, uri, "", _ticket, reopen, worker.id, std.concurrency.thisTid);
             vibe.core.core.yield();
