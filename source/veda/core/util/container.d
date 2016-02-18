@@ -142,7 +142,7 @@ class Cache(T, K)
         }
         else
         {
-            //writeln("MAX SIZE=", key_2_element.length);
+            writeln("MAX SIZE=", key_2_element.length);
             // найдем самый старый и малоиспользуемый элемент
             // удалим его
 

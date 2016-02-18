@@ -139,7 +139,7 @@ public void core_thread(string node_id, string write_storage_node)
                         if (cmd == Command.Get && fn == Function.Individual)
                         {
                             if (trace_msg[ 500 ] == 1)
-                                log.trace("get_individual #start : %s ", arg1);
+                                log.trace("get_individual #start : %s", arg1);
 
                             ResultCode rc = ResultCode.Internal_Server_Error;
 
@@ -184,10 +184,13 @@ public void core_thread(string node_id, string write_storage_node)
                                     }
                                 }
                             }
-                            catch (Exception ex) { writeln(ex.msg); }
+                            catch (Throwable ex)
+                            {
+                                log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.info);
+                            }
 
                             if (trace_msg[ 500 ] == 1)
-                                log.trace("get_individual #e : %s ", arg1);
+                                log.trace("get_individual #end : %s", arg1);
 
                             send(tid, res, rc, worker_id);
                         }

@@ -164,7 +164,7 @@ shared static this()
         sticket = core_context.sys_ticket();
     }
 
-    ushort                count_thread = 1;
+    ushort                count_thread = 4;
 
     std.concurrency.Tid[] pool;
     for (int i = 0; i < count_thread; i++)
