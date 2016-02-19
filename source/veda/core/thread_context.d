@@ -13,7 +13,7 @@ private
     import util.container, util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, veda.core.util.individual8json;
     import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.log_msg;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
-    import az.acl;
+    import veda.core.az.acl;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -1387,7 +1387,7 @@ class PThreadContext : Context
                 {
                     result = true;
 
-                    string res = az.acl.backup(this, backup_id);
+                    string res = veda.core.az.acl.backup(this, backup_id);
 
                     if (res == "")
                         result = false;

@@ -165,6 +165,14 @@ public struct Ticket
     }
 }
 
+interface Storage
+{
+    public ResultCode put(string in_key, string in_value);
+    public string find(string uri);
+
+	
+}
+
 /**
  * Внешнее API - Интерфейс
  */

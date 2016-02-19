@@ -49,7 +49,7 @@ public enum Result
 public bool[ string ] db_is_open;
 
 /// key-value хранилище на lmdb
-public class LmdbStorage
+public class LmdbStorage : Storage
 {
     MDB_env             *env;
     public const string summ_hash_this_db_id;
