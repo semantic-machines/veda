@@ -1028,20 +1028,26 @@ v-ui:JournalTemplate
   v-ui:template """
 <div class="container-fluid journal">
     <style>
-      div[rel="v-s:childRecord"]:first-child > div.journal-record > hr {display:none;}
-      div.sub-journal {margin-top: 10px;}
       .journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
       .journal hr.margin-sm {margin: 10px 0px;}
     </style>
     <h2 about="v-s:Journal" property="rdfs:label"></h2>
-    <h4 id="docLnk">
-      <span about="v-s:onDocument" property="rdfs:label"></span>: 
-      <span rel="v-s:onDocument" template="v-ui:ClassNameLabelTemplate"></span>
-    </h4>
-    <h4 id="procLnk">
-      <span about="v-wf:onProcess" property="rdfs:label"></span>: 
-      <span rel="v-wf:onProcess" template="v-ui:ClassNameLabelTemplate"></span>
-    </h4>
+    <div rel="v-s:onDocument">
+		<div>
+		    <h4>
+		      <span about="rdf:type" property="rdfs:label"></span>: 
+		      <span about="@" template="v-ui:ClassNameLabelTemplate"></span>
+		    </h4>
+		</div>
+	</div>   
+    <div rel="v-wf:onProcess">
+		<div>
+		    <h4>
+		      <span about="rdf:type" property="rdfs:label"></span>: 
+		      <span about="@" template="v-ui:ClassNameLabelTemplate"></span>
+		    </h4>
+		</div>
+	</div>   
     <div class="panel panel-default">
 		<div class="panel-heading">
 			<div class="row">
@@ -1063,10 +1069,6 @@ v-ui:JournalTemplate
 		</div>
 	</div>
 </div>
-<script>
-  if (!individual.hasValue("v-wf:onProcess")) $("#procLnk").remove();
-  if (!individual.hasValue("v-s:onDocument")) $("#docLnk").remove();
-</script>
   """ ;
 .
 v-ui:SubJournalTemplate
@@ -1100,14 +1102,18 @@ v-ui:DocumentEventTemplate
 	</div>
 	<div class="col-md-4 col-sm-6 event-desc">
 	  <div property="rdfs:label"></div>
-      <span class="document">
-        <span about="v-s:documentVersion" property="rdfs:label"></span>: 
-	    <em rel="v-s:documentVersion" template="v-ui:LabelTemplateWithLink"></em>
-	  </span>
-      <span class="process">
-        <span about="v-s:processJournal" property="rdfs:label"></span>: 
-	    <em rel="v-s:processJournal" template="v-ui:LabelTemplateWithLink"></em>
-	  </span>
+      <div rel="v-s:documentVersion">
+		<div>
+	        <span about="rdf:type" property="rdfs:label"></span>: 
+		    <em about="@" template="v-ui:LabelTemplateWithLink"></em>
+		</div>
+	  </div>
+      <div rel="v-s:processJournal">
+		<div>
+	        <span about="rdf:type" property="rdfs:label"></span>: 
+		    <em about="@" template="v-ui:LabelTemplateWithLink"></em>
+		</div>
+	  </div>
 	</div>
 	
 	<div class="col-md-2 col-sm-3 event-date text-right">
@@ -1115,10 +1121,16 @@ v-ui:DocumentEventTemplate
 	</div>
   </div>
 </div>
+<div rel="v-s:processJournal">
+  <div>
+	<div rel="v-s:childRecord"></div>
+  </div>
+</div>	
+
 <script>
-  if (!individual.hasValue("v-s:actor")) $(".actor", template).remove();
-  if (!individual.hasValue("v-s:documentVersion")) $(".document", template).remove();
-  if (!individual.hasValue("v-s:processJournal")) $(".process", template).remove();
+//  if (!individual.hasValue("v-s:actor")) $(".actor", template).remove();
+//  if (!individual.hasValue("v-s:documentVersion")) $(".document", template).remove();
+//  if (!individual.hasValue("v-s:processJournal")) $(".process", template).remove();
 </script>
   """ ;
 .
