@@ -14,6 +14,10 @@
   v-s:loadPriority 6 ;
 .
 
+rdfs:subClassOf
+  rdfs:range owl:Class ;
+.
+
 ### CLASSES ###
 
 v-s:Bundle
@@ -138,10 +142,10 @@ v-s:Deliverable
   rdfs:subClassOf owl:Thing ;
 .
 
-v-s:AuthorizedClass
+v-s:Authorized
   rdf:type owl:Class ;
-  rdfs:label "Authorized class"@en ;
-  rdfs:label "Авторизуемый класс"@ru ;
+  rdfs:label "Authorized resource"@en ;
+  rdfs:label "Авторизуемый ресурс"@ru ;
   rdfs:comment "Суперкласс всех классов, индивиды которых могут авторизоваться по типу"@en ;
   rdfs:comment "Superclass for classes whose individuals should be authorized by type"@ru ;
 .
@@ -152,7 +156,22 @@ v-s:ClassModel
   rdfs:label "Модель класса"@ru ;
 .
 
+v-s:Embedded
+  rdf:type owl:Class ;
+  rdfs:label "Embedded"@en ;
+  rdfs:label "Вложенный"@ru ;
+  rdfs:subClassOf owl:Thing ;
+.
+
 ### PROPERTIES ###
+
+v-s:parent
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Embedded ;
+  rdfs:label "parent"@en ;
+  rdfs:label "родитель"@ru ;
+  rdfs:range rdfs:Resource ;
+.
 
 v-s:hasDraft
   rdf:type owl:ObjectProperty ;
