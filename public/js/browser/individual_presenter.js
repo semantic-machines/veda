@@ -460,6 +460,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			relContainer.empty();
 			
 			propertyModifiedHandler(rel_uri, values);
+			about.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				about.off("individual:propertyModified", propertyModifiedHandler);
+			});
+
+			if (!isAbout && isEmbedded) {
+				embeddedHandler(rel_uri, values);
+				about.on("individual:propertyModified", embeddedHandler);
+				template.one("remove", function () {
+					about.off("individual:propertyModified", embeddedHandler);
+				});
+			}
 
 			// Re-render link property if its' values were changed
 			function propertyModifiedHandler (doc_rel_uri, values) {
@@ -487,10 +499,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					}
 				}
 			}
-			about.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				about.off("individual:propertyModified", propertyModifiedHandler);
-			});
+			
+			function embeddedHandler(doc_rel_uri, values) {
+				if (doc_rel_uri === rel_uri) {
+					values.map(function (value) {
+						if ( !value["v-s:parent"] ) {
+							value.defineProperty("v-s:parent");
+							value["v-s:parent"] = [about];
+						}
+					});
+				}
+			}
+			
 		});		
 
 		// About resource
