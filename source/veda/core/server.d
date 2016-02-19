@@ -241,7 +241,7 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
         }
 
         return core_context;
-    } catch (Exception ex)
+    } catch (Throwable ex)
     {
         writeln("Exception: ", ex.msg);
         return null;

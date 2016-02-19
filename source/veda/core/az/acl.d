@@ -379,6 +379,11 @@ class Authorization : LmdbStorage
             Right *[] get_resource_groups(string uri, ubyte access, int level = 0)
             {
                 Right *[] res;
+                
+               	if (level > 16)
+            		return res;
+
+    	//writeln ("~10 level=", level, ", uri=", uri); 
 
                 try
                 {
