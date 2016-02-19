@@ -52,8 +52,8 @@ veda.Module(function (veda) { "use strict";
 			if ( clientVsn !== serverVsn ) {
 				// Get ontology from server
 				storage.clear();
-				storage["cfg:OntoVsn"] = serverVsn;
 				getOntology();
+				storage["cfg:OntoVsn"] = serverVsn;
 			} else {
 				// Get ontology from local storage
 				Object.keys(storage).map(function (key) {
