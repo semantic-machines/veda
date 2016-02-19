@@ -95,7 +95,7 @@ interface VedaStorageRest_API {
     void set_trace(int idx, bool state);
 
     @path("backup") @method(HTTPMethod.GET)
-    void backup();
+    void backup(bool to_binlog);
 
     @path("count_individuals") @method(HTTPMethod.GET)
     long count_individuals();
@@ -476,7 +476,7 @@ class VedaStorageRest : VedaStorageRest_API
         context.set_trace(idx, state);
     }
 
-    void backup()
+    void backup(bool to_binlog)
     {
         ResultCode rc = ResultCode.OK;
         int        recv_worker_id;
@@ -488,7 +488,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (worker is null)
             throw new HTTPStatusException(ResultCode.Too_Many_Requests);
 
-        std.concurrency.send(getFreeTid(), Command.Execute, Function.Backup, worker.id, std.concurrency.thisTid);
+        std.concurrency.send(getFreeTid(), Command.Execute, Function.Backup, to_binlog, worker.id, std.concurrency.thisTid);
         vibe.core.core.yield();
         std.concurrency.receive((bool _res, int _recv_worker_id) { res = _res; recv_worker_id = _recv_worker_id; });
 

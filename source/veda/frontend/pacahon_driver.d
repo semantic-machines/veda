@@ -61,16 +61,22 @@ public void core_thread(string node_id, string write_storage_node)
     while (true)
     {
         receive(
-                (Command cmd, Function fn, int worker_id, Tid tid)
+                (Command cmd, Function fn, bool to_binlog, int worker_id, Tid tid)
                 {
                     if (tid != Tid.init)
                     {
                         if (cmd == Command.Execute && fn == Function.Backup)
                         {
-                            context.backup();
+                            context.backup(to_binlog);
                             send(tid, true, worker_id);
                         }
-                        else if (cmd == Command.Execute && fn == Function.CountIndividuals)
+                    }
+                },
+                (Command cmd, Function fn, int worker_id, Tid tid)
+                {
+                    if (tid != Tid.init)
+                    {
+                        if (cmd == Command.Execute && fn == Function.CountIndividuals)
                         {
                             long count = context.count_individuals();
                             send(tid, count, worker_id);

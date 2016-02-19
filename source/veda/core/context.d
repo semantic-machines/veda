@@ -370,7 +370,7 @@ interface Context
     /**
        Выполнить бэкапирование базы данных
      */
-    public bool backup(int level = 0);
+    public bool backup(bool to_binlog, int level = 0);
 
     /**
        Остановить выполнение операций записи, новые команды на запись не принимаются

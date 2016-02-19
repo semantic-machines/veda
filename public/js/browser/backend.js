@@ -90,11 +90,11 @@ veda.Module(function Backend(veda) { "use strict";
 		return call_server(undefined, params, success, fail);
 	}
 	
-	window.backup = function (success, fail) {
+	window.backup = function (to_binlog, success, fail) {
 		var params = {
 			type: "GET",
 			url: "backup",
-			data: { }
+			data: { "to_binlog": to_binlog }
 		};
 		return call_server(undefined, params, success, fail);
 	}

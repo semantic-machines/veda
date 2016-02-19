@@ -8,7 +8,7 @@ private
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
     import util.logger, util.utils, util.cbor, veda.core.util.cbor8individual;
     import veda.type, veda.core.bind.lmdb_header, veda.core.context, veda.core.define, veda.core.log_msg, veda.onto.individual, veda.onto.resource;
-    import veda.core.storage.lmdb_storage;
+    import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools;
     import search.vel;
 }
 
@@ -273,35 +273,6 @@ public void individuals_manager(string thread_name, string db_path, string node_
             log.trace("individuals_manager# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
         }
     }
-}
-
-private string write_in_binlog(string msg, string new_hash, string bin_log_name, out int size_bin_log, int max_size_bin_log, string db_path)
-{
-    inc_count_put();
-
-    long      now = Clock.currTime().stdTime();
-    OutBuffer oub = new OutBuffer();
-    oub.write('\n');
-    oub.write(cast(ubyte)0xff);
-    oub.write(cast(ubyte)0x12);
-    oub.write(cast(ubyte)0xff);
-    oub.write(cast(ubyte)0x21);
-    oub.write(cast(ubyte)0);
-
-    oub.write(now);
-    oub.write(cast(int)new_hash.length);
-    oub.write(cast(int)msg.length);
-    oub.write(new_hash);
-    oub.write(msg);
-    append(bin_log_name, oub.toString);
-    size_bin_log += msg.length + 30;
-
-    if (size_bin_log > max_size_bin_log)
-    {
-        size_bin_log = 0;
-        bin_log_name = get_new_binlog_name(db_path);
-    }
-    return bin_log_name;
 }
 
 /*

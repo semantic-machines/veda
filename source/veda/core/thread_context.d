@@ -1363,55 +1363,66 @@ class PThreadContext : Context
         veda.core.log_msg.set_trace(idx, state);
     }
 
-    public bool backup(int level = 0)
+    public bool backup(bool to_binlog, int level = 0)
     {
         if (level == 0)
             freeze();
 
         try
         {
-            bool   result = false;
+            bool   result    = false;
+            string backup_id = "to_binlog";
 
-            string backup_id = veda.core.storage.storage_thread.backup(this);
-
-            if (backup_id != "")
+            if (to_binlog)
             {
-                result = true;
+                long count = this.inividuals_storage.dump_to_binlog();
+                if (count > 0)
+                    result = true;
+            }
+            else
+            {
+                backup_id = veda.core.storage.storage_thread.backup(this);
 
-                string res = az.acl.backup(this, backup_id);
-
-                if (res == "")
-                    result = false;
-                else
+                if (backup_id != "")
                 {
-                    Tid tid_ticket_manager = getTid(P_MODULE.ticket_manager);
-                    send(tid_ticket_manager, CMD.BACKUP, backup_id, thisTid);
-                    receive((string _res) { res = _res; });
+                    result = true;
+
+                    string res = az.acl.backup(this, backup_id);
+
                     if (res == "")
                         result = false;
                     else
                     {
-                        res = search.xapian_indexer.backup(this, backup_id);
-
+                        Tid tid_ticket_manager = getTid(P_MODULE.ticket_manager);
+                        send(tid_ticket_manager, CMD.BACKUP, backup_id, thisTid);
+                        receive((string _res) { res = _res; });
                         if (res == "")
                             result = false;
+                        else
+                        {
+                            res = search.xapian_indexer.backup(this, backup_id);
+
+                            if (res == "")
+                                result = false;
+                        }
                     }
                 }
-            }
 
-            if (result == false)
-            {
-                if (level < 10)
+                if (result == false)
                 {
-                    log.trace_log_and_console("BACKUP FAIL, repeat(%d) %s", level, backup_id);
+                    if (level < 10)
+                    {
+                        log.trace_log_and_console("BACKUP FAIL, repeat(%d) %s", level, backup_id);
 
-                    core.thread.Thread.sleep(dur!("msecs")(500));
-                    return backup(level + 1);
+                        core.thread.Thread.sleep(dur!("msecs")(500));
+                        return backup(to_binlog, level + 1);
+                    }
+                    else
+                        log.trace_log_and_console("BACKUP FAIL, %s", backup_id);
                 }
-                else
-                    log.trace_log_and_console("BACKUP FAIL, %s", backup_id);
             }
-            else
+
+            if (result == true)
                 log.trace_log_and_console("BACKUP Ok, %s", backup_id);
 
             return result;

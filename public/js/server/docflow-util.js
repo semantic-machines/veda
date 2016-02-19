@@ -1183,7 +1183,7 @@ function remove_empty_branches_from_journal(journal_uri)
 				{
 					var chr_uri = child_records[i].data;
 					var chr = get_individual(ticket, chr_uri);
-					if (getUri(chr["v-s:subJournal"]) == journal_uri)
+					if (chr && getUri(chr["v-s:subJournal"]) == journal_uri)
 					{
 						var remove_from_journal = {
                         '@': parent_jrn_uri,
