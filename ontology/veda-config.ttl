@@ -25,6 +25,7 @@ v-s:loadPriority
 
 v-s:Node
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Node"@en ;
   rdfs:label "Нода"@ru ;
@@ -108,6 +109,7 @@ v-s:write_storage_node
 
 v-s:Connection
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Connection"@en ;
   rdfs:label "Соединение"@ru ;        
@@ -205,6 +207,7 @@ v-s:useTemplate
 
 v-s:AppInfo
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Application info"@en ;
   rdfs:label "Информация о приложении"@ru ;

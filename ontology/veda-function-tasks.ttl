@@ -20,9 +20,9 @@
 
 v-ft:FunctionTasks
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Function 'Tasks'"@en ;
   rdfs:label "Функция 'Задачи'"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 v-ft:query
   rdf:type owl:DatatypeProperty ;

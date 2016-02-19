@@ -33,10 +33,10 @@ td:email-test
 
 td:AdministrativeDocument
   rdf:type owl:Class ;
-  rdfs:label "Administrative document"@en ;
-  rdfs:label "Распорядительный документ"@ru ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
+  rdfs:label "Administrative document"@en ;
+  rdfs:label "Распорядительный документ"@ru ;
 .
 
 td:content

@@ -16,7 +16,7 @@
 .
 v-s:Numeration
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:AuthorizedClass ;
+  rdfs:subClassOf v-s:Authorized ;
   rdfs:label "Parent class for Numeration feature"@en ;
   rdfs:label "Родительский класс для возможностей нумерации"@ru ;
 .

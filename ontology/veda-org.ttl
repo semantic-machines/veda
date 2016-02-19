@@ -18,10 +18,9 @@
 
 v-s:Absence
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:HRRecord ;
   rdfs:label "Absence"@en ;
   rdfs:label "Отсутствие"@ru ;
-  rdfs:subClassOf v-s:HRRecord ;
-  owl:disjointWith v-s:Appointment ;
 .
 
 v-s:Appointment
@@ -70,6 +69,7 @@ v-s:OrganizationUnit
   rdfs:label "Организационная единица"@ru ;
   rdfs:subClassOf owl:Thing ;
   rdfs:subClassOf v-s:Exportable ;
+  rdfs:subClassOf v-s:Authorized ;
 .
 
 v-s:Position
@@ -77,7 +77,6 @@ v-s:Position
   rdfs:label "Position"@en ;
   rdfs:label "Должность"@ru ;
   rdfs:subClassOf v-s:OrganizationUnit ;
-  rdfs:subClassOf v-s:Group ;
   owl:disjointWith v-s:Department ;
   owl:disjointWith v-s:Organization ;
 .

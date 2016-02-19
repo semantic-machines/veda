@@ -20,10 +20,10 @@
 .
 cmn-s:Action
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Action"@en ;
   rdfs:label "Мероприятие"@ru ;
-  rdfs:subClassOf v-s:Document ;
 .
 cmn-s:descriptionOfPlace
   rdf:type owl:DatatypeProperty ;

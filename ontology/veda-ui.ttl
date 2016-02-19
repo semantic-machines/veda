@@ -375,6 +375,7 @@ v-ui:Preferences
   rdfs:label "Preferences"@en ;
   rdfs:label "Предпочтения"@ru ;
   rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Embedded ;
 .
 v-ui:hasPreferences
   rdf:type owl:ObjectProperty ;

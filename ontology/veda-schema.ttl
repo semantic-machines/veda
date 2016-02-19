@@ -36,7 +36,7 @@ v-s:Document
   rdfs:subClassOf owl:Thing ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Exportable ;
-  rdfs:subClassOf v-s:AuthorizedClass ;
+  rdfs:subClassOf v-s:Authorized ;
 .
 
 ### veda-function-search
@@ -361,6 +361,7 @@ v-s:File
   rdfs:label "File"@en ;
   rdfs:label "Файл"@ru ;
   rdfs:subClassOf v-s:Exportable ;  
+  rdfs:subClassOf v-s:Embedded ;  
 .
 
 ### veda-generic
