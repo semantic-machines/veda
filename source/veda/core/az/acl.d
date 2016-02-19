@@ -8,8 +8,8 @@ private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
     import veda.type, veda.onto.individual, veda.onto.resource, veda.core.bind.lmdb_header, veda.core.context, veda.core.define,
-           veda.core.know_predicates, veda.core.log_msg;
-    import util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, util.logger;
+           veda.core.know_predicates, veda.core.log_msg, veda.core.util.cbor8individual;
+    import util.logger, util.utils, util.cbor, util.logger;
     import veda.core.storage.lmdb_storage, veda.core.thread_context;
 }
 
@@ -73,7 +73,19 @@ string access_to_pretty_string(const ubyte src)
 
 class RightSet
 {
-    Right[ string ] data;
+    Right *[ string ] data;
+
+    this()
+    {
+    }
+
+    this(Right *[] src)
+    {
+        foreach (el; src)
+        {
+            data[ el.id ] = el;
+        }
+    }
 }
 
 public static string membership_prefix = "M";
@@ -87,9 +99,9 @@ class Authorization : LmdbStorage
         super(_path, mode, _parent_thread_name);
     }
 
+
     private bool rights_from_string(string src, RightSet new_rights)
     {
-        //writeln ("@rights_from_string=", src);
         string[] tokens = src.split(";");
         if (tokens.length > 2)
         {
@@ -99,7 +111,26 @@ class Authorization : LmdbStorage
                 if (key !is null && key.length > 0)
                 {
                     ubyte access = parse!ubyte (tokens[ idx + 1 ], 16);
-                    new_rights.data[ key ] = Right(key, access, false);
+                    new_rights.data[ key ] = new Right(key, access, false);
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private bool rights_from_string(string src, ref Right *[] rights_list)
+    {
+        string[] tokens = src.split(";");
+        if (tokens.length > 2)
+        {
+            for (long idx = 0; idx < tokens.length; idx += 2)
+            {
+                string key = tokens[ idx ];
+                if (key !is null && key.length > 0)
+                {
+                    ubyte access = parse!ubyte (tokens[ idx + 1 ], 16);
+                    rights_list ~= new Right(key, access, false);
                 }
             }
             return true;
@@ -114,8 +145,8 @@ class Authorization : LmdbStorage
 
         foreach (key; new_rights.data.keys)
         {
-            Right right = new_rights.data.get(key, Right.init);
-            if (right !is Right.init)
+            Right *right = new_rights.data.get(key, null);
+            if (right !is null)
             {
                 if (right.is_deleted == false)
                 {
@@ -134,7 +165,6 @@ class Authorization : LmdbStorage
         bool     is_deleted = ind.isExist("v-s:deleted", true);
 
         ubyte    access;
-        //writeln ("#1 access=", to!string(access, 16));
         Resource canCreate = ind.getFirstResource("v-s:canCreate");
 
         if (canCreate !is Resource.init)
@@ -174,8 +204,6 @@ class Authorization : LmdbStorage
 
         if (access == 0)
             access = default_access;
-        //writeln ("#2 access=", to!string(access, 16));
-
 
         Resources resource = ind.getResources(p_resource);
         Resources in_set   = ind.getResources(p_in_set);
@@ -186,18 +214,14 @@ class Authorization : LmdbStorage
             RightSet new_right_set = new RightSet();
 
             string   prev_data_str = this.find(prefix ~ rs.uri);
-            //writeln ("@ key=", prefix ~ rs.uri);
             if (prev_data_str !is null)
                 rights_from_string(prev_data_str, new_right_set);
 
-//      writeln ("@3 prev_right_set=", new_right_set);
-//      writeln ("@3 in_set=", in_set);
-
             foreach (mb; in_set)
             {
-                Right rr = new_right_set.data.get(mb.uri, Right.init);
+                Right *rr = new_right_set.data.get(mb.uri, null);
 
-                if (rr !is Right.init)
+                if (rr !is null)
                 {
                     rr.is_deleted                = is_deleted;
                     rr.access                    = access;
@@ -206,14 +230,12 @@ class Authorization : LmdbStorage
                 }
                 else
                 {
-                    Right nrr = Right(mb.uri, access, false);
-//      writeln ("@3.2 nrr=", nrr);
+                    Right *nrr = new Right(mb.uri, access, false);
                     new_right_set.data[ mb.uri ] = nrr;
                 }
             }
 
             string new_record = rights_as_string(new_right_set);
-            //log.trace ("@ new_record= [%s][%s]", prefix ~ rs.uri, new_right_set);
 
             if (new_record.length == 0)
                 new_record = "X";
@@ -254,18 +276,11 @@ class Authorization : LmdbStorage
         prepare_right_set(ind, veda_schema__permissionObject, veda_schema__permissionSubject, permission_prefix, 0);
     }
 
-//    string[][ string ] subject_groups_cache;
-//    ubyte[ 1024 ] buff_permissions;
-//    string[ 1024 ] buff_subject_group;
-//    string[ 1024 ] buff_object_group;
-
     int count_permissions = 0;
 
     override void reopen_db()
     {
-        //log.trace("@1 ACL:reopen_db");
         super.reopen_db();
-        //subject_groups_cache = string[][ string ].init;
     }
 
     import util.container;
@@ -281,9 +296,7 @@ class Authorization : LmdbStorage
 
         void reopen_db()
         {
-            //log.trace("@2 ACL:reopen_db");
             this.reopen_db();
-            //subject_groups_cache[ ticket.user_uri ] = string[].init;
         }
 
         ubyte res = 0;
@@ -291,10 +304,8 @@ class Authorization : LmdbStorage
         if (ticket is null)
             return request_access;
 
-        //log.trace("authorize uri=%s, user=%s, request_access=%s", uri, ticket.user_uri, access_to_pretty_string (request_access));
-
-//        if (trace_msg[ 111 ] == 1)
-//            log.trace("authorize %s", uri);
+        if (trace_msg[ 111 ] == 1)
+        	log.trace("authorize uri=%s, user=%s, request_access=%s", uri, ticket.user_uri, access_to_pretty_string (request_access));
 
         MDB_txn *txn_r;
         MDB_dbi dbi;
@@ -344,7 +355,6 @@ class Authorization : LmdbStorage
                 //rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
                 reopen_db();
                 rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-                //subject_groups_cache[ ticket.user_uri ] = string[].init;
             }
         }
 
@@ -361,17 +371,14 @@ class Authorization : LmdbStorage
                 throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
 
             RightSet[ string ] permission_2_group;
-            RightSet object_groups  = new RightSet();
-            RightSet subject_groups = new RightSet();
 
-            MDB_val  key;
-            MDB_val  data;
-            string   skey;
+            MDB_val   key;
+            MDB_val   data;
+            string    skey;
 
-            RightSet get_resource_groups(string uri, ubyte access, int level = 0)
+            Right *[] get_resource_groups(string uri, ubyte access, int level = 0)
             {
-                //log.trace ("%d[%s]@1 uri=%s, access=%s", level, tttt[0..level*3], uri, access_to_pretty_string (access));
-                RightSet res;
+                Right *[] res;
 
                 try
                 {
@@ -387,35 +394,29 @@ class Authorization : LmdbStorage
                         if (rc == 0)
                         {
                             groups_str = cast(string)(data.mv_data[ 0..data.mv_size ]);
-                            res        = new RightSet();
                             rights_from_string(groups_str, res);
                             //if (cache !is null)
                             //	cache.put (uri, res);
                         }
                     }
 
-                    if (res is null)
-                        res = new RightSet();
+                    long res_lenght = res.length;
 
-                    foreach (group; res.data)
+                    for (int idx = 0; idx < res_lenght; idx++)
                     {
+                        Right  *group    = res[ idx ];
                         string group_key = membership_prefix ~ group.id;
-                        group.access         = group.access & access;
-                        res.data[ group.id ] = group;
+                        group.access = group.access & access;
+                        res ~= group;
 
                         if (uri == group_key)
                             continue;
 
-                        RightSet up_restrictions = get_resource_groups(group_key, group.access & access, level + 1);
-
-                        //log.trace ("%d[%s]@3 up_restrictions=%s", level, tttt[0..level*3], up_restrictions.values);
-                        if (up_restrictions !is null)
-                            foreach (restriction; up_restrictions.data)
-                            {
-//                            restriction.access    = restriction.access & access;
-                                //up_restrictions[ restriction.id ] = restriction;
-                                res.data[ restriction.id ] = restriction;
-                            }
+                        Right *[] up_restrictions = get_resource_groups(group_key, group.access & access, level + 1);
+                        foreach (restriction; up_restrictions)
+                        {
+                            res ~= restriction;
+                        }
                     }
                 }
                 catch (Throwable ex)
@@ -426,13 +427,13 @@ class Authorization : LmdbStorage
             }
 
             // 1. читаем группы object (uri)
-            object_groups                                        = get_resource_groups(membership_prefix ~ uri, 15);
-            object_groups.data[ uri ]                            = Right(uri, 15, false);
-            object_groups.data[ veda_schema__AllResourcesGroup ] = Right(veda_schema__AllResourcesGroup, 15, false);
+            RightSet object_groups = new RightSet(get_resource_groups(membership_prefix ~ uri, 15));
+            object_groups.data[ uri ]                            = new Right(uri, 15, false);
+            object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
 
             // 2. читаем группы subject (ticket.user_uri)
-            subject_groups                         = get_resource_groups(membership_prefix ~ ticket.user_uri, 15);
-            subject_groups.data[ ticket.user_uri ] = Right(ticket.user_uri, 15, false);
+            RightSet subject_groups = new RightSet(get_resource_groups(membership_prefix ~ ticket.user_uri, 15));
+            subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
 
             if (trace_msg[ 113 ] == 1)
             {
@@ -456,7 +457,6 @@ class Authorization : LmdbStorage
                 if (rc == 0)
                 {
                     str = cast(string)(data.mv_data[ 0..data.mv_size ]);
-                    // writeln ("@ premisson key=", acl_key);
                     RightSet pp = new RightSet();
                     rights_from_string(str, pp);
                     permission_2_group[ object_group.id ] = pp;
@@ -468,8 +468,6 @@ class Authorization : LmdbStorage
 
             mdb_txn_abort(txn_r);
 
-            //log.trace("permission_2_group=%s", permission_2_group.values);
-
             foreach (obj_key; object_groups.data.keys)
             {
                 RightSet permissions = permission_2_group.get(obj_key, null);
@@ -479,16 +477,24 @@ class Authorization : LmdbStorage
                     {
                         if (perm_key in subject_groups.data)
                         {
-                            Right restriction = object_groups.data.get(obj_key, Right.init);
-                            Right permission  = permissions.data.get(perm_key, Right.init);
+                            Right *restriction = object_groups.data.get(obj_key, null);
+                            Right *permission  = permissions.data.get(perm_key, null);
 
                             //log.trace("restriction=%s, permission=%s, request=%s", restriction, permission, access_to_pretty_string (request_access));
 
+                            ubyte restriction_access, permission_access;
+
+                            if (restriction !is null)
+                                restriction_access = restriction.access;
+
+                            if (permission !is null)
+                                permission_access = permission.access;
+
                             foreach (int idx, access; access_list)
                             {
-                                if ((request_access & access & restriction.access) != 0)
+                                if ((request_access & access & restriction_access) != 0)
                                 {
-                                    ubyte set_bit = cast(ubyte)(access & permission.access);
+                                    ubyte set_bit = cast(ubyte)(access & permission_access);
 
                                     if (set_bit > 0)
                                     {
@@ -496,9 +502,6 @@ class Authorization : LmdbStorage
 //                                trace(buff_object_group[ pos ], buff_subject_group[ pos ], access_list_predicates[ idx ]);
 
                                         res = cast(ubyte)(res | set_bit);
-
-                                        //if (res == request_access && trace is null)
-                                        //    break;
                                     }
                                 }
                             }
@@ -552,7 +555,6 @@ void acl_manager(string thread_name, string db_path)
     int                          max_size_bin_log = 10_000_000;
 
     core.thread.Thread.getThis().name = thread_name;
-//    writeln("SPAWN: acl manager");
     Authorization                storage      = new Authorization(acl_indexes_db_path, DBMode.RW, "acl_manager");
     string                       bin_log_name = get_new_binlog_name(db_path);
 
