@@ -808,15 +808,15 @@ s-wf:UserTaskFormTemplate
   .
   
 v-wf:DecisionGoSign
-        rdfs:subClassOf v-wf:Decision ;
-        rdf:type owl:Class ;
-        rdfs:label "перейти к этапу подписания"@ru ;
+	rdf:type owl:Class ;
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:label "перейти к этапу подписания"@ru ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 v-wf:DecisionGoReview
-    rdfs:subClassOf v-wf:Decision ;
     rdf:type owl:Class ;
+    rdfs:subClassOf v-wf:Decision ;
     rdfs:label "перейти к этапу рассмотрения"@ru ;
 	rdfs:isDefinedBy s-wf: ;
 .

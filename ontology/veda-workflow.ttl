@@ -27,58 +27,63 @@ v-wf:appInboxUrl
 
 v-wf:Net
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Net"@en ;
 	rdfs:label "Сеть"@ru ;
 .
 v-wf:NetElement
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Net element"@en ;
 	rdfs:label "Элемент сети"@ru ;
 .
 v-wf:Condition
 	rdf:type owl:Class ;
-	rdfs:isDefinedBy v-wf: ;
 	rdfs:subClassOf v-wf:NetElement ;
+	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Condition"@en ;
 	rdfs:label "Состояние"@ru ;
 .
 v-wf:InputCondition
 	rdf:type owl:Class ;
-	rdfs:isDefinedBy v-wf: ;
 	rdfs:subClassOf v-wf:Condition ;
+	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Input condition"@en ;
 	rdfs:label "Входное состояние"@ru ;
 .
 v-wf:OutputCondition
 	rdf:type owl:Class ;
-	rdfs:isDefinedBy v-wf: ;
 	rdfs:subClassOf v-wf:Condition ;
+	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Output condition"@en ;
 	rdfs:label "Выходное состояние"@ru ;
 .
 v-wf:Task
 	rdf:type owl:Class ;
-	rdfs:isDefinedBy v-wf: ;
 	rdfs:subClassOf v-wf:NetElement ;	
+	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Task"@en ;
 	rdfs:label "Задача"@ru ;	
 .
 v-wf:Flow
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Flow"@en ;
 	rdfs:label "Поток"@ru ;
 .
 v-wf:ExecutorDefinition
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;	
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Executor definition"@en ;
 	rdfs:label "Выбор исполнителя"@ru ;
 .
 v-wf:TransitionBehavior
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;	
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Transition behavior"@en ;
 	rdfs:label "Тип перехода"@ru ;
@@ -314,6 +319,7 @@ v-wf:executorExpression
 #------------------------------------------------------
 v-wf:VarDefine
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Variable"@en ;
 	rdfs:label "Определение переменой"@ru ;
@@ -340,6 +346,7 @@ v-wf:varDefineScope
 
 v-wf:Variable
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Variable"@en ;
 	rdfs:label "Переменная"@ru ;
@@ -1633,6 +1640,7 @@ v-wf:useTransformation
 
 v-wf:Mapping
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;	
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Mapping"@en ;
 	rdfs:label "Преобразование"@ru ;
@@ -1840,6 +1848,7 @@ v-wf:isCompleted
 # --------------------------- WorkOrder --------------------------
 v-wf:WorkOrder
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "work order"@en ;
 	rdfs:label "рабочее задание"@ru ;
@@ -1935,158 +1944,158 @@ v-wf:event_df5
 .
 
 v-wf:Decision
+	rdf:type owl:Class ;
 	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "decision"@en ;
 	rdfs:label "решение"@ru ;
 .
 
 v-wf:DecisionAnswerToYourQuestion
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "Ответ на ваш вопрос"@ru ;
 .	
 
 v-wf:DecisionControll
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "Принять отчет по поручению"@ru ;
 .	
 
 v-wf:DecisionNotRequireReview
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "Не требует рассмотрения"@ru ;
 .	
 
 v-wf:DecisionAgreed
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "согласовано"@ru ;
 .	
 
 v-wf:DecisionAgreedToProject
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "начать проект"@ru ;
 .	
 
 v-wf:DecisionAgreedToExecute
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "согласовано в реализацию"@ru ;
 .	
 
 v-wf:DecisionAgreedToExecuteComment
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "согласовано в реализацию"@ru ;
 .	
 
 v-wf:DecisionSign
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "подписано"@ru ;
 .	
 
 v-wf:DecisionApprove
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "утверждено"@ru ;
 .	
 
 v-wf:DecisionReview
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "рассмотрено"@ru ;
 .	
 
 v-wf:DecisionRejected
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "отклонено"@ru ;
 .	
 
 v-wf:DecisionRemake
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "доработать"@ru ;
 .	
 
 v-wf:DecisionRemaked
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "доработанно"@ru ;
 .	
 
 v-wf:DecisionNotForMe
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "исполнитель не я"@ru ;
 .	
 
 v-wf:DecisionBreak
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "прервать маршрут"@ru ;
 .	
 
 v-wf:DecisionExamined
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "ознакомлен"@ru ;
 .	
 
 v-wf:DecisionAchieved
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "выполнено"@ru ;
 .	
 
 v-wf:DecisionNotPerformed
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "не выполнено"@ru ;
 .	
 
 v-wf:DecisionConfirm
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "подтверждено"@ru ;
 .	
 
 v-wf:DecisionRedirect
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "перенаправить другому"@ru ;
 .	
 
 v-wf:DecisionСalculationsPerformed
-        rdfs:subClassOf v-wf:Decision ;
-        rdfs:isDefinedBy v-wf: ;
-        rdf:type owl:Class ;
-        rdfs:label "расчет выполнен"@ru ;
+	rdf:type owl:Class ;
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "расчет выполнен"@ru ;
 .
 
 v-wf:DecisionRedirectTemplate

@@ -23,6 +23,7 @@
 
 v-l:MainPage 
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:label "Page"@en ;
 	rdfs:label "Страница"@ru ;
 .
@@ -220,9 +221,9 @@ v-l:PsMenuItem
 
 v-l:WelcomeAspect 
 	rdf:type owl:Class ;
+	rdfs:subClassOf v-s:Aspect ;
 	rdfs:label "Welcome aspect"@en ;
 	rdfs:label "Приветственный аспект"@ru ;
-	rdfs:subClassOf v-s:Aspect ;
 .
 v-l:WelcomeAspectTemplate
 	rdf:type v-ui:ClassTemplate ;

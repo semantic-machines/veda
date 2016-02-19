@@ -22,65 +22,70 @@ rdfs:subClassOf
 
 v-s:Bundle
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Bundle"@en ;
   rdfs:label "Текстовая константа"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 
 v-s:Account
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Account"@en ;
   rdfs:label "Учетная запись"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 
 v-s:Email
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Deliverable ;
   rdfs:label "e-mail"@en ;
   rdfs:label "электронное письмо"@ru ;
-  rdfs:subClassOf v-s:Deliverable ;
 .
 
 v-s:Codelet
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Codelet"@en ;
   rdfs:label "Исполняемый Код"@ru ;
 .
 
 v-s:Container
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Контейнер"@ru ;
 .
 
 v-s:TemplateForText
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Шаблон для текста"@ru ;
 .
 
 v-s:Event
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Event"@en ;
   rdfs:label "Событие"@ru ;
 .
 
 v-s:Group
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:comment "Group of resources"@en ;
   rdfs:comment "Группа ресурсов"@ru ;
   rdfs:label "Group"@en ;
   rdfs:label "Группа"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 
 v-s:Membership
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Membership"@en ;
   rdfs:label "Принадлежность"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 
 v-s:PermissionFilter
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:comment "Запись о соответствии документа и фильтра записей о правах."@ru ;
   rdfs:label "Permissions filter record"@en ;
   rdfs:label "Фильтр прав"@ru ;
@@ -88,6 +93,7 @@ v-s:PermissionFilter
 
 v-s:PermissionStatement
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:comment "Permissions record defines access rigths for individuals of one class to individuals of another class."@en ;
   rdfs:comment "Запись о выдаче прав описывает права индивидов одного класса по отношению к индивидам другого класса."@ru ;
   rdfs:label "Permissions record"@en ;
@@ -96,54 +102,55 @@ v-s:PermissionStatement
 
 v-s:Person
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:DraftAllowed ;
+  rdfs:subClassOf v-s:Versioned ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Exportable ;  
   rdfs:comment "A person." ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Person"@en ;
   rdfs:label "Персона"@ru ;
-  rdfs:subClassOf v-s:DraftAllowed ;
-  rdfs:subClassOf v-s:Versioned ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf owl:Thing ;
-  rdfs:subClassOf v-s:Exportable ;  
 .
 
 v-s:Transform
   rdf:type owl:Class ;
-  rdfs:label "для переливки из старой системы"@ru ;
   rdfs:subClassOf owl:Thing ;
+  rdfs:label "для переливки из старой системы"@ru ;
 .
 
 v-s:Versioned
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Versioned thing"@en ;
   rdfs:label "Версионная сущность"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 
 v-s:DraftAllowed
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Versioned ;
   rdfs:label "Draft allowed"@en ;
   rdfs:label "Возможно создание черновика"@ru ;
-  rdfs:subClassOf v-s:Versioned ;
 .
 
 v-s:Exportable
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Exportable thing"@en ;
   rdfs:label "Выгружаемая сущность"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 
 v-s:Deliverable
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Сущность подлежащая доставке" ;
   rdfs:label "Exportable thing"@en ;
   rdfs:label "Экспортируемая сущность"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 
 v-s:Authorized
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Authorized resource"@en ;
   rdfs:label "Авторизуемый ресурс"@ru ;
   rdfs:comment "Суперкласс всех классов, индивиды которых могут авторизоваться по типу"@en ;
@@ -152,15 +159,16 @@ v-s:Authorized
 
 v-s:ClassModel
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Class model"@en ;
   rdfs:label "Модель класса"@ru ;
 .
 
 v-s:Embedded
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Embedded"@en ;
   rdfs:label "Вложенный"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 
 ### PROPERTIES ###

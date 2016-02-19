@@ -806,24 +806,24 @@ s-wf:rul_transform21_6
 # --- end -------------------------- NET Complex Route ----------------------------------- end ---- #
 
 v-wf:DecisionGoCoordination1
-        rdfs:subClassOf v-wf:Decision ;
-        rdf:type owl:Class ;
+	rdf:type owl:Class ;
+	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy s-wfc: ;
-        rdfs:label "перейти к этапу согласования 1"@ru ;
+	rdfs:label "перейти к этапу согласования 1"@ru ;
 .
 
 v-wf:DecisionGoCoordination2
-        rdfs:subClassOf v-wf:Decision ;
-        rdf:type owl:Class ;
+	rdf:type owl:Class ;
+	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy s-wfc: ;
-        rdfs:label "перейти к этапу согласования 2"@ru ;
+	rdfs:label "перейти к этапу согласования 2"@ru ;
 .
 
 v-wf:DecisionGoCoordination3
-        rdfs:subClassOf v-wf:Decision ;
-        rdf:type owl:Class ;
+	rdf:type owl:Class ;
+	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy s-wfc: ;
-        rdfs:label "перейти к этапу согласования 3"@ru ;
+	rdfs:label "перейти к этапу согласования 3"@ru ;
 .
 
 s-wf:ss2 a v-s:SavedSearch;

@@ -19,22 +19,23 @@
 
 v-s:Aspect 
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:label "Aspect"@en ;
 	rdfs:label "Аспект"@ru ;
 .
 
 v-s:PersonalAspect 
 	rdf:type owl:Class ;
+	rdfs:subClassOf v-s:Aspect ;
 	rdfs:label "Personal aspect"@en ;
 	rdfs:label "Персональный аспект"@ru ;
-	rdfs:subClassOf v-s:Aspect ;
 .
 
 v-s:BusinessAspect 
 	rdf:type owl:Class ;
+	rdfs:subClassOf v-s:Aspect ;
 	rdfs:label "Business aspect"@en ;
 	rdfs:label "Деловой аспект"@ru ;
-	rdfs:subClassOf v-s:Aspect ;
 .
 
 v-s:hasImage

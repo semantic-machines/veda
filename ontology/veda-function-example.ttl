@@ -15,9 +15,9 @@
 .
 v-fe:FunctionExample
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Example function"@en ;
   rdfs:label "Функция-пример"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 v-fe:FunctionExample1
   rdf:type v-fe:FunctionExample ;

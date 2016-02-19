@@ -21,11 +21,11 @@
 
 v-df:ApprovalTask
   rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:DecisionForm ;
   rdfs:isDefinedBy v-df: ;
   rdfs:label "Approval document"@en ;
   rdfs:label "Утвердить документ"@ru ;
   rdfs:comment "Форма ответа на задачу утверждения"@ru ;  
-  rdfs:subClassOf v-wf:DecisionForm ;
 .
 v-df:PsApprovalTask_from
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -162,19 +162,19 @@ v-df:ApprovalTaskTemplate
 
 v-df:QuestionRouteStartForm
   rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:StartForm ;  
   rdfs:isDefinedBy v-df: ;
   rdfs:label "Question document"@en ;
   rdfs:label "Задать вопрос"@ru ;
   rdfs:comment "Задача задать вопрос"@ru ;  
-  rdfs:subClassOf v-wf:StartForm ;  
 .
 v-df:InstructionRouteStartForm
   rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:StartForm ;  
   rdfs:isDefinedBy v-df: ;
   rdfs:label "Instruction document"@en ;
   rdfs:label "Исполнить поручение"@ru ;
   rdfs:comment "Задача bcgjkybnm gjhextybt"@ru ;  
-  rdfs:subClassOf v-wf:StartForm ;  
 .
 
 v-s:hasAppointmentTo

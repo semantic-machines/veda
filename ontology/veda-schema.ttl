@@ -17,35 +17,35 @@
 ### veda-generic
 v-s:Dictionary
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
   rdfs:comment "Dictionary"@en ;
   rdfs:comment "Словарь"@ru ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Dictionary"@en ;
   rdfs:label "Словарь"@ru ;
-  rdfs:subClassOf v-s:Document ;
 .
 
 ### veda-generic
 v-s:Document
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Exportable ;
+  rdfs:subClassOf v-s:Authorized ;
   rdfs:comment "A document"@en ;
   rdfs:comment "Документ"@ru ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Document"@en ;
   rdfs:label "Документ"@ru ;
-  rdfs:subClassOf owl:Thing ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Exportable ;
-  rdfs:subClassOf v-s:Authorized ;
 .
 
 ### veda-function-search
 v-s:SavedSearch
   rdf:type owl:Class ;
-  rdfs:label "Saved search"@en ;
-  rdfs:label "Сохраненный запрос"@ru ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Journaling ;
+  rdfs:label "Saved search"@en ;
+  rdfs:label "Сохраненный запрос"@ru ;
 .
 
 ### veda-function-search
@@ -93,25 +93,25 @@ v-s:NotEmpty
 ### veda-generic
 v-s:Level
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Dictionary ;
   rdfs:label "Level"@en ;
   rdfs:label "Уровень"@ru ;
-  rdfs:subClassOf v-s:Dictionary ;
 .
 
 ### veda-function-search
 v-s:SpecialSearchValues
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Logical operator"@en ;
   rdfs:label "Логический оператор"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 
 ### veda-workflow
 v-s:StatusWorkflow
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Dictionary ;
   rdfs:label "StatusWorkflow"@en ;
   rdfs:label "Статус документооборота"@ru ;
-  rdfs:subClassOf v-s:Dictionary ;
 .
 
 ### veda-workflow
@@ -180,9 +180,9 @@ v-s:Yesterday
 ### veda-generic
 v-s:YesNo
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Dictionary ;
   rdfs:label "Yes No"@en ;
   rdfs:label "Да Нет"@ru ;
-  rdfs:subClassOf v-s:Dictionary ;
 .
 
 ### veda-generic
@@ -355,13 +355,14 @@ v-s:duration
 ### veda-generic
 v-s:File
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;  
+  rdfs:subClassOf v-s:Exportable ;  
+  rdfs:subClassOf v-s:Embedded ;  
   rdfs:comment "File description"@en ;
   rdfs:comment "Описание файла"@ru ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "File"@en ;
   rdfs:label "Файл"@ru ;
-  rdfs:subClassOf v-s:Exportable ;  
-  rdfs:subClassOf v-s:Embedded ;  
 .
 
 ### veda-generic
@@ -709,10 +710,10 @@ v-s:year
 
 v-s:ReportsForClass
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Reports list"@en ;
   rdfs:label "Список отчетов"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 v-ui:forClass
   rdfs:domain v-s:ReportsForClass ;
@@ -732,10 +733,10 @@ v-s:fileFormat
 
 v-s:Report
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Report"@en ;
   rdfs:label "Отчет"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 
 
@@ -745,13 +746,13 @@ v-s:Report
 ################################ JOURNAL ####################################################
 v-s:Journal
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:comment "A journal"@en ;
   rdfs:comment "Журнал"@ru ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Journal"@en ;
   rdfs:label "Журнал"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 v-s:childRecord
   rdf:type owl:ObjectProperty ;
@@ -762,9 +763,9 @@ v-s:childRecord
 .
 v-s:JournalRecord
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Запись в журнале"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 v-s:parentJournal
   rdf:type owl:ObjectProperty ;
@@ -791,8 +792,8 @@ v-s:subJournal
 .
 v-s:Journaling
   rdf:type owl:Class ;
-  rdfs:label "Журналируемая сущность"@ru ;
   rdfs:subClassOf owl:Thing ;
+  rdfs:label "Журналируемая сущность"@ru ;
 .
 v-s:actor
   rdf:type owl:ObjectProperty ;
@@ -1019,10 +1020,10 @@ v-s:DocumentLinkRulesTemplate
 ### veda-generic
 v-s:Action
   rdf:type owl:Class ;
-  rdfs:label "Action"@en ;
-  rdfs:label "Мероприятие"@ru ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
+  rdfs:label "Action"@en ;
+  rdfs:label "Мероприятие"@ru ;
 .
 
 ### veda-generic
