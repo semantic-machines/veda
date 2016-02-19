@@ -166,7 +166,7 @@ var uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + 'cfg_TTLResourc
 	};
 put_individual(ticket, membership, _event_id);
 
-print('cfg:Event_1', uri);
+// print('cfg:Event_1', uri);
 
   """ ;
 .
@@ -384,7 +384,7 @@ if ( hasValue(document, "v-s:parentUnit") ) {
 		}
 		put_individual (ticket, membership, _event_id);
 		
-		print('cfg:Event_4 (unit to parent)', uri);
+		//print('cfg:Event_4 (unit to parent)', uri);
 		
 	});
 }
@@ -408,7 +408,7 @@ if ( hasValue(document, "rdf:type", { data: "v-s:Appointment", type: _Uri }) ) {
 	}
 	put_individual (ticket, membership, _event_id);
 	
-	print('cfg:Event_4 (unit to position)', uri);
+	//print('cfg:Event_4 (unit to position)', uri);
 	
 }
   """ ;
@@ -449,7 +449,7 @@ if (deleted) {
 }
 put_individual (ticket, membership, _event_id);
 
-print('cfg:Event_5', uri);
+//print('cfg:Event_5', uri);
 
   """ ;
 .
@@ -488,6 +488,15 @@ cfg:Event_6
  * parent_document_id = id of the document that triggered this event.
  */
 
+// Update ontology vsn
+var vsn = {
+	"@" : "cfg:OntoVsn", 
+	"rdf:type"  : newUri("rdfs:Resource"),
+	"rdf:value" : newStr( guid() )
+};
+put_individual (ticket, vsn, _event_id);
+
+// Add to cfg:OntologyGroup
 var doc_uri = document['@'],
 	uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + "cfg_OntologyGroup",
 	membership = get_individual(ticket, uri);
@@ -503,15 +512,7 @@ membership = {
 };
 put_individual (ticket, membership, _event_id);
 
-print('cfg:Event_6', uri);
-
-// Update ontology vsn
-var vsn = {
-	"@" : "cfg:OntoVsn", 
-	"rdf:type"  : newUri("rdfs:Resource"),
-	"rdf:value" : newStr( guid() )
-};
-put_individual (ticket, vsn, _event_id);
+//print('cfg:Event_6', uri);
   """ ;
 .
 
@@ -573,7 +574,7 @@ _classes.map(function (class_uri) {
 	}
 	put_individual (ticket, membership, _event_id);	
 	
-	print('cfg:Event_7', uri);
+	//print('cfg:Event_7', uri);
 	
 });
   """ ;
@@ -637,7 +638,7 @@ _super_classes.map(function (super_uri) {
 	}
 	put_individual (ticket, membership, _event_id);
 	
-	print('cfg:Event_8', uri);
+	//print('cfg:Event_8', uri);
 	
 });
   """ ;
@@ -664,7 +665,7 @@ var doc_uri = document["@"],
 	parent_uri = getUri( document["v-s:parent"] ),
 	doc_deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean});
 
-print('cfg:Event_9', 'start', 'parent_uri', parent_uri );
+//print('cfg:Event_9', 'start', 'parent_uri', parent_uri );
 
 if (!parent_uri) { return; }
 
@@ -689,13 +690,13 @@ if (!membership) {
 	} else if ( !doc_deleted && mem_deleted ) {
 		delete membership['v-s:deleted'];
 	} else {
-		print('cfg:Event_9', uri, 'nothing changed');
+		//print('cfg:Event_9', uri, 'nothing changed');
 		return ;
 	}
 }
 put_individual (ticket, membership, _event_id);	
 
-print('cfg:Event_9', uri);
+//print('cfg:Event_9', uri);
 	
   """ ;
 .
