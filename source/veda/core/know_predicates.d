@@ -35,4 +35,4 @@ public const string ticket__accessor = "ticket:accessor";
 public const string ticket__when     = "ticket:when";
 public const string ticket__duration = "ticket:duration";
 
-public string[]     owl_tags = [ "rdf:Property", "owl:Restriction", "owl:ObjectProperty", "owl:DatatypeProperty" ];
+public string[]     owl_tags = [ "rdf:Property", "owl:Restriction", "owl:ObjectProperty", "owl:DatatypeProperty", "owl:Class", "rdfs:Class" ];
