@@ -33,7 +33,7 @@ function numerate(ticket, individual, oldstate, _event_id) {
 	if (individual['v-s:actualVersion'] && individual['v-s:actualVersion'][0].data != individual['@']) return;
 	for (var key in individual) {
 		var property = get_individual(ticket, key);
-		if (property['v-s:hasNumerationMapper']) {
+		if (property && property['v-s:hasNumerationMapper']) {
 		  var rule;
 		  for (var mapperkey in property['v-s:hasNumerationMapper']) {
 			  var mapper = get_individual(ticket, property['v-s:hasNumerationMapper'][mapperkey].data);

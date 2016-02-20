@@ -313,7 +313,9 @@ function prepare_work_order(ticket, document)
                         traceToJournal(ticket, trace_journal_uri, "v-wf:startDecisionTransform", "transform_result=" + toJson(transform_result));
 
                     var decisionFormList = [];
-
+					
+					if (transform_result)
+					{
                     for (var i = 0; i < transform_result.length; i++)
                     {
                         put_individual(ticket, transform_result[i], _event_id);
@@ -332,6 +334,7 @@ function prepare_work_order(ticket, document)
                             addRight(ticket, [can_read, can_update], employee[0].data, transform_result[i]['@']);
                         }
                     }
+					}
 
                     var add_to_document = {
                         '@': document['@'],
