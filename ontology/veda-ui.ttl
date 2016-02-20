@@ -1108,7 +1108,7 @@ v-ui:DocumentEventTemplate
 		    <em about="@" template="v-ui:LabelTemplateWithLink"></em>
 		</div>
 	  </div>
-      <div rel="v-s:processJournal">
+      <div rel="v-wf:onProcess">
 		<div>
 	        <span about="rdf:type" property="rdfs:label"></span>: 
 		    <em about="@" template="v-ui:LabelTemplateWithLink"></em>

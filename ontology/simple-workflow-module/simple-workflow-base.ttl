@@ -1308,7 +1308,7 @@ s-wf:map_jrn_msg_nc_t2_b
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wf: ;
         v-wf:mapToVariable s-wf:var_journal_msg ;
-        v-wf:mappingExpression "newStr ('выдана задача по согласованию')" ;
+        v-wf:mappingExpression "newStr ('выдана задача')" ;
 .
 
 s-wf:map_jrn_msg_nc_t2_b_ev
@@ -1322,7 +1322,7 @@ s-wf:map_jrn_msg_nce_t2_b
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wf: ;
         v-wf:mapToVariable s-wf:var_journal_msg ;
-        v-wf:mappingExpression "newStr ('задача по согласованию завершена')" ;
+        v-wf:mappingExpression "newStr ('получен ответ на задачу')" ;
 .
 
 s-wf:map_jrn_msg_nce_t2_b_ev
@@ -1484,7 +1484,7 @@ s-wf:nc_t2
     v-wf:startDecisionTransform s-wf:tr_actor_form;
     v-wf:completeDecisionTransform s-wf:tr_taken_decision;
     v-wf:hasFlow s-wf:nc_f_t2_t1, s-wf:nc_f_t2_oc, d:a65787936-f51e-a83c-f537-95eaaa02c21a;
-    rdfs:label "согласование";
+    rdfs:label "Выдача задачи";
     v-wf:expectedResultType s-wf:UserTaskForm;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_t2_sm2, s-wf:map_t2_sm3;
     v-wf:startingMapping s-wf:map_possible_decision, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type;
