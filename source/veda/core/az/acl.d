@@ -76,7 +76,7 @@ class Authorization : LmdbStorage
             return request_access;
 
         if (trace_msg[ 111 ] == 1)
-        	log.trace("authorize uri=%s, user=%s, request_access=%s", uri, ticket.user_uri, access_to_pretty_string (request_access));
+            log.trace("authorize uri=%s, user=%s, request_access=%s", uri, ticket.user_uri, access_to_pretty_string(request_access));
 
         MDB_txn *txn_r;
         MDB_dbi dbi;
@@ -147,14 +147,11 @@ class Authorization : LmdbStorage
             MDB_val   data;
             string    skey;
 
-            Right *[] get_resource_groups(string uri, ubyte access, int level = 0)
+            Right *[] _get_resource_groups(string uri, ubyte access, ref bool[ string ] prepared_uris, int level = 0)
             {
                 Right *[] res;
-                
-               	if (level > 16)
-            		return res;
 
-    	//writeln ("~10 level=", level, ", uri=", uri); 
+                //writeln ("~10 level=", level, ", uri=", uri);
 
                 try
                 {
@@ -180,15 +177,20 @@ class Authorization : LmdbStorage
 
                     for (int idx = 0; idx < res_lenght; idx++)
                     {
-                        Right  *group    = res[ idx ];
+                        Right *group = res[ idx ];
+
+                        if (prepared_uris.get(group.id, false) == true)
+                            continue;
+
                         string group_key = membership_prefix ~ group.id;
                         group.access = group.access & access;
-                        res ~= group;
+                        //res ~= group;
+                        prepared_uris[ group.id ] = true;
 
                         if (uri == group_key)
                             continue;
 
-                        Right *[] up_restrictions = get_resource_groups(group_key, group.access & access, level + 1);
+                        Right *[] up_restrictions = _get_resource_groups(group_key, group.access & access, prepared_uris, level + 1);
                         foreach (restriction; up_restrictions)
                         {
                             res ~= restriction;
@@ -202,13 +204,20 @@ class Authorization : LmdbStorage
                 return res;
             }
 
+            RightSet get_resource_groups(string uri, ubyte access)
+            {
+                bool[ string ] prepared_uris;
+                return new RightSet(_get_resource_groups(uri, access, prepared_uris, 0));
+            }
+
+
             // 1. читаем группы object (uri)
-            RightSet object_groups = new RightSet(get_resource_groups(membership_prefix ~ uri, 15));
+            RightSet object_groups = get_resource_groups(membership_prefix ~ uri, 15);
             object_groups.data[ uri ]                            = new Right(uri, 15, false);
             object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
 
             // 2. читаем группы subject (ticket.user_uri)
-            RightSet subject_groups = new RightSet(get_resource_groups(membership_prefix ~ ticket.user_uri, 15));
+            RightSet subject_groups = get_resource_groups(membership_prefix ~ ticket.user_uri, 15);
             subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
 
             if (trace_msg[ 113 ] == 1)
@@ -303,34 +312,12 @@ class Authorization : LmdbStorage
     }
 }
 
-private Access[] getAccessListFromByte(ubyte permission)
-{
-    Access[] res;
-
-    foreach (int idx, access; access_list)
-    {
-        ubyte set_bit = cast(ubyte)(access & permission);
-
-        if (set_bit > 0)
-            res ~= access;
-    }
-    foreach (int idx, access; denied_list)
-    {
-        ubyte set_bit = cast(ubyte)(access & permission);
-
-        if (set_bit > 0)
-            res ~= access;
-    }
-
-    return res;
-}
-
 void acl_manager(string thread_name, string db_path)
 {
     int                          size_bin_log     = 0;
     int                          max_size_bin_log = 10_000_000;
 
-    core.thread.Thread.getThis().name = thread_name;
+    core.thread.Thread.getThis().name         = thread_name;
     Authorization                storage      = new Authorization(acl_indexes_db_path, DBMode.RW, "acl_manager");
     string                       bin_log_name = get_new_binlog_name(db_path);
 
@@ -368,7 +355,7 @@ void acl_manager(string thread_name, string db_path)
 
                                 if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
                                 {
-                                   prepare_permission_statement(ind, op_id, storage);
+                                    prepare_permission_statement(ind, op_id, storage);
                                 }
                                 else if (rdfType.anyExist(veda_schema__Membership) == true)
                                 {
