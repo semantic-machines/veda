@@ -58,7 +58,9 @@ class Authorization : LmdbStorage
     override void reopen_db()
     {
         super.reopen_db();
-        cache = new Cache!(Right *[], string)(max_count_in_cache);
+        
+        if (cache !is null)
+        	cache = new Cache!(Right *[], string)(max_count_in_cache);
         //writeln ("ACL:CACHE:RESET");
     }
 

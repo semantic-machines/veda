@@ -514,6 +514,8 @@ public int exec_xapian_query_and_queue_authorize(Ticket *ticket,
     {
         XapianMSetIterator it = matches.iterator(&err);
 
+		bool acl_db_reopen = true;
+
         while (it.is_next(&err) == true)
         {
             if (err < 0)
@@ -533,13 +535,14 @@ public int exec_xapian_query_and_queue_authorize(Ticket *ticket,
             if (trace_msg[ 201 ] == 1)
                 log.trace("subject_id:[%s]", subject_id);
 
-            if (context.authorize(subject_id, ticket, Access.can_read, false))
+            if (context.authorize(subject_id, ticket, Access.can_read, acl_db_reopen))
             {
                 add_out_element(subject_id);
                 read_count++;
                 if (read_count >= top)
                     break;
             }
+            acl_db_reopen = false;
 
             it.next(&err);
         }
