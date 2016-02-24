@@ -451,7 +451,7 @@ function prepare_work_order(ticket, document)
                 else
                 {
                     //print("[WORKFLOW][WO4.0.0] completedJournalMap");
-                    mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item, null, null, journal_uri);
+                    mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item, null, net_element['rdfs:label'], journal_uri);
                 }
             }
 
