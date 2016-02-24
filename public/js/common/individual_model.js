@@ -368,6 +368,7 @@ veda.Module(function (veda) { "use strict";
 			}
 			version['v-s:actualVersion'] = [actual];
 			version['v-s:nextVersion'] = [actual];
+			version['rdf:type'] = version['rdf:type'].concat([veda.ontology["v-s:Version"]]);
 			version.saveIndividual(false);
 			
 			// Update draft version

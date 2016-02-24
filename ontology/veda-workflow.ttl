@@ -2242,7 +2242,7 @@ v-wf:completedExecutorJournalMap
 v-wf:onProcess
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:domain v-s:JournalRecord, v-s:Journal ;
+  rdfs:domain v-s:JournalRecord, v-s:Journal, v-s:ProcessStarted ;
   rdfs:label "on process"@en ;
   rdfs:label "к процессу"@ru ;
   rdfs:range v-wf:Process ;
@@ -2289,7 +2289,8 @@ v-wf:WorkItemStarted
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "WorkItem Started"@en ;
+  rdfs:label "Запущен блок"@ru ;
+  rdfs:label "Item was started"@en ;
 .
 
 v-wf:DecisionFormStarted
@@ -2303,7 +2304,8 @@ v-wf:WorkOrderStarted
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "WorkOrder Started"@en ;
+  rdfs:label "Запущено действие"@ru ;
+  rdfs:label "Order was started"@en ;
 .
 
 v-wf:ProcessCompleted
@@ -2324,7 +2326,7 @@ v-wf:TaskCompleted
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Выполнена задача"@ru ;
+  rdfs:label "Действие выполнено"@ru ;
   rdfs:label "Task completed"@en ;
 .
 v-wf:TraceRecord
@@ -2460,34 +2462,7 @@ v-ui:SubProcessStartedEventTemplate
   rdfs:label "Subprocess start event template"@en ;
   v-ui:forClass v-wf:SubProcessStarted ;
   v-ui:template """
-<div class="journal-record">
-  <hr class="margin-sm">
-  <div class="row">
-	<div class="col-md-3 col-sm-3 event-type">
-	  <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
-	</div>
-	<div class="col-md-7 col-sm-6 event-desc">
-	  <div property="rdfs:label"></div>
-	  <span id="initiator">
-        <span about="v-wf:initiator" property="rdfs:label"></span>: 
-	    <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
-	  </span>
-	</div>
-	<div class="col-md-2 col-sm-3 event-date text-right">
-	  <span property="v-s:created"></span>
-	</div>
-  </div>
-  <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
-</div>
-<script>
-  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
-  $("#exp", template).click(function (e) {
-    e.preventDefault();
-    $("div[rel='v-s:subJournal']", template).toggle();
-    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
-  });
-  $("#exp", template).click();  
-</script>
+ <div class="journal-record" rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
   """ ;
 .
 
@@ -2522,7 +2497,6 @@ v-ui:WorkItemStartedEventTemplate
     $("div[rel='v-s:subJournal']", template).toggle();
     $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
-  $("#exp", template).click();  
 </script>
   """ ;
 .
@@ -2532,34 +2506,7 @@ v-ui:WorkOrderStartedEventTemplate
   rdfs:label "Шаблон обработки work item"@ru ;
   v-ui:forClass v-wf:WorkOrderStarted ;
   v-ui:template """
-<div class="journal-record">
-  <hr class="margin-sm">
-  <div class="row">
-        <div class="col-md-3 col-sm-3 event-type">
-          <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
-        </div>
-        <div class="col-md-7 col-sm-6 event-desc">
-          <div property="rdfs:label"></div>
-          <span id="initiator">
-        <span about="v-wf:initiator" property="rdfs:label"></span>:
-            <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
-          </span>
-        </div>
-        <div class="col-md-2 col-sm-3 event-date text-right">
-          <span property="v-s:created"></span>
-        </div>
-  </div>
-  <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
-</div>
-<script>
-  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
-  $("#exp", template).click(function (e) {
-    e.preventDefault();
-    $("div[rel='v-s:subJournal']", template).toggle();
-    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
-  });
-  $("#exp", template).click();  
-</script>
+  <div class="journal-record" rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
   """ ;
 .
 
@@ -2594,7 +2541,6 @@ v-ui:DecisionFormStartedEventTemplate
     $("div[rel='v-s:subJournal']", template).toggle();
     $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
-  $("#exp", template).click();
 </script>
   """ ;
 .

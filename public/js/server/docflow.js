@@ -127,7 +127,7 @@ function prepare_work_order(ticket, document)
 
         if (!f_local_outVars)
         {
-        	journal_uri = create_new_subjournal(f_forWorkItem, _work_order['@'], null, 'v-wf:WorkOrderStarted')
+        	journal_uri = create_new_subjournal(f_forWorkItem, _work_order['@'], net_element['rdfs:label'], 'v-wf:WorkOrderStarted')
             // берем только необработанные рабочие задания
             if (!executor)
             {
@@ -451,7 +451,7 @@ function prepare_work_order(ticket, document)
                 else
                 {
                     //print("[WORKFLOW][WO4.0.0] completedJournalMap");
-                    mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item, null, null, journal_uri);
+                    mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item, null, net_element['rdfs:label'], journal_uri);
                 }
             }
 
@@ -1167,6 +1167,7 @@ function prepare_start_form(ticket, document)
 		'rdf:type': newUri('v-s:ProcessStarted'),
 		'v-s:actor': newUri(author_uri),
 		'v-s:processJournal': newUri(getJournalUri(new_process_uri)),
+		'v-wf:onProcess': newUri(new_process_uri),
         'v-s:created': [ { data: new Date(), type: _Datetime } ]
     };
     put_individual(ticket, journalRecord, _event_id);

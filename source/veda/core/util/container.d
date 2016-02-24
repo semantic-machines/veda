@@ -243,3 +243,45 @@ unittest
     cache.printMRU();
     assert(dx != "d1");
 }
+
+
+public class stack(T)
+{
+    T[] data;
+    int pos;
+
+    this()
+    {
+        data = new T[ 100 ];
+        pos  = 0;
+    }
+
+    T back()
+    {
+        //		writeln("stack:back:pos=", pos, ", data=", data[pos]);
+        return data[ pos ];
+    }
+
+    T popBack()
+    {
+        if (pos > 0)
+        {
+            //			writeln("stack:popBack:pos=", pos, ", data=", data[pos]);
+            pos--;
+            return data[ pos + 1 ];
+        }
+        return data[ pos ];
+    }
+
+    void pushBack(T val)
+    {
+        //		writeln("stack:pushBack:pos=", pos, ", val=", val);
+        pos++;
+        data[ pos ] = val;
+    }
+
+    bool empty()
+    {
+        return pos == 0;
+    }
+}
