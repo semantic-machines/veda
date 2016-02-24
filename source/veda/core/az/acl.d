@@ -50,7 +50,7 @@ class Authorization : LmdbStorage
     this(string _path, DBMode mode, string _parent_thread_name)
     {
         super(_path, mode, _parent_thread_name);
-        cache = new Cache!(Right *[], string)(max_count_in_cache);
+        //cache = new Cache!(Right *[], string)(max_count_in_cache);
     }
 
     int count_permissions = 0;
