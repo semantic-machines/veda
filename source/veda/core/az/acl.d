@@ -40,7 +40,7 @@ public string backup(Context ctx, string backup_id)
 }
 
 import veda.util.container;
-int max_count_in_cache = 1000;
+int max_count_in_cache = 10000;
 
 /// Хранение, чтение PermissionStatement, Membership
 class Authorization : LmdbStorage
@@ -62,9 +62,9 @@ class Authorization : LmdbStorage
         //writeln ("ACL:CACHE:RESET");
     }
 
-    ubyte authorize(string uri, Ticket *ticket, ubyte request_access, Context context, void delegate(string resource_group,
-                                                                                                     string subject_group,
-                                                                                                     string right) trace = null)
+    ubyte authorize(string uri, Ticket *ticket, ubyte request_access, Context context, bool is_check_for_reload, void delegate(string resource_group,
+                                                                                                     							string subject_group,
+                                                                                                     							string right) trace = null)
     {
         void reopen_db()
         {
@@ -84,7 +84,8 @@ class Authorization : LmdbStorage
         string  str;
         int     rc;
 
-        context.acl_check_for_reload(&reopen_db);
+		if (is_check_for_reload)
+        	context.acl_check_for_reload(&reopen_db);
 
         if (db_is_open.get(path, false) == false)
             return res;
@@ -155,8 +156,11 @@ class Authorization : LmdbStorage
                 try
                 {
                     string groups_str;
-                    //if (cache !is null)
-                    //	res = cache.get (uri);
+                    if (cache !is null)
+                    {
+                    	res = cache.get (uri);
+                    	//writeln ("ACL:CACHE:found in cache, uri=", uri);
+                    }	
 
                     if (res is null)
                     {
@@ -167,8 +171,8 @@ class Authorization : LmdbStorage
                         {
                             groups_str = cast(string)(data.mv_data[ 0..data.mv_size ]);
                             rights_from_string(groups_str, res);
-                            //if (cache !is null)
-                            //	cache.put (uri, res);
+                            if (cache !is null)
+                            	cache.put (uri, res);
                         }
                     }
 

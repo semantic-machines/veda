@@ -190,7 +190,7 @@ interface Context
     public bool ft_check_for_reload(void delegate() load);
     public bool acl_check_for_reload(void delegate() load);
 
-    bool authorize(string uri, Ticket *ticket, ubyte request_acess);
+    bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
     Individual[] get_individuals_via_query(Ticket *ticket, string query_str);
     string get_individual_from_storage(string uri);
     Onto get_onto();

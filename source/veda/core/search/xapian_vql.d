@@ -2,7 +2,7 @@
  * VQL -> xapian
  */
 
-module search.xapian_vql;
+module veda.core.search.xapian_vql;
 
 import std.string, std.concurrency, std.stdio, std.datetime, std.conv, std.algorithm;
 import bind.xapian_d_header;
@@ -533,7 +533,7 @@ public int exec_xapian_query_and_queue_authorize(Ticket *ticket,
             if (trace_msg[ 201 ] == 1)
                 log.trace("subject_id:[%s]", subject_id);
 
-            if (context.authorize(subject_id, ticket, Access.can_read))
+            if (context.authorize(subject_id, ticket, Access.can_read, false))
             {
                 add_out_element(subject_id);
                 read_count++;
