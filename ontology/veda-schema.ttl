@@ -357,7 +357,8 @@ v-s:File
   rdf:type owl:Class ;
   rdfs:subClassOf owl:Thing ;  
   rdfs:subClassOf v-s:Exportable ;  
-  rdfs:subClassOf v-s:Embedded ;  
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Authorized ;
   rdfs:comment "File description"@en ;
   rdfs:comment "Описание файла"@ru ;
   rdfs:isDefinedBy v-s: ;

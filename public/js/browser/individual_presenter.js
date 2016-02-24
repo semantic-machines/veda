@@ -503,10 +503,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			function embeddedHandler(doc_rel_uri, values) {
 				if (doc_rel_uri === rel_uri) {
 					values.map(function (value) {
-						if ( !value["v-s:parent"] ) {
-							value.defineProperty("v-s:parent");
-							value["v-s:parent"] = [about];
-						}
+						if ( !value["v-s:parent"] ) { value.defineProperty("v-s:parent"); }
+						value["v-s:parent"] = [about];
 					});
 				}
 			}
