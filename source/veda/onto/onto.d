@@ -10,7 +10,7 @@ private
 {
     import std.stdio, std.datetime, std.conv, std.concurrency, std.exception : assumeUnique;
     import veda.onto.resource, veda.onto.individual;
-    import util.utils, util.container, util.logger;
+    import util.utils, veda.util.container, util.logger;
     import veda.core.know_predicates, veda.core.context, veda.core.log_msg, veda.core.define;
     import search.vql;
 }

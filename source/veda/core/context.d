@@ -1,5 +1,5 @@
 /**
- * Внешнее API
+ * core API
 
    Copyright: © 2014-2015 Semantic Machines
    License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
@@ -9,10 +9,9 @@
 module veda.core.context;
 
 private import std.concurrency, std.datetime;
-private import util.container;
-private import search.vel;
-private import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.define;
 private import bind.v8d_header;
+private import search.vel;
+private import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.define, veda.util.container;
 
 /// Имена процессов
 public enum P_MODULE : byte

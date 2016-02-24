@@ -9,7 +9,7 @@ private
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
     import veda.type, veda.onto.individual, veda.onto.resource, veda.core.bind.lmdb_header, veda.core.context, veda.core.define,
            veda.core.know_predicates, veda.core.log_msg, veda.core.util.cbor8individual;
-    import util.utils, util.cbor, util.logger;
+    import util.utils, veda.util.cbor, util.logger;
     import veda.core.storage.lmdb_storage, veda.core.thread_context, veda.core.az.right_set;
 }
 
@@ -39,12 +39,18 @@ public string backup(Context ctx, string backup_id)
     return res;
 }
 
+import veda.util.container;
+int max_count_in_cache = 1000;
+
 /// Хранение, чтение PermissionStatement, Membership
 class Authorization : LmdbStorage
 {
+    Cache!(Right *[], string) cache;
+
     this(string _path, DBMode mode, string _parent_thread_name)
     {
         super(_path, mode, _parent_thread_name);
+        cache = new Cache!(Right *[], string)(max_count_in_cache);
     }
 
     int count_permissions = 0;
@@ -52,19 +58,14 @@ class Authorization : LmdbStorage
     override void reopen_db()
     {
         super.reopen_db();
+        cache = new Cache!(Right *[], string)(max_count_in_cache);
+        //writeln ("ACL:CACHE:RESET");
     }
-
-    import util.container;
-
-    Cache!(RightSet, string) cache;
 
     ubyte authorize(string uri, Ticket *ticket, ubyte request_access, Context context, void delegate(string resource_group,
                                                                                                      string subject_group,
                                                                                                      string right) trace = null)
     {
-        //if (cache is null)
-        //cache = new Cache!(RightSet, string)(1);
-
         void reopen_db()
         {
             this.reopen_db();
@@ -104,7 +105,6 @@ class Authorization : LmdbStorage
 
                 rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
             }
-            //subject_groups_cache[ ticket.user_uri ] = string[].init;
         }
 
         if (rc != 0)
@@ -114,7 +114,6 @@ class Authorization : LmdbStorage
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) WARN:%s", path, fromStringz(mdb_strerror(rc)));
                 reopen_db();
                 rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-                //subject_groups_cache[ ticket.user_uri ] = string[].init;
             }
             else if (rc == MDB_BAD_RSLOT)
             {

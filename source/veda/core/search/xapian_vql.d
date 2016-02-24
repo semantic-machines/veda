@@ -6,7 +6,7 @@ module search.xapian_vql;
 
 import std.string, std.concurrency, std.stdio, std.datetime, std.conv, std.algorithm;
 import bind.xapian_d_header;
-import util.utils, util.cbor;
+import util.utils, veda.util.cbor;
 import search.vel;
 import veda.type, veda.core.context, veda.core.define, veda.core.log_msg, veda.core.storage.lmdb_storage;
 
