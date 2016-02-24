@@ -151,7 +151,7 @@ td:ApplicationDevelopmentGroup
   v-s:childUnit td:Analyst1 ;
   v-s:childUnit td:Programmer1 ;
   v-s:parentUnit td:CCIP ;
-  v-s:hasChief td:RomanKarpov-CommercialDirector;    
+  v-s:hasChief td:RomanKarpov-Analyst1;    
   rdfs:label "Application development group"@en ;
   rdfs:label "Группа прикладного програмирования"@ru ;
 .
