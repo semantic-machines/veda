@@ -126,6 +126,13 @@ v-s:Versioned
   rdfs:label "Версионная сущность"@ru ;
 .
 
+v-s:Version
+  rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+  rdfs:label "Version"@en ;
+  rdfs:label "Версия"@ru ;
+.
+
 v-s:DraftAllowed
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Versioned ;

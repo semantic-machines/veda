@@ -1509,6 +1509,15 @@ td:AppointmentTemplate2
   """ ;
 .
 
+td:VersionTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон версии"@ru ;
+  rdfs:label "Version template"@en ;
+  v-ui:forClass v-s:Version ;
+  v-ui:template """
+  """ ;
+.
+
 td:AccountTemplate1
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон Учетной записи"@ru ;
