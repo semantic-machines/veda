@@ -26,10 +26,12 @@ veda.Module(function (veda) { "use strict";
 		self._.original_individual = "{}";
 		self._.properties = {};
 		self._.values = {};		
+		self._.isNew = false;
 		self._.sync = false;
 		self.properties = {};
 		
 		if (!uri) { 
+			self._.isNew = true;
 			self._.individual["@"] = veda.Util.genUri();
 			self._.original_individual = '{"@":"' + self._.individual["@"] +'"}';
 			if (self._.cache && veda.cache) {
@@ -43,6 +45,7 @@ veda.Module(function (veda) { "use strict";
 				return self._.individual["@"];
 			},
 			set: function (value) { 
+				self._.isNew = false;
 				self._.sync = false;
 				self._.individual["@"] = value;
 				self.trigger("individual:idChanged", value);
@@ -84,6 +87,7 @@ veda.Module(function (veda) { "use strict";
 		});
 
 		self.defineProperty("rdf:type", undefined, function (classes) {
+			self._.isNew = false;
 			self._.sync = false;
 			self.init();
 			self.trigger("individual:typeChanged", classes);
@@ -266,6 +270,7 @@ veda.Module(function (veda) { "use strict";
 			}
 			try {
 				self._.individual = get_individual(veda.ticket, uri);
+				self._.isNew = false;
 				self._.sync = true;
 			} catch (e) {
 				self._.individual = {
@@ -382,6 +387,7 @@ veda.Module(function (veda) { "use strict";
 		} else {
 			put_individual(veda.ticket, self._.individual);		
 			self._.original_individual = JSON.stringify(self._.individual);
+			self._.isNew = false;
 			self._.sync = true;
 			if (self._.cache) veda.cache[self.id] = self;
 			self.trigger("individual:afterSave", self._.original_individual);
@@ -407,6 +413,7 @@ veda.Module(function (veda) { "use strict";
 				self[property_uri] = [];
 			}
 		});
+		self._.isNew = false;
 		self._.sync = true;
 		self.trigger("individual:afterReset");
 		return this;
@@ -505,6 +512,16 @@ veda.Module(function (veda) { "use strict";
 	proto.isSync = function () {
 		return this._.sync;
 	};
+	
+	/**
+	 * @method
+	 * Check whether individual is new (not saved in db)
+	 * @return {boolean}
+	 */
+	proto.isNew = function () {
+		return this._.isNew;
+	};
+
 
 	/**
 	 * @method
