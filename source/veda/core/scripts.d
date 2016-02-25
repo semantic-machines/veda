@@ -385,7 +385,13 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
         if (ss.isExist(veda_schema__deleted, true) || ss.isExist("v-s:disabled", true))
         {
 //          writeln ("SCRIPT OFF, uri=", ss.uri);
-            scripts.remove(ss.uri);
+            ScriptInfo script = scripts.get (ss.uri, ScriptInfo.init);
+            
+            if (script !is ScriptInfo.init)
+            {
+            	script.compiled_script= null;
+            	scripts[ ss.uri ] = script;            	
+            }
             return;
         }
 
