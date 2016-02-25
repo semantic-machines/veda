@@ -45,12 +45,14 @@ int max_count_in_cache = 10000;
 /// Хранение, чтение PermissionStatement, Membership
 class Authorization : LmdbStorage
 {
-    Cache!(Right *[], string) cache;
+    Cache!(Right *[], string) cache_of_group;
+    Cache!(RightSet, string) cache_of_permission;
 
     this(string _path, DBMode mode, string _parent_thread_name)
     {
         super(_path, mode, _parent_thread_name);
-        //cache = new Cache!(Right *[], string)(max_count_in_cache);
+        //cache_of_group      = new Cache!(Right *[], string)(max_count_in_cache);
+        //cache_of_permission = new Cache!(RightSet, string)(max_count_in_cache);
     }
 
     int count_permissions = 0;
@@ -58,15 +60,20 @@ class Authorization : LmdbStorage
     override void reopen_db()
     {
         super.reopen_db();
-        
-        if (cache !is null)
-        	cache = new Cache!(Right *[], string)(max_count_in_cache);
-        //writeln ("ACL:CACHE:RESET");
+
+        if (cache_of_group !is null)
+            cache_of_group = new Cache!(Right *[], string)(max_count_in_cache);
+
+        if (cache_of_permission !is null)
+            cache_of_permission = new Cache!(RightSet, string)(max_count_in_cache);
+
+        writeln("ACL:CACHE:RESET");
     }
 
     ubyte authorize(string uri, Ticket *ticket, ubyte request_access, Context context, bool is_check_for_reload, void delegate(string resource_group,
-                                                                                                     							string subject_group,
-                                                                                                     							string right) trace = null)
+                                                                                                                               string subject_group,
+                                                                                                                               string right) trace =
+                        null)
     {
         void reopen_db()
         {
@@ -86,8 +93,8 @@ class Authorization : LmdbStorage
         string  str;
         int     rc;
 
-		if (is_check_for_reload)
-        	context.acl_check_for_reload(&reopen_db);
+        if (is_check_for_reload)
+            context.acl_check_for_reload(&reopen_db);
 
         if (db_is_open.get(path, false) == false)
             return res;
@@ -158,11 +165,11 @@ class Authorization : LmdbStorage
                 try
                 {
                     string groups_str;
-                    if (cache !is null)
+                    if (cache_of_group !is null)
                     {
-                    	res = cache.get (uri);
-                    	//writeln ("ACL:CACHE:found in cache, uri=", uri);
-                    }	
+                        res = cache_of_group.get(uri);
+                        //writeln ("ACL:CACHE:found in cache, uri=", uri);
+                    }
 
                     if (res is null)
                     {
@@ -173,8 +180,8 @@ class Authorization : LmdbStorage
                         {
                             groups_str = cast(string)(data.mv_data[ 0..data.mv_size ]);
                             rights_from_string(groups_str, res);
-                            if (cache !is null)
-                            	cache.put (uri, res);
+                            if (cache_of_group !is null)
+                                cache_of_group.put(uri, res);
                         }
                     }
 
@@ -240,19 +247,39 @@ class Authorization : LmdbStorage
                 if (trace_msg[ 112 ] == 1)
                     log.trace("look acl_key: [%s]", acl_key);
 
-                key.mv_size = acl_key.length;
-                key.mv_data = cast(char *)acl_key;
+                RightSet permission;
 
-                rc = mdb_get(txn_r, dbi, &key, &data);
-                if (rc == 0)
+                if (cache_of_permission !is null)
                 {
-                    str = cast(string)(data.mv_data[ 0..data.mv_size ]);
-                    RightSet pp = new RightSet();
-                    rights_from_string(str, pp);
-                    permission_2_group[ object_group.id ] = pp;
+                    permission = cache_of_permission.get(acl_key);
 
-                    if (trace_msg[ 112 ] == 1)
-                        log.trace("for [%s] found %s", acl_key, text(getAccessListFromByte(cast(ubyte)str[ 0 ])));
+                    if (permission !is null)
+                    {
+                        if (trace_msg[ 112 ] == 1)
+                            log.trace("for [%s] found in cache %s", acl_key, permission);
+                        permission_2_group[ object_group.id ] = permission;
+                    }
+                }
+
+                if (permission is null)
+                {
+                    key.mv_size = acl_key.length;
+                    key.mv_data = cast(char *)acl_key;
+
+                    rc = mdb_get(txn_r, dbi, &key, &data);
+                    if (rc == 0)
+                    {
+                        str = cast(string)(data.mv_data[ 0..data.mv_size ]);
+                        RightSet pp = new RightSet();
+                        rights_from_string(str, pp);
+                        permission_2_group[ object_group.id ] = pp;
+
+                        if (cache_of_permission !is null)
+                            cache_of_permission.put(acl_key, pp);
+
+                        if (trace_msg[ 112 ] == 1)
+                            log.trace("for [%s] found %s", acl_key, pp);
+                    }
                 }
             }
 
@@ -261,6 +288,7 @@ class Authorization : LmdbStorage
             foreach (obj_key; object_groups.data.keys)
             {
                 RightSet permissions = permission_2_group.get(obj_key, null);
+                //log.trace("obj_key=%s, permissions=%s", obj_key, permissions);
                 if (permissions !is null)
                 {
                     foreach (perm_key; permissions.data.keys)
@@ -270,7 +298,7 @@ class Authorization : LmdbStorage
                             Right *restriction = object_groups.data.get(obj_key, null);
                             Right *permission  = permissions.data.get(perm_key, null);
 
-                            //log.trace("restriction=%s, permission=%s, request=%s", restriction, permission, access_to_pretty_string (request_access));
+                            //log.trace("restriction=%s, permission=%s, request=%s", *restriction, *permission, access_to_pretty_string(request_access));
 
                             ubyte restriction_access, permission_access;
 
@@ -292,6 +320,7 @@ class Authorization : LmdbStorage
 //                                trace(buff_object_group[ pos ], buff_subject_group[ pos ], access_list_predicates[ idx ]);
 
                                         res = cast(ubyte)(res | set_bit);
+                                        //log.trace("set_bit=%s", access_to_pretty_string(set_bit));
                                     }
                                 }
                             }
@@ -307,11 +336,8 @@ class Authorization : LmdbStorage
         scope (exit)
         {
             if (trace_msg[ 111 ] == 1)
-                log.trace("authorize %s, request=%s, answer=%s", uri, text(request_access), text(res));
+                log.trace("authorize %s, request=%s, answer=[%s]", uri, access_to_pretty_string(request_access), access_to_pretty_string(res));
         }
-
-        if (trace_msg[ 111 ] == 1)
-            log.trace("acl:res=%d", res);
 
         return res;
     }

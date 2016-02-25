@@ -55,6 +55,14 @@ class RightSet
             data[ el.id ] = el;
         }
     }
+
+    void   toString(scope void delegate(const(char)[]) sink) const
+    {
+        foreach (key, value; data)
+        {
+            sink(text(*value) ~ ", ");
+        }
+    }
 }
 
 public bool rights_from_string(string src, RightSet new_rights)

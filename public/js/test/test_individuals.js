@@ -247,7 +247,7 @@ for (i = 0; i < 1; i++)
             var new_permission = res[0];
             wait_module(acl_manager, res[1].op_id);
 
-            test_success_read(ticket_user2, new_test_doc1_uri, new_test_doc1);
+            test_success_read(ticket_user2, new_test_doc1_uri, new_test_doc1, true);
 
             new_permission["@"] = "_";
             delete new_permission["v-s:permissionObject"];
