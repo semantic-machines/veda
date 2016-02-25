@@ -369,6 +369,12 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
     JSONValue nil;
     try
     {
+    	if (ss.isExist(veda_schema__deleted, true))
+    	{
+    		scripts.remove (ss.uri);
+    		return;
+    	}
+    	 
         string scripts_text = ss.getFirstResource(veda_schema__script).literal;
         if (scripts_text.length <= 0)
             return;
