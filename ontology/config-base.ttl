@@ -605,7 +605,7 @@ var _class = document,
 
 if ( !hasValue(_class, "rdfs:subClassOf") ) { return; }
 
-var _super_classes = getUris( _class["rdfs:subClassOf"] ),
+var _super_classes = getUris( _class["rdfs:subClassOf"] );
 
 _super_classes.map(function (super_uri) {
 	if ( super_uri === "owl:Thing" || class_uri === "rdfs:Resource" ) {
@@ -618,8 +618,8 @@ _super_classes.map(function (super_uri) {
 		membership = {
 			'@' : uri, 
 			'rdf:type'     : newUri('v-s:Membership'),
-			'v-s:memberOf' : newUri(class_uri),
-			'v-s:resource' : newUri(doc_uri),
+			'v-s:memberOf' : newUri(super_uri),
+			'v-s:resource' : newUri(class_uri),
 			'rdfs:comment' : newStr('создано cfg:Event_8')
 		};
 		if (class_deleted) {
