@@ -70,13 +70,6 @@ public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_stat
 
     if (tid_scripts != Tid.init)
     {
-        if (rdfType.anyExist(veda_schema__Event))
-        {
-            // изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
-            send(tid_scripts, CMD.RELOAD, new_state, thisTid);
-            receive((bool){});
-        }
-
         try
         {
             immutable(string)[] types;
@@ -175,14 +168,34 @@ public void scripts_thread(string thread_name, string node_id)
                                 //writeln("scripts B #1 *", process_name);
                                 if (msg !is null && msg.length > 3 && script_vm !is null)
                                 {
+                                    bool prepare_if_is_script = false;
+
                                     foreach (itype; indv_types)
                                     {
                                         if (itype == veda_schema__PermissionStatement || itype == veda_schema__Membership)
                                             return;
+
+                                        if (itype == veda_schema__Event)
+                                            prepare_if_is_script = true;
                                     }
 
                                     if (onto is null)
                                         onto = context.get_onto();
+
+                                    Individual ss;
+                                    if (cbor2individual(&ss, msg) > 0)
+                                    {
+                                        if (prepare_if_is_script == false)
+                                        {
+                                            if (scripts.get(ss.uri, ScriptInfo.init) !is ScriptInfo.init)
+                                                prepare_if_is_script = true;
+                                        }
+                                    }
+
+                                    if (prepare_if_is_script)
+                                    {
+                                        prepare_scripts(ss, script_vm);
+                                    }
 
                                     if (event_id !is null)
                                     {
@@ -369,12 +382,13 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
     JSONValue nil;
     try
     {
-    	if (ss.isExist(veda_schema__deleted, true))
-    	{
-    		scripts.remove (ss.uri);
-    		return;
-    	}
-    	 
+        if (ss.isExist(veda_schema__deleted, true) || ss.isExist("v-s:disabled", true))
+        {
+//          writeln ("SCRIPT OFF, uri=", ss.uri);
+            scripts.remove(ss.uri);
+            return;
+        }
+
         string scripts_text = ss.getFirstResource(veda_schema__script).literal;
         if (scripts_text.length <= 0)
             return;
