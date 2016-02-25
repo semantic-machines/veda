@@ -67,7 +67,7 @@ class Authorization : LmdbStorage
         if (cache_of_permission !is null)
             cache_of_permission = new Cache!(RightSet, string)(max_count_in_cache);
 
-        writeln("ACL:CACHE:RESET");
+        //writeln("ACL:CACHE:RESET");
     }
 
     ubyte authorize(string uri, Ticket *ticket, ubyte request_access, Context context, bool is_check_for_reload, void delegate(string resource_group,

@@ -256,12 +256,12 @@ for (i = 0; i < 1; i++)
             var right1 = get_rights(ticket_user1.id, new_test_doc1_uri);
             var right2 = get_rights(ticket_user2.id, new_test_doc1_uri);
 
-//            ok(compare(new_permission, right2));
+            ok(compare(new_permission, right2));
 
             new_permission['v-s:canUpdate'] = newBool(true);
             new_permission['v-s:canDelete'] = newBool(true);
 
-//            ok(compare(new_permission, right1));
+            ok(compare(new_permission, right1));
 
             res = addRight(ticket_user1.id, [cant_read], ticket_user2.user_uri, new_test_doc1_uri);
             wait_module(acl_manager, res[1].op_id);
