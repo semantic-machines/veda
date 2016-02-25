@@ -519,8 +519,8 @@ put_individual (ticket, membership, _event_id);
 cfg:Event_7
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт включает индивид в группу своего класса." ;
-  rdfs:comment "Скрипт включает индивид в группу своего класса." ;
+  rdfs:label "Скрипт включает индивид в группу индивидов своего класса." ;
+  rdfs:comment "Скрипт включает индивид в группу индивидов своего класса." ;
   v-s:filter v-s:Authorized ;
   v-s:script """
 /* Available variables:
@@ -540,22 +540,15 @@ var doc_uri = document["@"],
 	doc_deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean});
 
 _classes.map(function (class_uri) {
-	if (
-		class_uri === "owl:Thing" 
-		|| class_uri === "rdfs:Resource" 
-		|| class_uri === "v-s:Membership" 
-		|| class_uri === "v-s:PermissionStatement"
-	) {
-		return;
-	}
-	var uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + class_uri.split(':').join('_'),
+	var class_group_uri = class_uri + '_group', // uri группы индивидов класса
+		uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + class_group_uri.split(':').join('_'),
 		membership = get_individual(ticket, uri);
 	
 	if (!membership) {
 		membership = {
 			'@' : uri, 
 			'rdf:type'     : newUri('v-s:Membership'),
-			'v-s:memberOf' : newUri(class_uri),
+			'v-s:memberOf' : newUri(class_group_uri),
 			'v-s:resource' : newUri(doc_uri),
 			'rdfs:comment' : newStr('создано cfg:Event_7')
 		};
@@ -573,9 +566,8 @@ _classes.map(function (class_uri) {
 		}
 	}
 	put_individual (ticket, membership, _event_id);	
-	
-	//print('cfg:Event_7', uri);
-	
+
+	// print('cfg:Event_7', uri);
 });
   """ ;
 .
@@ -583,8 +575,8 @@ _classes.map(function (class_uri) {
 cfg:Event_8
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт включает класс в группу своего суперкласса." ;
-  rdfs:comment "Скрипт включает класс в группу своего суперкласса." ;
+  rdfs:label "Скрипт включает группу индивидов класса в группу индивидов суперкласса." ;
+  rdfs:comment "Скрипт включает группу индивидов класса в группу индивидов суперкласса." ;
   v-s:filter rdfs:Class ;
   v-s:script """
 /* Available variables:
@@ -601,7 +593,20 @@ if (parent_document_id && parent_document_id === document['@']) return;
 
 var _class = document,
 	class_uri = _class["@"],
-	class_deleted = hasValue(_class, "v-s:deleted", { data: true, type: _Boolean});
+	class_group_uri = class_uri + "_group",
+	class_deleted = hasValue(_class, "v-s:deleted", { data: true, type: _Boolean } ),
+	class_group = get_individual(ticket, class_group_uri);
+
+if ( !class_group ) {
+	var class_group = {
+		'@' : class_group_uri,
+		'rdf:type'     : newUri('v-s:Group'),
+		'rdfs:label' : newStr("Группа индивидов класса " + class_uri),
+		'rdfs:comment' : newStr('создано cfg:Event_8')
+	};
+	put_individual (ticket, class_group, _event_id);
+	// print("cfg:Event_8 class group", class_group_uri);
+}
 
 if ( !hasValue(_class, "rdfs:subClassOf") ) { return; }
 
@@ -611,15 +616,16 @@ _super_classes.map(function (super_uri) {
 	if ( super_uri === "owl:Thing" || class_uri === "rdfs:Resource" ) {
 		return;
 	}
-	var uri = 'd:membership_' + class_uri.split(':').join('_') + '_' + super_uri.split(':').join('_'),
+	var super_group_uri = super_uri + "_group",
+		uri = 'd:membership_' + class_group_uri.split(':').join('_') + '_' + super_group_uri.split(':').join('_'),
 		membership = get_individual(ticket, uri);
 	
 	if (!membership) {
 		membership = {
 			'@' : uri, 
 			'rdf:type'     : newUri('v-s:Membership'),
-			'v-s:memberOf' : newUri(super_uri),
-			'v-s:resource' : newUri(class_uri),
+			'v-s:memberOf' : newUri(super_group_uri),
+			'v-s:resource' : newUri(class_group_uri),
 			'rdfs:comment' : newStr('создано cfg:Event_8')
 		};
 		if (class_deleted) {
@@ -638,8 +644,7 @@ _super_classes.map(function (super_uri) {
 	}
 	put_individual (ticket, membership, _event_id);
 	
-	//print('cfg:Event_8', uri);
-	
+	// print('cfg:Event_8 membership', uri);
 });
   """ ;
 .
