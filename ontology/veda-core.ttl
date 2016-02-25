@@ -499,6 +499,14 @@ v-s:script
   rdfs:range xsd:string ;
 .
 
+v-s:disabled
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Event ;
+  rdfs:label "disabled"@en ;
+  rdfs:label "выключен"@ru ;
+  rdfs:range xsd:boolean ;
+.
+
 v-s:srcClassName
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Transform ;
