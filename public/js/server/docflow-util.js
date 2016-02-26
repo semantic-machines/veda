@@ -672,7 +672,7 @@ function rsffiwit(ticket, work_item_list, compare_field, compare_value, res, _pa
 
 ///////////////////////////////////////////// JOURNAL //////////////////////////////////////////////////
 
-function create_new_journal(ticket, new_journal_uri, parent_journal_uri, label)
+function create_new_journal(ticket, new_journal_uri, parent_journal_uri, label, is_trace)
 {
     try
     {
@@ -694,6 +694,10 @@ function create_new_journal(ticket, new_journal_uri, parent_journal_uri, label)
 
             if (label)
                 new_journal['rdfs:label'] = label;
+                
+            if (is_trace)    
+                new_journal['v-wf:isTrace'] = newBool(true);
+				
 
             put_individual(ticket, new_journal, _event_id);
             //print ("@@@ create new journal, =", toJson (new_journal))
@@ -922,7 +926,7 @@ function _create_new_subjournal(is_trace, parent_uri, el_uri, label, jtype)
         return new_sub_journal_uri;
     }
     else
-        create_new_journal(ticket, new_sub_journal_uri, parent_journal_uri, label);
+        create_new_journal(ticket, new_sub_journal_uri, parent_journal_uri, label, is_trace);
 
     var journal_record = newJournalRecord(parent_journal_uri);
     journal_record['rdf:type'] = [
