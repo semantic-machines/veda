@@ -36,6 +36,14 @@ string access_to_pretty_string(const ubyte src)
         res ~= "U ";
     if (src & Access.can_delete)
         res ~= "D ";
+    if (src & Access.cant_create)
+        res ~= "!C ";
+    if (src & Access.cant_read)
+        res ~= "!R ";
+    if (src & Access.cant_update)
+        res ~= "!U ";
+    if (src & Access.cant_delete)
+        res ~= "!D ";
 
     return res;
 }
@@ -189,7 +197,7 @@ void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, s
             if (rr !is null)
             {
                 rr.is_deleted                = is_deleted;
-                rr.access                    = access;
+                rr.access                    = rr.access | access;
                 new_right_set.data[ mb.uri ] = rr;
                 //writeln ("@3.1 rr=", rr);
             }

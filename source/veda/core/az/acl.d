@@ -306,7 +306,12 @@ class Authorization : LmdbStorage
                                 restriction_access = restriction.access;
 
                             if (permission !is null)
-                                permission_access = permission.access;
+                            {
+                                if (permission.access > 15)
+                                    permission_access = (((permission.access & 0xF0) >> 4) ^ 0x0F) & permission.access;
+                                else
+                                    permission_access = permission.access;
+                            }
 
                             foreach (int idx, access; access_list)
                             {
@@ -320,7 +325,7 @@ class Authorization : LmdbStorage
 //                                trace(buff_object_group[ pos ], buff_subject_group[ pos ], access_list_predicates[ idx ]);
 
                                         res = cast(ubyte)(res | set_bit);
-                                        //log.trace("set_bit=%s", access_to_pretty_string(set_bit));
+                                        //log.trace("set_bit=%s, res=%s", access_to_pretty_string(set_bit), access_to_pretty_string(res));
                                     }
                                 }
                             }

@@ -273,8 +273,10 @@ for (i = 0; i < 1; i++)
             new_permission['v-s:canDelete'] = newBool(true);
 
             ok(compare(new_permission, right1));
+            test_success_read(ticket_user2, new_test_doc1_uri, new_test_doc1);
 
             res = addRight(ticket_user1.id, [cant_read], ticket_user2.user_uri, new_test_doc1_uri);
+            res = addRight(ticket_user1.id, [can_read], ticket_user2.user_uri, new_test_doc1_uri);
             wait_module(acl_manager, res[1].op_id);
 
             test_fail_read(ticket_user2, new_test_doc1_uri, new_test_doc1);
