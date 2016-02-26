@@ -1148,7 +1148,7 @@ function prepare_start_form(ticket, document)
 
     if (isTrace)
     {
-        trace_journal_uri = create_new_journal(ticket, getTraceJournalUri(new_process_uri), new_process_uri, _net['rdfs:label']);
+        trace_journal_uri = create_new_journal(ticket, getTraceJournalUri(new_process_uri), new_process_uri, _net['rdfs:label'], true);
 
         if (trace_journal_uri)
         {
