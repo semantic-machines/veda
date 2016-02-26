@@ -821,13 +821,9 @@ for (i = 0; i < 1; i++)
             var op_id = res[1].op_id;
             wait_module(acl_manager, res[1].op_id);
 
-            // Раскомментить для проверки
             check_rights_success(ticket2.id, doc1['@'], [can_read, can_update, can_delete]);
-
             check_rights_success(ticket2.id, doc3['@'], [can_read]);
-
             check_rights_fail(ticket2.id, doc3['@'], [can_update]);
-
             check_rights_fail(ticket2.id, doc3['@'], [can_delete]);
 
         });
