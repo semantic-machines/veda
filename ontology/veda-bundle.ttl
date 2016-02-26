@@ -231,3 +231,8 @@ v-s:ViewJournal
   rdfs:label "Журнал"@ru ;
   rdfs:label "Journal"@en ;
 .
+v-s:WillBeProcessed
+  rdf:type v-s:Bundle ;
+  rdfs:label "Спасибо. Ваше действие будет обработано."@ru ;
+  rdfs:label "Thank you. Your action will be processed."@en ;
+.

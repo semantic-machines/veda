@@ -87,7 +87,6 @@ veda.Module(function (veda) { "use strict";
 		});
 
 		self.defineProperty("rdf:type", undefined, function (classes) {
-			self._.isNew = false;
 			self._.sync = false;
 			self.init();
 			self.trigger("individual:typeChanged", classes);
