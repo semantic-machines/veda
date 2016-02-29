@@ -135,20 +135,18 @@ cfg:Permission_4
   rdfs:label "Разрешение на чтение орг. структуры для всех пользователей"@ru ;
 .
 
-cfg:Permission_5
-  rdf:type v-s:PermissionStatement ;
-  v-s:author cfg:VedaSystem ;
-  v-s:permissionSubject cfg:AllUsersGroup ;
-  v-s:permissionObject v-s:Journal_group ;
-  v-s:permissionObject v-s:JournalRecord_group ;
-  v-s:canRead "true"^^xsd:boolean ;
-  rdfs:label "Permission to read journals for all users"@en ;
-  rdfs:label "Разрешение на чтение журналов для всех пользователей"@ru ;
-.
-
+#cfg:Permission_5
+#  rdf:type v-s:PermissionStatement ;
+#  v-s:author cfg:VedaSystem ;
+#  v-s:permissionSubject cfg:AllUsersGroup ;
+#  v-s:permissionObject v-s:Journal_group ;
+#  v-s:permissionObject v-s:JournalRecord_group ;
+#  v-s:canRead "true"^^xsd:boolean ;
+#  rdfs:label "Permission to read journals for all users"@en ;
+#  rdfs:label "Разрешение на чтение журналов для всех пользователей"@ru ;
+#.
 
 ##################### EVENT HANDLERS #####################
-
 
 cfg:Event_1
   rdf:type v-s:Event ;
@@ -335,7 +333,7 @@ if (!(document['v-s:isDraftOf'] && document['v-s:isDraftOf'].length > 0 || (docu
         put_individual(ticket, new_journal, _event_id);
         addRight(ticket, [can_read], 'cfg:AllUsersGroup', journal_uri);
 
-        var journal_record = newJournalRecord(new_journal);
+        var journal_record = newJournalRecord(new_journal['@']);
         if (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data == document['@'])
         {
             journal_record['v-s:documentVersion'] = document['v-s:previousVersion'];
@@ -715,5 +713,99 @@ put_individual (ticket, membership, _event_id);
 
 //print('cfg:Event_9', uri);
 	
+  """ ;
+.
+
+cfg:Event_10
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт включает журнал и записи журнала в группу документа с ограниченим прав до R." ;
+  rdfs:comment "Скрипт включает журнал и записи журнала в группу документа с ограниченим прав до R." ;
+  v-s:filter v-s:Journal ;
+  v-s:filter v-s:JournalRecord ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ */
+
+if ( document['v-wf:isTrace'] || getUri(document['rdf:type']) === 'v-wf:TraceRecord' ) { return; }
+
+var this_uri = document['@'],
+	group_uri = getUri(document["v-s:onDocument"]) || getUri(document["v-s:parentJournal"]) || getUri(document["v-wf:onProcess"]);
+
+if (!group_uri) { return; }
+
+var uri = 'd:membership_' + this_uri.split(':').join('_') + '_' + group_uri.split(':').join('_');
+
+var membership = get_individual(ticket, uri);
+
+if (membership) { return; }
+
+membership = {
+	'@' : uri, 
+	'rdf:type'     : newUri('v-s:Membership'),
+	'v-s:memberOf' : newUri(group_uri),
+	'v-s:resource' : newUri(this_uri),
+	'rdfs:comment' : newStr('создано cfg:Event_10'),
+	'v-s:canRead'  : newBool(true)
+};
+
+put_individual (ticket, membership, _event_id);	
+
+//print('cfg:Event_10 journal membership', uri);
+
+  """ ;
+.
+
+cfg:Event_11
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт включает задания в группу запущенного процесса с ограниченим прав до R." ;
+  rdfs:comment "Скрипт включает задания в группу запущенного процесса с ограниченим прав до R." ;
+  v-s:filter v-wf:Process ;
+  v-s:filter v-wf:WorkItem ;
+  v-s:filter v-wf:WorkOrder ;
+  v-s:filter v-wf:DecisionForm ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ */
+
+var this_uri = document['@'],
+	group_uri = getUri(document["v-wf:forProcess"]) || getUri(document["v-wf:forWorkItem"]) || getUri(document["v-wf:onWorkOrder"]) || getUri(document["v-wf:parentWorkOrder"]);
+
+if (!group_uri) { return; }
+
+var uri = 'd:membership_' + this_uri.split(':').join('_') + '_' + group_uri.split(':').join('_');
+
+var membership = get_individual(ticket, uri);
+
+if (membership) { return; }
+
+membership = {
+	'@' : uri, 
+	'rdf:type'     : newUri('v-s:Membership'),
+	'v-s:memberOf' : newUri(group_uri),
+	'v-s:resource' : newUri(this_uri),
+	'rdfs:comment' : newStr('создано cfg:Event_11'),
+	'v-s:canRead'  : newBool(true)
+};
+
+put_individual (ticket, membership, _event_id);	
+
+//print('cfg:Event_11 process membership', uri);
+
   """ ;
 .
