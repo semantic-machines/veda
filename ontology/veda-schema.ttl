@@ -748,7 +748,6 @@ v-s:Report
 v-s:Journal
   rdf:type owl:Class ;
   rdfs:subClassOf owl:Thing ;
-  rdfs:subClassOf v-s:Authorized ;
   rdfs:isDefinedBy v-s: ;
   rdfs:comment "A journal"@en ;
   rdfs:comment "Журнал"@ru ;
@@ -766,7 +765,6 @@ v-s:childRecord
 v-s:JournalRecord
   rdf:type owl:Class ;
   rdfs:subClassOf owl:Thing ;
-  rdfs:subClassOf v-s:Authorized ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Запись в журнале"@ru ;
 .

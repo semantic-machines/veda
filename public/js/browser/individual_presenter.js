@@ -465,7 +465,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				about.off("individual:propertyModified", propertyModifiedHandler);
 			});
 
-			if (!isAbout && isEmbedded) {
+			if (isEmbedded) {
 				embeddedHandler(rel_uri, values);
 				about.on("individual:propertyModified", embeddedHandler);
 				template.one("remove", function () {

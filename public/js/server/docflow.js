@@ -1148,7 +1148,7 @@ function prepare_start_form(ticket, document)
 
     if (isTrace)
     {
-        trace_journal_uri = create_new_journal(ticket, getTraceJournalUri(new_process_uri), new_process_uri, _net['rdfs:label'], true);
+        trace_journal_uri = create_new_journal(ticket, getTraceJournalUri(new_process_uri), getJournalUri(document['v-wf:processedDocument'][0].data), _net['rdfs:label'], true);
 
         if (trace_journal_uri)
         {
@@ -1159,7 +1159,7 @@ function prepare_start_form(ticket, document)
 
     put_individual(ticket, new_process, _event_id);
 
-    create_new_journal(ticket, getJournalUri(new_process_uri), new_process_uri, _net['rdfs:label']);
+    create_new_journal(ticket, getJournalUri(new_process_uri), getJournalUri(document['v-wf:processedDocument'][0].data), _net['rdfs:label']);
 
     var jrId = genUri();
     var journalRecord = {
@@ -1168,9 +1168,19 @@ function prepare_start_form(ticket, document)
 		'v-s:actor': newUri(author_uri),
 		'v-s:processJournal': newUri(getJournalUri(new_process_uri)),
 		'v-wf:onProcess': newUri(new_process_uri),
+		'v-s:onDocument': document['v-wf:processedDocument'],
         'v-s:created': [ { data: new Date(), type: _Datetime } ]
     };
     put_individual(ticket, journalRecord, _event_id);
+
+	var membership = {
+		'@' : genUri(),
+		'rdf:type' : newUri('v-s:Membership'),
+		'v-s:resource': newUri(new_process_uri),
+		'v-s:memberOf': document['v-wf:processedDocument'],
+		'rdfs:comment': newStr('Process is in document group')
+	};
+	put_individual(ticket, membership, _event_id);
 
     add_to_individual(ticket, 
 		{
