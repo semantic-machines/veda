@@ -222,6 +222,16 @@ class Authorization : LmdbStorage
                 return new RightSet(_get_resource_groups(uri, access, prepared_uris, 0));
             }
 
+            // 0. читаем фильтр прав у object (uri)
+            string filter = filter_prefix ~ uri;
+            string filter_value;
+            key.mv_size = filter.length;
+            key.mv_data = cast(char *)filter;
+            rc          = mdb_get(txn_r, dbi, &key, &data);
+            if (rc == 0)
+            {
+                filter_value = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
+            }
 
             // 1. читаем группы object (uri)
             RightSet object_groups = get_resource_groups(membership_prefix ~ uri, 15);
@@ -242,7 +252,11 @@ class Authorization : LmdbStorage
 
             foreach (object_group; object_groups.data)
             {
-                string acl_key = permission_prefix ~ object_group.id;
+                string acl_key;
+                if (filter_value !is null)
+                    acl_key = permission_prefix ~ filter_value ~ object_group.id;
+                else
+                    acl_key = permission_prefix ~ object_group.id;
 
                 if (trace_msg[ 112 ] == 1)
                     log.trace("look acl_key: [%s]", acl_key);

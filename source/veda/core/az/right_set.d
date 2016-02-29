@@ -6,7 +6,7 @@ private import util.utils, veda.util.cbor, util.logger;
 
 public static string membership_prefix = "M";
 public static string permission_prefix = "P";
-
+public static string filter_prefix     = "F";
 
 struct Right
 {
@@ -178,6 +178,8 @@ void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, s
     if (access == 0)
         access = default_access;
 
+    Resource  useFilter = ind.getFirstResource(veda_schema__useFilter);
+
     Resources resource = ind.getResources(p_resource);
     Resources in_set   = ind.getResources(p_in_set);
 
@@ -212,7 +214,15 @@ void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, s
 
         if (new_record.length == 0)
             new_record = "X";
-        ResultCode res = storage.put(prefix ~ rs.uri, new_record);
+
+        string key;
+
+        if (useFilter !is Resource.init)
+            key = prefix ~ useFilter.uri ~ rs.uri;
+        else
+            key = prefix ~ rs.uri;
+
+        ResultCode res = storage.put(key, new_record);
 
         if (trace_msg[ 101 ] == 1)
             log.trace("[acl index] (%s) new right set: %s : [%s]", text(res), rs.uri, new_record);
@@ -235,7 +245,7 @@ void prepare_permission_filter(ref Individual ind, long op_id, Storage storage)
 
     Resource   permissionObject = ind.getFirstResource(veda_schema__permissionObject);
 
-    ResultCode res = storage.put("F+" ~ permissionObject.uri, ind.uri);
+    ResultCode res = storage.put(filter_prefix ~ permissionObject.uri, ind.uri);
 
     if (trace_msg[ 101 ] == 1)
         log.trace("[acl index] (%s) PermissionFilter: %s : %s", text(res), permissionObject.uri, ind.uri);
