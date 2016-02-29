@@ -49,6 +49,12 @@ cfg:VedaSystem
   rdfs:label "Система Веда"@ru ;
 .
 
+cfg:VedaSystemAppointment
+  rdf:type v-s:Appointment ;
+  v-s:author cfg:VedaSystem ;  
+  v-s:employee cfg:VedaSystem ;
+.
+
 cfg:VedaSystemAccount
   rdf:type v-s:Account ;
   v-s:author cfg:VedaSystem ;
