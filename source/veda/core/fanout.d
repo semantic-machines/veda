@@ -250,29 +250,39 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
 
                         foreach (attachment_id; attachment_ids)
                         {
-                            //writeln("@1 attachment_id=", attachment_ids);
-                            Individual file_info = context.get_individual(&sticket, attachment_id);
-                            if (file_info !is Individual.init)
+                            try
                             {
-                                string path     = file_info.getFirstResource("v-s:filePath").get!string;
-                                string file_uri = file_info.getFirstResource("v-s:fileUri").get!string;
-                                if (path !is null && file_uri !is null && file_uri.length > 0)
+                                //writeln("@1 attachment_id=", attachment_ids);
+                                Individual file_info = context.get_individual(&sticket, attachment_id);
+                                if (file_info !is Individual.init)
                                 {
-                                    if (path.length > 0)
-                                        path = path ~ "/";
+                                    string path     = file_info.getFirstResource("v-s:filePath").get!string;
+                                    string file_uri = file_info.getFirstResource("v-s:fileUri").get!string;
+                                    if (path !is null && file_uri !is null && file_uri.length > 0)
+                                    {
+                                        if (path.length > 0)
+                                            path = path ~ "/";
 
-                                    string full_path = attachments_db_path ~ "/" ~ path ~ file_uri;
+                                        string full_path = attachments_db_path ~ "/" ~ path ~ file_uri;
 
-                                    auto   bytes = cast(ubyte[]) read(full_path);
+                                        auto   bytes = cast(ubyte[]) read(full_path);
 
-                                    auto   attachment = SmtpAttachment(file_uri, bytes, uri_2_cid(attachment_id));
-                                    message.attach(attachment);
+                                        auto   attachment = SmtpAttachment(file_uri, bytes, uri_2_cid(attachment_id));
+                                        message.attach(attachment);
+                                    }
                                 }
                             }
+                            catch (Exception ex)
+                            {
+                                log.trace("#EX! fail prepare attachment for e-mail [%s], LINE:[%s], FILE:[%s], MSG:[%s]", new_indv.uri, ex.line,
+                                          ex.file,
+                                          ex.msg);
+                            }
                         }
+
                         smtp.reply.SmtpReply res = smtp_conn.send(message);
 
-                        log.trace("send email: %s, result %s", new_indv.uri, text(res));
+                        log.trace("send email: %s, %s, %s, result %s", new_indv.uri, message.sender, message.recipients, res);
                     }
                 }
             }
@@ -484,7 +494,8 @@ private void connect_to_smtp(Context context)
                     }
                     catch (Throwable ex)
                     {
-                        log.trace("EX! fanout.connect_to_smtp# EX:[%s], connection=[%s]", ex.toString, ex.msg, connection);
+                        smtp_conn = null;
+                        log.trace("EX! fanout.connect_to_smtp# LINE:[%s], FILE:[%s], MSG:[%s], connection=[%s]", ex.line, ex.file, ex.msg, connection);
                     }
                 }
             }
@@ -493,7 +504,7 @@ private void connect_to_smtp(Context context)
     catch (Throwable ex)
     {
         printPrettyTrace(stdout);
-        log.trace("EX! fanout.connect_to_smtp# EX:[%s]", ex.toString, ex.msg);
+        log.trace("ERR! fanout.connect_to_smtp# LINE:[%s], FILE:[%s], MSG:[%s], %s", ex.line, ex.file, ex.msg, ex.toString);
     }
 }
 
