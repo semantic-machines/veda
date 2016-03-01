@@ -40,7 +40,7 @@ public string backup(Context ctx, string backup_id)
 }
 
 import veda.util.container;
-int max_count_in_cache = 10000;
+int max_count_in_cache = 200;
 
 /// Хранение, чтение PermissionStatement, Membership
 class Authorization : LmdbStorage
@@ -51,8 +51,8 @@ class Authorization : LmdbStorage
     this(string _path, DBMode mode, string _parent_thread_name)
     {
         super(_path, mode, _parent_thread_name);
-        cache_of_group      = new Cache!(Right *[], string)(max_count_in_cache);
-        //cache_of_permission = new Cache!(RightSet, string)(max_count_in_cache);
+        //cache_of_group      = new Cache!(Right *[], string)(max_count_in_cache, "group");
+        //cache_of_permission = new Cache!(RightSet, string)(max_count_in_cache, "permission");
     }
 
     int count_permissions = 0;
@@ -62,10 +62,10 @@ class Authorization : LmdbStorage
         super.reopen_db();
 
         if (cache_of_group !is null)
-            cache_of_group = new Cache!(Right *[], string)(max_count_in_cache);
+            cache_of_group = new Cache!(Right *[], string)(max_count_in_cache, "group");
 
         if (cache_of_permission !is null)
-            cache_of_permission = new Cache!(RightSet, string)(max_count_in_cache);
+            cache_of_permission = new Cache!(RightSet, string)(max_count_in_cache, "permission");
 
         //writeln("ACL:CACHE:RESET");
     }
