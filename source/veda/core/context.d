@@ -149,6 +149,13 @@ public struct Ticket
     long end_time;
 
     /// Конструктор
+    this(Ticket tt)
+    {
+        id       = tt.id.dup;
+        user_uri = tt.user_uri.dup;
+        end_time = tt.end_time;
+    }
+
     immutable this(string _id, string _user_uri, long _end_time)
     {
         id       = _id;
