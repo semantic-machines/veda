@@ -23,6 +23,7 @@ veda.Module(function (veda) { "use strict";
 			}
 		} else {
 			self.preferences = new veda.IndividualModel();
+			self.preferences["v-s:author"] = [ self ];
 			self.preferences["rdf:type"] = [ new veda.IndividualModel("v-ui:Preferences") ];
 			self.preferences["rdfs:label"] = [ "Preferences_" + self.id ];
 			self.preferences["v-ui:preferredLanguage"] = [ self.availableLanguages["RU"] ];
