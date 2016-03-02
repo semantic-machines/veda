@@ -149,7 +149,7 @@ v-s:NumerationEvent
 .
 v-s:Permission1602021330
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:NumerationScopeClass  ;
+  v-s:permissionObject v-s:NumerationScopeClass_group  ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canRead "true"^^xsd:boolean ;
   v-s:created "2016-02-02T13:31:33"^^xsd:dateTime ;
@@ -161,7 +161,7 @@ v-s:Permission1602021330
 .
 v-s:Permission1602021335
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:NumerationCommitedIntervalClass  ;
+  v-s:permissionObject v-s:NumerationCommitedIntervalClass_group  ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canRead "true"^^xsd:boolean ;
   v-s:created "2016-02-02T13:35:33"^^xsd:dateTime ;
