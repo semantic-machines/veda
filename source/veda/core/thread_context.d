@@ -1153,8 +1153,6 @@ class PThreadContext : Context
 
                         if (rc !is null)
                             rc.info = EXISTS_TYPE;
-                        else
-                            rc.info = NEW_TYPE;
                     }
                 }
 
@@ -1163,6 +1161,12 @@ class PThreadContext : Context
                 {
                     if (rs.info == NEW_TYPE)
                     {
+                        //writeln ("@NEW_TYPE key=", key);
+                        if (acl_indexes.authorize(key, ticket, Access.can_create, this, true) != Access.can_create)
+                        {
+                            //res.result = ResultCode.Not_Authorized;
+                            //return res;
+                        }
                     }
                 }
 

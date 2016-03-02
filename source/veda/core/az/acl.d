@@ -340,6 +340,11 @@ class Authorization : LmdbStorage
 
                                         res = cast(ubyte)(res | set_bit);
                                         //log.trace("set_bit=%s, res=%s", access_to_pretty_string(set_bit), access_to_pretty_string(res));
+
+                                        if (trace !is null)
+                                        {
+                                            trace(obj_key, perm_key, access_list_predicates[ idx ]);
+                                        }
                                     }
                                 }
                             }
