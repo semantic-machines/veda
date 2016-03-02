@@ -571,30 +571,6 @@ td:ComplexRouteStartForm1
     rdfs:label "общий инбокс: выполненые задачи"^^xsd:string;
     v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
 
-td:Membership_002
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadResGroup ;
-  v-s:resource :b435740-f19e-7731-03ef-e7cb2203f8c4 ;
-  rdfs:label "Membership 002"@en ;
-  rdfs:label "Членство 002"@ru ;
-.
-
-td:Membership_003
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadResGroup ;
-  v-s:resource :b435740-119e-1731-13ef-e7cb2203f8c4 ;
-  rdfs:label "Membership 003"@en ;
-  rdfs:label "Членство 003"@ru ;
-.
-
-td:Membership_004
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadResGroup ;
-  v-s:resource :b555740-119e-1731-13ef-e7cb2203f8c4 ;
-  rdfs:label "Membership 004"@en ;
-  rdfs:label "Членство 004"@ru ;
-.
-
 ######################## сеть, пример 1 #######################
 
 :start-form1 
