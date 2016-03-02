@@ -1022,8 +1022,8 @@ class PThreadContext : Context
         }
     }
 
-    static final ubyte NEW_TYPE    = 0;
-    static final ubyte EXISTS_TYPE = 1;
+    static const ubyte NEW_TYPE    = 0;
+    static const ubyte EXISTS_TYPE = 1;
 
     private OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id)
     {
@@ -1159,7 +1159,7 @@ class PThreadContext : Context
                 }
 
                 // для новых типов проверим доступность бита Create
-                foreach (rs; rdfType)
+                foreach (key, rs; rdfType)
                 {
                     if (rs.info == NEW_TYPE)
                     {
