@@ -1022,6 +1022,9 @@ class PThreadContext : Context
         }
     }
 
+    static final ubyte NEW_TYPE    = 0;
+    static final ubyte EXISTS_TYPE = 1;
+
     private OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id)
     {
         //writeln("context:store_individual #1 ", process_name);
@@ -1118,22 +1121,53 @@ class PThreadContext : Context
                 if (trace_msg[ 27 ] == 1)
                     log.trace("[%s] store_individual: %s", name, *indv);
 
-                Resource[ string ] rdfType;
-
+                Resource *[ string ] rdfType;
                 setMapResources(indv.resources.get(rdf__type, Resources.init), rdfType);
 
-                EVENT  ev = EVENT.NONE;
-                string prev_state;
+                EVENT      ev = EVENT.CREATE;
+                string     prev_state;
 
+                string[]   new_types;
+
+                Individual prev_indv;
                 prev_state = find(indv.uri);
-                if (prev_state is null)
-                    ev = EVENT.CREATE;
-                else
+                if (prev_state !is null)
                 {
                     ev = EVENT.UPDATE;
+                    int code = cbor2individual(&prev_indv, prev_state);
+                    if (code < 0)
+                    {
+                        log.trace("ERR:store_individual: invalid prev_state [%s]", prev_state);
+                        res.result = ResultCode.Unprocessable_Entity;
+                        return res;
+                    }
+
+
+                    // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
+
+                    foreach (rs; prev_indv.resources.get(rdf__type, Resources.init))
+                    {
+                        string   itype = rs.get!string;
+
+                        Resource *rc = rdfType.get(itype, null);
+
+                        if (rc !is null)
+                            rc.info = EXISTS_TYPE;
+                        else
+                            rc.info = NEW_TYPE;
+                    }
                 }
 
-                Individual indv_dest;
+                // для новых типов проверим доступность бита Create
+                foreach (rs; rdfType)
+                {
+                    if (rs.info == NEW_TYPE)
+                    {
+                    }
+                }
+
+
+
 
                 if (prev_state is null && (cmd == CMD.ADD || cmd == CMD.SET))
                 {
@@ -1142,33 +1176,25 @@ class PThreadContext : Context
                 {
                     if (cmd == CMD.ADD || cmd == CMD.SET || cmd == CMD.REMOVE)
                     {
-                        int code = cbor2individual(&indv_dest, prev_state);
-                        if (code < 0)
-                        {
-                            log.trace("ERR:store_individual(ADD|SET|REMOVE):cbor2individual [%s]", prev_state);
-                            res.result = ResultCode.Unprocessable_Entity;
-                            return res;
-                        }
-
                         foreach (predicate; indv.resources.keys)
                         {
                             if (cmd == CMD.ADD)
                             {
                                 // add value to set or ignore if exists
-                                indv_dest.add_unique_Resources(predicate, indv.getResources(predicate));
+                                prev_indv.add_unique_Resources(predicate, indv.getResources(predicate));
                             }
                             else if (cmd == CMD.SET)
                             {
                                 // set value to predicate
-                                indv_dest.set_Resources(predicate, indv.getResources(predicate));
+                                prev_indv.set_Resources(predicate, indv.getResources(predicate));
                             }
                             else if (cmd == CMD.REMOVE)
                             {
                                 // remove predicate or value in set
-                                indv_dest.remove_Resources(predicate, indv.getResources(predicate));
+                                prev_indv.remove_Resources(predicate, indv.getResources(predicate));
                             }
                         }
-                        indv = &indv_dest;
+                        indv = &prev_indv;
                     }
                 }
 
