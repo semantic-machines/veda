@@ -543,25 +543,18 @@ class PThreadContext : Context
             log.trace("authenticate, ticket__accessor=%s", user_id);
 
         // store ticket
-        string ss_as_cbor = individual2cbor(&new_ticket);
+        string     ss_as_cbor = individual2cbor(&new_ticket);
 
-        Tid    tid_ticket_manager = getTid(P_MODULE.ticket_manager);
+        long       op_id;
+        ResultCode rc = veda.core.storage.storage_thread.send_put(P_MODULE.ticket_manager, this, CMD.PUT, new_ticket.uri, ss_as_cbor, op_id);
 
-        if (tid_ticket_manager != Tid.init)
+        ticket.result = rc;
+        if (rc == ResultCode.OK)
         {
-            send(tid_ticket_manager, CMD.PUT, ss_as_cbor, thisTid);
-            receive((EVENT ev, string prev_state, string msg, Tid from)
-                    {
-                        if (from == getTid(P_MODULE.ticket_manager))
-                        {
-//                            res = msg;
-                            //writeln("context.store_subject:msg=", msg);
-                            subject2Ticket(new_ticket, &ticket);
-                            ticket.result = ResultCode.OK;
-                            user_of_ticket[ ticket.id ] = &ticket;
-                        }
-                    });
+            subject2Ticket(new_ticket, &ticket);
+            user_of_ticket[ ticket.id ] = new Ticket(ticket);
         }
+
         return ticket;
     }
 
@@ -749,7 +742,7 @@ class PThreadContext : Context
             else
             {
                 if (trace_msg[ 17 ] == 1)
-                    log.trace("тикет нашли в кеше, id=%s", ticket_id);
+                    log.trace("тикет нашли в кеше, id=%s, end_time=%d", tt.id, tt.end_time);
 
                 SysTime now = Clock.currTime();
                 if (now.stdTime >= tt.end_time)
@@ -760,6 +753,13 @@ class PThreadContext : Context
                     tt.result = ResultCode.Ticket_expired;
                     return tt;
                 }
+                else
+                {
+                    tt.result = ResultCode.OK;
+                }
+
+                if (trace_msg[ 17 ] == 1)
+                    log.trace("тикет, %s", *tt);
             }
             return tt;
         }
@@ -1112,10 +1112,8 @@ class PThreadContext : Context
             {
                 //  writeln("context:store_individual #5 ", process_name);
 
-                Tid    tid_subject_manager;
-                Tid    tid_acl;
-
-                string ss_as_cbor = individual2cbor(indv);
+                Tid tid_subject_manager;
+                Tid tid_acl;
 
                 if (trace_msg[ 27 ] == 1)
                     log.trace("[%s] store_individual: %s", name, *indv);
@@ -1124,53 +1122,75 @@ class PThreadContext : Context
 
                 setMapResources(indv.resources.get(rdf__type, Resources.init), rdfType);
 
-//                if (rdfType.anyExist(veda_schema__Membership) == true)
-//                {
-                // before storing the data, expected availability acl_manager.
-//                    wait_thread(P_MODULE.acl_manager);
-
-//                    if (indv.isExist("v-s:deleted", true) == false && this.acl_indexes.isExistMemberShip(indv) == true)
-//                    {
-//                        res.result = ResultCode.Duplicate_Key;
-//                        return res;
-//                    }
-//                }
-//                else if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
-//                {
-                // before storing the data, expected availability acl_manager.
-//                    wait_thread(P_MODULE.acl_manager);
-//                    if (this.acl_indexes.isExistPermissionStatement(indv) == true)
-//                    {
-//                        res.result = ResultCode.Duplicate_Key;
-//                        return res;
-//                    }
-//                }
-
                 EVENT  ev = EVENT.NONE;
                 string prev_state;
 
-                veda.core.storage.storage_thread.send_put(this, cmd, ss_as_cbor, ss_as_cbor, prev_state, res.op_id, ev);
-
-                if (ev == EVENT.NOT_READY)
+                prev_state = find(indv.uri);
+                if (prev_state is null)
+                    ev = EVENT.CREATE;
+                else
                 {
-                    res.result = ResultCode.Not_Ready;
-                    return res;
+                    ev = EVENT.UPDATE;
                 }
 
-                if (ev == EVENT.ERROR)
+                Individual indv_dest;
+
+                if (prev_state is null && (cmd == CMD.ADD || cmd == CMD.SET))
                 {
-                    res.result = ResultCode.Fail_Store;
+                }
+                else
+                {
+                    if (cmd == CMD.ADD || cmd == CMD.SET || cmd == CMD.REMOVE)
+                    {
+                        int code = cbor2individual(&indv_dest, prev_state);
+                        if (code < 0)
+                        {
+                            log.trace("ERR:store_individual(ADD|SET|REMOVE):cbor2individual [%s]", prev_state);
+                            res.result = ResultCode.Unprocessable_Entity;
+                            return res;
+                        }
+
+                        foreach (predicate; indv.resources.keys)
+                        {
+                            if (cmd == CMD.ADD)
+                            {
+                                // add value to set or ignore if exists
+                                indv_dest.add_unique_Resources(predicate, indv.getResources(predicate));
+                            }
+                            else if (cmd == CMD.SET)
+                            {
+                                // set value to predicate
+                                indv_dest.set_Resources(predicate, indv.getResources(predicate));
+                            }
+                            else if (cmd == CMD.REMOVE)
+                            {
+                                // remove predicate or value in set
+                                indv_dest.remove_Resources(predicate, indv.getResources(predicate));
+                            }
+                        }
+                        indv = &indv_dest;
+                    }
+                }
+
+                string new_state = individual2cbor(indv);
+
+
+                res.result = veda.core.storage.storage_thread.send_put(P_MODULE.subject_manager, this, CMD.PUT, indv.uri, new_state, res.op_id);
+
+                if (res.result != ResultCode.OK)
+                {
+                    //writeln ("@FAIL STORE uri=", indv.uri, ", res=", res);
                     return res;
                 }
 
                 if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
                 {
                     if (indv.isExist(veda_schema__deleted, true) == false)
-                        search.xapian_indexer.send_put(this, ss_as_cbor, prev_state, res.op_id);
+                        search.xapian_indexer.send_put(this, new_state, prev_state, res.op_id);
                     else
-                        search.xapian_indexer.send_delete(this, ss_as_cbor, prev_state, res.op_id);
+                        search.xapian_indexer.send_delete(this, new_state, prev_state, res.op_id);
 
-                    if (rdfType.anyExist(owl_tags) == true && ss_as_cbor != prev_state)
+                    if (rdfType.anyExist(owl_tags) == true && new_state != prev_state)
                     {
                         // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
                         inc_count_onto_update();
@@ -1181,14 +1201,14 @@ class PThreadContext : Context
                         tid_acl = this.getTid(P_MODULE.acl_manager);
                         if (tid_acl != Tid.init)
                         {
-                            send(tid_acl, CMD.PUT, ev, ss_as_cbor, res.op_id);
+                            send(tid_acl, CMD.PUT, ev, new_state, res.op_id);
                         }
                     }
 
                     if (prepare_events == true)
-                        bus_event_after(ticket, indv, rdfType, ss_as_cbor, prev_state, ev, this, event_id, res.op_id);
+                        bus_event_after(ticket, indv, rdfType, new_state, prev_state, ev, this, event_id, res.op_id);
 
-                    veda.core.fanout.send_put(this, ss_as_cbor, prev_state, res.op_id);
+                    veda.core.fanout.send_put(this, new_state, prev_state, res.op_id);
 
                     res.result = ResultCode.OK;
 
