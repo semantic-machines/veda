@@ -9,17 +9,18 @@ import onto.lang;
 import veda.type;
 
 alias Resource[]            Resources;
+alias Resource *[ string ]    MapResource;
 alias immutable(Resource)[] iResources;
 Resources                   _empty_Resources  = Resources.init;
 iResources                  _empty_iResources = iResources.init;
 
-public void setMapResources(Resources rss, ref Resource[ string ] hrss)
+public void setMapResources(Resources rss, ref Resource *[ string ] hrss)
 {
     foreach (rs; rss)
-        hrss[ rs.get!string ] = rs;
+        hrss[ rs.get!string ] = &rs;
 }
 
-public bool anyExist(ref Resource[ string ] hrss, string object)
+public bool anyExist(ref MapResource hrss, string object)
 {
     if ((object in hrss) !is null)
         return true;
@@ -27,7 +28,7 @@ public bool anyExist(ref Resource[ string ] hrss, string object)
         return false;
 }
 
-public bool anyExist(ref Resource[ string ] hrss, string[] objects)
+public bool anyExist(ref MapResource hrss, string[] objects)
 {
     foreach (object; objects)
     {

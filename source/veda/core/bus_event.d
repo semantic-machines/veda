@@ -22,7 +22,7 @@ logger log()
 
 int count;
 
-void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] rdfType, string new_state, string prev_state, EVENT ev_type,
+void bus_event_after(Ticket *ticket, Individual *individual, ref MapResource rdfType, string new_state, string prev_state, EVENT ev_type,
                      Context context,
                      string event_id, long op_id)
 {
@@ -96,7 +96,7 @@ ResultCode trigger_script(Ticket *ticket, EVENT ev_type, Individual *individual,
 
         if (tid_scripts != Tid.init)
         {
-            Resource[ string ] rdfType;
+            MapResource rdfType;
             setMapResources(individual.resources.get(rdf__type, Resources.init), rdfType);
 
             string subject_as_cbor = individual2cbor(individual);

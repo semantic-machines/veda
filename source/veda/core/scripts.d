@@ -61,7 +61,7 @@ public bool stop_module(Context ctx)
     return 0;
 }
 
-public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_state, string prev_state, Resource[ string ] rdfType,
+public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_state, string prev_state, ref MapResource rdfType,
                      Individual *individual,
                      string event_id,
                      long op_id)
