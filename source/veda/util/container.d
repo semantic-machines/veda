@@ -105,7 +105,7 @@ class Cache(T, K)
 {
     long                    max_size;
     private                 CacheElement!(T, K) *[ K ] key_2_element;
-    string id;
+    string                  id;
 
     CacheElement!(T, K) *[] MRU;
 
@@ -113,7 +113,7 @@ class Cache(T, K)
     {
         max_size   = _max_size;
         MRU.length = max_size;
-        id = _id;
+        id         = _id;
     }
 
     public void printMRU()
@@ -144,7 +144,7 @@ class Cache(T, K)
         }
         else
         {
-        	//printMRU();
+            //printMRU();
             //writeln("key=", key, ", id=", id, ", MAX SIZE=", key_2_element.length);
             // найдем самый старый и малоиспользуемый элемент
             // удалим его
@@ -152,13 +152,13 @@ class Cache(T, K)
             long pp = key_2_element.length - 1;
             while (pp > 0)
             {
-            	//writeln ("level=", level, ", pp=", pp);
+                //writeln ("level=", level, ", pp=", pp);
                 CacheElement!(T, K) * ce = MRU[ pp ];
 
                 if (ce !is null)
                 {
                     key_2_element.remove(ce.key);
-                    put(key, src, level+1);
+                    put(key, src, level + 1);
                     return;
                 }
 

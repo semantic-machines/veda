@@ -93,12 +93,8 @@ private static int read_element(Individual *individual, ubyte[] src, out string 
         string str = cast(string)src[ pos..ep ].dup;
         _key = str;
 
-        //writeln ("[", str, "]");
-
         if (subject_uri !is null && predicate_uri !is null)
         {
-            //writeln ("*1");
-
             Resources resources = individual.resources.get(predicate_uri, Resources.init);
 
             if (header.tag == TAG.TEXT_RU)
@@ -107,10 +103,7 @@ private static int read_element(Individual *individual, ubyte[] src, out string 
                 resources ~= Resource(DataType.String, str, LANG.EN);
             else if (header.tag == TAG.URI)
             {
-                if (str.indexOf('/') > 0)
-                    resources ~= Resource(str, ResourceOrigin.external);
-                else
-                    resources ~= Resource(str, ResourceOrigin.local);
+                resources ~= Resource(DataType.Uri, str);
             }
             else
                 resources ~= Resource(DataType.String, str);

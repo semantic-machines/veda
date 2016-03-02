@@ -8,12 +8,6 @@ import std.conv, std.stdio, std.datetime, std.string;
 import onto.lang;
 import veda.type;
 
-enum ResourceOrigin : ubyte
-{
-    local    = 1,
-    external = 2
-}
-
 alias Resource[]            Resources;
 alias immutable(Resource)[] iResources;
 Resources                   _empty_Resources  = Resources.init;
@@ -47,13 +41,13 @@ public bool anyExist(ref Resource[ string ] hrss, string[] objects)
 struct Resource
 {
     /// Тип
-    DataType       type = DataType.Uri;
+    DataType type = DataType.Uri;
 
-    /// Источник
-    ResourceOrigin origin = ResourceOrigin.local;
+    /// InfoByte
+    ubyte    info;
 
     /// Язык
-    LANG           lang = LANG.NONE;
+    LANG     lang = LANG.NONE;
 
     private {
         void *[ 2 ] m_data;
@@ -160,13 +154,6 @@ struct Resource
     }
 
     // /////////////////////////////////////////
-    /// конструктор
-    this(string str, ResourceOrigin _origin)
-    {
-        this   = str;
-        type   = DataType.Uri;
-        origin = _origin;
-    }
 
     /// конструктор
     this(DataType _type, string str, LANG _lang = LANG.NONE)
