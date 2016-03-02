@@ -215,7 +215,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri = "test3:" + guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': newUri('v-s:Document1'),
+                'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
                 'v-s:test_field': newStr('test data', 'EN')
             };
@@ -241,7 +241,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri = guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': newUri('v-s:Document1'),
+                'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
                 'v-s:test_field': newStr('test data', 'NONE')
             };
@@ -295,7 +295,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri = guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': newUri('v-s:Document1'),
+                'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
                 'v-s:test_field': newStr('test data', 'NONE')
             };
@@ -487,7 +487,7 @@ for (i = 0; i < 1; i++)
 
             var new_test_doc1 = {
                 '@': new_test_doc1_uri_1,
-                'rdf:type': newUri('v-s:Document1'),
+                'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
                 'v-s:test_field': newStr(test_data, 'NONE'),
                 'v-s:test_fieldA': newUri('BBB' + test_data_uid),
@@ -498,7 +498,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri_2 = "test12:" + guid();
             var new_test_doc2 = {
                 '@': new_test_doc1_uri_2,
-                'rdf:type': newUri('v-s:Document1'),
+                'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer2'),
                 'v-s:test_field': newUri(test_data)
             };
@@ -506,7 +506,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri_3 = "test12:" + guid();
             var new_test_doc3 = {
                 '@': new_test_doc1_uri_3,
-                'rdf:type': newUri('v-s:Document1'),
+                'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
                 'v-s:test_field': newUri(test_data),
                 'v-s:test_fieldA': newUri('BBB' + test_data_uid)
@@ -515,7 +515,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri_4 = "test12:" + guid();
             var new_test_doc4 = {
                 '@': new_test_doc1_uri_4,
-                'rdf:type': newUri('v-s:Document1'),
+                'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
                 'v-s:test_field': newUri('AAA' + test_data_uid),
                 'v-s:test_fieldA': newUri('BBB' + test_data_uid),
@@ -566,7 +566,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri = "test13:" + guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': newUri('v-s:Document1'),
+                'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
                 'v-s:created': newDate(new Date()),
                 'v-s:test_group': newUri(test_group_uid),
@@ -577,7 +577,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc2_uri = "test13:" + guid();
             var new_test_doc2 = {
                 '@': new_test_doc2_uri,
-                'rdf:type': newUri('v-s:Document1'),
+                'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
                 'v-s:created': newDate(new Date()),
                 'v-s:test_group': newUri(test_group_uid),
@@ -588,7 +588,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc3_uri = "test13:" + guid();
             var new_test_doc3 = {
                 '@': new_test_doc3_uri,
-                'rdf:type': newUri('v-s:Document1'),
+                'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
                 'v-s:created': newDate(new Date()),
                 'v-s:test_group': newUri(test_group_uid),
@@ -599,7 +599,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc4_uri = "test13:" + guid();
             var new_test_doc4 = {
                 '@': new_test_doc4_uri,
-                'rdf:type': newUri('v-s:Document1'),
+                'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
                 'v-s:created': newDate(new Date()),
                 'v-s:test_group': newUri(test_group_uid),
@@ -647,7 +647,7 @@ for (i = 0; i < 1; i++)
             var new_test_doc1_uri = "test14:" + guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': newUri('v-s:Document1'),
+                'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
                 'v-s:test_field': newStr('test data', 'EN')
             };
@@ -678,7 +678,7 @@ for (i = 0; i < 1; i++)
 
             var new_test_doc1_add1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': newUri('v-s:Document1'),
+                'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': [
                 {
                     data: 'td:ValeriyBushenev-Programmer1',
@@ -709,7 +709,7 @@ for (i = 0; i < 1; i++)
 
             var new_test_doc1_set1 = {
                 '@': new_test_doc1_uri,
-                'rdf:type': newUri('v-s:Document1'),
+                'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:test-e'),
                 'v-s:test_field': newStr('test data', 'EN')
             };
