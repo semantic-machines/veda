@@ -1022,8 +1022,8 @@ class PThreadContext : Context
         }
     }
 
-    static const ubyte NEW_TYPE    = 0;
-    static const ubyte EXISTS_TYPE = 1;
+    static const byte NEW_TYPE    = 0;
+    static const byte EXISTS_TYPE = 1;
 
     private OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id)
     {
@@ -1121,13 +1121,17 @@ class PThreadContext : Context
                 if (trace_msg[ 27 ] == 1)
                     log.trace("[%s] store_individual: %s", name, *indv);
 
-                Resource *[ string ] rdfType;
-                setMapResources(indv.resources.get(rdf__type, Resources.init), rdfType);
+                Resources _types = indv.resources.get(rdf__type, Resources.init);
+                foreach (idx, rs; _types)
+                {
+                    _types[ idx ].info = NEW_TYPE;
+                }
+
+                MapResource rdfType;
+                setMapResources(_types, rdfType);
 
                 EVENT      ev = EVENT.CREATE;
                 string     prev_state;
-
-                string[]   new_types;
 
                 Individual prev_indv;
                 prev_state = find(indv.uri);
@@ -1144,24 +1148,22 @@ class PThreadContext : Context
 
 
                     // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
-
-                    foreach (rs; prev_indv.resources.get(rdf__type, Resources.init))
+                    foreach (rs; _types)
                     {
                         string   itype = rs.get!string;
 
-                        Resource *rc = rdfType.get(itype, null);
+                        Resource *rr = rdfType.get(itype, null);
 
-                        if (rc !is null)
-                            rc.info = EXISTS_TYPE;
+                        if (rr !is null)
+                            rr.info = EXISTS_TYPE;
                     }
                 }
 
                 // для новых типов проверим доступность бита Create
-                foreach (key, rs; rdfType)
+                foreach (key, rr; rdfType)
                 {
-                    if (rs.info == NEW_TYPE)
+                    if (rr.info == NEW_TYPE)
                     {
-                        //writeln ("@NEW_TYPE key=", key);
                         if (acl_indexes.authorize(key, ticket, Access.can_create, this, true) != Access.can_create)
                         {
                             //res.result = ResultCode.Not_Authorized;

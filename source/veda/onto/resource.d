@@ -8,13 +8,11 @@ import std.conv, std.stdio, std.datetime, std.string;
 import onto.lang;
 import veda.type;
 
-alias Resource[]            Resources;
-alias Resource *[ string ]    MapResource;
-alias immutable(Resource)[] iResources;
-Resources                   _empty_Resources  = Resources.init;
-iResources                  _empty_iResources = iResources.init;
+alias Resource[] Resources;
+alias Resource *[ string ]  MapResource;
+Resources        _empty_Resources = Resources.init;
 
-public void setMapResources(Resources rss, ref Resource *[ string ] hrss)
+public void setMapResources(ref Resources rss, ref MapResource hrss)
 {
     foreach (rs; rss)
         hrss[ rs.get!string ] = &rs;
@@ -45,7 +43,7 @@ struct Resource
     DataType type = DataType.Uri;
 
     /// InfoByte
-    ubyte    info;
+    byte     info = -1;
 
     /// Язык
     LANG     lang = LANG.NONE;

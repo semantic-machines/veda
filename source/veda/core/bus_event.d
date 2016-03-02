@@ -97,7 +97,8 @@ ResultCode trigger_script(Ticket *ticket, EVENT ev_type, Individual *individual,
         if (tid_scripts != Tid.init)
         {
             MapResource rdfType;
-            setMapResources(individual.resources.get(rdf__type, Resources.init), rdfType);
+            Resources   _types = individual.resources.get(rdf__type, Resources.init);
+            setMapResources(_types, rdfType);
 
             string subject_as_cbor = individual2cbor(individual);
             string prev_state;
