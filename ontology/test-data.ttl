@@ -252,14 +252,14 @@ td:Membership_4
   rdfs:label "Членство_4"@ru ;
 .
 
-td:Membership_5
+td:Membership_5_su
   rdf:type v-s:Membership ;
   v-s:memberOf cfg:SuperUser ;
   v-s:resource td:RomanKarpov ;
   rdfs:label "Membership_5"@en ;
   rdfs:label "Членство_5"@ru ;
 .
-td:Membership_55
+td:Membership_55_su
   rdf:type v-s:Membership ;
   v-s:memberOf cfg:SuperUser ;
   v-s:resource td:AleksandraKhvostikova ;
