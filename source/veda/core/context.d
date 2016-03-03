@@ -243,7 +243,7 @@ interface Context
     /**
        Доверенная аутентификация
        Params:
-                ticket = имя пользователя, входящего в группу [cfg:SuperAdmin]
+                ticket = имя пользователя, входящего в группу [cfg:SuperUser]
                 login = имя пользователя, кому будет выдан новый тикет
 
        Returns:
