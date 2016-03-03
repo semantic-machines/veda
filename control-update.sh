@@ -20,7 +20,7 @@ if wget -q -O - "$@" https://api.travis-ci.org/repos/semantic-machines/veda/cc.x
     ./jsduck.sh
 
     echo "=== Build dependencies ==="
-    dub -v fetch vibe-d
+    dub -v fetch vibe-d --version=0.7.26
     echo "=== Build project ==="
     dub -v build --build=debug
 
