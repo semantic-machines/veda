@@ -65,7 +65,7 @@ cfg:VedaSystemAccount
   rdfs:label "Учетная запись системы Веда"@ru ;
 .
 
-cfg:SuperAdmin
+cfg:SuperUser
   rdf:type v-s:Group ;
   v-s:author cfg:VedaSystem ;  
   rdfs:label "Super admin"@en ;
@@ -97,13 +97,13 @@ cfg:Membership_1
   rdf:type v-s:Membership ;
   v-s:author cfg:VedaSystem ;
   v-s:resource cfg:VedaSystem ;
-  v-s:memberOf cfg:SuperAdmin ;
+  v-s:memberOf cfg:SuperUser ;
 .
 
 cfg:Permission_1
   rdf:type v-s:PermissionStatement ;
   v-s:author cfg:VedaSystem ;  
-  v-s:permissionSubject cfg:SuperAdmin ;
+  v-s:permissionSubject cfg:SuperUser ;
   v-s:permissionObject v-s:AllResourcesGroup ;
   v-s:canCreate "true"^^xsd:boolean ;
   v-s:canDelete "true"^^xsd:boolean ;
