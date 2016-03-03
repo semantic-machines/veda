@@ -578,11 +578,11 @@ class PThreadContext : Context
 
             void trace(string resource_group, string subject_group, string right)
             {
-                if (subject_group == "cfg:SuperAdmin")
+                if (subject_group == "cfg:SuperUser")
                     is_superadmin = true;
             }
 
-            get_rights_origin(tr_ticket, "cfg:SuperAdmin", &trace);
+            get_rights_origin(tr_ticket, "cfg:SuperUser", &trace);
 
 
             if (is_superadmin)

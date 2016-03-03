@@ -93,14 +93,14 @@ cfg:OntologyGroup
   rdfs:label "Группа для индивидов онтологии"@ru ;
 .
 
-cfg:Membership_1
+cfg:Membership_su
   rdf:type v-s:Membership ;
   v-s:author cfg:VedaSystem ;
   v-s:resource cfg:VedaSystem ;
   v-s:memberOf cfg:SuperUser ;
 .
 
-cfg:Permission_1
+cfg:Permission_su
   rdf:type v-s:PermissionStatement ;
   v-s:author cfg:VedaSystem ;  
   v-s:permissionSubject cfg:SuperUser ;
