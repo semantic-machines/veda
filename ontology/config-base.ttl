@@ -640,6 +640,23 @@ _super_classes.map(function (super_uri) {
 	if ( super_uri === "owl:Thing" || class_uri === "rdfs:Resource" ) {
 		return;
 	}
+	
+	// class memberOf superclass
+	var uri = 'd:membership_' + class_uri.split(':').join('_') + '_' + super_uri.split(':').join('_'),
+		membership = get_individual(ticket, uri);
+	if (!membership) {
+		membership = {
+			'@' : uri, 
+			'rdf:type'     : newUri('v-s:Membership'),
+			'v-s:memberOf' : newUri(super_uri),
+			'v-s:resource' : newUri(class_uri),
+			'rdfs:comment' : newStr('1. создано cfg:Event_8')
+		}
+		put_individual (ticket, membership, _event_id);
+		// print('cfg:Event_8 membership (class -> superclass)', uri);
+	}
+
+	// class_group memberOf superclass_group
 	var super_group_uri = super_uri + "_group",
 		uri = 'd:membership_' + class_group_uri.split(':').join('_') + '_' + super_group_uri.split(':').join('_'),
 		membership = get_individual(ticket, uri);
@@ -650,7 +667,7 @@ _super_classes.map(function (super_uri) {
 			'rdf:type'     : newUri('v-s:Membership'),
 			'v-s:memberOf' : newUri(super_group_uri),
 			'v-s:resource' : newUri(class_group_uri),
-			'rdfs:comment' : newStr('создано cfg:Event_8')
+			'rdfs:comment' : newStr('2. создано cfg:Event_8')
 		};
 		if (class_deleted) {
 			membership['v-s:deleted'] = newBool(true);
@@ -663,12 +680,12 @@ _super_classes.map(function (super_uri) {
 		} else if ( !class_deleted && mem_deleted ) {
 			delete membership['v-s:deleted'];
 		} else {
-			return ;
+			return;
 		}
 	}
 	put_individual (ticket, membership, _event_id);
-	
 	// print('cfg:Event_8 membership', uri);
+	
 });
   """ ;
 .
