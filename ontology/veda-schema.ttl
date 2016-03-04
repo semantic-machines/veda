@@ -800,7 +800,7 @@ v-s:Journaling
 .
 v-s:actor
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted, v-s:ProcessStarted ;
+  rdfs:domain v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted, v-s:ProcessStarted, v-wf:ProcessStopped ;
   rdfs:label "действующее лицо"@ru ;
   rdfs:range v-s:Person ;
 .

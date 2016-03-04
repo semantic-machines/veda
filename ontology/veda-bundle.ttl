@@ -236,3 +236,8 @@ v-s:WillBeProcessed
   rdfs:label "Спасибо. Ваше действие будет обработано."@ru ;
   rdfs:label "Thank you. Your action will be processed."@en ;
 .
+v-b:AreYouSure
+  rdf:type v-s:Bundle ;
+  rdfs:label "Вы уверены?"@ru ;
+  rdfs:label "Are you sure?"@en ;
+.

@@ -1085,7 +1085,7 @@ v-ui:DocumentEventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон события документа"@ru ;
   rdfs:label "Document event template"@en ;
-  v-ui:forClass v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted, v-s:ProcessStarted ;
+  v-ui:forClass v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted, v-s:ProcessStarted, v-wf:ProcessStopped ;
   v-ui:template """
 <div class="journal-record">
   <hr class="margin-sm">
@@ -1112,6 +1112,7 @@ v-ui:DocumentEventTemplate
 		<div>
 	        <span about="rdf:type" property="rdfs:label"></span>: 
 		    <em about="@" template="v-ui:LabelTemplateWithLink"></em>
+		    <a class="stop-process glyphicon glyphicon-remove" style="display:none"></a>
 		</div>
 	  </div>
 	</div>
@@ -1122,12 +1123,28 @@ v-ui:DocumentEventTemplate
   </div>
 </div>
 <div rel="v-s:processJournal">
-  <div>
+  <div class="child-records">
 	<div rel="v-s:childRecord"></div>
   </div>
 </div>	
 
 <script>
+	if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id == 'v-s:ProcessStarted') {
+		var process = individual['v-wf:onProcess'][0];
+		if (!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] == false) {
+			$(".stop-process", template).show();
+			$(".stop-process", template).on("click", function() {
+				if (confirm((new veda.IndividualModel("v-b:AreYouSure"))["rdfs:label"])) {
+					process['v-wf:isStopped'] = [new Boolean(true)];
+					process.save();
+				}
+			});
+		}
+	}
+	if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id == 'v-wf:ProcessStopped') {
+		$(".row", template).addClass('text-danger');
+		//$(".row", template).each(function(e) { $(e); });
+	}
 //  if (!individual.hasValue("v-s:actor")) $(".actor", template).remove();
 //  if (!individual.hasValue("v-s:documentVersion")) $(".document", template).remove();
 //  if (!individual.hasValue("v-s:processJournal")) $(".process", template).remove();

@@ -1845,6 +1845,16 @@ v-wf:isCompleted
 	rdfs:range xsd:boolean ;
 .
 
+v-wf:isStopped
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "is stopped"@en ;
+	rdfs:label "остановлено"@ru ;
+	rdfs:domain v-wf:Process ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:range xsd:boolean ;
+.
+
 # --------------------------- WorkOrder --------------------------
 v-wf:WorkOrder
 	rdf:type owl:Class ;
@@ -1901,7 +1911,8 @@ v-wf:event_df2
 
 //	print("Event df2: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
 
-	if (parent_script_id && 
+	if ((!document['v-wf:isStopped'] || 
+	    document['v-wf:isStopped'][0].data == false) && parent_script_id && 
 		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || 
 		 parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
 	{
@@ -2308,7 +2319,14 @@ v-wf:ProcessStarted
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущен процесс"@ru ;
-  rdfs:label "Process started"@en ;
+  rdfs:label "Process was started"@en ;
+.
+v-wf:ProcessStopped
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:JournalRecord ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Процесс прерван"@ru ;
+  rdfs:label "Process was stopped"@en ;
 .
 v-wf:SubProcessStarted
   rdf:type owl:Class ;
@@ -2686,4 +2704,89 @@ v-wf:rule3instruction
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping	"1";  
-. 
+.
+v-wf:ProcessStopEvent
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт включает процесс в группу журнала документа." ;
+  rdfs:comment "Скрипт включает процесс в группу журнала документа." ;
+  v-s:filter v-wf:Process ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ */	
+	function recursiveCall(elem) {
+		if (elem['v-wf:decisionFormList']) {
+			elem['v-wf:decisionFormList'].forEach(function(dfae) {
+			    var df = get_individual(ticket, dfae.data)
+				if (!df['v-wf:isCompleted'] || 
+				    df['v-wf:isCompleted'][0].data == false) 
+			    {				    
+					df['v-wf:isCompleted'] = newBool(true);
+					df['v-wf:isStopped'] = newBool(true);					
+					put_individual(ticket, df, _event_id);					
+					print("DF > "+toJson(df));
+				}
+			});
+		}
+		
+		if (elem['v-wf:workItemList']) {
+			elem['v-wf:workItemList'].forEach(function(wi) {
+				recursiveCall(get_individual(ticket, wi.data));
+    		});
+    	}
+		
+		if (elem['v-wf:workOrderList']) {
+			elem['v-wf:workOrderList'].forEach(function(wo) {
+				recursiveCall(get_individual(ticket, wo.data));
+			});
+		}
+		
+		if (elem['v-wf:isProcess']) {
+			elem['v-wf:isProcess'].forEach(function(p) {
+				recursiveCall(get_individual(ticket, p.data));
+			});
+		}
+	} 
+	
+print('1');	
+	if (document['v-wf:isStopped'] && 
+	    document['v-wf:isStopped'][0].data == true &&
+	    !prev_state['v-wf:isStopped']) {
+print('2');		    
+		// Disable all active tasks
+		recursiveCall(document);
+print('3');		
+		// Add journal record to process
+		
+		var pb = get_individual(ticket, 'v-wf:ProcessStopped');
+				
+		var journal_record = newJournalRecord(document['@']+'j');
+
+print('3.5 '+journal_record['@']);
+		
+	    journal_record['rdf:type'] = [
+	    {
+	        data: 'v-wf:ProcessStopped',
+	        type: _Uri
+	    }];
+        journal_record['v-s:actor'] = [
+        {
+            data: user_uri,
+            type: _Uri
+        }];
+	    journal_record['rdfs:label'] = pb['rdfs:label'];
+	    journal_record['rdfs:comment'] = pb['rdfs:label'];
+	
+	    logToJournal(ticket, document['@']+'j', journal_record, true);
+print('4');
+	    
+	}
+""" ;
+.
