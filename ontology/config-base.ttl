@@ -591,8 +591,8 @@ _classes.map(function (class_uri) {
 cfg:Event_8
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт включает группу индивидов класса в группу индивидов суперкласса." ;
-  rdfs:comment "Скрипт включает группу индивидов класса в группу индивидов суперкласса." ;
+  rdfs:label "Скрипт включает группу индивидов класса в группу индивидов суперкласса. Включает класс в группу суперкласса." ;
+  rdfs:comment "Скрипт включает группу индивидов класса в группу индивидов суперкласса. Включает класс в группу суперкласса." ;
   v-s:filter rdfs:Class ;
   v-s:script """
 /* Available variables:
@@ -853,7 +853,49 @@ membership = {
 
 put_individual (ticket, membership, _event_id);	
 
-print('cfg:Event_12 process membership', uri);
+// print('cfg:Event_12 process membership', uri);
+
+  """ ;
+.
+
+cfg:Event_13
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт включает версию в группу документа с ограничением R." ;
+  rdfs:comment "Скрипт включает версию в группу документа с ограничением R." ;
+  v-s:filter v-s:Version ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ */
+
+var doc_uri = document['@'],
+	group_uri = getUri(document['v-s:actualVersion']);
+
+var uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + group_uri.split(':').join('_');
+
+var membership = get_individual(ticket, uri);
+
+if (membership) { return; }
+
+membership = {
+	'@' : uri, 
+	'rdf:type'     : newUri('v-s:Membership'),
+	'v-s:memberOf' : newUri(group_uri),
+	'v-s:resource' : newUri(doc_uri),
+	'rdfs:comment' : newStr('создано cfg:Event_13'),
+	'v-s:canRead'  : newBool(true)
+};
+
+put_individual (ticket, membership, _event_id); 
+
+print('cfg:Event_13 process membership', uri);
 
   """ ;
 .
