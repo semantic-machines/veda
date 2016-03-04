@@ -199,6 +199,7 @@ interface Context
     Individual[] get_individuals_via_query(Ticket *ticket, string query_str);
     string get_individual_from_storage(string uri);
     Onto get_onto();
+    OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool api_request = true);
 
     public string get_ticket_from_storage(string ticket_id);
     public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null);

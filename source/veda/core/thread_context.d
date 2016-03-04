@@ -1025,7 +1025,7 @@ class PThreadContext : Context
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
 
-    private OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id)
+    OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool api_request = true)
     {
         //writeln("context:store_individual #1 ", process_name);
         StopWatch sw; sw.start;
@@ -1147,27 +1147,33 @@ class PThreadContext : Context
                     }
 
 
-                    // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
-                    foreach (rs; _types)
+                    if (api_request)
                     {
-                        string   itype = rs.get!string;
+                        // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
+                        foreach (rs; _types)
+                        {
+                            string   itype = rs.get!string;
 
-                        Resource *rr = rdfType.get(itype, null);
+                            Resource *rr = rdfType.get(itype, null);
 
-                        if (rr !is null)
-                            rr.info = EXISTS_TYPE;
+                            if (rr !is null)
+                                rr.info = EXISTS_TYPE;
+                        }
                     }
                 }
 
-                // для новых типов проверим доступность бита Create
-                foreach (key, rr; rdfType)
+                if (api_request)
                 {
-                    if (rr.info == NEW_TYPE)
+                    // для новых типов проверим доступность бита Create
+                    foreach (key, rr; rdfType)
                     {
-                        if (acl_indexes.authorize(key, ticket, Access.can_create, this, true) != Access.can_create)
+                        if (rr.info == NEW_TYPE)
                         {
-                            //res.result = ResultCode.Not_Authorized;
-                            //return res;
+                            if (acl_indexes.authorize(key, ticket, Access.can_create, this, true) != Access.can_create)
+                            {
+                                //res.result = ResultCode.Not_Authorized;
+                                //return res;
+                            }
                         }
                     }
                 }

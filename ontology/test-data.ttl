@@ -227,6 +227,7 @@ td:KarpovR
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "KarpovRT" ;
 .
+
 td:KhvostiA
   rdf:type v-s:Account ;
   v-s:login "KhvostiAT"^^xsd:string ;
@@ -305,7 +306,6 @@ td:Membership_11_1
   rdfs:label "Membership_11_1" ;
 .
 
-
 td:Membership_13
   rdf:type v-s:Membership ;
   v-s:memberOf td:ResGroup_2 ;
@@ -332,6 +332,13 @@ td:Permission_2
   v-s:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
   rdfs:label "Permissions record_2"@en ;
   rdfs:label "Запись о выдаче прав_2"@ru ;
+.
+
+td:Permission_2_vb
+  rdf:type v-s:PermissionStatement ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:permissionObject v-s:AllResourcesGroup ;
+  v-s:permissionSubject td:ValeriyBushenev ;
 .
 
 td:Permission_3
