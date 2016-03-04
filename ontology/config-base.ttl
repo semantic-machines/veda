@@ -19,6 +19,14 @@
   v-s:loadPriority 2 ;
 .
 
+td:pm_pa_au
+  rdf:type v-s:PermissionStatement ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:permissionObject v-s:PersonalAspect, v-s:File, v-s:Version;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+.
+
+
 cfg:Guest
   rdf:type v-s:Person ;
   v-s:author cfg:VedaSystem ;  

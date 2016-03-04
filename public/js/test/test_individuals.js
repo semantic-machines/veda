@@ -271,6 +271,7 @@ for (i = 0; i < 1; i++)
 
             new_permission['v-s:canUpdate'] = newBool(true);
             new_permission['v-s:canDelete'] = newBool(true);
+            new_permission['v-s:canCreate'] = newBool(true);
 
             ok(compare(new_permission, right1));
             test_success_read(ticket_user2, new_test_doc1_uri, new_test_doc1);

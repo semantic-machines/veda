@@ -8,7 +8,10 @@ private import util.logger;
 byte[ 1000 ] trace_msg;
 
 // last id = 500
-long T_ACL_1 = 500;
+long T_REST_1 = 500;
+long T_ACL_1 = 111;
+long T_ACL_2 = 112;
+long T_ACL_3 = 113;
 
 static this()
 {
@@ -25,7 +28,12 @@ static this()
     version (trace)
         trace_msg[] = 1;     // полное логгирование
 
-//    trace_msg[ T_ACL_1 ] = 1;
+	version (trace_acl)
+	{
+    	trace_msg[ T_ACL_1 ] = 1;
+    	trace_msg[ T_ACL_2 ] = 1;
+    	trace_msg[ T_ACL_3 ] = 1;
+	}
 }
 
 void set_message(int idx)

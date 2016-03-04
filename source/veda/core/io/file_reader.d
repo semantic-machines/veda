@@ -198,7 +198,7 @@ void processed(Context context, bool is_load)
 
                         if (indv_in_storage == Individual.init || indv.compare(indv_in_storage) == false)
                         {
-                            ResultCode res = context.put_individual(&sticket, indv.uri, indv).result;
+                            ResultCode res = context.store_individual(CMD.PUT, &sticket, &indv, true, null, false).result;
                             if (trace_msg[ 33 ] == 1)
                                 log.trace("store, uri=%s %s", indv.uri, indv);
 
