@@ -359,7 +359,7 @@ public void load()
     Individual[] res;
     vql.get(&sticket,
             "return { 'v-s:script'}
-            filter { 'rdf:type' == 'v-s:Event'}",
+            filter { 'rdf:type' === 'v-s:Event'}",
             res);
 
     int count = 0;

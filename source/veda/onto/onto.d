@@ -26,7 +26,7 @@ logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
-alias bool[ string ] OfSubClasses;
+alias bool[ string ] Classes;
 
 class Onto
 {
@@ -34,37 +34,45 @@ class Onto
     public int      reload_count = 0;
 
     private         Individual[ string ] individuals;
-    private         OfSubClasses[ string ] ofClass;
+    private         Classes[ string ] class2superclasses;
+    private         Classes[ string ] class2subclasses;
 
     public this(Context _context)
     {
-        //interthread_signal_id = "onto";
         context = _context;
     }
 
     Individual[ string ] get_individuals()
     {
-        //writeln ("@$1");
-
         return individuals;
+    }
+
+    public Classes get_super_classes(string _class_uri)
+    {
+        return class2superclasses.get(_class_uri, null);
+    }
+
+    public Classes get_sub_classes(string _class_uri)
+    {
+        return class2subclasses.get(_class_uri, null);
     }
 
     public bool isSubClasses(string _class_uri, string[] _subclasses_uri)
     {
-        OfSubClasses subclasses = ofClass.get(_class_uri, null);
+        Classes superclasses = class2superclasses.get(_class_uri, null);
 
-        if (subclasses !is null)
+        if (superclasses !is null)
         {
             foreach (_subclass_uri; _subclasses_uri)
             {
                 if (_subclass_uri == _class_uri)
                     return true;
 
-                if (subclasses.get(_subclass_uri, false) == true)
+                if (superclasses.get(_subclass_uri, false) == true)
                     return true;
             }
 
-            foreach (_subclass; subclasses.keys)
+            foreach (_subclass; superclasses.keys)
             {
                 bool res = isSubClasses(_subclass, _subclasses_uri);
                 if (res)
@@ -76,11 +84,11 @@ class Onto
 
     public bool isSubClass(string _class_uri, string _subclass_uri)
     {
-        OfSubClasses subclasses = ofClass.get(_class_uri, null);
+        Classes superclasses = class2superclasses.get(_class_uri, null);
 
-        if (subclasses !is null)
+        if (superclasses !is null)
         {
-            return subclasses.get(_subclass_uri, false);
+            return superclasses.get(_subclass_uri, false);
         }
         return false;
     }
@@ -104,7 +112,7 @@ class Onto
         context.vql().get(
                           &sticket,
                           "return { '*'}
-            filter { 'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'rdf:Property' || 'rdf:type' == 'owl:Class' || 'rdf:type' == 'owl:ObjectProperty' || 'rdf:type' == 'owl:DatatypeProperty' }",
+            filter { 'rdf:type' === 'rdfs:Class' || 'rdf:type' === 'rdf:Property' || 'rdf:type' === 'owl:Class' || 'rdf:type' === 'owl:ObjectProperty' || 'rdf:type' === 'owl:DatatypeProperty' }",
                           l_individuals);
 
         //if (trace_msg[ 20 ] == 1)
@@ -119,32 +127,43 @@ class Onto
         {
             if (indv.anyExist("rdf:type", [ "owl:Class", "rdfs:Class" ]))
             {
-                string       type_uri = indv.uri;
-                OfSubClasses icl      = ofClass.get(type_uri, null);
+                string  type_uri = indv.uri;
+
+                Classes icl = class2superclasses.get(type_uri, null);
                 if (icl is null)
                 {
-                    OfSubClasses sc = OfSubClasses.init;
-                    prepare_subclasses(sc, individuals, type_uri);
-                    ofClass[ type_uri ] = sc;
+                    Classes superclasses = Classes.init;
+                    prepare_superclasses(superclasses, individuals, type_uri);
+                    class2superclasses[ type_uri ] = superclasses;
+
+                    foreach (classz; superclasses.keys)
+                    {
+                        Classes subclasses = class2subclasses.get(classz, Classes.init);
+                        subclasses[ type_uri ]     = true;
+                        class2subclasses[ classz ] = subclasses;
+                    }
                 }
             }
         }
 
-//if (l_individuals.length > 100)
-//core.thread.Thread.sleep(dur!("seconds")(10));
+        //foreach (key, value; class2subclasses)
+        //{
+        //    writeln("@ class=", key, ", subclasses=", value);
+        //}
+
         if (trace_msg[ 20 ] == 1)
             log.trace_log_and_console("[%s] load onto to graph..Ok", context.get_name);
     }
 
-    private void prepare_subclasses(ref OfSubClasses subclasses, ref Individual[ string ] classes, string look_cl, int level = 0)
+    private void prepare_superclasses(ref Classes superclasses, ref Individual[ string ] classes, string look_cl, int level = 0)
     {
         Individual ii = classes.get(look_cl, Individual.init);
 
-        Resource[] list_subClassOf = ii.getResources(rdfs__subClassOf);
-        foreach (subClassOf; list_subClassOf)
+        Resource[] list = ii.getResources(rdfs__subClassOf);
+        foreach (classz; list)
         {
-            subclasses[ subClassOf.uri ] = true;
-            prepare_subclasses(subclasses, classes, subClassOf.uri, level + 1);
+            superclasses[ classz.uri ] = true;
+            prepare_superclasses(superclasses, classes, classz.uri, level + 1);
         }
     }
 }

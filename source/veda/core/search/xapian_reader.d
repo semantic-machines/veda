@@ -151,7 +151,7 @@ class XapianReader : SearchReader
         {
             try
             {
-                transform_vql_to_xapian(tta, "", dummy, dummy, query, key2slot, d_dummy, 0, db_qp.qp);
+                transform_vql_to_xapian(context, tta, "", dummy, dummy, query, key2slot, d_dummy, 0, db_qp.qp);
                 state = 0;
             }
             catch (XapianError ex)

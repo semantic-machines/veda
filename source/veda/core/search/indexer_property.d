@@ -103,7 +103,7 @@ class IndexerProperty
 //            context.vql().reopen_db();
             Ticket       sticket = context.sys_ticket();
 
-            context.vql().get(&sticket, "return { '*' } filter { 'rdf:type' == 'vdi:ClassIndex' }", l_individuals, true);
+            context.vql().get(&sticket, "return { '*' } filter { 'rdf:type' === 'vdi:ClassIndex' }", l_individuals, true);
 
             foreach (indv; l_individuals)
             {

@@ -1171,8 +1171,8 @@ class PThreadContext : Context
                         {
                             if (acl_indexes.authorize(key, ticket, Access.can_create, this, true) != Access.can_create)
                             {
-                                //res.result = ResultCode.Not_Authorized;
-                                //return res;
+                                res.result = ResultCode.Not_Authorized;
+                                return res;
                             }
                         }
                     }
