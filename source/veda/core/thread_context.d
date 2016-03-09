@@ -1134,6 +1134,7 @@ class PThreadContext : Context
                 string     prev_state;
 
                 Individual prev_indv;
+                
                 prev_state = find(indv.uri);
                 if (prev_state !is null)
                 {
@@ -1525,7 +1526,7 @@ class PThreadContext : Context
         }
     }
 
-    string find(string uri)
+    private string find(string uri)
     {
         string res;
         Tid    tid_subject_manager = getTid(P_MODULE.subject_manager);
