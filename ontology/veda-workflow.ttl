@@ -1952,6 +1952,13 @@ v-wf:Decision
 	rdfs:label "решение"@ru ;
 .
 
+v-wf:permission_c_on_decision
+  rdf:type v-s:PermissionStatement ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:permissionObject v-wf:Decision ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+.
+
 v-wf:DecisionAnswerToYourQuestion
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
