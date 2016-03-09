@@ -2099,7 +2099,7 @@ v-wf:DecisionRedirect
 	rdfs:label "перенаправить другому"@ru ;
 .	
 
-v-wf:DecisionСalculationsPerformed
+v-wf:DecisionCalculationsPerformed
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
@@ -2143,7 +2143,7 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionConfirm ;
   v-ui:forClass v-wf:DecisionAgreedToProject ;  
   v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;   
-  v-ui:forClass v-wf:DecisionСalculationsPerformed ;
+  v-ui:forClass v-wf:DecisionCalculationsPerformed ;
   v-ui:template """
 <div>
 	<em about="rdfs:comment" property="rdfs:label"></em>
@@ -2184,7 +2184,7 @@ v-wf:DecisionRedirectTemplateSpec2
   v-ui:forClass v-wf:DecisionAgreedToProject ;
   v-ui:forClass v-wf:DecisionConfirm ;   
   v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;   
-  v-ui:forClass v-wf:DecisionСalculationsPerformed ;
+  v-ui:forClass v-wf:DecisionCalculationsPerformed ;
 .
 
 v-wf:DecisionRedirectTemplateSpec3
