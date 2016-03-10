@@ -1,0 +1,387 @@
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix mnd-s-pm: <http://semantic-machines.com/veda/mondi-schema-pm/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/mondi-schema-pm>
+  rdf:type owl:Ontology ;
+  rdfs:label "Mondi ontology. PM"@en ;
+  rdfs:label "Онтология Монди. Управление проектами"@ru ;
+  v-s:loadPriority 10 ;
+.
+mnd-s-pm:DismantlingProject
+  rdf:type owl:Class ;
+  rdfs:label "Dismantling project"@en ;
+  rdfs:label "Проект Демонтажа"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-pm:InvestmentProject
+  rdf:type owl:Class ;
+  rdfs:label "Investment project"@en ;
+  rdfs:label "Инвестиционный проект"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-pm:InvestmentRequest
+  rdf:type owl:Class ;
+  rdfs:label "Investment request"@en ;
+  rdfs:label "Инвестиционная заявка"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-pm:IrDecision
+  rdf:type owl:Class ;
+  rdfs:label "Ir decision"@en ;
+  rdfs:label "Решение по документу ИЗ"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-pm:IrProfitKind
+  rdf:type owl:Class ;
+  rdfs:label "Ir profit kind"@en ;
+  rdfs:label "Категория выгод ИЗ"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-pm:ProjectChangeRequest
+  rdf:type owl:Class ;
+  rdfs:label "Project change request"@en ;
+  rdfs:label "Запрос на изменение в проекте"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-pm:ProjectEffectKind
+  rdf:type owl:Class ;
+  rdfs:label "Project effect kind"@en ;
+  rdfs:label "Вид влияния на проект"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-pm:ProjectGroup
+  rdf:type owl:Class ;
+  rdfs:label "Project group"@en ;
+  rdfs:label "Группа проекта"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-pm:SppItem
+  rdf:type owl:Class ;
+  rdfs:label "Spp item"@en ;
+  rdfs:label "СПП-элемент"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-pm:baseResourceNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "base resource number"@en ;
+  rdfs:label "номер основного средства"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pm:budgetEffect
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:ProjectChangeRequest ;
+  rdfs:label "budget effect"@en ;
+  rdfs:label "влияние изменения на бюджет проекта"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pm:capexItem
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "capex item"@en ;
+  rdfs:label "пункт CAPEX"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pm:folderNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "folder number"@en ;
+  rdfs:label "номер папки"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pm:followDoc
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "follow doc"@en ;
+  rdfs:label "сопровождающие документы"@ru ;
+  rdfs:range v-s:File ;
+.
+mnd-s-pm:hasBudgetKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "budget kind"@en ;
+  rdfs:label "вид бюджета"@ru ;
+  rdfs:range <http://semantic-machines.com/veda/mondi-schema-ta/BudgetKind> ;
+.
+mnd-s-pm:hasInvestmentRequest
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:ProjectChangeRequest ;
+  rdfs:label "investment request"@en ;
+  rdfs:label "инвестиционная заявка"@ru ;
+  rdfs:range mnd-s-pm:InvestmentRequest ;
+.
+mnd-s-pm:hasIrDecision
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "ir decision"@en ;
+  rdfs:label "решение по документу ИЗ"@ru ;
+  rdfs:range mnd-s-pm:IrDecision ;
+.
+mnd-s-pm:hasIrProfitKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "ir profit kind"@en ;
+  rdfs:label "категория выгод ИЗ"@ru ;
+  rdfs:range mnd-s-pm:IrProfitKind ;
+.
+mnd-s-pm:hasProjectChangeRequest
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "project change request"@en ;
+  rdfs:label "запрос на изменение в проекте"@ru ;
+  rdfs:range mnd-s-pm:ProjectChangeRequest ;
+.
+mnd-s-pm:hasProjectEffectKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pm:ProjectChangeRequest ;
+  rdfs:label "project effect kind"@en ;
+  rdfs:label "вид влияния на проект"@ru ;
+  rdfs:range mnd-s-pm:ProjectEffectKind ;
+.
+mnd-s-pm:hasProjectGroup
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:label "project group"@en ;
+  rdfs:label "группа проекта"@ru ;
+  rdfs:range mnd-s-pm:ProjectGroup ;
+.
+mnd-s-pm:hasPurchaseContract
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "purchase contract"@en ;
+  rdfs:label "контракт о закупке"@ru ;
+  rdfs:range <http://semantic-machines.com/veda/mondi-schema-contract/PurchaseContract> ;
+.
+mnd-s-pm:idNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "id number"@en ;
+  rdfs:label "номер id"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pm:irr
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "irr"@en ;
+  rdfs:label "irr"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-pm:lizIdeaNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "liz idea number"@en ;
+  rdfs:label "номер идеи в ЛИЗ"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-pm:nksCardNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:SppItem ;
+  rdfs:label "nks card number"@en ;
+  rdfs:label "номер карточки НКС"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pm:npv
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "npv"@en ;
+  rdfs:label "npv"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-pm:pbp
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "pbp"@en ;
+  rdfs:label "pbp"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-pm:projectControlPlan
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:label "project control plan"@en ;
+  rdfs:label "план управления проектом"@ru ;
+  rdfs:range v-s:File ;
+.
+mnd-s-pm:projectDoc
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:label "project doc"@en ;
+  rdfs:label "проектная документация"@ru ;
+  rdfs:range v-s:File ;
+.
+mnd-s-pm:safetyEffect
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:ProjectChangeRequest ;
+  rdfs:label "safety effect"@en ;
+  rdfs:label "влияние изменения на безопасность"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pm:sppItem
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:DismantlingProject ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:domain mnd-s-pm:SppItem ;
+  rdfs:label "spp item"@en ;
+  rdfs:label "номер СПП-элемента"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pm:sumEuro
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "sum euro"@en ;
+  rdfs:label "сумма инвестиций, евро"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-pm:sumRur
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "sum rur"@en ;
+  rdfs:label "сумма инвестиций, руб"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-pm:sumStartEuro
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "sum start euro"@en ;
+  rdfs:label "сумма ввода, евро"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-pm:sumStartRur
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:label "sum start rur"@en ;
+  rdfs:label "сумма ввода, руб"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-pm:timeEffect
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:ProjectChangeRequest ;
+  rdfs:label "time effect"@en ;
+  rdfs:label "влияние изменения на сроки проекта"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-pm:valueEffect
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-pm:ProjectChangeRequest ;
+  rdfs:label "value effect"@en ;
+  rdfs:label "влияние изменения на объем проекта"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s:hasActivityKind
+  rdfs:domain mnd-s-pm:DismantlingProject ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+.
+mnd-s:hasAddInfo
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:domain mnd-s-pm:ProjectChangeRequest ;
+.
+mnd-s:hasStatus
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+.
+mnd-s:hasStatusIp
+  rdfs:domain mnd-s-pm:DismantlingProject ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+.
+mnd-s:initiatorDepartment
+  rdfs:domain mnd-s-pm:DismantlingProject ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+.
+mnd-s:otherDoc
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+.
+v-s:attachment
+  rdfs:domain mnd-s-pm:DismantlingProject ;
+.
+v-s:dateFact
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+.
+v-s:dateFrom
+  rdfs:domain mnd-s-pm:DismantlingProject ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:domain mnd-s-pm:SppItem ;
+.
+v-s:datePlan
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+.
+v-s:dateStart
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+.
+v-s:dateTo
+  rdfs:domain mnd-s-pm:ProjectChangeRequest ;
+.
+v-s:description
+  rdfs:domain mnd-s-pm:ProjectChangeRequest ;
+.
+v-s:duration
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+.
+v-s:hasAddDoc
+  rdfs:domain mnd-s-pm:DismantlingProject ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:domain mnd-s-pm:SppItem ;
+.
+v-s:hasAppointmentFrom
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+.
+v-s:hasChief
+  rdfs:domain mnd-s-pm:DismantlingProject ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+.
+v-s:hasParentLink
+  rdfs:domain mnd-s-pm:ProjectChangeRequest ;
+.
+v-s:hasYesNo
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+.
+v-s:reason
+  rdfs:domain mnd-s-pm:ProjectChangeRequest ;
+.
+v-s:registrationDate
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+.
+v-s:registrationNumber
+  rdfs:domain mnd-s-pm:DismantlingProject ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+  rdfs:domain mnd-s-pm:ProjectChangeRequest ;
+.
+v-s:responsible
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+.
+v-s:title
+  rdfs:domain mnd-s-pm:DismantlingProject ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+.
+v-s:year
+  rdfs:domain mnd-s-pm:DismantlingProject ;
+  rdfs:domain mnd-s-pm:InvestmentProject ;
+  rdfs:domain mnd-s-pm:InvestmentRequest ;
+.

@@ -1,0 +1,555 @@
+@prefix cmn-s: <http://semantic-machines.com/veda/common-schema/> .
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix mnd-s-cmn: <http://semantic-machines.com/veda/mondi-schema-common/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+
+<http://semantic-machines.com/veda/mondi-schema-common>
+  rdf:type owl:Ontology ;
+  rdfs:label "Mondi ontology. Common"@en ;
+  rdfs:label "Онтология Монди. Общего назначения"@ru ;
+  v-s:loadPriority 10 ;
+.
+mnd-s-cmn:AccessLevel
+  rdf:type owl:Class ;
+  rdfs:label "Access level"@en ;
+  rdfs:label "Гриф доступа"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-cmn:BusinessTrip
+  rdf:type owl:Class ;
+  rdfs:label "Business trip"@en ;
+  rdfs:label "Командировка"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:ContactsCompetitors
+  rdf:type owl:Class ;
+  rdfs:label "Contacts competitors"@en ;
+  rdfs:label "Контакты конкурентов"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-cmn:DeliveryRecord
+  rdf:type owl:Class ;
+  rdfs:label "Delivery record"@en ;
+  rdfs:label "Запись об отправке"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:DeputyRequestKind
+  rdf:type owl:Class ;
+  rdfs:label "Deputy request kind"@en ;
+  rdfs:label "Вид заявки на делегирование"@ru ;
+  rdfs:subClassOf mnd-s:DocumentKind ;
+.
+mnd-s-cmn:IncomingDoc
+  rdf:type owl:Class ;
+  rdfs:label "Incoming document"@en ;
+  rdfs:label "Входящий документ"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:IncomingDocRmz
+  rdf:type owl:Class ;
+  rdfs:label "Incoming doc RMZ"@en ;
+  rdfs:label "Входящий документ РМЗ"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:IncomingDocumentum
+  rdf:type owl:Class ;
+  rdfs:label "Incoming documentum"@en ;
+  rdfs:label "Входящий документ (Documentum)"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:Instruction
+  rdf:type owl:Class ;
+  rdfs:label "Instruction"@en ;
+  rdfs:label "Инструкция"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:LocalNormativeDoc
+  rdf:type owl:Class ;
+  rdfs:label "Local normative doc"@en ;
+  rdfs:label "Локальный нормативный документ"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:MaterialsOZM
+  rdf:type owl:Class ;
+  rdfs:label "Materials OZM"@en ;
+  rdfs:label "Группа материалов ОЗМ"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-cmn:News
+  rdf:type owl:Class ;
+  rdfs:label "News"@en ;
+  rdfs:label "Новость"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:NormativeDoc
+  rdf:type owl:Class ;
+  rdfs:label "Normative doc"@en ;
+  rdfs:label "Нормативный документ"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:Note
+  rdf:type owl:Class ;
+  rdfs:label "Note"@en ;
+  rdfs:label "Служебная записка"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:OutgoingDoc
+  rdf:type owl:Class ;
+  rdfs:label "Outgoing doc"@en ;
+  rdfs:label "Исходящий документ"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:RegistrationRecordOut
+  rdf:type owl:Class ;
+  rdfs:label "Registration record out"@en ;
+  rdfs:label "Регистрационная запись Исх"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:ReportOfMeeting
+  rdf:type owl:Class ;
+  rdfs:label "Report of meeting"@en ;
+  rdfs:label "Отчет о встрече"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:RequestOZMKind
+  rdf:type owl:Class ;
+  rdfs:label "Request OZM kind"@en ;
+  rdfs:label "Вид заявки ОЗМ"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-cmn:RequestOfAppointmentDeputy
+  rdf:type owl:Class ;
+  rdfs:label "Request of appointment deputy"@en ;
+  rdfs:label "Заявка на назначение заместителя"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:RequestOfOZM
+  rdf:type owl:Class ;
+  rdfs:label "Request of OZM"@en ;
+  rdfs:label "Заявка на ОЗМ"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:SimpleDoc
+  rdf:type owl:Class ;
+  rdfs:label "Simple doc"@en ;
+  rdfs:label "Произвольный документ"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:SystemComment
+  rdf:type owl:Class ;
+  rdfs:label "System comment"@en ;
+  rdfs:label "Отзыв о Системе"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:Task
+  rdf:type owl:Class ;
+  rdfs:label "Task"@en ;
+  rdfs:label "Задача"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:ThemeOfBusinessTrip
+  rdf:type owl:Class ;
+  rdfs:label "Theme of business trip"@en ;
+  rdfs:label "Назначение командировки"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-cmn:TreatmentOfCitizens
+  rdf:type owl:Class ;
+  rdfs:label "Treatment of citizens"@en ;
+  rdfs:label "Обращение граждан"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:Warranty
+  rdf:type owl:Class ;
+  rdfs:label "Warranty"@en ;
+  rdfs:label "Доверенность"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-cmn:contactInfo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-cmn:TreatmentOfCitizens ;
+  rdfs:label "contact info"@en ;
+  rdfs:label "контактная информация"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-cmn:dateFromFact
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:label "date from fact"@en ;
+  rdfs:label "дата начала фактическая"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+mnd-s-cmn:dateToFact
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:label "date to fact"@en ;
+  rdfs:label "дата окончания фактическая"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+mnd-s-cmn:groupPPCAOfOZM
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-cmn:MaterialsOZM ;
+  rdfs:label "group PPCA of OZM"@en ;
+  rdfs:label "группа PPCA"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-cmn:hasAccessLevel
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+  rdfs:label "access level"@en ;
+  rdfs:label "гриф доступа"@ru ;
+  rdfs:range mnd-s-cmn:AccessLevel ;
+.
+mnd-s-cmn:hasActiveTag
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+  rdfs:label "active tag"@en ;
+  rdfs:label "признак активности"@ru ;
+  rdfs:range v-s:YesNo ;
+.
+mnd-s-cmn:hasContactsCompetitors
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:label "contacts competitors"@en ;
+  rdfs:label "контакты конкурентов"@ru ;
+  rdfs:range mnd-s-cmn:ContactsCompetitors ;
+.
+mnd-s-cmn:hasDeliveryRecord
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-cmn:OutgoingDoc ;
+  rdfs:label "delivery record"@en ;
+  rdfs:label "запись об отправке"@ru ;
+  rdfs:range mnd-s-cmn:DeliveryRecord ;
+.
+mnd-s-cmn:hasDeputyRequestKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-cmn:RequestOfAppointmentDeputy ;
+  rdfs:label "deputy request kind"@en ;
+  rdfs:label "вид заявки на замещение"@ru ;
+  rdfs:range mnd-s-cmn:DeputyRequestKind ;
+.
+mnd-s-cmn:hasMaterialsOZM
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-cmn:RequestOfOZM ;
+  rdfs:label "materials OZM"@en ;
+  rdfs:label "группа материалов ОЗМ"@ru ;
+  rdfs:range mnd-s-cmn:MaterialsOZM ;
+.
+mnd-s-cmn:hasNextVersion
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+  rdfs:label "next version"@en ;
+  rdfs:label "следующая версия"@ru ;
+  rdfs:range mnd-s-cmn:LocalNormativeDoc ;
+.
+mnd-s-cmn:hasOutgoingDoc
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-cmn:RegistrationRecordOut ;
+  rdfs:label "outgoing doc"@en ;
+  rdfs:label "исходящий документ"@ru ;
+  rdfs:range mnd-s-cmn:OutgoingDoc ;
+.
+mnd-s-cmn:hasPredVersion
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+  rdfs:label "pred version"@en ;
+  rdfs:label "предыдущая версия"@ru ;
+  rdfs:range mnd-s-cmn:LocalNormativeDoc ;
+.
+mnd-s-cmn:hasRequestOZMKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-cmn:RequestOfOZM ;
+  rdfs:label "request OZM kind"@en ;
+  rdfs:label "вид заявки ОЗМ"@ru ;
+  rdfs:range mnd-s-cmn:RequestOZMKind ;
+.
+mnd-s-cmn:hasThemeOfBusinessTrip
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:label "theme of business trip"@en ;
+  rdfs:label "наначение командировки"@ru ;
+  rdfs:range mnd-s-cmn:ThemeOfBusinessTrip ;
+.
+mnd-s-cmn:objective
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:label "objective"@en ;
+  rdfs:label "цель"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-cmn:sheetsAmount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+  rdfs:label "sheets amount"@en ;
+  rdfs:label "количество листов"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s:addresseFrom
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+  rdfs:domain mnd-s-cmn:IncomingDocumentum ;
+  rdfs:domain mnd-s-cmn:TreatmentOfCitizens ;
+.
+mnd-s:addresseTo
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:domain mnd-s-cmn:IncomingDocumentum ;
+  rdfs:domain mnd-s-cmn:Warranty ;
+.
+mnd-s:content
+  rdfs:domain mnd-s-cmn:IncomingDocumentum ;
+  rdfs:domain mnd-s-cmn:Note ;
+  rdfs:domain mnd-s-cmn:TreatmentOfCitizens ;
+.
+cmn-s:hasAction
+  rdfs:domain mnd-s-cmn:ReportOfMeeting ;
+.
+mnd-s:hasAddInfo
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+  rdfs:domain mnd-s-cmn:NormativeDoc ;
+  rdfs:domain mnd-s-cmn:Note ;
+  rdfs:domain mnd-s-cmn:RequestOfOZM ;
+  rdfs:domain mnd-s-cmn:TreatmentOfCitizens ;
+.
+mnd-s:hasCheckedDepartment
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+.
+mnd-s:hasDeliveryKind
+  rdfs:domain mnd-s-cmn:DeliveryRecord ;
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+  rdfs:domain mnd-s-cmn:OutgoingDoc ;
+  rdfs:domain mnd-s-cmn:TreatmentOfCitizens ;
+.
+mnd-s:hasDepartment
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+.
+mnd-s:hasDocumentKind
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+.
+mnd-s:hasEmotionalCharacteristic
+  rdfs:domain mnd-s-cmn:SystemComment ;
+.
+mnd-s:hasIndicator
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+.
+mnd-s:hasNomenclature
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+  rdfs:domain mnd-s-cmn:RegistrationRecordOut ;
+.
+mnd-s:hasObjectOfToro
+  rdfs:domain mnd-s-cmn:RequestOfOZM ;
+.
+mnd-s:hasOrganizationFrom
+  rdfs:domain mnd-s-cmn:DeliveryRecord ;
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+  rdfs:domain mnd-s-cmn:OutgoingDoc ;
+  rdfs:domain mnd-s-cmn:ReportOfMeeting ;
+  rdfs:domain mnd-s-cmn:Warranty ;
+.
+mnd-s:hasOrganizationTo
+  rdfs:domain mnd-s-cmn:Warranty ;
+.
+mnd-s:hasRegistrationRecord
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:domain mnd-s-cmn:OutgoingDoc ;
+.
+mnd-s:hasUnitOfMeasure
+  rdfs:domain mnd-s-cmn:RequestOfOZM ;
+.
+mnd-s:initiatorDepartment
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+  rdfs:domain mnd-s-cmn:OutgoingDoc ;
+  rdfs:domain mnd-s-cmn:RequestOfOZM ;
+.
+mnd-s:observation
+  rdfs:domain mnd-s-cmn:IncomingDocumentum ;
+.
+mnd-s:signer
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+  rdfs:domain mnd-s-cmn:OutgoingDoc ;
+.
+v-s:attachment
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:Note ;
+.
+v-s:city
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+.
+v-s:controller
+  rdfs:domain mnd-s-cmn:MaterialsOZM ;
+.
+v-s:count
+  rdfs:domain mnd-s-cmn:TreatmentOfCitizens ;
+.
+v-s:country
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+.
+v-s:dateFact
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-cmn:IncomingDocumentum ;
+  rdfs:domain mnd-s-cmn:TreatmentOfCitizens ;
+.
+v-s:dateFrom
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:domain mnd-s-cmn:DeliveryRecord ;
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+  rdfs:domain mnd-s-cmn:News ;
+  rdfs:domain mnd-s-cmn:RequestOfAppointmentDeputy ;
+  rdfs:domain mnd-s-cmn:Warranty ;
+.
+v-s:dateTo
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+  rdfs:domain mnd-s-cmn:News ;
+  rdfs:domain mnd-s-cmn:RequestOfAppointmentDeputy ;
+  rdfs:domain mnd-s-cmn:Warranty ;
+.
+v-s:decision
+  rdfs:domain mnd-s-cmn:ReportOfMeeting ;
+.
+v-s:description
+  rdfs:domain mnd-s-cmn:ContactsCompetitors ;
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+  rdfs:domain mnd-s-cmn:IncomingDocumentum ;
+  rdfs:domain mnd-s-cmn:News ;
+  rdfs:domain mnd-s-cmn:SystemComment ;
+  rdfs:domain mnd-s-cmn:Task ;
+  rdfs:domain mnd-s-cmn:ThemeOfBusinessTrip ;
+.
+v-s:duration
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:domain mnd-s-cmn:RequestOfOZM ;
+.
+v-s:foreignRegistrationDate
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+  rdfs:domain mnd-s-cmn:IncomingDocumentum ;
+.
+v-s:foreignRegistrationNumber
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+  rdfs:domain mnd-s-cmn:IncomingDocumentum ;
+.
+v-s:hasAddDoc
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+  rdfs:domain mnd-s-cmn:News ;
+  rdfs:domain mnd-s-cmn:Note ;
+  rdfs:domain mnd-s-cmn:OutgoingDoc ;
+  rdfs:domain mnd-s-cmn:ReportOfMeeting ;
+  rdfs:domain mnd-s-cmn:RequestOfAppointmentDeputy ;
+  rdfs:domain mnd-s-cmn:SimpleDoc ;
+  rdfs:domain mnd-s-cmn:TreatmentOfCitizens ;
+.
+v-s:hasAppointmentCopy
+  rdfs:domain mnd-s-cmn:Note ;
+  rdfs:domain mnd-s-cmn:ReportOfMeeting ;
+.
+v-s:hasAppointmentFrom
+  rdfs:domain mnd-s-cmn:Note ;
+  rdfs:domain mnd-s-cmn:RequestOfAppointmentDeputy ;
+  rdfs:domain mnd-s-cmn:Warranty ;
+.
+v-s:hasAppointmentTo
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+  rdfs:domain mnd-s-cmn:Note ;
+  rdfs:domain mnd-s-cmn:RequestOfAppointmentDeputy ;
+  rdfs:domain mnd-s-cmn:TreatmentOfCitizens ;
+  rdfs:domain mnd-s-cmn:Warranty ;
+.
+v-s:hasMember
+  rdfs:domain mnd-s-cmn:ReportOfMeeting ;
+.
+v-s:hasParentLink
+  rdfs:domain mnd-s-cmn:DeliveryRecord ;
+  rdfs:domain mnd-s-cmn:Instruction ;
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+  rdfs:domain mnd-s-cmn:News ;
+  rdfs:domain mnd-s-cmn:OutgoingDoc ;
+  rdfs:domain mnd-s-cmn:RequestOfOZM ;
+  rdfs:domain mnd-s-cmn:SimpleDoc ;
+.
+v-s:lastName
+  rdfs:domain mnd-s-cmn:IncomingDocumentum ;
+.
+v-s:reason
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:domain mnd-s-cmn:RequestOfOZM ;
+.
+v-s:registrationDate
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+  rdfs:domain mnd-s-cmn:IncomingDocumentum ;
+  rdfs:domain mnd-s-cmn:Instruction ;
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+  rdfs:domain mnd-s-cmn:OutgoingDoc ;
+  rdfs:domain mnd-s-cmn:RegistrationRecordOut ;
+  rdfs:domain mnd-s-cmn:ReportOfMeeting ;
+  rdfs:domain mnd-s-cmn:TreatmentOfCitizens ;
+  rdfs:domain mnd-s-cmn:Warranty ;
+.
+v-s:registrationNumber
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+  rdfs:domain mnd-s-cmn:IncomingDoc ;
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+  rdfs:domain mnd-s-cmn:IncomingDocumentum ;
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+  rdfs:domain mnd-s-cmn:OutgoingDoc ;
+  rdfs:domain mnd-s-cmn:RegistrationRecordOut ;
+  rdfs:domain mnd-s-cmn:ReportOfMeeting ;
+  rdfs:domain mnd-s-cmn:RequestOfOZM ;
+  rdfs:domain mnd-s-cmn:TreatmentOfCitizens ;
+  rdfs:domain mnd-s-cmn:Warranty ;
+.
+v-s:responsible
+  rdfs:domain mnd-s-cmn:MaterialsOZM ;
+.
+v-s:status
+  rdfs:domain mnd-s-cmn:BusinessTrip ;
+.
+v-s:sum
+  rdfs:domain mnd-s-cmn:RequestOfOZM ;
+.
+v-s:tags
+  rdfs:domain mnd-s-cmn:IncomingDocRmz ;
+.
+v-s:theme
+  rdfs:domain mnd-s-cmn:IncomingDocumentum ;
+  rdfs:domain mnd-s-cmn:Note ;
+  rdfs:domain mnd-s-cmn:OutgoingDoc ;
+  rdfs:domain mnd-s-cmn:ReportOfMeeting ;
+.
+v-s:title
+  rdfs:domain mnd-s-cmn:Instruction ;
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+  rdfs:domain mnd-s-cmn:News ;
+  rdfs:domain mnd-s-cmn:NormativeDoc ;
+  rdfs:domain mnd-s-cmn:ReportOfMeeting ;
+  rdfs:domain mnd-s-cmn:RequestOfOZM ;
+  rdfs:domain mnd-s-cmn:SimpleDoc ;
+  rdfs:domain mnd-s-cmn:Task ;
+.
+v-s:versionNumber
+  rdfs:domain mnd-s-cmn:Instruction ;
+  rdfs:domain mnd-s-cmn:LocalNormativeDoc ;
+.

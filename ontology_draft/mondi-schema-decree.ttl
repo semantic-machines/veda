@@ -1,0 +1,187 @@
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix mnd-s-decree: <http://semantic-machines.com/veda/mondi-schema-decree/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/mondi-schema-decree>
+  rdf:type owl:Ontology ;
+  rdfs:label "Mondi ontology. Decree"@en ;
+  rdfs:label "Онтология Монди. Распорядительный документ"@ru ;
+#  owl:versionInfo "1.0" ;
+  v-s:loadPriority 10 ;
+.
+mnd-s-decree:Decree
+  rdf:type owl:Class ;
+  rdfs:label "Decree"@en ;
+  rdfs:label "Распорядительный документ"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-decree:DecreeRMZ
+  rdf:type owl:Class ;
+  rdfs:label "Decree RMZ"@en ;
+  rdfs:label "Распорядительный документ РМЗ"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-decree:Instruction
+  rdf:type owl:Class ;
+  rdfs:label "Instruction"@en ;
+  rdfs:label "Распоряжение"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-decree:InstructionFLK
+  rdf:type owl:Class ;
+  rdfs:label "Instruction FLK"@en ;
+  rdfs:label "Распоряжение ФЛК"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-decree:InstructionGO
+  rdf:type owl:Class ;
+  rdfs:label "Instruction GO"@en ;
+  rdfs:label "Распоряжение по ГО"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-decree:InstructionHR
+  rdf:type owl:Class ;
+  rdfs:label "Instruction HR"@en ;
+  rdfs:label "Распоряжение по кадрам"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-decree:Order
+  rdf:type owl:Class ;
+  rdfs:label "Order"@en ;
+  rdfs:label "Приказ"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-decree:OrderGO
+  rdf:type owl:Class ;
+  rdfs:label "Order GO"@en ;
+  rdfs:label "Приказ по ГО"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-decree:OrderHR
+  rdf:type owl:Class ;
+  rdfs:label "Order HR"@en ;
+  rdfs:label "Приказ по кадрам"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s:addresseFrom
+  rdfs:domain mnd-s-decree:Order ;
+.
+mnd-s:addresseTo
+  rdfs:domain mnd-s-decree:Order ;
+.
+mnd-s:hasAddInfo
+  rdfs:domain mnd-s-decree:Decree ;
+  rdfs:domain mnd-s-decree:DecreeRMZ ;
+.
+mnd-s:hasNomenclature
+  rdfs:domain mnd-s-decree:Decree ;
+  rdfs:domain mnd-s-decree:DecreeRMZ ;
+.
+mnd-s:hasRegistrationRecord
+  rdfs:domain mnd-s-decree:Decree ;
+  rdfs:domain mnd-s-decree:DecreeRMZ ;
+.
+mnd-s:initiatorDepartment
+  rdfs:domain mnd-s-decree:Decree ;
+  rdfs:domain mnd-s-decree:DecreeRMZ ;
+.
+mnd-s:signer
+  rdfs:domain mnd-s-decree:Decree ;
+  rdfs:domain mnd-s-decree:DecreeRMZ ;
+  rdfs:domain mnd-s-decree:Instruction ;
+  rdfs:domain mnd-s-decree:InstructionFLK ;
+  rdfs:domain mnd-s-decree:InstructionGO ;
+  rdfs:domain mnd-s-decree:InstructionHR ;
+  rdfs:domain mnd-s-decree:OrderGO ;
+  rdfs:domain mnd-s-decree:OrderHR ;
+.
+v-s:alternativeTitle
+  rdfs:domain mnd-s-decree:Order ;
+.
+v-s:dateFact
+  rdfs:domain mnd-s-decree:Order ;
+.
+v-s:datePubliced
+  rdfs:domain mnd-s-decree:Order ;
+.
+v-s:description
+  rdfs:domain mnd-s-decree:Instruction ;
+  rdfs:domain mnd-s-decree:InstructionFLK ;
+  rdfs:domain mnd-s-decree:InstructionGO ;
+  rdfs:domain mnd-s-decree:InstructionHR ;
+  rdfs:domain mnd-s-decree:OrderGO ;
+  rdfs:domain mnd-s-decree:OrderHR ;
+.
+v-s:hasAddDoc
+  rdfs:domain mnd-s-decree:Decree ;
+  rdfs:domain mnd-s-decree:DecreeRMZ ;
+  rdfs:domain mnd-s-decree:Instruction ;
+  rdfs:domain mnd-s-decree:InstructionFLK ;
+  rdfs:domain mnd-s-decree:InstructionGO ;
+  rdfs:domain mnd-s-decree:InstructionHR ;
+  rdfs:domain mnd-s-decree:OrderGO ;
+  rdfs:domain mnd-s-decree:OrderHR ;
+.
+v-s:lastName
+  rdfs:domain mnd-s-decree:Order ;
+.
+v-s:registrationDate
+  rdfs:domain mnd-s-decree:Decree ;
+  rdfs:domain mnd-s-decree:DecreeRMZ ;
+  rdfs:domain mnd-s-decree:Instruction ;
+  rdfs:domain mnd-s-decree:InstructionFLK ;
+  rdfs:domain mnd-s-decree:InstructionGO ;
+  rdfs:domain mnd-s-decree:InstructionHR ;
+  rdfs:domain mnd-s-decree:Order ;
+  rdfs:domain mnd-s-decree:OrderGO ;
+  rdfs:domain mnd-s-decree:OrderHR ;
+.
+v-s:registrationNumber
+  rdfs:domain mnd-s-decree:Decree ;
+  rdfs:domain mnd-s-decree:DecreeRMZ ;
+  rdfs:domain mnd-s-decree:Instruction ;
+  rdfs:domain mnd-s-decree:InstructionFLK ;
+  rdfs:domain mnd-s-decree:InstructionGO ;
+  rdfs:domain mnd-s-decree:InstructionHR ;
+  rdfs:domain mnd-s-decree:Order ;
+  rdfs:domain mnd-s-decree:OrderGO ;
+  rdfs:domain mnd-s-decree:OrderHR ;
+.
+v-s:responsible
+  rdfs:domain mnd-s-decree:Decree ;
+  rdfs:domain mnd-s-decree:DecreeRMZ ;
+  rdfs:domain mnd-s-decree:Instruction ;
+  rdfs:domain mnd-s-decree:InstructionFLK ;
+  rdfs:domain mnd-s-decree:InstructionGO ;
+  rdfs:domain mnd-s-decree:InstructionHR ;
+  rdfs:domain mnd-s-decree:OrderGO ;
+  rdfs:domain mnd-s-decree:OrderHR ;
+.
+v-s:status
+  rdfs:domain mnd-s-decree:Decree ;
+  rdfs:domain mnd-s-decree:DecreeRMZ ;
+.
+v-s:tags
+  rdfs:domain mnd-s-decree:Instruction ;
+  rdfs:domain mnd-s-decree:InstructionFLK ;
+  rdfs:domain mnd-s-decree:InstructionGO ;
+  rdfs:domain mnd-s-decree:InstructionHR ;
+  rdfs:domain mnd-s-decree:OrderGO ;
+  rdfs:domain mnd-s-decree:OrderHR ;
+.
+v-s:title
+  rdfs:domain mnd-s-decree:Decree ;
+  rdfs:domain mnd-s-decree:DecreeRMZ ;
+  rdfs:domain mnd-s-decree:Instruction ;
+  rdfs:domain mnd-s-decree:InstructionFLK ;
+  rdfs:domain mnd-s-decree:InstructionGO ;
+  rdfs:domain mnd-s-decree:InstructionHR ;
+  rdfs:domain mnd-s-decree:Order ;
+  rdfs:domain mnd-s-decree:OrderGO ;
+  rdfs:domain mnd-s-decree:OrderHR ;
+.

@@ -1,0 +1,745 @@
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix mnd-s-ta: <http://semantic-machines.com/veda/mondi-schema-ta/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/mondi-schema-ta>
+  rdf:type owl:Ontology ;
+  rdfs:label "Mondi ontology. Technical archive"@en ;
+  rdfs:label "Онтология Монди. Технический архив"@ru ;
+  v-s:loadPriority 10 ;
+.
+mnd-s-ta:AttachmentTechDoc
+  rdf:type owl:Class ;
+  rdfs:label "Attachment tech doc"@en ;
+  rdfs:label "Вложенный технический документ"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:BudgetKind
+  rdf:type owl:Class ;
+  rdfs:label "Budget kind"@en ;
+  rdfs:label "Вид бюджета"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:Cost
+  rdf:type owl:Class ;
+  rdfs:label "Cost"@en ;
+  rdfs:label "Затрата"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:DesignRequest
+  rdf:type owl:Class ;
+  rdfs:label "Design request"@en ;
+  rdfs:label "Конструкторская заявка"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:DocKind
+  rdf:type owl:Class ;
+  rdfs:label "Doc kind"@en ;
+  rdfs:label "Класс документа"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:DocStatus
+  rdf:type owl:Class ;
+  rdfs:label "Doc status"@en ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:DowntimeInfo
+  rdf:type owl:Class ;
+  rdfs:label "Downtime info"@en ;
+  rdfs:label "Информация о простое"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:DowntimeReason
+  rdf:type owl:Class ;
+  rdfs:label "Downtime reason"@en ;
+  rdfs:label "Причина простоя"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:DowntimeReasonDirect
+  rdf:type owl:Class ;
+  rdfs:label "Downtime reason direct"@en ;
+  rdfs:label "Направление причин простоя"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:ERD
+  rdf:type owl:Class ;
+  rdfs:label "ERD"@en ;
+  rdfs:label "Эксплуатационно-ремонтная документация"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:ERDKind
+  rdf:type owl:Class ;
+  rdfs:label "ERD kind"@en ;
+  rdfs:label "Номенклатура ЭРД"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:ESKDKind
+  rdf:type owl:Class ;
+  rdfs:label "ESKD kind"@en ;
+  rdfs:label "Классификатор ЕСКД"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:EnergyResourceKind
+  rdf:type owl:Class ;
+  rdfs:label "Energy resource kind"@en ;
+  rdfs:label "Вид энергоресурса"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:EnergyResourceRequest
+  rdf:type owl:Class ;
+  rdfs:label "Energy resource request"@en ;
+  rdfs:label "Заявка на энергоресурсы"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:ExecutiveDoc
+  rdf:type owl:Class ;
+  rdfs:label "Executive doc"@en ;
+  rdfs:label "Исполнительная документация"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:ExecutiveDocKind
+  rdf:type owl:Class ;
+  rdfs:label "Executive doc kind"@en ;
+  rdfs:label "Вид исполнительной документации"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:KDKind
+  rdf:type owl:Class ;
+  rdfs:label "KD kind"@en ;
+  rdfs:label "вид КД"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:KhStage
+  rdf:type owl:Class ;
+  rdfs:label "KH stage"@en ;
+  rdfs:label "Стадия КЧ"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:KpStage
+  rdf:type owl:Class ;
+  rdfs:label "KP stage"@en ;
+  rdfs:label "Стадия КП"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:PKD
+  rdf:type owl:Class ;
+  rdfs:label "PKD"@en ;
+  rdfs:label "Проектно-конструкторский документ"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:PKDKind
+  rdf:type owl:Class ;
+  rdfs:label "PKD kind"@en ;
+  rdfs:label "Раздел ПКД"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:PKDSet
+  rdf:type owl:Class ;
+  rdfs:label "PKD set"@en ;
+  rdfs:label "Комплект проектно-конструкторской документации"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:PKOObject
+  rdf:type owl:Class ;
+  rdfs:label "PKO Object"@en ;
+  rdfs:label "Объект ПКО"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:ProjectTheme
+  rdf:type owl:Class ;
+  rdfs:label "Project theme"@en ;
+  rdfs:label "Проект/тема"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:ProjectThemeKind
+  rdf:type owl:Class ;
+  rdfs:label "Project theme kind"@en ;
+  rdfs:label "Основные части проекта/темы"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:RcfaAction
+  rdf:type owl:Class ;
+  rdfs:label "RCFA action"@en ;
+  rdfs:label "Мероприятие RCFA"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:RcfaCosts
+  rdf:type owl:Class ;
+  rdfs:label "RCFA costs"@en ;
+  rdfs:label "Затраты RCFA"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:RcfaEquipment
+  rdf:type owl:Class ;
+  rdfs:label "RCFA equipment"@en ;
+  rdfs:label "Оборудование RCFA"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:RcfaForm
+  rdf:type owl:Class ;
+  rdfs:label "RCFA form"@en ;
+  rdfs:label "Форма RCFA"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:RcfaFormWorkStage
+  rdf:type owl:Class ;
+  rdfs:label "RCFA form work stage"@en ;
+  rdfs:label "Этапы работы с формой RCFA"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:RcfaReasonKind
+  rdf:type owl:Class ;
+  rdfs:label "Rcfa reason kind"@en ;
+  rdfs:label "Каталог причин RCFA"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:ReasonAnalys
+  rdf:type owl:Class ;
+  rdfs:label "Reason analys"@en ;
+  rdfs:label "Анализ причин"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:RepairInfo
+  rdf:type owl:Class ;
+  rdfs:label "Repair Info"@en ;
+  rdfs:label "Информация о ремонте"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-ta:ServicesKind
+  rdf:type owl:Class ;
+  rdfs:label "Services kind"@en ;
+  rdfs:label "Вид служб"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:TechDocKind
+  rdf:type owl:Class ;
+  rdfs:label "Tech doc kind"@en ;
+  rdfs:label "Типы технических документов"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-ta:areaFrom
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:EnergyResourceRequest ;
+  rdfs:label "area from"@en ;
+  rdfs:label "от участка"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-ta:areaTo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:EnergyResourceRequest ;
+  rdfs:label "area to"@en ;
+  rdfs:label "до участка"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-ta:contactInfo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:EnergyResourceRequest ;
+  rdfs:label "contact info"@en ;
+  rdfs:label "контактные данные"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-ta:disposalTime
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:RcfaCosts ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "disposal time"@en ;
+  rdfs:label "время устранения"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-ta:downtime
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:RcfaCosts ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "downtime"@en ;
+  rdfs:label "время простоя"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-ta:hasAttachmentTechDoc
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:PKDSet ;
+  rdfs:label "attachment tech doc"@en ;
+  rdfs:label "вложенный технический документ"@ru ;
+  rdfs:range mnd-s-ta:AttachmentTechDoc ;
+.
+mnd-s-ta:hasBudgetKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:DesignRequest ;
+  rdfs:domain mnd-s-ta:ExecutiveDoc ;
+  rdfs:domain mnd-s-ta:PKDSet ;
+  rdfs:domain mnd-s-ta:RcfaAction ;
+  rdfs:label "budget kind"@en ;
+  rdfs:label "вид бюджета"@ru ;
+  rdfs:range mnd-s-ta:BudgetKind ;
+.
+mnd-s-ta:hasDecree
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "decree"@en ;
+  rdfs:label "распорядительный документ"@ru ;
+  rdfs:range <http://semantic-machines.com/veda/mondi-schema-decree/Decree> ;
+.
+mnd-s-ta:hasDesignRequest
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:PKDSet ;
+  rdfs:label "design request"@en ;
+  rdfs:label "конструкторская заявка"@ru ;
+  rdfs:range mnd-s-ta:DesignRequest ;
+.
+mnd-s-ta:hasDowntimeReason
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:domain mnd-s-ta:ReasonAnalys ;
+  rdfs:label "downtime reason"@en ;
+  rdfs:label "причина простоя"@ru ;
+  rdfs:range mnd-s-ta:DowntimeReason ;
+.
+mnd-s-ta:hasDowntimeReasonDirect
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:DowntimeReason ;
+  rdfs:label "downtime reason direct"@en ;
+  rdfs:label "направление причин простоя"@ru ;
+  rdfs:range mnd-s-ta:DowntimeReasonDirect ;
+.
+mnd-s-ta:hasERDKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:ERD ;
+  rdfs:label "ERD kind"@en ;
+  rdfs:label "номенклатура ЭРД"@ru ;
+  rdfs:range mnd-s-ta:ERDKind ;
+.
+mnd-s-ta:hasESKDKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:PKD ;
+  rdfs:label "ESKD kind"@en ;
+  rdfs:label "классификатор ЕСКД"@ru ;
+  rdfs:range mnd-s-ta:ESKDKind ;
+.
+mnd-s-ta:hasEnergyResourceKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:EnergyResourceRequest ;
+  rdfs:label "energy resource kind"@en ;
+  rdfs:label "вид энергоресурса"@ru ;
+  rdfs:range mnd-s-ta:EnergyResourceKind ;
+.
+mnd-s-ta:hasExecutiveDocKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:ExecutiveDoc ;
+  rdfs:label "executive doc kind"@en ;
+  rdfs:label "вид исполнительной документации"@ru ;
+  rdfs:range mnd-s-ta:ExecutiveDocKind ;
+.
+mnd-s-ta:hasKDKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:PKD ;
+  rdfs:label "KD kind"@en ;
+  rdfs:label "вид КД"@ru ;
+  rdfs:range mnd-s-ta:KDKind ;
+.
+mnd-s-ta:hasLastRepair
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:DowntimeInfo ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "last repair"@en ;
+  rdfs:label "данные последнего ремонта"@ru ;
+  rdfs:range mnd-s-ta:RepairInfo ;
+.
+mnd-s-ta:hasPKD
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "PKD"@en ;
+  rdfs:label "Проектно-конструкторский документ"@ru ;
+  rdfs:range mnd-s-ta:PKD ;
+.
+mnd-s-ta:hasPKDKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:PKDSet ;
+  rdfs:label "PKD Kind"@en ;
+  rdfs:label "раздел ПКД"@ru ;
+  rdfs:range mnd-s-ta:PKDKind ;
+.
+mnd-s-ta:hasPKDSet
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:PKD ;
+  rdfs:label "PKD set"@en ;
+  rdfs:label "Комплект проектно-конструкторской документации"@ru ;
+  rdfs:range mnd-s-ta:PKDSet ;
+.
+mnd-s-ta:hasPKOObject
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:ProjectTheme ;
+  rdfs:label "PKO Object"@en ;
+  rdfs:label "Объект ПКО"@ru ;
+  rdfs:range mnd-s-ta:PKOObject ;
+.
+mnd-s-ta:hasProjectTheme
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:ExecutiveDoc ;
+  rdfs:domain mnd-s-ta:PKDSet ;
+  rdfs:label "project theme"@en ;
+  rdfs:label "проект/тема"@ru ;
+  rdfs:range mnd-s-ta:ProjectTheme ;
+.
+mnd-s-ta:hasProjectThemeKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:ProjectTheme ;
+  rdfs:label "project theme kind"@en ;
+  rdfs:label "основные части проекта/темы"@ru ;
+  rdfs:range mnd-s-ta:ProjectThemeKind ;
+.
+mnd-s-ta:hasRcfaAction
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:DowntimeReason ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "RCFA action"@en ;
+  rdfs:label "мероприятие RCFA"@ru ;
+  rdfs:range mnd-s-ta:RcfaAction ;
+.
+mnd-s-ta:hasRcfaCosts
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "RCFA costs"@en ;
+  rdfs:label "затраты RCFA"@ru ;
+  rdfs:range mnd-s-ta:RcfaCosts ;
+.
+mnd-s-ta:hasRcfaEquipment
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:DowntimeInfo ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "RCFA equipment"@en ;
+  rdfs:label "оборудование RCFA"@ru ;
+  rdfs:range mnd-s-ta:RcfaEquipment ;
+.
+mnd-s-ta:hasRcfaForm
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:Cost ;
+  rdfs:domain mnd-s-ta:DowntimeInfo ;
+  rdfs:domain mnd-s-ta:DowntimeReason ;
+  rdfs:domain mnd-s-ta:RcfaAction ;
+  rdfs:domain mnd-s-ta:RcfaCosts ;
+  rdfs:domain mnd-s-ta:ReasonAnalys ;
+  rdfs:domain mnd-s-ta:RepairInfo ;
+  rdfs:label "RCFA form"@en ;
+  rdfs:label "форма RCFA"@ru ;
+  rdfs:range mnd-s-ta:RcfaForm ;
+.
+mnd-s-ta:hasRcfaFormWorkStage
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "RCFA form work stage"@en ;
+  rdfs:label "этапы работы с формой RCFA"@ru ;
+  rdfs:range mnd-s-ta:RcfaFormWorkStage ;
+.
+mnd-s-ta:hasRcfaReasonKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:DowntimeReason ;
+  rdfs:label "rcfa reason kind"@en ;
+  rdfs:label "каталог причин RCFA"@ru ;
+  rdfs:range mnd-s-ta:RcfaReasonKind ;
+.
+mnd-s-ta:hasRepairInfo
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:DowntimeInfo ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "repair info"@en ;
+  rdfs:label "информация о ремонте"@ru ;
+  rdfs:range mnd-s-ta:RepairInfo ;
+.
+mnd-s-ta:hasServiceCosts
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:RcfaCosts ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "service costs"@en ;
+  rdfs:label "затраты на сервис"@ru ;
+  rdfs:range mnd-s-ta:Cost ;
+.
+mnd-s-ta:hasServicesKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:RcfaAction ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "services kind"@en ;
+  rdfs:label "вид служб"@ru ;
+  rdfs:range mnd-s-ta:ServicesKind ;
+.
+mnd-s-ta:hasSparesCosts
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:RcfaCosts ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "spares costs"@en ;
+  rdfs:label "затраты на запчасти"@ru ;
+  rdfs:range mnd-s-ta:Cost ;
+.
+mnd-s-ta:hasTechDocKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-ta:AttachmentTechDoc ;
+  rdfs:label "tech doc kind"@en ;
+  rdfs:label "типы технических документов"@ru ;
+  rdfs:range mnd-s-ta:TechDocKind ;
+.
+mnd-s-ta:internalCost
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:EnergyResourceKind ;
+  rdfs:label "internal cost"@en ;
+  rdfs:label "внутренняя себестоимость"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-ta:orderNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "order number"@en ;
+  rdfs:label "№ заказа на ликвидацию"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-ta:sheet
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:PKD ;
+  rdfs:label "sheet"@en ;
+  rdfs:label "лист"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-ta:tipsNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "tips number"@en ;
+  rdfs:label "tips номер"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-ta:toroMessage
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "toro message"@en ;
+  rdfs:label "№ сообщения об отказе YP"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-ta:unreleasedProducts
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:RcfaCosts ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:label "unreleased products"@en ;
+  rdfs:label "невыпущенной продукции"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-ta:variableCosts
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:EnergyResourceKind ;
+  rdfs:label "variable costs"@en ;
+  rdfs:label "переменные затраты"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-ta:why1
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:DowntimeReason ;
+  rdfs:label "why1"@en ;
+  rdfs:label "почему 1"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-ta:why2
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:DowntimeReason ;
+  rdfs:label "why2"@en ;
+  rdfs:label "почему 2"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-ta:why3
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:DowntimeReason ;
+  rdfs:label "why3"@en ;
+  rdfs:label "почему 3"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-ta:why4
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:DowntimeReason ;
+  rdfs:label "why4"@en ;
+  rdfs:label "почему 4"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-ta:why5
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-ta:DowntimeReason ;
+  rdfs:label "why5"@en ;
+  rdfs:label "почему 5"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s:addresseFrom
+  rdfs:domain mnd-s-ta:ERD ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+.
+mnd-s:consequences
+  rdfs:domain mnd-s-ta:RcfaForm ;
+.
+mnd-s:content
+  rdfs:domain mnd-s-ta:DesignRequest ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+.
+mnd-s:descriptionOfPlace
+  rdfs:domain mnd-s-ta:RcfaAction ;
+.
+mnd-s:hasAddInfo
+  rdfs:domain mnd-s-ta:RcfaAction ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+.
+mnd-s:hasArea
+  rdfs:domain mnd-s-ta:DesignRequest ;
+  rdfs:domain mnd-s-ta:ERD ;
+  rdfs:domain mnd-s-ta:ExecutiveDoc ;
+  rdfs:domain mnd-s-ta:PKDSet ;
+  rdfs:domain mnd-s-ta:ProjectTheme ;
+.
+mnd-s:hasContractorFrom
+  rdfs:domain mnd-s-ta:ExecutiveDoc ;
+.
+mnd-s:hasObjectOfToro
+  rdfs:domain mnd-s-ta:DesignRequest ;
+  rdfs:domain mnd-s-ta:DowntimeInfo ;
+  rdfs:domain mnd-s-ta:ERD ;
+  rdfs:domain mnd-s-ta:EnergyResourceRequest ;
+  rdfs:domain mnd-s-ta:ExecutiveDoc ;
+  rdfs:domain mnd-s-ta:PKDSet ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+.
+mnd-s:hasStatus
+  rdfs:domain mnd-s-ta:DesignRequest ;
+  rdfs:domain mnd-s-ta:RcfaAction ;
+.
+mnd-s:hasStatusManual
+  rdfs:domain mnd-s-ta:DocStatus ;
+.
+mnd-s:hasWorkKind
+  rdfs:domain mnd-s-ta:EnergyResourceRequest ;
+.
+mnd-s:initiatorDepartment
+  rdfs:domain mnd-s-ta:RcfaAction ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+.
+mnd-s:observation
+  rdfs:domain mnd-s-ta:RcfaForm ;
+.
+mnd-s:unitOfMeasureTxt
+  rdfs:domain mnd-s-ta:EnergyResourceKind ;
+.
+v-s:alternativeTitle
+  rdfs:domain mnd-s-ta:ERDKind ;
+  rdfs:domain mnd-s-ta:ExecutiveDocKind ;
+  rdfs:domain mnd-s-ta:KDKind ;
+.
+v-s:controller
+  rdfs:domain mnd-s-ta:RcfaAction ;
+.
+v-s:count
+  rdfs:domain mnd-s-ta:ExecutiveDoc ;
+  rdfs:domain mnd-s-ta:PKDSet ;
+  rdfs:domain mnd-s-ta:RcfaCosts ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+.
+v-s:dateFact
+  rdfs:domain mnd-s-ta:ExecutiveDoc ;
+  rdfs:domain mnd-s-ta:PKD ;
+  rdfs:domain mnd-s-ta:PKDSet ;
+  rdfs:domain mnd-s-ta:RcfaAction ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+.
+v-s:dateFrom
+  rdfs:domain mnd-s-ta:DesignRequest ;
+  rdfs:domain mnd-s-ta:DocStatus ;
+  rdfs:domain mnd-s-ta:EnergyResourceRequest ;
+  rdfs:domain mnd-s-ta:RcfaAction ;
+.
+v-s:dateTo
+  rdfs:domain mnd-s-ta:DesignRequest ;
+  rdfs:domain mnd-s-ta:DocStatus ;
+  rdfs:domain mnd-s-ta:EnergyResourceRequest ;
+  rdfs:domain mnd-s-ta:RcfaAction ;
+.
+v-s:decision
+  rdfs:domain mnd-s-ta:RcfaAction ;
+.
+v-s:description
+  rdfs:domain mnd-s-ta:DesignRequest ;
+  rdfs:domain mnd-s-ta:DowntimeInfo ;
+  rdfs:domain mnd-s-ta:DowntimeReason ;
+  rdfs:domain mnd-s-ta:EnergyResourceRequest ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:domain mnd-s-ta:RepairInfo ;
+.
+v-s:hasAddDoc
+  rdfs:domain mnd-s-ta:DocStatus ;
+  rdfs:domain mnd-s-ta:EnergyResourceRequest ;
+  rdfs:domain mnd-s-ta:PKDSet ;
+  rdfs:domain mnd-s-ta:ProjectTheme ;
+.
+v-s:hasAppointmentCopy
+  rdfs:domain mnd-s-ta:RcfaAction ;
+.
+v-s:hasChief
+  rdfs:domain mnd-s-ta:DesignRequest ;
+  rdfs:domain mnd-s-ta:ProjectTheme ;
+.
+v-s:hasDeveloper
+  rdfs:domain mnd-s-ta:DesignRequest ;
+  rdfs:domain mnd-s-ta:PKDSet ;
+.
+v-s:hasHeadOfMember
+  rdfs:domain mnd-s-ta:RcfaForm ;
+.
+v-s:hasManager
+  rdfs:domain mnd-s-ta:RcfaForm ;
+.
+v-s:hasMember
+  rdfs:domain mnd-s-ta:RcfaForm ;
+.
+v-s:hasParentLink
+  rdfs:domain mnd-s-ta:DesignRequest ;
+  rdfs:domain mnd-s-ta:ERD ;
+  rdfs:domain mnd-s-ta:ESKDKind ;
+  rdfs:domain mnd-s-ta:EnergyResourceKind ;
+  rdfs:domain mnd-s-ta:ExecutiveDoc ;
+  rdfs:domain mnd-s-ta:PKD ;
+  rdfs:domain mnd-s-ta:PKDKind ;
+  rdfs:domain mnd-s-ta:PKDSet ;
+  rdfs:domain mnd-s-ta:ProjectTheme ;
+  rdfs:domain mnd-s-ta:ServicesKind ;
+.
+v-s:hasYesNo
+  rdfs:domain mnd-s-ta:DowntimeReason ;
+.
+v-s:registrationDate
+  rdfs:domain mnd-s-ta:ERD ;
+  rdfs:domain mnd-s-ta:ProjectTheme ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:domain mnd-s-ta:RepairInfo ;
+.
+v-s:registrationNumber
+  rdfs:domain mnd-s-ta:DesignRequest ;
+  rdfs:domain mnd-s-ta:ERD ;
+  rdfs:domain mnd-s-ta:ExecutiveDoc ;
+  rdfs:domain mnd-s-ta:PKDSet ;
+  rdfs:domain mnd-s-ta:ProjectTheme ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:domain mnd-s-ta:RepairInfo ;
+.
+v-s:responsible
+  rdfs:domain mnd-s-ta:DesignRequest ;
+  rdfs:domain mnd-s-ta:EnergyResourceRequest ;
+  rdfs:domain mnd-s-ta:RcfaAction ;
+.
+v-s:sum
+  rdfs:domain mnd-s-ta:Cost ;
+  rdfs:domain mnd-s-ta:RcfaAction ;
+.
+v-s:theme
+  rdfs:domain mnd-s-ta:DesignRequest ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+  rdfs:domain mnd-s-ta:RcfaReasonKind ;
+.
+v-s:title
+  rdfs:domain mnd-s-ta:Cost ;
+  rdfs:domain mnd-s-ta:ERD ;
+  rdfs:domain mnd-s-ta:ExecutiveDoc ;
+  rdfs:domain mnd-s-ta:PKD ;
+  rdfs:domain mnd-s-ta:PKDSet ;
+  rdfs:domain mnd-s-ta:ProjectTheme ;
+  rdfs:domain mnd-s-ta:RcfaForm ;
+.

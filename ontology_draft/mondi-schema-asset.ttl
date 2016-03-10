@@ -1,0 +1,42 @@
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix mnd-s-asset: <http://semantic-machines.com/veda/mondi-schema-asset/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/mondi-schema-asset>
+  rdf:type owl:Ontology ;
+  rdfs:label "Mondi ontology. Asset"@en ;
+  rdfs:label "Онтология Монди. Учет основных средств"@ru ;
+  v-s:loadPriority 10 ;
+.
+mnd-s-asset:AssetsManagementDoc
+  rdf:type owl:Class ;
+  rdfs:label "Assets management doc"@en ;
+  rdfs:label "Документ по движению основных средств"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+<http://semantic-machines.com/veda/mondi-schema-contract/hasAccountDocKind>
+  rdfs:domain mnd-s-asset:AssetsManagementDoc ;
+.
+mnd-s:addNumber
+  rdfs:domain mnd-s-asset:AssetsManagementDoc ;
+.
+mnd-s:hasDepartment
+  rdfs:domain mnd-s-asset:AssetsManagementDoc ;
+.
+mnd-s:initiatorDepartment
+  rdfs:domain mnd-s-asset:AssetsManagementDoc ;
+.
+v-s:hasAddDoc
+  rdfs:domain mnd-s-asset:AssetsManagementDoc ;
+.
+v-s:registrationDate
+  rdfs:domain mnd-s-asset:AssetsManagementDoc ;
+.
+v-s:registrationNumber
+  rdfs:domain mnd-s-asset:AssetsManagementDoc ;
+.

@@ -1,0 +1,653 @@
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix mnd-s-innov: <http://semantic-machines.com/veda/mondi-schema-innov/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/mondi-schema-innov>
+  rdf:type owl:Ontology ;
+  rdfs:label "Mondi ontology. Innovation"@en ;
+  rdfs:label "Онтология Монди. Инновации"@ru ;
+  v-s:loadPriority 10 ;
+.
+mnd-s-innov:AreaKind
+  rdf:type owl:Class ;
+  rdfs:label "Area kind"@en ;
+  rdfs:label "Категория по участку"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:Budget
+  rdf:type owl:Class ;
+  rdfs:label "Budget"@en ;
+  rdfs:label "Бюджет"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:Category
+  rdf:type owl:Class ;
+  rdfs:label "Category"@en ;
+  rdfs:label "Категория"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:Command
+  rdf:type owl:Class ;
+  rdfs:label "Command"@en ;
+  rdfs:label "Команда"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:CostKind
+  rdf:type owl:Class ;
+  rdfs:label "Cost kind"@en ;
+  rdfs:label "Вид затрат / экономии"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:CurrencyCourse
+  rdf:type owl:Class ;
+  rdfs:label "Currency course"@en ;
+  rdfs:label "Курс валют"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:Direction
+  rdf:type owl:Class ;
+  rdfs:label "Direction"@en ;
+  rdfs:label "Направление"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:EffectCost
+  rdf:type owl:Class ;
+  rdfs:label "Effect cost"@en ;
+  rdfs:label "Эффект. Затрата"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-innov:ExecutionDuration
+  rdf:type owl:Class ;
+  rdfs:label "Execution duration"@en ;
+  rdfs:label "Срок выполнения"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:FitToWinIdea
+  rdf:type owl:Class ;
+  rdfs:label "Fit to win idea"@en ;
+  rdfs:label "Идея Fit to win"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-innov:Idea
+  rdf:type owl:Class ;
+  rdfs:label "Idea innovation"@en ;
+  rdfs:label "Идея инновации"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-innov:ImpactLevel
+  rdf:type owl:Class ;
+  rdfs:label "Impact level"@en ;
+  rdfs:label "Уровень воздействия"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:InnovationAction
+  rdf:type owl:Class ;
+  rdfs:label "Innovation action"@en ;
+  rdfs:label "Мероприятие по инновации"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-innov:Kpi
+  rdf:type owl:Class ;
+  rdfs:label "Kpi"@en ;
+  rdfs:label "Показатель"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-innov:KpiDinamic
+  rdf:type owl:Class ;
+  rdfs:label "KPI dinamic"@en ;
+  rdfs:label "Отслеживание показателя проекта"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-innov:Parameter
+  rdf:type owl:Class ;
+  rdfs:label "Parameter"@en ;
+  rdfs:label "Отслеживание параметра"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:Plan
+  rdf:type owl:Class ;
+  rdfs:label "Plan"@en ;
+  rdfs:label "План"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
+mnd-s-innov:PoImpact
+  rdf:type owl:Class ;
+  rdfs:label "PO impact"@en ;
+  rdfs:label "Влияние на ПО"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:Ppca
+  rdf:type owl:Class ;
+  rdfs:label "PPCA (Программное обеспечение)"@ru ;
+  rdfs:label "PPCA"@en ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:Risk
+  rdf:type owl:Class ;
+  rdfs:label "Risk"@en ;
+  rdfs:label "Риск"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:StepLink
+  rdf:type owl:Class ;
+  rdfs:label "STEP link"@en ;
+  rdfs:label "Отношение к STEP"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:UnitOfMeasure
+  rdf:type owl:Class ;
+  rdfs:label "Unit of measure"@en ;
+  rdfs:label "Единица измерения"@ru ;
+  rdfs:subClassOf v-s:Dictionary ;
+.
+mnd-s-innov:approvedEffect
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:Plan ;
+  rdfs:label "approved effect"@en ;
+  rdfs:label "подтвержденный эффект"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:approvedEffectEpz
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:Plan ;
+  rdfs:label "approved effect epz"@en ;
+  rdfs:label "подтвержденный эффект"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:hasAreaKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:label "area kind"@en ;
+  rdfs:label "категория по участку"@ru ;
+  rdfs:range mnd-s-innov:AreaKind ;
+.
+mnd-s-innov:hasBudget
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:label "budget"@en ;
+  rdfs:label "бюджет"@ru ;
+  rdfs:range mnd-s-innov:Budget ;
+.
+mnd-s-innov:hasCapex
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "CAPEX"@en ;
+  rdfs:label "CAPEX"@ru ;
+  rdfs:range mnd-s-innov:EffectCost ;
+.
+mnd-s-innov:hasCategory
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:AreaKind ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:label "category"@en ;
+  rdfs:label "категория"@ru ;
+  rdfs:range mnd-s-innov:Category ;
+.
+mnd-s-innov:hasCommand
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:AreaKind ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:domain mnd-s-innov:InnovationAction ;
+  rdfs:domain mnd-s-innov:Plan ;
+  rdfs:label "command"@en ;
+  rdfs:label "команда"@ru ;
+  rdfs:range mnd-s-innov:Command ;
+.
+mnd-s-innov:hasCostAvoidance
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "cost avoidance"@en ;
+  rdfs:label "избежание затрат"@ru ;
+  rdfs:range mnd-s-innov:EffectCost ;
+.
+mnd-s-innov:hasCostKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:EffectCost ;
+  rdfs:label "cost kind"@en ;
+  rdfs:label "вид затрат / экономии"@ru ;
+  rdfs:range mnd-s-innov:CostKind ;
+.
+mnd-s-innov:hasCurrencyCourse
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:EffectCost ;
+  rdfs:label "currency course"@en ;
+  rdfs:label "курс валют"@ru ;
+  rdfs:range mnd-s-innov:CurrencyCourse ;
+.
+mnd-s-innov:hasDirection
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:label "direction"@en ;
+  rdfs:label "направление"@ru ;
+  rdfs:range mnd-s-innov:Direction ;
+.
+mnd-s-innov:hasEffectCost
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "effect cost"@en ;
+  rdfs:label "эффект, затрата"@ru ;
+  rdfs:range mnd-s-innov:EffectCost ;
+.
+mnd-s-innov:hasExecutionDuration
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:label "execution duration"@en ;
+  rdfs:label "срок выполнения"@ru ;
+  rdfs:range mnd-s-innov:ExecutionDuration ;
+.
+mnd-s-innov:hasFitToWinIdea
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:EffectCost ;
+  rdfs:domain mnd-s-innov:InnovationAction ;
+  rdfs:domain mnd-s-innov:Kpi ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:label "Fit to win idea"@en ;
+  rdfs:label "идея Fit to win"@ru ;
+  rdfs:range mnd-s-innov:FitToWinIdea ;
+.
+mnd-s-innov:hasFixCostMat
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "fix cost. Mat II"@en ;
+  rdfs:label "фиксированные затраты. Mat II"@ru ;
+  rdfs:range mnd-s-innov:EffectCost ;
+.
+mnd-s-innov:hasFixCostOpex
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "fix cost. OPEX"@en ;
+  rdfs:label "фиксированные затраты. OPEX"@ru ;
+  rdfs:range mnd-s-innov:EffectCost ;
+.
+mnd-s-innov:hasFixCostPersonnel
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "fix cost personnel"@en ;
+  rdfs:label "фиксированные затраты. Персонал"@ru ;
+  rdfs:range mnd-s-innov:EffectCost ;
+.
+mnd-s-innov:hasFreeCashFlow
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "free cash flow"@en ;
+  rdfs:label "чистый денежный поток"@ru ;
+  rdfs:range mnd-s-innov:EffectCost ;
+.
+mnd-s-innov:hasIdea
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:Plan ;
+  rdfs:label "idea"@en ;
+  rdfs:label "идея"@ru ;
+  rdfs:range mnd-s-innov:Idea ;
+.
+mnd-s-innov:hasImpactLevel
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:Category ;
+  rdfs:label "impact level"@en ;
+  rdfs:label "уровень воздействия"@ru ;
+  rdfs:range mnd-s-innov:ImpactLevel ;
+.
+mnd-s-innov:hasInnovationAction
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "innovation action"@en ;
+  rdfs:label "мероприятие по инновации"@ru ;
+  rdfs:range mnd-s-innov:InnovationAction ;
+.
+mnd-s-innov:hasKpi
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "kpi"@en ;
+  rdfs:label "показатель"@ru ;
+  rdfs:range mnd-s-innov:Kpi ;
+.
+mnd-s-innov:hasKpiDinamic
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "KPI dinamic"@en ;
+  rdfs:label "отслеживание показателя проекта"@ru ;
+  rdfs:range mnd-s-innov:KpiDinamic ;
+.
+mnd-s-innov:hasOeePaperMachines
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "OEE paper machines"@en ;
+  rdfs:label "OEE бумагоделательных машин"@ru ;
+  rdfs:range mnd-s-innov:EffectCost ;
+.
+mnd-s-innov:hasOpex
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "OPEX"@en ;
+  rdfs:label "OPEX"@ru ;
+  rdfs:range mnd-s-innov:EffectCost ;
+.
+mnd-s-innov:hasOtherKpi
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "other kpi"@en ;
+  rdfs:label "дополнительные показатели"@ru ;
+  rdfs:range mnd-s-innov:Kpi ;
+.
+mnd-s-innov:hasParameter
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:label "parameter"@en ;
+  rdfs:label "отслеживание параметра"@ru ;
+  rdfs:range mnd-s-innov:Parameter ;
+.
+mnd-s-innov:hasPoImpact
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:label "PO impact"@en ;
+  rdfs:label "влияние на ПО"@ru ;
+  rdfs:range mnd-s-innov:PoImpact ;
+.
+mnd-s-innov:hasPpca
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:label "PPCA (Программное обеспечение)"@ru ;
+  rdfs:label "PPCA"@en ;
+  rdfs:range mnd-s-innov:Ppca ;
+.
+mnd-s-innov:hasRisk
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:label "risk"@en ;
+  rdfs:label "риск"@ru ;
+  rdfs:range mnd-s-innov:Risk ;
+.
+mnd-s-innov:hasSaleEnergy
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "sale energy"@en ;
+  rdfs:label "продаваемая энергия"@ru ;
+  rdfs:range mnd-s-innov:EffectCost ;
+.
+mnd-s-innov:hasStatusHistory
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:domain mnd-s-innov:Plan ;
+  rdfs:label "status history"@en ;
+  rdfs:label "статус история"@ru ;
+  rdfs:range mnd-s:Status ;
+.
+mnd-s-innov:hasStepLink
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:label "STEP link"@en ;
+  rdfs:label "отношение к STEP"@ru ;
+  rdfs:range mnd-s-innov:StepLink ;
+.
+mnd-s-innov:hasTrackingKpi2013
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "tracking KPI 2013"@en ;
+  rdfs:label "отслеживание KPI 2013"@ru ;
+  rdfs:range mnd-s-innov:KpiDinamic ;
+.
+mnd-s-innov:hasTrackingRur2013
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "tracking RUR 2013"@en ;
+  rdfs:label "отслеживание RUR 2013"@ru ;
+  rdfs:range mnd-s-innov:KpiDinamic ;
+.
+mnd-s-innov:hasTrackingRur2014
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "tracking RUR 2014"@en ;
+  rdfs:label "отслеживание RUR 2014"@ru ;
+  rdfs:range mnd-s-innov:KpiDinamic ;
+.
+mnd-s-innov:hasUnitOfMeasure
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:Category ;
+  rdfs:label "unit of measure"@en ;
+  rdfs:label "единица измерения"@ru ;
+  rdfs:range mnd-s-innov:UnitOfMeasure ;
+.
+mnd-s-innov:hasVariableCostEnergy
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "variable cost energy"@en ;
+  rdfs:label "переменные затраты. Энергия"@ru ;
+  rdfs:range mnd-s-innov:EffectCost ;
+.
+mnd-s-innov:hasVariableCostMaterial
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "variable cost material"@en ;
+  rdfs:label "переменные затраты. Сырье"@ru ;
+  rdfs:range mnd-s-innov:EffectCost ;
+.
+mnd-s-innov:hasVariableCostOther
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:label "variable cost other"@en ;
+  rdfs:label "прочие переменные затраты"@ru ;
+  rdfs:range mnd-s-innov:EffectCost ;
+.
+mnd-s-innov:kpiApril
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:label "kpi april"@en ;
+  rdfs:label "апрель показатель"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:kpiAugust
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:label "kpi august"@en ;
+  rdfs:label "август показатель"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:kpiDecember
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:label "kpi december"@en ;
+  rdfs:label "декабрь показатель"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:kpiFebruary
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:label "kpi february"@en ;
+  rdfs:label "февраль показатель"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:kpiJanuary
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:label "kpi january"@en ;
+  rdfs:label "январь показатель"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:kpiJuly
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:label "kpi july"@en ;
+  rdfs:label "июль показатель"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:kpiJune
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:label "kpi june"@en ;
+  rdfs:label "июнь показатель"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:kpiMarch
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:label "kpi march"@en ;
+  rdfs:label "март показатель"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:kpiMay
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:label "kpi may"@en ;
+  rdfs:label "май показатель"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:kpiNovember
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:label "kpi november"@en ;
+  rdfs:label "ноябрь показатель"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:kpiOctober
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:label "kpi october"@en ;
+  rdfs:label "октябрь показатель"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:kpiSeptember
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:label "kpi september"@en ;
+  rdfs:label "сентябрь показатель"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:planKpi
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:Kpi ;
+  rdfs:label "plan kpi"@en ;
+  rdfs:label "целевой показатель"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:startKpi
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:Kpi ;
+  rdfs:label "start kpi"@en ;
+  rdfs:label "начальный показатель"@ru ;
+  rdfs:range xsd:integer ;
+.
+mnd-s-innov:statusHistoryTxt
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:domain mnd-s-innov:Plan ;
+  rdfs:label "status history txt"@en ;
+  rdfs:label "статус история текст"@ru ;
+  rdfs:range xsd:string ;
+.
+mnd-s-innov:sumEuro
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain mnd-s-innov:EffectCost ;
+  rdfs:label "sum euro"@en ;
+  rdfs:label "сумма евро"@ru ;
+  rdfs:range xsd:integer ;
+.
+<http://semantic-machines.com/veda/mondi-schema-ta/hasEnergyResourceKind>
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+.
+mnd-s:content
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+.
+mnd-s:descriptionOfPlace
+  rdfs:domain mnd-s-innov:InnovationAction ;
+.
+mnd-s:hasAddInfo
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+.
+mnd-s:hasDepartment
+  rdfs:domain mnd-s-innov:Idea ;
+.
+mnd-s:hasNomenclature
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+.
+mnd-s:hasStatus
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:domain mnd-s-innov:InnovationAction ;
+  rdfs:domain mnd-s-innov:Plan ;
+.
+mnd-s:hasStatusManual
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+.
+mnd-s:initiatorDepartment
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:domain mnd-s-innov:InnovationAction ;
+.
+mnd-s:unitOfMeasureTxt
+  rdfs:domain mnd-s-innov:Kpi ;
+.
+v-s:controller
+  rdfs:domain mnd-s-innov:InnovationAction ;
+.
+v-s:count
+  rdfs:domain mnd-s-innov:AreaKind ;
+  rdfs:domain mnd-s-innov:CurrencyCourse ;
+.
+v-s:dateFact
+  rdfs:domain mnd-s-innov:InnovationAction ;
+  rdfs:domain mnd-s-innov:Plan ;
+.
+v-s:dateFrom
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:domain mnd-s-innov:InnovationAction ;
+  rdfs:domain mnd-s-innov:Plan ;
+.
+v-s:dateTo
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:domain mnd-s-innov:InnovationAction ;
+  rdfs:domain mnd-s-innov:Plan ;
+.
+v-s:decision
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:domain mnd-s-innov:InnovationAction ;
+.
+v-s:description
+  rdfs:domain mnd-s-innov:Category ;
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+  rdfs:domain mnd-s-innov:Plan ;
+.
+v-s:duration
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:domain mnd-s-innov:Idea ;
+.
+v-s:hasAppointmentCopy
+  rdfs:domain mnd-s-innov:InnovationAction ;
+.
+v-s:hasChief
+  rdfs:domain mnd-s-innov:Command ;
+.
+v-s:hasParentLink
+  rdfs:domain mnd-s-innov:Category ;
+  rdfs:domain mnd-s-innov:Command ;
+  rdfs:domain mnd-s-innov:CostKind ;
+.
+v-s:reason
+  rdfs:domain mnd-s-innov:EffectCost ;
+.
+v-s:registrationNumber
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:domain mnd-s-innov:Idea ;
+.
+v-s:responsible
+  rdfs:domain mnd-s-innov:InnovationAction ;
+.
+v-s:sum
+  rdfs:domain mnd-s-innov:AreaKind ;
+  rdfs:domain mnd-s-innov:EffectCost ;
+.
+v-s:title
+  rdfs:domain mnd-s-innov:FitToWinIdea ;
+  rdfs:domain mnd-s-innov:Idea ;
+  rdfs:domain mnd-s-innov:Kpi ;
+.
+v-s:year
+  rdfs:domain mnd-s-innov:KpiDinamic ;
+.
