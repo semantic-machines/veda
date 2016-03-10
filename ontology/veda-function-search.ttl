@@ -609,6 +609,7 @@ v-fs:AttributiveRequestTemplate
 	<!-- Nav tabs -->
 	<ul class="nav nav-tabs nav-right" role="tablist">
 		<li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
+		<li role="presentation"><a id="xls" href="#xls"><i class="fa fa-table fa-lg"></i></a></li>
 		<li role="presentation"><a href="#mgmt-at" about="v-fs:RequestMgmt" property="rdfs:label" aria-controls="mgmt-at" role="tab" data-toggle="tab"></a></li>
 		<li role="presentation"><a id="results-pill-at" href="#results-at" aria-controls="results-at" role="tab" data-toggle="tab"><span href="#params-at" about="v-fs:Results" property="rdfs:label"></span> <span class="badge" id="results-count">0</span></a></li>
 		<li role="presentation" class="active"><a id="params-pill-at" href="#params-at" about="v-fs:Params" property="rdfs:label" aria-controls="params-at" role="tab" data-toggle="tab"></a></li>
@@ -921,6 +922,67 @@ v-fs:AttributiveRequestTemplate
 				"href" : ""
 			}).appendTo($pg);
 		}
+	}
+	
+	// Export to Spreadsheet
+	var tableToExcel = (function () {
+		var uri = 'data:application/vnd.ms-excel;base64,'
+			, template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
+			, base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+			, format = function(s, c) { return s.replace(/{([a-z]+)}/g, function(m, p) { return c[p]; }) }
+		return function(table, name) {
+			if (!table.nodeType) table = document.getElementById(table)
+			var ctx = {
+				worksheet: name || 'Worksheet',
+				table: table.innerHTML
+			};
+			var formatted = format(template, ctx);
+			var rendered = uri + base64(formatted);
+			window.location.href = rendered;
+			//window.location.href = uri + base64(format(template, ctx));
+		}
+	})();
+
+	$("#xls", template).click(function (e) {
+		e.preventDefault();
+		var hd = tHead.clone().removeAttr("id");
+		var tbl = $("<table id='export2xls'>").append(hd, "<tbody></tbody>");
+		var tmpl = gen_row_simple(head)[0].outerHTML;
+		
+		for (var i = 0; i < self.count; i++) {
+			(function (i) {
+				var _tmpl = $(tmpl.replace("###", i+1));
+				var result = new veda.IndividualModel( self.result[i] );
+				result.present($("tbody", tbl), _tmpl);
+			}(i));
+		}
+		setTimeout(function () {
+			tableToExcel(tbl[0], self["rdfs:label"].join(", "));
+		}, 0);
+	});
+	
+	function gen_row_simple(head) {
+		var hd = $(head);
+		var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
+		var row = $("<tr>");
+		hd.children().each( function () {
+			var td = $("<td>");
+			if (this.id === "count") {
+				td.text("###");
+			} else if (this.id === "zoom") {
+				td.html("");
+			} else {
+				var property = new veda.IndividualModel( this.id );
+				var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : undefined;
+				if (literals.indexOf(range) >= 0) {
+					td.attr("property", property.id);
+				} else {
+					td.attr("about", "@").attr("rel", property.id).attr("template", "v-ui:LabelTemplate");
+				}
+			}
+			td.appendTo(row);
+		});
+		return row;
 	}
 </script>
   """
