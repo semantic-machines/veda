@@ -212,28 +212,28 @@ veda.Module(function (veda) { "use strict";
 		// Get ontology from server
 		function getOntology () {
 			var q = /* Classes */ 
-					"'rdf:type' == 'rdfs:Class' || " +
-					"'rdf:type' == 'owl:Class' || " +
-					"'rdf:type' == 'rdfs:Datatype' || " +
-					"'rdf:type' == 'owl:Ontology' || " +
+					"'rdf:type' === 'rdfs:Class' || " +
+					"'rdf:type' === 'owl:Class' || " +
+					"'rdf:type' === 'rdfs:Datatype' || " +
+					"'rdf:type' === 'owl:Ontology' || " +
 					/* Properties */
-					"'rdf:type' == 'rdf:Property' || " +
-					"'rdf:type' == 'owl:DatatypeProperty' || " +
-					"'rdf:type' == 'owl:ObjectProperty' || " +
-					"'rdf:type' == 'owl:OntologyProperty' || " +
-					"'rdf:type' == 'owl:AnnotationProperty' || " +
+					"'rdf:type' === 'rdf:Property' || " +
+					"'rdf:type' === 'owl:DatatypeProperty' || " +
+					"'rdf:type' === 'owl:ObjectProperty' || " +
+					"'rdf:type' === 'owl:OntologyProperty' || " +
+					"'rdf:type' === 'owl:AnnotationProperty' || " +
 					/* Models */
-					"'rdf:type' == 'v-s:ClassModel' || " +
+					"'rdf:type' === 'v-s:ClassModel' || " +
 					/* Templates */
-					"'rdf:type' == 'v-ui:ClassTemplate' || " +
+					"'rdf:type' === 'v-ui:ClassTemplate' || " +
 					/* Property specifications */
-					"'rdf:type' == 'v-ui:PropertySpecification' || " +
-					"'rdf:type' == 'v-ui:IntegerPropertySpecification' || " + 
-					"'rdf:type' == 'v-ui:DecimalPropertySpecification' || " +
-					"'rdf:type' == 'v-ui:DatetimePropertySpecification' || " +
-					"'rdf:type' == 'v-ui:StringPropertySpecification' || " +
-					"'rdf:type' == 'v-ui:BooleanPropertySpecification' || " +
-					"'rdf:type' == 'v-ui:ObjectPropertySpecification'";
+					"'rdf:type' === 'v-ui:PropertySpecification' || " +
+					"'rdf:type' === 'v-ui:IntegerPropertySpecification' || " + 
+					"'rdf:type' === 'v-ui:DecimalPropertySpecification' || " +
+					"'rdf:type' === 'v-ui:DatetimePropertySpecification' || " +
+					"'rdf:type' === 'v-ui:StringPropertySpecification' || " +
+					"'rdf:type' === 'v-ui:BooleanPropertySpecification' || " +
+					"'rdf:type' === 'v-ui:ObjectPropertySpecification'";
 			
 			var q_results = query(veda.ticket, q);
 				
