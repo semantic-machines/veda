@@ -214,8 +214,10 @@ cfg:Event_2
 var doc_uri = document['@'],
 	vs_owner = document['v-s:owner'];
 
+var new_right_uri = doc_uri + "_" + getUri(vs_owner);
+
 if (vs_owner) {
-	addRight(ticket, [can_read, can_update, can_delete], getUri(vs_owner), doc_uri);
+	addRight(ticket, [can_read, can_update, can_delete], getUri(vs_owner), doc_uri, new_right_uri);
 }
 
 var vs_author = document["v-s:author"];
@@ -226,7 +228,8 @@ if (vs_author) {
 		var author_type = getUri(author['rdf:type']);
 		
 		if (author_type == 'v-s:Person') {
-			addRight(ticket, [can_read, can_update, can_delete], getUri(vs_author), doc_uri); 
+			new_right_uri = doc_uri + "_" + getUri(vs_author);
+			addRight(ticket, [can_read, can_update, can_delete], getUri(vs_author), doc_uri, new_right_uri); 
 		} else {
 			var ff = get_property_chain (ticket, document, 'v-s:author', 'v-s:occupation');
 			if (ff) {
@@ -235,7 +238,8 @@ if (vs_author) {
 				if (first_doc) {
 					doc_uri = first_doc['@'];	
 					if (position_uri) {
-						addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri);
+						new_right_uri = doc_uri + "_" + getUri(position_uri);
+						addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri, new_right_uri);
 					}
 				}
 			}
@@ -512,13 +516,17 @@ cfg:Event_6
  * parent_document_id = id of the document that triggered this event.
  */
 
-// Update ontology vsn
-var vsn = {
-	"@" : "cfg:OntoVsn", 
-	"rdf:type"  : newUri("rdfs:Resource"),
-	"rdf:value" : newStr( guid() )
-};
-put_individual (ticket, vsn, _event_id);
+var prev_onto_vsn = get_individual(ticket, "cfg:OntoVsn");
+if (prev_onto_vsn)
+{
+	// Update ontology vsn
+	var vsn = {
+		"@" : "cfg:OntoVsn", 
+		"rdf:type"  : newUri("rdfs:Resource"),
+		"rdf:value" : newStr( guid() )
+	};
+	put_individual (ticket, vsn, _event_id);
+}
 
 // Add to cfg:OntologyGroup
 var doc_uri = document['@'],

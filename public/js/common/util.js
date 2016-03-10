@@ -1119,8 +1119,21 @@ var cant_update = 64;
 /// Запрет удаления
 var cant_delete = 128;
 
-function addToGroup(ticket, group, resource, rights)
+function addToGroup(ticket, group, resource, rights, new_uri)
 {
+	if (new_uri)
+	{
+		var prev = get_individual(ticket, new_uri);
+		if (prev)
+		{
+			//print ("JS: GROUP ALREADY EXISTS");
+			return;
+		}	
+	}	
+	
+	if (!new_uri)
+		new_uri = genUri();
+	
     var new_membership_uri = genUri();
     var new_membership = {
         '@': new_membership_uri,
@@ -1171,9 +1184,21 @@ function removeFromGroup(ticket, group, resource)
     return [new_membership, res];
 }
 
-function addRight(ticket, rights, subj_uri, obj_uri)
+function addRight(ticket, rights, subj_uri, obj_uri, new_uri)
 {
-    var new_uri = genUri();
+	if (new_uri)
+	{
+		var prev = get_individual(ticket, new_uri);
+		if (prev)
+		{
+			//print ("JS: RIGHT ALREADY EXISTS");
+			return;
+		}	
+	}	
+
+	if (!new_uri)
+		new_uri = genUri();
+		
     var new_permission = {
         '@': new_uri,
         'rdf:type': newUri('v-s:PermissionStatement'),
