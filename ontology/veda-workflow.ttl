@@ -1911,8 +1911,13 @@ v-wf:event_df3
 	v-s:filter v-wf:WorkItem ;
 	v-s:script """
 
-	prepare_work_item (ticket, document);
+	//print("Event df3: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
 
+	if (parent_script_id && (parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3'))
+	{
+		prepare_work_item (ticket, document);
+	}
+	
 """ ;
 	rdfs:label "триггер выполнения элемента сети"@ru ;
 .
@@ -1924,8 +1929,11 @@ v-wf:event_df4
 	v-s:filter v-wf:WorkOrder ;
 	v-s:script """
 
-	prepare_work_order (ticket, document);
-
+	//print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
+	if (parent_script_id && (parent_script_id == 'v-wf:event_df5' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4'))
+	{
+		prepare_work_order (ticket, document);
+	}
 """ ;
 	rdfs:label "триггер выполнения рабочего задания"@ru ;
 .
