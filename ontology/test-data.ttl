@@ -781,4 +781,10 @@ v-wf:UserTaskForm1
 	v-wf:from td:RomanKarpov-Analyst1 ;  		
 .
 
-
+cfg:Bychina_create_Person
+  rdf:type v-s:PermissionStatement ;
+  v-s:author cfg:VedaSystem ;
+  v-s:permissionSubject td:AndreyBychin ;
+  v-s:permissionObject v-s:Prerson ;
+  v-s:canCreate "true"^^xsd:boolean ;
+.
