@@ -1885,7 +1885,8 @@ v-wf:event_df1
 	v-s:filter v-wf:StartForm ;
 	v-s:script """
 
-        prepare_start_form (ticket, document);
+	if (!parent_script_id)
+		prepare_start_form (ticket, document);
 
 """ ;
 	rdfs:label "триггер запуска маршрута из пользовательской формы"@ru ;
@@ -1898,7 +1899,14 @@ v-wf:event_df2
 	v-s:filter v-wf:Process ;
 	v-s:script """
 
-	prepare_process (ticket, document);
+//	print("Event df2: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
+
+	if (parent_script_id && 
+		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || 
+		 parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
+	{
+		prepare_process (ticket, document);
+	}
 
 """ ;
 	rdfs:label "триггер выполнения маршрута"@ru ;
@@ -1913,7 +1921,9 @@ v-wf:event_df3
 
 	//print("Event df3: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
 
-	if (parent_script_id && (parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4'))
+	if (parent_script_id && 
+		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || 
+		 parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
 	{
 		prepare_work_item (ticket, document);
 	}
@@ -1930,7 +1940,9 @@ v-wf:event_df4
 	v-s:script """
 
 	//print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-	if (parent_script_id && (parent_script_id == 'v-wf:event_df5' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4'))
+	if (parent_script_id && 
+		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || 
+		 parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
 	{
 		prepare_work_order (ticket, document);
 	}
@@ -1945,7 +1957,12 @@ v-wf:event_df5
 	v-s:filter v-wf:DecisionForm ;
 	v-s:script """
 
-	prepare_decision_form (ticket, document);
+	if (!parent_script_id || 
+		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || 
+		 parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
+	{	 
+		prepare_decision_form (ticket, document);
+	}
 
 """ ;
 	rdfs:label "триггер обработки решения пользователя"@ru ;
