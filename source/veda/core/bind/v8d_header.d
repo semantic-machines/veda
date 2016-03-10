@@ -227,7 +227,10 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
         }
         else if (uri == "$prev_state")
         {
-            return &g_prev_state;
+            if (g_prev_state.length > 0)
+                return &g_prev_state;
+            else
+                return null;
         }
         else
         {

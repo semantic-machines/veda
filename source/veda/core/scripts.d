@@ -196,10 +196,12 @@ public void scripts_thread(string thread_name, string node_id)
                                     {
                                         prepare_scripts(ss, script_vm);
                                     }
+                                    string[] aa;
 
+                                    //writeln ("@d event_id=", event_id);
                                     if (event_id !is null)
                                     {
-                                        string[] aa = event_id.split("+");
+                                        aa = event_id.split("+");
 
                                         if (aa.length == 2)
                                         {
