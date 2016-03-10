@@ -15,6 +15,10 @@ module.exports = {
 			assert(!flag);
 		}).thenCatch(function (e) {basic.errorHandler(e, "Save button must be inactive")});
 		
+		// Удаляем preferences
+		driver.executeScript("document.querySelector('[rel=\"v-ui:hasPreferences\"] button.button-delete').scrollIntoView(true);");
+		driver.findElement({css:'[rel="v-ui:hasPreferences"] button.button-delete'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot delete appointment")});
+		
 		// Удаляем раскрытый appointment
 		driver.executeScript("document.querySelector('[rel=\"v-s:hasAppointment\"] button.button-delete').scrollIntoView(true);");
 		driver.findElement({css:'[rel="v-s:hasAppointment"] button.button-delete'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot delete appointment")});

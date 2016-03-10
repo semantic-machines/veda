@@ -5,25 +5,26 @@ var webdriver = require('selenium-webdriver'),
 
 function assertCounts(driver, drv, totalCount, createCount, updateCount) {
 	// 		Go to journal
-	driver.findElement({css:'div[id="main"] > [typeof="v-s:Person"]'}).getAttribute('resource').then(function (individualId) {
-		driver.sleep(basic.SLOW_OPERATION); // wait
-		driver.executeScript("document.querySelector('#journal').scrollIntoView(true);");
-		driver.findElement({css:'#journal'}).click()
-			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `View Journal` button")});
-	}).thenCatch(function (e) {basic.errorHandler(e, "Seems person is not saved")});	
-
-	driver.findElements({css:'div.journal-record'}).then(function (result) {
-		assert.equal(totalCount, result.length);
-	}).thenCatch(function (e) {basic.errorHandler(e, "Invalid `total` journal elements count")});
-	driver.findElements({css:'div.journal-record[typeof="v-s:DocumentCreated"]'}).then(function (result) {
-		assert.equal(createCount, result.length);
-	}).thenCatch(function (e) {basic.errorHandler(e, "Invalid `create` journal elements count")});
-	driver.findElements({css:'div.journal-record[typeof="v-s:DocumentUpdated"]'}).then(function (result) {
-		assert.equal(updateCount, result.length);
-	}).thenCatch(function (e) {basic.errorHandler(e, "Invalid `update` journal elements count")});
-	// 		Return to document
-	driver.findElement({css:'[rel="v-s:onDocument"] [typeof="v-s:Person"] a'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click to return on main document")});
+	driver.sleep(basic.SLOW_OPERATION).then(function() {
+		driver.findElement({css:'div[id="main"] > [typeof="v-s:Person"]'}).getAttribute('resource').then(function (individualId) {
+			driver.executeScript("document.querySelector('#journal').scrollIntoView(true);");
+			driver.findElement({css:'#journal'}).click()
+				.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `View Journal` button")});
+		}).thenCatch(function (e) {basic.errorHandler(e, "Seems person is not saved")});
+	}).then(function() {
+		driver.findElements({css:'div.journal-record'}).then(function (result) {
+			assert.equal(totalCount, result.length);
+		}).thenCatch(function (e) {basic.errorHandler(e, "Invalid `total` journal elements count")});
+		driver.findElements({css:'div.journal-record[typeof="v-s:DocumentCreated"]'}).then(function (result) {
+			assert.equal(createCount, result.length);
+		}).thenCatch(function (e) {basic.errorHandler(e, "Invalid `create` journal elements count")});
+		driver.findElements({css:'div.journal-record[typeof="v-s:DocumentUpdated"]'}).then(function (result) {
+			assert.equal(updateCount, result.length);
+		}).thenCatch(function (e) {basic.errorHandler(e, "Invalid `update` journal elements count")});
+		// 		Return to document
+		driver.findElement({css:'[rel="v-s:onDocument"] [typeof="v-s:Person"] a'}).click()
+			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click to return on main document")});
+	});
 }
 
 basic.getDrivers().forEach (function (drv) {
