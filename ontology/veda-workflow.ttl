@@ -2328,6 +2328,12 @@ v-wf:ProcessStopped
   rdfs:label "Процесс прерван"@ru ;
   rdfs:label "Process was stopped"@en ;
 .
+
+v-s:actor
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-wf:ProcessStopped ;
+.
+
 v-wf:SubProcessStarted
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
