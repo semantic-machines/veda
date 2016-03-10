@@ -785,6 +785,6 @@ cfg:Bychina_create_Person
   rdf:type v-s:PermissionStatement ;
   v-s:author cfg:VedaSystem ;
   v-s:permissionSubject td:AndreyBychin ;
-  v-s:permissionObject v-s:Prerson ;
+  v-s:permissionObject v-s:Person ;
   v-s:canCreate "true"^^xsd:boolean ;
 .
