@@ -59,37 +59,19 @@ class Onto
 
     public bool isSubClasses(string _class_uri, string[] _subclasses_uri)
     {
-        Classes superclasses = class2superclasses.get(_class_uri, null);
-
-        if (superclasses !is null)
+        foreach (_subclass_uri; _subclasses_uri)
         {
-            foreach (_subclass_uri; _subclasses_uri)
-            {
-                if (_subclass_uri == _class_uri)
-                    return true;
+            Classes subclasses = class2subclasses.get(_subclass_uri, null);
 
-                if (superclasses.get(_subclass_uri, false) == true)
-                    return true;
-            }
-
-            foreach (_subclass; superclasses.keys)
+            if (subclasses !is null)
             {
-                bool res = isSubClasses(_subclass, _subclasses_uri);
-                if (res)
+                if (subclasses.get(_class_uri, false) == true)
+                {
                     return true;
+                }
             }
         }
-        return false;
-    }
 
-    public bool isSubClass(string _class_uri, string _subclass_uri)
-    {
-        Classes superclasses = class2superclasses.get(_class_uri, null);
-
-        if (superclasses !is null)
-        {
-            return superclasses.get(_subclass_uri, false);
-        }
         return false;
     }
 

@@ -271,13 +271,10 @@ public void scripts_thread(string thread_name, string node_id)
                                                         break;
                                                     }
 
-                                                    foreach (filter; script.filters.keys)
+                                                    if (onto.isSubClasses(cast(string)indv_type, script.filters.keys) == true)
                                                     {
-                                                        if (onto.isSubClass(cast(string)indv_type, filter) == true)
-                                                        {
-                                                            any_exist = true;
-                                                            break;
-                                                        }
+                                                        any_exist = true;
+                                                        break;
                                                     }
                                                 }
 
