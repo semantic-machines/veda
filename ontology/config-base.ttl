@@ -22,7 +22,7 @@
 td:pm_pa_au
   rdf:type v-s:PermissionStatement ;
   v-s:canCreate "true"^^xsd:boolean ;
-  v-s:permissionObject v-s:PersonalAspect, v-s:File, v-s:Version;
+  v-s:permissionObject v-s:PersonalAspect, v-ui:Preferences, v-s:File, v-s:Version;
   v-s:permissionSubject cfg:AllUsersGroup ;
 .
 
@@ -190,7 +190,7 @@ var uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + 'cfg_TTLResourc
 	};
 put_individual(ticket, membership, _event_id);
 
-// print('cfg:Event_1', uri);
+//print('cfg:Event_1', uri);
 
   """ ;
 .
@@ -211,6 +211,18 @@ cfg:Event_2
  * parent_document_id = id of the document that triggered this event.
  */
 
+/*var doc_uri = document['@'],
+	is_new = !prev_state,
+	is_ontology = !!document['rdfs:isDefinedBy'];
+
+if (is_new && !is_ontology) {
+	document["v-s:author"] = newUri(user_uri);
+	document["v-s:owner"] = newUri(user_uri);
+	put_individual(ticket, document, _event_id);
+	addRight(ticket, [can_read, can_update, can_delete], user_uri, doc_uri); 
+	//print("Event 2: uri", doc_uri, getUri(document['rdf:type']), "prev", toJson(prev_state) );
+}
+*/
 var doc_uri = document['@'],
 	vs_owner = document['v-s:owner'];
 
@@ -591,7 +603,7 @@ _classes.map(function (class_uri) {
 	}
 	put_individual (ticket, membership, _event_id);	
 
-	// print('cfg:Event_7', uri);
+	//print('cfg:Event_7', uri);
 });
   """ ;
 .
@@ -629,7 +641,7 @@ if ( !class_group ) {
 		'rdfs:comment' : newStr('создано cfg:Event_8')
 	};
 	put_individual (ticket, class_group, _event_id);
-	// print("cfg:Event_8 class group", class_group_uri);
+	//print("cfg:Event_8 class group", class_group_uri);
 }
 
 if ( !hasValue(_class, "rdfs:subClassOf") ) { return; }
@@ -653,7 +665,7 @@ _super_classes.map(function (super_uri) {
 			'rdfs:comment' : newStr('1. создано cfg:Event_8')
 		}
 		put_individual (ticket, membership, _event_id);
-		// print('cfg:Event_8 membership (class -> superclass)', uri);
+		//print('cfg:Event_8 membership (class -> superclass)', uri);
 	}
 
 	// class_group memberOf superclass_group
@@ -684,7 +696,7 @@ _super_classes.map(function (super_uri) {
 		}
 	}
 	put_individual (ticket, membership, _event_id);
-	// print('cfg:Event_8 membership', uri);
+	//print('cfg:Event_8 membership', uri);
 	
 });
   """ ;
@@ -878,7 +890,7 @@ membership = {
 
 put_individual (ticket, membership, _event_id);	
 
-// print('cfg:Event_12 process membership', uri);
+//print('cfg:Event_12 process membership', uri);
 
   """ ;
 .
@@ -920,7 +932,7 @@ membership = {
 
 put_individual (ticket, membership, _event_id); 
 
-print('cfg:Event_13 process membership', uri);
+//print('cfg:Event_13 process membership', uri);
 
   """ ;
 .
