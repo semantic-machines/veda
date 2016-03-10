@@ -391,11 +391,9 @@ v-s:nextVersion
 
 v-s:owner
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Account ;
-  rdfs:domain v-ui:Preferences ;
+  rdfs:domain rdfs:Resource ;
   rdfs:label "owner"@en ;
   rdfs:label "владелец"@ru ;
-  rdfs:range v-s:OrganizationUnit ;
   rdfs:range v-s:Person ;
 .
 
