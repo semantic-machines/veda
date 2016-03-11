@@ -73,6 +73,34 @@ cfg:VedaSystemAccount
   rdfs:label "Учетная запись системы Веда"@ru ;
 .
 
+cfg:Administrator
+  rdf:type v-s:Person ;
+  v-s:author cfg:VedaSystem ;
+  v-s:actualVersion cfg:Administrator ;
+  v-s:birthday "2014-03-05"^^xsd:dateTime ;
+  v-s:firstName "Administrator"@en ;
+  v-s:firstName "Администратор"@ru ;
+  v-s:hasAccount cfg:AdministratorAccount ;
+  rdfs:label "Administrator"@en ;
+  rdfs:label "Администратор"@ru ;
+.
+
+cfg:AdministratorAppointment
+  rdf:type v-s:Appointment ;
+  v-s:author cfg:VedaSystem ;  
+  v-s:employee cfg:Administrator ;
+.
+
+cfg:AdministratorAccount
+  rdf:type v-s:Account ;
+  v-s:author cfg:VedaSystem ;
+  v-s:login "admin" ;
+  v-s:password "4d1af0e10dab5fe07ae8d23bad5650b46804fb110cfb92f119213bc86aa03d34" ;
+  v-s:owner cfg:Administrator ;
+  rdfs:label "Administrator account"@en ;
+  rdfs:label "Учетная запись администратора"@ru ;
+.
+
 cfg:SuperUser
   rdf:type v-s:Group ;
   v-s:author cfg:VedaSystem ;  
@@ -105,6 +133,7 @@ cfg:Membership_su
   rdf:type v-s:Membership ;
   v-s:author cfg:VedaSystem ;
   v-s:resource cfg:VedaSystem ;
+  v-s:resource cfg:Administrator ;
   v-s:memberOf cfg:SuperUser ;
 .
 
