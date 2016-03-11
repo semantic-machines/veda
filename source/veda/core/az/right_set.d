@@ -135,7 +135,7 @@ public string rights_as_string(RightSet new_rights)
 
 void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, string prefix, ubyte default_access, Storage storage)
 {
-    bool     is_deleted = ind.isExist("v-s:deleted", true);
+    bool     is_deleted = ind.isExists("v-s:deleted", true);
 
     ubyte    access;
     Resource canCreate = ind.getFirstResource("v-s:canCreate");

@@ -106,7 +106,7 @@ ResultCode trigger_script(Ticket *ticket, EVENT ev_type, Individual *individual,
             if (indv_prev_state !is null)
                 prev_state = individual2cbor(indv_prev_state);
 
-            if (rdfType.anyExist(veda_schema__Event))
+            if (rdfType.anyExists(veda_schema__Event))
             {
                 // изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
                 send(tid_scripts, CMD.RELOAD, subject_as_cbor, thisTid);

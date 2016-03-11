@@ -182,7 +182,7 @@ public struct Individual
         return rss;
     }
 
-    bool isExist(T) (string predicate, T object)
+    bool isExists(T) (string predicate, T object)
     {
         Resources rss;
 
@@ -199,7 +199,7 @@ public struct Individual
         return false;
     }
 
-    bool anyExist(T) (string predicate, T[] objects)
+    bool anyExists(T) (string predicate, T[] objects)
     {
         Resources rss;
 

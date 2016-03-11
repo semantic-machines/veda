@@ -408,15 +408,15 @@ void acl_manager(string thread_name, string db_path)
 
                                 Resources rdfType = ind.resources[ rdf__type ];
 
-                                if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
+                                if (rdfType.anyExists(veda_schema__PermissionStatement) == true)
                                 {
                                     prepare_permission_statement(ind, op_id, storage);
                                 }
-                                else if (rdfType.anyExist(veda_schema__Membership) == true)
+                                else if (rdfType.anyExists(veda_schema__Membership) == true)
                                 {
                                     prepare_membership(ind, op_id, storage);
                                 }
-                                else if (rdfType.anyExist(veda_schema__PermissionFilter) == true)
+                                else if (rdfType.anyExists(veda_schema__PermissionFilter) == true)
                                 {
                                     prepare_permission_filter(ind, op_id, storage);
                                 }

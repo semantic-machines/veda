@@ -107,7 +107,7 @@ class Onto
 
         foreach (indv; l_individuals)
         {
-            if (indv.anyExist("rdf:type", [ "owl:Class", "rdfs:Class" ]))
+            if (indv.anyExists("rdf:type", [ "owl:Class", "rdfs:Class" ]))
             {
                 string  type_uri = indv.uri;
 

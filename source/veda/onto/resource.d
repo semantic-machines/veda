@@ -18,7 +18,7 @@ public void setMapResources(ref Resources rss, ref MapResource hrss)
         hrss[ rs.get!string ] = &rs;
 }
 
-public bool anyExist(ref MapResource hrss, string object)
+public bool anyExists(ref MapResource hrss, string object)
 {
     if ((object in hrss) !is null)
         return true;
@@ -26,7 +26,7 @@ public bool anyExist(ref MapResource hrss, string object)
         return false;
 }
 
-public bool anyExist(ref MapResource hrss, string[] objects)
+public bool anyExists(ref MapResource hrss, string[] objects)
 {
     foreach (object; objects)
     {
@@ -337,7 +337,7 @@ string getFirstString(Resources rss)
     return rss[ 0 ].get!string;
 }
 
-bool anyExist(Resources rss, string[] objects)
+bool anyExists(Resources rss, string[] objects)
 {
     foreach (rs; rss)
     {
@@ -350,7 +350,7 @@ bool anyExist(Resources rss, string[] objects)
     return false;
 }
 
-bool anyExist(T) (Resources rss, T object)
+bool anyExists(T) (Resources rss, T object)
 {
     foreach (rs; rss)
     {

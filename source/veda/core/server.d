@@ -121,8 +121,8 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
                     is_main = true;
                 else
                 {
-                    is_js_worker = roles.anyExist([ "js_worker" ]);
-                    is_main      = roles.anyExist([ "main" ]);
+                    is_js_worker = roles.anyExists([ "js_worker" ]);
+                    is_main      = roles.anyExists([ "main" ]);
                 }
                 jsvm_node_type = node.getFirstLiteral("v-s:jsvm_node");
             }

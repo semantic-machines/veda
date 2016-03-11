@@ -130,7 +130,7 @@ Individual[ string ] read_ttl(Context context, bool is_load)
 
             foreach (uri, indv; l_individuals)
             {
-                if (indv.isExist(rdf__type, owl__Ontology))
+                if (indv.isExists(rdf__type, owl__Ontology))
                 {
                     filename_2_prefix[ indv.uri ] = filename;
                     long loadPriority = indv.getFirstInteger("v-s:loadPriority", -1);
@@ -267,7 +267,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 
         foreach (ss; ss_list)
         {
-            if (ss.isExist(rdf__type, owl__Ontology) && context !is null)
+            if (ss.isExists(rdf__type, owl__Ontology) && context !is null)
             {
                 prefix = context.get_prefix_map.get(ss.uri, null);
                 Resources ress = Resources.init;
