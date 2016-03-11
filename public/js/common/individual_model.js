@@ -283,7 +283,6 @@ veda.Module(function (veda) { "use strict";
 			return uri;
 		} else {
 			self._.individual = uri;
-			if (self._.cache) veda.cache[self.id] = self;
 		}
 		self._.original_individual = JSON.stringify(self._.individual);
 		Object.keys(self._.individual).map(function (property_uri) {
