@@ -424,7 +424,7 @@ veda.Module(function (veda) { "use strict";
 	proto.delete = function () {
 		this.trigger("individual:beforeDelete");
 		this["v-s:deleted"] = [new Boolean(true)];
-		this.saveIndividual(false);
+		this.saveIndividual(true);
 		this.trigger("individual:afterDelete");
 		return this;
 	};
@@ -436,7 +436,7 @@ veda.Module(function (veda) { "use strict";
 	proto.recover = function () {
 		this.trigger("individual:beforeRecover");
 		this["v-s:deleted"] = [];
-		this.saveIndividual(false);
+		this.saveIndividual(true);
 		this.trigger("individual:afterRecover");
 		return this;
 	};
