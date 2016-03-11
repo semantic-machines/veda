@@ -77,7 +77,10 @@ v-ft:FunctionTasksTemplate
   v-ui:forClass v-ft:FunctionTasks ;
   v-ui:template """
 <div class="container-fluid">
-	<h3 property="rdfs:label"></h3>
+	<ul class="nav nav-tabs nav-right" role="tablist">
+		<li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
+		<li role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li>
+	</ul>
 	<table class="table table-condensed table-bordered table-striped">
 		<thead>
 			<tr>
@@ -153,6 +156,11 @@ v-ft:FunctionTasksTemplate
 	});
 
 	tasks.search();
+	
+	$("#refresh", template).click(function (e) {
+		e.preventDefault();
+		tasks.search();
+	});
 	
 	function renderTasks(result) {
 		if (result.length) {
