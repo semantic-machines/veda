@@ -42,6 +42,11 @@ v-ft:FunctionTasksModel
   v-s:script """
 	var q = individual["v-ft:query"][0].replace("$1", veda.appointment ? veda.appointment.id : veda.user.id);
 	individual["v-ft:query"] = [q];
+	var tasks = new veda.IndividualModel();
+	tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
+	tasks["v-fs:fulltextQuery"] = individual["v-ft:query"].slice(0);
+	tasks["v-fs:sortOrder"] = individual["v-ft:sortOrder"].slice(0);
+	individual.tasks = tasks;
   """
 .
 v-ft:Inbox
@@ -77,6 +82,7 @@ v-ft:FunctionTasksTemplate
   v-ui:forClass v-ft:FunctionTasks ;
   v-ui:template """
 <div class="container-fluid">
+	<br>
 	<ul class="nav nav-tabs nav-right" role="tablist">
 		<li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
 		<li role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li>
@@ -121,15 +127,7 @@ v-ft:FunctionTasksTemplate
 	<br />
 </div>
 <script>
-	var tasks;
-	if (!individual.tasks) {
-		tasks = new veda.IndividualModel();
-		tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
-		tasks["v-fs:fulltextQuery"] = individual["v-ft:query"].slice(0);
-		tasks["v-fs:sortOrder"] = individual["v-ft:sortOrder"].slice(0);
-	} else {
-		tasks = individual.tasks;
-	}
+	var tasks = individual.tasks;
 	
 	tasks.on("afterSearch", renderTasks);
 	template.on("remove", function () {
