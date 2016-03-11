@@ -349,6 +349,7 @@ v-fs:FulltextRequestTemplate
 	<!-- Nav tabs -->
 	<ul class="nav nav-tabs nav-right" role="tablist">
 		<li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
+		<li role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li>
 		<li role="presentation"><a href="#mgmt-ft" about="v-fs:RequestMgmt" property="rdfs:label" aria-controls="mgmt-ft" role="tab" data-toggle="tab"></a></li>
 		<li role="presentation"><a id="results-pill-ft" href="#results-ft" aria-controls="results-ft" role="tab" data-toggle="tab"><span href="#params-ft" about="v-fs:Results" property="rdfs:label"></span> <span class="badge" id="results-count">0</span></a></li>
 		<li role="presentation" class="active"><a id="params-pill-ft" href="#params-ft" about="v-fs:Params" property="rdfs:label" aria-controls="params-ft" role="tab" data-toggle="tab"></a></li>
@@ -441,6 +442,11 @@ v-fs:FulltextRequestTemplate
 	if (self.q) { 
 		self.trigger("afterSearch"); 
 	}
+	
+	$("#refresh", template).click(function (e) {
+		e.preventDefault();
+		self.search();
+	});
 
 	// Update user aspect when search request was saved
 	function updateAspect() {
