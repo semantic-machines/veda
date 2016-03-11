@@ -16,6 +16,9 @@ zip $backup_path/data.zip ./data -r -x "./data/files/*"
 # Craete backup of logs
 zip $backup_path/log.zip ./*.log -r
 
+# Backup config.ttl
+cp ./ontology/config.ttl $backup_path/config.ttl
+
 # Detele old backups and logs
 find ./data/lmdb-individuals.* -delete
 find ./data/lmdb-tickets.* -delete
