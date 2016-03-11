@@ -381,7 +381,7 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
     JSONValue nil;
     try
     {
-        if (ss.isExist(veda_schema__deleted, true) || ss.isExist("v-s:disabled", true))
+        if (ss.isExists(veda_schema__deleted, true) || ss.isExists("v-s:disabled", true))
         {
 //          writeln ("SCRIPT OFF, uri=", ss.uri);
             ScriptInfo script = scripts.get(ss.uri, ScriptInfo.init);

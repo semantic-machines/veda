@@ -1224,18 +1224,18 @@ class PThreadContext : Context
 
                 if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
                 {
-                    if (indv.isExist(veda_schema__deleted, true) == false)
+                    if (indv.isExists(veda_schema__deleted, true) == false)
                         search.xapian_indexer.send_put(this, new_state, prev_state, res.op_id);
                     else
                         search.xapian_indexer.send_delete(this, new_state, prev_state, res.op_id);
 
-                    if (rdfType.anyExist(owl_tags) == true && new_state != prev_state)
+                    if (rdfType.anyExists(owl_tags) == true && new_state != prev_state)
                     {
                         // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
                         inc_count_onto_update();
                     }
 
-                    if (rdfType.anyExist(veda_schema__PermissionStatement) == true || rdfType.anyExist(veda_schema__Membership) == true)
+                    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
                     {
                         tid_acl = this.getTid(P_MODULE.acl_manager);
                         if (tid_acl != Tid.init)
