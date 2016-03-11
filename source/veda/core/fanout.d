@@ -7,7 +7,7 @@ module veda.core.fanout;
 private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
-private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment;
+private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
 private import veda.type, veda.core.context, veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
 private import util.logger, veda.util.cbor, veda.core.util.cbor8individual;
 private import veda.core.storage.lmdb_storage, veda.core.thread_context;
@@ -192,7 +192,7 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
     {
         Ticket sticket = context.sys_ticket();
 
-        bool   is_deleted = new_indv.isExist("v-s:deleted", true);
+        bool   is_deleted = new_indv.isExists("v-s:deleted", true);
 
         string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
         string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");
@@ -280,9 +280,16 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
                             }
                         }
 
-                        smtp.reply.SmtpReply res = smtp_conn.send(message);
-
+                        SmtpReply res = smtp_conn.send(message);
                         log.trace("send email: %s, %s, %s, result %s", new_indv.uri, message.sender, message.recipients, res);
+						if (!res.success || res.code == 451)
+						{
+							// reconnect and retry
+							connect_to_smtp(context);
+							res = smtp_conn.send(message);
+                        	log.trace("send email (retry): %s, %s, %s, result %s", new_indv.uri, message.sender, message.recipients, res);
+						}
+
                     }
                 }
             }
@@ -306,7 +313,7 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
 {
     try
     {
-        bool   is_deleted = new_indv.isExist("v-s:deleted", true);
+        bool   is_deleted = new_indv.isExists("v-s:deleted", true);
 
         string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
         string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");
