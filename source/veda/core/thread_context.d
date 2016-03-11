@@ -1134,7 +1134,7 @@ class PThreadContext : Context
                 string     prev_state;
 
                 Individual prev_indv;
-                
+
                 prev_state = find(indv.uri);
                 if (prev_state !is null)
                 {

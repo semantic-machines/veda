@@ -282,14 +282,13 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
 
                         SmtpReply res = smtp_conn.send(message);
                         log.trace("send email: %s, %s, %s, result %s", new_indv.uri, message.sender, message.recipients, res);
-						if (!res.success || res.code == 451)
-						{
-							// reconnect and retry
-							connect_to_smtp(context);
-							res = smtp_conn.send(message);
-                        	log.trace("send email (retry): %s, %s, %s, result %s", new_indv.uri, message.sender, message.recipients, res);
-						}
-
+                        if (!res.success || res.code == 451)
+                        {
+                            // reconnect and retry
+                            connect_to_smtp(context);
+                            res = smtp_conn.send(message);
+                            log.trace("send email (retry): %s, %s, %s, result %s", new_indv.uri, message.sender, message.recipients, res);
+                        }
                     }
                 }
             }
