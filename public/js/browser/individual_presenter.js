@@ -824,7 +824,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			
 		}
-		// standard tasts
+		// standard tasks
 		var stasks = $('#standard-tasks', template);
 		stasks.append($('<li/>', {
 			style:'cursor:pointer', 

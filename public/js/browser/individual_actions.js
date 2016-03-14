@@ -35,10 +35,15 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			$createReport.on("click", function () {veda.Util.createReport(individual);});
 			$showRights.on("click", function () {veda.Util.showRights(individual);});
 			$journal.on("click", function() {
-				var container = $('#main');
-				container.empty();
-				new veda.IndividualModel(individual.id+'j', null, null, null, false).present(container, undefined, 'view');
-				changeHash(individual.id+'j');	
+				var journal = new veda.IndividualModel(individual.id+'j', null, null, null, false);
+				if (journal.hasValue('rdf:type') && journal['rdf:type'][0].id != 'rdfs:Resource') {
+					var container = $('#main');
+					container.empty();
+					journal.present(container, undefined, 'view');
+					changeHash(individual.id+'j');
+				} else {
+					$journal.prop("disabled",true);
+				}
 			});
 			
 			template.one("remove", function () {
