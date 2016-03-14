@@ -2475,7 +2475,9 @@ v-ui:TaskCompletedTemplate
         <span about="v-wf:takenDecision" property="rdfs:label"></span>: 
 	    <em rel="v-wf:takenDecision">
 	      <span>
-			<strong property="rdfs:label"></strong>, <span property="rdfs:comment"></span>
+			<strong property="rdfs:label"></strong> 
+			<span rel="v-wf:to"><span>(<span property="rdfs:label"></span>)</span></span>
+			, <span property="rdfs:comment"></span>
 		  </span>
 	    </em>
 	  </div>

@@ -1124,34 +1124,6 @@ v-ui:DocumentEventTemplate
   </div>
   <div rel="v-s:processJournal" template="v-ui:SubJournalTemplate"></div>
 </div>
-<!--
-<div rel="v-s:processJournal">
-  <div class="child-records">
-	<div rel="v-s:childRecord"></div>
-  </div>
-</div>
--->	
-<!--
-<div class="journal-record">
-  <hr class="margin-sm">
-  <div class="row">
-	<div class="col-md-3 col-sm-3 event-type">
-	  <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
-	</div>
-	<div class="col-md-7 col-sm-6 event-desc">
-	  <div property="rdfs:label"></div>
-	  <span id="initiator">
-        <span about="v-wf:initiator" property="rdfs:label"></span>: 
-	    <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
-	  </span>
-	</div>
-	<div class="col-md-2 col-sm-3 event-date text-right">
-	  <span property="v-s:created"></span>
-	</div>
-  </div>
-  <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
-</div>
--->
 <script>
   if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
   $("#exp", template).click(function (e) {
@@ -1164,11 +1136,11 @@ v-ui:DocumentEventTemplate
 <script>
 	if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id == 'v-s:ProcessStarted') {
 		$(".start-process", template).show();
+		$(".non-start-process", template).hide();
 		var process = individual['v-wf:onProcess'][0];
 		if ((!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] == false) &&
 		    (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] == false)) {
 			$(".stop-process", template).show();
-			$(".non-start-process, template).hide();
 			$(".stop-process", template).on("click", function() {
 				if (confirm((new veda.IndividualModel("v-b:AreYouSure"))["rdfs:label"])) {
 					process['v-wf:isStopped'] = [new Boolean(true)];
@@ -1181,9 +1153,6 @@ v-ui:DocumentEventTemplate
 		$(".row", template).addClass('text-danger');
 		//$(".row", template).each(function(e) { $(e); });
 	}
-//  if (!individual.hasValue("v-s:actor")) $(".actor", template).remove();
-//  if (!individual.hasValue("v-s:documentVersion")) $(".document", template).remove();
-//  if (!individual.hasValue("v-s:processJournal")) $(".process", template).remove();
 </script>
   """ ;
 .
