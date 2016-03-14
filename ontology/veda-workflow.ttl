@@ -1515,7 +1515,8 @@ v-wf:DecisionForm
 v-wf:onWorkOrder
 	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "on work order"@ru ;
+	rdfs:label "on work order"@en ;
+	rdfs:label "по рабочему заданию"@ru ;
 	rdfs:domain v-wf:DecisionForm ;
 	rdfs:range v-s:WorkOrder ;
 .
@@ -1524,13 +1525,15 @@ v-wf:takenDecision
 	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "решение"@ru ;
+	rdfs:label "decision"@en ;
 	rdfs:domain v-wf:DecisionForm ;
 	rdfs:range rdfs:Resource ;
 .
 v-wf:possibleDecisionClass
 	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "возможные варианты решения"@ru ;
+	rdfs:label "варианты решения"@ru ;
+	rdfs:label "possible decision"@ru ;
 	rdfs:domain v-wf:DecisionForm ;
 	rdfs:range owl:Class ;
 .
@@ -1539,6 +1542,7 @@ v-wf:onDocument
 	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "по документу"@ru ;
+	rdfs:label "for document"@en ;
 	rdfs:domain v-wf:DecisionForm ;
 	rdfs:range rdfs:Resource ;
 .
@@ -1547,6 +1551,7 @@ v-wf:from
 	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "от кого"@ru ;
+	rdfs:label "from"@en ;
 	rdfs:domain v-wf:DecisionForm ;
 	rdfs:domain v-s:Deliverable ;
 	rdfs:range v-s:Appointment ;
@@ -1556,7 +1561,7 @@ v-wf:to
 	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "кому"@ru ;
-	rdfs:label "whom"@en ;
+	rdfs:label "to"@en ;
 	rdfs:domain v-wf:DecisionForm ;
 	rdfs:domain v-wf:DecisionRedirect ;
 	rdfs:domain v-s:JournalRecord ;
@@ -1576,6 +1581,7 @@ v-wf:dateGiven
 	rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "контрольный срок"@ru ;
+	rdfs:label "due date"@en ;
 	rdfs:domain v-wf:DecisionForm ;
 	rdfs:range xsd:dateTime ;
 .
