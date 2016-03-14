@@ -1092,6 +1092,7 @@ v-ui:DocumentEventTemplate
   <div class="row">
 	<div class="col-md-3 col-sm-3 event-type">
 	  <a id="exp" class="start-process" href="#" style="display:none"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
+	  <span class="non-start-process" rel="rdf:type" template="v-ui:LabelTemplate"></span>
 	</div>
 	<div class="col-md-3 col-sm-6 event-desc">
 	  <div property="rdfs:label"></div>
@@ -1164,8 +1165,10 @@ v-ui:DocumentEventTemplate
 	if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id == 'v-s:ProcessStarted') {
 		$(".start-process", template).show();
 		var process = individual['v-wf:onProcess'][0];
-		if (!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] == false) {
+		if ((!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] == false) &&
+		    (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] == false)) {
 			$(".stop-process", template).show();
+			$(".non-start-process, template).hide();
 			$(".stop-process", template).on("click", function() {
 				if (confirm((new veda.IndividualModel("v-b:AreYouSure"))["rdfs:label"])) {
 					process['v-wf:isStopped'] = [new Boolean(true)];

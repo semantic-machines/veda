@@ -1842,6 +1842,7 @@ v-wf:isCompleted
 	rdfs:label "is completed"@en ;
 	rdfs:label "завершено"@ru ;
 	rdfs:domain v-wf:WorkItem ;
+	rdfs:domain v-wf:Process ;
 	rdfs:domain v-wf:DecisionForm ;
 	rdfs:range xsd:boolean ;
 .

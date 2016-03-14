@@ -904,6 +904,15 @@ function prepare_work_item(ticket, document)
             }];
 
             is_completed = true;
+            
+            var completeProcess = {
+                '@': forProcess,
+	            'v-wf:isCompleted': [{
+                     data: true,
+                     type: _Bool
+                 }]
+            };
+            add_to_individual(ticket, completeProcess, _event_id);
 
         } // end [OutputCondition]    
 
