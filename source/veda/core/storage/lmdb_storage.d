@@ -612,7 +612,15 @@ public class LmdbStorage : Storage
         return count;
     }
 
-    public string find(string uri)
+    public bool is_exists(string uri)
+    {
+        if (find(uri, false) !is null)
+            return true;
+        else
+            return false;
+    }
+
+    public string find(string uri, bool return_value = true)
     {
         if (uri is null || uri.length < 2)
             return null;
@@ -685,7 +693,10 @@ public class LmdbStorage : Storage
             rc = mdb_get(txn_r, dbi, &key, &data);
             if (rc == 0)
             {
-                str = cast(string)(data.mv_data[ 0..data.mv_size ]);
+                if (return_value)
+                    str = cast(string)(data.mv_data[ 0..data.mv_size ]);
+                else
+                    str = "";
             }
         }catch (Exception ex)
         {
