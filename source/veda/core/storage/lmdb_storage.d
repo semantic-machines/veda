@@ -274,12 +274,10 @@ public class LmdbStorage : Storage
             }
 
             MDB_val key;
-
             key.mv_data = cast(char *)_key;
             key.mv_size = _key.length;
 
             MDB_val data;
-
             data.mv_data = cast(char *)value;
             data.mv_size = value.length;
 
@@ -306,6 +304,88 @@ public class LmdbStorage : Storage
 
                 // retry
                 return put(_key, value);
+            }
+
+            if (rc != 0)
+            {
+                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
+                                                                                                                                         rc)),
+                                          _key);
+                return ResultCode.Fail_Commit;
+            }
+
+            mdb_dbi_close(env, dbi);
+
+            return ResultCode.OK;
+        }
+        catch (Throwable tr)
+        {
+            log.trace_log_and_console("!ERR: " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
+            return ResultCode.Fail_Store;
+        }
+    }
+
+    public ResultCode remove(string in_key)
+    {
+        try
+        {
+            string _key = in_key.dup;
+
+            if (_key is null || _key.length < 1)
+                return ResultCode.No_Content;
+
+            int     rc;
+            MDB_dbi dbi;
+            MDB_txn *txn;
+
+            rc = mdb_txn_begin(env, null, 0, &txn);
+            if (rc != 0)
+            {
+                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
+                                                                                                                                         rc)),
+                                          _key);
+                return ResultCode.Fail_Open_Transaction;
+            }
+            rc = mdb_dbi_open(txn, null, MDB_CREATE, &dbi);
+            if (rc != 0)
+            {
+                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
+                                                                                                                                         rc)),
+                                          _key);
+                return ResultCode.Fail_Open_Transaction;
+            }
+
+            MDB_val key;
+            key.mv_data = cast(char *)_key;
+            key.mv_size = _key.length;
+
+            MDB_val data;
+            data.mv_data = null;
+            data.mv_size = 0;
+
+            rc = mdb_del(txn, dbi, &key, &data);
+            if (rc == MDB_MAP_FULL)
+            {
+                growth_db(env, txn);
+
+                // retry
+                return remove(_key);
+            }
+            if (rc != 0)
+            {
+                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
+                                                                                                                                         rc)),
+                                          _key);
+                return ResultCode.Fail_Store;
+            }
+
+            rc = mdb_txn_commit(txn);
+            if (rc == MDB_MAP_FULL)
+            {
+                growth_db(env, null);
+
+                // retry
+                return remove(_key);
             }
 
             if (rc != 0)
@@ -752,6 +832,105 @@ public class LmdbStorage : Storage
         }
 
         return count;
+    }
+
+
+    public int get_of_cursor(bool delegate(string key, string value) prepare)
+    {
+        if (db_is_open.get(_path, false) == false)
+            return -1;
+
+        int     rc;
+        MDB_txn *txn_r;
+        MDB_dbi dbi;
+
+        rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
+        if (rc == MDB_BAD_RSLOT)
+        {
+            for (int i = 0; i < 10 && rc != 0; i++)
+            {
+                //log.trace_log_and_console("[%s] warn: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
+                mdb_txn_abort(txn_r);
+
+                // TODO: sleep ?
+                if (i > 3)
+                    core.thread.Thread.sleep(dur!("msecs")(10));
+
+                rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
+            }
+        }
+
+        if (rc != 0)
+        {
+            if (rc == MDB_MAP_RESIZED)
+            {
+                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) WARN:%s", _path, fromStringz(mdb_strerror(rc)));
+                reopen_db();
+                return -1;
+            }
+            else if (rc == MDB_BAD_RSLOT)
+            {
+                log.trace_log_and_console("[%s] warn 2: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
+                mdb_txn_abort(txn_r);
+
+                // TODO: sleep ?
+                //core.thread.Thread.sleep(dur!("msecs")(1));
+                //rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
+                reopen_db();
+                rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
+            }
+        }
+
+        if (rc != 0)
+        {
+            log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
+            return -1;
+        }
+
+        try
+        {
+            rc = mdb_dbi_open(txn_r, null, 0, &dbi);
+            if (rc != 0)
+            {
+                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
+                return -1;
+            }
+
+            MDB_cursor *cursor;
+
+            rc = mdb_cursor_open(txn_r, dbi, &cursor);
+            if (rc != 0)
+            {
+                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
+                return -1;
+            }
+
+            MDB_val key;
+            MDB_val data;
+
+            while (rc == 0)
+            {
+                rc = mdb_cursor_get(cursor, &key, &data, MDB_cursor_op.MDB_NEXT);
+
+                if (rc == 0)
+                {
+                    string str_key  = cast(string)(key.mv_data[ 0..key.mv_size ]).dup;
+                    string str_data = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
+                    if (prepare(str_key, str_data) == false)
+                        break;
+                }
+            }
+        }catch (Exception ex)
+        {
+            log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, ex.msg);
+            return -1;
+        }
+
+        scope (exit)
+        {
+            mdb_txn_abort(txn_r);
+        }
+        return 0;
     }
 }
 
