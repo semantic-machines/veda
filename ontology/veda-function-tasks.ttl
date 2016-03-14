@@ -238,6 +238,9 @@ v-ft:TaskTemplate
 	<td property="v-wf:dateGiven"></td>
 </tr>
 <script>
+	if ( !individual.hasValue("v-wf:read") || individual["v-wf:read"][0] != true) {
+		template.css("font-weight", "bold");
+	}
 	template.dblclick(function (e) {
 		riot.route("#/" + individual.id);
 		e.stopPropagation();

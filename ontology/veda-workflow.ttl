@@ -1494,18 +1494,12 @@ v-wf:DecisionFormTemplate
   rdfs:comment "Пустой шаблон сделан специально, поскольку индивиды этого класса не должны вводиться пользователями"@ru ;
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
-<!--div>
-	<strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
-	<div id="traceJournal">
-		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
-		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
-		<hr>
-	</div>	
-	<br/>	
-</div>
 <script>
-	if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
-</script-->
+	if (individual["v-wf:to"][0].id === veda.appointment.id && !individual.hasValue("v-wf:read")) {
+		individual["v-wf:read"] = [true];
+		individual.save(false);
+	}
+</script>
   """ ;
   .
 
@@ -1519,43 +1513,43 @@ v-wf:DecisionForm
 .
 
 v-wf:onWorkOrder
-        rdf:type owl:ObjectProperty ;
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "on work order"@ru ;
-        rdfs:domain v-wf:DecisionForm ;
-        rdfs:range v-s:WorkOrder ;
+	rdfs:label "on work order"@ru ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:range v-s:WorkOrder ;
 .
 
 v-wf:takenDecision
-        rdf:type owl:ObjectProperty ;
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "решение"@ru ;
-        rdfs:domain v-wf:DecisionForm ;
-        rdfs:range rdfs:Resource ;
+	rdfs:label "решение"@ru ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:range rdfs:Resource ;
 .
 v-wf:possibleDecisionClass
-        rdf:type owl:ObjectProperty ;
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "возможные варианты решения"@ru ;
-        rdfs:domain v-wf:DecisionForm ;
-        rdfs:range owl:Class ;
+	rdfs:label "возможные варианты решения"@ru ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:range owl:Class ;
 .
 
 v-wf:onDocument
-    rdf:type owl:ObjectProperty ;
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-    rdfs:label "по документу"@ru ;
-    rdfs:domain v-wf:DecisionForm ;
-    rdfs:range rdfs:Resource ;
+	rdfs:label "по документу"@ru ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:range rdfs:Resource ;
 .
 
 v-wf:from
-    rdf:type owl:ObjectProperty ;
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-    rdfs:label "от кого"@ru ;
-    rdfs:domain v-wf:DecisionForm ;
-    rdfs:domain v-s:Deliverable ;
-    rdfs:range v-s:Appointment ;
+	rdfs:label "от кого"@ru ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:domain v-s:Deliverable ;
+	rdfs:range v-s:Appointment ;
 .
 
 v-wf:to
@@ -1566,7 +1560,7 @@ v-wf:to
 	rdfs:domain v-wf:DecisionForm ;
 	rdfs:domain v-wf:DecisionRedirect ;
 	rdfs:domain v-s:JournalRecord ;
-    rdfs:domain v-s:Deliverable ;
+	rdfs:domain v-s:Deliverable ;
 	rdfs:range v-s:Appointment ;
 .
 
@@ -1574,20 +1568,27 @@ v-wf:replyTo
 	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "reply to" ;
-    rdfs:domain v-s:Deliverable ;
+	rdfs:domain v-s:Deliverable ;
 	rdfs:range v-s:Appointment ;
 .
 
 v-wf:dateGiven
-    rdf:type owl:DatatypeProperty ;
+	rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
-    rdfs:label "контрольный срок"@ru ;
-    rdfs:domain v-wf:DecisionForm ;
-    rdfs:range xsd:dateTime ;
+	rdfs:label "контрольный срок"@ru ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:range xsd:dateTime ;
 .
 
+v-wf:read
+	rdf:type owl:DatatypeProperty ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "прочитано"@ru ;
+	rdfs:label "read"@en ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:range xsd:boolean ;
+.
 
-  
 # --------------------------- Start Form ---------------------------
 v-wf:StartForm
 	rdf:type rdfs:Class ;
