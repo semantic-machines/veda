@@ -81,11 +81,15 @@ em {
 footer {
   font-size: 12px;
 }
+.jumbotron {
+  background-color: transparent;
+}
 .navbar {
   padding:7px 0px;
   margin-bottom:0px;
   background-image: none;
-  border: none;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #ddd;
   box-shadow: none;
 }
 .navbar-fixed-bottom {
