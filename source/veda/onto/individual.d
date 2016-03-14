@@ -106,7 +106,7 @@ public struct Individual
         resources[ uri ] = rss;
     }
 
-    void set_Resources(string uri, Resources in_rss)
+    void setResources(string uri, Resources in_rss)
     {
         Resources new_rss;
 
@@ -118,7 +118,12 @@ public struct Individual
         resources[ uri ] = new_rss;
     }
 
-    void remove_Resources(string uri, Resources in_rss)
+    void removeResource(string uri)
+    {
+            resources.remove(uri);    	
+    }
+
+    void removeResources(string uri, Resources in_rss)
     {
         Resources new_rss;
 
@@ -146,7 +151,7 @@ public struct Individual
             resources[ uri ] = new_rss;
     }
 
-    void add_unique_Resources(string uri, Resources in_rss)
+    void addUniqueResources(string uri, Resources in_rss)
     {
         Resources new_rss;
         Resources rss = resources.get(uri, Resources.init);

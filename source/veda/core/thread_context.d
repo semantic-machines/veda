@@ -1194,17 +1194,17 @@ class PThreadContext : Context
                             if (cmd == CMD.ADD)
                             {
                                 // add value to set or ignore if exists
-                                prev_indv.add_unique_Resources(predicate, indv.getResources(predicate));
+                                prev_indv.addUniqueResources(predicate, indv.getResources(predicate));
                             }
                             else if (cmd == CMD.SET)
                             {
                                 // set value to predicate
-                                prev_indv.set_Resources(predicate, indv.getResources(predicate));
+                                prev_indv.setResources(predicate, indv.getResources(predicate));
                             }
                             else if (cmd == CMD.REMOVE)
                             {
                                 // remove predicate or value in set
-                                prev_indv.remove_Resources(predicate, indv.getResources(predicate));
+                                prev_indv.removeResources(predicate, indv.getResources(predicate));
                             }
                         }
                         indv = &prev_indv;
