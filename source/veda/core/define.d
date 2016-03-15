@@ -62,15 +62,19 @@ enum EVENT : byte
     NOT_READY = 6
 }
 
-const string attachments_db_path = "./data/files";
-const string docs_onto_path      = "./public/docs/onto";
-const string dbs_backup          = "./backup";
-const string dbs_data            = "./data";
-const string individuals_db_path = "./data/lmdb-individuals";
-const string tickets_db_path     = "./data/lmdb-tickets";
-const string acl_indexes_db_path = "./data/acl-indexes";
+const string   attachments_db_path = "./data/files";
+const string   docs_onto_path      = "./public/docs/onto";
+const string   dbs_backup          = "./backup";
+const string   dbs_data            = "./data";
+const string   individuals_db_path = "./data/lmdb-individuals";
+const string   tickets_db_path     = "./data/lmdb-tickets";
+const string   acl_indexes_db_path = "./data/acl-indexes";
+const string   queue_db_path       = "./data/queue";
 
-private      string[ string ] _xapian_search_db_path;
+const string[] paths_list          =
+[ attachments_db_path, docs_onto_path, dbs_backup, dbs_data, individuals_db_path, tickets_db_path, acl_indexes_db_path, queue_db_path ];
+
+private string[ string ] _xapian_search_db_path;
 
 public string get_xapiab_db_path(string db_name)
 {
@@ -85,57 +89,15 @@ public const int    xapian_db_type         = 1;
 
 void create_folder_struct()
 {
-    try
+    foreach (path; paths_list)
     {
-        mkdir(dbs_data);
-        writeln("create folder: ", dbs_data);
-    }
-    catch (Exception ex)
-    {
-    }
-
-    try
-    {
-        mkdir(individuals_db_path);
-        writeln("create folder: ", individuals_db_path);
-    }
-    catch (Exception ex)
-    {
-    }
-
-    try
-    {
-        mkdir(tickets_db_path);
-        writeln("create folder: ", tickets_db_path);
-    }
-    catch (Exception ex)
-    {
-    }
-
-    try
-    {
-        mkdir(acl_indexes_db_path);
-        writeln("create folder: ", acl_indexes_db_path);
-    }
-    catch (Exception ex)
-    {
-    }
-
-    try
-    {
-        mkdir(dbs_backup);
-        writeln("create folder: ", dbs_backup);
-    }
-    catch (Exception ex)
-    {
-    }
-
-    try
-    {
-        mkdir(docs_onto_path);
-        writeln("create folder: ", docs_onto_path);
-    }
-    catch (Exception ex)
-    {
+        try
+        {
+            mkdir(path);
+            writeln("create folder: ", path);
+        }
+        catch (Exception ex)
+        {
+        }
     }
 }
