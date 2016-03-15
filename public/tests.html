@@ -69,7 +69,7 @@
 				});
 			})(veda);
 		</script>
-		<script src="/js/browser/backend.js" data-cover></script>
+		<script src="/js/browser/backend.js" data-cover data-cover-reporter="/js/browser/lcov_reporter.js"></script>
 		
 		<!-- QUNIT tests -->
 		<script src="./js/test/qunit.js"></script>
@@ -81,8 +81,11 @@
 		<script>
 			veda.Module();
 			QUnit.jUnitReport = function(report) {
-			    console.log(report.xml);
-			};
+				if (location.href.match(/(\?|&)lcovReport($|&|=)/)) {
+				    blanket.options("reporter_options", { toHTML:false });
+				    blanket.options("reporter", "/js/test/lcov_reporter.js");
+				}
+			}
 		</script>
 	</body>
 </html>

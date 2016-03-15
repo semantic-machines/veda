@@ -7,10 +7,15 @@ var _Integer = 4;
 var _Datetime = 8;
 var _Decimal = 32;
 var _Bool = 64;
+var _Boolean = 64;
 
 function genUri()
 {
-    return 'd:a' + guid();
+    var uid = guid();
+    if (uid[0] == '0' || uid[0] == '1' || uid[0] == '2' || uid[0] == '3' || uid[0] == '4' || uid[0] == '5' || uid[0] == '6' || uid[0] == '7' || uid[0] == '8' || uid[0] == '9')
+        return 'd:a' + uid;
+    else
+        return 'd:' + uid;
 }
 
 function guid()
@@ -18,7 +23,7 @@ function guid()
     function s4()
     {
         return Math.floor((1 + Math.random()) * 0x10000)
-            .toString(16)
+            .toString(36)
             .substring(1);
     }
     return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
@@ -69,6 +74,19 @@ function compare(a, b)
                     aa = 'Decimal';
                 else if (aa == _Bool)
                     aa = 'Boolean';
+            }
+        }
+        else(key == "lang")
+        {
+            if (tbb == 'number' && taa == 'string')
+            {
+                if (bb == 0)
+                    bb = 'NONE';
+            }
+            else if (taa == 'number' && tbb == 'string')
+            {
+                if (aa == 0)
+                    aa = 'NONE';
             }
         }
 
@@ -887,4 +905,329 @@ function isNumerationValueAvailable(scope, value)
         }
         return true;
     }
+}
+
+function putDraftToUserAspect(individual)
+{
+    if (!veda.user.aspect['v-s:hasDocumentDraft'])
+    {
+        veda.user.aspect['v-s:hasDocumentDraft'] = [individual];
+        veda.user.aspect.save();
+    }
+    else
+    {
+        var alreadyInDrafts = false;
+        veda.user.aspect['v-s:hasDocumentDraft'].forEach(function(draft)
+        {
+            alreadyInDrafts |= draft.id == individual.id;
+        });
+        if (!alreadyInDrafts)
+        {
+            veda.user.aspect['v-s:hasDocumentDraft'] = veda.user.aspect['v-s:hasDocumentDraft'].concat([individual]);
+            veda.user.aspect.save();
+        }
+    }
+}
+
+function removeDraftFromUserAspect(individual)
+{
+    if (veda.user.aspect['v-s:hasDocumentDraft'])
+    {
+        var inDrafts = false;
+        veda.user.aspect['v-s:hasDocumentDraft'] = veda.user.aspect['v-s:hasDocumentDraft'].filter(function(draft)
+        {
+            inDrafts |= draft.id == individual.id;
+            return draft.id !== individual.id;
+        })
+        if (inDrafts) veda.user.aspect.save();
+    }
+}
+
+/////////////// rights
+
+function newUri(uri)
+{
+    return [
+    {
+        data: uri,
+        type: _Uri
+    }];
+}
+
+function newStr(_data, _lang)
+{
+    if (!_lang || _lang == 'NONE')
+        _lang = 0;
+
+    return [
+    {
+        data: _data,
+        type: _String,
+        lang: _lang
+    }];
+}
+
+function newBool(_data)
+{
+    return [
+    {
+        data: _data,
+        type: _Bool
+    }];
+}
+
+function newInt(_data)
+{
+    return [
+    {
+        data: _data,
+        type: _Integer
+    }];
+}
+
+function newDecimal(_data)
+{
+    return [
+    {
+        data: _data,
+        type: _Decimal
+    }];
+}
+
+function newDate(_data)
+{
+    return [
+    {
+        data: _data,
+        type: _Datetime
+    }];
+}
+
+function addDay(_data, _days)
+{
+    if (!_data)
+        _data = new Date();
+
+    try
+    {
+        _data.setDate(_data.getDate() + _days);
+    }
+    catch (e)
+    {
+        print(e);
+    }
+
+    return _data;
+}
+
+function getStrings(field)
+{
+    var res = [];
+    if (field)
+    {
+        for (var i in field)
+        {
+            res.push(field[i].data);
+        }
+    }
+    return res;
+}
+
+function getUris(field)
+{
+    var res = [];
+    if (field)
+    {
+        for (var i in field)
+        {
+            res.push(field[i].data);
+        }
+    }
+    return res;
+}
+
+function getUri(field)
+{
+    if (field && field.length > 0)
+    {
+        return field[0].data;
+    }
+}
+
+function isExists(field, value)
+{
+    if (field)
+    {
+        for (var i in field)
+        {
+            if (field[i].data == value.data && field[i].type == value.type)
+                return true;
+        }
+    }
+    return false;
+}
+
+function getFirstValue(field)
+{
+    if (field && field.length > 0)
+    {
+        if (field[0].type == _Integer)
+        {
+            return parseInt(field[0].data, 10);
+        }
+        else if (field[0].type == _Datetime)
+            return new Date(field[0].data);
+
+        return field[0].data;
+    }
+}
+
+function getFirstValueUseLang(field, lang)
+{
+    for (var i in field)
+    {
+        if (field[i].lang == lang)
+            return field[i].data;
+    }
+    return null;
+}
+
+//
+
+
+/// Создание
+var can_create = 1;
+
+/// Чтение
+var can_read = 2;
+
+/// Изменеие
+var can_update = 4;
+
+/// Удаление
+var can_delete = 8;
+
+/// Запрет создания
+var cant_create = 16;
+
+/// Запрет чтения
+var cant_read = 32;
+
+/// Запрет обновления
+var cant_update = 64;
+
+/// Запрет удаления
+var cant_delete = 128;
+
+function addToGroup(ticket, group, resource, rights, new_uri)
+{
+	if (new_uri)
+	{
+		var prev = get_individual(ticket, new_uri);
+		if (prev)
+		{
+			//print ("JS: GROUP ALREADY EXISTS");
+			return;
+		}	
+	}	
+	
+	if (!new_uri)
+		new_uri = genUri();
+	
+    var new_membership_uri = genUri();
+    var new_membership = {
+        '@': new_membership_uri,
+        'rdf:type': newUri('v-s:Membership'),
+        'v-s:memberOf': newUri(group),
+        'v-s:resource': newUri(resource)
+    };
+    
+    if (rights) {
+		for (var i = 0; i < rights.length; i++)
+		{
+			if (rights[i] == can_read)
+				new_membership['v-s:canRead'] = newBool(true);
+			else if (rights[i] == can_update)
+				new_membership['v-s:canUpdate'] = newBool(true);
+			else if (rights[i] == can_delete)
+				new_membership['v-s:canDelete'] = newBool(true);
+			else if (rights[i] == can_create)
+				new_membership['v-s:canCreate'] = newBool(true);
+			else if (rights[i] == cant_read)
+				new_membership['v-s:canRead'] = newBool(false);
+			else if (rights[i] == cant_update)
+				new_membership['v-s:canUpdate'] = newBool(false);
+			else if (rights[i] == cant_delete)
+				new_membership['v-s:canDelete'] = newBool(false);
+			else if (rights[i] == cant_create)
+				new_membership['v-s:canCreate'] = newBool(false);
+		}
+	}
+    
+    var res = put_individual(ticket.id, new_membership);
+
+    return [new_membership, res];
+}
+
+function removeFromGroup(ticket, group, resource)
+{
+    var new_membership_uri = genUri();
+    var new_membership = {
+        '@': new_membership_uri,
+        'rdf:type': newUri('v-s:Membership'),
+        'v-s:memberOf': newUri(group),
+        'v-s:resource': newUri(resource),
+        'v-s:deleted': newBool(true)
+    };
+    var res = put_individual(ticket.id, new_membership);
+
+    return [new_membership, res];
+}
+
+function addRight(ticket, rights, subj_uri, obj_uri, new_uri)
+{
+	if (new_uri)
+	{
+		var prev = get_individual(ticket, new_uri);
+		if (prev)
+		{
+			//print ("JS: RIGHT ALREADY EXISTS");
+			return;
+		}	
+	}	
+
+	if (!new_uri)
+		new_uri = genUri();
+		
+    var new_permission = {
+        '@': new_uri,
+        'rdf:type': newUri('v-s:PermissionStatement'),
+        'v-s:permissionObject': newUri(obj_uri),
+        'v-s:permissionSubject': newUri(subj_uri)
+    };
+
+    for (var i = 0; i < rights.length; i++)
+    {
+        if (rights[i] == can_read)
+            new_permission['v-s:canRead'] = newBool(true);
+        else if (rights[i] == can_update)
+            new_permission['v-s:canUpdate'] = newBool(true);
+        else if (rights[i] == can_delete)
+            new_permission['v-s:canDelete'] = newBool(true);
+        else if (rights[i] == can_create)
+            new_permission['v-s:canCreate'] = newBool(true);
+        else if (rights[i] == cant_read)
+            new_permission['v-s:canRead'] = newBool(false);
+        else if (rights[i] == cant_update)
+            new_permission['v-s:canUpdate'] = newBool(false);
+        else if (rights[i] == cant_delete)
+            new_permission['v-s:canDelete'] = newBool(false);
+        else if (rights[i] == cant_create)
+            new_permission['v-s:canCreate'] = newBool(false);
+    }
+
+    var res = put_individual(ticket, new_permission, _event_id);
+
+    return [new_permission, res];
+    //print("ADD RIGHT:", toJson(new_permission));
 }

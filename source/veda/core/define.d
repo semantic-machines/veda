@@ -4,8 +4,7 @@
 module veda.core.define;
 
 import std.concurrency, std.file, std.stdio, core.atomic;
-import util.container;
-import veda.core.know_predicates;
+import veda.core.know_predicates, veda.util.container;
 
 // variable process_name static mirror of g_process_name
 string process_name;

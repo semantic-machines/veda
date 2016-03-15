@@ -33,7 +33,7 @@ function numerate(ticket, individual, oldstate, _event_id) {
 	if (individual['v-s:actualVersion'] && individual['v-s:actualVersion'][0].data != individual['@']) return;
 	for (var key in individual) {
 		var property = get_individual(ticket, key);
-		if (property['v-s:hasNumerationMapper']) {
+		if (property && property['v-s:hasNumerationMapper']) {
 		  var rule;
 		  for (var mapperkey in property['v-s:hasNumerationMapper']) {
 			  var mapper = get_individual(ticket, property['v-s:hasNumerationMapper'][mapperkey].data);
@@ -72,12 +72,12 @@ function numerate(ticket, individual, oldstate, _event_id) {
 				if (scopeId == oldScopeId && individual[key][0].data == oldstate[key][0].data
 					&& (!individual['v-s:deleted'] 
 					    || !oldstate['v-s:deleted'] 
-					    || (!(individual['v-s:deleted'].data =='true' && oldstate['v-s:deleted'].data == 'false')))) {
+					    || (!(individual['v-s:deleted'][0].data === true && oldstate['v-s:deleted'][0].data === false)))) {
 					// scope and numbers are not changed
-					if ((!oldstate['v-s:deleted'] || oldstate['v-s:deleted'].data =='false') && 
-						(individual['v-s:deleted'] && individual['v-s:deleted'].data == 'true')) {
+					if ((!oldstate['v-s:deleted'] || oldstate['v-s:deleted'][0].data === false) && 
+						(individual['v-s:deleted'] && individual['v-s:deleted'][0].data === true)) {
 						// document deleted
-						revoke(ticket, scope, parseInt(individual[key][0].data), _event_id);
+						revokeValue(ticket, scope, parseInt(individual[key][0].data), _event_id);
 						return {'sucess': true, 'result':'VALUE REVOKED'};
 					} else {
 						return {'sucess': true, 'result':'NO CHANGES'};

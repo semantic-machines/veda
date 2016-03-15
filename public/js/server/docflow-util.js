@@ -672,7 +672,7 @@ function rsffiwit(ticket, work_item_list, compare_field, compare_value, res, _pa
 
 ///////////////////////////////////////////// JOURNAL //////////////////////////////////////////////////
 
-function create_new_journal(ticket, new_journal_uri, parent_journal_uri, label)
+function create_new_journal(ticket, new_journal_uri, parent_journal_uri, label, is_trace)
 {
     try
     {
@@ -694,6 +694,10 @@ function create_new_journal(ticket, new_journal_uri, parent_journal_uri, label)
 
             if (label)
                 new_journal['rdfs:label'] = label;
+                
+            if (is_trace)    
+                new_journal['v-wf:isTrace'] = newBool(true);
+				
 
             put_individual(ticket, new_journal, _event_id);
             //print ("@@@ create new journal, =", toJson (new_journal))
@@ -918,11 +922,11 @@ function _create_new_subjournal(is_trace, parent_uri, el_uri, label, jtype)
     var cj = get_individual(ticket, new_sub_journal_uri);
     if (cj)
     {
-        print("!!!!!!!!!! journal [" + new_sub_journal_uri + "] already exists");
+        //print("!!!!!!!!!! journal [" + new_sub_journal_uri + "] already exists");
         return new_sub_journal_uri;
     }
     else
-        create_new_journal(ticket, new_sub_journal_uri, parent_journal_uri, label);
+        create_new_journal(ticket, new_sub_journal_uri, parent_journal_uri, label, is_trace);
 
     var journal_record = newJournalRecord(parent_journal_uri);
     journal_record['rdf:type'] = [
@@ -1169,7 +1173,7 @@ function traversal(indv, query, pos_in_path, result)
 function remove_empty_branches_from_journal(journal_uri)
 {
     var jrn = get_individual(ticket, journal_uri);
-    if (!jrn["v-s:childRecord"])
+    if (jrn && !jrn["v-s:childRecord"])
     {
         var parent_jrn_uri = getUri(jrn["v-s:parentJournal"]);
         if (parent_jrn_uri)
@@ -1177,28 +1181,30 @@ function remove_empty_branches_from_journal(journal_uri)
             var parent_jrn = get_individual(ticket, parent_jrn_uri);
 
             var child_records = parent_jrn['v-s:childRecord'];
-
-            for (var i = 0; i < child_records.length; i++)
-            {
-                var chr_uri = child_records[i].data;
-                var chr = get_individual(ticket, chr_uri);
-                if (getUri(chr["v-s:subJournal"]) == journal_uri)
-                {
-                    var remove_from_journal = {
+			if (child_records)
+			{	
+				for (var i = 0; i < child_records.length; i++)
+				{
+					var chr_uri = child_records[i].data;
+					var chr = get_individual(ticket, chr_uri);
+					if (chr && getUri(chr["v-s:subJournal"]) == journal_uri)
+					{
+						var remove_from_journal = {
                         '@': parent_jrn_uri,
                         'v-s:childRecord': [
                         {
                             data: chr_uri,
                             type: _Uri
                         }]
-                    };
-                    remove_from_individual(ticket, remove_from_journal, _event_id);
+						};
+						remove_from_individual(ticket, remove_from_journal, _event_id);
 
-                    //print("@@@@@@@@ parent_jrn=", toJson(parent_jrn), ", remove_from_journal=", toJson(remove_from_journal));
-                    break;
-                }
+						//print("@@@@@@@@ parent_jrn=", toJson(parent_jrn), ", remove_from_journal=", toJson(remove_from_journal));
+						break;
+					}
 
-            }
+				}
+			}
         }
     }
 

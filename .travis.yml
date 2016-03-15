@@ -9,7 +9,7 @@ env:
     - secure: s1BV5JjhQIIdasowuMW2OqH5LjvN3tnU+sEGdz4HxWpHufgFUeNBVzu13S85qSxdch55lCyB4ft58PAX3q0wHFPYvBEwkvMlSFny7LeiytW9HZ/fkCG+Dwh6H6OEK1jKQriXZrYLQm4m6gnnAQYsUpDhxP12YejyyBbfaVW73Og=
 
 language: d
-d: dmd-2.069.0
+d: dmd-2.070.0
 
 # Load all dependencies
 # Compile vibe-d before main project to prevent OutOfMemory issue
@@ -18,6 +18,10 @@ before_install:
   - ./control-install.sh    
   - dub -v fetch vibe-d
   - npm install selenium-webdriver@2.47.0
+  - npm install -g grunt-cli
+  - npm install grunt-contrib-qunit --save-dev
+  - npm install coveralls --save-dev
+  - npm install grunt-coveralls --save-dev
 
 # Build
 install:
@@ -33,11 +37,15 @@ before_script:
 
 # Run API & integration test
 script:
-  - node ./qa/testAPI.js
+  - grunt test
+  - grunt coveralls
+#  - node ./qa/testAPI.js
   - node ./qa/testLogin.js
   - node ./qa/testPerson.js
+  - node ./qa/testJournal.js
 
 # Stop deamon and show log
 after_script:
   - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
+  - grunt coveralls
   - cat $PWD/*.log          

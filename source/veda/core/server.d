@@ -1,17 +1,17 @@
 /**
- * сервер
+ * core main thread
  */
 module veda.core.server;
 
 private
 {
-    import core.thread, std.stdio, std.string, std.c.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process;
-    version (linux) import std.c.linux.linux, core.stdc.stdlib;
+    import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import io.mq_client, veda.core.io.file_reader;
     import util.logger, util.utils, util.load_info;
     import veda.core.scripts, veda.core.context, veda.core.know_predicates, veda.core.log_msg, veda.core.thread_context;
-    import veda.core.define, veda.type, az.acl, storage.storage_thread, search.xapian_indexer, veda.onto.individual, veda.onto.resource;
+    import veda.core.define, veda.type, veda.core.az.acl, veda.core.storage.storage_thread, search.xapian_indexer, veda.onto.individual,
+           veda.onto.resource;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -82,17 +82,6 @@ bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
             });
     return res;
 }
-//		import io.zmq_io;
-
-extern (C) void handleTermination(int signal)
-{
-    writefln("!Caught signal: %s", signal);
-
-    system(cast(char *)("kill -kill " ~ text(getpid()) ~ "\0"));
-
-    //   getTrace();
-    exit(signal);
-}
 
 Context init_core(string node_id, string role, ushort listener_http_port, string write_storage_node)
 {
@@ -106,8 +95,6 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
 
     io_msg = new logger("pacahon", "io", "server");
     Tid[ P_MODULE ] tids;
-
-    bsd_signal(SIGINT, &handleTermination);
 
     try
     {
@@ -134,8 +121,8 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
                     is_main = true;
                 else
                 {
-                    is_js_worker = roles.anyExist([ "js_worker" ]);
-                    is_main      = roles.anyExist([ "main" ]);
+                    is_js_worker = roles.anyExists([ "js_worker" ]);
+                    is_main      = roles.anyExists([ "main" ]);
                 }
                 jsvm_node_type = node.getFirstLiteral("v-s:jsvm_node");
             }
@@ -203,11 +190,7 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
 
         if (jsvm_node_type == "internal" || jsvm_node_type == "")
         {
-            tids[ P_MODULE.scripts ] = spawn(&scripts_thread, text(P_MODULE.scripts), node_id);
-            wait_starting_thread(P_MODULE.scripts, tids);
-
-            register(text(P_MODULE.scripts), tids[ P_MODULE.scripts ]);
-            Tid tid_scripts = locate(text(P_MODULE.scripts));
+            Tid tid_scripts = veda.core.scripts.start_module(node_id);
         }
 
         if (is_main)
@@ -259,7 +242,7 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
         }
 
         return core_context;
-    } catch (Exception ex)
+    } catch (Throwable ex)
     {
         writeln("Exception: ", ex.msg);
         return null;

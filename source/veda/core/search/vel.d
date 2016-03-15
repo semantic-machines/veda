@@ -7,13 +7,13 @@ module search.vel;
 
 private
 {
-    import std.string, std.array, std.stdio, std.conv, std.datetime, std.json, std.outbuffer, std.c.string;
-
-    import util.utils;
+    import std.string, std.array, std.stdio, std.conv, std.datetime, std.json, std.outbuffer, core.stdc.string;
+    import util.utils, veda.util.container;
 }
 
 //  expression
 //  "==", "!="
+//  "===" : поиск в подклассах
 //  "=*" : полнотекстовый поиск
 //  "&&", "||",
 //  ">", "<", ">=", "<=",
@@ -46,6 +46,11 @@ private string is_op(string c)
         if (c[ 0 ] == '<' && c[ 1 ] != '=')
             return "<";
     }
+    else if (c.length == 3)
+    {
+        if (c == "===")
+            return c;
+    }
     return null;
 }
 
@@ -54,7 +59,7 @@ private int priority(string op)
     if (op == "<" || op == "<=" || op == ">" || op == "=>")
         return 4;
 
-    if (op == "==" || op == "!=" || op == "=*" || op == "=+")
+    if (op == "==" || op == "!=" || op == "=*" || op == "=+" || op == "===")
         return 3;
 
     if (op == "&&")
@@ -79,6 +84,8 @@ private void process_op(ref stack!TTA st, string op)
     case ">":  st.pushBack(new TTA(op, l, r));  break;
 
     case "==":  st.pushBack(new TTA(op, l, r));  break;
+
+    case "===":  st.pushBack(new TTA(op, l, r));  break;
 
     case "!=":  st.pushBack(new TTA(op, l, r));  break;
 
@@ -169,6 +176,9 @@ public TTA parse_expr(string s)
                 int e = i + 2;
                 if (e > s.length)
                     e = cast(int)(s.length - 1);
+
+                if (s[ i ] == '=' && s[ e ] == '=')
+                    e++;
 
                 string curop = is_op(s[ i .. e ]);
                 if (curop !is null)

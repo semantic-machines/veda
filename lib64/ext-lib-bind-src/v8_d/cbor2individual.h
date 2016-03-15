@@ -57,7 +57,7 @@ struct Individual
 
 struct Element
 {
-    int    pos;
+    unsigned int    pos;
     string str;
     
     Element () : pos (0), str ("") {};

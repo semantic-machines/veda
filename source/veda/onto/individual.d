@@ -8,7 +8,7 @@ private
     import std.stdio, std.typecons, std.conv, std.exception : assumeUnique;
     import veda.onto.resource;
     import veda.core.know_predicates, veda.core.context;
-    import util.utils, util.container, veda.core.util.cbor8individual;
+    import util.utils, veda.util.container, veda.core.util.cbor8individual;
 }
 /// Массив индивидуалов
 alias Individual[] Individuals;
@@ -106,7 +106,7 @@ public struct Individual
         resources[ uri ] = rss;
     }
 
-    void set_Resources(string uri, Resources in_rss)
+    void setResources(string uri, Resources in_rss)
     {
         Resources new_rss;
 
@@ -118,7 +118,12 @@ public struct Individual
         resources[ uri ] = new_rss;
     }
 
-    void remove_Resources(string uri, Resources in_rss)
+    void removeResource(string uri)
+    {
+            resources.remove(uri);    	
+    }
+
+    void removeResources(string uri, Resources in_rss)
     {
         Resources new_rss;
 
@@ -146,7 +151,7 @@ public struct Individual
             resources[ uri ] = new_rss;
     }
 
-    void add_unique_Resources(string uri, Resources in_rss)
+    void addUniqueResources(string uri, Resources in_rss)
     {
         Resources new_rss;
         Resources rss = resources.get(uri, Resources.init);
@@ -182,7 +187,7 @@ public struct Individual
         return rss;
     }
 
-    bool isExist(T) (string predicate, T object)
+    bool isExists(T) (string predicate, T object)
     {
         Resources rss;
 
@@ -199,7 +204,7 @@ public struct Individual
         return false;
     }
 
-    bool anyExist(T) (string predicate, T[] objects)
+    bool anyExists(T) (string predicate, T[] objects)
     {
         Resources rss;
 

@@ -8,24 +8,17 @@ import std.conv, std.stdio, std.datetime, std.string;
 import onto.lang;
 import veda.type;
 
-enum ResourceOrigin : ubyte
-{
-    local    = 1,
-    external = 2
-}
+alias Resource[] Resources;
+alias Resource *[ string ]  MapResource;
+Resources        _empty_Resources = Resources.init;
 
-alias Resource[]            Resources;
-alias immutable(Resource)[] iResources;
-Resources                   _empty_Resources  = Resources.init;
-iResources                  _empty_iResources = iResources.init;
-
-public void setMapResources(Resources rss, ref Resource[ string ] hrss)
+public void setMapResources(ref Resources rss, ref MapResource hrss)
 {
     foreach (rs; rss)
-        hrss[ rs.get!string ] = rs;
+        hrss[ rs.get!string ] = &rs;
 }
 
-public bool anyExist(ref Resource[ string ] hrss, string object)
+public bool anyExists(ref MapResource hrss, string object)
 {
     if ((object in hrss) !is null)
         return true;
@@ -33,7 +26,7 @@ public bool anyExist(ref Resource[ string ] hrss, string object)
         return false;
 }
 
-public bool anyExist(ref Resource[ string ] hrss, string[] objects)
+public bool anyExists(ref MapResource hrss, string[] objects)
 {
     foreach (object; objects)
     {
@@ -47,13 +40,13 @@ public bool anyExist(ref Resource[ string ] hrss, string[] objects)
 struct Resource
 {
     /// Тип
-    DataType       type = DataType.Uri;
+    DataType type = DataType.Uri;
 
-    /// Источник
-    ResourceOrigin origin = ResourceOrigin.local;
+    /// InfoByte
+    byte     info = -1;
 
     /// Язык
-    LANG           lang = LANG.NONE;
+    LANG     lang = LANG.NONE;
 
     private {
         void *[ 2 ] m_data;
@@ -160,13 +153,6 @@ struct Resource
     }
 
     // /////////////////////////////////////////
-    /// конструктор
-    this(string str, ResourceOrigin _origin)
-    {
-        this   = str;
-        type   = DataType.Uri;
-        origin = _origin;
-    }
 
     /// конструктор
     this(DataType _type, string str, LANG _lang = LANG.NONE)
@@ -351,7 +337,7 @@ string getFirstString(Resources rss)
     return rss[ 0 ].get!string;
 }
 
-bool anyExist(Resources rss, string[] objects)
+bool anyExists(Resources rss, string[] objects)
 {
     foreach (rs; rss)
     {
@@ -364,7 +350,7 @@ bool anyExist(Resources rss, string[] objects)
     return false;
 }
 
-bool anyExist(T) (Resources rss, T object)
+bool anyExists(T) (Resources rss, T object)
 {
     foreach (rs; rss)
     {

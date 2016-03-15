@@ -5,11 +5,9 @@
 module search.xapian_reader;
 
 import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.container.slist;
-
 import bind.xapian_d_header;
-import util.utils, util.cbor;
-import veda.core.define, veda.core.know_predicates, veda.core.context, veda.core.log_msg;
-import search.vel, search.xapian_vql, search.indexer_property;
+import util.utils, veda.util.cbor, veda.core.define, veda.core.know_predicates, veda.core.context, veda.core.log_msg;
+import search.vel, veda.core.search.xapian_vql, search.indexer_property;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -79,7 +77,7 @@ class XapianReader : SearchReader
             }
             else if (ll == "v-s:deleted")
             {
-                databasenames[ "deleted" ] = false;            	
+                databasenames[ "deleted" ] = false;
             }
         }
 
@@ -153,7 +151,7 @@ class XapianReader : SearchReader
         {
             try
             {
-                transform_vql_to_xapian(tta, "", dummy, dummy, query, key2slot, d_dummy, 0, db_qp.qp);
+                transform_vql_to_xapian(context, tta, "", dummy, dummy, query, key2slot, d_dummy, 0, db_qp.qp);
                 state = 0;
             }
             catch (XapianError ex)
@@ -213,9 +211,9 @@ class XapianReader : SearchReader
                         break;
 
                     reopen_db();
-                    log.trace("[%s][Q:%X] exec_xapian_query_and_queue_authorize, attempt=%d",
+                    log.trace("WARN! [%s][Q:%X] exec_xapian_query_and_queue_authorize, res=%d, attempt=%d",
                               context.get_name(), cast(void *)str_query,
-                              attempt_count);
+                              state, attempt_count);
                 }
             }
 
@@ -223,6 +221,11 @@ class XapianReader : SearchReader
 
             if (state > 0)
                 read_count = state;
+
+            if (state < 0)
+                log.trace("ERR! [%s][Q:%X] exec_xapian_query_and_queue_authorize, attempt=%d, query=[%s]",
+                          context.get_name(), cast(void *)str_query,
+                          attempt_count, str_query);
 
             destroy_Enquire(xapian_enquire);
             destroy_Query(query);

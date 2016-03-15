@@ -13,8 +13,19 @@
   v-s:loadPriority 2 ;
 .
 
+v-s:loadPriority
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain owl:Ontology ;
+  rdfs:label "ontology load priority"@en ;
+  rdfs:label "приоритет загрузки онтологии"@ru ;
+  rdfs:comment "Приоритет загрузки используется сервером при чтении ttl-файлов для определения порядка загрузки онтологий в базу данных"@ru ;
+  rdfs:comment "Load proprity is used by server when reading ttl files to determine ontology load sequence to DB"@en ;
+  rdfs:range xsd:integer ;
+.
+
 v-s:Node
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Node"@en ;
   rdfs:label "Нода"@ru ;
@@ -98,6 +109,7 @@ v-s:write_storage_node
 
 v-s:Connection
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Connection"@en ;
   rdfs:label "Соединение"@ru ;        
@@ -195,6 +207,7 @@ v-s:useTemplate
 
 v-s:AppInfo
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Application info"@en ;
   rdfs:label "Информация о приложении"@ru ;

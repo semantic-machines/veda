@@ -4,9 +4,8 @@
 module veda.core.bus_event;
 
 private import std.outbuffer, std.stdio, std.concurrency, std.datetime, std.conv, std.json;
-//private import vibe.data.json, vibe.core.log, vibe.http.client, vibe.stream.operations;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
-private import util.container, util.logger, util.utils, veda.core.util.cbor8individual, veda.core.util.individual8json, veda.core.util.cbor8json;
+private import veda.util.container, util.logger, util.utils, veda.core.util.cbor8individual, veda.core.util.individual8json, veda.core.util.cbor8json;
 private import veda.type, veda.core.know_predicates, veda.core.context, veda.core.define;
 private import veda.onto.individual, veda.onto.resource;
 
@@ -23,7 +22,7 @@ logger log()
 
 int count;
 
-void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] rdfType, string new_state, string prev_state, EVENT ev_type,
+void bus_event_after(Ticket *ticket, Individual *individual, ref MapResource rdfType, string new_state, string prev_state, EVENT ev_type,
                      Context context,
                      string event_id, long op_id)
 {
@@ -36,21 +35,6 @@ void bus_event_after(Ticket *ticket, Individual *individual, Resource[ string ] 
 
     if (ev_type == EVENT.CREATE || ev_type == EVENT.UPDATE)
     {
-        if (rdfType.anyExist(owl_tags) == true && new_state != prev_state)
-        {
-            // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-            inc_count_onto_update();
-        }
-
-        if (rdfType.anyExist(veda_schema__PermissionStatement) == true || rdfType.anyExist(veda_schema__Membership) == true)
-        {
-            Tid tid_acl = context.getTid(P_MODULE.acl_manager);
-            if (tid_acl != Tid.init)
-            {
-                send(tid_acl, CMD.PUT, ev_type, new_state, op_id);
-            }
-        }
-
         if (external_js_vm_url !is null)
         {
             JSONValue req_body;
@@ -112,8 +96,9 @@ ResultCode trigger_script(Ticket *ticket, EVENT ev_type, Individual *individual,
 
         if (tid_scripts != Tid.init)
         {
-            Resource[ string ] rdfType;
-            setMapResources(individual.resources.get(rdf__type, Resources.init), rdfType);
+            MapResource rdfType;
+            Resources   _types = individual.resources.get(rdf__type, Resources.init);
+            setMapResources(_types, rdfType);
 
             string subject_as_cbor = individual2cbor(individual);
             string prev_state;
@@ -121,7 +106,7 @@ ResultCode trigger_script(Ticket *ticket, EVENT ev_type, Individual *individual,
             if (indv_prev_state !is null)
                 prev_state = individual2cbor(indv_prev_state);
 
-            if (rdfType.anyExist(veda_schema__Event))
+            if (rdfType.anyExists(veda_schema__Event))
             {
                 // изменения в v-s:Event, послать модуль Condition сигнал о перезагузке скрипта
                 send(tid_scripts, CMD.RELOAD, subject_as_cbor, thisTid);

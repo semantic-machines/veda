@@ -81,3 +81,292 @@ C5. Выполняется проверка соответствия польз�
 С2. Производится поиск всех групп, в которых состоит пользователь.
 С3. Производится поиск всех групп, в которых состоит запрашиваемый ресурс.
 С4. Производится поиск подходящих записей авторизации, в которых есть группа пользователя и группа ресурса.
+
+
+========================================================
+
+Вычисление прав доступа субъекта по отношению к объекту.
+
+Введем 2 области хранения данных:
+1) Обобщенные записи формируемые из субъектов типа Membership (далее - membership).
+2) Обобщенные записи формируемые из субъектов типа PermissionStatement (далее - permission).
+
+===============
+
+* Ключ membership совпадает с ключом ресурса + "_m".
+* В записи присутствуют только те группы, в которые ресурс входит непосредственно (есть субъект Membership).
+
+Пример записи membership:
+object_uri_m : { 
+	object_group_uri1 : 2, // R
+	object_group_uri2 : 2, // R
+	object_group_uri3 : 15 // CRUD
+}
+
+* Уровень прав вхождения в группу по-умолчанию равен CRUD.
+
+===============
+
+* Ключ permission совпадает с ключом ресурса + "_p".
+* В записи присутствуют только те разрешения, которые были выданы непосредственно на этот ресурс (есть субъект PermissionStatement).
+
+Пример записи permission:
+object_uri_p : {
+	subject_group_uri1 : 2,  // R
+	subject_group_uri2 : 2,  // R
+	subject_group_uri3 : 15  // CRUD
+}
+
+===============
+
+Алгоритм вычисления права доступа:
+
+object - объект доступа
+subject - субъект доступа
+
+1) Получаем цепочки всех групп объекта, запрашивая записи membership по сформированному uri:  object_uri + "_m".
+При этом, если в цепочке принадлежностей был указан уровень прав, этим же уровнем помечаются все группы далее по цепочке.
+Поскольку уровень прав одних и тех же групп в разных цепочках иерархии может отличаться, формируем общий хэш групп объекта с указанием для каждой группы всех уровней прав из разных цепочек (object_groups).
+В общий хэш групп объекта включаем сам объект.
+
+Пример:
+object_groups = {
+	// включаем сам объект
+	object_uri: [ 15 ],           // [ CRUD ]
+	object_group_uri1: [ 2, 15 ], // [ R, CRUD ]
+	object_group_uri2: [ 2 ],     // [ R ]
+	object_group_uri3: [ 2 ],     // [ R ]
+}
+
+2) Получаем цепочки всех групп субъекта (пользователя). 
+Формируем общий хэш групп, в которые входит субъект (персона). Операция аналогична п.1.
+В общий список групп субъекта включаем сам субъект.
+
+Пример:
+subject_groups = {
+	// включаем сам субъект
+	subject_uri : [ 15 ],
+	subject_group_uri1 : [ 15 ], 
+	subject_group_uri2 : [ 15 ], 
+	subject_group_uri3 : [ 15 ]
+}
+
+3) Для каждого ключа obj_key хэша objects_groups извлекаем запись permission по сформированному uri:  obj_key + "_p".
+
+Пример:
+object_uri_p : {
+	subject_group_uri3 : 15 // CRUD
+}
+
+4) Для каждого ключа perm_key в хэше permission проверяем, есть ли такой ключ в хэше subject_groups.
+При наличии ключа выполняем операцию побитового "И" каждого значения из списка object_groups[obj_key] со значением permission[perm_key], а потом с запрашиваемым уровнем прав.
+Если итог выполнения операции не 0, прекращаем обработку - запрашиваемое право подтверждено.
+
+* Для оптимизации количества обращений к базе данных используем вытесняющий кэш (с учетом частоты запроса конкретного элемента!) для записей membership и permission.
+* После некоторого времени, за счет использования вытесняющего кэша, количество обращений к базе данных резко сократится поскольку в него войдут группы объектов высокого уровня и их разрешения (например, классы и группы орг. структуры).
+* Дополнительно можно хранить в памяти предпостроенные цепочки групп ресурсов из кэша (для ускорения вычисления object_groups, subject_groups).
+
+========================================================
+
+Реализация на javascript:
+
+// AUTHORIZATION
+
+var C = 1,
+	R = 2,
+	U = 4,
+	D = 8;
+
+var admin_ticket = _get_admin_ticket();
+
+// MAIN FUNCTION
+
+function authorize(subject_uri, object_uri, right) {
+	
+	var object_groups = get_resource_groups(object_uri),
+		subject_groups = get_resource_groups(subject_uri);
+	
+	for (var obj_key in object_groups) {
+		
+		var permissions = get_permissions(obj_key);
+		
+		for (var perm_key in permissions) {
+			
+			if (perm_key in subject_groups) {
+			
+				var list = object_groups[obj_key], 
+					length = list.length;
+					
+				for (var i = 0; i < length; i++ ) {
+					if ( (list[i] & permissions[perm_key]) & right ) {
+						return true;
+					}
+				}
+			
+			}
+		}
+		
+	}
+	return false;
+}
+
+// UTILS
+
+function get_permissions(resource_uri) {
+	
+	return _get_individual(admin_ticket, resource_uri + "_p");
+
+}
+
+function get_resource_groups(resource_uri) {
+	
+	var result = {};
+	result[resource_uri] = [C|R|U|D];
+	return _get_resource_groups(resource_uri, result, C|R|U|D);
+	
+}
+
+function _get_resource_groups(resource_uri, acc, rights) {
+
+	if (resource_uri === "v-s:AllResourcesGroup") return;
+	
+	var membership_uri = resource_uri + "_m",
+		membership = _get_individual(admin_ticket, membership_uri);
+	
+	if (!membership) return;
+	
+	for (var key in membership) {
+		acc[key] = acc[key] || [];
+		rights = membership[key] & rights;
+		acc[key].push( rights );
+		_get_resource_groups(key, acc, rights);
+	}
+	
+	return acc;
+}
+
+// TEST DATA
+
+function _get_admin_ticket() {
+	return 1;
+}
+
+function _get_individual(ticket, uri) {
+	
+	get_count++;
+	
+	get_stats[uri] = get_stats[uri] ? ++get_stats[uri] : 1;
+	
+	var result;
+	
+	switch (uri) {
+		
+		// objects memberships
+		case "add1_m" : 
+			result = {
+				"v-s:AllResourcesGroup" : C|R|U|D,
+				"im1": C|R|U|D
+			}; break;
+		case "ver1_m" : 
+			result = {
+				"v-s:AllResourcesGroup" : C|R|U|D,
+				"im1": R
+			}; break;
+		case "im1_m" : 
+			result = {
+				"v-s:AllResourcesGroup" : C|R|U|D,
+				"imc": C|R|U|D
+			}; break;
+		case "imc_m" : 
+			result = {
+				"v-s:AllResourcesGroup" : C|R|U|D,
+				"doc": C|R|U|D
+			}; break;
+		case "doc_m" : 
+			result = {
+				"v-s:AllResourcesGroup" : C|R|U|D
+			}; break;
+
+		// subjects memberships
+		case "p1_m" : 
+			result = {
+				"v-s:AllResourcesGroup" : C|R|U|D,
+				"pg1" : C|R|U|D,
+				"pg2" : C|R|U|D
+			}; break;
+		case "pg1_m" : 
+			result = {
+				"v-s:AllResourcesGroup" : C|R|U|D,
+				"mnd" : C|R|U|D
+			}; break;
+		case "pg2_m" : 
+			result = {
+				"v-s:AllResourcesGroup" : C|R|U|D,
+				"mnd" : C|R|U|D
+			}; break;
+		case "mnd_m" : 
+			result = {
+				"v-s:AllResourcesGroup" : C|R|U|D
+			}; break;
+		
+		// object permissions
+		case "im1_p" : 
+			result = {
+				"p1" : C|R|U
+			}; break;
+		/*case "imc_p" : 
+			result = {
+				"mnd" : R
+			}; break;
+		case "doc_p" : 
+			result = {
+				"mnd" : C|R|U
+			}; break;
+		case "ver1_p" : 
+			result = {
+				"p1" : C|R|U|D
+			}; break;
+		*/
+	}
+	
+	return result;
+}
+
+
+// TEST
+
+var get_count = 0;
+var get_stats = {};
+
+// p1 -> im1
+get_count = 0;
+console.log("authorize('p1', 'im1', C)", authorize('p1', 'im1', C), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'im1', R)", authorize('p1', 'im1', R), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'im1', U)", authorize('p1', 'im1', U), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'im1', D)", authorize('p1', 'im1', D), "get_count", get_count);
+
+// p1 -> add1
+get_count = 0;
+console.log("authorize('p1', 'add1', C)", authorize('p1', 'add1', C), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'add1', R)", authorize('p1', 'add1', R), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'add1', U)", authorize('p1', 'add1', U), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'add1', D)", authorize('p1', 'add1', D), "get_count", get_count);
+
+// p1 -> ver1
+get_count = 0;
+console.log("authorize('p1', 'ver1', C)", authorize('p1', 'ver1', C), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'ver1', R)", authorize('p1', 'ver1', R), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'ver1', U)", authorize('p1', 'ver1', U), "get_count", get_count);
+get_count = 0;
+console.log("authorize('p1', 'ver1', D)", authorize('p1', 'ver1', D), "get_count", get_count);
+
+console.log("get_stats", get_stats);
+

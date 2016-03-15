@@ -405,6 +405,10 @@ void GetIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
     const char            *ticket = ToCString(str);
 
     v8::String::Utf8Value str1(args[ 1 ]);
+
+    if (str1.length() == 0)
+	return;
+
     const char            *cstr = ToCString(str1);
 
     _Buff                 *doc_as_cbor = read_individual(ticket, str.length(), cstr, str1.length());

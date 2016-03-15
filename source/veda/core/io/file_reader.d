@@ -7,7 +7,7 @@ module veda.core.io.file_reader;
 import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib;
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path, std.utf,
        std.stdio : writeln;
-import util.container, util.cbor, util.utils, util.logger, veda.core.util.raptor2individual, veda.core.util.cbor8individual;
+import veda.util.container, veda.util.cbor, util.utils, util.logger, veda.core.util.raptor2individual, veda.core.util.cbor8individual;
 import veda.type, veda.onto.individual, veda.onto.resource, veda.core.context, veda.core.thread_context, veda.core.define, veda.core.know_predicates,
        veda.core.log_msg;
 
@@ -130,7 +130,7 @@ Individual[ string ] read_ttl(Context context, bool is_load)
 
             foreach (uri, indv; l_individuals)
             {
-                if (indv.isExist(rdf__type, owl__Ontology))
+                if (indv.isExists(rdf__type, owl__Ontology))
                 {
                     filename_2_prefix[ indv.uri ] = filename;
                     long loadPriority = indv.getFirstInteger("v-s:loadPriority", -1);
@@ -198,7 +198,7 @@ void processed(Context context, bool is_load)
 
                         if (indv_in_storage == Individual.init || indv.compare(indv_in_storage) == false)
                         {
-                            ResultCode res = context.put_individual(&sticket, indv.uri, indv).result;
+                            ResultCode res = context.store_individual(CMD.PUT, &sticket, &indv, true, null, false).result;
                             if (trace_msg[ 33 ] == 1)
                                 log.trace("store, uri=%s %s", indv.uri, indv);
 
@@ -267,7 +267,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 
         foreach (ss; ss_list)
         {
-            if (ss.isExist(rdf__type, owl__Ontology) && context !is null)
+            if (ss.isExists(rdf__type, owl__Ontology) && context !is null)
             {
                 prefix = context.get_prefix_map.get(ss.uri, null);
                 Resources ress = Resources.init;

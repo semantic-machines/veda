@@ -6,6 +6,7 @@
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 
 @prefix v-asp: <http://semantic-machines.com/veda/veda-aspect/> .
@@ -19,22 +20,23 @@
 
 v-s:Aspect 
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:label "Aspect"@en ;
 	rdfs:label "Аспект"@ru ;
 .
 
 v-s:PersonalAspect 
 	rdf:type owl:Class ;
+	rdfs:subClassOf v-s:Aspect ;
 	rdfs:label "Personal aspect"@en ;
 	rdfs:label "Персональный аспект"@ru ;
-	rdfs:subClassOf v-s:Aspect ;
 .
 
 v-s:BusinessAspect 
 	rdf:type owl:Class ;
+	rdfs:subClassOf v-s:Aspect ;
 	rdfs:label "Business aspect"@en ;
 	rdfs:label "Деловой аспект"@ru ;
-	rdfs:subClassOf v-s:Aspect ;
 .
 
 v-s:hasImage
@@ -43,6 +45,14 @@ v-s:hasImage
 
 v-s:hasLogo
   rdfs:domain v-s:Aspect ;
+.
+
+v-s:hasDocumentDraft
+	rdf:type owl:ObjectProperty ;
+	rdfs:domain v-s:PersonalAspect ;
+	rdfs:range rdfs:Resource ;
+	rdfs:label "черновик"@en ;
+	rdfs:label "draft"@ru ;
 .
 
 v-s:hasFavorite
@@ -146,97 +156,93 @@ v-s:PersonalAspectTemplate
 		</div>
 		<div class="col-md-10">
 			<h3><span about="v-s:MyPage" property="rdfs:label"></span></h3>
-			
 			<hr/>
-			
-			<div rel="v-s:hasWidget"></div>
 			<div class="row">
-				<div class="col-lg-3 col-md-6">
-					<div class="panel panel-success">
-						<div class="panel-heading">
-							<div class="row">
-								<div class="col-xs-3">
-									<i class="fa fa-tasks fa-5x"></i>
-								</div>
-								<div class="col-xs-9 text-right">
-									<div class="huge">12</div>
-									<div about="v-s:NewTasks" property="rdfs:label"></div>
+				<div class="col-md-4 col-sm-6 col-xs-6">
+					<div about="v-ft:Inbox">
+						<div class="panel panel-danger">
+							<div class="panel-heading">
+								<div class="row">
+									<div class="col-xs-3">
+										<i class="fa fa-tasks fa-5x"></i>
+									</div>
+									<div class="col-xs-9 text-right">
+										<div id="tasks-count" class="huge"></div>
+										<div property="rdfs:label"></div>
+									</div>
 								</div>
 							</div>
+							<a href="#/v-ft:Inbox">
+								<div class="panel-body">
+									<span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
+									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+									<div class="clearfix"></div>
+								</div>
+							</a>
 						</div>
-						<a href="#">
-							<div class="panel-body">
-								<span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
-								<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-								<div class="clearfix"></div>
-							</div>
-						</a>
+						<script>
+							var tasks = individual.tasks;
+							tasks.search();
+							$("#tasks-count", template).text(tasks.count);
+						</script>
 					</div>
 				</div>
-				<div class="col-lg-3 col-md-6">
-					<div class="panel panel-info">
-						<div class="panel-heading">
-							<div class="row">
-								<div class="col-xs-3">
-									<i class="fa fa-comments fa-5x"></i>
-								</div>
-								<div class="col-xs-9 text-right">
-									<div class="huge">26</div>
-									<div>New Comments!</div>
+				<div class="col-md-4 col-sm-6 col-xs-6">
+					<div about="v-ft:Outbox">
+						<div class="panel panel-warning">
+							<div class="panel-heading">
+								<div class="row">
+									<div class="col-xs-3">
+										<i class="fa fa-comments fa-5x"></i>
+									</div>
+									<div class="col-xs-9 text-right">
+										<div id="tasks-count" class="huge"></div>
+										<div property="rdfs:label"></div>
+									</div>
 								</div>
 							</div>
+							<a href="#/v-ft:Outbox">
+								<div class="panel-body">
+									<span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
+									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+									<div class="clearfix"></div>
+								</div>
+							</a>
 						</div>
-						<a href="#">
-							<div class="panel-body">
-								<span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
-								<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-								<div class="clearfix"></div>
-							</div>
-						</a>
+						<script>
+							var tasks = individual.tasks;
+							tasks.search();
+							$("#tasks-count", template).text(tasks.count);
+						</script>
 					</div>
 				</div>
-				<div class="col-lg-3 col-md-6">
-					<div class="panel panel-warning">
-						<div class="panel-heading">
-							<div class="row">
-								<div class="col-xs-3">
-									<i class="fa fa-shopping-cart fa-5x"></i>
-								</div>
-								<div class="col-xs-9 text-right">
-									<div class="huge">124</div>
-									<div>New Orders!</div>
+				<div class="col-md-4 col-sm-6 col-xs-6">
+					<div about="v-ft:Completed">
+						<div class="panel panel-success">
+							<div class="panel-heading">
+								<div class="row">
+									<div class="col-xs-3">
+										<i class="fa fa-shopping-cart fa-5x"></i>
+									</div>
+									<div class="col-xs-9 text-right">
+										<div id="tasks-count" class="huge"></div>
+										<div property="rdfs:label"></div>
+									</div>
 								</div>
 							</div>
+							<a href="#/v-ft:Completed">
+								<div class="panel-body">
+									<span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
+									<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+									<div class="clearfix"></div>
+								</div>
+							</a>
 						</div>
-						<a href="#">
-							<div class="panel-body">
-								<span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
-								<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-								<div class="clearfix"></div>
-							</div>
-						</a>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<div class="panel panel-danger">
-						<div class="panel-heading">
-							<div class="row">
-								<div class="col-xs-3">
-									<i class="fa fa-support fa-5x"></i>
-								</div>
-								<div class="col-xs-9 text-right">
-									<div class="huge">13</div>
-									<div>Support Tickets!</div>
-								</div>
-							</div>
-						</div>
-						<a href="#">
-							<div class="panel-body">
-								<span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
-								<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-								<div class="clearfix"></div>
-							</div>
-						</a>
+						<script>
+							var tasks = individual.tasks;
+							tasks.search();
+							$("#tasks-count", template).text(tasks.count);
+						</script>
 					</div>
 				</div>
 			</div>
@@ -291,6 +297,21 @@ v-s:PersonalAspectTemplate
 						</div>
 					</div>
 					<veda-control type="link" rel="v-s:hasRegistry" class="fulltext dropdown -view edit"></veda-control>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="no-margin"><i class="fa fa-file-text-o"></i> <strong about="v-s:Drafts" property="rdfs:label"></strong></h4>
+				</div>
+				<div class="panel-body">
+					<ol rel="v-s:hasDocumentDraft">
+						<li><a href="#/@" property="rdfs:label"></a></li>								
+					</ol>
+					<!--veda-control type="link" rel="v-s:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control-->
 				</div>
 			</div>
 		</div>

@@ -12,6 +12,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			var $createReport = template.find("#createReport");
 			var $createReportButtons = template.find(".create-report-button");
 			var $showRights = template.find("#rightsOrigin");
+			var $journal = template.find("#journal");
 			
 			function validHandler(e) { 
 				$send.removeAttr("disabled");
@@ -33,6 +34,17 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			$send.on("click", function () { veda.Util.send(individual, template); });
 			$createReport.on("click", function () {veda.Util.createReport(individual);});
 			$showRights.on("click", function () {veda.Util.showRights(individual);});
+			$journal.on("click", function() {
+				var journal = new veda.IndividualModel(individual.id+'j', null, null, null, false);
+				if (journal.hasValue('rdf:type') && journal['rdf:type'][0].id != 'rdfs:Resource') {
+					var container = $('#main');
+					container.empty();
+					journal.present(container, undefined, 'view');
+					changeHash(individual.id+'j');
+				} else {
+					$journal.prop("disabled",true);
+				}
+			});
 			
 			template.one("remove", function () {
 				individual.off("individual:templateReady", actionsHandler);

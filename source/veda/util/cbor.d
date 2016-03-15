@@ -1,17 +1,12 @@
 /**
  * CBOR общее
  */
-module util.cbor;
+module veda.util.cbor;
 
 private
 {
-    import std.outbuffer;
-    import std.stdio;
-    import std.typetuple;
-    import std.datetime;
-    import std.conv;
-
-    import util.container;
+    import std.outbuffer, std.stdio, std.typetuple, std.datetime, std.conv;
+    import veda.util.container;
 }
 
 enum : byte

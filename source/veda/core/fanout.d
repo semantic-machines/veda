@@ -5,12 +5,12 @@
 module veda.core.fanout;
 
 private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file;
-private import veda.type, veda.core.context;
-private import util.logger, util.cbor, veda.core.util.cbor8individual;
-private import storage.lmdb_storage, veda.core.thread_context;
-private import veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
+private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
-private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment;
+private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
+private import veda.type, veda.core.context, veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
+private import util.logger, veda.util.cbor, veda.core.util.cbor8individual;
+private import veda.core.storage.lmdb_storage, veda.core.thread_context;
 
 //////
 Mysql      mysql_conn;
@@ -106,7 +106,7 @@ void fanout_thread(string thread_name, string _node_id)
         }
         catch (Throwable ex)
         {
-            log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+            log.trace("fanout# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
         }
     }
 }
@@ -186,11 +186,13 @@ private string extract_cids(string _src, out string[] attachment_ids)
 
 private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
 {
+    SmtpMessage message;
+
     try
     {
         Ticket sticket = context.sys_ticket();
 
-        bool   is_deleted = new_indv.isExist("v-s:deleted", true);
+        bool   is_deleted = new_indv.isExists("v-s:deleted", true);
 
         string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
         string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");
@@ -238,42 +240,55 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
                         string[] attachment_ids;
                         message_body = extract_cids(message_body, attachment_ids);
 
-                        auto message = SmtpMessage(
-                                                   Recipient(email_from, "From"),
-                                                   [ Recipient(email_to, "To") ],
-                                                   subject,
-                                                   message_body,
-                                                   email_reply_to
-                                                   );
+                        message = SmtpMessage(
+                                              Recipient(email_from, "From"),
+                                              [ Recipient(email_to, "To") ],
+                                              subject,
+                                              message_body,
+                                              email_reply_to
+                                              );
 
                         foreach (attachment_id; attachment_ids)
                         {
-                            //writeln("@1 attachment_id=", attachment_ids);
-                            Individual file_info = context.get_individual(&sticket, attachment_id);
-                            if (file_info !is Individual.init)
+                            try
                             {
-                                string path     = file_info.getFirstResource("v-s:filePath").get!string;
-                                string file_uri = file_info.getFirstResource("v-s:fileUri").get!string;
-                                if (path !is null && file_uri !is null && file_uri.length > 0)
+                                //writeln("@1 attachment_id=", attachment_ids);
+                                Individual file_info = context.get_individual(&sticket, attachment_id);
+                                if (file_info !is Individual.init)
                                 {
-                                    if (path.length > 0)
-                                        path = path ~ "/";
+                                    string path     = file_info.getFirstResource("v-s:filePath").get!string;
+                                    string file_uri = file_info.getFirstResource("v-s:fileUri").get!string;
+                                    if (path !is null && file_uri !is null && file_uri.length > 0)
+                                    {
+                                        if (path.length > 0)
+                                            path = path ~ "/";
 
-                                    string full_path = attachments_db_path ~ "/" ~ path ~ file_uri;
+                                        string full_path = attachments_db_path ~ "/" ~ path ~ file_uri;
 
-                                    auto   bytes = cast(ubyte[]) read(full_path);
+                                        auto   bytes = cast(ubyte[]) read(full_path);
 
-                                    auto   attachment = SmtpAttachment(file_uri, bytes, uri_2_cid(attachment_id));
-                                    message.attach(attachment);
+                                        auto   attachment = SmtpAttachment(file_uri, bytes, uri_2_cid(attachment_id));
+                                        message.attach(attachment);
+                                    }
                                 }
+                            }
+                            catch (Exception ex)
+                            {
+                                log.trace("#EX! fail prepare attachment for e-mail [%s], LINE:[%s], FILE:[%s], MSG:[%s]", new_indv.uri, ex.line,
+                                          ex.file,
+                                          ex.msg);
                             }
                         }
 
-                        smtp.reply.SmtpReply res = smtp_conn.send(message);
-
-                        //log.trace("mail=%s", message.toString());
-
-                        log.trace("send email: %s, result %s", new_indv.uri, text(res));
+                        SmtpReply res = smtp_conn.send(message);
+                        log.trace("send email: %s, %s, %s, result %s", new_indv.uri, message.sender, message.recipients, res);
+                        if (!res.success || res.code == 451)
+                        {
+                            // reconnect and retry
+                            connect_to_smtp(context);
+                            res = smtp_conn.send(message);
+                            log.trace("send email (retry): %s, %s, %s, result %s", new_indv.uri, message.sender, message.recipients, res);
+                        }
                     }
                 }
             }
@@ -281,7 +296,7 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
     }
     catch (Exception ex)
     {
-        log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+        log.trace("#EX! fail send e-mail[%s]=%s", ex.msg, message.toString());
     }
 
     //writeln("@@fanout indv.uri=", indv.uri);
@@ -297,7 +312,7 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
 {
     try
     {
-        bool   is_deleted = new_indv.isExist("v-s:deleted", true);
+        bool   is_deleted = new_indv.isExists("v-s:deleted", true);
 
         string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
         string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");
@@ -448,82 +463,98 @@ private void create_table_if_not_exists(string predicate, Resource rs)
 
 private void connect_to_smtp(Context context)
 {
-    Ticket sticket = context.sys_ticket();
-
-    node = context.getConfiguration();
-    Resources gates = node.resources.get("v-s:send_an_email_individual_by_event", Resources.init);
-    foreach (gate; gates)
+    try
     {
-        Individual connection = context.get_individual(&sticket, gate.uri);
+        Ticket sticket = context.sys_ticket();
 
-        Resource   transport = connection.getFirstResource("v-s:transport");
-        if (transport != Resource.init)
+        node = context.getConfiguration();
+        Resources gates = node.resources.get("v-s:send_an_email_individual_by_event", Resources.init);
+        foreach (gate; gates)
         {
-            if (transport.data() == "smtp")
+            Individual connection = context.get_individual(&sticket, gate.uri);
+
+            Resource   transport = connection.getFirstResource("v-s:transport");
+            if (transport != Resource.init)
             {
-                try
+                if (transport.data() == "smtp")
                 {
-                    smtp_conn = new MailSender(connection.getFirstLiteral("v-s:host"), cast(ushort)connection.getFirstInteger("v-s:port"));
+                    try
+                    {
+                        smtp_conn = new MailSender(connection.getFirstLiteral("v-s:host"), cast(ushort)connection.getFirstInteger("v-s:port"));
 
-                    if (smtp_conn is null)
-                        return;
+                        if (smtp_conn is null)
+                            return;
 
-                    string login = connection.getFirstLiteral("v-s:login");
-                    string pass  = connection.getFirstLiteral("v-s:password");
+                        string login = connection.getFirstLiteral("v-s:login");
+                        string pass  = connection.getFirstLiteral("v-s:password");
 
-                    if (login !is null && login.length > 0)
-                        smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
+                        if (login !is null && login.length > 0)
+                            smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
 
-                    // Connecting to smtp server
-                    auto result = smtp_conn.connect();
-                    if (!result.success)
+                        // Connecting to smtp server
+                        auto result = smtp_conn.connect();
+                        if (!result.success)
+                            smtp_conn = null;
+                        else
+                            log.trace("success connection to SMTP server: [%s]", connection);
+                    }
+                    catch (Throwable ex)
+                    {
                         smtp_conn = null;
-                    else
-                        log.trace("success connection to SMTP server: [%s]", connection);
-                }
-                catch (Throwable ex)
-                {
-                    log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s], connection=[%s]", ex.line, ex.file, ex.msg, connection);
+                        log.trace("EX! fanout.connect_to_smtp# LINE:[%s], FILE:[%s], MSG:[%s], connection=[%s]", ex.line, ex.file, ex.msg, connection);
+                    }
                 }
             }
         }
+    }
+    catch (Throwable ex)
+    {
+        printPrettyTrace(stdout);
+        log.trace("ERR! fanout.connect_to_smtp# LINE:[%s], FILE:[%s], MSG:[%s], %s", ex.line, ex.file, ex.msg, ex.toString);
     }
 }
 
 private void connect_to_mysql(Context context)
 {
-    Ticket sticket = context.sys_ticket();
-
-    node = context.getConfiguration();
-    Resources gates = node.resources.get("v-s:push_individual_by_event", Resources.init);
-    foreach (gate; gates)
+    try
     {
-        Individual connection = context.get_individual(&sticket, gate.uri);
+        Ticket sticket = context.sys_ticket();
 
-        Resource   transport = connection.getFirstResource("v-s:transport");
-        if (transport != Resource.init)
+        node = context.getConfiguration();
+        Resources gates = node.resources.get("v-s:push_individual_by_event", Resources.init);
+        foreach (gate; gates)
         {
-            if (transport.data() == "mysql")
+            Individual connection = context.get_individual(&sticket, gate.uri);
+
+            Resource   transport = connection.getFirstResource("v-s:transport");
+            if (transport != Resource.init)
             {
-                try
+                if (transport.data() == "mysql")
                 {
-                    database_name = connection.getFirstLiteral("v-s:sql_database");
-                    mysql_conn    = new Mysql(connection.getFirstLiteral("v-s:host"),
-                                              cast(uint)connection.getFirstInteger("v-s:port"),
-                                              connection.getFirstLiteral("v-s:login"),
-                                              connection.getFirstLiteral("v-s:password"),
-                                              database_name);
+                    try
+                    {
+                        database_name = connection.getFirstLiteral("v-s:sql_database");
+                        mysql_conn    = new Mysql(connection.getFirstLiteral("v-s:host"),
+                                                  cast(uint)connection.getFirstInteger("v-s:port"),
+                                                  connection.getFirstLiteral("v-s:login"),
+                                                  connection.getFirstLiteral("v-s:password"),
+                                                  database_name);
 
-                    mysql_conn.query("SET NAMES 'utf8'");
+                        mysql_conn.query("SET NAMES 'utf8'");
 
-                    //writeln("@@@@1 CONNECT TO MYSQL IS OK ", text(mysql_conn));
-                }
-                catch (Throwable ex)
-                {
-                    log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+                        //writeln("@@@@1 CONNECT TO MYSQL IS OK ", text(mysql_conn));
+                    }
+                    catch (Throwable ex)
+                    {
+                        log.trace("EX! fanout.connect_to_mysql# EX:[%s], connection=[%s]", ex.toString(), connection);
+                    }
                 }
             }
         }
+    }
+    catch (Throwable ex)
+    {
+        log.trace("EX! fanout.connect_to_mysql# EX:[%s]", ex.toString());
     }
 }
 

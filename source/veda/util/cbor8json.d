@@ -1,18 +1,16 @@
 /**
- * CBOR: cbor <-> Json
+ * CBOR: cbor <-> JSONValue
  */
-module veda.util.cbor8json;
+module veda.core.util.cbor8json;
 
-private import std.outbuffer, std.stdio, std.string, std.conv, std.datetime;
-private import vibe.data.json;
-private import veda.type, veda.onto.resource, veda.onto.individual;
+private import std.outbuffer, std.stdio, std.string, std.conv, std.datetime, std.json;
+private import veda.type, veda.onto.resource, veda.onto.individual, veda.util.cbor;
 private import onto.lang;
-private import util.cbor;
 
 string dummy;
 string nullz = "00000000000000000000000000000000";
 
-private static int read_element(Json *individual, ubyte[] src, out string _key, string subject_uri = null,
+private static int read_element(JSONValue *individual, ubyte[] src, out string _key, string subject_uri = null,
                                 string predicate_uri = null)
 {
     int           pos;
@@ -52,7 +50,7 @@ private static int read_element(Json *individual, ubyte[] src, out string _key, 
         {
             if (subject_uri !is null)
             {
-                Json new_individual = Json.emptyObject;
+                JSONValue new_individual;
                 individual = &new_individual;
             }
             (*individual)[ "@" ] = val.dup;
@@ -96,13 +94,13 @@ private static int read_element(Json *individual, ubyte[] src, out string _key, 
         {
             //writeln ("*1 |", individual.toString (), "|");
 
-            Json resources = individual.get!(Json[ string ]).get(predicate_uri, Json.emptyArray);
+            JSONValue resources = (*individual)[ predicate_uri ];
 
-            //Json resources = kk.get (predicate_uri, Json.emptyArray);
+            //JSONValue resources = kk.get (predicate_uri, JSONValue.emptyArray);
 
             //writeln ("JSON0:", resources);
-            //Json* resources = individual[predicate_uri];
-            Json resource_json = Json.emptyObject;
+            //JSONValue* resources = individual[predicate_uri];
+            JSONValue resource_json;
 
             if (header.tag == TAG.TEXT_RU)
             {
@@ -144,9 +142,9 @@ private static int read_element(Json *individual, ubyte[] src, out string _key, 
     }
     else if (header.type == MajorType.NEGATIVE_INTEGER)
     {
-        long value         = header.v_long;
-        Json resources     = individual.get!(Json[ string ]).get(predicate_uri, Json.emptyArray);
-        Json resource_json = Json.emptyObject;
+        long      value     = header.v_long;
+        JSONValue resources = (*individual)[ predicate_uri ];
+        JSONValue resource_json;
 
         //Resources resources = individual.resources.get(predicate_uri, Resources.init);
         if (header.tag == TAG.EPOCH_DATE_TIME)
@@ -167,9 +165,9 @@ private static int read_element(Json *individual, ubyte[] src, out string _key, 
     else if (header.type == MajorType.UNSIGNED_INTEGER)
     {
         //writeln ("@p #read_element MajorType.UNSIGNED_INTEGER #0");
-        long value         = header.v_long;
-        Json resources     = individual.get!(Json[ string ]).get(predicate_uri, Json.emptyArray);
-        Json resource_json = Json.emptyObject;
+        long      value     = header.v_long;
+        JSONValue resources = (*individual)[ predicate_uri ];
+        JSONValue resource_json;
         //Resources resources = individual.resources.get(predicate_uri, Resources.init);
 
         if (header.tag == TAG.EPOCH_DATE_TIME)
@@ -190,8 +188,8 @@ private static int read_element(Json *individual, ubyte[] src, out string _key, 
     }
     else if (header.type == MajorType.FLOAT_SIMPLE)
     {
-        Json resources     = individual.get!(Json[ string ]).get(predicate_uri, Json.emptyArray);
-        Json resource_json = Json.emptyObject;
+        JSONValue resources = (*individual)[ predicate_uri ];
+        JSONValue resource_json;
         //Resources resources = individual.resources.get(predicate_uri, Resources.init);
         if (header.v_long == TRUE)
         {
@@ -215,8 +213,8 @@ private static int read_element(Json *individual, ubyte[] src, out string _key, 
     {
         if (header.tag == TAG.DECIMAL_FRACTION)
         {
-            Json resources     = individual.get!(Json[ string ]).get(predicate_uri, Json.emptyArray);
-            Json resource_json = Json.emptyObject;
+            JSONValue resources = (*individual)[ predicate_uri ];
+            JSONValue resource_json;
             //Resources     resources = individual.resources.get(predicate_uri, Resources.init);
 
             ElementHeader mantissa;
@@ -314,7 +312,7 @@ private static int read_element(Json *individual, ubyte[] src, out string _key, 
 }
 
 // ///////////////////////////////////////////////////////////////////////////////////
-public int cbor2json(Json *individual, string in_str)
+public int cbor2json(JSONValue *individual, string in_str)
 {
     try
     {

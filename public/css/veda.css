@@ -39,16 +39,17 @@ em {
   font-style: normal;
   display: inline-block;
 }
-em::first-letter {
+/*em::first-letter {
+  color: #ff4d00;
   color: #711;
-  /*color: #ec6607;*/
+  color: #ec6607;
   color: #763304;
-  /*color: #591303;*/
+  color: #591303;
   font-weight: bold;
   font-size: 140%;
   font-variant: small-caps;
   line-height: 50%;
-}
+}*/
 
 .nav-right > li {
   float: right;
@@ -80,11 +81,15 @@ em::first-letter {
 footer {
   font-size: 12px;
 }
+.jumbotron {
+  background-color: transparent;
+}
 .navbar {
   padding:7px 0px;
-  margin-bottom:0px;
+  margin-bottom:15px;
   background-image: none;
-  border: none;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #ddd;
   box-shadow: none;
 }
 .navbar-fixed-bottom {
@@ -415,13 +420,21 @@ html, body {
   height:100%;
   z-index: 999999;
 }
-#login-holder {
+#login-container {
   position:absolute; 
   top:0;
   left:0;
   width:100%;
   height:100%;
-  z-index: 1000000;
+  z-index: 998;
+}
+#app-load-indicator {
+  position:absolute; 
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index: 999;
 }
 
 .CodeMirror {
@@ -580,6 +593,10 @@ veda-control {
 }
 
 path { 
+	cursor:pointer; 
+}
+
+.stop-process { 
 	cursor:pointer; 
 }
 

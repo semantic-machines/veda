@@ -1,5 +1,5 @@
 /**
- * Внешнее API
+ * core API
 
    Copyright: © 2014-2015 Semantic Machines
    License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
@@ -9,10 +9,9 @@
 module veda.core.context;
 
 private import std.concurrency, std.datetime;
-private import util.container;
-private import search.vel;
-private import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.define;
 private import bind.v8d_header;
+private import search.vel;
+private import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.define, veda.util.container;
 
 /// Имена процессов
 public enum P_MODULE : byte
@@ -150,6 +149,13 @@ public struct Ticket
     long end_time;
 
     /// Конструктор
+    this(Ticket tt)
+    {
+        id       = tt.id.dup;
+        user_uri = tt.user_uri.dup;
+        end_time = tt.end_time;
+    }
+
     immutable this(string _id, string _user_uri, long _end_time)
     {
         id       = _id;
@@ -163,6 +169,12 @@ public struct Ticket
         immutable(Ticket) result = immutable Ticket(id, user_uri, end_time);
         return result;
     }
+}
+
+interface Storage
+{
+    public ResultCode put(string in_key, string in_value);
+    public string find(string uri, bool return_value = true);
 }
 
 /**
@@ -183,10 +195,11 @@ interface Context
     public bool ft_check_for_reload(void delegate() load);
     public bool acl_check_for_reload(void delegate() load);
 
-    bool authorize(string uri, Ticket *ticket, ubyte request_acess);
+    bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
     Individual[] get_individuals_via_query(Ticket *ticket, string query_str);
     string get_individual_from_storage(string uri);
     Onto get_onto();
+    OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool api_request = true);
 
     public string get_ticket_from_storage(string ticket_id);
     public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null);
@@ -227,6 +240,17 @@ interface Context
                 экземпляр структуры Ticket
      */
     public Ticket authenticate(string login, string password);
+
+    /**
+       Доверенная аутентификация
+       Params:
+                ticket = имя пользователя, входящего в группу [cfg:SuperUser]
+                login = имя пользователя, кому будет выдан новый тикет
+
+       Returns:
+                экземпляр структуры Ticket
+     */
+    Ticket get_ticket_trusted(string ticket, string login);
 
     /**
        Вернуть обьект Ticket по Id
@@ -337,6 +361,13 @@ interface Context
     public long wait_thread(P_MODULE module_id, long op_id = 0);
 
     /**
+       Перезагрузить модуль
+       Params:
+                 thread_id = id процесса из перечисления P_MODULE
+     */
+    public long restart_module(P_MODULE module_id);
+
+    /**
        Включить/выключить отладочные сообщения
        Params:
                  idx   = id отладочного сообщения (0 - все сообщения)
@@ -352,7 +383,7 @@ interface Context
     /**
        Выполнить бэкапирование базы данных
      */
-    public bool backup(int level = 0);
+    public bool backup(bool to_binlog, int level = 0);
 
     /**
        Остановить выполнение операций записи, новые команды на запись не принимаются

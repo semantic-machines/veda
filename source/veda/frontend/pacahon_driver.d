@@ -4,7 +4,7 @@ import std.stdio, std.datetime, std.conv, std.string, std.variant, std.concurren
 import vibe.data.json;
 import veda.core.server, veda.core.context, veda.core.thread_context, veda.core.know_predicates, veda.core.define;
 import veda.type, veda.onto.onto, onto.lang, veda.onto.individual, veda.onto.resource, veda.core.log_msg;
-import veda.util.cbor8json, veda.util.individual8json;
+import veda.util.cbor8vjson, veda.util.individual8vjson;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -61,16 +61,22 @@ public void core_thread(string node_id, string write_storage_node)
     while (true)
     {
         receive(
-                (Command cmd, Function fn, int worker_id, Tid tid)
+                (Command cmd, Function fn, bool to_binlog, int worker_id, Tid tid)
                 {
                     if (tid != Tid.init)
                     {
                         if (cmd == Command.Execute && fn == Function.Backup)
                         {
-                            context.backup();
+                            context.backup(to_binlog);
                             send(tid, true, worker_id);
                         }
-                        else if (cmd == Command.Execute && fn == Function.CountIndividuals)
+                    }
+                },
+                (Command cmd, Function fn, int worker_id, Tid tid)
+                {
+                    if (tid != Tid.init)
+                    {
+                        if (cmd == Command.Execute && fn == Function.CountIndividuals)
                         {
                             long count = context.count_individuals();
                             send(tid, count, worker_id);
@@ -132,14 +138,14 @@ public void core_thread(string node_id, string write_storage_node)
                         }
                     }
                 },
-                (Command cmd, Function fn, string arg1, string arg2, string _ticket, int worker_id, Tid tid)
+                (Command cmd, Function fn, string arg1, string arg2, string _ticket, bool reopen, int worker_id, Tid tid)
                 {
                     if (tid != Tid.init)
                     {
                         if (cmd == Command.Get && fn == Function.Individual)
                         {
                             if (trace_msg[ 500 ] == 1)
-                                log.trace("get_individual #start : %s ", arg1);
+                                log.trace("get_individual #start : %s", arg1);
 
                             ResultCode rc = ResultCode.Internal_Server_Error;
 
@@ -163,6 +169,12 @@ public void core_thread(string node_id, string write_storage_node)
                                     rc = ticket.result;
                                     if (rc == ResultCode.OK)
                                     {
+                                        if (reopen)
+                                        {
+                                            context.reopen_ro_acl_storage_db();
+                                            context.reopen_ro_subject_storage_db();
+                                        }
+
                                         //Individual ii = context.get_individual(ticket, arg1);
                                         string cb = context.get_individual_as_cbor(ticket, arg1, rc);
                                         if (rc == ResultCode.OK)
@@ -178,10 +190,13 @@ public void core_thread(string node_id, string write_storage_node)
                                     }
                                 }
                             }
-                            catch (Exception ex) { writeln(ex.msg); }
+                            catch (Throwable ex)
+                            {
+                                log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.info);
+                            }
 
                             if (trace_msg[ 500 ] == 1)
-                                log.trace("get_individual #e : %s ", arg1);
+                                log.trace("get_individual #end : %s", arg1);
 
                             send(tid, res, rc, worker_id);
                         }

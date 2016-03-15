@@ -1,28 +1,19 @@
 /**
- * авторизация
+   авторизация
  */
 
-module az.acl;
+module veda.core.az.acl;
 
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
     import veda.type, veda.onto.individual, veda.onto.resource, veda.core.bind.lmdb_header, veda.core.context, veda.core.define,
-           veda.core.know_predicates, veda.core.log_msg;
-    import util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, util.logger;
-    import storage.lmdb_storage;
+           veda.core.know_predicates, veda.core.log_msg, veda.core.util.cbor8individual;
+    import util.utils, veda.util.cbor, util.logger;
+    import veda.core.storage.lmdb_storage, veda.core.thread_context, veda.core.az.right_set;
 }
 
 // ////////////// ACLManager
-
-/*********************************************************************
-   permissionObject uri
-   permissionSubject uri
-   permission
-
-   индекс:
-                permissionObject + permissionSubject
-*********************************************************************/
 protected byte err;
 
 // ////// logger ///////////////////////////////////////////
@@ -48,143 +39,45 @@ public string backup(Context ctx, string backup_id)
     return res;
 }
 
+import veda.util.container;
+int max_count_in_cache = 200;
+
 /// Хранение, чтение PermissionStatement, Membership
 class Authorization : LmdbStorage
 {
+    Cache!(Right *[], string) cache_of_group;
+    Cache!(RightSet, string) cache_of_permission;
+
     this(string _path, DBMode mode, string _parent_thread_name)
     {
         super(_path, mode, _parent_thread_name);
+        //cache_of_group      = new Cache!(Right *[], string)(max_count_in_cache, "group");
+        //cache_of_permission = new Cache!(RightSet, string)(max_count_in_cache, "permission");
     }
-
-    bool isExistMemberShip(Individual *membership)
-    {
-        if (membership is null)
-            return true;
-
-        bool[ string ] add_memberOf;
-
-        Resources resources = membership.getResources(veda_schema__resource);
-        Resources memberOf  = membership.getResources(veda_schema__memberOf);
-
-        foreach (mb; memberOf)
-            add_memberOf[ mb.uri ] = true;
-
-        int need_found_count = cast(int)add_memberOf.length;
-
-        if (resources.length > 0)
-        {
-            string groups_str = find(resources[ 0 ].uri);
-            if (groups_str !is null)
-            {
-                string[] groups = groups_str.split(";");
-
-                foreach (group; groups)
-                {
-                    if (group.length > 0)
-                    {
-                        if (add_memberOf.get(group, false) == true)
-                        {
-                            need_found_count--;
-                            if (need_found_count <= 0)
-                                break;
-                        }
-                    }
-                }
-            }
-            else
-                return false;
-        }
-
-        if (need_found_count == 0)
-        {
-            //writeln("MemberShip already exist:", *membership);
-            return true;
-        }
-        else
-            return false;
-    }
-
-    bool isExistPermissionStatement(Individual *prst)
-    {
-        //writeln ("@  isExistPermissionStatement uri=", prst.uri);
-
-        byte  count_new_bits    = 0;
-        byte  count_passed_bits = 0;
-        ubyte access;
-
-        void check_access_bit(Resource canXXX, ubyte true_bit_pos, ubyte false_bit_pos)
-        {
-            if (canXXX !is Resource.init)
-            {
-                if (canXXX == true)
-                {
-                    count_new_bits++;
-                    if (access & true_bit_pos)
-                        count_passed_bits++;
-                }
-                else
-                {
-                    count_new_bits++;
-                    if (access & false_bit_pos)
-                        count_passed_bits++;
-                }
-            }
-        }
-
-
-        Resource permissionObject  = prst.getFirstResource(veda_schema__permissionObject);
-        Resource permissionSubject = prst.getFirstResource(veda_schema__permissionSubject);
-
-        string   str = find(permissionObject.uri ~ "+" ~ permissionSubject.uri);
-
-        if (str !is null && str.length > 0)
-        {
-            access = cast(ubyte)str[ 0 ];
-
-            check_access_bit(prst.getFirstResource("v-s:canCreate"), Access.can_create, Access.cant_create);
-            check_access_bit(prst.getFirstResource("v-s:canDelete"), Access.can_delete, Access.cant_delete);
-            check_access_bit(prst.getFirstResource("v-s:canRead"), Access.can_read, Access.cant_read);
-            check_access_bit(prst.getFirstResource("v-s:canUpdate"), Access.can_update, Access.cant_update);
-        }
-        else
-        {
-            if (trace_msg[ 115 ] == 1)
-                log.trace("ACL NOT FOUND -> %s", permissionObject.uri ~ "+" ~ permissionSubject.uri);
-            return false;
-        }
-
-        if (count_passed_bits < count_new_bits)
-        {
-            if (trace_msg[ 115 ] == 1)
-                log.trace("PermissionStatement not exist, count_passed_bits = %d, count_new_bits=%d", count_passed_bits, count_new_bits);
-
-            return false;
-        }
-        else
-        {
-            if (trace_msg[ 115 ] == 1)
-                log.trace("PermissionStatement already exist: %s", *prst);
-            return true;
-        }
-    }
-
-    string[][ string ] subject_groups_cache;
-    ubyte[ 1024 ] buff_permissions;
-    string[ 1024 ] buff_subject_group;
-    string[ 1024 ] buff_object_group;
 
     int count_permissions = 0;
 
+    override void reopen_db()
+    {
+        super.reopen_db();
 
-    ubyte authorize(string uri, Ticket *ticket, ubyte request_access, Context context, void delegate(string resource_group,
-                                                                                                     string subject_group,
-                                                                                                     string right) trace = null)
+        if (cache_of_group !is null)
+            cache_of_group = new Cache!(Right *[], string)(max_count_in_cache, "group");
+
+        if (cache_of_permission !is null)
+            cache_of_permission = new Cache!(RightSet, string)(max_count_in_cache, "permission");
+
+        //writeln("ACL:CACHE:RESET");
+    }
+
+    ubyte authorize(string uri, Ticket *ticket, ubyte request_access, Context context, bool is_check_for_reload, void delegate(string resource_group,
+                                                                                                                               string subject_group,
+                                                                                                                               string right) trace =
+                        null)
     {
         void reopen_db()
         {
-            //log.trace("@ACL:reopen_db");
             this.reopen_db();
-            subject_groups_cache[ ticket.user_uri ] = string[].init;
         }
 
         ubyte res = 0;
@@ -193,14 +86,15 @@ class Authorization : LmdbStorage
             return request_access;
 
         if (trace_msg[ 111 ] == 1)
-            log.trace("authorize %s", uri);
+            log.trace("authorize uri=%s, user=%s, request_access=%s", uri, ticket.user_uri, access_to_pretty_string(request_access));
 
         MDB_txn *txn_r;
         MDB_dbi dbi;
         string  str;
         int     rc;
 
-        context.acl_check_for_reload(&reopen_db);
+        if (is_check_for_reload)
+            context.acl_check_for_reload(&reopen_db);
 
         if (db_is_open.get(path, false) == false)
             return res;
@@ -221,7 +115,6 @@ class Authorization : LmdbStorage
 
                 rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
             }
-            subject_groups_cache[ ticket.user_uri ] = string[].init;
         }
 
         if (rc != 0)
@@ -230,8 +123,7 @@ class Authorization : LmdbStorage
             {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) WARN:%s", path, fromStringz(mdb_strerror(rc)));
                 reopen_db();
-                rc                                      = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-                subject_groups_cache[ ticket.user_uri ] = string[].init;
+                rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
             }
             else if (rc == MDB_BAD_RSLOT)
             {
@@ -242,8 +134,7 @@ class Authorization : LmdbStorage
                 //core.thread.Thread.sleep(dur!("msecs")(1));
                 //rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
                 reopen_db();
-                rc                                      = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-                subject_groups_cache[ ticket.user_uri ] = string[].init;
+                rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
             }
         }
 
@@ -259,152 +150,204 @@ class Authorization : LmdbStorage
             if (rc != 0)
                 throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
 
-            string[] object_groups;
-            string[] subject_groups;
+            RightSet[ string ] permission_2_group;
 
-            // 1. читаем группы object (uri)
-            MDB_val key;
-            key.mv_size = uri.length;
-            key.mv_data = cast(char *)uri;
+            MDB_val   key;
+            MDB_val   data;
+            string    skey;
 
-            MDB_val data;
-            rc = mdb_get(txn_r, dbi, &key, &data);
+            Right *[] _get_resource_groups(string uri, ubyte access, ref bool[ string ] prepared_uris, int level = 0)
+            {
+                Right *[] res;
+
+                //writeln ("~10 level=", level, ", uri=", uri);
+
+                try
+                {
+                    string groups_str;
+                    if (cache_of_group !is null)
+                    {
+                        res = cache_of_group.get(uri);
+                        //writeln ("ACL:CACHE:found in cache, uri=", uri);
+                    }
+
+                    if (res is null)
+                    {
+                        key.mv_size = uri.length;
+                        key.mv_data = cast(char *)uri;
+                        rc          = mdb_get(txn_r, dbi, &key, &data);
+                        if (rc == 0)
+                        {
+                            groups_str = cast(string)(data.mv_data[ 0..data.mv_size ]);
+                            rights_from_string(groups_str, res);
+                            if (cache_of_group !is null)
+                                cache_of_group.put(uri, res);
+                        }
+                    }
+
+                    long res_lenght = res.length;
+
+                    for (int idx = 0; idx < res_lenght; idx++)
+                    {
+                        Right *group = res[ idx ];
+
+                        if (prepared_uris.get(group.id, false) == true)
+                            continue;
+
+                        string group_key = membership_prefix ~ group.id;
+                        group.access = group.access & access;
+                        //res ~= group;
+                        prepared_uris[ group.id ] = true;
+
+                        if (uri == group_key)
+                            continue;
+
+                        Right *[] up_restrictions = _get_resource_groups(group_key, group.access & access, prepared_uris, level + 1);
+                        foreach (restriction; up_restrictions)
+                        {
+                            res ~= restriction;
+                        }
+                    }
+                }
+                catch (Throwable ex)
+                {
+                    log.trace("ERR! (%d) LINE:[%s], FILE:[%s], MSG:[%s]", level, ex.line, ex.file, ex.info);
+                }
+                return res;
+            }
+
+            RightSet get_resource_groups(string uri, ubyte access)
+            {
+                bool[ string ] prepared_uris;
+                return new RightSet(_get_resource_groups(uri, access, prepared_uris, 0));
+            }
+
+            // 0. читаем фильтр прав у object (uri)
+            string filter = filter_prefix ~ uri;
+            string filter_value;
+            key.mv_size = filter.length;
+            key.mv_data = cast(char *)filter;
+            rc          = mdb_get(txn_r, dbi, &key, &data);
             if (rc == 0)
             {
-                string groups_str = cast(string)(data.mv_data[ 0..data.mv_size ]);
-
-                object_groups = groups_str.split(";");
+                filter_value = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
             }
-            object_groups ~= uri;
-            object_groups ~= veda_schema__AllResourcesGroup;
 
+            // 1. читаем группы object (uri)
+            RightSet object_groups = get_resource_groups(membership_prefix ~ uri, 15);
+            object_groups.data[ uri ]                            = new Right(uri, 15, false);
+            object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
 
             // 2. читаем группы subject (ticket.user_uri)
-
-            subject_groups = subject_groups_cache.get(ticket.user_uri, string[].init);
-
-            if (subject_groups == string[].init || subject_groups.length == 0)
-            {
-                key.mv_size = ticket.user_uri.length;
-                key.mv_data = cast(char *)ticket.user_uri;
-
-                rc = mdb_get(txn_r, dbi, &key, &data);
-                if (rc == 0)
-                {
-                    string groups_str = (cast(string)(data.mv_data[ 0..data.mv_size ])).dup;
-                    subject_groups = groups_str.split(";");
-                }
-                subject_groups ~= ticket.user_uri;
-                subject_groups_cache[ ticket.user_uri ] = subject_groups;
-            }
+            RightSet subject_groups = get_resource_groups(membership_prefix ~ ticket.user_uri, 15);
+            subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
 
             if (trace_msg[ 113 ] == 1)
             {
                 log.trace("user_uri=%s", ticket.user_uri);
-                log.trace("subject_groups=%s", text(subject_groups));
-                log.trace("object_groups=%s", text(object_groups));
+                log.trace("subject_groups=%s", subject_groups);
+                log.trace("object_groups=%s", object_groups);
             }
 
-            count_permissions = 0;
 
-            foreach (subject_group; subject_groups)
+            foreach (object_group; object_groups.data)
             {
-                if (res == request_access && trace is null)
-                    break;
+                string acl_key;
+                if (filter_value !is null)
+                    acl_key = permission_prefix ~ filter_value ~ object_group.id;
+                else
+                    acl_key = permission_prefix ~ object_group.id;
 
-                if (subject_group.length > 1)
+                if (trace_msg[ 112 ] == 1)
+                    log.trace("look acl_key: [%s]", acl_key);
+
+                RightSet permission;
+
+                if (cache_of_permission !is null)
                 {
-                    foreach (object_group; object_groups)
+                    permission = cache_of_permission.get(acl_key);
+
+                    if (permission !is null)
                     {
-                        if (res == request_access && trace is null)
-                            break;
+                        if (trace_msg[ 112 ] == 1)
+                            log.trace("for [%s] found in cache %s", acl_key, permission);
+                        permission_2_group[ object_group.id ] = permission;
+                    }
+                }
 
-                        if (object_group.length > 1)
+                if (permission is null)
+                {
+                    key.mv_size = acl_key.length;
+                    key.mv_data = cast(char *)acl_key;
+
+                    rc = mdb_get(txn_r, dbi, &key, &data);
+                    if (rc == 0)
+                    {
+                        str = cast(string)(data.mv_data[ 0..data.mv_size ]);
+                        RightSet pp = new RightSet();
+                        rights_from_string(str, pp);
+                        permission_2_group[ object_group.id ] = pp;
+
+                        if (cache_of_permission !is null)
+                            cache_of_permission.put(acl_key, pp);
+
+                        if (trace_msg[ 112 ] == 1)
+                            log.trace("for [%s] found %s", acl_key, pp);
+                    }
+                }
+            }
+
+            mdb_txn_abort(txn_r);
+
+            foreach (obj_key; object_groups.data.keys)
+            {
+                RightSet permissions = permission_2_group.get(obj_key, null);
+                //log.trace("obj_key=%s, permissions=%s", obj_key, permissions);
+                if (permissions !is null)
+                {
+                    foreach (perm_key; permissions.data.keys)
+                    {
+                        if (perm_key in subject_groups.data)
                         {
-                            // 3. поиск подходящего acl
-                            string acl_key = object_group ~ "+" ~ subject_group;
+                            Right *restriction = object_groups.data.get(obj_key, null);
+                            Right *permission  = permissions.data.get(perm_key, null);
 
-                            if (trace_msg[ 112 ] == 1)
-                                log.trace("look acl_key: [%s]", acl_key);
+                            //log.trace("restriction=%s, permission=%s, request=%s", *restriction, *permission, access_to_pretty_string(request_access));
 
-                            key.mv_size = acl_key.length;
-                            key.mv_data = cast(char *)acl_key;
+                            ubyte restriction_access, permission_access;
 
-                            rc = mdb_get(txn_r, dbi, &key, &data);
-                            if (rc == 0)
+                            if (restriction !is null)
+                                restriction_access = restriction.access;
+
+                            if (permission !is null)
                             {
-                                str = cast(string)(data.mv_data[ 0..data.mv_size ]);
+                                if (permission.access > 15)
+                                    permission_access = (((permission.access & 0xF0) >> 4) ^ 0x0F) & permission.access;
+                                else
+                                    permission_access = permission.access;
+                            }
 
-                                if (trace_msg[ 112 ] == 1)
-                                    log.trace("for [%s] found %s", acl_key, text(getAccessListFromByte(cast(ubyte)str[ 0 ])));
-
-                                if (str !is null && str.length > 0)
+                            foreach (int idx, access; access_list)
+                            {
+                                if ((request_access & access & restriction_access) != 0)
                                 {
-                                    buff_permissions[ count_permissions ] = cast(ubyte)str[ 0 ];
+                                    ubyte set_bit = cast(ubyte)(access & permission_access);
 
-                                    if (trace !is null)
+                                    if (set_bit > 0)
                                     {
-                                        buff_subject_group[ count_permissions ] = subject_group;
-                                        buff_object_group[ count_permissions ]  = object_group;
+//                            if (trace !is null)
+//                                trace(buff_object_group[ pos ], buff_subject_group[ pos ], access_list_predicates[ idx ]);
+
+                                        res = cast(ubyte)(res | set_bit);
+                                        //log.trace("set_bit=%s, res=%s", access_to_pretty_string(set_bit), access_to_pretty_string(res));
+
+                                        if (trace !is null)
+                                        {
+                                            trace(obj_key, perm_key, access_list_predicates[ idx ]);
+                                        }
                                     }
-                                    count_permissions++;
                                 }
                             }
-                        }
-                    }
-                }
-            }
-
-            // found can rights
-            for (int pos = 0; pos < count_permissions; pos++)
-            {
-                ubyte permission = (0x0F & buff_permissions[ pos ]);
-
-                if (permission == 0)
-                    continue;
-
-                foreach (int idx, access; access_list)
-                {
-                    if ((request_access & access) != 0)
-                    {
-                        ubyte set_bit = cast(ubyte)(access & permission);
-
-                        if (set_bit > 0)
-                        {
-                            if (trace !is null)
-                                trace(buff_object_group[ pos ], buff_subject_group[ pos ], access_list_predicates[ idx ]);
-
-                            res = cast(ubyte)(res | set_bit);
-
-                            //if (res == request_access && trace is null)
-                            //    break;
-                        }
-                    }
-                }
-            }
-
-            // found can't rights
-            for (int pos = 0; pos < count_permissions; pos++)
-            {
-                ubyte permission = (0xF0 & buff_permissions[ pos ]) >> 4;
-
-                if (permission == 0)
-                    continue;
-
-                foreach (int idx, access; access_list)
-                {
-                    if ((request_access & access) != 0)
-                    {
-                        ubyte set_bit = cast(ubyte)(access & permission);
-
-                        if (set_bit > 0)
-                        {
-                            if (trace !is null)
-                                trace(buff_object_group[ pos ], buff_subject_group[ pos ], access_list_predicates[ idx ]);
-
-                            res = res & ~set_bit;
-                            //if (res == request_access && trace is null)
-                            //    break;
                         }
                     }
                 }
@@ -416,39 +359,12 @@ class Authorization : LmdbStorage
 
         scope (exit)
         {
-            mdb_txn_abort(txn_r);
-
             if (trace_msg[ 111 ] == 1)
-                log.trace("authorize %s, request=%s, answer=%s", uri, text(request_access), text(res));
+                log.trace("authorize %s, request=%s, answer=[%s]", uri, access_to_pretty_string(request_access), access_to_pretty_string(res));
         }
-
-        if (trace_msg[ 111 ] == 1)
-            log.trace("acl:res=%d", res);
 
         return res;
     }
-}
-
-private Access[] getAccessListFromByte(ubyte permission)
-{
-    Access[] res;
-
-    foreach (int idx, access; access_list)
-    {
-        ubyte set_bit = cast(ubyte)(access & permission);
-
-        if (set_bit > 0)
-            res ~= access;
-    }
-    foreach (int idx, access; denied_list)
-    {
-        ubyte set_bit = cast(ubyte)(access & permission);
-
-        if (set_bit > 0)
-            res ~= access;
-    }
-
-    return res;
 }
 
 void acl_manager(string thread_name, string db_path)
@@ -456,9 +372,8 @@ void acl_manager(string thread_name, string db_path)
     int                          size_bin_log     = 0;
     int                          max_size_bin_log = 10_000_000;
 
-    core.thread.Thread.getThis().name = thread_name;
-//    writeln("SPAWN: acl manager");
-    LmdbStorage                  storage      = new LmdbStorage(acl_indexes_db_path, DBMode.RW, "acl_manager");
+    core.thread.Thread.getThis().name         = thread_name;
+    Authorization                storage      = new Authorization(acl_indexes_db_path, DBMode.RW, "acl_manager");
     string                       bin_log_name = get_new_binlog_name(db_path);
 
     // SEND ready
@@ -468,181 +383,102 @@ void acl_manager(string thread_name, string db_path)
             });
     while (true)
     {
-        receive(
-                (CMD cmd)
-                {
-                    if (cmd == CMD.COMMIT)
+        try
+        {
+            receive(
+                    (CMD cmd)
                     {
-                        storage.flush(1);
-                    }
-                },
-                (CMD cmd, EVENT type, string msg, long op_id)
-                {
-                    if (cmd == CMD.PUT)
-                    {
-                        try
+                        if (cmd == CMD.COMMIT)
                         {
-                            Individual ind;
-                            if (cbor2individual(&ind, msg) < 0)
+                            storage.flush(1);
+                        }
+                    },
+                    (CMD cmd, EVENT type, string msg, long op_id)
+                    {
+                        if (cmd == CMD.PUT)
+                        {
+                            try
                             {
-                                log.trace("!ERR:invalid individual: [%s]", msg);
-                                return;
+                                Individual ind;
+                                if (cbor2individual(&ind, msg) < 0)
+                                {
+                                    log.trace("!ERR:invalid individual: [%s] op_id=%d", msg, op_id);
+                                    return;
+                                }
+
+                                Resources rdfType = ind.resources[ rdf__type ];
+
+                                if (rdfType.anyExists(veda_schema__PermissionStatement) == true)
+                                {
+                                    prepare_permission_statement(ind, op_id, storage);
+                                }
+                                else if (rdfType.anyExists(veda_schema__Membership) == true)
+                                {
+                                    prepare_membership(ind, op_id, storage);
+                                }
+                                else if (rdfType.anyExists(veda_schema__PermissionFilter) == true)
+                                {
+                                    prepare_permission_filter(ind, op_id, storage);
+                                }
                             }
-
-                            Resources rdfType = ind.resources[ rdf__type ];
-
-                            if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
+                            finally
                             {
-                                if (trace_msg[ 114 ] == 1)
-                                    log.trace("store PermissionStatement: [%s]", ind);
-
-                                Resource permissionObject = ind.getFirstResource(veda_schema__permissionObject);
-                                Resource permissionSubject = ind.getFirstResource(veda_schema__permissionSubject);
-
-                                ubyte access;
-
-                                // найдем предыдущие права для данной пары
-                                string str = storage.find(permissionObject.uri ~ "+" ~ permissionSubject.uri);
-                                if (str !is null && str.length > 0)
-                                {
-                                    access = cast(ubyte)str[ 0 ];
-                                }
-
-                                Resource canCreate = ind.getFirstResource("v-s:canCreate");
-                                if (canCreate !is Resource.init)
-                                {
-                                    if (canCreate == true)
-                                        access = access | Access.can_create;
-                                    else
-                                        access = access | Access.cant_create;
-                                }
-
-                                Resource canRead = ind.getFirstResource("v-s:canRead");
-                                if (canRead !is Resource.init)
-                                {
-                                    if (canRead == true)
-                                        access = access | Access.can_read;
-                                    else
-                                        access = access | Access.cant_read;
-                                }
-
-                                Resource canUpdate = ind.getFirstResource("v-s:canUpdate");
-                                if (canUpdate !is Resource.init)
-                                {
-                                    if (canUpdate == true)
-                                        access = access | Access.can_update;
-                                    else
-                                        access = access | Access.cant_update;
-                                }
-
-                                Resource canDelete = ind.getFirstResource("v-s:canDelete");
-                                if (canDelete !is Resource.init)
-                                {
-                                    if (canDelete == true)
-                                        access = access | Access.can_delete;
-                                    else
-                                        access = access | Access.cant_delete;
-                                }
-
-                                ResultCode res = storage.put(permissionObject.uri ~ "+" ~ permissionSubject.uri, "" ~ access);
-
-                                if (trace_msg[ 100 ] == 1)
-                                    log.trace("[acl index] (%s) ACL: %s+%s %s", text(res), permissionObject.uri, permissionSubject.uri,
-                                              text(access));
-                            }
-                            else if (rdfType.anyExist(veda_schema__Membership) == true)
-                            {
-                                if (trace_msg[ 114 ] == 1)
-                                    log.trace("store Membership: [%s]", ind);
-
-                                bool[ string ] add_memberOf;
-                                Resources resource = ind.getResources(veda_schema__resource);
-                                Resources memberOf = ind.getResources(veda_schema__memberOf);
-
-                                foreach (mb; memberOf)
-                                    add_memberOf[ mb.uri ] = true;
-
-                                foreach (rs; resource)
-                                {
-                                    bool[ string ] new_memberOf = add_memberOf.dup;
-                                    string groups_str = storage.find(rs.uri);
-                                    if (groups_str !is null)
-                                    {
-                                        string[] groups = groups_str.split(";");
-                                        foreach (group; groups)
-                                        {
-                                            if (group.length > 0)
-                                                new_memberOf[ group ] = true;
-                                        }
-                                    }
-
-                                    OutBuffer outbuff = new OutBuffer();
-                                    foreach (key; new_memberOf.keys)
-                                    {
-                                        outbuff.write(key);
-                                        outbuff.write(';');
-                                    }
-
-                                    ResultCode res = storage.put(rs.uri, outbuff.toString());
-
-                                    if (trace_msg[ 101 ] == 1)
-                                        log.trace("[acl index] (%s) MemberShip: %s : %s", text(res), rs.uri, outbuff.toString());
-                                }
+                                set_acl_manager_op_id(op_id);
                             }
                         }
-                        finally
-                        {
-                            set_acl_manager_op_id(op_id);
-                        }
-                    }
-                },
-                (CMD cmd, Tid tid_response_reciever)
-                {
-                    if (cmd == CMD.NOP)
-                        send(tid_response_reciever, true);
-                    else
-                        send(tid_response_reciever, false);
-                },
-                (CMD cmd, string msg, Tid tid_response_reciever)
-                {
-                    if (cmd == CMD.BACKUP)
+                    },
+                    (CMD cmd, Tid tid_response_reciever)
                     {
-                        try
-                        {
-                            string backup_id;
-                            if (msg.length > 0)
-                                backup_id = msg;
-
-                            if (backup_id is null)
-                                backup_id = "0";
-
-                            Result res = storage.backup(backup_id);
-                            if (res == Result.Ok)
-                            {
-                                size_bin_log = 0;
-                                bin_log_name = get_new_binlog_name(db_path);
-                            }
-                            else if (res == Result.Err)
-                            {
-                                backup_id = "";
-                            }
-                            send(tid_response_reciever, backup_id);
-                        }
-                        catch (Exception ex)
-                        {
-                            send(tid_response_reciever, "");
-                        }
-                    }
-                    else
+                        if (cmd == CMD.NOP)
+                            send(tid_response_reciever, true);
+                        else
+                            send(tid_response_reciever, false);
+                    },
+                    (CMD cmd, string msg, Tid tid_response_reciever)
                     {
-                        send(tid_response_reciever, "?");
-                    }
-                },
-                (CMD cmd, int arg, bool arg2)
-                {
-                    if (cmd == CMD.SET_TRACE)
-                        set_trace(arg, arg2);
-                },
-                (Variant v) { writeln(thread_name, "::acl_manager::Received some other type: [", v, "]"); });
+                        if (cmd == CMD.BACKUP)
+                        {
+                            try
+                            {
+                                string backup_id;
+                                if (msg.length > 0)
+                                    backup_id = msg;
+
+                                if (backup_id is null)
+                                    backup_id = "0";
+
+                                Result res = storage.backup(backup_id);
+                                if (res == Result.Ok)
+                                {
+                                    size_bin_log = 0;
+                                    bin_log_name = get_new_binlog_name(db_path);
+                                }
+                                else if (res == Result.Err)
+                                {
+                                    backup_id = "";
+                                }
+                                send(tid_response_reciever, backup_id);
+                            }
+                            catch (Exception ex)
+                            {
+                                send(tid_response_reciever, "");
+                            }
+                        }
+                        else
+                        {
+                            send(tid_response_reciever, "?");
+                        }
+                    },
+                    (CMD cmd, int arg, bool arg2)
+                    {
+                        if (cmd == CMD.SET_TRACE)
+                            set_trace(arg, arg2);
+                    },
+                    (Variant v) { writeln(thread_name, "::acl_manager::Received some other type: [", v, "]"); });
+        }
+        catch (Throwable ex)
+        {
+            log.trace("acl manager# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+        }
     }
 }

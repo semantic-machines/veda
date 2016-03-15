@@ -8,6 +8,10 @@ private import util.logger;
 byte[ 1000 ] trace_msg;
 
 // last id = 500
+long T_REST_1 = 500;
+long T_ACL_1  = 111;
+long T_ACL_2  = 112;
+long T_ACL_3  = 113;
 
 static this()
 {
@@ -21,15 +25,15 @@ static this()
     trace_msg[ 68 ] = 1;
     trace_msg[ 69 ] = 1;
 
-    //	trace_msg[64] = 1; // вложенное в команду put turtle сообщения в виде json-ld
-    //	trace_msg[3] = 1; // входящее сообщение в виде json-ld
-
-    trace_msg[ 63 ] = 0;   // log.trace("command_preparer, set_message_trace");
-
     version (trace)
         trace_msg[] = 1;     // полное логгирование
 
-    trace_msg[ 3 ] = 0;
+    version (trace_acl)
+    {
+        trace_msg[ T_ACL_1 ] = 1;
+        trace_msg[ T_ACL_2 ] = 1;
+        trace_msg[ T_ACL_3 ] = 1;
+    }
 }
 
 void set_message(int idx)

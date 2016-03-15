@@ -5,7 +5,7 @@ import core.vararg, core.stdc.stdarg;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
 import veda.pacahon_driver, veda.type, veda.core.context, veda.core.know_predicates, veda.core.define, veda.core.log_msg;
-import veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang, veda.util.individual8json;
+import veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang, veda.util.individual8vjson;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -76,6 +76,9 @@ interface VedaStorageRest_API {
     @path("authenticate") @method(HTTPMethod.GET)
     Ticket authenticate(string login, string password);
 
+    @path("get_ticket_trusted") @method(HTTPMethod.GET)
+    Ticket get_ticket_trusted(string ticket, string login);
+
     @path("is_ticket_valid") @method(HTTPMethod.GET)
     bool is_ticket_valid(string ticket);
 
@@ -85,11 +88,14 @@ interface VedaStorageRest_API {
     @path("wait_module") @method(HTTPMethod.GET)
     long wait_module(int module_id, long op_id);
 
+    @path("restart_module") @method(HTTPMethod.GET)
+    long restart_module(string ticket, int module_id);
+
     @path("set_trace") @method(HTTPMethod.GET)
     void set_trace(int idx, bool state);
 
     @path("backup") @method(HTTPMethod.GET)
-    void backup();
+    void backup(bool to_binlog);
 
     @path("count_individuals") @method(HTTPMethod.GET)
     long count_individuals();
@@ -101,7 +107,7 @@ interface VedaStorageRest_API {
     Json[] get_individuals(string ticket, string[] uris);
 
     @path("get_individual") @method(HTTPMethod.GET)
-    Json get_individual(string ticket, string uri);
+    Json get_individual(string ticket, string uri, bool reopen = false);
 
     @path("put_individual") @method(HTTPMethod.PUT)
     OpResult put_individual(string ticket, Json individual, bool prepare_events, string event_id);
@@ -179,15 +185,16 @@ class VedaStorageRest : VedaStorageRest_API
 
     private Worker *allocate_worker()
     {
-        //writeln ("@1 request worker");
         Worker *worker = get_free_worker();
 
-        while (worker is null)
-        {
-            yield();
-            worker = get_free_worker();
-        }
-        //writeln ("@2 allocate worker ", worker.id);
+//        while (worker is null)
+//        {
+//            vibe.core.core.yield();
+//            worker = get_free_worker();
+//        }
+        if (worker is null)
+            return null;
+
         worker.ready    = false;
         worker.complete = false;
         return worker;
@@ -233,7 +240,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         // цикл по ожиданию своего результата
         while (my_worker.complete == false)
-            yield();
+            vibe.core.core.yield();
 
         string[] res = my_worker.res_string_array.dup;
 
@@ -260,7 +267,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         // цикл по ожиданию своего результата
         while (my_worker.complete == false)
-            yield();
+            vibe.core.core.yield();
 
         Json[] res = my_worker.res_json_array.dup;
 
@@ -287,7 +294,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         // цикл по ожиданию своего результата
         while (my_worker.complete == false)
-            yield();
+            vibe.core.core.yield();
 
         long res = my_worker.res_long;
 
@@ -435,6 +442,15 @@ class VedaStorageRest : VedaStorageRest_API
         return ticket;
     }
 
+    Ticket get_ticket_trusted(string ticket, string login)
+    {
+        Ticket new_ticket = context.get_ticket_trusted(ticket, login);
+
+        if (new_ticket.result != ResultCode.OK)
+            throw new HTTPStatusException(new_ticket.result);
+        return new_ticket;
+    }
+
     long get_operation_state(int module_id)
     {
         return context.get_operation_state(cast(P_MODULE)module_id);
@@ -447,12 +463,20 @@ class VedaStorageRest : VedaStorageRest_API
         return res;
     }
 
+    long restart_module(string ticket, int module_id)
+    {
+        long res = context.restart_module(cast(P_MODULE)module_id);
+
+        return res;
+    }
+
+
     void set_trace(int idx, bool state)
     {
         context.set_trace(idx, state);
     }
 
-    void backup()
+    void backup(bool to_binlog)
     {
         ResultCode rc = ResultCode.OK;
         int        recv_worker_id;
@@ -461,8 +485,11 @@ class VedaStorageRest : VedaStorageRest_API
 
         Worker     *worker = allocate_worker();
 
-        std.concurrency.send(getFreeTid(), Command.Execute, Function.Backup, worker.id, std.concurrency.thisTid);
-        yield();
+        if (worker is null)
+            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
+
+        std.concurrency.send(getFreeTid(), Command.Execute, Function.Backup, to_binlog, worker.id, std.concurrency.thisTid);
+        vibe.core.core.yield();
         std.concurrency.receive((bool _res, int _recv_worker_id) { res = _res; recv_worker_id = _recv_worker_id; });
 
         if (recv_worker_id == worker.id)
@@ -489,8 +516,11 @@ class VedaStorageRest : VedaStorageRest_API
 
         Worker     *worker = allocate_worker();
 
+        if (worker is null)
+            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
+
         std.concurrency.send(worker.tid, Command.Execute, Function.CountIndividuals, worker.id, std.concurrency.thisTid);
-        yield();
+        vibe.core.core.yield();
         std.concurrency.receive((long _res, int _recv_worker_id) { res = _res; recv_worker_id = _recv_worker_id; });
 
         if (recv_worker_id == worker.id)
@@ -527,11 +557,13 @@ class VedaStorageRest : VedaStorageRest_API
             string[]   individuals_ids;
 
             Worker     *worker = allocate_worker();
+            if (worker is null)
+                throw new HTTPStatusException(ResultCode.Too_Many_Requests);
 
             std.concurrency.send(worker.tid, Command.Get, Function.IndividualsIdsToQuery, _query, sort, databases, ticket, reopen,
                                  top, limit, worker.id, std.concurrency.thisTid);
 
-            yield();
+            vibe.core.core.yield();
 
             std.concurrency.receive((immutable(
                                                string)[] _individuals_ids, ResultCode _rc, int _recv_worker_id)
@@ -567,9 +599,11 @@ class VedaStorageRest : VedaStorageRest_API
         Json[]     res;
 
         Worker     *worker = allocate_worker();
+        if (worker is null)
+            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
 
         std.concurrency.send(worker.tid, Command.Get, Function.Individuals, uris.idup, ticket, worker.id, std.concurrency.thisTid);
-        yield();
+        vibe.core.core.yield();
         std.concurrency.receive((immutable(
                                            Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;
                                                                                                 recv_worker_id =
@@ -591,7 +625,7 @@ class VedaStorageRest : VedaStorageRest_API
         return res;
     }
 
-    Json get_individual(string _ticket, string uri)
+    Json get_individual(string _ticket, string uri, bool reopen = false)
     {
         StopWatch sw; sw.start;
 
@@ -606,9 +640,11 @@ class VedaStorageRest : VedaStorageRest_API
             Json[]     res;
 
             Worker     *worker = allocate_worker();
+            if (worker is null)
+                throw new HTTPStatusException(ResultCode.Too_Many_Requests);
 
-            std.concurrency.send(worker.tid, Command.Get, Function.Individual, uri, "", _ticket, worker.id, std.concurrency.thisTid);
-            yield();
+            std.concurrency.send(worker.tid, Command.Get, Function.Individual, uri, "", _ticket, reopen, worker.id, std.concurrency.thisTid);
+            vibe.core.core.yield();
             std.concurrency.receive((immutable(
                                                Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;
                                                                                                     recv_worker_id = _recv_worker_id; });
@@ -652,6 +688,9 @@ class VedaStorageRest : VedaStorageRest_API
     {
         OpResult res;
 
+       	if (trace_msg[ 500 ] == 1)
+        	log.trace("put_individual #start : %s", text(individual_json));
+
         long     fts_count_prep_put = search.xapian_indexer.get_count_prep_put();
         long     fts_count_recv_put = search.xapian_indexer.get_count_recv_put();
 
@@ -669,8 +708,11 @@ class VedaStorageRest : VedaStorageRest_API
         {
             Individual indv = json_to_individual(individual_json);
             res = context.put_individual(ticket, indv.uri, indv, prepare_events, event_id == "" ? null : event_id);
+            
+           	if (trace_msg[ 500 ] == 1)
+        		log.trace("put_individual #end : uri=%s, res=%s", indv.uri, text(res));
         }
-
+        	
         if (res.result != ResultCode.OK)
             throw new HTTPStatusException(res.result);
 

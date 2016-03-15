@@ -18,15 +18,15 @@
 
 v-fc:FunctionCreate
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Function Create"@en ;
   rdfs:label "Функция Создать"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 v-fc:Blank
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Бланк"@ru ;
   rdfs:label "Blank"@en ;
-  rdfs:subClassOf owl:Thing ;
 .
 v-fc:BlankMgmt
   rdf:type v-s:Bundle ;
@@ -184,6 +184,7 @@ v-fc:BlankTemplate
 			if (property_uri === "rdf:type") return;
 			if (property_uri === "rdfs:label") return;
 			if (property_uri === "v-s:deleted") return;
+			if (property_uri === "rdfs:isDefinedBy") return;
 			object.defineProperty(property_uri);
 			object[property_uri] = self[property_uri].slice(0);
 		});
@@ -200,6 +201,7 @@ v-fc:BlankTemplate
 			if (property_uri === "rdf:type") return;
 			if (property_uri === "rdfs:label") return;
 			if (property_uri === "v-s:deleted") return;
+			if (property_uri === "rdfs:isDefinedBy") return;
 			self.defineProperty(property_uri);
 			self[property_uri] = object[property_uri].slice(0);
 		});

@@ -23,11 +23,11 @@ function prepare_decision_form(ticket, document)
 
         var f_executor = _work_order['v-wf:executor'];
         var executor;
-        
-        if (f_executor && f_executor.length > 0)
-        	executor = f_executor[0];
 
-//        print ("@@@executor=", toJson (executor));	
+        if (f_executor && f_executor.length > 0)
+            executor = f_executor[0];
+
+        //        print ("@@@executor=", toJson (executor));	
         //print("[WORKFLOW][DF1].1");
 
         var f_forWorkItem = _work_order['v-wf:forWorkItem'];
@@ -109,7 +109,7 @@ function prepare_work_order(ticket, document)
             traceToJournal(ticket, trace_journal_uri, "обработка рабочего задания", toJson(document));
 
         var journal_uri;
-        
+
         var f_inVars = work_item['v-wf:inVars'];
         if (!f_inVars)
             f_inVars = [];
@@ -127,8 +127,8 @@ function prepare_work_order(ticket, document)
 
         if (!f_local_outVars)
         {
-        	journal_uri = create_new_subjournal(f_forWorkItem, _work_order['@'], null, 'v-wf:WorkOrderStarted')
-            // берем только необработанные рабочие задания
+            journal_uri = create_new_subjournal(f_forWorkItem, _work_order['@'], net_element['rdfs:label'], 'v-wf:WorkOrderStarted')
+                // берем только необработанные рабочие задания
             if (!executor)
             {
                 //print("[WORKFLOW][WO.2] executor not defined");
@@ -314,22 +314,25 @@ function prepare_work_order(ticket, document)
 
                     var decisionFormList = [];
 
-                    for (var i = 0; i < transform_result.length; i++)
+                    if (transform_result)
                     {
-                        put_individual(ticket, transform_result[i], _event_id);
-                        decisionFormList.push(
+                        for (var i = 0; i < transform_result.length; i++)
                         {
-                            data: transform_result[i]['@'],
-                            type: _Uri
-                        });
+                            put_individual(ticket, transform_result[i], _event_id);
+                            decisionFormList.push(
+                            {
+                                data: transform_result[i]['@'],
+                                type: _Uri
+                            });
 
-                        // выдадим права отвечающему на эту форму
-                        var employee = executor['v-s:employee'];
-                        if (employee)
-                        {
-                            //print("[WORKFLOW][WO2.2] employee=" + toJson(employee));
+                            // выдадим права отвечающему на эту форму
+                            var employee = executor['v-s:employee'];
+                            if (employee)
+                            {
+                                //print("[WORKFLOW][WO2.2] employee=" + toJson(employee));
 
-                            addRight(ticket, [can_read, can_update], employee[0].data, transform_result[i]['@']);
+                                addRight(ticket, [can_read, can_update], employee[0].data, transform_result[i]['@']);
+                            }
                         }
                     }
 
@@ -338,10 +341,10 @@ function prepare_work_order(ticket, document)
                         'v-wf:decisionFormList': decisionFormList
                     };
                     add_to_individual(ticket, add_to_document, _event_id);
-					_work_order['v-wf:decisionFormList'] = decisionFormList;
+                    _work_order['v-wf:decisionFormList'] = decisionFormList;
 
                     mapToMessage(net_element['v-wf:startingMessageMap'], ticket, _process, work_item, _work_order, null, journal_uri, trace_journal_uri, 'v-wf:startingMessageMap');
-					
+
                     //print("[WORKFLOW][WO2.3] transform_result=" + toJson(transform_result));
                 }
                 if (is_exist(executor, 'rdf:type', 'v-wf:Net') || f_useSubNet)
@@ -363,61 +366,63 @@ function prepare_work_order(ticket, document)
 
         var workOrderList = work_item['v-wf:workOrderList'];
         // проверяем есть ли результаты рабочих заданий
-        for (var i = 0; i < workOrderList.length; i++)
+        if (workOrderList)
         {
-            //print("[WORKFLOW][WO3.0] workOrder=" + toJson(workOrderList[i]) + "");
-            var workOrder;
-            if (workOrderList[i].data != document['@'])
-                workOrder = get_individual(ticket, workOrderList[i].data);
-            else
-                workOrder = document;
-
-            //print("[WORKFLOW][WO3.1] workOrder=" + toJson(workOrder) + "");
-
-            var outVars = workOrder['v-wf:outVars'];
-            if (outVars)
+            for (var i = 0; i < workOrderList.length; i++)
             {
-                var el = {};
-                el['workOrder'] = workOrder['@'];
+                //print("[WORKFLOW][WO3.0] workOrder=" + toJson(workOrderList[i]) + "");
+                var workOrder;
+                if (workOrderList[i].data != document['@'])
+                    workOrder = get_individual(ticket, workOrderList[i].data);
+                else
+                    workOrder = document;
 
-                var f_set = false;
-                for (var i1 = 0; i1 < outVars.length; i1++)
+                //print("[WORKFLOW][WO3.1] workOrder=" + toJson(workOrder) + "");
+
+                var outVars = workOrder['v-wf:outVars'];
+                if (outVars)
                 {
-                    var _result = get_individual(ticket, outVars[i1].data);
-                    //print("[WORKFLOW][WO3.2] _result=" + toJson(_result) + "");
-                    if (_result)
+                    var el = {};
+                    el['workOrder'] = workOrder['@'];
+
+                    var f_set = false;
+                    for (var i1 = 0; i1 < outVars.length; i1++)
                     {
-                        if (wosResultsMapping)
+                        var _result = get_individual(ticket, outVars[i1].data);
+                        //print("[WORKFLOW][WO3.2] _result=" + toJson(_result) + "");
+                        if (_result)
                         {
-                            // wosResultsMapping указан 
-                        }
-                        else
-                        {
-                            // складываем все результаты в локальную переменную					
-                            var key, val;
-                            var varName = _result["v-wf:variableName"];
-                            if (varName)
-                                key = varName[0].data;
-
-                            var varValue = _result["v-wf:variableValue"];
-                            if (varValue)
-                                val = varValue;
-
-                            if (val !== undefined && key !== undefined)
+                            if (wosResultsMapping)
                             {
-                                el[key] = val;
-                                f_set = true;
+                                // wosResultsMapping указан 
                             }
-                            //print("[WORKFLOW][WO3.3] result=" + toJson(result) + "");
+                            else
+                            {
+                                // складываем все результаты в локальную переменную					
+                                var key, val;
+                                var varName = _result["v-wf:variableName"];
+                                if (varName)
+                                    key = varName[0].data;
+
+                                var varValue = _result["v-wf:variableValue"];
+                                if (varValue)
+                                    val = varValue;
+
+                                if (val !== undefined && key !== undefined)
+                                {
+                                    el[key] = val;
+                                    f_set = true;
+                                }
+                                //print("[WORKFLOW][WO3.3] result=" + toJson(result) + "");
+                            }
                         }
                     }
+                    if (f_set) work_item_result.push(el);
+
                 }
-                if (f_set) work_item_result.push(el);
 
             }
-
         }
-
         if (work_item_result.length == workOrderList.length)
             is_goto_to_next_task = true;
         else
@@ -434,9 +439,9 @@ function prepare_work_order(ticket, document)
 
         if (is_goto_to_next_task)
         {
-           	journal_uri = getJournalUri(_work_order['@']); 
-        	
-        	
+            journal_uri = getJournalUri(_work_order['@']);
+
+
             // переход к новой задаче  prepare[[wo][wo][wo]] ----> new [wi]
 
             if (work_item_result.length > 0)
@@ -448,7 +453,7 @@ function prepare_work_order(ticket, document)
                 else
                 {
                     //print("[WORKFLOW][WO4.0.0] completedJournalMap");
-                    mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item, null, null, journal_uri);
+                    mapToJournal(net_element['v-wf:completedJournalMap'], ticket, _process, work_item, null, net_element['rdfs:label'], journal_uri);
                 }
             }
 
@@ -571,8 +576,8 @@ function prepare_work_order(ticket, document)
 
             put_individual(ticket, work_item, _event_id);
             //print("[WORKFLOW][WOe] update work_item=", toJson(work_item));
-            
-            remove_empty_branches_from_journal (journal_uri);
+
+            remove_empty_branches_from_journal(journal_uri);
         }
     }
     catch (e)
@@ -618,12 +623,12 @@ function prepare_work_item(ticket, document)
                 if (trace_journal_uri)
                     traceToJournal(ticket, trace_journal_uri, "prepare_work_item:completed, exit", work_item['@']);
 
-                remove_empty_branches_from_journal (getJournalUri(work_item['@']));                
-                
+                remove_empty_branches_from_journal(getJournalUri(work_item['@']));
+
                 return;
             }
         }
-    
+
         trace_journal_uri = create_new_trace_subjournal(forProcess, work_item, netElement['@'] + "' - [" + getStrings(netElement['rdfs:label']) + "] - " + work_item['@'], 'v-wf:WorkItemStarted')
 
         var f_join = netElement['v-wf:join'];
@@ -704,7 +709,7 @@ function prepare_work_item(ticket, document)
         {
             journal_uri = create_new_subjournal(forProcess, work_item['@'], netElement['rdfs:label'], 'v-wf:WorkItemStarted');
 
-        	if (trace_journal_uri)
+            if (trace_journal_uri)
                 traceToJournal(ticket, trace_journal_uri, "Is task");
 
             //* выполнить стартовый маппинг переменных	
@@ -792,7 +797,7 @@ function prepare_work_item(ticket, document)
             else
             {
                 mapToJournal(netElement['v-wf:startingJournalMap'], ticket, _process, document, null, netElement['rdfs:label'], journal_uri);
-            }    
+            }
 
             var work_order_list = [];
             var work_order_uri_list = [];
@@ -899,6 +904,15 @@ function prepare_work_item(ticket, document)
             }];
 
             is_completed = true;
+            
+            var completeProcess = {
+                '@': forProcess,
+	            'v-wf:isCompleted': [{
+                     data: true,
+                     type: _Bool
+                 }]
+            };
+            add_to_individual(ticket, completeProcess, _event_id);
 
         } // end [OutputCondition]    
 
@@ -1145,7 +1159,7 @@ function prepare_start_form(ticket, document)
 
     if (isTrace)
     {
-        trace_journal_uri = create_new_journal(ticket, getTraceJournalUri(new_process_uri), new_process_uri, _net['rdfs:label']);
+        trace_journal_uri = create_new_journal(ticket, getTraceJournalUri(new_process_uri), getJournalUri(document['v-wf:processedDocument'][0].data), _net['rdfs:label'], true);
 
         if (trace_journal_uri)
         {
@@ -1156,12 +1170,44 @@ function prepare_start_form(ticket, document)
 
     put_individual(ticket, new_process, _event_id);
 
-    create_new_journal(ticket, getJournalUri(new_process_uri), new_process_uri, _net['rdfs:label']);
+    create_new_journal(ticket, getJournalUri(new_process_uri), getJournalUri(document['v-wf:processedDocument'][0].data), _net['rdfs:label']);
+
+    var jrId = genUri();
+    var journalRecord = {
+        '@': jrId,
+        'rdf:type': newUri('v-s:ProcessStarted'),
+        'v-s:actor': newUri(author_uri),
+        'v-s:processJournal': newUri(getJournalUri(new_process_uri)),
+        'v-wf:onProcess': newUri(new_process_uri),
+        'v-s:onDocument': document['v-wf:processedDocument'],
+        'v-s:created': [
+        {
+            data: new Date(),
+            type: _Datetime
+        }]
+    };
+    put_individual(ticket, journalRecord, _event_id);
+
+    var membership = {
+        '@': genUri(),
+        'rdf:type': newUri('v-s:Membership'),
+        'v-s:resource': newUri(new_process_uri),
+        'v-s:memberOf': document['v-wf:processedDocument'],
+        'rdfs:comment': newStr('Process is in document group')
+    };
+    put_individual(ticket, membership, _event_id);
+
+    add_to_individual(ticket,
+    {
+        '@': document['v-wf:processedDocument'][0].data + 'j',
+        'v-s:childRecord': newUri(jrId)
+    }, _event_id);
 
     var add_to_document = {
         '@': document['@'],
         'v-wf:isProcess': newUri(new_process_uri)
     };
+
     add_to_individual(ticket, add_to_document, _event_id);
 
     // возьмем автора формы и выдадим ему полные права на процесс

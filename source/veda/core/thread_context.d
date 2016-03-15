@@ -8,13 +8,12 @@ private
 {
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
            std.json;
-    //import vibe.data.json, vibe.core.log, vibe.http.client, vibe.stream.operations;
     import bind.xapian_d_header, bind.v8d_header;
     import io.mq_client;
-    import util.container, util.logger, util.utils, util.cbor, veda.core.util.cbor8individual, veda.core.util.individual8json;
+    import veda.util.container, util.logger, util.utils, veda.util.cbor, veda.core.util.cbor8individual, veda.core.util.individual8json;
     import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.log_msg;
-    import veda.onto.onto, veda.onto.individual, veda.onto.resource, storage.lmdb_storage;
-    import az.acl;
+    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
+    import veda.core.az.acl;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -125,7 +124,7 @@ class PThreadContext : Context
             }
             catch (Exception ex)
             {
-                printPrettyTrace(stderr);
+                //printPrettyTrace(stderr);
                 log.trace("context.sys_ticket:EX!%s", ex.msg);
             }
 
@@ -261,7 +260,7 @@ class PThreadContext : Context
         return res;
     }
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
-    bool authorize(string uri, Ticket *ticket, ubyte request_acess)
+    bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload)
     {
         if (ticket is null)
         {
@@ -269,7 +268,7 @@ class PThreadContext : Context
         }
 
         //writeln ("@p ### uri=", uri, " ", request_acess);
-        ubyte res = acl_indexes.authorize(uri, ticket, request_acess, this);
+        ubyte res = acl_indexes.authorize(uri, ticket, request_acess, this, is_check_for_reload);
 
         //writeln ("@p ### uri=", uri, " ", request_acess, " ", request_acess == res);
         return request_acess == res;
@@ -544,25 +543,68 @@ class PThreadContext : Context
             log.trace("authenticate, ticket__accessor=%s", user_id);
 
         // store ticket
-        string ss_as_cbor = individual2cbor(&new_ticket);
+        string     ss_as_cbor = individual2cbor(&new_ticket);
 
-        Tid    tid_ticket_manager = getTid(P_MODULE.ticket_manager);
+        long       op_id;
+        ResultCode rc = veda.core.storage.storage_thread.send_put(P_MODULE.ticket_manager, this, CMD.PUT, new_ticket.uri, ss_as_cbor, op_id);
 
-        if (tid_ticket_manager != Tid.init)
+        ticket.result = rc;
+        if (rc == ResultCode.OK)
         {
-            send(tid_ticket_manager, CMD.PUT, ss_as_cbor, thisTid);
-            receive((EVENT ev, string prev_state, string msg, Tid from)
-                    {
-                        if (from == getTid(P_MODULE.ticket_manager))
-                        {
-//                            res = msg;
-                            //writeln("context.store_subject:msg=", msg);
-                            subject2Ticket(new_ticket, &ticket);
-                            ticket.result = ResultCode.OK;
-                            user_of_ticket[ ticket.id ] = &ticket;
-                        }
-                    });
+            subject2Ticket(new_ticket, &ticket);
+            user_of_ticket[ ticket.id ] = new Ticket(ticket);
         }
+
+        return ticket;
+    }
+
+    Ticket get_ticket_trusted(string tr_ticket_id, string login)
+    {
+        Ticket ticket;
+
+        if (trace_msg[ 18 ] == 1)
+            log.trace("trusted authenticate, ticket=[%s] login=[%s]", ticket, login);
+
+        ticket.result = ResultCode.Authentication_Failed;
+
+        if (login == null || login.length < 1 || tr_ticket_id.length < 6)
+            return ticket;
+
+        Ticket *tr_ticket = get_ticket(tr_ticket_id);
+
+        if (tr_ticket.result == ResultCode.OK)
+        {
+            bool is_superadmin = false;
+
+            void trace(string resource_group, string subject_group, string right)
+            {
+                if (subject_group == "cfg:SuperUser")
+                    is_superadmin = true;
+            }
+
+            get_rights_origin(tr_ticket, "cfg:SuperUser", &trace);
+
+
+            if (is_superadmin)
+            {
+                Ticket       sticket         = sys_ticket;
+                Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
+                foreach (user; candidate_users)
+                {
+                    string user_id = user.getFirstResource(veda_schema__owner).uri;
+                    if (user_id is null)
+                        continue;
+
+                    ticket = create_new_ticket(user_id);
+
+                    return ticket;
+                }
+            }
+        }
+
+        log.trace("failed trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
+
+        ticket.result = ResultCode.Authentication_Failed;
         return ticket;
     }
 
@@ -700,7 +742,7 @@ class PThreadContext : Context
             else
             {
                 if (trace_msg[ 17 ] == 1)
-                    log.trace("тикет нашли в кеше, id=%s", ticket_id);
+                    log.trace("тикет нашли в кеше, id=%s, end_time=%d", tt.id, tt.end_time);
 
                 SysTime now = Clock.currTime();
                 if (now.stdTime >= tt.end_time)
@@ -711,6 +753,13 @@ class PThreadContext : Context
                     tt.result = ResultCode.Ticket_expired;
                     return tt;
                 }
+                else
+                {
+                    tt.result = ResultCode.OK;
+                }
+
+                if (trace_msg[ 17 ] == 1)
+                    log.trace("тикет, %s", *tt);
             }
             return tt;
         }
@@ -800,13 +849,13 @@ class PThreadContext : Context
 
     public ubyte get_rights(Ticket *ticket, string uri)
     {
-        return acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this);
+        return acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true);
     }
 
     public void get_rights_origin(Ticket *ticket, string uri,
                                   void delegate(string resource_group, string subject_group, string right) trace)
     {
-        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, trace);
+        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true, trace);
     }
 
     public immutable(string)[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str, int top, int limit)
@@ -849,7 +898,7 @@ class PThreadContext : Context
         {
             Individual individual = Individual.init;
 
-            if (acl_indexes.authorize(uri, ticket, Access.can_read, this) == Access.can_read)
+            if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true) == Access.can_read)
             {
                 string individual_as_cbor = get_individual_from_storage(uri);
 
@@ -896,7 +945,7 @@ class PThreadContext : Context
 
             foreach (uri; uris)
             {
-                if (acl_indexes.authorize(uri, ticket, Access.can_read, this) == Access.can_read)
+                if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true) == Access.can_read)
                 {
                     Individual individual         = Individual.init;
                     string     individual_as_cbor = get_individual_from_storage(uri);
@@ -942,7 +991,7 @@ class PThreadContext : Context
 
         try
         {
-            if (acl_indexes.authorize(uri, ticket, Access.can_read, this) == Access.can_read)
+            if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true) == Access.can_read)
             {
                 string individual_as_cbor = get_individual_from_storage(uri);
 
@@ -973,7 +1022,10 @@ class PThreadContext : Context
         }
     }
 
-    private OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id)
+    static const byte NEW_TYPE    = 0;
+    static const byte EXISTS_TYPE = 1;
+
+    OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool api_request = true)
     {
         //writeln("context:store_individual #1 ", process_name);
         StopWatch sw; sw.start;
@@ -1063,67 +1115,139 @@ class PThreadContext : Context
             {
                 //  writeln("context:store_individual #5 ", process_name);
 
-                Tid    tid_subject_manager;
-                Tid    tid_acl;
-
-                string ss_as_cbor = individual2cbor(indv);
+                Tid tid_subject_manager;
+                Tid tid_acl;
 
                 if (trace_msg[ 27 ] == 1)
                     log.trace("[%s] store_individual: %s", name, *indv);
 
-                Resource[ string ] rdfType;
-
-                setMapResources(indv.resources.get(rdf__type, Resources.init), rdfType);
-
-                if (rdfType.anyExist(veda_schema__Membership) == true)
+                Resources _types = indv.resources.get(rdf__type, Resources.init);
+                foreach (idx, rs; _types)
                 {
-                    // before storing the data, expected availability acl_manager.
-                    wait_thread(P_MODULE.acl_manager);
-                    if (this.acl_indexes.isExistMemberShip(indv) == true)
+                    _types[ idx ].info = NEW_TYPE;
+                }
+
+                MapResource rdfType;
+                setMapResources(_types, rdfType);
+
+                EVENT      ev = EVENT.CREATE;
+                string     prev_state;
+
+                Individual prev_indv;
+
+                prev_state = find(indv.uri);
+                if (prev_state !is null)
+                {
+                    ev = EVENT.UPDATE;
+                    int code = cbor2individual(&prev_indv, prev_state);
+                    if (code < 0)
                     {
-                        res.result = ResultCode.Duplicate_Key;
+                        log.trace("ERR:store_individual: invalid prev_state [%s]", prev_state);
+                        res.result = ResultCode.Unprocessable_Entity;
                         return res;
                     }
-                }
-                else if (rdfType.anyExist(veda_schema__PermissionStatement) == true)
-                {
-                    // before storing the data, expected availability acl_manager.
-                    wait_thread(P_MODULE.acl_manager);
-                    if (this.acl_indexes.isExistPermissionStatement(indv) == true)
+
+
+                    if (api_request)
                     {
-                        res.result = ResultCode.Duplicate_Key;
-                        return res;
+                        // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
+                        foreach (rs; _types)
+                        {
+                            string   itype = rs.get!string;
+
+                            Resource *rr = rdfType.get(itype, null);
+
+                            if (rr !is null)
+                                rr.info = EXISTS_TYPE;
+                        }
                     }
                 }
 
-                EVENT  ev = EVENT.NONE;
-                string prev_state;
-
-                storage.storage_thread.send_put(this, cmd, ss_as_cbor, ss_as_cbor, prev_state, res.op_id, ev);
-
-                if (ev == EVENT.NOT_READY)
+                if (api_request)
                 {
-                    res.result = ResultCode.Not_Ready;
-                    return res;
+                    // для новых типов проверим доступность бита Create
+                    foreach (key, rr; rdfType)
+                    {
+                        if (rr.info == NEW_TYPE)
+                        {
+                            if (acl_indexes.authorize(key, ticket, Access.can_create, this, true) != Access.can_create)
+                            {
+                                res.result = ResultCode.Not_Authorized;
+                                return res;
+                            }
+                        }
+                    }
                 }
 
-                if (ev == EVENT.ERROR)
+
+
+
+                if (prev_state is null && (cmd == CMD.ADD || cmd == CMD.SET))
                 {
-                    res.result = ResultCode.Fail_Store;
+                }
+                else
+                {
+                    if (cmd == CMD.ADD || cmd == CMD.SET || cmd == CMD.REMOVE)
+                    {
+                        foreach (predicate; indv.resources.keys)
+                        {
+                            if (cmd == CMD.ADD)
+                            {
+                                // add value to set or ignore if exists
+                                prev_indv.addUniqueResources(predicate, indv.getResources(predicate));
+                            }
+                            else if (cmd == CMD.SET)
+                            {
+                                // set value to predicate
+                                prev_indv.setResources(predicate, indv.getResources(predicate));
+                            }
+                            else if (cmd == CMD.REMOVE)
+                            {
+                                // remove predicate or value in set
+                                prev_indv.removeResources(predicate, indv.getResources(predicate));
+                            }
+                        }
+                        indv = &prev_indv;
+                    }
+                }
+
+                string new_state = individual2cbor(indv);
+
+
+                res.result = veda.core.storage.storage_thread.send_put(P_MODULE.subject_manager, this, CMD.PUT, indv.uri, new_state, res.op_id);
+
+                if (res.result != ResultCode.OK)
+                {
+                    //writeln ("@FAIL STORE uri=", indv.uri, ", res=", res);
                     return res;
                 }
 
                 if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
                 {
-                    if (indv.isExist(veda_schema__deleted, true) == false)
-                        search.xapian_indexer.send_put(this, ss_as_cbor, prev_state, res.op_id);
+                    if (indv.isExists(veda_schema__deleted, true) == false)
+                        search.xapian_indexer.send_put(this, new_state, prev_state, res.op_id);
                     else
-                        search.xapian_indexer.send_delete(this, ss_as_cbor, prev_state, res.op_id);
+                        search.xapian_indexer.send_delete(this, new_state, prev_state, res.op_id);
+
+                    if (rdfType.anyExists(owl_tags) == true && new_state != prev_state)
+                    {
+                        // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
+                        inc_count_onto_update();
+                    }
+
+                    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+                    {
+                        tid_acl = this.getTid(P_MODULE.acl_manager);
+                        if (tid_acl != Tid.init)
+                        {
+                            send(tid_acl, CMD.PUT, ev, new_state, res.op_id);
+                        }
+                    }
 
                     if (prepare_events == true)
-                        bus_event_after(ticket, indv, rdfType, ss_as_cbor, prev_state, ev, this, event_id, res.op_id);
+                        bus_event_after(ticket, indv, rdfType, new_state, prev_state, ev, this, event_id, res.op_id);
 
-                    veda.core.fanout.send_put(this, ss_as_cbor, prev_state, res.op_id);
+                    veda.core.fanout.send_put(this, new_state, prev_state, res.op_id);
 
                     res.result = ResultCode.OK;
 
@@ -1229,6 +1353,11 @@ class PThreadContext : Context
         return res;
     }
 
+    public long restart_module(P_MODULE module_id)
+    {
+        return 0;
+    }
+
 
     public long wait_thread(P_MODULE module_id, long op_id = 0)
     {
@@ -1293,55 +1422,66 @@ class PThreadContext : Context
         veda.core.log_msg.set_trace(idx, state);
     }
 
-    public bool backup(int level = 0)
+    public bool backup(bool to_binlog, int level = 0)
     {
         if (level == 0)
             freeze();
 
         try
         {
-            bool   result = false;
+            bool   result    = false;
+            string backup_id = "to_binlog";
 
-            string backup_id = storage.storage_thread.backup(this);
-
-            if (backup_id != "")
+            if (to_binlog)
             {
-                result = true;
+                long count = this.inividuals_storage.dump_to_binlog();
+                if (count > 0)
+                    result = true;
+            }
+            else
+            {
+                backup_id = veda.core.storage.storage_thread.backup(this);
 
-                string res = az.acl.backup(this, backup_id);
-
-                if (res == "")
-                    result = false;
-                else
+                if (backup_id != "")
                 {
-                    Tid tid_ticket_manager = getTid(P_MODULE.ticket_manager);
-                    send(tid_ticket_manager, CMD.BACKUP, backup_id, thisTid);
-                    receive((string _res) { res = _res; });
+                    result = true;
+
+                    string res = veda.core.az.acl.backup(this, backup_id);
+
                     if (res == "")
                         result = false;
                     else
                     {
-                        res = search.xapian_indexer.backup(this, backup_id);
-
+                        Tid tid_ticket_manager = getTid(P_MODULE.ticket_manager);
+                        send(tid_ticket_manager, CMD.BACKUP, backup_id, thisTid);
+                        receive((string _res) { res = _res; });
                         if (res == "")
                             result = false;
+                        else
+                        {
+                            res = search.xapian_indexer.backup(this, backup_id);
+
+                            if (res == "")
+                                result = false;
+                        }
                     }
                 }
-            }
 
-            if (result == false)
-            {
-                if (level < 10)
+                if (result == false)
                 {
-                    log.trace_log_and_console("BACKUP FAIL, repeat(%d) %s", level, backup_id);
+                    if (level < 10)
+                    {
+                        log.trace_log_and_console("BACKUP FAIL, repeat(%d) %s", level, backup_id);
 
-                    core.thread.Thread.sleep(dur!("msecs")(500));
-                    return backup(level + 1);
+                        core.thread.Thread.sleep(dur!("msecs")(500));
+                        return backup(to_binlog, level + 1);
+                    }
+                    else
+                        log.trace_log_and_console("BACKUP FAIL, %s", backup_id);
                 }
-                else
-                    log.trace_log_and_console("BACKUP FAIL, %s", backup_id);
             }
-            else
+
+            if (result == true)
                 log.trace_log_and_console("BACKUP Ok, %s", backup_id);
 
             return result;
@@ -1386,7 +1526,7 @@ class PThreadContext : Context
         }
     }
 
-    string find(string uri)
+    private string find(string uri)
     {
         string res;
         Tid    tid_subject_manager = getTid(P_MODULE.subject_manager);

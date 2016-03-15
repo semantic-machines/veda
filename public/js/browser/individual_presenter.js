@@ -39,7 +39,25 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		if (template) {
 			if (template instanceof veda.IndividualModel) template = $( template["v-ui:template"][0].toString() );
 			if (template instanceof String) template = $( template.toString() );
-			if (typeof template === "string") template = $( template );
+			if (typeof template === "string") {
+				if (template === "generic") {
+					var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
+					template = genericTemplate(individual, _class);
+				} else if (template === "json") {
+					var pre = $("<pre>"), 
+						json = JSON.parse(individual._.original_individual),
+						ordered = {};
+					Object.keys(json).sort().forEach(function(key) {
+						ordered[key] = json[key];
+					});
+					json = JSON.stringify(ordered, null, 2);
+					pre.text(json);
+					container.html(pre);
+					return;
+				} else {
+					template = $( template );
+				}
+			}
 			var $scripts = template.filter("script");
 			$scripts.map(function () { scripts.push( $(this).text() ); });
 			template = template.filter("*:not(script)");
@@ -127,10 +145,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			if (individual.hasValue('v-s:isDraftOf')) {
 				//TODO Put link to actual version
 				//Rename edit button
-				$('#edit', wrapper).attr('about', 'v-s:ContinueEdit');
+				if ($('#edit', wrapper).attr('about')) $('#edit', wrapper).attr('about', 'v-s:ContinueEdit');
 				
 				//Rename delete button
-				$('#delete', wrapper).attr('about', 'v-s:DeleteDraft');
+				if ($('#delete', wrapper).attr('about')) $('#delete', wrapper).attr('about', 'v-s:DeleteDraft');
 				
 				//Hide send button
 				$('#send', wrapper).remove();
@@ -142,7 +160,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				//TODO Put link to draft version
 				
 				//Rename edit button
-				$('#edit', wrapper).attr('about', 'v-s:ContinueEdit');
+				if ($('#edit', wrapper).attr('about')) $('#edit', wrapper).attr('about', 'v-s:ContinueEdit');
 								
 				//Hide send button
 				$('#send', wrapper).remove();
@@ -206,13 +224,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			e.stopPropagation();
 		}
 		template.on("save", saveHandler);
-		
+				
 		function draftHandler (e) {
 			if (!individual.hasValue('v-s:isDraftOf')) {
 				// If `v-s:isDraftOf` is empty, then current individual is "draftonly" individual
 				individual['v-s:isDraftOf'] = [individual];
 			}
 			individual.draft();
+			putDraftToUserAspect(individual);
 			e.stopPropagation();
 		}
 		template.on("draft", draftHandler);
@@ -441,6 +460,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			relContainer.empty();
 			
 			propertyModifiedHandler(rel_uri, values);
+			about.on("individual:propertyModified", propertyModifiedHandler);
+			template.one("remove", function () {
+				about.off("individual:propertyModified", propertyModifiedHandler);
+			});
+
+			if (isEmbedded) {
+				embeddedHandler(rel_uri, values);
+				about.on("individual:propertyModified", embeddedHandler);
+				template.one("remove", function () {
+					about.off("individual:propertyModified", embeddedHandler);
+				});
+			}
 
 			// Re-render link property if its' values were changed
 			function propertyModifiedHandler (doc_rel_uri, values) {
@@ -468,10 +499,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					}
 				}
 			}
-			about.on("individual:propertyModified", propertyModifiedHandler);
-			template.one("remove", function () {
-				about.off("individual:propertyModified", propertyModifiedHandler);
-			});
+			
+			function embeddedHandler(doc_rel_uri, values) {
+				if (doc_rel_uri === rel_uri) {
+					values.map(function (value) {
+						if ( !value["v-s:parent"] ) { value.defineProperty("v-s:parent"); }
+						value["v-s:parent"] = [about];
+					});
+				}
+			}
+			
 		});		
 
 		// About resource
@@ -756,6 +793,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						clone['v-s:hasDraft'] = [];
 						clone['v-s:isDraftOf'] = [individual];
 						clone.saveIndividual(false);
+						putDraftToUserAspect(clone);
 	
 						// Add link to draft
 						individual['v-s:hasDraft'] = [clone];
@@ -786,7 +824,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			
 		}
-		// standard tasts
+		// standard tasks
 		var stasks = $('#standard-tasks', template);
 		stasks.append($('<li/>', {
 			style:'cursor:pointer', 

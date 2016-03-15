@@ -2,7 +2,11 @@
 
 echo "= UPDATE = "
 date
+export PATH="$PATH:/sbin/"
 if wget -q -O - "$@" https://api.travis-ci.org/repos/semantic-machines/veda/cc.xml?branch=master | grep 'lastBuildStatus="Success"'; then
+    echo "=== Update project ==="
+    git pull
+
     echo "=== Stop daemon ==="
     ./control-stop.sh
 
@@ -12,14 +16,11 @@ if wget -q -O - "$@" https://api.travis-ci.org/repos/semantic-machines/veda/cc.x
     rm dub.selections.json
     rm -r ~/.dub/cache
 
-    echo "=== Update project ==="
-    git pull
-
     echo "=== Generate JSduck documentation ==="
     ./jsduck.sh
 
     echo "=== Build dependencies ==="
-    dub -v fetch vibe-d
+    dub -v fetch vibe-d --version=0.7.26
     echo "=== Build project ==="
     dub -v build --build=debug
 

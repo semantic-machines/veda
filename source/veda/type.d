@@ -127,7 +127,10 @@ enum CMD : byte
     REMOVE       = 48,
 
     /// Пустая комманда
-    NOP          = 64
+    NOP          = 64,
+
+
+    EXIT         =  49
 }
 
 

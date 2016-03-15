@@ -66,6 +66,11 @@ v-s:Blanks
   rdfs:label "Бланки"@ru ;
   rdfs:label "Blanks"@en ;
 .
+v-s:Drafts
+  rdf:type v-s:Bundle ;
+  rdfs:label "Черновики"@ru ;
+  rdfs:label "Drafts"@en ;
+.
 v-s:Registries
   rdf:type v-s:Bundle ;
   rdfs:label "Реестры"@ru ;
@@ -116,7 +121,7 @@ v-s:Draft
   rdfs:label "Черновик"@ru ;
   rdfs:label "Draft"@en ;
 .
-v-s:toDraft
+v-s:ToDraft
   rdf:type v-s:Bundle ;
   rdfs:label "Сохранить в черновик"@ru ;
   rdfs:label "Save to draft"@en ;
@@ -181,11 +186,6 @@ v-s:Instruction
   rdfs:label "Поручение"@ru ;
   rdfs:label "Instruction"@en ;
 .
-v-s:SearchRequest
-  rdf:type v-s:Bundle ;
-  rdfs:label "Поисковый запрос"@ru ;
-  rdfs:label "Search request"@en ;
-.
 v-s:DocumentIsVersion
   rdf:type v-s:Bundle ;
   rdfs:label "Документ устарел. Существует более поздняя версия данного документа"@ru ;
@@ -216,13 +216,28 @@ v-s:Fact
   rdfs:label "Факт"@ru ;
   rdfs:label "Fact"@en ;
 .
-v-s:atLeastOneFilled
+v-s:AtLeastOneFilled
   rdf:type v-s:Bundle ;
   rdfs:label "Хотя ты одно из значений должно быть заполнено"@ru ;
   rdfs:label "At least one value must be filled"@en ;
 .
-v-s:numerationErrorValueIsUnavailable
+v-s:NumerationErrorValueIsUnavailable
   rdf:type v-s:Bundle ;
   rdfs:label "Данное значение занято"@ru ;
   rdfs:label "This value is already reserved"@en ;
+.
+v-s:ViewJournal
+  rdf:type v-s:Bundle ;
+  rdfs:label "Журнал"@ru ;
+  rdfs:label "Journal"@en ;
+.
+v-s:WillBeProcessed
+  rdf:type v-s:Bundle ;
+  rdfs:label "Спасибо. Ваше действие будет обработано."@ru ;
+  rdfs:label "Thank you. Your action will be processed."@en ;
+.
+v-b:AreYouSure
+  rdf:type v-s:Bundle ;
+  rdfs:label "Вы уверены?"@ru ;
+  rdfs:label "Are you sure?"@en ;
 .

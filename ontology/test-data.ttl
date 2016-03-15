@@ -33,10 +33,10 @@ td:email-test
 
 td:AdministrativeDocument
   rdf:type owl:Class ;
-  rdfs:label "Administrative document"@en ;
-  rdfs:label "Распорядительный документ"@ru ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Versioned ;
+  rdfs:label "Administrative document"@en ;
+  rdfs:label "Распорядительный документ"@ru ;
 .
 
 td:content
@@ -114,6 +114,7 @@ td:AndreyBychin
   v-s:middleName "Vladimirovitch"@en ;
   v-s:middleName "Владимирович"@ru ;
   v-ui:hasPreferences td:Preferences_AndreyBychin ;
+  v-s:hasAppointment td:AndreyBychin-Analyst2 ;
   rdfs:label "Andrey Bychin"@en ;
   rdfs:label "Андрей Бычин"@ru ;
 .
@@ -150,7 +151,7 @@ td:ApplicationDevelopmentGroup
   v-s:childUnit td:Analyst1 ;
   v-s:childUnit td:Programmer1 ;
   v-s:parentUnit td:CCIP ;
-  v-s:hasChief td:RomanKarpov-CommercialDirector;    
+  v-s:hasChief td:RomanKarpov-Analyst1;    
   rdfs:label "Application development group"@en ;
   rdfs:label "Группа прикладного програмирования"@ru ;
 .
@@ -226,6 +227,7 @@ td:KarpovR
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "KarpovRT" ;
 .
+
 td:KhvostiA
   rdf:type v-s:Account ;
   v-s:login "KhvostiAT"^^xsd:string ;
@@ -243,14 +245,6 @@ td:Membership_1
   rdfs:label "Членство_1"@ru ;
 .
 
-td:Membership_2
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:SuperAdmin ;
-  v-s:resource td:RomanKarpov-CommercialDirector ;
-  rdfs:label "Membership_2"@en ;
-  rdfs:label "Членство_2"@ru ;
-.
-
 td:Membership_4
   rdf:type v-s:Membership ;
   v-s:memberOf td:UserGroup_1 ;
@@ -259,16 +253,16 @@ td:Membership_4
   rdfs:label "Членство_4"@ru ;
 .
 
-td:Membership_5
+td:Membership_5_su
   rdf:type v-s:Membership ;
-  v-s:memberOf cfg:SuperAdmin ;
+  v-s:memberOf cfg:SuperUser ;
   v-s:resource td:RomanKarpov ;
   rdfs:label "Membership_5"@en ;
   rdfs:label "Членство_5"@ru ;
 .
-td:Membership_55
+td:Membership_55_su
   rdf:type v-s:Membership ;
-  v-s:memberOf cfg:SuperAdmin ;
+  v-s:memberOf cfg:SuperUser ;
   v-s:resource td:AleksandraKhvostikova ;
   rdfs:label "Membership_55"@en ;
   rdfs:label "Членство_55"@ru ;
@@ -305,28 +299,11 @@ td:Membership_10
   rdfs:label "Членство_10"@ru ;
 .
 
-td:Membership_11
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadUser ;
-  v-s:resource td:ValeriyBushenev ;
-  rdfs:label "Membership_11"@en ;
-  rdfs:label "Членство_11"@ru ;
-.
-
 td:Membership_11_1
   rdf:type v-s:Membership ;
   v-s:memberOf v-wf:WorkflowReadUser ;
   v-s:resource td:ValeriyBushenev ;
   rdfs:label "Membership_11_1" ;
-.
-
-
-td:Membership_12
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadUser ;
-  v-s:resource td:AleksandraKhvostikova ;
-  rdfs:label "Membership_12"@en ;
-  rdfs:label "Членство_12"@ru ;
 .
 
 td:Membership_13
@@ -337,35 +314,11 @@ td:Membership_13
   rdfs:label "Членство_12"@ru ;
 .
 
-td:Membership_14
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadUser ;
-  v-s:resource td:AndreyBychin ;
-  rdfs:label "Membership_14"@en ;
-  rdfs:label "Членство_14"@ru ;
-.
-
 td:MondiSyktyvkar
   rdf:type v-s:Organization ;
   v-s:childUnit td:CCIP ;
   rdfs:label "Mondi Syktyvkar, OJSC"@en ;
   rdfs:label "ОАО Монди СЛПК"@ru ;
-.
-
-td:Permission_1
-  rdf:type v-s:PermissionStatement ;
-  v-s:author td:RomanKarpov-Analyst1 ;
-  v-s:canCreate "true"^^xsd:boolean ;
-  v-s:canDelete "true"^^xsd:boolean ;
-  v-s:canRead "true"^^xsd:boolean ;
-  v-s:canUpdate "true"^^xsd:boolean ;
-  v-s:created "2014-01-30T16:45:33"^^xsd:dateTime ;
-  v-s:permissionObject v-s:AllResourcesGroup ;
-  v-s:permissionSubject cfg:SuperAdmin ;
-  v-s:published "2014-01-30T16:45:33"^^xsd:dateTime ;
-  v-s:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
-  rdfs:label "Permissions record_1"@en ;
-  rdfs:label "Запись о выдаче прав_1"@ru ;
 .
 
 td:Permission_2
@@ -379,6 +332,13 @@ td:Permission_2
   v-s:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
   rdfs:label "Permissions record_2"@en ;
   rdfs:label "Запись о выдаче прав_2"@ru ;
+.
+
+td:Permission_2_vb
+  rdf:type v-s:PermissionStatement ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:permissionObject v-s:AllResourcesGroup ;
+  v-s:permissionSubject td:ValeriyBushenev ;
 .
 
 td:Permission_3
@@ -579,32 +539,6 @@ td:SavedSearch1
   rdfs:label "Saved search 1"@en ;
 .
 
-td:SearchRequest1
-  rdf:type v-s:SearchRequest ;
-  rdfs:label "Поисковый запрос 1"@ru ;
-  rdfs:label "Search request 1"@en ;
-  v-s:selectedType v-s:Person ;
-  v-s:restriction td:SearchRestriction1 ;
-  v-s:sort td:SortOrder1 ;
-.
-td:SearchRestriction1
-  rdf:type v-s:SearchRestriction ;
-  rdfs:label "Поисковый запрос 1"@ru ;
-  rdfs:label "Search restriction 1"@en ;
-  v-s:onProperty rdfs:label ;
-  v-s:soughtValue "roman"^^xsd:string ;
-  v-s:soughtValue "andrey"^^xsd:string ;
-  v-s:soughtValue "valeriy"^^xsd:string ;
-  v-s:operator v-s:OR ;
-.
-td:SortOrder1
-  rdf:type v-s:SortOrder ;
-  rdfs:label "Порядок сортировки 1"@ru ;
-  rdfs:label "Sort order 1"@en ;
-  v-s:orderBy rdfs:label ;
-  v-s:direction v-s:Ascending ;
-.
-
 # ---------------------------- Тестовые экземпляры маршрутов ------------------------------
 
 # -------- стартовая форма маршрута ----------------
@@ -643,30 +577,6 @@ td:ComplexRouteStartForm1
     v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true "^^xsd:string;
     rdfs:label "общий инбокс: выполненые задачи"^^xsd:string;
     v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
-
-td:Membership_002
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadResGroup ;
-  v-s:resource :b435740-f19e-7731-03ef-e7cb2203f8c4 ;
-  rdfs:label "Membership 002"@en ;
-  rdfs:label "Членство 002"@ru ;
-.
-
-td:Membership_003
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadResGroup ;
-  v-s:resource :b435740-119e-1731-13ef-e7cb2203f8c4 ;
-  rdfs:label "Membership 003"@en ;
-  rdfs:label "Членство 003"@ru ;
-.
-
-td:Membership_004
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadResGroup ;
-  v-s:resource :b555740-119e-1731-13ef-e7cb2203f8c4 ;
-  rdfs:label "Membership 004"@en ;
-  rdfs:label "Членство 004"@ru ;
-.
 
 ######################## сеть, пример 1 #######################
 
@@ -871,4 +781,10 @@ v-wf:UserTaskForm1
 	v-wf:from td:RomanKarpov-Analyst1 ;  		
 .
 
-
+cfg:Bychina_create_Person
+  rdf:type v-s:PermissionStatement ;
+  v-s:author cfg:VedaSystem ;
+  v-s:permissionSubject td:AndreyBychin ;
+  v-s:permissionObject v-s:Person, v-ui:Preferences, v-s:Appointment ;
+  v-s:canCreate "true"^^xsd:boolean ;
+.

@@ -27,58 +27,63 @@ v-wf:appInboxUrl
 
 v-wf:Net
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Net"@en ;
 	rdfs:label "Сеть"@ru ;
 .
 v-wf:NetElement
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Net element"@en ;
 	rdfs:label "Элемент сети"@ru ;
 .
 v-wf:Condition
 	rdf:type owl:Class ;
-	rdfs:isDefinedBy v-wf: ;
 	rdfs:subClassOf v-wf:NetElement ;
+	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Condition"@en ;
 	rdfs:label "Состояние"@ru ;
 .
 v-wf:InputCondition
 	rdf:type owl:Class ;
-	rdfs:isDefinedBy v-wf: ;
 	rdfs:subClassOf v-wf:Condition ;
+	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Input condition"@en ;
 	rdfs:label "Входное состояние"@ru ;
 .
 v-wf:OutputCondition
 	rdf:type owl:Class ;
-	rdfs:isDefinedBy v-wf: ;
 	rdfs:subClassOf v-wf:Condition ;
+	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Output condition"@en ;
 	rdfs:label "Выходное состояние"@ru ;
 .
 v-wf:Task
 	rdf:type owl:Class ;
-	rdfs:isDefinedBy v-wf: ;
 	rdfs:subClassOf v-wf:NetElement ;	
+	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Task"@en ;
 	rdfs:label "Задача"@ru ;	
 .
 v-wf:Flow
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Flow"@en ;
 	rdfs:label "Поток"@ru ;
 .
 v-wf:ExecutorDefinition
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;	
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Executor definition"@en ;
 	rdfs:label "Выбор исполнителя"@ru ;
 .
 v-wf:TransitionBehavior
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;	
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Transition behavior"@en ;
 	rdfs:label "Тип перехода"@ru ;
@@ -146,13 +151,6 @@ v-wf:None
 	rdf:type v-wf:TransitionBehavior ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "None"^^xsd:string ;
-.
-
-v-wf:Membership_wf001
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadResGroup ;
-  v-s:resource v-wf:XOR, v-wf:OR, v-wf:AND, v-wf:None;
-  rdfs:label "Membership wf 001" ;
 .
 
 v-wf:subNet
@@ -321,6 +319,7 @@ v-wf:executorExpression
 #------------------------------------------------------
 v-wf:VarDefine
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Variable"@en ;
 	rdfs:label "Определение переменой"@ru ;
@@ -347,6 +346,7 @@ v-wf:varDefineScope
 
 v-wf:Variable
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Variable"@en ;
 	rdfs:label "Переменная"@ru ;
@@ -1494,18 +1494,12 @@ v-wf:DecisionFormTemplate
   rdfs:comment "Пустой шаблон сделан специально, поскольку индивиды этого класса не должны вводиться пользователями"@ru ;
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
-<!--div>
-	<strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
-	<div id="traceJournal">
-		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
-		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
-		<hr>
-	</div>	
-	<br/>	
-</div>
 <script>
-	if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
-</script-->
+	if (individual["v-wf:to"][0].id === veda.appointment.id && !individual.hasValue("v-wf:read")) {
+		individual["v-wf:read"] = [true];
+		individual.save(false);
+	}
+</script>
   """ ;
   .
 
@@ -1519,54 +1513,59 @@ v-wf:DecisionForm
 .
 
 v-wf:onWorkOrder
-        rdf:type owl:ObjectProperty ;
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "on work order"@ru ;
-        rdfs:domain v-wf:DecisionForm ;
-        rdfs:range v-s:WorkOrder ;
+	rdfs:label "on work order"@en ;
+	rdfs:label "по рабочему заданию"@ru ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:range v-s:WorkOrder ;
 .
 
 v-wf:takenDecision
-        rdf:type owl:ObjectProperty ;
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "решение"@ru ;
-        rdfs:domain v-wf:DecisionForm ;
-        rdfs:range rdfs:Resource ;
+	rdfs:label "решение"@ru ;
+	rdfs:label "decision"@en ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:range rdfs:Resource ;
 .
 v-wf:possibleDecisionClass
-        rdf:type owl:ObjectProperty ;
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-        rdfs:label "возможные варианты решения"@ru ;
-        rdfs:domain v-wf:DecisionForm ;
-        rdfs:range owl:Class ;
+	rdfs:label "варианты решения"@ru ;
+	rdfs:label "possible decision"@ru ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:range owl:Class ;
 .
 
 v-wf:onDocument
-    rdf:type owl:ObjectProperty ;
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-    rdfs:label "по документу"@ru ;
-    rdfs:domain v-wf:DecisionForm ;
-    rdfs:range rdfs:Resource ;
+	rdfs:label "по документу"@ru ;
+	rdfs:label "for document"@en ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:range rdfs:Resource ;
 .
 
 v-wf:from
-    rdf:type owl:ObjectProperty ;
+	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
-    rdfs:label "от кого"@ru ;
-    rdfs:domain v-wf:DecisionForm ;
-    rdfs:domain v-s:Deliverable ;
-    rdfs:range v-s:Appointment ;
+	rdfs:label "от кого"@ru ;
+	rdfs:label "from"@en ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:domain v-s:Deliverable ;
+	rdfs:range v-s:Appointment ;
 .
 
 v-wf:to
 	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "кому"@ru ;
-	rdfs:label "whom"@en ;
+	rdfs:label "to"@en ;
 	rdfs:domain v-wf:DecisionForm ;
 	rdfs:domain v-wf:DecisionRedirect ;
 	rdfs:domain v-s:JournalRecord ;
-    rdfs:domain v-s:Deliverable ;
+	rdfs:domain v-s:Deliverable ;
 	rdfs:range v-s:Appointment ;
 .
 
@@ -1574,20 +1573,28 @@ v-wf:replyTo
 	rdf:type owl:ObjectProperty ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "reply to" ;
-    rdfs:domain v-s:Deliverable ;
+	rdfs:domain v-s:Deliverable ;
 	rdfs:range v-s:Appointment ;
 .
 
 v-wf:dateGiven
-    rdf:type owl:DatatypeProperty ;
+	rdf:type owl:DatatypeProperty ;
 	rdfs:isDefinedBy v-wf: ;
-    rdfs:label "контрольный срок"@ru ;
-    rdfs:domain v-wf:DecisionForm ;
-    rdfs:range xsd:dateTime ;
+	rdfs:label "контрольный срок"@ru ;
+	rdfs:label "due date"@en ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:range xsd:dateTime ;
 .
 
+v-wf:read
+	rdf:type owl:DatatypeProperty ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "прочитано"@ru ;
+	rdfs:label "read"@en ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:range xsd:boolean ;
+.
 
-  
 # --------------------------- Start Form ---------------------------
 v-wf:StartForm
 	rdf:type rdfs:Class ;
@@ -1640,6 +1647,7 @@ v-wf:useTransformation
 
 v-wf:Mapping
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;	
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Mapping"@en ;
 	rdfs:label "Преобразование"@ru ;
@@ -1840,6 +1848,17 @@ v-wf:isCompleted
 	rdfs:label "is completed"@en ;
 	rdfs:label "завершено"@ru ;
 	rdfs:domain v-wf:WorkItem ;
+	rdfs:domain v-wf:Process ;
+	rdfs:domain v-wf:DecisionForm ;
+	rdfs:range xsd:boolean ;
+.
+
+v-wf:isStopped
+	rdf:type rdf:Property ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "is stopped"@en ;
+	rdfs:label "остановлено"@ru ;
+	rdfs:domain v-wf:Process ;
 	rdfs:domain v-wf:DecisionForm ;
 	rdfs:range xsd:boolean ;
 .
@@ -1847,6 +1866,7 @@ v-wf:isCompleted
 # --------------------------- WorkOrder --------------------------
 v-wf:WorkOrder
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "work order"@en ;
 	rdfs:label "рабочее задание"@ru ;
@@ -1883,7 +1903,8 @@ v-wf:event_df1
 	v-s:filter v-wf:StartForm ;
 	v-s:script """
 
-        prepare_start_form (ticket, document);
+	if (!parent_script_id)
+		prepare_start_form (ticket, document);
 
 """ ;
 	rdfs:label "триггер запуска маршрута из пользовательской формы"@ru ;
@@ -1896,7 +1917,15 @@ v-wf:event_df2
 	v-s:filter v-wf:Process ;
 	v-s:script """
 
-	prepare_process (ticket, document);
+//	print("Event df2: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
+
+	if ((!document['v-wf:isStopped'] || 
+	    document['v-wf:isStopped'][0].data == false) && parent_script_id && 
+		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || 
+		 parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
+	{
+		prepare_process (ticket, document);
+	}
 
 """ ;
 	rdfs:label "триггер выполнения маршрута"@ru ;
@@ -1909,8 +1938,15 @@ v-wf:event_df3
 	v-s:filter v-wf:WorkItem ;
 	v-s:script """
 
-	prepare_work_item (ticket, document);
+	//print("Event df3: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
 
+	if (parent_script_id && 
+		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || 
+		 parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
+	{
+		prepare_work_item (ticket, document);
+	}
+	
 """ ;
 	rdfs:label "триггер выполнения элемента сети"@ru ;
 .
@@ -1922,8 +1958,13 @@ v-wf:event_df4
 	v-s:filter v-wf:WorkOrder ;
 	v-s:script """
 
-	prepare_work_order (ticket, document);
-
+	//print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
+	if (parent_script_id && 
+		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || 
+		 parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
+	{
+		prepare_work_order (ticket, document);
+	}
 """ ;
 	rdfs:label "триггер выполнения рабочего задания"@ru ;
 .
@@ -1935,165 +1976,178 @@ v-wf:event_df5
 	v-s:filter v-wf:DecisionForm ;
 	v-s:script """
 
-	prepare_decision_form (ticket, document);
+	if (!parent_script_id || 
+		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || 
+		 parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
+	{	 
+		prepare_decision_form (ticket, document);
+	}
 
 """ ;
 	rdfs:label "триггер обработки решения пользователя"@ru ;
 .
 
 v-wf:Decision
-	rdfs:subClassOf owl:Thing ;
-	rdfs:isDefinedBy v-wf: ;
 	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
+	rdfs:subClassOf v-s:Embedded ;
+	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "decision"@en ;
 	rdfs:label "решение"@ru ;
 .
 
+v-wf:permission_c_on_decision
+  rdf:type v-s:PermissionStatement ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:permissionObject v-wf:Decision ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+.
+
 v-wf:DecisionAnswerToYourQuestion
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "Ответ на ваш вопрос"@ru ;
 .	
 
 v-wf:DecisionControll
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "Принять отчет по поручению"@ru ;
 .	
 
 v-wf:DecisionNotRequireReview
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "Не требует рассмотрения"@ru ;
 .	
 
 v-wf:DecisionAgreed
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "согласовано"@ru ;
 .	
 
 v-wf:DecisionAgreedToProject
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "начать проект"@ru ;
 .	
 
 v-wf:DecisionAgreedToExecute
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "согласовано в реализацию"@ru ;
 .	
 
 v-wf:DecisionAgreedToExecuteComment
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "согласовано в реализацию"@ru ;
 .	
 
 v-wf:DecisionSign
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "подписано"@ru ;
 .	
 
 v-wf:DecisionApprove
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "утверждено"@ru ;
 .	
 
 v-wf:DecisionReview
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "рассмотрено"@ru ;
 .	
 
 v-wf:DecisionRejected
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "отклонено"@ru ;
 .	
 
 v-wf:DecisionRemake
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "доработать"@ru ;
 .	
 
 v-wf:DecisionRemaked
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "доработанно"@ru ;
 .	
 
 v-wf:DecisionNotForMe
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "исполнитель не я"@ru ;
 .	
 
 v-wf:DecisionBreak
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "прервать маршрут"@ru ;
 .	
 
 v-wf:DecisionExamined
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "ознакомлен"@ru ;
 .	
 
 v-wf:DecisionAchieved
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "выполнено"@ru ;
 .	
 
 v-wf:DecisionNotPerformed
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "не выполнено"@ru ;
 .	
 
 v-wf:DecisionConfirm
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "подтверждено"@ru ;
 .	
 
 v-wf:DecisionRedirect
+	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdf:type owl:Class ;
 	rdfs:label "перенаправить другому"@ru ;
 .	
 
-v-wf:DecisionСalculationsPerformed
-        rdfs:subClassOf v-wf:Decision ;
-        rdfs:isDefinedBy v-wf: ;
-        rdf:type owl:Class ;
-        rdfs:label "расчет выполнен"@ru ;
+v-wf:DecisionCalculationsPerformed
+	rdf:type owl:Class ;
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "расчет выполнен"@ru ;
 .
 
 v-wf:DecisionRedirectTemplate
@@ -2133,7 +2187,7 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionConfirm ;
   v-ui:forClass v-wf:DecisionAgreedToProject ;  
   v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;   
-  v-ui:forClass v-wf:DecisionСalculationsPerformed ;
+  v-ui:forClass v-wf:DecisionCalculationsPerformed ;
   v-ui:template """
 <div>
 	<em about="rdfs:comment" property="rdfs:label"></em>
@@ -2174,7 +2228,7 @@ v-wf:DecisionRedirectTemplateSpec2
   v-ui:forClass v-wf:DecisionAgreedToProject ;
   v-ui:forClass v-wf:DecisionConfirm ;   
   v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;   
-  v-ui:forClass v-wf:DecisionСalculationsPerformed ;
+  v-ui:forClass v-wf:DecisionCalculationsPerformed ;
 .
 
 v-wf:DecisionRedirectTemplateSpec3
@@ -2240,7 +2294,7 @@ v-wf:completedExecutorJournalMap
 v-wf:onProcess
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:domain v-s:JournalRecord, v-s:Journal ;
+  rdfs:domain v-s:JournalRecord, v-s:Journal, v-s:ProcessStarted ;
   rdfs:label "on process"@en ;
   rdfs:label "к процессу"@ru ;
   rdfs:range v-wf:Process ;
@@ -2273,8 +2327,21 @@ v-wf:ProcessStarted
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущен процесс"@ru ;
-  rdfs:label "Process started"@en ;
+  rdfs:label "Process was started"@en ;
 .
+v-wf:ProcessStopped
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:JournalRecord ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Процесс прерван"@ru ;
+  rdfs:label "Process was stopped"@en ;
+.
+
+v-s:actor
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-wf:ProcessStopped ;
+.
+
 v-wf:SubProcessStarted
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
@@ -2287,7 +2354,8 @@ v-wf:WorkItemStarted
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "WorkItem Started"@en ;
+  rdfs:label "Запущен блок"@ru ;
+  rdfs:label "Item was started"@en ;
 .
 
 v-wf:DecisionFormStarted
@@ -2301,7 +2369,8 @@ v-wf:WorkOrderStarted
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "WorkOrder Started"@en ;
+  rdfs:label "Запущено действие"@ru ;
+  rdfs:label "Order was started"@en ;
 .
 
 v-wf:ProcessCompleted
@@ -2322,7 +2391,7 @@ v-wf:TaskCompleted
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Выполнена задача"@ru ;
+  rdfs:label "Действие выполнено"@ru ;
   rdfs:label "Task completed"@en ;
 .
 v-wf:TraceRecord
@@ -2406,7 +2475,9 @@ v-ui:TaskCompletedTemplate
         <span about="v-wf:takenDecision" property="rdfs:label"></span>: 
 	    <em rel="v-wf:takenDecision">
 	      <span>
-			<strong property="rdfs:label"></strong>, <span property="rdfs:comment"></span>
+			<strong property="rdfs:label"></strong> 
+			<span rel="v-wf:to"><span>(<span property="rdfs:label"></span>)</span></span>
+			, <span property="rdfs:comment"></span>
 		  </span>
 	    </em>
 	  </div>
@@ -2458,34 +2529,7 @@ v-ui:SubProcessStartedEventTemplate
   rdfs:label "Subprocess start event template"@en ;
   v-ui:forClass v-wf:SubProcessStarted ;
   v-ui:template """
-<div class="journal-record">
-  <hr class="margin-sm">
-  <div class="row">
-	<div class="col-md-3 col-sm-3 event-type">
-	  <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
-	</div>
-	<div class="col-md-7 col-sm-6 event-desc">
-	  <div property="rdfs:label"></div>
-	  <span id="initiator">
-        <span about="v-wf:initiator" property="rdfs:label"></span>: 
-	    <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
-	  </span>
-	</div>
-	<div class="col-md-2 col-sm-3 event-date text-right">
-	  <span property="v-s:created"></span>
-	</div>
-  </div>
-  <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
-</div>
-<script>
-  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
-  $("#exp", template).click(function (e) {
-    e.preventDefault();
-    $("div[rel='v-s:subJournal']", template).toggle();
-    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
-  });
-  $("#exp", template).click();  
-</script>
+ <div class="journal-record" rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
   """ ;
 .
 
@@ -2520,7 +2564,6 @@ v-ui:WorkItemStartedEventTemplate
     $("div[rel='v-s:subJournal']", template).toggle();
     $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
-  $("#exp", template).click();  
 </script>
   """ ;
 .
@@ -2530,34 +2573,7 @@ v-ui:WorkOrderStartedEventTemplate
   rdfs:label "Шаблон обработки work item"@ru ;
   v-ui:forClass v-wf:WorkOrderStarted ;
   v-ui:template """
-<div class="journal-record">
-  <hr class="margin-sm">
-  <div class="row">
-        <div class="col-md-3 col-sm-3 event-type">
-          <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
-        </div>
-        <div class="col-md-7 col-sm-6 event-desc">
-          <div property="rdfs:label"></div>
-          <span id="initiator">
-        <span about="v-wf:initiator" property="rdfs:label"></span>:
-            <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
-          </span>
-        </div>
-        <div class="col-md-2 col-sm-3 event-date text-right">
-          <span property="v-s:created"></span>
-        </div>
-  </div>
-  <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
-</div>
-<script>
-  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
-  $("#exp", template).click(function (e) {
-    e.preventDefault();
-    $("div[rel='v-s:subJournal']", template).toggle();
-    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
-  });
-  $("#exp", template).click();  
-</script>
+  <div class="journal-record" rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
   """ ;
 .
 
@@ -2592,7 +2608,6 @@ v-ui:DecisionFormStartedEventTemplate
     $("div[rel='v-s:subJournal']", template).toggle();
     $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
-  $("#exp", template).click();
 </script>
   """ ;
 .
@@ -2705,4 +2720,89 @@ v-wf:rule3instruction
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping	"1";  
-. 
+.
+v-wf:ProcessStopEvent
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт включает процесс в группу журнала документа." ;
+  rdfs:comment "Скрипт включает процесс в группу журнала документа." ;
+  v-s:filter v-wf:Process ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ */	
+	function recursiveCall(elem) {
+		if (elem['v-wf:decisionFormList']) {
+			elem['v-wf:decisionFormList'].forEach(function(dfae) {
+			    var df = get_individual(ticket, dfae.data)
+				if (!df['v-wf:isCompleted'] || 
+				    df['v-wf:isCompleted'][0].data == false) 
+			    {				    
+					df['v-wf:isCompleted'] = newBool(true);
+					df['v-wf:isStopped'] = newBool(true);					
+					put_individual(ticket, df, _event_id);					
+					print("DF > "+toJson(df));
+				}
+			});
+		}
+		
+		if (elem['v-wf:workItemList']) {
+			elem['v-wf:workItemList'].forEach(function(wi) {
+				recursiveCall(get_individual(ticket, wi.data));
+    		});
+    	}
+		
+		if (elem['v-wf:workOrderList']) {
+			elem['v-wf:workOrderList'].forEach(function(wo) {
+				recursiveCall(get_individual(ticket, wo.data));
+			});
+		}
+		
+		if (elem['v-wf:isProcess']) {
+			elem['v-wf:isProcess'].forEach(function(p) {
+				recursiveCall(get_individual(ticket, p.data));
+			});
+		}
+	} 
+	
+print('1');	
+	if (document['v-wf:isStopped'] && 
+	    document['v-wf:isStopped'][0].data == true &&
+	    !prev_state['v-wf:isStopped']) {
+print('2');		    
+		// Disable all active tasks
+		recursiveCall(document);
+print('3');		
+		// Add journal record to process
+		
+		var pb = get_individual(ticket, 'v-wf:ProcessStopped');
+				
+		var journal_record = newJournalRecord(document['@']+'j');
+
+print('3.5 '+journal_record['@']);
+		
+	    journal_record['rdf:type'] = [
+	    {
+	        data: 'v-wf:ProcessStopped',
+	        type: _Uri
+	    }];
+        journal_record['v-s:actor'] = [
+        {
+            data: user_uri,
+            type: _Uri
+        }];
+	    journal_record['rdfs:label'] = pb['rdfs:label'];
+	    journal_record['rdfs:comment'] = pb['rdfs:label'];
+	
+	    logToJournal(ticket, document['@']+'j', journal_record, true);
+print('4');
+	    
+	}
+""" ;
+.

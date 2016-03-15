@@ -8,11 +8,10 @@ private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typec
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import veda.type;
 private import bind.xapian_d_header;
-private import util.utils, util.cbor, veda.core.util.cbor8individual, util.logger;
-private import veda.onto.onto, veda.onto.resource, onto.lang, veda.onto.individual;
+private import util.utils, veda.util.cbor, veda.core.util.cbor8individual, util.logger;
+private import veda.onto.onto, veda.onto.resource, onto.lang, veda.onto.individual, veda.core.storage.lmdb_storage;
 private import veda.core.define, veda.core.know_predicates, veda.core.context, veda.core.log_msg, veda.core.thread_context;
-private import storage.lmdb_storage;
-private import search.vel, search.xapian_vql, search.indexer_property;
+private import search.vel, veda.core.search.xapian_vql, search.indexer_property;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -1044,9 +1043,9 @@ void xapian_indexer(string thread_name, string _node_id)
                     },
                     (Variant v) { writeln(thread_name, "::xapian_indexer::Received some other type.", v); printPrettyTrace(stderr); });
         }
-        catch (Exception ex)
+        catch (Throwable ex)
         {
-            log.trace("^^^^indexer# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+            log.trace("xapian indexer# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
         }
     }
 }

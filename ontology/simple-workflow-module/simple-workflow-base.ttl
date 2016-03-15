@@ -808,15 +808,15 @@ s-wf:UserTaskFormTemplate
   .
   
 v-wf:DecisionGoSign
-        rdfs:subClassOf v-wf:Decision ;
-        rdf:type owl:Class ;
-        rdfs:label "перейти к этапу подписания"@ru ;
+	rdf:type owl:Class ;
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:label "перейти к этапу подписания"@ru ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 v-wf:DecisionGoReview
-    rdfs:subClassOf v-wf:Decision ;
     rdf:type owl:Class ;
+    rdfs:subClassOf v-wf:Decision ;
     rdfs:label "перейти к этапу рассмотрения"@ru ;
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -1031,6 +1031,13 @@ s-wf:map_journal_to
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_journal_to ;	
 	v-wf:mappingExpression	"order.getExecutor ()" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_journal_to_fc
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_journal_to ;	
+	v-wf:mappingExpression	"process.getInputVariable ('financial_controller')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -1308,7 +1315,7 @@ s-wf:map_jrn_msg_nc_t2_b
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wf: ;
         v-wf:mapToVariable s-wf:var_journal_msg ;
-        v-wf:mappingExpression "newStr ('выдана задача по согласованию')" ;
+        v-wf:mappingExpression "newStr ('Выдана задача: '+process.getLocalVariable ('actor_task_action')[0].data)" ;
 .
 
 s-wf:map_jrn_msg_nc_t2_b_ev
@@ -1322,7 +1329,7 @@ s-wf:map_jrn_msg_nce_t2_b
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wf: ;
         v-wf:mapToVariable s-wf:var_journal_msg ;
-        v-wf:mappingExpression "newStr ('задача по согласованию завершена')" ;
+        v-wf:mappingExpression "newStr ('получен ответ на задачу')" ;
 .
 
 s-wf:map_jrn_msg_nce_t2_b_ev
@@ -1484,7 +1491,7 @@ s-wf:nc_t2
     v-wf:startDecisionTransform s-wf:tr_actor_form;
     v-wf:completeDecisionTransform s-wf:tr_taken_decision;
     v-wf:hasFlow s-wf:nc_f_t2_t1, s-wf:nc_f_t2_oc, d:a65787936-f51e-a83c-f537-95eaaa02c21a;
-    rdfs:label "согласование";
+    rdfs:label "Выдача задачи";
     v-wf:expectedResultType s-wf:UserTaskForm;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_t2_sm2, s-wf:map_t2_sm3;
     v-wf:startingMapping s-wf:map_possible_decision, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type;
@@ -1621,14 +1628,6 @@ s-wf:ss1 a v-s:SavedSearch;
     v-s:created "2015-05-23T13:27:18.000Z"^^xsd:dateTime.
 
 
-
-s-wf:Membership_000
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadResGroup ;
-  v-s:resource s-wf:net_coordination, s-wf:codelet_is_run, s-wf:codelet_down_right, s-wf:codelet_restore_right, s-wf:codelet_distribution;
-  v-s:resource s-wf:executor_signer, s-wf:executor_initiator, s-wf:executor_reviewer;
-  rdfs:label "Membership base net_complex_route";
-.
 
 # ----------- define vars for message template -------
 s-wf:map_msg_template_4_SV_default_template

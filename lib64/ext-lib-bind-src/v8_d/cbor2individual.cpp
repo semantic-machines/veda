@@ -65,7 +65,7 @@ Element read_element(Individual *individual, const char *src, int b_pos, int e_p
     else if (header.type == TEXT_STRING)
     {
         //writeln ("IS STRING, length=", header.len, ", pos=", pos);
-        uint16_t    ep = (uint16_t)(element.pos + header.v_long);
+        uint32_t    ep = (uint32_t)(element.pos + header.v_long);
 
         std::string str(src + b_pos + element.pos, header.v_long);
 

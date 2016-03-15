@@ -6,12 +6,42 @@ module util.utils;
 
 private
 {
-    import core.stdc.stdio;
-    import std.file, std.datetime, std.json, std.c.string, std.c.linux.linux, std.format, std.stdio, std.conv, std.string, std.concurrency;
+    import core.stdc.stdio, core.stdc.string, core.sys.posix.time;
+    import std.file, std.datetime, std.json, std.format, std.stdio, std.conv, std.string, std.concurrency;
     import std.ascii, std.csv, std.typecons, std.outbuffer;
-    import veda.onto.individual, veda.onto.resource;
-    import util.container;
-    import veda.core.know_predicates, veda.core.context;
+    import veda.onto.individual, veda.onto.resource, veda.core.define, veda.util.container, veda.core.know_predicates, veda.core.context;
+}
+
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
+{
+    if (_log is null)
+        _log = new logger("veda-core-" ~ process_name, "log", "UTIL");
+    return _log;
+}
+// ////// ////// ///////////////////////////////////////////
+
+
+bool wait_starting_module(P_MODULE tid_idx, Tid tid)
+{
+    bool res;
+
+    if (tid == Tid.init)
+        throw new Exception("wait_starting_thread: Tid=" ~ text(tid_idx) ~ " not found", __FILE__, __LINE__);
+
+    log.trace("START THREAD... : %s", text(tid_idx));
+    send(tid, thisTid);
+    receive((bool isReady)
+            {
+                res = isReady;
+                //if (trace_msg[ 50 ] == 1)
+                log.trace("START THREAD IS SUCCESS: %s", text(tid_idx));
+                if (res == false)
+                    log.trace("FAIL START THREAD: %s", text(tid_idx));
+            });
+    return res;
 }
 
 public string[ string ] getAsSimpleMapWithoutPrefix(Individual indv)
@@ -389,58 +419,6 @@ public bool is_today_in_interval(string from, string to)
     return true;
 }
 
-public class stack(T)
-{
-    T[] data;
-    int pos;
-
-    this()
-    {
-        data = new T[ 100 ];
-        pos  = 0;
-    }
-
-    T back()
-    {
-        //		writeln("stack:back:pos=", pos, ", data=", data[pos]);
-        return data[ pos ];
-    }
-
-    T popBack()
-    {
-        if (pos > 0)
-        {
-            //			writeln("stack:popBack:pos=", pos, ", data=", data[pos]);
-            pos--;
-            return data[ pos + 1 ];
-        }
-        return data[ pos ];
-    }
-
-    void pushBack(T val)
-    {
-        //		writeln("stack:pushBack:pos=", pos, ", val=", val);
-        pos++;
-        data[ pos ] = val;
-    }
-
-    bool empty()
-    {
-        return pos == 0;
-    }
-}
-
-string _tmp_correct_link(string link)
-{
-    // TODO убрать корректировки ссылок в organization: временная коррекция ссылок
-    char[] sscc = link.dup;
-    if (sscc[ 7 ] == '_')
-        sscc = sscc[ 8..$ ];
-    else if (sscc[ 8 ] == '_')
-        sscc = sscc[ 9..$ ];
-    return cast(string)sscc;
-}
-
 string to_lower_and_replace_delimeters(string in_text)
 {
     if (in_text is null || in_text.length == 0)
@@ -459,62 +437,6 @@ string to_lower_and_replace_delimeters(string in_text)
 
     return cast(immutable)out_text;
 }
-
-//////////////////////////////////////////////////////////////////////////////
-void print_2(ref Set!string *[ string ] res)
-{
-    writeln("***");
-    foreach (key; res.keys)
-    {
-        writeln(key, ":");
-        Set!string * ss = res[ key ];
-        foreach (aa; ss.items)
-        {
-            writeln("	", aa);
-        }
-    }
-}
-
-// based on std.functional.memoize
-/*
-         Copyright Andrei Alexandrescu 2008 - 2009.
-   Distributed under the Boost Software License, Version 1.0.
-   (See accompanying file LICENSE_1_0.txt or copy at
-         http://www.boost.org/LICENSE_1_0.txt)
- */
-
-enum cacheize_use
-{
-    common_use,
-    execute_and_update
-}
-
-template cacheize(alias fun, uint maxSize = uint.max)
-{
-    ReturnType!fun cacheize(ParameterTypeTuple!fun args, cacheize_use use = cacheize_use.common_use)
-    {
-        static ReturnType!fun[ Tuple!(typeof(args)) ] memo;
-        auto   t = tuple(args);
-
-        if (use == cacheize_use.common_use)
-        {
-            auto p = t in memo;
-            if (p)
-                return *p;
-
-            static if (maxSize != uint.max)
-            {
-                if (memo.length >= maxSize)
-                    memo = null;
-            }
-        }
-        auto r = fun(args);
-        //writeln("Inserting result ", typeof(r).stringof, "(", r, ") for parameters ", t);
-        memo[ t ] = r;
-        return r;
-    }
-}
-
 
 ////////////
 

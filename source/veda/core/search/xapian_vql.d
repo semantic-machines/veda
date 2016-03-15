@@ -2,14 +2,13 @@
  * VQL -> xapian
  */
 
-module search.xapian_vql;
+module veda.core.search.xapian_vql;
 
 import std.string, std.concurrency, std.stdio, std.datetime, std.conv, std.algorithm;
 import bind.xapian_d_header;
-import util.utils, util.cbor;
+import util.utils, veda.util.cbor, veda.onto.onto;
 import search.vel;
-import veda.type, veda.core.context, veda.core.define, veda.core.log_msg;
-import storage.lmdb_storage;
+import veda.type, veda.core.context, veda.core.define, veda.core.log_msg, veda.core.storage.lmdb_storage;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -113,7 +112,7 @@ private TokenType get_token_type(string token, out double value)
     return res;
 }
 
-public string transform_vql_to_xapian(TTA tta, string p_op, out string l_token, out string op, out XapianQuery query,
+public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out string l_token, out string op, out XapianQuery query,
                                       ref int[ string ] key2slot, out double _rd, int level, XapianQueryParser qp)
 {
     if (key2slot.length == 0)
@@ -129,8 +128,8 @@ public string transform_vql_to_xapian(TTA tta, string p_op, out string l_token, 
 
     if (tta.op == ">" || tta.op == "<")
     {
-        string    ls = transform_vql_to_xapian(tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
-        string    rs = transform_vql_to_xapian(tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
+        string    ls = transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
+        string    rs = transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
 
         double    value;
         TokenType rs_type = get_token_type(rs, value);
@@ -144,10 +143,30 @@ public string transform_vql_to_xapian(TTA tta, string p_op, out string l_token, 
             return rs;
         }
     }
-    else if (tta.op == "==" || tta.op == "!=")
+    else if (tta.op == "==" || tta.op == "!=" || tta.op == "===")
     {
-        string ls = transform_vql_to_xapian(tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
-        string rs = transform_vql_to_xapian(tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
+        bool is_strict_equality = false;
+        if (tta.op == "===")
+        {
+            is_strict_equality = true;
+            tta.op             = "==";
+        }
+
+        string ls = transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
+        string rs = transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
+
+        if (!is_strict_equality && rs.indexOf (':') > 0)
+        {
+            Classes subclasses = ctx.get_onto().get_sub_classes(rs);
+            //writeln ("@ class=,", rs, ", subclasses=", subclasses);
+
+            foreach (classz; subclasses.keys)
+            {
+                rs ~= " OR " ~ classz;
+            }
+
+            //writeln ("@ RS=", rs);
+        }
 
         //writeln("#2 % query_l=", query_l);
         //writeln("#2 % query_r=", query_r);
@@ -339,14 +358,14 @@ public string transform_vql_to_xapian(TTA tta, string p_op, out string l_token, 
 
         string tta_R;
         if (tta.R !is null)
-            tta_R = transform_vql_to_xapian(tta.R, tta.op, token_L, t_op_r, query_r, key2slot, rd, level + 1, qp);
+            tta_R = transform_vql_to_xapian(ctx, tta.R, tta.op, token_L, t_op_r, query_r, key2slot, rd, level + 1, qp);
 
         if (t_op_r !is null)
             op = t_op_r;
 
         string tta_L;
         if (tta.L !is null)
-            tta_L = transform_vql_to_xapian(tta.L, tta.op, dummy, t_op_l, query_l, key2slot, ld, level + 1, qp);
+            tta_L = transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, t_op_l, query_l, key2slot, ld, level + 1, qp);
 
         if (t_op_l !is null)
             op = t_op_l;
@@ -452,10 +471,10 @@ public string transform_vql_to_xapian(TTA tta, string p_op, out string l_token, 
 //        writeln("#4.1 ||");
 
         if (tta.R !is null)
-            transform_vql_to_xapian(tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
+            transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
 
         if (tta.L !is null)
-            transform_vql_to_xapian(tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
+            transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
 
         if (query_l !is null)
             query = query_l.add_right_query(xapian_op.OP_OR, query_r, &err);
@@ -515,6 +534,8 @@ public int exec_xapian_query_and_queue_authorize(Ticket *ticket,
     {
         XapianMSetIterator it = matches.iterator(&err);
 
+        bool               acl_db_reopen = true;
+
         while (it.is_next(&err) == true)
         {
             if (err < 0)
@@ -534,13 +555,14 @@ public int exec_xapian_query_and_queue_authorize(Ticket *ticket,
             if (trace_msg[ 201 ] == 1)
                 log.trace("subject_id:[%s]", subject_id);
 
-            if (context.authorize(subject_id, ticket, Access.can_read))
+            if (context.authorize(subject_id, ticket, Access.can_read, acl_db_reopen))
             {
                 add_out_element(subject_id);
                 read_count++;
                 if (read_count >= top)
                     break;
             }
+            acl_db_reopen = false;
 
             it.next(&err);
         }

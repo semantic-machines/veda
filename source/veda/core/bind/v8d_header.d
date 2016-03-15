@@ -22,6 +22,8 @@ logger log()
 string[ string ] g_prop;
 Context g_context;
 
+_Buff   g_parent_script_id;
+_Buff   g_parent_document_id;
 _Buff   g_prev_state;
 _Buff   g_document;
 _Buff   g_user;
@@ -185,7 +187,15 @@ extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
     {
         string var_name = cast(string)_var_name[ 0.._var_name_length ];
 
-        if (var_name == "$user")
+        if (var_name == "$parent_script_id")
+        {
+            return &g_parent_script_id;
+        }
+        else if (var_name == "$parent_document_id")
+        {
+            return &g_parent_document_id;
+        }
+        else if (var_name == "$user")
         {
             return &g_user;
         }
@@ -217,7 +227,10 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
         }
         else if (uri == "$prev_state")
         {
-            return &g_prev_state;
+            if (g_prev_state.length > 0)
+                return &g_prev_state;
+            else
+                return null;
         }
         else
         {

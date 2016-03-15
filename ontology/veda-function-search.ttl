@@ -19,21 +19,21 @@
 
 v-fs:FunctionSearch
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Function Search"@en ;
   rdfs:label "Функция Поиск"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 v-fs:FulltextRequest
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Fulltext request"@en ;
   rdfs:label "Полнотекстовый запрос"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 v-fs:AttributiveRequest
   rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
   rdfs:label "Attributive request"@en ;
   rdfs:label "Аттрибутивный запрос"@ru ;
-  rdfs:subClassOf owl:Thing ;
 .
 v-fs:Search
   rdf:type v-fs:FunctionSearch ;
@@ -312,6 +312,7 @@ v-fs:FulltextRequestModel
 	self.result  = [];
 	self.count  = 0;
 	self.selected = [];
+	self.q = q;
 	self.search = function () {
 		self.trigger("beforeSearch");
 		self.result = query(veda.ticket, q, sort, databases, reopen);
@@ -348,6 +349,7 @@ v-fs:FulltextRequestTemplate
 	<!-- Nav tabs -->
 	<ul class="nav nav-tabs nav-right" role="tablist">
 		<li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
+		<li role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li>
 		<li role="presentation"><a href="#mgmt-ft" about="v-fs:RequestMgmt" property="rdfs:label" aria-controls="mgmt-ft" role="tab" data-toggle="tab"></a></li>
 		<li role="presentation"><a id="results-pill-ft" href="#results-ft" aria-controls="results-ft" role="tab" data-toggle="tab"><span href="#params-ft" about="v-fs:Results" property="rdfs:label"></span> <span class="badge" id="results-count">0</span></a></li>
 		<li role="presentation" class="active"><a id="params-pill-ft" href="#params-ft" about="v-fs:Params" property="rdfs:label" aria-controls="params-ft" role="tab" data-toggle="tab"></a></li>
@@ -437,7 +439,14 @@ v-fs:FulltextRequestTemplate
 	});
 
 	// Present results if query defined
-	if (self.count) { self.trigger("afterSearch"); }
+	if (self.q) { 
+		self.trigger("afterSearch"); 
+	}
+	
+	$("#refresh", template).click(function (e) {
+		e.preventDefault();
+		self.search();
+	});
 
 	// Update user aspect when search request was saved
 	function updateAspect() {
@@ -483,47 +492,44 @@ v-fs:FulltextRequestTemplate
 		
 		// Nothing found
 		if (self.count === 0) {
-			params.tab("show");
 			notFound.show();
-
+		}
 		// Render results
-		} else {
-			self.page = self.page || 0;
-			if (self.count < self.page * veda.user.displayedElements) {
-				self.page = Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0) - 1;
-			}
-			resultsList.attr("start", self.page * veda.user.displayedElements + 1);
-			results.tab("show");
-			
-			for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
-				(function (i) {
-					setTimeout(function () {
-						var container = $("<li>").appendTo(resultsList);
-						var result = new veda.IndividualModel( self.result[i] );
-						var tmpl = genericTemplate(result);
-						result.present(container, tmpl);
-					}, 0);
-				}(i));
-			}
-			
-			// Show pager
-			for (var pg = 0; pg < Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0); pg++) {
-				var $pg = $("<li/>")
-					.attr("class", pg === self.page ? "active" : "")
-					.appendTo(pager);
-				var $a = $("<a/>", {
-					"text" : pg + 1,
-					"click": (function (pg) {
-						if (pg === self.page) return $.noop;
-						return function (event) {
-							event.preventDefault();
-							self.page = pg;
-							self.trigger("afterSearch");
-						}
-					})(pg),
-					"href" : ""
-				}).appendTo($pg);
-			}
+		self.page = self.page || 0;
+		if (self.count < self.page * veda.user.displayedElements) {
+			self.page = Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0) - 1;
+		}
+		resultsList.attr("start", self.page * veda.user.displayedElements + 1);
+		results.tab("show");
+		
+		for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
+			(function (i) {
+				setTimeout(function () {
+					var container = $("<li>").appendTo(resultsList);
+					var result = new veda.IndividualModel( self.result[i] );
+					var tmpl = genericTemplate(result);
+					result.present(container, tmpl);
+				}, 0);
+			}(i));
+		}
+		
+		// Show pager
+		for (var pg = 0; pg < Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0); pg++) {
+			var $pg = $("<li/>")
+				.attr("class", pg === self.page ? "active" : "")
+				.appendTo(pager);
+			var $a = $("<a/>", {
+				"text" : pg + 1,
+				"click": (function (pg) {
+					if (pg === self.page) return $.noop;
+					return function (event) {
+						event.preventDefault();
+						self.page = pg;
+						self.trigger("afterSearch");
+					}
+				})(pg),
+				"href" : ""
+			}).appendTo($pg);
 		}
 	}
 </script>
@@ -586,6 +592,7 @@ v-fs:AttributiveRequestModel
 	self.result  = [];
 	self.count  = 0;
 	self.selected = [];
+	self.q = q;
 	self.search = function () {
 		self.trigger("beforeSearch");
 		self.result = query(veda.ticket, q, sort, databases, reopen);
@@ -608,6 +615,8 @@ v-fs:AttributiveRequestTemplate
 	<!-- Nav tabs -->
 	<ul class="nav nav-tabs nav-right" role="tablist">
 		<li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
+		<li role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li>
+		<li role="presentation"><a id="xls" href="#xls"><i class="fa fa-table fa-lg"></i></a></li>
 		<li role="presentation"><a href="#mgmt-at" about="v-fs:RequestMgmt" property="rdfs:label" aria-controls="mgmt-at" role="tab" data-toggle="tab"></a></li>
 		<li role="presentation"><a id="results-pill-at" href="#results-at" aria-controls="results-at" role="tab" data-toggle="tab"><span href="#params-at" about="v-fs:Results" property="rdfs:label"></span> <span class="badge" id="results-count">0</span></a></li>
 		<li role="presentation" class="active"><a id="params-pill-at" href="#params-at" about="v-fs:Params" property="rdfs:label" aria-controls="params-at" role="tab" data-toggle="tab"></a></li>
@@ -725,7 +734,15 @@ v-fs:AttributiveRequestTemplate
 	}
 
 	// Present results if query defined
-	if (self.count) { self.trigger("afterSearch"); }
+	if (self.q) { 
+		//self.trigger("afterSearch"); 
+		self.search();
+	}
+	
+	$("#refresh", template).click(function (e) {
+		e.preventDefault();
+		self.search();
+	});
 	
 	// Display search form
 	function typeChanged(property_uri, types) {
@@ -878,55 +895,108 @@ v-fs:AttributiveRequestTemplate
 		
 		// Nothing found
 		if (self.count === 0) {
-			params.tab("show");
 			notFound.show();
-
-		// Render results
-		} else {
-			self.page = self.page || 0;
-			if (self.count < self.page * veda.user.displayedElements) {
-				self.page = Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0) - 1;
-			}
-			results.tab("show");
-			
-			for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
-				(function (i) {
-					setTimeout(function () {
-						var _tmpl = $(tmpl.replace("###", i+1));
-						var result = new veda.IndividualModel( self.result[i] );
-						result.present(tBody, _tmpl);
-						_tmpl.dblclick(function (e) {
-							riot.route("#/" + result.id);
-						});
-					}, 0);
-				}(i));
-			}
-			
-			// Show pager
-			for (var pg = 0; pg < Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0); pg++) {
-				var $pg = $("<li/>")
-					.attr("class", pg === self.page ? "active" : "")
-					.appendTo(pager);
-				var $a = $("<a/>", {
-					"text" : pg + 1,
-					"click": (function (pg) {
-						if (pg === self.page) return $.noop;
-						return function (event) {
-							event.preventDefault();
-							self.page = pg;
-							self.trigger("afterSearch");
-						}
-					})(pg),
-					"href" : ""
-				}).appendTo($pg);
-			}
 		}
+		// Render results
+		self.page = self.page || 0;
+		if (self.count < self.page * veda.user.displayedElements) {
+			self.page = Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0) - 1;
+		}
+		results.tab("show");
+		
+		for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
+			(function (i) {
+				setTimeout(function () {
+					var _tmpl = $(tmpl.replace("###", i+1));
+					var result = new veda.IndividualModel( self.result[i] );
+					result.present(tBody, _tmpl);
+					_tmpl.dblclick(function (e) {
+						riot.route("#/" + result.id);
+					});
+				}, 0);
+			}(i));
+		}
+		
+		// Show pager
+		for (var pg = 0; pg < Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0); pg++) {
+			var $pg = $("<li/>")
+				.attr("class", pg === self.page ? "active" : "")
+				.appendTo(pager);
+			var $a = $("<a/>", {
+				"text" : pg + 1,
+				"click": (function (pg) {
+					if (pg === self.page) return $.noop;
+					return function (event) {
+						event.preventDefault();
+						self.page = pg;
+						self.trigger("afterSearch");
+					}
+				})(pg),
+				"href" : ""
+			}).appendTo($pg);
+		}
+	}
+	
+	// Export to Spreadsheet
+	var tableToExcel = (function () {
+		var uri = 'data:application/vnd.ms-excel;base64,'
+			, template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
+			, base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+			, format = function(s, c) { return s.replace(/{([a-z]+)}/g, function(m, p) { return c[p]; }) }
+		return function(table, name) {
+			if (!table.nodeType) table = document.getElementById(table)
+			var ctx = {
+				worksheet: name || 'Worksheet',
+				table: table.innerHTML
+			};
+			var formatted = format(template, ctx);
+			var rendered = uri + base64(formatted);
+			window.location.href = rendered;
+			//window.location.href = uri + base64(format(template, ctx));
+		}
+	})();
+
+	$("#xls", template).click(function (e) {
+		e.preventDefault();
+		var hd = tHead.clone().removeAttr("id");
+		var tbl = $("<table id='export2xls'>").append(hd, "<tbody></tbody>");
+		var tmpl = gen_row_simple(head)[0].outerHTML;
+		
+		for (var i = 0; i < self.count; i++) {
+			(function (i) {
+				var _tmpl = $(tmpl.replace("###", i+1));
+				var result = new veda.IndividualModel( self.result[i] );
+				result.present($("tbody", tbl), _tmpl);
+			}(i));
+		}
+		setTimeout(function () {
+			tableToExcel(tbl[0], self["rdfs:label"].join(", "));
+		}, 0);
+	});
+	
+	function gen_row_simple(head) {
+		var hd = $(head);
+		var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
+		var row = $("<tr>");
+		hd.children().each( function () {
+			var td = $("<td>");
+			if (this.id === "count") {
+				td.text("###");
+			} else if (this.id === "zoom") {
+				td.html("");
+			} else {
+				var property = new veda.IndividualModel( this.id );
+				var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : undefined;
+				if (literals.indexOf(range) >= 0) {
+					td.attr("property", property.id);
+				} else {
+					td.attr("about", "@").attr("rel", property.id).attr("template", "v-ui:LabelTemplate");
+				}
+			}
+			td.appendTo(row);
+		});
+		return row;
 	}
 </script>
   """
-.
-v-fs:SearchMembership
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:ReadResGroup ;
-  v-s:resource v-fs:Search ;
 .
