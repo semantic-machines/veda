@@ -395,7 +395,7 @@
 		}
 		
 		$(".language-list", control).append(
-			Object.keys(veda.user.availableLanguages).map(function (language_name) {
+			Object.keys(veda.user.language).map(function (language_name) {
 				var li = undef.clone();
 				$(".language", li).data("language", language_name).text(language_name).appendTo(li);
 				language == language_name ? li.addClass("active") : li.removeClass("active");
@@ -403,7 +403,7 @@
 			})
 		);
 
-		$(".language", control).on("click", function ( e ) {
+		$(".language", control).click(function ( e ) {
 			e.preventDefault();
 			langTag.text( $(this).data("language") || "" );
 			input.data("language", $(this).data("language") || null);
