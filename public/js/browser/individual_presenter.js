@@ -824,18 +824,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			
 		}
+		
 		// standard tasks
-		var stasks = $('#standard-tasks', template);
-		stasks.append($('<li/>', {
-			style:'cursor:pointer', 
-			click: function() {veda.Util.send(individual, template, 'v-wf:questionRouteStartForm')},
-			html: '<a>'+(new veda.IndividualModel('v-s:SendQuestion')['rdfs:label'][0])+'</a>'
-		}));
-		stasks.append($('<li/>', {
-			style:'cursor:pointer', 
-			click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm')},
-			html: '<a>'+(new veda.IndividualModel('v-s:SendInstruction')['rdfs:label'][0])+'</a>'
-		}));
+		$('#standard-tasks', template).each(function(stask) {
+			stask.append($('<li/>', {
+				style:'cursor:pointer', 
+				click: function() {veda.Util.send(individual, template, 'v-wf:questionRouteStartForm')},
+				html: '<a>'+(new veda.IndividualModel('v-s:SendQuestion')['rdfs:label'][0])+'</a>'
+			}));
+			stask.append($('<li/>', {
+				style:'cursor:pointer', 
+				click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm')},
+				html: '<a>'+(new veda.IndividualModel('v-s:SendInstruction')['rdfs:label'][0])+'</a>'
+			}));
+		});
 
 		return template;
 	}
