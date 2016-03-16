@@ -6,7 +6,7 @@ module veda.util.cbor;
 private
 {
     import std.outbuffer, std.stdio, std.typetuple, std.datetime, std.conv;
-    import veda.util.container;
+    import veda.util.container, veda.util.tools;
 }
 
 enum : byte
@@ -209,30 +209,6 @@ public void write_bool(bool vv, ref OutBuffer ou)
         write_type_value(MajorType.FLOAT_SIMPLE, TRUE, ou);
     else
         write_type_value(MajorType.FLOAT_SIMPLE, FALSE, ou);
-}
-
-/// Записать в буффер ushort
-private ushort ushort_from_buff(ubyte[] buff, int pos)
-{
-    ushort res = *((cast(ushort *)(buff.ptr + pos)));
-
-    return res;
-}
-
-/// Записать в буффер uint
-private uint uint_from_buff(ubyte[] buff, int pos)
-{
-    uint res = *((cast(uint *)(buff.ptr + pos)));
-
-    return res;
-}
-
-/// Записать в буффер ulong
-private ulong ulong_from_buff(ubyte[] buff, int pos)
-{
-    ulong res = *((cast(ulong *)(buff.ptr + pos)));
-
-    return res;
 }
 
 /// Читать из буффера тип и значение
