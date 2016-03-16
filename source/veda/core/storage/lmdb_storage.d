@@ -696,7 +696,7 @@ public class LmdbStorage : Storage
                 if (return_value)
                     str = cast(string)(data.mv_data[ 0..data.mv_size ]);
                 else
-                    str = "";
+                    str = "?";
             }
         }catch (Exception ex)
         {
