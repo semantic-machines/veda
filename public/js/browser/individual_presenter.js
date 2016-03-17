@@ -211,7 +211,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var saveResult = individual.save();
 			if (saveResult.redirectToIndividual) {
 				container.empty();
-				saveResult.redirectToIndividual.present(container, undefined, saveResult.redirectToMode);
+				saveResult.redirectToIndividual.present(container, template, saveResult.redirectToMode);
 				changeHash(saveResult.redirectToIndividual.id);				
 			} else {
 				template.trigger("view");
@@ -251,7 +251,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				individual.saveIndividual(false);
 				
 				container.empty();
-				actual.present(container, undefined, "view");
+				actual.present(container, template, "view");
 				changeHash(actual.id);				
 			} else {
 				template.trigger("view");
@@ -777,14 +777,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					// Go to already existed draft
 					var draft = new veda.IndividualModel(individual['v-s:hasDraft'][0].id);
 					container.empty();
-					draft.present(container, undefined, "edit");
+					draft.present(container, template, "edit");
 					changeHash(draft.id, "edit");
 				} else 
 				{
 					if (individual.hasValue('v-s:isDraftOf')) {
 						// Individual is draft itself
 						container.empty();
-						individual.present(container, undefined, "edit");
+						individual.present(container, template, "edit");
 						changeHash(individual.id, "edit");
 					} else {
 						// Create new draft
@@ -800,7 +800,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						individual.saveIndividual(false);
 						
 						container.empty();
-						clone.present(container, undefined, "edit");
+						clone.present(container, template, "edit");
 						changeHash(clone.id, "edit");
 					}
 				}
