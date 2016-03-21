@@ -20,6 +20,36 @@ rdfs:subClassOf
 
 ### CLASSES ###
 
+v-s:ExecuteScript
+  rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+  rdfs:label "Выполнить скрипт" ;
+.
+
+v-s:Variable
+	rdf:type owl:Class ;
+	rdfs:subClassOf owl:Thing ;
+	rdfs:label "Variable"@en ;
+	rdfs:label "Переменная"@ru ;
+.
+
+v-s:variableName
+	rdf:type rdf:Property ;
+	rdfs:label "variable name"@en ;
+	rdfs:label "имя переменной"@ru ;
+	rdfs:domain v-s:Variable ;
+	rdfs:range xsd:string ;
+.
+
+v-s:variableValue
+	rdf:type rdf:Property ;
+	rdfs:label "variable value"@en ;
+	rdfs:label "значение переменной"@ru ;
+	rdfs:domain v-s:Variable ;
+	rdfs:range rdfs:Resource ;
+.
+
+
 v-s:Bundle
   rdf:type owl:Class ;
   rdfs:subClassOf owl:Thing ;
@@ -179,6 +209,36 @@ v-s:Embedded
 .
 
 ### PROPERTIES ###
+
+v-s:argument
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:ExecuteScript ;
+  rdfs:label "аргумент" ;
+  rdfs:range v-s:Variable ;
+.
+
+v-s:result
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:ExecuteScript ;
+  rdfs:label "результаты" ;
+  rdfs:range v-s:Variable ;
+.
+
+v-s:resultInfo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:ExecuteScript ;
+  rdfs:label "описание к результатам" ;
+  rdfs:range xsd:string ;
+.
+
+v-s:isSuccess
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:ExecuteScript ;
+  rdfs:label "завершено успешно" ;
+  rdfs:range xsd:boolean ;
+.
+
+###
 
 v-s:parent
   rdf:type owl:ObjectProperty ;
@@ -489,9 +549,7 @@ v-s:resource
 
 v-s:script
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:ClassModel ;
-  rdfs:domain v-s:Codelet ;
-  rdfs:domain v-s:Event ;
+  rdfs:domain v-s:ClassModel, v-s:Codelet, v-s:Event, v-s:ExecuteScript ;
   rdfs:label "script"@en ;
   rdfs:label "скрипт"@ru ;
   rdfs:range xsd:string ;

@@ -22,14 +22,39 @@
 # owl:versionInfo "1.3" ;
 .
 
-td:email-test
-  rdf:type v-s:Email;
-  v-wf:from td:AleksandraKhvostikova-Analyst1;
-  v-wf:to td:ValeriyBushenev-Programmer1;
-  v-wf:replyTo td:RomanKarpov-Analyst1;
-  v-s:subject "test";
-  v-s:messageBody "test1 test2 TEST3";
+td:run-script
+  rdf:type v-s:ExecuteScript;
+	v-s:argument td:arg1, td:arg2;
+	v-s:result td:res1 ;
+	v-s:isSuccess "false";
+	v-s:script td:script_onto_rename;
 .
+
+td:arg1
+  rdf:type v-s:Variable ;
+  v-s:variableName "from" ;
+  v-s:variableValue v-wf:Variable, v-wf:variableName, v-wf:variableValue;
+.  
+
+td:arg2
+  rdf:type v-s:Variable ;
+  v-s:variableName "to" ;
+  v-s:variableValue  v-s:Variable, v-s:variableName, v-s:variableValue;
+.  
+
+td:res1
+  rdf:type v-s:Variable ;
+  v-s:variableName "res" ;
+.
+
+td:script_onto_rename
+	rdf:type v-s:Codelet ;
+	v-s:script 
+	"""
+	// скрипт переименования онтологии
+	""";
+.	
+
 
 td:AdministrativeDocument
   rdf:type owl:Class ;
