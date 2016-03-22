@@ -49,6 +49,7 @@ td:script_onto_rename
 	// скрипт переименования онтологии
     
     var rename_template = $arguments["rename_template"];
+    var is_update = false;
 
     for (var key in $document)
     {
@@ -67,15 +68,21 @@ td:script_onto_rename
 
                 for (var value in values)
                 {
-                    if (value.data == from)
+                    var new_str = value.data.replace(new RegExp(from,'g'), to);
+                    
+                    if (new_str != value.data)
                     {
-                        value.data = to;
+                        is_update = true;
+                        value.data = new_str;
                     }
                 }
             }
 
         }
     }
+    
+    if (is_update)
+        put_individual(ticket, document);
         
 	""";
 .	
