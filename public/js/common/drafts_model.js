@@ -14,6 +14,19 @@ veda.Module(function (veda) { "use strict";
 	veda.DraftsModel = function () {
 		
 		var self = this;
+		
+		var data = {};
+		
+		Object.defineProperty(this, "_", {
+			get: function () {
+				return data;
+			},
+			set: function (value) {
+				data = value;
+			},
+			enumerable: false,
+			configurable: false
+		});
 
 		try { 
 			self._ = JSON.parse(storage.drafts);
@@ -35,8 +48,8 @@ veda.Module(function (veda) { "use strict";
 
 	proto.set = function (uri, data) {
 		this[uri] = data;
-		this._drafts[uri] = data.toJson();
-		storage.drafts = JSON.stringify(this._drafts);
+		this._[uri] = data.toJson();
+		storage.drafts = JSON.stringify(this._);
 	};
 
 	proto.remove = function (uri) {
