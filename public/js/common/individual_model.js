@@ -520,7 +520,6 @@ veda.Module(function (veda) { "use strict";
 		return this._.isNew;
 	};
 
-
 	/**
 	 * @method
 	 * Call individual presenter
@@ -539,6 +538,24 @@ veda.Module(function (veda) { "use strict";
 			veda.trigger("individual:loaded", this, container, template, mode);
 		}
 		return this;
+	};
+
+	/**
+	 * @method
+	 * Serialize to JSON string
+	 * @return {String} JSON representation of individual.
+	 */
+	proto.toJson = function () {
+		return JSON.stringify(this._.individual);
+	};
+
+	/**
+	 * @method
+	 * Serialize to JSON string
+	 * @return {String} JSON representation of individual.
+	 */
+	proto.toString = function () {
+		return this["rdfs:label"] ? this["rdfs:label"].join(", ") : this.id;
 	};
 
 	/**
