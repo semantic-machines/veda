@@ -567,8 +567,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			var control = $(this),
 				property_uri = control.attr("property"),
-				property = veda.ontology[property_uri],
-				type = control.attr("type") || veda.ontology[property_uri]["rdfs:range"][0].id,
+				property = new veda.IndividualModel(property_uri),
+				type = control.attr("type") || property["rdfs:range"][0].id,
 				spec = specs[property_uri],
 				controlType;
 			
@@ -676,7 +676,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var control = $(this), 
 				rel_uri = control.attr("rel"),
 				spec = specs[rel_uri],
-				rel = veda.ontology[rel_uri],
+				rel = new veda.IndividualModel(rel_uri),
 				controlType = control.attr("type") ? $.fn["veda_" + control.attr("type")] : $.fn.veda_link;
 			
 			control.removeAttr("rel");
@@ -1052,7 +1052,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		$(".properties", template).append (
 			Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
-				var property = veda.ontology[property_uri];
+				var property = new veda.IndividualModel(property_uri);
 				if (property_uri === "rdfs:label" || property_uri === "rdf:type" || property_uri === "v-s:deleted") return;
 				
 				var result = $("<div/>").append( propTmpl );

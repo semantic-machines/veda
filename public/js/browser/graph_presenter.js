@@ -62,7 +62,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 						addNode(value);
 						var from = individual.id;
 						var to = value.id;
-						var label = veda.ontology[property_uri]["rdfs:label"][0].toString();
+						var label = (new veda.IndividualModel(property_uri))["rdfs:label"].join(", ");
 						var options = {
 							filter: function (item) {
 								return  item.from == from && 
@@ -96,7 +96,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 				Object.getOwnPropertyNames(res.properties).map(function (property_uri) {
 					res[property_uri].map(function (item) {
 						if (item instanceof veda.IndividualModel && item.id == to) {
-							var label = veda.ontology[property_uri]["rdfs:label"][0];
+							var label = (new veda.IndividualModel(property_uri))["rdfs:label"].join(", ");
 							var options = {
 								filter: function (item) {
 									return  item.from == from && 

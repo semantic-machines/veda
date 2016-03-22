@@ -225,7 +225,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 individual.defineProperty("rdfs:label");                
                 individual.defineProperty("v-wf:flowsInto");
                 
-                individual["rdf:type"] = [veda.ontology["v-wf:Flow"]];
+                individual["rdf:type"] = [ new veda.IndividualModel("v-wf:Flow") ];
                 individual["rdfs:label"] = [new String('')];
                 
                 net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]); // <- Add new Flow to Net
@@ -319,7 +319,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 individualM.defineProperty("v-wf:mapsTo");
                 individualM.defineProperty("v-wf:mappingExpression");
                 
-           		individualM["rdf:type"] = [veda.ontology["v-wf:Mapping"]];
+           		individualM["rdf:type"] = [ new veda.IndividualModel("v-wf:Mapping") ];
            		individualM["v-wf:mapToVariable"] = [variable];
                 individualM['v-wf:mappingExpression'] = ["process.getInputVariable ('"+variable["v-wf:varDefineName"][0]+"')"];
                 
@@ -718,17 +718,17 @@ jsWorkflow.ready = jsPlumb.ready;
                 individual['v-wf:locationY'] = [new Number((-canvasSizePx/2-net['offsetY'])/net['currentScale'])];
 
             	if (type=='condition') {
-               		individual["rdf:type"] = [veda.ontology["v-wf:Condition"]];
+               		individual["rdf:type"] = [ new veda.IndividualModel("v-wf:Condition") ];
                 	instance.createState(individual);
                 } else if (type=='task') { 
-                    individual["rdf:type"] = [veda.ontology["v-wf:Task"]];
+                    individual["rdf:type"] = [ new veda.IndividualModel("v-wf:Task") ];
                 	instance.createState(individual);
                 } else if (type=='input') { 
-                    individual["rdf:type"] = [veda.ontology["v-wf:InputCondition"]];
+                    individual["rdf:type"] = [ new veda.IndividualModel("v-wf:InputCondition") ];
                 	instance.createState(individual);
                 } else if (type=='output') { 
                 	individual['v-wf:locationX'] = [individual['v-wf:locationX'][0]+200];
-                    individual["rdf:type"] = [veda.ontology["v-wf:OutputCondition"]];
+                    individual["rdf:type"] = [ new veda.IndividualModel("v-wf:OutputCondition") ];
                 	instance.createState(individual);
                 }
                	net['v-wf:consistsOf'] = (net['v-wf:consistsOf'] === undefined)?[individual]:net['v-wf:consistsOf'].concat([individual]);

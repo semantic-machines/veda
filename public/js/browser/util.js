@@ -311,7 +311,7 @@ veda.Module(function Util(veda) { "use strict";
 					var value = null;
 					if (key === 'rdf:type')
 					{
-						value = veda.ontology[transfromResult[0][key][i].data];
+						value = new veda.IndividualModel(transfromResult[0][key][i].data);
 					} else  
 					{
 						if (transfromResult[0][key][i].type == _Uri) {

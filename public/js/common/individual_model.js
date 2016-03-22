@@ -371,7 +371,7 @@ veda.Module(function (veda) { "use strict";
 			}
 			version['v-s:actualVersion'] = [actual];
 			version['v-s:nextVersion'] = [actual];
-			version['rdf:type'] = version['rdf:type'].concat([veda.ontology["v-s:Version"]]);
+			version['rdf:type'] = version['rdf:type'].concat( new veda.IndividualModel("v-s:Version") );
 			version.saveIndividual(false);
 			
 			// Update draft version
@@ -388,7 +388,7 @@ veda.Module(function (veda) { "use strict";
 			self._.isNew = false;
 			self._.sync = true;
 			if (self._.cache) veda.cache[self.id] = self;
-			self.trigger("individual:afterSave", self._.original_individual);
+			self.trigger("individual:afterSave", self._.individual);
 		}
 
 		return this;
@@ -456,7 +456,7 @@ veda.Module(function (veda) { "use strict";
 	 * @return {boolean} is individual rdf:type subclass of requested class 
 	 */
 	proto.is = function (classId) {
-		var type = veda.ontology[this['rdf:type'][0].id];
+		var type = new veda.IndividualModel(this['rdf:type'][0].id);
 		for (var key in type['rdfs:subClassOf']) {
 			if (type['rdfs:subClassOf'][key].id == classId) return true;
 		}
@@ -531,7 +531,7 @@ veda.Module(function (veda) { "use strict";
 	proto.present = function (container, template, mode) {
 		if (container) { 
 			if (!this.hasValue("rdf:type")) { 
-				this["rdf:type"] = [veda.ontology["rdfs:Resource"]]; 
+				this["rdf:type"] = [ new veda.IndividualModel("rdfs:Resource") ]; 
 				return;
 			}
 			// Prefetch linked object (depth 2) to reduce 'get_individual' requests count during rendering

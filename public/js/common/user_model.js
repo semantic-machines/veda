@@ -42,7 +42,7 @@ veda.Module(function (veda) { "use strict";
 			self.aspect = self["v-s:hasAspect"][0];
 		} else {
 			self.aspect = new veda.IndividualModel();
-			self.aspect["rdf:type"] = [ veda.ontology["v-s:PersonalAspect"] ];
+			self.aspect["rdf:type"] = [ new veda.IndividualModel("v-s:PersonalAspect") ];
 			self.aspect["v-s:owner"] = [ self ];
 			self.aspect["rdfs:label"] = [ "PersonalAspect_" + self.id ];
 			self.aspect.saveIndividual(false);

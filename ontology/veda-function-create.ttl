@@ -119,7 +119,7 @@ v-fc:FunctionCreateTemplate
 			var holder = $("#holder", template).empty();
 			if (values.length) {
 				var blank = new veda.IndividualModel();
-				blank["rdf:type"] = [ veda.ontology["v-fc:Blank"] ];
+				blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
 				blank["v-fc:typeToCreate"] = values;
 				blank.present(holder, undefined, "edit");
 			}
@@ -134,7 +134,7 @@ v-fc:FunctionCreateTemplate
 	if (blanks) {
 		blanks.map( function (blank) {
 			var cont = $("<li>").appendTo(blanksHolder);
-			blank.present(cont, veda.ontology["v-ui:LabelBlockLinkTemplate"]);
+			blank.present( cont, new veda.IndividualModel("v-ui:LabelBlockLinkTemplate") );
 		});
 	}
 </script>

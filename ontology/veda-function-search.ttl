@@ -282,7 +282,7 @@ v-fs:SearchTemplate
 		if (regs) {
 			regs.map( function (reg) {
 				var cont = $("<li>").appendTo(regsHolder);
-				reg.present(cont, veda.ontology["v-ui:LabelBlockLinkTemplate"]);
+				reg.present( cont, new veda.IndividualModel("v-ui:LabelBlockLinkTemplate") );
 			});
 		}
 	</script>

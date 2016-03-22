@@ -1042,7 +1042,7 @@
 			var files = [], n;
 			var uploaded = function (file, path, uri) {
 				var f = new veda.IndividualModel();
-				f["rdf:type"] = [ veda.ontology["v-s:File"] ];
+				f["rdf:type"] = [ new veda.IndividualModel("v-s:File") ];
 				f["v-s:fileName"] = [ file.name ];
 				f["rdfs:label"] = [ file.name ];
 				f["v-s:fileSize"] = [ file.size ];
@@ -1096,7 +1096,7 @@
 					form.submit();
 					iframe.one("load", function () {
 						var f = new veda.IndividualModel();
-						f["rdf:type"] = [ veda.ontology["v-s:File"] ];
+						f["rdf:type"] = [ new veda.IndividualModel("v-s:File") ];
 						f["v-s:fileName"] = [ name ];
 						f["rdfs:label"] = [ name ];
 						f["v-s:fileUri"] = [ uri ];
@@ -1145,7 +1145,7 @@
 			fullsearch = $("#fullsearch", control);
 
 		if (!queryPrefix) {
-			var relRange = veda.ontology[rel_uri]["rdfs:range"];
+			var relRange = (new veda.IndividualModel(rel_uri))["rdfs:range"];
 			if ( relRange && relRange.length && (relRange.length > 1 || relRange[0].id !== "rdfs:Resource") ) {
 				var types = relRange.map(function (i) { return "'rdf:type' == '" + i.id + "'";})
 				queryPrefix = "(" + types.join(" || ") + ")";
@@ -1163,7 +1163,7 @@
 
 		function createValue() {
 			var newVal = new veda.IndividualModel();
-			newVal["rdf:type"] = veda.ontology[rel_uri]["rdfs:range"];
+			newVal["rdf:type"] = (new veda.IndividualModel(rel_uri))["rdfs:range"];
 			select(newVal);
 		}
 
