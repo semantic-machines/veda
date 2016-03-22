@@ -45,31 +45,30 @@ td:script_onto_rename
 	rdf:type v-s:Codelet ;
 	v-s:script 
 	"""
-    
-	// скрипт переименования онтологии
-    
+    // скрипт переименования онтологии
     var rename_template = $arguments["rename_template"];
     var is_update = false;
+    var is_replace = false;
+    var prev_doc_uri = $document['@'];
 
     for (var key in $document)
     {
-        if (key != '@')
+        for (var template in rename_template)
         {
+            var cc = template.split(',');
+            if (!cc || cc.length != 2)
+                continue;
+
+            var from = cc[0];
+            var to = cc[1];
+
             var values = $document[key];
-
-            for (var template in rename_template)
+            if (key != '@')
             {
-                var cc = template.split(',');
-                if (!cc || cc.length != 2)
-                    continue;
-
-                var from = cc[0];
-                var to = cc[1];
-
                 for (var value in values)
                 {
-                    var new_str = value.data.replace(new RegExp(from,'g'), to);
-                    
+                    var new_str = value.data.replace(new RegExp(from, 'g'), to);
+
                     if (new_str != value.data)
                     {
                         is_update = true;
@@ -77,14 +76,29 @@ td:script_onto_rename
                     }
                 }
             }
-
+            else
+            {
+                if (key == from)
+                {
+                    is_replace = true;
+                    document['@'] = values;
+                }
+            }
         }
     }
-    
-    if (is_update)
+
+    if (is_replace)
+    {
+        remove_individual(ticket, prev_doc_uri);
         put_individual(ticket, document);
-        
-	""";
+    }
+    else
+    {
+        if (is_update)
+            put_individual(ticket, document);	
+    }        
+
+""";
 .	
 
 
