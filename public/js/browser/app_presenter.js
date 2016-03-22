@@ -18,7 +18,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 
 	// App loading indicator
 	var appLoadIndicator = $("#app-load-indicator");
-	veda.on("init", function (progress) {
+	veda.on("init:progress", function (progress) {
 		if (progress !== 100) {
 			appLoadIndicator.removeClass("hidden");
 		} else {
