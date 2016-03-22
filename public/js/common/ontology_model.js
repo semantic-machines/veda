@@ -28,6 +28,9 @@ veda.Module(function (veda) { "use strict";
 
 	veda.OntologyModel = function () {
 		
+		// Initialization percentage
+		veda.trigger("init:progress", 0);
+
 		//var t1 = new Date();
 		
 		var self = this;
@@ -60,7 +63,7 @@ veda.Module(function (veda) { "use strict";
 			localStorage.ontology = JSON.stringify(ontology);
 		}
 
-		// Check whether server & local cfg:OntoVsn objects are equal
+		// Check whether server & client cfg:OntoVsn objects are equal
 		var clientVsn = JSON.stringify( ontology["cfg:OntoVsn"] );
 		var serverVsn = JSON.stringify( get_individual(veda.ticket, "cfg:OntoVsn") );
 		if ( clientVsn !== serverVsn ) {
@@ -69,7 +72,7 @@ veda.Module(function (veda) { "use strict";
 			localStorage.ontology = JSON.stringify(ontology);
 		}
 
-		// Get ontology from localStorage
+		// Construct ontology individuals
 		Object.keys(ontology).map(function (key) {
 			var individual = ontology[key];
 			if (individual) self[key] = new veda.IndividualModel( individual, undefined, undefined, undefined, true, false );
