@@ -2,47 +2,47 @@
 
 veda.Module(function (veda) { "use strict";
 	
-	veda.drafts = (function () {
-		
-		var self = riot.observable({});
-		
-		var storage;
-		if (typeof localStorage !== "undefined") {
-			try {
-				storage = JSON.parse(localStorage.drafts);
-			} catch (e) {
-				delete localStorage.drafts;
-				storage = {};
-			}
-			storage.save = function () {
-				localStorage.drafts = JSON.stringify(this);
-			};
-			storage.clear = function () {
-				var self = this;
-				Object.keys(self).map(function (key) {
-					if (key === "save" || key === "clear") return;
-					delete self[key];
-				});
-				delete localStorage.drafts;
-			};
+	var storage = typeof localStorage !== "undefined" ? localStorage : {
+		clear: function () {
+			var self = this;
+			Object.keys(this).map(function (key) {
+				if (typeof self[key] !== "function") delete self[key];
+			});
 		}
+	}
+	
+	veda.DraftsModel = function () {
 		
-		self.get = function (uri) {
-			return storage[uri];
-		};
+		var self = this;
 
-		self.set = function (uri, data) {
-			storage[uri] = data;
-			storage.save();
-		};
+		try { 
+			self._ = JSON.parse(storage.drafts);
+		} catch (e) {
+			self._ = {};
+		}
 
-		self.remove = function (uri) {
-			delete storage[uri];
-			storage.save();
-		};
-		
-		return self;
-		
-	})();
+		Object.keys(self._).map(function (key) {
+			var draft = self._[key];
+			if (draft) self[key] = new veda.IndividualModel( draft );
+		});
+	};
+	
+	var proto = veda.DraftsModel.prototype;
+	
+	proto.get = function (uri) {
+		return this[uri];
+	};
+
+	proto.set = function (uri, data) {
+		this[uri] = data;
+		this._drafts[uri] = data.toJson();
+		storage.drafts = JSON.stringify(this._drafts);
+	};
+
+	proto.remove = function (uri) {
+		delete this[uri];
+		delete this._[uri];
+		storage.drafts = JSON.stringify(this._);
+	};
 
 });
