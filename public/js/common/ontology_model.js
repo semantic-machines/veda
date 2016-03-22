@@ -42,25 +42,23 @@ veda.Module(function (veda) { "use strict";
 		self.templates = {};
 		self.other = {};
 		
-		if (typeof localStorage === "undefined") { 
-			var localStorage = {
-				clear: function () {
-					var self = this;
-					Object.keys(this).map(function (key) {
-						if (typeof self[key] !== "function") delete self[key];
-					});
-				}
-			};
+		var storage = typeof localStorage !== "undefined" ? localStorage : {
+			clear: function () {
+				var self = this;
+				Object.keys(this).map(function (key) {
+					if (typeof self[key] !== "function") delete self[key];
+				});
+			}
 		}
-
-		if (!localStorage.ontology) localStorage.clear(); 
+		
+		if (!storage.ontology) storage.clear(); 
 		
 		var ontology;
 		try { 
-			ontology = JSON.parse(localStorage.ontology);
+			ontology = JSON.parse(storage.ontology);
 		} catch (e) {
 			ontology = getOntology();
-			localStorage.ontology = JSON.stringify(ontology);
+			storage.ontology = JSON.stringify(ontology);
 		}
 
 		// Check whether server & client cfg:OntoVsn objects are equal
@@ -69,7 +67,7 @@ veda.Module(function (veda) { "use strict";
 		if ( clientVsn !== serverVsn ) {
 			// Get ontology from server
 			ontology = getOntology();
-			localStorage.ontology = JSON.stringify(ontology);
+			storage.ontology = JSON.stringify(ontology);
 		}
 
 		// Construct ontology individuals
@@ -85,12 +83,6 @@ veda.Module(function (veda) { "use strict";
 		Object.keys(self).map( function (uri) {
 			var individual = self[uri];
 			if (!individual || !individual.id) return;
-			
-			// Update storage after individual was saved
-			individual.on("individual:afterSave", function (data) {
-				ontology[uri] = data;
-				localStorage.ontology = JSON.stringify(ontology);
-			});
 			
 			switch ( individual["rdf:type"][0].id ) {
 				case "rdfs:Class" :
