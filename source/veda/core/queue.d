@@ -106,6 +106,8 @@ class Consumer
     File   *ff_info_pop_w = null;
     File   *ff_info_pop_r = null;
 
+    string file_name_info_pop;
+
     // tmp
     Header header;
     CRC32  hash;
@@ -115,7 +117,7 @@ class Consumer
         queue = _queue;
         name  = _name;
 
-        string file_name_info_pop = queue_db_path ~ "/" ~ queue.name ~ "_info_pop_" ~ name;
+        file_name_info_pop = queue_db_path ~ "/" ~ queue.name ~ "_info_pop_" ~ name;
 
         if (exists(file_name_info_pop) == false)
             ff_info_pop_w = new File(file_name_info_pop, "w");
@@ -123,6 +125,18 @@ class Consumer
             ff_info_pop_w = new File(file_name_info_pop, "r+");
 
         ff_info_pop_r = new File(file_name_info_pop, "r");
+    }
+
+    public void close()
+    {
+        ff_info_pop_w.close();
+        ff_info_pop_r.close();
+    }
+
+    public void remove()
+    {
+        close();
+        std.file.remove(file_name_info_pop);
     }
 
     private void put_info()
@@ -227,8 +241,8 @@ class Consumer
         }
         else
         {
-                writeln("queue:pop:invalid msg: header.msg_length[",header.msg_length,"] < buff.length[",buff.length,"] :", header);
-                return null;        	
+            writeln("queue:pop:invalid msg: header.msg_length[", header.msg_length, "] < buff.length[", buff.length, "] :", header);
+            return null;
         }
 
         header_buff[ header_buff.length - 4 ] = 0;
@@ -244,8 +258,8 @@ class Consumer
         if (header.crc[ 0 ] != crc[ 0 ] || header.crc[ 1 ] != crc[ 1 ] || header.crc[ 2 ] != crc[ 2 ] || header.crc[ 3 ] != crc[ 3 ])
         {
             writeln("queue:pop:invalid msg: fail crc[", crc, "] :", header);
-            writeln (_buff.length);
-            writeln (cast(string)_buff);
+            writeln(_buff.length);
+            writeln(cast(string)_buff);
             return null;
         }
 
@@ -277,11 +291,14 @@ class Queue
     uint   count_pushed;
 //    uint    count_popped;
 
-    File *ff_info_push_w = null;
-    File *ff_info_push_r = null;
+    File   *ff_info_push_w = null;
+    File   *ff_info_push_r = null;
 
-    File *ff_queue_w = null;
-    File *ff_queue_r = null;
+    File   *ff_queue_w = null;
+    File   *ff_queue_r = null;
+
+    string file_name_info_push;
+    string file_name_queue;
 
     // tmp
     Header header;
@@ -295,7 +312,7 @@ class Queue
         get_info();
         put_info();
 
-        buff        = new ubyte[ 4096*100 ];
+        buff        = new ubyte[ 4096 * 100 ];
         header_buff = new ubyte[ header.length() ];
     }
 
@@ -313,12 +330,19 @@ class Queue
 //      sink (", count_popped=" ~ text(count_popped));
     }
 
+    public void remove()
+    {
+        close();
+        std.file.remove(file_name_info_push);
+        std.file.remove(file_name_queue);
+    }
+
     public void open()
     {
         if (isReady == false)
         {
-            string file_name_info_push = queue_db_path ~ "/" ~ name ~ "_info_push";
-            string file_name_queue     = queue_db_path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
+            file_name_info_push = queue_db_path ~ "/" ~ name ~ "_info_push";
+            file_name_queue     = queue_db_path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
 
             if (exists(file_name_info_push) == false)
                 ff_info_push_w = new File(file_name_info_push, "w");
