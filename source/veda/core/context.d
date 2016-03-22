@@ -323,6 +323,7 @@ interface Context
                 Код результата операции
      */
     public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents = true, string event_id = null);
+    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents = true, string event_id = null);
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents = true, string event_id = null);
     public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents = true, string event_id = null);
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents = true, string event_id = null);

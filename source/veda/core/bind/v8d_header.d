@@ -217,6 +217,31 @@ extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
     }
 }
 
+extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length, const char *_event_id,
+                                       int _event_id_length)
+{
+    try
+    {
+        //writeln ("@p:v8d put_individual");
+
+        if (g_context !is null)
+        {
+        	string uri    = cast(string)_uri[ 0.._uri_length ];
+            string     ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
+            string     event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
+
+            Ticket     *ticket = g_context.get_ticket(ticket_id);
+
+            return g_context.remove_individual(ticket, uri, true, event_id).result;
+        }
+        return ResultCode.Service_Unavailable;
+    }
+    finally
+    {
+        //writeln ("@p:v8d end put_individual");
+    }
+}
+
 extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length)
 {
     try

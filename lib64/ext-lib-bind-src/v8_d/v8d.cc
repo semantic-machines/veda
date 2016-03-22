@@ -330,6 +330,9 @@ int
 put_individual (const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
 		int _event_id_length);
 int
+remove_individual (const char *_ticket, int _ticket_length, const char *_uri, int _uri_length, const char *_event_id,
+		   int _event_id_length);
+int
 add_to_individual (const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
 		   int _event_id_length);
 int
@@ -445,6 +448,37 @@ GetIndividual (const v8::FunctionCallbackInfo<v8::Value>& args)
 //        std::cout << "@c:get #3 [" << vv << "]" << std::endl;
     args.GetReturnValue ().Set (oo);
   }
+}
+
+void
+RemoveIndividual (const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+  int res = 500;
+  Isolate *isolate = args.GetIsolate ();
+
+  if (args.Length () != 3)
+  {
+    isolate->ThrowException (v8::String::NewFromUtf8 (isolate, "RemoveIndividual::Bad count parameters"));
+
+    return;
+  }
+
+  v8::String::Utf8Value str (args[0]);
+  const char *ticket = ToCString (str);
+
+  v8::String::Utf8Value str1 (args[1]);
+
+  if (str1.length () == 0)
+    return;
+
+  const char *cstr = ToCString (str1);
+
+  v8::String::Utf8Value str_event_id (args[2]);
+  const char *event_id = ToCString (str_event_id);
+
+  res = remove_individual (ticket, str.length (), cstr, str1.length (), event_id, str_event_id.length ());
+
+  args.GetReturnValue ().Set (res);
 }
 
 void
@@ -634,6 +668,8 @@ WrappedContext::WrappedContext ()
 
   global->Set (v8::String::NewFromUtf8 (isolate_, "get_individual"),
 	       v8::FunctionTemplate::New (isolate_, GetIndividual));
+  global->Set (v8::String::NewFromUtf8 (isolate_, "remove_individual"),
+	       v8::FunctionTemplate::New (isolate_, RemoveIndividual));
   global->Set (v8::String::NewFromUtf8 (isolate_, "put_individual"),
 	       v8::FunctionTemplate::New (isolate_, PutIndividual));
   global->Set (v8::String::NewFromUtf8 (isolate_, "add_to_individual"),

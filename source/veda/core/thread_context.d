@@ -1278,6 +1278,12 @@ class PThreadContext : Context
         return store_individual(CMD.PUT, ticket, &individual, prepareEvents, event_id);
     }
 
+    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id)
+    {
+    	OpResult res;
+        return res;
+    }
+
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id)
     {
         individual.uri = uri;
