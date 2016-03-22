@@ -542,11 +542,11 @@ veda.Module(function (veda) { "use strict";
 
 	/**
 	 * @method
-	 * Serialize to JSON string
-	 * @return {String} JSON representation of individual.
+	 * Serialize to JSON
+	 * @return {Object} JSON representation of individual.
 	 */
 	proto.toJson = function () {
-		return JSON.stringify(this._.individual);
+		return this._.individual;
 	};
 
 	/**
