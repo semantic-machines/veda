@@ -235,10 +235,6 @@ veda.Module(function Util(veda) { "use strict";
 	 *  - Apply transformation and redirect to start form. 
 	 */
 	veda.Util.send = function (individual, template, transformId) {
-		individual.valid = true;
-		individual.trigger("individual:beforeSave");
-		if (!individual.valid) return;
-		
 		individual.defineProperty("v-s:hasStatusWorkflow");
 		individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
 		//$('[resource="'+individual.id+'"]').find("#save").trigger("click");
