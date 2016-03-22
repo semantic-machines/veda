@@ -39,8 +39,30 @@ veda.Module(function (veda) { "use strict";
 		self.templates = {};
 		self.other = {};
 		
-		var storage = typeof localStorage != 'undefined' ? localStorage : undefined;
+		//var storage = typeof localStorage != 'undefined' ? localStorage : undefined;
 		
+		var storage;
+		if (typeof localStorage !== "undefined") {
+			if (localStorage["cfg:OntoVsn"]) localStorage.clear(); // should be removed on april 2016
+			try {
+				storage = JSON.parse(localStorage.ontology);
+			} catch (e) {
+				delete localStorage.ontology;
+				storage = {};
+			}
+			storage.save = function () {
+				localStorage.ontology = JSON.stringify(this);
+			};
+			storage.clear = function () {
+				var self = this;
+				Object.keys(self).map(function (key) {
+					if (key === "save" || key === "clear") return;
+					delete self[key];
+				});
+				delete localStorage.ontology;
+			};
+		}
+
 		// Get ontology 
 		if (!storage) {
 			// ... from server
@@ -55,16 +77,15 @@ veda.Module(function (veda) { "use strict";
 				getOntology();
 				storage["cfg:OntoVsn"] = serverVsn;
 			} else {
-				// Get ontology from local storage
+				// Get ontology from storage
 				Object.keys(storage).map(function (key) {
-					if (key === "cfg:OntoVsn") return;
 					var individual = JSON.parse(storage[key]);
-					self[key] = new veda.IndividualModel( individual, undefined, undefined, undefined, true, false );
+					if (individual) self[key] = new veda.IndividualModel( individual, undefined, undefined, undefined, true, false );
 				});
 			}
 		}
 		
-		// Initialiazation percentage
+		// Initialization percentage
 		veda.trigger("init", 10);
 		
 		// Allocate ontology objects
@@ -72,10 +93,11 @@ veda.Module(function (veda) { "use strict";
 			var individual = self[uri];
 			if (!individual || !individual.id) return;
 			
-			// Update localStorage after individual was saved
+			// Update storage after individual was saved
 			if (storage) {
 				individual.on("individual:afterSave", function (data) {
 					storage[uri] = data;
+					storage.save();
 				});
 			}
 			
@@ -112,7 +134,7 @@ veda.Module(function (veda) { "use strict";
 			}
 		});
 
-		// Initialiazation percentage
+		// Initialization percentage
 		veda.trigger("init", 20);
 
 		// Process classes
@@ -131,7 +153,7 @@ veda.Module(function (veda) { "use strict";
 			});
 		});
 
-		// Initialiazation percentage
+		// Initialization percentage
 		veda.trigger("init", 30);
 
 		// Process properties
@@ -152,7 +174,7 @@ veda.Module(function (veda) { "use strict";
 			});
 		});
 
-		// Initialiazation percentage
+		// Initialization percentage
 		veda.trigger("init", 60);
 
 		// Process specifications
@@ -167,7 +189,7 @@ veda.Module(function (veda) { "use strict";
 			});
 		});
 
-		// Initialiazation percentage
+		// Initialization percentage
 		veda.trigger("init", 70);
 
 		// Process templates
@@ -179,7 +201,7 @@ veda.Module(function (veda) { "use strict";
 			});
 		});
 
-		// Initialiazation percentage
+		// Initialization percentage
 		veda.trigger("init", 80);
 
 
@@ -192,10 +214,10 @@ veda.Module(function (veda) { "use strict";
 			});
 		});
 
-		// Initialiazation percentage
+		// Initialization percentage
 		veda.trigger("init", 90);
 
-		// Initialize ontology objects
+		// Initialization percentage
 		Object.keys(self).map( function (uri) {
 			var individual = self[uri];
 			if (!individual || !individual.id) return;
@@ -238,9 +260,12 @@ veda.Module(function (veda) { "use strict";
 			var q_results = query(veda.ticket, q);
 				
 			get_individuals(veda.ticket, q_results).map( function (item) {
-				if (storage) storage[ item["@"] ] = JSON.stringify(item);
+				if (storage) storage[ item["@"] ] = JSON.stringify(item) ;
 				self[ item["@"] ] = new veda.IndividualModel( item, undefined, undefined, undefined, true, false );
 			});
+			if (storage) {
+				storage.save();
+			}
 		}
 	};
 
