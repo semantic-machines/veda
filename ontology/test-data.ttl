@@ -27,7 +27,7 @@ td:run-script
 	v-s:argument td:arg1, td:arg2;
 	v-s:result td:res1 ;
 	v-s:isSuccess "false";
-	v-s:script td:script_onto_rename;
+	v-s:useScript td:script_onto_rename;
 .
 
 td:arg1

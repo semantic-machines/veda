@@ -238,6 +238,13 @@ v-s:isSuccess
   rdfs:range xsd:boolean ;
 .
 
+v-s:useScript
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:ExecuteScript ;
+  rdfs:label "использовать скрипт" ;
+  rdfs:range v-s:Codelet ;
+.
+
 ###
 
 v-s:parent
@@ -549,7 +556,7 @@ v-s:resource
 
 v-s:script
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:ClassModel, v-s:Codelet, v-s:Event, v-s:ExecuteScript ;
+  rdfs:domain v-s:ClassModel, v-s:Codelet, v-s:Event ;
   rdfs:label "script"@en ;
   rdfs:label "скрипт"@ru ;
   rdfs:range xsd:string ;
