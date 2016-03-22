@@ -39,54 +39,44 @@ veda.Module(function (veda) { "use strict";
 		self.templates = {};
 		self.other = {};
 		
-		//var storage = typeof localStorage != 'undefined' ? localStorage : undefined;
-		
-		var storage;
-		if (typeof localStorage !== "undefined") {
-			if (localStorage["cfg:OntoVsn"]) localStorage.clear(); // should be removed on april 2016
-			try {
-				storage = JSON.parse(localStorage.ontology);
-			} catch (e) {
-				delete localStorage.ontology;
-				storage = {};
-			}
-			storage.save = function () {
-				localStorage.ontology = JSON.stringify(this);
-			};
-			storage.clear = function () {
-				var self = this;
-				Object.keys(self).map(function (key) {
-					if (key === "save" || key === "clear") return;
-					delete self[key];
-				});
-				delete localStorage.ontology;
+		if (typeof localStorage === "undefined") { 
+			var localStorage = {
+				clear: function () {
+					var self = this;
+					Object.keys(this).map(function (key) {
+						if (typeof self[key] !== "function") delete self[key];
+					});
+				}
 			};
 		}
 
-		// Get ontology 
-		if (!storage) {
-			// ... from server
-			getOntology();
-		} else {
-			// Check whether server & local cfg:OntoVsn objects are equal
-			var clientVsn = storage["cfg:OntoVsn"];
-			var serverVsn = JSON.stringify( get_individual(veda.ticket, "cfg:OntoVsn") );
-			if ( clientVsn !== serverVsn ) {
-				// Get ontology from server
-				storage.clear();
-				getOntology();
-				storage["cfg:OntoVsn"] = serverVsn;
-			} else {
-				// Get ontology from storage
-				Object.keys(storage).map(function (key) {
-					var individual = JSON.parse(storage[key]);
-					if (individual) self[key] = new veda.IndividualModel( individual, undefined, undefined, undefined, true, false );
-				});
-			}
+		if (!localStorage.ontology) localStorage.clear(); 
+		
+		var ontology;
+		try { 
+			ontology = JSON.parse(localStorage.ontology);
+		} catch (e) {
+			ontology = getOntology();
+			localStorage.ontology = JSON.stringify(ontology);
 		}
+
+		// Check whether server & local cfg:OntoVsn objects are equal
+		var clientVsn = JSON.stringify( ontology["cfg:OntoVsn"] );
+		var serverVsn = JSON.stringify( get_individual(veda.ticket, "cfg:OntoVsn") );
+		if ( clientVsn !== serverVsn ) {
+			// Get ontology from server
+			ontology = getOntology();
+			localStorage.ontology = JSON.stringify(ontology);
+		}
+
+		// Get ontology from localStorage
+		Object.keys(ontology).map(function (key) {
+			var individual = ontology[key];
+			if (individual) self[key] = new veda.IndividualModel( individual, undefined, undefined, undefined, true, false );
+		});
 		
 		// Initialization percentage
-		veda.trigger("init", 10);
+		veda.trigger("init:progress", 10);
 		
 		// Allocate ontology objects
 		Object.keys(self).map( function (uri) {
@@ -94,12 +84,10 @@ veda.Module(function (veda) { "use strict";
 			if (!individual || !individual.id) return;
 			
 			// Update storage after individual was saved
-			if (storage) {
-				individual.on("individual:afterSave", function (data) {
-					storage[uri] = data;
-					storage.save();
-				});
-			}
+			individual.on("individual:afterSave", function (data) {
+				ontology[uri] = data;
+				localStorage.ontology = JSON.stringify(ontology);
+			});
 			
 			switch ( individual["rdf:type"][0].id ) {
 				case "rdfs:Class" :
@@ -135,7 +123,7 @@ veda.Module(function (veda) { "use strict";
 		});
 
 		// Initialization percentage
-		veda.trigger("init", 20);
+		veda.trigger("init:progress", 20);
 
 		// Process classes
 		Object.keys(self.classes).map( function (uri) {
@@ -154,7 +142,7 @@ veda.Module(function (veda) { "use strict";
 		});
 
 		// Initialization percentage
-		veda.trigger("init", 30);
+		veda.trigger("init:progress", 30);
 
 		// Process properties
 		Object.keys(self.properties).map( function (uri) {
@@ -175,7 +163,7 @@ veda.Module(function (veda) { "use strict";
 		});
 
 		// Initialization percentage
-		veda.trigger("init", 60);
+		veda.trigger("init:progress", 60);
 
 		// Process specifications
 		Object.keys(self.specs).map( function (uri) {
@@ -190,7 +178,7 @@ veda.Module(function (veda) { "use strict";
 		});
 
 		// Initialization percentage
-		veda.trigger("init", 70);
+		veda.trigger("init:progress", 70);
 
 		// Process templates
 		Object.keys(self.templates).map( function (uri) {
@@ -202,7 +190,7 @@ veda.Module(function (veda) { "use strict";
 		});
 
 		// Initialization percentage
-		veda.trigger("init", 80);
+		veda.trigger("init:progress", 80);
 
 
 		// Process models
@@ -215,7 +203,7 @@ veda.Module(function (veda) { "use strict";
 		});
 
 		// Initialization percentage
-		veda.trigger("init", 90);
+		veda.trigger("init:progress", 90);
 
 		// Initialization percentage
 		Object.keys(self).map( function (uri) {
@@ -224,7 +212,7 @@ veda.Module(function (veda) { "use strict";
 			individual.init();
 		});
 
-		veda.trigger("init", 100);
+		veda.trigger("init:progress", 100);
 
 		//var t2 = new Date();
 		//console.log("onto load", (t2-t1)/1000, "sec", storage.length);
@@ -234,6 +222,7 @@ veda.Module(function (veda) { "use strict";
 		// Get ontology from server
 		function getOntology () {
 			var q = /* Classes */ 
+					"'@' == 'cfg:OntoVsn' || " +
 					"'rdf:type' === 'rdfs:Class' || " +
 					"'rdf:type' === 'owl:Class' || " +
 					"'rdf:type' === 'rdfs:Datatype' || " +
@@ -257,15 +246,11 @@ veda.Module(function (veda) { "use strict";
 					"'rdf:type' === 'v-ui:BooleanPropertySpecification' || " +
 					"'rdf:type' === 'v-ui:ObjectPropertySpecification'";
 			
-			var q_results = query(veda.ticket, q);
-				
-			get_individuals(veda.ticket, q_results).map( function (item) {
-				if (storage) storage[ item["@"] ] = JSON.stringify(item) ;
-				self[ item["@"] ] = new veda.IndividualModel( item, undefined, undefined, undefined, true, false );
+			var result = {};
+			get_individuals(veda.ticket, query(veda.ticket, q)).map( function (item) {
+				result[ item["@"] ] = item;
 			});
-			if (storage) {
-				storage.save();
-			}
+			return result;
 		}
 	};
 
