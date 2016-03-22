@@ -22,6 +22,7 @@ logger log()
 string[ string ] g_prop;
 Context g_context;
 
+_Buff   g_super_classes;
 _Buff   g_parent_script_id;
 _Buff   g_parent_document_id;
 _Buff   g_prev_state;
@@ -202,6 +203,10 @@ extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
         else if (var_name == "$ticket")
         {
             return &g_ticket;
+        }
+        else if (var_name == "$super_classes")
+        {
+            return &g_super_classes;
         }
 
         return null;

@@ -255,6 +255,32 @@ public void scripts_thread(string thread_name, string node_id)
                                     g_ticket.data = cast(char *)sticket;
                                     g_ticket.length = cast(int)sticket.length;
 
+
+                                    Classes super_classes;
+
+                                    foreach (indv_type; indv_types)
+                                    {
+                                        if (super_classes == Classes.init)
+                                        {
+                                            super_classes = onto.get_super_classes(indv_type);
+                                        }
+                                        else
+                                        {
+                                            Classes i_super_classes = onto.get_super_classes(indv_type);
+                                            foreach (i_super_class; i_super_classes.keys)
+                                            {
+                                                if (super_classes.get(i_super_class, false) == false)
+                                                {
+                                                    super_classes[ i_super_class ] = true;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    string superclasses_str = text(super_classes.keys);
+                                    g_super_classes.data = cast(char *)superclasses_str;
+                                    g_super_classes.length = cast(int)superclasses_str.length;
+
                                     foreach (script_id, script; scripts)
                                     {
                                         if (script.compiled_script !is null)
@@ -400,12 +426,13 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
 
         string str_script =
             "var ticket = get_env_str_var ('$ticket');"
+            ~ "var document = get_individual (ticket, '$document');"
+            ~ "if (document) {"
             ~ "var user_uri = get_env_str_var ('$user');"
             ~ "var parent_script_id = get_env_str_var ('$parent_script_id');"
             ~ "var parent_document_id = get_env_str_var ('$parent_document_id');"
             ~ "var prev_state = get_individual (ticket, '$prev_state');"
-            ~ "var document = get_individual (ticket, '$document');"
-            ~ "if (document) {"
+            ~ "var super_classes = get_env_str_var ('$super_classes');"
             ~ "var _script_id = '" ~ ss.uri ~ "';"
             ~ "var _event_id = document['@'] + '+' + _script_id;"
             ~ "script();"
