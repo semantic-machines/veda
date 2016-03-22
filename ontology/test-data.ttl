@@ -24,7 +24,7 @@
 
 td:run-script
   rdf:type v-s:ExecuteScript;
-	v-s:argument td:arg1, td:arg2;
+	v-s:argument td:arg1;
 	v-s:result td:res1 ;
 	v-s:isSuccess "false";
 	v-s:useScript td:script_onto_rename;
@@ -32,14 +32,8 @@ td:run-script
 
 td:arg1
   rdf:type v-s:Variable ;
-  v-s:variableName "from" ;
-  v-s:variableValue v-wf:Variable, v-wf:variableName, v-wf:variableValue;
-.  
-
-td:arg2
-  rdf:type v-s:Variable ;
-  v-s:variableName "to" ;
-  v-s:variableValue  v-s:Variable, v-s:variableName, v-s:variableValue;
+  v-s:variableName "rename_template" ;
+  v-s:variableValue "v-wf:Variable,v-s:Variable", "v-wf:variableName,v-s:variableName", "v-wf:variableValue,v-s:variableValue";
 .  
 
 td:res1
@@ -51,7 +45,38 @@ td:script_onto_rename
 	rdf:type v-s:Codelet ;
 	v-s:script 
 	"""
+    
 	// скрипт переименования онтологии
+    
+    var rename_template = $arguments["rename_template"];
+
+    for (var key in $document)
+    {
+        if (key != '@')
+        {
+            var values = $document[key];
+
+            for (var template in rename_template)
+            {
+                var cc = template.split(',');
+                if (!cc || cc.length != 2)
+                    continue;
+
+                var from = cc[0];
+                var to = cc[1];
+
+                for (var value in values)
+                {
+                    if (value.data == from)
+                    {
+                        value.data = to;
+                    }
+                }
+            }
+
+        }
+    }
+        
 	""";
 .	
 
