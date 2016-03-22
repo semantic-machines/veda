@@ -331,65 +331,13 @@ veda.Module(function (veda) { "use strict";
 			if (!acc[property_uri].length) delete acc[property_uri];
 			return acc;
 		}, self._.individual);				
-		if (createVersion && (self.hasValue('v-s:isDraftOf') || self.is('v-s:Versioned'))) 
-		{
-			// Before
-			var previousId = self.hasValue('v-s:isDraftOf')?
-									(self['v-s:isDraftOf'][0].hasValue('v-s:previousVersion')?
-									 self['v-s:isDraftOf'][0]['v-s:previousVersion'][0].id:
-									 null):
-									(self.hasValue('v-s:previousVersion')?
-									 self['v-s:previousVersion'][0].id:
-									 null);
-			var actualId = self.hasValue('v-s:isDraftOf')?self['v-s:isDraftOf'][0].id:self.id;
-			removeDraftFromUserAspect(self);
-			
-			var versionId = (actualId==self.id)?veda.Util.genUri():self.id;
-			
-			// After
-			var actual = self.clone();						
-			var version = self.clone();
-			var previous = previousId!=null?new veda.IndividualModel(previousId):null;
-			actual.id = actualId;
-			version.id = versionId;
-			
-			// Save draft as actual version
-			actual['v-s:isDraftOf'] = [];
-			actual['v-s:hasDraft'] = [];
-			actual['v-s:previousVersion'] = [version];
-			actual['v-s:actualVersion'] = [actual];
-			actual['v-s:nextVersion'] = [];
-			actual.saveIndividual(false);
-			
-			// Save draft as old version
-			version['v-s:isDraftOf'] = [];
-			version['v-s:hasDraft'] = [];
-			if (previous!=null) {
-				version['v-s:previousVersion'] = [previous];
-			} else {
-				version['v-s:previousVersion'] = [];
-			}
-			version['v-s:actualVersion'] = [actual];
-			version['v-s:nextVersion'] = [actual];
-			version['rdf:type'] = version['rdf:type'].concat( new veda.IndividualModel("v-s:Version") );
-			version.saveIndividual(false);
-			
-			// Update draft version
-			if (previous!=null) 
-			{
-				previous['v-s:nextVersion'] = [version];
-				previous.saveIndividual(false);
-			}
-			this.redirectToIndividual = actual;
-			this.redirectToMode = 'view';
-		} else {
-			put_individual(veda.ticket, self._.individual);		
-			self._.original_individual = JSON.stringify(self._.individual);
-			self._.isNew = false;
-			self._.sync = true;
-			if (self._.cache) veda.cache[self.id] = self;
-			self.trigger("individual:afterSave", self._.individual);
-		}
+
+		put_individual(veda.ticket, self._.individual);		
+		self._.original_individual = JSON.stringify(self._.individual);
+		self._.isNew = false;
+		self._.sync = true;
+		if (self._.cache) veda.cache[self.id] = self;
+		self.trigger("individual:afterSave", self._.original_individual);
 
 		return this;
 	};

@@ -749,6 +749,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			$('[about="'+individual.id+'"][property="rdfs:label"]', wrapper).append('<span class="glyphicon glyphicon-camera draftsign" style="font-size: 10px;">');
 		}
 		
+		/*
 		if (individual.is('v-s:DraftAllowed')) {
 			var $draft = $("#draft.action", wrapper);			 
 			$draft.unbind("click");
@@ -822,8 +823,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					changeHash(actual.id);
 				});
 			}
-			
 		}
+		*/
 		
 		// standard tasks
 		$('#standard-tasks', template).each(function() {
