@@ -2,6 +2,17 @@
 
 veda.Module(function (veda) { "use strict";
 
+	var storage = typeof localStorage !== "undefined" ? localStorage : {
+		clear: function () {
+			var self = this;
+			Object.keys(this).map(function (key) {
+				if (typeof self[key] !== "function") delete self[key];
+			});
+		}
+	}
+	
+	if (!storage.ontology) storage.clear(); 
+
 	/* owl:Thing && rdfs:Resource domain properties */
 	var stopList = [
 		//"rdf:type",
@@ -35,23 +46,12 @@ veda.Module(function (veda) { "use strict";
 		
 		var self = this;
 		
-		self.classes = {};
-		self.properties = {};
-		self.specs = {};
-		self.models = {};
-		self.templates = {};
-		self.other = {};
-		
-		var storage = typeof localStorage !== "undefined" ? localStorage : {
-			clear: function () {
-				var self = this;
-				Object.keys(this).map(function (key) {
-					if (typeof self[key] !== "function") delete self[key];
-				});
-			}
-		}
-		
-		if (!storage.ontology) storage.clear(); 
+		var classes = {},
+			properties = {},
+			specs = {},
+			models = {},
+			templates = {},
+			other = {};
 		
 		var ontology;
 		try { 
@@ -87,14 +87,14 @@ veda.Module(function (veda) { "use strict";
 			switch ( individual["rdf:type"][0].id ) {
 				case "rdfs:Class" :
 				case "owl:Class" :
-					self.classes[individual.id] = individual;
+					classes[individual.id] = individual;
 					break;
 				case "rdf:Property" :
 				case "owl:DatatypeProperty" :
 				case "owl:ObjectProperty" :
 				case "owl:OntologyProperty" :
 				case "owl:AnnotationProperty" :
-					self.properties[individual.id] = individual;
+					properties[individual.id] = individual;
 					break;
 				case "v-ui:PropertySpecification" :
 				case "v-ui:IntegerPropertySpecification" :
@@ -103,16 +103,16 @@ veda.Module(function (veda) { "use strict";
 				case "v-ui:StringPropertySpecification" :
 				case "v-ui:BooleanPropertySpecification" :
 				case "v-ui:ObjectPropertySpecification" :
-					self.specs[individual.id] = individual;
+					specs[individual.id] = individual;
 					break;
 				case "v-s:ClassModel" :
-					self.models[individual.id] = individual;
+					models[individual.id] = individual;
 					break;
 				case "v-ui:ClassTemplate" :
-					self.templates[individual.id] = individual;
+					templates[individual.id] = individual;
 					break;
 				default :
-					self.other[individual.id] = individual;
+					other[individual.id] = individual;
 					break;
 			}
 		});
@@ -121,8 +121,8 @@ veda.Module(function (veda) { "use strict";
 		veda.trigger("init:progress", 20);
 
 		// Process classes
-		Object.keys(self.classes).map( function (uri) {
-			var _class = self.classes[uri];
+		Object.keys(classes).map( function (uri) {
+			var _class = classes[uri];
 			// rdfs:Resource is a top level class
 			if ( _class.id === "rdfs:Resource" ) return;
 			// If class is not a subclass of another then make it a subclass of rdfs:Resource
@@ -140,9 +140,9 @@ veda.Module(function (veda) { "use strict";
 		veda.trigger("init:progress", 30);
 
 		// Process properties
-		Object.keys(self.properties).map( function (uri) {
+		Object.keys(properties).map( function (uri) {
 			if (stopList.indexOf(uri) >= 0) return;
-			var property = self.properties[uri];
+			var property = properties[uri];
 			if (!property["rdfs:domain"]) return;
 			property["rdfs:domain"].map( function ( item ) {
 				(function fillDomainProperty (_class) {
@@ -161,8 +161,8 @@ veda.Module(function (veda) { "use strict";
 		veda.trigger("init:progress", 60);
 
 		// Process specifications
-		Object.keys(self.specs).map( function (uri) {
-			var spec = self.specs[uri];
+		Object.keys(specs).map( function (uri) {
+			var spec = specs[uri];
 			if (!spec["v-ui:forClass"]) return;
 			spec["v-ui:forClass"].map( function ( _class ) {
 				_class.specsByProps = _class.specsByProps || {};
@@ -176,8 +176,8 @@ veda.Module(function (veda) { "use strict";
 		veda.trigger("init:progress", 70);
 
 		// Process templates
-		Object.keys(self.templates).map( function (uri) {
-			var template = self.templates[uri];
+		Object.keys(templates).map( function (uri) {
+			var template = templates[uri];
 			if (!template["v-ui:forClass"]) return; 
 			template["v-ui:forClass"].map( function ( item ) {
 				item.template = template;
@@ -187,10 +187,9 @@ veda.Module(function (veda) { "use strict";
 		// Initialization percentage
 		veda.trigger("init:progress", 80);
 
-
 		// Process models
-		Object.keys(self.models).map( function (uri) {
-			var model = self.models[uri];
+		Object.keys(models).map( function (uri) {
+			var model = models[uri];
 			if (!model["v-ui:forClass"]) return; 
 			model["v-ui:forClass"].map( function ( item ) {
 				item.model = model;
@@ -216,8 +215,9 @@ veda.Module(function (veda) { "use strict";
 		
 		// Get ontology from server
 		function getOntology () {
-			var q = /* Classes */ 
+			var q = /* Ontology version */ 
 					"'@' == 'cfg:OntoVsn' || " +
+					/* Classes */ 
 					"'rdf:type' === 'rdfs:Class' || " +
 					"'rdf:type' === 'owl:Class' || " +
 					"'rdf:type' === 'rdfs:Datatype' || " +
