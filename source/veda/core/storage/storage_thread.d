@@ -35,14 +35,14 @@ public string backup(Context ctx)
 }
 
 
-public ResultCode send_put(P_MODULE storage_id, Context ctx, CMD cmd, string uri, string cur_state, bool ignore_freeze, out long op_id)
+public ResultCode send_put(P_MODULE storage_id, Context ctx, string uri, string cur_state, bool ignore_freeze, out long op_id)
 {
     ResultCode rc;
     Tid        tid = ctx.getTid(storage_id);
 
     if (tid != Tid.init)
     {
-        send(tid, cmd, uri, cur_state, ignore_freeze, thisTid);
+        send(tid, CMD.PUT, uri, cur_state, ignore_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -55,6 +55,25 @@ public ResultCode send_put(P_MODULE storage_id, Context ctx, CMD cmd, string uri
     return rc;
 }
 
+public ResultCode send_remove(P_MODULE storage_id, Context ctx, string uri, bool ignore_freeze, out long op_id)
+{
+    ResultCode rc;
+    Tid        tid = ctx.getTid(storage_id);
+
+    if (tid != Tid.init)
+    {
+        send(tid, CMD.REMOVE, uri, ignore_freeze, thisTid);
+
+        receive((ResultCode _rc, Tid from)
+                {
+                    if (from == ctx.getTid(storage_id))
+                        rc = _rc;
+                    op_id = get_count_put();
+                    return true;
+                });
+    }
+    return rc;
+}
 
 public void individuals_manager(string thread_name, string db_path, string node_id)
 {
@@ -116,6 +135,33 @@ public void individuals_manager(string thread_name, string db_path, string node_
                             string res = storage.find(msg);
                             //writeln("@FIND msg=", msg, ", $res = ", res);
                             send(tid_response_reciever, msg, res, thisTid);
+                            return;
+                        }
+                    },
+                    (CMD cmd, string uri, bool ignore_freeze, Tid tid_response_reciever)
+                    {
+                        ResultCode rc = ResultCode.Not_Ready;
+
+                        if (!ignore_freeze && is_freeze && cmd == CMD.REMOVE)
+                            send(tid_response_reciever, rc, thisTid);
+                    	
+                        try
+                        {
+                            if (cmd == CMD.REMOVE)
+                            {
+                                if (storage.remove(uri) == 0)
+                                    rc = ResultCode.OK;
+                                else
+                                    rc = ResultCode.Fail_Store;
+
+                                send(tid_response_reciever, rc, thisTid);
+
+                                return;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            send(tid_response_reciever, ResultCode.Fail_Commit, thisTid);
                             return;
                         }
                     },

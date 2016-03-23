@@ -526,7 +526,7 @@ class PThreadContext : Context
         string     ss_as_cbor = individual2cbor(&new_ticket);
 
         long       op_id;
-        ResultCode rc = veda.core.storage.storage_thread.send_put(P_MODULE.ticket_manager, this, CMD.PUT, new_ticket.uri, ss_as_cbor, false, op_id);
+        ResultCode rc = veda.core.storage.storage_thread.send_put(P_MODULE.ticket_manager, this, new_ticket.uri, ss_as_cbor, false, op_id);
 
         ticket.result = rc;
         if (rc == ResultCode.OK)
@@ -1024,6 +1024,8 @@ class PThreadContext : Context
             }
         }
 
+        res.result = veda.core.storage.storage_thread.send_remove(P_MODULE.subject_manager, this, uri, ignore_freeze, res.op_id);
+
         return res;
     }
 
@@ -1035,21 +1037,20 @@ class PThreadContext : Context
 
         OpResult  res = OpResult(ResultCode.Fail_Store, -1);
 
-        if (indv !is null && (indv.uri is null || indv.uri.length < 2))
-        {
-            log.trace("Ex! store_subject:%s", indv);
-            res.result = ResultCode.Unprocessable_Entity;
-            return res;
-        }
-        if (indv is null || indv.resources.length == 0)
-        {
-            res.result = ResultCode.No_Content;
-            return res;
-        }
-        //writeln("context:store_individual #2 ", process_name);
-
         try
         {
+        	if (indv !is null && (indv.uri is null || indv.uri.length < 2))
+        	{
+            	res.result = ResultCode.Invalid_Identifier;
+            	return res;
+        	}
+        	if (indv is null || indv.resources.length == 0)
+        	{
+            	res.result = ResultCode.No_Content;
+            	return res;
+        	}
+        //writeln("context:store_individual #2 ", process_name);
+
             if (external_write_storage_url !is null)
             {
                 if (trace_msg[ 27 ] == 1)
@@ -1214,14 +1215,10 @@ class PThreadContext : Context
 
                 string new_state = individual2cbor(indv);
 
-                res.result = veda.core.storage.storage_thread.send_put(P_MODULE.subject_manager, this, CMD.PUT, indv.uri, new_state, ignore_freeze,
-                                                                       res.op_id);
+                res.result = veda.core.storage.storage_thread.send_put(P_MODULE.subject_manager, this, indv.uri, new_state, ignore_freeze, res.op_id);
 
                 if (res.result != ResultCode.OK)
-                {
-                    //writeln ("@FAIL STORE uri=", indv.uri, ", res=", res);
                     return res;
-                }
 
                 if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
                 {
@@ -1251,13 +1248,10 @@ class PThreadContext : Context
                     veda.core.fanout.send_put(this, new_state, prev_state, res.op_id);
 
                     res.result = ResultCode.OK;
-
                     return res;
                 }
                 else
                 {
-                    log.trace("Ex! store_subject:%s", ev);
-
                     res.result = ResultCode.Internal_Server_Error;
                     return res;
                 }
@@ -1266,10 +1260,10 @@ class PThreadContext : Context
         finally
         {
             if (res.result != ResultCode.OK)
-                log.trace("ERR! no store subject :%s, errcode=[%s], ticket=[%s]", indv !is null ? text(*indv) : "null", 
+                log.trace("ERR! no store subject :%s, errcode=[%s], ticket=[%s]", 
+                	indv !is null ? text(*indv) : "null", 
                 	text(res.result), ticket !is null ? text(*ticket) : "null");
 
-            //writeln("context:store_individual #e ", process_name);
             if (trace_msg[ 27 ] == 1)
                 log.trace("[%s] store_individual [%s] = %s", name, indv.uri, res);
 
@@ -1290,24 +1284,21 @@ class PThreadContext : Context
     }
 
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
-                                          false,
-                                      bool is_api_request = true)
+                                          false, bool is_api_request = true)
     {
         individual.uri = uri;
         return store_individual(CMD.ADD_IN, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
-                                          false,
-                                      bool is_api_request = true)
+                                          false, bool is_api_request = true)
     {
         individual.uri = uri;
         return store_individual(CMD.SET_IN, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
-                                           bool ignore_freeze = false,
-                                           bool is_api_request = true)
+                                           bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
         return store_individual(CMD.REMOVE_FROM, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
@@ -1317,7 +1308,6 @@ class PThreadContext : Context
     public long get_operation_state(P_MODULE module_id)
     {
         long res = -1;
-
 
         if (module_id == P_MODULE.scripts)
         {
