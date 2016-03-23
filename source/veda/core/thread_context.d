@@ -1180,12 +1180,9 @@ class PThreadContext : Context
                     }
                 }
 
-                if (prev_state is null && (cmd == CMD.ADD_IN || cmd == CMD.SET_IN))
+                if (cmd == CMD.ADD_IN || cmd == CMD.SET_IN || cmd == CMD.REMOVE_FROM)
                 {
-                }
-                else
-                {
-                    if (cmd == CMD.ADD_IN || cmd == CMD.SET_IN || cmd == CMD.REMOVE_FROM)
+                    if (prev_state !is null)
                     {
                         foreach (predicate; indv.resources.keys)
                         {
@@ -1205,7 +1202,13 @@ class PThreadContext : Context
                                 prev_indv.removeResources(predicate, indv.getResources(predicate));
                             }
                         }
-                        indv = &prev_indv;
+                        
+                        if (prev_indv.resources.get(rdf__type, Resources.init).length == 0)
+                        {
+                        	log.trace ("WARN! stores individual does not contain any type: arg:[%s] res:[%s]", text (*indv), text (prev_indv));
+                        }
+                        
+                        indv = &prev_indv;                        
                     }
                 }
 

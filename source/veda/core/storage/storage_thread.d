@@ -123,7 +123,7 @@ public void individuals_manager(string thread_name, string db_path, string node_
                     {
                         ResultCode rc = ResultCode.Not_Ready;
 
-                        if (!ignore_freeze && is_freeze && (cmd == CMD.PUT || cmd == CMD.ADD_IN || cmd == CMD.SET_IN || cmd == CMD.REMOVE_FROM))
+                        if (!ignore_freeze && is_freeze && cmd == CMD.PUT)
                             send(tid_response_reciever, rc, thisTid);
 
                         try
@@ -131,7 +131,6 @@ public void individuals_manager(string thread_name, string db_path, string node_
                             if (cmd == CMD.PUT)
                             {
                                 string new_hash;
-
 
                                 if (storage.update_or_create(uri, msg, new_hash) == 0)
                                     rc = ResultCode.OK;
