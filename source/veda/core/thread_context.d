@@ -1202,13 +1202,13 @@ class PThreadContext : Context
                                 prev_indv.removeResources(predicate, indv.getResources(predicate));
                             }
                         }
-                        
+
                         if (prev_indv.resources.get(rdf__type, Resources.init).length == 0)
                         {
-                        	log.trace ("WARN! stores individual does not contain any type: arg:[%s] res:[%s]", text (*indv), text (prev_indv));
+                            log.trace("WARN! stores individual does not contain any type: arg:[%s] res:[%s]", text(*indv), text(prev_indv));
                         }
-                        
-                        indv = &prev_indv;                        
+
+                        indv = &prev_indv;
                     }
                 }
 
@@ -1265,6 +1265,10 @@ class PThreadContext : Context
         }
         finally
         {
+            if (res.result != ResultCode.OK)
+                log.trace("ERR! no store subject :%s, errcode=[%s], ticket=[%s]", indv !is null ? text(*indv) : "null", 
+                	text(res.result), ticket !is null ? text(*ticket) : "null");
+
             //writeln("context:store_individual #e ", process_name);
             if (trace_msg[ 27 ] == 1)
                 log.trace("[%s] store_individual [%s] = %s", name, indv.uri, res);
