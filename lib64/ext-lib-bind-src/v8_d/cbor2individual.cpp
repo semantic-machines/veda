@@ -244,7 +244,8 @@ void write_individual(Individual *individual, std::vector<char> &ou)
     for (p = individual->resources.begin(); p != individual->resources.end(); ++p)
     {
         std::string strKey = p->first;
-        write_resources(p->first, p->second, ou);
+        if (p->second.size() > 0)
+        	write_resources(p->first, p->second, ou);
     }
 }
 
