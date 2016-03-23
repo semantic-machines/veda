@@ -76,7 +76,7 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
                 log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
                 return ResultCode.Unprocessable_Entity;
             }
-            return g_context.put_individual(ticket, indv.uri, indv, true, event_id).result;
+            return g_context.put_individual(ticket, indv.uri, indv, true, event_id, ignore_freeze).result;
         }
         return ResultCode.Service_Unavailable;
     }
@@ -108,7 +108,7 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
                 log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
                 return ResultCode.Unprocessable_Entity;
             }
-            return g_context.add_to_individual(ticket, indv.uri, indv, true, event_id).result;
+            return g_context.add_to_individual(ticket, indv.uri, indv, true, event_id, ignore_freeze).result;
         }
         return ResultCode.Service_Unavailable;
     }
@@ -140,7 +140,7 @@ extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_lengt
                 log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
                 return ResultCode.Unprocessable_Entity;
             }
-            return g_context.set_in_individual(ticket, indv.uri, indv, true, event_id).result;
+            return g_context.set_in_individual(ticket, indv.uri, indv, true, event_id, ignore_freeze).result;
         }
         return ResultCode.Service_Unavailable;
     }
@@ -172,7 +172,32 @@ extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_
                 log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
                 return ResultCode.Unprocessable_Entity;
             }
-            return g_context.remove_from_individual(ticket, indv.uri, indv, true, event_id).result;
+            return g_context.remove_from_individual(ticket, indv.uri, indv, true, event_id, ignore_freeze).result;
+        }
+        return ResultCode.Service_Unavailable;
+    }
+    finally
+    {
+        //writeln ("@p:v8d end put_individual");
+    }
+}
+
+extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length, const char *_event_id,
+                                          int _event_id_length)
+{
+    try
+    {
+        //writeln ("@p:v8d put_individual");
+
+        if (g_context !is null)
+        {
+            string uri       = cast(string)_uri[ 0.._uri_length ];
+            string ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
+            string event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
+
+            Ticket *ticket = g_context.get_ticket(ticket_id);
+
+            return g_context.remove_individual(ticket, uri, true, event_id, ignore_freeze).result;
         }
         return ResultCode.Service_Unavailable;
     }
@@ -214,31 +239,6 @@ extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
     finally
     {
         //writeln ("@p:v8d end read_individual");
-    }
-}
-
-extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length, const char *_event_id,
-                                       int _event_id_length)
-{
-    try
-    {
-        //writeln ("@p:v8d put_individual");
-
-        if (g_context !is null)
-        {
-        	string uri    = cast(string)_uri[ 0.._uri_length ];
-            string     ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
-            string     event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
-
-            Ticket     *ticket = g_context.get_ticket(ticket_id);
-
-            return g_context.remove_individual(ticket, uri, true, event_id).result;
-        }
-        return ResultCode.Service_Unavailable;
-    }
-    finally
-    {
-        //writeln ("@p:v8d end put_individual");
     }
 }
 
@@ -319,4 +319,4 @@ alias WrappedScript      Script;
 alias run_WrappedScript  run;
 alias new_WrappedScript  compile;
 
-
+bool                     ignore_freeze;

@@ -35,14 +35,14 @@ public string backup(Context ctx)
 }
 
 
-public ResultCode send_put(P_MODULE storage_id, Context ctx, CMD cmd, string uri, string cur_state, out long op_id)
+public ResultCode send_put(P_MODULE storage_id, Context ctx, CMD cmd, string uri, string cur_state, bool ignore_freeze, out long op_id)
 {
     ResultCode rc;
     Tid        tid = ctx.getTid(storage_id);
 
     if (tid != Tid.init)
     {
-        send(tid, cmd, uri, cur_state, thisTid);
+        send(tid, cmd, uri, cur_state, ignore_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -119,11 +119,11 @@ public void individuals_manager(string thread_name, string db_path, string node_
                             return;
                         }
                     },
-                    (CMD cmd, string uri, string msg, Tid tid_response_reciever)
+                    (CMD cmd, string uri, string msg, bool ignore_freeze, Tid tid_response_reciever)
                     {
                         ResultCode rc = ResultCode.Not_Ready;
 
-                        if (is_freeze == true && (cmd == CMD.PUT || cmd == CMD.ADD || cmd == CMD.SET || cmd == CMD.REMOVE))
+                        if (!ignore_freeze && is_freeze && (cmd == CMD.PUT || cmd == CMD.ADD_IN || cmd == CMD.SET_IN || cmd == CMD.REMOVE_FROM))
                             send(tid_response_reciever, rc, thisTid);
 
                         try

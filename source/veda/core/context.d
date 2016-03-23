@@ -199,7 +199,7 @@ interface Context
     Individual[] get_individuals_via_query(Ticket *ticket, string query_str);
     string get_individual_from_storage(string uri);
     Onto get_onto();
-    OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool api_request = true);
+//    OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool api_request = true);
 
     public string get_ticket_from_storage(string ticket_id);
     public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null);
@@ -215,21 +215,11 @@ interface Context
     void add_prefix_map(ref string[ string ] arg);
     public void stat(CMD command_type, ref StopWatch sw, string func = __FUNCTION__) nothrow;
     // *************************************************** external API *********************************** //
-    /**
-       Выполнить скрипт
-       Params:
-                str = строка содержащая скрипт
-
-       Returns:
-                string[ 2 ], [0] - результат выполнения, [1] - не используется
-     */
-    public string[ 2 ] execute_script(string str);
 
 //    //////////////////////////////////////////////////// ONTO //////////////////////////////////////////////
 
     public Individual[ string ] get_onto_as_map_individuals();
 
-// //////////////////////////////////////////////////// TICKET //////////////////////////////////////////////
     /**
        Aутентификация
        Params:
@@ -322,11 +312,19 @@ interface Context
        Returns:
                 Код результата операции
      */
-    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents = true, string event_id = null);
-    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents = true, string event_id = null);
-    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents = true, string event_id = null);
-    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents = true, string event_id = null);
-    public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents = true, string event_id = null);
+    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze = false,
+                                   bool is_api_request = true);
+    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, bool ignore_freeze = false,
+                                      bool is_api_request = true);
+    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
+                                          false,
+                                      bool is_api_request = true);
+    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
+                                          false,
+                                      bool is_api_request = true);
+    public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
+                                           bool ignore_freeze = false,
+                                           bool is_api_request = true);
 
     // ////////////////////////////////////////////// AUTHORIZATION ////////////////////////////////////////////
     /**

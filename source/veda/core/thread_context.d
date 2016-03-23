@@ -67,6 +67,8 @@ class PThreadContext : Context
     private Individual     node = Individual.init;
     private string         node_id;
 
+    private bool           API_ready = true;
+
     this(string _node_id, string context_name, P_MODULE _id)
     {
 //        if (_node_id is null)
@@ -109,6 +111,11 @@ class PThreadContext : Context
 
         log.trace_log_and_console("NEW CONTEXT [%s], external: write storage=[%s], js_vm=[%s]", context_name, external_write_storage_url,
                                   external_js_vm_url);
+    }
+
+    bool isReadyAPI()
+    {
+        return API_ready;
     }
 
     @property
@@ -232,33 +239,6 @@ class PThreadContext : Context
         return script_vm;
     }
 
-    string[ 2 ] execute_script(string str_js)
-    {
-        string[ 2 ] res;
-        get_ScriptVM();
-
-        reload_scripts();
-
-        try
-        {
-            auto str_js_script = script_vm.compile(cast(char *)(cast(char[])str_js ~ "\0"));
-            if (str_js_script !is null)
-                script_vm.run(str_js_script, &g_script_result);
-            else
-                writeln("Script is invalid");
-
-            res[ 0 ] = cast(string)g_script_result.data[ 0..g_script_result.length ];
-            res[ 1 ] = "NONE";
-        }
-        catch (Exception ex)
-        {
-            writeln("EX!executeScript ", ex.msg);
-            res[ 0 ] = ex.msg;
-            res[ 1 ] = "NONE";
-        }
-
-        return res;
-    }
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload)
     {
@@ -546,7 +526,7 @@ class PThreadContext : Context
         string     ss_as_cbor = individual2cbor(&new_ticket);
 
         long       op_id;
-        ResultCode rc = veda.core.storage.storage_thread.send_put(P_MODULE.ticket_manager, this, CMD.PUT, new_ticket.uri, ss_as_cbor, op_id);
+        ResultCode rc = veda.core.storage.storage_thread.send_put(P_MODULE.ticket_manager, this, CMD.PUT, new_ticket.uri, ss_as_cbor, false, op_id);
 
         ticket.result = rc;
         if (rc == ResultCode.OK)
@@ -1025,7 +1005,30 @@ class PThreadContext : Context
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
 
-    OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool api_request = true)
+    OpResult remove_individual(CMD cmd, Ticket *ticket, string uri, bool prepare_events, string event_id, bool api_request = true)
+    {
+        OpResult   res = OpResult(ResultCode.Fail_Store, -1);
+
+        string     prev_state;
+        Individual prev_indv;
+
+        prev_state = find(uri);
+        if (prev_state !is null)
+        {
+            int code = cbor2individual(&prev_indv, prev_state);
+            if (code < 0)
+            {
+                log.trace("ERR:store_individual: invalid prev_state [%s]", prev_state);
+                res.result = ResultCode.Unprocessable_Entity;
+                return res;
+            }
+        }
+
+        return res;
+    }
+
+    private OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool ignore_freeze,
+                                      bool is_api_request)
     {
         //writeln("context:store_individual #1 ", process_name);
         StopWatch sw; sw.start;
@@ -1057,11 +1060,11 @@ class PThreadContext : Context
 
                 if (cmd == CMD.PUT)
                     url = external_write_storage_url ~ "/put_individual";
-                else if (cmd == CMD.ADD)
+                else if (cmd == CMD.ADD_IN)
                     url = external_write_storage_url ~ "/add_to_individual";
-                else if (cmd == CMD.SET)
+                else if (cmd == CMD.SET_IN)
                     url = external_write_storage_url ~ "/set_in_individual";
-                else if (cmd == CMD.REMOVE)
+                else if (cmd == CMD.REMOVE_FROM)
                     url = external_write_storage_url ~ "/remove_from_individual";
 
                 //writeln("context:store_individual use EXTERNAL #3, url=", url, " ", process_name);
@@ -1131,10 +1134,9 @@ class PThreadContext : Context
                 setMapResources(_types, rdfType);
 
                 EVENT      ev = EVENT.CREATE;
+
                 string     prev_state;
-
                 Individual prev_indv;
-
                 prev_state = find(indv.uri);
                 if (prev_state !is null)
                 {
@@ -1147,8 +1149,7 @@ class PThreadContext : Context
                         return res;
                     }
 
-
-                    if (api_request)
+                    if (is_api_request)
                     {
                         // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
                         foreach (rs; _types)
@@ -1163,7 +1164,7 @@ class PThreadContext : Context
                     }
                 }
 
-                if (api_request)
+                if (is_api_request)
                 {
                     // для новых типов проверим доступность бита Create
                     foreach (key, rr; rdfType)
@@ -1179,29 +1180,26 @@ class PThreadContext : Context
                     }
                 }
 
-
-
-
-                if (prev_state is null && (cmd == CMD.ADD || cmd == CMD.SET))
+                if (prev_state is null && (cmd == CMD.ADD_IN || cmd == CMD.SET_IN))
                 {
                 }
                 else
                 {
-                    if (cmd == CMD.ADD || cmd == CMD.SET || cmd == CMD.REMOVE)
+                    if (cmd == CMD.ADD_IN || cmd == CMD.SET_IN || cmd == CMD.REMOVE_FROM)
                     {
                         foreach (predicate; indv.resources.keys)
                         {
-                            if (cmd == CMD.ADD)
+                            if (cmd == CMD.ADD_IN)
                             {
                                 // add value to set or ignore if exists
                                 prev_indv.addUniqueResources(predicate, indv.getResources(predicate));
                             }
-                            else if (cmd == CMD.SET)
+                            else if (cmd == CMD.SET_IN)
                             {
                                 // set value to predicate
                                 prev_indv.setResources(predicate, indv.getResources(predicate));
                             }
-                            else if (cmd == CMD.REMOVE)
+                            else if (cmd == CMD.REMOVE_FROM)
                             {
                                 // remove predicate or value in set
                                 prev_indv.removeResources(predicate, indv.getResources(predicate));
@@ -1213,8 +1211,8 @@ class PThreadContext : Context
 
                 string new_state = individual2cbor(indv);
 
-
-                res.result = veda.core.storage.storage_thread.send_put(P_MODULE.subject_manager, this, CMD.PUT, indv.uri, new_state, res.op_id);
+                res.result = veda.core.storage.storage_thread.send_put(P_MODULE.subject_manager, this, CMD.PUT, indv.uri, new_state, ignore_freeze,
+                                                                       res.op_id);
 
                 if (res.result != ResultCode.OK)
                 {
@@ -1272,34 +1270,40 @@ class PThreadContext : Context
         }
     }
 
-    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id)
+    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze = false,
+                                   bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(CMD.PUT, ticket, &individual, prepareEvents, event_id);
+        return store_individual(CMD.PUT, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
-    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id)
+    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, bool ignore_freeze, bool is_api_request = true)
     {
-    	OpResult res;
-        return res;
+        return remove_individual(ticket, uri, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
-    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id)
-    {
-        individual.uri = uri;
-        return store_individual(CMD.ADD, ticket, &individual, prepareEvents, event_id);
-    }
-
-    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id)
+    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
+                                          false,
+                                      bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(CMD.SET, ticket, &individual, prepareEvents, event_id);
+        return store_individual(CMD.ADD_IN, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
-    public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id)
+    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
+                                          false,
+                                      bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(CMD.REMOVE, ticket, &individual, prepareEvents, event_id);
+        return store_individual(CMD.SET_IN, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+    }
+
+    public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
+                                           bool ignore_freeze = false,
+                                           bool is_api_request = true)
+    {
+        individual.uri = uri;
+        return store_individual(CMD.REMOVE_FROM, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
 /////////////////////////////////////////////////////////////////////////////

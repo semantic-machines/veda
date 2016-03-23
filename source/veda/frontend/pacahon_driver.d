@@ -35,7 +35,6 @@ enum Function
     IndividualsIdsToQuery,
     NewTicket,
     TicketValid,
-    Script,
     PModule,
     Trace,
     Backup,
@@ -247,16 +246,6 @@ public void core_thread(string node_id, string write_storage_node)
                                 context.get_rights_origin(ticket, arg1, &trace);
                             }
                             send(tid, res);
-                        }
-                    }
-                },
-                (Command cmd, Function fn, string args, Tid tid) {
-                    // writeln("Tid=", cast(void *)tid);
-                    if (tid !is Tid.init)
-                    {
-                        if (cmd == Command.Execute && fn == Function.Script)
-                        {
-                            send(tid, context.execute_script(args));
                         }
                     }
                 },

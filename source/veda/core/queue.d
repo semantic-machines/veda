@@ -480,3 +480,53 @@ class Queue
         flush();
     }
 }
+
+unittest
+{
+    veda.core.queue.Queue    queue = new veda.core.queue.Queue("queue1");
+
+    veda.core.queue.Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
+
+    if (level == 0)
+        freeze();
+
+    bool      result = false;
+
+    int       count;
+    StopWatch sw;
+
+    sw.start();
+    bool pp(string key, string value)
+    {
+        queue.push(value);
+        count++;
+        //if (count > 150)
+        //	return false;
+        return true;
+    }
+
+    this.inividuals_storage.get_of_cursor(&pp);
+
+    sw.stop();
+    int t = cast(int)sw.peek().msecs;
+
+    writeln("write to queue: ", count, ", time: ", t, ", cps=", count / (t / 1000.0));
+
+    sw.reset();
+    sw.start();
+    string val;
+    count = 0;
+    do
+    {
+        val = cs.pop();
+        //writeln ("@@@val=", val);
+        count++;
+    } while (val !is null);
+
+    sw.stop();
+    t = cast(int)sw.peek().msecs;
+
+    writeln("read from queue: ", count, ", time: ", t, ", cps=", count / (t / 1000.0));
+
+    queue.close();
+}
