@@ -112,6 +112,9 @@ interface VedaStorageRest_API {
     @path("put_individual") @method(HTTPMethod.PUT)
     OpResult put_individual(string ticket, Json individual, bool prepare_events, string event_id);
 
+    @path("remove_individual") @method(HTTPMethod.PUT)
+    OpResult remove_individual(string ticket, string uri, bool prepare_events, string event_id);
+
     @path("remove_from_individual") @method(HTTPMethod.PUT)
     OpResult remove_from_individual(string ticket, Json individual, bool prepare_events, string event_id);
 
@@ -682,6 +685,40 @@ class VedaStorageRest : VedaStorageRest_API
             if (trace_msg[ 25 ] == 1)
                 log.trace("get_individual: end, uri=%s", uri);
         }
+    }
+
+    OpResult remove_individual(string _ticket, string uri, bool prepare_events, string event_id)
+    {
+        OpResult res;
+
+        if (trace_msg[ 500 ] == 1)
+            log.trace("remove_individual #start : uri=%s", uri);
+
+        long fts_count_prep_put = search.xapian_indexer.get_count_prep_put();
+        long fts_count_recv_put = search.xapian_indexer.get_count_recv_put();
+
+        long scr_count_prep_put = veda.core.scripts.get_count_prep_put();
+        long scr_count_recv_put = veda.core.scripts.get_count_recv_put();
+
+        if (fts_count_recv_put - fts_count_prep_put > 200 || scr_count_recv_put - scr_count_prep_put > 200)
+            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
+
+        Ticket     *ticket = context.get_ticket(_ticket);
+
+        ResultCode rc = ticket.result;
+
+        if (rc == ResultCode.OK)
+        {
+            res = context.remove_individual(ticket, uri, prepare_events, event_id == "" ? null : event_id);
+
+            if (trace_msg[ 500 ] == 1)
+                log.trace("remove_individual #end : uri=%s, res=%s", uri, text(res));
+        }
+
+        if (res.result != ResultCode.OK)
+            throw new HTTPStatusException(res.result);
+
+        return res;
     }
 
     OpResult put_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)

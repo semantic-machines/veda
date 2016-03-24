@@ -155,7 +155,7 @@ public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out str
         string ls = transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
         string rs = transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
 
-        if (!is_strict_equality && rs.indexOf (':') > 0)
+        if (!is_strict_equality && rs.indexOf(':') > 0)
         {
             Classes subclasses = ctx.get_onto().get_sub_classes(rs);
             //writeln ("@ class=,", rs, ", subclasses=", subclasses);

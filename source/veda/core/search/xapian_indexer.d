@@ -172,7 +172,7 @@ private class IndexerContext
 
         try
         {
-            if (cbor2individual(&indv, msg) < 0)
+            if (msg !is null && cbor2individual(&indv, msg) < 0)
             {
                 log.trace("!ERR:index_msg invalid individual:[%s]", msg);
                 return;

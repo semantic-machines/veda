@@ -168,7 +168,18 @@ veda.Module(function Backend(veda) { "use strict";
 		$.ajax(params).done(success).fail(fail);
 	}
 
-	window.put_individual = function (ticket, individual, prepare_events, event_id, wait1, wait2, wait3, wait4, success, fail) {
+	window.remove_individual = function (ticket, uri, prepare_events, event_id, success, fail) {
+		var params = {
+			type: "PUT",
+			url: "remove_individual",
+			data: JSON.stringify({"ticket": ticket, "uri": uri, 
+			"prepare_events" : prepare_events || true,  "event_id" : event_id || ""}),
+			contentType: "application/json"
+		};
+		return call_server(ticket, params, success, fail);
+	}
+
+	window.put_individual = function (ticket, individual, prepare_events, event_id, success, fail) {
 		var params = {
 			type: "PUT",
 			url: "put_individual",

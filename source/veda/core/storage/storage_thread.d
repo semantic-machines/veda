@@ -144,12 +144,12 @@ public void individuals_manager(string thread_name, string db_path, string node_
 
                         if (!ignore_freeze && is_freeze && cmd == CMD.REMOVE)
                             send(tid_response_reciever, rc, thisTid);
-                    	
+
                         try
                         {
                             if (cmd == CMD.REMOVE)
                             {
-                                if (storage.remove(uri) == 0)
+                                if (storage.remove(uri) == ResultCode.OK)
                                     rc = ResultCode.OK;
                                 else
                                     rc = ResultCode.Fail_Store;

@@ -76,7 +76,7 @@ void fanout_thread(string thread_name, string _node_id)
                         check_context();
 
                         Individual prev_indv, new_indv;
-                        if (cbor2individual(&new_indv, new_state) < 0)
+                        if (new_state !is null && cbor2individual(&new_indv, new_state) < 0)
                         {
                             log.trace("!ERR:invalid individual:[%s]", new_state);
                         }

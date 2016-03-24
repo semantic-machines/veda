@@ -117,8 +117,8 @@ public enum ResultCode
     /// 503
     Service_Unavailable   = 503,
 
-	Invalid_Identifier	  = 904,
-	
+    Invalid_Identifier    = 904,
+
     /// 1021
     Disk_Full             = 1021,
 
@@ -316,16 +316,16 @@ interface Context
      */
     public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze = false,
                                    bool is_api_request = true);
-    
+
     public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, bool ignore_freeze = false,
                                       bool is_api_request = true);
-    
+
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
                                           false, bool is_api_request = true);
-    
+
     public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
                                           false, bool is_api_request = true);
-    
+
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
                                            bool ignore_freeze = false, bool is_api_request = true);
 

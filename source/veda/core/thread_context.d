@@ -1005,28 +1005,61 @@ class PThreadContext : Context
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
 
-    OpResult remove_individual(CMD cmd, Ticket *ticket, string uri, bool prepare_events, string event_id, bool api_request = true)
+    private OpResult _remove_individual(Ticket *ticket, string uri, bool prepare_events, string event_id, bool ignore_freeze)
     {
-        OpResult   res = OpResult(ResultCode.Fail_Store, -1);
+        OpResult res = OpResult(ResultCode.Fail_Store, -1);
 
-        string     prev_state;
-        Individual prev_indv;
-
-        prev_state = find(uri);
-        if (prev_state !is null)
+        try
         {
-            int code = cbor2individual(&prev_indv, prev_state);
-            if (code < 0)
+            EVENT      ev = EVENT.REMOVE;
+
+            string     prev_state;
+            Individual indv;
+            Individual prev_indv;
+
+            prev_state = find(uri);
+            if (prev_state !is null)
             {
-                log.trace("ERR:store_individual: invalid prev_state [%s]", prev_state);
-                res.result = ResultCode.Unprocessable_Entity;
-                return res;
+                int code = cbor2individual(&prev_indv, prev_state);
+                if (code < 0)
+                {
+                    log.trace("ERR:store_individual: invalid prev_state [%s]", prev_state);
+                    res.result = ResultCode.Unprocessable_Entity;
+                    return res;
+                }
             }
+
+            res.result = veda.core.storage.storage_thread.send_remove(P_MODULE.subject_manager, this, uri, ignore_freeze, res.op_id);
+            search.xapian_indexer.send_delete(this, null, prev_state, res.op_id);
+
+            Resources   _types = prev_indv.resources.get(rdf__type, Resources.init);
+            MapResource rdfType;
+            setMapResources(_types, rdfType);
+
+            if (rdfType.anyExists(owl_tags) == true)
+            {
+                // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
+                inc_count_onto_update();
+            }
+
+            if (prepare_events == true)
+                bus_event_after(ticket, &indv, rdfType, null, prev_state, ev, this, event_id, res.op_id);
+
+            veda.core.fanout.send_put(this, null, prev_state, res.op_id);
+
+            return res;
         }
+        finally
+        {
+            if (res.result != ResultCode.OK)
+                log.trace("ERR! no remove subject :uri=%s, errcode=[%s], ticket=[%s]",
+                          uri, text(res.result), ticket !is null ? text(*ticket) : "null");
 
-        res.result = veda.core.storage.storage_thread.send_remove(P_MODULE.subject_manager, this, uri, ignore_freeze, res.op_id);
+            if (trace_msg[ 27 ] == 1)
+                log.trace("[%s] remove_individual [%s] uri = %s", name, uri, res);
 
-        return res;
+//            stat(CMD.PUT, sw);
+        }
     }
 
     private OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool ignore_freeze,
@@ -1039,17 +1072,17 @@ class PThreadContext : Context
 
         try
         {
-        	if (indv !is null && (indv.uri is null || indv.uri.length < 2))
-        	{
-            	res.result = ResultCode.Invalid_Identifier;
-            	return res;
-        	}
-        	if (indv is null || indv.resources.length == 0)
-        	{
-            	res.result = ResultCode.No_Content;
-            	return res;
-        	}
-        //writeln("context:store_individual #2 ", process_name);
+            if (indv !is null && (indv.uri is null || indv.uri.length < 2))
+            {
+                res.result = ResultCode.Invalid_Identifier;
+                return res;
+            }
+            if (indv is null || indv.resources.length == 0)
+            {
+                res.result = ResultCode.No_Content;
+                return res;
+            }
+            //writeln("context:store_individual #2 ", process_name);
 
             if (external_write_storage_url !is null)
             {
@@ -1260,9 +1293,9 @@ class PThreadContext : Context
         finally
         {
             if (res.result != ResultCode.OK)
-                log.trace("ERR! no store subject :%s, errcode=[%s], ticket=[%s]", 
-                	indv !is null ? text(*indv) : "null", 
-                	text(res.result), ticket !is null ? text(*ticket) : "null");
+                log.trace("ERR! no store subject :%s, errcode=[%s], ticket=[%s]",
+                          indv !is null ? text(*indv) : "null",
+                          text(res.result), ticket !is null ? text(*ticket) : "null");
 
             if (trace_msg[ 27 ] == 1)
                 log.trace("[%s] store_individual [%s] = %s", name, indv.uri, res);
@@ -1280,7 +1313,7 @@ class PThreadContext : Context
 
     public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, bool ignore_freeze, bool is_api_request = true)
     {
-        return remove_individual(ticket, uri, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return _remove_individual(ticket, uri, prepareEvents, event_id, ignore_freeze);
     }
 
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
@@ -1433,6 +1466,8 @@ class PThreadContext : Context
     {
         if (level == 0)
             freeze();
+
+        Ticket sticket = sys_ticket();
 
         try
         {
