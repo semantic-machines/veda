@@ -28,6 +28,7 @@ td:run-script
 	v-s:result td:res1 ;
 	v-s:isSuccess "false";
 	v-s:useScript td:script_onto_rename;
+	v-s:priority 16;
 .
 
 td:arg1

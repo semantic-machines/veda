@@ -9,7 +9,7 @@ private
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import io.mq_client, veda.core.io.file_reader;
     import util.logger, util.utils, util.load_info;
-    import veda.core.scripts, veda.core.context, veda.core.know_predicates, veda.core.log_msg, veda.core.thread_context;
+    import veda.core.glue_code.scripts, veda.core.context, veda.core.know_predicates, veda.core.log_msg, veda.core.thread_context;
     import veda.core.define, veda.type, veda.core.az.acl, veda.core.storage.storage_thread, search.xapian_indexer, veda.onto.individual,
            veda.onto.resource;
 }
@@ -190,7 +190,7 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
 
         if (jsvm_node_type == "internal" || jsvm_node_type == "")
         {
-            Tid tid_scripts = veda.core.scripts.start_module(node_id);
+            Tid tid_scripts = veda.core.glue_code.scripts.start_module(node_id);
         }
 
         if (is_main)

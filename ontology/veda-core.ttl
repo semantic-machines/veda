@@ -202,6 +202,14 @@ v-s:Embedded
 
 ### PROPERTIES ###
 
+v-s:priority
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:ExecuteScript ;                                                                       
+  rdfs:label "priority"@en ;                                                         
+  rdfs:label "приоритет"@ru ;                                                   
+  rdfs:range xsd:integer ;
+.
+
 v-s:argument
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:ExecuteScript ;

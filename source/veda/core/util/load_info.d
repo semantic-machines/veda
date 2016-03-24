@@ -121,8 +121,8 @@ void print_statistic(string thread_name, Tid _statistic_data_accumulator)
             long ft_count_prep_put = search.xapian_indexer.get_count_prep_put();
             long ft_count_recv_put = search.xapian_indexer.get_count_recv_put();
 
-            long sc_count_prep_put = veda.core.scripts.get_count_prep_put();
-            long sc_count_recv_put = veda.core.scripts.get_count_recv_put();
+            long sc_count_prep_put = veda.core.glue_code.scripts.get_count_prep_put();
+            long sc_count_recv_put = veda.core.glue_code.scripts.get_count_recv_put();
 
             auto writer = appender!string();
             formattedWrite(writer, "%s|r/w :%7d/%5d|cps/thr:%9.1f|wt:%7d µs|tp r/w: %7d/%5d|t.w.t. : %7d ms|FTS:%7d/%7d/%7d|SCR:%7d/%7d/%7d",

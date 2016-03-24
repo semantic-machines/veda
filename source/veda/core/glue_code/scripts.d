@@ -1,7 +1,7 @@
 /**
  * выполнение JS скриптов
  */
-module veda.core.scripts;
+module veda.core.glue_code.scripts;
 
 private
 {
@@ -90,7 +90,7 @@ public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_stat
         }
     }
 
-    veda.core.scripts.inc_count_recv_put();
+    veda.core.glue_code.scripts.inc_count_recv_put();
 }
 
 string empty_uid = "";

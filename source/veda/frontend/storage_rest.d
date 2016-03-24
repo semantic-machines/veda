@@ -697,8 +697,8 @@ class VedaStorageRest : VedaStorageRest_API
         long fts_count_prep_put = search.xapian_indexer.get_count_prep_put();
         long fts_count_recv_put = search.xapian_indexer.get_count_recv_put();
 
-        long scr_count_prep_put = veda.core.scripts.get_count_prep_put();
-        long scr_count_recv_put = veda.core.scripts.get_count_recv_put();
+        long scr_count_prep_put = veda.core.glue_code.scripts.get_count_prep_put();
+        long scr_count_recv_put = veda.core.glue_code.scripts.get_count_recv_put();
 
         if (fts_count_recv_put - fts_count_prep_put > 200 || scr_count_recv_put - scr_count_prep_put > 200)
             throw new HTTPStatusException(ResultCode.Too_Many_Requests);
@@ -731,8 +731,8 @@ class VedaStorageRest : VedaStorageRest_API
         long fts_count_prep_put = search.xapian_indexer.get_count_prep_put();
         long fts_count_recv_put = search.xapian_indexer.get_count_recv_put();
 
-        long scr_count_prep_put = veda.core.scripts.get_count_prep_put();
-        long scr_count_recv_put = veda.core.scripts.get_count_recv_put();
+        long scr_count_prep_put = veda.core.glue_code.scripts.get_count_prep_put();
+        long scr_count_recv_put = veda.core.glue_code.scripts.get_count_recv_put();
 
         if (fts_count_recv_put - fts_count_prep_put > 200 || scr_count_recv_put - scr_count_prep_put > 200)
             throw new HTTPStatusException(ResultCode.Too_Many_Requests);
