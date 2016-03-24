@@ -140,11 +140,7 @@ v-s:NumerationEvent
   rdf:type v-s:Event ;
   v-s:filter v-s:NumerationEvent ;
   v-s:script """
-  if (!document['v-s:isDraftOf'] || document['v-s:isDraftOf'].length==0) {
-	  //print("NUMERATION EVENT"); 
-	  var result = numerate(ticket, document, prev_state, _event_id);
-	  //print("RESULT : " +toJson(result));
-  }
+	var result = numerate(ticket, document, prev_state, _event_id);
 """
 .
 v-s:Permission1602021330

@@ -44,6 +44,9 @@
 				case "graph":
 					self.trigger.apply(self, ["load:graph"].concat(params));
 					break;
+				case "drafts":
+					self.trigger.apply(self, ["load:drafts"].concat(params));
+					break;
 				default:
 					if (!params[0]) { params[0] = "#main"; }
 					veda.Util.construct(veda.IndividualModel, [page].concat(params));

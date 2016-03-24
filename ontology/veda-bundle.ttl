@@ -113,8 +113,8 @@ v-s:ContinueEdit
 .
 v-s:Save
   rdf:type v-s:Bundle ;
-  rdfs:label "Опубликовать"@ru ;
-  rdfs:label "Publish"@en ;
+  rdfs:label "Сохранить"@ru ;
+  rdfs:label "Save"@en ;
 .
 v-s:Draft
   rdf:type v-s:Bundle ;
@@ -140,6 +140,11 @@ v-s:Delete
   rdf:type v-s:Bundle ;
   rdfs:label "Удалить"@ru ;
   rdfs:label "Delete"@en ;
+.
+v-s:DeleteAll
+  rdf:type v-s:Bundle ;
+  rdfs:label "Удалить все"@ru ;
+  rdfs:label "Delete all"@en ;
 .
 v-s:DeleteDraft
   rdf:type v-s:Bundle ;

@@ -139,38 +139,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		template.on("view edit search", showHideHandler);
 
-		// Additional buttons change for drafts 
-		if (individual.is('v-s:DraftAllowed')) {
-			// If individual is draft
-			if (individual.hasValue('v-s:isDraftOf')) {
-				//TODO Put link to actual version
-				//Rename edit button
-				if ($('#edit', wrapper).attr('about')) $('#edit', wrapper).attr('about', 'v-s:ContinueEdit');
-				
-				//Rename delete button
-				if ($('#delete', wrapper).attr('about')) $('#delete', wrapper).attr('about', 'v-s:DeleteDraft');
-				
-				//Hide send button
-				$('#send', wrapper).remove();
-				
-				//Hide cancel button
-				//$('#cancel', wrapper).remove();
-
-			} else if (individual.hasValue('v-s:hasDraft')) {			
-				//TODO Put link to draft version
-				
-				//Rename edit button
-				if ($('#edit', wrapper).attr('about')) $('#edit', wrapper).attr('about', 'v-s:ContinueEdit');
-								
-				//Hide send button
-				$('#send', wrapper).remove();
-			} 
-		}
 		if (container.prop("id") === "main" 
 			&& individual.is('v-s:Versioned') 
 			&& individual.hasValue('v-s:actualVersion') 
 			&& individual['v-s:actualVersion'][0].id !== individual.id 
-			&& !individual.hasValue("v-s:isDraftOf")
 		) {
 			var versionBundle = new veda.IndividualModel('v-s:DocumentIsVersion');
 			var actualVersionClass = new veda.IndividualModel('v-s:actualVersion');
@@ -226,12 +198,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		template.on("save", saveHandler);
 				
 		function draftHandler (e) {
-			if (!individual.hasValue('v-s:isDraftOf')) {
-				// If `v-s:isDraftOf` is empty, then current individual is "draftonly" individual
-				individual['v-s:isDraftOf'] = [individual];
-			}
 			individual.draft();
-			putDraftToUserAspect(individual);
+			template.trigger("view");
+			//putDraftToUserAspect(individual);
 			e.stopPropagation();
 		}
 		template.on("draft", draftHandler);
@@ -243,20 +212,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		template.on("showRights", showRightsHandler);
 
 		function cancelHandler (e) {
-			if (individual.is('v-s:Versioned') && individual.hasValue('v-s:isDraftOf')) {
-				var actual = new veda.IndividualModel(individual['v-s:isDraftOf'][0]);
-				actual['v-s:hasDraft'] = [];
-				actual.saveIndividual(false);
-				individual['v-s:deleted'] = [new Boolean(true)];
-				individual.saveIndividual(false);
-				
-				container.empty();
-				actual.present(container, template, "view");
-				changeHash(actual.id);				
-			} else {
-				template.trigger("view");
-				individual.reset();
-			}
+			individual.reset();
+			template.trigger("view");
 			e.stopPropagation();
 		}
 		template.on("cancel", cancelHandler);
@@ -298,6 +255,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Actions
 		var $edit = $("#edit.action", wrapper),
 			$save = $("#save.action", wrapper),
+			$draft = $("#draft.action", wrapper),
 			$showRights = $("#rightsOrigin.action", wrapper),
 			$cancel = $("#cancel.action", wrapper),
 			$delete = $("#delete.action", wrapper);
@@ -307,6 +265,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		if ( individual.isSync() ) {
 			if ($edit.length   && !(individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $edit.remove();
 			if ($save.length   && !(individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $save.remove();
+			if ($draft.length  && !(individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $draft.remove();
 			if ($cancel.length && !(individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $cancel.remove();
 			// Delete
 			if ($delete.length && !(individual.rights.hasValue("v-s:canDelete") && individual.rights["v-s:canDelete"][0] == true) ) $delete.remove();
@@ -321,6 +280,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// Save
 		$save.on("click", function (e) {
 			template.trigger("save");
+		});
+
+		// Draft
+		$draft.on("click", function (e) {
+			template.trigger("draft");
 		});
 		
 		// Show rights
@@ -740,91 +704,33 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 		});
 		
-		// add icon to label
-		if (individual.is('v-s:DraftAllowed') && individual.hasValue('v-s:isDraftOf')) {			
-			//Put draft sign
-			$('[about="'+individual.id+'"][property="rdfs:label"]', wrapper).append('<span class="glyphicon glyphicon-pencil draftsign" style="font-size: 10px;">');
-		} else if (individual.is('v-s:Versioned') && individual.hasValue('v-s:actualVersion') && individual['v-s:actualVersion'][0].id!=individual.id) {
-			//Put version sign
-			$('[about="'+individual.id+'"][property="rdfs:label"]', wrapper).append('<span class="glyphicon glyphicon-camera draftsign" style="font-size: 10px;">');
-		}
-		
-		/*
-		if (individual.is('v-s:DraftAllowed')) {
-			var $draft = $("#draft.action", wrapper);			 
-			$draft.unbind("click");
-			$draft.on("click", function () {
-				template.trigger('draft');
-				container.empty();
-				individual.present(container, undefined, "view");
-				changeHash(individual.id);
-			});
-			
-			// Remove edit button if no rights to edit draft
-			if (individual.hasValue('v-s:hasDraft')) {
-				var draft = new veda.IndividualModel(individual['v-s:hasDraft'][0].id);
-				if ($edit.length   && !(draft.rights.hasValue("v-s:canUpdate") && draft.rights["v-s:canUpdate"][0] == true) ) $edit.remove();
-			}
-			
-			// Remove delete button if document has draft
-			if (individual.hasValue('v-s:hasDraft')) {
-				$delete.remove();
-			}
-			
-			$edit.unbind("click");
-			$edit.on("click", function (e) {
-				// Go to edit draft instead of edit individual
-				if (individual.hasValue('v-s:hasDraft')) {
-					// Go to already existed draft
-					var draft = new veda.IndividualModel(individual['v-s:hasDraft'][0].id);
-					container.empty();
-					draft.present(container, template, "edit");
-					changeHash(draft.id, "edit");
-				} else 
-				{
-					if (individual.hasValue('v-s:isDraftOf')) {
-						// Individual is draft itself
-						container.empty();
-						individual.present(container, template, "edit");
-						changeHash(individual.id, "edit");
-					} else {
-						// Create new draft
-						var clone = individual.clone();
-						clone['v-s:actualVersion'] = [individual];
-						clone['v-s:hasDraft'] = [];
-						clone['v-s:isDraftOf'] = [individual];
-						clone.saveIndividual(false);
-						putDraftToUserAspect(clone);
-	
-						// Add link to draft
-						individual['v-s:hasDraft'] = [clone];
-						individual.saveIndividual(false);
-						
-						container.empty();
-						clone.present(container, template, "edit");
-						changeHash(clone.id, "edit");
-					}
+		// Standart buttons labels change for drafts 
+		var Edit = (new veda.IndividualModel("v-s:Edit"))["rdfs:label"].join(" ");
+		var ContinueEdit = (new veda.IndividualModel("v-s:ContinueEdit"))["rdfs:label"].join(" ");
+		var DeleteDraft = (new veda.IndividualModel("v-s:DeleteDraft"))["rdfs:label"].join(" ");
+		var Cancel = (new veda.IndividualModel("v-s:Cancel"))["rdfs:label"].join(" ");
+
+		individual.on("individual:propertyModified", isDraftHandler);
+		template.on("remove", function () {
+			individual.off("individual:propertyModified", isDraftHandler);
+		});
+		function isDraftHandler(property_uri) {
+			if (property_uri === "v-s:isDraft") {
+				// If individual is draft
+				if ( individual.hasValue("v-s:isDraft") && individual["v-s:isDraft"][0] == true ) {
+					//Rename "Edit" -> "Continue edit"
+					$edit.text(ContinueEdit);
+					//Rename "Cancel" -> "Delete draft"
+					$cancel.text(DeleteDraft);
+				} else {
+					//Rename "Continue edit" -> Edit"
+					$edit.text(Edit);
+					//Rename "Delete draft" -> "Cancel" 
+					$cancel.text(Cancel);
 				}
-			});
-			
-			if (individual.hasValue('v-s:isDraftOf')) 
-			{
-				$delete.unbind("click");
-				$delete.on("click", function (e) {
-					individual['v-s:deleted'] = [new Boolean(true)];
-					individual.saveIndividual(false);
-					
-					var actual = individual['v-s:isDraftOf'][0];
-					actual['v-s:hasDraft'] = [];
-					actual.saveIndividual(false);
-					
-					container.empty();
-					actual.present(container, undefined, "view");
-					changeHash(actual.id);
-				});
 			}
 		}
-		*/
+		isDraftHandler("v-s:isDraft");
 		
 		// standard tasks
 		$('#standard-tasks', template).each(function() {

@@ -133,7 +133,6 @@ v-s:PermissionStatement
 v-s:Person
   rdf:type owl:Class ;
   rdfs:subClassOf owl:Thing ;
-  rdfs:subClassOf v-s:DraftAllowed ;
   rdfs:subClassOf v-s:Versioned ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Exportable ;  
@@ -161,13 +160,6 @@ v-s:Version
   rdfs:subClassOf owl:Thing ;
   rdfs:label "Version"@en ;
   rdfs:label "Версия"@ru ;
-.
-
-v-s:DraftAllowed
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Versioned ;
-  rdfs:label "Draft allowed"@en ;
-  rdfs:label "Возможно создание черновика"@ru ;
 .
 
 v-s:Exportable
@@ -255,20 +247,12 @@ v-s:parent
   rdfs:range rdfs:Resource ;
 .
 
-v-s:hasDraft
+v-s:isDraft
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:DraftAllowed ;
-  rdfs:label "has draft"@en ;
-  rdfs:label "имеет черновик"@ru ;
-  rdfs:range v-s:DraftAllowed ;
-.
-
-v-s:isDraftOf
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:DraftAllowed ;
+  rdfs:domain rdfs:Resource ;
   rdfs:label "is draft of"@en ;
   rdfs:label "является черновиком"@ru ;
-  rdfs:range v-s:DraftAllowed ;
+  rdfs:range xsd:boolean ;
 .
 
 v-s:actualVersion
