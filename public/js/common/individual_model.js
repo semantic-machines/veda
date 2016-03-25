@@ -96,7 +96,7 @@ veda.Module(function (veda) { "use strict";
 		self.defineProperty("v-s:author");
 		self.defineProperty("v-s:created");
 		
-		self.on("individual:beforeDraft", function () {
+		self.on("individual:beforeSave", function () {
 			if (!self.hasValue("v-s:created")) self["v-s:created"] = [new Date()];
 			if (!self.hasValue("v-s:author")) self["v-s:author"] = [ veda.appointment ? veda.appointment : veda.user ];
 		});
