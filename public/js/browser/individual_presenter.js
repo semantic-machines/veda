@@ -229,14 +229,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			individual.off("individual:afterDelete", afterDeleteHandler);
 		});
 
-		function deleteHandler (e) {
-			individual.delete();
+		function deleteHandler (e, parent) {
+			individual.delete(parent);
 			e.stopPropagation();
 		}
 		template.on("delete", deleteHandler);
 
-		function recoverHandler (e) {
-			individual.recover();
+		function recoverHandler (e, parent) {
+			individual.recover(parent);
 			e.stopPropagation();
 		}
 		template.on("recover", recoverHandler);

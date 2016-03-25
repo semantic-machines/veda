@@ -377,13 +377,13 @@ veda.Module(function (veda) { "use strict";
 	 * @method
 	 * Mark current individual as deleted in database (add v-s:deleted property)
 	 */
-	proto.delete = function () {
+	proto.delete = function (parent) {
 		this.trigger("individual:beforeDelete");
 		if ( this["v-s:isDraft"][0] == true ) { 
 			veda.drafts.remove(this.id);
 		} 
 		this["v-s:deleted"] = [new Boolean(true)];
-		this.save();
+		this.save(parent);
 		this.trigger("individual:afterDelete");
 		return this;
 	};
@@ -392,13 +392,13 @@ veda.Module(function (veda) { "use strict";
 	 * @method
 	 * Recover current individual in database (remove v-s:deleted property)
 	 */
-	proto.recover = function () {
+	proto.recover = function (parent) {
 		this.trigger("individual:beforeRecover");
 		if ( this["v-s:isDraft"][0] == true ) { 
 			veda.drafts.remove(this.id);
 		} 
 		this["v-s:deleted"] = [];
-		this.save();
+		this.save(parent);
 		this.trigger("individual:afterRecover");
 		return this;
 	};
