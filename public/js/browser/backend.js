@@ -4,7 +4,8 @@ veda.Module(function Backend(veda) { "use strict";
 
 	$.ajaxSetup ({
 		dataType: "json",
-		cache: false
+		cache: false,
+		timeout: 3000
 	});
 
 	function call_server(ticket, params, success, fail) {
