@@ -238,6 +238,13 @@ v-s:isSuccess
   rdfs:range xsd:boolean ;
 .
 
+v-s:isExecuted
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:ExecuteScript ;
+  rdfs:label "исполняется" ;
+  rdfs:range xsd:boolean ;
+.
+
 v-s:useScript
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:ExecuteScript ;

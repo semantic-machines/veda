@@ -25,7 +25,7 @@ logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
-struct ScriptInfo
+private struct ScriptInfo
 {
     string id;
     string str_script;
@@ -82,28 +82,47 @@ public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_stat
             if (ticket !is null)
                 user_uri = ticket.user_uri;
 
-            send(tid_scripts, user_uri, ev_type, new_state, prev_state, types, individual.uri, event_id, op_id);
+            send(tid_scripts, user_uri, ev_type, new_state, prev_state, types, individual.uri, "", "", "", event_id, op_id);
         }
         catch (Exception ex)
         {
-            writeln("EX!bus_event:", ex.msg);
+            writeln("EX!scripts:send_put:", ex.msg);
         }
     }
 
     veda.core.glue_code.scripts.inc_count_recv_put();
 }
 
-string empty_uid = "";
+string empty_uid;
+string vars_for_event_script;
+string vars_for_codelet_script;
 
 public void scripts_thread(string thread_name, string node_id)
 {
+    empty_uid             = "";
+    vars_for_event_script =
+        "var user_uri = get_env_str_var ('$user');"
+        ~ "var parent_script_id = get_env_str_var ('$parent_script_id');"
+        ~ "var parent_document_id = get_env_str_var ('$parent_document_id');"
+        ~ "var prev_state = get_individual (ticket, '$prev_state');"
+        ~ "var super_classes = get_env_str_var ('$super_classes');"
+        ~ "var _event_id = document['@'] + '+' + _script_id;";
+
+    vars_for_codelet_script =
+        "var user_uri = get_env_str_var ('$user');"
+        ~ "var arguments = get_individual (ticket, '$arguments');"
+        ~ "var results = get_individual (ticket, '$results');"
+        ~ "var prev_state = get_individual (ticket, '$prev_state');"
+        ~ "var super_classes = get_env_str_var ('$super_classes');"
+        ~ "var _event_id = document['@'] + '+' + _script_id;";
+
     core.thread.Thread.getThis().name = thread_name;
 
     context   = new PThreadContext(node_id, thread_name, P_MODULE.scripts);
     g_context = context;
 
     vql = new VQL(context);
-    load();
+    load_event_scripts();
 
     try
     {
@@ -133,10 +152,10 @@ public void scripts_thread(string thread_name, string node_id)
                         {
                             if (cmd == CMD.RELOAD)
                             {
-                                Individual ss;
-                                if (cbor2individual(&ss, arg) > 0)
+                                Individual indv;
+                                if (cbor2individual(&indv, arg) > 0)
                                 {
-                                    prepare_scripts(ss, script_vm);
+                                    prepare_script(indv, script_vm, vars_for_event_script);
                                     send(to, true);
                                 }
                             }
@@ -161,6 +180,7 @@ public void scripts_thread(string thread_name, string node_id)
                                 send(to, false);
                         },
                         (string user_uri, EVENT type, string msg, string prev_state, immutable(string)[] indv_types, string individual_id,
+                         string script_uri, string arguments_cbor, string results_cbor,
                          string event_id, long op_id)
                         {
                             try
@@ -182,20 +202,19 @@ public void scripts_thread(string thread_name, string node_id)
                                     if (onto is null)
                                         onto = context.get_onto();
 
-                                    Individual ss;
-                                    if (cbor2individual(&ss, msg) > 0)
+                                    Individual indv;
+                                    if (cbor2individual(&indv, msg) < 0)
+                                        return;
+
+                                    if (prepare_if_is_script == false)
                                     {
-                                        if (prepare_if_is_script == false)
-                                        {
-                                            if (scripts.get(ss.uri, ScriptInfo.init) !is ScriptInfo.init)
-                                                prepare_if_is_script = true;
-                                        }
+                                        if (scripts.get(indv.uri, ScriptInfo.init) !is ScriptInfo.init)
+                                            prepare_if_is_script = true;
                                     }
 
                                     if (prepare_if_is_script)
-                                    {
-                                        prepare_scripts(ss, script_vm);
-                                    }
+                                        prepare_script(indv, script_vm, vars_for_event_script);
+
                                     string[] aa;
 
                                     //writeln ("@d event_id=", event_id);
@@ -370,7 +389,7 @@ public void scripts_thread(string thread_name, string node_id)
     writeln("TERMINATED: ", thread_name);
 }
 
-public void load()
+public void load_event_scripts()
 {
     ScriptVM script_vm = context.get_ScriptVM();
 
@@ -391,7 +410,7 @@ public void load()
 
     foreach (ss; res)
     {
-        prepare_scripts(ss, script_vm);
+        prepare_script(ss, script_vm, vars_for_event_script);
     }
 
     //writeln ("@2");
@@ -399,12 +418,12 @@ public void load()
     log.trace("end load db scripts, count=%d ", res.length);
 }
 
-private void prepare_scripts(Individual ss, ScriptVM script_vm)
+
+private void prepare_script(Individual ss, ScriptVM script_vm, string vars_env)
 {
     if (trace_msg[ 310 ] == 1)
-        log.trace("prepare_scripts uri=%s", ss.uri);
+        log.trace("prepare_script uri=%s", ss.uri);
 
-    JSONValue nil;
     try
     {
         if (ss.isExists(veda_schema__deleted, true) || ss.isExists("v-s:disabled", true))
@@ -428,13 +447,8 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
             "var ticket = get_env_str_var ('$ticket');"
             ~ "var document = get_individual (ticket, '$document');"
             ~ "if (document) {"
-            ~ "var user_uri = get_env_str_var ('$user');"
-            ~ "var parent_script_id = get_env_str_var ('$parent_script_id');"
-            ~ "var parent_document_id = get_env_str_var ('$parent_document_id');"
-            ~ "var prev_state = get_individual (ticket, '$prev_state');"
-            ~ "var super_classes = get_env_str_var ('$super_classes');"
             ~ "var _script_id = '" ~ ss.uri ~ "';"
-            ~ "var _event_id = document['@'] + '+' + _script_id;"
+            ~ vars_env
             ~ "script();"
             ~ "};"
             ~ "function script() {" ~ scripts_text ~ "};"
@@ -447,7 +461,7 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
 
             script.compiled_script = script_vm.compile(cast(char *)(script.str_script ~ "\0"));
             if (trace_msg[ 310 ] == 1)
-                log.trace("#compile script.id=%s, text=%s", script.id, script.str_script);
+                log.trace("#compile event script.id=%s, text=%s", script.id, script.str_script);
 
             //writeln("scripts_text:", scripts_text);
 
@@ -462,16 +476,15 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
         }
         catch (Exception ex)
         {
-            log.trace_log_and_console("error:compile script :%s", ex.msg);
+            log.trace_log_and_console("error:compile event script :%s", ex.msg);
         }
     }
     catch (Exception ex)
     {
-        log.trace_log_and_console("error:load script :%s", ex.msg);
+        log.trace_log_and_console("error:load event script :%s", ex.msg);
     }
     finally
     {
-        //writeln ("@4");
     }
 }
 

@@ -316,11 +316,15 @@ if (super_classes.indexOf('v-s:Versioned')>=0)
 	// Only if we save actual version of document (or it is first save of versioned document)
     if (!document['v-s:actualVersion'] 
     	|| (document['v-s:actualVersion'][0].data == document['@']
-    		&& ( ( !document['v-s:previousVersion'] && !prev_state['v-s:previousVersion']) 
-    		    || document['v-s:previousVersion'][0].data == prev_state['v-s:previousVersion'][0].data
+    		&& ( ( !document['v-s:previousVersion'] && (!prev_state || !prev_state['v-s:previousVersion']) ) 
+    		    || (prev_state 
+    		    	&& document['v-s:previousVersion']
+    		    	&& prev_state['v-s:previousVersion']
+    		    	&& document['v-s:previousVersion'][0].data == prev_state['v-s:previousVersion'][0].data)
     		   )
     	   )
        ) {
+        if (!prev_state) prev_state = document;
  		var actualId = document['@']; 
     	var versionId = genUri();    
         	

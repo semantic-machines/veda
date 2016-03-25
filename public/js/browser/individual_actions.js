@@ -42,7 +42,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 					journal.present(container, undefined, 'view');
 					changeHash(individual.id+'j');
 				} else {
-					$journal.prop("disabled",true);
+					// TODO add popup message
 				}
 			});
 			
