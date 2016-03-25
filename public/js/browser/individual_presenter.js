@@ -170,37 +170,26 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		var embedded = [];
 
 		// Trigger same events for embedded templates
-		function syncEmbedded (e) {
+		function syncEmbedded (e, parent) {
+			console.log("parent", parent);
 			embedded.map(function (item) {
-				item.trigger(e.type);
+				item.trigger(e.type, individual.id);
 			});
 			e.stopPropagation();
 		}
 		template.on("view edit search save cancel delete recover draft", syncEmbedded);
 				
 		// Define handlers
-		function saveHandler (e) {
-			var saveResult = individual.save();
-			if (saveResult.redirectToIndividual) {
-				container.empty();
-				saveResult.redirectToIndividual.present(container, template, saveResult.redirectToMode);
-				changeHash(saveResult.redirectToIndividual.id);				
-			} else {
-				template.trigger("view");
-				// Change location.hash if individual was presented in #main container
-				if (container.prop("id") === "main") {
-					var hash = ["#", individual.id].join("/");
-					if (hash !== location.hash) riot.route(hash, false);
-				}
-			}
+		function saveHandler (e, parent) {
+			individual.save(parent);
+			template.trigger("view");
 			e.stopPropagation();
 		}
 		template.on("save", saveHandler);
 				
-		function draftHandler (e) {
-			individual.draft();
+		function draftHandler (e, parent) {
+			individual.draft(parent);
 			template.trigger("view");
-			//putDraftToUserAspect(individual);
 			e.stopPropagation();
 		}
 		template.on("draft", draftHandler);

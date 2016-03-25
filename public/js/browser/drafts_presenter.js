@@ -19,12 +19,33 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
 		title.present( $("#drafts-title", tmpl), new veda.IndividualModel("v-ui:LabelTemplate") );
 		deleteAll.present( $("#delete-all", tmpl), new veda.IndividualModel("v-ui:LabelTemplate") );
 
+		var tree = {};
+		var linkTmpl = new veda.IndividualModel("v-ui:ClassNameLabelTemplate");
+		var labelTmpl = new veda.IndividualModel("v-ui:LabelTemplate");
+		
 		if (veda.drafts.length) {
 			Object.keys(veda.drafts).map(function (uri) {
-				var li = $("<li>").appendTo(ol);
-				var individual = veda.drafts[uri];
-				var tmpl = new veda.IndividualModel("v-ui:LabelBlockLinkTemplate");
-				individual.present(li, tmpl);
+				var draft = veda.drafts[uri],
+					parent = draft.parent;
+				if ( parent ) {
+					tree[parent] ? tree[parent].push(uri) : tree[parent] = [uri];
+				} else {
+					tree["root"] ? tree["root"].push(uri) : tree["root"] = [uri];
+				}
+			});
+			renderDraftsTree(tree.root, ol, linkTmpl);
+		}
+
+		function renderDraftsTree(list, el, tmpl) {
+			if (!list || !list.length) return;
+			list.map(function (uri) {
+				var draft = veda.drafts.get(uri);
+				if (draft) {
+					var li = $("<li>").appendTo(el);
+					draft.present(li, tmpl);
+					var ul = $("<ul>").appendTo(el);
+					renderDraftsTree(tree[uri], ul, labelTmpl);
+				}
 			});
 		}
 	});

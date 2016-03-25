@@ -301,7 +301,7 @@ veda.Module(function (veda) { "use strict";
 	 * @method
 	 * Save current individual to database (with validation and adding new version)
 	 */
-	proto.save = function() {
+	proto.save = function(parent) {
 		var self = this;
 		self.trigger("individual:beforeSave");
 		// Do not save individual to server if nothing changed
@@ -320,7 +320,7 @@ veda.Module(function (veda) { "use strict";
 		try {
 			put_individual(veda.ticket, this._.individual);
 		} catch (e) {
-			this.draft();
+			this.draft(parent);
 		}
 		this._.original_individual = JSON.stringify(this._.individual);
 		this._.isNew = false;
@@ -334,9 +334,9 @@ veda.Module(function (veda) { "use strict";
 	 * @method
 	 * Save current individual without validation and without adding new version
 	 */
-	proto.draft = function() {
+	proto.draft = function(parent) {
 		this.trigger("individual:beforeDraft");
-		veda.drafts.set(this.id, this);
+		veda.drafts.set(this.id, this, parent);
 		this.trigger("individual:afterDraft");
 		return this;
 	}
