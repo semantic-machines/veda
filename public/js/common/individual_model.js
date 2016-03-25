@@ -317,12 +317,16 @@ veda.Module(function (veda) { "use strict";
 			if (!acc[property_uri].length) delete acc[property_uri];
 			return acc;
 		}, self._.individual);
-		put_individual(veda.ticket, self._.individual);		
-		self._.original_individual = JSON.stringify(self._.individual);
-		self._.isNew = false;
-		self._.sync = true;
-		if (self._.cache) veda.cache[self.id] = self;
-		self.trigger("individual:afterSave", self._.original_individual);
+		try {
+			put_individual(veda.ticket, this._.individual);
+		} catch (e) {
+			this.draft();
+		}
+		this._.original_individual = JSON.stringify(this._.individual);
+		this._.isNew = false;
+		this._.sync = true;
+		if (this._.cache) veda.cache[this.id] = self;
+		this.trigger("individual:afterSave", this._.original_individual);
 		return this;
 	}
 	
