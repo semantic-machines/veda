@@ -25,7 +25,7 @@ logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
-struct ScriptInfo
+private struct ScriptInfo
 {
     string id;
     string str_script;
@@ -103,7 +103,7 @@ public void scripts_thread(string thread_name, string node_id)
     g_context = context;
 
     vql = new VQL(context);
-    load();
+    load_event_scripts();
 
     try
     {
@@ -136,7 +136,7 @@ public void scripts_thread(string thread_name, string node_id)
                                 Individual ss;
                                 if (cbor2individual(&ss, arg) > 0)
                                 {
-                                    prepare_scripts(ss, script_vm);
+                                    prepare_event_scripts(ss, script_vm);
                                     send(to, true);
                                 }
                             }
@@ -194,7 +194,7 @@ public void scripts_thread(string thread_name, string node_id)
 
                                     if (prepare_if_is_script)
                                     {
-                                        prepare_scripts(ss, script_vm);
+                                        prepare_event_scripts(ss, script_vm);
                                     }
                                     string[] aa;
 
@@ -370,7 +370,7 @@ public void scripts_thread(string thread_name, string node_id)
     writeln("TERMINATED: ", thread_name);
 }
 
-public void load()
+public void load_event_scripts()
 {
     ScriptVM script_vm = context.get_ScriptVM();
 
@@ -391,7 +391,7 @@ public void load()
 
     foreach (ss; res)
     {
-        prepare_scripts(ss, script_vm);
+        prepare_event_scripts(ss, script_vm);
     }
 
     //writeln ("@2");
@@ -399,10 +399,10 @@ public void load()
     log.trace("end load db scripts, count=%d ", res.length);
 }
 
-private void prepare_scripts(Individual ss, ScriptVM script_vm)
+private void prepare_event_scripts(Individual ss, ScriptVM script_vm)
 {
     if (trace_msg[ 310 ] == 1)
-        log.trace("prepare_scripts uri=%s", ss.uri);
+        log.trace("prepare_event_scripts uri=%s", ss.uri);
 
     JSONValue nil;
     try
@@ -447,7 +447,7 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
 
             script.compiled_script = script_vm.compile(cast(char *)(script.str_script ~ "\0"));
             if (trace_msg[ 310 ] == 1)
-                log.trace("#compile script.id=%s, text=%s", script.id, script.str_script);
+                log.trace("#compile event script.id=%s, text=%s", script.id, script.str_script);
 
             //writeln("scripts_text:", scripts_text);
 
@@ -462,12 +462,12 @@ private void prepare_scripts(Individual ss, ScriptVM script_vm)
         }
         catch (Exception ex)
         {
-            log.trace_log_and_console("error:compile script :%s", ex.msg);
+            log.trace_log_and_console("error:compile event script :%s", ex.msg);
         }
     }
     catch (Exception ex)
     {
-        log.trace_log_and_console("error:load script :%s", ex.msg);
+        log.trace_log_and_console("error:load event script :%s", ex.msg);
     }
     finally
     {
