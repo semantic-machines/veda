@@ -306,7 +306,7 @@ veda.Module(function (veda) { "use strict";
 		self.trigger("individual:beforeSave");
 		// Do not save individual to server if nothing changed
 		//if (self._.sync) return;
-		if ( this["v-s:isDraft"][0] == true ) {
+		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
 			veda.drafts.remove(this.id);
 		}
 		Object.keys(self._.individual).reduce(function (acc, property_uri) {
@@ -349,7 +349,7 @@ veda.Module(function (veda) { "use strict";
 		var self = this;
 		self.trigger("individual:beforeReset");
 		//var original = JSON.parse(self._.original_individual);
-		if ( this["v-s:isDraft"][0] == true ) { 
+		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) { 
 			veda.drafts.remove(this.id);
 		} 
 		var original;
@@ -379,7 +379,7 @@ veda.Module(function (veda) { "use strict";
 	 */
 	proto.delete = function (parent) {
 		this.trigger("individual:beforeDelete");
-		if ( this["v-s:isDraft"][0] == true ) { 
+		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) { 
 			veda.drafts.remove(this.id);
 		} 
 		this["v-s:deleted"] = [new Boolean(true)];
@@ -394,7 +394,7 @@ veda.Module(function (veda) { "use strict";
 	 */
 	proto.recover = function (parent) {
 		this.trigger("individual:beforeRecover");
-		if ( this["v-s:isDraft"][0] == true ) { 
+		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) { 
 			veda.drafts.remove(this.id);
 		} 
 		this["v-s:deleted"] = [];
