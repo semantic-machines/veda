@@ -23,11 +23,11 @@ veda.Module(function SearchSelectedFunctions(veda) { "use strict";
 						}
 					} catch (ex) {
 						setTimeout(function () {
-							updateList(i);	
+							updateList(i);
 						}, 2000);
 					}
 				}
-				deleteList(0);
+				updateList(0);
 			}
 		});
 		del.click(function () {
