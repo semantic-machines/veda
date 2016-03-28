@@ -1274,6 +1274,11 @@ class PThreadContext : Context
                             send(tid_acl, CMD.PUT, ev, new_state, res.op_id);
                         }
                     }
+                    
+   					if (rdfType.anyExists("v-s:ExecuteScript"))
+					{
+						// передать вызов отдельной нити по выполнению Long Time Run Scripts
+					}	
 
                     if (prepare_events == true)
                         bus_event_after(ticket, indv, rdfType, new_state, prev_state, ev, this, event_id, res.op_id);

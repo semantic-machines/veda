@@ -1,4 +1,4 @@
-module veda.pacahon_driver;
+module veda.core_driver;
 
 import std.stdio, std.datetime, std.conv, std.string, std.variant, std.concurrency;
 import vibe.data.json;

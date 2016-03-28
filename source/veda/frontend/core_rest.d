@@ -1,10 +1,10 @@
-module veda.storage_rest;
+module veda.core_rest;
 
 import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file;
 import core.vararg, core.stdc.stdarg;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
-import veda.pacahon_driver, veda.type, veda.core.context, veda.core.know_predicates, veda.core.define, veda.core.log_msg;
+import veda.core_driver, veda.type, veda.core.context, veda.core.know_predicates, veda.core.define, veda.core.log_msg;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang, veda.util.individual8vjson;
 
 // ////// logger ///////////////////////////////////////////

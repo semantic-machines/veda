@@ -68,8 +68,7 @@ public bool stop_module(Context ctx)
 }
 
 public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_state, string prev_state, ref MapResource rdfType,
-                     Individual *individual,
-                     string event_id, long op_id)
+                     Individual *individual, string event_id, long op_id)
 {
     Tid tid_scripts = ctx.getTid(P_MODULE.scripts);
 
@@ -88,6 +87,36 @@ public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_stat
                 user_uri = ticket.user_uri;
 
             send(tid_scripts, user_uri, ev_type, new_state, prev_state, types, individual.uri, event_id, op_id);
+        }
+        catch (Exception ex)
+        {
+            writeln("EX!scripts:send_put:", ex.msg);
+        }
+    }
+
+    veda.core.glue_code.scripts.inc_count_recv_put();
+}
+
+public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_state, string prev_state, ref MapResource rdfType,
+                     Individual *individual, string script_uri, string arguments_cbor, string results_cbor, long op_id)
+{
+    Tid tid_scripts = ctx.getTid(P_MODULE.scripts);
+
+    if (tid_scripts != Tid.init)
+    {
+        try
+        {
+            immutable(string)[] types;
+
+            foreach (key; rdfType.keys)
+                types ~= key;
+
+            string user_uri;
+
+            if (ticket !is null)
+                user_uri = ticket.user_uri;
+
+            send(tid_scripts, user_uri, ev_type, new_state, prev_state, types, individual.uri, script_uri, arguments_cbor, results_cbor, op_id);
         }
         catch (Exception ex)
         {
@@ -226,8 +255,8 @@ public void scripts_thread(string thread_name, string node_id)
                                 if (script is ScriptInfo.init)
                                     prepare_script(indv, script_vm, vars_for_codelet_script);
 
-                                    if (script.compiled_script !is null)
-                                    {
+                                if (script.compiled_script !is null)
+                                {
                                         if (script.filters.length > 0 && isFiltred(&script, indv_types, onto) == false)
 											return;
 											
@@ -245,7 +274,7 @@ public void scripts_thread(string thread_name, string node_id)
                                         {
                                             log.trace_log_and_console("WARN! fail execute codelet script : %s %s", script.id, ex.msg);
                                         }
-                                    }
+                                }
                             }
                             finally
                             {

@@ -23,8 +23,7 @@ logger log()
 int count;
 
 void bus_event_after(Ticket *ticket, Individual *individual, ref MapResource rdfType, string new_state, string prev_state, EVENT ev_type,
-                     Context context,
-                     string event_id, long op_id)
+                     Context context, string event_id, long op_id)
 {
     if (ticket is null)
     {

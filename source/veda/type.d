@@ -134,7 +134,13 @@ enum CMD : byte
 
     /// Убрать
     REMOVE       = 51,
-
+    
+    START		 = 52,
+    
+    STOP		 = 53,
+    
+    RESUME		 = 54,
+    
     /// Пустая комманда
     NOP          = 64
 }
