@@ -25,6 +25,12 @@ logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
+enum RUN_MODE
+{
+    ONE_CODELET_SCRIPT = 1,
+    ALL_EVENT_SCRIPTS  = 2
+}
+
 private struct ScriptInfo
 {
     string id;
@@ -63,8 +69,7 @@ public bool stop_module(Context ctx)
 
 public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_state, string prev_state, ref MapResource rdfType,
                      Individual *individual,
-                     string event_id,
-                     long op_id)
+                     string event_id, long op_id)
 {
     Tid tid_scripts = ctx.getTid(P_MODULE.scripts);
 
@@ -199,9 +204,6 @@ public void scripts_thread(string thread_name, string node_id)
                                             prepare_if_is_script = true;
                                     }
 
-                                    if (onto is null)
-                                        onto = context.get_onto();
-
                                     Individual indv;
                                     if (cbor2individual(&indv, msg) < 0)
                                         return;
@@ -215,46 +217,11 @@ public void scripts_thread(string thread_name, string node_id)
                                     if (prepare_if_is_script)
                                         prepare_script(indv, script_vm, vars_for_event_script);
 
-                                    string[] aa;
+                                    if (onto is null)
+                                        onto = context.get_onto();
 
-                                    //writeln ("@d event_id=", event_id);
-                                    if (event_id !is null)
-                                    {
-                                        aa = event_id.split("+");
-
-                                        if (aa.length == 2)
-                                        {
-                                            g_parent_script_id.data = cast(char *)aa[ 1 ];
-                                            g_parent_script_id.length = cast(int)aa[ 1 ].length;
-                                            g_parent_document_id.data = cast(char *)aa[ 0 ];
-                                            g_parent_document_id.length = cast(int)aa[ 0 ].length;
-                                        }
-                                        else
-                                        {
-                                            g_parent_script_id.data = cast(char *)empty_uid;
-                                            g_parent_script_id.length = cast(int)empty_uid.length;
-                                            g_parent_document_id.data = cast(char *)empty_uid;
-                                            g_parent_document_id.length = cast(int)empty_uid.length;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        g_parent_script_id.data = cast(char *)empty_uid;
-                                        g_parent_script_id.length = cast(int)empty_uid.length;
-                                        g_parent_document_id.data = cast(char *)empty_uid;
-                                        g_parent_document_id.length = cast(int)empty_uid.length;
-                                    }
-
-                                    if (prev_state !is null)
-                                    {
-                                        g_prev_state.data = cast(char *)prev_state;
-                                        g_prev_state.length = cast(int)prev_state.length;
-                                    }
-                                    else
-                                    {
-                                        g_prev_state.data = cast(char *)empty_uid;
-                                        g_prev_state.length = cast(int)empty_uid.length;
-                                    }
+                                    set_g_parent_script_id_etc(event_id);
+                                    set_g_prev_state(prev_state);
 
                                     g_document.data = cast(char *)msg;
                                     g_document.length = cast(int)msg.length;
@@ -274,31 +241,7 @@ public void scripts_thread(string thread_name, string node_id)
                                     g_ticket.data = cast(char *)sticket;
                                     g_ticket.length = cast(int)sticket.length;
 
-
-                                    Classes super_classes;
-
-                                    foreach (indv_type; indv_types)
-                                    {
-                                        if (super_classes == Classes.init)
-                                        {
-                                            super_classes = onto.get_super_classes(indv_type);
-                                        }
-                                        else
-                                        {
-                                            Classes i_super_classes = onto.get_super_classes(indv_type);
-                                            foreach (i_super_class; i_super_classes.keys)
-                                            {
-                                                if (super_classes.get(i_super_class, false) == false)
-                                                {
-                                                    super_classes[ i_super_class ] = true;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    string superclasses_str = text(super_classes.keys);
-                                    g_super_classes.data = cast(char *)superclasses_str;
-                                    g_super_classes.length = cast(int)superclasses_str.length;
+                                    set_g_super_classes(indv_types, onto);
 
                                     foreach (script_id, script; scripts)
                                     {
@@ -388,6 +331,81 @@ public void scripts_thread(string thread_name, string node_id)
     }
     writeln("TERMINATED: ", thread_name);
 }
+
+private void set_g_parent_script_id_etc(string event_id)
+{
+    //writeln ("@d event_id=", event_id);
+    string[] aa;
+
+    if (event_id !is null)
+    {
+        aa = event_id.split("+");
+
+        if (aa.length == 2)
+        {
+            g_parent_script_id.data     = cast(char *)aa[ 1 ];
+            g_parent_script_id.length   = cast(int)aa[ 1 ].length;
+            g_parent_document_id.data   = cast(char *)aa[ 0 ];
+            g_parent_document_id.length = cast(int)aa[ 0 ].length;
+        }
+        else
+        {
+            g_parent_script_id.data     = cast(char *)empty_uid;
+            g_parent_script_id.length   = cast(int)empty_uid.length;
+            g_parent_document_id.data   = cast(char *)empty_uid;
+            g_parent_document_id.length = cast(int)empty_uid.length;
+        }
+    }
+    else
+    {
+        g_parent_script_id.data     = cast(char *)empty_uid;
+        g_parent_script_id.length   = cast(int)empty_uid.length;
+        g_parent_document_id.data   = cast(char *)empty_uid;
+        g_parent_document_id.length = cast(int)empty_uid.length;
+    }
+}
+
+private void set_g_prev_state(string prev_state)
+{
+    if (prev_state !is null)
+    {
+        g_prev_state.data   = cast(char *)prev_state;
+        g_prev_state.length = cast(int)prev_state.length;
+    }
+    else
+    {
+        g_prev_state.data   = cast(char *)empty_uid;
+        g_prev_state.length = cast(int)empty_uid.length;
+    }
+}
+
+private void set_g_super_classes(immutable(string)[] indv_types, Onto onto)
+{
+    Classes super_classes;
+
+    foreach (indv_type; indv_types)
+    {
+        if (super_classes == Classes.init)
+        {
+            super_classes = onto.get_super_classes(indv_type);
+        }
+        else
+        {
+            Classes i_super_classes = onto.get_super_classes(indv_type);
+            foreach (i_super_class; i_super_classes.keys)
+            {
+                if (super_classes.get(i_super_class, false) == false)
+                {
+                    super_classes[ i_super_class ] = true;
+                }
+            }
+        }
+    }
+    string superclasses_str = text(super_classes.keys);
+    g_super_classes.data   = cast(char *)superclasses_str;
+    g_super_classes.length = cast(int)superclasses_str.length;
+}
+
 
 public void load_event_scripts()
 {
