@@ -192,6 +192,10 @@ public void scripts_thread(string thread_name, string node_id)
                                 if (msg is null || msg.length <= 3 || script_vm is null)
                                     return;
 
+                                Individual indv;
+                                if (cbor2individual(&indv, msg) < 0)
+                                    return;
+
                                 if (onto is null)
                                     onto = context.get_onto();
 
@@ -216,6 +220,32 @@ public void scripts_thread(string thread_name, string node_id)
                                 g_ticket.length = cast(int)sticket.length;
 
                                 set_g_super_classes(indv_types, onto);
+
+								ScriptInfo script = scripts.get (script_uri, ScriptInfo.init);
+
+                                if (script is ScriptInfo.init)
+                                    prepare_script(indv, script_vm, vars_for_codelet_script);
+
+                                    if (script.compiled_script !is null)
+                                    {
+                                        if (script.filters.length > 0 && isFiltred(&script, indv_types, onto) == false)
+											return;
+											
+                                        try
+                                        {
+                                            if (trace_msg[ 300 ] == 1)
+                                                log.trace("start exec codelet script : %s %s %d", script.id, individual_id, op_id);
+
+                                            script_vm.run(script.compiled_script);
+
+                                            if (trace_msg[ 300 ] == 1)
+                                                log.trace("end exec codelet script : %s", script.id);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            log.trace_log_and_console("WARN! fail execute codelet script : %s %s", script.id, ex.msg);
+                                        }
+                                    }
                             }
                             finally
                             {
@@ -301,25 +331,23 @@ public void scripts_thread(string thread_name, string node_id)
                                         try
                                         {
                                             if (trace_msg[ 300 ] == 1)
-                                                log.trace("start exec script : %s %s %d %s", script_id, individual_id, op_id, event_id);
+                                                log.trace("start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
 
                                             count++;
                                             script_vm.run(script.compiled_script);
 
                                             if (trace_msg[ 300 ] == 1)
-                                                log.trace("end exec script : %s", script_id);
+                                                log.trace("end exec event script : %s", script_id);
 
 
                                             //*(cast(char*)script_vm) = 0;
                                         }
                                         catch (Exception ex)
                                         {
-                                            log.trace_log_and_console("WARN! fail execute script : %s %s", script_id, ex.msg);
+                                            log.trace_log_and_console("WARN! fail execute event script : %s %s", script_id, ex.msg);
                                         }
                                     }
                                 }
-
-
 //                                writeln("count:", count);
 
                                 //clear_script_data_cache ();
