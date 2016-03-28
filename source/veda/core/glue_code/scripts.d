@@ -87,7 +87,7 @@ public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_stat
             if (ticket !is null)
                 user_uri = ticket.user_uri;
 
-            send(tid_scripts, user_uri, ev_type, new_state, prev_state, types, individual.uri, "", "", "", event_id, op_id);
+            send(tid_scripts, user_uri, ev_type, new_state, prev_state, types, individual.uri, event_id, op_id);
         }
         catch (Exception ex)
         {
@@ -184,127 +184,146 @@ public void scripts_thread(string thread_name, string node_id)
                             else
                                 send(to, false);
                         },
+                        (string user_uri, string msg, string prev_state, immutable(string)[] indv_types, string individual_id,
+                         string script_uri, string arguments_cbor, string results_cbor, long op_id)
+                        {
+                            try
+                            {
+                                if (msg is null || msg.length <= 3 || script_vm is null)
+                                    return;
+
+                                if (onto is null)
+                                    onto = context.get_onto();
+
+                                set_g_prev_state(prev_state);
+
+                                g_document.data = cast(char *)msg;
+                                g_document.length = cast(int)msg.length;
+
+                                if (user_uri !is null)
+                                {
+                                    g_user.data = cast(char *)user_uri;
+                                    g_user.length = cast(int)user_uri.length;
+                                }
+                                else
+                                {
+                                    g_user.data = cast(char *)"cfg:VedaSystem";
+                                    g_user.length = "cfg:VedaSystem".length;
+                                }
+
+                                string sticket = context.sys_ticket().id;
+                                g_ticket.data = cast(char *)sticket;
+                                g_ticket.length = cast(int)sticket.length;
+
+                                set_g_super_classes(indv_types, onto);
+                            }
+                            finally
+                            {
+                                set_scripts_op_id(op_id);
+                                inc_count_prep_put();
+                            }
+                        },
                         (string user_uri, EVENT type, string msg, string prev_state, immutable(string)[] indv_types, string individual_id,
-                         string script_uri, string arguments_cbor, string results_cbor,
                          string event_id, long op_id)
                         {
                             try
                             {
                                 //writeln("scripts B #1 *", process_name);
-                                if (msg !is null && msg.length > 3 && script_vm !is null)
+                                if (msg is null || msg.length <= 3 || script_vm is null)
+                                    return;
+
+                                bool prepare_if_is_script = false;
+
+                                foreach (itype; indv_types)
                                 {
-                                    bool prepare_if_is_script = false;
-
-                                    foreach (itype; indv_types)
-                                    {
-                                        if (itype == veda_schema__PermissionStatement || itype == veda_schema__Membership)
-                                            return;
-
-                                        if (itype == veda_schema__Event)
-                                            prepare_if_is_script = true;
-                                    }
-
-                                    Individual indv;
-                                    if (cbor2individual(&indv, msg) < 0)
+                                    if (itype == veda_schema__PermissionStatement || itype == veda_schema__Membership)
                                         return;
 
-                                    if (prepare_if_is_script == false)
+                                    if (itype == veda_schema__Event)
+                                        prepare_if_is_script = true;
+                                }
+
+                                Individual indv;
+                                if (cbor2individual(&indv, msg) < 0)
+                                    return;
+
+                                if (prepare_if_is_script == false)
+                                {
+                                    if (scripts.get(indv.uri, ScriptInfo.init) !is ScriptInfo.init)
+                                        prepare_if_is_script = true;
+                                }
+
+                                if (prepare_if_is_script)
+                                    prepare_script(indv, script_vm, vars_for_event_script);
+
+                                if (onto is null)
+                                    onto = context.get_onto();
+
+                                set_g_parent_script_id_etc(event_id);
+                                set_g_prev_state(prev_state);
+
+                                g_document.data = cast(char *)msg;
+                                g_document.length = cast(int)msg.length;
+
+                                if (user_uri !is null)
+                                {
+                                    g_user.data = cast(char *)user_uri;
+                                    g_user.length = cast(int)user_uri.length;
+                                }
+                                else
+                                {
+                                    g_user.data = cast(char *)"cfg:VedaSystem";
+                                    g_user.length = "cfg:VedaSystem".length;
+                                }
+
+                                string sticket = context.sys_ticket().id;
+                                g_ticket.data = cast(char *)sticket;
+                                g_ticket.length = cast(int)sticket.length;
+
+                                set_g_super_classes(indv_types, onto);
+
+                                foreach (script_id, script; scripts)
+                                {
+                                    if (script.compiled_script !is null)
                                     {
-                                        if (scripts.get(indv.uri, ScriptInfo.init) !is ScriptInfo.init)
-                                            prepare_if_is_script = true;
-                                    }
+                                        if (script.filters.length > 0 && isFiltred(&script, indv_types, onto) == false)
+                                            continue;
 
-                                    if (prepare_if_is_script)
-                                        prepare_script(indv, script_vm, vars_for_event_script);
+                                        //log.trace("execute script:%s", script_id);
 
-                                    if (onto is null)
-                                        onto = context.get_onto();
-
-                                    set_g_parent_script_id_etc(event_id);
-                                    set_g_prev_state(prev_state);
-
-                                    g_document.data = cast(char *)msg;
-                                    g_document.length = cast(int)msg.length;
-
-                                    if (user_uri !is null)
-                                    {
-                                        g_user.data = cast(char *)user_uri;
-                                        g_user.length = cast(int)user_uri.length;
-                                    }
-                                    else
-                                    {
-                                        g_user.data = cast(char *)"cfg:VedaSystem";
-                                        g_user.length = "cfg:VedaSystem".length;
-                                    }
-
-                                    string sticket = context.sys_ticket().id;
-                                    g_ticket.data = cast(char *)sticket;
-                                    g_ticket.length = cast(int)sticket.length;
-
-                                    set_g_super_classes(indv_types, onto);
-
-                                    foreach (script_id, script; scripts)
-                                    {
-                                        if (script.compiled_script !is null)
+                                        if (event_id !is null && event_id.length > 1 && event_id == (individual_id ~ '+' ~ script_id))
                                         {
-                                            //writeln("#1 exec script:", script_id, ", script.filters=", script.filters);
-                                            if (script.filters.length > 0)
-                                            {
-                                                bool any_exist = false;
-                                                foreach (indv_type; indv_types)
-                                                {
-                                                    if ((indv_type in script.filters) !is null)
-                                                    {
-                                                        any_exist = true;
-                                                        break;
-                                                    }
-
-                                                    if (onto.isSubClasses(cast(string)indv_type, script.filters.keys) == true)
-                                                    {
-                                                        any_exist = true;
-                                                        break;
-                                                    }
-                                                }
-
-                                                if (any_exist == false)
-                                                    continue;
-                                            }
-                                            //log.trace("execute script:%s", script_id);
-
-                                            if (event_id !is null && event_id.length > 1 && event_id == (individual_id ~ '+' ~ script_id))
-                                            {
-                                                //writeln("skip script [", script_id, "], type:", type, ", indiv.:[", individual_id, "]");
-                                                continue;
-                                            }
+                                            //writeln("skip script [", script_id, "], type:", type, ", indiv.:[", individual_id, "]");
+                                            continue;
+                                        }
 
 
-                                            try
-                                            {
-                                                if (trace_msg[ 300 ] == 1)
-                                                    log.trace("start exec script : %s %s %d %s", script_id, individual_id, op_id, event_id);
+                                        try
+                                        {
+                                            if (trace_msg[ 300 ] == 1)
+                                                log.trace("start exec script : %s %s %d %s", script_id, individual_id, op_id, event_id);
 
-                                                count++;
-                                                script_vm.run(script.compiled_script);
+                                            count++;
+                                            script_vm.run(script.compiled_script);
 
-                                                if (trace_msg[ 300 ] == 1)
-                                                    log.trace("end exec script : %s", script_id);
+                                            if (trace_msg[ 300 ] == 1)
+                                                log.trace("end exec script : %s", script_id);
 
 
-                                                //*(cast(char*)script_vm) = 0;
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                log.trace_log_and_console("WARN! fail execute script : %s %s", script_id, ex.msg);
-                                            }
+                                            //*(cast(char*)script_vm) = 0;
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            log.trace_log_and_console("WARN! fail execute script : %s %s", script_id, ex.msg);
                                         }
                                     }
+                                }
 
 
 //                                writeln("count:", count);
 
-                                    //clear_script_data_cache ();
-                                    // writeln("scripts B #e *", process_name);
-                                }
+                                //clear_script_data_cache ();
+                                // writeln("scripts B #e *", process_name);
                             }
                             finally
                             {
@@ -330,6 +349,29 @@ public void scripts_thread(string thread_name, string node_id)
         log.trace("#%s ERR! LINE:[%s], FILE:[%s], MSG:[%s]", thread_name, ex.line, ex.file, ex.msg);
     }
     writeln("TERMINATED: ", thread_name);
+}
+
+private bool isFiltred(ScriptInfo *script, immutable(string)[] indv_types, Onto onto)
+{
+//writeln("#1 exec script:", script.id, ", script.filters=", script.filters);
+
+    bool any_exist = false;
+
+    foreach (indv_type; indv_types)
+    {
+        if ((indv_type in script.filters) !is null)
+        {
+            any_exist = true;
+            break;
+        }
+
+        if (onto.isSubClasses(cast(string)indv_type, script.filters.keys) == true)
+        {
+            any_exist = true;
+            break;
+        }
+    }
+    return any_exist;
 }
 
 private void set_g_parent_script_id_etc(string event_id)
