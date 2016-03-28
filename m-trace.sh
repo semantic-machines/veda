@@ -12,3 +12,4 @@ then
   cp ./ontology/config.ttl.cfg ./ontology/config.ttl
 fi
 dub build --build=debug --config=trace-app
+mv veda veda-trace
