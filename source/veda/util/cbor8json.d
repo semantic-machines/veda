@@ -8,7 +8,6 @@ private import veda.type, veda.onto.resource, veda.onto.individual, veda.util.cb
 private import onto.lang;
 
 string dummy;
-string nullz = "00000000000000000000000000000000";
 
 private static int read_element(JSONValue *individual, ubyte[] src, out string _key, string subject_uri = null,
                                 string predicate_uri = null)
@@ -224,67 +223,7 @@ private static int read_element(JSONValue *individual, ubyte[] src, out string _
             pos += read_type_value(src[ pos..$ ], &exponent);
 
             resource_json[ "type" ] = text(DataType.Decimal);
-
-            string str_res;
-            double res;
-            bool   is_complete = false;
-
-            if (exponent.v_long < 0)
-            {
-                string str_mantissa = text(mantissa.v_long);
-                try
-                {
-                    long lh = exponent.v_long * -1;
-                    lh = str_mantissa.length - lh;
-
-                    if (lh > 0 && lh > str_mantissa.length)
-                    {
-                        res         = decimal(mantissa.v_long, exponent.v_long).toDouble();
-                        is_complete = true;
-                    }
-
-                    string slh;
-
-                    if (is_complete == false)
-                    {
-                        if (lh >= 0)
-                        {
-                            if (lh > str_mantissa.length)
-                            {
-                                res         = decimal(mantissa.v_long, exponent.v_long).toDouble();
-                                is_complete = true;
-                            }
-                            else
-                                slh = str_mantissa[ 0 .. lh ];
-                        }
-                        else
-                            slh = "";
-
-                        string slr;
-
-                        if (lh >= 0)
-                        {
-                            slr = str_mantissa[ lh..$ ];
-                        }
-                        else
-                            slr = nullz[ 0.. (-lh) ] ~str_mantissa;
-
-                        str_res = slh ~ "." ~ slr;
-
-                        res = to!double (str_res);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    res = decimal(mantissa.v_long, exponent.v_long).toDouble();
-                }
-            }
-            else
-            {
-                res = decimal(mantissa.v_long, exponent.v_long).toDouble();
-            }
-
-            resource_json[ "data" ] = res;
+            resource_json[ "data" ] = decimal(mantissa.v_long, exponent.v_long).toDouble_wjp();
 
             resources ~= resource_json;
             (*individual)[ predicate_uri ] = resources;

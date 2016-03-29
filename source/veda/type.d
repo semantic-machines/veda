@@ -134,17 +134,18 @@ enum CMD : byte
 
     /// Убрать
     REMOVE       = 51,
-    
-    START		 = 52,
-    
-    STOP		 = 53,
-    
-    RESUME		 = 54,
-    
+
+    START        = 52,
+
+    STOP         = 53,
+
+    RESUME       = 54,
+
     /// Пустая комманда
     NOP          = 64
 }
 
+string nullz = "00000000000000000000000000000000";
 
 /// Десятичное число
 struct decimal
@@ -213,5 +214,69 @@ struct decimal
             writeln("EX! ", ex.msg);
             return 0;
         }
+    }
+
+    ///
+    double toDouble_wjp()
+    {
+        string str_res;
+        double res;
+        bool   is_complete = false;
+
+        if (exponent < 0)
+        {
+            string str_mantissa = text(mantissa);
+            try
+            {
+                long lh = exponent * -1;
+                lh = str_mantissa.length - lh;
+
+                if (lh > 0 && lh > str_mantissa.length)
+                {
+                    res         = toDouble();
+                    is_complete = true;
+                }
+
+                string slh;
+
+                if (is_complete == false)
+                {
+                    if (lh >= 0)
+                    {
+                        if (lh > str_mantissa.length)
+                        {
+                            res         = toDouble();
+                            is_complete = true;
+                        }
+                        else
+                            slh = str_mantissa[ 0 .. lh ];
+                    }
+                    else
+                        slh = "";
+
+                    string slr;
+
+                    if (lh >= 0)
+                    {
+                        slr = str_mantissa[ lh..$ ];
+                    }
+                    else
+                        slr = nullz[ 0.. (-lh) ] ~str_mantissa;
+
+                    str_res = slh ~ "." ~ slr;
+
+                    res = to!double (str_res);
+                }
+            }
+            catch (Exception ex)
+            {
+                res = toDouble();
+            }
+        }
+        else
+        {
+            res = toDouble();
+        }
+        return res;
     }
 }

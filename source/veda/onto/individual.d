@@ -120,7 +120,7 @@ public struct Individual
 
     void removeResource(string uri)
     {
-            resources.remove(uri);    	
+        resources.remove(uri);
     }
 
     void removeResources(string uri, Resources in_rss)

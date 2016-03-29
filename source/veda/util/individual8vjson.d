@@ -55,9 +55,9 @@ Individual json_to_individual(const Json individual_json)
         Resource[] resources = Resource[].init;
         foreach (property_value; property_values)
             resources ~= json_to_resource(property_value);
-            
-        if (resources.length > 0)    
-        	individual.resources[ property_name ] = resources;
+
+        if (resources.length > 0)
+            individual.resources[ property_name ] = resources;
     }
 //    writeln ("->INDIVIDUAL:", individual);
     return individual;

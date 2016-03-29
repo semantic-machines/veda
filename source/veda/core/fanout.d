@@ -312,6 +312,8 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
 {
     try
     {
+        // log.trace ("push_to_mysql: prev_indv=%s, new_indv=%s", prev_indv, new_indv);
+
         bool   is_deleted = new_indv.isExists("v-s:deleted", true);
 
         string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
@@ -378,6 +380,9 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
                                 {
                                     mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, new_indv.uri,
                                                      rs.asString().toUTF8(), text(rs.lang));
+
+                                    // log.trace ("push_to_mysql: INSERT INTO `%s` (doc_id, value, lang) VALUES (%s, %s, %s)", predicate, new_indv.uri,
+                                    // rs.asString().toUTF8(), text(rs.lang));
                                 }
                             }
                         }
@@ -426,7 +431,7 @@ private void create_table_if_not_exists(string predicate, Resource rs)
             }
             else if (rs.type == DataType.Decimal)
             {
-                sql_type = "DECIMAL";
+                sql_type = "DECIMAL (10,2)";
             }
             else if (rs.type == DataType.String)
             {

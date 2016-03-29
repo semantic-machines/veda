@@ -209,10 +209,10 @@ private void write_individual(Individual *ii, ref OutBuffer ou)
     write_string("@", ou);
     write_string(ii.uri, ou);
 
-    foreach (key, resources; ii.resources)    
+    foreach (key, resources; ii.resources)
     {
-    	if (resources.length > 0)
-        	write_resources(key, resources, ou);
+        if (resources.length > 0)
+            write_resources(key, resources, ou);
     }
 }
 

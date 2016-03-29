@@ -273,7 +273,7 @@ struct Resource
         else if (type == DataType.Datetime)
             return text(get!long ());
         else if (type == DataType.Decimal)
-            return text(get!decimal());
+            return text(get!decimal().toDouble_wjp());
         else if (type == DataType.Integer)
             return text(get!long ());
 
