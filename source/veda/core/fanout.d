@@ -4,7 +4,7 @@
 
 module veda.core.fanout;
 
-private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file;
+private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
@@ -289,6 +289,15 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
                             res = smtp_conn.send(message);
                             log.trace("send email (retry): %s, %s, %s, result %s", new_indv.uri, message.sender, message.recipients, res);
                         }
+                        else
+                        {
+                            new_indv.addResource("v-s:isSuccess", Resource(true));
+                        }
+
+                        new_indv.addResource("v-s:infoOfExecuting", Resource(text(res)));
+                        new_indv.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
+                        new_indv.addResource("rdfs:label", Resource("email, from:" ~ email_from ~ ", to:" ~ email_to));
+                        context.put_individual(&sticket, new_indv.uri, new_indv, false, "fanout");
                     }
                 }
             }

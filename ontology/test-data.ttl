@@ -26,7 +26,7 @@ td:run-script
   rdf:type v-s:ExecuteScript;
 	v-s:argument td:arg1;
 	v-s:result td:res1 ;
-	v-s:isSuccess "false";
+	v-s:isSuccess false;
 	v-s:useScript td:script_onto_rename;
 	v-s:priority 16;
 .

@@ -224,16 +224,16 @@ v-s:result
   rdfs:range v-s:Variable ;
 .
 
-v-s:resultInfo
+v-s:infoOfExecuting
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:ExecuteScript ;
-  rdfs:label "описание к результатам" ;
+  rdfs:domain v-s:ExecuteScript, v-s:Deliverable ;
+  rdfs:label "Информация о выполнении" ;
   rdfs:range xsd:string ;
 .
 
 v-s:isSuccess
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:ExecuteScript ;
+  rdfs:domain v-s:ExecuteScript, v-s:Deliverable ;
   rdfs:label "завершено успешно" ;
   rdfs:range xsd:boolean ;
 .
