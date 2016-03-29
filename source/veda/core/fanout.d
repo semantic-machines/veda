@@ -106,7 +106,7 @@ void fanout_thread(string thread_name, string _node_id)
         }
         catch (Throwable ex)
         {
-            log.trace("fanout# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+            log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
         }
     }
 }
@@ -312,7 +312,8 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
 {
     try
     {
-        // log.trace ("push_to_mysql: prev_indv=%s, new_indv=%s", prev_indv, new_indv);
+        //log.trace ("push_to_mysql: prev_indv=%s", prev_indv);
+        //log.trace ("push_to_mysql: new_indv=%s", new_indv);
 
         bool   is_deleted = new_indv.isExists("v-s:deleted", true);
 
@@ -327,6 +328,8 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
         if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri ||
                                     (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
             return;
+
+        Resource  created = new_indv.getFirstResource("v-s:created");
 
         Resources types        = new_indv.getResources("rdf:type");
         bool      need_prepare = false;
@@ -351,7 +354,7 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
                 }
                 catch (Exception ex)
                 {
-                    log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+                    log.trace("!ERR:push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
                 }
             }
 
@@ -372,24 +375,27 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
                                 if (rs.type == DataType.Boolean)
                                 {
                                     if (rs.get!bool == true)
-                                        mysql_conn.query("INSERT INTO `?` (doc_id, value) VALUES (?, ?)", predicate, new_indv.uri, 1);
+                                        mysql_conn.query("INSERT INTO `?` (doc_id, created, value) VALUES (?, ?, ?)", predicate, new_indv.uri,
+                                                         created.asString(), 1);
                                     else
-                                        mysql_conn.query("INSERT INTO `?` (doc_id, value) VALUES (?, ?)", predicate, new_indv.uri, 0);
+                                        mysql_conn.query("INSERT INTO `?` (doc_id, created, value) VALUES (?, ?, ?)", predicate, new_indv.uri,
+                                                         created.asString(), 0);
                                 }
                                 else
                                 {
-                                    mysql_conn.query("INSERT INTO `?` (doc_id, value, lang) VALUES (?, ?, ?)", predicate, new_indv.uri,
+                                    mysql_conn.query("INSERT INTO `?` (doc_id, created, value, lang) VALUES (?, ?, ?, ?)", predicate, new_indv.uri,
+                                                     created.asString(),
                                                      rs.asString().toUTF8(), text(rs.lang));
-
-                                    // log.trace ("push_to_mysql: INSERT INTO `%s` (doc_id, value, lang) VALUES (%s, %s, %s)", predicate, new_indv.uri,
-                                    // rs.asString().toUTF8(), text(rs.lang));
                                 }
+
+                                //log.trace ("push_to_mysql: INSERT INTO `%s` (doc_id, created, value, lang) VALUES (%s, %s, %s, %s)", predicate, new_indv.uri,
+                                //created.asString(), rs.asString().toUTF8(), text(rs.lang));
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+                        log.trace("!ERR:push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
                     }
                 }
             }
@@ -399,7 +405,7 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
     }
     catch (Exception ex)
     {
-        log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+        log.trace("!ERR:push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
     }
 
     //writeln("@@fanout indv.uri=", indv.uri);
@@ -419,7 +425,7 @@ private void create_table_if_not_exists(string predicate, Resource rs)
         try
         {
             string sql_type;
-            string sql_value_index = ", INDEX c3(`value`)";
+            string sql_value_index = ", INDEX civ(`value`)";
 
             if (rs.type == DataType.Boolean)
             {
@@ -444,19 +450,25 @@ private void create_table_if_not_exists(string predicate, Resource rs)
             }
             else if (rs.type == DataType.Datetime)
             {
-                sql_type = "INTEGER";
+                sql_type = "DATETIME";
             }
 
             mysql_conn.query(
-                             "CREATE TABLE `veda_db`.`" ~ predicate ~
-                             "` ( `ID` BIGINT NOT NULL AUTO_INCREMENT, `doc_id` CHAR(128) NOT NULL,  `value` " ~ sql_type ~
-                             " NULL,  `lang` CHAR(2) NULL, PRIMARY KEY (`ID`),  INDEX c1(`doc_id`), INDEX c2(`lang`) " ~
-                             sql_value_index ~ ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
+                             "CREATE TABLE `veda_db`.`" ~ predicate ~ "` ("
+                             "`ID` BIGINT NOT NULL AUTO_INCREMENT, "
+                             "`doc_id` CHAR(128) NOT NULL, "
+                             "`created` DATETIME NULL, "
+                             "`value` " ~ sql_type ~ " NULL, "
+                             "`lang` CHAR(2) NULL, "
+                             " PRIMARY KEY (`ID`), "
+                             " INDEX c1(`doc_id`), INDEX c3 (`created`), INDEX c2(`lang`) " ~ sql_value_index ~
+                             ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
             isExistsTable[ predicate ] = true;
+            log.trace("create table [%s]", predicate);
         }
         catch (Exception ex)
         {
-            log.trace("fanout# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+            log.trace("!ERR:create_table_if_not_exists LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
             throw ex;
         }
     }
