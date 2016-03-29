@@ -894,7 +894,7 @@ v-ui:FileTemplate
   v-ui:forClass v-s:File ;
   v-ui:template """
 <div style="word-wrap: break-word;" class="margin-sm">
-	<a href="/files/@"><span id="icon" class="label label-primary"></span> <span about="@" property="v-s:fileName"></span></a>
+	<span id="icon" class="label label-primary"></span> <a href="/files/@"><span about="@" property="v-s:fileName"></span></a>
 </div>
 <script>
 	var fn = individual["v-s:fileName"][0], 
