@@ -271,7 +271,10 @@ struct Resource
         else if (type == DataType.Boolean)
             return text(get!bool());
         else if (type == DataType.Datetime)
-            return text(get!long ());
+        {
+            SysTime st = SysTime(unixTimeToStdTime(get!long ()), UTC());
+            return st.toISOExtString();
+        }
         else if (type == DataType.Decimal)
             return text(get!decimal().toDouble_wjp());
         else if (type == DataType.Integer)
