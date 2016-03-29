@@ -484,7 +484,6 @@ class Queue
 unittest
 {
     veda.core.queue.Queue    queue = new veda.core.queue.Queue("queue1");
-
     veda.core.queue.Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
 
     if (level == 0)

@@ -118,6 +118,11 @@ class PThreadContext : Context
         return API_ready;
     }
 
+	public Storage get_subject_storage_db ()
+	{
+		return inividuals_storage;
+	}
+
     @property
     public Ticket sys_ticket(bool is_new = false)
     {
