@@ -273,7 +273,7 @@ interface Context
     public void reopen_ro_subject_storage_db();
     public void reopen_ro_acl_storage_db();
 
-	public Storage get_subject_storage_db ();
+    public Storage get_subject_storage_db();
 
     /**
        Вернуть индивидуала по его uri

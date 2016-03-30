@@ -6,9 +6,10 @@
 
 module veda.core.ltrs;
 
-private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, core.thread;
-private import veda.core.util.utils, util.logger, veda.util.cbor, veda.core.util.cbor8individual;
-private import veda.core.storage.lmdb_storage, veda.core.thread_context;
+private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, core.thread, std.algorithm;
+private import bind.v8d_header;
+private import veda.core.util.utils, util.logger, veda.util.cbor, veda.core.util.cbor8individual, veda.core.queue;
+private import veda.core.storage.lmdb_storage, veda.core.thread_context, veda.core.glue_code.script;
 private import veda.type, veda.core.context, veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
 
 // ////// logger ///////////////////////////////////////////
@@ -47,6 +48,18 @@ public bool stop_module(Context ctx)
     return 0;
 }
 
+private struct Task
+{
+    ScriptInfo script_info;
+    Consumer   consumer;
+    Individual codelet;
+}
+
+alias Task *[ string ] Tasks;
+
+Tasks[ int ] tasks_2_priority;
+Task *task;
+
 void ltrs_thread(string thread_name, string _node_id)
 {
     scope (exit)
@@ -73,13 +86,13 @@ void ltrs_thread(string thread_name, string _node_id)
         try
         {
             receiveTimeout(msecs(0),
-                        (CMD cmd)
-                        {
-                            if (cmd == CMD.EXIT)
-                            {
-                                thread_term();
-                            }
-                        },
+                           (CMD cmd)
+                           {
+                               if (cmd == CMD.EXIT)
+                               {
+                                   thread_term();
+                               }
+                           },
                            (CMD cmd, string new_state)
                            {
                                check_context();
@@ -89,8 +102,7 @@ void ltrs_thread(string thread_name, string _node_id)
                                    if (cbor2individual(&indv, new_state) < 0)
                                        return;
 
-                                   veda.core.queue.Queue queue = new veda.core.queue.Queue("queue-ltrs-" ~ indv.uri);
-                                   veda.core.queue.Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
+                                   Queue queue = new veda.core.queue.Queue("queue-ltrs-" ~ indv.uri);
 
                                    bool add_to_queue(string key, string value)
                                    {
@@ -99,9 +111,37 @@ void ltrs_thread(string thread_name, string _node_id)
                                    }
 
                                    context.get_subject_storage_db.get_of_cursor(&add_to_queue);
+                                   Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
+
+                                   int priority = cast(int)indv.getFirstInteger("v-s:priority", 16);
+
+                                   Tasks tasks = tasks_2_priority.get(priority, Tasks.init);
+
+                                   if (tasks is Tasks.init)
+                                       tasks_2_priority[ priority ] = tasks;
+
+                                   task = new Task(ScriptInfo(), cs, indv);
+                                   tasks[ indv.uri ] = task;
                                }
                            },
                            (Variant v) { writeln(thread_name, "::ltrs_thread::Received some other type.", v); });
+
+            // обработка элементов очередей согласно приоритетам
+            yield();
+
+
+            foreach (priority; sort(tasks_2_priority.keys))
+            {
+                Tasks tasks = tasks_2_priority.get(priority, Tasks.init);
+
+                foreach (id, task; tasks)
+                {
+                    string data = task.consumer.pop();
+                    if (data !is null)
+                    {
+                    }
+                }
+            }
         }
         catch (Throwable ex)
         {

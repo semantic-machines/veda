@@ -98,10 +98,13 @@ ubyte[ 4 ] crc;
 
 class Consumer
 {
-    Queue  queue;
-    string name;
-    ulong  first_element;
-    uint   count_popped;
+    Queue   queue;
+    string  name;
+    ulong   first_element;
+    uint    count_popped;
+    ubyte[] last_read_msg;
+
+
 
     File   *ff_info_pop_w = null;
     File   *ff_info_pop_r = null;
@@ -139,14 +142,22 @@ class Consumer
         std.file.remove(file_name_info_pop);
     }
 
-    private void put_info()
+    private bool put_info()
     {
         if (!queue.isReady)
-            return;
+            return false;
 
-        ff_info_pop_w.seek(0);
-        ff_info_pop_w.writefln("%s;%d;%s;%d;%d", queue.name, queue.chunk, name, first_element, count_popped);
-        ff_info_pop_w.flush();
+        try
+        {
+            ff_info_pop_w.seek(0);
+            ff_info_pop_w.writefln("%s;%d;%s;%d;%d", queue.name, queue.chunk, name, first_element, count_popped);
+            ff_info_pop_w.flush();
+        }
+        catch (Throwable tr)
+        {
+            return false;
+        }
+        return true;
     }
 
     private bool get_info()
@@ -227,13 +238,11 @@ class Consumer
 //        writeln("@queue=", this);
 //        writeln("@header=", header);
 
-        ubyte[] _buff;
-
         if (header.msg_length < buff.length)
         {
-            _buff = buff[ 0..header.msg_length ];
-            _buff = queue.ff_queue_r.rawRead(_buff);
-            if (_buff.length < header.msg_length)
+            last_read_msg = buff[ 0..header.msg_length ];
+            last_read_msg = queue.ff_queue_r.rawRead(last_read_msg);
+            if (last_read_msg.length < header.msg_length)
             {
                 writeln("queue:pop:invalid msg: msg.length < header.msg_length :", header);
                 return null;
@@ -245,6 +254,18 @@ class Consumer
             return null;
         }
 
+        return cast(string)last_read_msg;
+//return null;
+    }
+
+    public bool commit()
+    {
+        if (!queue.isReady)
+            return false;
+
+        if (count_popped >= queue.count_pushed)
+            return false;
+
         header_buff[ header_buff.length - 4 ] = 0;
         header_buff[ header_buff.length - 3 ] = 0;
         header_buff[ header_buff.length - 2 ] = 0;
@@ -252,24 +273,21 @@ class Consumer
 
         hash.start();
         hash.put(header_buff);
-        hash.put(_buff);
+        hash.put(last_read_msg);
         crc = hash.finish();
 
         if (header.crc[ 0 ] != crc[ 0 ] || header.crc[ 1 ] != crc[ 1 ] || header.crc[ 2 ] != crc[ 2 ] || header.crc[ 3 ] != crc[ 3 ])
         {
             writeln("queue:pop:invalid msg: fail crc[", crc, "] :", header);
-            writeln(_buff.length);
-            writeln(cast(string)_buff);
-            return null;
+            writeln(last_read_msg.length);
+            writeln(cast(string)last_read_msg);
+            return false;
         }
 
         count_popped++;
         first_element += header.length + header.msg_length;
 
-        put_info();
-
-        return cast(string)_buff;
-//return null;
+        return put_info();
     }
 
     void toString(scope void delegate(const(char)[]) sink) const
@@ -484,7 +502,7 @@ class Queue
 unittest
 {
     veda.core.queue.Queue    queue = new veda.core.queue.Queue("queue1");
-    veda.core.queue.Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
+    veda.core.queue.Consumer cs    = new veda.core.queue.Consumer(queue, "consumer1");
 
     if (level == 0)
         freeze();

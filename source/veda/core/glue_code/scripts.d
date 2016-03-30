@@ -5,13 +5,12 @@ module veda.core.glue_code.scripts;
 
 private
 {
-    import std.json, std.stdio, std.string, std.array, std.datetime, std.concurrency, std.conv, std.file;
-    import core.thread;
+    import std.json, std.stdio, std.string, std.array, std.datetime, std.concurrency, std.conv, std.file, core.thread;
+    import bind.v8d_header;
     import veda.util.container, veda.core.util.utils, util.logger, veda.util.cbor, veda.core.util.cbor8individual;
     import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.onto;
     import veda.core.know_predicates, veda.core.context, veda.core.define, veda.core.thread_context, veda.core.log_msg;
-    import search.vel, search.vql;
-    import bind.v8d_header;
+    import search.vel, search.vql, veda.core.glue_code.script;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -31,7 +30,8 @@ enum RUN_MODE
     ALL_EVENT_SCRIPTS  = 2
 }
 
-private struct ScriptInfo
+private int     count;
+private Context context; private struct ScriptInfo
 {
     string id;
     string str_script;
@@ -39,10 +39,8 @@ private struct ScriptInfo
     Script compiled_script;
 }
 
-private int     count;
-private Context context;
-private         ScriptInfo[ string ] scripts;
-private VQL     vql;
+private     ScriptInfo[ string ] scripts;
+private VQL vql;
 
 public Tid start_module(string node_id)
 {
