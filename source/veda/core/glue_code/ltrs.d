@@ -8,59 +8,35 @@ module veda.core.ltrs;
 
 private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, core.thread, std.algorithm;
 private import bind.v8d_header;
-private import veda.core.util.utils, util.logger, veda.util.cbor, veda.core.util.cbor8individual, veda.core.queue;
+private import veda.core.util.utils, veda.util.cbor, veda.core.util.cbor8individual, veda.core.queue;
 private import veda.core.storage.lmdb_storage, veda.core.thread_context, veda.core.glue_code.script;
 private import veda.type, veda.core.context, veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
-logger _log;
-logger log()
+private  logger _log;
+private logger log()
 {
     if (_log is null)
         _log = new logger("veda-core-" ~ process_name, "log", "LTRS");
     return _log;
 }
 
-Context context;
-string  node_id;
-
-public Tid start_module(string node_id)
-{
-    Tid tid = spawn(&ltrs_thread, text(P_MODULE.ltrs), node_id);
-
-    if (wait_starting_module(P_MODULE.ltrs, tid) == false)
-        return Tid.init;
-
-    register(text(P_MODULE.ltrs), tid);
-    return locate(text(P_MODULE.ltrs));
-}
-
-public bool stop_module(Context ctx)
-{
-    Tid tid_scripts = ctx.getTid(P_MODULE.ltrs);
-
-    if (tid_scripts != Tid.init)
-    {
-        send(tid_scripts, CMD.EXIT);
-    }
-
-    return 0;
-}
+private Context context;
+private string  node_id;
 
 private struct Task
 {
-    ScriptInfo script_info;
     Consumer   consumer;
     Individual codelet;
 }
 
 alias Task *[ string ] Tasks;
 
-Tasks[ int ] tasks_2_priority;
-Task *task;
+private Tasks[ int ] tasks_2_priority;
+private Task *task;
 
-void ltrs_thread(string thread_name, string _node_id)
+private void ltrs_thread(string thread_name, string _node_id)
 {
     scope (exit)
     {
@@ -120,7 +96,7 @@ void ltrs_thread(string thread_name, string _node_id)
                                    if (tasks is Tasks.init)
                                        tasks_2_priority[ priority ] = tasks;
 
-                                   task = new Task(ScriptInfo(), cs, indv);
+                                   task = new Task(cs, indv);
                                    tasks[ indv.uri ] = task;
                                }
                            },
@@ -139,6 +115,8 @@ void ltrs_thread(string thread_name, string _node_id)
                     string data = task.consumer.pop();
                     if (data !is null)
                     {
+//                    	veda.core.glue_code.scripts.send_put(context, context.sys_ticket(), data, ref MapResource rdfType,
+//                     Individual *individual, string event_id, long op_id)
                     }
                 }
             }
@@ -148,4 +126,29 @@ void ltrs_thread(string thread_name, string _node_id)
             log.trace("ltrs# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
         }
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+public Tid start_module(string node_id)
+{
+    Tid tid = spawn(&ltrs_thread, text(P_MODULE.ltrs), node_id);
+
+    if (wait_starting_module(P_MODULE.ltrs, tid) == false)
+        return Tid.init;
+
+    register(text(P_MODULE.ltrs), tid);
+    return locate(text(P_MODULE.ltrs));
+}
+
+public bool stop_module(Context ctx)
+{
+    Tid tid_scripts = ctx.getTid(P_MODULE.ltrs);
+
+    if (tid_scripts != Tid.init)
+    {
+        send(tid_scripts, CMD.EXIT);
+    }
+
+    return 0;
 }

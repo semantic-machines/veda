@@ -15,8 +15,8 @@ private
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
-logger _log;
-logger log()
+private logger _log;
+private logger log()
 {
     if (_log is null)
         _log = new logger("veda-core-" ~ process_name, "log", "SCRIPTS");
@@ -31,107 +31,15 @@ enum RUN_MODE
 }
 
 private int     count;
-private Context context; private struct ScriptInfo
-{
-    string id;
-    string str_script;
-    bool[ string ] filters;
-    Script compiled_script;
-}
-
-private     ScriptInfo[ string ] scripts;
+private Context context; 
+private ScriptInfo[ string ] scripts;
 private VQL vql;
+private string empty_uid;
+private string vars_for_event_script;
+private string vars_for_codelet_script;
 
-public Tid start_module(string node_id)
+private void scripts_thread(string thread_name, string node_id)
 {
-    Tid tid = spawn(&scripts_thread, text(P_MODULE.scripts), node_id);
-
-    if (wait_starting_module(P_MODULE.scripts, tid) == false)
-        return Tid.init;
-
-    register(text(P_MODULE.scripts), tid);
-    return locate(text(P_MODULE.scripts));
-}
-
-public bool stop_module(Context ctx)
-{
-    Tid tid_scripts = ctx.getTid(P_MODULE.scripts);
-
-    if (tid_scripts != Tid.init)
-    {
-        send(tid_scripts, CMD.EXIT);
-    }
-
-    return 0;
-}
-
-public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_state, string prev_state, ref MapResource rdfType,
-                     Individual *individual, string event_id, long op_id)
-{
-    Tid tid_scripts = ctx.getTid(P_MODULE.scripts);
-
-    if (tid_scripts != Tid.init)
-    {
-        try
-        {
-            immutable(string)[] types;
-
-            foreach (key; rdfType.keys)
-                types ~= key;
-
-            string user_uri;
-
-            if (ticket !is null)
-                user_uri = ticket.user_uri;
-
-            send(tid_scripts, user_uri, ev_type, new_state, prev_state, types, individual.uri, event_id, op_id);
-        }
-        catch (Exception ex)
-        {
-            writeln("EX!scripts:send_put:", ex.msg);
-        }
-    }
-
-    veda.core.glue_code.scripts.inc_count_recv_put();
-}
-
-public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_state, string prev_state, ref MapResource rdfType,
-                     Individual *individual, string script_uri, string arguments_cbor, string results_cbor, long op_id)
-{
-    Tid tid_scripts = ctx.getTid(P_MODULE.scripts);
-
-    if (tid_scripts != Tid.init)
-    {
-        try
-        {
-            immutable(string)[] types;
-
-            foreach (key; rdfType.keys)
-                types ~= key;
-
-            string user_uri;
-
-            if (ticket !is null)
-                user_uri = ticket.user_uri;
-
-            send(tid_scripts, user_uri, ev_type, new_state, prev_state, types, individual.uri, script_uri, arguments_cbor, results_cbor, op_id);
-        }
-        catch (Exception ex)
-        {
-            writeln("EX!scripts:send_put:", ex.msg);
-        }
-    }
-
-    veda.core.glue_code.scripts.inc_count_recv_put();
-}
-
-string empty_uid;
-string vars_for_event_script;
-string vars_for_codelet_script;
-
-public void scripts_thread(string thread_name, string node_id)
-{
-    empty_uid             = "";
     vars_for_event_script =
         "var user_uri = get_env_str_var ('$user');"
         ~ "var parent_script_id = get_env_str_var ('$parent_script_id');"
@@ -152,6 +60,7 @@ public void scripts_thread(string thread_name, string node_id)
 
     context   = new PThreadContext(node_id, thread_name, P_MODULE.scripts);
     g_context = context;
+    empty_uid = "";
 
     vql = new VQL(context);
     load_event_scripts();
@@ -211,7 +120,7 @@ public void scripts_thread(string thread_name, string node_id)
                             else
                                 send(to, false);
                         },
-                        (string user_uri, string msg, string prev_state, immutable(string)[] indv_types, string individual_id,
+                        (string user_uri, string msg, immutable(string)[] indv_types, string individual_id,
                          string script_uri, string arguments_cbor, string results_cbor, long op_id)
                         {
                             try
@@ -219,14 +128,8 @@ public void scripts_thread(string thread_name, string node_id)
                                 if (msg is null || msg.length <= 3 || script_vm is null)
                                     return;
 
-                                Individual indv;
-                                if (cbor2individual(&indv, msg) < 0)
-                                    return;
-
                                 if (onto is null)
                                     onto = context.get_onto();
-
-                                set_g_prev_state(prev_state);
 
                                 g_document.data = cast(char *)msg;
                                 g_document.length = cast(int)msg.length;
@@ -251,8 +154,14 @@ public void scripts_thread(string thread_name, string node_id)
                                 ScriptInfo script = scripts.get(script_uri, ScriptInfo.init);
 
                                 if (script is ScriptInfo.init)
-                                    prepare_script(indv, script_vm, vars_for_codelet_script);
+                                {
+                                	Individual indv;
+                                	if (cbor2individual(&indv, msg) < 0)
+                                	    return;
 
+                                    prepare_script(indv, script_vm, vars_for_codelet_script);
+                                }
+                                
                                 if (script.compiled_script !is null)
                                 {
                                     if (script.filters.length > 0 && isFiltred(&script, indv_types, onto) == false)
@@ -300,19 +209,20 @@ public void scripts_thread(string thread_name, string node_id)
                                         prepare_if_is_script = true;
                                 }
 
-                                Individual indv;
-                                if (cbor2individual(&indv, msg) < 0)
-                                    return;
-
                                 if (prepare_if_is_script == false)
                                 {
-                                    if (scripts.get(indv.uri, ScriptInfo.init) !is ScriptInfo.init)
+                                    if (scripts.get(individual_id, ScriptInfo.init) !is ScriptInfo.init)
                                         prepare_if_is_script = true;
                                 }
 
                                 if (prepare_if_is_script)
+                                {
+                                	Individual indv;
+                                	if (cbor2individual(&indv, msg) < 0)
+                                	    return;
                                     prepare_script(indv, script_vm, vars_for_event_script);
-
+                                }
+                                
                                 if (onto is null)
                                     onto = context.get_onto();
 
@@ -632,5 +542,88 @@ public long get_count_prep_put()
 {
     return atomicLoad(_count_prep_put);
 }
-/////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////
+
+public Tid start_module(string node_id)
+{
+    Tid tid = spawn(&scripts_thread, text(P_MODULE.scripts), node_id);
+
+    if (wait_starting_module(P_MODULE.scripts, tid) == false)
+        return Tid.init;
+
+    register(text(P_MODULE.scripts), tid);
+    return locate(text(P_MODULE.scripts));
+}
+
+public bool stop_module(Context ctx)
+{
+    Tid tid_scripts = ctx.getTid(P_MODULE.scripts);
+
+    if (tid_scripts != Tid.init)
+    {
+        send(tid_scripts, CMD.EXIT);
+    }
+
+    return 0;
+}
+
+public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_state, string prev_state, ref MapResource rdfType,
+                     string indv_uri, string event_id, long op_id)
+{
+    Tid tid_scripts = ctx.getTid(P_MODULE.scripts);
+
+    if (tid_scripts != Tid.init)
+    {
+        try
+        {
+            immutable(string)[] types;
+
+            foreach (key; rdfType.keys)
+                types ~= key;
+
+            string user_uri;
+
+            if (ticket !is null)
+                user_uri = ticket.user_uri;
+
+            send(tid_scripts, user_uri, ev_type, new_state, prev_state, types, indv_uri, event_id, op_id);
+        }
+        catch (Exception ex)
+        {
+            writeln("EX!scripts:send_put:", ex.msg);
+        }
+    }
+
+    veda.core.glue_code.scripts.inc_count_recv_put();
+}
+
+public void send_put(Context ctx, Ticket *ticket, string new_state, ref MapResource rdfType, string indv_uri, 
+						string script_uri, string arguments_cbor, string results_cbor, long op_id)
+{
+    Tid tid_scripts = ctx.getTid(P_MODULE.scripts);
+
+    if (tid_scripts != Tid.init)
+    {
+        try
+        {
+            immutable(string)[] types;
+
+            foreach (key; rdfType.keys)
+                types ~= key;
+
+            string user_uri;
+
+            if (ticket !is null)
+                user_uri = ticket.user_uri;
+
+            send(tid_scripts, user_uri, new_state, types, indv_uri, script_uri, arguments_cbor, results_cbor, op_id);
+        }
+        catch (Exception ex)
+        {
+            writeln("EX!scripts:send_put:", ex.msg);
+        }
+    }
+
+    veda.core.glue_code.scripts.inc_count_recv_put();
+}
