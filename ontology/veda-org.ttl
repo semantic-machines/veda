@@ -117,6 +117,14 @@ v-s:occupation
   rdfs:range v-s:Position ;
 .
 
+v-s:origin
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Appointment, v-s:Person, v-s:OrganizationUnit ;
+  rdfs:label "origin"@en ;
+  rdfs:label "происхождение"@ru ;
+  rdfs:range xsd:string ;
+.
+
 v-s:official
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Appointment ;
