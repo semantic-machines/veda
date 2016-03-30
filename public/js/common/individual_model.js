@@ -56,6 +56,16 @@ veda.Module(function (veda) { "use strict";
 		Object.defineProperty(self, "rights", {
 			get: function () { 
 				if (rights) return rights;
+				if (self._.isNew) {
+					rights = new veda.IndividualModel();
+					rights.defineProperty("v-s:canRead");                
+					rights.defineProperty("v-s:canUpdate");                
+					rights.defineProperty("v-s:canDelete");
+					rights["v-s:canRead"] = [new Boolean(true)];
+					rights["v-s:canUpdate"] = [new Boolean(true)];
+					rights["v-s:canDelete"] = [new Boolean(true)];
+					return rights;
+				}
 				try {
 					var rightsJSON = get_rights(veda.ticket, self.id);
 					rights = new veda.IndividualModel( rightsJSON );
