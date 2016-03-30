@@ -15,12 +15,8 @@ function assertCounts(driver, drv, totalCount, createCount, updateCount) {
 	).thenCatch(function (e) {basic.errorHandler(e, "Cannot find person, after save operation")});
 		
 	driver.sleep(basic.SLOW_OPERATION).then(function() {
-//		driver.findElement({css:'div[id="main"] > [typeof="v-s:Person"]'}).getAttribute('resource').then(function (individualId) {
-//			driver.executeScript("document.querySelector('#journal').scrollIntoView(true);");
-			driver.findElement({css:'#journal'}).click()
-				.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `View Journal` button")});
-			driver.executeScript("location.reload();");
-//		}).thenCatch(function (e) {basic.errorHandler(e, "Seems person is not saved")});
+		driver.findElement({css:'#journal'}).click()
+			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `View Journal` button")});
 	}).then(function() {
 		driver.findElements({css:'div.journal-record'}).then(function (result) {
 			assert.equal(totalCount, result.length);
@@ -41,7 +37,6 @@ basic.getDrivers().forEach (function (drv) {
 	var driver = basic.getDriver(drv);
 	basic.openPage(driver, drv);
 
-//	basic.login(driver, 'karpovrt', '123', 'Роман', 'Карпов');
 	basic.login(driver, 'bychinat', '123', 'Андрей', 'Бычин');
 	
 	person.createPerson(driver, drv, 'first');
