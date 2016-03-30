@@ -6,7 +6,7 @@ module util.load_info;
 private
 {
     import core.thread, std.format, std.stdio, std.datetime, std.concurrency, std.datetime, std.array : appender;
-    import util.utils;
+    import veda.core.util.utils;
     import util.logger;
     import veda.type, veda.core.context, veda.core.define;
 }

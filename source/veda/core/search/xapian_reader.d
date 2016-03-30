@@ -6,7 +6,7 @@ module search.xapian_reader;
 
 import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.container.slist;
 import bind.xapian_d_header;
-import util.utils, veda.util.cbor, veda.core.define, veda.core.know_predicates, veda.core.context, veda.core.log_msg;
+import veda.core.util.utils, veda.util.cbor, veda.core.define, veda.core.know_predicates, veda.core.context, veda.core.log_msg;
 import search.vel, veda.core.search.xapian_vql, search.indexer_property;
 
 // ////// logger ///////////////////////////////////////////

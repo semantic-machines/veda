@@ -7,7 +7,7 @@ private
 {
     import std.json, std.stdio, std.string, std.array, std.datetime, std.concurrency, std.conv, std.file;
     import core.thread;
-    import veda.util.container, util.utils, util.logger, veda.util.cbor, veda.core.util.cbor8individual;
+    import veda.util.container, veda.core.util.utils, util.logger, veda.util.cbor, veda.core.util.cbor8individual;
     import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.onto;
     import veda.core.know_predicates, veda.core.context, veda.core.define, veda.core.thread_context, veda.core.log_msg;
     import search.vel, search.vql;
@@ -250,30 +250,30 @@ public void scripts_thread(string thread_name, string node_id)
 
                                 set_g_super_classes(indv_types, onto);
 
-								ScriptInfo script = scripts.get (script_uri, ScriptInfo.init);
+                                ScriptInfo script = scripts.get(script_uri, ScriptInfo.init);
 
                                 if (script is ScriptInfo.init)
                                     prepare_script(indv, script_vm, vars_for_codelet_script);
 
                                 if (script.compiled_script !is null)
                                 {
-                                        if (script.filters.length > 0 && isFiltred(&script, indv_types, onto) == false)
-											return;
-											
-                                        try
-                                        {
-                                            if (trace_msg[ 300 ] == 1)
-                                                log.trace("start exec codelet script : %s %s %d", script.id, individual_id, op_id);
+                                    if (script.filters.length > 0 && isFiltred(&script, indv_types, onto) == false)
+                                        return;
 
-                                            script_vm.run(script.compiled_script);
+                                    try
+                                    {
+                                        if (trace_msg[ 300 ] == 1)
+                                            log.trace("start exec codelet script : %s %s %d", script.id, individual_id, op_id);
 
-                                            if (trace_msg[ 300 ] == 1)
-                                                log.trace("end exec codelet script : %s", script.id);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            log.trace_log_and_console("WARN! fail execute codelet script : %s %s", script.id, ex.msg);
-                                        }
+                                        script_vm.run(script.compiled_script);
+
+                                        if (trace_msg[ 300 ] == 1)
+                                            log.trace("end exec codelet script : %s", script.id);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        log.trace_log_and_console("WARN! fail execute codelet script : %s %s", script.id, ex.msg);
+                                    }
                                 }
                             }
                             finally

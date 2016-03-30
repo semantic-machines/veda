@@ -2,7 +2,7 @@
  * utils
  */
 
-module util.utils;
+module veda.core.util.utils;
 
 private
 {

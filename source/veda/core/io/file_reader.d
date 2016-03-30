@@ -7,7 +7,7 @@ module veda.core.io.file_reader;
 import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib;
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path, std.utf,
        std.stdio : writeln;
-import veda.util.container, veda.util.cbor, util.utils, util.logger, veda.core.util.raptor2individual, veda.core.util.cbor8individual;
+import veda.util.container, veda.util.cbor, veda.core.util.utils, util.logger, veda.core.util.raptor2individual, veda.core.util.cbor8individual;
 import veda.type, veda.onto.individual, veda.onto.resource, veda.core.context, veda.core.thread_context, veda.core.define, veda.core.know_predicates,
        veda.core.log_msg;
 
