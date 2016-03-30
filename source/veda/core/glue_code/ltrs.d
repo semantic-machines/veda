@@ -6,8 +6,8 @@
 
 module veda.core.ltrs;
 
-private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime;
-private import util.logger, veda.util.cbor, veda.core.util.cbor8individual;
+private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, core.thread;
+private import veda.core.util.utils, util.logger, veda.util.cbor, veda.core.util.cbor8individual;
 private import veda.core.storage.lmdb_storage, veda.core.thread_context;
 private import veda.type, veda.core.context, veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
 
@@ -21,12 +21,35 @@ logger log()
     return _log;
 }
 
-Context    context;
-string		node_id;
+Context context;
+string  node_id;
+
+public Tid start_module(string node_id)
+{
+    Tid tid = spawn(&ltrs_thread, text(P_MODULE.ltrs), node_id);
+
+    if (wait_starting_module(P_MODULE.ltrs, tid) == false)
+        return Tid.init;
+
+    register(text(P_MODULE.ltrs), tid);
+    return locate(text(P_MODULE.ltrs));
+}
+
+public bool stop_module(Context ctx)
+{
+    Tid tid_scripts = ctx.getTid(P_MODULE.ltrs);
+
+    if (tid_scripts != Tid.init)
+    {
+        send(tid_scripts, CMD.EXIT);
+    }
+
+    return 0;
+}
 
 void ltrs_thread(string thread_name, string _node_id)
 {
-	    scope (exit)
+    scope (exit)
     {
         log.trace("ERR! ltrs_thread dead (exit)");
     }
@@ -50,33 +73,39 @@ void ltrs_thread(string thread_name, string _node_id)
         try
         {
             receiveTimeout(msecs(0),
-                    (CMD cmd, string new_state)
-                    {
-                        check_context();
-                    	if (cmd == CMD.START)
-                    	{
-                            Individual indv;
-                            if (cbor2individual(&indv, new_state) < 0)
-                            	return;
-                    		                    		
-                    		veda.core.queue.Queue    queue = new veda.core.queue.Queue("queue-ltrs-" ~ indv.uri);
-    						veda.core.queue.Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
+                        (CMD cmd)
+                        {
+                            if (cmd == CMD.EXIT)
+                            {
+                                thread_term();
+                            }
+                        },
+                           (CMD cmd, string new_state)
+                           {
+                               check_context();
+                               if (cmd == CMD.START)
+                               {
+                                   Individual indv;
+                                   if (cbor2individual(&indv, new_state) < 0)
+                                       return;
 
-                    		bool add_to_queue(string key, string value)
-    						{    							
-        							queue.push(value);
-							        return true;
-    						}
-                    		
-    						context.get_subject_storage_db.get_of_cursor(&add_to_queue);                    		
-                    	}
-                    },
-                    (Variant v) { writeln(thread_name, "::ltrs_thread::Received some other type.", v); });
+                                   veda.core.queue.Queue queue = new veda.core.queue.Queue("queue-ltrs-" ~ indv.uri);
+                                   veda.core.queue.Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
+
+                                   bool add_to_queue(string key, string value)
+                                   {
+                                       queue.push(value);
+                                       return true;
+                                   }
+
+                                   context.get_subject_storage_db.get_of_cursor(&add_to_queue);
+                               }
+                           },
+                           (Variant v) { writeln(thread_name, "::ltrs_thread::Received some other type.", v); });
         }
         catch (Throwable ex)
         {
             log.trace("ltrs# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
         }
     }
-
 }

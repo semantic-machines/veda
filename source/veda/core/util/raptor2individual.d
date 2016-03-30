@@ -4,7 +4,7 @@ import std.string, std.stdio : writeln;
 import bind.libraptor_header;
 import veda.type, veda.onto.individual, veda.onto.resource, veda.core.define;
 import onto.lang;
-import util.utils;
+import veda.core.util.utils;
 
 string[ string ] prefixes;
 Individual *[ string ] _individuals;

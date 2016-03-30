@@ -8,7 +8,7 @@ private
     import std.stdio, std.typecons, std.conv, std.exception : assumeUnique;
     import veda.onto.resource;
     import veda.core.know_predicates, veda.core.context;
-    import util.utils, veda.util.container, veda.core.util.cbor8individual;
+    import veda.core.util.utils, veda.util.container, veda.core.util.cbor8individual;
 }
 /// Массив индивидуалов
 alias Individual[] Individuals;
