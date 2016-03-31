@@ -4,7 +4,7 @@
  *	START - подготавливает очередь и запускает исполнение скрипта над данными из очереди
  */
 
-module veda.core.ltrs;
+module veda.core.glue_code.ltrs;
 
 private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, core.thread, std.algorithm;
 private import bind.v8d_header;
