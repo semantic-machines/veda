@@ -41,6 +41,10 @@ enum : int
     T_API_240 = 624
 }
 
+int[] T_API_L1 =
+[ T_API_50, T_API_60, T_API_70, T_API_130, T_API_140, T_API_150, T_API_160, T_API_170, T_API_180, 
+	T_API_190, T_API_200, T_API_210, T_API_230, T_API_240 ];
+
 static this()
 {
     trace_msg      = 0;
@@ -68,32 +72,10 @@ static this()
         trace_msg[ T_ACL_2 ] = 0;
         trace_msg[ T_ACL_3 ] = 0;
     }
-    version (trace_api)
+    version (trace_api_l1)
     {
-        trace_msg[ T_API_10 ]  = 1;
-        trace_msg[ T_API_20 ]  = 1;
-        trace_msg[ T_API_30 ]  = 1;
-        trace_msg[ T_API_40 ]  = 1;
-        trace_msg[ T_API_50 ]  = 1;
-        trace_msg[ T_API_60 ]  = 1;
-        trace_msg[ T_API_70 ]  = 1;
-        trace_msg[ T_API_80 ]  = 1;
-        trace_msg[ T_API_90 ]  = 1;
-        trace_msg[ T_API_100 ] = 1;
-        trace_msg[ T_API_110 ] = 1;
-        trace_msg[ T_API_120 ] = 1;
-        trace_msg[ T_API_130 ] = 1;
-        trace_msg[ T_API_140 ] = 1;
-        trace_msg[ T_API_150 ] = 1;
-        trace_msg[ T_API_160 ] = 1;
-        trace_msg[ T_API_170 ] = 1;
-        trace_msg[ T_API_180 ] = 1;
-        trace_msg[ T_API_190 ] = 1;
-        trace_msg[ T_API_200 ] = 1;
-        trace_msg[ T_API_210 ] = 1;
-        trace_msg[ T_API_220 ] = 1;
-        trace_msg[ T_API_230 ] = 1;
-        trace_msg[ T_API_240 ] = 1;
+        foreach (idx; T_API_L1)
+            trace_msg[ idx ] = 1;
     }
 }
 
