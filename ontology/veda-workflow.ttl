@@ -1497,7 +1497,7 @@ v-wf:DecisionFormTemplate
 <script>
 	if (individual["v-wf:to"][0].id === veda.appointment.id && !individual.hasValue("v-wf:read")) {
 		individual["v-wf:read"] = [true];
-		individual.save(false);
+		individual.save();
 	}
 </script>
   """ ;

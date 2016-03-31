@@ -1126,7 +1126,7 @@
 	$.fn.veda_link = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_link.defaults, options ),
 			control = $(opts.template),
-			template = this.attr("template") || "{rdfs:label}",
+			template = this.attr("template") || "{individual['rdfs:label'].join(', ')}",
 			individual = opts.individual,
 			spec = opts.spec,
 			placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
@@ -1144,7 +1144,9 @@
 			tree = $("#tree", control),
 			fullsearch = $("#fullsearch", control);
 
-		if (!queryPrefix) {
+		if (queryPrefix) {
+			queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+		} else {
 			var relRange = (new veda.IndividualModel(rel_uri))["rdfs:range"];
 			if ( relRange && relRange.length && (relRange.length > 1 || relRange[0].id !== "rdfs:Resource") ) {
 				var types = relRange.map(function (i) { return "'rdf:type' == '" + i.id + "'";})
@@ -1246,8 +1248,15 @@
 					},
 					displayKey: function (individual) {
 						var result;
-						try { result = riot.render(template, individual); }
-						catch (ex) { result = individual.id; }
+						/*try { 
+							result = riot.render(template, individual); 
+						}*/
+						try { 
+							result = template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+						} catch (ex) { 
+							console.log(ex);
+							result = individual.id; 
+						}
 						return result === "" ? individual.id : result;
 					}
 				}
@@ -1270,8 +1279,9 @@
 				if (doc_rel_uri === rel_uri) {
 					if (isSingle) {
 						if (values.length) {
+							var individual = values[0];
 							try { 
-								typeAhead.typeahead("val", riot.render(template, values[0]) ); 
+								typeAhead.typeahead("val", template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); }) ); 
 							} catch (e) {
 								typeAhead.typeahead("val", ""); 
 							}

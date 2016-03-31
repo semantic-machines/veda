@@ -59,6 +59,18 @@ veda.Module(function (veda) { "use strict";
 		} else {
 			veda.appointment = undefined;
 		}
+
+		if (self.hasValue("v-s:hasAppointment")) {
+			veda.appointmentList = self["v-s:hasAppointment"].filter( function (item) {
+				return item.hasValue("v-s:official") && item["v-s:official"][0] == true;
+			});
+		}
+		self.on("individual:propertyModified", function (property_uri, values) {
+			if (property_uri === "v-s:defaultAppointment") {
+				self.save();
+				veda.appointment = self["v-s:defaultAppointment"][0];
+			} 
+		});
  
 		self.preferences.on("individual:propertyModified", function (property_uri, values) {
 			if (property_uri === "v-ui:displayedElements") {

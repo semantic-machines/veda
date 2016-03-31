@@ -396,19 +396,44 @@ v-ui:IconPersonTemplate
   rdfs:label "Шаблон персоны с иконкой"@ru ;
   rdfs:label "Person template with icon"@en ;
   v-ui:template """
-<a href="#">
+<a href="#/@">
 	<span class="glyphicon glyphicon-user"></span>
 	<span about="@" property="rdfs:label"></span>
-	<span about="@" rel="v-s:defaultAppointment">
-		<span>
-			- <span about="@" rel="v-s:occupation" template="v-ui:LabelTemplate"></span>
-		</span>
-	</span>
 </a>
-<script>
+<!--script>
 	template.attr("href", "#/" + individual["v-s:hasAspect"][0].id);
+</script-->
+""" ;
+.
+v-ui:PersonAppointmentTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон персоны с выбором назначения"@ru ;
+  rdfs:label "Person template with appointment select"@en ;
+  v-ui:template """
+<div>
+	<veda-control type="link" rel="v-s:defaultAppointment" class="fulltext dropdown" template="{individual['v-s:occupation'][0]['rdfs:label'].join(', ')}"></veda-control>
+</div>
+<script>
+	function handler () { location.reload(); }
+	individual.on("individual:propertyModified", handler);
+	template.on("remove", function () { individual.off("individual:propertyModified", handler); });
 </script>
 """ ;
+.
+v-ui:PS_PersonDefaultAppointment
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация назначения по-умолчанию для класса Персона"@ru ;
+  rdfs:label "Default appointment property specification for Person class"@en ;
+  v-ui:forClass v-s:Person ;
+  v-ui:forProperty v-s:defaultAppointment ;
+#  v-ui:tooltip "Выбор назначения"@ru ;
+#  v-ui:tooltip "Appointment select"@en ;
+#  v-ui:queryPrefix "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='{individual.id}' && 'v-s:official'=='true')"^^xsd:string ;
+  v-ui:queryPrefix "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='{individual.id}')"^^xsd:string ;
+  v-ui:placeholder "Учетная запись"@ru ;
+  v-ui:placeholder "Account"@en ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
 .
 v-ui:ClassTemplateTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -1432,15 +1457,18 @@ td:PersonTemplate1
         <hr />
         <div class="row">
           <div class="col-md-6">
-            <div rel="v-s:hasAccount" template="td:AccountTemplate1">шаблон: td:AccountTemplate1</div>
-            <veda-control rel="v-s:hasAccount" type="link" class="-view edit search fulltext dropdown create"></veda-control>
+            <div about="@" rel="v-s:hasAccount" template="td:AccountTemplate1">шаблон: td:AccountTemplate1</div>
+            <!--div rel="v-s:hasAccount" template="td:AccountTemplate1">шаблон: td:AccountTemplate1</div>
+            <veda-control rel="v-s:hasAccount" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
           </div>
           <div class="col-md-6">
-		    <div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" embedded="true">шаблон: td:PreferencesTemplate1</div>
-		    <veda-control rel="v-ui:hasPreferences" type="link" class="-view edit search fulltext dropdown create"></veda-control>
+		    <div about="@" rel="v-ui:hasPreferences" template="td:PreferencesTemplate1">шаблон: td:PreferencesTemplate1</div>
+		    <!--div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" embedded="true">шаблон: td:PreferencesTemplate1</div>
+		    <veda-control rel="v-ui:hasPreferences" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
 		    <br />
-		    <div rel="v-s:hasAppointment" embedded="true"></div>
-		    <veda-control rel="v-s:hasAppointment" type="link" class="-view edit search fulltext dropdown create"></veda-control>
+		    <div about="@" rel="v-s:hasAppointment"></div>
+		    <!--div rel="v-s:hasAppointment" embedded="true"></div>
+		    <veda-control rel="v-s:hasAppointment" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
           </div>
         </div>
       </div>
@@ -1508,12 +1536,12 @@ td:AppointmentTemplate1
           </div>
         </div>        
       </div>
-      <div class="panel-footer">
+      <!--div class="panel-footer">
         <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label">Редактировать</button>
         <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label">Сохранить</button>
         <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label">Отмена</button>
         <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label">Удалить</button>
-      </div>
+      </div-->
     </div>
   </div>
   """ ;
