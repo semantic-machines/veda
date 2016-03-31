@@ -8,10 +8,38 @@ private import util.logger;
 byte[ 1000 ] trace_msg;
 
 // last id = 500
-long T_REST_1 = 500;
-long T_ACL_1  = 111;
-long T_ACL_2  = 112;
-long T_ACL_3  = 113;
+const static long T_REST_1 = 500;
+const static long T_ACL_1  = 111;
+const static long T_ACL_2  = 112;
+const static long T_ACL_3  = 113;
+
+enum : int
+{
+    T_API_10  = 601,
+    T_API_20  = 602,
+    T_API_30  = 603,
+    T_API_40  = 604,
+    T_API_50  = 605,
+    T_API_60  = 606,
+    T_API_70  = 607,
+    T_API_80  = 608,
+    T_API_90  = 609,
+    T_API_100 = 610,
+    T_API_110 = 611,
+    T_API_120 = 612,
+    T_API_130 = 613,
+    T_API_140 = 614,
+    T_API_150 = 615,
+    T_API_160 = 616,
+    T_API_170 = 617,
+    T_API_180 = 618,
+    T_API_190 = 619,
+    T_API_200 = 620,
+    T_API_210 = 621,
+    T_API_220 = 622,
+    T_API_230 = 623,
+    T_API_240 = 624
+}
 
 static this()
 {
@@ -33,6 +61,39 @@ static this()
         trace_msg[ T_ACL_1 ] = 1;
         trace_msg[ T_ACL_2 ] = 1;
         trace_msg[ T_ACL_3 ] = 1;
+    }
+    version (no_trace_acl)
+    {
+        trace_msg[ T_ACL_1 ] = 0;
+        trace_msg[ T_ACL_2 ] = 0;
+        trace_msg[ T_ACL_3 ] = 0;
+    }
+    version (trace_api)
+    {
+        trace_msg[ T_API_10 ]  = 1;
+        trace_msg[ T_API_20 ]  = 1;
+        trace_msg[ T_API_30 ]  = 1;
+        trace_msg[ T_API_40 ]  = 1;
+        trace_msg[ T_API_50 ]  = 1;
+        trace_msg[ T_API_60 ]  = 1;
+        trace_msg[ T_API_70 ]  = 1;
+        trace_msg[ T_API_80 ]  = 1;
+        trace_msg[ T_API_90 ]  = 1;
+        trace_msg[ T_API_100 ] = 1;
+        trace_msg[ T_API_110 ] = 1;
+        trace_msg[ T_API_120 ] = 1;
+        trace_msg[ T_API_130 ] = 1;
+        trace_msg[ T_API_140 ] = 1;
+        trace_msg[ T_API_150 ] = 1;
+        trace_msg[ T_API_160 ] = 1;
+        trace_msg[ T_API_170 ] = 1;
+        trace_msg[ T_API_180 ] = 1;
+        trace_msg[ T_API_190 ] = 1;
+        trace_msg[ T_API_200 ] = 1;
+        trace_msg[ T_API_210 ] = 1;
+        trace_msg[ T_API_220 ] = 1;
+        trace_msg[ T_API_230 ] = 1;
+        trace_msg[ T_API_240 ] = 1;
     }
 }
 

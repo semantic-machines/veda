@@ -22,7 +22,7 @@
 	},
 	{
 	    "name": "trace-app",
-	    "versions": ["trace"],
+	    "versions": ["trace_api"],
 	    "targetType": "executable"
 	    
 	}]

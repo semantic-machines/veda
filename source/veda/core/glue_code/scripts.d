@@ -31,12 +31,12 @@ enum RUN_MODE
 }
 
 private int     count;
-private Context context; 
-private ScriptInfo[ string ] scripts;
-private VQL vql;
-private string empty_uid;
-private string vars_for_event_script;
-private string vars_for_codelet_script;
+private Context context;
+private         ScriptInfo[ string ] scripts;
+private VQL     vql;
+private string  empty_uid;
+private string  vars_for_event_script;
+private string  vars_for_codelet_script;
 
 private void scripts_thread(string thread_name, string node_id)
 {
@@ -120,16 +120,24 @@ private void scripts_thread(string thread_name, string node_id)
                             else
                                 send(to, false);
                         },
-                        (string user_uri, string msg, immutable(string)[] indv_types, string individual_id,
-                         string script_uri, string arguments_cbor, string results_cbor, long op_id)
+                        (string user_uri, string msg, string script_uri, string arguments_cbor, string results_uri, Tid to)
                         {
                             try
                             {
                                 if (msg is null || msg.length <= 3 || script_vm is null)
                                     return;
 
+                                Individual indv;
+                                if (cbor2individual(&indv, msg) < 0)
+                                    return;
+
                                 if (onto is null)
                                     onto = context.get_onto();
+
+                                Resources types = indv.resources.get(rdf__type, Resources.init);
+                                MapResource rdfType;
+                                setMapResources(types, rdfType);
+
 
                                 g_document.data = cast(char *)msg;
                                 g_document.length = cast(int)msg.length;
@@ -149,28 +157,24 @@ private void scripts_thread(string thread_name, string node_id)
                                 g_ticket.data = cast(char *)sticket;
                                 g_ticket.length = cast(int)sticket.length;
 
-                                set_g_super_classes(indv_types, onto);
+                                set_g_super_classes(rdfType.keys, onto);
 
                                 ScriptInfo script = scripts.get(script_uri, ScriptInfo.init);
 
                                 if (script is ScriptInfo.init)
                                 {
-                                	Individual indv;
-                                	if (cbor2individual(&indv, msg) < 0)
-                                	    return;
-
                                     prepare_script(indv, script_vm, vars_for_codelet_script);
                                 }
-                                
+
                                 if (script.compiled_script !is null)
                                 {
-                                    if (script.filters.length > 0 && isFiltred(&script, indv_types, onto) == false)
+                                    if (script.filters.length > 0 && isFiltred(&script, rdfType.keys, onto) == false)
                                         return;
 
                                     try
                                     {
                                         if (trace_msg[ 300 ] == 1)
-                                            log.trace("start exec codelet script : %s %s %d", script.id, individual_id, op_id);
+                                            log.trace("start exec codelet script : %s %s", script.id, indv.uri);
 
                                         script_vm.run(script.compiled_script);
 
@@ -185,8 +189,7 @@ private void scripts_thread(string thread_name, string node_id)
                             }
                             finally
                             {
-                                set_scripts_op_id(op_id);
-                                inc_count_prep_put();
+                                send(to, true);
                             }
                         },
                         (string user_uri, EVENT type, string msg, string prev_state, immutable(string)[] indv_types, string individual_id,
@@ -217,12 +220,13 @@ private void scripts_thread(string thread_name, string node_id)
 
                                 if (prepare_if_is_script)
                                 {
-                                	Individual indv;
-                                	if (cbor2individual(&indv, msg) < 0)
-                                	    return;
+                                    Individual indv;
+                                    if (cbor2individual(&indv, msg) < 0)
+                                        return;
+
                                     prepare_script(indv, script_vm, vars_for_event_script);
                                 }
-                                
+
                                 if (onto is null)
                                     onto = context.get_onto();
 
@@ -598,8 +602,7 @@ public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_stat
     veda.core.glue_code.scripts.inc_count_recv_put();
 }
 
-public void send_put(Context ctx, Ticket *ticket, string new_state, ref MapResource rdfType, string indv_uri, 
-						string script_uri, string arguments_cbor, string results_cbor, long op_id)
+public void execute_script(Context ctx, Ticket *ticket, string new_state, string script_uri, string arguments_cbor, string results_uri, Tid to)
 {
     Tid tid_scripts = ctx.getTid(P_MODULE.scripts);
 
@@ -607,17 +610,12 @@ public void send_put(Context ctx, Ticket *ticket, string new_state, ref MapResou
     {
         try
         {
-            immutable(string)[] types;
-
-            foreach (key; rdfType.keys)
-                types ~= key;
-
             string user_uri;
 
             if (ticket !is null)
                 user_uri = ticket.user_uri;
 
-            send(tid_scripts, user_uri, new_state, types, indv_uri, script_uri, arguments_cbor, results_cbor, op_id);
+            send(tid_scripts, user_uri, new_state, script_uri, arguments_cbor, results_uri, to);
         }
         catch (Exception ex)
         {

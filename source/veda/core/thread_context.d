@@ -380,13 +380,13 @@ class PThreadContext : Context
 
         if (tt.user_uri is null)
         {
-            if (trace_msg[ 22 ] == 1)
+            if (trace_msg[ T_API_10 ] == 1)
                 log.trace("найденный сессионный билет не полон, пользователь не найден");
         }
 
         if (tt.user_uri !is null && (when is null || duration < 10))
         {
-            if (trace_msg[ 23 ] == 1)
+            if (trace_msg[ T_API_20 ] == 1)
                 log.trace(
                           "найденный сессионный билет не полон, считаем что пользователь не был найден");
             tt.user_uri = null;
@@ -394,7 +394,7 @@ class PThreadContext : Context
 
         if (when !is null)
         {
-            if (trace_msg[ 24 ] == 1)
+            if (trace_msg[ T_API_30 ] == 1)
                 log.trace("сессионный билет %s Ok, user=%s, when=%s, duration=%d", tt.id, tt.user_uri, when,
                           duration);
 
@@ -421,7 +421,7 @@ class PThreadContext : Context
             else
                 send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_PUT, 1);
 
-            if (trace_msg[ 555 ] == 1)
+            if (trace_msg[ T_API_40 ] == 1)
                 log.trace(func[ (func.lastIndexOf(".") + 1)..$ ] ~ ": t=%d µs", t);
         }
         catch (Exception ex)
@@ -524,7 +524,7 @@ class PThreadContext : Context
         new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
         new_ticket.resources[ ticket__duration ] ~= Resource(duration);
 
-        if (trace_msg[ 18 ] == 1)
+        if (trace_msg[ T_API_50 ] == 1)
             log.trace("authenticate, ticket__accessor=%s", user_id);
 
         // store ticket
@@ -547,7 +547,7 @@ class PThreadContext : Context
     {
         Ticket ticket;
 
-        if (trace_msg[ 18 ] == 1)
+        if (trace_msg[ T_API_60 ] == 1)
             log.trace("trusted authenticate, ticket=[%s] login=[%s]", ticket, login);
 
         ticket.result = ResultCode.Authentication_Failed;
@@ -631,7 +631,7 @@ class PThreadContext : Context
             }
             else
             {
-                if (trace_msg[ 18 ] == 1)
+                if (trace_msg[ T_API_70 ] == 1)
                     log.trace("authenticate, login=[%s] password=[%s]", login, password);
 
                 ticket.result = ResultCode.Authentication_Failed;
@@ -706,7 +706,7 @@ class PThreadContext : Context
                         tt.result               = ResultCode.OK;
                         user_of_ticket[ tt.id ] = tt;
 
-                        if (trace_msg[ 17 ] == 1)
+                        if (trace_msg[ T_API_80 ] == 1)
                             log.trace("тикет найден в базе, id=%s", ticket_id);
                     }
                     else
@@ -720,19 +720,19 @@ class PThreadContext : Context
                     tt        = new Ticket;
                     tt.result = ResultCode.Ticket_expired;
 
-                    if (trace_msg[ 17 ] == 1)
+                    if (trace_msg[ T_API_90 ] == 1)
                         log.trace("тикет не найден в базе, id=%s", ticket_id);
                 }
             }
             else
             {
-                if (trace_msg[ 17 ] == 1)
+                if (trace_msg[ T_API_100 ] == 1)
                     log.trace("тикет нашли в кеше, id=%s, end_time=%d", tt.id, tt.end_time);
 
                 SysTime now = Clock.currTime();
                 if (now.stdTime >= tt.end_time)
                 {
-                    if (trace_msg[ 17 ] == 1)
+                    if (trace_msg[ T_API_110 ] == 1)
                         log.trace("тикет просрочен, id=%s", ticket_id);
                     tt        = new Ticket;
                     tt.result = ResultCode.Ticket_expired;
@@ -743,7 +743,7 @@ class PThreadContext : Context
                     tt.result = ResultCode.OK;
                 }
 
-                if (trace_msg[ 17 ] == 1)
+                if (trace_msg[ T_API_120 ] == 1)
                     log.trace("тикет, %s", *tt);
             }
             return tt;
@@ -760,7 +760,7 @@ class PThreadContext : Context
     {
 //        StopWatch sw; sw.start;
 
-        if (trace_msg[ 26 ] == 1)
+        if (trace_msg[ T_API_130 ] == 1)
         {
             if (ticket !is null)
                 log.trace("get_individuals_via_query: start, query_str=%s, ticket=%s", query_str, ticket.id);
@@ -786,7 +786,7 @@ class PThreadContext : Context
         {
 //            stat(CMD.GET, sw);
 //
-            if (trace_msg[ 26 ] == 1)
+            if (trace_msg[ T_API_140 ] == 1)
                 log.trace("get_individuals_via_query: end, query_str=%s", query_str);
         }
     }
@@ -871,7 +871,7 @@ class PThreadContext : Context
     {
         //       StopWatch sw; sw.start;
 
-        if (trace_msg[ 25 ] == 1)
+        if (trace_msg[ T_API_150 ] == 1)
         {
             if (ticket !is null)
                 log.trace("get_individual, uri=%s, ticket=%s", uri, ticket.id);
@@ -905,7 +905,7 @@ class PThreadContext : Context
             }
             else
             {
-                if (trace_msg[ 25 ] == 1)
+                if (trace_msg[ T_API_160 ] == 1)
                     log.trace("get_individual, not authorized, uri=%s", uri);
                 individual.setStatus(ResultCode.Not_Authorized);
             }
@@ -915,7 +915,7 @@ class PThreadContext : Context
         finally
         {
 //            stat(CMD.GET, sw);
-            if (trace_msg[ 25 ] == 1)
+            if (trace_msg[ T_API_170 ] == 1)
                 log.trace("get_individual: end, uri=%s", uri);
         }
     }
@@ -966,7 +966,7 @@ class PThreadContext : Context
         rs = ResultCode.Unprocessable_Entity;
 
 
-        if (trace_msg[ 25 ] == 1)
+        if (trace_msg[ T_API_180 ] == 1)
         {
             if (ticket !is null)
                 log.trace("get_individual as cbor, uri=%s, ticket=%s", uri, ticket.id);
@@ -992,7 +992,7 @@ class PThreadContext : Context
             }
             else
             {
-                if (trace_msg[ 25 ] == 1)
+                if (trace_msg[ T_API_190 ] == 1)
                     log.trace("get_individual as cbor, not authorized, uri=%s", uri);
                 rs = ResultCode.Not_Authorized;
             }
@@ -1002,7 +1002,7 @@ class PThreadContext : Context
         finally
         {
             stat(CMD.GET, sw);
-            if (trace_msg[ 25 ] == 1)
+            if (trace_msg[ T_API_200 ] == 1)
                 log.trace("get_individual as cbor: end, uri=%s", uri);
         }
     }
@@ -1060,7 +1060,7 @@ class PThreadContext : Context
                 log.trace("ERR! no remove subject :uri=%s, errcode=[%s], ticket=[%s]",
                           uri, text(res.result), ticket !is null ? text(*ticket) : "null");
 
-            if (trace_msg[ 27 ] == 1)
+            if (trace_msg[ T_API_210 ] == 1)
                 log.trace("[%s] remove_individual [%s] uri = %s", name, uri, res);
 
 //            stat(CMD.PUT, sw);
@@ -1091,7 +1091,7 @@ class PThreadContext : Context
 
             if (external_write_storage_url !is null)
             {
-                if (trace_msg[ 27 ] == 1)
+                if (trace_msg[ T_API_220 ] == 1)
                     log.trace("[%s] store_individual use EXTERNAL", name);
 
                 string url;
@@ -1160,7 +1160,7 @@ class PThreadContext : Context
                 Tid tid_subject_manager;
                 Tid tid_acl;
 
-                if (trace_msg[ 27 ] == 1)
+                if (trace_msg[ T_API_230 ] == 1)
                     log.trace("[%s] store_individual: %s", name, *indv);
 
                 Resources _types = indv.resources.get(rdf__type, Resources.init);
@@ -1283,6 +1283,7 @@ class PThreadContext : Context
                     if (rdfType.anyExists("v-s:ExecuteScript"))
                     {
                         // передать вызов отдельной нити по выполнению Long Time Run Scripts
+                        veda.core.glue_code.ltrs.execute_script(this, new_state);
                     }
 
                     if (prepare_events == true)
@@ -1308,7 +1309,7 @@ class PThreadContext : Context
                           indv !is null ? text(*indv) : "null",
                           text(res.result), ticket !is null ? text(*ticket) : "null");
 
-            if (trace_msg[ 27 ] == 1)
+            if (trace_msg[ T_API_240 ] == 1)
                 log.trace("[%s] store_individual [%s] = %s", name, indv.uri, res);
 
             stat(CMD.PUT, sw);

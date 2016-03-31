@@ -4,7 +4,7 @@
  *	START - подготавливает очередь и запускает исполнение скрипта над данными из очереди
  */
 
-module veda.core.ltrs;
+module veda.core.glue_code.ltrs;
 
 private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, core.thread, std.algorithm;
 private import bind.v8d_header;
@@ -14,7 +14,7 @@ private import veda.type, veda.core.context, veda.core.define, veda.onto.resourc
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
-private  logger _log;
+private logger _log;
 private logger log()
 {
     if (_log is null)
@@ -29,11 +29,13 @@ private struct Task
 {
     Consumer   consumer;
     Individual codelet;
+    string     arguments_cbor;
+    string     results_uri;
 }
 
 alias Task *[ string ] Tasks;
 
-private Tasks[ int ] tasks_2_priority;
+private      Tasks[ int ] tasks_2_priority;
 private Task *task;
 
 private void ltrs_thread(string thread_name, string _node_id)
@@ -69,13 +71,13 @@ private void ltrs_thread(string thread_name, string _node_id)
                                    thread_term();
                                }
                            },
-                           (CMD cmd, string new_state)
+                           (CMD cmd, string inst_of_codelet)
                            {
                                check_context();
                                if (cmd == CMD.START)
                                {
                                    Individual indv;
-                                   if (cbor2individual(&indv, new_state) < 0)
+                                   if (cbor2individual(&indv, inst_of_codelet) < 0)
                                        return;
 
                                    Queue queue = new veda.core.queue.Queue("queue-ltrs-" ~ indv.uri);
@@ -105,18 +107,25 @@ private void ltrs_thread(string thread_name, string _node_id)
             // обработка элементов очередей согласно приоритетам
             yield();
 
+            Ticket sticket = context.sys_ticket();
+
 
             foreach (priority; sort(tasks_2_priority.keys))
             {
                 Tasks tasks = tasks_2_priority.get(priority, Tasks.init);
 
-                foreach (id, task; tasks)
+                foreach (script_uri, task; tasks)
                 {
                     string data = task.consumer.pop();
                     if (data !is null)
                     {
-//                    	veda.core.glue_code.scripts.send_put(context, context.sys_ticket(), data, ref MapResource rdfType,
-//                     Individual *individual, string event_id, long op_id)
+                        veda.core.glue_code.scripts.execute_script(context, &sticket, data, script_uri, task.arguments_cbor, task.results_uri,
+                                                                   thisTid);
+
+                        receive((bool isReady)
+                                {
+                                });
+                        task.consumer.commit();
                     }
                 }
             }
@@ -146,9 +155,21 @@ public bool stop_module(Context ctx)
     Tid tid_scripts = ctx.getTid(P_MODULE.ltrs);
 
     if (tid_scripts != Tid.init)
-    {
         send(tid_scripts, CMD.EXIT);
-    }
+    else
+        return false;
 
-    return 0;
+    return true;
+}
+
+public bool execute_script(Context ctx, string execute_script_srz)
+{
+    Tid tid_scripts = ctx.getTid(P_MODULE.ltrs);
+
+    if (tid_scripts != Tid.init)
+        send(tid_scripts, CMD.START, execute_script_srz);
+    else
+        return false;
+
+    return true;
 }
