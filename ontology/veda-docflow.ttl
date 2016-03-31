@@ -574,7 +574,7 @@ v-df:PsHasAction
   v-ui:forClass v-wf:DecisionAgreedToExecute ;
   v-ui:forProperty cmn-s:hasAction ;
   v-ui:maxCardinality 20 ;
-  v-ui:minCardinality 0 ;
+  v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='cmn-s:Action')"^^xsd:string ;
   v-ui:tooltip "Non-required, multy value. Link to instance of Action class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Action."@ru ;
