@@ -94,11 +94,26 @@ void fanout_thread(string thread_name, string _node_id)
                                     connect_to_smtp(context);
                                 }
 
-                                if (mysql_conn !is null)
-                                    push_to_mysql(prev_indv, new_indv);
+                                try
+                                {
+                                    if (mysql_conn !is null)
+                                        push_to_mysql(prev_indv, new_indv);
+                                }
+                                catch (Throwable ex)
+                                {
+                                    log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+                                }
 
-                                if (smtp_conn !is null)
-                                    push_to_smtp(prev_indv, new_indv);
+
+                                try
+                                {
+                                    if (smtp_conn !is null)
+                                        push_to_smtp(prev_indv, new_indv);
+                                }
+                                catch (Throwable ex)
+                                {
+                                    log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+                                }
                             }
                         }
                     },
@@ -303,7 +318,7 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
             }
         }
     }
-    catch (Exception ex)
+    catch (Throwable ex)
     {
         log.trace("#EX! fail send e-mail[%s]=%s", ex.msg, message.toString());
     }
@@ -412,7 +427,7 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
 
         //writeln ("@@@@1 insert TO MYSQL IS OK ", text (mysql_conn));
     }
-    catch (Exception ex)
+    catch (Throwable ex)
     {
         log.trace("!ERR:push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
     }
