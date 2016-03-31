@@ -71,13 +71,13 @@ private void ltrs_thread(string thread_name, string _node_id)
                                    thread_term();
                                }
                            },
-                           (CMD cmd, string new_state)
+                           (CMD cmd, string inst_of_codelet)
                            {
                                check_context();
                                if (cmd == CMD.START)
                                {
                                    Individual indv;
-                                   if (cbor2individual(&indv, new_state) < 0)
+                                   if (cbor2individual(&indv, inst_of_codelet) < 0)
                                        return;
 
                                    Queue queue = new veda.core.queue.Queue("queue-ltrs-" ~ indv.uri);
@@ -121,6 +121,11 @@ private void ltrs_thread(string thread_name, string _node_id)
                     {
                         veda.core.glue_code.scripts.execute_script(context, &sticket, data, script_uri, task.arguments_cbor, task.results_uri,
                                                                    thisTid);
+
+                        receive((bool isReady)
+                                {
+                                });
+                        task.consumer.commit();
                     }
                 }
             }
@@ -151,6 +156,20 @@ public bool stop_module(Context ctx)
 
     if (tid_scripts != Tid.init)
         send(tid_scripts, CMD.EXIT);
+    else
+        return false;
 
-    return 0;
+    return true;
+}
+
+public bool execute_script(Context ctx, string execute_script_srz)
+{
+    Tid tid_scripts = ctx.getTid(P_MODULE.ltrs);
+
+    if (tid_scripts != Tid.init)
+        send(tid_scripts, CMD.START, execute_script_srz);
+    else
+        return false;
+
+    return true;
 }

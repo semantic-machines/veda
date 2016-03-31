@@ -1283,6 +1283,7 @@ class PThreadContext : Context
                     if (rdfType.anyExists("v-s:ExecuteScript"))
                     {
                         // передать вызов отдельной нити по выполнению Long Time Run Scripts
+                        veda.core.ltrs.execute_script(this, new_state);
                     }
 
                     if (prepare_events == true)
