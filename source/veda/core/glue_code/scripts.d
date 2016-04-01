@@ -32,7 +32,10 @@ enum RUN_MODE
 
 private int     count;
 private Context context;
-private         ScriptInfo[ string ] scripts;
+
+private         ScriptInfo[ string ] event_scripts;
+private         ScriptInfo[ string ] codelet_scripts;
+
 private VQL     vql;
 private string  empty_uid;
 private string  vars_for_event_script;
@@ -96,7 +99,7 @@ private void scripts_thread(string thread_name, string node_id)
                                 Individual indv;
                                 if (cbor2individual(&indv, arg) > 0)
                                 {
-                                    prepare_script(indv, script_vm, vars_for_event_script);
+                                    prepare_script(event_scripts, indv, script_vm, vars_for_event_script);
                                     send(to, true);
                                 }
                             }
@@ -138,7 +141,6 @@ private void scripts_thread(string thread_name, string node_id)
                                 MapResource rdfType;
                                 setMapResources(types, rdfType);
 
-
                                 g_document.data = cast(char *)msg;
                                 g_document.length = cast(int)msg.length;
 
@@ -153,17 +155,21 @@ private void scripts_thread(string thread_name, string node_id)
                                     g_user.length = "cfg:VedaSystem".length;
                                 }
 
-                                string sticket = context.sys_ticket().id;
-                                g_ticket.data = cast(char *)sticket;
-                                g_ticket.length = cast(int)sticket.length;
+                                Ticket sticket = context.sys_ticket();
+                                string sticket_id = sticket.id;
+                                g_ticket.data = cast(char *)sticket_id;
+                                g_ticket.length = cast(int)sticket_id.length;
 
                                 set_g_super_classes(rdfType.keys, onto);
 
-                                ScriptInfo script = scripts.get(script_uri, ScriptInfo.init);
+                                ScriptInfo script = codelet_scripts.get(script_uri, ScriptInfo.init);
 
                                 if (script is ScriptInfo.init)
                                 {
-                                    prepare_script(indv, script_vm, vars_for_codelet_script);
+//                                  writeln ("@script_uri=", script_uri);
+                                    Individual codelet = context.get_individual(&sticket, script_uri);
+//                                  writeln ("@codelet=", codelet);
+                                    prepare_script(codelet_scripts, codelet, script_vm, vars_for_codelet_script);
                                 }
 
                                 if (script.compiled_script !is null)
@@ -189,6 +195,7 @@ private void scripts_thread(string thread_name, string node_id)
                             }
                             finally
                             {
+                                inc_count_prep_put();
                                 send(to, true);
                             }
                         },
@@ -214,7 +221,7 @@ private void scripts_thread(string thread_name, string node_id)
 
                                 if (prepare_if_is_script == false)
                                 {
-                                    if (scripts.get(individual_id, ScriptInfo.init) !is ScriptInfo.init)
+                                    if (event_scripts.get(individual_id, ScriptInfo.init) !is ScriptInfo.init)
                                         prepare_if_is_script = true;
                                 }
 
@@ -224,7 +231,7 @@ private void scripts_thread(string thread_name, string node_id)
                                     if (cbor2individual(&indv, msg) < 0)
                                         return;
 
-                                    prepare_script(indv, script_vm, vars_for_event_script);
+                                    prepare_script(event_scripts, indv, script_vm, vars_for_event_script);
                                 }
 
                                 if (onto is null)
@@ -253,7 +260,7 @@ private void scripts_thread(string thread_name, string node_id)
 
                                 set_g_super_classes(indv_types, onto);
 
-                                foreach (script_id, script; scripts)
+                                foreach (script_id, script; event_scripts)
                                 {
                                     if (script.compiled_script !is null)
                                     {
@@ -439,7 +446,7 @@ public void load_event_scripts()
 
     foreach (ss; res)
     {
-        prepare_script(ss, script_vm, vars_for_event_script);
+        prepare_script(event_scripts, ss, script_vm, vars_for_event_script);
     }
 
     //writeln ("@2");
@@ -448,7 +455,7 @@ public void load_event_scripts()
 }
 
 
-private void prepare_script(Individual ss, ScriptVM script_vm, string vars_env)
+private void prepare_script(ref ScriptInfo[ string ] scripts, Individual ss, ScriptVM script_vm, string vars_env)
 {
     if (trace_msg[ 310 ] == 1)
         log.trace("prepare_script uri=%s", ss.uri);
@@ -616,6 +623,10 @@ public void execute_script(Context ctx, Ticket *ticket, string new_state, string
                 user_uri = ticket.user_uri;
 
             send(tid_scripts, user_uri, new_state, script_uri, arguments_cbor, results_uri, to);
+
+            receive((bool isReady)
+                    {
+                    });
         }
         catch (Exception ex)
         {

@@ -46,6 +46,7 @@ td:script_onto_rename
 	rdf:type v-s:Codelet ;
 	v-s:script 
 	"""
+print ('hello ' + document['@']);
     // скрипт переименования онтологии
     var rename_template = arguments["rename_template"];
     var is_update = false;

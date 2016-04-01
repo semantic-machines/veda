@@ -80,8 +80,8 @@ class Onto
         reload_count++;
         Individual[] l_individuals;
 
-        //if (trace_msg[ 20 ] == 1)
-        log.trace_log_and_console("[%s] load onto to context..", context.get_name);
+        if (trace_msg[ 20 ] == 1)
+        	log.trace_log_and_console("[%s] load onto..", context.get_name);
 
 //        if (context.getTid(P_MODULE.acl_manager) != Tid.init)
 //            context.wait_thread(P_MODULE.acl_manager);
@@ -98,7 +98,7 @@ class Onto
                           l_individuals);
 
         //if (trace_msg[ 20 ] == 1)
-        log.trace_log_and_console("[%s] count individuals: %d", context.get_name, l_individuals.length);
+        log.trace_log_and_console("[%s] load onto, count individuals: %d", context.get_name, l_individuals.length);
 
         foreach (indv; l_individuals)
         {
@@ -134,7 +134,7 @@ class Onto
         //}
 
         if (trace_msg[ 20 ] == 1)
-            log.trace_log_and_console("[%s] load onto to graph..Ok", context.get_name);
+            log.trace_log_and_console("[%s] load onto..Ok", context.get_name);
     }
 
     private void prepare_superclasses(ref Classes superclasses, ref Individual[ string ] classes, string look_cl, int level = 0)

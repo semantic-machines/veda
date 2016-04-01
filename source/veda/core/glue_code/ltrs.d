@@ -28,14 +28,18 @@ private string  node_id;
 private struct Task
 {
     Consumer   consumer;
-    Individual codelet;
+    Individual execute_script;
+    string     execute_script_id;
     string     arguments_cbor;
     string     results_uri;
 }
 
-alias Task *[ string ] Tasks;
+private struct Tasks
+{
+    Task *[ string ] list;
+}
 
-private      Tasks[ int ] tasks_2_priority;
+private Tasks *[ int ] tasks_2_priority;
 private Task *task;
 
 private void ltrs_thread(string thread_name, string _node_id)
@@ -59,11 +63,21 @@ private void ltrs_thread(string thread_name, string _node_id)
             context = new PThreadContext(node_id, thread_name, P_MODULE.ltrs);
     }
 
+    long recv_wait_dur = 100_000_000;
+
+    Thread.sleep(dur!("seconds")(30));
     while (true)
     {
         try
         {
-            receiveTimeout(msecs(0),
+            if (tasks_2_priority.length == 0)
+            {
+                writeln("ltrs zzzzzzz...");
+                //Thread.sleep(dur!("seconds")(1));
+                recv_wait_dur = 100_000_000;
+            }
+
+            receiveTimeout(msecs(recv_wait_dur),
                            (CMD cmd)
                            {
                                if (cmd == CMD.EXIT)
@@ -92,14 +106,18 @@ private void ltrs_thread(string thread_name, string _node_id)
                                    Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
 
                                    int priority = cast(int)indv.getFirstInteger("v-s:priority", 16);
+                                   string execute_script_id = indv.getFirstLiteral("v-s:useScript");
 
-                                   Tasks tasks = tasks_2_priority.get(priority, Tasks.init);
+                                   Tasks *tasks = tasks_2_priority.get(priority, null);
 
-                                   if (tasks is Tasks.init)
+                                   if (tasks is null)
+                                   {
+                                       tasks = new Tasks();
                                        tasks_2_priority[ priority ] = tasks;
+                                   }
 
-                                   task = new Task(cs, indv);
-                                   tasks[ indv.uri ] = task;
+                                   task = new Task(cs, indv, execute_script_id, null, null);
+                                   tasks.list[ indv.uri ] = task;
                                }
                            },
                            (Variant v) { writeln(thread_name, "::ltrs_thread::Received some other type.", v); });
@@ -107,32 +125,51 @@ private void ltrs_thread(string thread_name, string _node_id)
             // обработка элементов очередей согласно приоритетам
             yield();
 
-            Ticket sticket = context.sys_ticket();
-
-
-            foreach (priority; sort(tasks_2_priority.keys))
+            if (tasks_2_priority.length > 0)
             {
-                Tasks tasks = tasks_2_priority.get(priority, Tasks.init);
+                recv_wait_dur = 0;
 
-                foreach (script_uri, task; tasks)
+                check_context();
+                Ticket sticket = context.sys_ticket();
+
+                foreach (priority; sort(tasks_2_priority.keys))
                 {
-                    string data = task.consumer.pop();
-                    if (data !is null)
-                    {
-                        veda.core.glue_code.scripts.execute_script(context, &sticket, data, script_uri, task.arguments_cbor, task.results_uri,
-                                                                   thisTid);
+                    Tasks *tasks = tasks_2_priority.get(priority, null);
 
-                        receive((bool isReady)
-                                {
-                                });
-                        task.consumer.commit();
+                    if (tasks is null)
+                        continue;
+
+                    foreach (script_uri; tasks.list.keys.dup)
+                    {
+                        task = tasks.list.get(script_uri, null);
+
+                        if (tasks is null)
+                            continue;
+
+                        string data = task.consumer.pop();
+                        if (data !is null)
+                        {
+                            veda.core.glue_code.scripts.execute_script(context, &sticket, data, task.execute_script_id, task.arguments_cbor,
+                                                                       task.results_uri,
+                                                                       thisTid);
+
+                            task.consumer.commit();
+                        }
+                        else
+                        {
+                            //remove complete task
+                            tasks.list.remove(script_uri);
+
+                            if (tasks.list.length == 0)
+                                tasks_2_priority.remove(priority);
+                        }
                     }
                 }
             }
         }
         catch (Throwable ex)
         {
-            log.trace("ltrs# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
+            log.trace("ltrs# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.info);
         }
     }
 }
