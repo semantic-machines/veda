@@ -29,9 +29,8 @@ private struct Task
 {
     Consumer   consumer;
     Individual execute_script;
-    string     execute_script_id;
-    string     arguments_cbor;
-    string     results_uri;
+    string     execute_script_cbor;
+    string     codelet_id;
 }
 
 private struct Tasks
@@ -95,6 +94,9 @@ private void ltrs_thread(string thread_name, string _node_id)
                                    if (cbor2individual(&indv, inst_of_codelet) < 0)
                                        return;
 
+                                   if (indv.getFirstBoolean("v-s:isSuccess") == true)
+                                       return;
+
                                    //Queue queue = new veda.core.queue.Queue("queue-ltrs-" ~ indv.uri);
 
                                    //bool add_to_queue(string key, string value)
@@ -113,7 +115,7 @@ private void ltrs_thread(string thread_name, string _node_id)
                                    Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
 
                                    int priority = cast(int)indv.getFirstInteger("v-s:priority", 16);
-                                   string execute_script_id = indv.getFirstLiteral("v-s:useScript");
+                                   string codelet_id = indv.getFirstLiteral("v-s:useScript");
 
                                    Tasks *tasks = tasks_2_priority.get(priority, null);
 
@@ -123,7 +125,7 @@ private void ltrs_thread(string thread_name, string _node_id)
                                        tasks_2_priority[ priority ] = tasks;
                                    }
 
-                                   task = new Task(cs, indv, execute_script_id, null, null);
+                                   task = new Task(cs, indv, inst_of_codelet, codelet_id);
                                    tasks.list[ indv.uri ] = task;
                                }
                            },
@@ -156,9 +158,7 @@ private void ltrs_thread(string thread_name, string _node_id)
                         string data = task.consumer.pop();
                         if (data !is null)
                         {
-                            veda.core.glue_code.scripts.execute_script(context, &sticket, data, task.execute_script_id, task.arguments_cbor,
-                                                                       task.results_uri,
-                                                                       thisTid);
+                            veda.core.glue_code.scripts.execute_script(context, &sticket, data, task.codelet_id, task.execute_script_cbor, thisTid);
 
                             task.consumer.commit();
                         }
@@ -169,6 +169,9 @@ private void ltrs_thread(string thread_name, string _node_id)
 
                             if (tasks.list.length == 0)
                                 tasks_2_priority.remove(priority);
+
+                            task.consumer.remove();
+                            task.consumer.queue.remove();
                         }
                     }
                 }

@@ -26,8 +26,7 @@ _Buff   g_super_classes;
 _Buff   g_parent_script_id;
 _Buff   g_parent_document_id;
 _Buff   g_prev_state;
-_Buff   g_arguments;
-_Buff   g_results;
+_Buff   g_execute_script;
 _Buff   g_document;
 _Buff   g_user;
 _Buff   g_ticket;
@@ -264,17 +263,10 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
             else
                 return null;
         }
-        else if (uri == "$arguments")
+        else if (uri == "$execute_script")
         {
-            if (g_arguments.length > 0)
-                return &g_arguments;
-            else
-                return null;
-        }
-        else if (uri == "$results")
-        {
-            if (g_results.length > 0)
-                return &g_arguments;
+            if (g_execute_script.length > 0)
+                return &g_execute_script;
             else
                 return null;
         }

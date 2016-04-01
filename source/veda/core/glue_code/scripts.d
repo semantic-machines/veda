@@ -53,8 +53,7 @@ private void scripts_thread(string thread_name, string node_id)
 
     vars_for_codelet_script =
         "var user_uri = get_env_str_var ('$user');"
-        ~ "var arguments = get_individual (ticket, '$arguments');"
-        ~ "var results = get_individual (ticket, '$results');"
+        ~ "var execute_script = get_individual (ticket, '$execute_script');"
         ~ "var prev_state = get_individual (ticket, '$prev_state');"
         ~ "var super_classes = get_env_str_var ('$super_classes');"
         ~ "var _event_id = document['@'] + '+' + _script_id;";
@@ -123,11 +122,13 @@ private void scripts_thread(string thread_name, string node_id)
                             else
                                 send(to, false);
                         },
-                        (string user_uri, string msg, string script_uri, string arguments_cbor, string results_uri, Tid to)
+                        (string user_uri, string msg, string script_uri, string execute_script_cbor, Tid to)
                         {
                             try
                             {
-                                if (msg is null || msg.length <= 3 || script_vm is null)
+                                if (msg is null || msg.length <= 3 || script_vm is null ||
+                                    script_uri is null || script_uri.length <= 3 ||
+                                    execute_script_cbor is null || execute_script_cbor.length <= 3)
                                     return;
 
                                 Individual indv;
@@ -143,6 +144,9 @@ private void scripts_thread(string thread_name, string node_id)
 
                                 g_document.data = cast(char *)msg;
                                 g_document.length = cast(int)msg.length;
+
+                                g_execute_script.data = cast(char *)execute_script_cbor;
+                                g_execute_script.length = cast(int)execute_script_cbor.length;
 
                                 if (user_uri !is null)
                                 {
@@ -609,7 +613,7 @@ public void send_put(Context ctx, Ticket *ticket, EVENT ev_type, string new_stat
     veda.core.glue_code.scripts.inc_count_recv_put();
 }
 
-public void execute_script(Context ctx, Ticket *ticket, string new_state, string script_uri, string arguments_cbor, string results_uri, Tid to)
+public void execute_script(Context ctx, Ticket *ticket, string new_state, string codelet_uri, string execute_script_cbor, Tid to)
 {
     Tid tid_scripts = ctx.getTid(P_MODULE.scripts);
 
@@ -622,7 +626,7 @@ public void execute_script(Context ctx, Ticket *ticket, string new_state, string
             if (ticket !is null)
                 user_uri = ticket.user_uri;
 
-            send(tid_scripts, user_uri, new_state, script_uri, arguments_cbor, results_uri, to);
+            send(tid_scripts, user_uri, new_state, codelet_uri, execute_script_cbor, to);
             receive((bool isReady) {});
         }
         catch (Exception ex)
