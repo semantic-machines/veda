@@ -29,6 +29,8 @@ module.exports = {
 		driver.findElement({css:'[property="v-s:birthday"] + veda-control input'}).sendKeys(
 				now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2))
 				.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:birthday for person")});
+
+		driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot click middle name control for person")});
 		
 		//basic.chooseFromDropdown(driver, 'v-s:hasAccount', 'karpovrt', 'karpovrt');
 		
