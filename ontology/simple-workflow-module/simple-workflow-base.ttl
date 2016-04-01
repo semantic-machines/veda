@@ -753,9 +753,6 @@ s-wf:UserTaskFormTemplate
 			</label>
 		</div>
 		<div about="@" rel="v-wf:takenDecision" embedded="true"></div>
-		<hr />
-		<em about="v-wf:onDocument" property="rdfs:label"></em>
-		<div about="@" rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate" class="view edit -search"></div>
 	</div>	
 	
 	<div class="panel-footer">
@@ -763,6 +760,11 @@ s-wf:UserTaskFormTemplate
 		<!-- button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/ -->
 		<!-- button type="button" class="action btn btn-warning view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"/ -->
 	</div>
+	<div class="panel-body">
+		<em about="v-wf:onDocument" property="rdfs:label"></em>
+		<div about="@" rel="v-wf:onDocument" class="view edit -search"></div>			
+	</div>
+		
 </div>
 <script type="text/javascript">
 	var radioTmpl = $(".radio.decision", template);
