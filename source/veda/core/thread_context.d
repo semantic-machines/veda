@@ -376,30 +376,26 @@ class PThreadContext : Context
             writeln("Ex!: ", __FUNCTION__, ":", text(__LINE__), ", ", ex.msg);
         }
 
-//				writeln ("tt.userId=", tt.userId);
-
         if (tt.user_uri is null)
         {
             if (trace_msg[ T_API_10 ] == 1)
-                log.trace("найденный сессионный билет не полон, пользователь не найден");
+                log.trace("found a session ticket is not complete, the user can not be found.");
         }
 
         if (tt.user_uri !is null && (when is null || duration < 10))
         {
             if (trace_msg[ T_API_20 ] == 1)
-                log.trace(
-                          "найденный сессионный билет не полон, считаем что пользователь не был найден");
+                log.trace("found a session ticket is not complete, we believe that the user has not been found.");
             tt.user_uri = null;
         }
 
         if (when !is null)
         {
             if (trace_msg[ T_API_30 ] == 1)
-                log.trace("сессионный билет %s Ok, user=%s, when=%s, duration=%d", tt.id, tt.user_uri, when,
+                log.trace("session ticket %s Ok, user=%s, when=%s, duration=%d", tt.id, tt.user_uri, when,
                           duration);
 
-            // TODO stringToTime очень медленная операция ~ 100 микросекунд
-            tt.end_time = stringToTime(when) + duration * 10_000_000;                     //? hnsecs?
+            tt.end_time = stringToTime(when) + duration * 10_000_000;
         }
     }
 
@@ -500,6 +496,9 @@ class PThreadContext : Context
 
     public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null)
     {
+        if (trace_msg[ T_API_50 ] == 1)
+            log.trace("create_new_ticket, ticket__accessor=%s", user_id);
+
         Ticket ticket;
 
         if (external_write_storage_url !is null)
@@ -524,9 +523,6 @@ class PThreadContext : Context
         new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
         new_ticket.resources[ ticket__duration ] ~= Resource(duration);
 
-        if (trace_msg[ T_API_50 ] == 1)
-            log.trace("authenticate, ticket__accessor=%s", user_id);
-
         // store ticket
         string     ss_as_cbor = individual2cbor(&new_ticket);
 
@@ -539,6 +535,9 @@ class PThreadContext : Context
             subject2Ticket(new_ticket, &ticket);
             user_of_ticket[ ticket.id ] = new Ticket(ticket);
         }
+
+        if (trace_msg[ T_API_50 ] == 1)
+            log.trace("create_new_ticket, new ticket=%s", ticket);
 
         return ticket;
     }
@@ -599,6 +598,9 @@ class PThreadContext : Context
 
         Ticket    ticket;
 
+        if (trace_msg[ T_API_70 ] == 1)
+            log.trace("authenticate, login=[%s] password=[%s]", login, password);
+
         try
         {
             if (external_write_storage_url !is null)
@@ -631,9 +633,6 @@ class PThreadContext : Context
             }
             else
             {
-                if (trace_msg[ T_API_70 ] == 1)
-                    log.trace("authenticate, login=[%s] password=[%s]", login, password);
-
                 ticket.result = ResultCode.Authentication_Failed;
 
                 if (login == null || login.length < 1 || password == null || password.length < 6)
@@ -1070,7 +1069,9 @@ class PThreadContext : Context
     private OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool ignore_freeze,
                                       bool is_api_request)
     {
-        //writeln("context:store_individual #1 ", process_name);
+        if (trace_msg[ T_API_230 ] == 1)
+            log.trace("[%s] store_individual: %s %s", name, text(cmd), *indv);
+
         StopWatch sw; sw.start;
 
         OpResult  res = OpResult(ResultCode.Fail_Store, -1);
@@ -1157,11 +1158,8 @@ class PThreadContext : Context
             {
                 //  writeln("context:store_individual #5 ", process_name);
 
-                Tid tid_subject_manager;
-                Tid tid_acl;
-
-                if (trace_msg[ T_API_230 ] == 1)
-                    log.trace("[%s] store_individual: %s", name, *indv);
+                Tid       tid_subject_manager;
+                Tid       tid_acl;
 
                 Resources _types = indv.resources.get(rdf__type, Resources.init);
                 foreach (idx, rs; _types)
