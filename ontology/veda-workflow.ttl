@@ -2000,6 +2000,29 @@ v-wf:permission_c_on_decision
   rdf:type v-s:PermissionStatement ;
   v-s:canCreate "true"^^xsd:boolean ;
   v-s:permissionObject v-wf:Decision ;
+	v-s:permissionObject v-wf:DecisionGoSign ;
+	v-s:permissionObject v-wf:DecisionGoReview ;
+	v-s:permissionObject v-wf:DecisionAnswerToYourQuestion ;
+	v-s:permissionObject v-wf:DecisionControll ;
+	v-s:permissionObject v-wf:DecisionNotRequireReview ;
+	v-s:permissionObject v-wf:DecisionAgreed ;
+	v-s:permissionObject v-wf:DecisionAgreedToProject ;
+	v-s:permissionObject v-wf:DecisionAgreedToExecute ;
+	v-s:permissionObject v-wf:DecisionAgreedToExecuteComment ;
+	v-s:permissionObject v-wf:DecisionSign ;
+	v-s:permissionObject v-wf:DecisionApprove ;
+	v-s:permissionObject v-wf:DecisionReview ;
+	v-s:permissionObject v-wf:DecisionRejected ;
+	v-s:permissionObject v-wf:DecisionRemake ;
+	v-s:permissionObject v-wf:DecisionRemaked ;
+	v-s:permissionObject v-wf:DecisionNotForMe ;
+	v-s:permissionObject v-wf:DecisionBreak ;
+	v-s:permissionObject v-wf:DecisionExamined ;
+	v-s:permissionObject v-wf:DecisionAchieved ;
+	v-s:permissionObject v-wf:DecisionNotPerformed ;
+	v-s:permissionObject v-wf:DecisionConfirm ;
+	v-s:permissionObject v-wf:DecisionRedirect ;
+	v-s:permissionObject v-wf:DecisionCalculationsPerformed ;  
   v-s:permissionSubject cfg:AllUsersGroup ;
 .
 
@@ -2660,6 +2683,14 @@ v-wf:instructionRouteStartFormLinkRule
   v-s:classTo v-df:InstructionRouteStartForm;
   v-s:hasTransformation v-wf:instructionRouteStartForm;
   v-s:isRoute "true"^^xsd:boolean;
+.
+
+v-wf:permission_on_simple_routes_start_from
+  rdf:type v-s:PermissionStatement ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:permissionObject v-df:QuestionRouteStartForm ;
+  v-s:permissionObject v-df:InstructionRouteStartForm ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
 .
 
 v-wf:questionRouteStartForm
