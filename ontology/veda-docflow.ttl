@@ -400,6 +400,7 @@ v-df:QuestionRouteStartFormToNet
   v-wf:transformRule v-df:rul_QuestionTransform6_0 ;  
   v-wf:transformRule v-df:rul_QuestionTransform6_1 ;  
   v-wf:transformRule v-df:rul_QuestionTransform6_2 ;  
+  v-wf:transformRule v-df:rul_QuestionTransform6_3 ;    
   v-wf:transformRule v-df:rul_QuestionTransform7 ;  
   rdfs:isDefinedBy v-df: ;
 .
@@ -466,11 +467,18 @@ v-df:rul_QuestionTransform6_2
 	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'decision_route_to_add_reaction')"; 	
 .
+v-df:rul_QuestionTransform6_3
+	rdf:type v-wf:Rule ;
+	v-wf:segregateElement "contentName('@')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 's-wf:UserTaskForm')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'decision_form_type')"; 	
+.
 v-df:rul_QuestionTransform7
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableValue', 'задать вопрос')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableValue', 'Ответить на вопрос')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_action')"; 	
 .
 
@@ -489,6 +497,7 @@ v-df:InstructionRouteStartFormToNet
   v-wf:transformRule v-df:rul_InstructionTransform6_0 ;  
   v-wf:transformRule v-df:rul_InstructionTransform6_1 ;  
   v-wf:transformRule v-df:rul_InstructionTransform6_2 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform6_3 ;
   v-wf:transformRule v-df:rul_InstructionTransform7 ;  
   rdfs:isDefinedBy v-df: ;
 .
@@ -556,11 +565,18 @@ v-df:rul_InstructionTransform6_2
 	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'decision_route_to_add_reaction')"; 	
 .
+v-df:rul_InstructionTransform6_3
+	rdf:type v-wf:Rule ;
+	v-wf:segregateElement "contentName('@')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 's-wf:UserTaskForm')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'decision_form_type')"; 	
+.
 v-df:rul_InstructionTransform7
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableValue', 'выдать поручение')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableValue', 'Выполнить поручение')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_action')"; 	
 .
 
