@@ -205,8 +205,9 @@ void processed(Context context, bool is_load)
                             //log.trace("store, uri=%s %s \n%s \n%s", indv.uri, uri, text(indv), text(indv_in_storage));
                             if (res != ResultCode.OK)
                                 log.trace("individual =%s, not store, errcode =%s", indv.uri, text(res));
+                                
+                        	is_loaded = true;
                         }
-                        is_loaded = true;
                     }
                 }
             }
