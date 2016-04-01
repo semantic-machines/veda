@@ -16,8 +16,8 @@ module.exports = {
 		}).thenCatch(function (e) {basic.errorHandler(e, "Save button must be inactive")});
 		
 		// Удаляем раскрытый appointment
-		driver.executeScript("document.querySelector('[rel=\"v-s:hasAppointment\"] button.button-delete').scrollIntoView(true);");
-		driver.findElement({css:'[rel="v-s:hasAppointment"] button.button-delete'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot delete appointment")});
+		//driver.executeScript("document.querySelector('[rel=\"v-s:hasAppointment\"] button.button-delete').scrollIntoView(true);");
+		//driver.findElement({css:'[rel="v-s:hasAppointment"] button.button-delete'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot delete appointment")});
 		
 		// Заполняем обязательные поля
 		driver.findElement({css:'div[id="object"] [property="rdfs:label"] + veda-control input'}).sendKeys("Вася Пупкин "+somethingUnique).thenCatch(function (e) {basic.errorHandler(e, "Cannot fill rdfs:label for preson")});
