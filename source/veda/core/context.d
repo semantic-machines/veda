@@ -272,6 +272,9 @@ interface Context
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_subject_storage_db();
     public void reopen_ro_acl_storage_db();
+    public void subject_storage_commmit(bool isWait = true);
+    public long unload_subject_storage(string queue_name);
+
 
     public Storage get_subject_storage_db();
 

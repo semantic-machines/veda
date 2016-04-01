@@ -191,7 +191,7 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
         if (jsvm_node_type == "internal" || jsvm_node_type == "")
         {
             Tid tid_scripts = veda.core.glue_code.scripts.start_module(node_id);
-            Tid tid_ltrs = veda.core.glue_code.ltrs.start_module(node_id);
+            Tid tid_ltrs    = veda.core.glue_code.ltrs.start_module(node_id);
         }
 
         if (is_main)

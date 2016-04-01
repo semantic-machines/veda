@@ -623,10 +623,7 @@ public void execute_script(Context ctx, Ticket *ticket, string new_state, string
                 user_uri = ticket.user_uri;
 
             send(tid_scripts, user_uri, new_state, script_uri, arguments_cbor, results_uri, to);
-
-            receive((bool isReady)
-                    {
-                    });
+            receive((bool isReady) {});
         }
         catch (Exception ex)
         {

@@ -6,7 +6,7 @@
 
 module veda.core.glue_code.ltrs;
 
-private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, core.thread, std.algorithm;
+private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, core.thread, std.algorithm, std.uuid;
 private import bind.v8d_header;
 private import veda.core.util.utils, veda.util.cbor, veda.core.util.cbor8individual, veda.core.queue;
 private import veda.core.storage.lmdb_storage, veda.core.thread_context, veda.core.glue_code.script;
@@ -72,7 +72,7 @@ private void ltrs_thread(string thread_name, string _node_id)
         {
             if (tasks_2_priority.length == 0)
             {
-                writeln("ltrs zzzzzzz...");
+                //writeln("ltrs zzzzzzz...");
                 //Thread.sleep(dur!("seconds")(1));
                 recv_wait_dur = 100_000_000;
             }
@@ -87,6 +87,7 @@ private void ltrs_thread(string thread_name, string _node_id)
                            },
                            (CMD cmd, string inst_of_codelet)
                            {
+                               //Thread.sleep(dur!("seconds")(15));
                                check_context();
                                if (cmd == CMD.START)
                                {
@@ -94,15 +95,21 @@ private void ltrs_thread(string thread_name, string _node_id)
                                    if (cbor2individual(&indv, inst_of_codelet) < 0)
                                        return;
 
-                                   Queue queue = new veda.core.queue.Queue("queue-ltrs-" ~ indv.uri);
+                                   //Queue queue = new veda.core.queue.Queue("queue-ltrs-" ~ indv.uri);
 
-                                   bool add_to_queue(string key, string value)
-                                   {
-                                       queue.push(value);
-                                       return true;
-                                   }
+                                   //bool add_to_queue(string key, string value)
+                                   //{
+                                   //    queue.push(value);
+                                   //    return true;
+                                   //}
 
-                                   context.get_subject_storage_db.get_of_cursor(&add_to_queue);
+                                   //context.subject_storage_commmit ();
+                                   //context.get_subject_storage_db.get_of_cursor(&add_to_queue);
+                                   string queue_name = randomUUID().toString();
+
+                                   context.unload_subject_storage(queue_name);
+                                   Queue queue = new veda.core.queue.Queue(queue_name);
+
                                    Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
 
                                    int priority = cast(int)indv.getFirstInteger("v-s:priority", 16);

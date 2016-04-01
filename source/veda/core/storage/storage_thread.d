@@ -6,7 +6,7 @@ module veda.core.storage.storage_thread;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
-    import util.logger, veda.core.util.utils, veda.util.cbor, veda.core.util.cbor8individual;
+    import util.logger, veda.core.util.utils, veda.util.cbor, veda.core.util.cbor8individual, veda.core.queue;
     import veda.type, veda.core.bind.lmdb_header, veda.core.context, veda.core.define, veda.core.log_msg, veda.onto.individual, veda.onto.resource;
     import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools;
     import search.vel;
@@ -34,6 +34,39 @@ public string backup(Context ctx)
     return backup_id;
 }
 
+public ResultCode send_commit(P_MODULE storage_id, Context ctx, bool is_wait)
+{
+    ResultCode rc;
+    Tid        tid = ctx.getTid(storage_id);
+
+    if (tid != Tid.init)
+    {
+        if (is_wait == false)
+        {
+            send(tid, CMD.COMMIT);
+        }
+        else
+        {
+            send(tid, CMD.COMMIT, thisTid);
+            receive((bool isReady) {});
+        }
+        rc = ResultCode.OK;
+    }
+    return rc;
+}
+
+public long send_unload(P_MODULE storage_id, Context ctx, string queue_name)
+{
+    Tid  tid   = ctx.getTid(storage_id);
+    long count = -1;
+
+    if (tid != Tid.init)
+    {
+        send(tid, CMD.UNLOAD, queue_name, thisTid);
+        receive((long _count) { count = _count; });
+    }
+    return count;
+}
 
 public ResultCode send_put(P_MODULE storage_id, Context ctx, string uri, string cur_state, bool ignore_freeze, out long op_id)
 {
@@ -111,7 +144,12 @@ public void individuals_manager(string thread_name, string db_path, string node_
                     },
                     (CMD cmd, Tid tid_response_reciever)
                     {
-                        if (cmd == CMD.FREEZE)
+                        if (cmd == CMD.COMMIT)
+                        {
+                            storage.flush(1);
+                            send(tid_response_reciever, true);
+                        }
+                        else if (cmd == CMD.FREEZE)
                         {
                             is_freeze = true;
                             send(tid_response_reciever, true);
@@ -128,14 +166,30 @@ public void individuals_manager(string thread_name, string db_path, string node_
                             storage.put(key, msg);
                         }
                     },
-                    (CMD cmd, string msg, Tid tid_response_reciever)
+                    (CMD cmd, string arg, Tid tid_response_reciever)
                     {
                         if (cmd == CMD.FIND)
                         {
-                            string res = storage.find(msg);
+                            string res = storage.find(arg);
                             //writeln("@FIND msg=", msg, ", $res = ", res);
-                            send(tid_response_reciever, msg, res, thisTid);
+                            send(tid_response_reciever, arg, res, thisTid);
                             return;
+                        }
+                        else if (cmd == CMD.UNLOAD)
+                        {
+                            long count;
+                            Queue queue = new veda.core.queue.Queue(arg);
+
+                            bool add_to_queue(string key, string value)
+                            {
+                                queue.push(value);
+                                count++;
+                                return true;
+                            }
+
+                            storage.get_of_cursor(&add_to_queue);
+                            queue.close();
+                            send(tid_response_reciever, count);
                         }
                     },
                     (CMD cmd, string uri, bool ignore_freeze, Tid tid_response_reciever)
@@ -250,40 +304,3 @@ public void individuals_manager(string thread_name, string db_path, string node_
         }
     }
 }
-
-/*
-   public string transform_and_execute_vql_to_lmdb(TTA tta, string p_op, out string l_token, out string op, out double _rd, int level,
-                                                ref Subjects res, Context context)
-   {
-    string dummy;
-    double rd, ld;
-
-    if (tta.op == "==")
-    {
-        string ls = transform_and_execute_vql_to_lmdb(tta.L, tta.op, dummy, dummy, ld, level + 1, res, context);
-        string rs = transform_and_execute_vql_to_lmdb(tta.R, tta.op, dummy, dummy, rd, level + 1, res, context);
-   //          writeln ("ls=", ls);
-   //          writeln ("rs=", rs);
-        if (ls == "@")
-        {
-            string  rr = context.get_subject_as_cbor(rs);
-            Subject ss = cbor2subject(rr);
-            res.addSubject(ss);
-        }
-    }
-    else if (tta.op == "||")
-    {
-        if (tta.R !is null)
-            transform_and_execute_vql_to_lmdb(tta.R, tta.op, dummy, dummy, rd, level + 1, res, context);
-
-        if (tta.L !is null)
-            transform_and_execute_vql_to_lmdb(tta.L, tta.op, dummy, dummy, ld, level + 1, res, context);
-    }
-    else
-    {
-   //		writeln ("#5 tta.op=", tta.op);
-        return tta.op;
-    }
-    return null;
-   }
- */

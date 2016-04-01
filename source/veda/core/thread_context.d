@@ -1066,6 +1066,17 @@ class PThreadContext : Context
         }
     }
 
+    public void subject_storage_commmit(bool isWait = true)
+    {
+        veda.core.storage.storage_thread.send_commit(P_MODULE.subject_manager, this, isWait);
+    }
+
+    public long unload_subject_storage(string queue_name)
+    {
+        return veda.core.storage.storage_thread.send_unload(P_MODULE.subject_manager, this, queue_name);
+    }
+
+
     private OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool ignore_freeze,
                                       bool is_api_request)
     {
