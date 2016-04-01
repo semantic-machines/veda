@@ -28,13 +28,13 @@ module.exports = {
 	    var now = new Date();
 		driver.findElement({css:'[property="v-s:birthday"] + veda-control input'}).sendKeys(
 				now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2))
-				.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:birthday for preson")});
+				.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:birthday for person")});
 		
-		basic.chooseFromDropdown(driver, 'v-s:hasAccount', 'karpovrt', 'karpovrt');
+		//basic.chooseFromDropdown(driver, 'v-s:hasAccount', 'karpovrt', 'karpovrt');
 		
-		driver.executeScript("document.querySelector('[rel=\"v-s:hasAppointment\"] + veda-control input').scrollIntoView(true);");
+		//driver.executeScript("document.querySelector('[rel=\"v-s:hasAppointment\"] + veda-control input').scrollIntoView(true);");
 		
-		basic.chooseFromDropdown(driver, 'v-s:hasAppointment', 'Роман Карпов', 'Роман Карпов : Аналитик');
+		//basic.chooseFromDropdown(driver, 'v-s:hasAppointment', 'Роман Карпов', 'Роман Карпов : Аналитик');
 
 		driver.executeScript("$('div[typeof=\"v-s:Person\"] > div.panel > div.panel-footer > button#save')[0].scrollIntoView(true);");
 
