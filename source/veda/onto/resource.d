@@ -340,6 +340,31 @@ string getFirstString(Resources rss)
     return rss[ 0 ].get!string;
 }
 
+string[] getAsStringArray(Resources rss)
+{
+    string[] res;
+
+    foreach (rs; rss)
+    {
+        res ~= rs.data;
+    }
+    return res;
+}
+
+string getAsStringify(Resources rss)
+{
+    string res = "";
+
+    foreach (rs; rss)
+    {
+        if (res.length != 0)
+            res ~= "," ~ rs.data;
+        else
+            res ~= rs.data;
+    }
+    return res;
+}
+
 bool anyExists(Resources rss, string[] objects)
 {
     foreach (rs; rss)
