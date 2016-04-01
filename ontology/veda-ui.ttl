@@ -414,7 +414,7 @@ v-ui:PersonAppointmentTemplate
 	<veda-control type="link" rel="v-s:defaultAppointment" class="fulltext dropdown" template="{individual['v-s:occupation'][0]['rdfs:label'].join(', ')}"></veda-control>
 </div>
 <script>
-	function handler () { location.reload(); }
+	function handler (property_uri) { if (property_uri === "v-s:defaultAppointment") location.reload(); }
 	individual.on("individual:propertyModified", handler);
 	template.on("remove", function () { individual.off("individual:propertyModified", handler); });
 </script>
@@ -1466,7 +1466,7 @@ td:PersonTemplate1
 		    <!--div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" embedded="true">шаблон: td:PreferencesTemplate1</div>
 		    <veda-control rel="v-ui:hasPreferences" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
 		    <br />
-		    <div about="@" rel="v-s:hasAppointment"></div>
+		    <div about="@" rel="v-s:defaultAppointment"></div>
 		    <!--div rel="v-s:hasAppointment" embedded="true"></div>
 		    <veda-control rel="v-s:hasAppointment" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
           </div>
