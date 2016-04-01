@@ -307,11 +307,11 @@ cfg:Event_3
  * parent_document_id = id of the document that triggered this event.
  */
 
-print('super_classes > '+toJson(super_classes));
+//print('super_classes > '+toJson(super_classes));
 
 if (super_classes.indexOf('v-s:Versioned')>=0) 
 {
-	print('+V');
+//	print('+V');
 	
 	// Only if we save actual version of document (or it is first save of versioned document)
     if (!document['v-s:actualVersion'] 
@@ -358,7 +358,7 @@ if (super_classes.indexOf('v-s:Versioned')>=0)
 		var membership = get_individual(ticket, uri);
 		
 		if (!membership) {
-			print('+M '+uri);
+			//print('+M '+uri);
 			membership = {
 				'@' : uri, 
 				'rdf:type'     : newUri('v-s:Membership'),
@@ -396,7 +396,7 @@ if (super_classes.indexOf('v-s:Versioned')>=0)
 
 if (super_classes.indexOf('v-s:Journaling')>=0) 
 {
-	print('+J');
+//	print('+J');
 	
     var author_uri = getUri(document['v-s:author']);
     if (!author_uri) { return; }
