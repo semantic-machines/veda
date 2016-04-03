@@ -45,8 +45,7 @@ td:res1
 td:script_onto_rename
 	rdf:type v-s:Codelet ;
 	v-s:script 
-	""
-	"
+	"""
 	try
 	{
 	    //print ('$ script_onto_rename:doc= ' + document['@']);
@@ -152,8 +151,7 @@ td:script_onto_rename
 	    }
 	}
 
-	""
-	";
+	""";
 .	
 
 
