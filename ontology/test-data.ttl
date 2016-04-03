@@ -45,64 +45,115 @@ td:res1
 td:script_onto_rename
 	rdf:type v-s:Codelet ;
 	v-s:script 
-	"""
-print ('$ script_onto_rename:doc= ' + document['@']);
-print ('$ script_onto_rename:execute_script= ' + toJson (execute_script));
+	""
+	"
+	try
+	{
+	    //print ('$ script_onto_rename:doc= ' + document['@']);
+	    //print ('$ script_onto_rename:execute_script= ' + toJson (execute_script));
 
-    // скрипт переименования онтологии
-    var rename_template = arguments["rename_template"];
-    var is_update = false;
-    var is_replace = false;
-    var prev_doc_uri = document['@'];
+	    var arguments = loadVariablesUseField(ticket, execute_script['v-s:argument']);
+	    //print ('$ script_onto_rename:arguments= ' + toJson (arguments));
 
-    for (var key in document)
-    {
-        for (var template in rename_template)
-        {
-            var cc = template.split(',');
-            if (!cc || cc.length != 2)
-                continue;
+	    // скрипт переименования онтологии
+	    var rename_template = arguments["rename_template"];
+	    var is_update = false;
+	    var is_replace = false;
+	    var prev_doc_uri = document['@'];
+	    var prev_doc = clone(document);
+	    var from_2_to = {};
 
-            var from = cc[0];
-            var to = cc[1];
+	    for (var idx in rename_template)
+	    {
+	        var template = rename_template[idx];
+	        //print ('$ template=', template);
 
-            var values = document[key];
-            if (key != '@')
-            {
-                for (var value in values)
-                {
-                    var new_str = value.data.replace(new RegExp(from, 'g'), to);
+	        var cc = template.split(',');
+	        if (!cc || cc.length != 2)
+	            continue;
 
-                    if (new_str != value.data)
-                    {
-                        is_update = true;
-                        value.data = new_str;
-                    }
-                }
-            }
-            else
-            {
-                if (key == from)
-                {
-                    is_replace = true;
-                    document['@'] = values;
-                }
-            }
-        }
-    }
+	        var from = cc[0];
+	        var to = cc[1];
+	        from_2_to[from] = to;
+	    }
+	    //print ('$ from_2_to=', toJson (from_2_to));
 
-    if (is_replace)
-    {
-        remove_individual(ticket, prev_doc_uri);
-        put_individual(ticket, document);
-    }
-    else
-    {
-        if (is_update)
-            put_individual(ticket, document);	
-    }        
+	    for (var key in document)
+	    {
+	        var values = document[key];
+	        if (key != '@')
+	        {
+	            for (var idx in values)
+	            {
+	                var value = values[idx];
+	                //print ("$value=", toJson (value));
 
-""";
+	                for (var from in from_2_to)
+	                {
+	                    var to = from_2_to[from];
+	                    //print ('$from=', from, ', to=', to); 
+	                    if (value.type == _Uri || value.type == _String)
+	                    {
+	                        var new_str = value.data.replace(new RegExp(from, 'g'), to);
+
+	                        if (new_str != value.data)
+	                        {
+	                            is_update = true;
+	                            value.data = new_str;
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	        else
+	        {
+	            for (var from in from_2_to)
+	            {
+	                if (key == from)
+	                {
+	                    var to = from_2_to[from];
+	                    is_replace = true;
+	                    //document['@'] = values;
+	                    //старые ключи надо убрать
+	                }
+	            }
+	        }
+	    }
+
+
+	    if (is_replace)
+	    {
+	        print('$ script_onto_rename:is_replace,  ' + document['@']);
+
+	        //remove_individual(ticket, prev_doc_uri);
+	        //put_individual(ticket, document);
+	    }
+	    else
+	    {
+	        if (is_update)
+	        {
+	            print('*1');
+	            print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
+	            print('*2');
+	            //put_individual(ticket, document);	
+	        }
+	    }
+
+	}
+	catch (e)
+	{
+	    if (typeof window === "undefined")
+	    {
+	        print(e.stack);
+	    }
+	    else
+	    {
+	        console.log(e.stack);
+	    }
+	}
+
+	""
+	";
 .	
 
 

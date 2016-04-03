@@ -151,3 +151,24 @@ function isTechnicalAttribute(attName, oldvalue) {
 	if (attName === 'v-s:hasStatusWorkflow') return true;
 	return false;
 }
+
+function loadVariablesUseField (ticket, field)
+{
+	var res = {};
+	for (var idx in field)
+	{
+		var uri = field[idx].data;
+		if (uri)
+		{
+			var indv = get_individual (ticket, uri);
+			
+			if (is_exist(indv, 'rdf:type', 'v-s:Variable'))
+			{
+				var varName = getFirstValue(indv['v-s:variableName']);
+				var varValue = getStrings(indv['v-s:variableValue']);
+				res[varName] = varValue;
+			}
+ 		}	
+	}	
+	return res;
+}
