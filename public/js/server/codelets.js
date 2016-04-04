@@ -180,3 +180,164 @@ function create_use_transformation(task)
     }
 
 }
+
+function replace_word(src, from, to)
+{
+    var new_str = src;
+    //print ('src=', src, ', from=', from, ', to=', to); 
+    var is_prepare = false;
+
+    if (src.length == from.length)
+        is_prepare = true;
+
+    if (is_prepare == false)
+    {
+        var pos = src.indexOf(from);
+        if (pos && pos >= 0)
+        {
+            //print ('src=', src, ', from=', from, ', to=', to); 
+            //print ('$ #1 pos=', pos);
+
+            var last_ch = src[pos + from.length];
+            //print ('$ #2 last_ch=', last_ch);
+
+            if (last_ch && isAlphaNumeric(last_ch) == false)
+            {
+                //print ('$ isAlphaNumeric last_ch=', last_ch);
+                is_prepare = true;
+            }
+        }
+    }
+
+    if (is_prepare)
+    {
+        new_str = src.replace(new RegExp(from, 'g'), to);
+    }
+
+    return new_str;
+}
+
+// скрипт переименования онтологии
+function onto_rename(ticket, document, execute_script)
+{    
+    //    print ('$$$$$$$$$$$$$$ script_onto_rename:doc= ' + document['@']);
+    try
+    {
+        //print ('$ script_onto_rename:execute_script= ' + toJson (execute_script));        
+        if (document['@'] === execute_script['@'])
+            return;
+
+        var args_uris = execute_script['v-s:argument'];
+        var args = loadVariablesUseField(ticket, args_uris);
+
+        for (var idx in args_uris)
+        {
+            var arg_uri = args_uris[idx].data;
+            if (arg_uri === document['@'])
+                return;
+        }
+
+        var rename_template = args["rename_template"];
+        var is_update = false;
+        var is_replace = false;
+        var prev_doc_uri = document['@'];
+        var prev_doc = clone(document);
+        var from_2_to = {};
+
+        for (var idx in rename_template)
+        {
+            var template = rename_template[idx];
+
+            var cc = template.split(',');
+            if (!cc || cc.length != 2)
+                continue;
+
+            var from = cc[0];
+            var to = cc[1];
+            from_2_to[from] = to;
+        }
+
+        for (var key in document)
+        {
+            var values = document[key];
+            if (key != '@')
+            {
+                for (var from in from_2_to)
+                {
+                    if (key === from)
+                    {
+                        var to = from_2_to[from];
+                        document[to] = values;
+                        delete document[from];
+                    }
+                }
+
+                for (var idx in values)
+                {
+                    var value = values[idx];
+
+                    for (var from in from_2_to)
+                    {
+                        if (value.type == _Uri || value.type == _String)
+                        {
+                            var to = from_2_to[from];
+
+                            var new_str = replace_word(value.data, from, to);
+
+                            if (new_str != value.data)
+                            {
+                                is_update = true;
+                                value.data = new_str;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (var from in from_2_to)
+                {
+                    var new_str = replace_word(values, from, to);
+
+                    if (new_str != values)
+                    {
+                        var to = from_2_to[from];
+                        is_replace = true;
+                        document['@'] = new_str;
+                    }
+                }
+            }
+        }
+
+        if (is_replace)
+        {
+            remove_individual(ticket, prev_doc_uri, "");
+            put_individual(ticket, document, "");
+        }
+        else
+        {
+            if (is_update)
+            {
+                put_individual(ticket, document, "");
+            }
+        }
+
+        if (is_replace || is_update)
+        {
+            print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
+        }
+
+
+    }
+    catch (e)
+    {
+        if (typeof window === "undefined")
+        {
+            print(e.stack);
+        }
+        else
+        {
+            console.log(e.stack);
+        }
+    }
+}
