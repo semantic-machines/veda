@@ -1,0 +1,15 @@
+{
+	"name": "veda",
+	"description": "veda-bootstrap",
+	"dependencies": {
+	},
+        "license": "LGPL v3",
+	"sourcePaths":["source/veda/bootstrap"],
+	"configurations": [
+	{
+	    "name": "app",
+	    "docs": ["syntaxOnly"],
+	    "targetType": "executable"
+	}
+	]
+}
