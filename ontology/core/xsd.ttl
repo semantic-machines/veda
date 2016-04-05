@@ -21,7 +21,7 @@ xsd:string
 xsd:integer
   rdf:type rdfs:Datatype ;
   rdfs:label "Integer datatype"@en ;
-  rdfs:label "Челочисленный тип данных"@ru ;
+  rdfs:label "Целочисленный тип данных"@ru ;
   rdfs:isDefinedBy xsd: ;
   rdfs:subClassOf rdf:XMLLiteral ;
 .
