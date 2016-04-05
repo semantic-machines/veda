@@ -88,8 +88,8 @@ interface VedaStorageRest_API {
     @path("wait_module") @method(HTTPMethod.GET)
     long wait_module(int module_id, long op_id);
 
-    @path("restart_module") @method(HTTPMethod.GET)
-    long restart_module(string ticket, int module_id);
+    @path("restart") @method(HTTPMethod.GET)
+    OpResult restart(string ticket);
 
     @path("set_trace") @method(HTTPMethod.GET)
     void set_trace(int idx, bool state);
@@ -154,10 +154,12 @@ class VedaStorageRest : VedaStorageRest_API
     private Worker *[] pool;
     string[ string ] properties;
     int                last_used_tid = 0;
+    void function(int sig) shutdown;
 
-    this(std.concurrency.Tid[] _pool, Context _local_context)
+    this(std.concurrency.Tid[] _pool, Context _local_context, void function(int sig) _shutdown)
     {
-        context = _local_context;
+        shutdown = _shutdown;
+        context  = _local_context;
         foreach (idx, tid; _pool)
         {
             Worker *worker = new Worker(tid, cast(int)idx, true, false, 0, ResultCode.No_Content);
@@ -466,9 +468,24 @@ class VedaStorageRest : VedaStorageRest_API
         return res;
     }
 
-    long restart_module(string ticket, int module_id)
+    OpResult restart(string _ticket)
     {
-        long res = context.restart_module(cast(P_MODULE)module_id);
+        OpResult res;
+
+        Ticket   *ticket = context.get_ticket(_ticket);
+
+        if (ticket is null)
+            return res;
+
+        ResultCode rc = ticket.result;
+
+        if (rc == ResultCode.OK)
+        {
+            shutdown(-1);
+        }
+
+        if (res.result != ResultCode.OK)
+            throw new HTTPStatusException(res.result);
 
         return res;
     }

@@ -83,6 +83,11 @@ bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
     return res;
 }
 
+void shutdown_core ()
+{
+	
+}
+
 Context init_core(string node_id, string role, ushort listener_http_port, string write_storage_node)
 {
     if ((node_id is null || node_id.length < 2) && role is null)

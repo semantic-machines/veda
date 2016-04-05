@@ -90,6 +90,15 @@ veda.Module(function Backend(veda) { "use strict";
 		};
 		return call_server(undefined, params, success, fail);
 	}
+
+	window.restart = function (ticket, success, fail) {
+		var params = {
+			type: "GET",
+			url: "restart",
+			data: { "ticket": ticket }
+		};
+		return call_server(undefined, params, success, fail);
+	}
 	
 	window.backup = function (to_binlog, success, fail) {
 		var params = {
