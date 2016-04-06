@@ -18,7 +18,7 @@ RUN apt-get -y -f install
 
 RUN cd ./veda && ./control-install.sh
 
-RUN cd ./veda && ./m.sh
+RUN cd ./veda && ./build.sh
 
 RUN cd ./veda && ./control-start.sh
 
