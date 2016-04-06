@@ -102,14 +102,14 @@ class Authorization : LmdbStorage
         rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
         if (rc == MDB_BAD_RSLOT)
         {
-            log.trace_log_and_console("warn: find 1:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", path);
+            log.trace("WARN! find 1:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", path);
             for (int i = 0; i < 10 && rc != 0; i++)
             {
                 mdb_txn_abort(txn_r);
 
                 if (i > 3)
                 {
-                    log.trace_log_and_console("warn: find 1:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", path);
+                    log.trace("WARN! find 1:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", path);
                     core.thread.Thread.sleep(dur!("msecs")(10));
                 }
 
@@ -121,13 +121,13 @@ class Authorization : LmdbStorage
         {
             if (rc == MDB_MAP_RESIZED)
             {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) WARN:%s", path, fromStringz(mdb_strerror(rc)));
+                log.trace("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", path, fromStringz(mdb_strerror(rc)));
                 reopen_db();
                 rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
             }
             else if (rc == MDB_BAD_RSLOT)
             {
-                log.trace_log_and_console("warn 2: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", path);
+                log.trace("WARN! 2: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", path);
                 mdb_txn_abort(txn_r);
 
                 // TODO: sleep ?

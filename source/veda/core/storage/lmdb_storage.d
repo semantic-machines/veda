@@ -180,7 +180,7 @@ public class LmdbStorage : Storage
 
         rc = mdb_env_create(&env);
         if (rc != 0)
-            log.trace_log_and_console("%s(%s) WARN#1:%s", __FUNCTION__ ~ ":" ~ text(__LINE__), _path, fromStringz(mdb_strerror(rc)));
+            log.trace_log_and_console("WARN! %s(%s) #1:%s", __FUNCTION__ ~ ":" ~ text(__LINE__), _path, fromStringz(mdb_strerror(rc)));
         else
         {
 //            rc = mdb_env_open(env, cast(char *)_path, MDB_NOMETASYNC | MDB_NOSYNC | MDB_NOTLS, std.conv.octal !664);
@@ -193,7 +193,7 @@ public class LmdbStorage : Storage
 
 
             if (rc != 0)
-                log.trace_log_and_console("%s(%s) WARN#2:%s", __FUNCTION__ ~ ":" ~ text(__LINE__), _path, fromStringz(mdb_strerror(rc)));
+                log.trace_log_and_console("WARN! %s(%s) #2:%s", __FUNCTION__ ~ ":" ~ text(__LINE__), _path, fromStringz(mdb_strerror(rc)));
             else
                 db_is_open[ _path ] = true;
 
@@ -563,7 +563,7 @@ public class LmdbStorage : Storage
         rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
         if (rc == MDB_BAD_RSLOT)
         {
-            log.trace_log_and_console("warn:" ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
+            log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
             mdb_txn_abort(txn_r);
 
             // TODO: sleep ?
@@ -576,12 +576,12 @@ public class LmdbStorage : Storage
         {
             if (rc == MDB_MAP_RESIZED)
             {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) WARN:%s", _path, fromStringz(mdb_strerror(rc)));
+                log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
                 reopen_db();
                 return count_entries();
             }
 
-            log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
+            log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
             mdb_txn_abort(txn_r);
             return -1;
         }
@@ -653,13 +653,13 @@ public class LmdbStorage : Storage
         {
             if (rc == MDB_MAP_RESIZED)
             {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) WARN:%s", _path, fromStringz(mdb_strerror(rc)));
+                log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
                 reopen_db();
                 return find(uri);
             }
             else if (rc == MDB_BAD_RSLOT)
             {
-                log.trace_log_and_console("[%s] warn 2: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
+                log.trace_log_and_console("WARN! [%s] #2: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
                 mdb_txn_abort(txn_r);
 
                 // TODO: sleep ?
@@ -765,13 +765,13 @@ public class LmdbStorage : Storage
         {
             if (rc == MDB_MAP_RESIZED)
             {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) WARN:%s", _path, fromStringz(mdb_strerror(rc)));
+                log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
                 reopen_db();
                 return -1;
             }
             else if (rc == MDB_BAD_RSLOT)
             {
-                log.trace_log_and_console("[%s] warn 2: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
+                log.trace_log_and_console("WARN! [%s] #2: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
                 mdb_txn_abort(txn_r);
 
                 // TODO: sleep ?
@@ -879,13 +879,13 @@ public class LmdbStorage : Storage
             {
                 if (rc == MDB_MAP_RESIZED)
                 {
-                    log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) WARN:%s", _path, fromStringz(mdb_strerror(rc)));
+                    log.trace_log_and_console("WARN" ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
                     reopen_db();
                     return -1;
                 }
                 else if (rc == MDB_BAD_RSLOT)
                 {
-                    log.trace_log_and_console("[%s] warn 2: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
+                    log.trace_log_and_console("WARN [%s] #2: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
                     mdb_txn_abort(txn_r);
 
                     // TODO: sleep ?
