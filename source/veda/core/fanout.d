@@ -78,13 +78,13 @@ void fanout_thread(string thread_name, string _node_id)
                         Individual prev_indv, new_indv;
                         if (new_state !is null && cbor2individual(&new_indv, new_state) < 0)
                         {
-                            log.trace("!ERR:invalid individual:[%s]", new_state);
+                            log.trace("ERR! invalid individual:[%s]", new_state);
                         }
                         else
                         {
                             if (prev_state !is null && cbor2individual(&prev_indv, prev_state) < 0)
                             {
-                                log.trace("!ERR:invalid individual:[%s]", prev_state);
+                                log.trace("ERR! invalid individual:[%s]", prev_state);
                             }
                             else
                             {
@@ -378,7 +378,7 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
                 }
                 catch (Exception ex)
                 {
-                    log.trace("!ERR:push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+                    log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
                 }
             }
 
@@ -419,7 +419,7 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
                     }
                     catch (Exception ex)
                     {
-                        log.trace("!ERR:push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+                        log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
                     }
                 }
             }
@@ -429,7 +429,7 @@ private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
     }
     catch (Throwable ex)
     {
-        log.trace("!ERR:push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+        log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
     }
 
     //writeln("@@fanout indv.uri=", indv.uri);
@@ -492,7 +492,7 @@ private void create_table_if_not_exists(string predicate, Resource rs)
         }
         catch (Exception ex)
         {
-            log.trace("!ERR:create_table_if_not_exists LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+            log.trace("ERR! create_table_if_not_exists LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
             throw ex;
         }
     }

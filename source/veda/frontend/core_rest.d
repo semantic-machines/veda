@@ -678,7 +678,7 @@ class VedaStorageRest : VedaStorageRest_API
                 if (rc != ResultCode.OK)
                 {
                     if (trace_msg[ 500 ] == 1)
-                        log.trace("get_individual #!ERR : %s ", text(rc));
+                        log.trace("ERR! get_individual : %s ", text(rc));
 
                     throw new HTTPStatusException(rc);
                 }

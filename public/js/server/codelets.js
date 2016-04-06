@@ -181,42 +181,6 @@ function create_use_transformation(task)
 
 }
 
-function replace_word(src, from, to)
-{
-    var new_str = src;
-    //print ('src=', src, ', from=', from, ', to=', to); 
-    var is_prepare = false;
-
-    if (src.length == from.length)
-        is_prepare = true;
-
-    if (is_prepare == false)
-    {
-        var pos = src.indexOf(from);
-        if (pos && pos >= 0)
-        {
-            //print ('src=', src, ', from=', from, ', to=', to); 
-            //print ('$ #1 pos=', pos);
-
-            var last_ch = src[pos + from.length];
-            //print ('$ #2 last_ch=', last_ch);
-
-            if (last_ch && isAlphaNumeric(last_ch) == false)
-            {
-                //print ('$ isAlphaNumeric last_ch=', last_ch);
-                is_prepare = true;
-            }
-        }
-    }
-
-    if (is_prepare)
-    {
-        new_str = src.replace(new RegExp(from, 'g'), to);
-    }
-
-    return new_str;
-}
-
 // скрипт переименования онтологии
 function onto_rename(ticket, document, execute_script)
 {    
@@ -255,6 +219,7 @@ function onto_rename(ticket, document, execute_script)
             var from = cc[0];
             var to = cc[1];
             from_2_to[from] = to;
+            from_2_to[from.replace (':', '_')] = to.replace (':', '_');
         }
 
         for (var key in document)
@@ -295,8 +260,10 @@ function onto_rename(ticket, document, execute_script)
             }
             else
             {
+				// replace in uri
                 for (var from in from_2_to)
-                {
+                {					
+            //print ('values=', values, ', from=', from, ', to=', to); 
                     var new_str = replace_word(values, from, to);
 
                     if (new_str != values)

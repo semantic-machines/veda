@@ -23,7 +23,7 @@
 .
 
 td:run-script
-  rdf:type v-s:ExecuteScript0;
+  rdf:type v-s:ExecuteScript;
 	v-s:argument td:arg1;
 	v-s:result td:res1 ;
 	v-s:isSuccess false;
@@ -34,7 +34,7 @@ td:run-script
 td:arg1
   rdf:type v-s:Variable ;
   v-s:variableName "rename_template" ;
-  v-s:variableValue "v-wf_Variable,v-s_Variable", "v-wf:Variable,v-s:Variable";
+  v-s:variableValue "v-wf:Variable,v-s:Variable";
 .  
 
 td:res1

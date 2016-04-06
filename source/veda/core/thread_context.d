@@ -293,7 +293,7 @@ class PThreadContext : Context
             res = find(uri);
 
         if (res !is null && res.length < 10)
-            log.trace_log_and_console("!ERR:get_individual_from_storage, found invalid CBOR, uri=%s", uri);
+            log.trace_log_and_console("ERR! get_individual_from_storage, found invalid CBOR, uri=%s", uri);
 
         return res;
     }
@@ -711,7 +711,7 @@ class PThreadContext : Context
                     else
                     {
                         tt.result = ResultCode.Unprocessable_Entity;
-                        log.trace("!ERR:invalid individual=%s", ticket_str);
+                        log.trace("ERR! invalid individual=%s", ticket_str);
                     }
                 }
                 else

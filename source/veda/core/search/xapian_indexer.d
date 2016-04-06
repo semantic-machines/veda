@@ -174,7 +174,7 @@ private class IndexerContext
         {
             if (msg !is null && cbor2individual(&indv, msg) < 0)
             {
-                log.trace("!ERR:index_msg invalid individual:[%s]", msg);
+                log.trace("ERR! index_msg invalid individual:[%s]", msg);
                 return;
             }
 
@@ -182,7 +182,7 @@ private class IndexerContext
             {
                 if (cbor2individual(&prev_indv, prev_msg) < 0)
                 {
-                    log.trace("!ERR:index_msg, prev_state: invalid individual:[%s]", msg);
+                    log.trace("ERR! index_msg, prev_state: invalid individual:[%s]", msg);
                     return;
                 }
             }

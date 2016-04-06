@@ -402,7 +402,7 @@ void acl_manager(string thread_name, string db_path)
                                 Individual ind;
                                 if (cbor2individual(&ind, msg) < 0)
                                 {
-                                    log.trace("!ERR:invalid individual: [%s] op_id=%d", msg, op_id);
+                                    log.trace("ERR! invalid individual: [%s] op_id=%d", msg, op_id);
                                     return;
                                 }
 

@@ -172,3 +172,66 @@ function loadVariablesUseField (ticket, field)
 	}	
 	return res;
 }
+
+function isAlphaNumeric (src)
+{
+	if (!src)
+		return false;
+	var alphanum=/[a-zA-Z0-9]/;
+	if(alphanum.test(src))
+		return true;
+	else
+		return false;
+}		
+
+function replace_word(src, from, to)
+{
+	var trace = false;
+	
+//	if (src === 'd:membership_v-wf_Variable_cfg_OntologyGroup')
+//		trace = true;
+	
+    var new_str = src;
+    
+    if (trace)
+		print ('src=', src, ', from=', from, ', to=', to); 
+		
+    var is_prepare = false;
+
+    if (src.length == from.length)
+        is_prepare = true;
+
+    if (is_prepare == false)
+    {
+        var pos = src.indexOf(from);
+        if (pos && pos >= 0)
+        {
+			if (trace)
+			{
+				print ('src=', src, ', from=', from, ', to=', to); 
+				print ('$ #1 pos=', pos);
+			}	
+
+            var last_ch = src[pos + from.length];
+            
+            if (trace)
+				print ('$ #2 last_ch=[' + last_ch + ']');
+
+            if (last_ch && isAlphaNumeric(last_ch) == false)
+            {
+				if (trace)
+				{
+					print ('$ !isAlphaNumeric last_ch=', last_ch);
+				}
+                is_prepare = true;
+            }
+        }
+    }
+
+    if (is_prepare)
+    {
+        new_str = src.replace(new RegExp(from, 'g'), to);
+    }
+
+    return new_str;
+}

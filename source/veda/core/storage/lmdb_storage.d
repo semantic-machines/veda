@@ -320,7 +320,7 @@ public class LmdbStorage : Storage
         }
         catch (Throwable tr)
         {
-            log.trace_log_and_console("!ERR: " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
+            log.trace_log_and_console("ERR!  " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
             return ResultCode.Fail_Store;
         }
     }
@@ -402,7 +402,7 @@ public class LmdbStorage : Storage
         }
         catch (Throwable tr)
         {
-            log.trace_log_and_console("!ERR: " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
+            log.trace_log_and_console("ERR!  " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
             return ResultCode.Fail_Store;
         }
     }
@@ -421,7 +421,7 @@ public class LmdbStorage : Storage
         }
         catch (Throwable tr)
         {
-            log.trace_log_and_console("!ERR: " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
+            log.trace_log_and_console("ERR!  " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
         }
     }
 
@@ -544,7 +544,7 @@ public class LmdbStorage : Storage
         }
         catch (Throwable tr)
         {
-            log.trace_log_and_console("!ERR: " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
+            log.trace_log_and_console("ERR!  " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
             return -1;
         }
     }
@@ -724,7 +724,7 @@ public class LmdbStorage : Storage
         {
             if (cbor2individual(&ind, str) < 0)
             {
-                log.trace("!ERR:invalid individual=", uri);
+                log.trace("ERR! invalid individual=", uri);
             }
         }
         return ind;

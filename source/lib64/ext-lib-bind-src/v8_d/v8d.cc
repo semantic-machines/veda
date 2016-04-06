@@ -151,7 +151,7 @@ jsobject2individual (Local<Value> value, Individual *indv, Resource *resource, s
   }
   else if (value->IsNumber ())
   {
-    std::cout << "!Err: @v8:json->cbor (value->IsNumber() not implemented" << std::endl;
+    std::cout << "ERR! @v8:json->cbor (value->IsNumber() not implemented" << std::endl;
   }
   else if (value->IsObject ())
   {
