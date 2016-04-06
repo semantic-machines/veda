@@ -183,7 +183,7 @@ function create_use_transformation(task)
 
 // скрипт переименования онтологии
 function onto_rename(ticket, document, execute_script)
-{    
+{
     //    print ('$$$$$$$$$$$$$$ script_onto_rename:doc= ' + document['@']);
     try
     {
@@ -219,7 +219,12 @@ function onto_rename(ticket, document, execute_script)
             var from = cc[0];
             var to = cc[1];
             from_2_to[from] = to;
-            from_2_to[from.replace (':', '_')] = to.replace (':', '_');
+
+            var from_u = from.replace(':', '_');
+            var to_u = to.replace(':', '_');
+
+            if (from_u !== from)
+                from_2_to[from_u] = to_u;
         }
 
         for (var key in document)
@@ -246,10 +251,8 @@ function onto_rename(ticket, document, execute_script)
                         if (value.type == _Uri || value.type == _String)
                         {
                             var to = from_2_to[from];
-
                             var new_str = replace_word(value.data, from, to);
-
-                            if (new_str != value.data)
+                            if (new_str !== value.data)
                             {
                                 is_update = true;
                                 value.data = new_str;
@@ -260,15 +263,14 @@ function onto_rename(ticket, document, execute_script)
             }
             else
             {
-				// replace in uri
+                // replace in uri
                 for (var from in from_2_to)
-                {					
-            //print ('values=', values, ', from=', from, ', to=', to); 
+                {
+                    var to = from_2_to[from];
+                    //print ('values=', values, ', from=', from, ', to=', to); 
                     var new_str = replace_word(values, from, to);
-
-                    if (new_str != values)
+                    if (new_str !== values)
                     {
-                        var to = from_2_to[from];
                         is_replace = true;
                         document['@'] = new_str;
                     }
@@ -291,7 +293,8 @@ function onto_rename(ticket, document, execute_script)
 
         if (is_replace || is_update)
         {
-            print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
+            //            print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
+            print('$ script_onto_rename:is_update, ' + prev_doc['@'] + '->' + document['@']);
         }
 
 

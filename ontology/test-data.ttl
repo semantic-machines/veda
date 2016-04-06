@@ -34,7 +34,7 @@ td:run-script
 td:arg1
   rdf:type v-s:Variable ;
   v-s:variableName "rename_template" ;
-  v-s:variableValue "v-wf:Variable,v-s:Variable";
+  v-s:variableValue "v-wf:*,v-s:*";
 .  
 
 td:res1
