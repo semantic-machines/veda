@@ -403,24 +403,6 @@ v-s:fileThumbnail
 .
 
 ### veda-generic
-v-s:filePath
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:File ;
-  rdfs:label "Путь файла"@ru ;
-  rdfs:label "file path"@en ;
-  rdfs:range xsd:string ;
-.
-
-### veda-generic
-v-s:fileUri
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:File ;
-  rdfs:label "URI файла"@ru ;
-  rdfs:label "file URI"@en ;
-  rdfs:range xsd:string ;
-.
-
-### veda-generic
 v-s:foreignRegistrationDate
   rdf:type owl:DatatypeProperty ;
   rdfs:label "foreign registration date"@en ;

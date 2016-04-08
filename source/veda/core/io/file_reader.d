@@ -5,8 +5,8 @@
 module veda.core.io.file_reader;
 
 import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib;
-import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path, std.utf,
-       std.stdio : writeln;
+import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path,
+       std.digest.md, std.utf, std.path, std.stdio : writeln, File;
 import veda.util.container, veda.util.cbor, veda.core.util.utils, util.logger, veda.core.util.raptor2individual, veda.core.util.cbor8individual;
 import veda.type, veda.onto.individual, veda.onto.resource, veda.core.context, veda.core.thread_context, veda.core.define, veda.core.know_predicates,
        veda.core.log_msg;
@@ -70,24 +70,38 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
 SysTime[ string ] file_modification_time;
 long[ string ]    prefix_2_priority;
 
+// Digests a file and prints the result.
+string digestFile(Hash) (string filename) if (isDigest!Hash)
+{
+    auto   file   = File(filename);
+    auto   result = digest!Hash(file.byChunk(4096 * 1024));
+
+    string str_res = toHexString(result);
+
+    return str_res.dup;
+}
+
 Individual[ string ] read_ttl(Context context, bool is_load)
 {
     Individual[ string ] individuals;
     string[ string ] filename_2_prefix;
     Individual *[ string ][ string ] individuals_2_filename;
-    Set!string files_to_load;
-    bool is_reload = false;
+    string[] files_to_load;
+    bool     is_reload = false;
 
-    auto oFiles = dirEntries(path, SpanMode.depth);
+    auto     oFiles = dirEntries(path, SpanMode.depth);
 
-    if (trace_msg[ 29 ] == 1)
-        log.trace("read *.ttl from %s", path);
+    //if (trace_msg[ 29 ] == 1)
+    log.trace("read *.ttl from %s", path);
+
+    Ticket sticket = context.sys_ticket();
 
     foreach (o; oFiles)
     {
         if (extension(o.name) == ".ttl")
         {
             string fname = o.name.dup;
+
             if ((fname in file_modification_time) !is null)
             {
                 if (o.timeLastModified != file_modification_time[ fname ])
@@ -96,26 +110,51 @@ Individual[ string ] read_ttl(Context context, bool is_load)
 
                     is_reload = true;
 
-                    if (trace_msg[ 29 ] == 1)
-                        log.trace("look modifed file=%s", fname);
+                    log.trace("file is modifed (datetime), %s", fname);
+
+                    files_to_load ~= fname;
                 }
             }
             else
             {
+                string     file_uri = "d:" ~ baseName(fname);
+
+                Individual indv_ttrl_file = context.get_individual(&sticket, file_uri);
+
+                if (indv_ttrl_file is Individual.init)
+                {
+                    is_reload = true;
+                    log.trace("file is new, %s", fname);
+                }
+                else
+                {
+                    string new_hash = digestFile!MD5(fname);
+                    string old_hash = indv_ttrl_file.getFirstLiteral("v-s:hash");
+
+                    if (new_hash != old_hash)
+                    {
+                        is_reload = true;
+                        files_to_load ~= fname;
+
+                        log.trace("file is modifed (hash), %s", fname);
+                    }
+                }
+
+                if (is_reload)
+                {
+                    is_load = true;
+                }
+
+
                 file_modification_time[ fname ] = o.timeLastModified;
-
-                is_reload = true;
-
-                if (trace_msg[ 29 ] == 1)
-                    log.trace("look new file=%s", fname);
             }
-
-            files_to_load ~= fname;
         }
     }
 
     if (is_reload && is_load)
     {
+        log.trace("load files: %s", files_to_load);
+
         foreach (filename; files_to_load)
         {
             string[ string ] prefixes;
@@ -158,7 +197,9 @@ Individual[ string ] read_ttl(Context context, bool is_load)
 
                     auto indvs = individuals_2_filename.get(filename, null);
                     if (indvs !is null)
-                        prepare_list(individuals, indvs.values, context, onto_name);
+                    {
+                        prepare_list(individuals, indvs.values, context, filename, onto_name);
+                    }
                     prepared_filename = filename;
                 }
             }
@@ -205,8 +246,8 @@ void processed(Context context, bool is_load)
                             //log.trace("store, uri=%s %s \n%s \n%s", indv.uri, uri, text(indv), text(indv_in_storage));
                             if (res != ResultCode.OK)
                                 log.trace("individual =%s, not store, errcode =%s", indv.uri, text(res));
-                                
-                        	is_loaded = true;
+
+                            is_loaded = true;
                         }
                     }
                 }
@@ -242,29 +283,44 @@ void processed(Context context, bool is_load)
         context.create_new_ticket("cfg:Guest", "4000000", "guest");
 }
 
-import util.individual2html;
+//import util.individual2html;
 
-private void prepare_list(ref Individual[ string ] individuals, Individual *[] ss_list, Context context, string onto_name)
+private void prepare_list(ref Individual[ string ] individuals, Individual *[] ss_list, Context context, string filename, string onto_name)
 {
     try
     {
         if (trace_msg[ 30 ] == 1)
             log.trace("ss_list.count=%d", ss_list.length);
 
+        Ticket     sticket = context.sys_ticket();
+
+        string     hash = digestFile!MD5(filename);
+        Individual indv_ttl_file;
+
+        string     base_name = baseName(filename);
+        string     dir_name  = dirName(filename);
+
+        indv_ttl_file.uri = "d:" ~ base_name;
+        indv_ttl_file.addResource("rdf:type", Resource(DataType.Uri, "v-s:TTLFile"));
+        indv_ttl_file.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
+        indv_ttl_file.addResource("v-s:hash", Resource(hash));
+        indv_ttl_file.addResource("v-s:filePath", Resource(dir_name));
+        indv_ttl_file.addResource("v-s:fileUri", Resource(base_name));
+
         string prefix;
         string i_uri;
 
-        string doc_filename = docs_onto_path ~ "/" ~ onto_name[ 0..$ - 1 ] ~ ".html";
+//        string doc_filename = docs_onto_path ~ "/" ~ onto_name[ 0..$ - 1 ] ~ ".html";
 
-        if (context !is null)
-            try
-            {
-                remove(doc_filename);
-                append(
-                       doc_filename,
-                       "<html><body><head><meta charset=\"utf-8\"/><link href=\"css/bootstrap.min.css\" rel=\"stylesheet\"/><style=\"padding: 0px 0px 30px;\"></head>\n");
-            }
-            catch (Exception ex) {}
+//        if (context !is null)
+//            try
+//            {
+//                remove(doc_filename);
+//                append(
+//                       doc_filename,
+//                       "<html><body><head><meta charset=\"utf-8\"/><link href=\"css/bootstrap.min.css\" rel=\"stylesheet\"/><style=\"padding: 0px 0px 30px;\"></head>\n");
+//            }
+//            catch (Exception ex) {}
 
         foreach (ss; ss_list)
         {
@@ -281,12 +337,15 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
                 ss.addResource("rdfs:isDefinedBy", Resource(DataType.Uri, onto_name));
             }
 
-            if (context !is null)
-                try
-                {
-                    append(doc_filename, individual2html(ss));
-                }
-                catch (Exception ex) {}
+            indv_ttl_file.addResource("v-s:resource", Resource(DataType.Uri, ss.uri));
+
+
+//            if (context !is null)
+//                try
+//                {
+//                    append(doc_filename, individual2html(ss));
+//                }
+//                catch (Exception ex) {}
 
             long       pos_path_delimiter = indexOf(ss.uri, '/');
 
@@ -300,12 +359,14 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
                 log.trace("apply, uri=%s %s", ss.uri, ss1);
         }
 
-        if (context !is null)
-            try
-            {
-                append(doc_filename, "\n</body></html>");
-            }
-            catch (Exception ex) {}
+//        if (context !is null)
+//            try
+//            {
+//                append(doc_filename, "\n</body></html>");
+//            }
+//            catch (Exception ex) {}
+
+        OpResult orc = context.put_individual(&sticket, indv_ttl_file.uri, indv_ttl_file, true, null, false, false);
 
         //context.reopen_ro_subject_storage_db ();
         if (trace_msg[ 33 ] == 1)

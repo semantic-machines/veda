@@ -18,12 +18,19 @@ rdfs:subClassOf
   rdfs:range owl:Class ;
 .
 
-### CLASSES ###
+### CLASSES ####
 
 v-s:ExecuteScript
   rdf:type owl:Class ;
   rdfs:subClassOf owl:Thing ;
   rdfs:label "Выполнить скрипт" ;
+.
+
+v-s:TTLFile
+	rdf:type owl:Class ;
+	rdfs:subClassOf v-s:Container ;
+	rdfs:label "TTL file"@en ;
+	rdfs:label "TTL файл"@ru ;
 .
 
 v-s:Variable
@@ -253,6 +260,29 @@ v-s:useScript
 .
 
 ###
+
+v-s:hash
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "хэш"@ru ;
+  rdfs:label "hash"@en ;
+  rdfs:range xsd:string ;
+.
+
+v-s:filePath
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:File, v-s:TTLFile;
+  rdfs:label "Путь файла"@ru ;
+  rdfs:label "file path"@en ;
+  rdfs:range xsd:string ;
+.
+
+v-s:fileUri
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:File, v-s:TTLFile;
+  rdfs:label "URI файла"@ru ;
+  rdfs:label "file URI"@en ;
+  rdfs:range xsd:string ;
+.
 
 v-s:parent
   rdf:type owl:ObjectProperty ;
