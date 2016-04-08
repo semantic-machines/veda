@@ -850,7 +850,7 @@ function getNextValueSimple(ticket, scope, FIRST_VALUE)
             return FIRST_VALUE;
         }
     }
-    if (typeof scope === 'undefined' || !scope['v-s:numerationCommitedInterval'])
+    if (typeof scope === 'undefined' || !scope['v-s:numerationCommitedInterval'] || scope['v-s:numerationCommitedInterval'].length == 0)
     {
         return FIRST_VALUE;
     }
