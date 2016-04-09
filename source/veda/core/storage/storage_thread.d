@@ -179,16 +179,22 @@ public void individuals_manager(string thread_name, string db_path, string node_
                         {
                             long count;
                             Queue queue = new veda.core.queue.Queue(arg);
+	
+							if (queue.open())
+							{
+                            	bool add_to_queue(string key, string value)
+                            	{
+                                	queue.push(value);
+                                	count++;
+                                	return true;
+                            	}
 
-                            bool add_to_queue(string key, string value)
-                            {
-                                queue.push(value);
-                                count++;
-                                return true;
-                            }
-
-                            storage.get_of_cursor(&add_to_queue);
-                            queue.close();
+                            	storage.get_of_cursor(&add_to_queue);
+                            	queue.close();
+							}
+							else
+								writeln ("store_thread:CMD.UNLOAD: not open queue");
+							
                             send(tid_response_reciever, count);
                         }
                     },

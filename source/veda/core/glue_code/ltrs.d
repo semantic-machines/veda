@@ -111,22 +111,31 @@ private void ltrs_thread(string thread_name, string _node_id)
 
                                    context.unload_subject_storage(queue_name);
                                    Queue queue = new veda.core.queue.Queue(queue_name);
+								   if (queue.open ())
+								   {
+                                   		Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
 
-                                   Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
+										if (cs.open())
+										{
+                                   			int priority = cast(int)indv.getFirstInteger("v-s:priority", 16);
+                                   			string codelet_id = indv.getFirstLiteral("v-s:useScript");
 
-                                   int priority = cast(int)indv.getFirstInteger("v-s:priority", 16);
-                                   string codelet_id = indv.getFirstLiteral("v-s:useScript");
+                                   			Tasks *tasks = tasks_2_priority.get(priority, null);
 
-                                   Tasks *tasks = tasks_2_priority.get(priority, null);
+                                   			if (tasks is null)
+                                   			{
+                                       			tasks = new Tasks();
+                                       			tasks_2_priority[ priority ] = tasks;
+                                   			}
 
-                                   if (tasks is null)
-                                   {
-                                       tasks = new Tasks();
-                                       tasks_2_priority[ priority ] = tasks;
-                                   }
-
-                                   task = new Task(cs, indv, inst_of_codelet, codelet_id);
-                                   tasks.list[ indv.uri ] = task;
+                                   			task = new Task(cs, indv, inst_of_codelet, codelet_id);
+                                   			tasks.list[ indv.uri ] = task;
+										}
+										else
+											writeln ("ltrs:Consumer not open");
+								   }
+								   else
+								   		writeln ("ltrs:Queue not open");	
                                }
                            },
                            (Variant v) { writeln(thread_name, "::ltrs_thread::Received some other type.", v); });
@@ -160,7 +169,12 @@ private void ltrs_thread(string thread_name, string _node_id)
                         {
                             veda.core.glue_code.scripts.execute_script(context, &sticket, data, task.codelet_id, task.execute_script_cbor, thisTid);
 
-                            task.consumer.commit();
+                            bool res = task.consumer.commit();
+                            if (res == false)
+                            {
+                            	writeln ("Queue commit fail !!!!");
+                            	break;
+                            }	
                         }
                         else
                         {
