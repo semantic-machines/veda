@@ -262,6 +262,7 @@ public class LmdbStorage : Storage
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
+                mdb_txn_abort(txn);
                 return ResultCode.Fail_Open_Transaction;
             }
             rc = mdb_dbi_open(txn, null, MDB_CREATE, &dbi);
@@ -270,6 +271,7 @@ public class LmdbStorage : Storage
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
+                mdb_txn_abort(txn);
                 return ResultCode.Fail_Open_Transaction;
             }
 
@@ -344,6 +346,7 @@ public class LmdbStorage : Storage
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
+                mdb_txn_abort(txn);
                 return ResultCode.Fail_Open_Transaction;
             }
             rc = mdb_dbi_open(txn, null, MDB_CREATE, &dbi);
@@ -352,6 +355,7 @@ public class LmdbStorage : Storage
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
+                mdb_txn_abort(txn);
                 return ResultCode.Fail_Open_Transaction;
             }
 
@@ -376,6 +380,7 @@ public class LmdbStorage : Storage
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
+                mdb_txn_abort(txn);
                 return ResultCode.Fail_Store;
             }
 
