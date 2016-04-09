@@ -104,8 +104,6 @@ class Consumer
     uint    count_popped;
     ubyte[] last_read_msg;
 
-
-
     File   *ff_info_pop_w = null;
     File   *ff_info_pop_r = null;
 
@@ -116,9 +114,15 @@ class Consumer
     CRC32  hash;
 
     this(Queue _queue, string _name)
-    {
+    {    	
         queue = _queue;
         name  = _name;
+    }
+
+	public bool open ()
+	{			
+		if (!queue.isReady)
+			return false;
 
         file_name_info_pop = queue_db_path ~ "/" ~ queue.name ~ "_info_pop_" ~ name;
 
@@ -127,11 +131,14 @@ class Consumer
         else
             ff_info_pop_w = new File(file_name_info_pop, "r+");
 
-        ff_info_pop_r = new File(file_name_info_pop, "r");
-    }
+        ff_info_pop_r = new File(file_name_info_pop, "r");		
+
+		return true;
+	}
 
     public void close()
     {
+        ff_info_pop_w.flush();
         ff_info_pop_w.close();
         ff_info_pop_r.close();
     }
@@ -212,7 +219,7 @@ class Consumer
             count_popped  = to!uint (ch[ 4 ]);
         }
 
-        writeln(this);
+        writeln("get_info:", this);
 
         return true;
     }
@@ -326,10 +333,6 @@ class Queue
     {
         name    = _name;
         isReady = false;
-        open();
-        get_info();
-        put_info();
-
         buff        = new ubyte[ 4096 * 100 ];
         header_buff = new ubyte[ header.length() ];
     }
@@ -355,12 +358,21 @@ class Queue
         std.file.remove(file_name_queue);
     }
 
-    public void open()
+    public bool open()
     {
         if (isReady == false)
         {
+        	writeln ("open");
+        	
             file_name_info_push = queue_db_path ~ "/" ~ name ~ "_info_push";
             file_name_queue     = queue_db_path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
+
+    		if (exists(file_name_queue ~ ".lock"))
+    		{
+    			writeln ("Queue already open, or not deleted lock file");
+    			return false;
+    		}
+    		std.file.write(file_name_queue ~ ".lock", "0");    	    	
 
             if (exists(file_name_info_push) == false)
                 ff_info_push_w = new File(file_name_info_push, "w");
@@ -382,25 +394,31 @@ class Queue
                 get_info();
                 if (ff_queue_w.size() != right_edge)
                 {
-                    writeln("queue:open: [", file_name_queue, "].size (", ff_queue_w.size(), ") != right_edge=", right_edge);
+                	isReady = false;
+                    writeln("ERR! queue:open: [", file_name_queue, "].size (", ff_queue_w.size(), ") != right_edge=", right_edge);
                 }
                 else
                 {
                     isReady = true;
+                    put_info();        	
                 }
             }
         }
+        return isReady;
     }
 
     public void close()
     {
         if (isReady == true)
         {
-            isReady = false;
+        	writeln ("queue_close:", file_name_queue);
+        	flush();
             ff_info_push_w.close();
             ff_queue_w.close();
             ff_info_push_r.close();
             ff_queue_r.close();
+    		std.file.remove(file_name_queue ~ ".lock");
+            isReady = false;
         }
     }
 
