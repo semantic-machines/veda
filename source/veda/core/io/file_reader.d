@@ -4,6 +4,7 @@
  */
 module veda.core.io.file_reader;
 
+import libasync, libasync.watcher, libasync.threads;
 import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib;
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path,
        std.digest.md, std.utf, std.path, std.stdio : writeln, File;
@@ -24,6 +25,8 @@ logger log()
 
 string path = "./ontology";
 
+shared static ~this() { destroyAsyncThreads(); }
+
 /// процесс отслеживающий появление новых файлов и добавление их содержимого в базу данных
 void file_reader_thread(P_MODULE id, string node_id, int checktime)
 {
@@ -38,36 +41,58 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
 
     long    count_individuals = context.count_individuals();
 
-    processed(context, count_individuals < 2);
+	if (count_individuals < 2)
+	{
+  		auto     oFiles = dirEntries(path, SpanMode.depth);
+		string[] files;
 
+    	foreach (o; oFiles)
+    	{
+        	if (extension(o.name) == ".ttl")
+        	{
+        		files ~= o.name.dup;
+        	}
+    	}
+		processed(files, context);    		
+	}
+	
     // SEND ready
     receive((Tid tid_response_reciever)
             {
                 send(tid_response_reciever, true);
             });
 
-    core.thread.Thread.sleep(dur!("msecs")(10000));
+   	core.thread.Thread.sleep(dur!("msecs")(10000));
 
-    while (true)
-    {
-        try
-        {
-            processed(context, true);
-        }
-        catch (Throwable thw)
-        {
-            log.trace("file_reader_thread Ex: %s", thw.msg);
-        }
+	auto ev_loop = getThreadEventLoop();
+	auto watcher = new AsyncDirectoryWatcher(ev_loop);
+	
+	DWChangeInfo[512] change_buf;
+	
+	watcher.run(
+	{ 
+			//writeln("Enter Handler (directory event captured)");
+			DWChangeInfo[] changes = change_buf[];
+			uint cnt;
+	        do {
+				cnt = watcher.readChanges(changes);
+				string[] files;	
 
-        if (checktime > 0)
-        {
-            //writeln (checktime);
-            core.thread.Thread.sleep(dur!("seconds")(checktime));
-        }
-    }
+				foreach (i; 0 .. cnt) {
+					files ~= changes[i].path.dup;
+				}
+				
+				processed(files, context);
+			} while (cnt > 0);
+	});
+	
+	watcher.watchDir(path);
+
+	while (ev_loop.loop())
+		continue;
 }
 
-SysTime[ string ] file_modification_time;
+//SysTime[ string ] file_modification_time;
 long[ string ]    prefix_2_priority;
 
 // Digests a file and prints the result.
@@ -81,7 +106,7 @@ string digestFile(Hash) (string filename) if (isDigest!Hash)
     return str_res.dup;
 }
 
-Individual[ string ] read_ttl(Context context, bool is_load)
+Individual[ string ] check_and_read_changed(string[] changes, Context context)
 {
     Individual[ string ] individuals;
     string[ string ] filename_2_prefix;
@@ -89,69 +114,40 @@ Individual[ string ] read_ttl(Context context, bool is_load)
     string[] files_to_load;
     bool     is_reload = false;
 
-    auto     oFiles = dirEntries(path, SpanMode.depth);
-
-    //if (trace_msg[ 29 ] == 1)
-    log.trace("read *.ttl from %s", path);
-
     Ticket sticket = context.sys_ticket();
 
-    foreach (o; oFiles)
+    foreach (fname; changes)
     {
-        if (extension(o.name) == ".ttl")
+        if (extension(fname) == ".ttl" && fname.indexOf ("#") < 0)
         {
-            string fname = o.name.dup;
+    		log.trace("change file %s", fname);
+                        
+            string     file_uri = "d:" ~ baseName(fname);
+            Individual indv_ttrl_file = context.get_individual(&sticket, file_uri);
 
-            if ((fname in file_modification_time) !is null)
+            if (indv_ttrl_file is Individual.init)
             {
-                if (o.timeLastModified != file_modification_time[ fname ])
-                {
-                    file_modification_time[ fname ] = o.timeLastModified;
-
-                    is_reload = true;
-
-                    log.trace("file is modifed (datetime), %s", fname);
-
-                    files_to_load ~= fname;
-                }
+            	is_reload = true;
+                files_to_load ~= fname;
+                log.trace("file is new, %s", fname);
             }
             else
             {
-                string     file_uri = "d:" ~ baseName(fname);
+                string new_hash = digestFile!MD5(fname);
+                string old_hash = indv_ttrl_file.getFirstLiteral("v-s:hash");
 
-                Individual indv_ttrl_file = context.get_individual(&sticket, file_uri);
-
-                if (indv_ttrl_file is Individual.init)
+                if (new_hash != old_hash)
                 {
-                    is_reload = true;
-                    log.trace("file is new, %s", fname);
+                	is_reload = true;
+                    files_to_load ~= fname;
+
+                    log.trace("file is modifed (hash), %s", fname);
                 }
-                else
-                {
-                    string new_hash = digestFile!MD5(fname);
-                    string old_hash = indv_ttrl_file.getFirstLiteral("v-s:hash");
-
-                    if (new_hash != old_hash)
-                    {
-                        is_reload = true;
-                        files_to_load ~= fname;
-
-                        log.trace("file is modifed (hash), %s", fname);
-                    }
-                }
-
-                if (is_reload)
-                {
-                    is_load = true;
-                }
-
-
-                file_modification_time[ fname ] = o.timeLastModified;
-            }
+             }
         }
     }
 
-    if (is_reload && is_load)
+    if (is_reload)
     {
         log.trace("load files: %s", files_to_load);
 
@@ -210,13 +206,13 @@ Individual[ string ] read_ttl(Context context, bool is_load)
     return individuals;
 }
 
-void processed(Context context, bool is_load)
+void processed(string[] changes, Context context)
 {
     Ticket sticket = context.sys_ticket();
 
-    Individual[ string ] individuals = read_ttl(context, is_load);
+    Individual[ string ] individuals = check_and_read_changed(changes, context);
 
-    if (individuals.length > 0 && is_load)
+    if (individuals.length > 0)
     {
         for (int priority = 0; priority < 100; priority++)
         {
