@@ -8,7 +8,7 @@ module veda.core.glue_code.ltrs;
 
 private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, core.thread, std.algorithm, std.uuid;
 private import bind.v8d_header;
-private import veda.core.util.utils, veda.util.cbor, veda.core.util.cbor8individual, veda.core.queue;
+private import veda.core.util.utils, veda.util.cbor, veda.core.util.cbor8individual, veda.util.queue;
 private import veda.core.storage.lmdb_storage, veda.core.thread_context, veda.core.glue_code.script;
 private import veda.type, veda.core.context, veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
 
@@ -100,32 +100,32 @@ private void ltrs_thread(string thread_name, string _node_id)
                                    string queue_name = randomUUID().toString();
 
                                    context.unload_subject_storage(queue_name);
-                                   Queue queue = new veda.core.queue.Queue(queue_name);
-								   if (queue.open ())
-								   {
-                                   		Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
+                                   Queue queue = new Queue(queue_name);
+                                   if (queue.open())
+                                   {
+                                       Consumer cs = new Consumer(queue, "consumer1");
 
-										if (cs.open())
-										{
-                                   			int priority = cast(int)indv.getFirstInteger("v-s:priority", 16);
-                                   			string codelet_id = indv.getFirstLiteral("v-s:useScript");
+                                       if (cs.open())
+                                       {
+                                           int priority = cast(int)indv.getFirstInteger("v-s:priority", 16);
+                                           string codelet_id = indv.getFirstLiteral("v-s:useScript");
 
-                                   			Tasks *tasks = tasks_2_priority.get(priority, null);
+                                           Tasks *tasks = tasks_2_priority.get(priority, null);
 
-                                   			if (tasks is null)
-                                   			{
-                                       			tasks = new Tasks();
-                                       			tasks_2_priority[ priority ] = tasks;
-                                   			}
+                                           if (tasks is null)
+                                           {
+                                               tasks = new Tasks();
+                                               tasks_2_priority[ priority ] = tasks;
+                                           }
 
-                                   			task = new Task(cs, indv, inst_of_codelet, codelet_id);
-                                   			tasks.list[ indv.uri ] = task;
-										}
-										else
-											writeln ("ltrs:Consumer not open");
-								   }
-								   else
-								   		writeln ("ltrs:Queue not open");	
+                                           task = new Task(cs, indv, inst_of_codelet, codelet_id);
+                                           tasks.list[ indv.uri ] = task;
+                                       }
+                                       else
+                                           writeln("ltrs:Consumer not open");
+                                   }
+                                   else
+                                       writeln("ltrs:Queue not open");
                                }
                            },
                            (Variant v) { writeln(thread_name, "::ltrs_thread::Received some other type.", v); });
@@ -162,9 +162,9 @@ private void ltrs_thread(string thread_name, string _node_id)
                             bool res = task.consumer.commit();
                             if (res == false)
                             {
-                            	writeln ("Queue commit fail !!!!");
-                            	break;
-                            }	
+                                writeln("Queue commit fail !!!!");
+                                break;
+                            }
                         }
                         else
                         {

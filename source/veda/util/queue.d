@@ -1,4 +1,4 @@
-module veda.core.queue;
+module veda.util.queue;
 
 import std.conv, std.stdio, std.file, std.array, std.digest.crc;
 import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.storage.lmdb_storage, veda.onto.onto;

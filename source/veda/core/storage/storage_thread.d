@@ -6,7 +6,7 @@ module veda.core.storage.storage_thread;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
-    import util.logger, veda.core.util.utils, veda.util.cbor, veda.core.util.cbor8individual, veda.core.queue;
+    import util.logger, veda.core.util.utils, veda.util.cbor, veda.core.util.cbor8individual, veda.util.queue;
     import veda.type, veda.core.bind.lmdb_header, veda.core.context, veda.core.define, veda.core.log_msg, veda.onto.individual, veda.onto.resource;
     import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools;
     import search.vel;
@@ -178,23 +178,23 @@ public void individuals_manager(string thread_name, string db_path, string node_
                         else if (cmd == CMD.UNLOAD)
                         {
                             long count;
-                            Queue queue = new veda.core.queue.Queue(arg);
-	
-							if (queue.open())
-							{
-                            	bool add_to_queue(string key, string value)
-                            	{
-                                	queue.push(value);
-                                	count++;
-                                	return true;
-                            	}
+                            Queue queue = new Queue(arg);
 
-                            	storage.get_of_cursor(&add_to_queue);
-                            	queue.close();
-							}
-							else
-								writeln ("store_thread:CMD.UNLOAD: not open queue");
-							
+                            if (queue.open())
+                            {
+                                bool add_to_queue(string key, string value)
+                                {
+                                    queue.push(value);
+                                    count++;
+                                    return true;
+                                }
+
+                                storage.get_of_cursor(&add_to_queue);
+                                queue.close();
+                            }
+                            else
+                                writeln("store_thread:CMD.UNLOAD: not open queue");
+
                             send(tid_response_reciever, count);
                         }
                     },
