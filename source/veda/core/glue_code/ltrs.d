@@ -97,16 +97,6 @@ private void ltrs_thread(string thread_name, string _node_id)
                                    if (indv.getFirstBoolean("v-s:isSuccess") == true)
                                        return;
 
-                                   //Queue queue = new veda.core.queue.Queue("queue-ltrs-" ~ indv.uri);
-
-                                   //bool add_to_queue(string key, string value)
-                                   //{
-                                   //    queue.push(value);
-                                   //    return true;
-                                   //}
-
-                                   //context.subject_storage_commmit ();
-                                   //context.get_subject_storage_db.get_of_cursor(&add_to_queue);
                                    string queue_name = randomUUID().toString();
 
                                    context.unload_subject_storage(queue_name);
