@@ -143,8 +143,8 @@ enum CMD : byte
     STOP         = 53,
 
     RESUME       = 54,
-    
-    PAUSE		 = 55,
+
+    PAUSE        = 55,
 
     /// Пустая комманда
     NOP          = 64

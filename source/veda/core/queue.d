@@ -104,25 +104,25 @@ class Consumer
     uint    count_popped;
     ubyte[] last_read_msg;
 
-    File   *ff_info_pop_w = null;
-    File   *ff_info_pop_r = null;
+    File    *ff_info_pop_w = null;
+    File    *ff_info_pop_r = null;
 
-    string file_name_info_pop;
+    string  file_name_info_pop;
 
     // tmp
     Header header;
     CRC32  hash;
 
     this(Queue _queue, string _name)
-    {    	
+    {
         queue = _queue;
         name  = _name;
     }
 
-	public bool open ()
-	{			
-		if (!queue.isReady)
-			return false;
+    public bool open()
+    {
+        if (!queue.isReady)
+            return false;
 
         file_name_info_pop = queue_db_path ~ "/" ~ queue.name ~ "_info_pop_" ~ name;
 
@@ -131,10 +131,10 @@ class Consumer
         else
             ff_info_pop_w = new File(file_name_info_pop, "r+");
 
-        ff_info_pop_r = new File(file_name_info_pop, "r");		
+        ff_info_pop_r = new File(file_name_info_pop, "r");
 
-		return true;
-	}
+        return true;
+    }
 
     public void close()
     {
@@ -331,8 +331,8 @@ class Queue
 
     this(string _name)
     {
-        name    = _name;
-        isReady = false;
+        name        = _name;
+        isReady     = false;
         buff        = new ubyte[ 4096 * 100 ];
         header_buff = new ubyte[ header.length() ];
     }
@@ -362,17 +362,17 @@ class Queue
     {
         if (isReady == false)
         {
-        	writeln ("open");
-        	
+            writeln("open");
+
             file_name_info_push = queue_db_path ~ "/" ~ name ~ "_info_push";
             file_name_queue     = queue_db_path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
 
-    		if (exists(file_name_queue ~ ".lock"))
-    		{
-    			writeln ("Queue already open, or not deleted lock file");
-    			return false;
-    		}
-    		std.file.write(file_name_queue ~ ".lock", "0");    	    	
+            if (exists(file_name_queue ~ ".lock"))
+            {
+                writeln("Queue already open, or not deleted lock file");
+                return false;
+            }
+            std.file.write(file_name_queue ~ ".lock", "0");
 
             if (exists(file_name_info_push) == false)
                 ff_info_push_w = new File(file_name_info_push, "w");
@@ -394,13 +394,13 @@ class Queue
                 get_info();
                 if (ff_queue_w.size() != right_edge)
                 {
-                	isReady = false;
+                    isReady = false;
                     writeln("ERR! queue:open: [", file_name_queue, "].size (", ff_queue_w.size(), ") != right_edge=", right_edge);
                 }
                 else
                 {
                     isReady = true;
-                    put_info();        	
+                    put_info();
                 }
             }
         }
@@ -411,13 +411,13 @@ class Queue
     {
         if (isReady == true)
         {
-        	writeln ("queue_close:", file_name_queue);
-        	flush();
+            writeln("queue_close:", file_name_queue);
+            flush();
             ff_info_push_w.close();
             ff_queue_w.close();
             ff_info_push_r.close();
             ff_queue_r.close();
-    		std.file.remove(file_name_queue ~ ".lock");
+            std.file.remove(file_name_queue ~ ".lock");
             isReady = false;
         }
     }
@@ -428,7 +428,16 @@ class Queue
             return;
 
         ff_info_push_w.seek(0);
-        ff_info_push_w.writefln("%s;%d;%d;%d", name, chunk, right_edge, count_pushed);
+
+        auto writer = appender!string();
+        std.format.formattedWrite(writer, "%s;%d;%d;%d;", name, chunk, right_edge, count_pushed);
+
+        hash.start();
+        hash.put(cast(ubyte[])writer.data);
+        string hash_hex = crcHexString(hash.finish());
+
+        ff_info_push_w.write(writer.data);
+        ff_info_push_w.writeln(hash_hex);
     }
 
     private bool get_info()
@@ -445,7 +454,7 @@ class Queue
         {
             string[] ch = str[ 0..$ - 1 ].split(';');
             //writeln("@ queue.get_info ch=", ch);
-            if (ch.length != 4)
+            if (ch.length != 5)
             {
                 isReady = false;
                 return false;
@@ -462,6 +471,7 @@ class Queue
             chunk        = to!int (ch[ 1 ]);
             right_edge   = to!ulong (ch[ 2 ]);
             count_pushed = to!uint (ch[ 3 ]);
+            string hash_hex = ch[ 4 ];
         }
 
         writeln(this);
