@@ -186,7 +186,7 @@ private void scripts_thread(string thread_name, string node_id)
                                         if (trace_msg[ 300 ] == 1)
                                             log.trace("start exec codelet script : %s %s", script.id, indv.uri);
 
-                                        script_vm.run(script.compiled_script);
+                                        script.compiled_script.run ();
 
                                         if (trace_msg[ 300 ] == 1)
                                             log.trace("end exec codelet script : %s", script.id);
@@ -286,7 +286,7 @@ private void scripts_thread(string thread_name, string node_id)
                                                 log.trace("start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
 
                                             count++;
-                                            script_vm.run(script.compiled_script);
+                                            script.compiled_script.run ();
 
                                             if (trace_msg[ 300 ] == 1)
                                                 log.trace("end exec event script : %s", script_id);
@@ -499,7 +499,7 @@ private void prepare_script(ref ScriptInfo[ string ] scripts, Individual ss, Scr
             script.id         = ss.uri;
             script.str_script = str_script;
 
-            script.compiled_script = script_vm.compile(cast(char *)(script.str_script ~ "\0"));
+            script.compiled_script = script_vm.compile(script.str_script);
             if (trace_msg[ 310 ] == 1)
                 log.trace("#compile event script.id=%s, text=%s", script.id, script.str_script);
 

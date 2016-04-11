@@ -9,7 +9,7 @@
 module veda.core.context;
 
 private import std.concurrency, std.datetime;
-private import bind.v8d_header;
+//private import bind.v8d_header;
 private import search.vel;
 private import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.define, veda.util.container;
 
@@ -182,6 +182,15 @@ interface Storage
     public int get_of_cursor(bool delegate(string key, string value) prepare);
 }
 
+interface ScriptVM
+{
+		Script compile (string code);
+}
+
+interface Script
+{
+		void run ();
+}
 /**
  * Внешнее API - Интерфейс
  */

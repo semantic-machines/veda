@@ -198,7 +198,7 @@ class PThreadContext : Context
                 {
                     log.trace(" load script:%s", o);
                     auto str_js        = cast(ubyte[]) read(o.name);
-                    auto str_js_script = script_vm.compile(cast(char *)(cast(char[])str_js ~ "\0"));
+                    auto str_js_script = script_vm.compile(cast (string)str_js);
                     if (str_js_script !is null)
                     {
                         scripts ~= str_js_script;
@@ -211,7 +211,7 @@ class PThreadContext : Context
         foreach (idx, script; scripts)
         {
             writeln("init script=", script_file_name[ idx ]);
-            script_vm.run(script);
+            script.run();
         }
     }
 
@@ -221,7 +221,7 @@ class PThreadContext : Context
         {
             try
             {
-                script_vm = new_ScriptVM();
+                script_vm = new JsVM();
                 g_context = this;
 
                 string g_str_script_result = new char[ 1024 * 64 ];

@@ -321,10 +321,39 @@ WrappedScript new_WrappedScript(WrappedContext _context, char *src);
 void run_WrappedScript(WrappedContext _context, WrappedScript ws, _Buff *_res = null, _Buff *_out = null);
 }
 
-alias new_WrappedContext new_ScriptVM;
-alias WrappedContext     ScriptVM;
-alias WrappedScript      Script;
-alias run_WrappedScript  run;
-alias new_WrappedScript  compile;
+//alias new_WrappedContext new_ScriptVM;
+//alias WrappedContext     ScriptVM;
+//alias WrappedScript      Script;
+//alias run_WrappedScript  run;
+//alias new_WrappedScript  compile;
 
 bool                     ignore_freeze;
+
+class JsVM : ScriptVM
+{
+	WrappedContext js_vm;
+	
+	this ()
+	{
+		js_vm = new_WrappedContext();
+	}
+	
+	Script compile (string code)
+	{
+		Js res = new Js ();	
+		res.vm = this;
+		res.script = new_WrappedScript(js_vm, cast(char *)(code ~ "\0"));
+		return res;
+	}
+}
+
+class Js : Script
+{
+	WrappedScript script;
+	JsVM vm;	
+	
+	void run ()
+	{
+		run_WrappedScript(vm.js_vm, script);	
+	}
+}
