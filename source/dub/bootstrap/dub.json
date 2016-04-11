@@ -4,7 +4,7 @@
 	"dependencies": {
 	},
         "license": "LGPL v3",
-	"sourcePaths":["source/veda/bootstrap"],
+	"sourcePaths":["../../veda/bootstrap"],
 	"configurations": [
 	{
 	    "name": "app",

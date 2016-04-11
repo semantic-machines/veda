@@ -5,14 +5,27 @@ then
   cp ./ontology/config.ttl.cfg ./ontology/config.ttl
 fi
 ./update-version-ttl.sh
-# build veda-bootstrap
+
+echo *** build veda-bootstrap ***
+cd source/dub/bootstrap
 rm veda-bootstrap
 rm dub.selections.json
-cp source/veda-bootstrap.dub.json dub.json 
 dub build veda --build=release
-# build veda-server
+cd ../../..
+mv source/dub/bootstrap/veda veda
+
+echo *** build veda-server ***
+cd source/dub/server
 rm veda-server
 rm dub.selections.json
-cp source/veda-server.dub.json dub.json 
 dub build veda-server --build=release
+cd ../../..
+mv source/dub/server/veda-server veda-server
+
+echo *** build veda-fanout ***
+cd source/dub/fanout
+rm veda-fanout
 rm dub.selections.json
+dub build veda-fanout --build=release
+cd ../../..
+mv source/dub/fanout/veda-fanout veda-fanout

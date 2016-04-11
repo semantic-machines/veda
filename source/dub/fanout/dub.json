@@ -1,21 +1,16 @@
 {
-	"name": "veda-server",
-	"description": "veda-server",
+	"name": "veda-fanout",
+	"description": "veda-fanout",
 	"dependencies": {
-		"vibe-d": "0.7.26",
 		"pacahon_third_party": "1.0.13", 
 		"backtrace-d": "0.1.0", 
 		"mysql-d": "~>0.3.2",
 		"smtp": "~master",
                 "libasync": "0.7.5"
 	},
-	"versions": ["VibeDefaultMain"],	
-        "libs": [
-                "raptor2"
-        ],
         "license": "LGPL v3",
-	"sourceFiles":["source/lib64/libv8d.a", "source/lib64/libxapiand.a"],
-	"sourcePaths":["source/veda/core",  "source/veda/frontend", "source/veda/onto", "source/veda/util"],
+	"sourceFiles":["../../lib64/libxapiand.a"],
+	"sourcePaths":["../../veda/fanout"],
 	"configurations": [
 	{
 	    "name": "app",

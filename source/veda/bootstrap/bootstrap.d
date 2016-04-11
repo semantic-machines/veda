@@ -1,4 +1,4 @@
-module bootstrap;
+module veda.bootstrap;
 
 import std.process, std.stdio, std.conv, core.sys.posix.signal;
 

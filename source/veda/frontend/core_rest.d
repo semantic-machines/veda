@@ -18,7 +18,6 @@ logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
-
 public const string veda_schema__File          = "v-s:File";
 public const string veda_schema__fileName      = "v-s:fileName";
 public const string veda_schema__fileSize      = "v-s:fileSize";
@@ -50,6 +49,7 @@ static this() {
     catch (Exception ex)
     {
     }
+    
 }
 
 //////////////////////////////////////////////////// Rest API /////////////////////////////////////////////////////////////////

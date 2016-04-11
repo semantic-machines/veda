@@ -1049,7 +1049,7 @@ class PThreadContext : Context
             if (prepare_events == true)
                 bus_event_after(ticket, &indv, rdfType, null, prev_state, ev, this, event_id, res.op_id);
 
-            veda.core.fanout.send_put(this, null, prev_state, res.op_id);
+            //veda.core.fanout.send_put(this, null, prev_state, res.op_id);
 
             return res;
         }
@@ -1298,8 +1298,8 @@ class PThreadContext : Context
                     if (prepare_events == true)
                         bus_event_after(ticket, indv, rdfType, new_state, prev_state, ev, this, event_id, res.op_id);
 
-                    if (event_id != "fanout")
-                        veda.core.fanout.send_put(this, new_state, prev_state, res.op_id);
+                    //if (event_id != "fanout")
+                    //    veda.core.fanout.send_put(this, new_state, prev_state, res.op_id);
 
                     res.result = ResultCode.OK;
                     return res;

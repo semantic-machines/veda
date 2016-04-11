@@ -108,6 +108,17 @@ public ResultCode send_remove(P_MODULE storage_id, Context ctx, string uri, bool
     return rc;
 }
 
+Queue queue;
+
+shared static ~this ()
+{
+	if (queue !is null)
+	{
+		queue.close ();
+		queue = null;
+	}		
+} 
+
 public void individuals_manager(string thread_name, string db_path, string node_id)
 {
     core.thread.Thread.getThis().name             = thread_name;
@@ -115,6 +126,10 @@ public void individuals_manager(string thread_name, string db_path, string node_
     int                          size_bin_log     = 0;
     int                          max_size_bin_log = 10_000_000;
     string                       bin_log_name     = get_new_binlog_name(db_path);
+
+ 	queue = new Queue("individuals-flow-" ~ thread_name);
+ 	queue.remove_lock ();
+    queue.open();    
 
     // SEND ready
     receive((Tid tid_response_reciever)
@@ -236,6 +251,8 @@ public void individuals_manager(string thread_name, string db_path, string node_
                         {
                             if (cmd == CMD.PUT)
                             {
+								queue.push (msg);
+								
                                 string new_hash;
 
                                 if (storage.update_or_create(uri, msg, new_hash) == 0)

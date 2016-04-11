@@ -2,7 +2,7 @@
  * fanout thread
  */
 
-module veda.core.fanout;
+module veda.fanout;
 
 private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;

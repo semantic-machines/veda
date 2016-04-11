@@ -1,0 +1,13 @@
+{
+	"fileVersion": 1,
+	"versions": {
+		"libasync": "0.7.5",
+		"memutils": "0.4.5",
+		"mysql-d": "0.3.2",
+		"openssl": "1.1.4+1.0.1g",
+		"backtrace-d": "0.1.0",
+		"smtp": "~master",
+		"dunit": "1.0.10",
+		"pacahon_third_party": "1.0.13"
+	}
+}

@@ -369,7 +369,7 @@ class Queue
 
             if (exists(file_name_queue ~ ".lock"))
             {
-                writeln("Queue already open, or not deleted lock file");
+                writefln("Queue [%s] already open, or not deleted lock file", name);
                 return false;
             }
             std.file.write(file_name_queue ~ ".lock", "0");
@@ -406,6 +406,18 @@ class Queue
         }
         return isReady;
     }
+
+	public void remove_lock ()
+	{
+		try
+		{
+            std.file.remove(file_name_queue ~ ".lock");
+		}
+		catch (Throwable tr)
+		{
+			
+		}    		
+	}
 
     public void close()
     {
