@@ -15,7 +15,7 @@
         ],
         "license": "LGPL v3",
 	"sourceFiles":["../../lib64/libv8d.a", "../../lib64/libxapiand.a"],
-	"sourcePaths":["../../veda/core",  "../../veda/frontend", "../../veda/onto", "../../veda/util"],
+	"sourcePaths":["../../veda/common", "../../veda/core",  "../../veda/frontend", "../../veda/onto", "../../veda/util"],
 	"configurations": [
 	{
 	    "name": "app",

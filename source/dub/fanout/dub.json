@@ -9,8 +9,7 @@
                 "libasync": "0.7.5"
 	},
         "license": "LGPL v3",
-	"sourceFiles":["../../lib64/libxapiand.a"],
-	"sourcePaths":["../../veda/fanout"],
+	"sourcePaths":["../../veda/fanout", "../../veda/common"],
 	"configurations": [
 	{
 	    "name": "app",

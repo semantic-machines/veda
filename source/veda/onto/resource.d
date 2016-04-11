@@ -5,7 +5,7 @@
 module veda.onto.resource;
 
 import std.conv, std.stdio, std.datetime, std.string;
-import onto.lang;
+import veda.onto.lang;
 import veda.type;
 
 alias Resource[] Resources;

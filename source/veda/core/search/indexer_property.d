@@ -6,7 +6,7 @@ module search.indexer_property;
 
 private import std.conv, std.stdio;
 private import veda.core.context, veda.core.log_msg;
-private import veda.onto.resource, onto.lang, veda.onto.individual, veda.core.define;
+private import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.define;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;

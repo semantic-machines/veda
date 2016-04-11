@@ -2,7 +2,7 @@ module veda.util.individual8vjson;
 
 import std.conv, std.stdio;
 import vibe.d;
-import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang;
+import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang;
 
 static LANG[ string ] Lang;
 static DataType[ string ] Resource_type;

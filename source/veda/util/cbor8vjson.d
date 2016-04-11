@@ -5,8 +5,7 @@ module veda.util.cbor8vjson;
 
 private import std.outbuffer, std.stdio, std.string, std.conv, std.datetime;
 private import vibe.data.json;
-private import veda.type, veda.onto.resource, veda.onto.individual, veda.util.cbor;
-private import onto.lang;
+private import veda.type, veda.onto.resource, veda.onto.individual, veda.util.cbor, veda.onto.lang;
 
 string dummy;
 string nullz = "00000000000000000000000000000000";

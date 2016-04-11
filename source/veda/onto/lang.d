@@ -1,7 +1,7 @@
 /**
         Языки
  */
-module onto.lang;
+module veda.onto.lang;
 
 /// языки
 public enum LANG : ubyte

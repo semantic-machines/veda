@@ -8,7 +8,7 @@ private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.fi
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
-private import veda.type, veda.core.context, veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
+private import veda.type, veda.core.define, veda.onto.resource, onto.lang, veda.onto.individual;
 private import util.logger, veda.util.cbor, veda.core.util.cbor8individual;
 private import veda.core.storage.lmdb_storage, veda.core.thread_context;
 

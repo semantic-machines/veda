@@ -4,7 +4,7 @@
 module bind.v8d_header;
 
 import std.stdio, std.conv;
-import veda.type, veda.onto.individual, veda.onto.resource, onto.lang, veda.core.context, veda.core.define, veda.core.util.cbor8individual;
+import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.core.context, veda.core.define, veda.core.util.cbor8individual;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
