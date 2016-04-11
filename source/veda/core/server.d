@@ -10,7 +10,7 @@ private
     import io.mq_client, veda.core.io.file_reader;
     import util.logger, veda.core.util.utils, util.load_info;
     import veda.core.glue_code.scripts, veda.core.context, veda.core.know_predicates, veda.core.log_msg, veda.core.thread_context;
-    import veda.core.define, veda.type, veda.core.az.acl, veda.core.storage.storage_thread, search.xapian_indexer, veda.onto.individual,
+    import veda.core.define, veda.type, veda.core.az.acl, veda.core.storage.storage_thread, veda.core.search.xapian_indexer, veda.onto.individual,
            veda.onto.resource;
 }
 

@@ -2,7 +2,7 @@
  * XAPIAN indexer thread
  */
 
-module search.xapian_indexer;
+module veda.core.search.xapian_indexer;
 
 private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.algorithm;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;

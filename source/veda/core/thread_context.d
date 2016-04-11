@@ -1034,7 +1034,7 @@ class PThreadContext : Context
             }
 
             res.result = veda.core.storage.storage_thread.send_remove(P_MODULE.subject_manager, this, uri, ignore_freeze, res.op_id);
-            search.xapian_indexer.send_delete(this, null, prev_state, res.op_id);
+            veda.core.search.xapian_indexer.send_delete(this, null, prev_state, res.op_id);
 
             Resources   _types = prev_indv.resources.get(rdf__type, Resources.init);
             MapResource rdfType;
@@ -1270,9 +1270,9 @@ class PThreadContext : Context
                 if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
                 {
                     if (indv.isExists(veda_schema__deleted, true) == false)
-                        search.xapian_indexer.send_put(this, new_state, prev_state, res.op_id);
+                        veda.core.search.xapian_indexer.send_put(this, new_state, prev_state, res.op_id);
                     else
-                        search.xapian_indexer.send_delete(this, new_state, prev_state, res.op_id);
+                        veda.core.search.xapian_indexer.send_delete(this, new_state, prev_state, res.op_id);
 
                     if (rdfType.anyExists(owl_tags) == true && new_state != prev_state)
                     {
@@ -1522,7 +1522,7 @@ class PThreadContext : Context
                             result = false;
                         else
                         {
-                            res = search.xapian_indexer.backup(this, backup_id);
+                            res = veda.core.search.xapian_indexer.backup(this, backup_id);
 
                             if (res == "")
                                 result = false;

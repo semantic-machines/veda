@@ -711,8 +711,8 @@ class VedaStorageRest : VedaStorageRest_API
         if (trace_msg[ 500 ] == 1)
             log.trace("remove_individual #start : uri=%s", uri);
 
-        long fts_count_prep_put = search.xapian_indexer.get_count_prep_put();
-        long fts_count_recv_put = search.xapian_indexer.get_count_recv_put();
+        long fts_count_prep_put = veda.core.search.xapian_indexer.get_count_prep_put();
+        long fts_count_recv_put = veda.core.search.xapian_indexer.get_count_recv_put();
 
         long scr_count_prep_put = veda.core.glue_code.scripts.get_count_prep_put();
         long scr_count_recv_put = veda.core.glue_code.scripts.get_count_recv_put();
@@ -745,8 +745,8 @@ class VedaStorageRest : VedaStorageRest_API
         if (trace_msg[ 500 ] == 1)
             log.trace("put_individual #start : %s", text(individual_json));
 
-        long fts_count_prep_put = search.xapian_indexer.get_count_prep_put();
-        long fts_count_recv_put = search.xapian_indexer.get_count_recv_put();
+        long fts_count_prep_put = veda.core.search.xapian_indexer.get_count_prep_put();
+        long fts_count_recv_put = veda.core.search.xapian_indexer.get_count_recv_put();
 
         long scr_count_prep_put = veda.core.glue_code.scripts.get_count_prep_put();
         long scr_count_recv_put = veda.core.glue_code.scripts.get_count_recv_put();

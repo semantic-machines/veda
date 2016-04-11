@@ -118,8 +118,8 @@ void print_statistic(string thread_name, Tid _statistic_data_accumulator)
                 cps_r = (cast(float)delta_count_read / wt) * 1000 * 1000;
             }
 
-            long ft_count_prep_put = search.xapian_indexer.get_count_prep_put();
-            long ft_count_recv_put = search.xapian_indexer.get_count_recv_put();
+            long ft_count_prep_put = veda.core.search.xapian_indexer.get_count_prep_put();
+            long ft_count_recv_put = veda.core.search.xapian_indexer.get_count_recv_put();
 
             long sc_count_prep_put = veda.core.glue_code.scripts.get_count_prep_put();
             long sc_count_recv_put = veda.core.glue_code.scripts.get_count_recv_put();
