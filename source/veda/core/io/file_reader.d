@@ -41,55 +41,64 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
 
     long    count_individuals = context.count_individuals();
 
-	if (count_individuals < 2)
-	{
-  		auto     oFiles = dirEntries(path, SpanMode.depth);
-		string[] files;
+    auto    oFiles = dirEntries(path, SpanMode.depth);
 
-    	foreach (o; oFiles)
-    	{
-        	if (extension(o.name) == ".ttl")
-        	{
-        		files ~= o.name.dup;
-        	}
-    	}
-		processed(files, context);    		
-	}
-	
+    if (count_individuals < 2)
+    {
+        string[] files;
+
+        foreach (o; oFiles)
+        {
+            if (extension(o.name) == ".ttl")
+            {
+                files ~= o.name.dup;
+            }
+        }
+        processed(files, context);
+    }
+
     // SEND ready
     receive((Tid tid_response_reciever)
             {
                 send(tid_response_reciever, true);
             });
 
-   	core.thread.Thread.sleep(dur!("msecs")(10000));
+    core.thread.Thread.sleep(dur!("msecs")(3000));
 
-	auto ev_loop = getThreadEventLoop();
-	auto watcher = new AsyncDirectoryWatcher(ev_loop);
-	
-	DWChangeInfo[512] change_buf;
-	
-	watcher.run(
-	{ 
-			//writeln("Enter Handler (directory event captured)");
-			DWChangeInfo[] changes = change_buf[];
-			uint cnt;
-	        do {
-				cnt = watcher.readChanges(changes);
-				string[] files;	
+    auto ev_loop = getThreadEventLoop();
+    auto watcher = new AsyncDirectoryWatcher(ev_loop);
 
-				foreach (i; 0 .. cnt) {
-					files ~= changes[i].path.dup;
-				}
-				
-				processed(files, context);
-			} while (cnt > 0);
-	});
-	
-	watcher.watchDir(path);
+    DWChangeInfo[ 512 ] change_buf;
 
-	while (ev_loop.loop())
-		continue;
+    watcher.run(
+                {
+                    //writeln("Enter Handler (directory event captured), path=", path);
+                    DWChangeInfo[] changes = change_buf[];
+                    uint cnt;
+                    do
+                    {
+                        cnt = watcher.readChanges(changes);
+                        string[] files;
+
+                        foreach (i; 0 .. cnt)
+                        {
+                            files ~= changes[ i ].path.dup;
+                        }
+
+                        processed(files, context);
+                    } while (cnt > 0);
+                });
+
+    watcher.watchDir(path);
+    foreach (o; oFiles)
+    {
+        if (o.isDir)
+            watcher.watchDir(o.name);
+    }
+
+
+    while (ev_loop.loop())
+        continue;
 }
 
 //SysTime[ string ] file_modification_time;
@@ -114,20 +123,20 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
     string[] files_to_load;
     bool     is_reload = false;
 
-    Ticket sticket = context.sys_ticket();
+    Ticket   sticket = context.sys_ticket();
 
     foreach (fname; changes)
     {
-        if (extension(fname) == ".ttl" && fname.indexOf ("#") < 0)
+        if (extension(fname) == ".ttl" && fname.indexOf("#") < 0)
         {
-    		log.trace("change file %s", fname);
-                        
-            string     file_uri = "d:" ~ baseName(fname);
+            log.trace("change file %s", fname);
+
+            string     file_uri       = "d:" ~ baseName(fname);
             Individual indv_ttrl_file = context.get_individual(&sticket, file_uri);
 
             if (indv_ttrl_file is Individual.init)
             {
-            	is_reload = true;
+                is_reload = true;
                 files_to_load ~= fname;
                 log.trace("file is new, %s", fname);
             }
@@ -138,12 +147,12 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
 
                 if (new_hash != old_hash)
                 {
-                	is_reload = true;
+                    is_reload = true;
                     files_to_load ~= fname;
 
                     log.trace("file is modifed (hash), %s", fname);
                 }
-             }
+            }
         }
     }
 
