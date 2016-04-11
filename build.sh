@@ -22,10 +22,10 @@ dub build veda-server --build=release
 cd ../../..
 mv source/dub/server/veda-server veda-server
 
-echo *** build veda-fanout ***
-cd source/dub/fanout
-rm veda-fanout
-rm dub.selections.json
-dub build veda-fanout --build=release
-cd ../../..
-mv source/dub/fanout/veda-fanout veda-fanout
+#echo *** build veda-fanout ***
+#cd source/dub/fanout
+#rm veda-fanout
+#rm dub.selections.json
+#dub build veda-fanout --build=release
+#cd ../../..
+#mv source/dub/fanout/veda-fanout veda-fanout
