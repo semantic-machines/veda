@@ -7,7 +7,7 @@ private
 {
     import std.json, std.stdio, std.string, std.array, std.datetime, std.concurrency, std.conv, std.file, core.thread;
     import bind.v8d_header;
-    import veda.util.container, veda.core.util.utils, util.logger, veda.util.cbor, veda.core.util.cbor8individual;
+    import veda.util.container, veda.core.util.utils, util.logger, veda.util.cbor, veda.util.cbor8individual;
     import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.onto;
     import veda.core.know_predicates, veda.core.context, veda.core.define, veda.core.thread_context, veda.core.log_msg;
     import search.vel, search.vql, veda.core.glue_code.script;

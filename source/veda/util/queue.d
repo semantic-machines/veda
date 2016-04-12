@@ -3,7 +3,7 @@ module veda.util.queue;
 import std.conv, std.stdio, std.file, std.array, std.digest.crc;
 import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.storage.lmdb_storage, veda.onto.onto;
 import veda.onto.individual, veda.onto.resource, veda.util.tools;
-import veda.core.util.cbor8individual;
+import veda.util.cbor8individual;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -407,17 +407,16 @@ class Queue
         return isReady;
     }
 
-	public void remove_lock ()
-	{
-		try
-		{
+    public void remove_lock()
+    {
+        try
+        {
             std.file.remove(file_name_queue ~ ".lock");
-		}
-		catch (Throwable tr)
-		{
-			
-		}    		
-	}
+        }
+        catch (Throwable tr)
+        {
+        }
+    }
 
     public void close()
     {

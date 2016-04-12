@@ -1,7 +1,7 @@
 /**
  * individual -> html
  */
-module util.individual2html;
+module veda.util.individual2html;
 
 private import std.outbuffer, std.stdio, std.string, std.conv;
 private import veda.type, veda.onto.resource, veda.onto.individual, veda.onto.lang;

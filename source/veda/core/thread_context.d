@@ -10,7 +10,7 @@ private
            std.json;
     import bind.xapian_d_header, bind.v8d_header;
     import io.mq_client;
-    import veda.util.container, util.logger, veda.core.util.utils, veda.util.cbor, veda.core.util.cbor8individual, veda.core.util.individual8json;
+    import veda.util.container, util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.individual8json;
     import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.log_msg;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
     import veda.core.az.acl, search.vql;

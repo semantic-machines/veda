@@ -6,9 +6,7 @@ module veda.onto.individual;
 private
 {
     import std.stdio, std.typecons, std.conv, std.exception : assumeUnique;
-    import veda.onto.resource;
-    import veda.core.know_predicates, veda.core.context;
-    import veda.core.util.utils, veda.util.container, veda.core.util.cbor8individual;
+    import veda.onto.resource, veda.core.know_predicates, veda.core.context, veda.core.util.utils, veda.util.container, veda.util.cbor8individual;
 }
 /// Массив индивидуалов
 alias Individual[] Individuals;

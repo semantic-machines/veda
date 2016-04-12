@@ -1,7 +1,7 @@
 /**
  * CBOR: cbor <-> JSONValue
  */
-module veda.core.util.cbor8json;
+module veda.util.cbor8json;
 
 private import std.outbuffer, std.stdio, std.string, std.conv, std.datetime, std.json;
 private import veda.type, veda.onto.resource, veda.onto.individual, veda.util.cbor, veda.onto.lang;

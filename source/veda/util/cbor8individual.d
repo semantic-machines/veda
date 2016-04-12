@@ -6,7 +6,7 @@
    Authors: Valeriy Bushenev
  */
 
-module veda.core.util.cbor8individual;
+module veda.util.cbor8individual;
 
 private import std.outbuffer, std.stdio, std.string;
 private import veda.type, veda.onto.resource, veda.onto.individual, veda.onto.lang, veda.util.cbor;
