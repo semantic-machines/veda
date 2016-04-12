@@ -773,7 +773,7 @@ class PThreadContext : Context
             }
 
             Individual[] res;
-            _vql.get(ticket, query_str, null, null, 10, 10000, res, inner_get);
+            _vql.get(ticket, query_str, null, null, top, limit, res, inner_get);
             return res;
         }
         finally

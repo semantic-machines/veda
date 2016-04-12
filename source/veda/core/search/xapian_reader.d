@@ -211,8 +211,8 @@ class XapianReader : SearchReader
                         break;
 
                     reopen_db();
-                    log.trace("WARN! [%s][Q:%X] exec_xapian_query_and_queue_authorize, res=%d, attempt=%d",
-                              context.get_name(), cast(void *)str_query,
+                    log.trace("WARN! [%s][%s] exec_xapian_query_and_queue_authorize, res=%d, attempt=%d",
+                              context.get_name(), str_query,
                               state, attempt_count);
                 }
             }
