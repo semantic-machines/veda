@@ -4,12 +4,13 @@
 
 module veda.fanout;
 
+private import libasync;
 private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
-private import veda.type, veda.core.define, veda.onto.resource, veda.onto.lang, veda.onto.individual;
-private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.context, veda.core.thread_context;
+private import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual;
+private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.common.context, veda.core.impl.thread_context;
 
 //////
 Mysql      mysql_conn;
@@ -18,7 +19,6 @@ string     database_name;
 MailSender smtp_conn;
 //////
 
-string     node_id;
 Context    context;
 Individual node;
 
@@ -32,43 +32,22 @@ logger log()
     return _log;
 }
 
-    void main(char[][] args)
-    {
-    }
+EventLoop g_evl;
+TCPListener g_listener;
+bool g_closed;
 
-// ////// ////// ///////////////////////////////////////////
-public void send_put(Context ctx, string cur_state, string prev_state, long op_id)
+void main(char[][] args)
 {
-    Tid tid_fanout = ctx.getTid(P_MODULE.fanout);
+    context = new PThreadContext("cfg:standart_node", "fanout", P_MODULE.fanout);
+	
+	g_evl = new EventLoop;
+	g_listener = new TCPListener("localhost", 8081);
 
-    if (tid_fanout != Tid.init)
-    {
-        send(tid_fanout, CMD.PUT, prev_state, cur_state);
-    }
-}
+	while(!g_closed)
+		g_evl.loop();
+	destroyAsyncThreads();
 
-void fanout_thread(string thread_name, string _node_id)
-{
-    node_id = _node_id;
-    scope (exit)
-    {
-        log.trace("ERR! fanout_thread dead (exit)");
-    }
-
-    core.thread.Thread.getThis().name = thread_name;
-
-    // SEND ready
-    receive((Tid tid_response_reciever)
-            {
-                send(tid_response_reciever, true);
-            });
-
-    void check_context()
-    {
-        if (context is null)
-            context = new PThreadContext(node_id, thread_name, P_MODULE.fanout);
-    }
-
+/*
     while (true)
     {
         try
@@ -127,8 +106,87 @@ void fanout_thread(string thread_name, string _node_id)
             log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
         }
     }
+*/    
 }
 
+class TCPListener {
+	AsyncTCPListener m_listener;
+	
+	this(string host, size_t port) {
+		m_listener = new AsyncTCPListener(g_evl);
+		if (m_listener.host(host, port).run(&handler))
+			writeln("Listening to ", m_listener.local.toString());
+			
+	}
+
+	void delegate(TCPEvent) handler(AsyncTCPConnection conn) {
+		auto tcpConn = new TCPConnection(conn);
+		return &tcpConn.handler;
+	}
+
+}
+
+class TCPConnection {
+	AsyncTCPConnection m_conn;
+	
+	this(AsyncTCPConnection conn)
+	{
+		this.m_conn = conn;
+	}
+	void onConnect() {
+		onRead();
+		onWrite();
+	}
+	
+	// Note: All buffers must be empty when returning from TCPEvent.READ
+	void onRead() {
+		static ubyte[] bin = new ubyte[4092];
+		while (true) {
+				writeln("Received data #1");
+			uint len = m_conn.recv(bin);
+				writeln("Received data #2");
+			
+			if (len > 0) {
+				auto res = cast(string)bin[0..len];
+				writeln("Received data: ", res);
+			}
+			if (len < bin.length)
+				break;
+		}
+				writeln("Received data #e");
+	}
+	
+	void onWrite() {
+		m_conn.send(cast(ubyte[])"My Reply");
+		writeln("Sent: My Reply");
+	}
+	
+	void onClose() {
+		writeln("Connection closed");
+		//g_closed = true;
+	}
+	
+	void handler(TCPEvent ev) {
+		final switch (ev) {
+			case TCPEvent.CONNECT:
+				onConnect();
+				break;
+			case TCPEvent.READ:
+				onRead();
+				break;
+			case TCPEvent.WRITE:
+				onWrite();
+				break;
+			case TCPEvent.CLOSE:
+				onClose();
+				break;
+			case TCPEvent.ERROR:
+				assert(false, "Error during TCP Event");
+		}
+		return;
+	}
+	
+}
 ///////////////////////////////////////// SMTP FANOUT ///////////////////////////////////////////////////////////////////
 private Resources extract_email(ref Ticket sticket, string ap_uri)
 {
@@ -315,7 +373,7 @@ private void push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
                         new_indv.addResource("v-s:infoOfExecuting", Resource(text(res)));
                         new_indv.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
                         new_indv.addResource("rdfs:label", Resource("email, from:" ~ email_from ~ ", to:" ~ email_to));
-                        context.put_individual(&sticket, new_indv.uri, new_indv, false, "fanout");
+                        //context.put_individual(&sticket, new_indv.uri, new_indv, false, "fanout");
                     }
                 }
             }

@@ -1,13 +1,13 @@
 /**
  * процесс отвечающий за хранение
  */
-module veda.core.storage.storage_thread;
+module veda.core.threads.storage_manager;
 
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
     import util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.queue;
-    import veda.type, veda.core.bind.lmdb_header, veda.core.context, veda.core.define, veda.core.log_msg, veda.onto.individual, veda.onto.resource;
+    import veda.type, veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.log_msg, veda.onto.individual, veda.onto.resource;
     import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools;
     import search.vel;
 }
@@ -121,6 +121,11 @@ shared static ~this ()
 
 public void individuals_manager(string thread_name, string db_path, string node_id)
 {
+//import dzmq;
+//auto ctx = new ZmqContext();
+//auto sock = ctx.socket!(ZmqSocketType.Req)();
+//sock.connect("tcp://localhost:8081");
+	
     core.thread.Thread.getThis().name             = thread_name;
     LmdbStorage                  storage          = new LmdbStorage(db_path, DBMode.RW, "individuals_manager");
     int                          size_bin_log     = 0;
@@ -250,9 +255,9 @@ public void individuals_manager(string thread_name, string db_path, string node_
                         try
                         {
                             if (cmd == CMD.PUT)
-                            {
+                            {                            	
 								queue.push (msg);
-								
+																
                                 string new_hash;
 
                                 if (storage.update_or_create(uri, msg, new_hash) == 0)

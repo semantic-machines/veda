@@ -2,7 +2,7 @@ import std.conv, std.stdio, std.file;
 import vibe.d;
 import properd;
 import veda.frontend.core_driver, veda.frontend.core_rest;
-import veda.onto.individual, veda.onto.resource, veda.core.context, veda.core.define;
+import veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -152,12 +152,12 @@ shared static this()
 
 //    if (checktime_onto_files < 1)
 //        checktime_onto_files = 30;
-    veda.core.context.Context core_context;
+    veda.core.common.context.Context core_context;
 
     if (write_storage_node !is null)
         set_g_external_write_storage_url(write_storage_node);
 
-    core_context = veda.core.server.init_core(node_id, role, listener_http_port, write_storage_node);
+    core_context = veda.core.srv.server.init_core(node_id, role, listener_http_port, write_storage_node);
     if (core_context is null)
     {
         log.trace("ERR! Veda core has not been initialized");
@@ -218,7 +218,7 @@ shared static this()
     if (is_exist_listener == false)
     {
         start_http_listener(core_context, pool, 8080);
-    }
+    }    
 }
 
 bool start_http_listener(Context core_context, ref std.concurrency.Tid[] pool, ushort http_port)

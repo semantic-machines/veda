@@ -1,7 +1,7 @@
 /**
  * core main thread
  */
-module veda.core.server;
+module veda.core.srv.server;
 
 private
 {
@@ -9,8 +9,8 @@ private
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import io.mq_client, veda.core.io.file_reader;
     import util.logger, veda.core.util.utils, util.load_info;
-    import veda.core.glue_code.scripts, veda.core.context, veda.core.know_predicates, veda.core.log_msg, veda.core.thread_context;
-    import veda.core.define, veda.type, veda.core.az.acl, veda.core.storage.storage_thread, veda.core.search.xapian_indexer, veda.onto.individual,
+    import veda.core.glue_code.scripts, veda.core.common.context, veda.core.common.know_predicates, veda.core.log_msg, veda.core.impl.thread_context;
+    import veda.core.common.define, veda.type, veda.core.threads.acl_manager, veda.core.threads.storage_manager, veda.core.threads.xapian_indexer, veda.onto.individual,
            veda.onto.resource;
 }
 

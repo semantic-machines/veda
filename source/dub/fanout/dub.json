@@ -6,10 +6,29 @@
 		"backtrace-d": "0.1.0", 
 		"mysql-d": "~>0.3.2",
 		"smtp": "~master",
-                "libasync": "0.7.5"
+                "libasync": "0.7.9",
+                "zmq-d": "~>0.3.0"
 	},
         "license": "LGPL v3",
-	"sourcePaths":["../../veda/fanout", "../../veda/common", "../../veda/onto",  "../../veda/util", "../../veda/core/bind", "../../veda/core"],
+	"sourcePaths":[
+	    "../../veda/fanout", 
+	    "../../veda/common", 
+	    "../../veda/onto",  
+	    "../../veda/util", 
+	    "../../veda/core/glue_code", 
+	    "../../veda/core/threads", 
+	    "../../veda/core/impl", 
+	    "../../veda/core/az", 
+	    "../../veda/core/bind", 
+	    "../../veda/core/search", 
+	    "../../veda/core/util",
+	    "../../veda/core/storage",
+	    "../../veda/core/common"
+	],
+        "libs": [
+                "raptor2"
+        ],
+        "sourceFiles":["../../lib64/libv8d.a", "../../lib64/libxapiand.a"],
 	"configurations": [
 	{
 	    "name": "app",

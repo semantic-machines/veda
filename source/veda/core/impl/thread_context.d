@@ -2,16 +2,16 @@
  * Внешнее API - Реализация
  */
 
-module veda.core.thread_context;
+module veda.core.impl.thread_context;
 
 private
 {
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
            std.json;
     import bind.xapian_d_header, bind.v8d_header;
-    import io.mq_client;
+//    import io.mq_client;
     import veda.util.container, util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.individual8json;
-    import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.log_msg;
+    import veda.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context, veda.core.impl.bus_event, veda.core.log_msg;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
     import veda.core.az.acl, search.vql;
 }
@@ -522,7 +522,7 @@ class PThreadContext : Context
         string     ss_as_cbor = individual2cbor(&new_ticket);
 
         long       op_id;
-        ResultCode rc = veda.core.storage.storage_thread.send_put(P_MODULE.ticket_manager, this, new_ticket.uri, ss_as_cbor, false, op_id);
+        ResultCode rc = veda.core.threads.storage_manager.send_put(P_MODULE.ticket_manager, this, new_ticket.uri, ss_as_cbor, false, op_id);
 
         ticket.result = rc;
         if (rc == ResultCode.OK)
@@ -1028,8 +1028,8 @@ class PThreadContext : Context
                 }
             }
 
-            res.result = veda.core.storage.storage_thread.send_remove(P_MODULE.subject_manager, this, uri, ignore_freeze, res.op_id);
-            veda.core.search.xapian_indexer.send_delete(this, null, prev_state, res.op_id);
+            res.result = veda.core.threads.storage_manager.send_remove(P_MODULE.subject_manager, this, uri, ignore_freeze, res.op_id);
+            veda.core.threads.xapian_indexer.send_delete(this, null, prev_state, res.op_id);
 
             Resources   _types = prev_indv.resources.get(rdf__type, Resources.init);
             MapResource rdfType;
@@ -1063,12 +1063,12 @@ class PThreadContext : Context
 
     public void subject_storage_commmit(bool isWait = true)
     {
-        veda.core.storage.storage_thread.send_commit(P_MODULE.subject_manager, this, isWait);
+        veda.core.threads.storage_manager.send_commit(P_MODULE.subject_manager, this, isWait);
     }
 
     public long unload_subject_storage(string queue_name)
     {
-        return veda.core.storage.storage_thread.send_unload(P_MODULE.subject_manager, this, queue_name);
+        return veda.core.threads.storage_manager.send_unload(P_MODULE.subject_manager, this, queue_name);
     }
 
 
@@ -1257,7 +1257,7 @@ class PThreadContext : Context
 
                 string new_state = individual2cbor(indv);
 
-                res.result = veda.core.storage.storage_thread.send_put(P_MODULE.subject_manager, this, indv.uri, new_state, ignore_freeze, res.op_id);
+                res.result = veda.core.threads.storage_manager.send_put(P_MODULE.subject_manager, this, indv.uri, new_state, ignore_freeze, res.op_id);
 
                 if (res.result != ResultCode.OK)
                     return res;
@@ -1265,9 +1265,9 @@ class PThreadContext : Context
                 if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
                 {
                     if (indv.isExists(veda_schema__deleted, true) == false)
-                        veda.core.search.xapian_indexer.send_put(this, new_state, prev_state, res.op_id);
+                        veda.core.threads.xapian_indexer.send_put(this, new_state, prev_state, res.op_id);
                     else
-                        veda.core.search.xapian_indexer.send_delete(this, new_state, prev_state, res.op_id);
+                        veda.core.threads.xapian_indexer.send_delete(this, new_state, prev_state, res.op_id);
 
                     if (rdfType.anyExists(owl_tags) == true && new_state != prev_state)
                     {
@@ -1498,13 +1498,13 @@ class PThreadContext : Context
             }
             else
             {
-                backup_id = veda.core.storage.storage_thread.backup(this);
+                backup_id = veda.core.threads.storage_manager.backup(this);
 
                 if (backup_id != "")
                 {
                     result = true;
 
-                    string res = veda.core.az.acl.backup(this, backup_id);
+                    string res = veda.core.threads.acl_manager.backup(this, backup_id);
 
                     if (res == "")
                         result = false;
@@ -1517,7 +1517,7 @@ class PThreadContext : Context
                             result = false;
                         else
                         {
-                            res = veda.core.search.xapian_indexer.backup(this, backup_id);
+                            res = veda.core.threads.xapian_indexer.backup(this, backup_id);
 
                             if (res == "")
                                 result = false;

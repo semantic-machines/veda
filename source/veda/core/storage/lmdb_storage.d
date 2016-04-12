@@ -7,7 +7,7 @@ private
 {
     import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string;
     import veda.core.bind.lmdb_header, veda.onto.individual;
-    import util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.core.context, veda.core.define, veda.core.storage.binlog_tools;
+    import util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.core.common.context, veda.core.common.define, veda.core.storage.binlog_tools;
 }
 
 // ////// logger ///////////////////////////////////////////

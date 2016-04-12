@@ -1,9 +1,7 @@
 module veda.util.queue;
 
 import std.conv, std.stdio, std.file, std.array, std.digest.crc;
-import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.storage.lmdb_storage, veda.onto.onto;
-import veda.onto.individual, veda.onto.resource, veda.util.tools;
-import veda.util.cbor8individual;
+import veda.type, veda.core.common.define, veda.util.tools;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -493,7 +491,7 @@ class Queue
     private void flush()
     {
         ff_queue_w.flush();
-        ff_info_push_w.flush();
+        ff_info_push_w.flush();        
     }
 
     private void put_msg(string msg, QMessageType type = QMessageType.STRING)

@@ -4,7 +4,7 @@ import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file;
 import core.vararg, core.stdc.stdarg;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
-import veda.frontend.core_driver, veda.type, veda.core.context, veda.core.know_predicates, veda.core.define, veda.core.log_msg;
+import veda.frontend.core_driver, veda.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.log_msg;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.frontend.individual8vjson;
 
 // ////// logger ///////////////////////////////////////////
@@ -711,8 +711,8 @@ class VedaStorageRest : VedaStorageRest_API
         if (trace_msg[ 500 ] == 1)
             log.trace("remove_individual #start : uri=%s", uri);
 
-        long fts_count_prep_put = veda.core.search.xapian_indexer.get_count_prep_put();
-        long fts_count_recv_put = veda.core.search.xapian_indexer.get_count_recv_put();
+        long fts_count_prep_put = veda.core.threads.xapian_indexer.get_count_prep_put();
+        long fts_count_recv_put = veda.core.threads.xapian_indexer.get_count_recv_put();
 
         long scr_count_prep_put = veda.core.glue_code.scripts.get_count_prep_put();
         long scr_count_recv_put = veda.core.glue_code.scripts.get_count_recv_put();
@@ -745,8 +745,8 @@ class VedaStorageRest : VedaStorageRest_API
         if (trace_msg[ 500 ] == 1)
             log.trace("put_individual #start : %s", text(individual_json));
 
-        long fts_count_prep_put = veda.core.search.xapian_indexer.get_count_prep_put();
-        long fts_count_recv_put = veda.core.search.xapian_indexer.get_count_recv_put();
+        long fts_count_prep_put = veda.core.threads.xapian_indexer.get_count_prep_put();
+        long fts_count_recv_put = veda.core.threads.xapian_indexer.get_count_recv_put();
 
         long scr_count_prep_put = veda.core.glue_code.scripts.get_count_prep_put();
         long scr_count_recv_put = veda.core.glue_code.scripts.get_count_recv_put();
@@ -854,7 +854,7 @@ class VedaStorageRest : VedaStorageRest_API
             if (prev_state_json != Json.init)
                 prev_state_indv = json_to_individual(prev_state_json);
 
-            veda.core.bus_event.trigger_script(ticket, ev_type, &indv, &prev_state_indv, context, event_id, op_id);
+            veda.core.impl.bus_event.trigger_script(ticket, ev_type, &indv, &prev_state_indv, context, event_id, op_id);
 
             rc = ResultCode.OK;
         }

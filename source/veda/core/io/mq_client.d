@@ -6,7 +6,7 @@
 module io.mq_client;
 
 private import std.outbuffer;
-private import veda.core.context;
+private import veda.core.common.context;
 
 interface mq_client
 {

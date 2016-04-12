@@ -1,7 +1,7 @@
 /**
  * Предикаты используемые в Veda Core
  */
-module veda.core.know_predicates;
+module veda.core.common.know_predicates;
 
 public const string owl__Ontology = "owl:Ontology";
 

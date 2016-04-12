@@ -2,7 +2,7 @@
  * XAPIAN indexer thread
  */
 
-module veda.core.search.xapian_indexer;
+module veda.core.threads.xapian_indexer;
 
 private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.algorithm;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
@@ -10,7 +10,7 @@ private import veda.type;
 private import bind.xapian_d_header;
 private import veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, util.logger;
 private import veda.onto.onto, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.storage.lmdb_storage;
-private import veda.core.define, veda.core.know_predicates, veda.core.context, veda.core.log_msg, veda.core.thread_context;
+private import veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context, veda.core.log_msg, veda.core.impl.thread_context;
 private import search.vel, veda.core.search.xapian_vql, search.indexer_property;
 
 // ////// logger ///////////////////////////////////////////

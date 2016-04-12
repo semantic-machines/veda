@@ -9,8 +9,8 @@ module veda.core.glue_code.ltrs;
 private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, core.thread, std.algorithm, std.uuid;
 private import bind.v8d_header;
 private import veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.queue;
-private import veda.core.storage.lmdb_storage, veda.core.thread_context, veda.core.glue_code.script;
-private import veda.type, veda.core.context, veda.core.define, veda.onto.resource, veda.onto.lang, veda.onto.individual;
+private import veda.core.storage.lmdb_storage, veda.core.impl.thread_context, veda.core.glue_code.script;
+private import veda.type, veda.core.common.context, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;

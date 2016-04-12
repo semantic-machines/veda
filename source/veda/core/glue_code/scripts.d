@@ -9,7 +9,7 @@ private
     import bind.v8d_header;
     import veda.util.container, veda.core.util.utils, util.logger, veda.util.cbor, veda.util.cbor8individual;
     import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.onto;
-    import veda.core.know_predicates, veda.core.context, veda.core.define, veda.core.thread_context, veda.core.log_msg;
+    import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.define, veda.core.impl.thread_context, veda.core.log_msg;
     import search.vel, search.vql, veda.core.glue_code.script;
 }
 
