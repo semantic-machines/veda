@@ -9,8 +9,7 @@ private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
 private import veda.type, veda.core.define, veda.onto.resource, veda.onto.lang, veda.onto.individual;
-private import util.logger, veda.util.cbor, veda.core.util.cbor8individual;
-private import veda.core.storage.lmdb_storage, veda.core.thread_context;
+private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.context, veda.core.thread_context;
 
 //////
 Mysql      mysql_conn;
@@ -32,6 +31,10 @@ logger log()
         _log = new logger("veda-core-" ~ process_name, "log", "FANOUT");
     return _log;
 }
+
+    void main(char[][] args)
+    {
+    }
 
 // ////// ////// ///////////////////////////////////////////
 public void send_put(Context ctx, string cur_state, string prev_state, long op_id)

@@ -1,7 +1,7 @@
 import std.conv, std.stdio, std.file;
 import vibe.d;
 import properd;
-import veda.core_driver, veda.core_rest;
+import veda.frontend.core_driver, veda.frontend.core_rest;
 import veda.onto.individual, veda.onto.resource, veda.core.context, veda.core.define;
 
 // ////// logger ///////////////////////////////////////////

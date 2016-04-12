@@ -9,7 +9,7 @@
                 "libasync": "0.7.5"
 	},
         "license": "LGPL v3",
-	"sourcePaths":["../../veda/fanout", "../../veda/common"],
+	"sourcePaths":["../../veda/fanout", "../../veda/common", "../../veda/onto",  "../../veda/util", "../../veda/core/bind", "../../veda/core"],
 	"configurations": [
 	{
 	    "name": "app",

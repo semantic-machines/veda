@@ -1,7 +1,7 @@
 /**
  * CBOR: cbor <-> vibe Json
  */
-module veda.util.cbor8vjson;
+module veda.frontend.cbor8vjson;
 
 private import std.outbuffer, std.stdio, std.string, std.conv, std.datetime;
 private import vibe.data.json;

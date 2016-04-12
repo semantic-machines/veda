@@ -1,10 +1,10 @@
-module veda.core_driver;
+module veda.frontend.core_driver;
 
 import std.stdio, std.datetime, std.conv, std.string, std.variant, std.concurrency;
 import vibe.data.json;
 import veda.core.server, veda.core.context, veda.core.thread_context, veda.core.know_predicates, veda.core.define;
 import veda.type, veda.onto.onto, veda.onto.lang, veda.onto.individual, veda.onto.resource, veda.core.log_msg;
-import veda.util.cbor8vjson, veda.util.individual8vjson;
+import veda.frontend.cbor8vjson, veda.frontend.individual8vjson;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
