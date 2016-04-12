@@ -184,12 +184,12 @@ interface Storage
 
 interface ScriptVM
 {
-		Script compile (string code);
+    Script compile(string code);
 }
 
 interface Script
 {
-		void run ();
+    void run();
 }
 /**
  * Внешнее API - Интерфейс
@@ -202,15 +202,12 @@ interface Context
 
     Tid getTid(P_MODULE tid_name);
 
-    @property search.vql.VQL vql();
-
     int[ string ] get_key2slot();
 
     public bool ft_check_for_reload(void delegate() load);
     public bool acl_check_for_reload(void delegate() load);
 
     bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
-    Individual[] get_individuals_via_query(Ticket *ticket, string query_str);
     string get_individual_from_storage(string uri);
     Onto get_onto();
 //    OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool api_request = true);
@@ -231,6 +228,8 @@ interface Context
     // *************************************************** external API *********************************** //
 
 //    //////////////////////////////////////////////////// ONTO //////////////////////////////////////////////
+    public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, bool inner_get = false, int top = 10, int limit = 10000);
+
 
     public Individual[ string ] get_onto_as_map_individuals();
 

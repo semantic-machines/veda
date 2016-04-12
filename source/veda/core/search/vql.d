@@ -72,7 +72,7 @@ class VQL
 
             if (data is null)
             {
-           	    log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", text(uri), filter);
+                log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", text(uri), filter);
             }
             else
             {
@@ -107,7 +107,7 @@ class VQL
 
             if (data is null)
             {
-           	    log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", text(uri), filter);
+                log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", text(uri), filter);
             }
             else
             {
@@ -209,7 +209,7 @@ class VQL
 
                 if (data is null)
                 {
-            	    log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", text(uri), query_str);
+                    log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", text(uri), query_str);
                 }
                 else
                 {

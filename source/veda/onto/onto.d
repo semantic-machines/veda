@@ -12,7 +12,6 @@ private
     import veda.onto.resource, veda.onto.individual;
     import veda.core.util.utils, veda.util.container, util.logger;
     import veda.core.know_predicates, veda.core.context, veda.core.log_msg, veda.core.define;
-    import search.vql;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -78,10 +77,8 @@ class Onto
     public void load()
     {
         reload_count++;
-        Individual[] l_individuals;
-
         if (trace_msg[ 20 ] == 1)
-        	log.trace_log_and_console("[%s] load onto..", context.get_name);
+            log.trace_log_and_console("[%s] load onto..", context.get_name);
 
 //        if (context.getTid(P_MODULE.acl_manager) != Tid.init)
 //            context.wait_thread(P_MODULE.acl_manager);
@@ -89,13 +86,12 @@ class Onto
         context.reopen_ro_subject_storage_db();
         context.reopen_ro_fulltext_indexer_db();
 
-        Ticket sticket = context.sys_ticket();
+        Ticket       sticket = context.sys_ticket();
 
-        context.vql().get(
-                          &sticket,
-                          "return { '*'}
-            filter { 'rdf:type' === 'rdfs:Class' || 'rdf:type' === 'rdf:Property' || 'rdf:type' === 'owl:Class' || 'rdf:type' === 'owl:ObjectProperty' || 'rdf:type' === 'owl:DatatypeProperty' }",
-                          l_individuals);
+        Individual[] l_individuals = context.get_individuals_via_query(
+                                                                       &sticket,
+                                                                       "'rdf:type' === 'rdfs:Class' || 'rdf:type' === 'rdf:Property' || 'rdf:type' === 'owl:Class' || 'rdf:type' === 'owl:ObjectProperty' || 'rdf:type' === 'owl:DatatypeProperty'",
+                                                                       true, 10000, 10000);
 
         //if (trace_msg[ 20 ] == 1)
         log.trace_log_and_console("[%s] load onto, count individuals: %d", context.get_name, l_individuals.length);

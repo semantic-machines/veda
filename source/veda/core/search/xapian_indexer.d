@@ -196,7 +196,6 @@ private class IndexerContext
 
             iproperty.load(false);
 
-            //writeln("prepare msg counter:", counter, ", subject:", ss.subject);
 
             if (indv.uri !is null && indv.resources.length > 0)
             {

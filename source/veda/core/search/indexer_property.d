@@ -99,11 +99,10 @@ class IndexerProperty
             context.reopen_ro_subject_storage_db();
             context.reopen_ro_fulltext_indexer_db();
 
-            Individual[] l_individuals;
 //            context.vql().reopen_db();
             Ticket       sticket = context.sys_ticket();
 
-            context.vql().get(&sticket, "return { '*' } filter { 'rdf:type' === 'vdi:ClassIndex' }", l_individuals, true);
+            Individual[] l_individuals = context.get_individuals_via_query(&sticket, "'rdf:type' === 'vdi:ClassIndex'", true, 10000, 10000);
 
             foreach (indv; l_individuals)
             {

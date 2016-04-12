@@ -13,7 +13,7 @@ private
     import veda.util.container, util.logger, veda.core.util.utils, veda.util.cbor, veda.core.util.cbor8individual, veda.core.util.individual8json;
     import veda.type, veda.core.know_predicates, veda.core.define, veda.core.context, veda.core.bus_event, veda.core.log_msg;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
-    import veda.core.az.acl;
+    import veda.core.az.acl, search.vql;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -55,19 +55,19 @@ class PThreadContext : Context
     private string        old_msg_key2slot;
     private int[ string ] old_key2slot;
 
-    private                string[ string ] prefix_map;
+    private             string[ string ] prefix_map;
 
-    private LmdbStorage    inividuals_storage;
-    private LmdbStorage    tickets_storage;
-    private search.vql.VQL _vql;
+    private LmdbStorage inividuals_storage;
+    private LmdbStorage tickets_storage;
+    private VQL         _vql;
 
-    private                Tid[ P_MODULE ] name_2_tids;
+    private             Tid[ P_MODULE ] name_2_tids;
 
-    private long           local_last_update_time;
-    private Individual     node = Individual.init;
-    private string         node_id;
+    private long        local_last_update_time;
+    private Individual  node = Individual.init;
+    private string      node_id;
 
-    private bool           API_ready = true;
+    private bool        API_ready = true;
 
     this(string _node_id, string context_name, P_MODULE _id)
     {
@@ -198,7 +198,7 @@ class PThreadContext : Context
                 {
                     log.trace(" load script:%s", o);
                     auto str_js        = cast(ubyte[]) read(o.name);
-                    auto str_js_script = script_vm.compile(cast (string)str_js);
+                    auto str_js_script = script_vm.compile(cast(string)str_js);
                     if (str_js_script !is null)
                     {
                         scripts ~= str_js_script;
@@ -350,11 +350,6 @@ class PThreadContext : Context
         {
             prefix_map[ key ] = value;
         }
-    }
-
-    @property search.vql.VQL vql()
-    {
-        return _vql;
     }
 
     private void subject2Ticket(ref Individual ticket, Ticket *tt)
@@ -755,7 +750,7 @@ class PThreadContext : Context
 
 
     // //////////////////////////////////////////// INDIVIDUALS IO /////////////////////////////////////
-    public Individual[] get_individuals_via_query(Ticket *ticket, string query_str)
+    public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, bool inner_get = false, int top = 10, int limit = 10000)
     {
 //        StopWatch sw; sw.start;
 
@@ -778,7 +773,7 @@ class PThreadContext : Context
             }
 
             Individual[] res;
-            vql.get(ticket, query_str, null, null, 10, 10000, res);
+            _vql.get(ticket, query_str, null, null, 10, 10000, res, inner_get);
             return res;
         }
         finally
@@ -799,8 +794,8 @@ class PThreadContext : Context
         }
         catch (Exception ex) {}
 
-        if (vql !is null)
-            vql.reopen_db();
+        if (_vql !is null)
+            _vql.reopen_db();
     }
 
     public void reopen_ro_subject_storage_db()
@@ -857,7 +852,7 @@ class PThreadContext : Context
             }
 
             immutable(string)[] res;
-            vql.get(ticket, query_str, sort_str, db_str, top, limit, res);
+            _vql.get(ticket, query_str, sort_str, db_str, top, limit, res);
             return res;
         }
         finally
