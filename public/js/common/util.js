@@ -582,10 +582,10 @@ function transformation(ticket, individuals, transform, executor, work_order)
                         var out_data0_el_arr = out_data0_el[name];
                         if (!out_data0_el_arr)
                             out_data0_el_arr = [];
-
+                        
                         var curelem = (typeof window === "undefined") ?
                             get_individual(ticket, element.data ? element.data : element) :
-                            new veda.IndividualModel(element.data ? element.data : element);
+                            	(element && element.length > 0)?new veda.IndividualModel(element[0]):new veda.IndividualModel(element.data ? element.data : element);
                         for (var i = 0; i < path.length - 1; i++)
                         {
                             if (!curelem || !curelem[path[i]]) return;
