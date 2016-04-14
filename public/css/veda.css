@@ -52,6 +52,10 @@ em {
   font-variant: small-caps;
   line-height: 50%;
 }*/
+.first-letter::first-letter {
+  font-size: 140%;
+  font-variant: small-caps;
+}
 
 .nav-right > li {
   float: right;
