@@ -964,7 +964,7 @@ v-ui:ModalImageTemplate
 	 var modal;
 	 $("#link", template).click(function (e) {
 		e.preventDefault();
-		if (!modal) modal = $("#modal").modal();
+		if (!modal) modal = $("#modal", template).modal();
 		modal.modal("show");
 	 });
 </script>

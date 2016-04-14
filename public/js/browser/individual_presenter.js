@@ -171,7 +171,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		// Trigger same events for embedded templates
 		function syncEmbedded (e, parent) {
-			console.log("parent", parent);
 			embedded.map(function (item) {
 				item.trigger(e.type, individual.id);
 			});
