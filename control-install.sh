@@ -25,7 +25,18 @@ if ! dub --version | grep $DUB_VER ; then
 fi
 
 # Get other dependencies
-sudo apt-get install -y libzmq3-dev
+mkdir tmp
+wget http://download.zeromq.org/zeromq-4.1.4.tar.gz -P tmp
+cd tmp
+tar -xvzf zeromq-4.1.4.tar.gz
+cd zeromq-4.1.4
+./autogen.sh
+./configure
+make
+sudo make install
+sudo ldconfig
+cd ..
+cd ..
 sudo apt-get install -y libevent-pthreads-2.0-5
 sudo apt-get install -y libraptor2-dev
 sudo apt-get install -y libevent-dev libssl-dev
