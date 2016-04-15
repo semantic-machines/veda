@@ -28,8 +28,8 @@ v-fe:FunctionExample1
 .
 v-fe:exampleProperty
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "example property"@en ;
-  rdfs:label "свойство-пример"@ru ;
+  rdfs:label "Example property"@en ;
+  rdfs:label "Свойство-пример"@ru ;
   rdfs:domain v-fe:FunctionExample ;
   rdfs:range xsd:string ;
 .

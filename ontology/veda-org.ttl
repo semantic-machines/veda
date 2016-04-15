@@ -79,8 +79,8 @@ v-s:Position
 v-s:childUnit
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
-  rdfs:label "child unit"@en ;
-  rdfs:label "дочерняя единица"@ru ;
+  rdfs:label "Child unit"@en ;
+  rdfs:label "Дочерняя единица"@ru ;
   rdfs:range v-s:OrganizationUnit ;
   owl:inverseOf v-s:parentUnit ;
 .
@@ -88,23 +88,23 @@ v-s:childUnit
 v-s:employee
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:HRRecord ;
-  rdfs:label "employee"@en ;
-  rdfs:label "работник"@ru ;
+  rdfs:label "Employee"@en ;
+  rdfs:label "Работник"@ru ;
   rdfs:range v-s:Person ;
 .
 
 v-s:hasAppointment
   rdf:type owl:ObjectProperty ;
-  rdfs:label "appointment"@en ;
-  rdfs:label "назначение"@ru ;
+  rdfs:label "Appointment"@en ;
+  rdfs:label "Назначение"@ru ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Person ;
 .
 
 v-s:defaultAppointment
   rdf:type owl:ObjectProperty ;
-  rdfs:label "default appointment"@en ;
-  rdfs:label "назначение по-умолчанию"@ru ;
+  rdfs:label "Default appointment"@en ;
+  rdfs:label "Назначение по-умолчанию"@ru ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Person ;
 .
@@ -112,24 +112,24 @@ v-s:defaultAppointment
 v-s:occupation
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Appointment ;
-  rdfs:label "occupation"@en ;
-  rdfs:label "занимает должность"@ru ;
+  rdfs:label "Occupation"@en ;
+  rdfs:label "Занимает должность"@ru ;
   rdfs:range v-s:Position ;
 .
 
 v-s:origin
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Appointment, v-s:Person, v-s:OrganizationUnit ;
-  rdfs:label "origin"@en ;
-  rdfs:label "происхождение"@ru ;
+  rdfs:label "Origin"@en ;
+  rdfs:label "Происхождение"@ru ;
   rdfs:range xsd:string ;
 .
 
 v-s:official
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Appointment ;
-  rdfs:label "official"@en ;
-  rdfs:label "официально"@ru ;
+  rdfs:label "Official"@en ;
+  rdfs:label "Официально"@ru ;
   rdfs:range xsd:boolean ;
 .
 
@@ -137,24 +137,24 @@ v-s:parentUnit
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
   rdfs:domain v-s:Appointment ;
-  rdfs:label "parent unit"@en ;
-  rdfs:label "родительская единица"@ru ;
+  rdfs:label "Parent unit"@en ;
+  rdfs:label "Родительская единица"@ru ;
   rdfs:range v-s:OrganizationUnit ;
   owl:inverseOf v-s:childUnit ;
 .
 
 v-s:postalAddress
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "postal address"@en ;
-  rdfs:label "почтовый адрес"@ru ;
+  rdfs:label "Postal address"@en ;
+  rdfs:label "Почтовый адрес"@ru ;
   rdfs:range xsd:string ;
 .
 
 v-s:valid
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Appointment ;
-  rdfs:label "valid"@en ;
-  rdfs:label "действительно"@ru ;
+  rdfs:label "Valid"@en ;
+  rdfs:label "Действительно"@ru ;
   rdfs:range xsd:boolean ;
 .
 

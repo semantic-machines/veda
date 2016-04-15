@@ -29,8 +29,8 @@ v-s:Chief
 .
 v-s:ImplementationPeriod
   rdf:type v-s:Bundle ;
-  rdfs:label "период реализации"@ru ;
-  rdfs:label "implementation period"@en ;
+  rdfs:label "Период реализации"@ru ;
+  rdfs:label "Implementation period"@en ;
 .
 
 v-s:ViewDetails

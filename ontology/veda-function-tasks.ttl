@@ -36,7 +36,7 @@ v-ft:sortOrder
 .
 v-ft:FunctionTasksModel
   rdf:type v-s:ClassModel ;
-  rdfs:label "v-ft:FunctionTasks class template"@en ;
+  rdfs:label "V-ft:FunctionTasks class template"@en ;
   rdfs:label "Шаблон для класса v-ft:FunctionTasks"@ru ;
   v-ui:forClass v-ft:FunctionTasks ;
   v-s:script """
@@ -77,7 +77,7 @@ v-ft:TasksNotFound
 .
 v-ft:FunctionTasksTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "v-ft:FunctionInbox class template"@en ;
+  rdfs:label "V-ft:FunctionInbox class template"@en ;
   rdfs:label "Шаблон для класса v-ft:FunctionInbox"@ru ;
   v-ui:forClass v-ft:FunctionTasks ;
   v-ui:template """

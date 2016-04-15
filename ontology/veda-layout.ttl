@@ -108,29 +108,29 @@ v-l:Menu
 .
 v-l:menuItem
 	rdf:type owl:ObjectProperty ;
-	rdfs:label "menu item"@en ;
-	rdfs:label "пункт меню"@ru ;
+	rdfs:label "Menu item"@en ;
+	rdfs:label "Пункт меню"@ru ;
 	rdfs:domain v-l:Menu ;
 	rdfs:range v-l:Menu ;
 .
 v-l:action
 	rdf:type owl:DatatypeProperty ;
-	rdfs:label "action"@en ;
-	rdfs:label "действие"@ru ;
+	rdfs:label "Action"@en ;
+	rdfs:label "Действие"@ru ;
 	rdfs:domain v-l:Menu ;
 	rdfs:range xsd:string ;
 .
 v-l:staticLink
 	rdf:type owl:DatatypeProperty ;
-	rdfs:label "static link"@en ;
-	rdfs:label "статическая ссылка"@ru ;
+	rdfs:label "Static link"@en ;
+	rdfs:label "Статическая ссылка"@ru ;
 	rdfs:domain v-l:Menu ;
 	rdfs:range xsd:string ;
 .
 v-l:objectLink
 	rdf:type owl:ObjectProperty ;
-	rdfs:label "link to individual"@en ;
-	rdfs:label "ссылка на индивид"@ru ;
+	rdfs:label "Link to individual"@en ;
+	rdfs:label "Ссылка на индивид"@ru ;
 	rdfs:domain v-l:Menu ;
 	rdfs:range rdfs:Resource ;
 .
@@ -203,7 +203,7 @@ v-l:PsStrings
 	rdf:type v-ui:StringPropertySpecification ;
 	v-ui:forProperty rdfs:label, v-l:staticLink ;
 	v-ui:forClass v-l:Menu ;
-	rdfs:label "rdfs:label, v-l:staticLink specification for Menu class"@en ;
+	rdfs:label "Rdfs:label, v-l:staticLink specification for Menu class"@en ;
 	rdfs:label "Спецификация rdfs:label, v-l:staticLink для класса Меню"@ru ;
 	v-ui:maxCardinality "1"^^xsd:integer ;
 .
@@ -211,7 +211,7 @@ v-l:PsMenuItem
 	rdf:type v-ui:ObjectPropertySpecification ;
 	v-ui:forProperty v-l:menuItem ;
 	v-ui:forClass v-l:Menu ;
-	rdfs:label "v-l:menuItem specification for v-l:Menu class"@en ;
+	rdfs:label "V-l:menuItem specification for v-l:Menu class"@en ;
 	rdfs:label "Спецификация v-l:menuItem для класса v-l:Menu"@ru ;
 	v-ui:queryPrefix "('rdf:type' == 'v-l:Menu')"^^xsd:string ;
 .

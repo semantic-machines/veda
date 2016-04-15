@@ -42,39 +42,39 @@ v-fs:Search
 .
 v-fs:fulltextQuery
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "query"@en ;
-  rdfs:label "запрос"@ru ;
+  rdfs:label "Query"@en ;
+  rdfs:label "Запрос"@ru ;
   rdfs:domain v-fs:FulltextRequest ;
   rdfs:range xsd:string ;
 .
 v-fs:sortOrder
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "sort order"@en ;
-  rdfs:label "порядок сортировки"@ru ;
+  rdfs:label "Sort order"@en ;
+  rdfs:label "Порядок сортировки"@ru ;
   rdfs:domain v-fs:FulltextRequest ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:string ;
 .
 v-fs:databases
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "databases"@en ;
-  rdfs:label "базы данных"@ru ;
+  rdfs:label "Databases"@en ;
+  rdfs:label "Базы данных"@ru ;
   rdfs:domain v-fs:FulltextRequest ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:string ;
 .
 v-fs:reopen
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "reopen"@en ;
-  rdfs:label "открыть заново"@ru ;
+  rdfs:label "Reopen"@en ;
+  rdfs:label "Открыть заново"@ru ;
   rdfs:domain v-fs:FulltextRequest ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:boolean ;
 .
 v-fs:typeToSearch
   rdf:type owl:ObjectProperty ;
-  rdfs:label "тип искомого объекта"@ru ;
-  rdfs:label "type of object to search"@en ;
+  rdfs:label "Тип искомого объекта"@ru ;
+  rdfs:label "Type of object to search"@en ;
   rdfs:domain v-fs:FulltextRequest ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range owl:Class ;
@@ -82,22 +82,22 @@ v-fs:typeToSearch
 .
 v-fs:resultTemplate
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "шаблон отображения результатов"@ru ;
-  rdfs:label "result template"@en ;
+  rdfs:label "Шаблон отображения результатов"@ru ;
+  rdfs:label "Result template"@en ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:string ;
 .
 v-fs:resultTemplateRest
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "шаблон отображения результатов"@ru ;
-  rdfs:label "result template"@en ;
+  rdfs:label "Шаблон отображения результатов"@ru ;
+  rdfs:label "Result template"@en ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:string ;
 .
 v-fs:TypeToSearchSpecFT
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:FulltextRequest"@ru ;
-  rdfs:label "v-fs:typeToSearch property specification for class v-fs:FulltextRequest"@en ;
+  rdfs:label "V-fs:typeToSearch property specification for class v-fs:FulltextRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:forProperty v-fs:typeToSearch ;
   v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
@@ -106,7 +106,7 @@ v-fs:TypeToSearchSpecFT
 v-fs:TypeToSearchSpecAT
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:AttributiveRequest"@ru ;
-  rdfs:label "v-fs:typeToSearch property specification for class v-fs:AttributiveRequest"@en ;
+  rdfs:label "V-fs:typeToSearch property specification for class v-fs:AttributiveRequest"@en ;
   v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:forProperty v-fs:typeToSearch ;
   v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
@@ -116,7 +116,7 @@ v-fs:TypeToSearchSpecAT
 v-fs:FulltextQuerySpec
   rdf:type v-ui:StringPropertySpecification ;
   rdfs:label "Спецификация свойства v-fs:fulltextQuery для класса v-fs:FulltextRequest"@ru ;
-  rdfs:label "v-fs:fulltextQuery property specification for class v-fs:FulltextRequest"@en ;
+  rdfs:label "V-fs:fulltextQuery property specification for class v-fs:FulltextRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:forProperty v-fs:fulltextQuery ;
   v-ui:maxCardinality "1"^^xsd:integer ;
@@ -126,7 +126,7 @@ v-fs:FulltextQuerySpec
 v-fs:LabelSpec
   rdf:type v-ui:StringPropertySpecification ;
   rdfs:label "Спецификация свойства rdfs:label для классов v-fs:FulltextRequest, v-fs:AttributiveRequest"@ru ;
-  rdfs:label "rdfs:label property specification for class v-fs:FulltextRequest, v-fs:AttributiveRequest"@en ;
+  rdfs:label "Rdfs:label property specification for class v-fs:FulltextRequest, v-fs:AttributiveRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:forProperty rdfs:label ;
@@ -290,7 +290,7 @@ v-fs:SearchTemplate
 .
 v-fs:FulltextRequestModel
   rdf:type v-s:ClassModel ;
-  rdfs:label "v-fs:FulltextRequest class model"@en ;
+  rdfs:label "V-fs:FulltextRequest class model"@en ;
   rdfs:label "Модель класса v-fs:FulltextRequest"@ru ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-s:script """
@@ -537,7 +537,7 @@ v-fs:FulltextRequestTemplate
 .
 v-fs:AttributiveRequestModel
   rdf:type v-s:ClassModel ;
-  rdfs:label "v-fs:AttributiveRequest class model"@en ;
+  rdfs:label "V-fs:AttributiveRequest class model"@en ;
   rdfs:label "Модель класса v-fs:AttributiveRequest"@ru ;
   v-ui:forClass v-fs:AttributiveRequest ;
   v-s:script """
@@ -606,7 +606,7 @@ v-fs:AttributiveRequestModel
 .
 v-fs:AttributiveRequestTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "v-fs:AttributiveRequest class template"@en ;
+  rdfs:label "V-fs:AttributiveRequest class template"@en ;
   rdfs:label "Шаблон класса v-fs:AttributiveRequest"@ru ;
   v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:template """

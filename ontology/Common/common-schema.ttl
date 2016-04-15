@@ -37,8 +37,8 @@ cmn-s:rights_to_actions
 cmn-s:descriptionOfPlace
   rdf:type owl:DatatypeProperty ;
   rdfs:domain cmn-s:Action ;
-  rdfs:label "description of the place"@en ;
-  rdfs:label "место проведения чего-либо"@ru ;
+  rdfs:label "Description of the place"@en ;
+  rdfs:label "Место проведения чего-либо"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:contributor
@@ -70,7 +70,7 @@ v-s:responsible
 .
 cmn-s:hasAction
   rdf:type owl:ObjectProperty ;
-  rdfs:label "has action"@en ;
-  rdfs:label "мероприятие"@ru ;
+  rdfs:label "Has action"@en ;
+  rdfs:label "Мероприятие"@ru ;
   rdfs:range cmn-s:Action ;
 .

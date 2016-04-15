@@ -27,8 +27,8 @@ v-ui:RU
 v-ui:preferredLanguage
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:Preferences ;
-  rdfs:label "preferred language"@en ;
-  rdfs:label "предпочитаемый язык"@ru ;
+  rdfs:label "Preferred language"@en ;
+  rdfs:label "Предпочитаемый язык"@ru ;
   rdfs:range v-ui:Language ;
 .
 v-ui:forClass
@@ -36,39 +36,39 @@ v-ui:forClass
   rdfs:domain v-ui:ClassTemplate ;
   rdfs:domain v-s:ClassModel ;
   rdfs:domain v-ui:PropertySpecification ;
-  rdfs:label "for class"@en ;
-  rdfs:label "для класса"@ru ;
+  rdfs:label "For class"@en ;
+  rdfs:label "Для класса"@ru ;
   rdfs:range owl:Class ;
 .
 v-ui:forProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:PropertySpecification ;
-  rdfs:label "for property"@en ;
-  rdfs:label "для свойства"@ru ;
+  rdfs:label "For property"@en ;
+  rdfs:label "Для свойства"@ru ;
   rdfs:range owl:DatatypeProperty, owl:ObjectProperty, rdf:Property ;
 .
 v-ui:hasTemplate
   rdf:type owl:ObjectProperty ;
   rdfs:domain owl:Class ;
   rdfs:domain rdfs:Class ;
-  rdfs:label "has template"@en ;
-  rdfs:label "имеет шаблон"@ru ;
+  rdfs:label "Has template"@en ;
+  rdfs:label "Имеет шаблон"@ru ;
   rdfs:range v-ui:ClassTemplate ;
 .
 v-ui:hasModel
   rdf:type owl:ObjectProperty ;
   rdfs:domain owl:Class ;
   rdfs:domain rdfs:Class ;
-  rdfs:label "has model"@en ;
-  rdfs:label "имеет модель"@ru ;
+  rdfs:label "Has model"@en ;
+  rdfs:label "Имеет модель"@ru ;
   rdfs:range v-s:ClassModel ;
 .
 v-ui:hasSpecification
   rdf:type owl:ObjectProperty ;
   rdfs:domain owl:Class ;
   rdfs:domain rdfs:Class ;
-  rdfs:label "has specification"@en ;
-  rdfs:label "имеет спецификацию"@ru ;
+  rdfs:label "Has specification"@en ;
+  rdfs:label "Имеет спецификацию"@ru ;
   rdfs:range v-ui:PropertySpecification ;
   rdfs:range v-ui:StringPropertySpecification ;
   rdfs:range v-ui:IntegerPropertySpecification ;
@@ -81,24 +81,24 @@ v-ui:hasProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain owl:Class ;
   rdfs:domain rdfs:Class ;
-  rdfs:label "has property"@en ;
-  rdfs:label "имеет свойство"@ru ;
+  rdfs:label "Has property"@en ;
+  rdfs:label "Имеет свойство"@ru ;
   rdfs:range owl:DatatypeProperty, owl:ObjectProperty, rdf:Property ;
 .
 v-ui:hasSubClass
   rdf:type owl:ObjectProperty ;
   rdfs:domain owl:Class ;
   rdfs:domain rdfs:Class ;
-  rdfs:label "has subclass"@en ;
-  rdfs:label "имеет подкласс"@ru ;
+  rdfs:label "Has subclass"@en ;
+  rdfs:label "Имеет подкласс"@ru ;
   rdfs:range owl:Class ;
   rdfs:range rdfs:Class ;
 .
 v-ui:template
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:ClassTemplate ;
-  rdfs:label "template"@en ;
-  rdfs:label "шаблон"@ru ;
+  rdfs:label "Template"@en ;
+  rdfs:label "Шаблон"@ru ;
   rdfs:range xsd:string ;
 .
 v-ui:ClassTemplate
@@ -116,29 +116,29 @@ v-ui:PropertySpecification
 v-ui:tooltip
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:PropertySpecification ;
-  rdfs:label "подсказка"@ru ;
-  rdfs:label "tooltip"@en ;
+  rdfs:label "Подсказка"@ru ;
+  rdfs:label "Tooltip"@en ;
   rdfs:range xsd:string ;
 .
 v-ui:placeholder
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:PropertySpecification ;
-  rdfs:label "заполнитель"@ru ;
-  rdfs:label "placeholder"@en ;
+  rdfs:label "Заполнитель"@ru ;
+  rdfs:label "Placeholder"@en ;
   rdfs:range xsd:string ;
 .
 v-ui:minCardinality
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:PropertySpecification ;
-  rdfs:label "минимальная кардинальность"@ru ;
-  rdfs:label "minimal cardinality"@en ;
+  rdfs:label "Минимальная кардинальность"@ru ;
+  rdfs:label "Minimal cardinality"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:maxCardinality
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:PropertySpecification ;
-  rdfs:label "максимальная кардинальность"@ru ;
-  rdfs:label "maximal cardinality"@en ;
+  rdfs:label "Максимальная кардинальность"@ru ;
+  rdfs:label "Maximal cardinality"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:regexp
@@ -146,8 +146,8 @@ v-ui:regexp
   rdfs:domain v-ui:StringPropertySpecification ;
   rdfs:domain v-ui:IntegerPropertySpecification ;
   rdfs:domain v-ui:DecimalPropertySpecification ;
-  rdfs:label "регулярное выражение"@ru ;
-  rdfs:label "regular expression"@en ;
+  rdfs:label "Регулярное выражение"@ru ;
+  rdfs:label "Regular expression"@en ;
   rdfs:range xsd:string ;
 .
 v-ui:IntegerPropertySpecification
@@ -159,29 +159,29 @@ v-ui:IntegerPropertySpecification
 v-ui:defaultIntegerValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:IntegerPropertySpecification ;
-  rdfs:label "целочисленное значение по-умолчанию"@ru ;
-  rdfs:label "default integer value"@en ;
+  rdfs:label "Целочисленное значение по-умолчанию"@ru ;
+  rdfs:label "Default integer value"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:optionIntegerValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:IntegerPropertySpecification ;
-  rdfs:label "допустимое целочисленное значение"@ru ;
-  rdfs:label "option integer value"@en ;
+  rdfs:label "Допустимое целочисленное значение"@ru ;
+  rdfs:label "Option integer value"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:minIntegerValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:IntegerPropertySpecification ;
-  rdfs:label "минимальное целочисленное значение"@ru ;
-  rdfs:label "minimal integer value"@en ;
+  rdfs:label "Минимальное целочисленное значение"@ru ;
+  rdfs:label "Minimal integer value"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:maxIntegerValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:IntegerPropertySpecification ;
-  rdfs:label "максимальное целочисленное значение"@ru ;
-  rdfs:label "maximal integer value"@en ;
+  rdfs:label "Максимальное целочисленное значение"@ru ;
+  rdfs:label "Maximal integer value"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:DecimalPropertySpecification
@@ -193,29 +193,29 @@ v-ui:DecimalPropertySpecification
 v-ui:defaultDecimalValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:DecimalPropertySpecification ;
-  rdfs:label "десятичное значение по-умолчанию"@ru ;
-  rdfs:label "default decimal value"@en ;
+  rdfs:label "Десятичное значение по-умолчанию"@ru ;
+  rdfs:label "Default decimal value"@en ;
   rdfs:range xsd:decimal ;
 .
 v-ui:optionDecimalValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:DecimalPropertySpecification ;
-  rdfs:label "допустимое десятичное значение"@ru ;
-  rdfs:label "option decimal value"@en ;
+  rdfs:label "Допустимое десятичное значение"@ru ;
+  rdfs:label "Option decimal value"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:minDecimalValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:DecimalPropertySpecification ;
-  rdfs:label "минимальное десятичное значение"@ru ;
-  rdfs:label "minimal decimal value"@en ;
+  rdfs:label "Минимальное десятичное значение"@ru ;
+  rdfs:label "Minimal decimal value"@en ;
   rdfs:range xsd:decimal ;
 .
 v-ui:maxDecimalValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:DecimalPropertySpecification ;
-  rdfs:label "максимальное десятичное значение"@ru ;
-  rdfs:label "maximal decimal value"@en ;
+  rdfs:label "Максимальное десятичное значение"@ru ;
+  rdfs:label "Maximal decimal value"@en ;
   rdfs:range xsd:decimal ;
 .
 v-ui:DatetimePropertySpecification
@@ -227,29 +227,29 @@ v-ui:DatetimePropertySpecification
 v-ui:defaultDatetimeValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:DatetimePropertySpecification ;
-  rdfs:label "календарное значение по-умолчанию"@ru ;
-  rdfs:label "default datetime value"@en ;
+  rdfs:label "Календарное значение по-умолчанию"@ru ;
+  rdfs:label "Default datetime value"@en ;
   rdfs:range xsd:dateTime ;
 .
 v-ui:optionDatetimeValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:DatetimePropertySpecification ;
-  rdfs:label "допустимое календарное значение"@ru ;
-  rdfs:label "option datetime value"@en ;
+  rdfs:label "Допустимое календарное значение"@ru ;
+  rdfs:label "Option datetime value"@en ;
   rdfs:range xsd:dateTime ;
 .
 v-ui:minDatetimeValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:DatetimePropertySpecification ;
-  rdfs:label "минимальное календарное значение"@ru ;
-  rdfs:label "minimal datetime value"@en ;
+  rdfs:label "Минимальное календарное значение"@ru ;
+  rdfs:label "Minimal datetime value"@en ;
   rdfs:range xsd:dateTime ;
 .
 v-ui:maxDatetimeValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:DatetimePropertySpecification ;
-  rdfs:label "максимальное календарное значение"@ru ;
-  rdfs:label "maximal datetime value"@en ;
+  rdfs:label "Максимальное календарное значение"@ru ;
+  rdfs:label "Maximal datetime value"@en ;
   rdfs:range xsd:dateTime ;
 .
 v-ui:StringPropertySpecification
@@ -261,29 +261,29 @@ v-ui:StringPropertySpecification
 v-ui:defaultStringValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:StringPropertySpecification ;
-  rdfs:label "строковое значение по-умолчанию"@ru ;
-  rdfs:label "default string value"@en ;
+  rdfs:label "Строковое значение по-умолчанию"@ru ;
+  rdfs:label "Default string value"@en ;
   rdfs:range xsd:string ;
 .
 v-ui:optionStringValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:StringPropertySpecification ;
-  rdfs:label "допустимое строковое значение"@ru ;
-  rdfs:label "option string value"@en ;
+  rdfs:label "Допустимое строковое значение"@ru ;
+  rdfs:label "Option string value"@en ;
   rdfs:range xsd:string ;
 .
 v-ui:minLength
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:StringPropertySpecification ;
-  rdfs:label "минимальная длина строки"@ru ;
-  rdfs:label "minimal string length"@en ;
+  rdfs:label "Минимальная длина строки"@ru ;
+  rdfs:label "Minimal string length"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:maxLength
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:StringPropertySpecification ;
-  rdfs:label "максимальная длина строки"@ru ;
-  rdfs:label "maximal string length"@en ;
+  rdfs:label "Максимальная длина строки"@ru ;
+  rdfs:label "Maximal string length"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:BooleanPropertySpecification
@@ -295,8 +295,8 @@ v-ui:BooleanPropertySpecification
 v-ui:defaultBooleanValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:BooleanPropertySpecification ;
-  rdfs:label "булево значение по-умолчанию"@ru ;
-  rdfs:label "default boolean value"@en ;
+  rdfs:label "Булево значение по-умолчанию"@ru ;
+  rdfs:label "Default boolean value"@en ;
   rdfs:range xsd:boolean ;
 .
 v-ui:ObjectPropertySpecification
@@ -308,58 +308,58 @@ v-ui:ObjectPropertySpecification
 v-ui:defaultObjectValue
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "объектное значение по-умолчанию"@ru ;
-  rdfs:label "default object value"@en ;
+  rdfs:label "Объектное значение по-умолчанию"@ru ;
+  rdfs:label "Default object value"@en ;
   rdfs:range rdfs:Resource ;
 .
 v-ui:optionObjectValue
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "допустимое объектное значение"@ru ;
-  rdfs:label "option object value"@en ;
+  rdfs:label "Допустимое объектное значение"@ru ;
+  rdfs:label "Option object value"@en ;
   rdfs:range rdfs:Resource ;
 .
 v-ui:queryPrefix
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "префикс запроса"@ru ;
-  rdfs:label "query prefix"@en ;
+  rdfs:label "Префикс запроса"@ru ;
+  rdfs:label "Query prefix"@en ;
   rdfs:range xsd:string ;
 .
 v-ui:treeRoot
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "корень"@ru ;
-  rdfs:label "root"@en ;
+  rdfs:label "Корень"@ru ;
+  rdfs:label "Root"@en ;
   rdfs:range rdfs:Resource ;
 .
 v-ui:treeInProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "входящая ветвь"@ru ;
-  rdfs:label "in edge"@en ;
+  rdfs:label "Входящая ветвь"@ru ;
+  rdfs:label "In edge"@en ;
   rdfs:range owl:ObjectProperty ;
 .
 v-ui:treeOutProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "исходящая ветвь"@ru ;
-  rdfs:label "out edge"@en ;
+  rdfs:label "Исходящая ветвь"@ru ;
+  rdfs:label "Out edge"@en ;
   rdfs:range owl:ObjectProperty ;
 .
 v-ui:treeAllowedClass
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "разрешенный класс"@ru ;
-  rdfs:label "allowed class"@en ;
+  rdfs:label "Разрешенный класс"@ru ;
+  rdfs:label "Allowed class"@en ;
   rdfs:range owl:Class ;
   rdfs:range rdfs:Class ;
 .
 v-ui:treeDisplayedProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "отображаемое свойство"@ru ;
-  rdfs:label "displayed property"@en ;
+  rdfs:label "Отображаемое свойство"@ru ;
+  rdfs:label "Displayed property"@en ;
   rdfs:range owl:ObjectProperty ;
   rdfs:range owl:DatatypeProperty ;
 .
@@ -380,15 +380,15 @@ v-ui:Preferences
 v-ui:hasPreferences
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Person ;
-  rdfs:label "preferences"@en ;
-  rdfs:label "предпочтения"@ru ;
+  rdfs:label "Preferences"@en ;
+  rdfs:label "Предпочтения"@ru ;
   rdfs:range v-ui:Preferences ;
 .
 v-ui:displayedElements
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:Preferences ;
-  rdfs:label "отображать элементов"@ru ;
-  rdfs:label "display elements"@en ;
+  rdfs:label "Отображать элементов"@ru ;
+  rdfs:label "Display elements"@en ;
   rdfs:range xsd:nonNegativeInteger ;
 .
 v-ui:IconPersonTemplate

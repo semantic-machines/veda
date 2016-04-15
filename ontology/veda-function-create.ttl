@@ -50,8 +50,8 @@ v-fc:ChooseType
 .
 v-fc:typeToCreate
   rdf:type owl:ObjectProperty ;
-  rdfs:label "type"@en ;
-  rdfs:label "тип"@ru ;
+  rdfs:label "Type"@en ;
+  rdfs:label "Тип"@ru ;
   rdfs:domain v-fc:Blank ;
   rdfs:range owl:Class ;
   rdfs:range rdfs:Class ;
@@ -59,7 +59,7 @@ v-fc:typeToCreate
 v-fc:TypeToCreateSpec
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства v-fc:typeToCreate"@ru ;
-  rdfs:label "v-fc:typeToCreate property specification"@en ;
+  rdfs:label "V-fc:typeToCreate property specification"@en ;
   v-ui:forClass v-fc:Blank, v-fc:FunctionCreate ;
   v-ui:forProperty v-fc:typeToCreate ;
   v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
@@ -71,7 +71,7 @@ v-fc:TypeToCreateSpec
 v-fc:LabelSpec
   rdf:type v-ui:StringPropertySpecification ;
   rdfs:label "Спецификация свойства rdfs:label для класса v-fc:Blank"@ru ;
-  rdfs:label "rdfs:label property specification for class v-fc:Blank"@en ;
+  rdfs:label "Rdfs:label property specification for class v-fc:Blank"@en ;
   v-ui:forClass v-fc:Blank ;
   v-ui:forProperty rdfs:label ;
   v-ui:tooltip "Обязательно. Строка произвольной длины."@ru ;
@@ -81,7 +81,7 @@ v-fc:LabelSpec
 .
 v-fc:FunctionCreateModel
   rdf:type v-s:ClassModel ;
-  rdfs:label "v-fc:FunctionCreate class model"@en ;
+  rdfs:label "V-fc:FunctionCreate class model"@en ;
   rdfs:label "Модель класса v-fc:FunctionCreate"@ru ;
   v-ui:forClass v-fc:FunctionCreate ;
   v-s:script """
@@ -90,7 +90,7 @@ var self = individual;
 .
 v-fc:FunctionCreateTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "v-fc:FunctionCreate class template"@en ;
+  rdfs:label "V-fc:FunctionCreate class template"@en ;
   rdfs:label "Шаблон класса v-fc:FunctionCreate"@ru ;
   v-ui:forClass v-fc:FunctionCreate ;
   v-ui:template """
@@ -142,7 +142,7 @@ v-fc:FunctionCreateTemplate
 .
 v-fc:BlankTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "v-fc:Blank class template"@en ;
+  rdfs:label "V-fc:Blank class template"@en ;
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
