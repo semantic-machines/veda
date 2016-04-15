@@ -585,7 +585,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
                         
                         var curelem = (typeof window === "undefined") ?
                             get_individual(ticket, element.data ? element.data : element) :
-                            	(element && element.length > 0)?new veda.IndividualModel(element[0]):new veda.IndividualModel(element.data ? element.data : element);
+                           	new veda.IndividualModel(element.data ? element.data : element);
                         for (var i = 0; i < path.length - 1; i++)
                         {
                             if (!curelem || !curelem[path[i]]) return;
@@ -594,11 +594,23 @@ function transformation(ticket, individuals, transform, executor, work_order)
                                 new veda.IndividualModel(curelem[path[i]][0]);
                         }
                         if (!curelem || !curelem[path[path.length - 1]]) return;
-                        out_data0_el_arr.push(
-                        {
-                            data: (typeof window === "undefined") ? curelem[path[path.length - 1]].data : curelem[path[path.length - 1]][0],
-                            type: _Uri
-                        });
+                        
+                        if (typeof window === "undefined") {
+                            out_data0_el_arr.push(curelem[path[path.length - 1]]);
+                        } else {
+	                        var value = curelem[path[path.length - 1]][0];
+	                        var valueType = _Uri;
+	                        
+	        				if (value instanceof String) valueType = _String;
+	        				if (value instanceof Date) valueType = _Datetime;
+	        				if (value instanceof Number) valueType = _Decimal;
+	
+	                        out_data0_el_arr.push(
+	                        {
+	                            data: value,
+	                            type: valueType
+	                        });
+                        }
 
                         out_data0_el[name] = out_data0_el_arr;
                     }

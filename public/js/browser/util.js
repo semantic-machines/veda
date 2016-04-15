@@ -245,7 +245,9 @@ veda.Module(function Util(veda) { "use strict";
 		
 		if (transformId !== undefined) {
 			var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
-	    	riot.route("#/" + startForm.id + "///edit", true);
+			startForm.present('#main', undefined, 'edit');			
+
+//	    	riot.route("#/" + startForm.id + "///edit", true);
 		} else {
 			var s = new veda.SearchModel("'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
 			if (Object.getOwnPropertyNames(s.results).length == 0) {
