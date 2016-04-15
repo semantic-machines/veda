@@ -8,15 +8,22 @@
 		"mysql-d": "~>0.3.2",
 		"smtp": "~master",
                 "libasync": "0.7.5",
-		"zmq-d": "~>0.3.0"
+	        "zeromq": "~master"
 	},
-	"versions": ["VibeDefaultMain"],	
+	"versions": ["VibeDefaultMain", "VibeZMQ", "libV8"],	
         "libs": [
                 "raptor2"
         ],
         "license": "LGPL v3",
 	"sourceFiles":["../../lib64/libv8d.a", "../../lib64/libxapiand.a"],
-	"sourcePaths":["../../veda/common", "../../veda/core",  "../../veda/frontend", "../../veda/onto", "../../veda/util"],
+	"sourcePaths":[
+	    "../../veda/common", 
+	    "../../veda/core",  
+	    "../../veda/frontend", 
+	    "../../veda/onto", 
+	    "../../veda/util",
+	    "../../zmq.d/source/dzmq"
+	],
 	"configurations": [
 	{
 	    "name": "app",

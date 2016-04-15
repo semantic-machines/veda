@@ -20,6 +20,13 @@ enum QMessageType
     OBJECT = 'O'
 }
 
+enum Mode
+{
+    R       = 0,
+    RW      = 1,
+    CURRENT = 2
+}
+
 struct Header
 {
     ulong        start_pos;
@@ -309,10 +316,9 @@ class Queue
     bool   isReady;
     string name;
     int    chunk;
-//    ulong   first_element;
     ulong  right_edge;
     uint   count_pushed;
-//    uint    count_popped;
+    Mode   mode;
 
     File   *ff_info_push_w = null;
     File   *ff_info_push_r = null;
@@ -327,12 +333,16 @@ class Queue
     Header header;
     CRC32  hash;
 
-    this(string _name)
+    this(string _name, Mode _mode)
     {
+        mode        = _mode;
         name        = _name;
         isReady     = false;
         buff        = new ubyte[ 4096 * 100 ];
         header_buff = new ubyte[ header.length() ];
+
+        file_name_info_push = queue_db_path ~ "/" ~ name ~ "_info_push";
+        file_name_queue     = queue_db_path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
     }
 
     ~this()
@@ -356,63 +366,80 @@ class Queue
         std.file.remove(file_name_queue);
     }
 
-    public bool open()
+    public bool open(Mode _mode = Mode.CURRENT)
     {
-        if (isReady == false)
+        try
         {
-            writeln("open");
-
-            file_name_info_push = queue_db_path ~ "/" ~ name ~ "_info_push";
-            file_name_queue     = queue_db_path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
-
-            if (exists(file_name_queue ~ ".lock"))
+            if (isReady == false)
             {
-                writefln("Queue [%s] already open, or not deleted lock file", name);
-                return false;
-            }
-            std.file.write(file_name_queue ~ ".lock", "0");
+                if (_mode != Mode.CURRENT)
+                    mode = _mode;
 
-            if (exists(file_name_info_push) == false)
-                ff_info_push_w = new File(file_name_info_push, "w");
-            else
-                ff_info_push_w = new File(file_name_info_push, "r+");
+                //writeln("open ", text (mode));
 
-            ff_info_push_r = new File(file_name_info_push, "r");
-
-            if (exists(file_name_queue) == false)
-                ff_queue_w = new File(file_name_queue, "wb");
-            else
-                ff_queue_w = new File(file_name_queue, "ab+");
-
-            ff_queue_r = new File(file_name_queue, "r");
-
-            if (ff_info_push_w !is null && ff_info_push_r !is null && ff_queue_w !is null && ff_queue_r !is null)
-            {
-                isReady = true;
-                get_info();
-                if (ff_queue_w.size() != right_edge)
+                if (mode == Mode.RW)
                 {
-                    isReady = false;
-                    writeln("ERR! queue:open: [", file_name_queue, "].size (", ff_queue_w.size(), ") != right_edge=", right_edge);
+                    if (exists(file_name_queue ~ ".lock"))
+                    {
+                        writefln("Queue [%s] already open, or not deleted lock file", name);
+                        return false;
+                    }
+                    std.file.write(file_name_queue ~ ".lock", "0");
+
+                    if (exists(file_name_info_push) == false)
+                        ff_info_push_w = new File(file_name_info_push, "w");
+                    else
+                        ff_info_push_w = new File(file_name_info_push, "r+");
+
+                    if (exists(file_name_queue) == false)
+                        ff_queue_w = new File(file_name_queue, "wb");
+                    else
+                        ff_queue_w = new File(file_name_queue, "ab+");
                 }
-                else
+
+                ff_info_push_r = new File(file_name_info_push, "r");
+                ff_queue_r     = new File(file_name_queue, "r");
+
+
+                if (mode == Mode.RW && ff_info_push_w !is null && ff_info_push_r !is null && ff_queue_w !is null && ff_queue_r !is null ||
+                    mode == Mode.R && ff_info_push_r !is null && ff_queue_r !is null
+                    )
                 {
                     isReady = true;
-                    put_info();
+                    get_info();
+
+                    if (ff_queue_r.size() != right_edge)
+                    {
+                        isReady = false;
+                        writeln("ERR! queue:open: [", file_name_queue, "].size (", ff_queue_r.size(), ") != right_edge=", right_edge);
+                    }
+                    else
+                    {
+                        isReady = true;
+                        put_info();
+                    }
                 }
             }
+        }
+        catch (Throwable ex)
+        {
+            writeln("ERR! queue, not open: ex: ", ex.msg);
         }
         return isReady;
     }
 
     public void remove_lock()
     {
+        if (mode == Mode.R)
+            return;
+
         try
         {
             std.file.remove(file_name_queue ~ ".lock");
         }
         catch (Throwable tr)
         {
+            writeln("queue:fail remove ", tr.msg);
         }
     }
 
@@ -421,19 +448,23 @@ class Queue
         if (isReady == true)
         {
             writeln("queue_close:", file_name_queue);
-            flush();
-            ff_info_push_w.close();
-            ff_queue_w.close();
+
             ff_info_push_r.close();
             ff_queue_r.close();
-            std.file.remove(file_name_queue ~ ".lock");
+            if (mode == Mode.RW)
+            {
+                flush();
+                ff_info_push_w.close();
+                ff_queue_w.close();
+                std.file.remove(file_name_queue ~ ".lock");
+            }
             isReady = false;
         }
     }
 
     private void put_info()
     {
-        if (!isReady)
+        if (!isReady || mode == Mode.R)
             return;
 
         ff_info_push_w.seek(0);
@@ -490,12 +521,18 @@ class Queue
 
     private void flush()
     {
+        if (mode == Mode.R)
+            return;
+
         ff_queue_w.flush();
-        ff_info_push_w.flush();        
+        ff_info_push_w.flush();
     }
 
     private void put_msg(string msg, QMessageType type = QMessageType.STRING)
     {
+        if (mode == Mode.R)
+            return;
+
         ubyte[] _buff2 = cast(ubyte[])msg;
 
         header.start_pos    = right_edge;
@@ -525,7 +562,7 @@ class Queue
 
     public void push(string msg, QMessageType type = QMessageType.STRING)
     {
-        if (!isReady)
+        if (!isReady || mode == Mode.R)
             return;
 
         count_pushed++;
@@ -539,7 +576,9 @@ class Queue
 unittest
 {
     veda.core.queue.Queue    queue = new veda.core.queue.Queue("queue1");
-    veda.core.queue.Consumer cs    = new veda.core.queue.Consumer(queue, "consumer1");
+    queue.open(Mode.RW);
+    veda.core.queue.Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
+    cs.open();
 
     if (level == 0)
         freeze();

@@ -1,16 +1,15 @@
 /**
  * fanout thread
  */
-
 module veda.fanout;
 
-private import libasync;
 private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
-private import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual;
-private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.common.context, veda.core.impl.thread_context;
+private import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+import veda.core.common.context, veda.util.tools;
 
 //////
 Mysql      mysql_conn;
@@ -32,161 +31,108 @@ logger log()
     return _log;
 }
 
-EventLoop g_evl;
-TCPListener g_listener;
-bool g_closed;
-
 void main(char[][] args)
 {
     context = new PThreadContext("cfg:standart_node", "fanout", P_MODULE.fanout);
-	
-	g_evl = new EventLoop;
-	g_listener = new TCPListener("localhost", 8081);
 
-	while(!g_closed)
-		g_evl.loop();
-	destroyAsyncThreads();
-
-/*
-    while (true)
     {
-        try
-        {
-            receive(
-                    (CMD cmd, string prev_state, string new_state)
-                    {
-                        check_context();
+        import zmqd;
+        // Socket to talk to clients
+        auto responder = Socket(SocketType.rep);
+        responder.bind("tcp://*:8081");
+        string queue_name = "individuals-flow";
 
+        ubyte[]  buffer = new ubyte[ 1024 ];
+
+        Queue    queue = new Queue("individuals-flow", Mode.R);
+        queue.open();
+        
+        while (!queue.isReady)
+        {
+        	writeln ("fanout: queue [", queue_name, "] not ready, sleep and repeate...");
+			core.thread.Thread.sleep(dur!("seconds")(10));
+        	queue.open();
+        }
+        
+        Consumer consumer;
+        Consumer cs = new Consumer(queue, "consumer1");
+        cs.open();
+        long count_readed = 0;
+        long count_success_prepared = 0;
+
+        while (true)
+        {
+            ulong count = responder.receive(buffer);
+            responder.send("Ok");
+
+//            writeln("Received signal ", count, cast(string)buffer[ 0..count ], ", readed=", count_readed, ", success_prepared=", count_success_prepared);
+
+            queue.close();
+            queue.open();
+            while (true)
+            {
+                string data = cs.pop();
+
+                if (data !is null)
+                {
+                	count_readed ++;
+                    IndividualsModifyMessage imm = IndividualsModifyMessage(data);
+                    cs.commit();
+
+                    if (imm.is_ok)
+                    {
                         Individual prev_indv, new_indv;
-                        if (new_state !is null && cbor2individual(&new_indv, new_state) < 0)
+                        if (imm.new_state !is null && cbor2individual(&new_indv, imm.new_state) < 0)
                         {
-                            log.trace("ERR! invalid individual:[%s]", new_state);
+                            log.trace("ERR! invalid individual:[%s]", imm.new_state);
                         }
                         else
                         {
-                            if (prev_state !is null && cbor2individual(&prev_indv, prev_state) < 0)
+                            if (imm.prev_state !is null && cbor2individual(&prev_indv, imm.prev_state) < 0)
                             {
-                                log.trace("ERR! invalid individual:[%s]", prev_state);
-                            }
-                            else
-                            {
-                                if (node == Individual.init)
-                                {
-                                    connect_to_mysql(context);
-                                    connect_to_smtp(context);
-                                }
-
-                                try
-                                {
-                                    if (mysql_conn !is null)
-                                        push_to_mysql(prev_indv, new_indv);
-                                }
-                                catch (Throwable ex)
-                                {
-                                    log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
-                                }
-
-
-                                try
-                                {
-                                    if (smtp_conn !is null)
-                                        push_to_smtp(prev_indv, new_indv);
-                                }
-                                catch (Throwable ex)
-                                {
-                                    log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
-                                }
+                                log.trace("ERR! invalid individual:[%s]", imm.prev_state);
                             }
                         }
-                    },
-                    (Variant v) { writeln(thread_name, "::fanout_thread::Received some other type.", v); });
-        }
-        catch (Throwable ex)
-        {
-            log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+
+						count_success_prepared++;
+
+                        if (node == Individual.init)
+                        {
+                            connect_to_mysql(context);
+                            connect_to_smtp(context);
+                        }
+
+                        try
+                        {
+                            if (mysql_conn !is null)
+                                push_to_mysql(prev_indv, new_indv);
+                        }
+                        catch (Throwable ex)
+                        {
+                            log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+                        }
+
+
+                        try
+                        {
+                            if (smtp_conn !is null)
+                                push_to_smtp(prev_indv, new_indv);
+                        }
+                        catch (Throwable ex)
+                        {
+                            log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+                        }
+                    }
+                }
+                else
+                    break;
+            }
+            
+           writeln("fanout: ", count, cast(string)buffer[ 0..count ], ", readed=", count_readed, ", success_prepared=", count_success_prepared);
         }
     }
-*/    
 }
 
-class TCPListener {
-	AsyncTCPListener m_listener;
-	
-	this(string host, size_t port) {
-		m_listener = new AsyncTCPListener(g_evl);
-		if (m_listener.host(host, port).run(&handler))
-			writeln("Listening to ", m_listener.local.toString());
-			
-	}
-
-	void delegate(TCPEvent) handler(AsyncTCPConnection conn) {
-		auto tcpConn = new TCPConnection(conn);
-		return &tcpConn.handler;
-	}
-
-}
-
-class TCPConnection {
-	AsyncTCPConnection m_conn;
-	
-	this(AsyncTCPConnection conn)
-	{
-		this.m_conn = conn;
-	}
-	void onConnect() {
-		onRead();
-		onWrite();
-	}
-	
-	// Note: All buffers must be empty when returning from TCPEvent.READ
-	void onRead() {
-		static ubyte[] bin = new ubyte[4092];
-		while (true) {
-				writeln("Received data #1");
-			uint len = m_conn.recv(bin);
-				writeln("Received data #2");
-			
-			if (len > 0) {
-				auto res = cast(string)bin[0..len];
-				writeln("Received data: ", res);
-			}
-			if (len < bin.length)
-				break;
-		}
-				writeln("Received data #e");
-	}
-	
-	void onWrite() {
-		m_conn.send(cast(ubyte[])"My Reply");
-		writeln("Sent: My Reply");
-	}
-	
-	void onClose() {
-		writeln("Connection closed");
-		//g_closed = true;
-	}
-	
-	void handler(TCPEvent ev) {
-		final switch (ev) {
-			case TCPEvent.CONNECT:
-				onConnect();
-				break;
-			case TCPEvent.READ:
-				onRead();
-				break;
-			case TCPEvent.WRITE:
-				onWrite();
-				break;
-			case TCPEvent.CLOSE:
-				onClose();
-				break;
-			case TCPEvent.ERROR:
-				assert(false, "Error during TCP Event");
-		}
-		return;
-	}
-	
-}
 ///////////////////////////////////////// SMTP FANOUT ///////////////////////////////////////////////////////////////////
 private Resources extract_email(ref Ticket sticket, string ap_uri)
 {

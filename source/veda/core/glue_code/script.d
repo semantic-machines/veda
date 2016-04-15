@@ -1,6 +1,6 @@
 module veda.core.glue_code.script;
 
-import bind.v8d_header, veda.core.common.context;
+import veda.core.bind.v8d_header, veda.core.common.context;
 
 struct ScriptInfo
 {

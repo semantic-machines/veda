@@ -7,7 +7,7 @@
 		"mysql-d": "~>0.3.2",
 		"smtp": "~master",
                 "libasync": "0.7.9",
-                "zmq-d": "~>0.3.0"
+		"zmqd": "~>1.0.0"
 	},
         "license": "LGPL v3",
 	"sourcePaths":[
@@ -15,20 +15,18 @@
 	    "../../veda/common", 
 	    "../../veda/onto",  
 	    "../../veda/util", 
-	    "../../veda/core/glue_code", 
 	    "../../veda/core/threads", 
 	    "../../veda/core/impl", 
 	    "../../veda/core/az", 
-	    "../../veda/core/bind", 
 	    "../../veda/core/search", 
-	    "../../veda/core/util",
 	    "../../veda/core/storage",
 	    "../../veda/core/common"
 	],
-        "libs": [
-                "raptor2"
-        ],
-        "sourceFiles":["../../lib64/libv8d.a", "../../lib64/libxapiand.a"],
+        "sourceFiles":[
+	"../../lib64/libxapiand.a", 
+	"../../veda/core/bind/xapian_d_header.d",
+	"../../veda/core/util/utils.d"
+	],
 	"configurations": [
 	{
 	    "name": "app",

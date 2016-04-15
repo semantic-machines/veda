@@ -7,9 +7,9 @@
 module veda.core.glue_code.ltrs;
 
 private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, core.thread, std.algorithm, std.uuid;
-private import bind.v8d_header;
+private import veda.core.bind.v8d_header;
 private import veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.queue;
-private import veda.core.storage.lmdb_storage, veda.core.impl.thread_context, veda.core.glue_code.script;
+private import veda.core.storage.lmdb_storage, veda.core.impl.thread_context, veda.core.glue_code.script, veda.core.glue_code.scripts;
 private import veda.type, veda.core.common.context, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual;
 
 // ////// logger ///////////////////////////////////////////
@@ -100,7 +100,7 @@ private void ltrs_thread(string thread_name, string _node_id)
                                    string queue_name = randomUUID().toString();
 
                                    context.unload_subject_storage(queue_name);
-                                   Queue queue = new Queue(queue_name);
+                                   Queue queue = new Queue(queue_name, Mode.R);
                                    if (queue.open())
                                    {
                                        Consumer cs = new Consumer(queue, "consumer1");
