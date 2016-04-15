@@ -88,7 +88,7 @@ v-s:Other
 .
 v-s:Send
   rdf:type v-s:Bundle ;
-  rdfs:label "Отправить"@ru ;
+  rdfs:label "Выдать задачу"@ru ;
   rdfs:label "Send"@en ;
 .
 v-s:Next
