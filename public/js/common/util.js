@@ -604,12 +604,15 @@ function transformation(ticket, individuals, transform, executor, work_order)
 	        				if (value instanceof String) valueType = _String;
 	        				if (value instanceof Date) valueType = _Datetime;
 	        				if (value instanceof Number) valueType = _Decimal;
+	        				if (value instanceof Boolean) valueType = _Boolean;
 	
-	                        out_data0_el_arr.push(
-	                        {
-	                            data: value,
-	                            type: valueType
-	                        });
+	        				if (typeof value !== "undefined") {
+		                        out_data0_el_arr.push(
+		                        {
+		                            data: value,
+		                            type: valueType
+		                        });
+	        				}
                         }
 
                         out_data0_el[name] = out_data0_el_arr;
