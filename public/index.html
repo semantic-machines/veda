@@ -769,5 +769,29 @@
 				document.addEventListener("DOMContentLoaded", $buo_f,false)
 			} catch(e) { window.attachEvent("onload", $buo_f) }
 		</script> 
+		
+		
+		<!--div class="container-fluid">
+			<div>Regex</div>
+			<input class="form-control" type="text" id="re-regex"></input>
+			<div>Replacer function</div>
+			<textarea class="form-control" rows="3" id="re-replacer"></textarea>
+			<div>Text</div>
+			<textarea class="form-control" rows="10" id="re-text"></textarea>
+			<div>Result</div>
+			<textarea class="form-control" rows="10" id="re-result"></textarea>
+			<button class="btn btn-success" id="re-go">Go</button>
+			<br>
+			<br>
+		</div>
+		<script>
+			$("#re-go").click( function () {
+				var str = $("#re-text").val();
+				var regex = new RegExp($("#re-regex").val(), "g");
+				var replacer = new Function("match", "group", $("#re-replacer").val());
+				var res = str.replace(regex, replacer);
+				var result = $("#re-result").val(res);
+			});
+		</script-->
 	</body>
 </html>
