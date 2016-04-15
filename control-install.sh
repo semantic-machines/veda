@@ -25,6 +25,10 @@ if ! dub --version | grep $DUB_VER ; then
 fi
 
 # Get other dependencies
+sudo apt-get install -y libevent-pthreads-2.0-5
+sudo apt-get install -y libraptor2-dev
+sudo apt-get install -y libevent-dev libssl-dev
+sudo apt-get install -y libmysqlclient-dev
 sudo apt-get install libtool pkg-config build-essential autoconf automake
 sudo apt-get install libzmq-dev
 mkdir tmp
@@ -43,12 +47,7 @@ cd zeromq-4.1.4
 ./configure
 make
 sudo make install
-sudo ldconfig
 cd ..
 cd ..
-sudo apt-get install -y libevent-pthreads-2.0-5
-sudo apt-get install -y libraptor2-dev
-sudo apt-get install -y libevent-dev libssl-dev
-sudo apt-get install -y libmysqlclient-dev
 
 sudo ldconfig
