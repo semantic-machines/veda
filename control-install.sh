@@ -25,9 +25,18 @@ if ! dub --version | grep $DUB_VER ; then
 fi
 
 # Get other dependencies
+sudo apt-get install libtool pkg-config build-essential autoconf automake
+sudo apt-get install libzmq-dev
 mkdir tmp
-wget http://download.zeromq.org/zeromq-4.1.4.tar.gz -P tmp
 cd tmp
+git clone git://github.com/jedisct1/libsodium.git 
+cd libsodium 
+./autogen.sh 
+./configure && make check 
+sudo make install 
+sudo ldconfig 
+cd ..
+wget http://download.zeromq.org/zeromq-4.1.4.tar.gz
 tar -xvzf zeromq-4.1.4.tar.gz
 cd zeromq-4.1.4
 ./autogen.sh
