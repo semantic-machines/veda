@@ -75,34 +75,45 @@ class ChildProcess
                     if (data !is null)
                     {
                         count_readed++;
-                        IndividualsModifyMessage imm = IndividualsModifyMessage(data);
+
+                        Individual imm;
+                        if (data !is null && cbor2individual(&imm, data) < 0)
+                        {
+                            log.trace("ERR! invalid individual:[%s]", data);
+                            continue;
+                        }
+
+                        string new_state  = imm.getFirstLiteral("new_state");
+                        string prev_state = imm.getFirstLiteral("prev_state");
+                        string user_uri   = imm.getFirstLiteral("user_uri");
+                        string event_id   = imm.getFirstLiteral("event_id");
+                        CMD    cmd        = cast(CMD)imm.getFirstInteger("cmd");
+
                         cs.commit();
 
-                        if (imm.is_ok)
+
+                        Individual prev_indv, new_indv;
+                        if (new_state !is null && cbor2individual(&new_indv, new_state) < 0)
                         {
-                            Individual prev_indv, new_indv;
-                            if (imm.new_state !is null && cbor2individual(&new_indv, imm.new_state) < 0)
-                            {
-                                log.trace("ERR! invalid individual:[%s]", imm.new_state);
-                            }
-                            else
-                            {
-                                if (imm.prev_state !is null && cbor2individual(&prev_indv, imm.prev_state) < 0)
-                                {
-                                    log.trace("ERR! invalid individual:[%s]", imm.prev_state);
-                                }
-                            }
-
-                            count_success_prepared++;
-
-                            if (node == Individual.init)
-                            {
-                                node = context.getConfiguration();
-                                configure();
-                            }
-
-                            prepare(prev_indv, new_indv);
+                            log.trace("ERR! invalid individual:[%s]", new_state);
                         }
+                        else
+                        {
+                            if (prev_state !is null && cbor2individual(&prev_indv, prev_state) < 0)
+                            {
+                                log.trace("ERR! invalid individual:[%s]", prev_state);
+                            }
+                        }
+
+                        count_success_prepared++;
+
+                        if (node == Individual.init)
+                        {
+                            node = context.getConfiguration();
+                            configure();
+                        }
+
+                        prepare(cmd, user_uri, prev_indv, new_indv, event_id);
                     }
                     else
                         break;
@@ -113,7 +124,7 @@ class ChildProcess
         }
     }
 
-    abstract void prepare(ref Individual prev_indv, ref Individual new_indv);
+    abstract void prepare(CMD cmd, string user_uri, ref Individual prev_indv, ref Individual new_indv, string event_id);
 
     abstract void configure();
 }

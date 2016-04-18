@@ -23,13 +23,6 @@ private logger log()
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
-
-enum RUN_MODE
-{
-    ONE_CODELET_SCRIPT = 1,
-    ALL_EVENT_SCRIPTS  = 2
-}
-
 private int     count;
 private Context context;
 

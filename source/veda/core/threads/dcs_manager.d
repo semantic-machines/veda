@@ -25,13 +25,13 @@ logger log()
 }
 
 // ////// ////// ///////////////////////////////////////////
-public void send_put(Context ctx, string cur_state, string prev_state, long op_id)
+public void send_put(Context ctx, CMD cmd, string user_uri, string cur_state, string prev_state, string event_id, long op_id)
 {
     Tid tid_dcs = ctx.getTid(P_MODULE.dcs);
 
     if (tid_dcs != Tid.init)
     {
-        send(tid_dcs, CMD.PUT, prev_state, cur_state);
+        send(tid_dcs, cmd, user_uri, prev_state, cur_state, event_id, op_id);
     }
 }
 
@@ -69,20 +69,23 @@ void dcs_thread(string thread_name, string _node_id)
                 send(tid_response_reciever, true);
             });
 
-    IndividualsModifyMessage imm;
-
     while (true)
     {
         try
         {
             receive(
-                    (CMD cmd, string prev_state, string new_state)
+                    (CMD cmd, string user_uri, string prev_state, string new_state, string event_id, long op_id)
                     {
-                        imm.cmd = cmd;
-                        imm.new_state = new_state;
-                        imm.prev_state = prev_state;
+    					Individual imm;
+                    	imm.resources[ "cmd" ] ~= Resource(cmd);
+                    	imm.resources[ "user_uri" ] ~= Resource(user_uri);
+                    	imm.resources[ "new_state" ] ~= Resource(new_state);
+                    	imm.resources[ "prev_state" ] ~= Resource(prev_state);
+                    	imm.resources[ "event_id" ] ~= Resource(event_id);
 
-                        queue.push(imm.serialize());
+						string cbor = individual2cbor(&imm);
+						
+                        queue.push(cbor);
                         osch.send_signal(text(queue.count_pushed));
                     },
                     (Variant v) { writeln(thread_name, "::dcs_thread::Received some other type.", v); });

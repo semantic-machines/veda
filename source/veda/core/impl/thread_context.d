@@ -1314,7 +1314,7 @@ class PThreadContext : Context
                         bus_event_after(ticket, indv, rdfType, new_state, prev_state, ev, this, event_id, res.op_id);
 
                     if (event_id != "fanout")
-                        veda.core.threads.dcs_manager.send_put(this, new_state, prev_state, res.op_id);
+                        veda.core.threads.dcs_manager.send_put(this, cmd, ticket.user_uri, new_state, prev_state, event_id, res.op_id);
 
                     res.result = ResultCode.OK;
                     return res;

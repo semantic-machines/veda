@@ -21,19 +21,17 @@ void main(char[][] args)
 
 class FanoutProcess : ChildProcess
 {
-//////
     Mysql      mysql_conn;
     string     database_name;
-//////
+
     MailSender smtp_conn;
-//////
 
     this(P_MODULE _module_name, string _tcp_point)
     {
         super(_module_name, _tcp_point);
     }
 
-    override void prepare(ref Individual prev_indv, ref Individual new_indv)
+    override void prepare(CMD cmd, string user_uri, ref Individual prev_indv, ref Individual new_indv, string event_id)
     {
         try
         {
