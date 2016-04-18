@@ -43,15 +43,15 @@ public void ulong_to_buff(ubyte[] _buff, int pos, ulong data)
 
 import veda.type, std.stdio;
 
-    ubyte[]                      buff = new ubyte[ 512 ];
-    
+ubyte[] buff = new ubyte[ 512 ];
+
 struct IndividualsModifyMessage
 {
     string new_state;
     string prev_state;
     CMD    cmd;
     bool   is_ok = false;
-    
+
     this(string data)
     {
         try
@@ -98,14 +98,14 @@ struct IndividualsModifyMessage
         }
         //writeln ("%e");
     }
-    
-    string serialize ()
+
+    string serialize()
     {
-    	buff[ 0 ] = cmd;
+        buff[ 0 ] = cmd;
         uint_to_buff(buff, 1, (cast(ubyte[])new_state).length);
         uint_to_buff(buff, 5, (cast(ubyte[])prev_state).length);
 
-        return cast(string)buff[ 0..9 ] ~ new_state ~ prev_state;    	
+        return cast(string)buff[ 0..9 ] ~new_state ~ prev_state;
     }
 }
 
