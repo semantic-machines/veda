@@ -15,6 +15,7 @@
 	    "../../veda/common", 
 	    "../../veda/onto",  
 	    "../../veda/util", 
+	    "../../veda/process",
 	    "../../veda/core/threads", 
 	    "../../veda/core/impl", 
 	    "../../veda/core/az", 

@@ -736,8 +736,17 @@ class PThreadContext : Context
                 {
                     if (trace_msg[ T_API_110 ] == 1)
                         log.trace("тикет просрочен, id=%s", ticket_id);
-                    tt        = new Ticket;
-                    tt.result = ResultCode.Ticket_expired;
+
+                    if (ticket_id == "guest")
+                    {
+                        Ticket guest_ticket = create_new_ticket("cfg:Guest", "4000000", "guest");
+                        tt = &guest_ticket;
+                    }
+                    else
+                    {
+                        tt        = new Ticket;
+                        tt.result = ResultCode.Ticket_expired;
+                    }
                     return tt;
                 }
                 else

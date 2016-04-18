@@ -56,7 +56,7 @@ void dcs_thread(string thread_name, string _node_id)
 
     core.thread.Thread.getThis().name = thread_name;
 
-    OutSignalChanel osch;
+    OutSignalChanel              osch;
     osch = new OutSignalChanel("tcp://localhost:8081");
 
     queue = new Queue("individuals-flow", Mode.RW);
@@ -69,7 +69,7 @@ void dcs_thread(string thread_name, string _node_id)
                 send(tid_response_reciever, true);
             });
 
-	IndividualsModifyMessage imm;
+    IndividualsModifyMessage imm;
 
     while (true)
     {
@@ -78,9 +78,9 @@ void dcs_thread(string thread_name, string _node_id)
             receive(
                     (CMD cmd, string prev_state, string new_state)
                     {
-                    	imm.cmd = cmd;
-                    	imm.new_state = new_state;
-                    	imm.prev_state = prev_state;
+                        imm.cmd = cmd;
+                        imm.new_state = new_state;
+                        imm.prev_state = prev_state;
 
                         queue.push(imm.serialize());
                         osch.send_signal(text(queue.count_pushed));
@@ -161,7 +161,7 @@ class OutSignalChanel
             }
             catch (Exception ex)
             {
-                writeln("ERR! send to fanout", ex.msg);
+                writeln("ERR! send to fanout: ", ex.msg);
                 send_is_ready = false;
             }
 

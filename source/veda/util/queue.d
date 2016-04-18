@@ -408,10 +408,10 @@ class Queue
                     isReady = true;
                     get_info();
 
-                    if (ff_queue_r.size() != right_edge)
+                    if (mode == Mode.R && ff_queue_r.size() < right_edge || mode == Mode.RW && ff_queue_r.size() != right_edge)
                     {
                         isReady = false;
-                        writeln("ERR! queue:open: [", file_name_queue, "].size (", ff_queue_r.size(), ") != right_edge=", right_edge);
+                        writeln("ERR! queue:open(", mode, "): [", file_name_queue, "].size (", ff_queue_r.size(), ") != right_edge=", right_edge);
                     }
                     else
                     {
@@ -447,7 +447,7 @@ class Queue
     {
         if (isReady == true)
         {
-            writeln("queue_close:", file_name_queue);
+            //writeln("queue_close:", file_name_queue);
 
             ff_info_push_r.close();
             ff_queue_r.close();
@@ -514,7 +514,7 @@ class Queue
             string hash_hex = ch[ 4 ];
         }
 
-        writeln(this);
+        //writeln(this);
 
         return true;
     }
