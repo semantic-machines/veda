@@ -8,7 +8,7 @@
 		"mysql-d": "~>0.3.2",
 		"smtp": "~master",
                 "libasync": "0.7.5",
-	        "zeromq": "~master"
+	        "zeromq": "4.1.2"
 	},
 	"versions": ["VibeDefaultMain", "VibeZMQ", "libV8"],	
         "libs": [
