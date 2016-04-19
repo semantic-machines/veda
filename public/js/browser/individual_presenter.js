@@ -730,12 +730,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var stask = $(this);
 			stask.append($('<li/>', {
 				style:'cursor:pointer', 
-				click: function() {veda.Util.send(individual, template, 'v-wf:questionRouteStartForm')},
+				click: function() {veda.Util.send(individual, template, 'v-wf:questionRouteStartForm', true)},
 				html: '<a>'+(new veda.IndividualModel('v-s:SendQuestion')['rdfs:label'][0])+'</a>'
 			}));
 			stask.append($('<li/>', {
 				style:'cursor:pointer', 
-				click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm')},
+				click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm', true)},
 				html: '<a>'+(new veda.IndividualModel('v-s:SendInstruction')['rdfs:label'][0])+'</a>'
 			}));
 		});

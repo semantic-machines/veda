@@ -234,7 +234,11 @@ veda.Module(function Util(veda) { "use strict";
 	 *  - Find transformation to start form or use transformation specified by `transformId` parameter
 	 *  - Apply transformation and redirect to start form. 
 	 */
-	veda.Util.send = function (individual, template, transformId) {
+	veda.Util.send = function (individual, template, transformId, modal) {
+		if (typeof modal == 'undefined') {
+			modal = false;
+		}
+		
 		individual.defineProperty("v-s:hasStatusWorkflow");
 		individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
 		//$('[resource="'+individual.id+'"]').find("#save").trigger("click");
@@ -243,11 +247,13 @@ veda.Module(function Util(veda) { "use strict";
 			individual = individual.redirectToIndividual;
 		}
 		
-		if (transformId !== undefined) {
+		if (transformId !== undefined) {			
 			var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
-			startForm.present('#main', undefined, 'edit');			
-
-//	    	riot.route("#/" + startForm.id + "///edit", true);
+			if (modal) {
+				veda.Util.showModal(startForm, 'edit');				
+			} else {
+				startForm.present('#main', undefined, 'edit');
+			}
 		} else {
 			var s = new veda.SearchModel("'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
 			if (Object.getOwnPropertyNames(s.results).length == 0) {
@@ -269,7 +275,11 @@ veda.Module(function Util(veda) { "use strict";
 				Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
 					var res = s.results[res_id];
 					var startForm = veda.Util.buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
-	            	riot.route("#/" + startForm.id + "///edit", true);
+					if (modal) {
+						veda.Util.showModal(startForm, 'edit');				
+					} else {
+		            	riot.route("#/" + startForm.id + "///edit", true);
+					}
 				});
 			} else {
 				var sendDropdown = $('[resource="'+individual.id+'"] #send + .dropdown-menu');
@@ -421,6 +431,24 @@ veda.Module(function Util(veda) { "use strict";
 		});			
 	}
 	
+	
+	veda.Util.showModal = function (individual, mode) {
+		if (typeof mode == 'undefined') {
+			mode = 'view';
+		}
+		
+		// Ignore individuals without id
+		if (individual.id === undefined || individual.id === '' || individual.id === '_') return;
+		var container = $($("#notification-modal-template").html());
+		container.modal();
+
+		$("body").append(container);
+		
+		var holder = $("<div>");
+		individual.present(holder, undefined, mode);
+		holder.appendTo($(".modal-body", container));
+	}
+	
 	veda.Util.showMessage = function (message, cssClass, timeout, redirectIndividual, redirectIndividualMode) {
 		var container = $($("#notification-modal-template").html());
 		container.modal();
@@ -431,7 +459,7 @@ veda.Module(function Util(veda) { "use strict";
 		function redirectAfterTimeout() {
 			if (redirectAlreadyCalled) return;
 			redirectAlreadyCalled = true;
-			container.modal('hide');
+			$('.modal').modal('hide');			
 			var main = $('#main');
 			main.empty();
 			if (typeof redirectIndividual === 'string') {
