@@ -513,24 +513,17 @@ v-fs:FulltextRequestTemplate
 			}(i));
 		}
 		
-		// Show pager
-		for (var pg = 0; pg < Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0); pg++) {
-			var $pg = $("<li/>")
-				.attr("class", pg === self.page ? "active" : "")
-				.appendTo(pager);
-			var $a = $("<a/>", {
-				"text" : pg + 1,
-				"click": (function (pg) {
-					if (pg === self.page) return $.noop;
-					return function (event) {
-						event.preventDefault();
-						self.page = pg;
-						self.trigger("afterSearch");
-					}
-				})(pg),
-				"href" : ""
-			}).appendTo($pg);
-		}
+		// Pager
+		pager.pager({
+			pages: Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0),
+			active: self.page + 1,
+			neighbours: 3,
+			click: function (page) {
+				if (page - 1 === self.page) return false;
+				self.page = page - 1;
+				self.trigger("afterSearch");
+			}
+		});
 	}
 </script>
   """
@@ -917,24 +910,17 @@ v-fs:AttributiveRequestTemplate
 			}(i));
 		}
 		
-		// Show pager
-		for (var pg = 0; pg < Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0); pg++) {
-			var $pg = $("<li/>")
-				.attr("class", pg === self.page ? "active" : "")
-				.appendTo(pager);
-			var $a = $("<a/>", {
-				"text" : pg + 1,
-				"click": (function (pg) {
-					if (pg === self.page) return $.noop;
-					return function (event) {
-						event.preventDefault();
-						self.page = pg;
-						self.trigger("afterSearch");
-					}
-				})(pg),
-				"href" : ""
-			}).appendTo($pg);
-		}
+		// Pager
+		pager.pager({
+			pages: Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0),
+			active: self.page + 1,
+			neighbours: 3,
+			click: function (page) {
+				if (page - 1 === self.page) return false;
+				self.page = page - 1;
+				self.trigger("afterSearch");
+			}
+		});
 	}
 	
 	// Export to Spreadsheet
