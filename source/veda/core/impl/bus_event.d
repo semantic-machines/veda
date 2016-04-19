@@ -80,8 +80,11 @@ void bus_event_after(Ticket *ticket, Individual *individual, ref MapResource rdf
         }
         else
         {
-            //log.trace("EXECUTE SCRIPT: event:%s uri:[%s]", ev_type, individual.uri);
-            veda.core.glue_code.scripts.send_put(context, ticket, ev_type, new_state, prev_state, rdfType, individual.uri, event_id, op_id);
+            version (libV8)
+            {
+                //log.trace("EXECUTE SCRIPT: event:%s uri:[%s]", ev_type, individual.uri);
+                veda.core.glue_code.scripts.send_put(context, ticket, ev_type, new_state, prev_state, rdfType, individual.uri, event_id, op_id);
+            }
         }
     }
 }

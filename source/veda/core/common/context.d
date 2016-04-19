@@ -50,7 +50,8 @@ public enum P_MODULE : byte
 
     fanout                     = 12,
 
-    nanomsg_listener           = 13,
+    //// data change signal
+    dcs                        = 13,
 
     ltrs                       = 14,
 

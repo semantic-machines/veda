@@ -6,13 +6,13 @@ void main(char[][] args)
 {
     int  exit_code;
 
-//    auto fanout_logFile = File("veda-fanout-errors.log", "w");
+    auto fanout_logFile = File("veda-fanout-errors.log", "w");
 
-//    writeln("start veda-fanout");
-//    auto pid_fanout = spawnProcess([ "./veda-fanout" ],
-//                                   std.stdio.stdin,
-//                                   std.stdio.stdout,
-//                                   fanout_logFile);
+    writeln("start veda-fanout");
+    auto pid_fanout = spawnProcess([ "./veda-fanout" ],
+                                   std.stdio.stdin,
+                                   std.stdio.stdout,
+                                   fanout_logFile);
 
     while (true)
     {

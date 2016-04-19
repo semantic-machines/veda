@@ -7,7 +7,8 @@ private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
     import util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.queue;
-    import veda.type, veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.log_msg, veda.onto.individual, veda.onto.resource;
+    import veda.type, veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.log_msg, veda.onto.individual,
+           veda.onto.resource;
     import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools;
     import search.vel;
 }
@@ -110,31 +111,22 @@ public ResultCode send_remove(P_MODULE storage_id, Context ctx, string uri, bool
 
 Queue queue;
 
-shared static ~this ()
+shared static ~this()
 {
-	if (queue !is null)
-	{
-		queue.close ();
-		queue = null;
-	}		
-} 
+    if (queue !is null)
+    {
+        queue.close();
+        queue = null;
+    }
+}
 
 public void individuals_manager(string thread_name, string db_path, string node_id)
 {
-//import dzmq;
-//auto ctx = new ZmqContext();
-//auto sock = ctx.socket!(ZmqSocketType.Req)();
-//sock.connect("tcp://localhost:8081");
-	
     core.thread.Thread.getThis().name             = thread_name;
     LmdbStorage                  storage          = new LmdbStorage(db_path, DBMode.RW, "individuals_manager");
     int                          size_bin_log     = 0;
     int                          max_size_bin_log = 10_000_000;
     string                       bin_log_name     = get_new_binlog_name(db_path);
-
- 	queue = new Queue("individuals-flow-" ~ thread_name);
- 	queue.remove_lock ();
-    queue.open();    
 
     // SEND ready
     receive((Tid tid_response_reciever)
@@ -198,9 +190,9 @@ public void individuals_manager(string thread_name, string db_path, string node_
                         else if (cmd == CMD.UNLOAD)
                         {
                             long count;
-                            Queue queue = new Queue(arg);
+                            Queue queue = new Queue(arg, Mode.RW);
 
-                            if (queue.open())
+                            if (queue.open(Mode.RW))
                             {
                                 bool add_to_queue(string key, string value)
                                 {
@@ -255,9 +247,7 @@ public void individuals_manager(string thread_name, string db_path, string node_
                         try
                         {
                             if (cmd == CMD.PUT)
-                            {                            	
-								queue.push (msg);
-																
+                            {
                                 string new_hash;
 
                                 if (storage.update_or_create(uri, msg, new_hash) == 0)

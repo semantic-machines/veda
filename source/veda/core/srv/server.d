@@ -183,8 +183,8 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
 
         if (is_main)
         {
-//            tids[ P_MODULE.fanout ] = spawn(&veda.core.fanout.fanout_thread, text(P_MODULE.fanout), node_id);
-//            wait_starting_thread(P_MODULE.fanout, tids);
+            tids[ P_MODULE.dcs ] = spawn(&veda.core.threads.dcs_manager.dcs_thread, text(P_MODULE.dcs), node_id);
+            wait_starting_thread(P_MODULE.dcs, tids);
         }
 
         foreach (key, value; tids)

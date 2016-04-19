@@ -8,10 +8,15 @@ private
 {
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
            std.json;
-    import bind.xapian_d_header, bind.v8d_header;
-//    import io.mq_client;
+    import bind.xapian_d_header;
+
+    version (libV8)
+    {
+        import veda.core.bind.v8d_header;
+    }
     import veda.util.container, util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.individual8json;
-    import veda.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context, veda.core.impl.bus_event, veda.core.log_msg;
+    import veda.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context, veda.core.impl.bus_event,
+           veda.core.log_msg;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
     import veda.core.az.acl, search.vql;
 }
@@ -217,27 +222,30 @@ class PThreadContext : Context
 
     ScriptVM get_ScriptVM()
     {
-        if (script_vm is null)
+        version (libV8)
         {
-            try
+            if (script_vm is null)
             {
-                script_vm = new JsVM();
-                g_context = this;
+                try
+                {
+                    script_vm = new JsVM();
+                    g_context = this;
 
-                string g_str_script_result = new char[ 1024 * 64 ];
-                string g_str_script_out    = new char[ 1024 * 64 ];
+                    string g_str_script_result = new char[ 1024 * 64 ];
+                    string g_str_script_out    = new char[ 1024 * 64 ];
 
-                g_script_result.data           = cast(char *)g_str_script_result;
-                g_script_result.allocated_size = cast(int)g_str_script_result.length;
+                    g_script_result.data           = cast(char *)g_str_script_result;
+                    g_script_result.allocated_size = cast(int)g_str_script_result.length;
 
-                g_script_out.data           = cast(char *)g_str_script_out;
-                g_script_out.allocated_size = cast(int)g_str_script_out.length;
+                    g_script_out.data           = cast(char *)g_str_script_out;
+                    g_script_out.allocated_size = cast(int)g_str_script_out.length;
 
-                reload_scripts();
-            }
-            catch (Exception ex)
-            {
-                writeln("EX!get_ScriptVM ", ex.msg);
+                    reload_scripts();
+                }
+                catch (Exception ex)
+                {
+                    writeln("EX!get_ScriptVM ", ex.msg);
+                }
             }
         }
 
@@ -728,8 +736,17 @@ class PThreadContext : Context
                 {
                     if (trace_msg[ T_API_110 ] == 1)
                         log.trace("тикет просрочен, id=%s", ticket_id);
-                    tt        = new Ticket;
-                    tt.result = ResultCode.Ticket_expired;
+
+                    if (ticket_id == "guest")
+                    {
+                        Ticket guest_ticket = create_new_ticket("cfg:Guest", "4000000", "guest");
+                        tt = &guest_ticket;
+                    }
+                    else
+                    {
+                        tt        = new Ticket;
+                        tt.result = ResultCode.Ticket_expired;
+                    }
                     return tt;
                 }
                 else
@@ -1284,17 +1301,20 @@ class PThreadContext : Context
                         }
                     }
 
-                    if (rdfType.anyExists("v-s:ExecuteScript"))
+                    version (libV8)
                     {
-                        // передать вызов отдельной нити по выполнению Long Time Run Scripts
-                        veda.core.glue_code.ltrs.execute_script(this, new_state);
+                        if (rdfType.anyExists("v-s:ExecuteScript"))
+                        {
+                            // передать вызов отдельной нити по выполнению Long Time Run Scripts
+                            veda.core.glue_code.ltrs.execute_script(this, new_state);
+                        }
                     }
 
                     if (prepare_events == true)
                         bus_event_after(ticket, indv, rdfType, new_state, prev_state, ev, this, event_id, res.op_id);
 
-                    //if (event_id != "fanout")
-                    //    veda.core.fanout.send_put(this, new_state, prev_state, res.op_id);
+                    if (event_id != "fanout")
+                        veda.core.threads.dcs_manager.send_put(this, cmd, ticket.user_uri, new_state, prev_state, event_id, res.op_id);
 
                     res.result = ResultCode.OK;
                     return res;

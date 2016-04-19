@@ -40,4 +40,3 @@ public void ulong_to_buff(ubyte[] _buff, int pos, ulong data)
     _buff[ pos + 6 ] = (data & 0x00FF000000000000) >> 48;
     _buff[ pos + 7 ] = (data & 0xFF00000000000000) >> 56;
 }
-

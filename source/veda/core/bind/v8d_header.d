@@ -1,7 +1,7 @@
 /**
  * обвязка к v8d
  */
-module bind.v8d_header;
+module veda.core.bind.v8d_header;
 
 import std.stdio, std.conv;
 import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.core.common.context, veda.core.common.define, veda.util.cbor8individual;

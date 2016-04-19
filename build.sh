@@ -6,6 +6,10 @@ then
 fi
 ./update-version-ttl.sh
 
+rm veda-bootstrap
+rm veda-server
+rm veda-fanout
+
 echo *** build veda-bootstrap ***
 cd source/dub/bootstrap
 rm veda-bootstrap

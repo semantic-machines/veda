@@ -6,7 +6,7 @@ module veda.core.glue_code.scripts;
 private
 {
     import std.json, std.stdio, std.string, std.array, std.datetime, std.concurrency, std.conv, std.file, core.thread;
-    import bind.v8d_header;
+    import veda.core.bind.v8d_header;
     import veda.util.container, veda.core.util.utils, util.logger, veda.util.cbor, veda.util.cbor8individual;
     import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.onto;
     import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.define, veda.core.impl.thread_context, veda.core.log_msg;
@@ -23,13 +23,6 @@ private logger log()
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
-
-enum RUN_MODE
-{
-    ONE_CODELET_SCRIPT = 1,
-    ALL_EVENT_SCRIPTS  = 2
-}
-
 private int     count;
 private Context context;
 

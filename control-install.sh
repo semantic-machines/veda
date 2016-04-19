@@ -25,10 +25,29 @@ if ! dub --version | grep $DUB_VER ; then
 fi
 
 # Get other dependencies
-sudo apt-get install -y libzmq3-dev
 sudo apt-get install -y libevent-pthreads-2.0-5
 sudo apt-get install -y libraptor2-dev
 sudo apt-get install -y libevent-dev libssl-dev
 sudo apt-get install -y libmysqlclient-dev
+sudo apt-get install libtool pkg-config build-essential autoconf automake
+sudo apt-get install libzmq-dev
+mkdir tmp
+cd tmp
+git clone git://github.com/jedisct1/libsodium.git 
+cd libsodium 
+./autogen.sh 
+./configure && make check 
+sudo make install 
+sudo ldconfig 
+cd ..
+wget http://download.zeromq.org/zeromq-4.1.4.tar.gz
+tar -xvzf zeromq-4.1.4.tar.gz
+cd zeromq-4.1.4
+./autogen.sh
+./configure
+make
+sudo make install
+cd ..
+cd ..
 
 sudo ldconfig
