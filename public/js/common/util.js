@@ -577,7 +577,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
 
                 var putValueFrom = (function()
                 {
-                    return function(name, path)
+                    return function(name, path, transform)
                     {
                         var out_data0_el_arr = out_data0_el[name];
                         if (!out_data0_el_arr)
@@ -589,12 +589,15 @@ function transformation(ticket, individuals, transform, executor, work_order)
                         for (var i = 0; i < path.length - 1; i++)
                         {
                             if (!curelem || !curelem[path[i]]) return;
-                            curelem = (typeof window === "undefined") ?
-                                get_individual(ticket, curelem[path[i]].data ? curelem[path[i]].data : curelem[path[i]]) :
-                                new veda.IndividualModel(curelem[path[i]][0]);
+                            
+                            if (typeof window === "undefined") {
+                        		curelem = get_individual(ticket, curelem[path[i]].data ? curelem[path[i]].data : curelem[path[i]]);
+                            } else {
+                        		curelem = new veda.IndividualModel(curelem[path[i]][0]);	
+                            } 
                         }
                         if (!curelem || !curelem[path[path.length - 1]]) return;
-                        
+                                                
                         if (typeof window === "undefined") {
                             out_data0_el_arr.push(curelem[path[path.length - 1]]);
                         } else {
@@ -605,6 +608,14 @@ function transformation(ticket, individuals, transform, executor, work_order)
 	        				if (value instanceof Date) valueType = _Datetime;
 	        				if (value instanceof Number) valueType = _Decimal;
 	        				if (value instanceof Boolean) valueType = _Boolean;
+	        				
+	        				if (valueType == _Uri && typeof transform != 'undefined') {
+                        		if (transform == 'clone') {
+                        			value = value.clone();                            			
+                        		} else {
+                        			value = veda.Util.buildStartFormByTransformation(value, new veda.IndividualModel(transform));                            			
+                        		}                            	
+	        				}
 	
 	        				if (typeof value !== "undefined") {
 		                        out_data0_el_arr.push(
