@@ -54,9 +54,14 @@ JSONValue individual_to_json(immutable(Individual)individual)
     json[ "@" ] = individual.uri;
     foreach (property_name, property_values; individual.resources)
     {
-        JSONValue resources_json;
+        JSONValue[] jsonVals;
+
         foreach (property_value; property_values)
-            resources_json ~= resource_to_json(cast(Resource)property_value);
+            jsonVals ~= resource_to_json(cast(Resource)property_value);
+
+        JSONValue resources_json;
+        resources_json.array = jsonVals;
+
         json[ property_name ] = resources_json;
     }
 //    writeln ("->JSON:", json);
@@ -71,9 +76,14 @@ JSONValue individual_to_json(Individual individual)
     json[ "@" ] = individual.uri;
     foreach (property_name, property_values; individual.resources)
     {
-        JSONValue resources_json;
+        JSONValue[] jsonVals;
+
         foreach (property_value; property_values)
-            resources_json ~= resource_to_json(cast(Resource)property_value);
+            jsonVals ~= resource_to_json(cast(Resource)property_value);
+
+        JSONValue resources_json;
+        resources_json.array = jsonVals;
+
         json[ property_name ] = resources_json;
     }
 //    writeln ("->JSON:", json);
