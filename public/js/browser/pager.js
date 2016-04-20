@@ -14,9 +14,7 @@
 			var update = opts.pages <= 20 ? function (page) {
 				pager.empty();
 				for (var i = 1; i <= opts.pages; i++) {
-					pager.append(
-						$("<li" + (i === page ? " class='active'" : "") + "><a href=''>" + i + "</a></li>").data("page", i)
-					);
+					pager.append( $("<li" + (i === page ? " class='active'" : "") + "><a href=''>" + i + "</a></li>").data("page", i) );
 				}
 				pager.children().click( function (e) {
 					e.preventDefault();
