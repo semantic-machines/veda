@@ -88,8 +88,13 @@ v-s:Other
 .
 v-s:Send
   rdf:type v-s:Bundle ;
-  rdfs:label "Выдать задачу"@ru ;
+  rdfs:label "Отправить"@ru ;
   rdfs:label "Send"@en ;
+.
+v-s:SendTask
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выдать задачу"@ru ;
+  rdfs:label "Send task"@en ;
 .
 v-s:Next
   rdf:type v-s:Bundle ;
@@ -246,3 +251,9 @@ v-b:AreYouSure
   rdfs:label "Вы уверены?"@ru ;
   rdfs:label "Are you sure?"@en ;
 .
+v-b:Status
+  rdf:type v-s:Bundle ;
+  rdfs:label "Статус"@ru ;
+  rdfs:label "Status"@en ;
+.
+
