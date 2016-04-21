@@ -427,13 +427,20 @@ veda.Module(function (veda) { "use strict";
 	 * @param {String} id of class to check
 	 * @return {boolean} is individual rdf:type subclass of requested class 
 	 */
-	proto.is = function (classId) {
-		var type = new veda.IndividualModel(this['rdf:type'][0].id);
-		for (var key in type['rdfs:subClassOf']) {
-			if (type['rdfs:subClassOf'][key].id == classId) return true;
+	proto.is = function (_class) {
+		if (typeof _class.valueOf() === "string") {
+			_class = new veda.IndividualModel(_class);
 		}
-		return false;
+		return this["rdf:type"].reduce(function (acc, item) {
+			return acc || (item.id === _class.id) || isSubClassOf(item, _class);
+		}, false);
 	};
+	function isSubClassOf(_class, _super) {
+		if (!_class.hasValue("rdfs:subClassOf")) return false;
+		return _class["rdfs:subClassOf"].reduce(function (acc, item) {
+			return acc || (item.id === _super.id) || isSubClassOf(item, _super);
+		}, false);
+	}
 
 	/**
 	 * @method
