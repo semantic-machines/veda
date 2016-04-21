@@ -119,8 +119,9 @@ v-fc:FunctionCreateTemplate
 			var holder = $("#holder", template).empty();
 			if (values.length) {
 				var blank = new veda.IndividualModel();
-				blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
+				blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank", undefined, undefined, undefined, undefined, false) ];
 				blank["v-fc:typeToCreate"] = values;
+				blank.init();
 				blank.present(holder, undefined, "edit");
 			}
 		}
@@ -140,6 +141,76 @@ v-fc:FunctionCreateTemplate
 </script>
   """
 .
+
+v-fc:BlankModel
+  rdf:type v-s:ClassModel ;
+  rdfs:label "v-fc:Blank class model"@en ;
+  rdfs:label "Модель класса v-fc:Blank"@ru ;
+  v-ui:forClass v-fc:Blank ;
+  v-s:script """
+var self = individual,
+	object = new veda.IndividualModel(),
+	asp = veda.user.aspect;
+object["rdf:type"] = self["v-fc:typeToCreate"];
+if ( self.isSync() ) {
+	Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
+		if (property_uri === "rdf:type") return;
+		if (property_uri === "rdfs:label") return;
+		if (property_uri === "v-s:deleted") return;
+		if (property_uri === "rdfs:isDefinedBy") return;
+		if (property_uri === "v-s:parent") return;
+		object.defineProperty(property_uri);
+		if ( self.hasValue(property_uri) && self[property_uri][0] instanceof veda.IndividualModel && self[property_uri][0].is("v-fc:Blank")) {
+			object[property_uri] = self[property_uri].map(function (item) {
+				if ( !item.object["v-s:parent"] ) { item.object.defineProperty("v-s:parent"); }
+				item.object["v-s:parent"] = [ object ];
+				return item.object;
+			});
+		} else {
+			object[property_uri] = self[property_uri].slice(0);			
+		}
+	});
+}
+self.on("individual:beforeSave", updateBlank);	
+self.on("individual:afterSave", updateAspect);	
+
+self.object = object;
+
+function updateBlank() {
+	Object.getOwnPropertyNames(object.properties).map( function (property_uri) {
+		if (property_uri === "rdf:type") return;
+		if (property_uri === "rdfs:label") return;
+		if (property_uri === "v-s:deleted") return;
+		if (property_uri === "rdfs:isDefinedBy") return;
+		if (property_uri === "v-s:parent") return;
+		self.defineProperty(property_uri);
+		self[property_uri] = object[property_uri].slice(0);
+		if ( self.hasValue(property_uri) && self[property_uri][0] instanceof veda.IndividualModel && self[property_uri][0].is("v-s:Embedded")) {
+			self[property_uri] = self[property_uri].map(function (item) {
+				var blank = item.clone();
+				var types = blank["rdf:type"];
+				blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
+				blank["v-fc:typeToCreate"] = types;
+				blank.save();
+				return blank;
+			});
+		}
+	});
+}
+function updateAspect() {
+	if (self["v-s:deleted"][0] == true) {
+		asp["v-s:hasBlank"] = asp["v-s:hasBlank"].filter( function (i) { return i.id !== self.id;});
+	} else if (
+		!asp["v-s:hasBlank"].filter( function (i) {return i.id === self.id;}).length
+	) {
+		asp["v-s:hasBlank"] = asp["v-s:hasBlank"].concat(self);
+	}
+	asp.save();
+}
+
+  """
+.
+
 v-fc:BlankTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "V-fc:Blank class template"@en ;
@@ -176,46 +247,8 @@ v-fc:BlankTemplate
 <script>
 	var self = individual,
 		holder = $("#object", template),
-		object = new veda.IndividualModel(),
-		asp = veda.user.aspect;
-	object["rdf:type"] = self["v-fc:typeToCreate"];
-	if ( self.isSync() ) {
-		Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
-			if (property_uri === "rdf:type") return;
-			if (property_uri === "rdfs:label") return;
-			if (property_uri === "v-s:deleted") return;
-			if (property_uri === "rdfs:isDefinedBy") return;
-			object.defineProperty(property_uri);
-			object[property_uri] = self[property_uri].slice(0);
-		});
-	}
+		object = self.object;
 	object.present(holder, undefined, "edit");
-	self.on("individual:beforeSave", updateBlank);	
-	self.on("individual:afterSave", updateAspect);	
-	template.one("remove", function () {
-		self.off("individual:beforeSave", updateBlank);
-		self.off("individual:afterSave", updateAspect);
-	});
-	function updateBlank() {
-		Object.getOwnPropertyNames(object.properties).map( function (property_uri) {
-			if (property_uri === "rdf:type") return;
-			if (property_uri === "rdfs:label") return;
-			if (property_uri === "v-s:deleted") return;
-			if (property_uri === "rdfs:isDefinedBy") return;
-			self.defineProperty(property_uri);
-			self[property_uri] = object[property_uri].slice(0);
-		});
-	}
-	function updateAspect() {
-		if (self["v-s:deleted"][0] == true) {
-			asp["v-s:hasBlank"] = asp["v-s:hasBlank"].filter( function (i) { return i.id !== self.id;});
-		} else if (
-			!asp["v-s:hasBlank"].filter( function (i) {return i.id === self.id;}).length
-		) {
-			asp["v-s:hasBlank"] = asp["v-s:hasBlank"].concat(self);
-		}
-		asp.save();
-	}
 </script>
   """
 .
