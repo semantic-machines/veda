@@ -21,3 +21,7 @@ dub.selections.json
 /*.dprojectoptions
 /*.buildpath
 veda.properties
+/.coverage-results/
+/veda-fts-worker
+/veda-js-worker
+/veda-server
