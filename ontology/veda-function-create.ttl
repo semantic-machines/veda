@@ -160,14 +160,14 @@ if ( self.isSync() ) {
 		if (property_uri === "rdfs:isDefinedBy") return;
 		if (property_uri === "v-s:parent") return;
 		object.defineProperty(property_uri);
-		if ( self.hasValue(property_uri) && self[property_uri][0] instanceof veda.IndividualModel && self[property_uri][0].is("v-fc:Blank")) {
+		if ( self.hasValue(property_uri) && self[property_uri][0] instanceof veda.IndividualModel && self[property_uri][0].is("v-fc:Blank") ) {
 			object[property_uri] = self[property_uri].map(function (item) {
 				if ( !item.object["v-s:parent"] ) { item.object.defineProperty("v-s:parent"); }
 				item.object["v-s:parent"] = [ object ];
 				return item.object;
 			});
 		} else {
-			object[property_uri] = self[property_uri].slice(0);			
+			object[property_uri] = self[property_uri].slice(0);
 		}
 	});
 }
@@ -200,12 +200,14 @@ function updateBlank() {
 function updateAspect() {
 	if (self["v-s:deleted"][0] == true) {
 		asp["v-s:hasBlank"] = asp["v-s:hasBlank"].filter( function (i) { return i.id !== self.id;});
+		asp.save();
 	} else if (
 		!asp["v-s:hasBlank"].filter( function (i) {return i.id === self.id;}).length
+		&& !self.hasValue("v-s:parent") // Not embedded
 	) {
 		asp["v-s:hasBlank"] = asp["v-s:hasBlank"].concat(self);
+		asp.save();
 	}
-	asp.save();
 }
 
   """
