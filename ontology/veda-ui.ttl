@@ -637,7 +637,12 @@ v-ui:LabelBlockLinkTemplate
   rdfs:label "Шаблон без имени класса, но с меткой, блочный"@ru ;
   rdfs:label "Template without class name, with label, blocked"@en ;
   v-ui:template """
-  <div><a href="#/@"><span property="rdfs:label"></span></a></div>
+  <div><a id="label" href="#/@" property="rdfs:label"></a></div>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+  	  $("#label", template).text(individual.id);
+    }
+  </script>
   """ ;
 .
 v-ui:ClassNameLabelTemplate
