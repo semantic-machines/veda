@@ -119,9 +119,9 @@ v-fc:FunctionCreateTemplate
 			var holder = $("#holder", template).empty();
 			if (values.length) {
 				var blank = new veda.IndividualModel();
-				blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank", undefined, undefined, undefined, undefined, false) ];
+				blank.defineProperty("v-fc:typeToCreate");
 				blank["v-fc:typeToCreate"] = values;
-				blank.init();
+				blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
 				blank.present(holder, undefined, "edit");
 			}
 		}
@@ -149,51 +149,54 @@ v-fc:BlankModel
   v-ui:forClass v-fc:Blank ;
   v-s:script """
 var self = individual,
-	object = new veda.IndividualModel(),
 	asp = veda.user.aspect;
-object["rdf:type"] = self["v-fc:typeToCreate"];
-if ( self.isSync() ) {
-	Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
-		if (property_uri === "rdf:type") return;
-		if (property_uri === "rdfs:label") return;
-		if (property_uri === "v-s:deleted") return;
-		if (property_uri === "rdfs:isDefinedBy") return;
-		if (property_uri === "v-s:parent") return;
-		object.defineProperty(property_uri);
-		if ( self.hasValue(property_uri) && self[property_uri][0] instanceof veda.IndividualModel && self[property_uri][0].is("v-fc:Blank") ) {
-			object[property_uri] = self[property_uri].map(function (item) {
-				if ( !item.object["v-s:parent"] ) { item.object.defineProperty("v-s:parent"); }
-				item.object["v-s:parent"] = [ object ];
-				return item.object;
-			});
-		} else {
-			object[property_uri] = self[property_uri].slice(0);
-		}
-	});
-}
+
+self.object = new veda.IndividualModel(),
+self.object["rdf:type"] = self["v-fc:typeToCreate"].slice(0);
+Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
+	if ( property_uri === "rdf:type"
+		|| property_uri === "rdfs:label"
+		|| property_uri === "v-s:deleted"
+		|| property_uri === "rdfs:isDefinedBy"
+		|| property_uri === "v-s:parent"
+		|| property_uri === "v-fc:typeToCreate"
+	) return;
+	if ( self.hasValue(property_uri) && self[property_uri][0] instanceof veda.IndividualModel && self[property_uri][0].is("v-fc:Blank") ) {
+		self.object[property_uri] = self[property_uri].map(function (item) {
+			// Embedded blanks are for v-s:Embedded objects only
+			if ( !item.object["v-s:parent"] ) { item.object.defineProperty("v-s:parent"); }
+			item.object["v-s:parent"] = [ self.object ];
+			return item.object;
+		});
+	} else {
+		self.object[property_uri] = self[property_uri].slice(0);
+	}
+});
 self.on("individual:beforeSave", updateBlank);	
 self.on("individual:afterSave", updateAspect);	
 
-self.object = object;
-
 function updateBlank() {
-	Object.getOwnPropertyNames(object.properties).map( function (property_uri) {
-		if (property_uri === "rdf:type") return;
-		if (property_uri === "rdfs:label") return;
-		if (property_uri === "v-s:deleted") return;
-		if (property_uri === "rdfs:isDefinedBy") return;
-		if (property_uri === "v-s:parent") return;
+	Object.getOwnPropertyNames(self.object.properties).map( function (property_uri) {
+		if ( property_uri === "rdf:type"
+			|| property_uri === "rdfs:label"
+			|| property_uri === "v-s:deleted"
+			|| property_uri === "rdfs:isDefinedBy"
+			|| property_uri === "v-s:parent"
+		) return;
 		self.defineProperty(property_uri);
-		self[property_uri] = object[property_uri].slice(0);
-		if ( self.hasValue(property_uri) && self[property_uri][0] instanceof veda.IndividualModel && self[property_uri][0].is("v-s:Embedded")) {
-			self[property_uri] = self[property_uri].map(function (item) {
+		if ( self.object.hasValue(property_uri) && self.object[property_uri][0] instanceof veda.IndividualModel && self.object[property_uri][0].is("v-s:Embedded")) {
+			self[property_uri] = self.object[property_uri].map(function (item) {
 				var blank = item.clone();
 				var types = blank["rdf:type"];
-				blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
+				blank.defineProperty("v-fc:typeToCreate");
 				blank["v-fc:typeToCreate"] = types;
+				blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
+				blank["v-s:parent"] = [ self ];
 				blank.save();
 				return blank;
 			});
+		} else {
+			self[property_uri] = self.object[property_uri].slice(0);
 		}
 	});
 }
