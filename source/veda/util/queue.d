@@ -103,6 +103,7 @@ ubyte[ 4 ] crc;
 
 class Consumer
 {
+	bool   isReady;
     Queue   queue;
     string  name;
     ulong   first_element;
@@ -127,7 +128,10 @@ class Consumer
     public bool open()
     {
         if (!queue.isReady)
+        {
+        	isReady = false;
             return false;
+        }    
 
         file_name_info_pop = queue_db_path ~ "/" ~ queue.name ~ "_info_pop_" ~ name;
 
@@ -138,7 +142,9 @@ class Consumer
 
         ff_info_pop_r = new File(file_name_info_pop, "r");
 
-        return true;
+		isReady = get_info();
+		
+        return isReady;
     }
 
     public void close()
@@ -156,7 +162,7 @@ class Consumer
 
     private bool put_info()
     {
-        if (!queue.isReady)
+        if (!queue.isReady || !isReady)
             return false;
 
         try
@@ -186,23 +192,17 @@ class Consumer
         {
             string[] ch = str[ 0..$ - 1 ].split(';');
             //writeln("@ queue.get_info ch=", ch);
-            if (ch.length != 6)
+            if (ch.length != 5)
             {
-                queue.isReady = false;
+                isReady = false;                
                 return false;
             }
 
-            name = ch[ 0 ];
-
-            if (ch[ 0 ] != name)
-            {
-                queue.isReady = false;
-                return false;
-            }
             string _name = ch[ 0 ];
-            if (name != queue.name)
+            if (_name != queue.name)
             {
                 writeln("consumer:get_info:queue name from info [", _name, "] != consumer.queue.name[", queue.name, "]");
+                isReady = false;                
                 return false;
             }
 
@@ -210,6 +210,7 @@ class Consumer
             if (_chunk != queue.chunk)
             {
                 writeln("consumer:get_info:queue chunk from info [", _chunk, "] != consumer.queue.chunk[", queue.chunk, "]");
+                isReady = false;                
                 return false;
             }
 
@@ -217,6 +218,7 @@ class Consumer
             if (_name != name)
             {
                 writeln("consumer:get_info:consumer name from info[", _name, "] != consumer.name[", name, "]");
+                isReady = false;                
                 return false;
             }
 
@@ -231,7 +233,7 @@ class Consumer
 
     public string pop()
     {
-        if (!queue.isReady)
+        if (!queue.isReady || !isReady)
             return null;
 
         if (count_popped >= queue.count_pushed)
@@ -272,7 +274,7 @@ class Consumer
 
     public bool commit()
     {
-        if (!queue.isReady)
+        if (!queue.isReady || !isReady)
             return false;
 
         if (count_popped >= queue.count_pushed)
