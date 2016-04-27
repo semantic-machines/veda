@@ -400,6 +400,17 @@ v-fs:FulltextRequestTemplate
 			</div>
 		</div>
 	</div>
+	<div class="modal" id="object-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title"></h4>
+				</div>
+				<div class="modal-body"></div>
+			</div>
+		</div>
+	</div>	
 </div>
 <script>
 	var self = individual,
@@ -448,6 +459,22 @@ v-fs:FulltextRequestTemplate
 		self.search();
 	});
 
+	// Modal for links
+	var $objModal = $("#object-modal", template).modal({show: false});
+	var cntr = $(".modal-body", $objModal);
+	template.on("remove", function () {
+		$objModal.modal("hide");
+	});
+	resultsList.on("click", "a[resource]", function (e) {
+		e.preventDefault();
+		var uri = $(this).attr("resource"),
+			link = new veda.IndividualModel(uri);
+		cntr.empty();
+		link.present(cntr);
+		$objModal.modal("show");
+		$objModal.focus();
+	});
+
 	// Update user aspect when search request was saved
 	function updateAspect() {
 		if (self["v-s:deleted"][0] == true) {
@@ -466,9 +493,9 @@ v-fs:FulltextRequestTemplate
 		var props = "<div>";
 		for (var i = 0, uri; (uri = allprops && allprops[i]); i++) {
 			if ( individual.hasValue(uri) ) {
-				props += "<em about='" + uri + "' property='rdfs:label'></em>: "
+				props += "<span about='" + uri + "' property='rdfs:label'></span>: "
 				if (individual[uri][0] instanceof veda.IndividualModel) {
-					props += "<span rel='" + uri + "' template='v-ui:LabelLinkTemplate'></span>; "
+					props += "<span rel='" + uri + "' template='v-ui:LabelEmptyLinkTemplate'></span>; "
 				} else {
 					props += "<span property='" + uri + "'></span>; "
 				}
@@ -670,6 +697,17 @@ v-fs:AttributiveRequestTemplate
 			</div>
 		</div>
 	</div>
+	<div class="modal" id="object-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title"></h4>
+				</div>
+				<div class="modal-body"></div>
+			</div>
+		</div>
+	</div>
 </div>
 <script>
 	var self = individual,
@@ -735,6 +773,22 @@ v-fs:AttributiveRequestTemplate
 	$("#refresh", template).click(function (e) {
 		e.preventDefault();
 		self.search();
+	});
+	
+	// Modal for links
+	var $objModal = $("#object-modal", template).modal({show: false});
+	var cntr = $(".modal-body", $objModal);
+	template.on("remove", function () {
+		$objModal.modal("hide");
+	});
+	tBody.on("click", "a[resource]", function (e) {
+		e.preventDefault();
+		var uri = $(this).attr("resource"),
+			link = new veda.IndividualModel(uri);
+		cntr.empty();
+		link.present(cntr);
+		$objModal.modal("show");
+		$objModal.focus();
 	});
 	
 	// Display search form
@@ -866,7 +920,7 @@ v-fs:AttributiveRequestTemplate
 				} else if (literals.indexOf(range) >= 0) {
 					td.attr("property", property.id);
 				} else {
-					td.attr("rel", property.id).attr("template", "v-ui:LabelLinkTemplate");
+					td.attr("rel", property.id).attr("template", "v-ui:LabelEmptyLinkTemplate");
 				}
 			}
 			td.appendTo(row);
