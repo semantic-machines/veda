@@ -228,8 +228,8 @@ v-fs:SearchTemplate
 			<div class="col-md-2 col-sm-3">
 				<h4></h4>
 				<ul class="nav nav-pills nav-stacked" role="tablist" id="req-tabs">
-					<li role="presentation" class="active"><a href="#fulltext" about="v-fs:Fulltext" property="rdfs:label" aria-controls="fulltext" role="tab" data-toggle="tab"></a></li>
-					<li role="presentation"><a href="#attributive" about="v-fs:Attributive" property="rdfs:label" aria-controls="attributive" role="tab" data-toggle="tab"></a></li>
+					<li role="presentation" class="active"><a href="#fulltext-search" about="v-fs:Fulltext" property="rdfs:label" aria-controls="fulltext-search" role="tab" data-toggle="tab"></a></li>
+					<li role="presentation"><a href="#attributive-search" about="v-fs:Attributive" property="rdfs:label" aria-controls="attributive-search" role="tab" data-toggle="tab"></a></li>
 				</ul>
 				<hr>
 				<h4 about="v-fs:SavedRequests" property="rdfs:label"></h4>
@@ -237,16 +237,16 @@ v-fs:SearchTemplate
 			</div>
 			<div class="col-md-10 col-sm-9" style="border-left: 1px solid gainsboro;">
 				<div class="tab-content">
-					<div role="tabpanel" class="tab-pane active" id="fulltext"></div>
-					<div role="tabpanel" class="tab-pane" id="attributive"></div>
+					<div role="tabpanel" class="tab-pane active" id="fulltext-search"></div>
+					<div role="tabpanel" class="tab-pane" id="attributive-search"></div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<script>
 		var self = individual,
-			ftHolder = $("#fulltext", template),
-			attrHolder = $("#attributive", template);
+			ftHolder = $("#fulltext-search", template),
+			attrHolder = $("#attributive-search", template);
 		if (!self.ftRequest) {
 			self.ftRequest = new veda.IndividualModel();
 			self.ftRequest["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
@@ -258,10 +258,10 @@ v-fs:SearchTemplate
 			self.attrRequest["rdf:type"] = [ new veda.IndividualModel("v-fs:AttributiveRequest") ];
 		}
 		self.attrRequest.present(attrHolder, undefined, "edit");
-		/*
+		
 		$("#req-tabs a", template).click(function (e) {
 			e.preventDefault();
-			if ($(this).attr("href") === "fulltext") { 
+			if ($(this).attr("href") === "#fulltext-search") { 
 				individual.reqType = "fulltext"; 
 			} else {
 				individual.reqType = "attributive";
@@ -269,13 +269,13 @@ v-fs:SearchTemplate
 		});
 		
 		if (individual.reqType === "attributive") {
-			$("#req-tabs a[href='attributive']", template).tab("show");
+			$("#req-tabs a[href='#attributive-search']", template).tab("show");
 			individual.reqType = "attributive";
 		} else {
-			$("#req-tabs a[href='fulltext']", template).tab("show");
+			$("#req-tabs a[href='#fulltext-search']", template).tab("show");
 			individual.reqType = "fulltext";
 		}
-		*/
+		
 		var regsHolder = $("#saved", template),
 			asp = veda.user.aspect,
 			regs = asp["v-s:hasRegistry"];
@@ -365,7 +365,7 @@ v-fs:FulltextRequestTemplate
 				<h4 about="v-fs:EnterQuery" property="rdfs:label"></h4>
 				<div class="form-group">
 					<div class="input-group">
-						<veda-control id="fulltext" type="string" property="v-fs:fulltextQuery"></veda-control>
+						<veda-control type="string" property="v-fs:fulltextQuery"></veda-control>
 						<span class="input-group-btn">
 							<button type="submit" id="submit" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
 						</span>
@@ -391,7 +391,7 @@ v-fs:FulltextRequestTemplate
 		<div role="tabpanel" class="tab-pane" id="mgmt-ft">
 			<em about="rdfs:label" property="rdfs:label"></em>
 			<p property="rdfs:label" class="view -edit -search"></p>
-			<veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
+			<veda-control id="query" type="string" property="rdfs:label" class="-view edit search"></veda-control>
 			<br>
 			<div>
 				<button type="button" class="action btn btn-primary view -edit" id="edit" about="v-s:Edit" property="rdfs:label"/>
@@ -422,13 +422,13 @@ v-fs:FulltextRequestTemplate
 		resultsList = $("#results-list", template),
 		resultsCount = $("#results-count", template),
 		submit = $("#submit", template),
-		fulltext = $("#fulltext", template),
+		query = $("#query", template),
 		form = new veda.IndividualModel();
 	
 	// Autofocus on query field
 	params.on("shown.bs.tab", function () {
 		if (!self.hasValue("v-fs:attributiveQuery")) {
-			$("#fulltext", template).trigger("veda_focus");
+			query.trigger("veda_focus");
 		}
 	});
 	params.trigger("shown.bs.tab");
@@ -450,7 +450,7 @@ v-fs:FulltextRequestTemplate
 	});
 
 	// Present results if query defined
-	if (self.q) { 
+	if (self.result.length) { 
 		self.trigger("afterSearch"); 
 	}
 	
@@ -765,9 +765,9 @@ v-fs:AttributiveRequestTemplate
 	}
 
 	// Present results if query defined
-	if (self.q) { 
-		//self.trigger("afterSearch"); 
-		self.search();
+	if (self.result.length) { 
+		self.trigger("afterSearch"); 
+		//self.search();
 	}
 	
 	$("#refresh", template).click(function (e) {
