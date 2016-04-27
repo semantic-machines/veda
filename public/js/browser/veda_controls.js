@@ -75,12 +75,12 @@
 		
 		this.on("view edit search", function (e) {
 			e.stopPropagation();
-			if (e.type === "search") {
+			/*if (e.type === "search") {
 				change = function (value) { 
 					individual[property_uri] = individual[property_uri].concat(value);
 					input.val("");
 				}
-			}
+			}*/
 		});
 		
 		this.val = function (value) {
