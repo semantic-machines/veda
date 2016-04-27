@@ -75,6 +75,12 @@
 		
 		this.on("view edit search", function (e) {
 			e.stopPropagation();
+			if (e.type === "search") {
+				change = function (value) { 
+					individual[property_uri] = individual[property_uri].concat(value);
+					input.val("");
+				}
+			}
 		});
 		
 		this.val = function (value) {
@@ -248,9 +254,9 @@
 			return !isNaN(float) ? new Number(float) : null;
 		}
 	};
-
+/*
 	// Datetime control
-	/*$.fn.veda_dateTime = function (options) {
+	$.fn.veda_dateTime = function (options) {
 		var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
 			control = veda_literal_input.call(this, opts),
 			individual = opts.individual, 
@@ -344,6 +350,12 @@
 		
 		this.on("view edit search", function (e) {
 			e.stopPropagation();
+			if (e.type === "search") {
+				change = function (value) { 
+					individual[property_uri] = individual[property_uri].concat(value);
+					input.val("");
+				}
+			}
 		});
 		
 		this.val = function (value) {
@@ -365,7 +377,7 @@
 				var timestamp = moment(input, "DD.MM.YYYY HH:mm").toDate();
 				return new Date(timestamp);
 			}
-			return undefined;
+			return null;
 		}
 	};
 

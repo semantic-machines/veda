@@ -188,10 +188,17 @@ veda.Module(function Util(veda) { "use strict";
 							undefined;
 						break;
 					case "xsd:dateTime": 
-						oneProp =
-							values.length === 1 ? "'" + property_uri + "'==[" + values[0].toISOString().substring(0,19) + "," + values[0].toISOString().substring(0,19) + "]" :
-							values.length > 1 ? "'" + property_uri + "'==[" + values[0].toISOString().substring(0,19) + "," + values[values.length-1].toISOString().substring(0,19) + "]" :
-							undefined;
+							if (values.length === 1) {
+								var start = values[0].toISOString().substring(0,19);
+								values[0].setHours(23, 59, 59, 999);
+								var end = values[0].toISOString().substring(0,19);
+								oneProp = "'" + property_uri + "'==[" + start + "," + end + "]";
+							} else if (values.length > 1) {
+								values[values.length-1].setHours(23, 59, 59, 999);
+								oneProp = "'" + property_uri + "'==[" + values[0].toISOString().substring(0,19) + "," + values[values.length-1].toISOString().substring(0,19) + "]";
+							} else {
+								oneProp = undefined;
+							}
 						break;
 					case "xsd:boolean": 
 						oneProp = values
