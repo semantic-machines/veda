@@ -540,6 +540,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
             {
                 //print("#2 key2=", key2);
                 var element = individual[iteratedObject[key2]];
+            //    print("#2 element=", toJson (element));
 
                 var putValue = (function()
                 {
@@ -583,9 +584,19 @@ function transformation(ticket, individuals, transform, executor, work_order)
                         if (!out_data0_el_arr)
                             out_data0_el_arr = [];
                         
-                        var curelem = (typeof window === "undefined") ?
-                            get_individual(ticket, element.data ? element.data : element) :
-                           	new veda.IndividualModel(element.data ? element.data : element);
+			var element_uri;
+
+			if (Array.isArray(element) === true)
+                        {
+			    element_uri = getUri (element);
+			}
+			else
+			    element_uri = element.data ? element.data : element;
+			
+                        var curelem;
+
+						curelem = (typeof window === "undefined") ? get_individual(ticket, element_uri) : new veda.IndividualModel(element_uri);
+
                         for (var i = 0; i < path.length - 1; i++)
                         {
                             if (!curelem || !curelem[path[i]]) return;
