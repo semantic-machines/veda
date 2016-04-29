@@ -1044,3 +1044,13 @@ v-s:coauthor
   rdfs:label "Соавтор"@ru ;
   rdfs:range v-s:Appointment ;
 .
+
+### veda-generic
+v-s:shortLabel
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain xsd:string ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "short label"@en ;
+  rdfs:label "краткое наименование"@ru ;
+  rdfs:range rdfs:Resource ;
+.

@@ -34,12 +34,14 @@ v-l:MainPageTemplate
 	v-ui:forClass v-l:MainPage ;
 	v-ui:template """
 <div class="page">
-	<nav role="navigation" class="navbar" id="navigation">
-		<div class="container-fluid" id="nav-container">
-			<button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
-				<span class="glyphicon glyphicon-menu-hamburger"></span>
-			</button>
-			<a class="navbar-brand" href="#/"><img src="/img/veda-logo.png"></a>
+	<nav role="navigation" class="navbar">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+					<span class="glyphicon glyphicon-menu-hamburger"></span>
+				</button>
+				<a class="navbar-brand" href="#/"><img src="/img/veda-logo.png"></a>
+			</div>
 			<div class="collapse navbar-collapse" id="navbar-collapse">
 				<div id="user-menu"></div>
 				<ul class="nav navbar-nav navbar-right">
@@ -230,9 +232,7 @@ v-l:WelcomeAspectTemplate
 	rdfs:label "Template for Welcome aspect class"@en ;
 	v-ui:forClass v-l:WelcomeAspect ;
 	v-ui:template """
-<div>
-	<style>
-	</style>
+<div class="container-fluid">
 	<div class="jumbotron">
 		<div class="row">
 			<div class="col-md-7">

@@ -327,6 +327,70 @@ fieldset[disabled] .form-control {
 	border-left-color: lightgray!important; 
 }
 
+/* CAROUSEL */
+
+.carousel-control {
+  width: 5%;
+}
+.carousel-control:hover {
+  opacity: 1;
+}
+.carousel-control.right, .carousel-control.left  {
+  background-image: none; 
+}
+.carousel-caption {
+  position: absolute;
+  top: 0px;
+  left: 5%;
+  right: initial;
+  z-index: 10;
+  /*padding: 0px 50px 50px;*/
+  /*width: 100%;*/
+  color: #ffffff;
+  text-align: left;
+  text-shadow: 0px 1px 2px black; 
+}
+.carousel-caption > h1 {
+  font-size: 3em;
+}
+.carousel-caption > p {
+  font-size: 1.5em;
+}
+.carousel-indicators {
+  position: absolute;
+  bottom: 0px;
+  text-align: center;
+  width: 100%;
+  padding: 10px 30px;
+  margin: 0px;
+  left: initial;
+  background-color: black;
+  opacity: 0.6;
+  z-index: 15;
+}
+.carousel-indicators > li {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  width: initial;
+  height: initial;
+  text-indent: initial;
+  font-size: 0.9em;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 1px 4px;  
+}
+.carousel-indicators > li:hover {
+  border: 1px solid white;
+}
+.carousel-indicators > li.active {
+  border-radius: 4px;
+  padding: 1px 4px;  
+  background-color: white;
+  color: black;
+  width: initial;
+  height: initial;
+}
 
 /* [BEGIN] Typeahead */
 

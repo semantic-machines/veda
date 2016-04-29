@@ -344,7 +344,7 @@ v-fs:FulltextRequestTemplate
   rdfs:label "Шаблон класса полнотекстовый запрос"@ru ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:template """
-<div role="tabpanel">
+<div role="tabpanel" class="container-fluid">
 	<br>
 	<!-- Nav tabs -->
 	<ul class="nav nav-tabs nav-right" role="tablist">
@@ -630,7 +630,7 @@ v-fs:AttributiveRequestTemplate
   rdfs:label "Шаблон класса v-fs:AttributiveRequest"@ru ;
   v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:template """
-<div role="tabpanel">
+<div role="tabpanel" class="container-fluid">
 	<br>
 	<!-- Nav tabs -->
 	<ul class="nav nav-tabs nav-right" role="tablist">

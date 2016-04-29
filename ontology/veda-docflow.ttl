@@ -84,6 +84,7 @@ v-df:ApprovalTaskTemplate
   rdfs:label "Approval task template"@en ;
   rdfs:label "Шаблон формы задачи утверждения"@ru ;
   v-ui:template """
+<div class="container-fluid">
     <div class="panel panel-default">
       <div class="panel-body">
         
@@ -154,6 +155,7 @@ v-df:ApprovalTaskTemplate
 		
 	  </div>		
 	</div>			
+</div>			
 """ ;
 .
 
@@ -262,6 +264,7 @@ v-df:QuestionRouteStartFormTemplate
   rdfs:label "QuestionRouteStartForm template"@en ;
   rdfs:label "Шаблон формы задачи задать вопрос"@ru ;
   v-ui:template """
+<div class="container-fluid">
     <div class="panel panel-default">
       <div class="panel-body">
         
@@ -318,6 +321,7 @@ v-df:QuestionRouteStartFormTemplate
 			</div>    
 	  </div>		
 	</div>			
+</div>			
 """ ;
 .
 
@@ -328,6 +332,7 @@ v-df:InstructionRouteStartFormTemplate
   rdfs:label "InstructionRouteStartForm template"@en ;
   rdfs:label "Шаблон формы задачи исполнить поручение"@ru ;
   v-ui:template """
+<div class="container-fluid">
     <div class="panel panel-default">
       <div class="panel-body">
         
@@ -384,6 +389,7 @@ v-df:InstructionRouteStartFormTemplate
 			</div>    
 	  </div>		
 	</div>			
+</div>			
 """ ;
 .
 
@@ -621,24 +627,22 @@ v-df:ActionInDecisionTemplate
   rdfs:label "Action in decision Template"@en ;
 # v-ui:forClass cmn-s:Action ;   
   v-ui:template """
-<div>
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<span about="cmn-s:hasAction" property="rdfs:label"></span>
-		</div>
-		<div class="panel-body">
-			<em about="v-s:responsible" property="rdfs:label"></em>
-			<div rel="v-s:responsible" template="v-ui:LabelTemplate" class="view -edit -search"></div>
-			<veda-control rel="v-s:responsible" type="link" class="fulltext dropdown -view edit search"></veda-control>
-			<br>
-			<em about="v-s:description" property="rdfs:label"></em>
-			<div property="v-s:description" class="view -edit -search"></div>
-			<veda-control property="v-s:description" type="text" class="-view edit search"></veda-control>
-			<br>
-			<em about="v-s:dateTo" property="rdfs:label"></em>
-			<div property="v-s:dateTo" class="view -edit -search"></div>
-			<veda-control property="v-s:dateTo" type="dateTime" class="-view edit search"></veda-control>
-		</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<span about="cmn-s:hasAction" property="rdfs:label"></span>
+	</div>
+	<div class="panel-body">
+		<em about="v-s:responsible" property="rdfs:label"></em>
+		<div rel="v-s:responsible" template="v-ui:LabelTemplate" class="view -edit -search"></div>
+		<veda-control rel="v-s:responsible" type="link" class="fulltext dropdown -view edit search"></veda-control>
+		<br>
+		<em about="v-s:description" property="rdfs:label"></em>
+		<div property="v-s:description" class="view -edit -search"></div>
+		<veda-control property="v-s:description" type="text" class="-view edit search"></veda-control>
+		<br>
+		<em about="v-s:dateTo" property="rdfs:label"></em>
+		<div property="v-s:dateTo" class="view -edit -search"></div>
+		<veda-control property="v-s:dateTo" type="dateTime" class="-view edit search"></veda-control>
 	</div>
 </div>
   """ ;

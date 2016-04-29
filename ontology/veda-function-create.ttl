@@ -222,7 +222,7 @@ v-fc:BlankTemplate
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
-<div role="tabpanel">
+<div role="tabpanel" class="container-fluid">
 	<br>
 	<!-- Nav tabs -->
 	<ul class="nav nav-tabs nav-right" role="tablist">
