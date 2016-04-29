@@ -32,87 +32,92 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			)
 		);
 		var rendered = [], scripts = [];
-		
-		if (template) {
-			if (template instanceof veda.IndividualModel) template = $( template["v-ui:template"][0].toString() );
-			if (template instanceof String) template = $( template.toString() );
-			if (typeof template === "string") {
-				if (template === "generic") {
-					var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
-					template = genericTemplate(individual, _class);
-				} else if (template === "json") {
-					var pre = $("<pre>"), 
-						json = JSON.parse(individual._.original_individual),
-						ordered = {};
-					Object.keys(json).sort().forEach(function(key) {
-						ordered[key] = json[key];
-					});
-					json = JSON.stringify(ordered, null, 2);
-					pre.text(json);
-					container.html(pre);
-					return;
-				} else {
-					template = $( template );
-				}
-			}
-			var $scripts = template.filter("script");
-			$scripts.map(function () { scripts.push( $(this).text() ); });
-			template = template.filter("*:not(script)");
-			rendered.push({
-				template: renderTemplate(individual, container, template, specs, mode),
-				scripts: scripts
-			});
-
-		} else {
-			rendered = individual["rdf:type"]
-				.filter( function (_class) {
-					return _class instanceof veda.IndividualModel;
-				})
-				.map( function (_class) {
-					var template, scripts = [], specs;
-					if (_class.template && _class.template["v-ui:template"]) {
-						// Get template from class
-						template = $( _class.template["v-ui:template"][0].toString() );
-						var $scripts = template.filter("script");
-						$scripts.map(function () { scripts.push( $(this).text() ); });
-						//template = template.first();
-						template = template.filter("*:not(script)");
-					} else {
-						// Construct generic template
+			
+		try {
+			if (template) {
+				if (template instanceof veda.IndividualModel) template = $( template["v-ui:template"][0].toString() );
+				if (template instanceof String) template = $( template.toString() );
+				if (typeof template === "string") {
+					if (template === "generic") {
+						var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
 						template = genericTemplate(individual, _class);
+					} else if (template === "json") {
+						var pre = $("<pre>"), 
+							json = JSON.parse(individual._.original_individual),
+							ordered = {};
+						Object.keys(json).sort().forEach(function(key) {
+							ordered[key] = json[key];
+						});
+						json = JSON.stringify(ordered, null, 2);
+						pre.text(json);
+						container.html(pre);
+						return;
+					} else {
+						template = $( template );
 					}
-					specs = _class.specsByProps || {};
-					return {
-						template: renderTemplate(individual, container, template, specs, mode),
-						scripts: scripts
-					};
+				}
+				var $scripts = template.filter("script");
+				$scripts.map(function () { scripts.push( $(this).text() ); });
+				template = template.filter("*:not(script)");
+				rendered.push({
+					template: renderTemplate(individual, container, template, specs, mode),
+					scripts: scripts
 				});
-		}
-		
-		if (!rendered.length) {
-			template = genericTemplate(individual);
-			rendered.push({
-				template: renderTemplate(individual, container, template, specs, mode),
-				scripts: scripts
-			});
-		}
 
-		rendered.map( function (view) {
-			view.template
-				.attr("resource", individual.id)
-				.attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") )
-				.addClass("mode-" + mode);
-			container.append(view.template);
-			individual.trigger("individual:templateReady", view.template);
-			// Timeout to wait all related individuals to render
-			setTimeout(function () {
-				view.template.trigger(mode);
-				view.scripts.map( function (script) { 
-					var presenter = new Function("veda", "individual", "container", "template", "mode", script + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js" /*+ "." + veda.Util.guid()*/ );
-					presenter(veda, individual, container, view.template, mode);
+			} else {
+				rendered = individual["rdf:type"]
+					.filter( function (_class) {
+						return _class instanceof veda.IndividualModel;
+					})
+					.map( function (_class) {
+						var template, scripts = [], specs;
+						if (_class.template && _class.template["v-ui:template"]) {
+							// Get template from class
+							template = $( _class.template["v-ui:template"][0].toString() );
+							var $scripts = template.filter("script");
+							$scripts.map(function () { scripts.push( $(this).text() ); });
+							//template = template.first();
+							template = template.filter("*:not(script)");
+						} else {
+							// Construct generic template
+							template = genericTemplate(individual, _class);
+						}
+						specs = _class.specsByProps || {};
+						return {
+							template: renderTemplate(individual, container, template, specs, mode),
+							scripts: scripts
+						};
+					});
+			}
+			
+			if (!rendered.length) {
+				template = genericTemplate(individual);
+				rendered.push({
+					template: renderTemplate(individual, container, template, specs, mode),
+					scripts: scripts
 				});
-			}, 0);
-		});
+			}
+
+			rendered.map( function (view) {
+				view.template
+					.attr("resource", individual.id)
+					.attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") )
+					.addClass("mode-" + mode);
+				container.append(view.template);
+				individual.trigger("individual:templateReady", view.template);
+				// Timeout to wait all related individuals to render
+				setTimeout(function () {
+					view.template.trigger(mode);
+					view.scripts.map( function (script) { 
+						var presenter = new Function("veda", "individual", "container", "template", "mode", script + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js" /*+ "." + veda.Util.guid()*/ );
+						presenter(veda, individual, container, view.template, mode);
+					});
+				}, 0);
+			});
+		} catch (ex) {
+			console ? console.log(e) : null;
+			individual.present(container, new veda.IndividualModel("v-ui:LabelBlockLinkTemplate"));
+		}
 	});
 	
 	function renderTemplate (individual, container, template, specs, mode) {
