@@ -40,7 +40,7 @@ v-ft:FunctionTasksModel
   rdfs:label "Шаблон для класса v-ft:FunctionTasks"@ru ;
   v-ui:forClass v-ft:FunctionTasks ;
   v-s:script """
-	var q = individual["v-ft:query"][0].replace("$1", veda.appointment ? veda.appointment.id : veda.user.id);
+	var q = individual["v-ft:query"][0].replace("$1", veda.appointment ? veda.appointment.id : veda.user.id).replace("$2", veda.appointment ? veda.appointment["v-s:occupation"][0].id : veda.user.id);
 	individual["v-ft:query"] = [q];
 	var tasks = new veda.IndividualModel();
 	tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
@@ -53,21 +53,21 @@ v-ft:Inbox
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Inbox"@en ;
   rdfs:label "Входящие"@ru ;
-  v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$1'"^^xsd:string ;
+  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$2')"^^xsd:string ;
   v-ft:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
 .
 v-ft:Outbox
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Outbox"@en ;
   rdfs:label "Исходящие"@ru ;
-  v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$1'"^^xsd:string ;
+  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$2')"^^xsd:string ;
   v-ft:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
 .
 v-ft:Completed
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Completed"@en ;
   rdfs:label "Выполненные"@ru ;
-  v-ft:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$1'"^^xsd:string ;  
+  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$2')"^^xsd:string ;  
   v-ft:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
 .
 v-ft:TasksNotFound
