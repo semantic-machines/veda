@@ -2778,7 +2778,7 @@ v-wf:ProcessStopEvent
 					df['v-wf:isCompleted'] = newBool(true);
 					df['v-wf:isStopped'] = newBool(true);					
 					put_individual(ticket, df, _event_id);					
-					print("DF > "+toJson(df));
+//					print("DF > "+toJson(df));
 				}
 			});
 		}
@@ -2802,21 +2802,21 @@ v-wf:ProcessStopEvent
 		}
 	} 
 	
-print('1');	
+// print('1');	
 	if (document['v-wf:isStopped'] && 
 	    document['v-wf:isStopped'][0].data == true &&
 	    !prev_state['v-wf:isStopped']) {
-print('2');		    
+// print('2');		    
 		// Disable all active tasks
 		recursiveCall(document);
-print('3');		
+// print('3');		
 		// Add journal record to process
 		
 		var pb = get_individual(ticket, 'v-wf:ProcessStopped');
 				
 		var journal_record = newJournalRecord(document['@']+'j');
 
-print('3.5 '+journal_record['@']);
+// print('3.5 '+journal_record['@']);
 		
 	    journal_record['rdf:type'] = [
 	    {
@@ -2832,7 +2832,7 @@ print('3.5 '+journal_record['@']);
 	    journal_record['rdfs:comment'] = pb['rdfs:label'];
 	
 	    logToJournal(ticket, document['@']+'j', journal_record, true);
-print('4');
+// print('4');
 	    
 	}
 """ ;
