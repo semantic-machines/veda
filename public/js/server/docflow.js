@@ -170,6 +170,9 @@ function prepare_work_order(ticket, document)
             }
             else
             {
+				var is_appointment = is_exist(executor, 'rdf:type', 'v-s:Appointment');
+				var is_position = is_exist(executor, 'rdf:type', 'v-s:Position');				
+				
                 if (is_exist(executor, 'rdf:type', 'v-s:Codelet'))
                 {
                     //print("[WORKFLOW][WO1.2] executor=" + getUri(f_executor) + ", is codelet");
@@ -217,7 +220,7 @@ function prepare_work_order(ticket, document)
                     */
 
                 } // end [is codelet]        
-                else if (is_exist(executor, 'rdf:type', 'v-s:Appointment') && !f_useSubNet)
+                else if ((is_appointment || is_position) && !f_useSubNet)
                 {
                     //print("[WORKFLOW][WO2] is USER, executor=" + getUri(f_executor));
                     //           //print("work_item.inVars=", toJson(f_inVars));
@@ -325,14 +328,21 @@ function prepare_work_order(ticket, document)
                                 type: _Uri
                             });
 
-                            // выдадим права отвечающему на эту форму
-                            var employee = executor['v-s:employee'];
-                            if (employee)
+                            // выдадим права отвечающему на эту форму                            
+                            if (is_appointment)
                             {
-                                //print("[WORKFLOW][WO2.2] employee=" + toJson(employee));
+								var employee = executor['v-s:employee'];
+								if (employee)
+								{
+									//print("[WORKFLOW][WO2.2] employee=" + toJson(employee));
 
-                                addRight(ticket, [can_read, can_update], employee[0].data, transform_result[i]['@']);
-                            }
+									addRight(ticket, [can_read, can_update], employee[0].data, transform_result[i]['@']);
+								}
+							}
+                            if (is_position)
+                            {
+								addRight(ticket, [can_read, can_update], executor['@'], transform_result[i]['@']);
+							}	
                         }
                     }
 
@@ -978,6 +988,10 @@ function prepare_process(ticket, document)
     if (deleted)
         return;
 
+    var isCompleted = document['v-wf:isCompleted'];
+    if (isCompleted)
+        return;
+
     var _process = document;
     var trace_journal_uri = get_trace_journal(document, _process);
 
@@ -1021,7 +1035,6 @@ function prepare_process(ticket, document)
 
         }
     }
-    ////print("[PP04]");
 
     var workItemList = [];
 
@@ -1063,6 +1076,8 @@ function prepare_process(ticket, document)
     if (workItemList.length > 0)
         document['v-wf:workItemList'] = workItemList;
 
+	document['v-wf:isCompleted'] = newBool (false);
+
     if (inVars.length > 0 || workItemList.length > 0)
         put_individual(ticket, document, _event_id);
 
@@ -1079,7 +1094,7 @@ function prepare_process(ticket, document)
  */
 function prepare_start_form(ticket, document)
 {
-    //print(":prepare_start_form #B, doc_id=" + document['@']);
+//    print("@js prepare_start_form, doc_id=" + document['@']);
 
     var isTrace = document['v-wf:isTrace'];
     if (isTrace && getFirstValue(isTrace) == true)
@@ -1118,6 +1133,9 @@ function prepare_start_form(ticket, document)
 
     var new_vars = [];
     var transform_link = getUri(document['v-wf:useTransformation']);
+
+//    print ('@js transform_link=', transform_link);
+
     if (transform_link)
     {
         var transform = get_individual(ticket, transform_link);
