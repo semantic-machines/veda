@@ -846,7 +846,8 @@ s-wf:rul_t2_transform1
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:segregateElement "contentName('v-wf:processInitiator')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+#	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putValueFrom ('v-wf:variableValue', ['v-s:occupation', ''])";
 	v-wf:aggregate	"putString ('v-wf:variableName', 'initiator')"; 	
 .
 

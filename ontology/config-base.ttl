@@ -409,12 +409,16 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
 //	print('+J');
 	
     var author_uri = getUri(document['v-s:author']);
+	print('+J1 '+document['@']);
+	print('+J1 '+toJson(document));
     if (!author_uri) { return; }
 
     var author = get_individual(ticket, author_uri);
+	print('+J2');
     if (!author) { return; }
 
     var employee_uri;
+	print('+J3');
     if (isExists(author['rdf:type'], newUri('v-s:Appointment')))
     {
         employee_uri = author['v-s:employee'];
@@ -425,12 +429,15 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
         employee_uri = author_uri;
     }
 
+	print('+J4');
     if (!employee_uri) { return; }
 
     var journal_uri = getJournalUri(document['@']);
     var exist_journal = get_individual(ticket, journal_uri);
+	print('+J5');
     if (exist_journal)
     {
+		print('+J6');
         // UPDATE DOCUMENT
         var journal_record = newJournalRecord(journal_uri);
         if (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data == document['@'])
@@ -487,6 +494,8 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
             }]
         };
         put_individual(ticket, new_journal, _event_id);
+	    print('+J'+journal_uri);
+	    
         addRight(ticket, [can_read], 'cfg:AllUsersGroup', journal_uri);
 
         var journal_record = newJournalRecord(new_journal['@']);

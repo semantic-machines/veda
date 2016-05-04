@@ -1488,8 +1488,8 @@ td:PersonTemplate1
 		    <div about="@" rel="v-ui:hasPreferences" template="td:PreferencesTemplate1">шаблон: td:PreferencesTemplate1</div>
 		    <!--div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" embedded="true">шаблон: td:PreferencesTemplate1</div>
 		    <veda-control rel="v-ui:hasPreferences" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
-		    <br>
-		    <div about="@" rel="v-s:hasAppointment"></div> 
+		    <br />
+		    <div about="@" rel="v-s:hasAppointment"></div>
 		    <!--div rel="v-s:hasAppointment" embedded="true"></div>
 		    <veda-control rel="v-s:hasAppointment" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
           </div>
