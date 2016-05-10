@@ -444,6 +444,13 @@ s-wf:map_coordinator_4_PLV_coordinator
     rdfs:label "Coordinator = process.input.coordinator" ;        
 .
 
+s-wf:map_documentType
+    rdf:type v-wf:Mapping ;
+    v-wf:mapToVariable s-wf:var_documentType ;
+    v-wf:mappingExpression  "task_result.getValue ('res')" ;
+    rdfs:label "documentType = task_result.getValue ('res')" ;        
+.
+
 
 s-wf:user_task_form_label
         rdf:type v-wf:VarDefine ;

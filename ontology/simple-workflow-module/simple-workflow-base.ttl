@@ -68,6 +68,14 @@ s-wf:var_coordinator
 	rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:var_documentType
+    rdf:type v-wf:VarDefine ;
+	v-wf:varDefineName "documentType" ;
+    rdfs:label "тип документа"@ru ;
+	v-wf:varDefineScope v-wf:Net ;        
+	rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:var_actor
     rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "actor" ;
@@ -758,6 +766,16 @@ s-wf:UserTaskFormTemplate
 		
 		<div class="panel-footer">
 			<button type="button" class="action btn btn-warning -view edit -search" id="send" about="v-s:Send" property="rdfs:label"/>
+<!--  Добавить кнопку Выдать задачу
+			<div class="btn-group dropup">
+				<button class="btn btn-warning btn-block dropdown-toggle sendbutton" data-toggle="dropdown">
+					<span about="v-s:SendTask" property="rdfs:label"> </span> 			
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" id="standard-tasks">
+				</ul>
+			</div> 			
+-->
 			<!-- button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/ -->
 			<!-- button type="button" class="action btn btn-warning view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"/ -->
 		</div>
