@@ -115,7 +115,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				}, 0);
 			});
 		} catch (ex) {
-			console ? console.log(ex) : null;
+			console ? console.log("Error presenting", individual.id, ex) : null;
 			individual.present(container, new veda.IndividualModel("v-ui:LabelBlockLinkTemplate"));
 		}
 	});

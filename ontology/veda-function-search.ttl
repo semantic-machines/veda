@@ -321,7 +321,7 @@ v-fs:FulltextRequestModel
 		return self.result;
 	};
 	// Search if query defined
-	if (q) { self.search() };
+	//if (q) { self.search() };
 	
 	function mkQuery () {
 		var type = self.hasValue("v-fs:typeToSearch") ? 
@@ -450,8 +450,9 @@ v-fs:FulltextRequestTemplate
 	});
 
 	// Present results if query defined
-	if (self.result.length) { 
-		self.trigger("afterSearch"); 
+	if (self.q) { 
+		//self.trigger("afterSearch"); 
+		self.search(); 
 	}
 	
 	$("#refresh", template).click(function (e) {
@@ -621,7 +622,7 @@ v-fs:AttributiveRequestModel
 		return self.result;
 	};
 	// Search if query defined
-	if (q) { self.search() };
+	//if (q) { self.search() };
   """
 .
 v-fs:AttributiveRequestTemplate
@@ -765,9 +766,9 @@ v-fs:AttributiveRequestTemplate
 	}
 
 	// Present results if query defined
-	if (self.result.length) { 
-		self.trigger("afterSearch"); 
-		//self.search();
+	if (self.q) { 
+		//self.trigger("afterSearch"); 
+		self.search();
 	}
 	
 	$("#refresh", template).click(function (e) {
