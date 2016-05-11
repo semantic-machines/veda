@@ -140,9 +140,17 @@ void dcs_thread(string thread_name, string _node_id)
     node_id = _node_id;
     scope (exit)
     {
-        log.trace("ERR! dcs_thread dead (exit)");
+        log.trace("ERR! DCS dead (exit)");
     }
 
+    // SEND ready
+    receive((Tid tid_response_reciever)
+            {
+                send(tid_response_reciever, true);
+            });
+
+    core.thread.Thread.sleep(dur!("msecs")(3000));
+    
     core.thread.Thread.getThis().name = thread_name;
     osch_2_name[ P_MODULE.fanout ]  = new OutSignalChanel("fanout", "127.0.0.1", 8081);
     osch_2_name[ P_MODULE.scripts ] = new OutSignalChanel("scripts", "127.0.0.1", 8082);
@@ -150,12 +158,6 @@ void dcs_thread(string thread_name, string _node_id)
     queue = new Queue("individuals-flow", Mode.RW);
     queue.remove_lock();
     queue.open();
-
-    // SEND ready
-    receive((Tid tid_response_reciever)
-            {
-                send(tid_response_reciever, true);
-            });
 
     while (true)
     {
@@ -315,7 +317,7 @@ class OutSignalChanel
         }
         catch (Exception ex)
         {
-            writeln("ERR! reconnect [", name, "]: ", ex.msg);
+            writeln("ERR! DCS: reconnect [", name, "]: ", ex.msg);
             send_is_ready = false;
         }
     }
