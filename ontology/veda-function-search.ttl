@@ -1027,6 +1027,8 @@ v-fs:AttributiveRequestTemplate
 				td.text("###");
 			} else if (this.id === "zoom") {
 				td.html("");
+			} else if (this.id === "@") {
+				td.attr("property", "@");
 			} else {
 				var property = new veda.IndividualModel( this.id );
 				var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : undefined;
