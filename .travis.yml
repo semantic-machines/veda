@@ -37,8 +37,8 @@ before_script:
 
 # Run API & integration test
 script:
-  - grunt test
   - cat $PWD/*.log          
+  - grunt test
   - grunt coveralls
 #  - node ./qa/testAPI.js
   - node ./qa/testLogin.js
