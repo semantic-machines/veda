@@ -363,7 +363,8 @@ fieldset[disabled] .form-control {
   width: 100%;
   padding: 10px 30px;
   margin: 0px;
-  left: initial;
+  left: 0px;
+  right: 0px;
   background-color: black;
   opacity: 0.6;
   z-index: 15;
@@ -372,9 +373,9 @@ fieldset[disabled] .form-control {
   display: inline-block;
   color: white;
   text-align: center;
-  width: initial;
-  height: initial;
-  text-indent: initial;
+  width: auto;
+  height: auto;
+  text-indent: 0px;
   font-size: 0.9em;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -388,8 +389,8 @@ fieldset[disabled] .form-control {
   padding: 1px 4px;  
   background-color: white;
   color: black;
-  width: initial;
-  height: initial;
+  width: auto;
+  height: auto;
 }
 
 /* [BEGIN] Typeahead */
