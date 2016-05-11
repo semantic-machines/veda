@@ -152,6 +152,7 @@ class OutSignalChanel
 
     void send_signal(string data)
     {
+/*
         version (VibeZMQ)
         {
             try
@@ -191,6 +192,8 @@ class OutSignalChanel
                 }
             }
         }
+*/
     }
+
 }
 
