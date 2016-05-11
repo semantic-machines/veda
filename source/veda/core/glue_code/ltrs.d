@@ -9,7 +9,7 @@ module veda.core.glue_code.ltrs;
 private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, core.thread, std.algorithm, std.uuid;
 private import veda.core.bind.v8d_header;
 private import veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.queue;
-private import veda.core.storage.lmdb_storage, veda.core.impl.thread_context, veda.core.glue_code.script, veda.core.glue_code.scripts;
+private import veda.core.storage.lmdb_storage, veda.core.impl.thread_context, veda.core.glue_code.script;
 private import veda.type, veda.core.common.context, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual;
 
 // ////// logger ///////////////////////////////////////////
@@ -40,6 +40,14 @@ private struct Tasks
 
 private Tasks *[ int ] tasks_2_priority;
 private Task *task;
+
+/// Команды используемые процессами
+enum CMD : byte
+{
+    EXIT         = 49,
+    START        = 52
+}
+
 
 private void ltrs_thread(string thread_name, string _node_id)
 {
@@ -157,7 +165,7 @@ private void ltrs_thread(string thread_name, string _node_id)
                         string data = task.consumer.pop();
                         if (data !is null)
                         {
-                            veda.core.glue_code.scripts.execute_script(context, &sticket, data, task.codelet_id, task.execute_script_cbor, thisTid);
+                            //veda.core.glue_code.scripts.execute_script(context, &sticket, data, task.codelet_id, task.execute_script_cbor, thisTid);
 
                             bool res = task.consumer.commit();
                             if (res == false)
@@ -201,9 +209,9 @@ public Tid start_module(string node_id)
     return locate(text(P_MODULE.ltrs));
 }
 
-public bool stop_module(Context ctx)
+public bool stop_module()
 {
-    Tid tid_scripts = ctx.getTid(P_MODULE.ltrs);
+    Tid tid_scripts = getTid(P_MODULE.ltrs);
 
     if (tid_scripts != Tid.init)
         send(tid_scripts, CMD.EXIT);
@@ -213,9 +221,9 @@ public bool stop_module(Context ctx)
     return true;
 }
 
-public bool execute_script(Context ctx, string execute_script_srz)
+public bool execute_script(string execute_script_srz)
 {
-    Tid tid_scripts = ctx.getTid(P_MODULE.ltrs);
+    Tid tid_scripts = getTid(P_MODULE.ltrs);
 
     if (tid_scripts != Tid.init)
         send(tid_scripts, CMD.START, execute_script_srz);

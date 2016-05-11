@@ -19,6 +19,9 @@ extern (C) void handleTermination(int _signal)
 {
     log.trace("!SYS: veda.app: caught signal: %s", text(_signal));
     writefln("!SYS: veda.app: caught signal: %s", text(_signal));
+    
+    veda.core.threads.dcs_manager.close ();
+    
     foreach (port, listener; listener_2_port)
     {
         listener.stopListening();
@@ -162,6 +165,12 @@ shared static this()
     {
         log.trace("ERR! Veda core has not been initialized");
         return;
+    }
+
+    long    count_individuals = core_context.count_individuals();
+    if (count_individuals < 2)
+    {
+    	core_context.sys_ticket(true);        
     }
 
     Ticket sticket;

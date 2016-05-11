@@ -18,6 +18,14 @@ public void setMapResources(ref Resources rss, ref MapResource hrss)
         hrss[ rs.get!string ] = &rs;
 }
 
+public string[] getAsArrayStrings(ref Resources rss)
+{
+    string[] res;
+    foreach (rs; rss)
+        res ~= rs.get!string;
+    return res;
+}
+
 public bool anyExists(ref MapResource hrss, string object)
 {
     if ((object in hrss) !is null)

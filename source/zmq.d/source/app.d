@@ -1,5 +1,0 @@
-import dzmq;
-void main()
-{
-}
-

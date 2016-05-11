@@ -90,6 +90,9 @@ public enum ResultCode
     /// 429
     Too_Many_Requests     = 429,
 
+    /// 470
+    Ticket_not_found      = 470,
+
     /// 471
     Ticket_expired        = 471,
 
@@ -126,7 +129,9 @@ public enum ResultCode
     Disk_Full             = 1021,
 
     /// 1022
-    Duplicate_Key         = 1022
+    Duplicate_Key         = 1022,
+
+    Connect_Error         = 4000
 }
 
 public struct OpResult
@@ -192,6 +197,7 @@ interface Script
 {
     void run();
 }
+
 /**
  * Внешнее API - Интерфейс
  */
@@ -201,8 +207,6 @@ interface Context
 
     ScriptVM get_ScriptVM();
 
-    Tid getTid(P_MODULE tid_name);
-
     int[ string ] get_key2slot();
 
     public bool ft_check_for_reload(void delegate() load);
@@ -211,9 +215,11 @@ interface Context
     bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
     string get_individual_from_storage(string uri);
     Onto get_onto();
-//    OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool api_request = true);
 
     public string get_ticket_from_storage(string ticket_id);
+    
+    public Ticket *get_systicket_from_storage();
+
     public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null);
 
     public long get_operation_state(P_MODULE thread_id);
@@ -221,11 +227,10 @@ interface Context
     @property
     public Ticket sys_ticket(bool is_new = false);
 
-
     // *************************************************** external API ? *********************************** //
     ref string[ string ] get_prefix_map();
     void add_prefix_map(ref string[ string ] arg);
-    public void stat(CMD command_type, ref StopWatch sw, string func = __FUNCTION__) nothrow;
+    public void stat(byte command_type, ref StopWatch sw) nothrow;
     // *************************************************** external API *********************************** //
 
 //    //////////////////////////////////////////////////// ONTO //////////////////////////////////////////////
@@ -281,6 +286,8 @@ interface Context
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_subject_storage_db();
     public void reopen_ro_acl_storage_db();
+    public void reopen_ro_ticket_manager_db();
+    
     public void subject_storage_commmit(bool isWait = true);
     public long unload_subject_storage(string queue_name);
 
@@ -345,6 +352,10 @@ interface Context
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
                                            bool ignore_freeze = false, bool is_api_request = true);
+    
+    string begin_transaction();    
+    void commit_transaction(string transaction_id);    
+    void abort_transaction(string transaction_id);    
 
     // ////////////////////////////////////////////// AUTHORIZATION ////////////////////////////////////////////
     /**
@@ -445,20 +456,6 @@ public void inc_count_put(long delta = 1)
 public long get_count_put()
 {
     return atomicLoad(count_put);
-}
-
-///
-
-private shared long scripts_op_id = 0;
-
-public void set_scripts_op_id(long data)
-{
-    atomicStore(scripts_op_id, data);
-}
-
-public long get_scripts_op_id()
-{
-    return atomicLoad(scripts_op_id);
 }
 
 ///

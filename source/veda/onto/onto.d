@@ -103,25 +103,7 @@ class Onto
 
         foreach (indv; l_individuals)
         {
-            if (indv.anyExists("rdf:type", [ "owl:Class", "rdfs:Class" ]))
-            {
-                string  type_uri = indv.uri;
-
-                Classes icl = class2superclasses.get(type_uri, null);
-                if (icl is null)
-                {
-                    Classes superclasses = Classes.init;
-                    prepare_superclasses(superclasses, individuals, type_uri);
-                    class2superclasses[ type_uri ] = superclasses;
-
-                    foreach (classz; superclasses.keys)
-                    {
-                        Classes subclasses = class2subclasses.get(classz, Classes.init);
-                        subclasses[ type_uri ]     = true;
-                        class2subclasses[ classz ] = subclasses;
-                    }
-                }
-            }
+            update_class_in_hierarchy(indv);
         }
 
         //foreach (key, value; class2subclasses)
@@ -131,6 +113,40 @@ class Onto
 
         if (trace_msg[ 20 ] == 1)
             log.trace_log_and_console("[%s] load onto..Ok", context.get_name);
+    }
+
+    public void update_class_in_hierarchy(ref Individual indv, bool replace = false)
+    {
+        if (replace == true && indv.anyExists("rdf:type", [ "rdf:Property", "owl:ObjectProperty", "owl:DatatypeProperty" ]))
+            individuals[ indv.uri ] = indv;
+
+        if (indv.anyExists("rdf:type", [ "owl:Class", "rdfs:Class" ]))
+        {
+            if (replace == true)
+                individuals[ indv.uri ] = indv;
+
+            string  type_uri = indv.uri;
+
+            Classes icl;
+
+            if (replace == false)
+                icl = class2superclasses.get(type_uri, null);
+
+            if (icl is null)
+            {
+                //                  writeln ("@b1 update_class_in_hierarchy, uri=", indv.uri);
+                Classes superclasses = Classes.init;
+                prepare_superclasses(superclasses, individuals, type_uri);
+                class2superclasses[ type_uri ] = superclasses;
+
+                foreach (classz; superclasses.keys)
+                {
+                    Classes subclasses = class2subclasses.get(classz, Classes.init);
+                    subclasses[ type_uri ]     = true;
+                    class2subclasses[ classz ] = subclasses;
+                }
+            }
+        }
     }
 
     private void prepare_superclasses(ref Classes superclasses, ref Individual[ string ] classes, string look_cl, int level = 0)

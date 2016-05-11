@@ -72,6 +72,28 @@ public enum DataType : ubyte
     Boolean  = 64
 }
 
+public enum INDV_OP : byte
+{
+    /// Сохранить
+    PUT          = 1,
+
+    /// Сохранить
+    GET          = 2,
+
+    /// Установить в
+    SET_IN       = 45,
+
+    /// Добавить в
+    ADD_IN       = 47,
+
+    /// Убрать из
+    REMOVE_FROM  = 48,
+
+    /// Убрать
+    REMOVE       = 51
+}
+
+/*
 /// Команды используемые процессами
 enum CMD : byte
 {
@@ -146,10 +168,12 @@ enum CMD : byte
 
     PAUSE        = 55,
 
+    WAIT        = 56,
+    
     /// Пустая комманда
     NOP          = 64
 }
-
+*/
 string nullz = "00000000000000000000000000000000";
 
 /// Десятичное число

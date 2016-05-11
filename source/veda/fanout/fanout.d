@@ -14,7 +14,11 @@ private import veda.process.child_process;
 
 void main(char[][] args)
 {
-    FanoutProcess p_fanout = new FanoutProcess(P_MODULE.fanout, "tcp://*:8081");
+	process_name = "fanout";
+
+	core.thread.Thread.sleep(dur!("seconds")(1));
+
+    FanoutProcess p_fanout = new FanoutProcess(P_MODULE.fanout, "127.0.0.1", 8081);
 
     p_fanout.run();
 }
@@ -26,12 +30,14 @@ class FanoutProcess : ChildProcess
 
     MailSender smtp_conn;
 
-    this(P_MODULE _module_name, string _tcp_point)
+    this(P_MODULE _module_name, string _host, ushort _port)
     {
-        super(_module_name, _tcp_point);
+        super(_module_name, _host, _port);
     }
 
-    override void prepare(CMD cmd, string user_uri, ref Individual prev_indv, ref Individual new_indv, string event_id)
+    override bool prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
+                          string event_id,
+                          long op_id)
     {
         try
         {
@@ -53,6 +59,8 @@ class FanoutProcess : ChildProcess
         {
             log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
         }
+
+        return true;
     }
 
     override void configure()

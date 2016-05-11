@@ -8,8 +8,8 @@ private
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import io.mq_client, veda.core.io.file_reader;
-    import util.logger, veda.core.util.utils, util.load_info;
-    import veda.core.glue_code.scripts, veda.core.common.context, veda.core.common.know_predicates, veda.core.log_msg, veda.core.impl.thread_context;
+    import util.logger, veda.core.util.utils, veda.core.threads.load_info;
+    import veda.core.common.context, veda.core.common.know_predicates, veda.core.log_msg, veda.core.impl.thread_context;
     import veda.core.common.define, veda.type, veda.core.threads.acl_manager, veda.core.threads.storage_manager, veda.core.threads.xapian_indexer, veda.onto.individual,
            veda.onto.resource;
 }
@@ -27,6 +27,13 @@ logger log()
 
 logger io_msg;
 
+enum CMD : byte
+{
+    /// Установить
+    SET          = 50,
+}
+
+
 static this()
 {
     io_msg = new logger("pacahon", "io", "server");
@@ -42,7 +49,7 @@ version (executable)
     }
 }
 
-void commiter(string thread_name, Tid tid, Tid tid_subject_manager, Tid tid_acl_manager)
+void commiter(string thread_name)
 {
     core.thread.Thread.getThis().name = thread_name;
     // SEND ready
@@ -54,11 +61,11 @@ void commiter(string thread_name, Tid tid, Tid tid_subject_manager, Tid tid_acl_
     while (true)
     {
         core.thread.Thread.sleep(dur!("seconds")(10));
-        send(tid, CMD.COMMIT, "");
+        veda.core.threads.xapian_indexer.flush();
         core.thread.Thread.sleep(dur!("seconds")(1));
-        send(tid_subject_manager, CMD.COMMIT);
+        veda.core.threads.storage_manager.flush(false);
         core.thread.Thread.sleep(dur!("seconds")(1));
-        send(tid_acl_manager, CMD.COMMIT);
+        veda.core.threads.acl_manager.flush(false);
     }
 }
 
@@ -169,8 +176,7 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
             send(tids[ P_MODULE.fulltext_indexer ], CMD.SET, P_MODULE.xapian_thread_context, tids[ P_MODULE.xapian_thread_context ]);
 
             tids[ P_MODULE.commiter ] =
-                spawn(&commiter, text(P_MODULE.commiter), tids[ P_MODULE.fulltext_indexer ], tids[ P_MODULE.subject_manager ],
-                      tids[ P_MODULE.acl_manager ]);
+                spawn(&commiter, text(P_MODULE.commiter));
             wait_starting_thread(P_MODULE.commiter, tids);
         }
 
@@ -194,8 +200,8 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
 
         if (jsvm_node_type == "internal" || jsvm_node_type == "")
         {
-            Tid tid_scripts = veda.core.glue_code.scripts.start_module(node_id);
-            Tid tid_ltrs    = veda.core.glue_code.ltrs.start_module(node_id);
+            //Tid tid_scripts = veda.core.glue_code.scripts.start_module(node_id);
+            //Tid tid_ltrs    = veda.core.glue_code.ltrs.start_module(node_id);
         }
 
         if (is_main)

@@ -7,10 +7,10 @@ private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
     import util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.queue;
-    import veda.type, veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.log_msg, veda.onto.individual,
+    import veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.log_msg, veda.onto.individual,
            veda.onto.resource;
     import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools;
-    import search.vel;
+    import search.vel, veda.type;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -22,12 +22,157 @@ logger log()
         _log = new logger("veda-core-" ~ process_name, "log", "API");
     return _log;
 }
+
+/// Команды используемые процессами
+enum CMD : byte
+{
+    /// Найти
+    FIND         = 2,
+    /// Проверить
+    EXAMINE      = 4,
+
+    /// Авторизовать
+    AUTHORIZE    = 8,
+
+    /// Коммит
+    COMMIT       = 16,
+
+    /// Конец данных
+    END_DATA     = 32,
+
+    /// Включить/выключить отладочные сообщения
+    SET_TRACE    = 33,
+
+    /// Выгрузить
+    UNLOAD       = 34,
+
+    /// Перезагрузить
+    RELOAD       = 40,
+
+    /// Backup
+    BACKUP       = 41,
+
+    /// Остановить прием команд на изменение
+    FREEZE       = 42,
+
+    /// Возобновить прием команд на изменение
+    UNFREEZE     = 43,
+
+    /// Сохранить соответствие ключ - слот (xapian)
+    PUT_KEY2SLOT = 44,
+
+    /// Удалить
+    DELETE       = 46,
+
+    EXIT         = 49,
+
+    /// Установить
+    SET          = 50,
+
+    START        = 52,
+
+    STOP         = 53,
+
+    RESUME       = 54,
+
+    PAUSE        = 55,
+
+    WAIT        = 56,
+    
+    /// Пустая комманда
+    NOP          = 64
+}
 // ////// ////// ///////////////////////////////////////////
-public string backup(Context ctx)
+
+struct TransactionItem
+{	
+    CMD    cmd;
+    string indv_serl;
+    string ticket_id;
+    string event_id;
+    
+	Individual indv;
+
+    this (CMD _cmd, string _indv_serl, string _ticket_id, string _event_id)
+    {
+    	cmd = _cmd;
+    	indv_serl = _indv_serl;
+    	ticket_id = _ticket_id;
+    	event_id = _event_id;    	
+    	
+        int code = cbor2individual(&indv, indv_serl);
+        if (code < 0)
+        {
+            log.trace("ERR:v8d:transaction:cbor2individual [%s]", indv_serl);
+        }
+    	    	
+    }
+}
+TransactionItem*[string] transaction_buff;
+TransactionItem*[] transaction_queue;	
+
+
+string begin_transaction(P_MODULE storage_id)
+{
+    return "";
+}
+
+void commit_transaction(P_MODULE storage_id, string transaction_id)
+{
+}
+
+void abort_transaction(P_MODULE storage_id, string transaction_id)
+{
+}
+
+
+public void freeze(P_MODULE storage_id)
+{
+    writeln("FREEZE");
+    Tid tid_subject_manager = getTid(storage_id);
+
+    if (tid_subject_manager != Tid.init)
+    {
+        send(tid_subject_manager, CMD.FREEZE, thisTid);
+        receive((bool _res) {});
+    }
+}
+
+public void unfreeze(P_MODULE storage_id)
+{
+    writeln("UNFREEZE");
+    Tid tid_subject_manager = getTid(storage_id);
+
+    if (tid_subject_manager != Tid.init)
+    {
+        send(tid_subject_manager, CMD.UNFREEZE);
+    }
+}
+
+public string find(P_MODULE storage_id, string uri)
+{
+    string res;
+    Tid    tid_subject_manager = getTid(P_MODULE.subject_manager);
+
+    if (tid_subject_manager !is Tid.init)
+    {
+        send(tid_subject_manager, CMD.FIND, uri, thisTid);
+        receive((string key, string data, Tid tid)
+                {
+                    res = data;
+                });
+    }
+    else
+        throw new Exception("find [" ~ uri ~ "], !!! NOT FOUND TID=" ~ text(P_MODULE.subject_manager));
+
+    return res;
+}
+
+public string backup(P_MODULE storage_id)
 {
     string backup_id;
 
-    Tid    tid_subject_manager = ctx.getTid(P_MODULE.subject_manager);
+    Tid    tid_subject_manager = getTid(storage_id);
 
     send(tid_subject_manager, CMD.BACKUP, "", thisTid);
     receive((string res) { backup_id = res; });
@@ -35,10 +180,10 @@ public string backup(Context ctx)
     return backup_id;
 }
 
-public ResultCode send_commit(P_MODULE storage_id, Context ctx, bool is_wait)
+public ResultCode flush(bool is_wait)
 {
     ResultCode rc;
-    Tid        tid = ctx.getTid(storage_id);
+    Tid        tid = getTid(P_MODULE.subject_manager);
 
     if (tid != Tid.init)
     {
@@ -56,9 +201,9 @@ public ResultCode send_commit(P_MODULE storage_id, Context ctx, bool is_wait)
     return rc;
 }
 
-public long send_unload(P_MODULE storage_id, Context ctx, string queue_name)
+public long unload(P_MODULE storage_id, string queue_name)
 {
-    Tid  tid   = ctx.getTid(storage_id);
+    Tid  tid   = getTid(storage_id);
     long count = -1;
 
     if (tid != Tid.init)
@@ -69,18 +214,18 @@ public long send_unload(P_MODULE storage_id, Context ctx, string queue_name)
     return count;
 }
 
-public ResultCode send_put(P_MODULE storage_id, Context ctx, string uri, string cur_state, bool ignore_freeze, out long op_id)
+public ResultCode put(P_MODULE storage_id, string uri, string cur_state, bool ignore_freeze, out long op_id)
 {
     ResultCode rc;
-    Tid        tid = ctx.getTid(storage_id);
+    Tid        tid = getTid(storage_id);
 
     if (tid != Tid.init)
     {
-        send(tid, CMD.PUT, uri, cur_state, ignore_freeze, thisTid);
+        send(tid, INDV_OP.PUT, uri, cur_state, ignore_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
-                    if (from == ctx.getTid(storage_id))
+                    if (from == getTid(storage_id))
                         rc = _rc;
                     op_id = get_count_put();
                     return true;
@@ -89,18 +234,18 @@ public ResultCode send_put(P_MODULE storage_id, Context ctx, string uri, string 
     return rc;
 }
 
-public ResultCode send_remove(P_MODULE storage_id, Context ctx, string uri, bool ignore_freeze, out long op_id)
+public ResultCode remove(P_MODULE storage_id, string uri, bool ignore_freeze, out long op_id)
 {
     ResultCode rc;
-    Tid        tid = ctx.getTid(storage_id);
+    Tid        tid = getTid(storage_id);
 
     if (tid != Tid.init)
     {
-        send(tid, CMD.REMOVE, uri, ignore_freeze, thisTid);
+        send(tid, INDV_OP.REMOVE, uri, ignore_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
-                    if (from == ctx.getTid(storage_id))
+                    if (from == getTid(storage_id))
                         rc = _rc;
                     op_id = get_count_put();
                     return true;
@@ -210,16 +355,16 @@ public void individuals_manager(string thread_name, string db_path, string node_
                             send(tid_response_reciever, count);
                         }
                     },
-                    (CMD cmd, string uri, bool ignore_freeze, Tid tid_response_reciever)
+                    (INDV_OP cmd, string uri, bool ignore_freeze, Tid tid_response_reciever)
                     {
                         ResultCode rc = ResultCode.Not_Ready;
 
-                        if (!ignore_freeze && is_freeze && cmd == CMD.REMOVE)
+                        if (!ignore_freeze && is_freeze && cmd == INDV_OP.REMOVE)
                             send(tid_response_reciever, rc, thisTid);
 
                         try
                         {
-                            if (cmd == CMD.REMOVE)
+                            if (cmd == INDV_OP.REMOVE)
                             {
                                 if (storage.remove(uri) == ResultCode.OK)
                                     rc = ResultCode.OK;
@@ -237,16 +382,16 @@ public void individuals_manager(string thread_name, string db_path, string node_
                             return;
                         }
                     },
-                    (CMD cmd, string uri, string msg, bool ignore_freeze, Tid tid_response_reciever)
+                    (INDV_OP cmd, string uri, string msg, bool ignore_freeze, Tid tid_response_reciever)
                     {
                         ResultCode rc = ResultCode.Not_Ready;
 
-                        if (!ignore_freeze && is_freeze && cmd == CMD.PUT)
+                        if (!ignore_freeze && is_freeze && cmd == INDV_OP.PUT)
                             send(tid_response_reciever, rc, thisTid);
 
                         try
                         {
-                            if (cmd == CMD.PUT)
+                            if (cmd == INDV_OP.PUT)
                             {
                                 string new_hash;
 
@@ -269,7 +414,7 @@ public void individuals_manager(string thread_name, string db_path, string node_
                             return;
                         }
 
-
+/*
                         if (cmd == CMD.BACKUP)
                         {
                             try
@@ -304,17 +449,19 @@ public void individuals_manager(string thread_name, string db_path, string node_
                                 send(tid_response_reciever, "");
                             }
                         }
+                        
                         else
                         {
                             send(tid_response_reciever, msg, "err in individuals_manager", thisTid);
                         }
+*/                        
                     },
                     (CMD cmd, int arg, bool arg2)
                     {
                         if (cmd == CMD.SET_TRACE)
                             set_trace(arg, arg2);
                     },
-                    (Variant v) { writeln(thread_name, "::individuals_manager::Received some other type.", v); });
+                    (Variant v) { writeln(thread_name, "::storage_manager::Received some other type.", v); });
         }
         catch (Throwable ex)
         {

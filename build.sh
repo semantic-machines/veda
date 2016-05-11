@@ -9,6 +9,7 @@ fi
 rm veda-bootstrap
 rm veda-server
 rm veda-fanout
+rm veda-scripts
 
 echo *** build veda-bootstrap ***
 cd source/dub/bootstrap
@@ -30,6 +31,14 @@ echo *** build veda-fanout ***
 cd source/dub/fanout
 rm veda-fanout
 rm dub.selections.json
-dub build veda-fanout --build=release
+dub build veda-fanout --build=debug
 cd ../../..
 mv source/dub/fanout/veda-fanout veda-fanout
+
+echo *** build veda-scripts ***
+cd source/dub/scripts
+rm veda-scripts
+rm dub.selections.json
+dub build veda-scripts --build=debug
+cd ../../..
+mv source/dub/scripts/veda-scripts veda-scripts

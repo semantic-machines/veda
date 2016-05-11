@@ -85,8 +85,8 @@ interface VedaStorageRest_API {
     @path("get_operation_state") @method(HTTPMethod.GET)
     long get_operation_state(int module_id);
 
-    @path("wait_module") @method(HTTPMethod.GET)
-    long wait_module(int module_id, long op_id);
+//    @path("wait_module") @method(HTTPMethod.GET)
+//    long wait_module(int module_id, long op_id);
 
     @path("restart") @method(HTTPMethod.GET)
     OpResult restart(string ticket);
@@ -110,22 +110,28 @@ interface VedaStorageRest_API {
     Json get_individual(string ticket, string uri, bool reopen = false);
 
     @path("put_individual") @method(HTTPMethod.PUT)
-    OpResult put_individual(string ticket, Json individual, bool prepare_events, string event_id);
+    OpResult put_individual(string ticket, Json individual, bool prepare_events, string event_id, string transaction_id);
 
     @path("remove_individual") @method(HTTPMethod.PUT)
-    OpResult remove_individual(string ticket, string uri, bool prepare_events, string event_id);
+    OpResult remove_individual(string ticket, string uri, bool prepare_events, string event_id, string transaction_id);
 
     @path("remove_from_individual") @method(HTTPMethod.PUT)
-    OpResult remove_from_individual(string ticket, Json individual, bool prepare_events, string event_id);
+    OpResult remove_from_individual(string ticket, Json individual, bool prepare_events, string event_id, string transaction_id);
 
     @path("set_in_individual") @method(HTTPMethod.PUT)
-    OpResult set_in_individual(string ticket, Json individual, bool prepare_events, string event_id);
+    OpResult set_in_individual(string ticket, Json individual, bool prepare_events, string event_id, string transaction_id);
 
     @path("add_to_individual") @method(HTTPMethod.PUT)
-    OpResult add_to_individual(string ticket, Json individual, bool prepare_events, string event_id);
-
-    @path("trigger") @method(HTTPMethod.PUT)
-    int trigger(string ticket, string event_type, string event_id, Json individual, Json prev_state, long op_id);
+    OpResult add_to_individual(string ticket, Json individual, bool prepare_events, string event_id, string transaction_id);
+    
+    @path("begin_transaction") @method(HTTPMethod.PUT)
+    string begin_transaction();
+    
+    @path("commit_transaction") @method(HTTPMethod.PUT)
+    void commit_transaction(string transaction_id);
+    
+    @path("abort_transaction") @method(HTTPMethod.PUT)
+    void abort_transaction(string transaction_id);
 }
 
 
@@ -460,14 +466,16 @@ class VedaStorageRest : VedaStorageRest_API
     {
         return context.get_operation_state(cast(P_MODULE)module_id);
     }
-
+/*
     long wait_module(int module_id, long op_id)
     {
+    	writeln ("@z1 wait_module ", cast(P_MODULE)module_id);
         long res = context.wait_thread(cast(P_MODULE)module_id, op_id);
 
+    	writeln ("@ze wait_module");
         return res;
     }
-
+*/
     OpResult restart(string _ticket)
     {
         OpResult res;
@@ -607,7 +615,7 @@ class VedaStorageRest : VedaStorageRest_API
         }
         finally
         {
-            context.stat(CMD.GET, sw);
+            //context.stat(CMD.GET, sw);
         }
     }
 
@@ -698,13 +706,13 @@ class VedaStorageRest : VedaStorageRest_API
         }
         finally
         {
-            context.stat(CMD.GET, sw);
-            if (trace_msg[ 25 ] == 1)
-                log.trace("get_individual: end, uri=%s", uri);
+            //context.stat(CMD.GET, sw);
+            //if (trace_msg[ 25 ] == 1)
+            //    log.trace("get_individual: end, uri=%s", uri);
         }
     }
 
-    OpResult remove_individual(string _ticket, string uri, bool prepare_events, string event_id)
+    OpResult remove_individual(string _ticket, string uri, bool prepare_events, string event_id, string transaction_id)
     {
         OpResult res;
 
@@ -714,10 +722,10 @@ class VedaStorageRest : VedaStorageRest_API
         long fts_count_prep_put = veda.core.threads.xapian_indexer.get_count_prep_put();
         long fts_count_recv_put = veda.core.threads.xapian_indexer.get_count_recv_put();
 
-        long scr_count_prep_put = veda.core.glue_code.scripts.get_count_prep_put();
-        long scr_count_recv_put = veda.core.glue_code.scripts.get_count_recv_put();
+        //long scr_count_prep_put = veda.core.glue_code.scripts.get_count_prep_put();
+        //long scr_count_recv_put = veda.core.glue_code.scripts.get_count_recv_put();
 
-        if (fts_count_recv_put - fts_count_prep_put > 200 || scr_count_recv_put - scr_count_prep_put > 200)
+        if (fts_count_recv_put - fts_count_prep_put > 200 /*|| scr_count_recv_put - scr_count_prep_put > 200*/)
             throw new HTTPStatusException(ResultCode.Too_Many_Requests);
 
         Ticket     *ticket = context.get_ticket(_ticket);
@@ -738,7 +746,7 @@ class VedaStorageRest : VedaStorageRest_API
         return res;
     }
 
-    OpResult put_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
+    OpResult put_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
         OpResult res;
 
@@ -748,17 +756,17 @@ class VedaStorageRest : VedaStorageRest_API
         long fts_count_prep_put = veda.core.threads.xapian_indexer.get_count_prep_put();
         long fts_count_recv_put = veda.core.threads.xapian_indexer.get_count_recv_put();
 
-        long scr_count_prep_put = veda.core.glue_code.scripts.get_count_prep_put();
-        long scr_count_recv_put = veda.core.glue_code.scripts.get_count_recv_put();
+        //long scr_count_prep_put = veda.core.glue_code.scripts.get_count_prep_put();
+        //long scr_count_recv_put = veda.core.glue_code.scripts.get_count_recv_put();
 
-        if (fts_count_recv_put - fts_count_prep_put > 200 || scr_count_recv_put - scr_count_prep_put > 200)
+        if (fts_count_recv_put - fts_count_prep_put > 200/* || scr_count_recv_put - scr_count_prep_put > 200*/)
             throw new HTTPStatusException(ResultCode.Too_Many_Requests);
 
         Ticket     *ticket = context.get_ticket(_ticket);
 
         ResultCode rc = ticket.result;
 
-        if (rc == ResultCode.OK)
+        if (ticket.result == ResultCode.OK)
         {
             Individual indv = json_to_individual(individual_json);
             res = context.put_individual(ticket, indv.uri, indv, prepare_events, event_id == "" ? null : event_id);
@@ -766,14 +774,18 @@ class VedaStorageRest : VedaStorageRest_API
             if (trace_msg[ 500 ] == 1)
                 log.trace("put_individual #end : uri=%s, res=%s", indv.uri, text(res));
         }
-
+        else
+        {
+        	res.result = ticket.result;
+        }
+        
         if (res.result != ResultCode.OK)
             throw new HTTPStatusException(res.result);
 
         return res;
     }
 
-    OpResult add_to_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
+    OpResult add_to_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
         Ticket     *ticket = context.get_ticket(_ticket);
 
@@ -792,7 +804,7 @@ class VedaStorageRest : VedaStorageRest_API
         return res;
     }
 
-    OpResult set_in_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
+    OpResult set_in_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
         Ticket     *ticket = context.get_ticket(_ticket);
 
@@ -811,7 +823,7 @@ class VedaStorageRest : VedaStorageRest_API
         return res;
     }
 
-    OpResult remove_from_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
+    OpResult remove_from_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
         Ticket     *ticket = context.get_ticket(_ticket);
 
@@ -829,41 +841,20 @@ class VedaStorageRest : VedaStorageRest_API
 
         return res;
     }
-
-    int trigger(string _ticket, string event_type, string event_id, Json individual_json, Json prev_state_json, long op_id)
+    
+    string begin_transaction()
     {
-        //writeln ("REST: trigger #1 ", "op_id=", op_id, " *", process_name);
-        Ticket     *ticket = context.get_ticket(_ticket);
-
-        ResultCode rc = ticket.result;
-
-        if (rc == ResultCode.OK)
-        {
-            Individual indv = json_to_individual(individual_json);
-
-            EVENT      ev_type;
-
-            if (event_type == "UPDATE")
-                ev_type = EVENT.UPDATE;
-            else if (event_type == "CREATE")
-                ev_type = EVENT.CREATE;
-            else if (event_type == "REMOVE")
-                ev_type = EVENT.REMOVE;
-
-            Individual prev_state_indv;
-            if (prev_state_json != Json.init)
-                prev_state_indv = json_to_individual(prev_state_json);
-
-            veda.core.impl.bus_event.trigger_script(ticket, ev_type, &indv, &prev_state_indv, context, event_id, op_id);
-
-            rc = ResultCode.OK;
-        }
-        if (rc != ResultCode.OK)
-        {
-            throw new HTTPStatusException(rc);
-        }
-        //writeln ("REST: trigger #e ", "op_id=", op_id, " *", process_name);
-
-        return rc.to!int;
+    	return context.begin_transaction();
     }
+    
+    void commit_transaction(string transaction_id)
+    {
+    	context.commit_transaction(transaction_id);
+    }
+    
+    void abort_transaction(string transaction_id)
+    {
+    	context.abort_transaction(transaction_id);
+    }
+    
 }

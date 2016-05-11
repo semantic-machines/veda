@@ -26,17 +26,55 @@ logger log()
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
+enum CMD : byte
+{
+    /// Сохранить
+    PUT          = 1,
+    
+    /// Коммит
+    COMMIT       = 16,
 
-public string backup(Context ctx, string backup_id)
+    /// Включить/выключить отладочные сообщения
+    SET_TRACE    = 33,
+
+    /// Backup
+    BACKUP       = 41,
+        
+    /// Пустая комманда
+    NOP          = 64    
+}
+
+public string backup(string backup_id)
 {
     string res;
 
-    Tid    tid_acl_manager = ctx.getTid(P_MODULE.acl_manager);
+    Tid    tid_acl_manager = getTid(P_MODULE.acl_manager);
 
     send(tid_acl_manager, CMD.BACKUP, backup_id, thisTid);
     receive((string _res) { res = _res; });
 
     return res;
+}
+
+public ResultCode flush(bool is_wait)
+{
+    ResultCode rc;
+    Tid        tid = getTid(P_MODULE.acl_manager);
+
+    if (tid != Tid.init)
+    {
+        if (is_wait == false)
+        {
+            send(tid, CMD.COMMIT);
+        }
+        else
+        {
+            send(tid, CMD.COMMIT, thisTid);
+            receive((bool isReady) {});
+        }
+        rc = ResultCode.OK;
+    }
+    return rc;
 }
 
 void acl_manager(string thread_name, string db_path)

@@ -24,21 +24,70 @@ logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
+/// Команды используемые процессами
+enum CMD : byte
+{
+    /// Сохранить
+    PUT          = 1,
+    	
+    /// Найти
+    FIND         = 2,
+
+    /// Получить
+    GET          = 2,
+    
+    /// Установить
+    SET          = 50,
+        
+    /// Удалить
+    DELETE       = 46,
+    
+    /// Коммит
+    COMMIT       = 16,
+
+    /// Включить/выключить отладочные сообщения
+    SET_TRACE    = 33,
+
+    /// Перезагрузить
+    RELOAD       = 40,
+
+    /// Сохранить соответствие ключ - слот (xapian)
+    PUT_KEY2SLOT = 44,
+
+    BACKUP       = 41,
+    
+    /// Пустая комманда
+    NOP          = 64
+}
+
 protected byte err;
 
-public string backup(Context ctx, string backup_id)
+public ResultCode flush(bool is_wait = false)
+{
+    ResultCode rc;
+    Tid        tid = getTid(P_MODULE.fulltext_indexer);
+
+    if (tid != Tid.init)
+    {
+        send(tid, CMD.COMMIT, "");
+        rc = ResultCode.OK;
+    }
+    return rc;
+}
+
+public string backup(string backup_id)
 {
     string res;
-    Tid    tid_fulltext_indexer = ctx.getTid(P_MODULE.fulltext_indexer);
+    Tid    tid_fulltext_indexer = getTid(P_MODULE.fulltext_indexer);
 
     send(tid_fulltext_indexer, CMD.BACKUP, backup_id, thisTid);
     receive((string _res) { res = _res; });
     return res;
 }
 
-public void send_put(Context ctx, string cur_state, string prev_state, long op_id)
+public void send_put(string cur_state, string prev_state, long op_id)
 {
-    Tid tid_search_manager = ctx.getTid(P_MODULE.fulltext_indexer);
+    Tid tid_search_manager = getTid(P_MODULE.fulltext_indexer);
 
     if (tid_search_manager != Tid.init)
     {
@@ -47,9 +96,9 @@ public void send_put(Context ctx, string cur_state, string prev_state, long op_i
     }
 }
 
-public void send_delete(Context ctx, string cur_state, string prev_state, long op_id)
+public void send_delete(string cur_state, string prev_state, long op_id)
 {
-    Tid tid_search_manager = ctx.getTid(P_MODULE.fulltext_indexer);
+    Tid tid_search_manager = getTid(P_MODULE.fulltext_indexer);
 
     if (tid_search_manager != Tid.init)
     {

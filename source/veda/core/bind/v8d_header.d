@@ -4,7 +4,8 @@
 module veda.core.bind.v8d_header;
 
 import std.stdio, std.conv;
-import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.core.common.context, veda.core.common.define, veda.util.cbor8individual;
+import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.core.common.context, veda.core.common.define,
+       veda.util.cbor8individual, veda.core.util.utils;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -15,26 +16,122 @@ logger log()
         _log = new logger("veda-core-" ~ process_name, "log", "V8D");
     return _log;
 }
-// ////// ////// ///////////////////////////////////////////
 
 // //////////////////////////  call D from C //////////////////////////////////////////
 
 string[ string ] g_prop;
-Context g_context;
+Context    g_context;
 
-_Buff   g_super_classes;
-_Buff   g_parent_script_id;
-_Buff   g_parent_document_id;
-_Buff   g_prev_state;
-_Buff   g_execute_script;
-_Buff   g_document;
-_Buff   g_user;
-_Buff   g_ticket;
+_Buff      g_super_classes;
+_Buff      g_parent_script_id;
+_Buff      g_parent_document_id;
+_Buff      g_prev_state;
+_Buff      g_execute_script;
+_Buff      g_document;
+_Buff      g_user;
+_Buff      g_ticket;
 
-_Buff   tmp_individual;
+_Buff      tmp_individual;
 
-_Buff   g_script_result;
-_Buff   g_script_out;
+_Buff      g_script_result;
+_Buff      g_script_out;
+
+ResultCode g_last_result;
+
+struct TransactionItem
+{	
+    INDV_OP    cmd;
+    string indv_serl;
+    string ticket_id;
+    string event_id;
+    
+	Individual indv;
+
+    this (INDV_OP _cmd, string _indv_serl, string _ticket_id, string _event_id)
+    {
+    	cmd = _cmd;
+    	indv_serl = _indv_serl;
+    	ticket_id = _ticket_id;
+    	event_id = _event_id;    	
+    	
+        int code = cbor2individual(&indv, indv_serl);
+        if (code < 0)
+        {
+            log.trace("ERR:v8d:transaction:cbor2individual [%s]", indv_serl);
+        }
+        
+        if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM)
+        {
+        	Ticket* ticket = g_context.get_ticket(ticket_id);
+        	Individual prev_indv = g_context.get_individual(ticket, indv.uri);
+        	
+        	indv = *indv_apply_cmd (cmd, &prev_indv, &indv);       	
+        }
+    	    	
+    }
+}
+
+TransactionItem*[string] transaction_buff;
+TransactionItem*[] transaction_queue;	
+
+public bool commit()
+{
+	//if (transaction_buff.values.length > 0)	
+	//	writeln ("@ script: commit #1");
+		
+    foreach (item; transaction_queue)
+    {    	
+    	if (item.indv == Individual.init)
+    		continue;
+    	
+        Ticket     *ticket = g_context.get_ticket(item.ticket_id);
+
+		//log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
+
+        ResultCode rc;
+        if (item.cmd == INDV_OP.PUT)
+        {
+            rc = g_context.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
+        }
+        else if (item.cmd == INDV_OP.ADD_IN)
+        {
+            rc = g_context.add_to_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
+        }
+        else if (item.cmd == INDV_OP.SET_IN)
+        {
+            rc = g_context.set_in_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
+        }
+        else if (item.cmd == INDV_OP.REMOVE_FROM)
+        {
+            rc = g_context.remove_from_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
+        }
+        else if (item.cmd == INDV_OP.REMOVE)
+        {
+            rc = g_context.remove_individual(ticket, item.indv_serl, true, item.event_id, ignore_freeze).result;
+        }
+
+	if (rc != ResultCode.OK)
+	{
+		log.trace ("FAIL COMMIT");
+	}
+	//else	
+		//log.trace ("SUCCESS COMMIT");
+
+    }
+
+
+
+	//if (transaction_buff.values.length > 0)
+	//	writeln ("@ script: commit #e");
+
+    transaction_buff = transaction_buff.init;
+    transaction_queue = transaction_queue.init;
+
+	//if (transaction_buff.values.length > 0)
+	//	writeln ("@ script: commit #e1");
+
+    return true;
+}
 
 extern (C++)
 {
@@ -53,160 +150,63 @@ extern (C++) char *get_global_prop(const char *prop_name, int prop_name_length)
 
     return cast(char *)res;
 }
-
+//чтение неправильное после операции add set
 extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
                                        int _event_id_length)
 {
-    try
-    {
-        //writeln ("@p:v8d put_individual");
-
-        if (g_context !is null)
-        {
-            string     cbor      = cast(string)_cbor[ 0.._cbor_length ].dup;
-            string     ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
-            string     event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
-
-            Ticket     *ticket = g_context.get_ticket(ticket_id);
-
-            Individual indv;
-            int        code = cbor2individual(&indv, cbor);
-            if (code < 0)
-            {
-                //cbor2individual(indv, ss_as_cbor);
-                log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
-                return ResultCode.Unprocessable_Entity;
-            }
-            return g_context.put_individual(ticket, indv.uri, indv, true, event_id, ignore_freeze).result;
-        }
-        return ResultCode.Service_Unavailable;
-    }
-    finally
-    {
-        //writeln ("@p:v8d end put_individual");
-    }
+	TransactionItem* ti = new TransactionItem(INDV_OP.PUT, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                                        cast(string)_event_id[ 0.._event_id_length ].dup);
+	
+    transaction_buff[ti.indv.uri] = ti;
+    transaction_queue ~= ti;
+    return ResultCode.OK;
 }
 
 extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
                                           int _event_id_length)
 {
-    try
-    {
-        //writeln ("@p:v8d put_individual");
-
-        if (g_context !is null)
-        {
-            string     cbor      = cast(string)_cbor[ 0.._cbor_length ].dup;
-            string     ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
-            string     event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
-
-            Ticket     *ticket = g_context.get_ticket(ticket_id);
-            Individual indv;
-            int        code = cbor2individual(&indv, cbor);
-            if (code < 0)
-            {
-                //cbor2individual(indv, ss_as_cbor);
-                log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
-                return ResultCode.Unprocessable_Entity;
-            }
-            return g_context.add_to_individual(ticket, indv.uri, indv, true, event_id, ignore_freeze).result;
-        }
-        return ResultCode.Service_Unavailable;
-    }
-    finally
-    {
-        //writeln ("@p:v8d end put_individual");
-    }
+    TransactionItem* ti = new TransactionItem(INDV_OP.ADD_IN, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                    cast(string)_event_id[ 0.._event_id_length ].dup);
+    
+    transaction_buff[ti.indv.uri] = ti;
+    transaction_queue ~= ti;
+    return ResultCode.OK;
 }
 
 extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
                                           int _event_id_length)
 {
-    try
-    {
-        //writeln ("@p:v8d put_individual");
+    TransactionItem* ti = new TransactionItem(INDV_OP.SET_IN, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                    cast(string)_event_id[ 0.._event_id_length ].dup);
 
-        if (g_context !is null)
-        {
-            string     cbor      = cast(string)_cbor[ 0.._cbor_length ].dup;
-            string     ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
-            string     event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
-
-            Ticket     *ticket = g_context.get_ticket(ticket_id);
-            Individual indv;
-            int        code = cbor2individual(&indv, cbor);
-            if (code < 0)
-            {
-                //cbor2individual(indv, ss_as_cbor);
-                log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
-                return ResultCode.Unprocessable_Entity;
-            }
-            return g_context.set_in_individual(ticket, indv.uri, indv, true, event_id, ignore_freeze).result;
-        }
-        return ResultCode.Service_Unavailable;
-    }
-    finally
-    {
-        //writeln ("@p:v8d end put_individual");
-    }
+    transaction_buff[ti.indv.uri] = ti;
+    transaction_queue ~= ti;
+    return ResultCode.OK;
 }
 
 extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
                                                int _event_id_length)
 {
-    try
-    {
-        //writeln ("@p:v8d put_individual");
+    TransactionItem* ti = new TransactionItem(INDV_OP.REMOVE_FROM, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                    cast(string)_event_id[ 0.._event_id_length ].dup);
 
-        if (g_context !is null)
-        {
-            string     cbor      = cast(string)_cbor[ 0.._cbor_length ].dup;
-            string     ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
-            string     event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
-
-            Ticket     *ticket = g_context.get_ticket(ticket_id);
-            Individual indv;
-            int        code = cbor2individual(&indv, cbor);
-            if (code < 0)
-            {
-                //cbor2individual(indv, ss_as_cbor);
-                log.trace("ERR:v8d:put_individual:cbor2individual [%s]", cbor);
-                return ResultCode.Unprocessable_Entity;
-            }
-            return g_context.remove_from_individual(ticket, indv.uri, indv, true, event_id, ignore_freeze).result;
-        }
-        return ResultCode.Service_Unavailable;
-    }
-    finally
-    {
-        //writeln ("@p:v8d end put_individual");
-    }
+    transaction_buff[ti.indv.uri] = ti;
+    transaction_queue ~= ti;
+    return ResultCode.OK;
 }
 
 extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length, const char *_event_id,
                                           int _event_id_length)
 {
-    try
-    {
-        //writeln ("@p:v8d put_individual");
+    TransactionItem* ti = new TransactionItem(INDV_OP.REMOVE, cast(string)_uri[ 0.._uri_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                                        cast(string)_event_id[ 0.._event_id_length ].dup);
 
-        if (g_context !is null)
-        {
-            string uri       = cast(string)_uri[ 0.._uri_length ];
-            string ticket_id = cast(string)_ticket[ 0.._ticket_length ].dup;
-            string event_id  = cast(string)_event_id[ 0.._event_id_length ].dup;
-
-            Ticket *ticket = g_context.get_ticket(ticket_id);
-
-            return g_context.remove_individual(ticket, uri, true, event_id, ignore_freeze).result;
-        }
-        return ResultCode.Service_Unavailable;
-    }
-    finally
-    {
-        //writeln ("@p:v8d end put_individual");
-    }
+    transaction_buff[ti.indv.uri] = ti;
+    transaction_queue ~= ti;
+    return ResultCode.OK;
 }
+
+////
 
 extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
 {
@@ -248,6 +248,15 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
     try
     {
         string uri    = cast(string)_uri[ 0.._uri_length ];
+        
+        TransactionItem* ti = transaction_buff.get (uri, null);        
+        if (ti !is null && ti.indv_serl.length > 0)
+        {
+                    tmp_individual.data   = cast(char *)ti.indv_serl;
+                    tmp_individual.length = cast(int)ti.indv_serl.length;
+                    return &tmp_individual;        	
+        }        	        
+        
         string ticket = cast(string)_ticket[ 0.._ticket_length ];
 
         //writeln ("@p:v8d read_individual, uri=[", uri, "],  ticket=[", ticket, "]");
@@ -327,33 +336,34 @@ void run_WrappedScript(WrappedContext _context, WrappedScript ws, _Buff *_res = 
 //alias run_WrappedScript  run;
 //alias new_WrappedScript  compile;
 
-bool                     ignore_freeze;
+bool ignore_freeze;
 
 class JsVM : ScriptVM
 {
-	WrappedContext js_vm;
-	
-	this ()
-	{
-		js_vm = new_WrappedContext();
-	}
-	
-	Script compile (string code)
-	{
-		Js res = new Js ();	
-		res.vm = this;
-		res.script = new_WrappedScript(js_vm, cast(char *)(code ~ "\0"));
-		return res;
-	}
+    WrappedContext js_vm;
+
+    this()
+    {
+        js_vm = new_WrappedContext();
+    }
+
+    Script compile(string code)
+    {
+        Js res = new Js();
+
+        res.vm     = this;
+        res.script = new_WrappedScript(js_vm, cast(char *)(code ~ "\0"));
+        return res;
+    }
 }
 
 class Js : Script
 {
-	WrappedScript script;
-	JsVM vm;	
-	
-	void run ()
-	{
-		run_WrappedScript(vm.js_vm, script);	
-	}
+    WrappedScript script;
+    JsVM          vm;
+
+    void run()
+    {
+        run_WrappedScript(vm.js_vm, script);
+    }
 }

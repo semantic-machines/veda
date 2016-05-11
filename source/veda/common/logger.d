@@ -41,6 +41,8 @@ private void logger_process()
             llq.trace_io(true, msg[ 4 ]);
         else if (cmd == 'O')
             llq.trace_io(false, msg[ 4 ]);
+        else if (cmd == 'X')
+        	return;    
     }
 }
 
@@ -86,6 +88,12 @@ public class logger
         log_name = _log_name;
         src      = _src;
         ext      = _ext;
+    }
+
+    public void close ()
+    {
+        init_tid_logger();
+        send(tid_logger, 'X', log_name, ext, src, "");
     }
 
     /**

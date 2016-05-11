@@ -39,12 +39,20 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
 
     Context context = new PThreadContext(node_id, "file_reader", id);
 
-    long    count_individuals = context.count_individuals();
-
     auto    oFiles = dirEntries(path, SpanMode.depth);
 
+    long    count_individuals = context.count_individuals();
+    writeln ("file_reader_thread:count_individuals=", count_individuals);
     if (count_individuals < 2)
     {
+    	bool all_modules_ready = false;
+    	while (all_modules_ready == false)
+    	{
+    		all_modules_ready = veda.core.threads.dcs_manager.examine_modules();
+    		if (all_modules_ready == false)    	
+    			core.thread.Thread.sleep(dur!("msecs")(2000));
+    	}
+    	
         string[] files;
 
         foreach (o; oFiles)
@@ -54,6 +62,7 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
                 files ~= o.name.dup;
             }
         }
+        
         processed(files, context);
     }
 
@@ -217,6 +226,11 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
 
 void processed(string[] changes, Context context)
 {
+    string guest_ticket = context.get_ticket_from_storage("guest");
+
+    if (guest_ticket is null)
+        context.create_new_ticket("cfg:Guest", "4000000", "guest");
+	
     Ticket sticket = context.sys_ticket();
 
     Individual[ string ] individuals = check_and_read_changed(changes, context);
@@ -258,22 +272,6 @@ void processed(string[] changes, Context context)
                 }
             }
 
-            if (is_loaded)
-            {
-                //    context.reopen_ro_subject_storage_db();
-                //    context.reopen_ro_fulltext_indexer_db();
-                try
-                {
-                    Tid tid_scripts_manager = context.getTid(P_MODULE.scripts);
-                    if (tid_scripts_manager != Tid.init)
-                    {
-                        core.thread.Thread.sleep(dur!("seconds")(1));
-                        send(tid_scripts_manager, CMD.RELOAD, thisTid);
-                        receive((bool res) {});
-                    }
-                }
-                catch (Exception ex) {}
-            }
         }
     }
 
@@ -281,11 +279,6 @@ void processed(string[] changes, Context context)
 
     if (trace_msg[ 29 ] == 1)
         log.trace("file_reader::processed end");
-
-    string guest_ticket = context.get_ticket_from_storage("guest");
-
-    if (guest_ticket is null)
-        context.create_new_ticket("cfg:Guest", "4000000", "guest");
 }
 
 //import util.individual2html;

@@ -15,10 +15,12 @@ private
         import veda.core.bind.v8d_header;
     }
     import veda.util.container, util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.individual8json;
-    import veda.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context, veda.core.impl.bus_event,
+    import veda.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context,
            veda.core.log_msg;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
     import veda.core.az.acl, search.vql;
+
+    version (useInnerModules) alias veda.core.threads.storage_manager storage_module;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -37,6 +39,26 @@ Tid    dummy_tid;
 
 string g_str_script_result;
 string g_str_script_out;
+
+private enum CMD : byte
+{
+    /// Сохранить
+    PUT          = 1,
+
+    GET          = 2,
+
+    /// Удалить
+    DELETE       = 46,
+
+    /// Установить
+    SET          = 50,
+
+    /// Backup
+    BACKUP       = 41,
+        
+    /// Пустая комманда
+    NOP          = 64    
+}
 
 /// реализация интерфейса Context
 class PThreadContext : Context
@@ -66,8 +88,6 @@ class PThreadContext : Context
     private LmdbStorage tickets_storage;
     private VQL         _vql;
 
-    private             Tid[ P_MODULE ] name_2_tids;
-
     private long        local_last_update_time;
     private Individual  node = Individual.init;
     private string      node_id;
@@ -76,6 +96,13 @@ class PThreadContext : Context
 
     this(string _node_id, string context_name, P_MODULE _id)
     {
+        {
+            import std.experimental.logger;
+            import std.experimental.logger.core;
+
+            std.experimental.logger.core.globalLogLevel(LogLevel.info);
+        }
+
 //        if (_node_id is null)
 //        {
 //            writeln("---NODE_ID IS NULL---");
@@ -90,12 +117,6 @@ class PThreadContext : Context
         acl_indexes        = new Authorization(acl_indexes_db_path, DBMode.R, context_name ~ ":acl");
 
         name = context_name;
-
-        foreach (id; P_MODULE.min .. P_MODULE.max)
-        {
-            name_2_tids[ id ] = locate(text(id));
-        }
-
         id = _id;
 
         is_traced_module[ P_MODULE.ticket_manager ]   = true;
@@ -118,6 +139,35 @@ class PThreadContext : Context
                                   external_js_vm_url);
     }
 
+    string begin_transaction()
+    {
+        string res;
+
+        version (useInnerModules)
+        {
+            res = veda.core.threads.storage_manager.begin_transaction(P_MODULE.subject_manager);
+        }
+
+        return res;
+    }
+
+    void commit_transaction(string transaction_id)
+    {
+        version (useInnerModules)
+        {
+            veda.core.threads.storage_manager.commit_transaction(P_MODULE.subject_manager, transaction_id);
+        }
+    }
+
+    void abort_transaction(string transaction_id)
+    {
+        version (useInnerModules)
+        {
+            veda.core.threads.storage_manager.abort_transaction(P_MODULE.subject_manager, transaction_id);
+        }
+    }
+
+
     bool isReadyAPI()
     {
         return API_ready;
@@ -138,6 +188,12 @@ class PThreadContext : Context
             try
             {
                 ticket = create_new_ticket("cfg:VedaSystem", "400000");
+
+                version (useInnerModules)
+                {
+                    long op_id;
+                    storage_module.put(P_MODULE.ticket_manager, "systicket", ticket.id, false, op_id);
+                }
             }
             catch (Exception ex)
             {
@@ -306,30 +362,6 @@ class PThreadContext : Context
         return res;
     }
 
-    public Tid getTid(P_MODULE tid_id)
-    {
-        Tid res = name_2_tids.get(tid_id, Tid.init);
-
-        if (res == Tid.init)
-        {
-            // tid not found, attempt restore
-            Tid tmp_tid = locate(text(tid_id));
-
-            if (tmp_tid == Tid.init)
-            {
-//                writeln("!!! NOT FOUND TID=", text(tid_id), "\n", name_2_tids, ", locate=1 ", );
-                throw new Exception("!!! NOT FOUND TID=" ~ text(tid_id));
-            }
-            else
-            {
-                name_2_tids[ tid_id ] = tmp_tid;
-                return tmp_tid;
-            }
-            //assert(false);
-        }
-        return res;
-    }
-
     public int[ string ] get_key2slot()
     {
         string key2slot_str;
@@ -402,30 +434,10 @@ class PThreadContext : Context
         }
     }
 
-    public void stat(CMD command_type, ref StopWatch sw, string func = __FUNCTION__) nothrow
+    public void stat(byte command_type, ref StopWatch sw) nothrow
     {
-        try
-        {
-            sw.stop();
-            int t = cast(int)sw.peek().usecs;
-
-            Tid statistic_data_accumulator_tid = this.getTid(P_MODULE.statistic_data_accumulator);
-
-            send(statistic_data_accumulator_tid, CMD.PUT, CNAME.WORKED_TIME, t);
-
-//        send(this.getTid(P_MODULE.statistic_data_accumulator), CMD.PUT, CNAME.COUNT_COMMAND, 1);
-
-            if (command_type == CMD.GET)
-                send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_GET, 1);
-            else
-                send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_PUT, 1);
-
-            if (trace_msg[ T_API_40 ] == 1)
-                log.trace(func[ (func.lastIndexOf(".") + 1)..$ ] ~ ": t=%d µs", t);
-        }
-        catch (Exception ex)
-        {
-        }
+    	version (useInnerModules)
+    		veda.core.threads.load_info.stat(command_type, sw);
     }
 
     int  timeout = 10;
@@ -504,6 +516,8 @@ class PThreadContext : Context
 
         Ticket ticket;
 
+        ticket.result = ResultCode.Fail_Store;
+
         if (external_write_storage_url !is null)
         {
             writeln("$$$ create_new_ticket EXTERNAL");
@@ -527,20 +541,23 @@ class PThreadContext : Context
         new_ticket.resources[ ticket__duration ] ~= Resource(duration);
 
         // store ticket
-        string     ss_as_cbor = individual2cbor(&new_ticket);
+        string ss_as_cbor = individual2cbor(&new_ticket);
 
-        long       op_id;
-        ResultCode rc = veda.core.threads.storage_manager.send_put(P_MODULE.ticket_manager, this, new_ticket.uri, ss_as_cbor, false, op_id);
-
-        ticket.result = rc;
-        if (rc == ResultCode.OK)
+        version (useInnerModules)
         {
-            subject2Ticket(new_ticket, &ticket);
-            user_of_ticket[ ticket.id ] = new Ticket(ticket);
-        }
+            long       op_id;
+            ResultCode rc = storage_module.put(P_MODULE.ticket_manager, new_ticket.uri, ss_as_cbor, false, op_id);
+            ticket.result = rc;
 
-        if (trace_msg[ T_API_50 ] == 1)
-            log.trace("create_new_ticket, new ticket=%s", ticket);
+            if (rc == ResultCode.OK)
+            {
+                subject2Ticket(new_ticket, &ticket);
+                user_of_ticket[ ticket.id ] = new Ticket(ticket);
+            }
+
+            if (trace_msg[ T_API_50 ] == 1)
+                log.trace("create_new_ticket, new ticket=%s", ticket);
+        }
 
         return ticket;
     }
@@ -641,11 +658,6 @@ class PThreadContext : Context
                 if (login == null || login.length < 1 || password == null || password.length < 6)
                     return ticket;
 
-                //if (this.getTid(P_MODULE.subject_manager) != Tid.init)
-                //    this.wait_thread(P_MODULE.subject_manager);
-                //if (this.getTid(P_MODULE.fulltext_indexer) != Tid.init)
-                //    this.wait_thread(P_MODULE.fulltext_indexer);
-
                 Ticket       sticket         = sys_ticket;
                 Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
                 foreach (user; candidate_users)
@@ -679,6 +691,13 @@ class PThreadContext : Context
         return tickets_storage.find(ticket_id);
     }
 
+    public Ticket *get_systicket_from_storage()
+    {
+        string systicket_id = tickets_storage.find("systicket");
+
+        return get_ticket(systicket_id);
+    }
+
     public Ticket *get_ticket(string ticket_id)
     {
         //StopWatch sw; sw.start;
@@ -686,7 +705,7 @@ class PThreadContext : Context
         try
         {
             Ticket *tt;
-            if (ticket_id is null || ticket_id == "")
+            if (ticket_id is null || ticket_id == "" || ticket_id == "systicket")
                 ticket_id = "guest";
 
             tt = user_of_ticket.get(ticket_id, null);
@@ -720,7 +739,7 @@ class PThreadContext : Context
                 else
                 {
                     tt        = new Ticket;
-                    tt.result = ResultCode.Ticket_expired;
+                    tt.result = ResultCode.Ticket_not_found;
 
                     if (trace_msg[ T_API_90 ] == 1)
                         log.trace("тикет не найден в базе, id=%s", ticket_id);
@@ -802,11 +821,24 @@ class PThreadContext : Context
         }
     }
 
+    public void reopen_ro_ticket_manager_db()
+    {
+        try
+        {
+            if (getTid(P_MODULE.ticket_manager) != Tid.init)
+                this.wait_thread(P_MODULE.ticket_manager);
+        }
+        catch (Exception ex) {}
+
+        if (tickets_storage !is null)
+            tickets_storage.reopen_db();
+    }
+
     public void reopen_ro_fulltext_indexer_db()
     {
         try
         {
-            if (this.getTid(P_MODULE.fulltext_indexer) != Tid.init)
+            if (getTid(P_MODULE.fulltext_indexer) != Tid.init)
                 this.wait_thread(P_MODULE.fulltext_indexer);
         }
         catch (Exception ex) {}
@@ -819,7 +851,7 @@ class PThreadContext : Context
     {
         try
         {
-            if (this.getTid(P_MODULE.subject_manager) != Tid.init)
+            if (getTid(P_MODULE.subject_manager) != Tid.init)
                 this.wait_thread(P_MODULE.subject_manager);
         }
         catch (Exception ex) {}
@@ -832,7 +864,7 @@ class PThreadContext : Context
     {
         try
         {
-            if (this.getTid(P_MODULE.acl_manager) != Tid.init)
+            if (getTid(P_MODULE.acl_manager) != Tid.init)
                 this.wait_thread(P_MODULE.acl_manager);
         }
         catch (Exception ex) {}
@@ -1045,8 +1077,11 @@ class PThreadContext : Context
                 }
             }
 
-            res.result = veda.core.threads.storage_manager.send_remove(P_MODULE.subject_manager, this, uri, ignore_freeze, res.op_id);
-            veda.core.threads.xapian_indexer.send_delete(this, null, prev_state, res.op_id);
+            version (useInnerModules)
+            {
+                res.result = storage_module.remove(P_MODULE.subject_manager, uri, ignore_freeze, res.op_id);
+                veda.core.threads.xapian_indexer.send_delete(null, prev_state, res.op_id);
+            }
 
             Resources   _types = prev_indv.resources.get(rdf__type, Resources.init);
             MapResource rdfType;
@@ -1057,9 +1092,6 @@ class PThreadContext : Context
                 // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
                 inc_count_onto_update();
             }
-
-            if (prepare_events == true)
-                bus_event_after(ticket, &indv, rdfType, null, prev_state, ev, this, event_id, res.op_id);
 
             //veda.core.fanout.send_put(this, null, prev_state, res.op_id);
 
@@ -1080,16 +1112,24 @@ class PThreadContext : Context
 
     public void subject_storage_commmit(bool isWait = true)
     {
-        veda.core.threads.storage_manager.send_commit(P_MODULE.subject_manager, this, isWait);
+        version (useInnerModules)
+        {
+            storage_module.flush(isWait);
+        }
     }
 
     public long unload_subject_storage(string queue_name)
     {
-        return veda.core.threads.storage_manager.send_unload(P_MODULE.subject_manager, this, queue_name);
+        long res = -1;
+
+        version (useInnerModules)
+        {
+            res = storage_module.unload(P_MODULE.subject_manager, queue_name);
+        }
+        return res;
     }
 
-
-    private OpResult store_individual(CMD cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool ignore_freeze,
+    private OpResult store_individual(INDV_OP cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool ignore_freeze,
                                       bool is_api_request)
     {
         if (trace_msg[ T_API_230 ] == 1)
@@ -1111,219 +1151,220 @@ class PThreadContext : Context
                 res.result = ResultCode.No_Content;
                 return res;
             }
-            //writeln("context:store_individual #2 ", process_name);
+//            writeln("context:store_individual #2 ", process_name);
 
             if (external_write_storage_url !is null)
             {
-                if (trace_msg[ T_API_220 ] == 1)
-                    log.trace("[%s] store_individual use EXTERNAL", name);
-
-                string url;
-                //string _external_write_storage_url_ = "http://127.0.0.1:8111";
-
-                if (cmd == CMD.PUT)
-                    url = external_write_storage_url ~ "/put_individual";
-                else if (cmd == CMD.ADD_IN)
-                    url = external_write_storage_url ~ "/add_to_individual";
-                else if (cmd == CMD.SET_IN)
-                    url = external_write_storage_url ~ "/set_in_individual";
-                else if (cmd == CMD.REMOVE_FROM)
-                    url = external_write_storage_url ~ "/remove_from_individual";
-
-                //writeln("context:store_individual use EXTERNAL #3, url=", url, " ", process_name);
-
-                JSONValue req_body;
-                req_body[ "ticket" ]         = ticket.id;
-                req_body[ "individual" ]     = individual_to_json(*indv);
-                req_body[ "prepare_events" ] = prepare_events;
-                req_body[ "event_id" ]       = event_id;
-
-                int max_count_retry = 100;
-                int count_retry     = 0;
-
-                while (count_retry < max_count_retry)
+            //writeln("context:store_individual #3 ", process_name);
+                version (libRequests)
                 {
-                    count_retry++;
-                    try
-                    {
-/*                        requestHTTP(url,
-                                    (scope req) {
-                                        req.method = HTTPMethod.PUT;
-                                        req.writeJsonBody(req_body);
-                                        //writeln("req:", text (req_body));
-                                    },
-                                    (scope result) {
-                                        //logInfo("Response: %s", text(result.statusCode));
-                                        res.result = cast(ResultCode)result.statusCode;
-                                    }
-                                    );
- */
-                        if (res.result != ResultCode.Too_Many_Requests)
-                            count_retry = max_count_retry;
+                    import requests.http;
 
-                        if (res.result == ResultCode.Too_Many_Requests)
-                            core.thread.Thread.sleep(dur!("msecs")(10));
-                    }
-                    catch (Exception ex)
+                    auto rq = Request();
+                        	rq.timeout = 1.seconds;
+							//rq.verbosity = 2;
+
+                    if (trace_msg[ T_API_220 ] == 1)
+                        log.trace("[%s] store_individual use EXTERNAL", name);
+
+                    string url;
+
+                    if (cmd == INDV_OP.PUT)
+                        url = external_write_storage_url ~ "/put_individual";
+                    else if (cmd == INDV_OP.ADD_IN)
+                        url = external_write_storage_url ~ "/add_to_individual";
+                    else if (cmd == INDV_OP.SET_IN)
+                        url = external_write_storage_url ~ "/set_in_individual";
+                    else if (cmd == INDV_OP.REMOVE_FROM)
+                        url = external_write_storage_url ~ "/remove_from_individual";
+
+                    JSONValue req_body;
+                    req_body[ "ticket" ]         = ticket.id;
+                    req_body[ "individual" ]     = individual_to_json(*indv);
+                    req_body[ "prepare_events" ] = prepare_events;
+                    req_body[ "event_id" ]       = event_id;
+                    req_body[ "transaction_id" ] = "";
+
+                    int max_count_attempt = 100;
+                    int count_attempt     = 0;
+
+                    while (count_attempt < max_count_attempt)
                     {
-                        writeln("ERR! external put_individual:", ex.msg, ", url=", url, ", req_body=", text(req_body));
-                        res.result = ResultCode.Internal_Server_Error;
+                        count_attempt++;
+
+                        if (count_attempt > 1)
+                            log.trace("WARN! [%s] store_individual[%s] use EXTERNAL, retry, attempt=%d ", name, indv.uri, count_attempt);
+
+                        Response rs;
+                        try
+                        {
+                            rs         = rq.exec !"PUT" (url, req_body.toString(), "application/json");
+                            res.result = cast(ResultCode)rs.code;
+                        }
+                        catch (ConnectError ce)
+                        {
+                            res.result = ResultCode.Connect_Error;
+                        }
+                        catch (Exception ex)
+                        {
+                            log.trace("ERR! [%s] store_individual, use EXTERNAL, err=[%s], req=[%s]", name, ex.msg, text(req_body));
+                            res.result = ResultCode.Internal_Server_Error;
+                        }
+
+                        if (res.result != ResultCode.OK)
+                            log.trace("WARN! [%s] store_individual[%s] use EXTERNAL, err=[%s]", name, indv.uri, res.result);
+
+                        if (res.result != ResultCode.Too_Many_Requests && res.result != ResultCode.Connect_Error)
+                        {
+                            if (count_attempt > 1 && res.result == ResultCode.OK)
+                                log.trace("INFO! [%s] successful store_individual[%s] use EXTERNAL ", name, indv.uri);
+
+                            break;
+                        }
+
+                        core.thread.Thread.sleep(dur!("msecs")(count_attempt));
                     }
+
+                    if (res.result != ResultCode.OK && res.result != ResultCode.Duplicate_Key)
+                        log.trace("ERR! [%s] store_individual, use EXTERNAL, err=[%s], req=[%s]", name, res.result, text(req_body));
                 }
-
-                if (res.result != ResultCode.OK && res.result != ResultCode.Duplicate_Key)
-                    writeln("ERR! external put_individual:", res.result, ", url=", url, ", req_body=", text(req_body));
-
-
                 return res;
             }
             else
             {
-                //  writeln("context:store_individual #5 ", process_name);
-
-                Tid       tid_subject_manager;
-                Tid       tid_acl;
-
-                Resources _types = indv.resources.get(rdf__type, Resources.init);
-                foreach (idx, rs; _types)
+//                  writeln("context:store_individual #5 ", process_name);
+                version (useInnerModules)
                 {
-                    _types[ idx ].info = NEW_TYPE;
-                }
+                    Tid       tid_subject_manager;
+                    Tid       tid_acl;
 
-                MapResource rdfType;
-                setMapResources(_types, rdfType);
-
-                EVENT      ev = EVENT.CREATE;
-
-                string     prev_state;
-                Individual prev_indv;
-                prev_state = find(indv.uri);
-                if (prev_state !is null)
-                {
-                    ev = EVENT.UPDATE;
-                    int code = cbor2individual(&prev_indv, prev_state);
-                    if (code < 0)
+                    Resources _types = indv.resources.get(rdf__type, Resources.init);
+                    foreach (idx, rs; _types)
                     {
-                        log.trace("ERR:store_individual: invalid prev_state [%s]", prev_state);
-                        res.result = ResultCode.Unprocessable_Entity;
+                        _types[ idx ].info = NEW_TYPE;
+                    }
+
+                    MapResource rdfType;
+                    setMapResources(_types, rdfType);
+
+                    EVENT      ev = EVENT.CREATE;
+
+                    string     prev_state;
+                    Individual prev_indv;
+
+                    try
+                    {
+                        prev_state = find(indv.uri);
+
+                        if ((prev_state is null || prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
+                            log.trace("ERR:store_individual: not read prev_state uri=[%s]", indv.uri);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.trace("ERR:store_individual: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
                         return res;
+                    }
+
+                    if (prev_state !is null)
+                    {
+                        ev = EVENT.UPDATE;
+                        int code = cbor2individual(&prev_indv, prev_state);
+                        if (code < 0)
+                        {
+                            log.trace("ERR:store_individual: invalid prev_state [%s]", prev_state);
+                            res.result = ResultCode.Unprocessable_Entity;
+                            return res;
+                        }
+
+                        if (is_api_request)
+                        {
+                            // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
+                            foreach (rs; _types)
+                            {
+                                string   itype = rs.get!string;
+
+                                Resource *rr = rdfType.get(itype, null);
+
+                                if (rr !is null)
+                                    rr.info = EXISTS_TYPE;
+                            }
+                        }
                     }
 
                     if (is_api_request)
                     {
-                        // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
-                        foreach (rs; _types)
+                        // для новых типов проверим доступность бита Create
+                        foreach (key, rr; rdfType)
                         {
-                            string   itype = rs.get!string;
-
-                            Resource *rr = rdfType.get(itype, null);
-
-                            if (rr !is null)
-                                rr.info = EXISTS_TYPE;
+                            if (rr.info == NEW_TYPE)
+                            {
+                                if (acl_indexes.authorize(key, ticket, Access.can_create, this, true) != Access.can_create)
+                                {
+                                    res.result = ResultCode.Not_Authorized;
+                                    return res;
+                                }
+                            }
                         }
                     }
-                }
 
-                if (is_api_request)
-                {
-                    // для новых типов проверим доступность бита Create
-                    foreach (key, rr; rdfType)
+                    if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM)
                     {
-                        if (rr.info == NEW_TYPE)
-                        {
-                            if (acl_indexes.authorize(key, ticket, Access.can_create, this, true) != Access.can_create)
-                            {
-                                res.result = ResultCode.Not_Authorized;
-                                return res;
-                            }
-                        }
-                    }
-                }
+						//log.trace("[%s] ++ store_individual, prev_indv: %s", name, prev_indv);                    	
 
-                if (cmd == CMD.ADD_IN || cmd == CMD.SET_IN || cmd == CMD.REMOVE_FROM)
-                {
-                    if (prev_state !is null)
+						indv = indv_apply_cmd (cmd, &prev_indv, indv);
+
+						//log.trace("[%s] ++ store_individual, final indv: %s", name, *indv);                    	
+                    }
+
+                    string new_state = individual2cbor(indv);
+
+                    res.result = storage_module.put(P_MODULE.subject_manager, indv.uri, new_state, ignore_freeze,
+                                                    res.op_id);
+                    if (res.result != ResultCode.OK)
+                        return res;
+
+                    if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
                     {
-                        foreach (predicate; indv.resources.keys)
+                        if (indv.isExists(veda_schema__deleted, true) == false)
+                            veda.core.threads.xapian_indexer.send_put(new_state, prev_state, res.op_id);
+                        else
+                            veda.core.threads.xapian_indexer.send_delete(new_state, prev_state, res.op_id);
+
+                        if (rdfType.anyExists(owl_tags) == true && new_state != prev_state)
                         {
-                            if (cmd == CMD.ADD_IN)
+                            // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
+                            inc_count_onto_update();
+                        }
+
+                        if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+                        {
+                            tid_acl = getTid(P_MODULE.acl_manager);
+                            if (tid_acl != Tid.init)
                             {
-                                // add value to set or ignore if exists
-                                prev_indv.addUniqueResources(predicate, indv.getResources(predicate));
-                            }
-                            else if (cmd == CMD.SET_IN)
-                            {
-                                // set value to predicate
-                                prev_indv.setResources(predicate, indv.getResources(predicate));
-                            }
-                            else if (cmd == CMD.REMOVE_FROM)
-                            {
-                                // remove predicate or value in set
-                                prev_indv.removeResources(predicate, indv.getResources(predicate));
+                                send(tid_acl, CMD.PUT, ev, new_state, res.op_id);
                             }
                         }
 
-                        if (prev_indv.resources.get(rdf__type, Resources.init).length == 0)
+                        version (libV8)
                         {
-                            log.trace("WARN! stores individual does not contain any type: arg:[%s] res:[%s]", text(*indv), text(prev_indv));
+                            if (rdfType.anyExists("v-s:ExecuteScript"))
+                            {
+                                // передать вызов отдельной нити по выполнению Long Time Run Scripts
+                                veda.core.glue_code.ltrs.execute_script(new_state);
+                            }
                         }
 
-                        indv = &prev_indv;
+//                    if (event_id != "fanout")
+                        veda.core.threads.dcs_manager.send_put(cmd, ticket.user_uri, new_state, prev_state, event_id, res.op_id);
+
+                        res.result = ResultCode.OK;
                     }
-                }
-
-                string new_state = individual2cbor(indv);
-
-                res.result = veda.core.threads.storage_manager.send_put(P_MODULE.subject_manager, this, indv.uri, new_state, ignore_freeze, res.op_id);
-
-                if (res.result != ResultCode.OK)
-                    return res;
-
-                if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
-                {
-                    if (indv.isExists(veda_schema__deleted, true) == false)
-                        veda.core.threads.xapian_indexer.send_put(this, new_state, prev_state, res.op_id);
                     else
-                        veda.core.threads.xapian_indexer.send_delete(this, new_state, prev_state, res.op_id);
-
-                    if (rdfType.anyExists(owl_tags) == true && new_state != prev_state)
                     {
-                        // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-                        inc_count_onto_update();
+                        res.result = ResultCode.Internal_Server_Error;
                     }
-
-                    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
-                    {
-                        tid_acl = this.getTid(P_MODULE.acl_manager);
-                        if (tid_acl != Tid.init)
-                        {
-                            send(tid_acl, CMD.PUT, ev, new_state, res.op_id);
-                        }
-                    }
-
-                    version (libV8)
-                    {
-                        if (rdfType.anyExists("v-s:ExecuteScript"))
-                        {
-                            // передать вызов отдельной нити по выполнению Long Time Run Scripts
-                            veda.core.glue_code.ltrs.execute_script(this, new_state);
-                        }
-                    }
-
-                    if (prepare_events == true)
-                        bus_event_after(ticket, indv, rdfType, new_state, prev_state, ev, this, event_id, res.op_id);
-
-                    if (event_id != "fanout")
-                        veda.core.threads.dcs_manager.send_put(this, cmd, ticket.user_uri, new_state, prev_state, event_id, res.op_id);
-
-                    res.result = ResultCode.OK;
-                    return res;
                 }
-                else
-                {
-                    res.result = ResultCode.Internal_Server_Error;
-                    return res;
-                }
+                return res;
             }
         }
         finally
@@ -1344,7 +1385,7 @@ class PThreadContext : Context
                                    bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(CMD.PUT, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return store_individual(INDV_OP.PUT, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, bool ignore_freeze, bool is_api_request = true)
@@ -1356,21 +1397,21 @@ class PThreadContext : Context
                                           false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(CMD.ADD_IN, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return store_individual(INDV_OP.ADD_IN, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
                                           false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(CMD.SET_IN, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return store_individual(INDV_OP.SET_IN, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
                                            bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(CMD.REMOVE_FROM, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return store_individual(INDV_OP.REMOVE_FROM, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1378,54 +1419,25 @@ class PThreadContext : Context
     {
         long res = -1;
 
-        if (module_id == P_MODULE.scripts)
+        version (useInnerModules)
         {
-            if (external_js_vm_url !is null)
+            if (module_id == P_MODULE.scripts)
             {
-                //writeln("context: get_operation_state: #1 EXTERNAL ", text(module_id), " ", process_name);
-                string url = external_js_vm_url ~ "/get_operation_state?module_id=" ~ text(cast(int)module_id);
-//                string url = "http://127.0.0.1:8555" ~ "/get_operation_state?module_id=" ~ text(cast(int)module_id);
-                try
-                {
-/*                    requestHTTP(url,
-                                (scope req) {
-                                    req.method = HTTPMethod.GET;
-                                },
-                                (scope h_res) {
-                                    auto res_as_str = h_res.bodyReader.readAllUTF8();
-                                    res = to!long (res_as_str);
-                                    //writeln("context: get_operation_state: #3 EXTERNAL ", text(module_id), ", url=", url, ",res=", res, " *", process_name);
-                                }
-                                );
- */
-                }
-                catch (Exception ex)
-                {
-                    writeln("EX!get_operation_state:", ex.msg, ", url=", url);
-                }
-                //writeln("context: get_operation_state: #E EXTERNAL ", text(module_id), " ", process_name);
+                res = veda.core.threads.dcs_manager.get_opid(P_MODULE.scripts);
             }
-            else
+            else if (module_id == P_MODULE.acl_manager)
             {
-                long _op_id = get_scripts_op_id;
-                //writeln("context: get_operation_state: #E ", text(module_id), "op_id=", _op_id, " *", process_name);
-                //core.thread.Thread.sleep(100.msecs);
-                return _op_id;
+                return get_acl_manager_op_id;
+            }
+            else if (module_id == P_MODULE.fulltext_indexer)
+            {
+                return get_count_indexed;
+            }
+            else if (module_id == P_MODULE.subject_manager)
+            {
+                return get_count_put;
             }
         }
-        else if (module_id == P_MODULE.acl_manager)
-        {
-            return get_acl_manager_op_id;
-        }
-        else if (module_id == P_MODULE.fulltext_indexer)
-        {
-            return get_count_indexed;
-        }
-        else if (module_id == P_MODULE.subject_manager)
-        {
-            return get_count_put;
-        }
-
         return res;
     }
 
@@ -1440,10 +1452,12 @@ class PThreadContext : Context
         if (module_id == id)
             return -1;
 
+        version (useInnerModules)
+        {
 /*
                 if (module_id == P_MODULE.fulltext_indexer)
                 {
-                Tid tid = this.getTid(module_id);
+                Tid tid = getTid(module_id);
                 if (tid != Tid.init)
                 {
                         //writeln ("SEND COMMIT");
@@ -1452,123 +1466,111 @@ class PThreadContext : Context
                         }
         }
  */
-        if (external_js_vm_url !is null && module_id == P_MODULE.scripts)
-        {
-            for (int i = 0; i < 200; i++)
+            if (module_id == P_MODULE.scripts)
             {
-                long in_module_op_id = get_operation_state(module_id);
-
-                //if (i > 1)
-                //	writeln (module_id, ", ", i, ", op_id=", op_id, ", in_module_op_id=", in_module_op_id);
-
-                if (in_module_op_id >= op_id || in_module_op_id == -1)
-                    return 0;
-
-                core.thread.Thread.sleep(10.msecs);
+                veda.core.threads.dcs_manager.wait_module(P_MODULE.scripts, op_id);
+            }
+            else
+            {
+                Tid tid = getTid(module_id);
+                if (tid != Tid.init)
+                {
+                    send(tid, CMD.NOP, thisTid);
+                    //                receiveTimeout(1000.msecs, (bool res) {});
+                    receive((bool res) {});
+                }
             }
         }
-        else
-        {
-            //writeln("context: wait_thread: #1 ", text(module_id), " ", process_name);
-            Tid tid = this.getTid(module_id);
-            if (tid != Tid.init)
-            {
-                //writeln("context: wait_thread: #2 send ", text(module_id), " ", process_name);
-                send(tid, CMD.NOP, thisTid);
-                //                receiveTimeout(1000.msecs, (bool res) {});
-                //writeln("context: wait_thread: #3 recv ", text(module_id), " ", process_name);
-                receive((bool res) {});
-            }
-        }
-
         return 0;
-        //writeln("context: wait_thread: #e ", text(module_id), " ", process_name);
     }
 
     public void set_trace(int idx, bool state)
     {
-        writeln("set trace idx=", idx, ":", state);
-        foreach (mid; is_traced_module.keys)
-        {
-            Tid tid = getTid(mid);
-            if (tid != Tid.init)
-                send(tid, CMD.SET_TRACE, idx, state);
-        }
+//        writeln("set trace idx=", idx, ":", state);
+//        foreach (mid; is_traced_module.keys)
+//        {
+//            Tid tid = getTid(mid);
+//            if (tid != Tid.init)
+//                send(tid, CMD.SET_TRACE, idx, state);
+//        }
 
-        veda.core.log_msg.set_trace(idx, state);
+//        veda.core.log_msg.set_trace(idx, state);
     }
 
     public bool backup(bool to_binlog, int level = 0)
     {
-        if (level == 0)
-            freeze();
+        bool result = false;
 
-        Ticket sticket = sys_ticket();
-
-        try
+        version (useInnerModules)
         {
-            bool   result    = false;
-            string backup_id = "to_binlog";
+            if (level == 0)
+                freeze();
 
-            if (to_binlog)
-            {
-                long count = this.inividuals_storage.dump_to_binlog();
-                if (count > 0)
-                    result = true;
-            }
-            else
-            {
-                backup_id = veda.core.threads.storage_manager.backup(this);
+            Ticket sticket = sys_ticket();
 
-                if (backup_id != "")
+            try
+            {
+                string backup_id = "to_binlog";
+
+                if (to_binlog)
                 {
-                    result = true;
+                    long count = this.inividuals_storage.dump_to_binlog();
+                    if (count > 0)
+                        result = true;
+                }
+                else
+                {
+                    backup_id = storage_module.backup(P_MODULE.subject_manager);
 
-                    string res = veda.core.threads.acl_manager.backup(this, backup_id);
-
-                    if (res == "")
-                        result = false;
-                    else
+                    if (backup_id != "")
                     {
-                        Tid tid_ticket_manager = getTid(P_MODULE.ticket_manager);
-                        send(tid_ticket_manager, CMD.BACKUP, backup_id, thisTid);
-                        receive((string _res) { res = _res; });
+                        result = true;
+
+                        string res = veda.core.threads.acl_manager.backup(backup_id);
+
                         if (res == "")
                             result = false;
                         else
                         {
-                            res = veda.core.threads.xapian_indexer.backup(this, backup_id);
-
+                            Tid tid_ticket_manager = getTid(P_MODULE.ticket_manager);
+                            send(tid_ticket_manager, CMD.BACKUP, backup_id, thisTid);
+                            receive((string _res) { res = _res; });
                             if (res == "")
                                 result = false;
+                            else
+                            {
+                                res = veda.core.threads.xapian_indexer.backup(backup_id);
+
+                                if (res == "")
+                                    result = false;
+                            }
                         }
                     }
-                }
 
-                if (result == false)
-                {
-                    if (level < 10)
+                    if (result == false)
                     {
-                        log.trace_log_and_console("BACKUP FAIL, repeat(%d) %s", level, backup_id);
+                        if (level < 10)
+                        {
+                            log.trace_log_and_console("BACKUP FAIL, repeat(%d) %s", level, backup_id);
 
-                        core.thread.Thread.sleep(dur!("msecs")(500));
-                        return backup(to_binlog, level + 1);
+                            core.thread.Thread.sleep(dur!("msecs")(500));
+                            return backup(to_binlog, level + 1);
+                        }
+                        else
+                            log.trace_log_and_console("BACKUP FAIL, %s", backup_id);
                     }
-                    else
-                        log.trace_log_and_console("BACKUP FAIL, %s", backup_id);
                 }
+
+                if (result == true)
+                    log.trace_log_and_console("BACKUP Ok, %s", backup_id);
             }
-
-            if (result == true)
-                log.trace_log_and_console("BACKUP Ok, %s", backup_id);
-
-            return result;
+            finally
+            {
+                if (level == 0)
+                    unfreeze();
+            }
         }
-        finally
-        {
-            if (level == 0)
-                unfreeze();
-        }
+        return result;
     }
 
     public long count_individuals()
@@ -1583,37 +1585,28 @@ class PThreadContext : Context
 
     public void freeze()
     {
-        writeln("FREEZE");
-        Tid tid_subject_manager = getTid(P_MODULE.subject_manager);
-
-        if (tid_subject_manager != Tid.init)
+        version (useInnerModules)
         {
-            send(tid_subject_manager, CMD.FREEZE, thisTid);
-            receive((bool _res) {});
+            veda.core.threads.storage_manager.freeze(P_MODULE.subject_manager);
         }
     }
 
     public void unfreeze()
     {
-        writeln("UNFREEZE");
-        Tid tid_subject_manager = getTid(P_MODULE.subject_manager);
-
-        if (tid_subject_manager != Tid.init)
+        version (useInnerModules)
         {
-            send(tid_subject_manager, CMD.UNFREEZE);
+            veda.core.threads.storage_manager.unfreeze(P_MODULE.subject_manager);
         }
     }
 
     private string find(string uri)
     {
         string res;
-        Tid    tid_subject_manager = getTid(P_MODULE.subject_manager);
 
-        send(tid_subject_manager, CMD.FIND, uri, thisTid);
-        receive((string key, string data, Tid tid)
-                {
-                    res = data;
-                });
+        version (useInnerModules)
+        {
+            res = veda.core.threads.storage_manager.find(P_MODULE.subject_manager, uri);
+        }
         return res;
     }
 }
