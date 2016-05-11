@@ -18,7 +18,7 @@ d: dmd-2.070.0
 before_install:
   - sudo apt-get update
   - ./control-install.sh    
-  - dub -v fetch vibe-d
+  - dub -v fetch vibe-d --version=0.7.26
   - npm install selenium-webdriver@2.47.0
   - npm install -g grunt-cli
   - npm install grunt-contrib-qunit --save-dev
