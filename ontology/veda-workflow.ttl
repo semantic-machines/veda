@@ -1942,7 +1942,7 @@ v-wf:event_df3
 
 	if (parent_script_id && 
 		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || 
-		 parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
+		 parent_script_id == 'v-wf:event_df4'))
 	{
 		prepare_work_item (ticket, document);
 	}
