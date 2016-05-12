@@ -114,6 +114,9 @@ footer {
 .navbar-fixed-bottom {
   margin:0px;
 }
+.navbar-collapse.collapse.in li , .navbar-collapse.collapsing li {
+  display: inline-block!important;
+}
 .text-muted {
   color: #707070;
 }
