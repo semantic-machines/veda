@@ -11,13 +11,12 @@ env:
     - secure: PYwCZBpLe87Qg2RXibiGk9LrNrkFMlGuFnf/mp+f5kc4bFoVMo7Pl+Rdl4S1H33kLYK6d3pFggddwWxO7HGH9IyHzQ6Gfu3u9gR9rJXovQYfEp8muDCJDXvLEUoMxRgnRPa202p+BUnrNMwebxYHmwgef0s1dYQpRsewmPWHevk=
     - secure: s1BV5JjhQIIdasowuMW2OqH5LjvN3tnU+sEGdz4HxWpHufgFUeNBVzu13S85qSxdch55lCyB4ft58PAX3q0wHFPYvBEwkvMlSFny7LeiytW9HZ/fkCG+Dwh6H6OEK1jKQriXZrYLQm4m6gnnAQYsUpDhxP12YejyyBbfaVW73Og=
 
-language: d
-d: dmd-2.070.0
+#language: d
+#d: dmd-2.070.0
 
 # Load all dependencies
 # Compile vibe-d before main project to prevent OutOfMemory issue
 before_install:
-  - sudo apt-get update
   - ./control-install.sh    
   - dub -v fetch vibe-d --version=0.7.26
   - npm install selenium-webdriver@2.47.0
