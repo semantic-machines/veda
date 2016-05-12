@@ -273,7 +273,7 @@ void processed(string[] changes, Context context)
 
     core.memory.GC.collect();
 
-    if (trace_msg[ 29 ] == 1)
+    //if (trace_msg[ 29 ] == 1)
         log.trace("file_reader::processed end");
 }
 

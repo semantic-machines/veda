@@ -1177,7 +1177,7 @@ class PThreadContext : Context
                             break;
                         }
 
-                        core.thread.Thread.sleep(dur!("msecs")(count_attempt));
+                        core.thread.Thread.sleep(dur!("msecs")(count_attempt*10));
                     }
 
                     if (res.result != ResultCode.OK && res.result != ResultCode.Duplicate_Key)

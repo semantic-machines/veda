@@ -718,11 +718,14 @@ class VedaStorageRest : VedaStorageRest_API
         if (trace_msg[ 500 ] == 1)
             log.trace("remove_individual #start : uri=%s", uri);
 
-        long fts_count_prep_put = veda.core.threads.xapian_indexer.get_count_prep_put();
-        long fts_count_recv_put = veda.core.threads.xapian_indexer.get_count_recv_put();
+//        long fts_count_prep_put = veda.core.threads.xapian_indexer.get_count_prep_put();
+//        long fts_count_recv_put = veda.core.threads.xapian_indexer.get_count_recv_put();
 
-        if (fts_count_recv_put - fts_count_prep_put > 200)
-            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
+//        if (fts_count_recv_put - fts_count_prep_put > 200)
+//        {
+//            log.trace("remove_individual: uri=%s, res=%s, fts_count_prep_put=%d fts_count_recv_put=%d", uri, text(ResultCode.Too_Many_Requests), fts_count_prep_put, fts_count_recv_put);
+//            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
+//        }    
 
         Ticket     *ticket = context.get_ticket(_ticket);
 
@@ -749,11 +752,14 @@ class VedaStorageRest : VedaStorageRest_API
         if (trace_msg[ 500 ] == 1)
             log.trace("put_individual #start : %s", text(individual_json));
 
-        long fts_count_prep_put = veda.core.threads.xapian_indexer.get_count_prep_put();
-        long fts_count_recv_put = veda.core.threads.xapian_indexer.get_count_recv_put();
+//        long fts_count_prep_put = veda.core.threads.xapian_indexer.get_count_prep_put();
+//        long fts_count_recv_put = veda.core.threads.xapian_indexer.get_count_recv_put();
 
-        if (fts_count_recv_put - fts_count_prep_put > 200)
-            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
+//        if (fts_count_recv_put - fts_count_prep_put > 500)
+//        {
+//            log.trace("put_individual: uri=%s, res=%s, fts_count_prep_put=%d fts_count_recv_put=%d", "?", text(ResultCode.Too_Many_Requests), fts_count_prep_put, fts_count_recv_put);
+//            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
+//        }    
 
         Ticket     *ticket = context.get_ticket(_ticket);
 
