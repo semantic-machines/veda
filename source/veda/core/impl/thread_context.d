@@ -1160,6 +1160,11 @@ class PThreadContext : Context
                         {
                             res.result = ResultCode.Connect_Error;
                         }
+                        catch (TimeoutException)
+                        {
+                            res.result = ResultCode.Connect_Error;
+                    		rq.timeout = 3.seconds;  
+                        }
                         catch (Exception ex)
                         {
                             log.trace("ERR! [%s] store_individual, use EXTERNAL, err=[%s], req=[%s]", name, ex.msg, text(req_body));
