@@ -1210,6 +1210,7 @@ class PThreadContext : Context
                     MapResource rdfType;
                     setMapResources(_types, rdfType);
 
+            	log.trace ("@1.1.1");
                     EVENT      ev = EVENT.CREATE;
 
                     string     prev_state;
@@ -1217,11 +1218,14 @@ class PThreadContext : Context
 
                     try
                     {
+            	log.trace ("@1.1.2");
                         prev_state = find(indv.uri);
+            	log.trace ("@1.1.3");
 
                         if ((prev_state is null ||
                              prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
                             log.trace("ERR:store_individual: not read prev_state uri=[%s]", indv.uri);
+            	log.trace ("@1.1.4");
                     }
                     catch (Exception ex)
                     {
@@ -1260,7 +1264,6 @@ class PThreadContext : Context
                         }
                     }
 
-            	log.trace ("@2");
                     if (is_api_request)
                     {
                         // для новых типов проверим доступность бита Create
@@ -1293,8 +1296,6 @@ class PThreadContext : Context
                     if (res.result != ResultCode.OK)
                         return res;
 
-            	log.trace ("@3");
-
                     if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
                     {
                         if (indv.isExists(veda_schema__deleted, true) == false)
@@ -1326,25 +1327,16 @@ class PThreadContext : Context
                             }
                         }
 
-            	log.trace ("@4");
-
 //                    if (event_id != "fanout")
                         veda.core.threads.dcs_manager.send_put(cmd, ticket.user_uri, new_state, prev_state, event_id, res.op_id);
-            	log.trace ("@5");
 
                         res.result = ResultCode.OK;
                     }
                     else
                     {
-             	log.trace ("@6");
-                   	
                         res.result = ResultCode.Internal_Server_Error;
-                    }
-             	log.trace ("@7");
-                   
+                    }                   
                 }
-            	log.trace ("@8");
-                
                 return res;
             }
         }
