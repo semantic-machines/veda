@@ -770,7 +770,7 @@ class VedaStorageRest : VedaStorageRest_API
             Individual indv = json_to_individual(individual_json);
             res = context.put_individual(ticket, indv.uri, indv, prepare_events, event_id == "" ? null : event_id);
 
-            if (trace_msg[ 500 ] == 1)
+            //if (trace_msg[ 500 ] == 1)
                 log.trace("put_individual #end : uri=%s, res=%s", indv.uri, text(res));
         }
         else

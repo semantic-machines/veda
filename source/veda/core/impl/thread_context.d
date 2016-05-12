@@ -1192,6 +1192,7 @@ class PThreadContext : Context
             }
             else
             {
+            	log.trace ("@1");
 //                  writeln("context:store_individual #5 ", process_name);
                 version (useInnerModules)
                 {
@@ -1252,6 +1253,7 @@ class PThreadContext : Context
                         }
                     }
 
+            	log.trace ("@2");
                     if (is_api_request)
                     {
                         // для новых типов проверим доступность бита Create
@@ -1284,6 +1286,8 @@ class PThreadContext : Context
                     if (res.result != ResultCode.OK)
                         return res;
 
+            	log.trace ("@3");
+
                     if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
                     {
                         if (indv.isExists(veda_schema__deleted, true) == false)
@@ -1315,16 +1319,25 @@ class PThreadContext : Context
                             }
                         }
 
+            	log.trace ("@4");
+
 //                    if (event_id != "fanout")
                         veda.core.threads.dcs_manager.send_put(cmd, ticket.user_uri, new_state, prev_state, event_id, res.op_id);
+            	log.trace ("@5");
 
                         res.result = ResultCode.OK;
                     }
                     else
                     {
+             	log.trace ("@6");
+                   	
                         res.result = ResultCode.Internal_Server_Error;
                     }
+             	log.trace ("@7");
+                   
                 }
+            	log.trace ("@8");
+                
                 return res;
             }
         }
@@ -1335,7 +1348,7 @@ class PThreadContext : Context
                           indv !is null ? text(*indv) : "null",
                           text(res.result), ticket !is null ? text(*ticket) : "null");
 
-            if (trace_msg[ T_API_240 ] == 1)
+            //if (trace_msg[ T_API_240 ] == 1)
                 log.trace("[%s] store_individual [%s] = %s", name, indv.uri, res);
 
             stat(CMD.PUT, sw);
