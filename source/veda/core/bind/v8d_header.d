@@ -44,6 +44,7 @@ struct TransactionItem
     string     indv_serl;
     string     ticket_id;
     string     event_id;
+    ResultCode rc;
 
     Individual indv;
 
@@ -53,10 +54,12 @@ struct TransactionItem
         indv_serl = _indv_serl;
         ticket_id = _ticket_id;
         event_id  = _event_id;
+        rc = ResultCode.OK;
 
         int code = cbor2individual(&indv, indv_serl);
         if (code < 0)
         {
+        	rc = ResultCode.Unprocessable_Entity;
             log.trace("ERR:v8d:transaction:cbor2individual [%s]", indv_serl);
         }
 
@@ -64,6 +67,9 @@ struct TransactionItem
         {
             Ticket     *ticket   = g_context.get_ticket(ticket_id);
             Individual prev_indv = g_context.get_individual(ticket, indv.uri);
+
+			if (prev_indv.getStatus() == ResultCode.Connect_Error || prev_indv.getStatus() == ResultCode.Too_Many_Requests)
+				rc = prev_indv.getStatus();
 
             if (prev_indv.getStatus() == ResultCode.OK)
                 indv = *indv_apply_cmd(cmd, &prev_indv, &indv);
@@ -85,6 +91,9 @@ public bool commit()
     {
         if (item.indv == Individual.init)
             continue;
+
+		if (item.rc != ResultCode.OK)
+			return false;
 
         Ticket *ticket = g_context.get_ticket(item.ticket_id);
 
