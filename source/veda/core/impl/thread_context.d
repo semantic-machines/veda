@@ -1192,7 +1192,6 @@ class PThreadContext : Context
             }
             else
             {
-            	log.trace ("@1");
 //                  writeln("context:store_individual #5 ", process_name);
                 version (useInnerModules)
                 {
@@ -1205,12 +1204,9 @@ class PThreadContext : Context
                         _types[ idx ].info = NEW_TYPE;
                     }
 
-            	log.trace ("@1.1");
-
                     MapResource rdfType;
                     setMapResources(_types, rdfType);
 
-            	log.trace ("@1.1.1");
                     EVENT      ev = EVENT.CREATE;
 
                     string     prev_state;
@@ -1218,22 +1214,19 @@ class PThreadContext : Context
 
                     try
                     {
-            	log.trace ("@1.1.2");
+            	log.trace ("@@ 1.1.2");
                         prev_state = find(indv.uri);
-            	log.trace ("@1.1.3");
+            	log.trace ("@@ 1.1.3");
 
                         if ((prev_state is null ||
                              prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
                             log.trace("ERR:store_individual: not read prev_state uri=[%s]", indv.uri);
-            	log.trace ("@1.1.4");
                     }
                     catch (Exception ex)
                     {
                         log.trace("ERR:store_individual: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
                         return res;
                     }
-
-            	log.trace ("@1.2");
 
                     if (prev_state !is null)
                     {
@@ -1247,7 +1240,6 @@ class PThreadContext : Context
                             res.result = ResultCode.Unprocessable_Entity;
                             return res;
                         }
-            	log.trace ("@1.4");
 
                         if (is_api_request)
                         {

@@ -156,11 +156,16 @@ public string find(P_MODULE storage_id, string uri)
 
     if (tid_subject_manager !is Tid.init)
     {
+    	            	log.trace ("@A 1");
+
         send(tid_subject_manager, CMD.FIND, uri, thisTid);
+            	log.trace ("@A 2");
         receive((string key, string data, Tid tid)
                 {
+            	log.trace ("@A 3");
                     res = data;
                 });
+            	log.trace ("@A 4");
     }
     else
         throw new Exception("find [" ~ uri ~ "], !!! NOT FOUND TID=" ~ text(P_MODULE.subject_manager));
