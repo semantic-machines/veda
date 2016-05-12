@@ -1205,6 +1205,8 @@ class PThreadContext : Context
                         _types[ idx ].info = NEW_TYPE;
                     }
 
+            	log.trace ("@1.1");
+
                     MapResource rdfType;
                     setMapResources(_types, rdfType);
 
@@ -1227,8 +1229,12 @@ class PThreadContext : Context
                         return res;
                     }
 
+            	log.trace ("@1.2");
+
                     if (prev_state !is null)
                     {
+                    	            	log.trace ("@1.3");
+
                         ev = EVENT.UPDATE;
                         int code = cbor2individual(&prev_indv, prev_state);
                         if (code < 0)
@@ -1237,6 +1243,7 @@ class PThreadContext : Context
                             res.result = ResultCode.Unprocessable_Entity;
                             return res;
                         }
+            	log.trace ("@1.4");
 
                         if (is_api_request)
                         {
