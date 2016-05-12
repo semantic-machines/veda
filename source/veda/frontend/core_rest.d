@@ -749,7 +749,7 @@ class VedaStorageRest : VedaStorageRest_API
     {
         OpResult res;
 
-        if (trace_msg[ 500 ] == 1)
+        //if (trace_msg[ 500 ] == 1)
             log.trace("put_individual #start : %s", text(individual_json));
 
 //        long fts_count_prep_put = veda.core.threads.xapian_indexer.get_count_prep_put();
