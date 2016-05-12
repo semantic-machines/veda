@@ -140,7 +140,13 @@ class ScriptProcess : ChildProcess
                     //count++;
                     script.compiled_script.run();
 
-                    commit();
+                    bool res = commit();
+                    
+                    if (res == false)
+                    {
+                        log.trace("fail exec event script : %s", script_id);
+                        return false;
+                    }    
 
                     if (trace_msg[ 300 ] == 1)
                         log.trace("end exec event script : %s", script_id);

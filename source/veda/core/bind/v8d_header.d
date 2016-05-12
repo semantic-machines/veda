@@ -115,6 +115,7 @@ public bool commit()
         if (rc != ResultCode.OK)
         {
             log.trace("FAIL COMMIT");
+            return false;
         }
         //else
         //log.trace ("SUCCESS COMMIT");
