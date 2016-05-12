@@ -70,6 +70,7 @@ const string   individuals_db_path = "./data/lmdb-individuals";
 const string   tickets_db_path     = "./data/lmdb-tickets";
 const string   acl_indexes_db_path = "./data/acl-indexes";
 const string   queue_db_path       = "./data/queue";
+const string   onto_path           = "./ontology";
 
 const string[] paths_list          =
 [ attachments_db_path, docs_onto_path, dbs_backup, dbs_data, individuals_db_path, tickets_db_path, acl_indexes_db_path, queue_db_path ];

@@ -49,7 +49,6 @@ static this() {
     catch (Exception ex)
     {
     }
-    
 }
 
 //////////////////////////////////////////////////// Rest API /////////////////////////////////////////////////////////////////
@@ -123,13 +122,13 @@ interface VedaStorageRest_API {
 
     @path("add_to_individual") @method(HTTPMethod.PUT)
     OpResult add_to_individual(string ticket, Json individual, bool prepare_events, string event_id, string transaction_id);
-    
+
     @path("begin_transaction") @method(HTTPMethod.PUT)
     string begin_transaction();
-    
+
     @path("commit_transaction") @method(HTTPMethod.PUT)
     void commit_transaction(string transaction_id);
-    
+
     @path("abort_transaction") @method(HTTPMethod.PUT)
     void abort_transaction(string transaction_id);
 }
@@ -469,13 +468,13 @@ class VedaStorageRest : VedaStorageRest_API
 /*
     long wait_module(int module_id, long op_id)
     {
-    	writeln ("@z1 wait_module ", cast(P_MODULE)module_id);
+        writeln ("@z1 wait_module ", cast(P_MODULE)module_id);
         long res = context.wait_thread(cast(P_MODULE)module_id, op_id);
 
-    	writeln ("@ze wait_module");
+        writeln ("@ze wait_module");
         return res;
     }
-*/
+ */
     OpResult restart(string _ticket)
     {
         OpResult res;
@@ -722,10 +721,7 @@ class VedaStorageRest : VedaStorageRest_API
         long fts_count_prep_put = veda.core.threads.xapian_indexer.get_count_prep_put();
         long fts_count_recv_put = veda.core.threads.xapian_indexer.get_count_recv_put();
 
-        //long scr_count_prep_put = veda.core.glue_code.scripts.get_count_prep_put();
-        //long scr_count_recv_put = veda.core.glue_code.scripts.get_count_recv_put();
-
-        if (fts_count_recv_put - fts_count_prep_put > 200 /*|| scr_count_recv_put - scr_count_prep_put > 200*/)
+        if (fts_count_recv_put - fts_count_prep_put > 200)
             throw new HTTPStatusException(ResultCode.Too_Many_Requests);
 
         Ticket     *ticket = context.get_ticket(_ticket);
@@ -756,10 +752,7 @@ class VedaStorageRest : VedaStorageRest_API
         long fts_count_prep_put = veda.core.threads.xapian_indexer.get_count_prep_put();
         long fts_count_recv_put = veda.core.threads.xapian_indexer.get_count_recv_put();
 
-        //long scr_count_prep_put = veda.core.glue_code.scripts.get_count_prep_put();
-        //long scr_count_recv_put = veda.core.glue_code.scripts.get_count_recv_put();
-
-        if (fts_count_recv_put - fts_count_prep_put > 200/* || scr_count_recv_put - scr_count_prep_put > 200*/)
+        if (fts_count_recv_put - fts_count_prep_put > 200)
             throw new HTTPStatusException(ResultCode.Too_Many_Requests);
 
         Ticket     *ticket = context.get_ticket(_ticket);
@@ -776,9 +769,9 @@ class VedaStorageRest : VedaStorageRest_API
         }
         else
         {
-        	res.result = ticket.result;
+            res.result = ticket.result;
         }
-        
+
         if (res.result != ResultCode.OK)
             throw new HTTPStatusException(res.result);
 
@@ -841,20 +834,19 @@ class VedaStorageRest : VedaStorageRest_API
 
         return res;
     }
-    
+
     string begin_transaction()
     {
-    	return context.begin_transaction();
+        return context.begin_transaction();
     }
-    
+
     void commit_transaction(string transaction_id)
     {
-    	context.commit_transaction(transaction_id);
+        context.commit_transaction(transaction_id);
     }
-    
+
     void abort_transaction(string transaction_id)
     {
-    	context.abort_transaction(transaction_id);
+        context.abort_transaction(transaction_id);
     }
-    
 }

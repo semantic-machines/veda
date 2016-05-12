@@ -43,7 +43,7 @@ enum Function
     RightsOrigin
 }
 
-public void core_thread(string node_id, string write_storage_node)
+public void core_thread(string node_id)
 {
     Context                      context;
     string                       thread_name = "veda" ~ text(std.uuid.randomUUID().toHash())[ 0..5 ];

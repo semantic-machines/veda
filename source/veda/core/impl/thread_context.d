@@ -43,21 +43,21 @@ string g_str_script_out;
 private enum CMD : byte
 {
     /// Сохранить
-    PUT          = 1,
+    PUT    = 1,
 
-    GET          = 2,
+    GET    = 2,
 
     /// Удалить
-    DELETE       = 46,
+    DELETE = 46,
 
     /// Установить
-    SET          = 50,
+    SET    = 50,
 
     /// Backup
-    BACKUP       = 41,
-        
+    BACKUP = 41,
+
     /// Пустая комманда
-    NOP          = 64    
+    NOP    = 64
 }
 
 /// реализация интерфейса Context
@@ -93,22 +93,17 @@ class PThreadContext : Context
     private string      node_id;
 
     private bool        API_ready = true;
+    private string      external_write_storage_url;
 
-    this(string _node_id, string context_name, P_MODULE _id)
+    this(string _node_id, string context_name, P_MODULE _id, string _external_write_storage_url = null)
     {
+        external_write_storage_url = _external_write_storage_url;
         {
             import std.experimental.logger;
             import std.experimental.logger.core;
 
             std.experimental.logger.core.globalLogLevel(LogLevel.info);
         }
-
-//        if (_node_id is null)
-//        {
-//            writeln("---NODE_ID IS NULL---");
-//            printPrettyTrace(stdout);
-//            writeln("^^^NODE_ID IS NULL^^^");
-//        }
 
         node_id = _node_id;
 
@@ -117,7 +112,7 @@ class PThreadContext : Context
         acl_indexes        = new Authorization(acl_indexes_db_path, DBMode.R, context_name ~ ":acl");
 
         name = context_name;
-        id = _id;
+        id   = _id;
 
         is_traced_module[ P_MODULE.ticket_manager ]   = true;
         is_traced_module[ P_MODULE.subject_manager ]  = true;
@@ -135,8 +130,7 @@ class PThreadContext : Context
         local_count_put = get_count_put();
         ft_local_count  = get_count_indexed();
 
-        log.trace_log_and_console("NEW CONTEXT [%s], external: write storage=[%s], js_vm=[%s]", context_name, external_write_storage_url,
-                                  external_js_vm_url);
+        log.trace_log_and_console("NEW CONTEXT [%s]", context_name);
     }
 
     string begin_transaction()
@@ -219,9 +213,6 @@ class PThreadContext : Context
             node = get_individual(&sticket, node_id);
             if (node.getStatus() != ResultCode.OK)
                 node = Individual.init;
-
-            set_g_external_write_storage_url(node.getFirstLiteral("v-s:write_storage_node"));
-//            external_js_vm         = node.getFirstLiteral("v-s:jsvm_node");
         }
         return node;
     }
@@ -436,8 +427,8 @@ class PThreadContext : Context
 
     public void stat(byte command_type, ref StopWatch sw) nothrow
     {
-    	version (useInnerModules)
-    		veda.core.threads.load_info.stat(command_type, sw);
+        version (useInnerModules)
+            veda.core.threads.load_info.stat(command_type, sw);
     }
 
     int  timeout = 10;
@@ -517,12 +508,6 @@ class PThreadContext : Context
         Ticket ticket;
 
         ticket.result = ResultCode.Fail_Store;
-
-        if (external_write_storage_url !is null)
-        {
-            writeln("$$$ create_new_ticket EXTERNAL");
-            return ticket;
-        }
 
         Individual new_ticket;
 
@@ -623,61 +608,31 @@ class PThreadContext : Context
 
         try
         {
-            if (external_write_storage_url !is null)
-            {
-                string url = external_write_storage_url ~ "/authenticate";
-                try
-                {
-/*
-                    requestHTTP(url ~ "?login=" ~ login ~ "&password=" ~ password,
-                                (scope req) {
-                                    req.method = HTTPMethod.GET;
-                                },
-                                (scope res) {
-                                    auto res_json = res.readJson();
-                                    if (res_json[ "result" ] == 200)
-                                    {
-                                        ticket.id = res_json[ "id" ].get!string;
-                                        ticket.user_uri = res_json[ "user_uri" ].get!string;
-                                        ticket.end_time = res_json[ "end_time" ].get!long;
-                                        ticket.result = ResultCode.OK;
-                                    }
-                                }
-                                );
- */
-                }
-                catch (Exception ex)
-                {
-                    writeln("ERR! authenticate:", ex.msg, ", url=", url);
-                }
-            }
-            else
-            {
-                ticket.result = ResultCode.Authentication_Failed;
+            ticket.result = ResultCode.Authentication_Failed;
 
-                if (login == null || login.length < 1 || password == null || password.length < 6)
+            if (login == null || login.length < 1 || password == null || password.length < 6)
+                return ticket;
+
+            Ticket       sticket         = sys_ticket;
+            Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
+            foreach (user; candidate_users)
+            {
+                string user_id = user.getFirstResource(veda_schema__owner).uri;
+                if (user_id is null)
+                    continue;
+
+                Resources pass = user.resources.get(veda_schema__password, _empty_Resources);
+                if (pass.length > 0 && pass[ 0 ] == password)
+                {
+                    ticket = create_new_ticket(user_id);
                     return ticket;
-
-                Ticket       sticket         = sys_ticket;
-                Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
-                foreach (user; candidate_users)
-                {
-                    string user_id = user.getFirstResource(veda_schema__owner).uri;
-                    if (user_id is null)
-                        continue;
-
-                    Resources pass = user.resources.get(veda_schema__password, _empty_Resources);
-                    if (pass.length > 0 && pass[ 0 ] == password)
-                    {
-                        ticket = create_new_ticket(user_id);
-                        return ticket;
-                    }
                 }
-
-                log.trace("fail authenticate, login=[%s] password=[%s]", login, password);
-
-                ticket.result = ResultCode.Authentication_Failed;
             }
+
+            log.trace("fail authenticate, login=[%s] password=[%s]", login, password);
+
+            ticket.result = ResultCode.Authentication_Failed;
+
             return ticket;
         }
         finally
@@ -1155,14 +1110,14 @@ class PThreadContext : Context
 
             if (external_write_storage_url !is null)
             {
-            //writeln("context:store_individual #3 ", process_name);
+                //writeln("context:store_individual #3 ", process_name);
                 version (libRequests)
                 {
                     import requests.http;
 
                     auto rq = Request();
-                        	rq.timeout = 1.seconds;
-							//rq.verbosity = 2;
+                    rq.timeout = 1.seconds;
+                    //rq.verbosity = 2;
 
                     if (trace_msg[ T_API_220 ] == 1)
                         log.trace("[%s] store_individual use EXTERNAL", name);
@@ -1256,7 +1211,8 @@ class PThreadContext : Context
                     {
                         prev_state = find(indv.uri);
 
-                        if ((prev_state is null || prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
+                        if ((prev_state is null ||
+                             prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
                             log.trace("ERR:store_individual: not read prev_state uri=[%s]", indv.uri);
                     }
                     catch (Exception ex)
@@ -1309,11 +1265,11 @@ class PThreadContext : Context
 
                     if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM)
                     {
-						//log.trace("[%s] ++ store_individual, prev_indv: %s", name, prev_indv);                    	
+                        //log.trace("[%s] ++ store_individual, prev_indv: %s", name, prev_indv);
 
-						indv = indv_apply_cmd (cmd, &prev_indv, indv);
+                        indv = indv_apply_cmd(cmd, &prev_indv, indv);
 
-						//log.trace("[%s] ++ store_individual, final indv: %s", name, *indv);                    	
+                        //log.trace("[%s] ++ store_individual, final indv: %s", name, *indv);
                     }
 
                     string new_state = individual2cbor(indv);

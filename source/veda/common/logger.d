@@ -42,7 +42,7 @@ private void logger_process()
         else if (cmd == 'O')
             llq.trace_io(false, msg[ 4 ]);
         else if (cmd == 'X')
-        	return;    
+            return;
     }
 }
 
@@ -90,7 +90,7 @@ public class logger
         ext      = _ext;
     }
 
-    public void close ()
+    public void close()
     {
         init_tid_logger();
         send(tid_logger, 'X', log_name, ext, src, "");
@@ -185,20 +185,16 @@ private class LoggerQueue
     {
         count = 0;
 
-        _time tt     = time(null);
-        tm    *ptm   = localtime(&tt);
-        int   year   = ptm.tm_year + 1900;
-        int   month  = ptm.tm_mon + 1;
-        int   day    = ptm.tm_mday;
-        int   hour   = ptm.tm_hour;
-        int   minute = ptm.tm_min;
-        int   second = ptm.tm_sec;
-        auto  now    = Clock.currTime();
-        int   usecs  = cast(int)now.fracSecs().split().usecs;
+        SysTime    time = Clock.currTime();
+        const auto dt   = cast(DateTime)time;
+        const auto fsec = time.fracSecs.total !"usecs";
 
-        auto  writer = appender!string();
+        auto       writer = appender!string();
 
-        formattedWrite(writer, "%s_%04d-%02d-%02d_%02d:%02d:%02d-%06d.%s", trace_logfilename, year, month, day, hour, minute, second, usecs, ext);
+        formattedWrite(writer, "%s_%04d-%02d-%02d_%02d:%02d:%02d-%06d.%s", trace_logfilename, dt.year, dt.month, dt.day, dt.hour, dt.minute,
+                       dt.second,
+                       fsec,
+                       ext);
 
         writer.put(cast(char)0);
 
@@ -223,65 +219,48 @@ private class LoggerQueue
         else
             str_io = "OUTPUT";
 
-        _time tt     = time(null);
-        tm    *ptm   = localtime(&tt);
-        int   year   = ptm.tm_year + 1900;
-        int   month  = ptm.tm_mon + 1;
-        int   day    = ptm.tm_mday;
-        int   hour   = ptm.tm_hour;
-        int   minute = ptm.tm_min;
-        int   second = ptm.tm_sec;
-        auto  now    = Clock.currTime();
-        int   usecs  = cast(int)now.fracSecs().split().usecs;
+        SysTime    time = Clock.currTime();
+        const auto dt   = cast(DateTime)time;
+        const auto fsec = time.fracSecs.total !"usecs";
 
         count++;
 
-        if (ff is null || prev_time > 0 && day != prev_time || count > 1_000_000)
-        {
+        if (ff is null || prev_time > 0 && dt.day != prev_time || count > 1_000_000)
             open_new_file();
-        }
 
         auto writer = appender!string();
 
-        formattedWrite(writer, "[%04d-%02d-%02d %02d:%02d:%02d.%06d]\n%s\n", year, month, day, hour, minute, second, usecs, str_io);
+        formattedWrite(writer, "[%04d-%02d-%02d %02d:%02d:%02d.%06d]\n%s\n", dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
+                       fsec, str_io);
 
         fwrite(cast(char *)writer.data, 1, writer.data.length, ff);
-
         fwrite(cast(char *)data, 1, data.length, ff);
-
         fputc('\r', ff);
 
         fflush(ff);
 
-        prev_time = day;
+        prev_time = dt.day;
     }
 
     string trace(string arg, string src)
     {
-        _time tt     = time(null);
-        tm    *ptm   = localtime(&tt);
-        int   year   = ptm.tm_year + 1900;
-        int   month  = ptm.tm_mon + 1;
-        int   day    = ptm.tm_mday;
-        int   hour   = ptm.tm_hour;
-        int   minute = ptm.tm_min;
-        int   second = ptm.tm_sec;
-        auto  now    = Clock.currTime();
-        int   usecs  = cast(int)now.fracSecs().split().usecs;
+        SysTime    time = Clock.currTime();
+        const auto dt   = cast(DateTime)time;
+        const auto fsec = time.fracSecs.total !"usecs";
 
         count++;
-        if (ff is null || prev_time > 0 && day != prev_time || count > 1_000_000)
-        {
+        if (ff is null || prev_time > 0 && dt.day != prev_time || count > 1_000_000)
             open_new_file();
-        }
 
         //	       StopWatch sw1; sw1.start();
         auto writer = appender!string();
 
         if (src.length > 0)
-            formattedWrite(writer, "[%04d-%02d-%02d %02d:%02d:%02d.%06d] [%s] ", year, month, day, hour, minute, second, usecs, src);
+            formattedWrite(writer, "[%04d-%02d-%02d %02d:%02d:%02d.%06d] [%s] ", dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
+                           fsec, src);
         else
-            formattedWrite(writer, "[%04d-%02d-%02d %02d:%02d:%02d.%06d] ", year, month, day, hour, minute, second, usecs);
+            formattedWrite(writer, "[%04d-%02d-%02d %02d:%02d:%02d.%06d] ", dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
+                           fsec);
 
         writer.put(arg);
         writer.put(cast(char)0);
@@ -294,7 +273,7 @@ private class LoggerQueue
 
         fflush(ff);
 
-        prev_time = day;
+        prev_time = dt.day;
 
         return writer.data;
     }

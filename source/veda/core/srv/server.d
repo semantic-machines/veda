@@ -10,7 +10,8 @@ private
     import io.mq_client, veda.core.io.file_reader;
     import util.logger, veda.core.util.utils, veda.core.threads.load_info;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.log_msg, veda.core.impl.thread_context;
-    import veda.core.common.define, veda.type, veda.core.threads.acl_manager, veda.core.threads.storage_manager, veda.core.threads.xapian_indexer, veda.onto.individual,
+    import veda.core.common.define, veda.type, veda.core.threads.acl_manager, veda.core.threads.storage_manager, veda.core.threads.xapian_indexer,
+           veda.onto.individual,
            veda.onto.resource;
 }
 
@@ -30,7 +31,7 @@ logger io_msg;
 enum CMD : byte
 {
     /// Установить
-    SET          = 50,
+    SET = 50,
 }
 
 
@@ -94,13 +95,12 @@ void shutdown_core()
 {
 }
 
-Context init_core(string node_id, string role, ushort listener_http_port, string write_storage_node)
+Context init_core(string node_id)
 {
-    if ((node_id is null || node_id.length < 2) && role is null)
+    if (node_id is null || node_id.length < 2)
         node_id = "cfg:standart_node";
 
-    log.trace("init_core: node_id=[%s], role=[%s], listener_http_port=%d, write_storage_node=%s", node_id, role, listener_http_port,
-              write_storage_node);
+    log.trace("init_core: node_id=[%s]", node_id);
 
     Backtrace.install(stderr);
 
@@ -109,76 +109,43 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
 
     try
     {
-//        log.trace_log_and_console("\nPACAHON %s.%s.%s\nSOURCE: commit=%s date=%s\n", veda.core.myversion.major, veda.core.myversion.minor,
-//                                  veda.core.myversion.patch, veda.core.myversion.hash, veda.core.myversion.date);
         Individual node;
-        bool       is_js_worker = false;
-        bool       is_main      = true;
-        string     jsvm_node_type;
         Context    core_context;
         Ticket     sticket;
 
         core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop);
-        if (node_id !is null)
-        {
-            sticket = core_context.sys_ticket();
-            node    = core_context.getConfiguration();
-            if (node.getStatus() == ResultCode.OK)
-            {
-                Resources roles;
-                log.trace_log_and_console("VEDA NODE CONFIGURATION: [%s]", node);
-                roles = node.resources.get("v-s:role", Resources.init);
-                if (roles.length == 0)
-                    is_main = true;
-                else
-                {
-                    is_js_worker = roles.anyExists([ "js_worker" ]);
-                    is_main      = roles.anyExists([ "main" ]);
-                }
-                jsvm_node_type = node.getFirstLiteral("v-s:jsvm_node");
-            }
-        }
-        else
-        {
-            if (write_storage_node !is null)
-                is_main = false;
-        }
+        sticket      = core_context.sys_ticket();
+        node         = core_context.getConfiguration();
+        if (node.getStatus() == ResultCode.OK)
+            log.trace_log_and_console("VEDA NODE CONFIGURATION: [%s]", node);
 
-        if (is_main)
-        {
-            if (jsvm_node_type is null || jsvm_node_type == "")
-                jsvm_node_type = "internal";
-        }
+        log.trace("init core");
 
-        log.trace("init core: is_main=%s, jsvm_node_type=%s", text(is_main), jsvm_node_type);
+        tids[ P_MODULE.fulltext_indexer ] =
+            spawn(&xapian_indexer, text(P_MODULE.fulltext_indexer), node_id);
+        if (wait_starting_thread(P_MODULE.fulltext_indexer, tids) == false)
+            return null;
 
-        if (is_main)
-        {
-            tids[ P_MODULE.fulltext_indexer ] =
-                spawn(&xapian_indexer, text(P_MODULE.fulltext_indexer), node_id);
-            if (wait_starting_thread(P_MODULE.fulltext_indexer, tids) == false)
-                return null;
+        tids[ P_MODULE.subject_manager ] = spawn(&individuals_manager, text(P_MODULE.subject_manager), individuals_db_path, node_id);
+        wait_starting_thread(P_MODULE.subject_manager, tids);
 
-            tids[ P_MODULE.subject_manager ] = spawn(&individuals_manager, text(P_MODULE.subject_manager), individuals_db_path, node_id);
-            wait_starting_thread(P_MODULE.subject_manager, tids);
+        tids[ P_MODULE.ticket_manager ] = spawn(&individuals_manager, text(P_MODULE.ticket_manager), tickets_db_path, node_id);
+        wait_starting_thread(P_MODULE.ticket_manager, tids);
 
-            tids[ P_MODULE.ticket_manager ] = spawn(&individuals_manager, text(P_MODULE.ticket_manager), tickets_db_path, node_id);
-            wait_starting_thread(P_MODULE.ticket_manager, tids);
+        tids[ P_MODULE.acl_manager ] = spawn(&acl_manager, text(P_MODULE.acl_manager), acl_indexes_db_path);
+        wait_starting_thread(P_MODULE.acl_manager, tids);
 
-            tids[ P_MODULE.acl_manager ] = spawn(&acl_manager, text(P_MODULE.acl_manager), acl_indexes_db_path);
-            wait_starting_thread(P_MODULE.acl_manager, tids);
+        tids[ P_MODULE.xapian_thread_context ] = spawn(&xapian_thread_context, text(P_MODULE.xapian_thread_context));
+        wait_starting_thread(P_MODULE.xapian_thread_context, tids);
 
-            tids[ P_MODULE.xapian_thread_context ] = spawn(&xapian_thread_context, text(P_MODULE.xapian_thread_context));
-            wait_starting_thread(P_MODULE.xapian_thread_context, tids);
+        send(tids[ P_MODULE.fulltext_indexer ], CMD.SET, P_MODULE.subject_manager, tids[ P_MODULE.subject_manager ]);
+        send(tids[ P_MODULE.fulltext_indexer ], CMD.SET, P_MODULE.acl_manager, tids[ P_MODULE.acl_manager ]);
+        send(tids[ P_MODULE.fulltext_indexer ], CMD.SET, P_MODULE.xapian_thread_context, tids[ P_MODULE.xapian_thread_context ]);
 
-            send(tids[ P_MODULE.fulltext_indexer ], CMD.SET, P_MODULE.subject_manager, tids[ P_MODULE.subject_manager ]);
-            send(tids[ P_MODULE.fulltext_indexer ], CMD.SET, P_MODULE.acl_manager, tids[ P_MODULE.acl_manager ]);
-            send(tids[ P_MODULE.fulltext_indexer ], CMD.SET, P_MODULE.xapian_thread_context, tids[ P_MODULE.xapian_thread_context ]);
+        tids[ P_MODULE.commiter ] =
+            spawn(&commiter, text(P_MODULE.commiter));
+        wait_starting_thread(P_MODULE.commiter, tids);
 
-            tids[ P_MODULE.commiter ] =
-                spawn(&commiter, text(P_MODULE.commiter));
-            wait_starting_thread(P_MODULE.commiter, tids);
-        }
 
         tids[ P_MODULE.statistic_data_accumulator ] = spawn(&statistic_data_accumulator, text(P_MODULE.statistic_data_accumulator));
         wait_starting_thread(P_MODULE.statistic_data_accumulator, tids);
@@ -187,69 +154,26 @@ Context init_core(string node_id, string role, ushort listener_http_port, string
                                                  tids[ P_MODULE.statistic_data_accumulator ]);
         wait_starting_thread(P_MODULE.print_statistic, tids);
 
-        if (is_main)
-        {
-            tids[ P_MODULE.dcs ] = spawn(&veda.core.threads.dcs_manager.dcs_thread, text(P_MODULE.dcs), node_id);
-            wait_starting_thread(P_MODULE.dcs, tids);
-        }
+        tids[ P_MODULE.dcs ] = spawn(&veda.core.threads.dcs_manager.dcs_thread, text(P_MODULE.dcs), node_id);
+        wait_starting_thread(P_MODULE.dcs, tids);
 
         foreach (key, value; tids)
             register(text(key), value);
 
         sticket = core_context.sys_ticket(true);
 
-        if (jsvm_node_type == "internal" || jsvm_node_type == "")
-        {
-            //Tid tid_scripts = veda.core.glue_code.scripts.start_module(node_id);
-            //Tid tid_ltrs    = veda.core.glue_code.ltrs.start_module(node_id);
-        }
-
-        if (is_main)
-        {
-            if (jsvm_node_type == "external")
-            {
-                Resources listeners = node.resources.get("v-s:listener", Resources.init);
-                foreach (listener_uri; listeners)
-                {
-                    Individual connection = core_context.get_individual(&sticket, listener_uri.uri);
-
-                    Resource   transport = connection.getFirstResource("v-s:transport");
-                    if (transport != Resource.init)
-                    {
-                        if (transport.data() == "http")
-                        {
-                            core.thread.Thread.sleep(100.msecs);
-                            string spawned_process_port = "8081";
-                            ushort http_port            = cast(ushort)connection.getFirstInteger("v-s:port", 8080);
-                            auto   js_worker_pid        =
-                                spawnProcess([ "./veda-js-worker", "--role", "js_worker", "--listener_http_port", spawned_process_port,
-                                               "--write_storage_node",
-                                               "http://127.0.0.1:" ~ text(http_port), "--systicket=", sticket.id ]);
-
-                            set_g_external_js_vm_url("http://127.0.0.1:" ~ spawned_process_port);
-                        }
-                    }
-                }
-            }
-        }
-        //spawn (&zmq_thread, "");
-        //Context core_context = new PThreadContext(node_id, "core_context", P_MODULE.nop);
-
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if (is_main)
-        {
-            tids[ P_MODULE.file_reader ] = spawn(&veda.core.io.file_reader.file_reader_thread, P_MODULE.file_reader, node_id, 5);
-            wait_starting_thread(P_MODULE.file_reader, tids);
+        tids[ P_MODULE.file_reader ] = spawn(&veda.core.io.file_reader.file_reader_thread, P_MODULE.file_reader, node_id, 5);
+        wait_starting_thread(P_MODULE.file_reader, tids);
 
 //        io.file_reader.processed(core_context);
-            if (node.getStatus() != ResultCode.OK)
-            {
-                core_context.reopen_ro_subject_storage_db();
-                core_context.reopen_ro_acl_storage_db();
-                node = core_context.get_individual(&sticket, node_id);
+        if (node.getStatus() != ResultCode.OK)
+        {
+            core_context.reopen_ro_subject_storage_db();
+            core_context.reopen_ro_acl_storage_db();
+            node = core_context.get_individual(&sticket, node_id);
 
-                log.trace_log_and_console("VEDA NODE CONFIGURATION:[%s]", node);
-            }
+            log.trace_log_and_console("VEDA NODE CONFIGURATION:[%s]", node);
         }
 
         return core_context;

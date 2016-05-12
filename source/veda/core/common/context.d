@@ -217,7 +217,7 @@ interface Context
     Onto get_onto();
 
     public string get_ticket_from_storage(string ticket_id);
-    
+
     public Ticket *get_systicket_from_storage();
 
     public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null);
@@ -287,7 +287,7 @@ interface Context
     public void reopen_ro_subject_storage_db();
     public void reopen_ro_acl_storage_db();
     public void reopen_ro_ticket_manager_db();
-    
+
     public void subject_storage_commmit(bool isWait = true);
     public long unload_subject_storage(string queue_name);
 
@@ -352,10 +352,10 @@ interface Context
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
                                            bool ignore_freeze = false, bool is_api_request = true);
-    
-    string begin_transaction();    
-    void commit_transaction(string transaction_id);    
-    void abort_transaction(string transaction_id);    
+
+    string begin_transaction();
+    void commit_transaction(string transaction_id);
+    void abort_transaction(string transaction_id);
 
     // ////////////////////////////////////////////// AUTHORIZATION ////////////////////////////////////////////
     /**
@@ -521,50 +521,5 @@ public void set_global_systicket(Ticket new_data)
     atomicStore(systicket_id, new_data.id);
     atomicStore(systicket_user_uri, new_data.user_uri);
     atomicStore(systicket_end_time, new_data.end_time);
-}
-
-/////////////////////////////// external_js_vm_url & external_write_storage_url //////////////////////////
-
-private shared string g_external_js_vm_url;
-public string get_g_external_js_vm_url()
-{
-    return atomicLoad(g_external_js_vm_url);
-}
-
-public void set_g_external_js_vm_url(string new_data)
-{
-    atomicStore(g_external_js_vm_url, new_data);
-}
-
-private shared string g_external_write_storage_url;
-public string get_g_external_write_storage_url()
-{
-    return atomicLoad(g_external_write_storage_url);
-}
-
-public void set_g_external_write_storage_url(string new_data)
-{
-    atomicStore(g_external_write_storage_url, new_data);
-}
-
-private string _external_write_storage_url;
-private string _external_js_vm_url;
-
-@property
-string external_js_vm_url()
-{
-    if (_external_js_vm_url is null)
-        _external_js_vm_url = get_g_external_js_vm_url();
-
-    return _external_js_vm_url;
-}
-
-@property
-string external_write_storage_url()
-{
-    if (_external_write_storage_url is null)
-        _external_write_storage_url = get_g_external_write_storage_url();
-
-    return _external_write_storage_url;
 }
 

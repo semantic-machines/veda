@@ -39,54 +39,56 @@ _Buff      g_script_out;
 ResultCode g_last_result;
 
 struct TransactionItem
-{	
+{
     INDV_OP    cmd;
-    string indv_serl;
-    string ticket_id;
-    string event_id;
-    
-	Individual indv;
+    string     indv_serl;
+    string     ticket_id;
+    string     event_id;
 
-    this (INDV_OP _cmd, string _indv_serl, string _ticket_id, string _event_id)
+    Individual indv;
+
+    this(INDV_OP _cmd, string _indv_serl, string _ticket_id, string _event_id)
     {
-    	cmd = _cmd;
-    	indv_serl = _indv_serl;
-    	ticket_id = _ticket_id;
-    	event_id = _event_id;    	
-    	
+        cmd       = _cmd;
+        indv_serl = _indv_serl;
+        ticket_id = _ticket_id;
+        event_id  = _event_id;
+
         int code = cbor2individual(&indv, indv_serl);
         if (code < 0)
         {
             log.trace("ERR:v8d:transaction:cbor2individual [%s]", indv_serl);
         }
-        
+
         if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM)
         {
-        	Ticket* ticket = g_context.get_ticket(ticket_id);
-        	Individual prev_indv = g_context.get_individual(ticket, indv.uri);
-        	
-        	indv = *indv_apply_cmd (cmd, &prev_indv, &indv);       	
+            Ticket     *ticket   = g_context.get_ticket(ticket_id);
+            Individual prev_indv = g_context.get_individual(ticket, indv.uri);
+
+            if (prev_indv.getStatus() == ResultCode.OK)
+                indv = *indv_apply_cmd(cmd, &prev_indv, &indv);
+            else
+                log.trace("g_context.get_individual[%s] fail=%s", indv.uri, prev_indv.getStatus());
         }
-    	    	
     }
 }
 
-TransactionItem*[string] transaction_buff;
-TransactionItem*[] transaction_queue;	
+TransactionItem *[ string ] transaction_buff;
+TransactionItem *[] transaction_queue;
 
 public bool commit()
 {
-	//if (transaction_buff.values.length > 0)	
-	//	writeln ("@ script: commit #1");
-		
-    foreach (item; transaction_queue)
-    {    	
-    	if (item.indv == Individual.init)
-    		continue;
-    	
-        Ticket     *ticket = g_context.get_ticket(item.ticket_id);
+    //if (transaction_buff.values.length > 0)
+    //	writeln ("@ script: commit #1");
 
-		//log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
+    foreach (item; transaction_queue)
+    {
+        if (item.indv == Individual.init)
+            continue;
+
+        Ticket *ticket = g_context.get_ticket(item.ticket_id);
+
+        //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
 
         ResultCode rc;
         if (item.cmd == INDV_OP.PUT)
@@ -110,25 +112,24 @@ public bool commit()
             rc = g_context.remove_individual(ticket, item.indv_serl, true, item.event_id, ignore_freeze).result;
         }
 
-	if (rc != ResultCode.OK)
-	{
-		log.trace ("FAIL COMMIT");
-	}
-	//else	
-		//log.trace ("SUCCESS COMMIT");
-
+        if (rc != ResultCode.OK)
+        {
+            log.trace("FAIL COMMIT");
+        }
+        //else
+        //log.trace ("SUCCESS COMMIT");
     }
 
 
 
-	//if (transaction_buff.values.length > 0)
-	//	writeln ("@ script: commit #e");
+    //if (transaction_buff.values.length > 0)
+    //	writeln ("@ script: commit #e");
 
-    transaction_buff = transaction_buff.init;
+    transaction_buff  = transaction_buff.init;
     transaction_queue = transaction_queue.init;
 
-	//if (transaction_buff.values.length > 0)
-	//	writeln ("@ script: commit #e1");
+    //if (transaction_buff.values.length > 0)
+    //	writeln ("@ script: commit #e1");
 
     return true;
 }
@@ -150,14 +151,15 @@ extern (C++) char *get_global_prop(const char *prop_name, int prop_name_length)
 
     return cast(char *)res;
 }
+
 //чтение неправильное после операции add set
 extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
                                        int _event_id_length)
 {
-	TransactionItem* ti = new TransactionItem(INDV_OP.PUT, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                                        cast(string)_event_id[ 0.._event_id_length ].dup);
-	
-    transaction_buff[ti.indv.uri] = ti;
+    TransactionItem *ti = new TransactionItem(INDV_OP.PUT, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                                              cast(string)_event_id[ 0.._event_id_length ].dup);
+
+    transaction_buff[ ti.indv.uri ] = ti;
     transaction_queue ~= ti;
     return ResultCode.OK;
 }
@@ -165,10 +167,10 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
 extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
                                           int _event_id_length)
 {
-    TransactionItem* ti = new TransactionItem(INDV_OP.ADD_IN, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                    cast(string)_event_id[ 0.._event_id_length ].dup);
-    
-    transaction_buff[ti.indv.uri] = ti;
+    TransactionItem *ti = new TransactionItem(INDV_OP.ADD_IN, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                                              cast(string)_event_id[ 0.._event_id_length ].dup);
+
+    transaction_buff[ ti.indv.uri ] = ti;
     transaction_queue ~= ti;
     return ResultCode.OK;
 }
@@ -176,10 +178,10 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
 extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
                                           int _event_id_length)
 {
-    TransactionItem* ti = new TransactionItem(INDV_OP.SET_IN, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                    cast(string)_event_id[ 0.._event_id_length ].dup);
+    TransactionItem *ti = new TransactionItem(INDV_OP.SET_IN, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                                              cast(string)_event_id[ 0.._event_id_length ].dup);
 
-    transaction_buff[ti.indv.uri] = ti;
+    transaction_buff[ ti.indv.uri ] = ti;
     transaction_queue ~= ti;
     return ResultCode.OK;
 }
@@ -187,10 +189,11 @@ extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_lengt
 extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
                                                int _event_id_length)
 {
-    TransactionItem* ti = new TransactionItem(INDV_OP.REMOVE_FROM, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                    cast(string)_event_id[ 0.._event_id_length ].dup);
+    TransactionItem *ti =
+        new TransactionItem(INDV_OP.REMOVE_FROM, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                            cast(string)_event_id[ 0.._event_id_length ].dup);
 
-    transaction_buff[ti.indv.uri] = ti;
+    transaction_buff[ ti.indv.uri ] = ti;
     transaction_queue ~= ti;
     return ResultCode.OK;
 }
@@ -198,10 +201,10 @@ extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_
 extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length, const char *_event_id,
                                           int _event_id_length)
 {
-    TransactionItem* ti = new TransactionItem(INDV_OP.REMOVE, cast(string)_uri[ 0.._uri_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                                        cast(string)_event_id[ 0.._event_id_length ].dup);
+    TransactionItem *ti = new TransactionItem(INDV_OP.REMOVE, cast(string)_uri[ 0.._uri_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                                              cast(string)_event_id[ 0.._event_id_length ].dup);
 
-    transaction_buff[ti.indv.uri] = ti;
+    transaction_buff[ ti.indv.uri ] = ti;
     transaction_queue ~= ti;
     return ResultCode.OK;
 }
@@ -247,16 +250,16 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
 {
     try
     {
-        string uri    = cast(string)_uri[ 0.._uri_length ];
-        
-        TransactionItem* ti = transaction_buff.get (uri, null);        
+        string          uri = cast(string)_uri[ 0.._uri_length ];
+
+        TransactionItem *ti = transaction_buff.get(uri, null);
         if (ti !is null && ti.indv_serl.length > 0)
         {
-                    tmp_individual.data   = cast(char *)ti.indv_serl;
-                    tmp_individual.length = cast(int)ti.indv_serl.length;
-                    return &tmp_individual;        	
-        }        	        
-        
+            tmp_individual.data   = cast(char *)ti.indv_serl;
+            tmp_individual.length = cast(int)ti.indv_serl.length;
+            return &tmp_individual;
+        }
+
         string ticket = cast(string)_ticket[ 0.._ticket_length ];
 
         //writeln ("@p:v8d read_individual, uri=[", uri, "],  ticket=[", ticket, "]");

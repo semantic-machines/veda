@@ -19,9 +19,9 @@ extern (C) void handleTermination(int _signal)
 {
     log.trace("!SYS: veda.app: caught signal: %s", text(_signal));
     writefln("!SYS: veda.app: caught signal: %s", text(_signal));
-    
-    veda.core.threads.dcs_manager.close ();
-    
+
+    veda.core.threads.dcs_manager.close();
+
     foreach (port, listener; listener_2_port)
     {
         listener.stopListening();
@@ -116,15 +116,7 @@ shared static this()
         registerMemoryErrorHandler();
 
     import vibe.core.args;
-    string role;
-    ushort listener_http_port = 8081;
-    string write_storage_node = "http://localhost:8080";
     string sys_ticket_id;
-
-    readOption("role", &role, "set role, if role is empty, then ignore params: [listener_http_port] and [write_storage_node]");
-    readOption("listener_http_port", &listener_http_port, "default: 8081");
-    readOption("write_storage_node", &write_storage_node, "default: http://127.0.0.1:8080");
-    readOption("systicket", &sys_ticket_id, "");
 
     string[ string ] properties;
 
@@ -137,40 +129,42 @@ shared static this()
     }
 
     string node_id;
+    node_id = properties.as!(string)("node_id");
 
-    if (role is null)
-    {
-        node_id            = properties.as!(string)("node_id");
-        listener_http_port = 0;
-        write_storage_node = null;
-    }
-    else
-    {
-        set_g_process_name(role);
-    }
-
-//    http_port    = properties.as!(string)("node_id");
-//    count_thread = properties.as!(int)("count_thread");
-//    int checktime_onto_files = properties.as!(int)("checktime_onto_files");
-
-//    if (checktime_onto_files < 1)
-//        checktime_onto_files = 30;
     veda.core.common.context.Context core_context;
 
-    if (write_storage_node !is null)
-        set_g_external_write_storage_url(write_storage_node);
-
-    core_context = veda.core.srv.server.init_core(node_id, role, listener_http_port, write_storage_node);
+    core_context = veda.core.srv.server.init_core(node_id);
     if (core_context is null)
     {
         log.trace("ERR! Veda core has not been initialized");
         return;
     }
 
-    long    count_individuals = core_context.count_individuals();
+    Individual *[ string ] onto_config;
+
+    Individual delegate(Ticket * ticket, string uri) get_individual;
+
+    Individual get_individual_from_local(Ticket *ticket, string uri)
+    {
+        Individual *ii = onto_config.get(uri, null);
+
+        if (ii !is null)
+            return *ii;
+        else
+            return Individual.init;
+    }
+
+    long count_individuals = core_context.count_individuals();
     if (count_individuals < 2)
     {
-    	core_context.sys_ticket(true);        
+        core_context.sys_ticket(true);
+        onto_config = load_config_onto();
+
+        get_individual = &get_individual_from_local;
+    }
+    else
+    {
+        get_individual = &core_context.get_individual;
     }
 
     Ticket sticket;
@@ -189,45 +183,32 @@ shared static this()
     std.concurrency.Tid[] pool;
     for (int i = 0; i < count_thread; i++)
     {
-        pool ~= std.concurrency.spawnLinked(&core_thread, node_id, write_storage_node);
+        pool ~= std.concurrency.spawnLinked(&core_thread, node_id);
         core.thread.Thread.sleep(dur!("msecs")(10));
     }
 
     bool is_exist_listener = false;
 
-    if (role !is null)
-    {
-        is_exist_listener = start_http_listener(core_context, pool, listener_http_port);
-//        start_http_listener(core_context, pool, 8555);
-    }
-    else
-    {
-        Individual node = core_context.get_individual(&sticket, node_id);
 
-        count_thread = cast(ushort)node.getFirstInteger("v-s:count_thread", 4);
+    Individual node = get_individual(&sticket, node_id);
 
-        Resources listeners = node.resources.get("v-s:listener", Resources.init);
-        foreach (listener_uri; listeners)
+    count_thread = cast(ushort)node.getFirstInteger("v-s:count_thread", 4);
+
+    Resources listeners = node.resources.get("v-s:listener", Resources.init);
+    foreach (listener_uri; listeners)
+    {
+        Individual connection = get_individual(&sticket, listener_uri.uri);
+
+        Resource   transport = connection.getFirstResource("v-s:transport");
+        if (transport != Resource.init)
         {
-            Individual connection = core_context.get_individual(&sticket, listener_uri.uri);
-
-            Resource   transport = connection.getFirstResource("v-s:transport");
-            if (transport != Resource.init)
+            if (transport.data() == "http")
             {
-                if (transport.data() == "http")
-                {
-                    ushort http_port = cast(ushort)connection.getFirstInteger("v-s:port", 8080);
-                    is_exist_listener = start_http_listener(core_context, pool, http_port);
-                }
+                ushort http_port = cast(ushort)connection.getFirstInteger("v-s:port", 8080);
+                is_exist_listener = start_http_listener(core_context, pool, http_port);
             }
         }
-//                    start_http_listener(core_context, pool, 8111);
     }
-
-    if (is_exist_listener == false)
-    {
-        start_http_listener(core_context, pool, 8080);
-    }    
 }
 
 bool start_http_listener(Context core_context, ref std.concurrency.Tid[] pool, ushort http_port)
@@ -297,4 +278,18 @@ bool start_http_listener(Context core_context, ref std.concurrency.Tid[] pool, u
         log.trace("start_http_listener# EX! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
     }
     return false;
+}
+
+import veda.core.util.raptor2individual;
+
+Individual *[ string ] load_config_onto()
+{
+    log.trace("load_config_onto");
+    string[ string ] prefixes;
+
+    Individual *[ string ] l_individuals = ttl2individuals(onto_path ~ "/config.ttl", prefixes, prefixes);
+
+    log.trace("load_config_onto %s", l_individuals);
+
+    return l_individuals;
 }

@@ -9,7 +9,8 @@ import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib;
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path,
        std.digest.md, std.utf, std.path, std.stdio : writeln, File;
 import veda.util.container, veda.util.cbor, veda.core.util.utils, util.logger, veda.core.util.raptor2individual, veda.util.cbor8individual;
-import veda.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define, veda.core.common.know_predicates,
+import veda.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
+       veda.core.common.know_predicates,
        veda.core.log_msg;
 
 // ////// logger ///////////////////////////////////////////
@@ -23,8 +24,6 @@ logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
-string path = "./ontology";
-
 shared static ~this() { destroyAsyncThreads(); }
 
 /// процесс отслеживающий появление новых файлов и добавление их содержимого в базу данных
@@ -37,22 +36,30 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
 
     ubyte[] out_data;
 
+    // SEND ready
+    receive((Tid tid_response_reciever)
+            {
+                send(tid_response_reciever, true);
+            });
+
+    core.thread.Thread.sleep(dur!("msecs")(3000));
+
     Context context = new PThreadContext(node_id, "file_reader", id);
 
-    auto    oFiles = dirEntries(path, SpanMode.depth);
+    auto    oFiles = dirEntries(onto_path, SpanMode.depth);
 
     long    count_individuals = context.count_individuals();
-    writeln ("file_reader_thread:count_individuals=", count_individuals);
+    writeln("file_reader_thread:count_individuals=", count_individuals);
     if (count_individuals < 2)
     {
-    	bool all_modules_ready = false;
-    	while (all_modules_ready == false)
-    	{
-    		all_modules_ready = veda.core.threads.dcs_manager.examine_modules();
-    		if (all_modules_ready == false)    	
-    			core.thread.Thread.sleep(dur!("msecs")(2000));
-    	}
-    	
+        bool all_modules_ready = false;
+        while (all_modules_ready == false)
+        {
+            all_modules_ready = veda.core.threads.dcs_manager.examine_modules();
+            if (all_modules_ready == false)
+                core.thread.Thread.sleep(dur!("msecs")(2000));
+        }
+
         string[] files;
 
         foreach (o; oFiles)
@@ -62,17 +69,9 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
                 files ~= o.name.dup;
             }
         }
-        
+
         processed(files, context);
     }
-
-    // SEND ready
-    receive((Tid tid_response_reciever)
-            {
-                send(tid_response_reciever, true);
-            });
-
-    core.thread.Thread.sleep(dur!("msecs")(3000));
 
     auto ev_loop = getThreadEventLoop();
     auto watcher = new AsyncDirectoryWatcher(ev_loop);
@@ -98,13 +97,12 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
                     } while (cnt > 0);
                 });
 
-    watcher.watchDir(path);
+    watcher.watchDir(onto_path);
     foreach (o; oFiles)
     {
         if (o.isDir)
             watcher.watchDir(o.name);
     }
-
 
     while (ev_loop.loop())
         continue;
@@ -230,7 +228,7 @@ void processed(string[] changes, Context context)
 
     if (guest_ticket is null)
         context.create_new_ticket("cfg:Guest", "4000000", "guest");
-	
+
     Ticket sticket = context.sys_ticket();
 
     Individual[ string ] individuals = check_and_read_changed(changes, context);
@@ -271,7 +269,6 @@ void processed(string[] changes, Context context)
                     }
                 }
             }
-
         }
     }
 

@@ -58,11 +58,9 @@ class ChildProcess
         port         = _port;
         host         = _host;
         _log         = new logger("veda-core-" ~ process_name, "log", "PROCESS");
-        set_g_external_write_storage_url("http://localhost:8080");
-        context = new PThreadContext("cfg:standart_node", process_name, _module_name);
+        context      = new PThreadContext("cfg:standart_node", process_name, _module_name, "http://localhost:8080");
         Ticket sticket;
         sticket = *context.get_systicket_from_storage();
-        writeln("@c ", process_name, ", found systicket=", sticket);
         set_global_systicket(sticket);
 
         if (node == Individual.init)
@@ -95,7 +93,7 @@ class ChildProcess
 
         while (!queue.isReady)
         {
-            writeln(process_name, ": queue [", queue_name, "] not ready, sleep and repeate...");
+            log.trace("queue [%s] not ready, sleep and repeate...", queue_name);
             core.thread.Thread.sleep(dur!("seconds")(10));
             queue.open();
         }
@@ -122,12 +120,12 @@ class ChildProcess
             {
                 listener.bind(new InternetAddress(host, port));
                 listener.listen(10);
-                writefln("Listening on port %d.", port);
+                log.trace("Listening on port %d.", port);
                 is_connected = true;
             }
             catch (Throwable tr)
             {
-                writeln(process_name, ": fail bind ex=", tr.msg, ", sleep, and repeate (", count_attempt, ")");
+                log.trace("fail bind ex=%s, sleep, and repeate (%d)", tr.msg, count_attempt);
                 core.thread.Thread.sleep(dur!("seconds")(10));
                 try
                 {
@@ -138,7 +136,7 @@ class ChildProcess
                 }
                 catch (Throwable tr1)
                 {
-                    writeln(process_name, ": fail undind, ex=", tr1.msg);
+                    log.trace("fail undind, ex=%s", tr1.msg);
                 }
             }
         }
@@ -159,7 +157,7 @@ class ChildProcess
 
             if (f_listen_exit == true)
             {
-                writeln(process_name, ": stop listen port");
+                log.trace("stop listen port");
                 return;
             }
             for (size_t i = 0; i < reads.length; i++)
@@ -170,7 +168,7 @@ class ChildProcess
                         auto datLength = reads[ i ].receive(buf[]);
 
                         if (datLength == Socket.ERROR)
-                            writeln("Connection error.");
+                            log.trace("Connection error.");
                         else if (datLength != 0)
                         {
                             char[] msg = buf[ 0..datLength ];
@@ -202,11 +200,11 @@ class ChildProcess
                             try
                             {
                                 // if the connection closed due to an error, remoteAddress() could fail
-                                writefln("Connection from %s closed.", reads[ i ].remoteAddress().toString());
+                                log.trace("Connection from %s closed.", reads[ i ].remoteAddress().toString());
                             }
                             catch (SocketException)
                             {
-                                writeln("Connection closed.");
+                                log.trace("Connection closed.");
                             }
                         }
                     }
@@ -218,7 +216,7 @@ class ChildProcess
                     // i will be incremented by the for, we don't want it to be.
                     i--;
 
-                    writefln("\tTotal connections: %d", reads.length);
+                    log.trace("Total connections: %d", reads.length);
                 }
             }
 
@@ -227,7 +225,7 @@ class ChildProcess
                 Socket sn = null;
                 scope (failure)
                 {
-                    writefln("Error accepting");
+                    log.trace("Error accepting");
 
                     if (sn)
                         sn.close();
@@ -240,7 +238,7 @@ class ChildProcess
                 catch (Exception ex)
                 {
                     sn = null;
-                    writeln("ERR! ex=", ex.msg);
+                    log.trace("ERR! ex=%s", ex.msg);
                 }
 
 //                assert(sn.isAlive);
@@ -252,13 +250,13 @@ class ChildProcess
                 if (reads.length < MAX_CONNECTIONS)
                 {
                     sn.setKeepAlive(1, 1);
-                    writefln("Connection from %s established.", sn.remoteAddress().toString());
+                    log.trace("Connection from %s established.", sn.remoteAddress().toString());
                     reads ~= sn;
-                    writefln("\tTotal connections: %d", reads.length);
+                    log.trace("Total connections: %d", reads.length);
                 }
                 else
                 {
-                    writefln("Rejected connection from %s; too many connections.", sn.remoteAddress().toString());
+                    log.trace("Rejected connection from %s; too many connections.", sn.remoteAddress().toString());
                     sn.close();
 //                    assert(!sn.isAlive);
 //                    assert(listener.isAlive);
@@ -333,14 +331,14 @@ class ChildProcess
                 }
                 catch (Throwable ex)
                 {
-                    writeln("EX! ex=", ex.msg);
+                    log.trace("EX! ex=%s", ex.msg);
                 }
             }
             else
                 break;
         }
         if (count_readed != count_success_prepared)
-            writeln("WARN! ", process_name, ": readed=", count_readed, ", success_prepared=", count_success_prepared);
+            log.trace("WARN! : readed=%d, success_prepared=%d", count_readed, count_success_prepared);
     }
 
 

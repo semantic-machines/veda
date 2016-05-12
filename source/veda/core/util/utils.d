@@ -9,7 +9,8 @@ private
     import core.stdc.stdio, core.stdc.string, core.sys.posix.time;
     import std.file, std.datetime, std.json, std.format, std.stdio, std.conv, std.string, std.concurrency;
     import std.ascii, std.csv, std.typecons, std.outbuffer;
-    import veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container, veda.core.common.know_predicates, veda.core.common.context;
+    import veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container, veda.core.common.know_predicates,
+           veda.core.common.context;
     import veda.type;
 }
 
@@ -23,75 +24,74 @@ logger log()
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
-public Individual *indv_apply_cmd (INDV_OP cmd, Individual *prev_indv, Individual *indv)
+public Individual *indv_apply_cmd(INDV_OP cmd, Individual *prev_indv, Individual *indv)
 {
-                        if (prev_indv !is null)
-                        {
-                            foreach (predicate; indv.resources.keys)
-                            {
-                                if (cmd == INDV_OP.ADD_IN)
-                                {
-                                    // add value to set or ignore if exists
-                                    prev_indv.addUniqueResources(predicate, indv.getResources(predicate));
-                                }
-                                else if (cmd == INDV_OP.SET_IN)
-                                {
-                                    // set value to predicate
-                                    prev_indv.setResources(predicate, indv.getResources(predicate));
-                                }
-                                else if (cmd == INDV_OP.REMOVE_FROM)
-                                {
-                                    // remove predicate or value in set
-                                    prev_indv.removeResources(predicate, indv.getResources(predicate));
-                                }
-                            }
+    if (prev_indv !is null)
+    {
+        if (prev_indv.resources.get(rdf__type, Resources.init).length == 0)
+        {
+            log.trace("WARN! stores individual does not contain any type: arg:[%s] prev_indv:[%s]", text(*indv), text(*prev_indv));
+        }
 
-                            if (prev_indv.resources.get(rdf__type, Resources.init).length == 0)
-                            {
-                                log.trace("WARN! stores individual does not contain any type: arg:[%s] res:[%s]", text(*indv), text(prev_indv));
-                            }
-
-                        }
-                        return prev_indv;
+        foreach (predicate; indv.resources.keys)
+        {
+            if (cmd == INDV_OP.ADD_IN)
+            {
+                // add value to set or ignore if exists
+                prev_indv.addUniqueResources(predicate, indv.getResources(predicate));
+            }
+            else if (cmd == INDV_OP.SET_IN)
+            {
+                // set value to predicate
+                prev_indv.setResources(predicate, indv.getResources(predicate));
+            }
+            else if (cmd == INDV_OP.REMOVE_FROM)
+            {
+                // remove predicate or value in set
+                prev_indv.removeResources(predicate, indv.getResources(predicate));
+            }
+        }
+    }
+    return prev_indv;
 }
 
 
-    private             Tid[ P_MODULE ] name_2_tids;
-    
-    public Tid getTid(P_MODULE tid_id)
+private Tid[ P_MODULE ] name_2_tids;
+
+public Tid getTid(P_MODULE tid_id)
+{
+    if (name_2_tids.values.length == 0)
     {
-    	if (name_2_tids.values.length == 0)
-    	{
-        	foreach (id; P_MODULE.min .. P_MODULE.max)
-        	{
-            	name_2_tids[ id ] = locate(text(id));
-        	}    		
-    	}
-    	
-        Tid res = name_2_tids.get(tid_id, Tid.init);
-
-        if (res == Tid.init)
+        foreach (id; P_MODULE.min .. P_MODULE.max)
         {
-            // tid not found, attempt restore
-            Tid tmp_tid = locate(text(tid_id));
-
-            if (tmp_tid == Tid.init)
-            {
-//                writeln("!!! NOT FOUND TID=", text(tid_id), "\n", name_2_tids, ", locate=1 ", );
-                //throw new Exception("!!! NOT FOUND TID=" ~ text(tid_id));
-                log.trace("!!! NOT FOUND TID=%s", text(tid_id));
-                return tmp_tid;
-            }
-            else
-            {
-                name_2_tids[ tid_id ] = tmp_tid;
-                return tmp_tid;
-            }
+            name_2_tids[ id ] = locate(text(id));
         }
-        return res;
     }
-    
-    
+
+    Tid res = name_2_tids.get(tid_id, Tid.init);
+
+    if (res == Tid.init)
+    {
+        // tid not found, attempt restore
+        Tid tmp_tid = locate(text(tid_id));
+
+        if (tmp_tid == Tid.init)
+        {
+//                writeln("!!! NOT FOUND TID=", text(tid_id), "\n", name_2_tids, ", locate=1 ", );
+            //throw new Exception("!!! NOT FOUND TID=" ~ text(tid_id));
+            log.trace("!!! NOT FOUND TID=%s", text(tid_id));
+            return tmp_tid;
+        }
+        else
+        {
+            name_2_tids[ tid_id ] = tmp_tid;
+            return tmp_tid;
+        }
+    }
+    return res;
+}
+
+
 
 bool wait_starting_module(P_MODULE tid_idx, Tid tid)
 {
