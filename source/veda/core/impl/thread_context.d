@@ -1214,9 +1214,7 @@ class PThreadContext : Context
 
                     try
                     {
-            	log.trace ("@@ 1.1.2");
                         prev_state = find(indv.uri);
-            	log.trace ("@@ 1.1.3");
 
                         if ((prev_state is null ||
                              prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
@@ -1230,8 +1228,6 @@ class PThreadContext : Context
 
                     if (prev_state !is null)
                     {
-                    	            	log.trace ("@1.3");
-
                         ev = EVENT.UPDATE;
                         int code = cbor2individual(&prev_indv, prev_state);
                         if (code < 0)
@@ -1339,7 +1335,7 @@ class PThreadContext : Context
                           indv !is null ? text(*indv) : "null",
                           text(res.result), ticket !is null ? text(*ticket) : "null");
 
-            //if (trace_msg[ T_API_240 ] == 1)
+            if (trace_msg[ T_API_240 ] == 1)
                 log.trace("[%s] store_individual [%s] = %s", name, indv.uri, res);
 
             stat(CMD.PUT, sw);

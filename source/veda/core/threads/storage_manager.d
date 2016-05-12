@@ -156,12 +156,9 @@ public string find(P_MODULE storage_id, string uri)
 
     if (tid_subject_manager !is Tid.init)
     {
-    	            	log.trace ("@A 1");
-
         send(tid_subject_manager, CMD.FIND, uri, thisTid);
         receive((string key, string data, Tid tid)
                 {
-            	log.trace ("@A 3");
                     res = data;
                 });
     }
@@ -330,17 +327,9 @@ public void individuals_manager(string thread_name, string db_path, string node_
                     {
                         if (cmd == CMD.FIND)
                         {
-                        	    	            	log.trace ("@B 1");
-
                             string res = storage.find(arg);
-
-    	            	log.trace ("@B 2");
-
                             //writeln("@FIND msg=", msg, ", $res = ", res);
                             send(tid_response_reciever, arg, res, thisTid);
-                            
-                                	            	log.trace ("@B 3");
-
                             return;
                         }
                         else if (cmd == CMD.UNLOAD)
