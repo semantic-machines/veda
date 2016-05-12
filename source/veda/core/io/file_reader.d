@@ -49,7 +49,6 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
     auto    oFiles = dirEntries(onto_path, SpanMode.depth);
 
     long    count_individuals = context.count_individuals();
-    writeln("file_reader_thread:count_individuals=", count_individuals);
     if (count_individuals < 2)
     {
         bool all_modules_ready = false;
@@ -257,8 +256,8 @@ void processed(string[] changes, Context context)
                         if (indv_in_storage == Individual.init || indv.compare(indv_in_storage) == false)
                         {
                             ResultCode res = context.put_individual(&sticket, indv.uri, indv, true, null, false, false).result;
-                            if (trace_msg[ 33 ] == 1)
-                                log.trace("store, uri=%s %s", indv.uri, indv);
+                            //if (trace_msg[ 33 ] == 1)
+                                log.trace("file reader:store, uri=%s", indv.uri);
 
                             //log.trace("store, uri=%s %s \n%s \n%s", indv.uri, uri, text(indv), text(indv_in_storage));
                             if (res != ResultCode.OK)
