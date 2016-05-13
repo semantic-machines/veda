@@ -371,6 +371,8 @@ veda.Module(function (veda) { "use strict";
 		Object.getOwnPropertyNames(self.properties).map(function (property_uri) {
 			if (property_uri === "@") return;
 			if (property_uri === "rdf:type") return;
+			self.removeProperty(property_uri);
+			self.defineProperty(property_uri);
 			if (original[property_uri] && original[property_uri].length) {
 				self[property_uri] = original[property_uri].map( parser );
 			} else {
