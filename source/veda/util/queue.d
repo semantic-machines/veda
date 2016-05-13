@@ -9,7 +9,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "queue");
+        _log = new logger("veda-core-" ~ process_name, "log", "QUEUE");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -246,11 +246,17 @@ class Consumer
 
         if (header.start_pos != first_element)
         {
-            log.trace("queue pop:invalid msg: header.start_pos[%d] != first_element[%d] : %s", header.start_pos, first_element, text(header));
+            log.trace("pop:invalid msg: header.start_pos[%d] != first_element[%d] : %s", header.start_pos, first_element, text(header));
             return null;
         }
 //        writeln("@queue=", this);
 //        writeln("@header=", header);
+
+        if (header.msg_length >= buff.length)
+        {
+            log.trace("pop:inc buff size %d -> %d", buff.length, header.msg_length);
+        	buff = new ubyte[header.msg_length + 1];
+        }
 
         if (header.msg_length < buff.length)
         {
@@ -258,13 +264,13 @@ class Consumer
             last_read_msg = queue.ff_queue_r.rawRead(last_read_msg);
             if (last_read_msg.length < header.msg_length)
             {
-                log.trace("queue:pop:invalid msg: msg.length < header.msg_length : %s", text(header));
+                log.trace("pop:invalid msg: msg.length < header.msg_length : %s", text(header));
                 return null;
             }
         }
         else
         {
-            log.trace("queue:pop:invalid msg: header.msg_length[%d] < buff.length[%d] : %s", header.msg_length, buff.length, text(header));
+            log.trace("pop:invalid msg: header.msg_length[%d] < buff.length[%d] : %s", header.msg_length, buff.length, text(header));
             return null;
         }
 
