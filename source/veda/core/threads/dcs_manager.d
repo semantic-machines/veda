@@ -32,6 +32,7 @@ logger log()
     return _log;
 }
 
+alias log mlog;
 // ////// ////// ///////////////////////////////////////////
 public void send_put(byte cmd, string user_uri, string cur_state, string prev_state, string event_id, long op_id)
 {
@@ -111,7 +112,7 @@ public long get_opid(P_MODULE pm)
 
 public void close()
 {
-    Tid  tid_dcs           = getTid(P_MODULE.dcs);
+    Tid tid_dcs = getTid(P_MODULE.dcs);
 
     send(tid_dcs, CMD.CLOSE, thisTid);
     receive((long _op_id)
@@ -126,13 +127,12 @@ OutSignalChanel[ P_MODULE ]              osch_2_name;
 
 shared static ~this()
 {
-	writeln ("dsc_manager: shared static ~this");
+    log.trace("dsc_manager: shared static ~this");
     if (queue !is null)
     {
         queue.close();
         queue = null;
     }
-        
 }
 
 void dcs_thread(string thread_name, string _node_id)
@@ -150,7 +150,7 @@ void dcs_thread(string thread_name, string _node_id)
             });
 
     core.thread.Thread.sleep(dur!("msecs")(3000));
-    
+
     core.thread.Thread.getThis().name = thread_name;
     osch_2_name[ P_MODULE.fanout ]  = new OutSignalChanel("fanout", "127.0.0.1", 8081);
     osch_2_name[ P_MODULE.scripts ] = new OutSignalChanel("scripts", "127.0.0.1", 8082);
@@ -168,8 +168,8 @@ void dcs_thread(string thread_name, string _node_id)
                     {
                         if (cmd == CMD.EXAMINE)
                         {
-                        	writeln("examine modules");
-                        	byte count_ready_module = 0;
+                            log.trace("examine modules");
+                            byte count_ready_module = 0;
                             foreach (name, osch; osch_2_name)
                             {
                                 string res = osch.send_signal("get_opid");
@@ -179,16 +179,16 @@ void dcs_thread(string thread_name, string _node_id)
                                     count_ready_module++;
                                 }
                             }
-                        	writeln("examine modules, count_ready_module=", count_ready_module, ", all=", osch_2_name.keys.length);
-                        	send(tid_response_reciever, osch_2_name.keys.length == count_ready_module);
-                        }else if (cmd == CMD.CLOSE)
+                            log.trace("examine modules, count_ready_module=%d, all=%d", count_ready_module, osch_2_name.keys.length);
+                            send(tid_response_reciever, osch_2_name.keys.length == count_ready_module);
+                        }
+                        else if (cmd == CMD.CLOSE)
                         {
-
-                        	foreach (name, osch; osch_2_name)
-                        	{
-                            	osch.disconnect();
-                        	}
-                        	send(tid_response_reciever, 0);                        	
+                            foreach (name, osch; osch_2_name)
+                            {
+                                osch.disconnect();
+                            }
+                            send(tid_response_reciever, 0);
                         }
                     },
                     (CMD cmd, P_MODULE pm, Tid tid_response_reciever)
@@ -236,7 +236,7 @@ void dcs_thread(string thread_name, string _node_id)
 
                         imm.addResource("op_id", Resource(op_id));
 
-//writeln ("*imm=[", imm, "]");
+                        //writeln ("*imm=[", imm, "]");
 
                         string cbor = individual2cbor(&imm);
                         //writeln("*cbor.length=", cbor.length);
@@ -248,7 +248,7 @@ void dcs_thread(string thread_name, string _node_id)
                             osch.send_signal(text(queue.count_pushed));
                         }
                     },
-                    (Variant v) { writeln(thread_name, "::dcs_thread::Received some other type.", v); });
+                    (Variant v) { log.trace("::dcs_thread::Received some other type. %s", text(v)); });
         }
         catch (Throwable ex)
         {
@@ -280,34 +280,30 @@ class OutSignalChanel
         port = _port;
     }
 
-	~this ()
-	{
-    	disconnect();
-	}
+    ~this()
+    {
+        disconnect();
+    }
 
     public void disconnect()
     {
-    version (VibeDefaultMain)
-    {
-        con.flush();
-        con.finalize();
-        con.close();    	
-            writeln("@ disconnect ", name, ", ", host, ":", port);
-    }		
+        version (VibeDefaultMain)
+        {
+            con.flush();
+            con.finalize();
+            con.close();
+            mlog.trace("disconnect %s, %s : %d ", name, host, port);
+        }
     }
 
     private void reconnect()
     {
         try
         {
-            writeln("@ reconnect");
+            mlog.trace("reconnect");
 
             if (con !is null && con.connected() == true)
-            {
-                writeln("@ reconnect: close socket #1");
                 con.close();
-                writeln("@ reconnect: close socket #2");
-            }
 
             con = connectTCP(host, port);
             con.tcpNoDelay(true);
@@ -317,7 +313,7 @@ class OutSignalChanel
         }
         catch (Exception ex)
         {
-            writeln("ERR! DCS: reconnect [", name, "]: ", ex.msg);
+            mlog.trace("ERR! DCS: reconnect [%s]: %s", name, ex.msg);
             send_is_ready = false;
         }
     }
@@ -329,7 +325,6 @@ class OutSignalChanel
 
     string send_signal(string data)
     {
-//        writeln("@ c10");
         string res;
 
         version (VibeDefaultMain)
@@ -350,20 +345,16 @@ class OutSignalChanel
                     con.write(data);
                     con.flush();
                     con.read(buf[ 0..2 ]);
-//                    writeln("b0=", buf[ 0 ], ", b1=", buf[ 1 ]);
                     int len = buf[ 0 ] + (buf[ 1 ] << 8);
-//                    writeln("len = ", len);
                     con.read(buf[ 0..len ]);
                     res = (cast(string)buf[ 0..len ]);
-
-                    //writeln("@recv=", res);
 
                     is_send_recv_complete = true;
                 }
             }
             catch (Exception ex)
             {
-                writeln("ERR! send to [", name, "]: ", ex.msg);
+                mlog.trace("ERR! send to [%s]: %s", name, ex.msg);
                 send_is_ready = false;
             }
         }

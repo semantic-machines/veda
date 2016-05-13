@@ -256,7 +256,7 @@ void processed(string[] changes, Context context)
                         if (indv_in_storage == Individual.init || indv.compare(indv_in_storage) == false)
                         {
                             ResultCode res = context.put_individual(&sticket, indv.uri, indv, true, null, false, false).result;
-                            //if (trace_msg[ 33 ] == 1)
+                            if (trace_msg[ 33 ] == 1)
                                 log.trace("file reader:store, uri=%s", indv.uri);
 
                             //log.trace("store, uri=%s %s \n%s \n%s", indv.uri, uri, text(indv), text(indv_in_storage));
@@ -273,7 +273,7 @@ void processed(string[] changes, Context context)
 
     core.memory.GC.collect();
 
-    //if (trace_msg[ 29 ] == 1)
+    if (trace_msg[ 29 ] == 1)
         log.trace("file_reader::processed end");
 }
 
