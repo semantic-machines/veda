@@ -414,7 +414,8 @@ v-ui:PersonAppointmentTemplate
 	<veda-control type="link" rel="v-s:defaultAppointment" class="fulltext dropdown" template="{individual['v-s:occupation'][0]['rdfs:label'].join(', ')}"></veda-control>
 </div>
 <script>
-	function handler (property_uri) { if (property_uri === "v-s:defaultAppointment") location.reload(); }
+	var prev = individual["v-s:defaultAppointment"];
+	function handler (property_uri, values) { if (property_uri === "v-s:defaultAppointment" && prev[0].id !== values[0].id) location.reload(); }
 	individual.on("individual:propertyModified", handler);
 	template.on("remove", function () { individual.off("individual:propertyModified", handler); });
 </script>
