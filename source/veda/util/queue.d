@@ -103,7 +103,7 @@ ubyte[ 4 ] crc;
 
 class Consumer
 {
-	bool   isReady;
+    bool    isReady;
     Queue   queue;
     string  name;
     ulong   first_element;
@@ -129,9 +129,9 @@ class Consumer
     {
         if (!queue.isReady)
         {
-        	isReady = false;
+            isReady = false;
             return false;
-        }    
+        }
 
         file_name_info_pop = queue_db_path ~ "/" ~ queue.name ~ "_info_pop_" ~ name;
 
@@ -142,8 +142,8 @@ class Consumer
 
         ff_info_pop_r = new File(file_name_info_pop, "r");
 
-		isReady = get_info();
-		
+        isReady = get_info();
+
         return isReady;
     }
 
@@ -194,31 +194,31 @@ class Consumer
             //writeln("@ queue.get_info ch=", ch);
             if (ch.length != 5)
             {
-                isReady = false;                
+                isReady = false;
                 return false;
             }
 
             string _name = ch[ 0 ];
             if (_name != queue.name)
             {
-                writeln("consumer:get_info:queue name from info [", _name, "] != consumer.queue.name[", queue.name, "]");
-                isReady = false;                
+                log.trace("consumer:get_info:queue name from info [%s] != consumer.queue.name[%s]", _name, queue.name);
+                isReady = false;
                 return false;
             }
 
             int _chunk = to!int (ch[ 1 ]);
             if (_chunk != queue.chunk)
             {
-                writeln("consumer:get_info:queue chunk from info [", _chunk, "] != consumer.queue.chunk[", queue.chunk, "]");
-                isReady = false;                
+                log.trace("consumer:get_info:queue chunk from info [%d] != consumer.queue.chunk[%d]", _chunk, queue.chunk);
+                isReady = false;
                 return false;
             }
 
             _name = ch[ 2 ];
             if (_name != name)
             {
-                writeln("consumer:get_info:consumer name from info[", _name, "] != consumer.name[", name, "]");
-                isReady = false;                
+                log.trace("consumer:get_info:consumer name from info[%s] != consumer.name[%s]", _name, name);
+                isReady = false;
                 return false;
             }
 
@@ -226,7 +226,7 @@ class Consumer
             count_popped  = to!uint (ch[ 4 ]);
         }
 
-        writeln("get_info:", this);
+        log.trace("get_info:%s", text(this));
 
         return true;
     }
@@ -246,7 +246,7 @@ class Consumer
 
         if (header.start_pos != first_element)
         {
-            writeln("queue pop:invalid msg: header.start_pos[", header.start_pos, "] != first_element[", first_element, "] :", header);
+            log.trace("queue pop:invalid msg: header.start_pos[%d] != first_element[%d] : %s", header.start_pos, first_element, text(header));
             return null;
         }
 //        writeln("@queue=", this);
@@ -258,13 +258,13 @@ class Consumer
             last_read_msg = queue.ff_queue_r.rawRead(last_read_msg);
             if (last_read_msg.length < header.msg_length)
             {
-                writeln("queue:pop:invalid msg: msg.length < header.msg_length :", header);
+                log.trace("queue:pop:invalid msg: msg.length < header.msg_length : %s", text(header));
                 return null;
             }
         }
         else
         {
-            writeln("queue:pop:invalid msg: header.msg_length[", header.msg_length, "] < buff.length[", buff.length, "] :", header);
+            log.trace("queue:pop:invalid msg: header.msg_length[%d] < buff.length[%d] : %s", header.msg_length, buff.length, text(header));
             return null;
         }
 
@@ -292,9 +292,9 @@ class Consumer
 
         if (header.crc[ 0 ] != crc[ 0 ] || header.crc[ 1 ] != crc[ 1 ] || header.crc[ 2 ] != crc[ 2 ] || header.crc[ 3 ] != crc[ 3 ])
         {
-            writeln("queue:pop:invalid msg: fail crc[", crc, "] :", header);
-            writeln(last_read_msg.length);
-            writeln(cast(string)last_read_msg);
+            log.trace("ERR! queue:pop:invalid msg: fail crc[%s] : %s", text(crc), text(header));
+            log.trace(text(last_read_msg.length));
+            log.trace(cast(string)last_read_msg);
             return false;
         }
 
@@ -383,7 +383,7 @@ class Queue
                 {
                     if (exists(file_name_queue ~ ".lock"))
                     {
-                        writefln("Queue [%s] already open, or not deleted lock file", name);
+                        log.trace("Queue [%s] already open, or not deleted lock file", name);
                         return false;
                     }
                     std.file.write(file_name_queue ~ ".lock", "0");
@@ -413,7 +413,7 @@ class Queue
                     if (mode == Mode.R && ff_queue_r.size() < right_edge || mode == Mode.RW && ff_queue_r.size() != right_edge)
                     {
                         isReady = false;
-                        writeln("ERR! queue:open(", mode, "): [", file_name_queue, "].size (", ff_queue_r.size(), ") != right_edge=", right_edge);
+                        log.trace("ERR! queue:open(%s): [%s].size (%d) != right_edge=", text(mode), file_name_queue, ff_queue_r.size(), right_edge);
                     }
                     else
                     {
@@ -425,7 +425,7 @@ class Queue
         }
         catch (Throwable ex)
         {
-            writeln("ERR! queue, not open: ex: ", ex.msg);
+            log.trace("ERR! queue, not open: ex: %s", ex.msg);
         }
         return isReady;
     }
@@ -441,7 +441,7 @@ class Queue
         }
         catch (Throwable tr)
         {
-            writeln("queue:fail remove ", tr.msg);
+            log.trace("queue:fail remove %s", tr.msg);
         }
     }
 
@@ -605,7 +605,7 @@ unittest
     sw.stop();
     int t = cast(int)sw.peek().msecs;
 
-    writeln("write to queue: ", count, ", time: ", t, ", cps=", count / (t / 1000.0));
+    log.trace("write to queue: %d, time: %d, cps=%s", count, t, text(count / (t / 1000.0)));
 
     sw.reset();
     sw.start();
@@ -621,7 +621,7 @@ unittest
     sw.stop();
     t = cast(int)sw.peek().msecs;
 
-    writeln("read from queue: ", count, ", time: ", t, ", cps=", count / (t / 1000.0));
+    log.trace("read from queue:  %d, time: %d, cps=%s", count, t, text(count / (t / 1000.0)));
 
     queue.close();
 }
