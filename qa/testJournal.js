@@ -28,7 +28,7 @@ function assertCounts(driver, drv, totalCount, createCount, updateCount) {
 			assert.equal(updateCount, result.length);
 		}).thenCatch(function (e) {basic.errorHandler(e, "Invalid `update` journal elements count")});
 		// 		Return to document
-		driver.findElement({css:'[rel="v-s:onDocument"] [typeof="v-s:Person"] a'}).click()
+		driver.findElement({css:'[rel="v-s:onDocument"] [typeof="v-s:Person v-s:Version"] a'}).click()
 			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click to return on main document")});
 	});
 }
