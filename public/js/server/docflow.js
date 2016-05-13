@@ -1094,7 +1094,7 @@ function prepare_process(ticket, document)
  */
 function prepare_start_form(ticket, document)
 {
-//    print("@js prepare_start_form, doc_id=" + document['@']);
+    print("@js prepare_start_form, doc_id=" + document['@']);
 
     var isTrace = document['v-wf:isTrace'];
     if (isTrace && getFirstValue(isTrace) == true)
@@ -1102,12 +1102,14 @@ function prepare_start_form(ticket, document)
     else
         isTrace = false;
 
+    print("@js prepare_start_form #2");
+    
     var hasStatusWorkflowif = document['v-s:hasStatusWorkflow'];
     if (hasStatusWorkflowif)
     {
         if (getUri(hasStatusWorkflowif) != 'v-s:ToBeSent')
         {
-            //print("[WORKFLOW]:prepare_start_form, not ready to start.");
+            print("[WORKFLOW]:prepare_start_form, not ready to start.");
             return;
         }
     }
@@ -1116,25 +1118,33 @@ function prepare_start_form(ticket, document)
 
     if (document['v-wf:isProcess'])
     {
-        //print("[WORKFLOW]:prepare_start_form, already started.");
+        print("[WORKFLOW]:prepare_start_form, already started.");
         return;
     }
 
+    print("@js prepare_start_form #3");
     var new_process_uri = genUri();
 
+    print("@js prepare_start_form #4");
     var author_uri;
     var ff = get_property_chain(ticket, document, 'v-s:author', 'v-s:employee');
     if (ff)
         author_uri = getUri(ff['field']);
 
+    print("@js prepare_start_form #5 document=", toJson (document));
+
     var forNet = document['v-wf:forNet'];
+    print("@js prepare_start_form #5.1");
     var _net = get_individual(ticket, getUri(forNet));
+    print("@js prepare_start_form #5.2 net=", toJson (_net));
     if (!_net) return;
+
+    print("@js prepare_start_form #6");
 
     var new_vars = [];
     var transform_link = getUri(document['v-wf:useTransformation']);
 
-//    print ('@js transform_link=', transform_link);
+    print ('@js transform_link=', transform_link);
 
     if (transform_link)
     {
