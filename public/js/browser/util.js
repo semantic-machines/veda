@@ -171,7 +171,7 @@ veda.Module(function Util(veda) { "use strict";
 		var query;
 		var allProps = Object.getOwnPropertyNames(individual.properties)
 			.map(function (property_uri) {
-				var property = individual.properties[property_uri];
+				var property = new veda.IndividualModel(property_uri);
 				var values = individual[property_uri];//.filter(function(item){return !!item && !!item.valueOf();});
 				// Filter rdfs:Resource type
 				if (property_uri === "rdf:type") { 

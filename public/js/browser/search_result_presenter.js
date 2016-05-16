@@ -4,10 +4,9 @@ veda.Module(function SearchResultPresenter(veda) { "use strict";
 	
 	function renderIndividualProperty (veda, individual, property_uri, template, container) {
 		var label, uri, values;
-		label = typeof individual.properties[property_uri] == "object" ? 
-					individual.properties[property_uri]["rdfs:label"].join(", ")
-					: individual.properties[property_uri];
-		uri = typeof individual.properties[property_uri] == "object" ? individual.properties[property_uri].id : "";
+		var property = new veda.IndividualModel(property_uri);
+		label = property["rdfs:label"].join(", ");
+		uri = property.id;
 		values = individual[property_uri]
 					.map( function (item) {
 						if (item instanceof String)
