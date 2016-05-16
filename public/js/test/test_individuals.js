@@ -68,6 +68,7 @@ function create_test_document1(ticket)
     var new_test_doc1 = generate_test_document1(ticket)
     var res = put_individual(ticket.id, new_test_doc1);
     wait_module(subject_manager, res.op_id);
+    wait_module(acl_manager, res.op_id);
     return new_test_doc1;
 }
 
