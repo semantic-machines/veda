@@ -1061,7 +1061,7 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
 }
 
 
-function get_properties_chain(var1, query)
+function get_properties_chain(var1, query, result_if_fail_search)
 {
     var res = [];
 
@@ -1076,6 +1076,9 @@ function get_properties_chain(var1, query)
         traversal(doc, query, 0, res);
 
     //    print('@@@get_properties_chain #2 res=', toJson(res));
+
+	if (result_if_fail_search == define && (res == undefine || res.length == 0))
+		res = result_if_fail_search;
 
     return res;
 }
