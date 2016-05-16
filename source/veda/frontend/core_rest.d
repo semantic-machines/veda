@@ -133,7 +133,7 @@ interface VedaStorageRest_API {
     void abort_transaction(string transaction_id);
 
     @path("set_module_info") @method(HTTPMethod.PUT)
-    void set_module_info(string _ticket, Json new_info);
+    void set_module_info(string ticket, string module_name, string host, ushort port);
 }
 
 
@@ -844,7 +844,7 @@ class VedaStorageRest : VedaStorageRest_API
         return res;
     }
 
-    void set_module_info(string _ticket, Json new_info)
+    void set_module_info(string _ticket, string module_name, string host, ushort port)
     {
         Ticket     *ticket = context.get_ticket(_ticket);
 
@@ -869,10 +869,6 @@ class VedaStorageRest : VedaStorageRest_API
 
                 if (is_superadmin)
                 {
-                    ushort port        = new_info[ "port" ].get!ushort;
-                    string host        = new_info[ "host" ].get!string;
-                    string module_name = new_info[ "module_name" ].get!string;
-
                     veda.core.threads.dcs_manager.set_module_info(module_name, host, port);
                 }
             }
