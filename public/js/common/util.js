@@ -530,10 +530,6 @@ function transformation(ticket, individuals, transform, executor, work_order)
 
             //print("#1.2 key=", key);
             var iteratedObject = (typeof window === "undefined") ? Object.getOwnPropertyNames(individual) : Object.getOwnPropertyNames(individual.properties);
-            if (typeof window !== "undefined")
-            {
-                iteratedObject.push('@');
-            }
             //print("#1.3 key=", key);
 
             for (var key2 = 0; key2 < iteratedObject.length; key2++)

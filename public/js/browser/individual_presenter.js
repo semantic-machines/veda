@@ -33,7 +33,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		);
 		var rendered = [], scripts = [];
 			
-		try {
+		//try {
 			if (template) {
 				if (template instanceof veda.IndividualModel) template = $( template["v-ui:template"][0].toString() );
 				if (template instanceof String) template = $( template.toString() );
@@ -114,10 +114,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					});
 				}, 0);
 			});
-		} catch (ex) {
-			console ? console.log("Error presenting", individual.id, ex) : null;
-			individual.present(container, new veda.IndividualModel("v-ui:LabelBlockLinkTemplate"));
-		}
+		//} catch (ex) {
+		//	console ? console.log("Error presenting", individual.id, ex) : null;
+		//	individual.present(container, new veda.IndividualModel("v-ui:LabelBlockLinkTemplate"));
+		//}
 	});
 	
 	function renderTemplate (individual, container, template, specs, mode) {
@@ -955,6 +955,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		$(".properties", template).append (
 			Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
+				if(property_uri === "@") { return }
 				var property = new veda.IndividualModel(property_uri);
 				if (property_uri === "rdfs:label" || property_uri === "rdf:type" || property_uri === "v-s:deleted") return;
 				

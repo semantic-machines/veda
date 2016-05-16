@@ -56,6 +56,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		function addOutLinks (id) {
 			var individual = nodes.get(id).individual;
 			Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
+				if(property_uri === "@") { return }
 				var values = individual[property_uri];
 				values.map(function (value) {
 					if (value instanceof veda.IndividualModel && value.id != individual.id) {
@@ -94,6 +95,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 				var to = id; 
 				var from = res.id;
 				Object.getOwnPropertyNames(res.properties).map(function (property_uri) {
+					if(property_uri === "@") { return }
 					res[property_uri].map(function (item) {
 						if (item instanceof veda.IndividualModel && item.id == to) {
 							var label = (new veda.IndividualModel(property_uri))["rdfs:label"].join(", ");

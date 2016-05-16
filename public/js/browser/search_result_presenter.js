@@ -59,6 +59,7 @@ veda.Module(function SearchResultPresenter(veda) { "use strict";
 		
 		// Render individual properties
 		Object.getOwnPropertyNames(individual.properties).reduce ( function (limit, property_uri) {
+			if(property_uri === "@") { return }
 			if (limit <= 0) return limit;
 			try {
 				renderIndividualProperty (veda, individual, property_uri, individual_single_property_template, $("#individual-properties", container));

@@ -154,7 +154,8 @@ var self = individual,
 self.object = new veda.IndividualModel(),
 self.object["rdf:type"] = self["v-fc:typeToCreate"].slice(0);
 Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
-	if ( property_uri === "rdf:type"
+	if ( property_uri === "@"
+		|| property_uri === "rdf:type"
 		|| property_uri === "rdfs:label"
 		|| property_uri === "v-s:deleted"
 		|| property_uri === "rdfs:isDefinedBy"
@@ -177,7 +178,8 @@ self.on("individual:afterSave", updateAspect);
 
 function updateBlank() {
 	Object.getOwnPropertyNames(self.object.properties).map( function (property_uri) {
-		if ( property_uri === "rdf:type"
+		if ( property_uri === "@"
+			|| property_uri === "rdf:type"
 			|| property_uri === "rdfs:label"
 			|| property_uri === "v-s:deleted"
 			|| property_uri === "rdfs:isDefinedBy"
