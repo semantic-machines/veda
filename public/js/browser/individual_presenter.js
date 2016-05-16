@@ -399,15 +399,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			
 			template.on("edit", function (e) {
+				var property = new veda.IndividualModel(rel_uri);
 				if ( isEmbedded 
 					 && spec 
 					 && spec["v-ui:minCardinality"][0] >= 1 
 					 && !individual.hasValue(rel_uri)  
-					 && !(individual.properties[rel_uri].hasValue("rdfs:range") && individual.properties[rel_uri]["rdfs:range"][0].id === "v-s:File")
+					 && !(property.hasValue("rdfs:range") && property["rdfs:range"][0].id === "v-s:File")
 				) {
 					var emptyValue = new veda.IndividualModel();
-					if ( individual.properties[rel_uri].hasValue("rdfs:range") ) {
-						emptyValue["rdf:type"] = individual.properties[rel_uri]["rdfs:range"].slice(0);
+					if ( property.hasValue("rdfs:range") ) {
+						emptyValue["rdf:type"] = property["rdfs:range"].slice(0);
 					}
 					individual[rel_uri] = [emptyValue];
 				}
