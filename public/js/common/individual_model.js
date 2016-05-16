@@ -26,7 +26,7 @@ veda.Module(function (veda) { "use strict";
 		this._.properties = {};
 		this._.values = {};		
 		this._.isNew = false;
-		this._.sync = false;
+		this._.isSync = false;
 		this.properties = {};
 		
 		if (!uri) { 
@@ -38,7 +38,7 @@ veda.Module(function (veda) { "use strict";
 		}
 
 		this.defineProperty("rdf:type", undefined, function (classes) {
-			this._.sync = false;
+			this._.isSync = false;
 			this.init();
 			this.trigger("individual:typeChanged", classes);
 		});
@@ -77,7 +77,7 @@ veda.Module(function (veda) { "use strict";
 		},
 		set: function (value) { 
 			this._.isNew = false;
-			this._.sync = false;
+			this._.isSync = false;
 			this._.individual["@"] = value;
 			this.trigger("individual:idChanged", value);
 		}
@@ -185,7 +185,7 @@ veda.Module(function (veda) { "use strict";
 			},
 			
 			set: function (value) { 
-				self._.sync = false;
+				self._.isSync = false;
 				self._.values[property_uri] = value.filter(function (i) { return i !== null; });
 				self._.individual[property_uri] = self._.values[property_uri].concat(filteredStrings).map( serializer );
 				if (setterCB) setterCB.call(this, self._.values[property_uri]);
@@ -211,7 +211,7 @@ veda.Module(function (veda) { "use strict";
 		delete this._.individual[property_uri];
 		delete this._.values[property_uri];
 		delete this.properties[property_uri];
-		this._.sync = false;
+		this._.isSync = false;
 		return this;
 	};
 
@@ -278,7 +278,7 @@ veda.Module(function (veda) { "use strict";
 			try {
 				self._.individual = get_individual(veda.ticket, uri);
 				self._.isNew = false;
-				self._.sync = true;
+				self._.isSync = true;
 			} catch (e) {
 				self._.individual = {
 					"@": uri,
@@ -312,7 +312,7 @@ veda.Module(function (veda) { "use strict";
 		var self = this;
 		self.trigger("individual:beforeSave");
 		// Do not save individual to server if nothing changed
-		//if (self._.sync) return;
+		//if (self._.isSync) return;
 		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
 			veda.drafts.remove(this.id);
 		}
@@ -330,7 +330,7 @@ veda.Module(function (veda) { "use strict";
 			this.draft(parent);
 		}
 		this._.isNew = false;
-		this._.sync = true;
+		this._.isSync = true;
 		if (this._.cache) veda.cache[this.id] = self;
 		this.trigger("individual:afterSave");
 		return this;
@@ -375,7 +375,7 @@ veda.Module(function (veda) { "use strict";
 			}
 		});
 		self._.isNew = false;
-		self._.sync = true;
+		self._.isSync = true;
 		self.trigger("individual:afterReset");
 		return this;
 	};
@@ -484,7 +484,7 @@ veda.Module(function (veda) { "use strict";
 	 * @return {boolean}
 	 */
 	proto.isSync = function () {
-		return this._.sync;
+		return this._.isSync;
 	};
 	
 	/**
