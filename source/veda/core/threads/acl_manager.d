@@ -29,19 +29,19 @@ logger log()
 enum CMD : byte
 {
     /// Сохранить
-    PUT          = 1,
-    
+    PUT       = 1,
+
     /// Коммит
-    COMMIT       = 16,
+    COMMIT    = 16,
 
     /// Включить/выключить отладочные сообщения
-    SET_TRACE    = 33,
+    SET_TRACE = 33,
 
     /// Backup
-    BACKUP       = 41,
-        
+    BACKUP    = 41,
+
     /// Пустая комманда
-    NOP          = 64    
+    NOP       = 64
 }
 
 public string backup(string backup_id)

@@ -1,16 +1,16 @@
 /**
  * scripts thread
  */
-module veda.scripts;
+module veda.gluecode.scripts;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
-private import veda.core.bind.v8d_header;
+private import veda.gluecode.v8d_header;
 private import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.log_msg, veda.core.common.know_predicates, veda.onto.onto;
 private import veda.process.child_process;
-private import search.vel, search.vql, veda.core.glue_code.script;
+private import search.vel, search.vql, veda.gluecode.script;
 
 
 void main(char[][] args)
@@ -141,12 +141,12 @@ class ScriptProcess : ChildProcess
                     script.compiled_script.run();
 
                     bool res = commit();
-                    
+
                     if (res == false)
                     {
                         log.trace("fail exec event script : %s", script_id);
                         return false;
-                    }    
+                    }
 
                     if (trace_msg[ 300 ] == 1)
                         log.trace("end exec event script : %s", script_id);
@@ -186,7 +186,7 @@ class ScriptProcess : ChildProcess
 
         vql = new VQL(context);
 
-        script_vm = context.get_ScriptVM();
+        script_vm = get_ScriptVM(context);
         load_event_scripts();
     }
 

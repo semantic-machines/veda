@@ -131,6 +131,9 @@ interface VedaStorageRest_API {
 
     @path("abort_transaction") @method(HTTPMethod.PUT)
     void abort_transaction(string transaction_id);
+
+    @path("set_module_info") @method(HTTPMethod.PUT)
+    void set_module_info(string _ticket, Json new_info);
 }
 
 
@@ -725,7 +728,7 @@ class VedaStorageRest : VedaStorageRest_API
 //        {
 //            log.trace("remove_individual: uri=%s, res=%s, fts_count_prep_put=%d fts_count_recv_put=%d", uri, text(ResultCode.Too_Many_Requests), fts_count_prep_put, fts_count_recv_put);
 //            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
-//        }    
+//        }
 
         Ticket     *ticket = context.get_ticket(_ticket);
 
@@ -759,7 +762,7 @@ class VedaStorageRest : VedaStorageRest_API
 //        {
 //            log.trace("put_individual: uri=%s, res=%s, fts_count_prep_put=%d fts_count_recv_put=%d", "?", text(ResultCode.Too_Many_Requests), fts_count_prep_put, fts_count_recv_put);
 //            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
-//        }    
+//        }
 
         Ticket     *ticket = context.get_ticket(_ticket);
 
@@ -839,6 +842,41 @@ class VedaStorageRest : VedaStorageRest_API
             throw new HTTPStatusException(rc);
 
         return res;
+    }
+
+    void set_module_info(string _ticket, Json new_info)
+    {
+        Ticket     *ticket = context.get_ticket(_ticket);
+
+        OpResult   res;
+        ResultCode rc = ticket.result;
+
+        if (rc == ResultCode.OK)
+        {
+            bool is_superadmin = false;
+
+            void trace(string resource_group, string subject_group, string right)
+            {
+                if (subject_group == "cfg:SuperUser")
+                    is_superadmin = true;
+            }
+
+            context.get_rights_origin(ticket, "cfg:SuperUser", &trace);
+
+            writeln("@@ set_module_info is_superadmin=", is_superadmin);
+
+            if (is_superadmin)
+            {
+                int    port        = new_info[ "port" ].get!int;
+                string host        = new_info[ "host" ].get!string;
+                string module_name = new_info[ "module_name" ].get!string;
+
+                veda.core.threads.dcs_manager.set_module_info(module_name, host, port);
+            }
+        }
+
+        if (res.result != ResultCode.OK)
+            throw new HTTPStatusException(rc);
     }
 
     string begin_transaction()

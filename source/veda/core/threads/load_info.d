@@ -34,38 +34,38 @@ static this()
 enum CMD : byte
 {
     /// Сохранить
-    PUT          = 1,
+    PUT = 1,
 
     /// Получить
-    GET          = 2,
+    GET = 2,
 }
 
-    public void stat(byte command_type, ref StopWatch sw) nothrow
+public void stat(byte command_type, ref StopWatch sw) nothrow
+{
+    try
     {
-        try
+        sw.stop();
+        int t = cast(int)sw.peek().usecs;
+
+        Tid statistic_data_accumulator_tid = getTid(P_MODULE.statistic_data_accumulator);
+
+        if (statistic_data_accumulator_tid !is Tid.init)
         {
-            sw.stop();
-            int t = cast(int)sw.peek().usecs;
+            send(statistic_data_accumulator_tid, CMD.PUT, CNAME.WORKED_TIME, t);
 
-            Tid statistic_data_accumulator_tid = getTid(P_MODULE.statistic_data_accumulator);
+            if (command_type == CMD.GET)
+                send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_GET, 1);
+            else
+                send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_PUT, 1);
 
-            if (statistic_data_accumulator_tid !is Tid.init)
-            {
-                send(statistic_data_accumulator_tid, CMD.PUT, CNAME.WORKED_TIME, t);
-
-                if (command_type == CMD.GET)
-                    send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_GET, 1);
-                else
-                    send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_PUT, 1);
-
-                //if (trace_msg[ T_API_40 ] == 1)
-                 //   log.trace(func[ (func.lastIndexOf(".") + 1)..$ ] ~ ": t=%d µs", t);
-            }
-        }
-        catch (Exception ex)
-        {
+            //if (trace_msg[ T_API_40 ] == 1)
+            //   log.trace(func[ (func.lastIndexOf(".") + 1)..$ ] ~ ": t=%d µs", t);
         }
     }
+    catch (Exception ex)
+    {
+    }
+}
 
 
 void statistic_data_accumulator(string thread_name)
@@ -158,8 +158,8 @@ void print_statistic(string thread_name, Tid _statistic_data_accumulator)
             long ft_count_prep_put = veda.core.threads.xapian_indexer.get_count_prep_put();
             long ft_count_recv_put = veda.core.threads.xapian_indexer.get_count_recv_put();
 
-            long sc_count_prep_put;// = veda.core.glue_code.scripts.get_count_prep_put();
-            long sc_count_recv_put;// = veda.core.glue_code.scripts.get_count_recv_put();
+            long sc_count_prep_put; // = veda.core.glue_code.scripts.get_count_prep_put();
+            long sc_count_recv_put; // = veda.core.glue_code.scripts.get_count_recv_put();
 
             auto writer = appender!string();
             formattedWrite(writer, "%s|r/w :%7d/%5d|cps/thr:%9.1f|wt:%7d µs|tp r/w: %7d/%5d|t.w.t. : %7d ms|FTS:%7d/%7d/%7d|SCR:%7d/%7d/%7d",

@@ -1296,7 +1296,7 @@ s-wf:transformation_uri
 
 s-wf:def_exec_actor
 	rdf:type v-wf:ExecutorDefinition ;
-	v-wf:executorExpression "get_properties_chain (process.getLocalVariable ('actor'), [{$get:'v-s:occupation'}])" ;
+	v-wf:executorExpression "get_properties_chain (process.getLocalVariable ('actor'), [{$get:'v-s:occupation'}], process.getLocalVariable ('actor'))" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
