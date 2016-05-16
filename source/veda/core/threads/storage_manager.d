@@ -77,39 +77,38 @@ enum CMD : byte
 
     PAUSE        = 55,
 
-    WAIT        = 56,
-    
+    WAIT         = 56,
+
     /// Пустая комманда
     NOP          = 64
 }
 // ////// ////// ///////////////////////////////////////////
 
 struct TransactionItem
-{	
-    CMD    cmd;
-    string indv_serl;
-    string ticket_id;
-    string event_id;
-    
-	Individual indv;
+{
+    CMD        cmd;
+    string     indv_serl;
+    string     ticket_id;
+    string     event_id;
 
-    this (CMD _cmd, string _indv_serl, string _ticket_id, string _event_id)
+    Individual indv;
+
+    this(CMD _cmd, string _indv_serl, string _ticket_id, string _event_id)
     {
-    	cmd = _cmd;
-    	indv_serl = _indv_serl;
-    	ticket_id = _ticket_id;
-    	event_id = _event_id;    	
-    	
+        cmd       = _cmd;
+        indv_serl = _indv_serl;
+        ticket_id = _ticket_id;
+        event_id  = _event_id;
+
         int code = cbor2individual(&indv, indv_serl);
         if (code < 0)
         {
             log.trace("ERR:v8d:transaction:cbor2individual [%s]", indv_serl);
         }
-    	    	
     }
 }
-TransactionItem*[string] transaction_buff;
-TransactionItem*[] transaction_queue;	
+TransactionItem *[ string ] transaction_buff;
+TransactionItem *[] transaction_queue;
 
 
 string begin_transaction(P_MODULE storage_id)
@@ -449,12 +448,12 @@ public void individuals_manager(string thread_name, string db_path, string node_
                                 send(tid_response_reciever, "");
                             }
                         }
-                        
+
                         else
                         {
                             send(tid_response_reciever, msg, "err in individuals_manager", thisTid);
                         }
-*/                        
+ */
                     },
                     (CMD cmd, int arg, bool arg2)
                     {
