@@ -34,7 +34,17 @@ logger log()
 
 alias log mlog;
 // ////// ////// ///////////////////////////////////////////
-public void send_put(byte cmd, string user_uri, string cur_state, string prev_state, string event_id, long op_id)
+public void set_module_info(string module_name, string host, int port)
+{
+    Tid tid_dcs = getTid(P_MODULE.dcs);
+
+    if (tid_dcs != Tid.init)
+    {
+        send(tid_dcs, module_name, host, port);
+    }
+}
+
+public void ev_update_individual(byte cmd, string user_uri, string cur_state, string prev_state, string event_id, long op_id)
 {
     Tid tid_dcs = getTid(P_MODULE.dcs);
 
@@ -190,6 +200,9 @@ void dcs_thread(string thread_name, string _node_id)
                             }
                             send(tid_response_reciever, 0);
                         }
+                    },
+                    (string module_name, string host, int port)
+                    {
                     },
                     (CMD cmd, P_MODULE pm, Tid tid_response_reciever)
                     {

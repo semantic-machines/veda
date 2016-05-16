@@ -1247,7 +1247,7 @@ class PThreadContext : Context
                         }
 */
 //                    if (event_id != "fanout")
-                        veda.core.threads.dcs_manager.send_put(cmd, ticket.user_uri, new_state, prev_state, event_id, res.op_id);
+                        veda.core.threads.dcs_manager.ev_update_individual(cmd, ticket.user_uri, new_state, prev_state, event_id, res.op_id);
 
                         res.result = ResultCode.OK;
                     }
