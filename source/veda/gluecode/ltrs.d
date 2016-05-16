@@ -4,12 +4,12 @@
  *	START - подготавливает очередь и запускает исполнение скрипта над данными из очереди
  */
 
-module veda.core.glue_code.ltrs;
+module veda.gluecode.ltrs;
 
 private import std.concurrency, std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, core.thread, std.algorithm, std.uuid;
-private import veda.core.bind.v8d_header;
+private import veda.gluecode.v8d_header, veda.gluecode.script;
 private import veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.queue;
-private import veda.core.storage.lmdb_storage, veda.core.impl.thread_context, veda.core.glue_code.script;
+private import veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.type, veda.core.common.context, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual;
 
 // ////// logger ///////////////////////////////////////////

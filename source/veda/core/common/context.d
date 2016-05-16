@@ -205,8 +205,6 @@ interface Context
 {
     string get_name();
 
-    ScriptVM get_ScriptVM();
-
     int[ string ] get_key2slot();
 
     public bool ft_check_for_reload(void delegate() load);

@@ -1,6 +1,7 @@
-module veda.core.glue_code.script;
+module veda.gluecode.script;
 
-import veda.core.bind.v8d_header, veda.core.common.context;
+import std.stdio, std.path;
+import veda.gluecode.v8d_header, veda.core.common.context;
 
 struct ScriptInfo
 {
@@ -9,4 +10,3 @@ struct ScriptInfo
     bool[ string ] filters;
     Script compiled_script;
 }
-

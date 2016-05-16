@@ -1,9 +1,9 @@
 /**
  * обвязка к v8d
  */
-module veda.core.bind.v8d_header;
+module veda.gluecode.v8d_header;
 
-import std.stdio, std.conv;
+import std.stdio, std.conv, std.file, std.path;
 import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.core.common.context, veda.core.common.define,
        veda.util.cbor8individual, veda.core.util.utils;
 
@@ -393,3 +393,73 @@ class Js : Script
         run_WrappedScript(vm.js_vm, script);
     }
 }
+
+string g_str_script_result;
+string g_str_script_out;
+ScriptVM              script_vm;
+    
+
+    ScriptVM get_ScriptVM(Context ctx)
+    {
+        version (libV8)
+        {
+            if (script_vm is null)
+            {
+                try
+                {
+                    script_vm = new JsVM();
+                    g_context = ctx;
+
+                    string g_str_script_result = new char[ 1024 * 64 ];
+                    string g_str_script_out    = new char[ 1024 * 64 ];
+
+                    g_script_result.data           = cast(char *)g_str_script_result;
+                    g_script_result.allocated_size = cast(int)g_str_script_result.length;
+
+                    g_script_out.data           = cast(char *)g_str_script_out;
+                    g_script_out.allocated_size = cast(int)g_str_script_out.length;
+
+                    reload_scripts();
+                }
+                catch (Exception ex)
+                {
+                    writeln("EX!get_ScriptVM ", ex.msg);
+                }
+            }
+        }
+
+        return script_vm;
+    }
+
+    void reload_scripts()
+    {
+        Script[] scripts;
+        string[] script_file_name;
+        writeln("-");
+
+        foreach (path; [ "./public/js/server", "./public/js/common" ])
+        {
+            auto oFiles = dirEntries(path, SpanMode.depth);
+
+            foreach (o; oFiles)
+            {
+                if (extension(o.name) == ".js")
+                {
+                    log.trace(" load script:%s", o);
+                    auto str_js        = cast(ubyte[]) read(o.name);
+                    auto str_js_script = script_vm.compile(cast(string)str_js);
+                    if (str_js_script !is null)
+                    {
+                        scripts ~= str_js_script;
+                        script_file_name ~= o.name;
+                    }
+                }
+            }
+        }
+
+        foreach (idx, script; scripts)
+        {
+            writeln("init script=", script_file_name[ idx ]);
+            script.run();
+        }
+    }

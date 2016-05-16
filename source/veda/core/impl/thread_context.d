@@ -10,10 +10,10 @@ private
            std.json;
     import bind.xapian_d_header;
 
-    version (libV8)
-    {
-        import veda.core.bind.v8d_header;
-    }
+//    version (libV8)
+//    {
+//        import veda.core.bind.v8d_header;
+//    }
     import veda.util.container, util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.individual8json;
     import veda.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context,
            veda.core.log_msg;
@@ -36,9 +36,6 @@ logger log()
 
 
 Tid    dummy_tid;
-
-string g_str_script_result;
-string g_str_script_out;
 
 private enum CMD : byte
 {
@@ -71,8 +68,6 @@ class PThreadContext : Context
 
     // // // authorization
     private Authorization acl_indexes;
-
-    ScriptVM              script_vm;
 
     private Onto          onto;
 
@@ -232,71 +227,6 @@ class PThreadContext : Context
         }
 
         return onto;
-    }
-
-    private void reload_scripts()
-    {
-        Script[] scripts;
-        string[] script_file_name;
-        writeln("-");
-
-        foreach (path; [ "./public/js/server", "./public/js/common" ])
-        {
-            auto oFiles = dirEntries(path, SpanMode.depth);
-
-            foreach (o; oFiles)
-            {
-                if (extension(o.name) == ".js")
-                {
-                    log.trace(" load script:%s", o);
-                    auto str_js        = cast(ubyte[]) read(o.name);
-                    auto str_js_script = script_vm.compile(cast(string)str_js);
-                    if (str_js_script !is null)
-                    {
-                        scripts ~= str_js_script;
-                        script_file_name ~= o.name;
-                    }
-                }
-            }
-        }
-
-        foreach (idx, script; scripts)
-        {
-            writeln("init script=", script_file_name[ idx ]);
-            script.run();
-        }
-    }
-
-    ScriptVM get_ScriptVM()
-    {
-        version (libV8)
-        {
-            if (script_vm is null)
-            {
-                try
-                {
-                    script_vm = new JsVM();
-                    g_context = this;
-
-                    string g_str_script_result = new char[ 1024 * 64 ];
-                    string g_str_script_out    = new char[ 1024 * 64 ];
-
-                    g_script_result.data           = cast(char *)g_str_script_result;
-                    g_script_result.allocated_size = cast(int)g_str_script_result.length;
-
-                    g_script_out.data           = cast(char *)g_str_script_out;
-                    g_script_out.allocated_size = cast(int)g_str_script_out.length;
-
-                    reload_scripts();
-                }
-                catch (Exception ex)
-                {
-                    writeln("EX!get_ScriptVM ", ex.msg);
-                }
-            }
-        }
-
-        return script_vm;
     }
 
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
@@ -1113,7 +1043,8 @@ class PThreadContext : Context
                 //writeln("context:store_individual #3 ", process_name);
                 version (libRequests)
                 {
-                    import requests.http;
+                    import requests.http, requests.streams;
+                    
 
                     auto rq = Request();
                     rq.timeout = 1.seconds;
@@ -1305,7 +1236,7 @@ class PThreadContext : Context
                                 send(tid_acl, CMD.PUT, ev, new_state, res.op_id);
                             }
                         }
-
+/*
                         version (libV8)
                         {
                             if (rdfType.anyExists("v-s:ExecuteScript"))
@@ -1314,7 +1245,7 @@ class PThreadContext : Context
                                 veda.core.glue_code.ltrs.execute_script(new_state);
                             }
                         }
-
+*/
 //                    if (event_id != "fanout")
                         veda.core.threads.dcs_manager.send_put(cmd, ticket.user_uri, new_state, prev_state, event_id, res.op_id);
 
