@@ -85,6 +85,7 @@ veda.Module(function Util(veda) { "use strict";
 				writer.addTriple(triple);
 			});
 			Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
+				if (property_uri === "@") { return; }
 				if (property_uri === "rdf:type") { return; }
 				triple.predicate = N3.Util.expandPrefixedName(property_uri, prefixes);
 				individual[property_uri].map(function (value) {
@@ -171,6 +172,7 @@ veda.Module(function Util(veda) { "use strict";
 		var query;
 		var allProps = Object.getOwnPropertyNames(individual.properties)
 			.map(function (property_uri) {
+				if (property_uri === "@") { return }
 				var property = new veda.IndividualModel(property_uri);
 				var values = individual[property_uri];//.filter(function(item){return !!item && !!item.valueOf();});
 				// Filter rdfs:Resource type

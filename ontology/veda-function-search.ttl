@@ -493,6 +493,7 @@ v-fs:FulltextRequestTemplate
 		var allprops = Object.getOwnPropertyNames(individual.properties);
 		var props = "<div>";
 		for (var i = 0, uri; (uri = allprops && allprops[i]); i++) {
+			if(uri === "@") { continue }
 			if ( individual.hasValue(uri) ) {
 				props += "<span about='" + uri + "' property='rdfs:label'></span>: "
 				if (individual[uri][0] instanceof veda.IndividualModel) {
@@ -576,7 +577,8 @@ v-fs:AttributiveRequestModel
 				self.form = new veda.IndividualModel();
 				self.form["rdf:type"] = values.slice(0);
 				for (var property_uri in self.properties) {
-					if ( property_uri === "rdf:type" 
+					if ( property_uri === "@" 
+						 ||	property_uri === "rdf:type" 
 						 || property_uri === "v-s:author" 
 						 || property_uri === "v-s:created"
 						 || property_uri === "v-s:deleted" 
