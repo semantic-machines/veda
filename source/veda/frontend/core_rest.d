@@ -853,25 +853,33 @@ class VedaStorageRest : VedaStorageRest_API
 
         if (rc == ResultCode.OK)
         {
-            bool is_superadmin = false;
-
-            void trace(string resource_group, string subject_group, string right)
+            try
             {
-                if (subject_group == "cfg:SuperUser")
-                    is_superadmin = true;
+                bool is_superadmin = false;
+
+                void trace(string resource_group, string subject_group, string right)
+                {
+                    if (subject_group == "cfg:SuperUser")
+                        is_superadmin = true;
+                }
+
+                context.get_rights_origin(ticket, "cfg:SuperUser", &trace);
+
+                writeln("@@ set_module_info is_superadmin=", is_superadmin);
+
+                if (is_superadmin)
+                {
+                    ushort port        = new_info[ "port" ].get!ushort;
+                    string host        = new_info[ "host" ].get!string;
+                    string module_name = new_info[ "module_name" ].get!string;
+
+                    veda.core.threads.dcs_manager.set_module_info(module_name, host, port);
+                }
             }
-
-            context.get_rights_origin(ticket, "cfg:SuperUser", &trace);
-
-            writeln("@@ set_module_info is_superadmin=", is_superadmin);
-
-            if (is_superadmin)
+            catch (Throwable tr)
             {
-                int    port        = new_info[ "port" ].get!int;
-                string host        = new_info[ "host" ].get!string;
-                string module_name = new_info[ "module_name" ].get!string;
-
-                veda.core.threads.dcs_manager.set_module_info(module_name, host, port);
+                log.trace("ERR! set_module_info, err", tr.msg);
+                throw new HTTPStatusException(ResultCode.Internal_Server_Error);
             }
         }
 

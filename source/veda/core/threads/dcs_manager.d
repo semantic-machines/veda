@@ -34,7 +34,7 @@ logger log()
 
 alias log mlog;
 // ////// ////// ///////////////////////////////////////////
-public void set_module_info(string module_name, string host, int port)
+public void set_module_info(string module_name, string host, ushort port)
 {
     Tid tid_dcs = getTid(P_MODULE.dcs);
 
@@ -201,8 +201,17 @@ void dcs_thread(string thread_name, string _node_id)
                             send(tid_response_reciever, 0);
                         }
                     },
-                    (string module_name, string host, int port)
+                    (string module_name, string host, ushort port)
                     {
+                    	foreach (pname ; osch_2_name.keys)
+                    	{
+                    		if (text (pname) == module_name)
+                    		{
+                    			OutSignalChanel osch = new OutSignalChanel(module_name, host, port);
+                    			osch.reconnect();
+    							osch_2_name[pname]  = osch;                    			
+                    		}                    	
+                    	}	                    
                     },
                     (CMD cmd, P_MODULE pm, Tid tid_response_reciever)
                     {
