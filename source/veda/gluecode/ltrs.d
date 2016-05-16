@@ -44,8 +44,8 @@ private Task *task;
 /// Команды используемые процессами
 enum CMD : byte
 {
-    EXIT         = 49,
-    START        = 52
+    EXIT  = 49,
+    START = 52
 }
 
 
