@@ -867,9 +867,9 @@ class VedaStorageRest : VedaStorageRest_API
 
             if (is_superadmin)
             {
-                int    port        = resource_json[ "port" ].get!int;
-                string host        = resource_json[ "host" ].get!string;
-                string module_name = resource_json[ "module_name" ].get!string;
+                int    port        = new_info[ "port" ].get!int;
+                string host        = new_info[ "host" ].get!string;
+                string module_name = new_info[ "module_name" ].get!string;
 
                 veda.core.threads.dcs_manager.set_module_info(module_name, host, port);
             }
