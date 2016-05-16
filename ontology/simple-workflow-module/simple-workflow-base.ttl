@@ -1056,6 +1056,20 @@ s-wf:map_journal_to
 	rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_journal_to_4_PLV_actor
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_journal_to ;	
+	v-wf:mappingExpression	"process.getLocalVariable ('actor')" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_journal_to_4_OOV_result_data_N_author
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_journal_to ;	
+	v-wf:mappingExpression	"get_properties_chain (order.getOutVariable ('result_data'), [{$get:'v-s:author'}])" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:map_journal_to_fc
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_journal_to ;	
@@ -1273,16 +1287,16 @@ s-wf:map_actor_2_result_decision
 
 
 s-wf:transformation_uri
-        rdf:type v-wf:VarDefine ;
+    rdf:type v-wf:VarDefine ;
 	rdfs:isDefinedBy s-wf: ;
 	v-wf:varDefineName "transformation_uri" ;
-        rdfs:label "Ссылка на трансформацию"@ru ;
+    rdfs:label "Ссылка на трансформацию"@ru ;
 .
 #---------- Net Coordination
 
 s-wf:def_exec_actor
 	rdf:type v-wf:ExecutorDefinition ;
-	v-wf:executorExpression "process.getLocalVariable ('actor')" ;
+	v-wf:executorExpression "get_properties_chain (process.getLocalVariable ('actor'), [{$get:'v-s:occupation'}])" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -1523,8 +1537,8 @@ s-wf:nc_t2
     v-wf:executor s-wf:def_exec_actor;
     v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data;
 	rdfs:isDefinedBy s-wf: ;
-    v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
-    v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
+    v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_actor, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
+    v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
 .
 
 s-wf:additional_user_response 

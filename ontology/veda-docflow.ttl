@@ -428,8 +428,7 @@ v-df:rul_QuestionTransform2
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-s:hasAppointmentTo')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-#	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putValueFrom ('v-wf:variableValue', ['v-s:occupation'])";	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'actor')"; 	
 .
 v-df:rul_QuestionTransform3
@@ -526,8 +525,7 @@ v-df:rul_InstructionTransform2
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-s:hasAppointmentTo')" ;
 	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-#	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putValueFrom ('v-wf:variableValue', ['v-s:occupation'])";
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
 	v-wf:aggregate	"putString ('v-wf:variableName', 'actor')"; 	
 .
 v-df:rul_InstructionTransform3
