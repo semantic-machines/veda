@@ -1077,7 +1077,7 @@ function get_properties_chain(var1, query, result_if_fail_search)
 
     //    print('@@@get_properties_chain #2 res=', toJson(res));
 
-	if (result_if_fail_search == define && (res == undefine || res.length == 0))
+	if (result_if_fail_search && (res == undefined || res.length == 0))
 		res = result_if_fail_search;
 
     return res;
