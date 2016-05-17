@@ -16,7 +16,7 @@ veda.Module(function (veda) { "use strict";
 	 */
 	veda.IndividualModel = function (uri, container, template, mode, cache, init) {
 	
-		var self = riot.observable(this);
+		var self = riot.observable(this); 
 		
 		// Define Model functions
 		this._ = {};
