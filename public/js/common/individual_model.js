@@ -137,33 +137,36 @@ veda.Module(function (veda) { "use strict";
 		Object.defineProperty(this, property_uri, {
 			get: function () { 
 				if (!self.properties[property_uri]) return [];
-				var values = self.properties[property_uri].map( parser )
-					.filter(function (i) { return i !== null })
-					.filter(function (string) {
-						var condition = !(string instanceof String || typeof string === "string") || !string.language || (veda.user && veda.user.language && string.language in veda.user.language);
+				var values = self.properties[property_uri]
+					.filter(function (value) {
+						var condition = value.type !== "String" || value.lang === "NONE" || (veda.user && veda.user.language && value.lang in veda.user.language);
 						if (condition === false) {
 							var filtered = self._.filtered[property_uri] || [],
-								index = filtered.indexOf(string);
-							if ( !filtered.length || index < 0 || filtered[index].language !== string.language ) {
-								filtered.push( string );
+								found = filtered.find(function (filteredVal) {
+									return filteredVal.data === value.data && filteredVal.lang === value.lang;
+								});
+							if ( !found ) {
+								filtered.push( value );
 							}
 							self._.filtered[property_uri] = filtered;
 						}
 						return condition;
-					});
+					})
+					.map( parser );
 				if (getterCB) getterCB.call(this, values);
 				return values;
 			},
 			
 			set: function (values) {
 				self._.isSync = false;
-				var refined = values.filter(function (i) { return i !== null });
-				if ( self._.filtered[property_uri] ) { 
-					refined = refined.concat( self._.filtered[property_uri] );
+				var notNull = values.filter(function (i) { return i !== null });
+				var serialized = notNull.map( serializer );
+				if (self._.filtered[property_uri] && self._.filtered[property_uri].length) {
+					serialized = serialized.concat( self._.filtered[property_uri] );
 				}
-				self.properties[property_uri] = refined.map( serializer );
-				if (setterCB) setterCB.call(this, refined);
-				else self.trigger("individual:propertyModified", property_uri, refined);
+				self.properties[property_uri] = serialized;
+				if (setterCB) setterCB.call(this, notNull);
+				else self.trigger("individual:propertyModified", property_uri, notNull);
 			},
 			
 			configurable: true
