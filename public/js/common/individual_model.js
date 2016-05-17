@@ -89,9 +89,9 @@ veda.Module(function (veda) { "use strict";
 				this._.rights.defineProperty("v-s:canRead");                
 				this._.rights.defineProperty("v-s:canUpdate");                
 				this._.rights.defineProperty("v-s:canDelete");
-				this._.rights["v-s:canRead"] = [new Boolean(true)];
-				this._.rights["v-s:canUpdate"] = [new Boolean(true)];
-				this._.rights["v-s:canDelete"] = [new Boolean(true)];
+				this._.rights["v-s:canRead"] = [ true ];
+				this._.rights["v-s:canUpdate"] = [ true ];
+				this._.rights["v-s:canDelete"] = [ true ];
 				return this._.rights;
 			}
 			try {
