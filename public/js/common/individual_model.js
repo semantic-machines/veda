@@ -22,18 +22,16 @@ veda.Module(function (veda) { "use strict";
 		this._ = {};
 		this._.cache = typeof cache !== "undefined" ? cache : true;
 		this._.init = typeof init !== "undefined" ? init : true;
-		this._.individual = {};
-		this._.properties = {};
-		this._.values = {};		
 		this._.isNew = false;
 		this._.isSync = false;
 		this.properties = {};
+		this._.filtered = {};
 		
 		if (!uri) { 
 			this._.isNew = true;
-			this._.individual["@"] = veda.Util.genUri();
+			this.properties["@"] = veda.Util.genUri();
 			if (this._.cache && veda.cache) {
-				veda.cache[this._.individual["@"]] = this;
+				veda.cache[this.id] = this;
 			}
 		}
 
@@ -73,12 +71,12 @@ veda.Module(function (veda) { "use strict";
 	// Special properties
 	Object.defineProperty(proto, "id", {
 		get: function () { 
-			return this._.individual["@"];
+			return this.properties["@"];
 		},
 		set: function (value) { 
 			this._.isNew = false;
 			this._.isSync = false;
-			this._.individual["@"] = value;
+			this.properties["@"] = value;
 			this.trigger("individual:idChanged", value);
 		}
 	});
@@ -125,8 +123,6 @@ veda.Module(function (veda) { "use strict";
 		configurable: false
 	});
 
-
-
 	/**
 	 * @method
 	 * 
@@ -138,58 +134,36 @@ veda.Module(function (veda) { "use strict";
 	 */
 	proto.defineProperty = function (property_uri, getterCB, setterCB) {
 		var self = this;
-		if (self._.properties[property_uri]) return self;
-		
-		Object.defineProperty(self.properties, property_uri, {
+		Object.defineProperty(this, property_uri, {
 			get: function () { 
-				if (self._.properties[property_uri]) return self._.properties[property_uri];
-				try { self._.properties[property_uri] = new veda.IndividualModel(property_uri); } 
-				catch (e) { self._.properties[property_uri] = property_uri; }
-				return self._.properties[property_uri];
-			},
-			set: function (value) { 
-				if (self._.properties[property_uri] == value) return; 
-				self._.properties[property_uri] = value; 
-			},
-			configurable: true,
-			enumerable: true
-		});
-		
-		var filteredStrings = [];
-		self._.values[property_uri] = undefined;
-		
-		Object.defineProperty(self, property_uri, {
-			get: function () { 
-				// TODO: performance issue
-				/*if (self._.values[property_uri]) {
-					if (getterCB) getterCB(self._.values[property_uri]);
-					return self._.values[property_uri];
-				}*/
-				filteredStrings = []; // should remove this
-				if (!self._.individual[property_uri]) self._.individual[property_uri] = [];
-				self._.values[property_uri] = self._.individual[property_uri].map( parser );
-				// Filter undesired language tagged strings && undefined values
-				self._.values[property_uri] = self._.values[property_uri]
-					.filter(function (i) { return !!i; })
+				if (!self.properties[property_uri]) return [];
+				var values = self.properties[property_uri].map( parser )
+					.filter(function (i) { return i !== null })
 					.filter(function (string) {
-						if (! (string instanceof String) ) return true;
-						return (string.language === undefined || (veda.user && veda.user.language && string.language in veda.user.language)) ? (
-							true
-						) : (
-							filteredStrings.push(string),
-							false
-						);
+						var condition = !(string instanceof String || typeof string === "string") || !string.language || (veda.user && veda.user.language && string.language in veda.user.language);
+						if (condition === false) {
+							var filtered = self._.filtered[property_uri] || [],
+								index = filtered.indexOf(string);
+							if ( !filtered.length || index < 0 || filtered[index].language !== string.language ) {
+								filtered.push( string );
+							}
+							self._.filtered[property_uri] = filtered;
+						}
+						return condition;
 					});
-				if (getterCB) getterCB.call(this, self._.values[property_uri]);
-				return self._.values[property_uri];
+				if (getterCB) getterCB.call(this, values);
+				return values;
 			},
 			
-			set: function (value) { 
+			set: function (values) {
 				self._.isSync = false;
-				self._.values[property_uri] = value.filter(function (i) { return i !== null; });
-				self._.individual[property_uri] = self._.values[property_uri].concat(filteredStrings).map( serializer );
-				if (setterCB) setterCB.call(this, self._.values[property_uri]);
-				else self.trigger("individual:propertyModified", property_uri, value);
+				var refined = values.filter(function (i) { return i !== null });
+				if ( self._.filtered[property_uri] ) { 
+					refined = refined.concat( self._.filtered[property_uri] );
+				}
+				self.properties[property_uri] = refined.map( serializer );
+				if (setterCB) setterCB.call(this, refined);
+				else self.trigger("individual:propertyModified", property_uri, refined);
 			},
 			
 			configurable: true
@@ -206,10 +180,7 @@ veda.Module(function (veda) { "use strict";
 	 * @param {String} property_uri name of property
 	 */
 	proto.removeProperty = function (property_uri) {
-		delete this._.properties[property_uri];
 		delete this[property_uri];
-		delete this._.individual[property_uri];
-		delete this._.values[property_uri];
 		delete this.properties[property_uri];
 		this._.isSync = false;
 		return this;
@@ -218,43 +189,45 @@ veda.Module(function (veda) { "use strict";
 	function parser(value) {
 		if (value.type === "String") {
 			var string = new String(value.data);
-			string.language = value.lang === "NONE" ? undefined : value.lang;
+			if (value.lang !== "NONE") { string.language = value.lang };
 			return string;
-		} 
-		else if (value.type === "Uri") {
-			if (value.data.search(/^.{3,5}:\/\//) === 0) return new String(value.data);
+		} else if (value.type === "Uri") {
+			if (value.data.search(/^.{3,5}:\/\//) === 0) return value.data;
 			return new veda.IndividualModel(value.data);
-		} 
-		else if (value.type === "Datetime") return new Date(Date.parse(value.data));
-		else if (value.type === "Decimal") return new Number(value.data);
-		else if (value.type === "Integer") return new Number(value.data);
-		else if (value.type === "Boolean") return new Boolean(value.data);
-		else throw ("Unsupported type of property value");
+		} else if (value.type === "Datetime") { 
+			return new Date(Date.parse(value.data));
+		} else {
+			return value.data;
+		}
 	}
 	
 	function serializer (value) {
-		var result = {};
-		if (value instanceof Number || typeof value === "number" ) {
-			result.type = isInteger(value.valueOf()) ? "Integer" : "Decimal";
-			result.data = value.valueOf();
-			return result;
-		} else if (value instanceof Boolean || typeof value === "boolean") {
-			result.type = "Boolean";
-			result.data = value.valueOf();
-			return result;
-		} else if (value instanceof String || typeof value === "string") {
-			result.type = "String";
-			result.data = value.valueOf();
-			result.lang = value.language || "NONE";
-			return result;
+		if (typeof value === "number" ) {
+			return {
+				type: isInteger(value) ? "Integer" : "Decimal",
+				data: value
+			}
+		} else if (typeof value === "boolean") {
+			return {
+				type: "Boolean",
+				data: value
+			}
+		} else if (typeof value === "string" || value instanceof String) {
+			return {
+				type: "String",
+				data: value.valueOf(),
+				lang: value.language || "NONE"
+			}
 		} else if (value instanceof Date) {
-			result.type = "Datetime";
-			result.data = value.toISOString();
-			return result;
+			return { 
+				type: "Datetime",
+				data: value.toISOString()
+			}
 		} else if (value instanceof veda.IndividualModel) {
-			result.type = "Uri";
-			result.data = value.id;
-			return result;
+			return {
+				type: "Uri",
+				data: value.id
+			}
 		} else {
 			return value;
 		}
@@ -276,11 +249,11 @@ veda.Module(function (veda) { "use strict";
 				return veda.cache[uri]; 
 			}
 			try {
-				self._.individual = get_individual(veda.ticket, uri);
+				self.properties = get_individual(veda.ticket, uri);
 				self._.isNew = false;
 				self._.isSync = true;
 			} catch (e) {
-				self._.individual = {
+				self.properties = {
 					"@": uri,
 					"rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
 					"rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
@@ -290,12 +263,10 @@ veda.Module(function (veda) { "use strict";
 			self.trigger("individual:afterLoad", uri);
 			return uri;
 		} else {
-			self._.individual = uri;
+			self.properties = uri;
 		}
-		Object.keys(self._.individual).map(function (property_uri) {
-			if (property_uri === "@") return;
-			if (property_uri === "rdf:type") return;
-			if (property_uri === "v-s:deleted") return;
+		Object.keys(self.properties).map(function (property_uri) {
+			if (property_uri === "@" || property_uri === "rdf:type") { return; }
 			self.defineProperty(property_uri);
 		});
 		if (self._.cache) veda.cache[self.id] = self;
@@ -316,16 +287,16 @@ veda.Module(function (veda) { "use strict";
 		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
 			veda.drafts.remove(this.id);
 		}
-		Object.keys(self._.individual).reduce(function (acc, property_uri) {
+		Object.keys(self.properties).reduce(function (acc, property_uri) {
 			if (property_uri === "@") return acc;
-			acc[property_uri] = self._.individual[property_uri].filter(function (item) {
+			acc[property_uri] = self.properties[property_uri].filter(function (item) {
 				return item && item.data !== "";
 			});
 			if (!acc[property_uri].length) delete acc[property_uri];
 			return acc;
-		}, self._.individual);
+		}, self.properties);
 		try {
-			put_individual(veda.ticket, this._.individual);
+			put_individual(veda.ticket, this.properties);
 		} catch (e) {
 			this.draft(parent);
 		}
@@ -357,6 +328,7 @@ veda.Module(function (veda) { "use strict";
 		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) { 
 			veda.drafts.remove(this.id);
 		} 
+		this._.filtered = {};
 		var original;
 		try {
 			original = get_individual(veda.ticket, this.id);
@@ -364,8 +336,7 @@ veda.Module(function (veda) { "use strict";
 			original = {};
 		}
 		Object.getOwnPropertyNames(self.properties).map(function (property_uri) {
-			if (property_uri === "@") return;
-			if (property_uri === "rdf:type") return;
+			if (property_uri === "@" || property_uri === "rdf:type") { return; }
 			self.removeProperty(property_uri);
 			self.defineProperty(property_uri);
 			if (original[property_uri] && original[property_uri].length) {
@@ -472,7 +443,7 @@ veda.Module(function (veda) { "use strict";
 	 * @return {veda.IndividualModel} clone of this individual with different id.
 	 */
 	proto.clone = function (uri) {
-		var individual = JSON.parse( JSON.stringify(this._.individual) );
+		var individual = JSON.parse( JSON.stringify(this.properties) );
 		individual["@"] = veda.Util.genUri();
 		var clone = new veda.IndividualModel(individual); 
 		return clone;
@@ -522,7 +493,7 @@ veda.Module(function (veda) { "use strict";
 	 * @return {Object} JSON representation of individual.
 	 */
 	proto.toJson = function () {
-		return this._.individual;
+		return this.properties;
 	};
 
 	/**
@@ -540,7 +511,7 @@ veda.Module(function (veda) { "use strict";
 	 * @param {Number} Depth of the object tree to prefetch.
 	 */
 	proto.prefetch = function (depth) {
-		var uris = [], data = this._.individual;
+		var uris = [], data = this.properties;
 		Object.keys(data).map( function (key) {
 			if (key === "@") return;
 			data[key].map(function (value) {

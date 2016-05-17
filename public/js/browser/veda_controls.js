@@ -90,7 +90,9 @@
 		return control;
 	};
 	veda_literal_input.defaults = {
-		parser: function (input) { return input; },
+		parser: function (input) { 
+			return (input || null);
+		}
 	};
 
 	// String input
@@ -104,8 +106,7 @@
 	$.fn.veda_string.defaults = {
 		template: $("#string-control-template").html(),
 		parser: function (input, el) {
-			var value = new String(input);
-			return value != "" ? value : null;
+			return (input || null);
 		}
 	};
 
@@ -127,8 +128,7 @@
 	$.fn.veda_text.defaults = {
 		template: $("#text-control-template").html(),
 		parser: function (input, el) {
-			var value = new String(input);
-			return value != "" ? value : null;
+			return (input || null);
 		}
 	};
 	
@@ -142,7 +142,7 @@
 	$.fn.veda_boolean.defaults = {
 		template: $("#boolean-control-template").html(),
 		parser: function (input) {
-			return new Boolean(input == "true" ? true : false);
+			return (input === "true");
 		}
 	};
 
@@ -157,7 +157,7 @@
 		template: $("#integer-control-template").html(),
 		parser: function (input) {
 			var int = parseInt( input.replace(",", "."), 10 );
-			return !isNaN(int) ? new Number(int) : null;
+			return !isNaN(int) ? int : null;
 		}
 	};
 	
@@ -236,7 +236,7 @@
 		template: $("#numeration-control-template").html(),
 		parser: function (input) {
 			var int = parseInt( input.replace(",", "."), 10 );
-			return !isNaN(int) ? new Number(int) : null;
+			return !isNaN(int) ? int : null;
 		}
 	};
 
@@ -251,7 +251,7 @@
 		template: $("#decimal-control-template").html(),
 		parser: function (input) {
 			var float = parseFloat( input.replace(",", ".") );
-			return !isNaN(float) ? new Number(float) : null;
+			return !isNaN(float) ? float : null;
 		}
 	};
 /*
@@ -527,11 +527,11 @@
 		
 		input.click( function () {
 			if ( input.prop("readonly") ) {
-				individual[property_uri] = [new Boolean(false) ];
+				individual[property_uri] = [ false ];
 			} else if ( !input.prop("checked") ) {
 				individual[property_uri] = []; 
 			} else {
-				individual[property_uri] = [new Boolean(true) ];
+				individual[property_uri] = [ true ];
 			}
 		});
 
@@ -633,7 +633,7 @@
 		optionProperty: "v-ui:optionIntegerValue",
 		parser: function (input) {
 			var int = parseInt(input, 10);
-			return !isNaN(int) ? new Number(int) : null;
+			return !isNaN(int) ? int : null;
 		}
 	};
 	// Decimal select control
@@ -647,7 +647,7 @@
 		optionProperty: "v-ui:optionDecimalValue",
 		parser: function (input) {
 			var float = parseFloat(input.replace(",", "."));
-			return !isNaN(float) ? new Number(float) : null;
+			return !isNaN(float) ? float : null;
 		}
 	};
 	// String select control
@@ -660,8 +660,7 @@
 	$.fn.veda_stringSelect.defaults = {
 		optionProperty: "v-ui:optionStringValue",
 		parser: function (input, el) {
-			var value = new String(input);
-			return value != "" ? value : null;
+			return (input || null);
 		}
 	};
 	// Datetime select control
@@ -762,7 +761,7 @@
 		optionProperty: "v-ui:optionIntegerValue",
 		parser: function (input) {
 			var int = parseInt(input, 10);
-			return !isNaN(int) ? new Number(int) : null;
+			return !isNaN(int) ? int : null;
 		}
 	};
 	// Decimal checkbox group control
@@ -776,7 +775,7 @@
 		optionProperty: "v-ui:optionDecimalValue",
 		parser: function (input) {
 			var float = parseFloat(input.replace(",", "."));
-			return !isNaN(float) ? new Number(float) : null;
+			return !isNaN(float) ? float : null;
 		}
 	};
 	// String checkbox group control
@@ -789,8 +788,7 @@
 	$.fn.veda_stringCheckbox.defaults = {
 		optionProperty: "v-ui:optionStringValue",
 		parser: function (input, el) {
-			var value = new String(input);
-			return value != "" ? value : null;
+			return (input || null);
 		}
 	};
 	// Detetime checkbox group control
@@ -891,7 +889,7 @@
 		optionProperty: "v-ui:optionIntegerValue",
 		parser: function (input) {
 			var int = parseInt(input, 10);
-			return !isNaN(int) ? new Number(int) : null;
+			return !isNaN(int) ? int : null;
 		}
 	};
 	// Decimal radio group control
@@ -905,7 +903,7 @@
 		optionProperty: "v-ui:optionDecimalValue",
 		parser: function (input) {
 			var float = parseFloat(input.replace(",", "."));
-			return !isNaN(float) ? new Number(float) : null;
+			return !isNaN(float) ? float : null;
 		}
 	};
 	// String radio group control
@@ -918,8 +916,7 @@
 	$.fn.veda_stringRadio.defaults = {
 		optionProperty: "v-ui:optionStringValue",
 		parser: function (input, el) {
-			var value = new String(input);
-			return value != "" ? value : null;
+			return (input || null);
 		}
 	};
 	// Detetime radio group control
@@ -1010,11 +1007,12 @@
 		return this;
 	}
 	$.fn.veda_source.defaults = {
-		value: new String(""),
+		value: "",
 		template: $("#source-control-template").html(),
 		mode: "javascript", 
 		parser: function (input) {
-			return new String(input);
+			return (input || null);
+			//return new String(input);
 		}
 	};
 
