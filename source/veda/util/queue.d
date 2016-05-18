@@ -255,7 +255,7 @@ class Consumer
         if (header.msg_length >= buff.length)
         {
             log.trace("pop:inc buff size %d -> %d", buff.length, header.msg_length);
-        	buff = new ubyte[header.msg_length + 1];
+            buff = new ubyte[ header.msg_length + 1 ];
         }
 
         if (header.msg_length < buff.length)
