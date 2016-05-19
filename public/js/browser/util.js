@@ -248,7 +248,6 @@ veda.Module(function Util(veda) { "use strict";
 			modal = false;
 		}
 		
-		individual.defineProperty("v-s:hasStatusWorkflow");
 		individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
 		//$('[resource="'+individual.id+'"]').find("#save").trigger("click");
 		template.trigger('save');
@@ -319,7 +318,6 @@ veda.Module(function Util(veda) { "use strict";
 		{
 			if (key !== '@') 
 			{
-				if (key !== 'rdf:type') startForm.defineProperty(key);
 				if (!Array.isArray(transfromResult[0][key])) {
 					transfromResult[0][key] = [transfromResult[0][key]];
 				} 
@@ -333,14 +331,8 @@ veda.Module(function Util(veda) { "use strict";
 					{
 						if (transfromResult[0][key][i].type == _Uri) {
 							value = new veda.IndividualModel(transfromResult[0][key][i].data);
-						} else if (transfromResult[0][key][i].type == _Integer) {
-							value = new Number(transfromResult[0][key][i].data);
 						} else if (transfromResult[0][key][i].type == _Datetime) {
 							value = new Date(Date.parse(transfromResult[0][key][i].data));
-						} else if (transfromResult[0][key][i].type == _Decimal) {
-							value = new Number(transfromResult[0][key][i].data);
-						} else if (transfromResult[0][key][i].type == _Bool) {
-							value = new Boolean(transfromResult[0][key][i].data);
 						} else {
 							value = transfromResult[0][key][i].data;
 						}
