@@ -121,7 +121,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	});
 
 	// NTLM auth using iframe
-	var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider"),
+	var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider", undefined, undefined, undefined, true, false),
 		ntlm = ntlmProvider.hasValue("rdf:value"),
 		iframe = $("<iframe>", {"class": "hidden"});
 	if (ntlm) {
