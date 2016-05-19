@@ -70,6 +70,21 @@ veda.Module(function (veda) { "use strict";
 			storage.ontology = JSON.stringify(ontology);
 		}
 
+		// Initialize individual properties in {veda.IndividualModel.prototype}
+		Object.keys(ontology).map(function (property_uri) {
+			var individual = ontology[property_uri],
+				type = individual["rdf:type"][0].data;
+			if (
+				type === 'rdf:Property'
+				|| type === 'owl:DatatypeProperty'
+				|| type === 'owl:ObjectProperty'
+				|| type === 'owl:OntologyProperty'
+				|| type === 'owl:AnnotationProperty'
+			) {
+				veda.IndividualModel.defineProperty(property_uri);
+			}
+		});
+		
 		// Construct ontology individuals
 		Object.keys(ontology).map(function (key) {
 			var individual = ontology[key];
@@ -127,7 +142,6 @@ veda.Module(function (veda) { "use strict";
 			if ( _class.id === "rdfs:Resource" ) return;
 			// If class is not a subclass of another then make it a subclass of rdfs:Resource
 			if ( !_class.hasValue("rdfs:subClassOf") ) {
-				_class.defineProperty("rdfs:subClassOf");
 				_class["rdfs:subClassOf"] = [ self["rdfs:Resource"] ];
 			}
 			_class["rdfs:subClassOf"].map( function ( item ) {
