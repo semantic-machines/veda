@@ -78,9 +78,6 @@ veda.Module(function AppPresenter(veda) { "use strict";
 				$('#error-description').text( JSON.stringify(error) );
 				$('#error-modal').modal('show');
 				console.log ? console.log("Error:", JSON.stringify(error)) : null;
-			var cnt = $("<div class='container-fluid'></div>");
-			cnt.text( error );
-			$("body, #login-container").append(cnt);
 		}
 	});	
 	
@@ -120,10 +117,6 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			}
 			errorMsg.removeClass("hidden");
 			veda.trigger("login:failed");
-			
-			var cnt = $("<div class='container-fluid'></div>");
-			cnt.text( ex1 );
-			$("body, #login-container").append(cnt);
 		}		
 	});
 

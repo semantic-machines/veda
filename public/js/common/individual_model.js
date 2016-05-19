@@ -79,10 +79,10 @@ veda.Module(function (veda) { "use strict";
 						var condition = value.type !== "String" || value.lang === "NONE" || (veda.user && veda.user.language && value.lang in veda.user.language);
 						if (condition === false) {
 							var filtered = self._.filtered[property_uri] || [],
-								found = filtered.find(function (filteredVal) {
+								found = filtered.filter(function (filteredVal) {
 									return filteredVal.data === value.data && filteredVal.lang === value.lang;
 								});
-							if ( !found ) {
+							if ( !found.length ) {
 								filtered.push( value );
 							}
 							self._.filtered[property_uri] = filtered;
