@@ -221,9 +221,6 @@ jsWorkflow.ready = jsPlumb.ready;
             		return; // Don't use logic when we work with flows that already exists
             	}
                 var individual = new veda.IndividualModel(); // create individual (Task / Condition) 
-                individual.defineProperty("rdf:type");
-                individual.defineProperty("rdfs:label");                
-                individual.defineProperty("v-wf:flowsInto");
                 
                 individual["rdf:type"] = [ new veda.IndividualModel("v-wf:Flow") ];
                 individual["rdfs:label"] = [new String('')];
@@ -231,9 +228,6 @@ jsWorkflow.ready = jsPlumb.ready;
                 net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]); // <- Add new Flow to Net
                 
                 var source = new veda.IndividualModel(info.sourceId);
-                if (!source.hasOwnProperty('v-wf:hasFlow')) {
-                	source.defineProperty('v-wf:hasFlow');
-    			}
                 source['v-wf:hasFlow'] = source['v-wf:hasFlow'].concat([individual]);
                 
               	individual["v-wf:flowsInto"] = [new veda.IndividualModel(info.targetId)]; // setup Flow target
@@ -314,10 +308,6 @@ jsWorkflow.ready = jsPlumb.ready;
             	var variable = new veda.IndividualModel(varId);
                 
                 var individualM = new veda.IndividualModel(); // create individual (Mapping)
-                
-                individualM.defineProperty("rdf:type");
-                individualM.defineProperty("v-wf:mapsTo");
-                individualM.defineProperty("v-wf:mappingExpression");
                 
            		individualM["rdf:type"] = [ new veda.IndividualModel("v-wf:Mapping") ];
            		individualM["v-wf:mapToVariable"] = [variable];
@@ -497,8 +487,8 @@ jsWorkflow.ready = jsPlumb.ready;
 	                  drag: function (event) { //gets called on every drag
 	                	  $("#workflow-context-menu").hide();
 	                	  var target = new veda.IndividualModel(event.el.id);
-	                   	  target['v-wf:locationX'] = [new Number(Math.round(event.pos[0]-canvasSizePx/2))];
-	                   	  target['v-wf:locationY'] = [new Number(Math.round(event.pos[1]-canvasSizePx/2))];
+	                   	  target['v-wf:locationX'] = [Math.round(event.pos[0]-canvasSizePx/2)];
+	                   	  target['v-wf:locationY'] = [Math.round(event.pos[1]-canvasSizePx/2)];
 	                  }
 	            	});
                 }
@@ -708,14 +698,10 @@ jsWorkflow.ready = jsPlumb.ready;
             
             instance.createEmptyNetElement = function(type) {
         		var individual = new veda.IndividualModel(); 
-                individual.defineProperty("rdf:type");
-                individual.defineProperty("rdfs:label");
-                individual.defineProperty("v-wf:locationX");
-                individual.defineProperty("v-wf:locationY");
                 
                 individual['rdfs:label'] = ['', ''];
-                individual['v-wf:locationX'] = [new Number((-canvasSizePx/2-net['offsetX'])/net['currentScale'])];
-                individual['v-wf:locationY'] = [new Number((-canvasSizePx/2-net['offsetY'])/net['currentScale'])];
+                individual['v-wf:locationX'] = [(-canvasSizePx/2-net['offsetX'])/net['currentScale']];
+                individual['v-wf:locationY'] = [(-canvasSizePx/2-net['offsetY'])/net['currentScale']];
 
             	if (type=='condition') {
                		individual["rdf:type"] = [ new veda.IndividualModel("v-wf:Condition") ];
@@ -764,9 +750,6 @@ jsWorkflow.ready = jsPlumb.ready;
             	}            	
             	if (!hasOutput) {
                    	instance.createEmptyNetElement('output');
-            	}
-            	if (!net.hasValue('rdfs:label')) {
-            		net.defineProperty("rdfs:label");  
             	}
             	
             	// Create Flows
