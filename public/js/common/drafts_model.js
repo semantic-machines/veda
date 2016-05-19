@@ -55,7 +55,7 @@ veda.Module(function (veda) { "use strict";
 			individual: individual,
 			parent: parent
 		}
-		individual["v-s:isDraft"] = [ new Boolean(true) ];
+		individual["v-s:isDraft"] = [ true ];
 		this._[uri] = { 
 			individual: individual.toJson(),
 			parent: parent
