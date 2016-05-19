@@ -120,6 +120,10 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			}
 			errorMsg.removeClass("hidden");
 			veda.trigger("login:failed");
+			
+			var cnt = $("<div class='container-fluid'></div>");
+			cnt.text( ex1 );
+			$("body, #login-container").append(cnt);
 		}		
 	});
 
