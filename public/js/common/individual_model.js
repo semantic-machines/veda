@@ -16,7 +16,7 @@ veda.Module(function (veda) { "use strict";
 	 */
 	veda.IndividualModel = function (uri, container, template, mode, cache, init) {
 	
-		var self = riot.observable(this); 
+		var self = riot.observable(this);
 		
 		// Define Model functions
 		this._ = {};
@@ -29,21 +29,21 @@ veda.Module(function (veda) { "use strict";
 		
 		if (!uri) { 
 			this._.isNew = true;
-			this.properties["@"] = veda.Util.genUri();
+			let id = veda.Util.genUri();
+			this.properties["@"] = id;
 			if (this._.cache && veda.cache) {
-				veda.cache[this.id] = this;
+				veda.cache[id] = this;
 			}
 		}
-
-		this.defineProperty("rdf:type", undefined, function (classes) {
-			this._.isSync = false;
-			this.init();
-			this.trigger("individual:typeChanged", classes);
-		});
-
-		this.defineProperty("v-s:deleted");
-		this.defineProperty("v-s:author");
-		this.defineProperty("v-s:created");
+		
+		function typeHandler (property_uri, values) {
+			if (property_uri === "rdf:type") {
+				this._.isSync = false;
+				this.init();
+				this.trigger("individual:typeChanged", values);
+			}
+		}
+		this.on("individual:propertyModified", typeHandler);
 		
 		this.on("individual:beforeSave", function () {
 			if (!this.hasValue("v-s:created")) this["v-s:created"] = [new Date()];
@@ -65,77 +65,14 @@ veda.Module(function (veda) { "use strict";
 
 		return self;
 	};
-
+	
 	var proto = veda.IndividualModel.prototype;
 
-	// Special properties
-	Object.defineProperty(proto, "id", {
-		get: function () { 
-			return this.properties["@"];
-		},
-		set: function (value) { 
-			this._.isNew = false;
-			this._.isSync = false;
-			this.properties["@"] = value;
-			this.trigger("individual:idChanged", value);
-		}
-	});
-
-	Object.defineProperty(proto, "rights", {
-		get: function () { 
-			if (this._.rights) return this._.rights;
-			if (this._.isNew) {
-				this._.rights = new veda.IndividualModel();
-				this._.rights.defineProperty("v-s:canRead");                
-				this._.rights.defineProperty("v-s:canUpdate");                
-				this._.rights.defineProperty("v-s:canDelete");
-				this._.rights["v-s:canRead"] = [ true ];
-				this._.rights["v-s:canUpdate"] = [ true ];
-				this._.rights["v-s:canDelete"] = [ true ];
-				return this._.rights;
-			}
-			try {
-				var rightsJSON = get_rights(veda.ticket, this.id);
-				this._.rights = new veda.IndividualModel( rightsJSON );
-			} catch (e) {
-				this._.rights = null;
-			} finally {
-				return this._.rights;
-			}
-		},
-		configurable: false
-	});
-	
-	Object.defineProperty(proto, "rightsOrigin", {
-		get: function () { 
-			if (this._.rightsOrigin) return this._.rightsOrigin;
-			try {
-				var rightsOriginArr = get_rights_origin(veda.ticket, this.id);
-				this._.rightsOrigin = rightsOriginArr.map(function (item) {
-					return new veda.IndividualModel( item );
-				});
-			} catch (e) {
-				this._.rightsOrigin = null;
-			} finally {
-				return this._.rightsOrigin;
-			}
-		},
-		configurable: false
-	});
-
-	/**
-	 * @method
-	 * 
-	 * You must define property in individual  
-	 * 
-	 * @param {String} property_uri name of property
-	 * @param {Function} getterCB callback function that called after get method executed
-	 * @param {Function} setterCB callback function that called after set method executed
-	 */
-	proto.defineProperty = function (property_uri, getterCB, setterCB) {
-		var self = this;
-		Object.defineProperty(this, property_uri, {
+	// Define properties from ontology in veda.IndividualModel.prototype
+	veda.IndividualModel.defineProperty = function (property_uri) {
+		Object.defineProperty(proto, property_uri, {
 			get: function () { 
+				var self = this;
 				if (!self.properties[property_uri]) return [];
 				var values = self.properties[property_uri]
 					.filter(function (value) {
@@ -153,41 +90,21 @@ veda.Module(function (veda) { "use strict";
 						return condition;
 					})
 					.map( parser );
-				if (getterCB) getterCB.call(this, values);
 				return values;
 			},
-			
 			set: function (values) {
-				self._.isSync = false;
+				this._.isSync = false;
 				var notNull = values.filter(function (i) { return i !== null });
 				var serialized = notNull.map( serializer );
-				if (self._.filtered[property_uri] && self._.filtered[property_uri].length) {
-					serialized = serialized.concat( self._.filtered[property_uri] );
+				if (this._.filtered[property_uri] && this._.filtered[property_uri].length) {
+					serialized = serialized.concat( this._.filtered[property_uri] );
 				}
-				self.properties[property_uri] = serialized;
-				if (setterCB) setterCB.call(this, notNull);
-				else self.trigger("individual:propertyModified", property_uri, notNull);
+				this.properties[property_uri] = serialized;
+				this.trigger("individual:propertyModified", property_uri, notNull);
 			},
-			
 			configurable: true
-		
 		});
-		return this;
-	};
-	
-	/**
-	 * @method
-	 * 
-	 * Remove property from individual  
-	 * 
-	 * @param {String} property_uri name of property
-	 */
-	proto.removeProperty = function (property_uri) {
-		delete this[property_uri];
-		delete this.properties[property_uri];
-		this._.isSync = false;
-		return this;
-	};
+	}
 
 	function parser(value) {
 		if (value.type === "String") {
@@ -234,9 +151,61 @@ veda.Module(function (veda) { "use strict";
 		} else {
 			return value;
 		}
-	}	
+	}
 
 	function isInteger (n) { return n % 1 === 0; }
+
+	// Special properties
+	Object.defineProperty(proto, "id", {
+		get: function () { 
+			return this.properties["@"];
+		},
+		set: function (value) { 
+			this._.isNew = false;
+			this._.isSync = false;
+			this.properties["@"] = value;
+			this.trigger("individual:idChanged", value);
+		}
+	});
+
+	Object.defineProperty(proto, "rights", {
+		get: function () { 
+			if (this._.rights) return this._.rights;
+			if (this._.isNew) {
+				this._.rights = new veda.IndividualModel();
+				this._.rights["v-s:canRead"] = [ true ];
+				this._.rights["v-s:canUpdate"] = [ true ];
+				this._.rights["v-s:canDelete"] = [ true ];
+				return this._.rights;
+			}
+			try {
+				var rightsJSON = get_rights(veda.ticket, this.id);
+				this._.rights = new veda.IndividualModel( rightsJSON );
+			} catch (e) {
+				this._.rights = null;
+			} finally {
+				return this._.rights;
+			}
+		},
+		configurable: false
+	});
+	
+	Object.defineProperty(proto, "rightsOrigin", {
+		get: function () { 
+			if (this._.rightsOrigin) return this._.rightsOrigin;
+			try {
+				var rightsOriginArr = get_rights_origin(veda.ticket, this.id);
+				this._.rightsOrigin = rightsOriginArr.map(function (item) {
+					return new veda.IndividualModel( item );
+				});
+			} catch (e) {
+				this._.rightsOrigin = null;
+			} finally {
+				return this._.rightsOrigin;
+			}
+		},
+		configurable: false
+	});
 		
 	/**
 	 * @method
@@ -268,10 +237,6 @@ veda.Module(function (veda) { "use strict";
 		} else {
 			self.properties = uri;
 		}
-		Object.keys(self.properties).map(function (property_uri) {
-			if (property_uri === "@" || property_uri === "rdf:type") { return; }
-			self.defineProperty(property_uri);
-		});
 		if (self._.cache) veda.cache[self.id] = self;
 		if (self._.init) self.init();
 		self.trigger("individual:afterLoad", self);
@@ -340,8 +305,6 @@ veda.Module(function (veda) { "use strict";
 		}
 		Object.getOwnPropertyNames(self.properties).map(function (property_uri) {
 			if (property_uri === "@" || property_uri === "rdf:type") { return; }
-			self.removeProperty(property_uri);
-			self.defineProperty(property_uri);
 			if (original[property_uri] && original[property_uri].length) {
 				self[property_uri] = original[property_uri].map( parser );
 			} else {
@@ -363,7 +326,7 @@ veda.Module(function (veda) { "use strict";
 		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) { 
 			veda.drafts.remove(this.id);
 		} 
-		this["v-s:deleted"] = [new Boolean(true)];
+		this["v-s:deleted"] = [ true ];
 		this.save(parent);
 		this.trigger("individual:afterDelete");
 		return this;
@@ -420,21 +383,11 @@ veda.Module(function (veda) { "use strict";
 	proto.init = function () {
 		var self = this;
 		self["rdf:type"].map(function (_class) {
-			if (_class.domainProperties) {
-				Object.keys(_class.domainProperties).map(function (property_uri) {
-					if (property_uri === "rdf:type") return;
-					if (property_uri === "v-s:deleted") return;
-					self.defineProperty(property_uri, undefined, function (values) {
-						self.trigger("individual:propertyModified", property_uri, values);
-					});
-				});
-			}
 			if (_class.model) {
 				var model = new Function (
-					"individual", 
 					_class.model["v-s:script"][0] + "//# sourceURL=" + _class.id + "Model.js"
 				);
-				model(self);
+				model.call(self);
 			}
 		});
 		return this;
