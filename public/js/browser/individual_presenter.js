@@ -43,7 +43,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						template = genericTemplate(individual, _class);
 					} else if (template === "json") {
 						var pre = $("<pre>"), 
-							json = individual._.individual,
+							json = individual.properties,
 							ordered = {};
 						Object.keys(json).sort().forEach(function(key) {
 							ordered[key] = json[key];
@@ -349,9 +349,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				propertyContainer.text(individual.id);
 				return;
 			}
-			if (!individual[property_uri]) {
-				individual.defineProperty(property_uri);
-			}
 			propertyModifiedHandler(property_uri);
 			// Re-render all property values at propertyModified event from model
 			function propertyModifiedHandler(doc_property_uri) {
@@ -394,9 +391,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				relTemplate = rel_inline_template.remove();
 			}
 			rel_inline_template = null;
-			if ( !about[rel_uri] ) {
-				about.defineProperty(rel_uri);
-			}
 			
 			template.on("edit", function (e) {
 				var property = new veda.IndividualModel(rel_uri);
@@ -463,7 +457,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			function embeddedHandler(doc_rel_uri, values) {
 				if (doc_rel_uri === rel_uri) {
 					values.map(function (value) {
-						if ( !value["v-s:parent"] ) { value.defineProperty("v-s:parent"); }
 						value["v-s:parent"] = [about];
 					});
 				}
@@ -532,10 +525,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				spec = specs[property_uri],
 				controlType;
 			
-			if ( !individual[property_uri] ) { 
-				individual.defineProperty(property_uri);
-			}
-
 			control.removeAttr("property");
 			
 			switch (type) {
@@ -641,10 +630,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			
 			control.removeAttr("rel");
 				
-			if ( !individual[rel_uri] ) { 
-				individual.defineProperty(rel_uri);
-			}
-			
 			var opts = {
 				individual: individual,
 				rel_uri: rel_uri,
