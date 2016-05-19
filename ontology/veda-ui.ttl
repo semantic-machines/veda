@@ -1186,7 +1186,7 @@ v-ui:DocumentEventTemplate
 			$(".stop-process", template).show();
 			$(".stop-process", template).on("click", function() {
 				if (confirm((new veda.IndividualModel("v-b:AreYouSure"))["rdfs:label"])) {
-					process['v-wf:isStopped'] = [new Boolean(true)];
+					process['v-wf:isStopped'] = [ true ];
 					process.save();
 				}
 			});
