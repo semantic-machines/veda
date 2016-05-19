@@ -39,8 +39,9 @@ v-fe:FunctionExampleModel
   rdfs:label "Модель Функции-примера"@ru ;
   v-ui:forClass v-fe:FunctionExample ;
   v-s:script """
-    individual.press = function () {
-      alert("model extention works! individual['v-fe:exampleProperty']:" + individual["v-fe:exampleProperty"].join(", "));
+	var self = this;
+    self.press = function () {
+      alert("model extention works! self['v-fe:exampleProperty']:" + self["v-fe:exampleProperty"].join(", "));
     }
   """
 .

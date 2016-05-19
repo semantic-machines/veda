@@ -85,7 +85,7 @@ v-fc:FunctionCreateModel
   rdfs:label "Модель класса v-fc:FunctionCreate"@ru ;
   v-ui:forClass v-fc:FunctionCreate ;
   v-s:script """
-var self = individual;
+var self = this;
   """
 .
 v-fc:FunctionCreateTemplate
@@ -119,7 +119,6 @@ v-fc:FunctionCreateTemplate
 			var holder = $("#holder", template).empty();
 			if (values.length) {
 				var blank = new veda.IndividualModel();
-				blank.defineProperty("v-fc:typeToCreate");
 				blank["v-fc:typeToCreate"] = values;
 				blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
 				blank.present(holder, undefined, "edit");
@@ -148,7 +147,7 @@ v-fc:BlankModel
   rdfs:label "Модель класса v-fc:Blank"@ru ;
   v-ui:forClass v-fc:Blank ;
   v-s:script """
-var self = individual,
+var self = this,
 	asp = veda.user.aspect;
 
 self.object = new veda.IndividualModel(),
@@ -165,7 +164,6 @@ Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
 	if ( self.hasValue(property_uri) && self[property_uri][0] instanceof veda.IndividualModel && self[property_uri][0].is("v-fc:Blank") ) {
 		self.object[property_uri] = self[property_uri].map(function (item) {
 			// Embedded blanks are for v-s:Embedded objects only
-			if ( !item.object["v-s:parent"] ) { item.object.defineProperty("v-s:parent"); }
 			item.object["v-s:parent"] = [ self.object ];
 			return item.object;
 		});
@@ -185,12 +183,10 @@ function updateBlank() {
 			|| property_uri === "rdfs:isDefinedBy"
 			|| property_uri === "v-s:parent"
 		) return;
-		self.defineProperty(property_uri);
 		if ( self.object.hasValue(property_uri) && self.object[property_uri][0] instanceof veda.IndividualModel && self.object[property_uri][0].is("v-s:Embedded")) {
 			self[property_uri] = self.object[property_uri].map(function (item) {
 				var blank = item.clone();
 				var types = blank["rdf:type"];
-				blank.defineProperty("v-fc:typeToCreate");
 				blank["v-fc:typeToCreate"] = types;
 				blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
 				blank["v-s:parent"] = [ self ];
