@@ -20,29 +20,41 @@ private void logger_process()
 
     while (true)
     {
-        // Receive a message from the owner thread.
-        auto        msg = receiveOnly!(char, string, string, string, string)();
-
-        char        cmd       = msg[ 0 ];
-        string      file_name = msg[ 1 ];
-
-        LoggerQueue llq = llq_2_filename.get(file_name, null);
-        if (llq is null)
+        try
         {
-            llq                         = new LoggerQueue(file_name, msg[ 2 ]);
-            llq_2_filename[ file_name ] = llq;
-        }
+            // Receive a message from the owner thread.
+            auto        msg = receiveOnly!(char, string, string, string, string)();
 
-        if (cmd == 'T')
-            llq.trace(msg[ 4 ], msg[ 3 ]);
-        else if (cmd == 'C')
-            llq.trace_log_and_console(msg[ 4 ], msg[ 3 ]);
-        else if (cmd == 'I')
-            llq.trace_io(true, msg[ 4 ]);
-        else if (cmd == 'O')
-            llq.trace_io(false, msg[ 4 ]);
-        else if (cmd == 'X')
-            return;
+            char        cmd       = msg[ 0 ];
+            string      file_name = msg[ 1 ];
+
+            LoggerQueue llq = llq_2_filename.get(file_name, null);
+            if (llq is null)
+            {
+                llq                         = new LoggerQueue(file_name, msg[ 2 ]);
+                llq_2_filename[ file_name ] = llq;
+            }
+
+            if (cmd == 'T')
+                llq.trace(msg[ 4 ], msg[ 3 ]);
+            else if (cmd == 'C')
+                llq.trace_log_and_console(msg[ 4 ], msg[ 3 ]);
+            else if (cmd == 'I')
+                llq.trace_io(true, msg[ 4 ]);
+            else if (cmd == 'O')
+                llq.trace_io(false, msg[ 4 ]);
+            else if (cmd == 'X')
+                return;
+        }
+        catch (OwnerTerminated ot)
+        {
+            break;
+        }
+        catch (Throwable tr)
+        {
+            writeln("ERR! logging, ex=", tr.msg);
+            break;
+        }
     }
 }
 

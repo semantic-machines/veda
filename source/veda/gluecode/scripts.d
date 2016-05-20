@@ -12,7 +12,6 @@ private import veda.core.common.context, veda.util.tools, veda.core.log_msg, ved
 private import veda.process.child_process;
 private import search.vel, search.vql, veda.gluecode.script;
 
-
 void main(char[][] args)
 {
     process_name = "scripts";

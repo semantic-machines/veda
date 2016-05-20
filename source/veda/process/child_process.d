@@ -1,15 +1,18 @@
 module veda.process.child_process;
 
-private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime;
-import std.socket    : InternetAddress, Socket, SocketException, SocketSet, TcpSocket;
-import std.algorithm : remove;
+private
+{
+    import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
+    import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, std.algorithm : remove;
+    import requests.http, requests.streams;
+    import backtrace.backtrace, Backtrace = backtrace.backtrace;
+    import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+    import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+    import veda.core.common.context, veda.util.tools, veda.onto.onto;
+    import veda.core.bind.libwebsocketd;
+}
 
-private import backtrace.backtrace, Backtrace = backtrace.backtrace;
-private import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
-private import veda.core.common.context, veda.util.tools, veda.onto.onto;
-import util.logger;
-import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
+bool   f_listen_exit = false;
 
 logger _log;
 
@@ -21,15 +24,6 @@ extern (C) void handleTermination(int _signal)
     writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));
     _log.close();
 
-    foreach (soc; reads)
-    {
-        writeln(process_name, ": close socket=", soc.localAddress, "- ", soc.remoteAddress);
-        if (soc.isAlive())
-        {
-            soc.close();
-        }
-    }
-
     writeln("!SYS: ", process_name, ": exit");
 }
 
@@ -38,29 +32,76 @@ shared static this()
     bsd_signal(SIGINT, &handleTermination);
 }
 
-Socket[] reads;
-bool     f_listen_exit = false;
+int          connection_flag = 0;
+int          destroy_flag    = 0;
+int          writeable_flag  = 0;
+
+ChildProcess g_child_process;
 
 class ChildProcess
 {
-    Context    context;
-    Onto       onto;
+    long                      op_id;
 
-    Individual node;
+    long                      count_signal           = 0;
+    long                      count_readed           = 0;
+    long                      count_success_prepared = 0;
+    Queue                     queue;
+    Consumer                  cs;
 
-    ushort     port;
-    string     host;
-    string     queue_name = "individuals-flow";
+    lws_context               *ws_context;
+    lws_context_creation_info info;
+    lws                       *wsi;
+    lws_protocols[]           protocol = new lws_protocols[ 2 ];
+
+    Context                   context;
+    Onto                      onto;
+
+    Individual                node;
+
+    ushort                    port;
+    string                    host;
+    string                    queue_name = "individuals-flow";
+    string                    parent_url = "http://127.0.0.1:8080";
+    Ticket                    sticket;
+
+    logger log()
+    {
+        if (_log is null)
+            _log = new logger("veda-core-" ~ process_name, "log", process_name);
+        return _log;
+    }
 
     this(P_MODULE _module_name, string _host, ushort _port)
     {
-        process_name = text(_module_name);
-        port         = _port;
-        host         = _host;
-        _log         = new logger("veda-core-" ~ process_name, "log", "PROCESS");
-        context      = new PThreadContext("cfg:standart_node", process_name, _module_name, "http://localhost:8080");
-        Ticket sticket;
-        sticket = *context.get_systicket_from_storage();
+        g_child_process = this;
+        process_name    = text(_module_name);
+        port            = _port;
+        host            = _host;
+        _log            = new logger("veda-core-" ~ process_name, "log", "PROCESS");
+        context         = new PThreadContext("cfg:standart_node", process_name, _module_name, parent_url);
+        sticket         = *context.get_systicket_from_storage();
+
+        //if (sticket is Ticket.init || sticket.result != ResultCode.OK)
+        {
+            writeln("SYS TICKET, systicket=", sticket);
+
+            bool is_superadmin = false;
+
+            void trace(string resource_group, string subject_group, string right)
+            {
+                if (subject_group == "cfg:SuperUser")
+                    is_superadmin = true;
+            }
+
+            while (is_superadmin == false)
+            {
+                context.get_rights_origin(&sticket, "cfg:SuperUser", &trace);
+
+                writeln("@@ child_process is_superadmin=", is_superadmin);
+                core.thread.Thread.sleep(dur!("seconds")(1));
+            }
+        }
+
         set_global_systicket(sticket);
 
         if (node == Individual.init)
@@ -70,19 +111,50 @@ class ChildProcess
         }
     }
 
-    logger log()
+    private void init_chanel()
     {
-        if (_log is null)
-            _log = new logger("veda-core-" ~ process_name, "log", process_name);
-        return _log;
-    }
+        protocol[ 0 ].name                  = "veda-module-protocol\0";
+        protocol[ 0 ].callback              = &ws_service_callback;
+        protocol[ 0 ].per_session_data_size = 16;
+        protocol[ 0 ].rx_buffer_size        = 0;
+        protocol[ 0 ].id                    = 0;
 
-    long     count_signal           = 0;
-    long     count_readed           = 0;
-    long     count_success_prepared = 0;
-    long     op_id;
-    Queue    queue;
-    Consumer cs;
+        info.port      = CONTEXT_PORT_NO_LISTEN;
+        info.protocols = &protocol[ 0 ];
+//    info.extensions = lws_get_internal_extensions();
+        info.gid     = -1;
+        info.uid     = -1;
+        info.options = 0;
+
+        ws_context = lws_create_context(&info);
+
+        writeln("[Main] context created.");
+
+        if (ws_context is null)
+        {
+            writeln("[Main] context is NULL.");
+            return;
+        }
+
+        lws_client_connect_info i;
+
+        i.host    = "localhost\0";
+        i.origin  = i.host;
+        i.address = i.host;
+        i.port    = 8091;
+        i.context = ws_context;
+        i.path    = "/ws\0";
+
+        wsi = lws_client_connect_via_info(&i);
+
+        if (wsi is null)
+        {
+            writeln("[Main] wsi create error.");
+            return;
+        }
+
+        writeln("[Main] wsi create success.");
+    }
 
     void run()
     {
@@ -98,174 +170,43 @@ class ChildProcess
             queue.open();
         }
 
-
         cs = new Consumer(queue, process_name);
         cs.open();
 
-        char[ 1024 ] buf;
+        //if (count_signal == 0)
+        //    prepare_queue();
 
-        if (count_signal == 0)
-            prepare_queue();
+        init_chanel();
 
-        auto listener = new TcpSocket();
-        listener.blocking = false;
+//        send_conn_info_to_parent(host, port);
 
-        bool is_connected = false;
-
-        int  count_attempt = 0;
-        while (is_connected == false)
+        bool f1 = false;
+        while (!destroy_flag)
         {
-            count_attempt++;
-            try
+            lws_service(ws_context, 50);
+
+            // send module name
+            if (connection_flag && f1 == false)
             {
-                listener.bind(new InternetAddress(host, port));
-                listener.listen(10);
-                log.trace("Listening on port %d.", port);
-                is_connected = true;
-            }
-            catch (Throwable tr)
-            {
-                log.trace("fail bind ex=%s, sleep, and repeate (%d)", tr.msg, count_attempt);
-                core.thread.Thread.sleep(dur!("seconds")(10));
-                try
-                {
-                    listener.close();
-                    listener = new TcpSocket();
-                    listener.connect(new InternetAddress(host, port));
-                    listener.close();
-                }
-                catch (Throwable tr1)
-                {
-                    log.trace("fail undind, ex=%s", tr1.msg);
-                }
+                websocket_write_back(wsi, "module-name=" ~ process_name);
+                lws_callback_on_writable(wsi);
+                f1 = true;
             }
         }
 
-        enum MAX_CONNECTIONS = 60;
-        // Room for listener.
-        SocketSet socketSet = new SocketSet(MAX_CONNECTIONS + 1);
-        ubyte[]   buff      = new ubyte[ 1024 ];
+        lws_context_destroy(ws_context);
 
-        while (true)
-        {
-            socketSet.add(listener);
-
-            foreach (sock; reads)
-                socketSet.add(sock);
-
-            Socket.select(socketSet, null, null);
-
-            if (f_listen_exit == true)
-            {
-                log.trace("stop listen port");
-                return;
-            }
-            for (size_t i = 0; i < reads.length; i++)
-            {
-                if (reads[ i ] !is null && socketSet.isSet(reads[ i ]))
-                {
-                    {
-                        auto datLength = reads[ i ].receive(buf[]);
-
-                        if (datLength == Socket.ERROR)
-                            log.trace("Connection error.");
-                        else if (datLength != 0)
-                        {
-                            char[] msg = buf[ 0..datLength ];
-
-                            string res;
-
-                            if (msg == "get_opid")
-                                res = text(op_id);
-                            else
-                                res = "Ok";
-
-                            //writefln("Received %d bytes from %s: \"%s\", send %s", datLength, reads[ i ].remoteAddress().toString(), msg, res);
-
-                            long len = (cast(ubyte[])res).length;
-
-                            buff[ 0 ]          = cast(ubyte)(len & 0x00FF);
-                            buff[ 1 ]          = cast(ubyte)((len & 0xFF00) >> 8);
-                            buff[ 2..len + 2 ] = (cast(ubyte[])res);
-
-                            reads[ i ].send(buff[ 0..len + 2 ]);
-
-                            if (msg != "get_opid")
-                                prepare_queue();
-
-                            continue;
-                        }
-                        else
-                        {
-                            try
-                            {
-                                // if the connection closed due to an error, remoteAddress() could fail
-                                log.trace("Connection from %s closed.", reads[ i ].remoteAddress().toString());
-                            }
-                            catch (SocketException)
-                            {
-                                log.trace("Connection closed.");
-                            }
-                        }
-                    }
-
-                    // release socket resources now
-                    reads[ i ].close();
-
-                    reads = reads.remove(i);
-                    // i will be incremented by the for, we don't want it to be.
-                    i--;
-
-                    log.trace("Total connections: %d", reads.length);
-                }
-            }
-
-            if (socketSet.isSet(listener))    // connection request
-            {
-                Socket sn = null;
-                scope (failure)
-                {
-                    log.trace("Error accepting");
-
-                    if (sn)
-                        sn.close();
-                }
-
-                try
-                {
-                    sn = listener.accept();
-                }
-                catch (Exception ex)
-                {
-                    sn = null;
-                    log.trace("ERR! ex=%s", ex.msg);
-                }
-
-//                assert(sn.isAlive);
-//                assert(listener.isAlive);
-
-                if (sn is null)
-                    return;
-
-                if (reads.length < MAX_CONNECTIONS)
-                {
-                    sn.setKeepAlive(1, 1);
-                    log.trace("Connection from %s established.", sn.remoteAddress().toString());
-                    reads ~= sn;
-                    log.trace("Total connections: %d", reads.length);
-                }
-                else
-                {
-                    log.trace("Rejected connection from %s; too many connections.", sn.remoteAddress().toString());
-                    sn.close();
-//                    assert(!sn.isAlive);
-//                    assert(listener.isAlive);
-                }
-            }
-
-            socketSet.reset();
-        }
+        writeln("EXIT");
     }
+
+///////////////////////////////////////////////////
+
+    abstract bool prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
+                          string event_id,
+                          long op_id);
+
+    abstract void configure();
+
 
     private void prepare_queue()
     {
@@ -340,14 +281,84 @@ class ChildProcess
         if (count_readed != count_success_prepared)
             log.trace("WARN! : readed=%d, success_prepared=%d", count_readed, count_success_prepared);
     }
-
-
-
-
-
-    abstract bool prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                          string event_id,
-                          long op_id);
-
-    abstract void configure();
 }
+
+int websocket_write_back(lws *wsi_in, string str)
+{
+    if (str is null)
+        return -1;
+
+    int     pre = LWS_SEND_BUFFER_PRE_PADDING;
+    int     n;
+    int     len = cast(int)str.length;
+
+    ubyte[] _out  = new ubyte[ pre + len ];
+    ubyte[] frame = _out[ pre..pre + str.length ];
+
+    frame[ 0..$ ] = cast(ubyte[])str[ 0..$ ];
+
+    //* write out*/
+    n = lws_write(wsi_in, cast(ubyte *)frame, len, lws_write_protocol.LWS_WRITE_TEXT);
+
+    //writeln("[websocket_write_back]", str, ", n=", n);
+
+    return n;
+}
+
+extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason, void *user, void *_in, size_t len)
+{
+    //writeln ("@@reason=", reason,  ", msg_count=", msg_count);
+
+    switch (reason)
+    {
+    case lws_callback_reasons.LWS_CALLBACK_CLIENT_ESTABLISHED:
+        writeln("[CP]Connect with server success.");
+        connection_flag = 1;
+        break;
+
+    case lws_callback_reasons.LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
+        writeln("[CP] Connect with server error.");
+        destroy_flag    = 1;
+        connection_flag = 0;
+        break;
+
+    case lws_callback_reasons.LWS_CALLBACK_CLOSED:
+        writeln("[CP] LWS_CALLBACK_CLOSED");
+        destroy_flag    = 1;
+        connection_flag = 0;
+        break;
+
+    case lws_callback_reasons.LWS_CALLBACK_CLIENT_RECEIVE:
+        char[] msg = fromStringz(cast(char *)_in);
+        //writeln("[CP] Client recieved:", msg);
+
+        string res;
+        if (msg == "get_opid")
+            res = text(g_child_process.op_id);
+        else
+            res = "Ok";
+
+        websocket_write_back(wsi, res); // ~ text(msg_count));
+
+        if (msg != "get_opid")
+            g_child_process.prepare_queue();
+
+
+//        if (writeable_flag)
+//            destroy_flag = 1;
+
+        break;
+
+    case lws_callback_reasons.LWS_CALLBACK_CLIENT_WRITEABLE:
+        writeln("[CP] On writeable is called.");
+        //websocket_write_back(wsi, "test msg-count=" ~ text(msg_count));
+        //msg_count++;
+        writeable_flag = 1;
+        break;
+
+    default:
+    }
+
+    return 0;
+}
+

@@ -30,3 +30,4 @@ sudo apt-get install -y libraptor2-dev
 sudo apt-get install -y libevent-dev libssl-dev
 sudo apt-get install -y libmysqlclient-dev
 sudo apt-get install libtool pkg-config build-essential autoconf automake
+sudo apt-get install -y libwebsockets-dev

@@ -108,6 +108,13 @@ void main(char[][] args)
         return;
     }
 
+        auto server_logFile = File("veda-server-errors.log", "w");
+        writeln("start veda-server");
+        auto server_pid = spawnProcess("./veda-server",
+                                std.stdio.stdin,
+                                std.stdio.stdout,
+                                server_logFile, env, Config.suppressConsole);
+
 
     auto fanout_logFile = File("veda-fanout-errors.log", "w");
     writeln("start veda-fanout");
@@ -123,17 +130,9 @@ void main(char[][] args)
                                     std.stdio.stdout,
                                     scripts_logFile, env, Config.suppressConsole);
 
-    while (true)
-    {
-        auto server_logFile = File("veda-server-errors.log", "w");
-        writeln("start veda-server");
-        auto pid = spawnProcess("./veda-server",
-                                std.stdio.stdin,
-                                std.stdio.stdout,
-                                server_logFile, env, Config.suppressConsole);
-        exit_code = wait(pid);
+
+        exit_code = wait(server_pid);
 
         if (exit_code == -SIGKILL)
             writeln("veda-server terminated, code=", exit_code);
-    }
 }

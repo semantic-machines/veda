@@ -35,7 +35,7 @@ logger log()
 // ////// ////// ///////////////////////////////////////////
 
 
-Tid    dummy_tid;
+Tid dummy_tid;
 
 private enum CMD : byte
 {
@@ -1044,14 +1044,13 @@ class PThreadContext : Context
                 version (libRequests)
                 {
                     import requests.http, requests.streams;
-                    
 
                     auto rq = Request();
                     rq.timeout = 1.seconds;
                     //rq.verbosity = 2;
 
                     if (trace_msg[ T_API_220 ] == 1)
-                        log.trace("[%s] store_individual use EXTERNAL", name);
+                        log.trace("[%s] store_individual[%s] use EXTERNAL, start", name, indv.uri);
 
                     string url;
 
@@ -1071,7 +1070,7 @@ class PThreadContext : Context
                     req_body[ "event_id" ]       = event_id;
                     req_body[ "transaction_id" ] = "";
 
-                    int max_count_attempt = 100;
+                    int max_count_attempt = 10;
                     int count_attempt     = 0;
 
                     while (count_attempt < max_count_attempt)
@@ -1094,7 +1093,7 @@ class PThreadContext : Context
                         catch (TimeoutException)
                         {
                             res.result = ResultCode.Connect_Error;
-                    		rq.timeout = 3.seconds;  
+                            rq.timeout = 3.seconds;
                         }
                         catch (Exception ex)
                         {
@@ -1113,11 +1112,14 @@ class PThreadContext : Context
                             break;
                         }
 
-                        core.thread.Thread.sleep(dur!("msecs")(count_attempt*10));
+                        core.thread.Thread.sleep(dur!("msecs")(count_attempt * 10));
                     }
 
                     if (res.result != ResultCode.OK && res.result != ResultCode.Duplicate_Key)
                         log.trace("ERR! [%s] store_individual, use EXTERNAL, err=[%s], req=[%s]", name, res.result, text(req_body));
+
+                    if (trace_msg[ T_API_220 ] == 1)
+                        log.trace("[%s] store_individual[%s] use EXTERNAL, end", name, indv.uri);
                 }
                 return res;
             }
@@ -1245,7 +1247,7 @@ class PThreadContext : Context
                                 veda.core.glue_code.ltrs.execute_script(new_state);
                             }
                         }
-*/
+ */
 //                    if (event_id != "fanout")
                         veda.core.threads.dcs_manager.ev_update_individual(cmd, ticket.user_uri, new_state, prev_state, event_id, res.op_id);
 
@@ -1254,7 +1256,7 @@ class PThreadContext : Context
                     else
                     {
                         res.result = ResultCode.Internal_Server_Error;
-                    }                   
+                    }
                 }
                 return res;
             }

@@ -131,9 +131,6 @@ interface VedaStorageRest_API {
 
     @path("abort_transaction") @method(HTTPMethod.PUT)
     void abort_transaction(string transaction_id);
-
-    @path("set_module_info") @method(HTTPMethod.PUT)
-    void set_module_info(string ticket, string module_name, string host, ushort port);
 }
 
 
@@ -765,7 +762,7 @@ class VedaStorageRest : VedaStorageRest_API
 //        }
 
         Ticket     *ticket = context.get_ticket(_ticket);
-
+//log.trace("put_individual #1");
         ResultCode rc = ticket.result;
 
         if (ticket.result == ResultCode.OK)
@@ -782,7 +779,10 @@ class VedaStorageRest : VedaStorageRest_API
         }
 
         if (res.result != ResultCode.OK)
+        {
             throw new HTTPStatusException(res.result);
+        }
+//log.trace("put_individual #8");
 
         return res;
     }
@@ -842,45 +842,6 @@ class VedaStorageRest : VedaStorageRest_API
             throw new HTTPStatusException(rc);
 
         return res;
-    }
-
-    void set_module_info(string _ticket, string module_name, string host, ushort port)
-    {
-        Ticket     *ticket = context.get_ticket(_ticket);
-
-        OpResult   res;
-        ResultCode rc = ticket.result;
-
-        if (rc == ResultCode.OK)
-        {
-            try
-            {
-                bool is_superadmin = false;
-
-                void trace(string resource_group, string subject_group, string right)
-                {
-                    if (subject_group == "cfg:SuperUser")
-                        is_superadmin = true;
-                }
-
-                context.get_rights_origin(ticket, "cfg:SuperUser", &trace);
-
-                writeln("@@ set_module_info is_superadmin=", is_superadmin);
-
-                if (is_superadmin)
-                {
-                    veda.core.threads.dcs_manager.set_module_info(module_name, host, port);
-                }
-            }
-            catch (Throwable tr)
-            {
-                log.trace("ERR! set_module_info, err", tr.msg);
-                throw new HTTPStatusException(ResultCode.Internal_Server_Error);
-            }
-        }
-
-        if (res.result != ResultCode.OK)
-            throw new HTTPStatusException(rc);
     }
 
     string begin_transaction()

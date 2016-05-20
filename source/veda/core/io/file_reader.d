@@ -42,7 +42,7 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
                 send(tid_response_reciever, true);
             });
 
-    core.thread.Thread.sleep(dur!("msecs")(3000));
+    //core.thread.Thread.sleep(dur!("msecs")(3000));
 
     Context context = new PThreadContext(node_id, "file_reader", id);
 
@@ -51,14 +51,14 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
     long    count_individuals = context.count_individuals();
     if (count_individuals < 2)
     {
-        bool all_modules_ready = false;
+/*        bool all_modules_ready = false;
         while (all_modules_ready == false)
         {
             all_modules_ready = veda.core.threads.dcs_manager.examine_modules();
             if (all_modules_ready == false)
                 core.thread.Thread.sleep(dur!("msecs")(2000));
         }
-
+ */
         string[] files;
 
         foreach (o; oFiles)

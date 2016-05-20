@@ -1,20 +1,115 @@
 /**
- * Data Change Signal thread
+ * Data Change Signal
  */
 
 module veda.core.threads.dcs_manager;
 
-import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
+import core.thread, std.stdio, std.conv, std.file, std.datetime, std.outbuffer, std.string;
 import util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.queue;
 import backtrace.backtrace, Backtrace = backtrace.backtrace;
 import veda.type, veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.log_msg, veda.onto.individual,
        veda.onto.resource, veda.util.tools;
+import vibe.core.concurrency, vibe.core.task, vibe.http.router                 : URLRouter;
+import vibe.inet.url, vibe.http.client, vibe.http.server, vibe.http.websockets : WebSocket, handleWebSockets;
 
-version (VibeDefaultMain)
+
+private shared Task task_of_scripts;
+private shared Task task_of_fanout;
+
+void handleWebSocketConnection(scope WebSocket socket)
 {
-    import vibe.core.net : TCPConnection;
-    import vibe.core.net : connectTCP;
+    string module_name;
+
+    try
+    {
+        while (true)
+        {
+            if (!socket.connected)
+                break;
+
+            string   inital_message = socket.receiveText();
+            string[] kv             = inital_message.split('=');
+
+            if (kv.length == 2)
+            {
+                if (kv[ 0 ] == "module-name")
+                {
+                    module_name = kv[ 1 ];
+                    if (module_name == "scripts")
+                        task_of_scripts = Task.getThis();
+                    else if (module_name == "fanout")
+                        task_of_fanout = Task.getThis();
+                    else
+                        module_name = null;
+                }
+            }
+
+            if (module_name !is null)
+            {
+                log.trace("create chanel [%s]", module_name);
+
+                while (true)
+                {
+                    string msg;
+                    Task   task_to;
+                    vibe.core.concurrency.receive(
+                                                  (string _msg, Task _to)
+                                                  {
+                                                      msg = _msg;
+                                                      task_to = _to;
+                                                  }
+                                                  );
+
+                    //log.trace("Sending '%s'.", msg);
+                    socket.send(msg);
+                    //log.trace("Ok");
+                    string resp = socket.receiveText();
+                    //log.trace("recv '%s'", resp);
+
+                    if (msg == "get_opid")
+                    {
+                        long l_res;
+
+                        try
+                        {
+                            l_res = to!long (resp);
+                        }
+                        catch (Throwable tr)
+                        {
+                            l_res = -1;
+                        }
+                        vibe.core.concurrency.send(task_to, l_res);
+                    }
+                }
+            }
+        }
+    }
+    catch (Throwable tr)
+    {
+        log.trace("err on chanel [%s] ex=%s", module_name, tr.msg);
+    }
+
+    if (module_name == "scripts")
+        task_of_scripts = shared(Task).init;
+    else if (module_name == "fanout")
+        task_of_fanout = shared(Task).init;
+
+    log.trace("chanel [%s] is closed", module_name);
 }
+
+
+shared static this()
+{
+    auto router = new URLRouter;
+    router.get("/ws", handleWebSockets(&handleWebSocketConnection));
+
+    auto settings = new HTTPServerSettings;
+    settings.port          = 8091;
+    settings.bindAddresses = [ "127.0.0.1" ];
+    listenHTTP(settings, router);
+    log.trace("listen %s:%s", text(settings.bindAddresses), text(settings.port));
+}
+
 
 string     node_id;
 Context    context;
@@ -36,104 +131,115 @@ alias log mlog;
 // ////// ////// ///////////////////////////////////////////
 public void set_module_info(string module_name, string host, ushort port)
 {
-    Tid tid_dcs = getTid(P_MODULE.dcs);
+    std.concurrency.Tid tid_dcs = getTid(P_MODULE.dcs);
 
-    if (tid_dcs != Tid.init)
+    if (tid_dcs != std.concurrency.Tid.init)
     {
-        send(tid_dcs, module_name, host, port);
+        std.concurrency.send(tid_dcs, module_name, host, port);
     }
 }
 
 public void ev_update_individual(byte cmd, string user_uri, string cur_state, string prev_state, string event_id, long op_id)
 {
-    Tid tid_dcs = getTid(P_MODULE.dcs);
+    std.concurrency.Tid tid_dcs = getTid(P_MODULE.dcs);
 
-    if (tid_dcs != Tid.init)
+    if (tid_dcs != std.concurrency.Tid.init)
     {
-        send(tid_dcs, cast(CMD)cmd, user_uri, prev_state, cur_state, event_id, op_id);
+        std.concurrency.send(tid_dcs, cast(CMD)cmd, user_uri, prev_state, cur_state, event_id, op_id);
     }
 }
 
 public bool examine_modules()
 {
-    bool all_ready = false;
-    Tid  tid_dcs   = getTid(P_MODULE.dcs);
+    bool                all_ready = false;
 
-    if (tid_dcs != Tid.init)
+    std.concurrency.Tid tid_dcs = getTid(P_MODULE.dcs);
+
+    if (tid_dcs != std.concurrency.Tid.init)
     {
-        send(tid_dcs, CMD.EXAMINE, thisTid);
-        receive((bool _all_ready)
-                {
-                    all_ready = _all_ready;
-                });
+        std.concurrency.send(tid_dcs, CMD.EXAMINE, std.concurrency.thisTid);
+        std.concurrency.receive((bool _all_ready)
+                                {
+                                    all_ready = _all_ready;
+                                });
     }
     return all_ready;
 }
 
 long timeout = 1_000;
 
+public shared(Task) getTaskOfPMODULE(P_MODULE pm)
+{
+    if (pm == P_MODULE.scripts)
+        return task_of_scripts;
+    else if (pm == P_MODULE.fanout)
+        return task_of_fanout;
+
+    return shared(Task).init;
+}
+
 public void wait_module(P_MODULE pm, long op_id)
 {
-    //writeln ("@d dsc:wait_module");
-    Tid  tid_dcs = getTid(P_MODULE.dcs);
+    long op_id_from_module;
 
-    long wait_time;
+    Task task = getTaskOfPMODULE(pm);
 
-    if (tid_dcs != Tid.init)
+    if (task_of_scripts is shared(Task).init)
+        return;
+
+    long wait_time = 0;
+
+    while (op_id > op_id_from_module)
     {
-        long op_id_from_module = 0;
+        vibe.core.concurrency.send(task, "get_opid", Task.getThis());
+        vibe.core.concurrency.receive((long _op_id)
+                                      {
+                                          op_id_from_module = _op_id;
+                                      });
 
-        while (op_id > op_id_from_module)
+        if (op_id_from_module >= op_id)
+            break;
+
+        core.thread.Thread.sleep(dur!("msecs")(100));
+        wait_time += 100;
+
+        if (wait_time > timeout)
         {
-            send(tid_dcs, CMD.GET, pm, thisTid);
-            receive((long _op_id)
-                    {
-                        op_id_from_module = _op_id;
-                    });
-
-            if (op_id_from_module >= op_id)
-                break;
-
-            core.thread.Thread.sleep(dur!("msecs")(100));
-            wait_time += 100;
-
-            if (wait_time > timeout)
-            {
-                writeln("WARN! timeout (wait opid=", op_id, ", opid from module = ", op_id_from_module, ") wait_module:", pm);
-                break;
-            }
+            writeln("WARN! timeout (wait opid=", op_id, ", opid from module = ", op_id_from_module, ") wait_module:", pm);
+            break;
         }
     }
 }
 
 public long get_opid(P_MODULE pm)
 {
-    Tid  tid_dcs           = getTid(P_MODULE.dcs);
-    long op_id_from_module = 0;
+    long op_id_from_module;
 
-    send(tid_dcs, CMD.GET, pm, thisTid);
-    receive((long _op_id)
-            {
-                op_id_from_module = _op_id;
-            });
+    Task task = getTaskOfPMODULE(pm);
 
+    if (task_of_scripts is shared(Task).init)
+        return -1;
+
+    vibe.core.concurrency.send(task, "get_opid", Task.getThis());
+    vibe.core.concurrency.receive((long _op_id)
+                                  {
+                                      op_id_from_module = _op_id;
+                                  });
     return op_id_from_module;
 }
 
 public void close()
 {
-    Tid tid_dcs = getTid(P_MODULE.dcs);
+    std.concurrency.Tid tid_dcs = getTid(P_MODULE.dcs);
 
-    send(tid_dcs, CMD.CLOSE, thisTid);
-    receive((long _op_id)
-            {
-            });
+    std.concurrency.send(tid_dcs, CMD.CLOSE, std.concurrency.thisTid);
+    std.concurrency.receive((long _op_id)
+                            {
+                            });
 }
 
 
 Queue queue;
-OutSignalChanel[ P_MODULE ]              osch_2_name;
-
 
 shared static ~this()
 {
@@ -147,6 +253,8 @@ shared static ~this()
 
 void dcs_thread(string thread_name, string _node_id)
 {
+    P_MODULE[] modules = [ P_MODULE.fanout, P_MODULE.scripts ];
+
     node_id = _node_id;
     scope (exit)
     {
@@ -154,123 +262,78 @@ void dcs_thread(string thread_name, string _node_id)
     }
 
     // SEND ready
-    receive((Tid tid_response_reciever)
-            {
-                send(tid_response_reciever, true);
-            });
-
-    core.thread.Thread.sleep(dur!("msecs")(3000));
+    std.concurrency.receive((std.concurrency.Tid tid_response_reciever)
+                            {
+                                std.concurrency.send(tid_response_reciever, true);
+                            });
 
     core.thread.Thread.getThis().name = thread_name;
-    osch_2_name[ P_MODULE.fanout ]  = new OutSignalChanel("fanout", "127.0.0.1", 8081);
-    osch_2_name[ P_MODULE.scripts ] = new OutSignalChanel("scripts", "127.0.0.1", 8082);
 
     queue = new Queue("individuals-flow", Mode.RW);
     queue.remove_lock();
     queue.open();
 
+    core.thread.Thread.sleep(dur!("msecs")(3000));
+
+    Task main_loop_task = Task.getThis();
+
     while (true)
     {
         try
         {
-            receive(
-                    (CMD cmd, Tid tid_response_reciever)
-                    {
-                        if (cmd == CMD.EXAMINE)
-                        {
-                            log.trace("examine modules");
-                            byte count_ready_module = 0;
-                            foreach (name, osch; osch_2_name)
-                            {
-                                string res = osch.send_signal("get_opid");
-
-                                if (res.length > 0)
-                                {
-                                    count_ready_module++;
-                                }
-                            }
-                            log.trace("examine modules, count_ready_module=%d, all=%d", count_ready_module, osch_2_name.keys.length);
-                            send(tid_response_reciever, osch_2_name.keys.length == count_ready_module);
-                        }
-                        else if (cmd == CMD.CLOSE)
-                        {
-                            foreach (name, osch; osch_2_name)
-                            {
-                                osch.disconnect();
-                            }
-                            send(tid_response_reciever, 0);
-                        }
-                    },
-                    (string module_name, string host, ushort port)
-                    {
-                    	foreach (pname ; osch_2_name.keys)
-                    	{
-                    		if (text (pname) == module_name)
-                    		{
-                    			OutSignalChanel osch = new OutSignalChanel(module_name, host, port);
-                    			osch.reconnect();
-    							osch_2_name[pname]  = osch;                    			
-                    		}                    	
-                    	}	                    
-                    },
-                    (CMD cmd, P_MODULE pm, Tid tid_response_reciever)
-                    {
-                        long op_id_from_module;
-                        if (cmd == CMD.GET)
-                        {
-                            OutSignalChanel osch = osch_2_name.get(pm, null);
-                            if (osch !is null)
-                            {
-                                osch.send_is_ready = true;
-                                string res = osch.send_signal("get_opid");
-
-                                if (res.length > 0)
-                                {
-                                    try
+            std.concurrency.receive(
+                                    (CMD cmd, std.concurrency.Tid tid_response_reciever)
                                     {
-                                        op_id_from_module = to!long (res[ 0 ]);
-                                    }
-                                    catch (Exception ex)
+                                        if (cmd == CMD.EXAMINE)
+                                        {
+                                            log.trace("examine modules");
+                                            byte count_ready_module = 0;
+
+                                            if (task_of_scripts !is shared(Task).init)
+                                                count_ready_module++;
+
+                                            count_ready_module++;
+
+                                            log.trace("examine modules, count_ready_module=%d, all=%d", count_ready_module, 2);
+                                            std.concurrency.send(tid_response_reciever, 2 == count_ready_module);
+                                        }
+                                        else if (cmd == CMD.CLOSE)
+                                        {
+                                            //TODO: send close to Task
+
+                                            std.concurrency.send(tid_response_reciever, 0);
+                                        }
+                                    },
+                                    (CMD cmd, string user_uri, string prev_state, string new_state, string event_id, long op_id)
                                     {
-                                        op_id_from_module = -1;
-                                    }
-                                }
-                            }
-                        }
-                        send(tid_response_reciever, op_id_from_module);
-                    },
-                    (CMD cmd, string user_uri, string prev_state, string new_state, string event_id, long op_id)
-                    {
-                        Individual imm;
-                        imm.uri = text(op_id);
-                        imm.addResource("cmd", Resource(cmd));
+                                        Individual imm;
+                                        imm.uri = text(op_id);
+                                        imm.addResource("cmd", Resource(cmd));
 
-                        if (user_uri !is null && user_uri.length > 0)
-                            imm.addResource("user_uri", Resource(DataType.String, user_uri));
+                                        if (user_uri !is null && user_uri.length > 0)
+                                            imm.addResource("user_uri", Resource(DataType.String, user_uri));
 
-                        imm.addResource("new_state", Resource(DataType.String, new_state));
+                                        imm.addResource("new_state", Resource(DataType.String, new_state));
 
-                        if (prev_state !is null && prev_state.length > 0)
-                            imm.addResource("prev_state", Resource(DataType.String, prev_state));
+                                        if (prev_state !is null && prev_state.length > 0)
+                                            imm.addResource("prev_state", Resource(DataType.String, prev_state));
 
-                        if (event_id !is null && event_id.length > 0)
-                            imm.addResource("event_id", Resource(DataType.String, event_id));
+                                        if (event_id !is null && event_id.length > 0)
+                                            imm.addResource("event_id", Resource(DataType.String, event_id));
 
-                        imm.addResource("op_id", Resource(op_id));
+                                        imm.addResource("op_id", Resource(op_id));
 
-                        //writeln ("*imm=[", imm, "]");
+                                        //writeln ("*imm=[", imm, "]");
 
-                        string cbor = individual2cbor(&imm);
-                        //writeln("*cbor.length=", cbor.length);
+                                        string cbor = individual2cbor(&imm);
+                                        //writeln("*cbor.length=", cbor.length);
 
-                        queue.push(cbor);
+                                        queue.push(cbor);
 
-                        foreach (name, osch; osch_2_name)
-                        {
-                            osch.send_signal(text(queue.count_pushed));
-                        }
-                    },
-                    (Variant v) { log.trace("::dcs_thread::Received some other type. %s", text(v)); });
+                                        if (task_of_scripts !is shared(Task).init)
+                                            vibe.core.concurrency.send(task_of_scripts, text(op_id), main_loop_task);
+                                    },
+                                    (std.concurrency.Variant v) { log.trace("::dcs_thread::Received some other type. %s", text(v)); });
         }
         catch (Throwable ex)
         {
@@ -278,109 +341,3 @@ void dcs_thread(string thread_name, string _node_id)
         }
     }
 }
-
-
-class OutSignalChanel
-{
-    string name;
-    string host;
-    ushort port;
-    bool   send_is_ready = true;
-    long   last_fail_send;
-
-    version (VibeDefaultMain)
-    {
-        import vibe.d;
-
-        TCPConnection con = null;
-    }
-
-    this(string _name, string _host, ushort _port)
-    {
-        name = _name;
-        host = _host;
-        port = _port;
-    }
-
-    ~this()
-    {
-        disconnect();
-    }
-
-    public void disconnect()
-    {
-        version (VibeDefaultMain)
-        {
-            con.flush();
-            con.finalize();
-            con.close();
-            mlog.trace("disconnect %s, %s : %d ", name, host, port);
-        }
-    }
-
-    private void reconnect()
-    {
-        try
-        {
-            mlog.trace("reconnect");
-
-            if (con !is null && con.connected() == true)
-                con.close();
-
-            con = connectTCP(host, port);
-            con.tcpNoDelay(true);
-            con.keepAlive(true);
-
-            send_is_ready = true;
-        }
-        catch (Exception ex)
-        {
-            mlog.trace("ERR! DCS: reconnect [%s]: %s", name, ex.msg);
-            send_is_ready = false;
-        }
-    }
-
-    ubyte[] buf = new ubyte[ 1024 ];
-
-
-    bool is_send_recv_complete = true;
-
-    string send_signal(string data)
-    {
-        string res;
-
-        version (VibeDefaultMain)
-        {
-            if (con is null)
-            {
-                reconnect();
-            }
-
-            try
-            {
-                if (is_send_recv_complete == false)
-                    reconnect();
-
-                if (send_is_ready)
-                {
-                    is_send_recv_complete = false;
-                    con.write(data);
-                    con.flush();
-                    con.read(buf[ 0..2 ]);
-                    int len = buf[ 0 ] + (buf[ 1 ] << 8);
-                    con.read(buf[ 0..len ]);
-                    res = (cast(string)buf[ 0..len ]);
-
-                    is_send_recv_complete = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                mlog.trace("ERR! send to [%s]: %s", name, ex.msg);
-                send_is_ready = false;
-            }
-        }
-        return res;
-    }
-}
-
