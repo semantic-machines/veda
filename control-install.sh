@@ -36,7 +36,7 @@ sudo apt-get install cmake
 mkdir tmp
 wget https://github.com/warmcat/libwebsockets/archive/v2.0.1.tar.gz -P tmp
 cd tmp
-tar -xvzf libwebsockets-2.0.1.tar.gz
+tar -xvzf v2.0.1.tar.gz
 cd libwebsockets-2.0.1
 mkdir build
 cd build
