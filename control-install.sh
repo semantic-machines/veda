@@ -30,4 +30,20 @@ sudo apt-get install -y libraptor2-dev
 sudo apt-get install -y libevent-dev libssl-dev
 sudo apt-get install -y libmysqlclient-dev
 sudo apt-get install libtool pkg-config build-essential autoconf automake
-sudo apt-get install -y libwebsockets-dev
+sudo apt-get install cmake
+
+# make libwebsockets dependency
+mkdir tmp
+wget https://github.com/warmcat/libwebsockets/archive/v2.0.1.tar.gz -P tmp
+cd tmp
+tar -xvzf libwebsockets-2.0.1.tar.gz
+cd libwebsockets-2.0.1
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+sudo ldconfig
+cd ..
+cd ..
+cd ..
