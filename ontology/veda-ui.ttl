@@ -355,6 +355,21 @@ v-ui:treeAllowedClass
   rdfs:range owl:Class ;
   rdfs:range rdfs:Class ;
 .
+v-ui:treeSelectableClass
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:label "Выбираемый класс"@ru ;
+  rdfs:label "Selectable class"@en ;
+  rdfs:range owl:Class ;
+  rdfs:range rdfs:Class ;
+.
+v-ui:treeSelectableFilter
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:label "Фильтр выбираемых субъектов"@ru ;
+  rdfs:label "Selectable filter"@en ;
+  rdfs:range xsd:string ;
+.
 v-ui:treeDisplayedProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
@@ -1288,8 +1303,17 @@ v-ui:TreeTemplate
 		thead = $("#thead", template),
 		headTmpl = "<th width='1px'><input type='checkbox' id='select-col' /></th>";
 		rowTmpl = "<td><input type='checkbox' class='select-row' /></td>",
-		literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
-		
+		literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"],
+		allowedClassIds = individual.treeConfig.allowedClass ? individual.treeConfig.allowedClass.reduce(function (acc, _class) {
+			acc.push( _class.id );
+			return acc;
+		}, []) : [],
+		selectableClassIds = individual.treeConfig.selectableClass ? individual.treeConfig.selectableClass.reduce(function (acc, _class) {
+			acc.push( _class.id );
+			return acc;
+		}, []) : [],
+		selectableFilter = individual.treeConfig.selectableFilter ? new Function( individual.treeConfig.selectableFilter[0].toString() ) : undefined;
+
 	container.data("selected", []);
 		
 	individual.treeConfig.displayedProperty.map( function (property, index) {
@@ -1347,9 +1371,16 @@ v-ui:TreeTemplate
 		
 		function render(item) {
 			var	cont = $("<div>"),
-			tmpl = $("<tr>").attr("data-level", thatLvl + 1).append(rowTmpl);
+				tmpl = $("<tr>").attr("data-level", thatLvl + 1).append(rowTmpl);
 			$(".spacer", tmpl).css({"width": 16 * (thatLvl + 1) + "px", "display": "inline-block"});
 			item.present(cont, tmpl);
+			if (selectableFilter) {
+				if ( !selectableFilter.call(item) ) {
+					$("input", tmpl).remove();
+				}
+			} else if (selectableClassIds.length && selectableClassIds.indexOf(item["rdf:type"][0].id) < 0) {
+				$("input", tmpl).remove();
+			}
 			thatRow.after( cont.html() );
 		}
 		return false;
@@ -1379,8 +1410,15 @@ v-ui:TreeTemplate
 	});
 
 	individual.treeConfig.root.map( function (root) {
-		var rootTmpl = $("<tr>").attr("data-level", 0).append(rowTmpl);
-		root.present(tbody, rootTmpl);
+		var tmpl = $("<tr>").attr("data-level", 0).append(rowTmpl);
+		if (selectableFilter) {
+			if ( !selectableFilter.call(root) ) {
+				$("input", tmpl).remove();
+			}
+		} else if (selectableClassIds.length && selectableClassIds.indexOf(root["rdf:type"][0].id) < 0) {
+			$("input", tmpl).remove();
+		}
+		root.present(tbody, tmpl);
 	});
 	template.one("remove", function () {
 		delete individual[treeConfig];
@@ -1392,7 +1430,9 @@ v-ui:TreeTemplate
 			individual.treeConfig.outProperty.map(function (property) {
 				if (self.hasValue(property.id)) {
 					self[property.id].map(function (value) {
-						res.push(value);
+						if ( !allowedClassIds.length || allowedClassIds.indexOf(value["rdf:type"][0].id) > -1 ) {
+							res.push(value);
+						}
 					});
 				}
 			});
@@ -1404,8 +1444,13 @@ v-ui:TreeTemplate
 		var res = [];
 		if (individual.treeConfig && individual.treeConfig.inProperty) {
 			var query = individual.treeConfig.inProperty.map(function (property) {
-				return "'" + property.id + "'=='" + self.id + "'";
-			}).join(" || ");
+					return "'" + property.id + "'=='" + self.id + "'";
+				}).join(" || ");
+			if (individual.treeConfig.allowedClass) {
+				query = "(" + query + ") && (" + individual.treeConfig.allowedClass.map(function (_class) {
+					return "'rdf:type'=='" + _class.id + "'";
+				}).join(" || ") + ")";
+			}
 			var search = new veda.IndividualModel();
 			search["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
 			search["v-fs:fulltextQuery"] = [ query ];
