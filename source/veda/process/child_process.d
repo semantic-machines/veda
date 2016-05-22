@@ -79,6 +79,7 @@ class ChildProcess
         host            = _host;
         _log            = new logger("veda-core-" ~ process_name, "log", "PROCESS");
         context         = new PThreadContext("cfg:standart_node", process_name, _module_name, parent_url);
+/*
         sticket         = *context.get_systicket_from_storage();
 
         //if (sticket is Ticket.init || sticket.result != ResultCode.OK)
@@ -103,7 +104,7 @@ class ChildProcess
         }
 
         set_global_systicket(sticket);
-
+ */
         if (node == Individual.init)
         {
             node = context.getConfiguration();
