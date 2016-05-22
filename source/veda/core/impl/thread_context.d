@@ -172,6 +172,12 @@ class PThreadContext : Context
     {
         Ticket ticket = get_global_systicket();
 
+        version (isModule)
+        {
+            ticket = *get_systicket_from_storage();
+            set_global_systicket(ticket);
+        }
+
         version (useInnerModules)
         {
             if (ticket == Ticket.init || ticket.user_uri == "" || is_new)
