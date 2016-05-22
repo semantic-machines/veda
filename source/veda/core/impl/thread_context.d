@@ -172,28 +172,28 @@ class PThreadContext : Context
     {
         Ticket ticket = get_global_systicket();
 
-        if (ticket == Ticket.init || ticket.user_uri == "" || is_new)
+        version (useInnerModules)
         {
-            try
+            if (ticket == Ticket.init || ticket.user_uri == "" || is_new)
             {
-                ticket = create_new_ticket("cfg:VedaSystem", "400000");
-
-                version (useInnerModules)
+                try
                 {
+                    ticket = create_new_ticket("cfg:VedaSystem", "400000");
+
                     long op_id;
                     storage_module.put(P_MODULE.ticket_manager, "systicket", ticket.id, false, op_id);
                 }
-            }
-            catch (Exception ex)
-            {
-                //printPrettyTrace(stderr);
-                log.trace("context.sys_ticket:EX!%s", ex.msg);
-            }
+                catch (Exception ex)
+                {
+                    //printPrettyTrace(stderr);
+                    log.trace("context.sys_ticket:EX!%s", ex.msg);
+                }
 
-            if (ticket.user_uri == "")
-                ticket.user_uri = "cfg:VedaSystem";
+                if (ticket.user_uri == "")
+                    ticket.user_uri = "cfg:VedaSystem";
 
-            set_global_systicket(ticket);
+                set_global_systicket(ticket);
+            }
         }
         return ticket;
     }
