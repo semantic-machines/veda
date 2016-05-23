@@ -168,7 +168,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			wrapper = embedded = props_ctrls = null;
 		});*/
 		
-		// Embedded templates list & property controls
+		// Embedded templates list
 		var embedded = [];
 
 		// Trigger same events for embedded templates
