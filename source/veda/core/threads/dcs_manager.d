@@ -332,6 +332,9 @@ void dcs_thread(string thread_name, string _node_id)
 
                                         if (task_of_scripts !is shared(Task).init)
                                             vibe.core.concurrency.send(task_of_scripts, text(op_id), main_loop_task);
+                                            
+                                        if (task_of_fanout !is shared(Task).init)
+                                            vibe.core.concurrency.send(task_of_fanout, text(op_id), main_loop_task);
                                     },
                                     (std.concurrency.Variant v) { log.trace("::dcs_thread::Received some other type. %s", text(v)); });
         }
