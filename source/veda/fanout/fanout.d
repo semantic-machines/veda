@@ -14,11 +14,11 @@ private import veda.process.child_process;
 
 void main(char[][] args)
 {
-	process_name = "fanout";
+    process_name = "fanout";
 
-	core.thread.Thread.sleep(dur!("seconds")(1));
+    core.thread.Thread.sleep(dur!("seconds")(1));
 
-    FanoutProcess p_fanout = new FanoutProcess(P_MODULE.fanout, "127.0.0.1", 8081);
+    FanoutProcess p_fanout = new FanoutProcess(P_MODULE.fanout, "127.0.0.1", 8091);
 
     p_fanout.run();
 }
