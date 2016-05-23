@@ -351,7 +351,7 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_WRITEABLE:
-        writeln("[CP] On writeable is called.");
+        //writeln("[CP] On writeable is called.");
         //websocket_write_back(wsi, "test msg-count=" ~ text(msg_count));
         //msg_count++;
         writeable_flag = 1;
