@@ -979,10 +979,4 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		);
 		return template;
 	}
-	
 });
-
-function changeHash(individualId, mode) {
-	var hash = "#/"+individualId+(mode?("///"+mode):"");
-	if (hash !== location.hash) riot.route(hash, false);			
-}

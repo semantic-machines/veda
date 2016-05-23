@@ -52,4 +52,9 @@ veda.Module(function IndividualActions(veda) { "use strict";
 		}
 		individual.on("individual:templateReady", actionsHandler);
 	});
+	
+	function changeHash(individualId, mode) {
+		var hash = "#/"+individualId+(mode?("///"+mode):"");
+		if (hash !== location.hash) riot.route(hash, false);			
+	}
 });
