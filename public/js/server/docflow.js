@@ -1107,7 +1107,7 @@ function prepare_start_form(ticket, document)
     {
         if (getUri(hasStatusWorkflowif) != 'v-s:ToBeSent')
         {
-            print("[WORKFLOW]:prepare_start_form, not ready to start.");
+            // print("[WORKFLOW]:prepare_start_form, not ready to start.");
             return;
         }
     }

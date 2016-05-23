@@ -139,10 +139,10 @@ class ChildProcess
 
         lws_client_connect_info i;
 
-        i.host    = "localhost\0";
+        i.host    = cast(char*)(host ~ "\0");
         i.origin  = i.host;
         i.address = i.host;
-        i.port    = 8091;
+        i.port    = port;
         i.context = ws_context;
         i.path    = "/ws\0";
 

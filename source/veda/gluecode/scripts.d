@@ -18,7 +18,7 @@ void main(char[][] args)
 
     core.thread.Thread.sleep(dur!("seconds")(1));
 
-    ScriptProcess p_script = new ScriptProcess(P_MODULE.scripts, "127.0.0.1", 8082);
+    ScriptProcess p_script = new ScriptProcess(P_MODULE.scripts, "127.0.0.1", 8091);
 
     p_script.run();
 }
@@ -200,8 +200,7 @@ class ScriptProcess : ChildProcess
         Ticket       sticket = context.sys_ticket();
         Individual[] res;
         vql.get(&sticket,
-                "return { 'v-s:script'}
-            filter { 'rdf:type' === 'v-s:Event'}",
+                "return { 'v-s:script'} filter { 'rdf:type' === 'v-s:Event'}",
                 res);
 
         int count = 0;
@@ -365,12 +364,6 @@ class ScriptProcess : ChildProcess
 
         foreach (indv_type; indv_types)
         {
-//if (script.id == "v-wf:event_df1")
-//{
-//	foreach (key ; script.filters.keys)
-            //writeln("#1 exec script:", script.id, ", script.filters=", script.filters, "key=", key, ", sub_classes=", onto.get_sub_classes(key));
-//}
-
             if ((indv_type in script.filters) !is null)
             {
                 any_exist = true;
