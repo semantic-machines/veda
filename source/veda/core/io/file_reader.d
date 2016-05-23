@@ -42,8 +42,6 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
                 send(tid_response_reciever, true);
             });
 
-    //core.thread.Thread.sleep(dur!("msecs")(3000));
-
     Context context = new PThreadContext(node_id, "file_reader", id);
 
     auto    oFiles = dirEntries(onto_path, SpanMode.depth);
@@ -51,14 +49,6 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
     long    count_individuals = context.count_individuals();
     if (count_individuals < 2)
     {
-/*        bool all_modules_ready = false;
-        while (all_modules_ready == false)
-        {
-            all_modules_ready = veda.core.threads.dcs_manager.examine_modules();
-            if (all_modules_ready == false)
-                core.thread.Thread.sleep(dur!("msecs")(2000));
-        }
- */
         string[] files;
 
         foreach (o; oFiles)
@@ -255,15 +245,18 @@ void processed(string[] changes, Context context)
 
                         if (indv_in_storage == Individual.init || indv.compare(indv_in_storage) == false)
                         {
-                            ResultCode res = context.put_individual(&sticket, indv.uri, indv, true, null, false, false).result;
-                            if (trace_msg[ 33 ] == 1)
-                                log.trace("file reader:store, uri=%s", indv.uri);
+                            if (indv.getResources("rdf:type").length > 0)
+                            {
+                                ResultCode res = context.put_individual(&sticket, indv.uri, indv, true, null, false, false).result;
+                                if (trace_msg[ 33 ] == 1)
+                                    log.trace("file reader:store, uri=%s", indv.uri);
 
-                            //log.trace("store, uri=%s %s \n%s \n%s", indv.uri, uri, text(indv), text(indv_in_storage));
-                            if (res != ResultCode.OK)
-                                log.trace("individual =%s, not store, errcode =%s", indv.uri, text(res));
+                                //log.trace("store, uri=%s %s \n%s \n%s", indv.uri, uri, text(indv), text(indv_in_storage));
+                                if (res != ResultCode.OK)
+                                    log.trace("individual =%s, not store, errcode =%s", indv.uri, text(res));
 
-                            is_loaded = true;
+                                is_loaded = true;
+                            }
                         }
                     }
                 }
