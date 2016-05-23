@@ -7,7 +7,7 @@ private
 {
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
-    import io.mq_client, veda.core.io.file_reader;
+    import veda.core.io.file_reader;
     import util.logger, veda.core.util.utils, veda.core.threads.load_info;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.log_msg, veda.core.impl.thread_context;
     import veda.core.common.define, veda.type, veda.core.threads.acl_manager, veda.core.threads.storage_manager, veda.core.threads.xapian_indexer,
