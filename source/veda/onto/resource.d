@@ -214,6 +214,10 @@ struct Resource
                 writeln("Ex!: ", __FUNCTION__, ":", text(__LINE__), ", ", ex.msg);
             }
         }
+        else if (_type == DataType.Uri)
+        {
+            this = str;
+        }
         else
         {
             this = str;

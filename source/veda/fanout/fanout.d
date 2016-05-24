@@ -3,7 +3,7 @@
  */
 module veda.fanout;
 
-private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime;
+private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
@@ -70,17 +70,10 @@ class FanoutProcess : ChildProcess
     }
 
 ///////////////////////////////////////// SMTP FANOUT ///////////////////////////////////////////////////////////////////
-    private Resources extract_email(ref Ticket sticket, string ap_uri)
+    private Resources get_email_from_appointment(ref Ticket sticket, ref Individual ap)
     {
-        if (ap_uri is null || ap_uri.length < 1)
-            return null;
-
-        Individual ap = context.get_individual(&sticket, ap_uri);
-
-        if (ap.getStatus() != ResultCode.OK)
-            return null;
-
         string p_uri = ap.getFirstLiteral("v-s:employee");
+
         if (p_uri is null)
             return null;
 
@@ -97,6 +90,41 @@ class FanoutProcess : ChildProcess
             return null;
 
         return ac.resources[ "v-s:mailbox" ];
+    }
+
+    private Resources extract_email(ref Ticket sticket, string ap_uri)
+    {
+        if (ap_uri is null || ap_uri.length < 1)
+            return null;
+
+        Resources  res;
+
+        Individual indv = context.get_individual(&sticket, ap_uri);
+
+        if (indv.getStatus() != ResultCode.OK)
+            return null;
+
+        if (indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:Appointment")))
+        {
+            res = get_email_from_appointment(sticket, indv);
+        }
+        else if (indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:Position")))
+        {
+            Individual[] l_individuals = context.get_individuals_via_query(
+                                                                           &sticket,
+                                                                           "'rdf:type' == 'v-s:Appointment' && 'v-s:occupation' == '" ~ indv.uri ~
+                                                                           "'", true, 10000, 10000);
+
+            foreach (individual; l_individuals)
+            {
+                Resources tmp_res = get_email_from_appointment(sticket, individual);
+
+                foreach (rr; tmp_res)
+                    res ~= rr;
+            }
+        }
+
+        return res;
     }
 
     string scptn = "src=\"cid:";
