@@ -47,21 +47,20 @@ enum CMD : byte
     START = 52
 }
 
+Onto     onto;
+Context  context;
+ScriptInfo[ string ] codelet_scripts;
+VQL      vql;
+string   empty_uid;
+string   vars_for_codelet_script;
+
+ScriptVM script_vm;
+
+Tasks *[ int ] tasks_2_priority;
+Task *task;
+
 private void ltrs_thread(string parent_url)
 {
-    ScriptInfo[ string ] codelet_scripts;
-
-    VQL      vql;
-    string   empty_uid;
-    string   vars_for_codelet_script;
-
-    ScriptVM script_vm;
-
-    Tasks *[ int ] tasks_2_priority;
-    Task    *task;
-
-    Context context;
-
     scope (exit)
     {
 //        log.trace("ERR! ltrs_thread dead (exit)");
@@ -208,14 +207,94 @@ private void ltrs_thread(string parent_url)
     }
 }
 
+void execute_script(string user_uri, string msg, string script_uri, string execute_script_cbor)
+{
+    if (msg is null || msg.length <= 3 || script_vm is null ||
+        script_uri is null || script_uri.length <= 3 ||
+        execute_script_cbor is null || execute_script_cbor.length <= 3)
+        return;
+
+    Individual indv;
+    if (cbor2individual(&indv, msg) < 0)
+        return;
+
+    if (onto is null)
+        onto = context.get_onto();
+
+    Resources   types = indv.resources.get(rdf__type, Resources.init);
+    MapResource rdfType;
+    setMapResources(types, rdfType);
+
+    g_document.data   = cast(char *)msg;
+    g_document.length = cast(int)msg.length;
+
+    g_execute_script.data   = cast(char *)execute_script_cbor;
+    g_execute_script.length = cast(int)execute_script_cbor.length;
+
+    if (user_uri !is null)
+    {
+        g_user.data   = cast(char *)user_uri;
+        g_user.length = cast(int)user_uri.length;
+    }
+    else
+    {
+        g_user.data   = cast(char *)"cfg:VedaSystem";
+        g_user.length = "cfg:VedaSystem".length;
+    }
+
+
+    Ticket sticket    = context.sys_ticket();
+    string sticket_id = sticket.id;
+    g_ticket.data   = cast(char *)sticket_id;
+    g_ticket.length = cast(int)sticket_id.length;
+
+    set_g_super_classes(rdfType.keys, onto);
+
+    ScriptInfo script = codelet_scripts.get(script_uri, ScriptInfo.init);
+
+    if (script is ScriptInfo.init)
+    {
+//                                  writeln ("@script_uri=", script_uri);
+        Individual codelet = context.get_individual(&sticket, script_uri);
+//                                  writeln ("@codelet=", codelet);
+        prepare_script(codelet_scripts, codelet, script_vm, vars_for_codelet_script);
+    }
+
+    if (script.compiled_script !is null)
+    {
+        if (script.filters.length > 0 && isFiltred(&script, rdfType.keys, onto) == false)
+            return;
+
+        try
+        {
+            // if (trace_msg[ 300 ] == 1)
+            //     log.trace("start exec codelet script : %s %s", script.id, indv.uri);
+
+            script.compiled_script.run();
+
+            //if (trace_msg[ 300 ] == 1)
+            //    log.trace("end exec codelet script : %s", script.id);
+        }
+        catch (Exception ex)
+        {
+            //log.trace_log_and_console("WARN! fail execute codelet script : %s %s", script.id, ex.msg);
+        }
+    }
+}
+
+private void prepare_script(ref ScriptInfo[ string ] scripts, Individual ss, ScriptVM script_vm, string vars_env)
+{
+}
+
 class ScriptProcess : ChildProcess
 {
+    Tid  tid_ltr_scripts;
+    long count_sckip = 0;
+
     this(P_MODULE _module_name, string _host, ushort _port)
     {
         super(_module_name, _host, _port);
     }
-
-    long count_sckip = 0;
 
     override bool prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                           string event_id,
@@ -231,59 +310,20 @@ class ScriptProcess : ChildProcess
         if (new_indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
             return true;
 
+        execute_script(new_bin);
 
-        if (new_indv.getFirstBoolean("v-s:isSuccess") == true)
-            return true;
-
-        string queue_name = randomUUID().toString();
-
-        context.unload_subject_storage(queue_name);
-/*
-        Queue queue = new Queue(queue_name, Mode.R);
-        if (queue.open())
-        {
-            Consumer cs = new Consumer(queue, "consumer1");
-
-            if (cs.open())
-            {
-                int    priority   = cast(int)new_indv.getFirstInteger("v-s:priority", 16);
-                string codelet_id = new_indv.getFirstLiteral("v-s:useScript");
-
-                Tasks  *tasks = tasks_2_priority.get(priority, null);
-
-                if (tasks is null)
-                {
-                    tasks                        = new Tasks();
-                    tasks_2_priority[ priority ] = tasks;
-                }
-
-                task                       = new Task(cs, new_indv, new_bin, codelet_id);
-                tasks.list[ new_indv.uri ] = task;
-            }
-            else
-                writeln("ltr-scripts:Consumer not open");
-        }
-        else
-            writeln("ltr-scripts:Queue not open");
-
- */
         return true;
     }
 
     override void configure()
     {
-        spawn(&ltrs_thread, this.parent_url);
+        tid_ltr_scripts = spawn(&ltrs_thread, this.parent_url);
     }
 
-    public void load_event_scripts()
+    private void execute_script(string execute_script_srz)
     {
-        if (script_vm is null)
-            return;
-    }
-
-
-    private void prepare_script(ref ScriptInfo[ string ] scripts, Individual ss, ScriptVM script_vm, string vars_env)
-    {
+        if (tid_ltr_scripts != Tid.init)
+            send(tid_ltr_scripts, CMD.START, execute_script_srz);
     }
 }
 

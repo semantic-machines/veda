@@ -4,7 +4,7 @@
 module veda.gluecode.v8d_header;
 
 import std.stdio, std.conv, std.file, std.path;
-import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto;
+import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
 import veda.core.common.context, veda.core.common.define, veda.util.cbor8individual, veda.core.util.utils;
 
 // ////// logger ///////////////////////////////////////////
@@ -40,6 +40,27 @@ ResultCode     g_last_result;
 
 private string empty_uid;
 
+bool isFiltred(ScriptInfo *script, string[] indv_types, Onto onto)
+{
+    bool any_exist = false;
+
+    foreach (indv_type; indv_types)
+    {
+        if ((indv_type in script.filters) !is null)
+        {
+            any_exist = true;
+            break;
+        }
+
+        if (onto.isSubClasses(cast(string)indv_type, script.filters.keys) == true)
+        {
+            any_exist = true;
+            break;
+        }
+    }
+    return any_exist;
+}
+
 void set_g_prev_state(string prev_state)
 {
     if (prev_state !is null)
@@ -54,7 +75,7 @@ void set_g_prev_state(string prev_state)
     }
 }
 
-void set_g_super_classes(ref string[] indv_types, Onto onto)
+void set_g_super_classes(string[] indv_types, Onto onto)
 {
     Classes super_classes;
 

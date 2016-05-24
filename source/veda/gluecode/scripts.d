@@ -305,27 +305,6 @@ class ScriptProcess : ChildProcess
             g_parent_document_id.length = cast(int)empty_uid.length;
         }
     }
-
-    private bool isFiltred(ScriptInfo *script, ref string[] indv_types, Onto onto)
-    {
-        bool any_exist = false;
-
-        foreach (indv_type; indv_types)
-        {
-            if ((indv_type in script.filters) !is null)
-            {
-                any_exist = true;
-                break;
-            }
-
-            if (onto.isSubClasses(cast(string)indv_type, script.filters.keys) == true)
-            {
-                any_exist = true;
-                break;
-            }
-        }
-        return any_exist;
-    }
 }
 
 
