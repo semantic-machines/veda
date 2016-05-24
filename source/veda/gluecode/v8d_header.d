@@ -4,8 +4,8 @@
 module veda.gluecode.v8d_header;
 
 import std.stdio, std.conv, std.file, std.path;
-import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.core.common.context, veda.core.common.define,
-       veda.util.cbor8individual, veda.core.util.utils;
+import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto;
+import veda.core.common.context, veda.core.common.define, veda.util.cbor8individual, veda.core.util.utils;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -20,23 +20,67 @@ logger log()
 // //////////////////////////  call D from C //////////////////////////////////////////
 
 string[ string ] g_prop;
-Context    g_context;
+Context        g_context;
 
-_Buff      g_super_classes;
-_Buff      g_parent_script_id;
-_Buff      g_parent_document_id;
-_Buff      g_prev_state;
-_Buff      g_execute_script;
-_Buff      g_document;
-_Buff      g_user;
-_Buff      g_ticket;
+_Buff          g_super_classes;
+_Buff          g_parent_script_id;
+_Buff          g_parent_document_id;
+_Buff          g_prev_state;
+_Buff          g_execute_script;
+_Buff          g_document;
+_Buff          g_user;
+_Buff          g_ticket;
 
-_Buff      tmp_individual;
+_Buff          tmp_individual;
 
-_Buff      g_script_result;
-_Buff      g_script_out;
+_Buff          g_script_result;
+_Buff          g_script_out;
 
-ResultCode g_last_result;
+ResultCode     g_last_result;
+
+private string empty_uid;
+
+void set_g_prev_state(string prev_state)
+{
+    if (prev_state !is null)
+    {
+        g_prev_state.data   = cast(char *)prev_state;
+        g_prev_state.length = cast(int)prev_state.length;
+    }
+    else
+    {
+        g_prev_state.data   = cast(char *)empty_uid;
+        g_prev_state.length = cast(int)empty_uid.length;
+    }
+}
+
+void set_g_super_classes(ref string[] indv_types, Onto onto)
+{
+    Classes super_classes;
+
+    foreach (indv_type; indv_types)
+    {
+        if (super_classes == Classes.init)
+        {
+            super_classes = onto.get_super_classes(indv_type);
+        }
+        else
+        {
+            Classes i_super_classes = onto.get_super_classes(indv_type);
+            foreach (i_super_class; i_super_classes.keys)
+            {
+                if (super_classes.get(i_super_class, false) == false)
+                {
+                    super_classes[ i_super_class ] = true;
+                }
+            }
+        }
+    }
+    string superclasses_str = text(super_classes.keys);
+    g_super_classes.data   = cast(char *)superclasses_str;
+    g_super_classes.length = cast(int)superclasses_str.length;
+}
+
 
 struct TransactionItem
 {
@@ -419,7 +463,7 @@ ScriptVM get_ScriptVM(Context ctx)
                 g_script_out.data           = cast(char *)g_str_script_out;
                 g_script_out.allocated_size = cast(int)g_str_script_out.length;
 
-                reload_scripts();
+                reload_ext_scripts();
             }
             catch (Exception ex)
             {
@@ -431,7 +475,7 @@ ScriptVM get_ScriptVM(Context ctx)
     return script_vm;
 }
 
-void reload_scripts()
+private void reload_ext_scripts()
 {
     Script[] scripts;
     string[] script_file_name;

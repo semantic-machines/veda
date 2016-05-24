@@ -1,5 +1,5 @@
 /**
- * scripts thread
+ * scripts module
  */
 module veda.gluecode.scripts;
 
@@ -26,7 +26,6 @@ void main(char[][] args)
 class ScriptProcess : ChildProcess
 {
     private          ScriptInfo[ string ] event_scripts;
-    private          ScriptInfo[ string ] codelet_scripts;
 
     private VQL      vql;
     private string   empty_uid;
@@ -176,13 +175,6 @@ class ScriptProcess : ChildProcess
             ~ "var super_classes = get_env_str_var ('$super_classes');"
             ~ "var _event_id = document['@'] + '+' + _script_id;";
 
-        vars_for_codelet_script =
-            "var user_uri = get_env_str_var ('$user');"
-            ~ "var execute_script = get_individual (ticket, '$execute_script');"
-            ~ "var prev_state = get_individual (ticket, '$prev_state');"
-            ~ "var super_classes = get_env_str_var ('$super_classes');"
-            ~ "var _event_id = document['@'] + '+' + _script_id;";
-
         vql = new VQL(context);
 
         script_vm = get_ScriptVM(context);
@@ -315,47 +307,6 @@ class ScriptProcess : ChildProcess
             g_parent_document_id.data   = cast(char *)empty_uid;
             g_parent_document_id.length = cast(int)empty_uid.length;
         }
-    }
-
-    private void set_g_prev_state(string prev_state)
-    {
-        if (prev_state !is null)
-        {
-            g_prev_state.data   = cast(char *)prev_state;
-            g_prev_state.length = cast(int)prev_state.length;
-        }
-        else
-        {
-            g_prev_state.data   = cast(char *)empty_uid;
-            g_prev_state.length = cast(int)empty_uid.length;
-        }
-    }
-
-    private void set_g_super_classes(ref string[] indv_types, Onto onto)
-    {
-        Classes super_classes;
-
-        foreach (indv_type; indv_types)
-        {
-            if (super_classes == Classes.init)
-            {
-                super_classes = onto.get_super_classes(indv_type);
-            }
-            else
-            {
-                Classes i_super_classes = onto.get_super_classes(indv_type);
-                foreach (i_super_class; i_super_classes.keys)
-                {
-                    if (super_classes.get(i_super_class, false) == false)
-                    {
-                        super_classes[ i_super_class ] = true;
-                    }
-                }
-            }
-        }
-        string superclasses_str = text(super_classes.keys);
-        g_super_classes.data   = cast(char *)superclasses_str;
-        g_super_classes.length = cast(int)superclasses_str.length;
     }
 
     private bool isFiltred(ScriptInfo *script, ref string[] indv_types, Onto onto)
