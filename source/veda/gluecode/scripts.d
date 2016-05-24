@@ -4,13 +4,11 @@
 module veda.gluecode.scripts;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime;
-private import backtrace.backtrace, Backtrace = backtrace.backtrace;
-private import veda.gluecode.v8d_header;
 private import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.log_msg, veda.core.common.know_predicates, veda.onto.onto;
 private import veda.process.child_process;
-private import search.vel, search.vql, veda.gluecode.script;
+private import search.vel, search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 
 void main(char[][] args)
 {
@@ -57,7 +55,6 @@ class ScriptProcess : ChildProcess
 
         Resources types      = new_indv.resources.get(rdf__type, Resources.init);
         string[]  indv_types = types.getAsArrayStrings();
-
         foreach (itype; indv_types)
         {
             if (itype == veda_schema__PermissionStatement || itype == veda_schema__Membership)

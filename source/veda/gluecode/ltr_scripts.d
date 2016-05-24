@@ -1,16 +1,16 @@
 /**
  * ltr-scripts module
+ * https://github.com/semantic-machines/veda/blob/f9fd83a84aea0f9721299dff6d673dd967202ce2/source/veda/core/glue_code/scripts.d
+ * https://github.com/semantic-machines/veda/blob/f9fd83a84aea0f9721299dff6d673dd967202ce2/source/veda/core/glue_code/ltrs.d
  */
 module veda.gluecode.ltr_scripts;
 
-private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime;
-private import backtrace.backtrace, Backtrace = backtrace.backtrace;
-private import veda.gluecode.v8d_header;
+private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid;
 private import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.log_msg, veda.core.common.know_predicates, veda.onto.onto;
 private import veda.process.child_process;
-private import search.vel, search.vql, veda.gluecode.script;
+private import search.vel, search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 
 void main(char[][] args)
 {
@@ -23,6 +23,19 @@ void main(char[][] args)
     p_script.run();
 }
 
+private struct Task
+{
+    Consumer   consumer;
+    Individual execute_script;
+    string     execute_script_cbor;
+    string     codelet_id;
+}
+
+private struct Tasks
+{
+    Task *[ string ] list;
+}
+
 class ScriptProcess : ChildProcess
 {
     private          ScriptInfo[ string ] codelet_scripts;
@@ -32,6 +45,9 @@ class ScriptProcess : ChildProcess
     private string   vars_for_codelet_script;
 
     private ScriptVM script_vm;
+
+    private Tasks *[ int ] tasks_2_priority;
+    private Task *task;
 
     this(P_MODULE _module_name, string _host, ushort _port)
     {
@@ -46,6 +62,48 @@ class ScriptProcess : ChildProcess
     {
         if (script_vm is null)
             return false;
+
+        string individual_id = new_indv.uri;
+
+        bool   prepare_if_is_script = false;
+
+        if (new_indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
+            return true;
+
+
+        if (new_indv.getFirstBoolean("v-s:isSuccess") == true)
+            return true;
+
+        string queue_name = randomUUID().toString();
+
+        context.unload_subject_storage(queue_name);
+        Queue queue = new Queue(queue_name, Mode.R);
+        if (queue.open())
+        {
+            Consumer cs = new Consumer(queue, "consumer1");
+
+            if (cs.open())
+            {
+                int    priority   = cast(int)new_indv.getFirstInteger("v-s:priority", 16);
+                string codelet_id = new_indv.getFirstLiteral("v-s:useScript");
+
+                Tasks  *tasks = tasks_2_priority.get(priority, null);
+
+                if (tasks is null)
+                {
+                    tasks                        = new Tasks();
+                    tasks_2_priority[ priority ] = tasks;
+                }
+
+                task                       = new Task(cs, new_indv, new_bin, codelet_id);
+                tasks.list[ new_indv.uri ] = task;
+            }
+            else
+                writeln("ltr-scripts:Consumer not open");
+        }
+        else
+            writeln("ltr-scripts:Queue not open");
+
 
         return true;
     }

@@ -202,6 +202,7 @@ class ChildProcess
 
 ///////////////////////////////////////////////////
 
+	// if return [false] then, no commit prepared message, and repeate   
     abstract bool prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                           string event_id,
                           long op_id);
