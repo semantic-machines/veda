@@ -8,6 +8,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	
 	var socket,	
 		address = "ws://" + location.hostname + ":8088/ccus";
+		//address = "ws://echo.websocket.org";
 
 	try {
 		socket = new WebSocket(address);
@@ -25,8 +26,8 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	
 	socket.onmessage = function (event) {
 		try {
-			var msg = JSON.parse(event.data);
-			for (var uri in msg) {
+			var msg = event.data.split(",");
+			for (var i = 0, uri; (uri = msg[i]); i++) {
 				var ind = new veda.IndividualModel(uri);
 				ind.reset();
 			}
@@ -65,7 +66,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 			subscribe: function () {
 				setTimeout( function () {
 					if (socket.readyState === 1) {
-						var msg = JSON.stringify(counter);
+						var msg = Object.keys(counter).join(",");
 						socket.send(msg);
 					}
 				}, 1000);
