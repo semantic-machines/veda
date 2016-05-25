@@ -6,14 +6,13 @@ module veda.core.threads.dcs_manager;
 
 import core.thread, std.stdio, std.conv, std.file, std.datetime, std.outbuffer, std.string;
 import util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.queue;
-import backtrace.backtrace, Backtrace = backtrace.backtrace;
 import veda.type, veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.log_msg, veda.onto.individual,
        veda.onto.resource, veda.util.tools;
 import vibe.core.concurrency, vibe.core.task, vibe.http.router                 : URLRouter;
 import vibe.inet.url, vibe.http.client, vibe.http.server, vibe.http.websockets : WebSocket, handleWebSockets;
 
-
 private shared Task task_of_scripts;
+private shared Task task_of_ltr_scripts;
 private shared Task task_of_fanout;
 
 void handleWebSocketConnection(scope WebSocket socket)
@@ -37,6 +36,8 @@ void handleWebSocketConnection(scope WebSocket socket)
                     module_name = kv[ 1 ];
                     if (module_name == "scripts")
                         task_of_scripts = Task.getThis();
+                    else if (module_name == "ltr_scripts")
+                        task_of_ltr_scripts = Task.getThis();
                     else if (module_name == "fanout")
                         task_of_fanout = Task.getThis();
                     else
@@ -91,6 +92,8 @@ void handleWebSocketConnection(scope WebSocket socket)
 
     if (module_name == "scripts")
         task_of_scripts = shared(Task).init;
+    else if (module_name == "ltr_scripts")
+        task_of_ltr_scripts = shared(Task).init;
     else if (module_name == "fanout")
         task_of_fanout = shared(Task).init;
 
@@ -172,6 +175,8 @@ public shared(Task) getTaskOfPMODULE(P_MODULE pm)
 {
     if (pm == P_MODULE.scripts)
         return task_of_scripts;
+    else if (pm == P_MODULE.ltr_scripts)
+        return task_of_ltr_scripts;
     else if (pm == P_MODULE.fanout)
         return task_of_fanout;
 
@@ -253,7 +258,7 @@ shared static ~this()
 
 void dcs_thread(string thread_name, string _node_id)
 {
-    P_MODULE[] modules = [ P_MODULE.fanout, P_MODULE.scripts ];
+    P_MODULE[] modules = [ P_MODULE.fanout, P_MODULE.scripts, P_MODULE.ltr_scripts ];
 
     node_id = _node_id;
     scope (exit)
@@ -333,6 +338,9 @@ void dcs_thread(string thread_name, string _node_id)
                                         if (task_of_scripts !is shared(Task).init)
                                             vibe.core.concurrency.send(task_of_scripts, text(op_id), main_loop_task);
                                             
+                                        if (task_of_ltr_scripts !is shared(Task).init)
+                                            vibe.core.concurrency.send(task_of_ltr_scripts, text(op_id), main_loop_task);
+
                                         if (task_of_fanout !is shared(Task).init)
                                             vibe.core.concurrency.send(task_of_fanout, text(op_id), main_loop_task);
                                     },
