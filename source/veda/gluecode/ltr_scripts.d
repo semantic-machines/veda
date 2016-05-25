@@ -1,5 +1,5 @@
 /**
- * ltr-scripts module
+ * ltr_scripts module
  * https://github.com/semantic-machines/veda/blob/f9fd83a84aea0f9721299dff6d673dd967202ce2/source/veda/core/glue_code/scripts.d
  * https://github.com/semantic-machines/veda/blob/f9fd83a84aea0f9721299dff6d673dd967202ce2/source/veda/core/glue_code/ltrs.d
  */
@@ -17,10 +17,10 @@ private
 }
 
 void main(char[][] args)
-{
-    process_name = "ltr-scripts";
+{				   
+    process_name = "ltr_scripts";
 
-    core.thread.Thread.sleep(dur!("seconds")(1));
+    core.thread.Thread.sleep(dur!("seconds")(2));
 
     ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091);
 
@@ -68,7 +68,7 @@ private void ltrs_thread(string parent_url)
 
 //    core.thread.Thread.getThis().name = thread_name;
 
-    context = new PThreadContext("cfg:standart_node", "ltr-scripts", P_MODULE.ltr_scripts, parent_url);
+    context = new PThreadContext("cfg:standart_node", "ltr_scripts", P_MODULE.ltr_scripts, parent_url);
 
 
     vars_for_codelet_script =
@@ -300,13 +300,6 @@ class ScriptProcess : ChildProcess
                           string event_id,
                           long op_id)
     {
-        if (script_vm is null)
-            return false;
-
-        string individual_id = new_indv.uri;
-
-        bool   prepare_if_is_script = false;
-
         if (new_indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
             return true;
 
