@@ -6,25 +6,52 @@ Autoupdate displayed individuals on client when they change on server
 
 veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	
-	return;
-	
-	var socket;
+	var socket,	
+		address = location.protocol + "//" + location.hostname + ":8088/ccus";
 
 	try {
-		socket = new WebSocket("ws://echo.websocket.org");
+		socket = new WebSocket(address);
 	} catch (ex) {
 		return socket = null;
 	}
 	
-	socket.onmessage = function (event) {
-		var msg = JSON.parse(event.data);
-		console.log("received", event.data);
-		for (var uri in msg) {
-			var ind = new veda.IndividualModel(uri);
-			ind.reset();
-		}
+	socket.onopen = function (event) {
+		socket.send("Client individual update subscription");
 	};
 	
+	socket.onclose = function (event) {
+		veda.off("individual:loaded", updateWatch);
+	};
+	
+	socket.onmessage = function (event) {
+		try {
+			var msg = JSON.parse(event.data);
+			for (var uri in msg) {
+				var ind = new veda.IndividualModel(uri);
+				ind.reset();
+			}
+		} catch (e) {
+			"individual update failed";
+		}
+	};
+
+	veda.on("individual:loaded", updateWatch);
+
+	function updateWatch(individual, container, template, mode) {
+		individual.one("individual:templateReady", displayedHandler);
+		if (container === "#main") {
+			visible.subscribe();
+		}
+	}
+	
+	function displayedHandler(template) {
+		var individual = this;
+		visible.add(individual.id);
+		template.one("remove", function () {
+			visible.remove(individual.id);
+		});
+	}	
+
 	var visible = (function (socket) {
 		var counter = {};
 		return {
@@ -38,24 +65,11 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 			subscribe: function () {
 				setTimeout( function () {
 					if (socket.readyState === 1) {
-						socket.send( JSON.stringify(counter) );
+						var msg = JSON.stringify(counter);
+						socket.send(msg);
 					}
-				}, 500);
+				}, 1000);
 			}
 		}
 	})(socket);
-
-	veda.on("individual:loaded", function (individual, container, template, mode) {
-		function displayedHandler(template) {
-			visible.add(individual.id);
-			template.one("remove", function () {
-				visible.remove(individual.id);
-			});
-		}
-		individual.one("individual:templateReady", displayedHandler);
-		if (container === "#main") {
-			visible.subscribe();
-		}
-	});
-
 });
