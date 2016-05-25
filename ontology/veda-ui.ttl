@@ -120,6 +120,13 @@ v-ui:tooltip
   rdfs:label "Tooltip"@en ;
   rdfs:range xsd:string ;
 .
+v-ui:alternativeName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:PropertySpecification ;
+  rdfs:label "Альтернативное наименование предиката"@ru ;
+  rdfs:label "Alternativ name for predicate"@en ;
+  rdfs:range xsd:string ;
+.
 v-ui:placeholder
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:PropertySpecification ;

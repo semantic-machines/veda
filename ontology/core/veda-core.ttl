@@ -310,7 +310,7 @@ v-s:actualVersion
 
 v-s:author
   rdf:type owl:ObjectProperty ;
-  rdfs:domain rdfs:Resource ;
+  rdfs:domain v-s:Document ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Author"@en ;
   rdfs:label "Автор"@ru ;
