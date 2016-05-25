@@ -129,20 +129,20 @@ class ChildProcess
 
         ws_context = lws_create_context(&info);
 
-        writeln("[Main] context created.");
+        //writeln("[Main] context created.");
 
         if (ws_context is null)
         {
-            writeln("[Main] context is NULL.");
+            //writeln("[Main] context is NULL.");
             return;
         }
 
         lws_client_connect_info i;
 
-        i.host    = "localhost\0";
+        i.host    = cast(char*)(host ~ "\0");
         i.origin  = i.host;
         i.address = i.host;
-        i.port    = 8091;
+        i.port    = port;
         i.context = ws_context;
         i.path    = "/ws\0";
 
@@ -150,11 +150,11 @@ class ChildProcess
 
         if (wsi is null)
         {
-            writeln("[Main] wsi create error.");
+            log.trace("init_chanel: wsi create error.");
             return;
         }
 
-        writeln("[Main] wsi create success.");
+        //writeln("[Main] wsi create success.");
     }
 
     void run()
@@ -197,11 +197,12 @@ class ChildProcess
 
         lws_context_destroy(ws_context);
 
-        writeln("EXIT");
+        log.trace("EXIT");
     }
 
 ///////////////////////////////////////////////////
 
+	// if return [false] then, no commit prepared message, and repeate   
     abstract bool prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                           string event_id,
                           long op_id);
@@ -267,7 +268,7 @@ class ChildProcess
                         cs.commit();
                     else
                     {
-                        writeln(process_name, ": message fail prepared, sleep and repeate...");
+                        log.trace("message fail prepared, sleep and repeate...");
                         core.thread.Thread.sleep(dur!("seconds")(10));
                     }
                 }
@@ -313,18 +314,18 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
     switch (reason)
     {
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_ESTABLISHED:
-        writeln("[CP]Connect with server success.");
+        //writeln("[CP]Connect with server success.");
         connection_flag = 1;
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
-        writeln("[CP] Connect with server error.");
+        //writeln("[CP] Connect with server error.");
         destroy_flag    = 1;
         connection_flag = 0;
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLOSED:
-        writeln("[CP] LWS_CALLBACK_CLOSED");
+        //writeln("[CP] LWS_CALLBACK_CLOSED");
         destroy_flag    = 1;
         connection_flag = 0;
         break;

@@ -42,3 +42,11 @@ rm dub.selections.json
 dub build veda-scripts --build=debug
 cd ../../..
 mv source/dub/scripts/veda-scripts veda-scripts
+
+echo *** build veda-ltr-scripts ***
+cd source/dub/ltr-scripts
+rm veda-ltr-scripts
+rm dub.selections.json
+dub build veda-ltr-scripts --build=debug
+cd ../../..
+mv source/dub/ltr-scripts/veda-ltr-scripts veda-ltr-scripts

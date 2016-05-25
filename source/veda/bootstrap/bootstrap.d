@@ -67,7 +67,7 @@ void main(char[][] args)
     string[ string ] env;
     int      exit_code;
 
-    string[] modules = [ "veda", "veda-server", "veda-fanout", "veda-scripts" ];
+    string[] modules = [ "veda", "veda-server", "veda-fanout", "veda-scripts", "veda-ltr-scripts" ];
     int[][ string ] command_2_pid;
 
     bool is_found_modules = false;
@@ -108,12 +108,12 @@ void main(char[][] args)
         return;
     }
 
-        auto server_logFile = File("veda-server-errors.log", "w");
-        writeln("start veda-server");
-        auto server_pid = spawnProcess("./veda-server",
-                                std.stdio.stdin,
-                                std.stdio.stdout,
-                                server_logFile, env, Config.suppressConsole);
+    auto server_logFile = File("veda-server-errors.log", "w");
+    writeln("start veda-server");
+    auto server_pid = spawnProcess("./veda-server",
+                                   std.stdio.stdin,
+                                   std.stdio.stdout,
+                                   server_logFile, env, Config.suppressConsole);
 
 
     auto fanout_logFile = File("veda-fanout-errors.log", "w");
@@ -130,9 +130,15 @@ void main(char[][] args)
                                     std.stdio.stdout,
                                     scripts_logFile, env, Config.suppressConsole);
 
+    auto ltr_scripts_logFile = File("veda-ltr-scripts-errors.log", "w");
+    writeln("start veda-ltr-scripts");
+    auto pid_ltr_scripts = spawnProcess("./veda-ltr-scripts",
+                                    std.stdio.stdin,
+                                    std.stdio.stdout,
+                                    ltr_scripts_logFile, env, Config.suppressConsole);
 
-        exit_code = wait(server_pid);
+    exit_code = wait(server_pid);
 
-        if (exit_code == -SIGKILL)
-            writeln("veda-server terminated, code=", exit_code);
+    if (exit_code == -SIGKILL)
+        writeln("veda-server terminated, code=", exit_code);
 }

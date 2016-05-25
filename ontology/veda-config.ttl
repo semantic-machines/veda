@@ -189,14 +189,6 @@ v-s:queue
   rdfs:range xsd:string ;
 .    
 
-v-s:role
-  rdf:type owl:DatatypeProperty ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:domain v-s:Node ;
-  rdfs:label "Node_role" ;
-  rdfs:range xsd:string ;
-.    
-
 v-s:useTemplate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Connection ;

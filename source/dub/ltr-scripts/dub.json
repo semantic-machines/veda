@@ -1,6 +1,6 @@
 {
-	"name": "veda-scripts",
-	"description": "veda-scripts",
+	"name": "veda-ltr-scripts",
+	"description": "veda-ltr-scripts",
 	"dependencies": {
 		"pacahon_third_party": "1.0.13", 
 		"backtrace-d": "0.1.0", 
@@ -20,9 +20,9 @@
 	    "../../veda/core/common"
 	],
         "sourceFiles":[
-	"../../veda/gluecode/script.d",
-	"../../veda/gluecode/scripts.d", 
-	"../../veda/gluecode/v8d_header.d",
+        "../../veda/gluecode/script.d",
+        "../../veda/gluecode/ltr_scripts.d",
+        "../../veda/gluecode/v8d_header.d",
         "../../lib64/libv8d.a", 
 	"../../lib64/libxapiand.a",
 	"../../veda/core/bind/xapian_d_header.d",

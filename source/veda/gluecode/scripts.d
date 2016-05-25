@@ -1,16 +1,14 @@
 /**
- * scripts thread
+ * scripts module
  */
 module veda.gluecode.scripts;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime;
-private import backtrace.backtrace, Backtrace = backtrace.backtrace;
-private import veda.gluecode.v8d_header;
 private import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.log_msg, veda.core.common.know_predicates, veda.onto.onto;
 private import veda.process.child_process;
-private import search.vel, search.vql, veda.gluecode.script;
+private import search.vel, search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 
 void main(char[][] args)
 {
@@ -18,7 +16,7 @@ void main(char[][] args)
 
     core.thread.Thread.sleep(dur!("seconds")(1));
 
-    ScriptProcess p_script = new ScriptProcess(P_MODULE.scripts, "127.0.0.1", 8082);
+    ScriptProcess p_script = new ScriptProcess(P_MODULE.scripts, "127.0.0.1", 8091);
 
     p_script.run();
 }
@@ -26,7 +24,6 @@ void main(char[][] args)
 class ScriptProcess : ChildProcess
 {
     private          ScriptInfo[ string ] event_scripts;
-    private          ScriptInfo[ string ] codelet_scripts;
 
     private VQL      vql;
     private string   empty_uid;
@@ -58,7 +55,6 @@ class ScriptProcess : ChildProcess
 
         Resources types      = new_indv.resources.get(rdf__type, Resources.init);
         string[]  indv_types = types.getAsArrayStrings();
-
         foreach (itype; indv_types)
         {
             if (itype == veda_schema__PermissionStatement || itype == veda_schema__Membership)
@@ -176,13 +172,6 @@ class ScriptProcess : ChildProcess
             ~ "var super_classes = get_env_str_var ('$super_classes');"
             ~ "var _event_id = document['@'] + '+' + _script_id;";
 
-        vars_for_codelet_script =
-            "var user_uri = get_env_str_var ('$user');"
-            ~ "var execute_script = get_individual (ticket, '$execute_script');"
-            ~ "var prev_state = get_individual (ticket, '$prev_state');"
-            ~ "var super_classes = get_env_str_var ('$super_classes');"
-            ~ "var _event_id = document['@'] + '+' + _script_id;";
-
         vql = new VQL(context);
 
         script_vm = get_ScriptVM(context);
@@ -200,8 +189,7 @@ class ScriptProcess : ChildProcess
         Ticket       sticket = context.sys_ticket();
         Individual[] res;
         vql.get(&sticket,
-                "return { 'v-s:script'}
-            filter { 'rdf:type' === 'v-s:Event'}",
+                "return { 'v-s:script'} filter { 'rdf:type' === 'v-s:Event'}",
                 res);
 
         int count = 0;
@@ -316,74 +304,6 @@ class ScriptProcess : ChildProcess
             g_parent_document_id.data   = cast(char *)empty_uid;
             g_parent_document_id.length = cast(int)empty_uid.length;
         }
-    }
-
-    private void set_g_prev_state(string prev_state)
-    {
-        if (prev_state !is null)
-        {
-            g_prev_state.data   = cast(char *)prev_state;
-            g_prev_state.length = cast(int)prev_state.length;
-        }
-        else
-        {
-            g_prev_state.data   = cast(char *)empty_uid;
-            g_prev_state.length = cast(int)empty_uid.length;
-        }
-    }
-
-    private void set_g_super_classes(ref string[] indv_types, Onto onto)
-    {
-        Classes super_classes;
-
-        foreach (indv_type; indv_types)
-        {
-            if (super_classes == Classes.init)
-            {
-                super_classes = onto.get_super_classes(indv_type);
-            }
-            else
-            {
-                Classes i_super_classes = onto.get_super_classes(indv_type);
-                foreach (i_super_class; i_super_classes.keys)
-                {
-                    if (super_classes.get(i_super_class, false) == false)
-                    {
-                        super_classes[ i_super_class ] = true;
-                    }
-                }
-            }
-        }
-        string superclasses_str = text(super_classes.keys);
-        g_super_classes.data   = cast(char *)superclasses_str;
-        g_super_classes.length = cast(int)superclasses_str.length;
-    }
-
-    private bool isFiltred(ScriptInfo *script, ref string[] indv_types, Onto onto)
-    {
-        bool any_exist = false;
-
-        foreach (indv_type; indv_types)
-        {
-//if (script.id == "v-wf:event_df1")
-//{
-//	foreach (key ; script.filters.keys)
-            //writeln("#1 exec script:", script.id, ", script.filters=", script.filters, "key=", key, ", sub_classes=", onto.get_sub_classes(key));
-//}
-
-            if ((indv_type in script.filters) !is null)
-            {
-                any_exist = true;
-                break;
-            }
-
-            if (onto.isSubClasses(cast(string)indv_type, script.filters.keys) == true)
-            {
-                any_exist = true;
-                break;
-            }
-        }
-        return any_exist;
     }
 }
 

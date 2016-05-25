@@ -53,7 +53,7 @@ public enum P_MODULE : byte
     //// data change signal
     dcs                        = 13,
 
-    ltrs                       = 14,
+    ltr_scripts                = 14,
 
     nop                        = 99
 }
