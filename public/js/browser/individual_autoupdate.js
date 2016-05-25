@@ -16,7 +16,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	}
 	
 	socket.onopen = function (event) {
-		socket.send("ccus = " + veda.ticket);
+		socket.send("ccus=" + veda.ticket);
 	};
 	
 	socket.onclose = function (event) {
