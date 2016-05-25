@@ -47,7 +47,7 @@ veda.Module(function (veda) { "use strict";
 		
 		this.on("individual:beforeSave", function () {
 			if (!this.hasValue("v-s:created")) this["v-s:created"] = [new Date()];
-			if (!this.hasValue("v-s:author")) this["v-s:author"] = [ veda.appointment ? veda.appointment : veda.user ];
+			if (!this.hasValue("v-s:publisher")) this["v-s:publisher"] = [ veda.appointment ? veda.appointment : veda.user ];
 		});
 				
 		if (container) {
