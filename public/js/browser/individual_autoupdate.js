@@ -7,7 +7,7 @@ Autoupdate displayed individuals on client when they change on server
 veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	
 	var socket,	
-		address = location.protocol + "//" + location.hostname + ":8088/ccus";
+		address = "ws://" + location.hostname + ":8088/ccus";
 
 	try {
 		socket = new WebSocket(address);
