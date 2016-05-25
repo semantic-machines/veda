@@ -5,6 +5,8 @@
 data
 pacahon-properties.json
 veda
+veda-fanout
+veda-scripts
 dub
 veda.geany
 m.sh
@@ -25,3 +27,4 @@ veda.properties
 /veda-fts-worker
 /veda-js-worker
 /veda-server
+/tmp/
