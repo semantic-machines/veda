@@ -405,25 +405,25 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
 {
 //	print('+J');
 	
-    var author_uri = getUri(document['v-s:author']);
+    var publisher_uri = getUri(document['v-s:publisher']);
 //	print('+J1 '+document['@']);
 //	print('+J1 '+toJson(document));
-    if (!author_uri) { return; }
+    if (!publisher_uri) { return; }
 
-    var author = get_individual(ticket, author_uri);
+    var publisher = get_individual(ticket, publisher_uri);
 //	print('+J2');
-    if (!author) { return; }
+    if (!publisher) { return; }
 
     var employee_uri;
 //	print('+J3');
-    if (isExists(author['rdf:type'], newUri('v-s:Appointment')))
+    if (isExists(publisher['rdf:type'], newUri('v-s:Appointment')))
     {
-        employee_uri = author['v-s:employee'];
+        employee_uri = publisher['v-s:employee'];
         if (!employee_uri) { return; }
     }
     else
     {
-        employee_uri = author_uri;
+        employee_uri = publisher_uri;
     }
 
 //	print('+J4');
