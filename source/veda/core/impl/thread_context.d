@@ -1216,9 +1216,9 @@ class PThreadContext : Context
                         //log.trace("[%s] ++ store_individual, final indv: %s", name, *indv);
                     }
 
-					long update_counter = prev_indv.getFirstInteger("v-s:update_counter", 0);					
-					update_counter++;					
-					indv.setResources("v-s:update_counter", [Resource(update_counter)]);					
+                    long update_counter = prev_indv.getFirstInteger("v-s:update_counter", 0);
+                    update_counter++;
+                    indv.setResources("v-s:update_counter", [ Resource(update_counter) ]);
 
                     string new_state = individual2cbor(indv);
 
