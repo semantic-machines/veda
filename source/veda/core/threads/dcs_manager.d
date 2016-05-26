@@ -142,13 +142,13 @@ public void set_module_info(string module_name, string host, ushort port)
     }
 }
 
-public void ev_update_individual(byte cmd, string user_uri, string cur_state, string prev_state, string event_id, long op_id)
+public void ev_update_individual(byte cmd, string user_uri, string indv_uri, string cur_state, string prev_state, string event_id, long op_id)
 {
     std.concurrency.Tid tid_dcs = getTid(P_MODULE.dcs);
 
     if (tid_dcs != std.concurrency.Tid.init)
     {
-        std.concurrency.send(tid_dcs, cast(CMD)cmd, user_uri, prev_state, cur_state, event_id, op_id);
+        std.concurrency.send(tid_dcs, cast(CMD)cmd, user_uri, indv_uri, prev_state, cur_state, event_id, op_id);
     }
 }
 
@@ -309,10 +309,10 @@ void dcs_thread(string thread_name, string _node_id)
                                             std.concurrency.send(tid_response_reciever, 0);
                                         }
                                     },
-                                    (CMD cmd, string user_uri, string prev_state, string new_state, string event_id, long op_id)
+                                    (CMD cmd, string user_uri, string indv_uri, string prev_state, string new_state, string event_id, long opid)
                                     {
                                         Individual imm;
-                                        imm.uri = text(op_id);
+                                        imm.uri = text(opid);
                                         imm.addResource("cmd", Resource(cmd));
 
                                         if (user_uri !is null && user_uri.length > 0)
@@ -326,7 +326,7 @@ void dcs_thread(string thread_name, string _node_id)
                                         if (event_id !is null && event_id.length > 0)
                                             imm.addResource("event_id", Resource(DataType.String, event_id));
 
-                                        imm.addResource("op_id", Resource(op_id));
+                                        imm.addResource("op_id", Resource(opid));
 
                                         //writeln ("*imm=[", imm, "]");
 
@@ -336,13 +336,13 @@ void dcs_thread(string thread_name, string _node_id)
                                         queue.push(cbor);
 
                                         if (task_of_scripts !is shared(Task).init)
-                                            vibe.core.concurrency.send(task_of_scripts, text(op_id), main_loop_task);
+                                            vibe.core.concurrency.send(task_of_scripts, text(opid), main_loop_task);
                                             
                                         if (task_of_ltr_scripts !is shared(Task).init)
-                                            vibe.core.concurrency.send(task_of_ltr_scripts, text(op_id), main_loop_task);
+                                            vibe.core.concurrency.send(task_of_ltr_scripts, text(opid), main_loop_task);
 
                                         if (task_of_fanout !is shared(Task).init)
-                                            vibe.core.concurrency.send(task_of_fanout, text(op_id), main_loop_task);
+                                            vibe.core.concurrency.send(task_of_fanout, text(opid), main_loop_task);
                                     },
                                     (std.concurrency.Variant v) { log.trace("::dcs_thread::Received some other type. %s", text(v)); });
         }
