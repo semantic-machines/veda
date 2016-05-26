@@ -142,7 +142,7 @@ v-s:Person
   rdfs:subClassOf owl:Thing ;
   rdfs:subClassOf v-s:Versioned ;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Exportable ;  
+  rdfs:subClassOf v-s:Exportable ;
   rdfs:comment "A person." ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Person"@en ;
@@ -211,9 +211,9 @@ v-s:Embedded
 
 v-s:priority
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:ExecuteScript ;                                                                       
-  rdfs:label "Priority"@en ;                                                         
-  rdfs:label "Приоритет"@ru ;                                                   
+  rdfs:domain v-s:ExecuteScript ;
+  rdfs:label "Priority"@en ;
+  rdfs:label "Приоритет"@ru ;
   rdfs:range xsd:integer ;
 .
 
@@ -332,7 +332,7 @@ v-s:birthday
 v-s:canCreate
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
-  rdfs:domain v-s:Membership ;  
+  rdfs:domain v-s:Membership ;
   rdfs:label "Can create"@en ;
   rdfs:label "Можно создавать"@ru ;
   rdfs:range xsd:boolean ;
@@ -341,7 +341,7 @@ v-s:canCreate
 v-s:canDelete
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
-  rdfs:domain v-s:Membership ;  
+  rdfs:domain v-s:Membership ;
   rdfs:label "Can delete"@en ;
   rdfs:label "Можно удалять"@ru ;
   rdfs:range xsd:boolean ;
@@ -359,7 +359,7 @@ v-s:canRead
 v-s:canUpdate
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
-  rdfs:domain v-s:Membership ;  
+  rdfs:domain v-s:Membership ;
   rdfs:label "Can update"@en ;
   rdfs:label "Можно изменять"@ru ;
   rdfs:range xsd:boolean ;
@@ -629,6 +629,14 @@ v-s:endTime
   rdfs:label "End time"@en ;
   rdfs:label "Время окончания"@ru ;
   rdfs:range xsd:dateTime ;
+.
+
+v-s:updateCounter
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain rdfs:Resource ;
+  rdfs:label "update counter"@en ;
+  rdfs:label "счетчик обновлений"@ru ;
+  rdfs:range xsd:integer ;
 .
 
 ### INDIVIDUALS ###
