@@ -15,37 +15,43 @@
 .
 #-- Классы --
 
+v-s:Activity
+  rdf:type owl:Class ;
+  rdfs:label "Activity"@en ;
+  rdfs:label "Активность"@ru ;
+  rdfs:subClassOf v-s:Document ;
+.
 v-s:MeetingReport
   rdf:type owl:Class ;
   rdfs:label "Report of meeting"@en ;
   rdfs:label "Отчет о встрече"@ru ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Activity ;
 .
 
 
 #-- Аттрибуты --
 
 v-s:hasAction
-  rdfs:domain v-s:MeetingReport ;
+  rdfs:domain v-s:Activity ;
 .
 v-s:member
-  rdfs:domain v-s:MeetingReport ;
+  rdfs:domain v-s:Activity ;
 .
 v-s:decision
-  rdfs:domain v-s:MeetingReport ;
+  rdfs:domain v-s:Activity ;
 .
 v-s:copyTo
   rdfs:domain v-s:MeetingReport ;
 .
 v-s:registrationDate
-  rdfs:domain v-s:MeetingReport ;
+  rdfs:domain v-s:Activity ;
 .
 v-s:registrationNumber
-  rdfs:domain v-s:MeetingReport ;
+  rdfs:domain v-s:Activity ;
 .
 v-s:theme
-  rdfs:domain v-s:MeetingReport ;
+  rdfs:domain v-s:Activity ;
 .
 v-s:title
-  rdfs:domain v-s:MeetingReport ;
+  rdfs:domain v-s:Activity ;
 .
