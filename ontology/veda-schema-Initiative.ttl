@@ -16,7 +16,6 @@
 
 # -- КЛАССЫ START --
 
-
 v-s:Initiative
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Document ;
@@ -25,13 +24,13 @@ v-s:Initiative
 .
 v-s:Idea
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Initiative ;  
+  rdfs:subClassOf v-s:Initiative ;
   rdfs:label "Idea"@en ;
   rdfs:label "Идея"@ru ;
 .
 v-s:Project
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Initiative ;  
+  rdfs:subClassOf v-s:Initiative ;
   rdfs:label "Project"@en ;
   rdfs:label "Проект"@ru ;
 .
@@ -93,7 +92,7 @@ v-s:Asset
 v-s:MemberOfWorkGroup
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Document ;
-  rdfs:subClassOf v-s:Embedded ;  
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Project team member"@en ;
   rdfs:label "Член рабочей группы в Проекте"@ru ;
 .
@@ -154,7 +153,7 @@ v-s:PsInitiatorAuthorCoathorForInitiative
   v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:initiator ;
   v-ui:forProperty v-s:author ;
-  v-ui:forProperty v-s:coauthor ;  
+  v-ui:forProperty v-s:coauthor ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
@@ -221,11 +220,11 @@ v-s:hasTotalFactOnceEffect
 .
 v-s:PsHasTotalEffects
   rdf:type v-ui:DecimalPropertySpecification ;
-  v-ui:forClass v-s:Initiative ;  
+  v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:hasTotalPlanYearEffect ;
   v-ui:forProperty v-s:hasTotalFactYearEffect ;
   v-ui:forProperty v-s:hasTotalPlanOnceEffect ;
-  v-ui:forProperty v-s:hasTotalFactOnceEffect ;      
+  v-ui:forProperty v-s:hasTotalFactOnceEffect ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
   rdfs:label "Effects property specification for FinancialEffectForIdea and FinancialEffect class"@en ;
@@ -317,23 +316,23 @@ v-s:factMonth12Effect
 .
 v-s:PsHasEffects
   rdf:type v-ui:DecimalPropertySpecification ;
-  v-ui:forClass v-s:Effect ;  
+  v-ui:forClass v-s:Effect ;
   v-ui:forProperty v-s:planOnceEffect ;
   v-ui:forProperty v-s:planYearEffect ;
   v-ui:forProperty v-s:factOnceEffect ;
   v-ui:forProperty v-s:factYearEffect ;
   v-ui:forProperty v-s:factMonth1Effect ;
-  v-ui:forProperty v-s:factMonth2Effect ;      
-  v-ui:forProperty v-s:factMonth3Effect ;        
-  v-ui:forProperty v-s:factMonth4Effect ;        
-  v-ui:forProperty v-s:factMonth5Effect ;        
-  v-ui:forProperty v-s:factMonth6Effect ;        
+  v-ui:forProperty v-s:factMonth2Effect ;
+  v-ui:forProperty v-s:factMonth3Effect ;
+  v-ui:forProperty v-s:factMonth4Effect ;
+  v-ui:forProperty v-s:factMonth5Effect ;
+  v-ui:forProperty v-s:factMonth6Effect ;
   v-ui:forProperty v-s:factMonth7Effect ;
-  v-ui:forProperty v-s:factMonth8Effect ;      
-  v-ui:forProperty v-s:factMonth9Effect ;        
-  v-ui:forProperty v-s:factMonth10Effect ;        
-  v-ui:forProperty v-s:factMonth11Effect ;        
-  v-ui:forProperty v-s:factMonth12Effect ;          
+  v-ui:forProperty v-s:factMonth8Effect ;
+  v-ui:forProperty v-s:factMonth9Effect ;
+  v-ui:forProperty v-s:factMonth10Effect ;
+  v-ui:forProperty v-s:factMonth11Effect ;
+  v-ui:forProperty v-s:factMonth12Effect ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
   rdfs:label "Effects property specification for FinancialEffectForIdea and FinancialEffect class"@en ;
@@ -386,7 +385,7 @@ v-s:hasEffect
 v-s:PsHasEffect
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:Idea ;
-  v-ui:forClass v-s:Project ;  
+  v-ui:forClass v-s:Project ;
   v-ui:forProperty v-s:hasEffect ;
   v-ui:maxCardinality 50 ;
   v-ui:minCardinality 0 ;
@@ -427,7 +426,7 @@ v-s:hasSector
   rdfs:domain v-s:Initiative ;
   rdfs:label "Sector"@en ;
   rdfs:label "Отрасль экономической деятельности"@ru ;
-  rdfs:range v-s:Sector ;  
+  rdfs:range v-s:Sector ;
 .
 v-s:PsHasSector
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -435,19 +434,19 @@ v-s:PsHasSector
   v-ui:forProperty v-s:hasSector ;
   v-ui:maxCardinality 30 ;
   v-ui:minCardinality 0 ;
-  v-ui:alternativeName "Область применения"@ru ;  
+  v-ui:alternativeName "Область применения"@ru ;
   v-ui:tooltip "Select functional areas which are covered by your initiative"@en ;
   v-ui:tooltip "Выберите сферы деятельности, на которые распространяется Ваша идея."@ru ;
   rdfs:label "hasSector specification for Initiative class"@en ;
   rdfs:label "Спецификация области применения для класса Инициатива"@ru ;
 .
 v-s:attachment
-  rdfs:domain v-s:ClassifiedAttachment ;    
+  rdfs:domain v-s:ClassifiedAttachment ;
 .
 v-s:hasDocumentKind
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:ClassifiedAttachment ;
-  rdfs:domain v-s:ProjectPhaseCost ;    
+  rdfs:domain v-s:ProjectPhaseCost ;
   rdfs:label "Type of document"@en ;
   rdfs:label "Вид документа"@ru ;
   rdfs:range v-s:DocumentKind ;
@@ -476,7 +475,7 @@ v-s:PsDocumentKindForProjectPhaseCost
   rdfs:label "Спецификация свойства Вид документа для класса классифицированная сумма"@ru ;
 .
 v-s:hasParentLink
-  rdfs:domain v-s:DocumentKind ;  
+  rdfs:domain v-s:DocumentKind ;
 .
 v-s:PsHasParentLink
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -490,7 +489,7 @@ v-s:PsHasParentLink
   rdfs:label "Спецификация ссылки на родтельский документ для класса виды документов"@ru ;
 .
 v-s:projectManager
-  rdfs:domain v-s:Initiative ;  
+  rdfs:domain v-s:Initiative ;
   rdf:type owl:ObjectProperty ;
   rdfs:label "Project manager"@en ;
   rdfs:label "Руководитель проекта"@ru ;
@@ -498,7 +497,7 @@ v-s:projectManager
 .
 v-s:PsProjectManager
   rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:Initiztive ;
+  v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:projectManager ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -778,7 +777,7 @@ v-s:hasAddInitiative
 .
 v-s:PsHasAddInitiative
   rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:Initiative ;  
+  v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:hasAddInitiative ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -896,7 +895,7 @@ v-s:PsCommentForProjectPhase
 .
 v-s:hasProjectPhaseKind
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:ProjectPhase ;  
+  rdfs:domain v-s:ProjectPhase ;
   rdfs:label "Project phase kind"@en ;
   rdfs:label "Вид фазы проекта"@ru ;
   rdfs:range v-s:ProjectPhaseKind ;
@@ -904,7 +903,7 @@ v-s:hasProjectPhaseKind
 v-s:PsProjectPhaseKind
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forProperty v-s:hasProjectPhaseKind ;
-  v-ui:forClass v-s:ProjectPhase ;  
+  v-ui:forClass v-s:ProjectPhase ;
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectPhaseKind')"^^xsd:string ;
@@ -915,7 +914,7 @@ v-s:PsProjectPhaseKind
 .
 v-s:hasProjectPhaseCost
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:ProjectPhase ;  
+  rdfs:domain v-s:ProjectPhase ;
   rdfs:label "Project phase costs"@en ;
   rdfs:label "Затраты на фазу проекта"@ru ;
   rdfs:range v-s:ProjectPhaseCost ;
@@ -934,7 +933,7 @@ v-s:PsProjectPhaseCost
 .
 v-s:hasProjectPhaseRisk
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:ProjectPhase ;  
+  rdfs:domain v-s:ProjectPhase ;
   rdfs:label "Project phase risks"@en ;
   rdfs:label "Риски на фазу проекта"@ru ;
   rdfs:range v-s:ProjectPhaseRisk ;
@@ -942,7 +941,7 @@ v-s:hasProjectPhaseRisk
 v-s:PsProjectPhaseRisk
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forProperty v-s:hasProjectPhaseRisk ;
-  v-ui:forClass v-s:ProjectPhase ;  
+  v-ui:forClass v-s:ProjectPhase ;
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectPhaseRisk')"^^xsd:string ;
@@ -952,7 +951,7 @@ v-s:PsProjectPhaseRisk
   rdfs:label "Спецификация рисков фазы проекта для класса фаза проекта"@ru ;
 .
 v-s:attachment
-  rdfs:domain v-s:ProjectPhaseCost ;      
+  rdfs:domain v-s:ProjectPhaseCost ;
 .
 v-s:sum_decimal
   rdfs:domain v-s:ProjectPhaseCost ;
@@ -970,7 +969,7 @@ v-s:PsSum_decimal
 .
 v-s:hasCurrencyKind
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:ProjectPhaseCost ;  
+  rdfs:domain v-s:ProjectPhaseCost ;
   rdfs:label "Currency kind"@en ;
   rdfs:label "Вид валюты"@ru ;
   rdfs:range v-s:CurrencyKind ;
@@ -989,7 +988,7 @@ v-s:PsHasCurrencyKind
 .
 v-s:riskAttachment
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:ProjectPhaseRisk ;      
+  rdfs:domain v-s:ProjectPhaseRisk ;
   rdfs:label "Risk attachment"@en ;
   rdfs:label "Вложение"@ru ;
   rdfs:range v-s:File ;

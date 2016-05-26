@@ -66,6 +66,12 @@ v-s:Bond
 
 #-- Аттрибуты --
 
+v-s:agenda
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Agenda"@en ;
+  rdfs:label "Повестка"@ru ;
+  rdfs:range xsd:string ;
+.
 v-s:hasAction
   rdf:type owl:ObjectProperty ;
   rdfs:label "Action"@en ;
@@ -207,21 +213,21 @@ v-s:copyTo
   rdfs:label "Copy to"@en ;
   rdfs:label "В копию"@ru ;
   rdfs:range v-s:Appointment ;
-  rdfs:range v-s:OrganizationUnit ;  
+  rdfs:range v-s:OrganizationUnit ;
 .
 v-s:sender
   rdf:type owl:ObjectProperty ;
   rdfs:label "Sender"@en ;
   rdfs:label "Отправитель"@ru ;
   rdfs:range v-s:Appointment ;
-  rdfs:range v-s:OrganizationUnit ;    
+  rdfs:range v-s:OrganizationUnit ;
 .
 v-s:recipient
   rdf:type owl:ObjectProperty ;
   rdfs:label "Recipient"@en ;
   rdfs:label "Получатель"@ru ;
   rdfs:range v-s:Appointment ;
-  rdfs:range v-s:OrganizationUnit ;    
+  rdfs:range v-s:OrganizationUnit ;
 .
 v-s:hasBaseDoc
   rdf:type owl:ObjectProperty ;
@@ -268,7 +274,7 @@ v-s:supplier
 	rdfs:label "Supplier"@en ;
 	rdfs:label "Исполнитель"@ru ;
 	rdfs:range v-s:Appointment ;
-    rdfs:range v-s:OrganizationUnit ;	
+    rdfs:range v-s:OrganizationUnit ;
 .
 v-s:hasFunctionalChief
   rdf:type owl:ObjectProperty ;

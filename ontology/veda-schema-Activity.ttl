@@ -7,10 +7,10 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 
-<http://semantic-machines.com/veda/mondi-schema-ReportOfMeeting/>
+<http://semantic-machines.com/veda/mondi-schema-Activity/>
   rdf:type owl:Ontology ;
-  rdfs:label "Mondi ontology. ReportOfMeeting "@en ;
-  rdfs:label "Онтология Монди. Отчет о встрече"@ru ;
+  rdfs:label "Veda system ontology. Activity"@en ;
+  rdfs:label "Онтология системы Veda. Мероприятие"@ru ;
   v-s:loadPriority 10 ;
 .
 #-- Классы --
@@ -21,27 +21,17 @@ v-s:Activity
   rdfs:label "Активность"@ru ;
   rdfs:subClassOf v-s:Document ;
 .
-v-s:MeetingReport
+v-s:Meeting
   rdf:type owl:Class ;
-  rdfs:label "Report of meeting"@en ;
-  rdfs:label "Отчет о встрече"@ru ;
+  rdfs:label "Meeting"@en ;
+  rdfs:label "Встреча"@ru ;
   rdfs:subClassOf v-s:Activity ;
 .
 
-
 #-- Аттрибуты --
 
-v-s:hasAction
-  rdfs:domain v-s:Activity ;
-.
 v-s:member
   rdfs:domain v-s:Activity ;
-.
-v-s:decision
-  rdfs:domain v-s:Activity ;
-.
-v-s:copyTo
-  rdfs:domain v-s:MeetingReport ;
 .
 v-s:registrationDate
   rdfs:domain v-s:Activity ;
@@ -52,6 +42,12 @@ v-s:registrationNumber
 v-s:theme
   rdfs:domain v-s:Activity ;
 .
-v-s:title
+v-s:agenda
+  rdfs:domain v-s:Meeting ;
+.
+v-s:decision
+  rdfs:domain v-s:Meeting ;
+.
+v-s:hasAction
   rdfs:domain v-s:Activity ;
 .
