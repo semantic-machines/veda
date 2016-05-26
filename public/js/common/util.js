@@ -33,7 +33,8 @@ function compare(a, b)
 {
     if (typeof a === "function") return a.toString() === b.toString();
     else if (typeof a != "object" || typeof b != "object") return a === b;
-    if (Object.keys(a).length != Object.keys(b).length) return false;
+    var dl = Object.keys(a).length - Object.keys(b).length;
+    if (dl > 1 || dl < -1) return false;
     var result = true;
     for (var key in a)
     {
@@ -42,6 +43,9 @@ function compare(a, b)
 
         var tbb = typeof bb;
         var taa = typeof aa;
+
+	if (key == "v-s:update_counter")
+	    continue;
 
         if (key == "type")
         {

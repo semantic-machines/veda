@@ -1216,6 +1216,10 @@ class PThreadContext : Context
                         //log.trace("[%s] ++ store_individual, final indv: %s", name, *indv);
                     }
 
+					long update_counter = prev_indv.getFirstInteger("v-s:update_counter", 0);					
+					update_counter++;					
+					indv.setResources("v-s:update_counter", [Resource(update_counter)]);					
+
                     string new_state = individual2cbor(indv);
 
                     res.result = storage_module.put(P_MODULE.subject_manager, indv.uri, new_state, ignore_freeze,
@@ -1255,7 +1259,7 @@ class PThreadContext : Context
                         }
  */
 //                    if (event_id != "fanout")
-                        veda.core.threads.dcs_manager.ev_update_individual(cmd, ticket.user_uri, new_state, prev_state, event_id, res.op_id);
+                        veda.core.threads.dcs_manager.ev_update_individual(cmd, ticket.user_uri, indv.uri, new_state, prev_state, event_id, res.op_id);
 
                         res.result = ResultCode.OK;
                     }
