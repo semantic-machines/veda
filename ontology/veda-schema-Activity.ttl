@@ -28,7 +28,24 @@ v-s:Meeting
   rdfs:subClassOf v-s:Activity ;
 .
 
+v-s:Action
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Versioned ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Action"@en ;
+  rdfs:label "Мероприятие"@ru ;
+.
+
 #-- Аттрибуты --
+
+v-s:hasAction
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Action"@en ;
+  rdfs:label "Мероприятие"@ru ;
+  rdfs:range v-s:Action ;
+  rdfs:domain v-s:Activity ;
+.
 
 v-s:member
   rdfs:domain v-s:Activity ;
@@ -42,12 +59,35 @@ v-s:registrationNumber
 v-s:theme
   rdfs:domain v-s:Activity ;
 .
+
 v-s:agenda
   rdfs:domain v-s:Meeting ;
 .
 v-s:decision
   rdfs:domain v-s:Meeting ;
 .
-v-s:hasAction
-  rdfs:domain v-s:Activity ;
+
+v-s:contributor
+  rdfs:domain v-s:Action ;
+.
+v-s:controller
+  rdfs:domain v-s:Action ;
+.
+v-s:dateFrom
+  rdfs:domain v-s:Action ;
+.
+v-s:dateTo
+  rdfs:domain v-s:Action ;
+.
+v-s:dateFact
+  rdfs:domain v-s:Action ;
+.
+v-s:description
+  rdfs:domain v-s:Action ;
+.
+v-s:responsible
+  rdfs:domain v-s:Action ;
+.
+v-s:placeDescription
+  rdfs:domain v-s:Action ;
 .

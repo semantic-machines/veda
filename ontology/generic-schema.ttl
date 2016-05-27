@@ -15,15 +15,6 @@
 #-- Классы --
 
 
-v-s:Action
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
-  rdfs:subClassOf v-s:Versioned ;
-  rdfs:subClassOf v-s:Embedded ;
-  rdfs:label "Action"@en ;
-  rdfs:label "Мероприятие"@ru ;
-.
-
 v-s:Dictionary
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Document ;
@@ -71,12 +62,6 @@ v-s:agenda
   rdfs:label "Agenda"@en ;
   rdfs:label "Повестка"@ru ;
   rdfs:range xsd:string ;
-.
-v-s:hasAction
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Action"@en ;
-  rdfs:label "Мероприятие"@ru ;
-  rdfs:range v-s:Action ;
 .
 v-s:alternativeTitle
   rdf:type owl:DatatypeProperty ;
@@ -498,29 +483,7 @@ v-s:to
 .
 v-s:placeDescription
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Action ;
   rdfs:label "Description of the place"@en ;
   rdfs:label "Место проведения чего-либо"@ru ;
   rdfs:range xsd:string ;
-.
-v-s:contributor
-  rdfs:domain v-s:Action ;
-.
-v-s:controller
-  rdfs:domain v-s:Action ;
-.
-v-s:dateFrom
-  rdfs:domain v-s:Action ;
-.
-v-s:dateTo
-  rdfs:domain v-s:Action ;
-.
-v-s:dateFact
-  rdfs:domain v-s:Action ;
-.
-v-s:description
-  rdfs:domain v-s:Action ;
-.
-v-s:responsible
-  rdfs:domain v-s:Action ;
 .
