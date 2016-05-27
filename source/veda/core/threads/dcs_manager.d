@@ -30,7 +30,7 @@ public void set_updated_uid(string uid, long opid, long update_counter)
 {
     synchronized (_mutex)
     {
-        //writeln ("@opid=", opid);
+        //writeln ("@ uid=", uid, ", opid=", opid, ", update_counter=", update_counter);
         _info_2_uid[ uid ] = UidInfo(update_counter, opid);
         _last_opid         = opid;
 //        core.atomic.atomicOp !"+=" (_count_opid, 1);
@@ -229,20 +229,21 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                         foreach (i_uid; keys)
                         {
                             long i_count = count_2_uid[ i_uid ];
-                            if (get_counter_4_uid(i_uid) > i_count)
+                            long g_count = get_counter_4_uid(i_uid);
+                            if (g_count > i_count)
                             {
                                 if (res is null)
                                     res ~= i_uid ~ "=" ~ text(i_count);
                                 else
                                     res ~= "," ~ i_uid ~ "=" ~ text(i_count);
 
-                                count_2_uid[ i_uid ] = i_count;
+                                count_2_uid[ i_uid ] = g_count;
                             }
                         }
 
                         if (res !is null)
                         {
-                            //writeln("@@res=", res);
+                            //writeln("@@send to=", res);
                             socket.send(res);
                         }
                         last_check_opid = last_opid;
