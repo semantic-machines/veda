@@ -843,3 +843,21 @@ cfg:Bychina_create_Person
   v-s:permissionObject v-s:Person, v-ui:Preferences, v-s:Appointment ;
   v-s:canCreate "true"^^xsd:boolean ;
 .
+
+
+d:khvostia_dismantlingProjectSpecialist
+    a v-s:Appointment;
+    v-s:occupation d:dismantlingProjectSpecialist;
+    v-s:employee td:AleksandraKhvostikova;
+    v-s:official "true"^^xsd:boolean;
+    v-s:valid "true"^^xsd:boolean;
+    rdfs:label "Хвостикова : Специалист по проектам демонтажа"@ru
+.
+d:khvostia_financialController
+    a v-s:Appointment;
+    v-s:occupation d:financialController;
+    v-s:employee td:AleksandraKhvostikova;
+    v-s:official "true"^^xsd:boolean;
+    v-s:valid "true"^^xsd:boolean;
+    rdfs:label "Хвостикова : Финансовый контролер"@ru
+.
