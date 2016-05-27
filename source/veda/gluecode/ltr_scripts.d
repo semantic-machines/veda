@@ -17,17 +17,14 @@ private
 }
 
 Tid    tid_ltr_scripts;
-logger _log;
+logger log;
 
 extern (C) void handleTermination1(int _signal)
 {
-    writeln("$1");
-    _log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
+    log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
     writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));
-    _log.close();
-
+    log.close();
     shutdown_ltr_scripts();
-
     writeln("!SYS: ", process_name, ": exit");
 }
 
@@ -43,7 +40,7 @@ void main(char[][] args)
     core.thread.Thread.sleep(dur!("seconds")(2));
 
     ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091);
-    _log = p_script.log();
+    log = p_script.log();
 
     tid_ltr_scripts = spawn(&ltrs_thread, p_script.parent_url);
 
@@ -88,7 +85,7 @@ private void ltrs_thread(string parent_url)
 {
     scope (exit)
     {
-//        log.trace("ERR! ltrs_thread dead (exit)");
+        log.trace("ERR! ltrs_thread dead (exit)");
     }
 
 //    core.thread.Thread.getThis().name = thread_name;
@@ -144,7 +141,8 @@ private void ltrs_thread(string parent_url)
 
                                    string queue_name = randomUUID().toString();
 
-                                   context.unload_subject_storage(queue_name);
+                                   unload_subject_storage(queue_name);
+
                                    Queue queue = new Queue(queue_name, Mode.R);
                                    if (queue.open())
                                    {
@@ -167,10 +165,10 @@ private void ltrs_thread(string parent_url)
                                            tasks.list[ indv.uri ] = task;
                                        }
                                        else
-                                           writeln("ltrs:Consumer not open");
+                                           writeln("ltrs:Consumer not open :", cs);
                                    }
                                    else
-                                       writeln("ltrs:Queue not open");
+                                       writeln("ltrs:Queue not open :", queue);
                                }
                            },
                            (Variant v) { writeln("ltrs_thread::Received some other type.", v); });
@@ -201,7 +199,7 @@ private void ltrs_thread(string parent_url)
                         string data = task.consumer.pop();
                         if (data !is null)
                         {
-                            //veda.core.glue_code.scripts.execute_script(context, &sticket, data, task.codelet_id, task.execute_script_cbor, thisTid);
+                            execute_script(sticket.user_uri, data, task.codelet_id, task.execute_script_cbor);
 
                             bool res = task.consumer.commit();
                             if (res == false)
@@ -227,7 +225,7 @@ private void ltrs_thread(string parent_url)
         }
         catch (Throwable ex)
         {
-            //log.trace("ltrs# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.info);
+            log.trace("ltrs# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.info);
         }
     }
 }
@@ -292,17 +290,17 @@ void execute_script(string user_uri, string msg, string script_uri, string execu
 
         try
         {
-            // if (trace_msg[ 300 ] == 1)
-            //     log.trace("start exec codelet script : %s %s", script.id, indv.uri);
+            if (trace_msg[ 300 ] == 1)
+                log.trace("start exec ltr-script : %s %s", script.id, indv.uri);
 
             script.compiled_script.run();
 
-            //if (trace_msg[ 300 ] == 1)
-            //    log.trace("end exec codelet script : %s", script.id);
+            if (trace_msg[ 300 ] == 1)
+                log.trace("end exec ltr-script : %s", script.id);
         }
         catch (Exception ex)
         {
-            //log.trace_log_and_console("WARN! fail execute codelet script : %s %s", script.id, ex.msg);
+            log.trace_log_and_console("WARN! fail execute ltr-script : %s %s", script.id, ex.msg);
         }
     }
 }
@@ -347,5 +345,26 @@ private void shutdown_ltr_scripts()
 {
     if (tid_ltr_scripts != Tid.init)
         send(tid_ltr_scripts, CMD.EXIT);
+}
+
+private void unload_subject_storage(string queue_name)
+{
+	writeln ("@unload_subject_storage, queue_name=", queue_name);
+	
+    long  count;
+    Queue queue = new Queue(queue_name, Mode.RW);
+
+    if (queue.open(Mode.RW))
+    {
+        bool add_to_queue(string key, string value)
+        {
+            queue.push(value);
+            count++;
+            return true;
+        }
+
+        context.get_subject_storage_db().get_of_cursor(&add_to_queue);
+        queue.close();
+    }
 }
 
