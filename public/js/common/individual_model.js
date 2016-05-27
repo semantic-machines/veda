@@ -1,23 +1,23 @@
 /**
- * @class veda.IndividualModel 
- * 
+ * @class veda.IndividualModel
+ *
  * This class is used to manipulate with individuals.
  */
 veda.Module(function (veda) { "use strict";
 
 	/**
 	 * @constructor
-	 * @param {String} uri URI of individual. If not specified, than id of individual will be generated automatically. 
+	 * @param {String} uri URI of individual. If not specified, than id of individual will be generated automatically.
 	 * @param {String/jQuery} container Container to render individual in. If passed as String, then must be a valid css selector. If passed as jQuery, then is used as is. If not specified, than individual will not be presented.
 	 * @param {String/jQuery/veda.IndividualModel} template Template to render individual with.
 	 * @param {String} mode Initial mode for individual presenter. Expected values: "view", "edit", "search".
-	 * @param {boolean} cache Use cache true / false. If true or not set, then object will be return from application cache (veda.cache). If false or individual not found in application cache - than individual will be loaded from database 
+	 * @param {boolean} cache Use cache true / false. If true or not set, then object will be return from application cache (veda.cache). If false or individual not found in application cache - than individual will be loaded from database
 	 * @param {boolean} init individual with class model at load. If true or not set, then individual will be initialized with class specific model upon load.
 	 */
 	veda.IndividualModel = function (uri, container, template, mode, cache, init) {
-	
+
 		var self = riot.observable(this);
-		
+
 		// Define Model functions
 		this._ = {};
 		this._.cache = typeof cache !== "undefined" ? cache : true;
@@ -26,8 +26,8 @@ veda.Module(function (veda) { "use strict";
 		this._.isSync = false;
 		this.properties = {};
 		this._.filtered = {};
-		
-		if (!uri) { 
+
+		if (!uri) {
 			this._.isNew = true;
 			let id = veda.Util.genUri();
 			this.properties["@"] = id;
@@ -35,7 +35,7 @@ veda.Module(function (veda) { "use strict";
 				veda.cache[id] = this;
 			}
 		}
-		
+
 		function typeHandler (property_uri, values) {
 			if (property_uri === "rdf:type") {
 				this._.isSync = false;
@@ -44,12 +44,13 @@ veda.Module(function (veda) { "use strict";
 			}
 		}
 		this.on("individual:propertyModified", typeHandler);
-		
+
 		this.on("individual:beforeSave", function () {
 			if (!this.hasValue("v-s:created")) this["v-s:created"] = [new Date()];
 			if (!this.hasValue("v-s:publisher")) this["v-s:publisher"] = [ veda.appointment ? veda.appointment : veda.user ];
+			this["v-s:lastEditor"] = [ veda.appointment ? veda.appointment : veda.user ];
 		});
-				
+
 		if (container) {
 			this.on("individual:afterLoad", function (individual) {
 				this.present.call(individual, container, template, mode);
@@ -58,20 +59,20 @@ veda.Module(function (veda) { "use strict";
 				this.present(container, template, mode);
 			});
 		}
-		
-		// Load data 
+
+		// Load data
 		if (uri) self = self.load(uri);
 		else self.trigger("individual:afterLoad", self);
 
 		return self;
 	};
-	
+
 	var proto = veda.IndividualModel.prototype;
 
 	// Define properties from ontology in veda.IndividualModel.prototype
 	veda.IndividualModel.defineProperty = function (property_uri) {
 		Object.defineProperty(proto, property_uri, {
-			get: function () { 
+			get: function () {
 				var self = this;
 				if (!self.properties[property_uri]) return [];
 				var values = self.properties[property_uri]
@@ -114,13 +115,13 @@ veda.Module(function (veda) { "use strict";
 		} else if (value.type === "Uri") {
 			if (value.data.search(/^.{3,5}:\/\//) === 0) return value.data;
 			return new veda.IndividualModel(value.data);
-		} else if (value.type === "Datetime") { 
+		} else if (value.type === "Datetime") {
 			return new Date(Date.parse(value.data));
 		} else {
 			return value.data;
 		}
 	}
-	
+
 	function serializer (value) {
 		if (typeof value === "number" ) {
 			return {
@@ -139,7 +140,7 @@ veda.Module(function (veda) { "use strict";
 				lang: value.language || "NONE"
 			}
 		} else if (value instanceof Date) {
-			return { 
+			return {
 				type: "Datetime",
 				data: value.toISOString()
 			}
@@ -157,10 +158,10 @@ veda.Module(function (veda) { "use strict";
 
 	// Special properties
 	Object.defineProperty(proto, "id", {
-		get: function () { 
+		get: function () {
 			return this.properties["@"];
 		},
-		set: function (value) { 
+		set: function (value) {
 			this._.isNew = false;
 			this._.isSync = false;
 			this.properties["@"] = value;
@@ -169,7 +170,7 @@ veda.Module(function (veda) { "use strict";
 	});
 
 	Object.defineProperty(proto, "rights", {
-		get: function () { 
+		get: function () {
 			if (this._.rights) return this._.rights;
 			if (this._.isNew) {
 				this._.rights = new veda.IndividualModel();
@@ -189,9 +190,9 @@ veda.Module(function (veda) { "use strict";
 		},
 		configurable: false
 	});
-	
+
 	Object.defineProperty(proto, "rightsOrigin", {
-		get: function () { 
+		get: function () {
 			if (this._.rightsOrigin) return this._.rightsOrigin;
 			try {
 				var rightsOriginArr = get_rights_origin(veda.ticket, this.id);
@@ -206,7 +207,7 @@ veda.Module(function (veda) { "use strict";
 		},
 		configurable: false
 	});
-		
+
 	/**
 	 * @method
 	 * Load individual specified by uri from database. If cache parameter (from constructor) is true, than try to load individual from browser cache first.
@@ -218,7 +219,7 @@ veda.Module(function (veda) { "use strict";
 		if (typeof uri === "string") {
 			if (self._.cache && veda.cache[uri]) {
 				self.trigger("individual:afterLoad", veda.cache[uri]);
-				return veda.cache[uri]; 
+				return veda.cache[uri];
 			}
 			try {
 				self.properties = get_individual(veda.ticket, uri);
@@ -274,7 +275,7 @@ veda.Module(function (veda) { "use strict";
 		this.trigger("individual:afterSave");
 		return this;
 	}
-	
+
 	/**
 	 * @method
 	 * Save current individual without validation and without adding new version
@@ -285,7 +286,7 @@ veda.Module(function (veda) { "use strict";
 		this.trigger("individual:afterDraft");
 		return this;
 	}
-		
+
 	/**
 	 * @method
 	 * Reset current individual to database
@@ -293,9 +294,9 @@ veda.Module(function (veda) { "use strict";
 	proto.reset = function () {
 		var self = this;
 		self.trigger("individual:beforeReset");
-		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) { 
+		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
 			veda.drafts.remove(this.id);
-		} 
+		}
 		this._.filtered = {};
 		var original;
 		try {
@@ -323,9 +324,9 @@ veda.Module(function (veda) { "use strict";
 	 */
 	proto.delete = function (parent) {
 		this.trigger("individual:beforeDelete");
-		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) { 
+		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
 			veda.drafts.remove(this.id);
-		} 
+		}
 		this["v-s:deleted"] = [ true ];
 		this.save(parent);
 		this.trigger("individual:afterDelete");
@@ -338,9 +339,9 @@ veda.Module(function (veda) { "use strict";
 	 */
 	proto.recover = function (parent) {
 		this.trigger("individual:beforeRecover");
-		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) { 
+		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
 			veda.drafts.remove(this.id);
-		} 
+		}
 		this["v-s:deleted"] = [];
 		this.save(parent);
 		this.trigger("individual:afterRecover");
@@ -359,7 +360,7 @@ veda.Module(function (veda) { "use strict";
 	/**
 	 * @method
 	 * @param {String} id of class to check
-	 * @return {boolean} is individual rdf:type subclass of requested class 
+	 * @return {boolean} is individual rdf:type subclass of requested class
 	 */
 	proto.is = function (_class) {
 		if (typeof _class.valueOf() === "string") {
@@ -401,7 +402,7 @@ veda.Module(function (veda) { "use strict";
 	proto.clone = function (uri) {
 		var individual = JSON.parse( JSON.stringify(this.properties) );
 		individual["@"] = veda.Util.genUri();
-		var clone = new veda.IndividualModel(individual); 
+		var clone = new veda.IndividualModel(individual);
 		return clone;
 	};
 
@@ -413,7 +414,7 @@ veda.Module(function (veda) { "use strict";
 	proto.isSync = function () {
 		return this._.isSync;
 	};
-	
+
 	/**
 	 * @method
 	 * Check whether individual is new (not saved in db)
@@ -431,9 +432,9 @@ veda.Module(function (veda) { "use strict";
 	 * @param {String} mode Initial mode for individual presenter. Expected values: "view", "edit", "search".
 	 */
 	proto.present = function (container, template, mode) {
-		if (container) { 
-			if (!this.hasValue("rdf:type")) { 
-				this["rdf:type"] = [ new veda.IndividualModel("rdfs:Resource") ]; 
+		if (container) {
+			if (!this.hasValue("rdf:type")) {
+				this["rdf:type"] = [ new veda.IndividualModel("rdfs:Resource") ];
 				return;
 			}
 			// Prefetch linked object (depth 2) to reduce 'get_individual' requests count during rendering
@@ -471,7 +472,7 @@ veda.Module(function (veda) { "use strict";
 		Object.keys(data).map( function (key) {
 			if (key === "@") return;
 			data[key].map(function (value) {
-				if (value.type !== "Uri") return; 
+				if (value.type !== "Uri") return;
 				if (!veda.cache[value.data]) {
 					uris.push(value.data);
 				} else if (depth !== 0) {
@@ -500,8 +501,8 @@ veda.Module(function (veda) { "use strict";
 		var n = {}, r=[];
 		for(var i = 0; i < arr.length; i++) {
 			if (!n[arr[i]]) {
-				n[arr[i]] = true; 
-				r.push(arr[i]); 
+				n[arr[i]] = true;
+				r.push(arr[i]);
 			}
 		}
 		return r;

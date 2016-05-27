@@ -639,6 +639,22 @@ v-s:updateCounter
   rdfs:range xsd:integer ;
 .
 
+v-s:publisher
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain rdfs:Resource ;
+  rdfs:label "Publisher"@en ;
+  rdfs:label "Издатель (автор публикации)"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+
+v-s:lastEditor
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain rdfs:Resource ;
+  rdfs:label "Last editor"@en ;
+  rdfs:label "Последний редактор"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+
 ### INDIVIDUALS ###
 
 v-s:AllResourcesGroup

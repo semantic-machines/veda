@@ -312,15 +312,6 @@ v-s:published
 .
 
 ### veda-generic
-v-s:publisher
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Document ;
-  rdfs:label "Publisher"@en ;
-  rdfs:label "Издатель (автор публикации)"@ru ;
-  rdfs:range v-s:Appointment ;
-.
-
-### veda-generic
 v-s:dateTo
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Date finish"@en ;
@@ -355,8 +346,8 @@ v-s:duration
 ### veda-generic
 v-s:File
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;  
-  rdfs:subClassOf v-s:Exportable ;  
+  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Exportable ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Authorized ;
   rdfs:comment "File description"@en ;
@@ -703,14 +694,14 @@ v-ui:forClass
 .
 v-s:filePath
   rdfs:domain v-s:ReportsForClass ;
-  rdfs:domain v-s:Report ;  
+  rdfs:domain v-s:Report ;
 .
 v-s:fileFormat
   rdf:type owl:DatatypeProperty ;
   rdfs:label "File format"@en ;
   rdfs:label "Формат файла"@ru ;
-  rdfs:domain v-s:ReportsForClass ;  
-  rdfs:domain v-s:Report ;    
+  rdfs:domain v-s:ReportsForClass ;
+  rdfs:domain v-s:Report ;
   rdfs:range xsd:string ;
 .
 
@@ -970,24 +961,24 @@ v-s:DocumentLinkRulesTemplate
 			<veda-control property="v-s:displayName" type="multilingualText" class="-view edit search"></veda-control>
 		  </div>
 		 </div>
-		<div class="row">		 
+		<div class="row">
 		  <div class="col-md-3">
 			<veda-control property="v-s:unique" type="booleanCheckbox"></veda-control>
 			<em about="v-s:unique" property="rdfs:label"></em>
 		  </div>
-		</div>		  
-		<div class="row">		
+		</div>
+		<div class="row">
 		  <div class="col-md-3">
 			<veda-control property="v-s:isRoute" type="booleanCheckbox"></veda-control>
 			<em about="v-s:isRoute" property="rdfs:label"></em>
 		  </div>
-		</div>		  
+		</div>
 		<div class="row">
 		  <div class="col-md-3">
 			<veda-control property="v-s:isClone" type="booleanCheckbox"></veda-control>
 			<em about="v-s:isClone" property="rdfs:label"></em>
 		  </div>
-		</div>		
+		</div>
 	</div>
     </div>
     <br><br>
@@ -1020,17 +1011,17 @@ v-s:hasAction
 .
 
 
-### добавляем Назначение ссылку на подразделение (связка через должность) 
+### добавляем Назначение ссылку на подразделение (связка через должность)
 v-s:AppointmentSaveEvent
   rdf:type v-s:Event ;
   v-s:filter v-s:Appointment ;
   v-s:script """
   if (document['v-s:occupation'] && document['v-s:occupation'].length>0) {
-  		var occupation = get_individual(ticket, document['v-s:occupation'][0].data);  		
+  		var occupation = get_individual(ticket, document['v-s:occupation'][0].data);
   		if (occupation && occupation['v-s:parentUnit'] && occupation['v-s:parentUnit'].length>0) {
-  			document['v-s:parentUnit'] = occupation['v-s:parentUnit']; 
+  			document['v-s:parentUnit'] = occupation['v-s:parentUnit'];
   			put_individual (ticket, document, _event_id);
-  		}  
+  		}
   }
 """
 .
