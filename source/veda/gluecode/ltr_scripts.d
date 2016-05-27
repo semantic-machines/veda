@@ -7,7 +7,7 @@ module veda.gluecode.ltr_scripts;
 
 private
 {
-    import core.thread;
+    import core.thread, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm;
     import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
@@ -16,15 +16,40 @@ private
     import search.vel, search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 }
 
+Tid    tid_ltr_scripts;
+logger _log;
+
+extern (C) void handleTermination1(int _signal)
+{
+    writeln("$1");
+    _log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
+    writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));
+    _log.close();
+
+    shutdown_ltr_scripts();
+
+    writeln("!SYS: ", process_name, ": exit");
+}
+
+shared static this()
+{
+    bsd_signal(SIGINT, &handleTermination1);
+}
+
 void main(char[][] args)
-{				   
+{
     process_name = "ltr_scripts";
 
     core.thread.Thread.sleep(dur!("seconds")(2));
 
     ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091);
+    _log = p_script.log();
+
+    tid_ltr_scripts = spawn(&ltrs_thread, p_script.parent_url);
 
     p_script.run();
+
+    shutdown_ltr_scripts();
 }
 
 private struct Task
@@ -288,7 +313,6 @@ private void prepare_script(ref ScriptInfo[ string ] scripts, Individual ss, Scr
 
 class ScriptProcess : ChildProcess
 {
-    Tid  tid_ltr_scripts;
     long count_sckip = 0;
 
     this(P_MODULE _module_name, string _host, ushort _port)
@@ -310,14 +334,18 @@ class ScriptProcess : ChildProcess
 
     override void configure()
     {
-        tid_ltr_scripts = spawn(&ltrs_thread, this.parent_url);
-    }
-
-    private void execute_script(string execute_script_srz)
-    {
-        if (tid_ltr_scripts != Tid.init)
-            send(tid_ltr_scripts, CMD.START, execute_script_srz);
     }
 }
 
+private void execute_script(string execute_script_srz)
+{
+    if (tid_ltr_scripts != Tid.init)
+        send(tid_ltr_scripts, CMD.START, execute_script_srz);
+}
+
+private void shutdown_ltr_scripts()
+{
+    if (tid_ltr_scripts != Tid.init)
+        send(tid_ltr_scripts, CMD.EXIT);
+}
 

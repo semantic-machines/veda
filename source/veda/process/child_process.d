@@ -139,7 +139,7 @@ class ChildProcess
 
         lws_client_connect_info i;
 
-        i.host    = cast(char*)(host ~ "\0");
+        i.host    = cast(char *)(host ~ "\0");
         i.origin  = i.host;
         i.address = i.host;
         i.port    = port;
@@ -200,7 +200,7 @@ class ChildProcess
 
 ///////////////////////////////////////////////////
 
-	// if return [false] then, no commit prepared message, and repeate   
+    // if return [false] then, no commit prepared message, and repeate
     abstract bool prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                           string event_id,
                           long op_id);
@@ -214,6 +214,9 @@ class ChildProcess
         queue.open();
         while (true)
         {
+            if (f_listen_exit == true)
+                break;
+
             string data = cs.pop();
 
             if (data !is null)
