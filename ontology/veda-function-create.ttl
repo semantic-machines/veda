@@ -96,7 +96,7 @@ v-fc:FunctionCreateTemplate
   v-ui:template """
 <div class="container-fluid">
 	<h3 property="rdfs:label"></h3>
-	<hr>	
+	<hr>
 	<div class="row">
 		<div class="col-md-2 col-sm-3">
 			<h4 about="v-fc:SavedBlanks" property="rdfs:label"></h4>
@@ -150,17 +150,25 @@ v-fc:BlankModel
 var self = this,
 	asp = veda.user.aspect;
 
+var stopList = [
+	"@",
+	"rdf:type",
+	"v-s:author",
+	"v-s:publisher",
+	"v-s:lastEditor",
+	"v-s:created",
+	"v-s:edited",
+	"v-s:updateCounter",
+	"v-s:deleted",
+	"rdfs:label",
+	"rdfs:isDefinedBy",
+	"v-fc:typeToCreate"
+];
+
 self.object = new veda.IndividualModel(),
 self.object["rdf:type"] = self["v-fc:typeToCreate"].slice(0);
 Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
-	if ( property_uri === "@"
-		|| property_uri === "rdf:type"
-		|| property_uri === "rdfs:label"
-		|| property_uri === "v-s:deleted"
-		|| property_uri === "rdfs:isDefinedBy"
-		|| property_uri === "v-s:parent"
-		|| property_uri === "v-fc:typeToCreate"
-	) return;
+	if ( stopList.indexOf(property_uri) >= 0 ) { return; }
 	if ( self.hasValue(property_uri) && self[property_uri][0] instanceof veda.IndividualModel && self[property_uri][0].is("v-fc:Blank") ) {
 		self.object[property_uri] = self[property_uri].map(function (item) {
 			// Embedded blanks are for v-s:Embedded objects only
@@ -171,18 +179,12 @@ Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
 		self.object[property_uri] = self[property_uri].slice(0);
 	}
 });
-self.on("individual:beforeSave", updateBlank);	
-self.on("individual:afterSave", updateAspect);	
+self.on("individual:beforeSave", updateBlank);
+self.on("individual:afterSave", updateAspect);
 
 function updateBlank() {
 	Object.getOwnPropertyNames(self.object.properties).map( function (property_uri) {
-		if ( property_uri === "@"
-			|| property_uri === "rdf:type"
-			|| property_uri === "rdfs:label"
-			|| property_uri === "v-s:deleted"
-			|| property_uri === "rdfs:isDefinedBy"
-			|| property_uri === "v-s:parent"
-		) return;
+		if ( stopList.indexOf(property_uri) >= 0 ) { return; }
 		if ( self.object.hasValue(property_uri) && self.object[property_uri][0] instanceof veda.IndividualModel && self.object[property_uri][0].is("v-s:Embedded")) {
 			self[property_uri] = self.object[property_uri].map(function (item) {
 				var blank = item.clone();

@@ -4,18 +4,67 @@
 
 module veda.core.threads.dcs_manager;
 
-import core.thread, std.stdio, std.conv, std.file, std.datetime, std.outbuffer, std.string;
+import core.thread, std.stdio, std.conv, std.file, std.datetime, std.outbuffer, std.string, core.atomic;
 import util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.queue;
-import backtrace.backtrace, Backtrace = backtrace.backtrace;
 import veda.type, veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.log_msg, veda.onto.individual,
        veda.onto.resource, veda.util.tools;
 import vibe.core.concurrency, vibe.core.task, vibe.http.router                 : URLRouter;
 import vibe.inet.url, vibe.http.client, vibe.http.server, vibe.http.websockets : WebSocket, handleWebSockets;
 
-
 private shared Task task_of_scripts;
+private shared Task task_of_ltr_scripts;
 private shared Task task_of_fanout;
 
+struct UidInfo
+{
+    long update_counter;
+    long opid;
+}
+
+private shared        UidInfo[ string ] _info_2_uid;
+private shared long   _last_opid;
+//private shared long   _count_opid;
+private shared Object _mutex = new Object();
+
+public void set_updated_uid(string uid, long opid, long update_counter)
+{
+    synchronized (_mutex)
+    {
+        //writeln ("@ uid=", uid, ", opid=", opid, ", update_counter=", update_counter);
+        _info_2_uid[ uid ] = UidInfo(update_counter, opid);
+        _last_opid         = opid;
+//        core.atomic.atomicOp !"+=" (_count_opid, 1);
+    }
+}
+
+public long get_counter_4_uid(string uid)
+{
+    long res;
+
+    synchronized (_mutex)
+    {
+        if ((uid in _info_2_uid) !is null)
+            res = _info_2_uid[ uid ].update_counter;
+    }
+    return res;
+}
+
+public long get_last_opid()
+{
+    synchronized (_mutex)
+    {
+        return _last_opid;
+    }
+}
+/*
+   public long get_count_opid()
+   {
+    synchronized (_mutex)
+    {
+        return _count_opid;
+    }
+   }
+ */
 void handleWebSocketConnection(scope WebSocket socket)
 {
     string module_name;
@@ -37,6 +86,8 @@ void handleWebSocketConnection(scope WebSocket socket)
                     module_name = kv[ 1 ];
                     if (module_name == "scripts")
                         task_of_scripts = Task.getThis();
+                    else if (module_name == "ltr_scripts")
+                        task_of_ltr_scripts = Task.getThis();
                     else if (module_name == "fanout")
                         task_of_fanout = Task.getThis();
                     else
@@ -91,12 +142,126 @@ void handleWebSocketConnection(scope WebSocket socket)
 
     if (module_name == "scripts")
         task_of_scripts = shared(Task).init;
+    else if (module_name == "ltr_scripts")
+        task_of_ltr_scripts = shared(Task).init;
     else if (module_name == "fanout")
         task_of_fanout = shared(Task).init;
 
     log.trace("chanel [%s] is closed", module_name);
 }
 
+void handleWebSocketConnection_CCUS(scope WebSocket socket)
+{
+    const(HTTPServerRequest)hsr = socket.request();
+    writeln("@@@1 hsr=", hsr.clientAddress);
+    // Client Cache Update Subscription
+    string chid;
+
+    try
+    {
+        long[ string ] count_2_uid;
+
+        while (true)
+        {
+            if (!socket.connected)
+                break;
+
+            string   inital_message = socket.receiveText();
+            writeln("@inital_message=", inital_message);
+            string[] kv = inital_message.split('=');
+
+            if (kv.length == 2)
+            {
+                if (kv[ 0 ] == "ccus")
+                {
+                    chid = kv[ 1 ];
+//                    task_2_client[hsr.clientAddress] = Task.getThis();
+                    //task_2_client ~= Task.getThis();
+                }
+            }
+
+            if (chid !is null)
+            {
+                writeln("*last_opid=", get_last_opid);
+
+                string list_uids = socket.receiveText();
+                if (list_uids is null || list_uids.length < 2)
+                    return;
+
+                foreach (data; list_uids.split(','))
+                {
+                    string[] uid_count = data.split('=');
+                    if (uid_count.length == 2)
+                    {
+                        try
+                        {
+                            count_2_uid[ uid_count[ 0 ] ] = to!long (uid_count[ 1 ]);
+                        }
+                        catch (Throwable tr)
+                        {
+                            log.trace("%s", tr);
+                        }
+                    }
+                }
+
+                //writeln("count_2_uids=", count_2_uid);
+                long last_check_opid = 0;
+
+                long timeout = 1;
+
+                while (true)
+                {
+                    string msg;
+
+                    vibe.core.concurrency.receiveTimeout(dur!("msecs")(1000), (string _msg)
+                                                         {
+                                                             msg = _msg;
+                                                         }
+                                                         );
+
+                    long last_opid = get_last_opid();
+                    //writeln ("@1 last_check_opid=", last_check_opid, ", last_opid=", last_opid);
+                    if (last_check_opid < last_opid)
+                    {
+                        string   res;
+
+                        string[] keys = count_2_uid.keys;
+                        foreach (i_uid; keys)
+                        {
+                            long i_count = count_2_uid[ i_uid ];
+                            long g_count = get_counter_4_uid(i_uid);
+                            if (g_count > i_count)
+                            {
+                                if (res is null)
+                                    res ~= i_uid ~ "=" ~ text(i_count);
+                                else
+                                    res ~= "," ~ i_uid ~ "=" ~ text(i_count);
+
+                                count_2_uid[ i_uid ] = g_count;
+                            }
+                        }
+
+                        if (res !is null)
+                        {
+                            //writeln("@@send to=", res);
+                            socket.send(res);
+                        }
+                        last_check_opid = last_opid;
+                    }
+                }
+            }
+        }
+    }
+    catch (Throwable tr)
+    {
+        log.trace("err on chanel [%s] ex=%s", chid, tr.msg);
+    }
+
+    scope (exit)
+    {
+        log.trace("chanel [%s] closed", chid);
+    }
+}
 
 shared static this()
 {
@@ -107,7 +272,14 @@ shared static this()
     settings.port          = 8091;
     settings.bindAddresses = [ "127.0.0.1" ];
     listenHTTP(settings, router);
-    log.trace("listen %s:%s", text(settings.bindAddresses), text(settings.port));
+    log.trace("listen /ws %s:%s", text(settings.bindAddresses), text(settings.port));
+
+    router.get("/ccus", handleWebSockets(&handleWebSocketConnection_CCUS));
+    settings      = new HTTPServerSettings;
+    settings.port = 8088;
+    //settings.bindAddresses = [ "127.0.0.1" ];
+    listenHTTP(settings, router);
+    log.trace("listen /ccus %s:%s", text(settings.bindAddresses), text(settings.port));
 }
 
 
@@ -139,13 +311,14 @@ public void set_module_info(string module_name, string host, ushort port)
     }
 }
 
-public void ev_update_individual(byte cmd, string user_uri, string cur_state, string prev_state, string event_id, long op_id)
+public void ev_update_individual(byte cmd, string user_uri, string indv_uri, string cur_state, string prev_state, string event_id, long op_id,
+                                 long update_counter)
 {
     std.concurrency.Tid tid_dcs = getTid(P_MODULE.dcs);
 
     if (tid_dcs != std.concurrency.Tid.init)
     {
-        std.concurrency.send(tid_dcs, cast(CMD)cmd, user_uri, prev_state, cur_state, event_id, op_id);
+        std.concurrency.send(tid_dcs, cast(CMD)cmd, user_uri, indv_uri, prev_state, cur_state, event_id, op_id, update_counter);
     }
 }
 
@@ -172,6 +345,8 @@ public shared(Task) getTaskOfPMODULE(P_MODULE pm)
 {
     if (pm == P_MODULE.scripts)
         return task_of_scripts;
+    else if (pm == P_MODULE.ltr_scripts)
+        return task_of_ltr_scripts;
     else if (pm == P_MODULE.fanout)
         return task_of_fanout;
 
@@ -253,7 +428,7 @@ shared static ~this()
 
 void dcs_thread(string thread_name, string _node_id)
 {
-    P_MODULE[] modules = [ P_MODULE.fanout, P_MODULE.scripts ];
+    P_MODULE[] modules = [ P_MODULE.fanout, P_MODULE.scripts, P_MODULE.ltr_scripts ];
 
     node_id = _node_id;
     scope (exit)
@@ -304,10 +479,11 @@ void dcs_thread(string thread_name, string _node_id)
                                             std.concurrency.send(tid_response_reciever, 0);
                                         }
                                     },
-                                    (CMD cmd, string user_uri, string prev_state, string new_state, string event_id, long op_id)
+                                    (CMD cmd, string user_uri, string indv_uri, string prev_state, string new_state, string event_id, long opid,
+                                     long update_counter)
                                     {
                                         Individual imm;
-                                        imm.uri = text(op_id);
+                                        imm.uri = text(opid);
                                         imm.addResource("cmd", Resource(cmd));
 
                                         if (user_uri !is null && user_uri.length > 0)
@@ -321,7 +497,7 @@ void dcs_thread(string thread_name, string _node_id)
                                         if (event_id !is null && event_id.length > 0)
                                             imm.addResource("event_id", Resource(DataType.String, event_id));
 
-                                        imm.addResource("op_id", Resource(op_id));
+                                        imm.addResource("op_id", Resource(opid));
 
                                         //writeln ("*imm=[", imm, "]");
 
@@ -331,10 +507,15 @@ void dcs_thread(string thread_name, string _node_id)
                                         queue.push(cbor);
 
                                         if (task_of_scripts !is shared(Task).init)
-                                            vibe.core.concurrency.send(task_of_scripts, text(op_id), main_loop_task);
-                                            
+                                            vibe.core.concurrency.send(task_of_scripts, text(opid), main_loop_task);
+
+                                        if (task_of_ltr_scripts !is shared(Task).init)
+                                            vibe.core.concurrency.send(task_of_ltr_scripts, text(opid), main_loop_task);
+
                                         if (task_of_fanout !is shared(Task).init)
-                                            vibe.core.concurrency.send(task_of_fanout, text(op_id), main_loop_task);
+                                            vibe.core.concurrency.send(task_of_fanout, text(opid), main_loop_task);
+
+                                        set_updated_uid(indv_uri, opid, update_counter);
                                     },
                                     (std.concurrency.Variant v) { log.trace("::dcs_thread::Received some other type. %s", text(v)); });
         }

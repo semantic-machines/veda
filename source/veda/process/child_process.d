@@ -179,8 +179,6 @@ class ChildProcess
 
         init_chanel();
 
-//        send_conn_info_to_parent(host, port);
-
         bool f1 = false;
         while (!destroy_flag)
         {

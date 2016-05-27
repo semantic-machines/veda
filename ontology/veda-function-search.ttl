@@ -258,16 +258,16 @@ v-fs:SearchTemplate
 			self.attrRequest["rdf:type"] = [ new veda.IndividualModel("v-fs:AttributiveRequest") ];
 		}
 		self.attrRequest.present(attrHolder, undefined, "edit");
-		
+
 		$("#req-tabs a", template).click(function (e) {
 			e.preventDefault();
-			if ($(this).attr("href") === "#fulltext-search") { 
-				individual.reqType = "fulltext"; 
+			if ($(this).attr("href") === "#fulltext-search") {
+				individual.reqType = "fulltext";
 			} else {
 				individual.reqType = "attributive";
 			}
 		});
-		
+
 		if (individual.reqType === "attributive") {
 			$("#req-tabs a[href='#attributive-search']", template).tab("show");
 			individual.reqType = "attributive";
@@ -275,7 +275,7 @@ v-fs:SearchTemplate
 			$("#req-tabs a[href='#fulltext-search']", template).tab("show");
 			individual.reqType = "fulltext";
 		}
-		
+
 		var regsHolder = $("#saved", template),
 			asp = veda.user.aspect,
 			regs = asp["v-s:hasRegistry"];
@@ -299,10 +299,10 @@ v-fs:FulltextRequestModel
 		sort = self.hasValue("v-fs:sortOrder")      ? self["v-fs:sortOrder"][0] : undefined,
 		databases = self.hasValue("v-fs:databases") ? self["v-fs:databases"][0] : undefined,
 		reopen = self.hasValue("v-fs:reopen")       ? self["v-fs:reopen"][0]    : false;
-	
+
 	self.on("individual:propertyModified", function (property_uri, values) {
 		switch (property_uri) {
-			case "v-fs:typeToSearch": 
+			case "v-fs:typeToSearch":
 			case "v-fs:fulltextQuery" : q = mkQuery(); break;
 			case "v-fs:sortOrder"   : sort = values.length      ? values[0].toString() : undefined; break;
 			case "v-fs:databases"   : databases = values.length ? values[0].toString() : undefined; break;
@@ -322,13 +322,13 @@ v-fs:FulltextRequestModel
 	};
 	// Search if query defined
 	//if (q) { self.search() };
-	
+
 	function mkQuery () {
-		var type = self.hasValue("v-fs:typeToSearch") ? 
+		var type = self.hasValue("v-fs:typeToSearch") ?
 				"(" + self["v-fs:typeToSearch"].map(function (i) {
-					return "'rdf:type'=='" + i.id + "'" 
+					return "'rdf:type'=='" + i.id + "'"
 				}).join("||") + ")"
-			: 
+			:
 				"";
 		var q = self.hasValue("v-fs:fulltextQuery") ? self["v-fs:fulltextQuery"][0] : "";
 		if (q && q.indexOf("==") < 0) {
@@ -410,7 +410,7 @@ v-fs:FulltextRequestTemplate
 				<div class="modal-body"></div>
 			</div>
 		</div>
-	</div>	
+	</div>
 </div>
 <script>
 	var self = individual,
@@ -424,7 +424,7 @@ v-fs:FulltextRequestTemplate
 		submit = $("#submit", template),
 		query = $("#query", template),
 		form = new veda.IndividualModel();
-	
+
 	// Autofocus on query field
 	params.on("shown.bs.tab", function () {
 		if (!self.hasValue("v-fs:attributiveQuery")) {
@@ -432,13 +432,13 @@ v-fs:FulltextRequestTemplate
 		}
 	});
 	params.trigger("shown.bs.tab");
-	
+
 	// Enter on query field triggers search
 	submit.click( function (e) {
 		e.preventDefault();
 		self.search();
 	});
-	
+
 	// Define and clean handlers
 	self.on("beforeSearch", beforeSearch);
 	self.on("afterSearch", afterSearch);
@@ -446,15 +446,15 @@ v-fs:FulltextRequestTemplate
 	template.on("remove", function () {
 		self.off("beforeSearch", beforeSearch);
 		self.off("afterSearch", afterSearch);
-		self.off("individual:afterSave", updateAspect);	
+		self.off("individual:afterSave", updateAspect);
 	});
 
 	// Present results if query defined
-	if (self.q) { 
-		//self.trigger("afterSearch"); 
-		self.search(); 
+	if (self.q) {
+		//self.trigger("afterSearch");
+		self.search();
 	}
-	
+
 	$("#refresh", template).click(function (e) {
 		e.preventDefault();
 		self.search();
@@ -487,7 +487,7 @@ v-fs:FulltextRequestTemplate
 		}
 		asp.save();
 	}
-	
+
 	function genericTemplate(individual) {
 		var head = "<strong><a href='#/@' property='rdfs:label'></a></strong>";
 		var allprops = Object.getOwnPropertyNames(individual.properties);
@@ -506,7 +506,7 @@ v-fs:FulltextRequestTemplate
 		props += "</div>";
 		return "<span>" + head + props + "</span>";
 	}
-	
+
 	// Present results
 	function beforeSearch() {
 		notFound.hide();
@@ -518,7 +518,7 @@ v-fs:FulltextRequestTemplate
 		resultsList.empty();
 		pager.empty();
 		resultsCount.text(self.count);
-		
+
 		// Nothing found
 		if (self.count === 0) {
 			notFound.show();
@@ -530,7 +530,7 @@ v-fs:FulltextRequestTemplate
 		}
 		resultsList.attr("start", self.page * veda.user.displayedElements + 1);
 		results.tab("show");
-		
+
 		for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
 			(function (i) {
 				setTimeout(function () {
@@ -541,7 +541,7 @@ v-fs:FulltextRequestTemplate
 				}, 0);
 			}(i));
 		}
-		
+
 		// Pager
 		pager.pager({
 			pages: Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0),
@@ -567,7 +567,11 @@ v-fs:AttributiveRequestModel
 		"@",
 		"rdf:type",
 		"v-s:author",
+		"v-s:publisher",
+		"v-s:lastEditor",
 		"v-s:created",
+		"v-s:edited",
+		"v-s:updateCounter",
 		"v-s:deleted",
 		"rdfs:label",
 		"rdfs:isDefinedBy",
@@ -579,16 +583,16 @@ v-fs:AttributiveRequestModel
 		"v-fs:resultTemplateRest"
 	];
 	var mkQuery = veda.Util.queryFromIndividual;
-	
+
 	var self = this,
 		sort = self.hasValue("v-fs:sortOrder")      ? self["v-fs:sortOrder"][0] : undefined,
 		databases = self.hasValue("v-fs:databases") ? self["v-fs:databases"][0] : undefined,
 		reopen = self.hasValue("v-fs:reopen")       ? self["v-fs:reopen"][0]    : false,
 		q;
-	
+
 	self.on("individual:propertyModified", function (property_uri, values) {
 		switch (property_uri) {
-			case "v-fs:typeToSearch": 
+			case "v-fs:typeToSearch":
 				self.form = new veda.IndividualModel();
 				self.form["rdf:type"] = values;
 				for (var property_uri in self.properties) {
@@ -609,12 +613,12 @@ v-fs:AttributiveRequestModel
 	}
 
 	function handler(property_uri, values) {
-		if ( stopList.indexOf(property_uri) < 0 ) { 
+		if ( stopList.indexOf(property_uri) < 0 ) {
 			self[property_uri] = values;
 		}
 		q = mkQuery(self.form);
 	}
-	
+
 	self.result  = [];
 	self.count  = 0;
 	self.selected = [];
@@ -732,7 +736,7 @@ v-fs:AttributiveRequestTemplate
 		customHead = $("thead#custom-head", template),
 		clearCustom = $("#clear-custom", template),
 		head, rest, tmpl;
-	
+
 	// Autofocus on query field
 	params.on("shown.bs.tab", function () {
 		if (!self.hasValue("v-fs:attributiveQuery")) {
@@ -740,19 +744,19 @@ v-fs:AttributiveRequestTemplate
 		}
 	});
 	params.trigger("shown.bs.tab");
-	
+
 	// Enter on query field triggers search
 	find.click( function (e) {
 		e.preventDefault();
 		self.search();
 	});
-	
+
 	clearCustom.click(function () {
 		self["v-fs:resultTemplate"] = [];
 		self["v-fs:resultTemplateRest"] = [];
 		setResultTable( self["v-fs:typeToSearch"] );
 	});
-	
+
 	// Define and clean handlers
 	self.on("beforeSearch", beforeSearch);
 	self.on("afterSearch", afterSearch);
@@ -761,26 +765,26 @@ v-fs:AttributiveRequestTemplate
 	template.on("remove", function () {
 		self.off("beforeSearch", beforeSearch);
 		self.off("afterSearch", afterSearch);
-		self.off("individual:afterSave", updateAspect);	
+		self.off("individual:afterSave", updateAspect);
 		self.off("individual:propertyModified", typeChanged);
 	});
 
 	// Present form if defined
-	if (self.form) { 
+	if (self.form) {
 		typeChanged("v-fs:typeToSearch", self["v-fs:typeToSearch"]);
 	}
 
 	// Present results if query defined
-	if (self.q) { 
-		//self.trigger("afterSearch"); 
+	if (self.q) {
+		//self.trigger("afterSearch");
 		self.search();
 	}
-	
+
 	$("#refresh", template).click(function (e) {
 		e.preventDefault();
 		self.search();
 	});
-	
+
 	// Modal for links
 	var $objModal = $("#object-modal", template).modal({show: false});
 	var cntr = $(".modal-body", $objModal);
@@ -796,7 +800,7 @@ v-fs:AttributiveRequestTemplate
 		$objModal.modal("show");
 		$objModal.focus();
 	});
-	
+
 	// Display search form
 	function typeChanged(property_uri, types) {
 		if (property_uri === "v-fs:typeToSearch") {
@@ -805,7 +809,7 @@ v-fs:AttributiveRequestTemplate
 			setResultTable(types);
 		}
 	}
-	
+
 	// Set result table
 	function setResultTable(types) {
 		if ( self.hasValue("v-fs:resultTemplate") ) {
@@ -823,7 +827,7 @@ v-fs:AttributiveRequestTemplate
 			var placeholder = (new veda.IndividualModel("v-fs:DragColumns")).present(customHead, '<tr><td><em about="v-fs:DragColumns" property="rdfs:label"></em></td></tr>');
 		}
 		tHead.html( head.clone() );
-		
+
 		// Sorting
 		var sortBy = dir = "";
 		if ( self.hasValue("v-fs:sortOrder") ) {
@@ -836,7 +840,7 @@ v-fs:AttributiveRequestTemplate
 			if (sortBy.indexOf(property_uri) >= 0) {
 				a.removeClass("text-muted");
 				if (dir === "desc") a.removeClass("glyphicon-sort-by-attributes").addClass("glyphicon-sort-by-attributes-alt");
-			}			
+			}
 			a.click(function (e) {
 				e.preventDefault();
 				var $this = $(this);
@@ -849,7 +853,7 @@ v-fs:AttributiveRequestTemplate
 			});
 		});
 		tmpl = gen_row(head)[0].outerHTML;
-		
+
 		$("thead#generic-head > tr").sortable({
 			connectWith: "thead#custom-head > tr",
 			placeholder: "danger",
@@ -887,12 +891,12 @@ v-fs:AttributiveRequestTemplate
 		}
 		asp.save();
 	}
-	
+
 	// Generic header from class
 	function gen_head(type) {
 		var props = Object.getOwnPropertyNames(type.domainProperties);
 		var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
-		var tr = $("<tr><th id='count' width='20px'>#</th><th id='zoom' width='20px'><span class='glyphicon glyphicon-search'></span></th><th id='@'>@</th></tr>"); 
+		var tr = $("<tr><th id='count' width='20px'>#</th><th id='zoom' width='20px'><span class='glyphicon glyphicon-search'></span></th><th id='@'>@</th></tr>");
 		var header = props.map( function (property_uri) {
 			if (property_uri === "rdf:type" || property_uri === "v-s:deleted") { return ""; }
 			var property = type.domainProperties[property_uri];
@@ -935,7 +939,7 @@ v-fs:AttributiveRequestTemplate
 		});
 		return row;
 	}
-	
+
 	// Present results
 	function beforeSearch() {
 		notFound.hide();
@@ -947,7 +951,7 @@ v-fs:AttributiveRequestTemplate
 		tBody.empty();
 		pager.empty();
 		resultsCount.text(self.count);
-		
+
 		// Nothing found
 		if (self.count === 0) {
 			notFound.show();
@@ -958,7 +962,7 @@ v-fs:AttributiveRequestTemplate
 			self.page = Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0) - 1;
 		}
 		results.tab("show");
-		
+
 		for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
 			(function (i) {
 				setTimeout(function () {
@@ -971,7 +975,7 @@ v-fs:AttributiveRequestTemplate
 				}, 0);
 			}(i));
 		}
-		
+
 		// Pager
 		pager.pager({
 			pages: Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0),
@@ -984,7 +988,7 @@ v-fs:AttributiveRequestTemplate
 			}
 		});
 	}
-	
+
 	// Export to Spreadsheet
 	var tableToExcel = (function () {
 		var uri = 'data:application/vnd.ms-excel;base64,'
@@ -1009,7 +1013,7 @@ v-fs:AttributiveRequestTemplate
 		var hd = tHead.clone().removeAttr("id");
 		var tbl = $("<table id='export2xls'>").append(hd, "<tbody></tbody>");
 		var tmpl = gen_row_simple(head)[0].outerHTML;
-		
+
 		for (var i = 0; i < self.count; i++) {
 			(function (i) {
 				var _tmpl = $(tmpl.replace("###", i+1));
@@ -1021,7 +1025,7 @@ v-fs:AttributiveRequestTemplate
 			tableToExcel(tbl[0], self["rdfs:label"].join(", "));
 		}, 0);
 	});
-	
+
 	function gen_row_simple(head) {
 		var hd = $(head);
 		var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];

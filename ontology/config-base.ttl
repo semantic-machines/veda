@@ -237,8 +237,8 @@ put_individual(ticket, membership, _event_id);
 cfg:Event_2
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт выдает права авторам (v-s:author) и владельцам (v-s:owner)";
-  rdfs:comment "Скрипт выдает права авторам (v-s:author) и владельцам (v-s:owner)";
+  rdfs:label "Скрипт выдает права авторам (v-s:author), владельцам (v-s:owner) и издателям (v-s:publisher)";
+  rdfs:comment "Скрипт выдает права авторам (v-s:author), владельцам (v-s:owner) и издателям (v-s:publisher)";
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -262,41 +262,38 @@ if (is_new && !is_ontology) {
 	//print("Event 2: uri", doc_uri, getUri(document['rdf:type']), "prev", toJson(prev_state) );
 }
 */
+
 var doc_uri = document['@'],
-	vs_owner = document['v-s:owner'];
+	owner_properties = ["v-s:owner", "v-s:author", "v-s:publisher"];
 
-var new_right_uri = doc_uri + "_" + getUri(vs_owner);
-
-if (vs_owner) {
-	addRight(ticket, [can_read, can_update, can_delete], getUri(vs_owner), doc_uri, new_right_uri);
-}
-
-var vs_author = document["v-s:author"];
-if (vs_author) {
-    var author = get_individual(ticket, getUri(vs_author));
-    if (author) {
-		
-		var author_type = getUri(author['rdf:type']);
-		
-		if (author_type == 'v-s:Person') {
-			new_right_uri = doc_uri + "_" + getUri(vs_author);
-			addRight(ticket, [can_read, can_update, can_delete], getUri(vs_author), doc_uri, new_right_uri); 
-		} else {
-			var ff = get_property_chain (ticket, document, 'v-s:author', 'v-s:occupation');
-			if (ff) {
-				var position_uri = getUri (ff['field']);
-				var first_doc = ff['first'];
-				if (first_doc) {
-					doc_uri = first_doc['@'];	
-					if (position_uri) {
-						new_right_uri = doc_uri + "_" + getUri(position_uri);
-						addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri, new_right_uri);
+owner_properties.map(function (property_uri) {
+	var owner_uri = getUri( document[property_uri] );
+	if (owner_uri) {
+		var owner = get_individual(ticket, owner_uri);
+		if (owner) {
+			var owner_type = getUri(owner['rdf:type']);
+			if (owner_type == 'v-s:Person') {
+				var new_right_uri = doc_uri + "_" + owner_uri;
+				addRight(ticket, [can_read, can_update, can_delete], owner_uri, doc_uri, new_right_uri); 
+				//print("Event 2: rights for person", owner_uri, "to doc", doc_uri);
+			} else {
+				var ff = get_property_chain (ticket, document, property_uri, 'v-s:occupation');
+				if (ff) {
+					var position_uri = getUri (ff['field']);
+					var first_doc = ff['first'];
+					if (first_doc) {
+						doc_uri = first_doc['@'];
+						if (position_uri) {
+							new_right_uri = doc_uri + "_" + position_uri;
+							addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri, new_right_uri);
+							//print("Event 2: rights for position", position_uri, "to doc", doc_uri);
+						}
 					}
 				}
 			}
 		}
-    }
-}
+	}
+}); 
   """ ;
 .
 
@@ -408,25 +405,25 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
 {
 //	print('+J');
 	
-    var author_uri = getUri(document['v-s:author']);
+    var publisher_uri = getUri(document['v-s:publisher']);
 //	print('+J1 '+document['@']);
 //	print('+J1 '+toJson(document));
-    if (!author_uri) { return; }
+    if (!publisher_uri) { return; }
 
-    var author = get_individual(ticket, author_uri);
+    var publisher = get_individual(ticket, publisher_uri);
 //	print('+J2');
-    if (!author) { return; }
+    if (!publisher) { return; }
 
     var employee_uri;
 //	print('+J3');
-    if (isExists(author['rdf:type'], newUri('v-s:Appointment')))
+    if (isExists(publisher['rdf:type'], newUri('v-s:Appointment')))
     {
-        employee_uri = author['v-s:employee'];
+        employee_uri = publisher['v-s:employee'];
         if (!employee_uri) { return; }
     }
     else
     {
-        employee_uri = author_uri;
+        employee_uri = publisher_uri;
     }
 
 //	print('+J4');

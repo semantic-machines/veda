@@ -1049,7 +1049,7 @@ class PThreadContext : Context
                 //writeln("context:store_individual #3 ", process_name);
                 version (libRequests)
                 {
-                    import requests.http, requests.streams;
+                    import requests.http, requests.streams, requests;
 
                     auto rq = Request();
                     rq.timeout = 1.seconds;
@@ -1216,6 +1216,10 @@ class PThreadContext : Context
                         //log.trace("[%s] ++ store_individual, final indv: %s", name, *indv);
                     }
 
+                    long update_counter = prev_indv.getFirstInteger("v-s:updateCounter", 0);
+                    update_counter++;
+                    indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
+
                     string new_state = individual2cbor(indv);
 
                     res.result = storage_module.put(P_MODULE.subject_manager, indv.uri, new_state, ignore_freeze,
@@ -1255,7 +1259,7 @@ class PThreadContext : Context
                         }
  */
 //                    if (event_id != "fanout")
-                        veda.core.threads.dcs_manager.ev_update_individual(cmd, ticket.user_uri, new_state, prev_state, event_id, res.op_id);
+                        veda.core.threads.dcs_manager.ev_update_individual(cmd, ticket.user_uri, indv.uri, new_state, prev_state, event_id, res.op_id, update_counter);
 
                         res.result = ResultCode.OK;
                     }

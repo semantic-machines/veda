@@ -33,7 +33,8 @@ function compare(a, b)
 {
     if (typeof a === "function") return a.toString() === b.toString();
     else if (typeof a != "object" || typeof b != "object") return a === b;
-    if (Object.keys(a).length != Object.keys(b).length) return false;
+    var dl = Object.keys(a).length - Object.keys(b).length;
+    if (dl > 1 || dl < -1) return false;
     var result = true;
     for (var key in a)
     {
@@ -42,6 +43,9 @@ function compare(a, b)
 
         var tbb = typeof bb;
         var taa = typeof aa;
+
+	if (key == "v-s:updateCounter")
+	    continue;
 
         if (key == "type")
         {
@@ -159,10 +163,10 @@ function is_exist(individual, field, value)
 
 /**
  * Трансформировать указанные индивидуалы по заданным правилам
- * 
- * @param ticket сессионный билет 
+ *
+ * @param ticket сессионный билет
  * @param individuals один или несколько IndividualModel или их идентификаторов
- * @param transform применяемая трансформация 
+ * @param transform применяемая трансформация
  * @param executor контекст исполнителя
  * @param work_order контекст рабочего задания
  * @returns {Array}
@@ -273,7 +277,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
                 type: _Uri
             }];
 
-            //if (typeof window === "undefined") 
+            //if (typeof window === "undefined")
             //	print ("@1 out_data0_el=", toJson (out_data0_el));
             //    		print ("@1 out_data0_el[",name, "]=", toJson (out_data0_el[name]));
         }
@@ -579,7 +583,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
                         var out_data0_el_arr = out_data0_el[name];
                         if (!out_data0_el_arr)
                             out_data0_el_arr = [];
-                        
+
 			var element_uri;
 
 			if (Array.isArray(element) === true)
@@ -588,7 +592,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
 			}
 			else
 			    element_uri = element.data ? element.data : element;
-			
+
                         var curelem;
 
 						curelem = (typeof window === "undefined") ? get_individual(ticket, element_uri) : new veda.IndividualModel(element_uri);
@@ -596,34 +600,34 @@ function transformation(ticket, individuals, transform, executor, work_order)
                         for (var i = 0; i < path.length - 1; i++)
                         {
                             if (!curelem || !curelem[path[i]]) return;
-                            
+
                             if (typeof window === "undefined") {
                         		curelem = get_individual(ticket, curelem[path[i]].data ? curelem[path[i]].data : curelem[path[i]]);
                             } else {
-                        		curelem = new veda.IndividualModel(curelem[path[i]][0]);	
-                            } 
+                        		curelem = new veda.IndividualModel(curelem[path[i]][0]);
+                            }
                         }
                         if (!curelem || !curelem[path[path.length - 1]]) return;
-                                                
+
                         if (typeof window === "undefined") {
                             out_data0_el_arr.push(curelem[path[path.length - 1]]);
                         } else {
 	                        var value = curelem[path[path.length - 1]][0];
 	                        var valueType = _Uri;
-	                        
+
 	        				if (value instanceof String) valueType = _String;
 	        				if (value instanceof Date) valueType = _Datetime;
 	        				if (value instanceof Number) valueType = _Decimal;
 	        				if (value instanceof Boolean) valueType = _Boolean;
-	        				
+
 	        				if (valueType == _Uri && typeof transform != 'undefined') {
                         		if (transform == 'clone') {
-                        			value = value.clone();                            			
+                        			value = value.clone();
                         		} else {
-                        			value = veda.Util.buildStartFormByTransformation(value, new veda.IndividualModel(transform));                            			
-                        		}                            	
+                        			value = veda.Util.buildStartFormByTransformation(value, new veda.IndividualModel(transform));
+                        		}
 	        				}
-	
+
 	        				if (typeof value !== "undefined") {
 		                        out_data0_el_arr.push(
 		                        {
@@ -837,7 +841,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
             }
         }
 
-        //if (typeof window === "undefined") 
+        //if (typeof window === "undefined")
         //	print("@E out_data0=", toJson (out_data0));
 
         var out_data = [];
@@ -864,7 +868,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
 
 /**
  * General function for getNextValue method for numerators
- * 
+ *
  * @param ticket
  * @param scope - numerator scope
  * @param FIRST_VALUE - first value in scope
@@ -1125,12 +1129,12 @@ function addToGroup(ticket, group, resource, rights, new_uri)
 		{
 			//print ("JS: GROUP ALREADY EXISTS");
 			return;
-		}	
-	}	
-	
+		}
+	}
+
 	if (!new_uri)
 		new_uri = genUri();
-	
+
     var new_membership_uri = genUri();
     var new_membership = {
         '@': new_membership_uri,
@@ -1138,7 +1142,7 @@ function addToGroup(ticket, group, resource, rights, new_uri)
         'v-s:memberOf': newUri(group),
         'v-s:resource': newUri(resource)
     };
-    
+
     if (rights) {
 		for (var i = 0; i < rights.length; i++)
 		{
@@ -1160,7 +1164,7 @@ function addToGroup(ticket, group, resource, rights, new_uri)
 				new_membership['v-s:canCreate'] = newBool(false);
 		}
 	}
-    
+
     var res = put_individual(ticket.id, new_membership);
 
     return [new_membership, res];
@@ -1190,12 +1194,12 @@ function addRight(ticket, rights, subj_uri, obj_uri, new_uri)
 		{
 			//print ("JS: RIGHT ALREADY EXISTS");
 			return;
-		}	
-	}	
+		}
+	}
 
 	if (!new_uri)
 		new_uri = genUri();
-		
+
     var new_permission = {
         '@': new_uri,
         'rdf:type': newUri('v-s:PermissionStatement'),
@@ -1229,7 +1233,7 @@ function addRight(ticket, rights, subj_uri, obj_uri, new_uri)
     //print("ADD RIGHT:", toJson(new_permission));
 }
 
-function clone(obj) 
+function clone(obj)
 {
     var copy;
 

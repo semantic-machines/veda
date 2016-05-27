@@ -3,17 +3,17 @@
 veda.Module(function (veda) { "use strict";
 
 	veda.UserModel = function (uri) {
-		
+
 		var self = new veda.IndividualModel(uri);
-		
+
 		var langs = query(veda.ticket, "'rdf:type' == 'v-ui:Language'");
-		self.availableLanguages = langs.reduce ( 
+		self.availableLanguages = langs.reduce (
 			function (acc, language_uri) {
 				var lang = new veda.IndividualModel(language_uri);
-				acc[lang["rdf:value"][0]] = lang;  
+				acc[lang["rdf:value"][0]] = lang;
 				return acc;
 			}, {});
-		
+
 		if ( self.hasValue("v-ui:hasPreferences") ) {
 			self.preferences = self["v-ui:hasPreferences"][0];
 			if ( !self.preferences.hasValue("v-ui:preferredLanguage") || !self.preferences.hasValue("v-ui:displayedElements")) {
@@ -49,7 +49,7 @@ veda.Module(function (veda) { "use strict";
 			self["v-s:hasAspect"] = [ self.aspect ];
 			self.save();
 		}
-		
+
 		if (self.hasValue("v-s:defaultAppointment")) {
 			veda.appointment = self["v-s:defaultAppointment"][0];
 		} else if (self.hasValue("v-s:hasAppointment")) {
@@ -67,15 +67,16 @@ veda.Module(function (veda) { "use strict";
 		}
 		self.on("individual:propertyModified", function (property_uri, values) {
 			if (property_uri === "v-s:defaultAppointment") {
+				if (self["v-s:defaultAppointment"][0].id === values[0].id) return;
 				self.save();
 				veda.appointment = self["v-s:defaultAppointment"][0];
-			} 
+			}
 		});
- 
+
 		self.preferences.on("individual:propertyModified", function (property_uri, values) {
 			if (property_uri === "v-ui:displayedElements") {
 				self.displayedElements = values[0];
-			} 
+			}
 			if (property_uri === "v-ui:preferredLanguage") {
 				self.language = values.reduce( function (acc, lang) {
 					acc[lang["rdf:value"][0]] = self.availableLanguages[lang["rdf:value"][0]];
@@ -92,7 +93,7 @@ veda.Module(function (veda) { "use strict";
 			});
 			self.preferences.save();
 		};
-			
+
 		return self;
 	};
 
