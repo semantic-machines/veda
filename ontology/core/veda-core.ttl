@@ -373,6 +373,14 @@ v-s:created
   rdfs:range xsd:dateTime ;
 .
 
+v-s:edited
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain rdfs:Resource ;
+  rdfs:label "Edition date"@en ;
+  rdfs:label "Дата редактирования"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+
 v-s:deleted
   rdf:type owl:DatatypeProperty ;
   rdfs:domain rdfs:Resource ;

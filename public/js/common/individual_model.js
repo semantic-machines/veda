@@ -46,9 +46,10 @@ veda.Module(function (veda) { "use strict";
 		this.on("individual:propertyModified", typeHandler);
 
 		this.on("individual:beforeSave", function () {
-			if (!this.hasValue("v-s:created")) this["v-s:created"] = [new Date()];
+			if (!this.hasValue("v-s:created")) this["v-s:created"] = [ new Date() ];
 			if (!this.hasValue("v-s:publisher")) this["v-s:publisher"] = [ veda.appointment ? veda.appointment : veda.user ];
 			this["v-s:lastEditor"] = [ veda.appointment ? veda.appointment : veda.user ];
+			this["v-s:edited"] = [ new Date() ];
 		});
 
 		if (container) {
@@ -315,6 +316,31 @@ veda.Module(function (veda) { "use strict";
 		self._.isNew = false;
 		self._.isSync = true;
 		self.trigger("individual:afterReset");
+		return this;
+	};
+
+	/**
+	 * @method
+	 * Update current individual with values from database & merge with local changes
+	 */
+	proto.update = function () {
+		var self = this;
+		self.trigger("individual:beforeUpdate");
+		var original;
+		try {
+			original = get_individual(veda.ticket, this.id);
+		} catch (e) {
+			original = {};
+		}
+		Object.getOwnPropertyNames(self.properties).map(function (property_uri) {
+			if (property_uri === "@" || property_uri === "rdf:type") { return; }
+			if (original[property_uri] && original[property_uri].length) {
+				self[property_uri] = original[property_uri].map( parser );
+			}
+		});
+		self._.isNew = false;
+		self._.isSync = true;
+		self.trigger("individual:afterUpdate");
 		return this;
 	};
 
