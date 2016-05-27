@@ -460,13 +460,6 @@ v-s:hasBond
   rdfs:label "Связанный документ"@ru ;
   rdfs:range v-s:Bond ;
 .
-v-s:hasBond
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Document ;
-  rdfs:label "Bonded document"@en ;
-  rdfs:label "Связанный документ"@ru ;
-  rdfs:range v-s:Bond ;
-.
 v-s:from
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Bond ;

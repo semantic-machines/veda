@@ -17,36 +17,39 @@
 
 v-s:Activity
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Activity"@en ;
   rdfs:label "Активность"@ru ;
-  rdfs:subClassOf v-s:Document ;
 .
 v-s:Meeting
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Activity ;
   rdfs:label "Meeting"@en ;
   rdfs:label "Встреча"@ru ;
-  rdfs:subClassOf v-s:Activity ;
 .
-
 v-s:Action
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
-  rdfs:subClassOf v-s:Versioned ;
-  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Activity ;
   rdfs:label "Action"@en ;
   rdfs:label "Мероприятие"@ru ;
+.
+v-s:Audit
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Activity ;
+  rdfs:label "Audit"@en ;
+  rdfs:label "Аудит"@ru ;
 .
 
 #-- Аттрибуты --
 
-v-s:hasAction
+v-s:hasActivity
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Action"@en ;
-  rdfs:label "Мероприятие"@ru ;
-  rdfs:range v-s:Action ;
+  rdfs:label "Has activity"@en ;
+  rdfs:label "Активность"@ru ;
+  rdfs:range v-s:Activity ;
   rdfs:domain v-s:Activity ;
 .
-
 v-s:member
   rdfs:domain v-s:Activity ;
 .
@@ -60,12 +63,14 @@ v-s:theme
   rdfs:domain v-s:Activity ;
 .
 
+
 v-s:agenda
   rdfs:domain v-s:Meeting ;
 .
 v-s:decision
   rdfs:domain v-s:Meeting ;
 .
+
 
 v-s:contributor
   rdfs:domain v-s:Action ;
