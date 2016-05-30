@@ -123,9 +123,9 @@ footer {
 .has-error + * {
 	color: #a94442;
 }
-textarea { 
+textarea {
   resize: vertical;
-  max-height: 300px; 
+  max-height: 300px;
 }
 
 .popover {
@@ -200,29 +200,29 @@ fieldset[disabled] .form-control {
 
 /* breadcrumb1 */
 
-.breadcrumb1 { 
+.breadcrumb1 {
 	margin: 20px 0px 10px -40px;
-	list-style: none; 
-	overflow: hidden; 
+	list-style: none;
+	overflow: hidden;
 }
-.breadcrumb1 li { 
-	float: left; 
+.breadcrumb1 li {
+	float: left;
 }
 .breadcrumb1 li a {
 	color: white;
-	text-decoration: none; 
+	text-decoration: none;
 	padding: 10px 10px 10px 55px;
 	background: #27ae60;
-	position: relative; 
+	position: relative;
 	display: block;
 	float: left;
 }
 .breadcrumb1 li.active a {
 	color: white;
-	text-decoration: none; 
+	text-decoration: none;
 	padding: 10px 10px 10px 55px;
 	background: #e74c3c;
-	position: relative; 
+	position: relative;
 	display: block;
 	float: left;
 }
@@ -231,72 +231,72 @@ fieldset[disabled] .form-control {
 	text-decoration: none;
 	padding: 10px 10px 10px 55px;
 	background: lightgray;
-	position: relative; 
+	position: relative;
 	display: block;
 	float: left;
 }
 @media (min-width: 1024px) {
-	.breadcrumb1 li a:after { 
-		content: " "; 
-		display: block; 
-		width: 0; 
+	.breadcrumb1 li a:after {
+		content: " ";
+		display: block;
+		width: 0;
 		height: 0;
 		border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
 		border-bottom: 50px solid transparent;
 		border-left: 30px solid #27ae60;
 		position: absolute;
 		top: 50%;
-		margin-top: -50px; 
+		margin-top: -50px;
 		left: 100%;
-		z-index: 2; 
-		overflow: hidden; 
-	}	
-	.breadcrumb1 li.active a:after { 
-		content: " "; 
-		display: block; 
-		width: 0; 
+		z-index: 2;
+		overflow: hidden;
+	}
+	.breadcrumb1 li.active a:after {
+		content: " ";
+		display: block;
+		width: 0;
 		height: 0;
 		border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
 		border-bottom: 50px solid transparent;
 		border-left: 30px solid #e74c3c;
 		position: absolute;
 		top: 50%;
-		margin-top: -50px; 
+		margin-top: -50px;
 		left: 100%;
-		z-index: 2; 
-		overflow: hidden; 	
-	}	
-	.breadcrumb1 li.disabled a:after { 
-		content: " "; 
-		display: block; 
-		width: 0; 
+		z-index: 2;
+		overflow: hidden;
+	}
+	.breadcrumb1 li.disabled a:after {
+		content: " ";
+		display: block;
+		width: 0;
 		height: 0;
 		border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
 		border-bottom: 50px solid transparent;
 		border-left: 30px solid lightgray;
 		position: absolute;
 		top: 50%;
-		margin-top: -50px; 
+		margin-top: -50px;
 		left: 100%;
-		z-index: 2; 
-		overflow: hidden; 	
-	}	
-	.breadcrumb1 li a:before { 
-		content: " "; 
-		display: block; 
-		width: 0; 
+		z-index: 2;
+		overflow: hidden;
+	}
+	.breadcrumb1 li a:before {
+		content: " ";
+		display: block;
+		width: 0;
 		height: 0;
 		border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
 		border-bottom: 50px solid transparent;
 		border-left: 30px solid white;
 		position: absolute;
 		top: 50%;
-		margin-top: -50px; 
+		margin-top: -50px;
 		margin-left: 6px;
 		left: 100%;
-		z-index: 1; 
-		overflow: hidden; 	
-	}	
+		z-index: 1;
+		overflow: hidden;
+	}
 }
 .breadcrumb1 li:first-child a {
 	padding-left: 20px;
@@ -308,26 +308,26 @@ fieldset[disabled] .form-control {
 /*	border-top-right-radius: 4px;
 	border-bottom-right-radius: 4px;*/
 }
-.breadcrumb1 li a:hover { 
+.breadcrumb1 li a:hover {
 	color:white;
-	background: #2ecc71; 
+	background: #2ecc71;
 }
-.breadcrumb1 li a:hover:after { 
-	border-left-color: #2ecc71!important; 
+.breadcrumb1 li a:hover:after {
+	border-left-color: #2ecc71!important;
 }
-.breadcrumb1 li.active a:hover { 
+.breadcrumb1 li.active a:hover {
 	color:white;
-	background: #e74c3c; 
+	background: #e74c3c;
 }
-.breadcrumb1 li.active a:hover:after { 
-	border-left-color: #e74c3c!important; 
+.breadcrumb1 li.active a:hover:after {
+	border-left-color: #e74c3c!important;
 }
-.breadcrumb1 li.disabled a:hover { 
+.breadcrumb1 li.disabled a:hover {
 	color: dimgray;
-	background: lightgray; 
+	background: lightgray;
 }
-.breadcrumb1 li.disabled a:hover:after { 
-	border-left-color: lightgray!important; 
+.breadcrumb1 li.disabled a:hover:after {
+	border-left-color: lightgray!important;
 }
 
 /* CAROUSEL */
@@ -339,7 +339,7 @@ fieldset[disabled] .form-control {
   opacity: 1;
 }
 .carousel-control.right, .carousel-control.left  {
-  background-image: none; 
+  background-image: none;
 }
 .carousel-caption {
   position: absolute;
@@ -351,7 +351,7 @@ fieldset[disabled] .form-control {
   /*width: 100%;*/
   color: #ffffff;
   text-align: left;
-  text-shadow: 0px 1px 2px black; 
+  text-shadow: 0px 1px 2px black;
 }
 .carousel-caption > h1 {
   font-size: 3em;
@@ -382,14 +382,14 @@ fieldset[disabled] .form-control {
   font-size: 0.9em;
   border: 1px solid transparent;
   border-radius: 4px;
-  padding: 1px 4px;  
+  padding: 1px 4px;
 }
 .carousel-indicators > li:hover {
   border: 1px solid white;
 }
 .carousel-indicators > li.active {
   border-radius: 4px;
-  padding: 1px 4px;  
+  padding: 1px 4px;
   background-color: white;
   color: black;
   width: auto;
@@ -458,12 +458,12 @@ span.twitter-typeahead .tt-hint {
 }
 
 /* Codemirror editor */
-.codemirror-editor { 
+.codemirror-editor {
   font-size: 12px;
   position: relative;
 }
 
-.fs-btn { 
+.fs-btn {
   margin: 5px;
   font-size: 14px;
   position:absolute;right:0px;z-index:999;
@@ -479,15 +479,15 @@ span.twitter-typeahead .tt-hint {
   border-color: #a94442;
 }
 
-html, body { 
+html, body {
   height:99%;
 }
 .fs-wrapper {
-  min-height:100%; 
-  position:relative; 
+  min-height:100%;
+  position:relative;
 }
 .fs {
-  position:absolute; 
+  position:absolute;
   top:0;
   left:0;
   width:100%;
@@ -495,7 +495,7 @@ html, body {
   z-index: 999999;
 }
 #login-container {
-  position:absolute; 
+  position:absolute;
   top:0;
   left:0;
   width:100%;
@@ -503,7 +503,7 @@ html, body {
   z-index: 998;
 }
 #app-load-indicator {
-  position:absolute; 
+  position:absolute;
   top:0;
   left:0;
   width:100%;
@@ -540,10 +540,14 @@ veda-control {
   margin: 5px 5px 5px 0px;
 }
 
+td > #rel-actions {
+  margin: 0px;
+}
+
 #rel-actions.block {
   position:absolute !important;
-  top:0px; 
-  right:0px; 
+  top:0px;
+  right:0px;
   z-index:100;
   padding:inherit;
 }
@@ -565,7 +569,7 @@ veda-control {
 	box-shadow: 2px 2px 19px #e0e0e0;
 	-o-box-shadow: 2px 2px 19px #e0e0e0;
 	-webkit-box-shadow: 2px 2px 19px #e0e0e0;
-	-moz-box-shadow: 2px 2px 19px #e0e0e0;		
+	-moz-box-shadow: 2px 2px 19px #e0e0e0;
 	opacity:0.8;
 	filter:alpha(opacity=80);
 	cursor:move;
@@ -573,7 +577,7 @@ veda-control {
 	font-size:11px;
 	-webkit-transition:background-color 0.25s ease-in;
 	-moz-transition:background-color 0.25s ease-in;
-	transition:background-color 0.25s ease-in;	
+	transition:background-color 0.25s ease-in;
 	text-align: center;
 }
 
@@ -581,11 +585,11 @@ veda-control {
 	color:blue;
 }
 
-.state-task {	
+.state-task {
 	width: 90px;
 	height: 50px;
 	-moz-border-radius:8px;
-	border-radius:8px;	
+	border-radius:8px;
 }
 
 .state-io-condition {
@@ -605,20 +609,20 @@ veda-control {
 .state-name {
 	width: inherit;
 	position: absolute;
-	top: 50px;	
+	top: 50px;
 }
 
 .condition-name {
-	top: 30px;	
+	top: 30px;
 }
 
 .w_active {
 	color: #FF0000;
-	border:2px solid #FF0000;	
+	border:2px solid #FF0000;
 }
 
 .jsplumb-drag-selected {
-	border:2px solid #FFA500;	
+	border:2px solid #FFA500;
 }
 
 .aLabel {
@@ -637,7 +641,7 @@ veda-control {
 .aLabel {
 	background-color:white;
 	opacity:0.8;
-	padding:0.3em;				
+	padding:0.3em;
 	border-radius:0.5em;
 	border:1px solid #bbb;
 	cursor:pointer;
@@ -665,16 +669,16 @@ veda-control {
 	z-index:3;
 }
 
-.dragHover { 
-	border:2px solid #bbb; 
+.dragHover {
+	border:2px solid #bbb;
 }
 
-path { 
-	cursor:pointer; 
+path {
+	cursor:pointer;
 }
 
-.stop-process { 
-	cursor:pointer; 
+.stop-process {
+	cursor:pointer;
 }
 
 .subnet-link {
@@ -710,12 +714,12 @@ path {
     height: 100%;
 }
 
-.workflow-canvas-wrapper {	
+.workflow-canvas-wrapper {
     height: -moz-calc(100% - 65px);
     height: -webkit-calc(100% - 65px);
     height: calc(100% - 65px);
 	border: 1px solid #ddd;
-    border-radius: 5px;	
+    border-radius: 5px;
 	overflow-x:hidden;
 	overflow-y:hidden;
 	position: relative;
@@ -745,10 +749,10 @@ path {
 }
 
 .workflow-context-menu-list {
-	background-color: #fff; 
-	border: 1px solid #ccc; 
-	list-style-type: none; 
-	padding: 5px; 
+	background-color: #fff;
+	border: 1px solid #ccc;
+	list-style-type: none;
+	padding: 5px;
 	font-family: Lucida Console;
 }
 
@@ -759,12 +763,12 @@ svg.process-path-highlight path
 }
 
 .properties-editor {
-	
+
 /*	width: auto 100% !important; */
 }
 
 .ui-dialog {
-	background-color:#FFFFFF; 
+	background-color:#FFFFFF;
 	border: 1px solid black;
 	text-align:center;
 }

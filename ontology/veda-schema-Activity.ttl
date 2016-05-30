@@ -50,16 +50,22 @@ v-s:hasActivity
   rdfs:range v-s:Activity ;
   rdfs:domain v-s:Activity ;
 .
+v-s:theme
+  rdfs:domain v-s:Activity ;
+.
 v-s:member
   rdfs:domain v-s:Activity ;
 .
-v-s:registrationDate
+v-s:dateFrom
+  rdfs:domain v-s:Activity ;
+.
+v-s:dateTo
+  rdfs:domain v-s:Activity ;
+.
+v-s:placeDescription
   rdfs:domain v-s:Activity ;
 .
 v-s:registrationNumber
-  rdfs:domain v-s:Activity ;
-.
-v-s:theme
   rdfs:domain v-s:Activity ;
 .
 
@@ -72,27 +78,18 @@ v-s:decision
 .
 
 
+v-s:responsible
+  rdfs:domain v-s:Action ;
+.
 v-s:contributor
   rdfs:domain v-s:Action ;
 .
 v-s:controller
   rdfs:domain v-s:Action ;
 .
-v-s:dateFrom
-  rdfs:domain v-s:Action ;
-.
-v-s:dateTo
-  rdfs:domain v-s:Action ;
-.
 v-s:dateFact
   rdfs:domain v-s:Action ;
 .
 v-s:description
-  rdfs:domain v-s:Action ;
-.
-v-s:responsible
-  rdfs:domain v-s:Action ;
-.
-v-s:placeDescription
   rdfs:domain v-s:Action ;
 .
