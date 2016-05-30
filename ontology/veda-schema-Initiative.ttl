@@ -735,7 +735,7 @@ v-s:PsMember
   rdfs:label "Member property specification for MemberOfWorkGroup class"@en ;
   rdfs:label "Спецификация свойства Участник рабочей группы для класса MemberOfWorkGroup"@ru ;
 .
-v-s:timeeffort
+v-s:timeEffort
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:MemberOfWorkGroup ;
   rdfs:label "Work hours"@en ;
@@ -745,7 +745,7 @@ v-s:timeeffort
 v-s:PsTimeeffort
   rdf:type v-ui:IntegerPropertySpecification ;
   v-ui:forClass v-s:MemberOfWorkGroup ;
-  v-ui:forProperty v-s:timeeffort ;
+  v-ui:forProperty v-s:timeEffort ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
   v-ui:tooltip "non-required, single integer value."@en ;
