@@ -1,6 +1,6 @@
 # берет новые исходники из github, но не собирает
 
-DMD_VER=2.070.0
+DMD_VER=2.070.2
 DUB_VER=0.9.24
 
 sudo apt-get update
