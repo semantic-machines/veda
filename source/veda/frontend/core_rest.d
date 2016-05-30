@@ -131,6 +131,9 @@ interface VedaStorageRest_API {
 
     @path("abort_transaction") @method(HTTPMethod.PUT)
     void abort_transaction(string transaction_id);
+
+    @path("unload_to_queue") @method(HTTPMethod.PUT)
+    long unload_to_queue(string queue_id);
 }
 
 
@@ -857,5 +860,10 @@ class VedaStorageRest : VedaStorageRest_API
     void abort_transaction(string transaction_id)
     {
         context.abort_transaction(transaction_id);
+    }
+
+    long unload_to_queue(string queue_id)
+    {
+        return context.unload_subject_storage(queue_id);
     }
 }

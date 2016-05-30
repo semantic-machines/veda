@@ -1009,14 +1009,59 @@ class PThreadContext : Context
         }
     }
 
-    public long unload_subject_storage(string queue_name)
+    public long unload_subject_storage(string queue_id)
     {
         long res = -1;
 
         version (useInnerModules)
         {
-            res = storage_module.unload(P_MODULE.subject_manager, queue_name);
+            res = storage_module.unload(P_MODULE.subject_manager, queue_id);
         }
+
+        if (external_write_storage_url !is null)
+        {
+            //writeln("context:store_individual #3 ", process_name);
+            version (libRequests)
+            {
+                import requests.http, requests.streams, requests;
+
+                auto rq = Request();
+                //rq.timeout = 1.seconds;
+                //rq.verbosity = 2;
+
+                string    url = external_write_storage_url ~ "/unload_to_queue";
+                JSONValue req_body;
+                req_body[ "queue_id" ] = queue_id;
+
+                Response rs;
+                try
+                {
+                    rs = rq.exec !"PUT" (url, req_body.toString(), "application/json");
+                    writeln("@rs=", rs);
+                    // res.result = cast(ResultCode)rs.code;
+                }
+                catch (ConnectError ce)
+                {
+                    writeln("@ce=", ce);
+                    //  res.result = ResultCode.Connect_Error;
+                }
+                catch (TimeoutException te)
+                {
+                    writeln("@te=", te);
+                    //  res.result = ResultCode.Connect_Error;
+                }
+                catch (Exception ex)
+                {
+                    writeln("@ex=", ex);
+                    log.trace("ERR! [%s] unload_to_queue, use EXTERNAL, err=[%s], req=[%s]", name, ex.msg, text(req_body));
+                    //res.result = ResultCode.Internal_Server_Error;
+                }
+
+                //if (res.result != ResultCode.OK)
+                //    log.trace("WARN! [%s] store_individual[%s] use EXTERNAL, err=[%s]", name, indv.uri, res.result);
+            }
+        }
+
         return res;
     }
 
@@ -1259,7 +1304,8 @@ class PThreadContext : Context
                         }
  */
 //                    if (event_id != "fanout")
-                        veda.core.threads.dcs_manager.ev_update_individual(cmd, ticket.user_uri, indv.uri, new_state, prev_state, event_id, res.op_id, update_counter);
+                        veda.core.threads.dcs_manager.ev_update_individual(cmd, ticket.user_uri, indv.uri, new_state, prev_state, event_id, res.op_id,
+                                                                           update_counter);
 
                         res.result = ResultCode.OK;
                     }
