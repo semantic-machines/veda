@@ -548,7 +548,7 @@ td > #rel-actions {
   padding:inherit;
 }
 .red-outline {
-  outline: 3px dashed #fbb!important;
+  outline: 3px dashed #faa!important;
   outline-offset: 3px!important;
 }
 

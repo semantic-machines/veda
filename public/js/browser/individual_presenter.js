@@ -832,7 +832,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				wrapper.addClass("block");
 			}*/
 
-			if (valTemplate.css("display").indexOf("inline") < 0) {
+			if (valTemplate.css("display") !== "inline") {
 				wrapper.addClass("block");
 			}
 
