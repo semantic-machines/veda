@@ -120,39 +120,47 @@ struct TransactionItem
         ticket_id = _ticket_id;
         event_id  = _event_id;
 
-        int code = cbor2individual(&indv, indv_serl);
-        if (code < 0)
+        if (cmd == INDV_OP.REMOVE)
         {
-            rc = ResultCode.Unprocessable_Entity;
-            log.trace("ERR:v8d:transaction:cbor2individual [%s]", indv_serl);
+            rc = ResultCode.OK;
         }
         else
-            rc = ResultCode.OK;
-
-        indv.setStatus(rc);
-
-        if (rc == ResultCode.OK && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
         {
-            Individual      prev_indv;
-
-            TransactionItem *ti = transaction_buff.get(indv.uri, null);
-            if (ti !is null && ti.indv_serl.length > 0)
+            int code = cbor2individual(&indv, indv_serl);
+            if (code < 0)
             {
-                prev_indv = ti.indv;
+                rc = ResultCode.Unprocessable_Entity;
+                log.trace("ERR:v8d:transaction:cbor2individual [%s]", indv_serl);
+                return;
             }
             else
+                rc = ResultCode.OK;
+
+            indv.setStatus(rc);
+
+            if (rc == ResultCode.OK && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
             {
-                Ticket *ticket = g_context.get_ticket(ticket_id);
-                prev_indv = g_context.get_individual(ticket, indv.uri);
+                Individual      prev_indv;
+
+                TransactionItem *ti = transaction_buff.get(indv.uri, null);
+                if (ti !is null && ti.indv_serl.length > 0)
+                {
+                    prev_indv = ti.indv;
+                }
+                else
+                {
+                    Ticket *ticket = g_context.get_ticket(ticket_id);
+                    prev_indv = g_context.get_individual(ticket, indv.uri);
+                }
+
+                if (prev_indv.getStatus() == ResultCode.Connect_Error || prev_indv.getStatus() == ResultCode.Too_Many_Requests)
+                    rc = prev_indv.getStatus();
+
+                if (prev_indv.getStatus() == ResultCode.OK)
+                    indv = *indv_apply_cmd(cmd, &prev_indv, &indv);
+                else
+                    log.trace("g_context.get_individual[%s] fail=%s", indv.uri, prev_indv.getStatus());
             }
-
-            if (prev_indv.getStatus() == ResultCode.Connect_Error || prev_indv.getStatus() == ResultCode.Too_Many_Requests)
-                rc = prev_indv.getStatus();
-
-            if (prev_indv.getStatus() == ResultCode.OK)
-                indv = *indv_apply_cmd(cmd, &prev_indv, &indv);
-            else
-                log.trace("g_context.get_individual[%s] fail=%s", indv.uri, prev_indv.getStatus());
         }
     }
 }
@@ -247,9 +255,14 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
     TransactionItem *ti = new TransactionItem(INDV_OP.PUT, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
-    transaction_buff[ ti.indv.uri ] = ti;
-    transaction_queue ~= ti;
-    return ResultCode.OK;
+    if (ti.rc == ResultCode.OK)
+    {
+        transaction_buff[ ti.indv.uri ] = ti;
+        transaction_queue ~= ti;
+        return ResultCode.OK;
+    }
+    else
+        return ti.rc;
 }
 
 extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
@@ -258,9 +271,15 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
     TransactionItem *ti = new TransactionItem(INDV_OP.ADD_IN, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
-    transaction_buff[ ti.indv.uri ] = ti;
-    transaction_queue ~= ti;
-    return ResultCode.OK;
+
+    if (ti.rc == ResultCode.OK)
+    {
+        transaction_buff[ ti.indv.uri ] = ti;
+        transaction_queue ~= ti;
+        return ResultCode.OK;
+    }
+    else
+        return ti.rc;
 }
 
 extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
@@ -269,9 +288,15 @@ extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_lengt
     TransactionItem *ti = new TransactionItem(INDV_OP.SET_IN, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
-    transaction_buff[ ti.indv.uri ] = ti;
-    transaction_queue ~= ti;
-    return ResultCode.OK;
+
+    if (ti.rc == ResultCode.OK)
+    {
+        transaction_buff[ ti.indv.uri ] = ti;
+        transaction_queue ~= ti;
+        return ResultCode.OK;
+    }
+    else
+        return ti.rc;
 }
 
 extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
@@ -281,9 +306,15 @@ extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_
         new TransactionItem(INDV_OP.REMOVE_FROM, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                             cast(string)_event_id[ 0.._event_id_length ].dup);
 
-    transaction_buff[ ti.indv.uri ] = ti;
-    transaction_queue ~= ti;
-    return ResultCode.OK;
+
+    if (ti.rc == ResultCode.OK)
+    {
+        transaction_buff[ ti.indv.uri ] = ti;
+        transaction_queue ~= ti;
+        return ResultCode.OK;
+    }
+    else
+        return ti.rc;
 }
 
 extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length, const char *_event_id,
@@ -292,9 +323,15 @@ extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_lengt
     TransactionItem *ti = new TransactionItem(INDV_OP.REMOVE, cast(string)_uri[ 0.._uri_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
-    transaction_buff[ ti.indv.uri ] = ti;
-    transaction_queue ~= ti;
-    return ResultCode.OK;
+
+    if (ti.rc == ResultCode.OK)
+    {
+        transaction_buff[ ti.indv.uri ] = ti;
+        transaction_queue ~= ti;
+        return ResultCode.OK;
+    }
+    else
+        return ti.rc;
 }
 
 ////

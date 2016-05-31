@@ -16,8 +16,7 @@ private
     import search.vel, search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 }
 
-Tid    tid_ltr_scripts;
-logger log;
+Tid tid_ltr_scripts;
 
 extern (C) void handleTermination1(int _signal)
 {
@@ -40,7 +39,7 @@ void main(char[][] args)
     core.thread.Thread.sleep(dur!("seconds")(2));
 
     ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091);
-    log = p_script.log();
+    //log = p_script.log();
 
     tid_ltr_scripts = spawn(&ltrs_thread, p_script.parent_url);
 
@@ -52,8 +51,8 @@ void main(char[][] args)
 private struct Task
 {
     Consumer   consumer;
-    Individual execute_script;
-    string     execute_script_cbor;
+    Individual executed_script;
+    string     executed_script_cbor;
     string     codelet_id;
 }
 
@@ -80,6 +79,17 @@ ScriptVM script_vm;
 
 Tasks *[ int ] tasks_2_priority;
 Task *task;
+
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
+{
+    if (_log is null)
+        _log = new logger("veda-core-ltr_scripts", "log", "LTR-SCRIPTS");
+    return _log;
+}
+// ////// ////// ///////////////////////////////////////////
 
 private void ltrs_thread(string parent_url)
 {
@@ -193,9 +203,10 @@ private void ltrs_thread(string parent_url)
                             continue;
 
                         string data = task.consumer.pop();
+                        //writeln ("@ data from queue=", data);
                         if (data !is null)
                         {
-                            execute_script(sticket.user_uri, data, task.codelet_id, task.execute_script_cbor);
+                            execute_script(sticket.user_uri, data, task.codelet_id, task.executed_script_cbor);
 
                             bool res = task.consumer.commit();
                             if (res == false)
@@ -226,18 +237,19 @@ private void ltrs_thread(string parent_url)
     }
 }
 
-void execute_script(string user_uri, string msg, string script_uri, string execute_script_cbor)
+void execute_script(string user_uri, string msg, string script_uri, string executed_script_cbor)
 {
-    writeln("@execute_scrip, script_uri=", script_uri);
-
     if (msg is null || msg.length <= 3 || script_vm is null ||
         script_uri is null || script_uri.length <= 3 ||
-        execute_script_cbor is null || execute_script_cbor.length <= 3)
+        executed_script_cbor is null || executed_script_cbor.length <= 3)
         return;
 
     Individual indv;
     if (cbor2individual(&indv, msg) < 0)
+    {
+        writeln("ERR msg=", msg);
         return;
+    }
 
     if (onto is null)
         onto = context.get_onto();
@@ -249,8 +261,8 @@ void execute_script(string user_uri, string msg, string script_uri, string execu
     g_document.data   = cast(char *)msg;
     g_document.length = cast(int)msg.length;
 
-    g_execute_script.data   = cast(char *)execute_script_cbor;
-    g_execute_script.length = cast(int)execute_script_cbor.length;
+    g_execute_script.data   = cast(char *)executed_script_cbor;
+    g_execute_script.length = cast(int)executed_script_cbor.length;
 
     if (user_uri !is null)
     {
@@ -275,9 +287,7 @@ void execute_script(string user_uri, string msg, string script_uri, string execu
 
     if (script is ScriptInfo.init)
     {
-        writeln("@script_uri=", script_uri);
         Individual codelet = context.get_individual(&sticket, script_uri);
-        writeln("@codelet=", codelet);
         prepare_script(codelet_scripts, codelet, script_vm, vars_for_codelet_script);
     }
 
@@ -326,7 +336,7 @@ class ScriptProcess : ChildProcess
 
         context.unload_subject_storage(queue_id);
 
-        execute_script(new_bin, queue_id);
+        start_script(new_bin, queue_id);
 
         return true;
     }
@@ -336,7 +346,7 @@ class ScriptProcess : ChildProcess
     }
 }
 
-private void execute_script(string execute_script_srz, string queue_id)
+private void start_script(string execute_script_srz, string queue_id)
 {
     if (tid_ltr_scripts != Tid.init)
         send(tid_ltr_scripts, CMD.START, execute_script_srz, queue_id);

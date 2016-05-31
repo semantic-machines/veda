@@ -25,7 +25,7 @@ private static int read_element(Individual *individual, ubyte[] src, out string 
 
     if (pos == 0)
     {
-        writeln("EX! cbor8individual.read_element src.length=", src.length);
+        //writeln("EX! cbor8individual.read_element src.length=", src.length);
         throw new Exception("no content in pos");
     }
 
@@ -276,7 +276,7 @@ public int cbor2individual(Individual *individual, string in_str)
     {
         return read_element(individual, cast(ubyte[])in_str, dummy);
     }
-    catch (Exception ex)
+    catch (Throwable ex)
     {
         writeln("ERR! cbor2individual ex=", ex.msg, ", in_str=", in_str);
         //printPrettyTrace(stderr);

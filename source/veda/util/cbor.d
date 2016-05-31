@@ -249,7 +249,7 @@ public int read_type_value(ubyte[] src, ElementHeader *header)
         int           len = read_type_value(src[ d_pos..$ ], &main_type_header);
         if (len <= 0)
         {
-            writeln("@%%%1");
+            //writeln("@%%%1");
             throw new Exception("no content in pos");
         }
         d_pos        += len;
@@ -267,8 +267,8 @@ public int read_type_value(ubyte[] src, ElementHeader *header)
         }
         else if ((type == MajorType.ARRAY || type == MajorType.TEXT_STRING) && ld > src.length)
         {
-            writeln("Err! @d cbor.read_header, ld=", ld);
-            throw new Exception("Err! @d cbor.read_header, ld=" ~ text(ld) ~ ", src=[" ~ text(src) ~ "]");
+            //writeln("Err! @d cbor.read_header, ld=", ld);
+            throw new Exception("read_type_value: cbor.read_header, ld=" ~ text(ld) ~ ", src=[" ~ text(src) ~ "]");
             //ld = src.length;
         }
 
