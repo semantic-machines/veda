@@ -532,12 +532,8 @@ veda-control {
   white-space: pre-wrap;
 }
 
-#prop-actions {
-  margin: 5px 5px 5px 0px;
-}
-
-#rel-actions {
-  margin: 5px 5px 5px 0px;
+#prop-actions, #rel-actions {
+  margin: 5px;
 }
 
 td > #rel-actions {
@@ -552,7 +548,7 @@ td > #rel-actions {
   padding:inherit;
 }
 .red-outline {
-  outline: 3px dashed #faa!important;
+  outline: 3px dashed #fbb!important;
   outline-offset: 3px!important;
 }
 

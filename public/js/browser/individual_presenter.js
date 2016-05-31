@@ -1,20 +1,20 @@
 // Individual Presenter
 
 veda.Module(function IndividualPresenter(veda) { "use strict";
-	
+
 	var deletedAlertTmpl = $("#deleted-individual-alert-template").html();
-	
-	//var c = 0; 
-	
+
+	//var c = 0;
+
 	veda.on("individual:loaded", function (individual, container, template, mode) {
-		
+
 		//console.log(individual.id, "presenter count:", ++c);
-		
-		if (typeof container === "string") { 
+
+		if (typeof container === "string") {
 			container = $(container).empty();
 		}
 		mode = mode || "view";
-		
+
 		// Change location.hash if individual was presented in #main container
 		/*if (container.prop("id") === "main" && location.hash.indexOf(individual.id) < 0) {
 			var hash = ["#", individual.id].join("/");
@@ -32,7 +32,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			)
 		);
 		var rendered = [], scripts = [];
-			
+
 		//try {
 			if (template) {
 				if (template instanceof veda.IndividualModel) template = $( template["v-ui:template"][0].toString() );
@@ -42,7 +42,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
 						template = genericTemplate(individual, _class);
 					} else if (template === "json") {
-						var pre = $("<pre>"), 
+						var pre = $("<pre>"),
 							json = individual.properties,
 							ordered = {};
 						Object.keys(json).sort().forEach(function(key) {
@@ -89,7 +89,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						};
 					});
 			}
-			
+
 			if (!rendered.length) {
 				template = genericTemplate(individual);
 				rendered.push({
@@ -108,7 +108,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				// Timeout to wait all related individuals to render
 				setTimeout(function () {
 					view.template.trigger(mode);
-					view.scripts.map( function (script) { 
+					view.scripts.map( function (script) {
 						var presenter = new Function("veda", "individual", "container", "template", "mode", script + "//# sourceURL=" + individual["rdf:type"][0].id + "Presenter.js" /*+ "." + veda.Util.guid()*/ );
 						presenter(veda, individual, container, view.template, mode);
 					});
@@ -119,12 +119,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		//	individual.present(container, new veda.IndividualModel("v-ui:LabelBlockLinkTemplate"));
 		//}
 	});
-	
+
 	function renderTemplate (individual, container, template, specs, mode) {
 
 		// Unwrapped templates support
 		var wrapper = $("<div>").append(template);
-		
+
 		var view = $(".view", wrapper);
 		var edit = $(".edit", wrapper);
 		var search = $(".search", wrapper);
@@ -141,10 +141,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		template.on("view edit search", showHideHandler);
 
-		if (container.prop("id") === "main" 
-			&& individual.is('v-s:Versioned') 
-			&& individual.hasValue('v-s:actualVersion') 
-			&& individual['v-s:actualVersion'][0].id !== individual.id 
+		if (container.prop("id") === "main"
+			&& individual.is('v-s:Versioned')
+			&& individual.hasValue('v-s:actualVersion')
+			&& individual['v-s:actualVersion'][0].id !== individual.id
 		) {
 			var versionBundle = new veda.IndividualModel('v-s:DocumentIsVersion');
 			var actualVersionClass = new veda.IndividualModel('v-s:actualVersion');
@@ -161,13 +161,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
          	   });
 			$('#main').prepend($versionToolbar);
 		}
-		
+
 		// Cleanup memory
 		/*template.on("remove", function (event) {
 			$(".typeahead", wrapper).typeahead("destroy");
 			wrapper = embedded = props_ctrls = null;
 		});*/
-		
+
 		// Embedded templates list
 		var embedded = [];
 
@@ -179,7 +179,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			e.stopPropagation();
 		}
 		template.on("view edit search save cancel delete recover draft", syncEmbedded);
-				
+
 		// Define handlers
 		function saveHandler (e, parent) {
 			individual.save(parent);
@@ -187,14 +187,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			e.stopPropagation();
 		}
 		template.on("save", saveHandler);
-				
+
 		function draftHandler (e, parent) {
 			individual.draft(parent);
 			template.trigger("view");
 			e.stopPropagation();
 		}
 		template.on("draft", draftHandler);
-		
+
 		function showRightsHandler (e) {
 			individual.trigger("showRights");
 			e.stopPropagation();
@@ -241,7 +241,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			e.stopPropagation();
 		}
 		template.on("recover", recoverHandler);
-		
+
 		// Actions
 		var $edit = $("#edit.action", wrapper),
 			$save = $("#save.action", wrapper),
@@ -250,7 +250,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			$cancel = $("#cancel.action", wrapper),
 			$delete = $("#delete.action", wrapper);
 
-		// Check rights to manage buttons		
+		// Check rights to manage buttons
 		// Update
 		if ( individual.isSync() ) {
 			if ($edit.length   && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $edit.remove();
@@ -260,13 +260,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			// Delete
 			if ($delete.length && !(individual.rights && individual.rights.hasValue("v-s:canDelete") && individual.rights["v-s:canDelete"][0] == true) ) $delete.remove();
 		}
-		
+
 		// Buttons handlers
 		// Edit
 		$edit.on("click", function (e) {
 			template.trigger("edit");
 		});
-		
+
 		// Save
 		$save.on("click", function (e) {
 			template.trigger("save");
@@ -276,7 +276,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		$draft.on("click", function (e) {
 			template.trigger("draft");
 		});
-		
+
 		// Show rights
 		$showRights.on("click", function (e) {
 			template.trigger("showRights");
@@ -286,19 +286,19 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		$cancel.on("click", function (e) {
 			template.trigger("cancel");
 		});
-		
+
 		//  Delete
 		$delete.on("click", function (e) {
 			if ( confirm("Вы действительно хотите удалить документ?") ) template.trigger("delete");
 		});
 		if (individual.hasValue("v-s:deleted") && individual["v-s:deleted"][0]) $delete.hide();
-		
+
 		// Apply mode class to template to show/hide elements in different modes
 		function modeHandler (e) {
 			mode = e.type;
 			mode === "view" ? template.addClass("mode-view").removeClass("mode-edit mode-search") :
 			mode === "edit" && (individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ? template.addClass("mode-edit").removeClass("mode-view mode-search") :
-			mode === "search" ? template.addClass("mode-search").removeClass("mode-view mode-edit") : 
+			mode === "search" ? template.addClass("mode-search").removeClass("mode-view mode-edit") :
 			true;
 			e.stopPropagation();
 		}
@@ -306,12 +306,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		// Validation with support of embedded templates (arbitrary depth)
 		function validationHandler () {
-			var isValid = checkState(template);			
+			var isValid = checkState(template);
 			isValid = isValid && embedded.reduce(function (state, template) {
 				return state && template.data("valid").state;
 			}, true);
 			template.data("valid").state = isValid;
-			if (isValid) { 
+			if (isValid) {
 				$save.removeAttr("disabled");
 				template.trigger("valid");
 			} else {
@@ -345,7 +345,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var propertyContainer = $(this),
 				property_uri = propertyContainer.attr("property"),
 				spec = specs[property_uri];
-			if (property_uri === "@") { 
+			if (property_uri === "@") {
 				propertyContainer.text(individual.id);
 				return;
 			}
@@ -364,7 +364,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		// Related resources & about resources
 		$("[rel]:not(veda-control):not([rel] *):not([about] *)", wrapper).map( function () {
-			var relContainer = $(this), 
+			var relContainer = $(this),
 				about = relContainer.attr("about"),
 				rel_uri = relContainer.attr("rel"),
 				isEmbedded = relContainer.attr("embedded") === "true",
@@ -373,7 +373,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				rel_template_uri = relContainer.attr("template"),
 				relTemplate,
 				isAbout;
-			
+
 			if (about) {
 				isAbout = true;
 				about = (about === "@" ? individual : new veda.IndividualModel(about));
@@ -382,7 +382,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				isAbout = false;
 				about = individual;
 			}
-			
+
 			if ( rel_template_uri ) {
 				var templateIndividual = new veda.IndividualModel( rel_template_uri );
 				relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
@@ -391,13 +391,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				relTemplate = rel_inline_template.remove();
 			}
 			rel_inline_template = null;
-			
+
 			template.on("edit", function (e) {
 				var property = new veda.IndividualModel(rel_uri);
-				if ( isEmbedded 
-					 && spec 
-					 && spec["v-ui:minCardinality"][0] >= 1 
-					 && !individual.hasValue(rel_uri)  
+				if ( isEmbedded
+					 && spec
+					 && spec["v-ui:minCardinality"][0] >= 1
+					 && !individual.hasValue(rel_uri)
 					 && !(property.hasValue("rdfs:range") && property["rdfs:range"][0].id === "v-s:File")
 				) {
 					var emptyValue = new veda.IndividualModel();
@@ -410,9 +410,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 
 			var values = about[rel_uri], rendered = {}, counter = 0;
-			
+
 			relContainer.empty();
-			
+
 			propertyModifiedHandler(rel_uri, values);
 			about.on("individual:propertyModified", propertyModifiedHandler);
 			template.one("remove", function () {
@@ -447,13 +447,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					}
 					// Remove rendered templates for removed values
 					for (var i in rendered) {
-						if (rendered[i].cnt === counter) continue; 
+						if (rendered[i].cnt === counter) continue;
 						rendered[i].tmpl.remove();
 						delete rendered[i];
 					}
 				}
 			}
-			
+
 			function embeddedHandler(doc_rel_uri, values) {
 				if (doc_rel_uri === rel_uri) {
 					values.map(function (value) {
@@ -461,12 +461,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					});
 				}
 			}
-			
-		});		
+
+		});
 
 		// About resource
 		$("[about]:not([rel]):not([property])", wrapper).map( function () {
-			var aboutContainer = $(this), 
+			var aboutContainer = $(this),
 				about_template_uri = aboutContainer.attr("template"),
 				about_inline_template = aboutContainer.children(),
 				about, aboutTemplate;
@@ -489,7 +489,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		// About resource property
 		$("[about][property]:not([rel] *):not([about] *)", wrapper).map( function () {
-			var propertyContainer = $(this), 
+			var propertyContainer = $(this),
 				property_uri = propertyContainer.attr("property"),
 				about;
 			if (propertyContainer.attr("about") === "@") {
@@ -517,35 +517,35 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		// Property control
 		$("veda-control[property]:not([rel] *):not([about] *)", wrapper).map( function () {
-			
+
 			var control = $(this),
 				property_uri = control.attr("property"),
 				property = new veda.IndividualModel(property_uri),
 				type = control.attr("type") || property["rdfs:range"][0].id,
 				spec = specs[property_uri],
 				controlType;
-			
+
 			control.removeAttr("property");
-			
+
 			switch (type) {
-				case "rdfs:Literal": 
-				case "xsd:string": 
+				case "rdfs:Literal":
+				case "xsd:string":
 					controlType = $.fn.veda_multilingualString;
 					break;
-				case "xsd:boolean": 
-					controlType = $.fn.veda_boolean; 
+				case "xsd:boolean":
+					controlType = $.fn.veda_boolean;
 					break;
-				case "xsd:integer": 
+				case "xsd:integer":
 				case "xsd:nonNegativeInteger":
-					controlType = $.fn.veda_integer; 
+					controlType = $.fn.veda_integer;
 					break;
 				case "xsd:decimal":
-					controlType = $.fn.veda_decimal; 
+					controlType = $.fn.veda_decimal;
 					break;
-				case "xsd:dateTime": 
-					controlType = $.fn.veda_dateTime; 
+				case "xsd:dateTime":
+					controlType = $.fn.veda_dateTime;
 					break;
-				default: 
+				default:
 					controlType = $.fn["veda_" + type];
 					break;
 			}
@@ -562,21 +562,21 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 
 			controlType.call(control, opts);
-			
+
 			props_ctrls[property_uri] ? props_ctrls[property_uri].push(control) : props_ctrls[property_uri] = [ control ];
-			
+
 			var state = true;
-			
+
 			template.on("view edit search", function (e) {
 				e.stopPropagation();
 				control.trigger(e.type);
 				if (spec) state = validate(template, spec, individual[property_uri], property_uri);
-				e.type === "edit" ? 
-					state ? control.removeClass("has-error") : control.addClass("has-error") 
+				e.type === "edit" ?
+					state ? control.removeClass("has-error") : control.addClass("has-error")
 					:
 					control.removeClass("has-error");
 			});
-			
+
 			function propertyModifiedHandler(doc_property_uri) {
 				if (doc_property_uri === property_uri) {
 					if (spec) state = validate(template, spec, individual[property_uri], property_uri);
@@ -594,20 +594,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				if ( spec && !individual.hasValue(property_uri) ) {
 					var defaultValue;
 					switch (property["rdfs:range"][0].id) {
-						case "xsd:boolean": 
+						case "xsd:boolean":
 							defaultValue = spec && spec.hasValue("v-ui:defaultBooleanValue") ? spec["v-ui:defaultBooleanValue"][0] : undefined;
 							break;
-						case "xsd:integer": 
+						case "xsd:integer":
 						case "xsd:nonNegativeInteger":
-							defaultValue = spec && spec.hasValue("v-ui:defaultIntegerValue") ? spec["v-ui:defaultIntegerValue"][0] : undefined; 
+							defaultValue = spec && spec.hasValue("v-ui:defaultIntegerValue") ? spec["v-ui:defaultIntegerValue"][0] : undefined;
 							break;
 						case "xsd:decimal":
-							defaultValue = spec && spec.hasValue("v-ui:defaultDecimalValue") ? spec["v-ui:defaultDecimalValue"][0] : undefined; 
+							defaultValue = spec && spec.hasValue("v-ui:defaultDecimalValue") ? spec["v-ui:defaultDecimalValue"][0] : undefined;
 							break;
-						case "xsd:dateTime": 
+						case "xsd:dateTime":
 							defaultValue = spec && spec.hasValue("v-ui:defaultDatetimeValue") ? spec["v-ui:defaultDatetimeValue"][0] : undefined;
 							break;
-						default: 
+						default:
 							defaultValue = spec && spec.hasValue("v-ui:defaultStringValue") ? spec["v-ui:defaultStringValue"][0] : undefined;
 							break;
 					}
@@ -616,42 +616,42 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				e.stopPropagation();
 			}
 			template.on("edit", assignDefaultValue);
-			
+
 		});
-		
+
 		// Relation control
 		$("veda-control[rel]:not([rel] *):not([about] *)", wrapper).map( function () {
-			
-			var control = $(this), 
+
+			var control = $(this),
 				rel_uri = control.attr("rel"),
 				spec = specs[rel_uri],
 				rel = new veda.IndividualModel(rel_uri),
 				controlType = control.attr("type") ? $.fn["veda_" + control.attr("type")] : $.fn.veda_link;
-			
+
 			control.removeAttr("rel");
-				
+
 			var opts = {
 				individual: individual,
 				rel_uri: rel_uri,
 				spec: spec,
 				mode: mode
 			};
-			
+
 			controlType.call(control, opts);
 
 			var state = true;
-			
+
 			function modeHandler(e) {
 				if (spec) state = validate(template, spec, individual[rel_uri], rel_uri);
 				e.stopPropagation();
-				e.type === "edit" ? 
-					state ? control.removeClass("has-error") : control.addClass("has-error") 
+				e.type === "edit" ?
+					state ? control.removeClass("has-error") : control.addClass("has-error")
 					:
 					control.removeClass("has-error");
 				control.trigger(e.type);
 			}
 			template.on("view edit search", modeHandler);
-			
+
 			function propertyModifiedHandler(doc_rel_uri) {
 				if (doc_rel_uri === rel_uri) {
 					if (spec) state = validate(template, spec, individual[rel_uri], rel_uri);
@@ -672,7 +672,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				e.stopPropagation();
 			}
 			template.on("edit", assignDefaultObjectValue);
-			
+
 			// tooltip from spec
 			if (spec && spec.hasValue("v-ui:tooltip")) {
 				control.tooltip({
@@ -682,10 +682,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					trigger: "focus"
 				});
 			}
-			
+
 		});
-		
-		// Standart buttons labels change for drafts 
+
+		// Standart buttons labels change for drafts
 		var Edit = (new veda.IndividualModel("v-s:Edit"))["rdfs:label"].join(" ");
 		var ContinueEdit = (new veda.IndividualModel("v-s:ContinueEdit"))["rdfs:label"].join(" ");
 		var DeleteDraft = (new veda.IndividualModel("v-s:DeleteDraft"))["rdfs:label"].join(" ");
@@ -706,23 +706,23 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				} else {
 					//Rename "Continue edit" -> Edit"
 					$edit.text(Edit);
-					//Rename "Delete draft" -> "Cancel" 
+					//Rename "Delete draft" -> "Cancel"
 					$cancel.text(Cancel);
 				}
 			}
 		}
 		isDraftHandler("v-s:isDraft");
-		
+
 		// standard tasks
 		$('#standard-tasks', template).each(function() {
 			var stask = $(this);
 			stask.append($('<li/>', {
-				style:'cursor:pointer', 
+				style:'cursor:pointer',
 				click: function() {veda.Util.send(individual, template, 'v-wf:questionRouteStartForm', true)},
 				html: '<a>'+(new veda.IndividualModel('v-s:SendQuestion')['rdfs:label'][0])+'</a>'
 			}));
 			stask.append($('<li/>', {
-				style:'cursor:pointer', 
+				style:'cursor:pointer',
 				click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm', true)},
 				html: '<a>'+(new veda.IndividualModel('v-s:SendInstruction')['rdfs:label'][0])+'</a>'
 			}));
@@ -740,7 +740,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			case value instanceof Number:
 				formatted = veda.Util.formatNumber(value);
 				break;
-			default: 
+			default:
 				formatted = value.toString();
 		}
 		return formatted;
@@ -755,14 +755,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
 			var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
 			wrapper.append(btnEdit, btnRemove);
-			
+
 			template.on("view edit search", function (e) {
 				if (e.type === "view") wrapper.hide();
 				else wrapper.show();
 				e.stopPropagation();
 			});
 			if (mode === "view") { wrapper.hide(); }
-			
+
 			btnRemove.click(function () {
 				individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
 			});
@@ -786,10 +786,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					});
 				}
 			});
-			valueHolder.after( wrapper );
+			//valueHolder.after( wrapper );
+			valueHolder.append( wrapper );
 		});
 	}
-	
+
 	function renderRelationValue(individual, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode) {
 		var valTemplate;
 		if (isEmbedded) {
@@ -827,9 +828,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 			if (mode === "view") { wrapper.hide(); }
 
-			if (valTemplate.prop("tagName") !== "SPAN") {
+			/*if (valTemplate.prop("tagName") !== "SPAN") {
+				wrapper.addClass("block");
+			}*/
+
+			if (valTemplate.css("display").indexOf("inline") < 0) {
 				wrapper.addClass("block");
 			}
+
 			if (valTemplate.attr("deleteButton") == "hide") {
 				btnRemove.hide();
 			}
@@ -854,7 +860,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		return valTemplate;
 	}
 
-	// Check validity state of a template 
+	// Check validity state of a template
 	function checkState (template) {
 		var valid = template.data("valid");
 		return Object.keys(valid).reduce(function (state, spec_id) {
@@ -873,16 +879,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		valid[spec.id] = valid[spec.id] || {};
 		var result = true;
 		// cardinality check
-		if (spec.hasValue("v-ui:minCardinality")) { 
+		if (spec.hasValue("v-ui:minCardinality")) {
 			result = result && (
-				values.length >= spec["v-ui:minCardinality"][0] && 
+				values.length >= spec["v-ui:minCardinality"][0] &&
 				// filter empty values
 				values.length === values.filter(function(item){return !!item;}).length
 			);
 		}
-		if (spec.hasValue("v-ui:maxCardinality")) { 
+		if (spec.hasValue("v-ui:maxCardinality")) {
 			result = result && (
-				values.length <= spec["v-ui:maxCardinality"][0] && 
+				values.length <= spec["v-ui:maxCardinality"][0] &&
 				// filter empty values
 				values.length === values.filter(function(item){return !!item;}).length
 			);
@@ -890,7 +896,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		// check each value
 		result = result && values.reduce(function (result, value) {
 			// regexp check
-			if (spec.hasValue("v-ui:regexp")) { 
+			if (spec.hasValue("v-ui:regexp")) {
 				var regexp = new RegExp(spec["v-ui:regexp"][0]);
 				result = result && regexp.test(value.toString());
 			}
@@ -923,7 +929,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		template.trigger("validate");
 		return result;
 	}
-	
+
 	function genericTemplate (individual, _class) {
 		// Construct generic template
 		var propTmpl = $("#generic-property-template").html();
@@ -943,20 +949,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				if(property_uri === "@") { return }
 				var property = new veda.IndividualModel(property_uri);
 				if (property_uri === "rdfs:label" || property_uri === "rdf:type" || property_uri === "v-s:deleted") return;
-				
+
 				var result = $("<div/>").append( propTmpl );
 				$(".name", result).append (
 					$("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
 				);
-				
+
 				var range = property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal";
 				switch( range ) {
-					case "rdfs:Literal" : 
-					case "xsd:string" : 
-					case "xsd:boolean" : 
-					case "xsd:nonNegativeInteger" : 
-					case "xsd:integer" : 
-					case "xsd:decimal" : 
+					case "rdfs:Literal" :
+					case "xsd:string" :
+					case "xsd:boolean" :
+					case "xsd:nonNegativeInteger" :
+					case "xsd:integer" :
+					case "xsd:decimal" :
 					case "xsd:dateTime" :
 						$(".value", result).append (
 							$("<div/>").attr("property", property_uri),
@@ -970,11 +976,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						);
 					break;
 				}
-				
+
 				if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") );
-				
+
 				return result;
-				
+
 			})
 		);
 		return template;

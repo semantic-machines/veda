@@ -476,7 +476,7 @@ v-s:to
 .
 v-s:placeDescription
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Description of the place"@en ;
-  rdfs:label "Место проведения чего-либо"@ru ;
+  rdfs:label "Place description"@en ;
+  rdfs:label "Место проведения"@ru ;
   rdfs:range xsd:string ;
 .
