@@ -153,7 +153,7 @@ void handleWebSocketConnection(scope WebSocket socket)
 void handleWebSocketConnection_CCUS(scope WebSocket socket)
 {
     const(HTTPServerRequest)hsr = socket.request();
-    writeln("@@@1 hsr=", hsr.clientAddress);
+    //writeln("@@@1 hsr=", hsr.clientAddress);
     // Client Cache Update Subscription
     string chid;
 
@@ -167,7 +167,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                 break;
 
             string   inital_message = socket.receiveText();
-            writeln("@inital_message=", inital_message);
+            //writeln("@inital_message=", inital_message);
             string[] kv = inital_message.split('=');
 
             if (kv.length == 2)
@@ -182,7 +182,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
 
             if (chid !is null)
             {
-                writeln("*last_opid=", get_last_opid);
+                //writeln("*last_opid=", get_last_opid);
 
                 string list_uids = socket.receiveText();
                 if (list_uids is null || list_uids.length < 2)

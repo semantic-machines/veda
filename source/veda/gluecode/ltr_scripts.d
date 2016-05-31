@@ -7,7 +7,7 @@ module veda.gluecode.ltr_scripts;
 
 private
 {
-    import core.thread;
+    import core.thread, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm;
     import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
@@ -16,15 +16,37 @@ private
     import search.vel, search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 }
 
+Tid    tid_ltr_scripts;
+logger log;
+
+extern (C) void handleTermination1(int _signal)
+{
+    log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
+    writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));
+    log.close();
+    shutdown_ltr_scripts();
+    writeln("!SYS: ", process_name, ": exit");
+}
+
+shared static this()
+{
+    bsd_signal(SIGINT, &handleTermination1);
+}
+
 void main(char[][] args)
-{				   
+{
     process_name = "ltr_scripts";
 
     core.thread.Thread.sleep(dur!("seconds")(2));
 
     ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091);
+    log = p_script.log();
+
+    tid_ltr_scripts = spawn(&ltrs_thread, p_script.parent_url);
 
     p_script.run();
+
+    shutdown_ltr_scripts();
 }
 
 private struct Task
@@ -63,7 +85,7 @@ private void ltrs_thread(string parent_url)
 {
     scope (exit)
     {
-//        log.trace("ERR! ltrs_thread dead (exit)");
+        log.trace("ERR! ltrs_thread dead (exit)");
     }
 
 //    core.thread.Thread.getThis().name = thread_name;
@@ -104,7 +126,7 @@ private void ltrs_thread(string parent_url)
                                    thread_term();
                                }
                            },
-                           (CMD cmd, string inst_of_codelet)
+                           (CMD cmd, string inst_of_codelet, string queue_id)
                            {
                                //Thread.sleep(dur!("seconds")(15));
 //                               check_context();
@@ -117,10 +139,7 @@ private void ltrs_thread(string parent_url)
                                    if (indv.getFirstBoolean("v-s:isSuccess") == true)
                                        return;
 
-                                   string queue_name = randomUUID().toString();
-
-                                   context.unload_subject_storage(queue_name);
-                                   Queue queue = new Queue(queue_name, Mode.R);
+                                   Queue queue = new Queue(queue_id, Mode.R);
                                    if (queue.open())
                                    {
                                        Consumer cs = new Consumer(queue, "consumer1");
@@ -142,10 +161,10 @@ private void ltrs_thread(string parent_url)
                                            tasks.list[ indv.uri ] = task;
                                        }
                                        else
-                                           writeln("ltrs:Consumer not open");
+                                           writeln("ltrs:Consumer not open :", cs);
                                    }
                                    else
-                                       writeln("ltrs:Queue not open");
+                                       writeln("ltrs:Queue not open :", queue);
                                }
                            },
                            (Variant v) { writeln("ltrs_thread::Received some other type.", v); });
@@ -176,7 +195,7 @@ private void ltrs_thread(string parent_url)
                         string data = task.consumer.pop();
                         if (data !is null)
                         {
-                            //veda.core.glue_code.scripts.execute_script(context, &sticket, data, task.codelet_id, task.execute_script_cbor, thisTid);
+                            execute_script(sticket.user_uri, data, task.codelet_id, task.execute_script_cbor);
 
                             bool res = task.consumer.commit();
                             if (res == false)
@@ -193,8 +212,8 @@ private void ltrs_thread(string parent_url)
                             if (tasks.list.length == 0)
                                 tasks_2_priority.remove(priority);
 
-                            task.consumer.remove();
-                            task.consumer.queue.remove();
+                            //task.consumer.remove();
+                            //task.consumer.queue.remove();
                         }
                     }
                 }
@@ -202,13 +221,15 @@ private void ltrs_thread(string parent_url)
         }
         catch (Throwable ex)
         {
-            //log.trace("ltrs# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.info);
+            log.trace("ltrs# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.info);
         }
     }
 }
 
 void execute_script(string user_uri, string msg, string script_uri, string execute_script_cbor)
 {
+    writeln("@execute_scrip, script_uri=", script_uri);
+
     if (msg is null || msg.length <= 3 || script_vm is null ||
         script_uri is null || script_uri.length <= 3 ||
         execute_script_cbor is null || execute_script_cbor.length <= 3)
@@ -254,9 +275,9 @@ void execute_script(string user_uri, string msg, string script_uri, string execu
 
     if (script is ScriptInfo.init)
     {
-//                                  writeln ("@script_uri=", script_uri);
+        writeln("@script_uri=", script_uri);
         Individual codelet = context.get_individual(&sticket, script_uri);
-//                                  writeln ("@codelet=", codelet);
+        writeln("@codelet=", codelet);
         prepare_script(codelet_scripts, codelet, script_vm, vars_for_codelet_script);
     }
 
@@ -267,28 +288,23 @@ void execute_script(string user_uri, string msg, string script_uri, string execu
 
         try
         {
-            // if (trace_msg[ 300 ] == 1)
-            //     log.trace("start exec codelet script : %s %s", script.id, indv.uri);
+            //if (trace_msg[ 300 ] == 1)
+            log.trace("start exec ltr-script : %s %s", script.id, indv.uri);
 
             script.compiled_script.run();
 
             //if (trace_msg[ 300 ] == 1)
-            //    log.trace("end exec codelet script : %s", script.id);
+            log.trace("end exec ltr-script : %s", script.id);
         }
         catch (Exception ex)
         {
-            //log.trace_log_and_console("WARN! fail execute codelet script : %s %s", script.id, ex.msg);
+            log.trace_log_and_console("WARN! fail execute ltr-script : %s %s", script.id, ex.msg);
         }
     }
 }
 
-private void prepare_script(ref ScriptInfo[ string ] scripts, Individual ss, ScriptVM script_vm, string vars_env)
-{
-}
-
 class ScriptProcess : ChildProcess
 {
-    Tid  tid_ltr_scripts;
     long count_sckip = 0;
 
     this(P_MODULE _module_name, string _host, ushort _port)
@@ -303,21 +319,32 @@ class ScriptProcess : ChildProcess
         if (new_indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
             return true;
 
-        execute_script(new_bin);
+        if (new_indv.getFirstBoolean("v-s:isSuccess") == true)
+            return true;
+
+        string queue_id = randomUUID().toString();
+
+        context.unload_subject_storage(queue_id);
+
+        execute_script(new_bin, queue_id);
 
         return true;
     }
 
     override void configure()
     {
-        tid_ltr_scripts = spawn(&ltrs_thread, this.parent_url);
-    }
-
-    private void execute_script(string execute_script_srz)
-    {
-        if (tid_ltr_scripts != Tid.init)
-            send(tid_ltr_scripts, CMD.START, execute_script_srz);
     }
 }
 
+private void execute_script(string execute_script_srz, string queue_id)
+{
+    if (tid_ltr_scripts != Tid.init)
+        send(tid_ltr_scripts, CMD.START, execute_script_srz, queue_id);
+}
+
+private void shutdown_ltr_scripts()
+{
+    if (tid_ltr_scripts != Tid.init)
+        send(tid_ltr_scripts, CMD.EXIT);
+}
 
