@@ -973,7 +973,86 @@ class PThreadContext : Context
                 res.result = storage_module.remove(P_MODULE.subject_manager, uri, ignore_freeze, res.op_id);
                 veda.core.threads.xapian_indexer.send_delete(null, prev_state, res.op_id);
             }
+            if (external_write_storage_url !is null)
+            {
+                //writeln("context:store_individual #3 ", process_name);
+                version (libRequests)
+                {
+                    import requests.http, requests.streams, requests;
 
+                    auto rq = Request();
+                    rq.timeout = 1.seconds;
+                    //rq.verbosity = 2;
+
+                    if (trace_msg[ T_API_220 ] == 1)
+                        log.trace("[%s] store_individual[%s] use EXTERNAL, start", name, indv.uri);
+
+                    string url = external_write_storage_url ~ "/remove_individual";
+                    
+                    JSONValue req_body;
+                    req_body[ "ticket" ]         = ticket.id;
+                    req_body[ "uri" ]     = uri;
+                    req_body[ "prepare_events" ] = prepare_events;
+                    req_body[ "event_id" ]       = event_id;
+                    req_body[ "transaction_id" ] = "";
+
+                    int max_count_attempt = 10;
+                    int count_attempt     = 0;
+
+                    while (count_attempt < max_count_attempt)
+                    {
+                        count_attempt++;
+
+                        if (count_attempt > 1)
+                            log.trace("WARN! [%s] remove_individual[%s] use EXTERNAL, retry, attempt=%d ", name, uri, count_attempt);
+
+                        Response rs;
+                        try
+                        {
+                            rs         = rq.exec !"PUT" (url, req_body.toString(), "application/json");
+                            res.result = cast(ResultCode)rs.code;
+                        }
+                        catch (ConnectError ce)
+                        {
+                            res.result = ResultCode.Connect_Error;
+                        }
+                        catch (TimeoutException)
+                        {
+                            res.result = ResultCode.Connect_Error;
+                            rq.timeout = 3.seconds;
+                        }
+                        catch (Exception ex)
+                        {
+                            log.trace("ERR! [%s] remove_individual, use EXTERNAL, err=[%s], req=[%s]", name, ex.msg, text(req_body));
+                            res.result = ResultCode.Internal_Server_Error;
+                        }
+
+                        if (res.result != ResultCode.OK)
+                            log.trace("WARN! [%s] remove_individual[%s] use EXTERNAL, err=[%s]", name, uri, res.result);
+
+                        if (res.result != ResultCode.Too_Many_Requests && res.result != ResultCode.Connect_Error)
+                        {
+                            if (count_attempt > 1 && res.result == ResultCode.OK)
+                                log.trace("INFO! [%s] successful remove_individual[%s] use EXTERNAL ", name, uri);
+
+                            break;
+                        }
+
+                        core.thread.Thread.sleep(dur!("msecs")(count_attempt * 10));
+                    }
+
+                    if (res.result != ResultCode.OK && res.result != ResultCode.Duplicate_Key)
+                        log.trace("ERR! [%s] remove_individual, use EXTERNAL, err=[%s], req=[%s]", name, res.result, text(req_body));
+
+                    if (trace_msg[ T_API_220 ] == 1)
+                        log.trace("[%s] remove_individual[%s] use EXTERNAL, end", name, uri);
+                }
+                    
+                    
+                
+            }
+            else
+            {    
             Resources   _types = prev_indv.resources.get(rdf__type, Resources.init);
             MapResource rdfType;
             setMapResources(_types, rdfType);
@@ -983,7 +1062,7 @@ class PThreadContext : Context
                 // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
                 inc_count_onto_update();
             }
-
+            }
             //veda.core.fanout.send_put(this, null, prev_state, res.op_id);
 
             return res;

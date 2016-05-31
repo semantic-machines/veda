@@ -175,7 +175,7 @@ public bool commit()
 
     foreach (item; transaction_queue)
     {
-        if (item.indv == Individual.init)
+        if (item.cmd != INDV_OP.REMOVE && item.indv == Individual.init)
             continue;
 
         if (item.rc != ResultCode.OK)

@@ -136,7 +136,6 @@ class ScriptProcess : ChildProcess
                     script.compiled_script.run();
 
                     bool res = commit();
-
                     if (res == false)
                     {
                         log.trace("fail exec event script : %s", script_id);

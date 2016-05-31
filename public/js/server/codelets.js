@@ -282,19 +282,22 @@ function onto_rename(ticket, document, execute_script)
         {
             remove_individual(ticket, prev_doc_uri, "");
             put_individual(ticket, document, "");
+            print('$ script_onto_rename:is_replace, ' + prev_doc['@'] + '->' + document['@']);
         }
         else
         {
             if (is_update)
             {
                 put_individual(ticket, document, "");
+            	print('$ script_onto_rename:is_update, ' + prev_doc['@'] + '->' + document['@']);
+            //            print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
             }
         }
 
         if (is_replace || is_update)
         {
-            //            print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
-            print('$ script_onto_rename:is_update, ' + prev_doc['@'] + '->' + document['@']);
+//            print('$ script_onto_rename:is_update, ' + prev_doc['@'] + '->' + document['@']);
+//                        print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
         }
 
 

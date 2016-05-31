@@ -30,12 +30,11 @@ extern (C) void handleTermination1(int _signal)
 shared static this()
 {
     bsd_signal(SIGINT, &handleTermination1);
+    process_name = "ltr_scripts";
 }
 
 void main(char[][] args)
 {
-    process_name = "ltr_scripts";
-
     core.thread.Thread.sleep(dur!("seconds")(2));
 
     ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091);
@@ -93,6 +92,8 @@ logger log()
 
 private void ltrs_thread(string parent_url)
 {
+    process_name = "ltr_scripts";
+
     scope (exit)
     {
         log.trace("ERR! ltrs_thread dead (exit)");
@@ -237,18 +238,18 @@ private void ltrs_thread(string parent_url)
     }
 }
 
-void execute_script(string user_uri, string msg, string script_uri, string executed_script_cbor)
+bool execute_script(string user_uri, string msg, string script_uri, string executed_script_cbor)
 {
     if (msg is null || msg.length <= 3 || script_vm is null ||
         script_uri is null || script_uri.length <= 3 ||
         executed_script_cbor is null || executed_script_cbor.length <= 3)
-        return;
+        return true;
 
     Individual indv;
     if (cbor2individual(&indv, msg) < 0)
     {
         writeln("ERR msg=", msg);
-        return;
+        return true;
     }
 
     if (onto is null)
@@ -294,7 +295,7 @@ void execute_script(string user_uri, string msg, string script_uri, string execu
     if (script.compiled_script !is null)
     {
         if (script.filters.length > 0 && isFiltred(&script, rdfType.keys, onto) == false)
-            return;
+            return true;
 
         try
         {
@@ -302,6 +303,12 @@ void execute_script(string user_uri, string msg, string script_uri, string execu
             log.trace("start exec ltr-script : %s %s", script.id, indv.uri);
 
             script.compiled_script.run();
+            bool res = commit();
+            if (res == false)
+            {
+                log.trace("fail exec event script : %s", script.id);
+                return false;
+            }
 
             //if (trace_msg[ 300 ] == 1)
             log.trace("end exec ltr-script : %s", script.id);
@@ -311,6 +318,8 @@ void execute_script(string user_uri, string msg, string script_uri, string execu
             log.trace_log_and_console("WARN! fail execute ltr-script : %s %s", script.id, ex.msg);
         }
     }
+
+    return true;
 }
 
 class ScriptProcess : ChildProcess
