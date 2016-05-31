@@ -768,6 +768,14 @@ svg.process-path-highlight path
 	border: 1px solid black;
 	text-align:center;
 }
+
+#select_canvas {
+    display: none;
+    z-index: 9999;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
 /* [END] NET EDITOR */
 
 /* TABS BEGIN */

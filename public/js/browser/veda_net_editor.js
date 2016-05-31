@@ -50,7 +50,6 @@ jsWorkflow.ready = jsPlumb.ready;
                     process,
                     mode='view',
                     max_process_depth=0,
-                    
            			props = $("#props", template),
 					propsHead = $("#props-head", template);
             
@@ -97,25 +96,85 @@ jsWorkflow.ready = jsPlumb.ready;
        			'width': canvasSizePx+'px'
        		});
         	$('.workflow-wrapper').addClass('calculated-height');
+        	
+            $('<canvas>').attr({
+                id: 'select_canvas',
+                'width': canvasSizePx +'px',
+                'height': canvasSizePx+'px'
+            }).appendTo('#'+workflowData);
+
+        	var as_start = null;
+        	var ctx = $("#select_canvas").get(0).getContext('2d');
+        	ctx.globalAlpha = 0.3;
+        	
+        	$('#'+workflowData).on("mousedown", function(e) {
+        		if (e.ctrlKey) {
+        			as_start = [e.offsetX, e.offsetY];
+        			$("#select_canvas").show();
+        		}
+        	}).on("mouseup", function(e) {
+        		if (e.ctrlKey) {
+                    end = [e.offsetX, e.offsetY];
+                    
+                    var x1 = Math.min(as_start[0], end[0]) - canvasSizePx/2,
+                        x2 = Math.max(as_start[0], end[0]) - canvasSizePx/2,
+                        y1 = Math.min(as_start[1], end[1]) - canvasSizePx/2,
+                        y2 = Math.max(as_start[1], end[1]) - canvasSizePx/2;
+                    $("#select_canvas").hide();
+                    
+                	net['v-wf:consistsOf'].forEach(function(state) {
+                		if (state.hasValue('v-wf:locationX') && state.hasValue('v-wf:locationY')) {
+                			if (
+            					x1 <= state['v-wf:locationX'][0] && state['v-wf:locationX'][0] <= x2 &&
+            					y1 <= state['v-wf:locationY'][0] && state['v-wf:locationY'][0] <= y2
+        					) {
+                				var $state = $('#' + veda.Util.escape4$(state.id));
+                       	    	$state.addClass('jsplumb-drag-selected');
+                       	    	instance.addToDragSelection($state);
+                       	    	e.stopPropagation();
+                			} 
+                		}
+                	});                    
+        		}
+        	}).on("mousemove", function(e) {
+        		if (e.ctrlKey && e.buttons == 1) {
+	        		if(!as_start) return;
+	
+	        	    ctx.clearRect(0, 0, this.offsetWidth, this.offsetHeight);
+	        	    ctx.beginPath();
+	
+	        	    var x = e.offsetX,
+	        	        y = e.offsetY;
+	
+	        	    ctx.rect(as_start[0], as_start[1], x - as_start[0], y - as_start[1]);
+	        	    ctx.fill();
+        		}
+        	});
         	$('#'+workflowData).draggable({
                 drag: function (event, ui) {
-                  instance.moveCanvas(ui.position.left, ui.position.top);	
-              	  $("#workflow-context-menu").hide();
+                  if (!event.ctrlKey) {
+                	  instance.moveCanvas(ui.position.left, ui.position.top);	
+                	  $("#workflow-context-menu").hide();
+                  } else {
+                	  return false;
+                  }
                 }
-            }).on("click", function() {
-            	instance.defocus();
-            	if (mode === "view") {
-					var holder = $("<div>");
-					propsHead.text(net["rdfs:label"].join(", "));
-					process.present(holder, new veda.IndividualModel("v-wf:ProcessPropsTemplate"));
-					props.empty().append(holder);
-				}
-            	if (mode === "edit") {
-					var holder = $("<div>");
-					propsHead.text(net["rdfs:label"].join(", "));
-					net.present(holder, new veda.IndividualModel("v-wf:SimpleNetTemplate"), 'edit');
-					props.empty().append(holder);
-				}            	
+            }).on("click", function(event) {
+            	if (!event.ctrlKey) {
+	            	instance.defocus();
+	            	if (mode === "view") {
+						var holder = $("<div>");
+						propsHead.text(net["rdfs:label"].join(", "));
+						process.present(holder, new veda.IndividualModel("v-wf:ProcessPropsTemplate"));
+						props.empty().append(holder);
+					}
+	            	if (mode === "edit") {
+						var holder = $("<div>");
+						propsHead.text(net["rdfs:label"].join(", "));
+						net.present(holder, new veda.IndividualModel("v-wf:SimpleNetTemplate"), 'edit');
+						props.empty().append(holder);
+					}            	
+            	}
             });
 
             instance = this.instance;
@@ -1027,7 +1086,7 @@ jsWorkflow.ready = jsPlumb.ready;
             
             $('#full-width').on('click', function() {            	
             	instance.optimizeView();
-            });          
+            });                        
             /* ZOOM [END] */
 
             /* NET MENU [END] */
