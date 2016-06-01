@@ -9,6 +9,17 @@ var _Decimal = 32;
 var _Bool = 64;
 var _Boolean = 64;
 
+function removeA(arr) {
+    var what, a = arguments, L = a.length, ax;
+    while (L > 1 && arr.length) {
+        what = a[--L];
+        while ((ax= arr.indexOf(what)) !== -1) {
+            arr.splice(ax, 1);
+        }
+    }
+    return arr;
+}
+
 function genUri()
 {
     var uid = guid();
@@ -519,12 +530,13 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
                 {
                     for (var key3 in process)
                     {
-                        out_data0_el_arr.remove(process[key3]);
+                        removeA (out_data0_el_arr, process[key3]);
                     }
                 }
                 else
-                    out_data0_el_arr.remove(process);
-
+		{
+                    removeA (out_data0_el_arr, process);
+		}
                 out_data0_el[name] = out_data0_el_arr;
             }
         })();
