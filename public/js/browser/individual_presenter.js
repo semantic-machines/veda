@@ -52,6 +52,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						pre.text(json);
 						container.html(pre);
 						return;
+					} else if (template === "ttl") {
+						var list = new veda.IndividualListModel(individual);
+						veda.Util.toTTL(list, function (error, result) {
+							var ttl = $("<div class='container-fluid'></div>").append( $("<pre></pre>").text(result) );
+							container.html(ttl);
+						});
+						return;
 					} else {
 						template = $( template );
 					}

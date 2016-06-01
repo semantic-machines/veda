@@ -1,7 +1,7 @@
 // Browser-side utility functions
 
 veda.Module(function Util(veda) { "use strict";
-	
+
 	veda.Util = veda.Util || {};
 
 	// Escape function for css (jQuery) selectors
@@ -31,19 +31,19 @@ veda.Module(function Util(veda) { "use strict";
 		F.prototype = constr.prototype;
 		return new F();
 	};
-	
+
 	function isInteger(n) { return n % 1 === 0; };
-	
+
 	function zeroPref(n) {
 		return n > 9 ? n : "0" + n;
 	};
-	
+
 	veda.Util.formatDate = function (date) {
 		var day = date.getDate(),
 			month = date.getMonth() + 1,
 			year = date.getFullYear(),
 			hours = date.getHours(),
-			mins = date.getMinutes(), 
+			mins = date.getMinutes(),
 			secs = date.getSeconds(),
 			fdate, ftime;
 		month = zeroPref(month); day = zeroPref(day);
@@ -56,8 +56,8 @@ veda.Module(function Util(veda) { "use strict";
 	veda.Util.formatNumber = function (n) {
 		return (n+"").replace(/.(?=(?:[0-9]{3})+\b)/g, '$& ');
 	};
-	
-	veda.Util.exportTTL = function (individualList) {
+
+	veda.Util.toTTL = function (individualList, callback) {
 		var s = new veda.SearchModel("'rdf:type'=='owl:Ontology'", null);
 		var prefixes = {};
 		prefixes["dc"] = "http://purl.org/dc/elements/1.1/";
@@ -108,16 +108,20 @@ veda.Module(function Util(veda) { "use strict";
 				});
 			});
 		});
-		writer.end(function (error, result) { 
+		writer.end(callback);
+	};
+
+	veda.Util.exportTTL = function (individualList) {
+		veda.Util.toTTL(individualList, function (error, result) {
 			var blob = new Blob([result], {type: "text/plain;charset=utf-8"});
 			saveAs(blob, "exported_graph.ttl");
 		});
 	};
-	
+
 	veda.Util.applyTransform = function (individualList, transform) {
 		return transformation(null, individualList, transform, null, null);
 	};
-	
+
 	veda.Util.forSubIndividual = function (net, property, id, func) {
 		if (net[property]===undefined) return;
 		net[property].forEach(function(el) {
@@ -130,14 +134,14 @@ veda.Module(function Util(veda) { "use strict";
 	veda.Util.removeSubIndividual = function (net, property, id) {
 		if (net[property]===undefined) return undefined;
 		return net[property].filter( function (item) {
-			return item.id !== id; 
+			return item.id !== id;
 		});
 	};
-	
-	/* 
+
+	/*
 	 * from http://stackoverflow.com/questions/27266550/how-to-flatten-nested-array-in-javascript
 	 * by http://stackoverflow.com/users/2389720/aduch
-	 * 
+	 *
 	 * This is done in a linear time O(n) without recursion
 	 * memory complexity is O(1) or O(n) if mutable param is set to false
 	 */
@@ -166,7 +170,7 @@ veda.Module(function Util(veda) { "use strict";
 		result.reverse(); // we reverse result to restore the original order
 		return result;
 	};
-	
+
 	veda.Util.queryFromIndividual = function (individual) {
 		// Serialize individual as search query
 		var query;
@@ -176,12 +180,12 @@ veda.Module(function Util(veda) { "use strict";
 				var property = new veda.IndividualModel(property_uri);
 				var values = individual[property_uri];//.filter(function(item){return !!item && !!item.valueOf();});
 				// Filter rdfs:Resource type
-				if (property_uri === "rdf:type") { 
+				if (property_uri === "rdf:type") {
 					values = individual[property_uri].filter(function(item){ return item.id !== "rdfs:Resource" });
 				}
 				var oneProp;
 				switch (property["rdfs:range"][0].id) {
-					case "xsd:integer": 
+					case "xsd:integer":
 					case "xsd:nonNegativeInteger":
 					case "xsd:decimal":
 						oneProp =
@@ -189,7 +193,7 @@ veda.Module(function Util(veda) { "use strict";
 							values.length > 1 ? "'" + property_uri + "'==[" + values[0] + "," + values[values.length-1] + "]" :
 							undefined;
 						break;
-					case "xsd:dateTime": 
+					case "xsd:dateTime":
 							if (values.length === 1) {
 								var start = values[0].toISOString().substring(0,19);
 								values[0].setHours(23, 59, 59, 999);
@@ -202,7 +206,7 @@ veda.Module(function Util(veda) { "use strict";
 								oneProp = undefined;
 							}
 						break;
-					case "xsd:boolean": 
+					case "xsd:boolean":
 						oneProp = values
 							//.filter(function(item){return !!item && !!item.valueOf();})
 							.map( function (value) {
@@ -210,8 +214,8 @@ veda.Module(function Util(veda) { "use strict";
 							})
 							.join("||");
 						break;
-					case "xsd:string": 
-					case "rdfs:Literal": 
+					case "xsd:string":
+					case "rdfs:Literal":
 						oneProp = values
 							.filter(function(item){return !!item && !!item.valueOf();})
 							.map( function (value) {
@@ -239,26 +243,26 @@ veda.Module(function Util(veda) { "use strict";
 	}
 
 	/**
-	 * Event `send` handler: 
+	 * Event `send` handler:
 	 *  - Find transformation to start form or use transformation specified by `transformId` parameter
-	 *  - Apply transformation and redirect to start form. 
+	 *  - Apply transformation and redirect to start form.
 	 */
 	veda.Util.send = function (individual, template, transformId, modal) {
 		if (typeof modal == 'undefined') {
 			modal = false;
 		}
-		
+
 		individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
 		//$('[resource="'+individual.id+'"]').find("#save").trigger("click");
 		template.trigger('save');
 		if (individual.redirectToIndividual) {
 			individual = individual.redirectToIndividual;
 		}
-		
-		if (transformId !== undefined) {			
+
+		if (transformId !== undefined) {
 			var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
 			if (modal) {
-				veda.Util.showModal(startForm, 'edit');				
+				veda.Util.showModal(startForm, 'edit');
 			} else {
 				startForm.present('#main', undefined, 'edit');
 			}
@@ -274,7 +278,7 @@ veda.Module(function Util(veda) { "use strict";
 				if (individual.hasValue('v-wf:processedDocument') || individual.hasValue('v-wf:onDocument')) {
 					individual.trigger("individual:afterSend");
 					if (individual.sendConfirmed != true) {
-						veda.Util.showMessage("<div class='row'><div class='col-md-12'><br><br><h2>"+new veda.IndividualModel("v-s:WillBeProcessed")['rdfs:label'][0]+"</h2></div></div>", "", 5000, 
+						veda.Util.showMessage("<div class='row'><div class='col-md-12'><br><br><h2>"+new veda.IndividualModel("v-s:WillBeProcessed")['rdfs:label'][0]+"</h2></div></div>", "", 5000,
 							individual.hasValue('v-wf:processedDocument')?individual['v-wf:processedDocument'][0].id:individual['v-wf:onDocument'][0].id, "view");
 					}
 				}
@@ -284,7 +288,7 @@ veda.Module(function Util(veda) { "use strict";
 					var res = s.results[res_id];
 					var startForm = veda.Util.buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
 					if (modal) {
-						veda.Util.showModal(startForm, 'edit');				
+						veda.Util.showModal(startForm, 'edit');
 					} else {
 		            	riot.route("#/" + startForm.id + "///edit", true);
 					}
@@ -296,7 +300,7 @@ veda.Module(function Util(veda) { "use strict";
 					Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
 						var res = s.results[res_id];
 						$("<li/>", {
-			   			   "style" : "cursor:pointer",    
+			   			   "style" : "cursor:pointer",
 	                 	   "html" : "<a>"+new veda.IndividualModel(res_id)['rdfs:label'][0]+"</a>",
 	                 	   "click": (function (e) {
 	                 		  veda.Util.send(individual, template, res['v-s:hasTransformation'][0].id);
@@ -305,7 +309,7 @@ veda.Module(function Util(veda) { "use strict";
 					});
 				}
 			}
-		}			
+		}
 	}
 
 	/**
@@ -316,18 +320,18 @@ veda.Module(function Util(veda) { "use strict";
 		var startForm = new veda.IndividualModel();
 		Object.getOwnPropertyNames(transfromResult[0]).forEach(function (key)
 		{
-			if (key !== '@') 
+			if (key !== '@')
 			{
 				if (!Array.isArray(transfromResult[0][key])) {
 					transfromResult[0][key] = [transfromResult[0][key]];
-				} 
-				for (var i in transfromResult[0][key]) 
+				}
+				for (var i in transfromResult[0][key])
 				{
 					var value = null;
 					if (key === 'rdf:type')
 					{
 						value = new veda.IndividualModel(transfromResult[0][key][i].data);
-					} else  
+					} else
 					{
 						if (transfromResult[0][key][i].type == _Uri) {
 							value = new veda.IndividualModel(transfromResult[0][key][i].data);
@@ -342,12 +346,12 @@ veda.Module(function Util(veda) { "use strict";
 					}
 				}
 			}
-		});        
+		});
 		return startForm;
 	}
 
 	/**
-	 * Event `createReport` handler: 
+	 * Event `createReport` handler:
 	 *  - Find available reports or use report specified by `reportId` parameter.
 	 *  - Let user to choice report (if more then one founded)
 	 *  - Redirect to report
@@ -368,13 +372,13 @@ veda.Module(function Util(veda) { "use strict";
 				if (reportsDropdown.html()== '') {
 					Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
 						$("<li/>", {
-			   			   "style" : "cursor:pointer",    
+			   			   "style" : "cursor:pointer",
 	                 	   "html" : "<a href='#'>"+new veda.IndividualModel(res_id)['rdfs:label'][0]+"</a>",
 	                 	   "click": (function (e) {
 	                 		  veda.Util.redirectToReport(individual, res_id);
 	                 	   })
 	                  	}).appendTo(reportsDropdown);
-					});				
+					});
 				}
 			}
 		}
@@ -384,15 +388,15 @@ veda.Module(function Util(veda) { "use strict";
 		var jasperServer = new veda.IndividualModel('cfg:jasperServerAddress');
 		var jasperServerAddress = jasperServer['rdf:value'][0];
 		var report = new veda.IndividualModel(reportId);
-		
+
 		var form = document.createElement("form");
 		form.setAttribute("method", "post");
 		form.setAttribute("action", jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id));
 		form.setAttribute("target", "view");
-		
-		Object.getOwnPropertyNames(individual).forEach(function (key) 
+
+		Object.getOwnPropertyNames(individual).forEach(function (key)
 		{
-			var hiddenField = document.createElement("input"); 
+			var hiddenField = document.createElement("input");
 			hiddenField.setAttribute("type", "hidden");
 			hiddenField.setAttribute("name", key.replace(':','_'));
 			hiddenField.setAttribute("value", (individual[key][0] instanceof veda.IndividualModel)?individual[key][0].id:individual[key][0]);
@@ -406,7 +410,7 @@ veda.Module(function Util(veda) { "use strict";
 	}
 
 	/**
-	 * Event `showRights` handler: 
+	 * Event `showRights` handler:
 	 *  - Find available reports
 	 *  - Let user to choice report (if more then one founded)
 	 *  - Redirect to report
@@ -418,64 +422,64 @@ veda.Module(function Util(veda) { "use strict";
 		container.modal();
 
 		$("body").append(container);
-		
+
 		var rights = individual['rights'];
 		var holder = $("<div>");
 		rights.present(holder);
 		holder.appendTo($(".modal-body", container));
 
-		var origin = individual['rightsOrigin'];						
+		var origin = individual['rightsOrigin'];
 		origin.forEach(function (rightRecord) {
 			var holder = $("<div>");
 			rightRecord.present(holder);
 			holder.appendTo($(".modal-body", container));
-		});			
+		});
 	}
-	
-	
+
+
 	veda.Util.showModal = function (individual, mode) {
 		if (typeof mode == 'undefined') {
 			mode = 'view';
 		}
-		
+
 		// Ignore individuals without id
 		if (individual.id === undefined || individual.id === '' || individual.id === '_') return;
 		var container = $($("#notification-modal-template").html());
 		container.modal();
 
 		$("body").append(container);
-		
+
 		var holder = $("<div>");
 		individual.present(holder, undefined, mode);
 		holder.appendTo($(".modal-body", container));
 	}
-	
+
 	veda.Util.showMessage = function (message, cssClass, timeout, redirectIndividual, redirectIndividualMode) {
 		var container = $($("#notification-modal-template").html());
 		container.modal();
-		
+
 		$("body").append(container);
-		
+
 		var redirectAlreadyCalled = false;
 		function redirectAfterTimeout() {
 			if (redirectAlreadyCalled) return;
 			redirectAlreadyCalled = true;
-			$('.modal').modal('hide');			
+			$('.modal').modal('hide');
 			var main = $('#main');
 			main.empty();
 			if (typeof redirectIndividual === 'string') {
 				redirectIndividual = new veda.IndividualModel(redirectIndividual, null, null, null, false);
 			}
-			redirectIndividual.present(main, undefined, redirectIndividualMode);			
+			redirectIndividual.present(main, undefined, redirectIndividualMode);
 		}
-		
+
 		var $notification = $("<div/>", {
 			'html': message,
 			'class': cssClass
 		});
 		$notification.appendTo($(".modal-body", container));
 		$notification.on("click", function() {redirectAfterTimeout();});
-		
+
 		setTimeout( function () {
 			redirectAfterTimeout();
 		}, timeout);
