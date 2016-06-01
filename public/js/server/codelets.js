@@ -156,7 +156,7 @@ function create_use_transformation(process, task)
                     var document = get_individual(task.ticket, getUri(src_doc_id));
                     if (document)
                     {
-                        var new_items = transformation(task.ticket, document, transform, null, null, process['@']);
+                        var new_items = transformation(task.ticket, document, transform, null, null, newUri (process.src_data['@']));
                         for (var i = 0; i < new_items.length; i++)
                         {
                             put_individual(ticket, new_items[i], _event_id);

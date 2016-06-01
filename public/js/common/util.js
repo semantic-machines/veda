@@ -494,7 +494,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
 
                 if (Array.isArray(process) === true)
                 {
-                    for (var key3 in work_order)
+                    for (var key3 in process)
                     {
                         out_data0_el_arr.push(process[key3]);
                     }
@@ -517,7 +517,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
 
                 if (Array.isArray(process) === true)
                 {
-                    for (var key3 in work_order)
+                    for (var key3 in process)
                     {
                         out_data0_el_arr.remove(process[key3]);
                     }
