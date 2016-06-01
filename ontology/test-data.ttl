@@ -481,7 +481,6 @@ td:AleksandraKhvostikova
   rdfs:label "Aleksandra Khvostikova"@en ;
   rdfs:label "Александра Хвостикова"@ru ;
   v-s:hasAppointment td:AleksandraKhvostikova-Analyst1 ;
-  v-s:hasAspect v-s:PersonalAspectKhvostia ;        
   v-s:hasImage td:khvostiaImage;
 .
 td:AleksandraKhvostikova-Analyst1

@@ -1172,7 +1172,7 @@ s-wf:map_actor_task_comment_4_actor_task
 	v-wf:mappingExpression 
     """	
 	get_properties_chain (process.getInputVariable('actor_task'), 
-							[{$go:'cmn-s:hasAction'}, {$get:'v-s:description', $eq:{'v-s:responsible':process.getExecutor ()}}] )	
+							[{$go:'v-s:hasAction'}, {$get:'v-s:description', $eq:{'v-s:responsible':process.getExecutor ()}}] )	
 	""";
 	rdfs:label "Описание задачи из формы решения пользователя [actor_task]"@ru ;
 .
@@ -1182,7 +1182,7 @@ s-wf:map_initiator_4_actor_task
 	v-wf:mapToVariable s-wf:var_initiator ;
 	v-wf:mappingExpression """	
 	get_properties_chain (process.getInputVariable('actor_task'), 
-							[{$go:'cmn-s:hasAction'}, {$get:'v-s:author', $eq:{'v-s:responsible':process.getExecutor ()}}] 
+							[{$go:'v-s:hasAction'}, {$get:'v-s:author', $eq:{'v-s:responsible':process.getExecutor ()}}] 
 						  )	
 	""";
 	rdfs:label "Описание задачи из формы решения пользователя [actor_task]"@ru ;
@@ -1193,7 +1193,7 @@ s-wf:map_actor_task_date_to_4_actor_task
 	v-wf:mapToVariable s-wf:var_actor_task_date_to ;
 	v-wf:mappingExpression """	
 	get_properties_chain (process.getInputVariable('actor_task'), 
-							[{$go:'cmn-s:hasAction'}, {$get:'v-s:dateTo', $eq:{'v-s:responsible':process.getExecutor ()}}] )	
+							[{$go:'v-s:hasAction'}, {$get:'v-s:dateTo', $eq:{'v-s:responsible':process.getExecutor ()}}] )	
 	""";
 	rdfs:label "Описание задачи из формы решения пользователя [actor_task]"@ru ;
 .
@@ -1229,7 +1229,7 @@ s-wf:map_task_date_to_2_actor_task
 	v-wf:mappingExpression """
 	
 	get_properties_chain (process.getInputVariable('actor_task'), 
-							[{$go:'cmn-s:hasAction'}, {$get:'v-s:dateTo', $eq:{'v-s:responsible':process.getExecutor ()}}] 
+							[{$go:'v-s:hasAction'}, {$get:'v-s:dateTo', $eq:{'v-s:responsible':process.getExecutor ()}}] 
 						  )
 	
 	""";

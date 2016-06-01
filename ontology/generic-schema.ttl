@@ -339,12 +339,6 @@ v-s:responsible
   rdfs:label "Ответственное лицо"@ru ;
   rdfs:range v-s:Appointment ;
 .
-v-s:status
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Status"@en ;
-  rdfs:label "Статус"@ru ;
-  rdfs:range rdfs:Resource ;
-.
 v-s:sum
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Sum"@en ;
