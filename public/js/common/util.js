@@ -9,15 +9,16 @@ var _Decimal = 32;
 var _Bool = 64;
 var _Boolean = 64;
 
-function removeA(arr) {
-    var what, a = arguments, L = a.length, ax;
-    while (L > 1 && arr.length) {
-        what = a[--L];
-        while ((ax= arr.indexOf(what)) !== -1) {
-            arr.splice(ax, 1);
-        }
+function removeV(arr, what) {
+    var res = [];
+//    print ("@b in=", toJson (arr));
+    for (var i = 0; i < arr.length; i++)
+    {
+	if (what.data != arr[i].data)
+	    res = arr[i];
     }
-    return arr;
+//    print ("@e out=", toJson (res));
+    return res;
 }
 
 function genUri()
@@ -530,13 +531,14 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
                 {
                     for (var key3 in process)
                     {
-                        removeA (out_data0_el_arr, process[key3]);
+                        out_data0_el_arr = removeV (out_data0_el_arr, process[key3]);
                     }
                 }
                 else
-		{
-                    removeA (out_data0_el_arr, process);
-		}
+				{
+                    out_data0_el_arr = removeV (out_data0_el_arr, process);
+				}
+
                 out_data0_el[name] = out_data0_el_arr;
             }
         })();
