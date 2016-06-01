@@ -1168,10 +1168,14 @@
 
 		// Select value
 		function select(selected) {
+			selected = selected instanceof Array ? selected : [ selected ];
 			if (isSingle) {
-				individual[rel_uri] = selected instanceof Array ? [ selected[0] ] : [ selected ];
+				individual[rel_uri] = [ selected[0] ];
 			} else {
-				individual[rel_uri] = individual[rel_uri].concat(selected);
+				var filtered = selected.filter( function (i) {
+					return individual[rel_uri].indexOf(i) < 0;
+				});
+				individual[rel_uri] = individual[rel_uri].concat(filtered);
 			}
 		}
 
@@ -1567,7 +1571,10 @@
 		} else {
 			select.change(function () {
 				var value = select.val();
-				if (value) individual[rel_uri] = individual[rel_uri].concat( parser(value) );
+				var parsed = parser(value);
+				if ( individual[rel_uri].indexOf(parsed) < 0 ) {
+					individual[rel_uri] = individual[rel_uri].concat( parsed );
+				}
 			});
 		}
 
