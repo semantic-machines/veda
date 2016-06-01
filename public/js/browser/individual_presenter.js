@@ -786,6 +786,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					});
 				}
 			});
+			btnEdit.mouseenter(function () {
+				valueHolder.addClass("blue-outline");
+			});
+			btnEdit.mouseleave(function () {
+				valueHolder.removeClass("blue-outline");
+			});
 			//valueHolder.after( wrapper );
 			valueHolder.append( wrapper );
 		});
@@ -828,14 +834,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			});
 			if (mode === "view") { wrapper.hide(); }
 
-			/*if (valTemplate.prop("tagName") !== "SPAN") {
-				wrapper.addClass("block");
-			}*/
-
-			if (valTemplate.css("display") !== "inline") {
-				wrapper.addClass("block");
-			}
-
 			if (valTemplate.attr("deleteButton") == "hide") {
 				btnRemove.hide();
 			}
@@ -848,9 +846,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			btnRemove.mouseleave(function () {
 				valTemplate.removeClass("red-outline");
 			});
-			if (valTemplate.prop("tagName") === "TR") {
-				var td = $("td", valTemplate).last();
-				td.css("position", "relative").append(wrapper);
+			if (valTemplate.css("display") !== "inline") {
+				wrapper.addClass("block");
+			}
+			if (valTemplate.css("display") === "table-row") {
+				var cell = valTemplate.children().last();
+				cell.css("position", "relative").append(wrapper);
 			} else {
 				valTemplate.css("position", "relative");
 				// It is important to append buttons skipping script element in template!

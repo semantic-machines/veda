@@ -616,24 +616,13 @@ v-ui:LabelTemplate
     if (!individual.hasValue("rdfs:label")) {
   	  template.text(individual.id);
     }
+    template.css({
+			"display": "inline-block",
+			"white-space": "pre",
+		});
   </script>
   """ ;
 .
-
-v-ui:LabelBlockTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с меткой блочный"@ru ;
-  rdfs:label "Template with label blocked"@en ;
-  v-ui:template """
-  <div id="label" property="rdfs:label"></div>
-  <script>
-    if (!individual.hasValue("rdfs:label")) {
-  	  template.text(individual.id);
-    }
-  </script>
-  """ ;
-.
-
 v-ui:LabelTemplateWithEditLink
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с меткой на страницу редактирования"@ru ;

@@ -528,8 +528,9 @@ veda-control {
 }
 
 .value-holder {
-  margin-right: 5px;
-  white-space: pre-wrap;
+  margin-right: 10px;
+  white-space: pre;
+  display: inline-block;
 }
 
 #prop-actions, #rel-actions {
@@ -548,7 +549,11 @@ td > #rel-actions {
   padding:inherit;
 }
 .red-outline {
-  outline: 3px dashed #faa!important;
+  outline: 3px dashed #e74c3c!important;
+  outline-offset: 3px!important;
+}
+.blue-outline {
+  outline: 3px dashed #3498db!important;
   outline-offset: 3px!important;
 }
 
