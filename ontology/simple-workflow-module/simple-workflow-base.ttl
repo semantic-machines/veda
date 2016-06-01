@@ -658,7 +658,7 @@ s-wf:codelet_create_use_transformation
 	rdf:type v-s:Codelet ;
 	rdfs:label "Создать на основе трансформации (src_uri, transformation_uri)" ;
 	v-s:script """
-	create_use_transformation (task)	
+	create_use_transformation (process, task)	
 """ ;
 	rdfs:isDefinedBy s-wf: ;
 .

@@ -171,7 +171,7 @@ function is_exist(individual, field, value)
  * @param work_order контекст рабочего задания
  * @returns {Array}
  */
-function transformation(ticket, individuals, transform, executor, work_order)
+function transformation(ticket, individuals, transform, executor, work_order, process)
 {
     try
     {
@@ -482,6 +482,53 @@ function transformation(ticket, individuals, transform, executor, work_order)
                 out_data0_el[name] = out_data0_el_arr;
             }
         })();
+
+        var putThisProcess = (function()
+        {
+            return function(name)
+            {
+                var out_data0_el_arr = out_data0_el[name];
+
+                if (!out_data0_el_arr)
+                    out_data0_el_arr = [];
+
+                if (Array.isArray(process) === true)
+                {
+                    for (var key3 in work_order)
+                    {
+                        out_data0_el_arr.push(process[key3]);
+                    }
+                }
+                else
+                    out_data0_el_arr.push(process);
+
+                out_data0_el[name] = out_data0_el_arr;
+            }
+        })();
+
+        var removeThisProcess = (function()
+        {
+            return function(name)
+            {
+                var out_data0_el_arr = out_data0_el[name];
+
+                if (!out_data0_el_arr)
+                    out_data0_el_arr = [];
+
+                if (Array.isArray(process) === true)
+                {
+                    for (var key3 in work_order)
+                    {
+                        out_data0_el_arr.remove(process[key3]);
+                    }
+                }
+                else
+                    out_data0_el_arr.remove(process);
+
+                out_data0_el[name] = out_data0_el_arr;
+            }
+        })();
+
         /* PUT functions [END] */
 
         for (var key in individuals)
@@ -532,15 +579,11 @@ function transformation(ticket, individuals, transform, executor, work_order)
                 }
             })();
 
-            //print("#1.2 key=", key);
             var iteratedObject = (typeof window === "undefined") ? Object.getOwnPropertyNames(individual) : Object.getOwnPropertyNames(individual.properties);
-            //print("#1.3 key=", key);
 
             for (var key2 = 0; key2 < iteratedObject.length; key2++)
             {
-                //print("#2 key2=", key2);
                 var element = individual[iteratedObject[key2]];
-            //    print("#2 element=", toJson (element));
 
                 var putValue = (function()
                 {
@@ -584,14 +627,12 @@ function transformation(ticket, individuals, transform, executor, work_order)
                         if (!out_data0_el_arr)
                             out_data0_el_arr = [];
 
-			var element_uri;
+						var element_uri;
 
-			if (Array.isArray(element) === true)
-                        {
-			    element_uri = getUri (element);
-			}
-			else
-			    element_uri = element.data ? element.data : element;
+						if (Array.isArray(element) === true)
+							element_uri = getUri (element);
+						else
+							element_uri = element.data ? element.data : element;
 
                         var curelem;
 

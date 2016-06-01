@@ -34,7 +34,8 @@ function prepare_decision_form(ticket, document)
         var work_item = get_individual(ticket, getUri(f_forWorkItem));
         if (!work_item) return;
 
-        var forProcess_uri = getUri(work_item['v-wf:forProcess']);
+		var forProcess = work_item['v-wf:forProcess'];
+        var forProcess_uri = getUri(forProcess);
         var _process = get_individual(ticket, forProcess_uri);
         if (!_process) return;
 
@@ -57,7 +58,7 @@ function prepare_decision_form(ticket, document)
         //print("[WORKFLOW][DF1].4 transform=", toJson(transform));
         //print("[WORKFLOW][DF1].4 _work_order=", toJson(_work_order));
 
-        var process_output_vars = transformation(ticket, decision_form, transform, executor, f_onWorkOrder);
+        var process_output_vars = transformation(ticket, decision_form, transform, executor, f_onWorkOrder, forProcess);
 
         //print("[WORKFLOW][DF1].5 transform_result=", toJson(process_output_vars));
         var new_vars = store_items_and_set_minimal_rights(ticket, process_output_vars);
@@ -99,8 +100,9 @@ function prepare_work_order(ticket, document)
         var f_forWorkItem = getUri(document['v-wf:forWorkItem']);
         var work_item = get_individual(ticket, f_forWorkItem);
         if (!work_item) return;
-
-        var forProcess_uri = getUri(work_item['v-wf:forProcess']);
+        
+		var forProcess = work_item['v-wf:forProcess'];
+        var forProcess_uri = getUri(forProcess);
         var _process = get_individual(ticket, forProcess_uri);
         if (!_process) return;
 
@@ -310,7 +312,7 @@ function prepare_work_order(ticket, document)
                     var transform = get_individual(ticket, transform_link);
                     if (!transform) return;
 
-                    var transform_result = transformation(ticket, work_item_inVars, transform, f_executor, newUri(document['@']));
+                    var transform_result = transformation(ticket, work_item_inVars, transform, f_executor, newUri(document['@']), forProcess);
 
                     if (trace_journal_uri)
                         traceToJournal(ticket, trace_journal_uri, "v-wf:startDecisionTransform", "transform_result=" + toJson(transform_result));
@@ -1142,7 +1144,7 @@ function prepare_start_form(ticket, document)
         if (!transform) return;
 
         // формируем входящие переменные для нового процесса
-        var process_inVars = transformation(ticket, document, transform, null, null);
+        var process_inVars = transformation(ticket, document, transform, null, null, newUri(new_process_uri));
         for (var i = 0; i < process_inVars.length; i++)
         {
             put_individual(ticket, process_inVars[i], _event_id);

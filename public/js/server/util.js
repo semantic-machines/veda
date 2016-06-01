@@ -253,19 +253,19 @@ function replace_word(src, from, to)
             {
                 if (trace)
                 {
-                    print('$ #1 pos=', pos);
+                    print('$replace_word #1 pos=', pos);
                 }
 
                 var last_ch = src[pos + from.length];
 
                 if (trace)
-                    print('$ #2 last_ch=[' + last_ch + ']');
+                    print('$replace_word #2 last_ch=[' + last_ch + ']');
 
                 if (last_ch && isAlphaNumeric(last_ch) == false)
                 {
                     if (trace)
                     {
-                        print('$ !isAlphaNumeric last_ch=', last_ch);
+                        print('$replace_word !isAlphaNumeric last_ch=', last_ch);
                     }
                     is_prepare = true;
                 }
