@@ -3,9 +3,9 @@
 veda.Module(function GraphPresenter(veda) { "use strict";
 
 	var tmpl = $("#graph-template").html();
-	
+
 	veda.on("load:graph", function (uri) {
-		
+
 		function addNode (individual, opts) {
 			if ( nodes.get(individual.id) === null ) {
 				var node = {
@@ -52,7 +52,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 				nodes.add ([ node ]);
 			}
 		}
-		
+
 		function addOutLinks (id) {
 			var individual = nodes.get(id).individual;
 			Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
@@ -66,7 +66,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 						var label = (new veda.IndividualModel(property_uri))["rdfs:label"].join(", ");
 						var options = {
 							filter: function (item) {
-								return  item.from == from && 
+								return  item.from == from &&
 										item.to == to &&
 										item.label.toString() == label;
 							}
@@ -92,7 +92,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 			Object.getOwnPropertyNames(s.results).map(function (uri) {
 				var res = s.results[uri];
 				addNode(res);
-				var to = id; 
+				var to = id;
 				var from = res.id;
 				Object.getOwnPropertyNames(res.properties).map(function (property_uri) {
 					if(property_uri === "@") { return }
@@ -101,7 +101,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 							var label = (new veda.IndividualModel(property_uri))["rdfs:label"].join(", ");
 							var options = {
 								filter: function (item) {
-									return  item.from == from && 
+									return  item.from == from &&
 											item.to == to &&
 											item.label.toString() == label;
 								}
@@ -181,9 +181,9 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 		}
 
 		var root = new veda.IndividualModel(uri);
-		
+
 		if (!uri) riot.route("#/graph/" + root.id, false);
-		
+
 		var nodes = new vis.DataSet(), edges = new vis.DataSet();
 		var body = $("body");
 		var select = {nodes: [], edges: []};
@@ -212,8 +212,8 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 				switch (node.group) {
 					case "_class": this.setMenu($("#class-context-menu", container)); break;
 					case "ontology": this.setMenu($("#ontology-context-menu", container)); break;
-					case "datatypeProperty": 
-					case "objectProperty": 
+					case "datatypeProperty":
+					case "objectProperty":
 						this.setMenu($("#property-context-menu", container)); break;
 					case "template": this.setMenu($("#template-context-menu", container)); break;
 					case "specification": this.setMenu($("#specification-context-menu", container)); break;
@@ -226,47 +226,47 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 				switch (e.target.id) {
 					case "out-links" : addOutLinks( id ); break;
 					case "in-links" : addInLinks( id ); break;
-					case "delete" : 
-						nodes.remove(select.nodes); 
+					case "delete" :
+						nodes.remove(select.nodes);
 						edges.remove(select.edges);
 						select.nodes = select.edges = [];
 						break;
-					case "delete-with-out" : 
+					case "delete-with-out" :
 						deleteWithOutLinks (id);
 						select.nodes = select.edges = [];
 						break;
-					case "delete-with-in" : 
+					case "delete-with-in" :
 						deleteWithInLinks (id);
 						select.nodes = select.edges = [];
 						break;
-					case "class-individuals" : addInLinks( id, "'rdf:type'=='{id}'" ); break;
-					case "class-subclasses" : addInLinks( id, "('rdf:type'=='owl:Class'||'rdf:type'=='rdfs:Class')&&'rdfs:subClassOf'=='{id}'" ); break;
-					case "class-properties" : addInLinks( id, "'rdfs:domain'=='{id}'"); break;
-					case "class-templates" : addInLinks( id, "'rdf:type'=='v-ui:ClassTemplate'&&'v-ui:forClass'=='{id}'" ); break;
-					case "class-specifications" : 
-						addInLinks( id, "('rdf:type'=='v-ui:PropertySpecification'||" +
-										"'rdf:type'=='v-ui:IntegerPropertySpecification'||" +
-										"'rdf:type'=='v-ui:DecimalPropertySpecification'||" +
-										"'rdf:type'=='v-ui:DatetimePropertySpecification'||" +
-										"'rdf:type'=='v-ui:StringPropertySpecification'||" +
-										"'rdf:type'=='v-ui:BooleanPropertySpecification'||" +
-										"'rdf:type'=='v-ui:ObjectPropertySpecification'" +
-										")&&'v-ui:forClass'=='{id}'" );
+					case "class-individuals" : addInLinks( id, "'rdf:type'==='{id}'" ); break;
+					case "class-subclasses" : addInLinks( id, "('rdf:type'==='owl:Class'||'rdf:type'==='rdfs:Class')&&'rdfs:subClassOf'==='{id}'" ); break;
+					case "class-properties" : addInLinks( id, "'rdfs:domain'==='{id}'"); break;
+					case "class-templates" : addInLinks( id, "'rdf:type'==='v-ui:ClassTemplate'&&'v-ui:forClass'==='{id}'" ); break;
+					case "class-specifications" :
+						addInLinks( id, "('rdf:type'==='v-ui:PropertySpecification'||" +
+										"'rdf:type'==='v-ui:IntegerPropertySpecification'||" +
+										"'rdf:type'==='v-ui:DecimalPropertySpecification'||" +
+										"'rdf:type'==='v-ui:DatetimePropertySpecification'||" +
+										"'rdf:type'==='v-ui:StringPropertySpecification'||" +
+										"'rdf:type'==='v-ui:BooleanPropertySpecification'||" +
+										"'rdf:type'==='v-ui:ObjectPropertySpecification'" +
+										")&&'v-ui:forClass'==='{id}'" );
 					break;
-					case "property-specifications" : 
-						addInLinks( id, "('rdf:type'=='v-ui:PropertySpecification'||" +
-										"'rdf:type'=='v-ui:IntegerPropertySpecification'||" +
-										"'rdf:type'=='v-ui:DecimalPropertySpecification'||" +
-										"'rdf:type'=='v-ui:DatetimePropertySpecification'||" +
-										"'rdf:type'=='v-ui:StringPropertySpecification'||" +
-										"'rdf:type'=='v-ui:BooleanPropertySpecification'||" +
-										"'rdf:type'=='v-ui:ObjectPropertySpecification'" +
+					case "property-specifications" :
+						addInLinks( id, "('rdf:type'==='v-ui:PropertySpecification'||" +
+										"'rdf:type'==='v-ui:IntegerPropertySpecification'||" +
+										"'rdf:type'==='v-ui:DecimalPropertySpecification'||" +
+										"'rdf:type'==='v-ui:DatetimePropertySpecification'||" +
+										"'rdf:type'==='v-ui:StringPropertySpecification'||" +
+										"'rdf:type'==='v-ui:BooleanPropertySpecification'||" +
+										"'rdf:type'==='v-ui:ObjectPropertySpecification'" +
 										")&&'v-ui:forProperty'=='{id}'" );
 					break;
 				}
 			}
 		});
-		
+
 		// Create a network
 		var data = {
 			nodes: nodes,
@@ -275,7 +275,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 
 		addNode(root);
 		addOutLinks(root.id);
-		
+
 		var height = ( $(window).height() - graph.offset().top - 40) + "px";
 		var options = {
 			width: "100%",
@@ -382,7 +382,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 
 		// Add event listeners
 		network.on("doubleClick", onDoubleClick);
-		
+
 		network.on("select", onSelect);
 	});
 

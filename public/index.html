@@ -11,7 +11,7 @@
 
 		<!-- Bootstrap theme -->
 		<link href="/css/bootstrap-theme.min.css" rel="stylesheet"/>
-		
+
 		<!-- Bootswatch themes (good) -->
 		<!--link href="/css/united.bootstrap.min.css" rel="stylesheet"/-->
 		<!--link href="/css/cerulean.bootstrap.min.css" rel="stylesheet"/-->
@@ -56,7 +56,7 @@
 				<div class="modal-header">
 			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			        <h3 class="modal-title">Ой, ошибка / Oops, error</h3>
-			    </div>		  
+			    </div>
 			    <div class="modal-body">
 			    	<p id="error-message"></p>
 			    	<hr>
@@ -67,7 +67,7 @@
 				</div>
 		    </div>
 		  </div>
-		</div> 
+		</div>
 
 		<!-- Templates -->
 
@@ -127,7 +127,7 @@
 			<div class="container-fluid" id="individual-properties"></div>
 			<br/>
 		</script>
-		
+
 		<!-- Individual label template -->
 		<script type="html/template" id="individual-label-template">
 			<a href="#/{uri}"><strong>{label}</strong></a>
@@ -137,7 +137,7 @@
 		<script type="html/template" id="individual-single-property-template">
 			<span class="text-muted">{label}: </span>
 			<span>{values};</span>
-		</script>	
+		</script>
 
 		<!-- Current user template -->
 		<script type="html/template" id="user-template">
@@ -204,7 +204,7 @@
 							<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
 						</div>
 					</div>
-					
+
 					<div role="tabpanel" class="tab-pane" id="results-{id}">
 						<div class="container-fluid" id="search-results" style="display: none">
 							<div id="search-features" class="form-inline">
@@ -231,7 +231,7 @@
 				</div>
 			</div>
 		</script>
-		
+
 		<!-- Selected actions -->
 		<script type="html/template" id="selected-actions-template">
 			<div class="well well-sm" id="selected-actions">
@@ -241,14 +241,14 @@
 			</div>
 			<br>
 		</script>
-				
+
 		<!-- Checkbox for search -->
 		<script type="html/template" id="search-select-template">
 			<label class="checkbox-inline">
 				<input type="checkbox"> &nbsp;
-			</label>		
+			</label>
 		</script>
-		
+
 		<!-- Save search button -->
 		<script type="html/template" id="save-search-template">
 			<button class="btn btn-default" type="button" id="save-search">
@@ -262,7 +262,7 @@
 				<i class="glyphicon glyphicon-menu-hamburger"></i>
 			</button>
 		</script>
-		
+
 		<!-- Sort property template -->
 		<script type="html/template" id="sort-property-template">
 			<span class="form-inline" id="sort-property-container">
@@ -304,7 +304,7 @@
 				</div>
 			</div>
 		</script>
-		
+
 		<!-- Show rights modal -->
 		<script type="html/template" id="show-rights-modal-template">
 			<div class="modal" id="show-rights-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -324,7 +324,7 @@
 				</div>
 			</div>
 		</script>
-		
+
 		<!-- Show rights modal -->
 		<script type="html/template" id="notification-modal-template">
 			<div class="modal" id="show-rights-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -400,9 +400,9 @@
 		<script type="html/template" id="source-control-template">
 			<div class="panel panel-default codemirror-editor">
 				<button id="full-screen" class="fs-btn btn btn-xs btn-default glyphicon glyphicon-resize-full"></button>
-			</div>		
+			</div>
 		</script>
-		
+
 		<!-- Datetime control template -->
 		<script type="html/template" id="datetime-control-template">
 			<div class="input-group date">
@@ -421,7 +421,7 @@
 				<input type="text" class="form-control" placeholder="#" />
 			</div>
 		</script>
-		
+
 		<!-- Numeration control template -->
 		<script type="html/template" id="numeration-control-template">
 			<div class="input-group">
@@ -475,7 +475,7 @@
 				</div>
 			</div>
 		</script>
-		
+
 		<!-- Radio control template -->
 		<script type="html/template" id="radio-control-template">
 			<div>
@@ -494,7 +494,7 @@
 				<button class="btn btn-primary">Browse...</button>
 			</div>
 		</script>
-		
+
 		<!-- File control template using iframe -->
 		<script type="html/template" id="file-control-template-iframe">
 			<div>
@@ -520,7 +520,7 @@
 							<div class="col-md-8 text-right text-muted">
 								<a href="#/@"><span property="@"></span></a>
 								<a href="#/graph/@/#main"><span class="glyphicon glyphicon-link"></span></a>
-							</div>  
+							</div>
 						</div>
 					</div>
 					<div class="panel-body">
@@ -549,7 +549,7 @@
 					<div class="panel-footer">
 	    				<div class="btn-group dropup">
 							<button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		      					<span about="v-s:Send" property="rdfs:label"></span> 			
+		      					<span about="v-s:Send" property="rdfs:label"></span>
 		      					<span class="caret"></span>
             				</button>
 							<ul class="dropdown-menu" id="standard-tasks">
@@ -573,7 +573,7 @@
 				</div>
 			</div>
 		</script>
-		
+
 		<!-- Deleted individual alert -->
 		<script type="html/template" id="deleted-individual-alert-template">
 			<div class="alert alert-warning no-margin" role="alert">
@@ -586,9 +586,9 @@
 
 			<button type="button" id="freeze" class="btn btn-success"><i class="glyphicon glyphicon-pause"></i></button>
 			<button type="button" id="export-ttl" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i> Экспорт в ttl</button>
-			
+
 			<div id="graph"></div>
-			
+
 			<div id="individual-context-menu">
 				<ul class="dropdown-menu" role="menu">
 					<li role="presentation" class="dropdown-header">Индивид</li>
@@ -668,7 +668,7 @@
 				</ul>
 			</div>
 		</script>
-		
+
 		<!-- Graph modal template -->
 		<script type="html/template" id="graph-modal-template">
 			<div class="modal" id="graph-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -700,7 +700,7 @@
 		<script type="text/javascript" src="/js/browser/lib/autosize.min.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/moment-with-locales.min.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/bootstrap-datetimepicker.min.js"></script>
-		
+
 		<!-- CodeMirror -->
 		<script type="text/javascript" src="/js/browser/lib/codemirror/codemirror.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/codemirror/mode/xml/xml.js"></script>
@@ -713,7 +713,7 @@
 		<script type="text/javascript" src="/js/browser/lib/codemirror/addon/edit/matchbrackets.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/codemirror/addon/edit/matchtags.js"></script>
 		<script type="text/javascript" src="/js/browser/lib/codemirror/addon/fold/xml-fold.js"></script>
-		
+
 		<!-- Veda browser & server -->
 		<script type="text/javascript" src="/js/common/lib/riot.js"></script>
 		<script type="text/javascript" src="/js/common/util.js"></script>
@@ -727,7 +727,7 @@
 		<script type="text/javascript" src="/js/common/search_model.js"></script>
 		<script type="text/javascript" src="/js/common/ontology_model.js"></script>
 		<script type="text/javascript" src="/js/common/drafts_model.js"></script>
-		
+
 		<!-- Veda browser only -->
 		<script type="text/javascript" src="/js/browser/backend.js"></script>
 		<script type="text/javascript" src="/js/browser/util.js"></script>
@@ -753,26 +753,26 @@
 				veda.Module({/* configuration object */});
 			});
 		</script>
-		<script> 
+		<script>
 			var $buoop = {
 				vs:{i:10,f:39.0,o:11.5,s:8.0},
 				c:2,
-			    //vs: {i:11,f:40.0,o:11.60,s:8.1,c:43.0}, 
+			    //vs: {i:11,f:40.0,o:11.60,s:8.1,c:43.0},
 			    reminder: 0
 			};
 			function $buo_f()
-			{ 
-				var e = document.createElement("script"); 
-				e.src = "/js/browser/lib/update.min.js"; 
+			{
+				var e = document.createElement("script");
+				e.src = "/js/browser/lib/update.min.js";
 				document.body.appendChild(e);
 			};
-			try 
+			try
 			{
 				document.addEventListener("DOMContentLoaded", $buo_f,false)
 			} catch(e) { window.attachEvent("onload", $buo_f) }
-		</script> 
-		
-		
+		</script>
+
+
 		<!--div class="container-fluid">
 			<div>Regex</div>
 			<input class="form-control" type="text" id="re-regex"></input>

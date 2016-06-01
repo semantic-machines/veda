@@ -1,0 +1,95 @@
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+
+<http://semantic-machines.com/veda/mondi-schema-Activity/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system ontology. Activity"@en ;
+  rdfs:label "Онтология системы Veda. Мероприятие"@ru ;
+  v-s:loadPriority 10 ;
+.
+#-- Классы --
+
+v-s:Activity
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Activity"@en ;
+  rdfs:label "Активность"@ru ;
+.
+v-s:Meeting
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Activity ;
+  rdfs:label "Meeting"@en ;
+  rdfs:label "Встреча"@ru ;
+.
+v-s:Action
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Activity ;
+  rdfs:label "Action"@en ;
+  rdfs:label "Мероприятие"@ru ;
+.
+v-s:Audit
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Activity ;
+  rdfs:label "Audit"@en ;
+  rdfs:label "Аудит"@ru ;
+.
+
+#-- Аттрибуты --
+
+v-s:hasActivity
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Has activity"@en ;
+  rdfs:label "Активность"@ru ;
+  rdfs:range v-s:Activity ;
+  rdfs:domain v-s:Activity ;
+.
+v-s:theme
+  rdfs:domain v-s:Activity ;
+.
+v-s:member
+  rdfs:domain v-s:Activity ;
+.
+v-s:dateFrom
+  rdfs:domain v-s:Activity ;
+.
+v-s:dateTo
+  rdfs:domain v-s:Activity ;
+.
+v-s:placeDescription
+  rdfs:domain v-s:Activity ;
+.
+v-s:registrationNumber
+  rdfs:domain v-s:Activity ;
+.
+
+
+v-s:agenda
+  rdfs:domain v-s:Meeting ;
+.
+v-s:decision
+  rdfs:domain v-s:Meeting ;
+.
+
+
+v-s:responsible
+  rdfs:domain v-s:Action ;
+.
+v-s:contributor
+  rdfs:domain v-s:Action ;
+.
+v-s:controller
+  rdfs:domain v-s:Action ;
+.
+v-s:dateFact
+  rdfs:domain v-s:Action ;
+.
+v-s:description
+  rdfs:domain v-s:Action ;
+.

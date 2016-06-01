@@ -1,0 +1,72 @@
+@prefix ppk: <http://semantic-machines.com/veda/dictionary-ProjectPhaseKind/> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix : <http://semantic-machines.com/veda/dictionary-ProjectPhaseKind/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix td: <http://semantic-machines.com/veda/test-data/> .
+
+<http://semantic-machines.com/veda/dictionary-ProjectPhaseKind>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda ontology. Dictionary - ProjectPhaseKind"@en ;
+  rdfs:label "Онтология Веды. Справочник Вид фады проекта"@ru ;
+  v-s:loadPriority 10 ;
+.
+
+d:afef8f68a-f4a2-0b12-0dda-93db83fc479e
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Преинжиниринг"^^xsd:string.
+
+d:a5df791c2-0112-583b-dbf7-57a93f097fe6
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Проектирование"^^xsd:string.
+
+d:a57e63c10-c2b2-5729-7e5d-9bec3e3a0f55
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Начало проекта"^^xsd:string.
+
+d:ac9859141-3a3e-46e1-d4d4-b10cb28308f7
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Cтроительные работы"^^xsd:string.
+
+d:a0013513e-76a3-e3e2-d3ae-4edd724b382b
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Монтажные работы"^^xsd:string.
+
+d:a22ad7015-9d12-8554-480f-41000701aae5
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Восстановительные работы"^^xsd:string.
+
+d:ab555020d-d2f7-6cac-d0be-1db7baf60e63
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Завершение проекта"^^xsd:string.
+
+d:a210f879a-6875-a6fd-6178-ed9f663e6473
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Демонтажные работы"^^xsd:string.
+
+d:a3c7d42e0-7a03-d7cb-b60e-2cb004688d43
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Устройство инвентарных лесов"^^xsd:string.
+
+d:a986d7662-f783-1a5f-b384-98b9d53337ed
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Пуско-наладочные работы"^^xsd:string.
+
+d:aac2e2ef4-84df-d53b-0be9-5da308f87153
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Ввод в эксплуатацию"^^xsd:string.
+
+d:adf4b0ed4-8a40-9c25-9c06-3446bfcf6230
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Инвестиционные затраты внутри холдинга"^^xsd:string.
+
+d:a68023d00-9260-f92d-6354-28bad4677d95
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Изготовление и поставка оборудования"^^xsd:string.
+
+d:ad116a5ba-e2dc-d197-0ecb-378c3321209c
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Изготовление и поставка вспомогательного оборудования и материалов"^^xsd:string.
