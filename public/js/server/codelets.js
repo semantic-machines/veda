@@ -137,7 +137,7 @@ function is_in_docflow_and_set_if_true(task)
 function distribution(process, task)
 {}
 
-function create_use_transformation(task)
+function create_use_transformation(process, task)
 {
     try
     {
@@ -156,7 +156,7 @@ function create_use_transformation(task)
                     var document = get_individual(task.ticket, getUri(src_doc_id));
                     if (document)
                     {
-                        var new_items = transformation(task.ticket, document, transform, null, null);
+                        var new_items = transformation(task.ticket, document, transform, null, null, process['@']);
                         for (var i = 0; i < new_items.length; i++)
                         {
                             put_individual(ticket, new_items[i], _event_id);
