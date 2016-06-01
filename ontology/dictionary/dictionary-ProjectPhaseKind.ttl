@@ -15,58 +15,73 @@
   v-s:loadPriority 10 ;
 .
 
-d:afef8f68a-f4a2-0b12-0dda-93db83fc479e
+d:StartProject
     a v-s:ProjectPhaseKind;
-    rdfs:label "Преинжиниринг"^^xsd:string.
+    rdfs:label "Начало проекта"@ru ;
+    rdfs:label "Start project"@en.
 
-d:a5df791c2-0112-583b-dbf7-57a93f097fe6
+d:Preengineering
     a v-s:ProjectPhaseKind;
-    rdfs:label "Проектирование"^^xsd:string.
+    rdfs:label "Преинжиниринг"@ru ;
+    rdfs:label "Preengineering"@en.    
 
-d:a57e63c10-c2b2-5729-7e5d-9bec3e3a0f55
+d:Design
     a v-s:ProjectPhaseKind;
-    rdfs:label "Начало проекта"^^xsd:string.
+    rdfs:label "Проектирование"@ru ;
+    rdfs:label "Design"@en.    
 
-d:ac9859141-3a3e-46e1-d4d4-b10cb28308f7
+d:ProductionEquipment
     a v-s:ProjectPhaseKind;
-    rdfs:label "Cтроительные работы"^^xsd:string.
+    rdfs:label "Изготовление и поставка оборудования"@ru ;
+    rdfs:label "ProductionEquipment"@en.
 
-d:a0013513e-76a3-e3e2-d3ae-4edd724b382b
+d:ProductionAddEquipment
     a v-s:ProjectPhaseKind;
-    rdfs:label "Монтажные работы"^^xsd:string.
+    rdfs:label "Изготовление и поставка вспомогательного оборудования и материалов"@ru ;
+    rdfs:label "ProductionAddEquipment"@en.
 
-d:a22ad7015-9d12-8554-480f-41000701aae5
+d:GuardInstalling
     a v-s:ProjectPhaseKind;
-    rdfs:label "Восстановительные работы"^^xsd:string.
+    rdfs:label "Устройство инвентарных лесов"@ru ;
+    rdfs:label "GuardInstalling"@en.
 
-d:ab555020d-d2f7-6cac-d0be-1db7baf60e63
+d:BuildingWork
     a v-s:ProjectPhaseKind;
-    rdfs:label "Завершение проекта"^^xsd:string.
+    rdfs:label "Cтроительные работы"@ru ;
+    rdfs:label "BuildingWork"@en.    
 
-d:a210f879a-6875-a6fd-6178-ed9f663e6473
+d:InstallingWork
     a v-s:ProjectPhaseKind;
-    rdfs:label "Демонтажные работы"^^xsd:string.
+    rdfs:label "Монтажные работы"@ru ;
+    rdfs:label "InstallingWork"@en.    
 
-d:a3c7d42e0-7a03-d7cb-b60e-2cb004688d43
+d:DeinstallingWork
     a v-s:ProjectPhaseKind;
-    rdfs:label "Устройство инвентарных лесов"^^xsd:string.
+    rdfs:label "Демонтажные работы"@ru ;
+    rdfs:label "DeinstallingWork"@en.
 
-d:a986d7662-f783-1a5f-b384-98b9d53337ed
+d:AdjustmentWork
     a v-s:ProjectPhaseKind;
-    rdfs:label "Пуско-наладочные работы"^^xsd:string.
+    rdfs:label "Пуско-наладочные работы"@ru ;
+    rdfs:label "AdjustmentWork"@en.
 
-d:aac2e2ef4-84df-d53b-0be9-5da308f87153
+d:Commissioning
     a v-s:ProjectPhaseKind;
-    rdfs:label "Ввод в эксплуатацию"^^xsd:string.
+    rdfs:label "Ввод в эксплуатацию"@ru ;
+    rdfs:label "Commissioning"@en.
 
-d:adf4b0ed4-8a40-9c25-9c06-3446bfcf6230
+d:RecoveryWork
     a v-s:ProjectPhaseKind;
-    rdfs:label "Инвестиционные затраты внутри холдинга"^^xsd:string.
+    rdfs:label "Восстановительные работы"@ru ;
+    rdfs:label "RecoveryWork"@en.    
 
-d:a68023d00-9260-f92d-6354-28bad4677d95
+d:FinishProject
     a v-s:ProjectPhaseKind;
-    rdfs:label "Изготовление и поставка оборудования"^^xsd:string.
+    rdfs:label "Завершение проекта"@ru ;
+    rdfs:label "FinishProject"@en.    
 
-d:ad116a5ba-e2dc-d197-0ecb-378c3321209c
+d:InvestmentCosts
     a v-s:ProjectPhaseKind;
-    rdfs:label "Изготовление и поставка вспомогательного оборудования и материалов"^^xsd:string.
+    rdfs:label "Инвестиционные затраты внутри холдинга"@ru ;
+    rdfs:label "Investment costs"@en.
+

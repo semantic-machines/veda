@@ -2343,6 +2343,7 @@ v-wf:isProcess
   rdfs:label "Started process"@en ;
   rdfs:domain v-wf:StartForm ;
   rdfs:domain v-wf:WorkOrder ;
+  rdfs:domain v-s:Document ;  
   rdfs:range v-wf:Process ;
 .
 v-wf:ProcessStarted

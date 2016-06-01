@@ -588,16 +588,16 @@ v-df:rul_InstructionTransform7
 
 # -- ФОРМА ОТВЕТА ЗАДАЧИ ИДЕЯ В РЕАЛИЗАЦИЮ --
 
-cmn-s:hasAction
+v-s:hasAction
   rdfs:domain v-wf:DecisionAgreedToExecute ;
 .
 v-df:PsHasAction
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-wf:DecisionAgreedToExecute ;
-  v-ui:forProperty cmn-s:hasAction ;
+  v-ui:forProperty v-s:hasAction ;
   v-ui:maxCardinality 20 ;
   v-ui:minCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type'=='cmn-s:Action')"^^xsd:string ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Action')"^^xsd:string ;
   v-ui:tooltip "Non-required, multy value. Link to instance of Action class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Action."@ru ;
   rdfs:label "Project phases shedule property specification for Project class"@en ;
@@ -614,8 +614,8 @@ v-df:DecisionTemplate2
   v-ui:forClass v-wf:DecisionAgreedToExecute ;    
   v-ui:template """
 <div>
-	<div rel="cmn-s:hasAction" template="v-df:ActionInDecisionTemplate" embedded="true"></div>
-	<veda-control rel="cmn-s:hasAction" type="link" class="-view edit search fullsearch fulltext create"></veda-control>
+	<div rel="v-s:hasAction" template="v-df:ActionInDecisionTemplate" embedded="true"></div>
+	<veda-control rel="v-s:hasAction" type="link" class="-view edit search fullsearch fulltext create"></veda-control>
 </div>
   """ ;
 .
@@ -625,11 +625,11 @@ v-df:ActionInDecisionTemplate
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса Мероприятие внутри Ответа на задачу"@ru ;
   rdfs:label "Action in decision Template"@en ;
-# v-ui:forClass cmn-s:Action ;   
+# v-ui:forClass v-s:Action ;   
   v-ui:template """
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<span about="cmn-s:hasAction" property="rdfs:label"></span>
+		<span about="v-s:hasAction" property="rdfs:label"></span>
 	</div>
 	<div class="panel-body">
 		<em about="v-s:responsible" property="rdfs:label"></em>
@@ -649,7 +649,7 @@ v-df:ActionInDecisionTemplate
 .
 v-df:PsresponsibleInDecision
   rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass cmn-s:Action ;
+  v-ui:forClass v-s:Action ;
   v-ui:forProperty v-s:responsible ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
@@ -661,7 +661,7 @@ v-df:PsresponsibleInDecision
 
 v-df:PsDescriptionInDecision
   rdf:type v-ui:StringPropertySpecification ;
-  v-ui:forClass cmn-s:Action ;
+  v-ui:forClass v-s:Action ;
   v-ui:forProperty v-s:description ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;

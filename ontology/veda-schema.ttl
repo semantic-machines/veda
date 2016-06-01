@@ -212,7 +212,6 @@ v-s:hasStatusWorkflow
   rdfs:label "Статус документооборота"@ru ;
   rdfs:range v-s:StatusWorkflow ;
   rdfs:domain rdfs:Resource ;
-  rdfs:subPropertyOf v-s:status ;
 .
 
 ### veda-function-search
