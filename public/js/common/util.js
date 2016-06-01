@@ -11,13 +11,13 @@ var _Boolean = 64;
 
 function removeV(arr, what) {
     var res = [];
-//    print ("@b in=", toJson (arr));
+    print ("@b in=", toJson (arr));
     for (var i = 0; i < arr.length; i++)
     {
 	if (what.data != arr[i].data)
 	    res = arr[i];
     }
-//    print ("@e out=", toJson (res));
+    print ("@e out=", toJson (res));
     return res;
 }
 

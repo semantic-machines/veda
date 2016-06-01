@@ -1848,3 +1848,51 @@ s-wf:msg-default-template
 все входящие задачи: {{inbox_url}} 
 	""";
 .	
+
+s-wf:map_currentNetToIsProcess_to_transformation
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:transformation_uri ;
+	v-wf:mappingExpression  "newUri('s-wf:currentNetToIsProcess')" ;
+    rdfs:label "добавление id процесса в поле документа"@ru ;  
+.
+
+s-wf:currentNetToIsProcess
+  rdf:type v-wf:Transform ;
+  v-wf:transformRule s-wf:rule1currentNetToIsProcess ;
+  v-wf:transformRule s-wf:rule2currentNetToIsProcess ;
+.
+s-wf:rule1currentNetToIsProcess
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putElement ()" ;
+  v-wf:grouping	"@", "1";    
+.
+s-wf:rule2currentNetToIsProcess
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate  "putThisProcess ('v-wf:isProcess')";
+  v-wf:grouping	"@", "1";    
+.
+
+
+s-wf:map_currentNetFromIsProcess_to_transformation
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:transformation_uri ;
+	v-wf:mappingExpression  "newUri('s-wf:currentNetFromIsProcess')" ;
+    rdfs:label "удаление id процесса из поля документа"@ru ;  
+.
+s-wf:currentNetFromIsProcess
+  rdf:type v-wf:Transform ;
+  v-wf:transformRule s-wf:rule1currentNetFromIsProcess ;
+  v-wf:transformRule s-wf:rule2currentNetFromIsProcess ;
+.
+s-wf:rule1currentNetFromIsProcess
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putElement ()" ;
+  v-wf:grouping	"@", "1";    
+.
+s-wf:rule2currentNetFromIsProcess
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate  "removeThisProcess ('v-wf:isProcess')";
+  v-wf:grouping	"@", "1";    
+.
