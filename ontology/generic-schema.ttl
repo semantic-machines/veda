@@ -336,7 +336,7 @@ v-s:registrationNumber
 v-s:responsible
   rdf:type owl:ObjectProperty ;
   rdfs:label "Responsible"@en ;
-  rdfs:label "Ответсвенное лицо"@ru ;
+  rdfs:label "Ответственное лицо"@ru ;
   rdfs:range v-s:Appointment ;
 .
 v-s:status
