@@ -50,6 +50,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     process,
                     mode='view',
                     max_process_depth=0,
+                    dragList = [],
            			props = $("#props", template),
 					propsHead = $("#props-head", template);
             
@@ -129,8 +130,7 @@ jsWorkflow.ready = jsPlumb.ready;
             					y1 <= state['v-wf:locationY'][0] && state['v-wf:locationY'][0] <= y2
         					) {
                 				var $state = $('#' + veda.Util.escape4$(state.id));
-                       	    	$state.addClass('jsplumb-drag-selected');
-                       	    	instance.addToDragSelection($state);
+                       	    	instance.addToDragList($state);
                        	    	e.stopPropagation();
                 			} 
                 		}
@@ -378,6 +378,17 @@ jsWorkflow.ready = jsPlumb.ready;
                 });
             }
             
+            instance.addToDragList = function(element) {
+            	dragList.push(element);
+            	element.addClass('jsplumb-drag-selected');
+       	    	instance.addToDragSelection(element);
+            };
+            
+            instance.clearDragList = function() {
+            	dragList = [];
+                instance.clearDragSelection();
+            };
+            
             /**
              *Bind required functional to State elements
              *@method bindStateEvents
@@ -439,8 +450,7 @@ jsWorkflow.ready = jsPlumb.ready;
                     var _this = this, currentElement = $(_this), alreadySelected = currentElement.hasClass('w_active');
                 	veda["workflow"+elementId+"-selectedElement"] = _this.id;
                	    if (e.shiftKey) {
-               	    	currentElement.addClass('jsplumb-drag-selected');
-               	    	instance.addToDragSelection(currentElement);
+               	    	instance.addToDragList(currentElement);
                	    	e.stopPropagation();
                	    	return;
                	    }
@@ -865,7 +875,7 @@ jsWorkflow.ready = jsPlumb.ready;
             
             instance.defocus = function() {
             	props.empty();
-       	    	instance.clearDragSelection();
+       	    	instance.clearDragList();
        	    	$('.jsplumb-drag-selected').removeClass('jsplumb-drag-selected');
             	$("#workflow-context-menu").hide();
             	$.each(instance.getAllConnections(), function (idx, connection) {
@@ -1017,12 +1027,15 @@ jsWorkflow.ready = jsPlumb.ready;
             });
 
             $('.delete-state').on('click', function() {
-                if (selectedElementType == 'state') {
+            	if (dragList.length > 0) {
+            		dragList.forEach(function(item) {
+	                	instance.deleteState(instance.getSelector('#'+veda.Util.escape4$(item.attr('id')))[0]);
+            		});
+            	} else if (selectedElementType == 'state') {
 	                if (confirm('Delete state ' + selectedElementId + ' ?')) {
 	                	instance.deleteState(instance.getSelector('#'+veda.Util.escape4$(selectedElementId))[0]);
 	                }
-                }
-                if (selectedElementType == 'flow') {
+                } else if (selectedElementType == 'flow') {
 	                if (confirm('Delete flow ' + selectedElementId + ' ?')) {
 	                	instance.getConnections({
 	                		  source:selectedElementSourceId 
@@ -1044,7 +1057,7 @@ jsWorkflow.ready = jsPlumb.ready;
             });
             
             $('.copy-net-element').on('click', function() {
-            	if (typeof selectedElementId !== "undefined") {
+            	function clone(selectedElementId) {
             		var individual = new veda.IndividualModel(selectedElementId);
             		if (individual.hasValue('rdf:type')) {
             			if (individual['rdf:type'][0].id === 'v-wf:Task' || individual['rdf:type'][0].id === 'v-wf:Condition') {
@@ -1053,9 +1066,28 @@ jsWorkflow.ready = jsPlumb.ready;
             				individual['v-wf:locationY'] = [individual['v-wf:locationY'][0]+50];
             				individual['v-wf:hasFlow'] = [];
             				instance.createState(individual);
-                           	net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]);
+                           	net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]);                           	
             			}
             		}
+            		return $('#' + veda.Util.escape4$(individual.id));
+            	}
+            	
+            	if (dragList.length > 0) {
+            		var n = [];
+            		
+            		dragList.forEach(function(item) {
+            			n.push(clone(item.attr('id')));
+            		});
+            		
+        			instance.clearDragList();
+        			
+            		n.forEach(function(item) {
+            			instance.addToDragList(item);
+            		});
+            	} else {
+	            	if (typeof selectedElementId !== "undefined") {
+	            		clone(selectedElementId);            		
+	            	}
             	}
             });
             
