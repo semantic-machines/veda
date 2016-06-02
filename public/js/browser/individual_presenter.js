@@ -891,14 +891,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			result = result && (
 				values.length >= spec["v-ui:minCardinality"][0] &&
 				// filter empty values
-				values.length === values.filter(function(item){return !!item;}).length
+				values.length === values.filter(function(item) {
+					return ( typeof item === "boolean" ? true : !!item ) ;
+				}).length
 			);
 		}
 		if (spec.hasValue("v-ui:maxCardinality")) {
 			result = result && (
 				values.length <= spec["v-ui:maxCardinality"][0] &&
 				// filter empty values
-				values.length === values.filter(function(item){return !!item;}).length
+				values.length === values.filter(function(item) {
+					return ( typeof item === "boolean" ? true : !!item ) ;
+				}).length
 			);
 		}
 		// check each value
