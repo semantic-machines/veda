@@ -150,13 +150,6 @@ v-s:published
   rdfs:label "Дата публикации"@ru ;
   rdfs:range xsd:dateTime ;
 .
-v-s:publisher
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain rdfs:Resource ;
-  rdfs:label "Publisher"@en ;
-  rdfs:label "Издатель (автор публикации)"@ru ;
-  rdfs:range v-s:Appointment ;
-.
 v-s:decision
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Decision"@en ;
