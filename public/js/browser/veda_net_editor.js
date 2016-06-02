@@ -109,12 +109,12 @@ jsWorkflow.ready = jsPlumb.ready;
         	ctx.globalAlpha = 0.3;
         	
         	$('#'+workflowData).on("mousedown", function(e) {
-        		if (e.ctrlKey) {
+        		if (e.shiftKey) {
         			as_start = [e.offsetX, e.offsetY];
         			$("#select_canvas").show();
         		}
         	}).on("mouseup", function(e) {
-        		if (e.ctrlKey) {
+        		if (e.shiftKey) {
                     end = [e.offsetX, e.offsetY];
                     
                     var x1 = Math.min(as_start[0], end[0]) - canvasSizePx/2,
@@ -137,7 +137,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 	});                    
         		}
         	}).on("mousemove", function(e) {
-        		if (e.ctrlKey && e.buttons == 1) {
+        		if (e.shiftKey && e.buttons == 1) {
 	        		if(!as_start) return;
 	
 	        	    ctx.clearRect(0, 0, this.offsetWidth, this.offsetHeight);
@@ -152,7 +152,7 @@ jsWorkflow.ready = jsPlumb.ready;
         	});
         	$('#'+workflowData).draggable({
                 drag: function (event, ui) {
-                  if (!event.ctrlKey) {
+                  if (!event.shiftKey) {
                 	  instance.moveCanvas(ui.position.left, ui.position.top);	
                 	  $("#workflow-context-menu").hide();
                   } else {
@@ -160,7 +160,7 @@ jsWorkflow.ready = jsPlumb.ready;
                   }
                 }
             }).on("click", function(event) {
-            	if (!event.ctrlKey) {
+            	if (!event.shiftKey) {
 	            	instance.defocus();
 	            	if (mode === "view") {
 						var holder = $("<div>");
@@ -449,7 +449,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 windows.bind("click", function(e) {
                     var _this = this, currentElement = $(_this), alreadySelected = currentElement.hasClass('w_active');
                 	veda["workflow"+elementId+"-selectedElement"] = _this.id;
-               	    if (e.shiftKey) {
+               	    if (e.ctrlKey) {
                	    	instance.addToDragList(currentElement);
                	    	e.stopPropagation();
                	    	return;
