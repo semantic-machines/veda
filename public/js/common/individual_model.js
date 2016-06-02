@@ -46,10 +46,12 @@ veda.Module(function (veda) { "use strict";
 		this.on("individual:propertyModified", typeHandler);
 
 		this.on("individual:beforeSave", function () {
-			if (!this.hasValue("v-s:created")) this["v-s:created"] = [ new Date() ];
-			if (!this.hasValue("v-s:publisher")) this["v-s:publisher"] = [ veda.appointment ? veda.appointment : veda.user ];
-			this["v-s:lastEditor"] = [ veda.appointment ? veda.appointment : veda.user ];
-			this["v-s:edited"] = [ new Date() ];
+			var now = new Date();
+			var editor = veda.appointment ? veda.appointment : veda.user;
+			this["v-s:edited"] = [ now ];
+			this["v-s:lastEditor"] = [ editor ];
+			if (!this.hasValue("v-s:created")) this["v-s:created"] = [ now ];
+			if (!this.hasValue("v-s:publisher")) this["v-s:publisher"] = [ editor ];
 		});
 
 		if (container) {
