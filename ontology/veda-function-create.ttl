@@ -165,20 +165,24 @@ var stopList = [
 	"v-fc:typeToCreate"
 ];
 
-self.object = new veda.IndividualModel(),
-self.object["rdf:type"] = self["v-fc:typeToCreate"].slice(0);
-Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
-	if ( stopList.indexOf(property_uri) >= 0 ) { return; }
-	if ( self.hasValue(property_uri) && self[property_uri][0] instanceof veda.IndividualModel && self[property_uri][0].is("v-fc:Blank") ) {
-		self.object[property_uri] = self[property_uri].map(function (item) {
-			// Embedded blanks are for v-s:Embedded objects only
-			item.object["v-s:parent"] = [ self.object ];
-			return item.object;
-		});
-	} else {
-		self.object[property_uri] = self[property_uri].slice(0);
-	}
-});
+this._init = function () {
+	self.object = new veda.IndividualModel(),
+	self.object["rdf:type"] = self["v-fc:typeToCreate"].slice(0);
+	Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
+		if ( stopList.indexOf(property_uri) >= 0 ) { return; }
+		if ( self.hasValue(property_uri) && self[property_uri][0] instanceof veda.IndividualModel && self[property_uri][0].is("v-fc:Blank") ) {
+			self.object[property_uri] = self[property_uri].map(function (item) {
+				// Embedded blanks are for v-s:Embedded objects only
+				item.object["v-s:parent"] = [ self.object ];
+				return item.object;
+			});
+		} else {
+			self.object[property_uri] = self[property_uri].slice(0);
+		}
+	});
+}
+
+this._init();
 self.on("individual:beforeSave", updateBlank);
 self.on("individual:afterSave", updateAspect);
 
@@ -250,9 +254,10 @@ v-fc:BlankTemplate
 	</div>
 </div>
 <script>
+	individual._init();
 	var self = individual,
-		holder = $("#object", template),
-		object = self.object;
+			holder = $("#object", template),
+			object = self.object;
 	object.present(holder, undefined, "edit");
 </script>
   """
