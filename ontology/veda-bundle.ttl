@@ -12,6 +12,17 @@
 #  owl:versionInfo "0.1" ;
   v-s:loadPriority 9 ;
 .
+
+v-s:SystemProperties
+  rdf:type v-s:Bundle ;
+  rdfs:label "Системные свойства"@ru ;
+  rdfs:label "System properties"@en ;
+.
+v-s:MainProperties
+  rdf:type v-s:Bundle ;
+  rdfs:label "Основные свойства"@ru ;
+  rdfs:label "Main properties"@en ;
+.
 v-s:Back
   rdf:type v-s:Bundle ;
   rdfs:label "Назад"@ru ;

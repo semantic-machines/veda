@@ -651,7 +651,7 @@ v-s:publisher
   rdf:type owl:ObjectProperty ;
   rdfs:domain rdfs:Resource ;
   rdfs:label "Publisher"@en ;
-  rdfs:label "Издатель (автор публикации)"@ru ;
+  rdfs:label "Подготовил"@ru ;
   rdfs:range v-s:Appointment ;
 .
 

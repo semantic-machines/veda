@@ -529,7 +529,6 @@ veda-control {
 
 .value-holder {
   margin-right: 10px;
-  white-space: pre;
   display: inline-block;
 }
 
@@ -785,6 +784,10 @@ svg.process-path-highlight path
 
 /* TABS BEGIN */
 
+.tabs-below, .tabs-right, .tabs-left {
+  background-color: #fff;
+}
+
 .tabs-below > .nav-tabs,
 .tabs-right > .nav-tabs,
 .tabs-left > .nav-tabs {
@@ -841,7 +844,7 @@ svg.process-path-highlight path
 }
 
 .tabs-left > .nav-tabs {
-  float: left;
+  float: right;
   margin-right: 19px;
   border-right: 1px solid #ddd;
 }
@@ -866,7 +869,7 @@ svg.process-path-highlight path
 }
 
 .tabs-right > .nav-tabs {
-  float: right;
+  float: left;
   margin-left: 19px;
   border-left: 1px solid #ddd;
 }
