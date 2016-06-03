@@ -106,7 +106,8 @@ veda.Module(function (veda) { "use strict";
 				this.properties[property_uri] = serialized;
 				this.trigger("individual:propertyModified", property_uri, notNull);
 			},
-			configurable: true
+			configurable: false,
+			enumerable: false
 		});
 	}
 
@@ -191,7 +192,8 @@ veda.Module(function (veda) { "use strict";
 				return this._.rights;
 			}
 		},
-		configurable: false
+		configurable: false,
+		enumerable: false
 	});
 
 	Object.defineProperty(proto, "rightsOrigin", {
@@ -208,7 +210,8 @@ veda.Module(function (veda) { "use strict";
 				return this._.rightsOrigin;
 			}
 		},
-		configurable: false
+		configurable: false,
+		enumerable: false
 	});
 
 	/**
