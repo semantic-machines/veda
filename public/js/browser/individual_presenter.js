@@ -438,7 +438,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			function propertyModifiedHandler (doc_rel_uri, values) {
 				if (doc_rel_uri === rel_uri) {
 					++counter;
-					if (values.length) {
+					if (values && values.length) {
 						values.map(function (value) {
 							if (value.id in rendered) {
 								rendered[value.id].cnt = counter;
