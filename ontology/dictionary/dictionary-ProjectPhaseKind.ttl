@@ -80,7 +80,7 @@ d:FinishProject
     rdfs:label "Завершение проекта"@ru ;
     rdfs:label "FinishProject"@en.    
 
-d:InvestmentCosts
+d:InvestmentCost
     a v-s:ProjectPhaseKind;
     rdfs:label "Инвестиционные затраты внутри холдинга"@ru ;
     rdfs:label "Investment costs"@en.

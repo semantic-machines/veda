@@ -157,7 +157,7 @@ v-s:decision
   rdfs:range xsd:string ;
 .
 v-s:description
-  rdf:type owl:ObjectProperty ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:label "Description"@en ;
   rdfs:label "Описание"@ru ;
   rdfs:range xsd:string ;
@@ -466,4 +466,11 @@ v-s:placeDescription
   rdfs:label "Place description"@en ;
   rdfs:label "Место проведения"@ru ;
   rdfs:range xsd:string ;
+.
+v-s:numerationScope
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Document ;
+  rdfs:label "Numeration scope"@en ;
+  rdfs:label "Пространство нумерации"@ru ;
+  rdfs:range rdfs:Resource ;
 .

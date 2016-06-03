@@ -103,8 +103,8 @@ v-s:numerationCommitedIntervalEnd
 v-s:SimpleNumeration
   rdf:type v-s:NumerationRule ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Нумерация в пределах шаблона"@ru ;
-  rdfs:label "Numeration with type as scope"@en ;
+  rdfs:label "Нумерация в пределах класса"@ru ;
+  rdfs:label "Numeration with class as scope"@en ;
   v-s:numerationScope """
 (function (ticket, individual) 
 {
@@ -121,8 +121,8 @@ v-s:SimpleNumeration
 v-s:YearNumeration8
   rdf:type v-s:NumerationRule ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Нумерация в пределах шаблона"@ru ;
-  rdfs:label "Numeration with type as scope"@en ;
+  rdfs:label "Нумерация 2+6 (год+номер) в пределах класса и года"@ru ;
+  rdfs:label "Numeration 2+6 (year+number) with class as scope"@en ;
   v-s:numerationScope """
 (function (ticket, individual) 
 {
