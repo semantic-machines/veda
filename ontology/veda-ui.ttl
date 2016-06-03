@@ -962,12 +962,10 @@ v-ui:TestUITemplate
 </div>
   """ ;
 .
-v-ui:PsDescriptionFile
+v-ui:PsCommentFile
   rdf:type v-ui:PropertySpecification ;
-  rdfs:label "Спецификация тестового целочисленного свойства"@ru ;
-  rdfs:label "Specification for test integer property"@en ;
   v-ui:forClass v-s:File ;
-  v-ui:forProperty v-s:description ;
+  v-ui:forProperty rdfs:comment ;
   v-ui:minCardinality "0"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
 .
@@ -996,8 +994,8 @@ v-ui:FileTemplateWithComment
   v-ui:template """
 <div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:15px; overflow: hidden">
 	<div class="panel-body">
-		<strong property="v-s:description" class="view -edit -search"></strong>
-		<veda-control type="string" property="v-s:description" class="-view edit search"></veda-control>
+		<strong property="rdfs:comment" class="view -edit -search"></strong>
+		<veda-control type="string" property="rdfs:comment" class="-view edit search"></veda-control>
 		<div>
 			<span id="icon" class="label label-primary"></span>
 			<a href="/files/@">

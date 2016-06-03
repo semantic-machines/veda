@@ -175,10 +175,6 @@ v-s:File
   rdfs:label "File"@en ;
   rdfs:label "Файл"@ru ;
 .
-
-v-s:description
-  rdfs:domain v-s:File ;
-.
 v-s:fileName
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:File ;
@@ -200,7 +196,6 @@ v-s:fileThumbnail
   rdfs:label "Миниатюра"@ru ;
   rdfs:range v-s:File ;
 .
-
 ### veda-workflow
 v-s:hasStatusWorkflow
   rdf:type owl:ObjectProperty ;
