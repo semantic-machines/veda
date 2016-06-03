@@ -6,7 +6,7 @@ module veda.util.cbor;
 private
 {
     import std.outbuffer, std.stdio, std.typetuple, std.datetime, std.conv;
-    import veda.util.container;
+    import veda.util.container, veda.util.tools;
 }
 
 enum : byte
@@ -211,30 +211,6 @@ public void write_bool(bool vv, ref OutBuffer ou)
         write_type_value(MajorType.FLOAT_SIMPLE, FALSE, ou);
 }
 
-/// Записать в буффер ushort
-private ushort ushort_from_buff(ubyte[] buff, int pos)
-{
-    ushort res = *((cast(ushort *)(buff.ptr + pos)));
-
-    return res;
-}
-
-/// Записать в буффер uint
-private uint uint_from_buff(ubyte[] buff, int pos)
-{
-    uint res = *((cast(uint *)(buff.ptr + pos)));
-
-    return res;
-}
-
-/// Записать в буффер ulong
-private ulong ulong_from_buff(ubyte[] buff, int pos)
-{
-    ulong res = *((cast(ulong *)(buff.ptr + pos)));
-
-    return res;
-}
-
 /// Читать из буффера тип и значение
 public int read_type_value(ubyte[] src, ElementHeader *header)
 {
@@ -273,7 +249,7 @@ public int read_type_value(ubyte[] src, ElementHeader *header)
         int           len = read_type_value(src[ d_pos..$ ], &main_type_header);
         if (len <= 0)
         {
-            writeln("@%%%1");
+            //writeln("@%%%1");
             throw new Exception("no content in pos");
         }
         d_pos        += len;
@@ -291,8 +267,8 @@ public int read_type_value(ubyte[] src, ElementHeader *header)
         }
         else if ((type == MajorType.ARRAY || type == MajorType.TEXT_STRING) && ld > src.length)
         {
-            writeln("Err! @d cbor.read_header, ld=", ld);
-            throw new Exception("Err! @d cbor.read_header, ld=" ~ text(ld) ~ ", src=[" ~ text(src) ~ "]");
+            //writeln("Err! @d cbor.read_header, ld=", ld);
+            throw new Exception("read_type_value: cbor.read_header, ld=" ~ text(ld) ~ ", src=[" ~ text(src) ~ "]");
             //ld = src.length;
         }
 

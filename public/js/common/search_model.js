@@ -62,7 +62,7 @@ veda.Module(function (veda) { "use strict";
 			}
 			
 			// Prefix query if defined in constructor
-			q = (self.queryPrefix ? self.queryPrefix + "&&" : "") + (q ? q : "") ;
+			q = [self.queryPrefix, q].filter(function (item) { return !!item; }).join("&&") ;
 			
 			self.fullQuery = q;
 			

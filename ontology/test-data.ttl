@@ -22,14 +22,34 @@
 # owl:versionInfo "1.3" ;
 .
 
-td:email-test
-  rdf:type v-s:Email;
-  v-wf:from td:AleksandraKhvostikova-Analyst1;
-  v-wf:to td:ValeriyBushenev-Programmer1;
-  v-wf:replyTo td:RomanKarpov-Analyst1;
-  v-s:subject "test";
-  v-s:messageBody "test1 test2 TEST3";
+td:run-script
+  rdf:type v-s:ExecuteScript0;
+	v-s:argument td:arg1;
+	v-s:result td:res1 ;
+	v-s:isSuccess false;
+	v-s:useScript td:script_onto_rename;
+	v-s:priority 16;
 .
+
+td:arg1
+  rdf:type v-s:Variable ;
+  v-s:variableName "rename_template" ;
+  v-s:variableValue "v-wf:*,v-s:*";
+.
+
+td:res1
+  rdf:type v-s:Variable ;
+  v-s:variableName "res" ;
+.
+
+td:script_onto_rename
+	rdf:type v-s:Codelet ;
+	v-s:script
+	"""
+    onto_rename (ticket, document, execute_script);
+	""";
+.
+
 
 td:AdministrativeDocument
   rdf:type owl:Class ;
@@ -42,16 +62,16 @@ td:AdministrativeDocument
 td:content
   rdf:type owl:DatatypeProperty ;
   rdfs:domain td:AdministrativeDocument ;
-  rdfs:label "content"@en ;
-  rdfs:label "содержание"@ru ;
+  rdfs:label "Content"@en ;
+  rdfs:label "Содержание"@ru ;
   rdfs:range xsd:string ;
 .
 
 td:signer
   rdf:type owl:ObjectProperty ;
   rdfs:domain td:AdministrativeDocument ;
-  rdfs:label "signer"@en ;
-  rdfs:label "подписант"@ru ;
+  rdfs:label "Signer"@en ;
+  rdfs:label "Подписант"@ru ;
   rdfs:range v-s:Appointment ;
 .
 
@@ -129,7 +149,7 @@ td:AndreyBychin-Analyst2
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Andrey Bychin : Analyst"@en ;
   rdfs:label "Андрей Бычин : Аналитик"@ru ;
-  v-s:parentUnit td:ApplicationDevelopmentGroup ;  
+  v-s:parentUnit td:ApplicationDevelopmentGroup ;
 .
 
 td:AndreyBychin-ExecutiveDirector
@@ -143,7 +163,7 @@ td:AndreyBychin-ExecutiveDirector
   v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Андрей Бычин : Исполнительный директор"@ru ;
-  v-s:parentUnit td:SemanticMachines ;  
+  v-s:parentUnit td:SemanticMachines ;
 .
 
 td:ApplicationDevelopmentGroup
@@ -151,27 +171,45 @@ td:ApplicationDevelopmentGroup
   v-s:childUnit td:Analyst1 ;
   v-s:childUnit td:Programmer1 ;
   v-s:parentUnit td:CCIP ;
-  v-s:hasChief td:RomanKarpov-Analyst1;    
+  v-s:hasChief td:RomanKarpov-Analyst1;
   rdfs:label "Application development group"@en ;
   rdfs:label "Группа прикладного програмирования"@ru ;
 .
 
 td:BushenevV
   rdf:type v-s:Account ;
-  v-s:login "BushenevVT"^^xsd:string ;
+  v-s:login "BushenevV"^^xsd:string ;
   v-s:mailbox "valeriy.bushenev@gmail.com"^^xsd:string ;
   v-s:owner td:ValeriyBushenev ;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "BushenevV" ;
 .
 
+td:BushenevVT
+  rdf:type v-s:Account ;
+  v-s:login "BushenevVT"^^xsd:string ;
+  v-s:mailbox "valeriy.bushenev@gmail.com"^^xsd:string ;
+  v-s:owner td:ValeriyBushenev ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "BushenevVT" ;
+.
+
 td:BychinA
+  rdf:type v-s:Account ;
+  v-s:login "BychinA"^^xsd:string ;
+  v-s:mailbox "andrey.bychin@mondigroup.com"^^xsd:string ;
+  v-s:owner td:AndreyBychin ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "BychinA" ;
+.
+
+td:BychinAT
   rdf:type v-s:Account ;
   v-s:login "BychinAT"^^xsd:string ;
   v-s:mailbox "andrey.bychin@mondigroup.com"^^xsd:string ;
   v-s:owner td:AndreyBychin ;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  rdfs:label "BychinA" ;
+  rdfs:label "BychinAT" ;
 .
 
 td:CCIP
@@ -221,6 +259,15 @@ td:ResGroup_2
 
 td:KarpovR
   rdf:type v-s:Account ;
+  v-s:login "KarpovR"^^xsd:string ;
+  v-s:mailbox "roman.karpov@mondigroup.com"^^xsd:string ;
+  v-s:owner td:RomanKarpov ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "KarpovR" ;
+.
+
+td:KarpovRT
+  rdf:type v-s:Account ;
   v-s:login "KarpovRT"^^xsd:string ;
   v-s:mailbox "roman.karpov@mondigroup.com"^^xsd:string ;
   v-s:owner td:RomanKarpov ;
@@ -230,11 +277,19 @@ td:KarpovR
 
 td:KhvostiA
   rdf:type v-s:Account ;
-  v-s:login "KhvostiAT"^^xsd:string ;
+  v-s:login "KhvostiA"^^xsd:string ;
   v-s:mailbox "Alexandra.khvostikova@mondigroup.com"^^xsd:string ;
   v-s:owner td:AleksandraKhvostikova ;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "KhvostiA" ;
+.
+td:KhvostiAT
+  rdf:type v-s:Account ;
+  v-s:login "KhvostiAT"^^xsd:string ;
+  v-s:mailbox "Alexandra.khvostikova@mondigroup.com"^^xsd:string ;
+  v-s:owner td:AleksandraKhvostikova ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "KhvostiAT" ;
 .
 
 td:Membership_1
@@ -409,7 +464,7 @@ td:RomanKarpov
   rdfs:label "Roman Karpov"@en ;
   rdfs:label "Роман Карпов"@ru ;
   v-s:hasAppointment td:RomanKarpov-Analyst1 ;
-  v-s:hasAspect v-s:PersonalAspectKarpovr ;      
+  v-s:hasAspect v-s:PersonalAspectKarpovr ;
 .
 td:AleksandraKhvostikova
   rdf:type v-s:Person ;
@@ -426,7 +481,6 @@ td:AleksandraKhvostikova
   rdfs:label "Aleksandra Khvostikova"@en ;
   rdfs:label "Александра Хвостикова"@ru ;
   v-s:hasAppointment td:AleksandraKhvostikova-Analyst1 ;
-  v-s:hasAspect v-s:PersonalAspectKhvostia ;        
   v-s:hasImage td:khvostiaImage;
 .
 td:AleksandraKhvostikova-Analyst1
@@ -439,7 +493,7 @@ td:AleksandraKhvostikova-Analyst1
   v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Александра Хвостикова : Аналитик"@ru ;
-  rdfs:label "Aleksandra Khvostikova : Analyst"@en ;  
+  rdfs:label "Aleksandra Khvostikova : Analyst"@en ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
 .
 
@@ -453,6 +507,7 @@ td:RomanKarpov-Analyst1
   v-s:startTime "2014-01-30T15:22:33"^^xsd:dateTime ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
   rdfs:label "Роман Карпов : Аналитик"@ru ;
+  v-s:official "true"^^xsd:boolean ;
 .
 
 td:RomanKarpov-CommercialDirector
@@ -544,221 +599,221 @@ td:SavedSearch1
 # -------- стартовая форма маршрута ----------------
 td:ComplexRouteStartForm1
     v-s:author cfg:VedaSystemAccount ;
-	rdf:type s-wf:ComplexRouteStartForm ; 
-	rdf:type v-wf:StartForm ; 
+	rdf:type s-wf:ComplexRouteStartForm ;
+	rdf:type v-wf:StartForm ;
 	v-wf:forNet s-wf:net_complex_route ;
-	v-wf:processedDocument td:SavedSearch1 ; 
-	v-wf:processInitiator td:RomanKarpov-Analyst1 ; 
+	v-wf:processedDocument td:SavedSearch1 ;
+	v-wf:processInitiator td:RomanKarpov-Analyst1 ;
 	v-wf:useTransformation s-wf:transformation1 ;
 	rdfs:label "ТЕСТ Комплексный маршрут"@ru;
-	s-wf:ComplexRouteStartForm_coordinator1 td:RomanKarpov-Analyst1 ; 
-	s-wf:ComplexRouteStartForm_coordinator1 td:ValeriyBushenev-Programmer1 ; 
-	s-wf:ComplexRouteStartForm_coordinator2 td:ValeriyBushenev-Programmer1 ; 
-	s-wf:ComplexRouteStartForm_coordinator3 td:AndreyBychin-ExecutiveDirector ; 
-	s-wf:ComplexRouteStartForm_reviewer td:ValeriyBushenev-Programmer1 ; 
-	s-wf:ComplexRouteStartForm_signer td:AndreyBychin-ExecutiveDirector ; 
+	s-wf:ComplexRouteStartForm_coordinator1 td:RomanKarpov-Analyst1 ;
+	s-wf:ComplexRouteStartForm_coordinator1 td:ValeriyBushenev-Programmer1 ;
+	s-wf:ComplexRouteStartForm_coordinator2 td:ValeriyBushenev-Programmer1 ;
+	s-wf:ComplexRouteStartForm_coordinator3 td:AndreyBychin-ExecutiveDirector ;
+	s-wf:ComplexRouteStartForm_reviewer td:ValeriyBushenev-Programmer1 ;
+	s-wf:ComplexRouteStartForm_signer td:AndreyBychin-ExecutiveDirector ;
 .
 
-:b435740-f19e-7731-03ef-e7cb2203f8c4 
+:b435740-f19e-7731-03ef-e7cb2203f8c4
 	a v-s:SavedSearch;
     v-s:author cfg:VedaSystemAccount ;
     v-s:query "'rdf:type' == 'v-wf:Process'"^^xsd:string;
-    rdfs:label "экземпляры маршрута"^^xsd:string;
+    rdfs:label "Экземпляры маршрута"^^xsd:string;
     v-s:created "2015-03-23T13:27:18.000Z"^^xsd:dateTime.
 
 :b435740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
 	v-s:author cfg:VedaSystemAccount ;
     v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false "^^xsd:string;
-    rdfs:label "общий инбокс: новые задачи"^^xsd:string;
+    rdfs:label "Общий инбокс: новые задачи"^^xsd:string;
     v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
 
 :b555740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
 	v-s:author cfg:VedaSystemAccount ;
     v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true "^^xsd:string;
-    rdfs:label "общий инбокс: выполненые задачи"^^xsd:string;
+    rdfs:label "Общий инбокс: выполненые задачи"^^xsd:string;
     v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
 
 ######################## сеть, пример 1 #######################
 
-:start-form1 
+:start-form1
     a v-wf:StartForm;
     v-s:hasStatusWorkflow v-s:DoNotSent;
-    rdfs:label "тест стартовой формы 1"@ru;
+    rdfs:label "Тест стартовой формы 1"@ru;
     v-wf:forNet :net1 ;
 .
 
-:net1 
+:net1
     v-wf:consistsOf :net1-ic, :net1-oc, :net1-fl1;
-    rdfs:label "сеть, пример 1"^^xsd:string;
+    rdfs:label "Сеть, пример 1"^^xsd:string;
     a v-wf:Net.
 
-:net1-ic 
+:net1-ic
     v-wf:hasFlow :net1-fl1;
     v-wf:locationX "0"^^xsd:integer;
     v-wf:locationY "0"^^xsd:integer;
     a v-wf:InputCondition;
-    rdfs:label "с1"^^xsd:string.
+    rdfs:label "С1"^^xsd:string.
 
-:net1-oc 
+:net1-oc
     v-wf:locationX "376"^^xsd:integer;
     v-wf:locationY "0"^^xsd:integer;
     a v-wf:OutputCondition;
-    rdfs:label "с2"^^xsd:string. 
+    rdfs:label "С2"^^xsd:string.
 
-:net1-fl1 
+:net1-fl1
     v-wf:flowsInto :net1-oc;
     a v-wf:Flow;
     rdfs:label ""^^xsd:string.
 
 ######################## сеть, пример 2 #######################
 
-:start-form2 
+:start-form2
     a v-wf:StartForm;
     v-s:hasStatusWorkflow v-s:DoNotSent;
-    rdfs:label "тест стартовой формы 2"@ru;
+    rdfs:label "Тест стартовой формы 2"@ru;
     v-wf:forNet :net2 ;
 .
 
-:net2 
+:net2
     v-wf:consistsOf :net2-ic, :net2-oc, :net2-fl1, :net2-t1, :net2-fl2;
-    rdfs:label "сеть, пример 2"^^xsd:string;
+    rdfs:label "Сеть, пример 2"^^xsd:string;
     a v-wf:Net.
 
-:net2-ic 
+:net2-ic
     v-wf:hasFlow :net2-fl1;
     v-wf:locationX "0"^^xsd:integer;
     v-wf:locationY "0"^^xsd:integer;
     a v-wf:InputCondition;
-    rdfs:label "с1"^^xsd:string.
+    rdfs:label "С1"^^xsd:string.
 
-:net2-fl1 
+:net2-fl1
     v-wf:flowsInto :net2-t1;
     a v-wf:Flow;
     rdfs:label ""^^xsd:string.
 
-:net2-t1  
+:net2-t1
     v-wf:hasFlow :net2-fl2;
     v-wf:locationY "0"^^xsd:integer;
     a v-wf:Task;
-    rdfs:label "задача 1"^^xsd:string;
+    rdfs:label "Задача 1"^^xsd:string;
     v-wf:locationX "164"^^xsd:integer.
 
 :net2-fl2 v-wf:flowsInto :net2-oc;
     a v-wf:Flow;
     rdfs:label ""^^xsd:string.
 
-:net2-oc 
+:net2-oc
     v-wf:locationX "376"^^xsd:integer;
     v-wf:locationY "0"^^xsd:integer;
     a v-wf:OutputCondition;
-    rdfs:label "с2"^^xsd:string.
+    rdfs:label "С2"^^xsd:string.
 
 ######################## сеть, пример 3 #######################
 
-:start-form3 
+:start-form3
     a v-wf:StartForm;
     v-s:hasStatusWorkflow v-s:DoNotSent;
-    rdfs:label "тест стартовой формы 3"@ru;
+    rdfs:label "Тест стартовой формы 3"@ru;
     v-wf:forNet :net3 ;
 .
 
-:net3 
+:net3
     v-wf:consistsOf :net3-ic, :net3-oc, :net3-fl1, :net3-t1, :net3-fl2;
-    rdfs:label "сеть, пример 3"^^xsd:string;
+    rdfs:label "Сеть, пример 3"^^xsd:string;
     a v-wf:Net.
 
-:net3-ic 
+:net3-ic
     v-wf:hasFlow :net3-fl1;
     v-wf:locationX "0"^^xsd:integer;
     v-wf:locationY "0"^^xsd:integer;
     a v-wf:InputCondition;
-    rdfs:label "с1"^^xsd:string.
+    rdfs:label "С1"^^xsd:string.
 
-:net3-fl1 
+:net3-fl1
     v-wf:flowsInto :net3-t1;
     a v-wf:Flow;
     rdfs:label ""^^xsd:string.
 
-:net3-t1  
+:net3-t1
     v-wf:hasFlow :net3-fl2;
     v-wf:executor td:AndreyBychin-Analyst2;
     v-wf:locationY "0"^^xsd:integer;
     a v-wf:Task;
-    rdfs:label "задача 1"^^xsd:string;
+    rdfs:label "Задача 1"^^xsd:string;
     v-wf:locationX "164"^^xsd:integer.
 
 :net3-fl2 v-wf:flowsInto :net3-oc;
     a v-wf:Flow;
     rdfs:label ""^^xsd:string.
 
-:net3-oc 
+:net3-oc
     v-wf:locationX "376"^^xsd:integer;
     v-wf:locationY "0"^^xsd:integer;
     a v-wf:OutputCondition;
-    rdfs:label "с2"^^xsd:string.
+    rdfs:label "С2"^^xsd:string.
 
 ######################## сеть, пример 4 #######################
 
-:start-form4 
+:start-form4
     a v-wf:StartForm;
     v-s:hasStatusWorkflow v-s:DoNotSent;
-    rdfs:label "тест стартовой формы 4"@ru;
+    rdfs:label "Тест стартовой формы 4"@ru;
     v-wf:forNet :net4 ;
 .
 
-:net4 
+:net4
     v-wf:consistsOf :net4-ic, :net4-oc, :net4-fl1, :net4-t1, :net4-fl2;
-    rdfs:label "сеть, пример 4"^^xsd:string;
+    rdfs:label "Сеть, пример 4"^^xsd:string;
     a v-wf:Net.
 
-:net4-ic 
+:net4-ic
     v-wf:hasFlow :net4-fl1;
     v-wf:locationX "0"^^xsd:integer;
     v-wf:locationY "0"^^xsd:integer;
     a v-wf:InputCondition;
-    rdfs:label "с1"^^xsd:string.
+    rdfs:label "С1"^^xsd:string.
 
-:net4-fl1 
+:net4-fl1
     v-wf:flowsInto :net4-t1;
     a v-wf:Flow;
     rdfs:label ""^^xsd:string.
 
-:net4-t1  
+:net4-t1
     v-wf:hasFlow :net4-fl2;
     v-wf:executor td:AndreyBychin-Analyst2;
     v-wf:startDecisionTransform :net4-tr1;
     v-wf:locationY "0"^^xsd:integer;
     a v-wf:Task;
-    rdfs:label "задача 1"^^xsd:string;
+    rdfs:label "Задача 1"^^xsd:string;
     v-wf:locationX "164"^^xsd:integer.
 
 :net4-fl2 v-wf:flowsInto :net4-oc;
     a v-wf:Flow;
     rdfs:label ""^^xsd:string.
 
-:net4-oc 
+:net4-oc
     v-wf:locationX "376"^^xsd:integer;
     v-wf:locationY "0"^^xsd:integer;
     a v-wf:OutputCondition;
-    rdfs:label "с2"^^xsd:string.
+    rdfs:label "С2"^^xsd:string.
 
 :net4-tr1
         rdf:type v-wf:Transform ;
-    	rdfs:label "создание формы ответа на задачу, net4"^^xsd:string;
-	v-wf:transformRule :net4-tr1-r1 ;	
-.		
+    	rdfs:label "Создание формы ответа на задачу, net4"^^xsd:string;
+	v-wf:transformRule :net4-tr1-r1 ;
+.
 
 :net4-tr1-r1
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')";
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
 	v-wf:aggregate	"putString ('rdfs:label', 'задание')";
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
-	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')"; 	
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')"; 	
+	v-wf:aggregate	"putExecutor ('v-wf:to')";
+	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')";
+	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')";
+	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')";
 .
 
 ##############################################################################################
@@ -772,13 +827,13 @@ v-s:PersonalAspectKarpovr
 
 v-wf:UserTaskForm1
 	rdf:type s-wf:UserTaskForm ;
-	rdfs:label "example"@en ;
-	rdfs:label "экземпляр"@ru ;
-	v-wf:possibleDecisionClass v-wf:DecisionApprove ;  
-	v-wf:possibleDecisionClass v-wf:DecisionRemake ;  	
-	v-wf:possibleDecisionClass v-wf:DecisionRejected ;  		
-	v-wf:possibleDecisionClass v-wf:DecisionBreak ;  		
-	v-wf:from td:RomanKarpov-Analyst1 ;  		
+	rdfs:label "Example"@en ;
+	rdfs:label "Экземпляр"@ru ;
+	v-wf:possibleDecisionClass v-wf:DecisionApprove ;
+	v-wf:possibleDecisionClass v-wf:DecisionRemake ;
+	v-wf:possibleDecisionClass v-wf:DecisionRejected ;
+	v-wf:possibleDecisionClass v-wf:DecisionBreak ;
+	v-wf:from td:RomanKarpov-Analyst1 ;
 .
 
 cfg:Bychina_create_Person
@@ -787,4 +842,22 @@ cfg:Bychina_create_Person
   v-s:permissionSubject td:AndreyBychin ;
   v-s:permissionObject v-s:Person, v-ui:Preferences, v-s:Appointment ;
   v-s:canCreate "true"^^xsd:boolean ;
+.
+
+
+d:khvostia_dismantlingProjectSpecialist
+    a v-s:Appointment;
+    v-s:occupation d:dismantlingProjectSpecialist;
+    v-s:employee td:AleksandraKhvostikova;
+    v-s:official "true"^^xsd:boolean;
+    v-s:valid "true"^^xsd:boolean;
+    rdfs:label "Хвостикова : Специалист по проектам демонтажа"@ru
+.
+d:khvostia_financialController
+    a v-s:Appointment;
+    v-s:occupation d:financialController;
+    v-s:employee td:AleksandraKhvostikova;
+    v-s:official "true"^^xsd:boolean;
+    v-s:valid "true"^^xsd:boolean;
+    rdfs:label "Хвостикова : Финансовый контролер"@ru
 .

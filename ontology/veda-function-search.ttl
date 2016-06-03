@@ -42,39 +42,39 @@ v-fs:Search
 .
 v-fs:fulltextQuery
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "query"@en ;
-  rdfs:label "запрос"@ru ;
+  rdfs:label "Query"@en ;
+  rdfs:label "Запрос"@ru ;
   rdfs:domain v-fs:FulltextRequest ;
   rdfs:range xsd:string ;
 .
 v-fs:sortOrder
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "sort order"@en ;
-  rdfs:label "порядок сортировки"@ru ;
+  rdfs:label "Sort order"@en ;
+  rdfs:label "Порядок сортировки"@ru ;
   rdfs:domain v-fs:FulltextRequest ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:string ;
 .
 v-fs:databases
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "databases"@en ;
-  rdfs:label "базы данных"@ru ;
+  rdfs:label "Databases"@en ;
+  rdfs:label "Базы данных"@ru ;
   rdfs:domain v-fs:FulltextRequest ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:string ;
 .
 v-fs:reopen
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "reopen"@en ;
-  rdfs:label "открыть заново"@ru ;
+  rdfs:label "Reopen"@en ;
+  rdfs:label "Открыть заново"@ru ;
   rdfs:domain v-fs:FulltextRequest ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:boolean ;
 .
 v-fs:typeToSearch
   rdf:type owl:ObjectProperty ;
-  rdfs:label "тип искомого объекта"@ru ;
-  rdfs:label "type of object to search"@en ;
+  rdfs:label "Тип искомого объекта"@ru ;
+  rdfs:label "Type of object to search"@en ;
   rdfs:domain v-fs:FulltextRequest ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range owl:Class ;
@@ -82,22 +82,22 @@ v-fs:typeToSearch
 .
 v-fs:resultTemplate
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "шаблон отображения результатов"@ru ;
-  rdfs:label "result template"@en ;
+  rdfs:label "Шаблон отображения результатов"@ru ;
+  rdfs:label "Result template"@en ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:string ;
 .
 v-fs:resultTemplateRest
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "шаблон отображения результатов"@ru ;
-  rdfs:label "result template"@en ;
+  rdfs:label "Шаблон отображения результатов"@ru ;
+  rdfs:label "Result template"@en ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:string ;
 .
 v-fs:TypeToSearchSpecFT
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:FulltextRequest"@ru ;
-  rdfs:label "v-fs:typeToSearch property specification for class v-fs:FulltextRequest"@en ;
+  rdfs:label "V-fs:typeToSearch property specification for class v-fs:FulltextRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:forProperty v-fs:typeToSearch ;
   v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
@@ -106,7 +106,7 @@ v-fs:TypeToSearchSpecFT
 v-fs:TypeToSearchSpecAT
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства v-fs:typeToSearch для класса v-fs:AttributiveRequest"@ru ;
-  rdfs:label "v-fs:typeToSearch property specification for class v-fs:AttributiveRequest"@en ;
+  rdfs:label "V-fs:typeToSearch property specification for class v-fs:AttributiveRequest"@en ;
   v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:forProperty v-fs:typeToSearch ;
   v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
@@ -116,7 +116,7 @@ v-fs:TypeToSearchSpecAT
 v-fs:FulltextQuerySpec
   rdf:type v-ui:StringPropertySpecification ;
   rdfs:label "Спецификация свойства v-fs:fulltextQuery для класса v-fs:FulltextRequest"@ru ;
-  rdfs:label "v-fs:fulltextQuery property specification for class v-fs:FulltextRequest"@en ;
+  rdfs:label "V-fs:fulltextQuery property specification for class v-fs:FulltextRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:forProperty v-fs:fulltextQuery ;
   v-ui:maxCardinality "1"^^xsd:integer ;
@@ -126,7 +126,7 @@ v-fs:FulltextQuerySpec
 v-fs:LabelSpec
   rdf:type v-ui:StringPropertySpecification ;
   rdfs:label "Спецификация свойства rdfs:label для классов v-fs:FulltextRequest, v-fs:AttributiveRequest"@ru ;
-  rdfs:label "rdfs:label property specification for class v-fs:FulltextRequest, v-fs:AttributiveRequest"@en ;
+  rdfs:label "Rdfs:label property specification for class v-fs:FulltextRequest, v-fs:AttributiveRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:forProperty rdfs:label ;
@@ -228,8 +228,8 @@ v-fs:SearchTemplate
 			<div class="col-md-2 col-sm-3">
 				<h4></h4>
 				<ul class="nav nav-pills nav-stacked" role="tablist" id="req-tabs">
-					<li role="presentation" class="active"><a href="#fulltext" about="v-fs:Fulltext" property="rdfs:label" aria-controls="fulltext" role="tab" data-toggle="tab"></a></li>
-					<li role="presentation"><a href="#attributive" about="v-fs:Attributive" property="rdfs:label" aria-controls="attributive" role="tab" data-toggle="tab"></a></li>
+					<li role="presentation" class="active"><a href="#fulltext-search" about="v-fs:Fulltext" property="rdfs:label" aria-controls="fulltext-search" role="tab" data-toggle="tab"></a></li>
+					<li role="presentation"><a href="#attributive-search" about="v-fs:Attributive" property="rdfs:label" aria-controls="attributive-search" role="tab" data-toggle="tab"></a></li>
 				</ul>
 				<hr>
 				<h4 about="v-fs:SavedRequests" property="rdfs:label"></h4>
@@ -237,16 +237,16 @@ v-fs:SearchTemplate
 			</div>
 			<div class="col-md-10 col-sm-9" style="border-left: 1px solid gainsboro;">
 				<div class="tab-content">
-					<div role="tabpanel" class="tab-pane active" id="fulltext"></div>
-					<div role="tabpanel" class="tab-pane" id="attributive"></div>
+					<div role="tabpanel" class="tab-pane active" id="fulltext-search"></div>
+					<div role="tabpanel" class="tab-pane" id="attributive-search"></div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<script>
 		var self = individual,
-			ftHolder = $("#fulltext", template),
-			attrHolder = $("#attributive", template);
+			ftHolder = $("#fulltext-search", template),
+			attrHolder = $("#attributive-search", template);
 		if (!self.ftRequest) {
 			self.ftRequest = new veda.IndividualModel();
 			self.ftRequest["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
@@ -258,31 +258,31 @@ v-fs:SearchTemplate
 			self.attrRequest["rdf:type"] = [ new veda.IndividualModel("v-fs:AttributiveRequest") ];
 		}
 		self.attrRequest.present(attrHolder, undefined, "edit");
-		/*
+
 		$("#req-tabs a", template).click(function (e) {
 			e.preventDefault();
-			if ($(this).attr("href") === "fulltext") { 
-				individual.reqType = "fulltext"; 
+			if ($(this).attr("href") === "#fulltext-search") {
+				individual.reqType = "fulltext";
 			} else {
 				individual.reqType = "attributive";
 			}
 		});
-		
+
 		if (individual.reqType === "attributive") {
-			$("#req-tabs a[href='attributive']", template).tab("show");
+			$("#req-tabs a[href='#attributive-search']", template).tab("show");
 			individual.reqType = "attributive";
 		} else {
-			$("#req-tabs a[href='fulltext']", template).tab("show");
+			$("#req-tabs a[href='#fulltext-search']", template).tab("show");
 			individual.reqType = "fulltext";
 		}
-		*/
+
 		var regsHolder = $("#saved", template),
 			asp = veda.user.aspect,
 			regs = asp["v-s:hasRegistry"];
 		if (regs) {
 			regs.map( function (reg) {
 				var cont = $("<li>").appendTo(regsHolder);
-				reg.present(cont, veda.ontology["v-ui:LabelBlockLinkTemplate"]);
+				reg.present( cont, new veda.IndividualModel("v-ui:LabelBlockLinkTemplate") );
 			});
 		}
 	</script>
@@ -290,19 +290,19 @@ v-fs:SearchTemplate
 .
 v-fs:FulltextRequestModel
   rdf:type v-s:ClassModel ;
-  rdfs:label "v-fs:FulltextRequest class model"@en ;
+  rdfs:label "V-fs:FulltextRequest class model"@en ;
   rdfs:label "Модель класса v-fs:FulltextRequest"@ru ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-s:script """
-	var self = individual,
+	var self = this,
 		q = mkQuery(),
 		sort = self.hasValue("v-fs:sortOrder")      ? self["v-fs:sortOrder"][0] : undefined,
 		databases = self.hasValue("v-fs:databases") ? self["v-fs:databases"][0] : undefined,
 		reopen = self.hasValue("v-fs:reopen")       ? self["v-fs:reopen"][0]    : false;
-	
+
 	self.on("individual:propertyModified", function (property_uri, values) {
 		switch (property_uri) {
-			case "v-fs:typeToSearch": 
+			case "v-fs:typeToSearch":
 			case "v-fs:fulltextQuery" : q = mkQuery(); break;
 			case "v-fs:sortOrder"   : sort = values.length      ? values[0].toString() : undefined; break;
 			case "v-fs:databases"   : databases = values.length ? values[0].toString() : undefined; break;
@@ -321,14 +321,14 @@ v-fs:FulltextRequestModel
 		return self.result;
 	};
 	// Search if query defined
-	if (q) { self.search() };
-	
+	//if (q) { self.search() };
+
 	function mkQuery () {
-		var type = self.hasValue("v-fs:typeToSearch") ? 
+		var type = self.hasValue("v-fs:typeToSearch") ?
 				"(" + self["v-fs:typeToSearch"].map(function (i) {
-					return "'rdf:type'=='" + i.id + "'" 
+					return "'rdf:type'=='" + i.id + "'"
 				}).join("||") + ")"
-			: 
+			:
 				"";
 		var q = self.hasValue("v-fs:fulltextQuery") ? self["v-fs:fulltextQuery"][0] : "";
 		if (q && q.indexOf("==") < 0) {
@@ -344,7 +344,7 @@ v-fs:FulltextRequestTemplate
   rdfs:label "Шаблон класса полнотекстовый запрос"@ru ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:template """
-<div role="tabpanel">
+<div role="tabpanel" class="container-fluid">
 	<br>
 	<!-- Nav tabs -->
 	<ul class="nav nav-tabs nav-right" role="tablist">
@@ -365,7 +365,7 @@ v-fs:FulltextRequestTemplate
 				<h4 about="v-fs:EnterQuery" property="rdfs:label"></h4>
 				<div class="form-group">
 					<div class="input-group">
-						<veda-control id="fulltext" type="string" property="v-fs:fulltextQuery"></veda-control>
+						<veda-control type="string" property="v-fs:fulltextQuery"></veda-control>
 						<span class="input-group-btn">
 							<button type="submit" id="submit" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
 						</span>
@@ -391,12 +391,23 @@ v-fs:FulltextRequestTemplate
 		<div role="tabpanel" class="tab-pane" id="mgmt-ft">
 			<em about="rdfs:label" property="rdfs:label"></em>
 			<p property="rdfs:label" class="view -edit -search"></p>
-			<veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
+			<veda-control id="query" type="string" property="rdfs:label" class="-view edit search"></veda-control>
 			<br>
 			<div>
 				<button type="button" class="action btn btn-primary view -edit" id="edit" about="v-s:Edit" property="rdfs:label"/>
 				<button type="button" class="action btn btn-success -view edit" id="save" about="v-s:Save" property="rdfs:label"/>
 				<button type="button" class="action btn btn-link view -edit" id="delete" about="v-s:Delete" property="rdfs:label"/>
+			</div>
+		</div>
+	</div>
+	<div class="modal" id="object-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title"></h4>
+				</div>
+				<div class="modal-body"></div>
 			</div>
 		</div>
 	</div>
@@ -411,23 +422,23 @@ v-fs:FulltextRequestTemplate
 		resultsList = $("#results-list", template),
 		resultsCount = $("#results-count", template),
 		submit = $("#submit", template),
-		fulltext = $("#fulltext", template),
+		query = $("#query", template),
 		form = new veda.IndividualModel();
-	
+
 	// Autofocus on query field
 	params.on("shown.bs.tab", function () {
 		if (!self.hasValue("v-fs:attributiveQuery")) {
-			$("#fulltext", template).trigger("veda_focus");
+			query.trigger("veda_focus");
 		}
 	});
 	params.trigger("shown.bs.tab");
-	
+
 	// Enter on query field triggers search
 	submit.click( function (e) {
 		e.preventDefault();
 		self.search();
 	});
-	
+
 	// Define and clean handlers
 	self.on("beforeSearch", beforeSearch);
 	self.on("afterSearch", afterSearch);
@@ -435,17 +446,34 @@ v-fs:FulltextRequestTemplate
 	template.on("remove", function () {
 		self.off("beforeSearch", beforeSearch);
 		self.off("afterSearch", afterSearch);
-		self.off("individual:afterSave", updateAspect);	
+		self.off("individual:afterSave", updateAspect);
 	});
 
 	// Present results if query defined
-	if (self.q) { 
-		self.trigger("afterSearch"); 
+	if (self.q) {
+		//self.trigger("afterSearch");
+		self.search();
 	}
-	
+
 	$("#refresh", template).click(function (e) {
 		e.preventDefault();
 		self.search();
+	});
+
+	// Modal for links
+	var $objModal = $("#object-modal", template).modal({show: false});
+	var cntr = $(".modal-body", $objModal);
+	template.on("remove", function () {
+		$objModal.modal("hide");
+	});
+	resultsList.on("click", "a[resource]", function (e) {
+		e.preventDefault();
+		var uri = $(this).attr("resource"),
+			link = new veda.IndividualModel(uri);
+		cntr.empty();
+		link.present(cntr);
+		$objModal.modal("show");
+		$objModal.focus();
 	});
 
 	// Update user aspect when search request was saved
@@ -459,16 +487,17 @@ v-fs:FulltextRequestTemplate
 		}
 		asp.save();
 	}
-	
+
 	function genericTemplate(individual) {
 		var head = "<strong><a href='#/@' property='rdfs:label'></a></strong>";
 		var allprops = Object.getOwnPropertyNames(individual.properties);
 		var props = "<div>";
 		for (var i = 0, uri; (uri = allprops && allprops[i]); i++) {
+			if(uri === "@") { continue }
 			if ( individual.hasValue(uri) ) {
-				props += "<em about='" + uri + "' property='rdfs:label'></em>: "
+				props += "<span about='" + uri + "' property='rdfs:label'></span>: "
 				if (individual[uri][0] instanceof veda.IndividualModel) {
-					props += "<span rel='" + uri + "' template='v-ui:LabelLinkTemplate'></span>; "
+					props += "<span rel='" + uri + "' template='v-ui:LabelEmptyLinkTemplate'></span>; "
 				} else {
 					props += "<span property='" + uri + "'></span>; "
 				}
@@ -477,7 +506,7 @@ v-fs:FulltextRequestTemplate
 		props += "</div>";
 		return "<span>" + head + props + "</span>";
 	}
-	
+
 	// Present results
 	function beforeSearch() {
 		notFound.hide();
@@ -489,7 +518,7 @@ v-fs:FulltextRequestTemplate
 		resultsList.empty();
 		pager.empty();
 		resultsCount.text(self.count);
-		
+
 		// Nothing found
 		if (self.count === 0) {
 			notFound.show();
@@ -501,7 +530,7 @@ v-fs:FulltextRequestTemplate
 		}
 		resultsList.attr("start", self.page * veda.user.displayedElements + 1);
 		results.tab("show");
-		
+
 		for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
 			(function (i) {
 				setTimeout(function () {
@@ -512,56 +541,63 @@ v-fs:FulltextRequestTemplate
 				}, 0);
 			}(i));
 		}
-		
-		// Show pager
-		for (var pg = 0; pg < Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0); pg++) {
-			var $pg = $("<li/>")
-				.attr("class", pg === self.page ? "active" : "")
-				.appendTo(pager);
-			var $a = $("<a/>", {
-				"text" : pg + 1,
-				"click": (function (pg) {
-					if (pg === self.page) return $.noop;
-					return function (event) {
-						event.preventDefault();
-						self.page = pg;
-						self.trigger("afterSearch");
-					}
-				})(pg),
-				"href" : ""
-			}).appendTo($pg);
-		}
+
+		// Pager
+		pager.pager({
+			pages: Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0),
+			active: self.page + 1,
+			neighbours: 3,
+			click: function (page) {
+				if (page - 1 === self.page) return false;
+				self.page = page - 1;
+				self.trigger("afterSearch");
+			}
+		});
 	}
 </script>
   """
 .
 v-fs:AttributiveRequestModel
   rdf:type v-s:ClassModel ;
-  rdfs:label "v-fs:AttributiveRequest class model"@en ;
+  rdfs:label "V-fs:AttributiveRequest class model"@en ;
   rdfs:label "Модель класса v-fs:AttributiveRequest"@ru ;
   v-ui:forClass v-fs:AttributiveRequest ;
   v-s:script """
+	var stopList = [
+		"@",
+		"rdf:type",
+		"v-s:author",
+		"v-s:publisher",
+		"v-s:lastEditor",
+		"v-s:created",
+		"v-s:edited",
+		"v-s:updateCounter",
+		"v-s:deleted",
+		"rdfs:label",
+		"rdfs:isDefinedBy",
+		"v-fs:sortOrder",
+		"v-fs:databases",
+		"v-fs:reopen",
+		"v-fs:typeToSearch",
+		"v-fs:resultTemplate",
+		"v-fs:resultTemplateRest"
+	];
 	var mkQuery = veda.Util.queryFromIndividual;
-	
-	var self = individual,
+
+	var self = this,
 		sort = self.hasValue("v-fs:sortOrder")      ? self["v-fs:sortOrder"][0] : undefined,
 		databases = self.hasValue("v-fs:databases") ? self["v-fs:databases"][0] : undefined,
 		reopen = self.hasValue("v-fs:reopen")       ? self["v-fs:reopen"][0]    : false,
 		q;
-	
+
 	self.on("individual:propertyModified", function (property_uri, values) {
 		switch (property_uri) {
-			case "v-fs:typeToSearch": 
+			case "v-fs:typeToSearch":
 				self.form = new veda.IndividualModel();
-				self.form["rdf:type"] = values.slice(0);
+				self.form["rdf:type"] = values;
 				for (var property_uri in self.properties) {
-					if ( property_uri === "rdf:type" 
-						 || property_uri === "v-s:author" 
-						 || property_uri === "v-s:created"
-						 || property_uri === "v-s:deleted" 
-						 || property_uri === "rdfs:label"
-					) { continue; }
-					if (self.form[property_uri]) { self.form[property_uri] = self[property_uri].slice(0); }
+					if ( stopList.indexOf(property_uri) >= 0 ) { continue; }
+					self.form[property_uri] = self[property_uri];
 				}
 				self.form.on("individual:propertyModified", handler);
 				q = mkQuery(self.form);
@@ -577,18 +613,12 @@ v-fs:AttributiveRequestModel
 	}
 
 	function handler(property_uri, values) {
-		if ( property_uri !== "rdf:type" 
-			 && property_uri !== "v-s:author" 
-			 && property_uri !== "v-s:created" 
-			 && property_uri !== "v-s:deleted" 
-			 && property_uri !== "rdfs:label"
-		) { 
-			if (!self[property_uri]) self.defineProperty(property_uri);
-			self[property_uri] = values.slice(0);
+		if ( stopList.indexOf(property_uri) < 0 ) {
+			self[property_uri] = values;
 		}
 		q = mkQuery(self.form);
 	}
-	
+
 	self.result  = [];
 	self.count  = 0;
 	self.selected = [];
@@ -601,16 +631,16 @@ v-fs:AttributiveRequestModel
 		return self.result;
 	};
 	// Search if query defined
-	if (q) { self.search() };
+	//if (q) { self.search() };
   """
 .
 v-fs:AttributiveRequestTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "v-fs:AttributiveRequest class template"@en ;
+  rdfs:label "V-fs:AttributiveRequest class template"@en ;
   rdfs:label "Шаблон класса v-fs:AttributiveRequest"@ru ;
   v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:template """
-<div role="tabpanel">
+<div role="tabpanel" class="container-fluid">
 	<br>
 	<!-- Nav tabs -->
 	<ul class="nav nav-tabs nav-right" role="tablist">
@@ -677,6 +707,17 @@ v-fs:AttributiveRequestTemplate
 			</div>
 		</div>
 	</div>
+	<div class="modal" id="object-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title"></h4>
+				</div>
+				<div class="modal-body"></div>
+			</div>
+		</div>
+	</div>
 </div>
 <script>
 	var self = individual,
@@ -695,7 +736,7 @@ v-fs:AttributiveRequestTemplate
 		customHead = $("thead#custom-head", template),
 		clearCustom = $("#clear-custom", template),
 		head, rest, tmpl;
-	
+
 	// Autofocus on query field
 	params.on("shown.bs.tab", function () {
 		if (!self.hasValue("v-fs:attributiveQuery")) {
@@ -703,19 +744,19 @@ v-fs:AttributiveRequestTemplate
 		}
 	});
 	params.trigger("shown.bs.tab");
-	
+
 	// Enter on query field triggers search
 	find.click( function (e) {
 		e.preventDefault();
 		self.search();
 	});
-	
+
 	clearCustom.click(function () {
 		self["v-fs:resultTemplate"] = [];
 		self["v-fs:resultTemplateRest"] = [];
 		setResultTable( self["v-fs:typeToSearch"] );
 	});
-	
+
 	// Define and clean handlers
 	self.on("beforeSearch", beforeSearch);
 	self.on("afterSearch", afterSearch);
@@ -724,26 +765,42 @@ v-fs:AttributiveRequestTemplate
 	template.on("remove", function () {
 		self.off("beforeSearch", beforeSearch);
 		self.off("afterSearch", afterSearch);
-		self.off("individual:afterSave", updateAspect);	
+		self.off("individual:afterSave", updateAspect);
 		self.off("individual:propertyModified", typeChanged);
 	});
 
 	// Present form if defined
-	if (self.form) { 
+	if (self.form) {
 		typeChanged("v-fs:typeToSearch", self["v-fs:typeToSearch"]);
 	}
 
 	// Present results if query defined
-	if (self.q) { 
-		//self.trigger("afterSearch"); 
+	if (self.q) {
+		//self.trigger("afterSearch");
 		self.search();
 	}
-	
+
 	$("#refresh", template).click(function (e) {
 		e.preventDefault();
 		self.search();
 	});
-	
+
+	// Modal for links
+	var $objModal = $("#object-modal", template).modal({show: false});
+	var cntr = $(".modal-body", $objModal);
+	template.on("remove", function () {
+		$objModal.modal("hide");
+	});
+	tBody.on("click", "a[resource]", function (e) {
+		e.preventDefault();
+		var uri = $(this).attr("resource"),
+			link = new veda.IndividualModel(uri);
+		cntr.empty();
+		link.present(cntr);
+		$objModal.modal("show");
+		$objModal.focus();
+	});
+
 	// Display search form
 	function typeChanged(property_uri, types) {
 		if (property_uri === "v-fs:typeToSearch") {
@@ -752,7 +809,7 @@ v-fs:AttributiveRequestTemplate
 			setResultTable(types);
 		}
 	}
-	
+
 	// Set result table
 	function setResultTable(types) {
 		if ( self.hasValue("v-fs:resultTemplate") ) {
@@ -770,7 +827,7 @@ v-fs:AttributiveRequestTemplate
 			var placeholder = (new veda.IndividualModel("v-fs:DragColumns")).present(customHead, '<tr><td><em about="v-fs:DragColumns" property="rdfs:label"></em></td></tr>');
 		}
 		tHead.html( head.clone() );
-		
+
 		// Sorting
 		var sortBy = dir = "";
 		if ( self.hasValue("v-fs:sortOrder") ) {
@@ -783,7 +840,7 @@ v-fs:AttributiveRequestTemplate
 			if (sortBy.indexOf(property_uri) >= 0) {
 				a.removeClass("text-muted");
 				if (dir === "desc") a.removeClass("glyphicon-sort-by-attributes").addClass("glyphicon-sort-by-attributes-alt");
-			}			
+			}
 			a.click(function (e) {
 				e.preventDefault();
 				var $this = $(this);
@@ -796,7 +853,7 @@ v-fs:AttributiveRequestTemplate
 			});
 		});
 		tmpl = gen_row(head)[0].outerHTML;
-		
+
 		$("thead#generic-head > tr").sortable({
 			connectWith: "thead#custom-head > tr",
 			placeholder: "danger",
@@ -834,12 +891,12 @@ v-fs:AttributiveRequestTemplate
 		}
 		asp.save();
 	}
-	
+
 	// Generic header from class
 	function gen_head(type) {
 		var props = Object.getOwnPropertyNames(type.domainProperties);
 		var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
-		var tr = $("<tr><th id='count' width='20px'>#</th><th id='zoom' width='20px'><span class='glyphicon glyphicon-search'></span></th></tr>"); 
+		var tr = $("<tr><th id='count' width='20px'>#</th><th id='zoom' width='20px'><span class='glyphicon glyphicon-search'></span></th><th id='@'>@</th></tr>");
 		var header = props.map( function (property_uri) {
 			if (property_uri === "rdf:type" || property_uri === "v-s:deleted") { return ""; }
 			var property = type.domainProperties[property_uri];
@@ -865,6 +922,8 @@ v-fs:AttributiveRequestTemplate
 				td.text("###");
 			} else if (this.id === "zoom") {
 				td.html("<a href='#/@'><span class='glyphicon glyphicon-search'></span></a>");
+			} else if (this.id === "@") {
+				td.attr("property", "@");
 			} else {
 				var property = new veda.IndividualModel( this.id );
 				var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : undefined;
@@ -873,14 +932,14 @@ v-fs:AttributiveRequestTemplate
 				} else if (literals.indexOf(range) >= 0) {
 					td.attr("property", property.id);
 				} else {
-					td.attr("rel", property.id).attr("template", "v-ui:LabelLinkTemplate");
+					td.attr("rel", property.id).attr("template", "v-ui:LabelEmptyLinkTemplate");
 				}
 			}
 			td.appendTo(row);
 		});
 		return row;
 	}
-	
+
 	// Present results
 	function beforeSearch() {
 		notFound.hide();
@@ -892,7 +951,7 @@ v-fs:AttributiveRequestTemplate
 		tBody.empty();
 		pager.empty();
 		resultsCount.text(self.count);
-		
+
 		// Nothing found
 		if (self.count === 0) {
 			notFound.show();
@@ -903,7 +962,7 @@ v-fs:AttributiveRequestTemplate
 			self.page = Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0) - 1;
 		}
 		results.tab("show");
-		
+
 		for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
 			(function (i) {
 				setTimeout(function () {
@@ -916,27 +975,20 @@ v-fs:AttributiveRequestTemplate
 				}, 0);
 			}(i));
 		}
-		
-		// Show pager
-		for (var pg = 0; pg < Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0); pg++) {
-			var $pg = $("<li/>")
-				.attr("class", pg === self.page ? "active" : "")
-				.appendTo(pager);
-			var $a = $("<a/>", {
-				"text" : pg + 1,
-				"click": (function (pg) {
-					if (pg === self.page) return $.noop;
-					return function (event) {
-						event.preventDefault();
-						self.page = pg;
-						self.trigger("afterSearch");
-					}
-				})(pg),
-				"href" : ""
-			}).appendTo($pg);
-		}
+
+		// Pager
+		pager.pager({
+			pages: Math.floor(self.count / veda.user.displayedElements) + 1 * (self.count % veda.user.displayedElements ? 1 : 0),
+			active: self.page + 1,
+			neighbours: 3,
+			click: function (page) {
+				if (page - 1 === self.page) return false;
+				self.page = page - 1;
+				self.trigger("afterSearch");
+			}
+		});
 	}
-	
+
 	// Export to Spreadsheet
 	var tableToExcel = (function () {
 		var uri = 'data:application/vnd.ms-excel;base64,'
@@ -961,7 +1013,7 @@ v-fs:AttributiveRequestTemplate
 		var hd = tHead.clone().removeAttr("id");
 		var tbl = $("<table id='export2xls'>").append(hd, "<tbody></tbody>");
 		var tmpl = gen_row_simple(head)[0].outerHTML;
-		
+
 		for (var i = 0; i < self.count; i++) {
 			(function (i) {
 				var _tmpl = $(tmpl.replace("###", i+1));
@@ -973,7 +1025,7 @@ v-fs:AttributiveRequestTemplate
 			tableToExcel(tbl[0], self["rdfs:label"].join(", "));
 		}, 0);
 	});
-	
+
 	function gen_row_simple(head) {
 		var hd = $(head);
 		var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
@@ -984,6 +1036,8 @@ v-fs:AttributiveRequestTemplate
 				td.text("###");
 			} else if (this.id === "zoom") {
 				td.html("");
+			} else if (this.id === "@") {
+				td.attr("property", "@");
 			} else {
 				var property = new veda.IndividualModel( this.id );
 				var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : undefined;

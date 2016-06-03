@@ -54,7 +54,8 @@ veda.Module(function SearchSort(veda) { "use strict";
 			var key = Object.getOwnPropertyNames(search.results)[i];
 			var result = search.results[key];
 			Object.getOwnPropertyNames(result.properties).map( function (property_uri) {
-				properties[property_uri] = result.properties[property_uri];
+				if(property_uri === "@") { return }
+				properties[property_uri] = new veda.IndividualModel(property_uri);
 			});
 		}
 		

@@ -8,49 +8,41 @@ veda.Module(function SearchSelectedFunctions(veda) { "use strict";
 			del = $("#delete", actions),
 			ttl = $("#export-ttl", actions);
 		upd.click(function () {
-			if ( confirm("Вы действительно хотите обновить выбранные элементы?") ) {
-				/*var l = new veda.IndividualListModel(search.selected);
-				l.each(function (item) {
-					item.save();
-				});*/
-				var i = 0, keys = Object.keys(search.selected), length = keys.length;
-				function updateList(start) {
-					try {
-						for (i=start; i<length; i++) {
-							var key = keys[i],
-								item = search.selected[key];
-							item.save();
-						}
-					} catch (ex) {
-						setTimeout(function () {
-							updateList(i);	
-						}, 2000);
+			var i = 0, keys = Object.keys(search.selected), length = keys.length;
+			function updateList(start) {
+				try {
+					for (i=start; i<length; i++) {
+						var key = keys[i],
+							item = search.selected[key];
+						item.save();
 					}
+				} catch (ex) {
+					setTimeout(function () {
+						updateList(i);
+					}, 2000);
 				}
-				deleteList(0);
+			}
+			if ( confirm("Вы действительно хотите обновить выбранные элементы?") ) { 
+				updateList(0); 
 			}
 		});
 		del.click(function () {
-			if ( confirm("Вы действительно хотите удалить выбранные элементы?") ) {
-				/*var list = new veda.IndividualListModel(search.selected);
-				l.each(function (item) {
-					item.delete();
-				});*/
-				var i = 0, keys = Object.keys(search.selected), length = keys.length;
-				function deleteList(start) {
-					try {
-						for (i=start; i<length; i++) {
-							var key = keys[i],
-								item = search.selected[key];
-							item.delete();
-						}
-					} catch (ex) {
-						setTimeout(function () {
-							deleteList(i);	
-						}, 2000);
+			var i = 0, keys = Object.keys(search.selected), length = keys.length;
+			function deleteList(start) {
+				try {
+					for (i=start; i<length; i++) {
+						var key = keys[i],
+							item = search.selected[key];
+						item.delete();
 					}
+				} catch (ex) {
+					setTimeout(function () {
+						deleteList(i);	
+					}, 2000);
 				}
-				deleteList(0);
+			}
+			if ( confirm("Вы действительно хотите удалить выбранные элементы?") ) { 
+				deleteList(0); 
 			}
 		});
 		ttl.click(function () {

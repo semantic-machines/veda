@@ -12,6 +12,17 @@
 #  owl:versionInfo "0.1" ;
   v-s:loadPriority 9 ;
 .
+
+v-s:SystemProperties
+  rdf:type v-s:Bundle ;
+  rdfs:label "Системные свойства"@ru ;
+  rdfs:label "System properties"@en ;
+.
+v-s:MainProperties
+  rdf:type v-s:Bundle ;
+  rdfs:label "Основные свойства"@ru ;
+  rdfs:label "Main properties"@en ;
+.
 v-s:Back
   rdf:type v-s:Bundle ;
   rdfs:label "Назад"@ru ;
@@ -29,8 +40,8 @@ v-s:Chief
 .
 v-s:ImplementationPeriod
   rdf:type v-s:Bundle ;
-  rdfs:label "период реализации"@ru ;
-  rdfs:label "implementation period"@en ;
+  rdfs:label "Период реализации"@ru ;
+  rdfs:label "Implementation period"@en ;
 .
 
 v-s:ViewDetails
@@ -91,6 +102,11 @@ v-s:Send
   rdfs:label "Отправить"@ru ;
   rdfs:label "Send"@en ;
 .
+v-s:SendTask
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выдать задачу"@ru ;
+  rdfs:label "Send task"@en ;
+.
 v-s:Next
   rdf:type v-s:Bundle ;
   rdfs:label "Далее"@ru ;
@@ -113,8 +129,8 @@ v-s:ContinueEdit
 .
 v-s:Save
   rdf:type v-s:Bundle ;
-  rdfs:label "Опубликовать"@ru ;
-  rdfs:label "Publish"@en ;
+  rdfs:label "Сохранить"@ru ;
+  rdfs:label "Save"@en ;
 .
 v-s:Draft
   rdf:type v-s:Bundle ;
@@ -140,6 +156,11 @@ v-s:Delete
   rdf:type v-s:Bundle ;
   rdfs:label "Удалить"@ru ;
   rdfs:label "Delete"@en ;
+.
+v-s:DeleteAll
+  rdf:type v-s:Bundle ;
+  rdfs:label "Удалить все"@ru ;
+  rdfs:label "Delete all"@en ;
 .
 v-s:DeleteDraft
   rdf:type v-s:Bundle ;
@@ -241,3 +262,9 @@ v-b:AreYouSure
   rdfs:label "Вы уверены?"@ru ;
   rdfs:label "Are you sure?"@en ;
 .
+v-b:Status
+  rdf:type v-s:Bundle ;
+  rdfs:label "Статус"@ru ;
+  rdfs:label "Status"@en ;
+.
+

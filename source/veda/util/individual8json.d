@@ -1,7 +1,7 @@
-module veda.core.util.individual8json;
+module veda.util.individual8json;
 
 import std.conv, std.stdio, std.json, std.datetime;
-import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, onto.lang;
+import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang;
 
 static LANG[ string ] Lang;
 static DataType[ string ] Resource_type;
@@ -54,9 +54,14 @@ JSONValue individual_to_json(immutable(Individual)individual)
     json[ "@" ] = individual.uri;
     foreach (property_name, property_values; individual.resources)
     {
-        JSONValue resources_json;
+        JSONValue[] jsonVals;
+
         foreach (property_value; property_values)
-            resources_json ~= resource_to_json(cast(Resource)property_value);
+            jsonVals ~= resource_to_json(cast(Resource)property_value);
+
+        JSONValue resources_json;
+        resources_json.array = jsonVals;
+
         json[ property_name ] = resources_json;
     }
 //    writeln ("->JSON:", json);
@@ -71,9 +76,14 @@ JSONValue individual_to_json(Individual individual)
     json[ "@" ] = individual.uri;
     foreach (property_name, property_values; individual.resources)
     {
-        JSONValue resources_json;
+        JSONValue[] jsonVals;
+
         foreach (property_value; property_values)
-            resources_json ~= resource_to_json(cast(Resource)property_value);
+            jsonVals ~= resource_to_json(cast(Resource)property_value);
+
+        JSONValue resources_json;
+        resources_json.array = jsonVals;
+
         json[ property_name ] = resources_json;
     }
 //    writeln ("->JSON:", json);
@@ -95,7 +105,9 @@ Individual json_to_individual(ref JSONValue individual_json)
         Resource[] resources = Resource[].init;
         foreach (size_t index, property_value; property_values)
             resources ~= json_to_resource(property_value);
-        individual.resources[ property_name ] = resources;
+
+        if (resources.length > 0)
+            individual.resources[ property_name ] = resources;
     }
 //    writeln ("->INDIVIDUAL:", individual);
     return individual;

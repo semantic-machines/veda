@@ -13,7 +13,7 @@
 <http://semantic-machines.com/veda/simple-workflow-cr>
   rdf:type owl:Ontology ;
   rdfs:label "Онтология бизнес процессов"@ru ;
-  rdfs:label "simple workflow ontology"@en ;
+  rdfs:label "Simple workflow ontology"@en ;
   rdfs:isDefinedBy s-wfc: ;
 #  owl:versionInfo "1.4" ;
   v-s:loadPriority 21 ;
@@ -71,7 +71,7 @@ s-wf:t2 a v-wf:Task;
     v-wf:belongsTo s-wf:net_complex_route;
     v-wf:hasFlow s-wf:f_t2_t3;
     v-wf:executor s-wf:codelet_down_right;
-    rdfs:label "понизить права"^^xsd:string;
+    rdfs:label "Понизить права"^^xsd:string;
     v-wf:completedJournalMap s-wf:map_jrn_msg_rd, s-wf:map_jrn_msg_rd_ev, s-wf:map_journal_doc_id, s-wf:map_journal_process_id;
     v-wf:completedMapping s-wf:map_get_rights;
     v-wf:startingMapping s-wf:map_doc_id.
@@ -273,7 +273,7 @@ s-wf:t9 a v-wf:Task;
     v-wf:belongsTo s-wf:net_complex_route;
     v-wf:hasFlow s-wf:f_t9_oc1;
     v-wf:executor s-wf:codelet_restore_right;
-    rdfs:label "восстановить права"^^xsd:string;
+    rdfs:label "Восстановить права"^^xsd:string;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_orig_rights.
 
 s-wf:f_t9_oc1 a v-wf:Flow;
@@ -331,7 +331,7 @@ s-wf:t_instruction a v-wf:Task;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
     v-wf:completeDecisionTransform s-wf:tr_taken_decision;
     v-wf:startDecisionTransform s-wf:tr_instruct_form;
-    rdfs:label "поручение"^^xsd:string.
+    rdfs:label "Поручение"^^xsd:string.
 
 s-wf:t_examination a v-wf:Task;
 	rdfs:isDefinedBy s-wfc: ;
@@ -342,7 +342,7 @@ s-wf:t_examination a v-wf:Task;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
     v-wf:completeDecisionTransform s-wf:tr_taken_decision;
     v-wf:startDecisionTransform s-wf:tr_examin_form;
-    rdfs:label "ознакомление"^^xsd:string.
+    rdfs:label "Ознакомление"^^xsd:string.
 
 s-wf:t_auto_instruction a v-wf:Task;
 	rdfs:isDefinedBy s-wfc: ;
@@ -352,7 +352,7 @@ s-wf:t_auto_instruction a v-wf:Task;
     v-wf:executor s-wf:executor_reviewer;
     v-wf:completeDecisionTransform s-wf:tr_taken_decision;
     v-wf:startDecisionTransform s-wf:tr_approv_form;
-    rdfs:label "автопоручение"^^xsd:string.
+    rdfs:label "Автопоручение"^^xsd:string.
 
 s-wf:t_review a v-wf:Task;
     rdfs:isDefinedBy s-wfc: ;
@@ -363,7 +363,7 @@ s-wf:t_review a v-wf:Task;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
     v-wf:completeDecisionTransform s-wf:tr_taken_decision;
     v-wf:startDecisionTransform s-wf:tr_review_form;
-    rdfs:label "рассмотрение"^^xsd:string.
+    rdfs:label "Рассмотрение"^^xsd:string.
 
 s-wf:t_distribution a v-wf:Task;
     rdfs:isDefinedBy s-wfc: ;
@@ -373,7 +373,7 @@ s-wf:t_distribution a v-wf:Task;
     v-wf:hasFlow s-wf:f_tdistr_t9;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
     v-wf:executor s-wf:codelet_distribution;
-    rdfs:label "рассылка"^^xsd:string.
+    rdfs:label "Рассылка"^^xsd:string.
 
 s-wf:f_tdistr_t9 a v-wf:Flow;
 	rdfs:isDefinedBy s-wfc: ;
@@ -401,7 +401,7 @@ s-wf:var_coordinator_1
         rdf:type v-wf:VarDefine ;
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:varDefineName "coordinatorLevel1" ;
-        rdfs:label "список согласующих 1 уровень"@ru ;
+        rdfs:label "Список согласующих 1 уровень"@ru ;
 .
 
 s-wf:executor_def_1
@@ -414,7 +414,7 @@ s-wf:var_coordinator_2
         rdf:type v-wf:VarDefine ;
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:varDefineName "coordinatorLevel2" ;
-        rdfs:label "список согласующих 2 уровень"@ru ;
+        rdfs:label "Список согласующих 2 уровень"@ru ;
 .
 
 s-wf:executor_def_2
@@ -427,28 +427,35 @@ s-wf:executor_from_coordinator
 	rdf:type v-wf:ExecutorDefinition ;
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:executorExpression "process.getInputVariable ('coordinator')" ;
-	rdfs:label "исполнители из переменной coordinator"@ru ;
+	rdfs:label "Исполнители из переменной coordinator"@ru ;
 .
 
 s-wf:executor_4m_PLV_coordinator
 	rdf:type v-wf:ExecutorDefinition ;
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:executorExpression "process.getLocalVariable ('coordinator')" ;
-	rdfs:label "исполнители из local process variable coordinator" ;
+	rdfs:label "Исполнители из local process variable coordinator" ;
 .
 
 s-wf:map_coordinator_4_PLV_coordinator
     rdf:type v-wf:Mapping ;
     v-wf:mapToVariable s-wf:var_coordinator ;
     v-wf:mappingExpression  "process.getInputVariable ('coordinator')" ;
-    rdfs:label "coordinator = process.input.coordinator" ;        
+    rdfs:label "Coordinator = process.input.coordinator" ;        
+.
+
+s-wf:map_documentType
+    rdf:type v-wf:Mapping ;
+    v-wf:mapToVariable s-wf:var_documentType ;
+    v-wf:mappingExpression  "task_result.getValue ('res')" ;
+    rdfs:label "documentType = task_result.getValue ('res')" ;        
 .
 
 
 s-wf:user_task_form_label
         rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "user_task_form_label" ;
-        rdfs:label "наименование формы ответа на задачу"@ru ;
+        rdfs:label "Наименование формы ответа на задачу"@ru ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -457,7 +464,7 @@ s-wf:map_user_task_form_label
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:user_task_form_label ;
         v-wf:mappingExpression  "process.getInputVariable ('user_task_form_label')" ;
-        rdfs:label "user_task_form_label=process.user_task_form_label" ;        
+        rdfs:label "User_task_form_label=process.user_task_form_label" ;        
 .
 
 s-wf:map_user_task_form_label_coordination
@@ -465,7 +472,7 @@ s-wf:map_user_task_form_label_coordination
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:user_task_form_label ;
         v-wf:mappingExpression  "newStr ('Согласовать документ')" ;
-        rdfs:label "user_task_form_label=согласование"@ru ;        
+        rdfs:label "User_task_form_label=согласование"@ru ;        
 .
 
 s-wf:map_user_task_form_label_instruction
@@ -473,7 +480,7 @@ s-wf:map_user_task_form_label_instruction
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:user_task_form_label ;
         v-wf:mappingExpression  "newStr ('Исполнить поручение')" ;
-        rdfs:label "user_task_form_label=поручение"@ru ;        
+        rdfs:label "User_task_form_label=поручение"@ru ;        
 .
 
 s-wf:map_user_task_form_label_remake
@@ -481,14 +488,14 @@ s-wf:map_user_task_form_label_remake
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:user_task_form_label ;
         v-wf:mappingExpression  "newStr ('Доработать документ')" ;
-        rdfs:label "user_task_form_label=доработать"@ru ;        
+        rdfs:label "User_task_form_label=доработать"@ru ;        
 .
 
 s-wf:var_coordinator_3
         rdf:type v-wf:VarDefine ;
 	rdfs:isDefinedBy s-wfc: ;
 	v-wf:varDefineName "coordinatorLevel3" ;
-        rdfs:label "список согласующих 3 уровень"@ru ;
+        rdfs:label "Список согласующих 3 уровень"@ru ;
 .
 
 s-wf:executor_def_3
@@ -509,7 +516,7 @@ s-wf:map_possible_decision_for_instruction
 	rdfs:isDefinedBy s-wfc: ;
         v-wf:mapToVariable s-wf:possible_decision ;
         v-wf:mappingExpression  "[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect')]" ;
-    rdfs:label "варианты ответа для исполнения"^^xsd:string;
+    rdfs:label "Варианты ответа для исполнения"^^xsd:string;
 .
 
 s-wf:map_coordinator1_1
@@ -809,28 +816,28 @@ v-wf:DecisionGoCoordination1
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy s-wfc: ;
-	rdfs:label "перейти к этапу согласования 1"@ru ;
+	rdfs:label "Перейти к этапу согласования 1"@ru ;
 .
 
 v-wf:DecisionGoCoordination2
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy s-wfc: ;
-	rdfs:label "перейти к этапу согласования 2"@ru ;
+	rdfs:label "Перейти к этапу согласования 2"@ru ;
 .
 
 v-wf:DecisionGoCoordination3
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy s-wfc: ;
-	rdfs:label "перейти к этапу согласования 3"@ru ;
+	rdfs:label "Перейти к этапу согласования 3"@ru ;
 .
 
 s-wf:ss2 a v-s:SavedSearch;
 	rdfs:isDefinedBy s-wfc: ;
     v-s:author td:RomanKarpov;
     v-s:query "'rdfs:isDefinedBy' == 's-wfc:'"^^xsd:string;
-    rdfs:label "онтология комплексного маршрута монди"^^xsd:string;
+    rdfs:label "Онтология комплексного маршрута монди"^^xsd:string;
     v-s:created "2015-05-23T13:27:18.000Z"^^xsd:dateTime.
 
 #----------------------- трансформация для стартовой формы ПДР -------------------------------------------------

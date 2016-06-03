@@ -51,24 +51,24 @@ v-s:hasDocumentDraft
 	rdf:type owl:ObjectProperty ;
 	rdfs:domain v-s:PersonalAspect ;
 	rdfs:range rdfs:Resource ;
-	rdfs:label "черновик"@en ;
-	rdfs:label "draft"@ru ;
+	rdfs:label "Черновик"@en ;
+	rdfs:label "Draft"@ru ;
 .
 
 v-s:hasFavorite
 	rdf:type owl:ObjectProperty ;
 	rdfs:domain v-s:Aspect ;
 	rdfs:range rdfs:Resource ;
-	rdfs:label "favorite"@en ;
-	rdfs:label "избранное"@ru ;
+	rdfs:label "Favorite"@en ;
+	rdfs:label "Избранное"@ru ;
 .
 
 v-s:hasBlank
 	rdf:type owl:ObjectProperty ;
 	rdfs:domain v-s:Aspect ;
 	rdfs:range v-fc:Blank ;
-	rdfs:label "blank"@en ;
-	rdfs:label "бланк"@ru ;
+	rdfs:label "Blank"@en ;
+	rdfs:label "Бланк"@ru ;
 .
 
 v-s:hasRegistry
@@ -76,32 +76,32 @@ v-s:hasRegistry
 	rdfs:domain v-s:Aspect ;
 	rdfs:range v-fs:FulltextRequest ;
 	rdfs:range v-fs:AttributiveRequest ;
-	rdfs:label "registry"@en ;
-	rdfs:label "реестр"@ru ;
+	rdfs:label "Registry"@en ;
+	rdfs:label "Реестр"@ru ;
 .
 
 v-s:hasReport
 	rdf:type owl:ObjectProperty ;
 	rdfs:domain v-s:Aspect ;
 	rdfs:range rdfs:Resource ;
-	rdfs:label "report"@en ;
-	rdfs:label "отчет"@ru ;
+	rdfs:label "Report"@en ;
+	rdfs:label "Отчет"@ru ;
 .
 
 v-s:hasArbitraryLink
 	rdf:type owl:ObjectProperty ;
 	rdfs:domain v-s:Aspect ;
 	rdfs:range rdfs:Resource ;
-	rdfs:label "arbitrary link"@en ;
-	rdfs:label "произвольная ссылка"@ru ;
+	rdfs:label "Arbitrary link"@en ;
+	rdfs:label "Произвольная ссылка"@ru ;
 .
 
 v-s:hasWidget
 	rdf:type owl:ObjectProperty ;
 	rdfs:domain v-s:Aspect ;
 	rdfs:range rdfs:Resource ;
-	rdfs:label "widget"@en ;
-	rdfs:label "виджет"@ru ;
+	rdfs:label "Widget"@en ;
+	rdfs:label "Виджет"@ru ;
 .
 
 v-s:owner
@@ -112,15 +112,15 @@ v-s:hasBusinessAspect
 	rdf:type owl:ObjectProperty ;
 	rdfs:domain v-s:Aspect ;
 	rdfs:range v-s:BusinessAspect ;
-	rdfs:label "related business aspect"@en ;
-	rdfs:label "связанный деловой аспект"@ru ;
+	rdfs:label "Related business aspect"@en ;
+	rdfs:label "Связанный деловой аспект"@ru ;
 .
 
 v-s:hasAspect
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Person ;
-  rdfs:label "персональный аспект"@ru ;
-  rdfs:label "personal aspect"@ru ;
+  rdfs:label "Персональный аспект"@ru ;
+  rdfs:label "Personal aspect"@ru ;
   rdfs:range v-s:PersonalAspect ;
 .
 

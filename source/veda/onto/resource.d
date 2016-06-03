@@ -5,7 +5,7 @@
 module veda.onto.resource;
 
 import std.conv, std.stdio, std.datetime, std.string;
-import onto.lang;
+import veda.onto.lang;
 import veda.type;
 
 alias Resource[] Resources;
@@ -16,6 +16,14 @@ public void setMapResources(ref Resources rss, ref MapResource hrss)
 {
     foreach (rs; rss)
         hrss[ rs.get!string ] = &rs;
+}
+
+public string[] getAsArrayStrings(ref Resources rss)
+{
+    string[] res;
+    foreach (rs; rss)
+        res ~= rs.get!string;
+    return res;
 }
 
 public bool anyExists(ref MapResource hrss, string object)
@@ -206,6 +214,10 @@ struct Resource
                 writeln("Ex!: ", __FUNCTION__, ":", text(__LINE__), ", ", ex.msg);
             }
         }
+        else if (_type == DataType.Uri)
+        {
+            this = str;
+        }
         else
         {
             this = str;
@@ -271,9 +283,12 @@ struct Resource
         else if (type == DataType.Boolean)
             return text(get!bool());
         else if (type == DataType.Datetime)
-            return text(get!long ());
+        {
+            SysTime st = SysTime(unixTimeToStdTime(get!long ()), UTC());
+            return st.toISOExtString();
+        }
         else if (type == DataType.Decimal)
-            return text(get!decimal());
+            return text(get!decimal().toDouble_wjp());
         else if (type == DataType.Integer)
             return text(get!long ());
 
@@ -335,6 +350,31 @@ string getFirstString(Resources rss)
         return null;
 
     return rss[ 0 ].get!string;
+}
+
+string[] getAsStringArray(Resources rss)
+{
+    string[] res;
+
+    foreach (rs; rss)
+    {
+        res ~= rs.data;
+    }
+    return res;
+}
+
+string getAsStringify(Resources rss)
+{
+    string res = "";
+
+    foreach (rs; rss)
+    {
+        if (res.length != 0)
+            res ~= "," ~ rs.data;
+        else
+            res ~= rs.data;
+    }
+    return res;
 }
 
 bool anyExists(Resources rss, string[] objects)

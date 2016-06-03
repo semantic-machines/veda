@@ -9,6 +9,18 @@ var _Decimal = 32;
 var _Bool = 64;
 var _Boolean = 64;
 
+function removeV(arr, what) {
+    var res = [];
+    print ("@b in=", toJson (arr));
+    for (var i = 0; i < arr.length; i++)
+    {
+	if (what.data != arr[i].data)
+	    res = arr[i];
+    }
+    print ("@e out=", toJson (res));
+    return res;
+}
+
 function genUri()
 {
     var uid = guid();
@@ -33,7 +45,8 @@ function compare(a, b)
 {
     if (typeof a === "function") return a.toString() === b.toString();
     else if (typeof a != "object" || typeof b != "object") return a === b;
-    if (Object.keys(a).length != Object.keys(b).length) return false;
+    var dl = Object.keys(a).length - Object.keys(b).length;
+    if (dl > 1 || dl < -1) return false;
     var result = true;
     for (var key in a)
     {
@@ -42,6 +55,9 @@ function compare(a, b)
 
         var tbb = typeof bb;
         var taa = typeof aa;
+
+	if (key == "v-s:updateCounter")
+	    continue;
 
         if (key == "type")
         {
@@ -159,15 +175,15 @@ function is_exist(individual, field, value)
 
 /**
  * Трансформировать указанные индивидуалы по заданным правилам
- * 
- * @param ticket сессионный билет 
+ *
+ * @param ticket сессионный билет
  * @param individuals один или несколько IndividualModel или их идентификаторов
- * @param transform применяемая трансформация 
+ * @param transform применяемая трансформация
  * @param executor контекст исполнителя
  * @param work_order контекст рабочего задания
  * @returns {Array}
  */
-function transformation(ticket, individuals, transform, executor, work_order)
+function transformation(ticket, individuals, transform, executor, work_order, process)
 {
     try
     {
@@ -273,7 +289,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
                 type: _Uri
             }];
 
-            //if (typeof window === "undefined") 
+            //if (typeof window === "undefined")
             //	print ("@1 out_data0_el=", toJson (out_data0_el));
             //    		print ("@1 out_data0_el[",name, "]=", toJson (out_data0_el[name]));
         }
@@ -478,6 +494,55 @@ function transformation(ticket, individuals, transform, executor, work_order)
                 out_data0_el[name] = out_data0_el_arr;
             }
         })();
+
+        var putThisProcess = (function()
+        {
+            return function(name)
+            {
+                var out_data0_el_arr = out_data0_el[name];
+
+                if (!out_data0_el_arr)
+                    out_data0_el_arr = [];
+
+                if (Array.isArray(process) === true)
+                {
+                    for (var key3 in process)
+                    {
+                        out_data0_el_arr.push(process[key3]);
+                    }
+                }
+                else
+                    out_data0_el_arr.push(process);
+
+                out_data0_el[name] = out_data0_el_arr;
+            }
+        })();
+
+        var removeThisProcess = (function()
+        {
+            return function(name)
+            {
+                var out_data0_el_arr = out_data0_el[name];
+
+                if (!out_data0_el_arr)
+                    out_data0_el_arr = [];
+
+                if (Array.isArray(process) === true)
+                {
+                    for (var key3 in process)
+                    {
+                        out_data0_el_arr = removeV (out_data0_el_arr, process[key3]);
+                    }
+                }
+                else
+				{
+                    out_data0_el_arr = removeV (out_data0_el_arr, process);
+				}
+
+                out_data0_el[name] = out_data0_el_arr;
+            }
+        })();
+
         /* PUT functions [END] */
 
         for (var key in individuals)
@@ -528,17 +593,10 @@ function transformation(ticket, individuals, transform, executor, work_order)
                 }
             })();
 
-            //print("#1.2 key=", key);
             var iteratedObject = (typeof window === "undefined") ? Object.getOwnPropertyNames(individual) : Object.getOwnPropertyNames(individual.properties);
-            if (typeof window !== "undefined")
-            {
-                iteratedObject.push('@');
-            }
-            //print("#1.3 key=", key);
 
             for (var key2 = 0; key2 < iteratedObject.length; key2++)
             {
-                //print("#2 key2=", key2);
                 var element = individual[iteratedObject[key2]];
 
                 var putValue = (function()
@@ -577,28 +635,62 @@ function transformation(ticket, individuals, transform, executor, work_order)
 
                 var putValueFrom = (function()
                 {
-                    return function(name, path)
+                    return function(name, path, transform)
                     {
                         var out_data0_el_arr = out_data0_el[name];
                         if (!out_data0_el_arr)
                             out_data0_el_arr = [];
 
-                        var curelem = (typeof window === "undefined") ?
-                            get_individual(ticket, element.data ? element.data : element) :
-                            new veda.IndividualModel(element.data ? element.data : element);
+						var element_uri;
+
+						if (Array.isArray(element) === true)
+							element_uri = getUri (element);
+						else
+							element_uri = element.data ? element.data : element;
+
+                        var curelem;
+
+						curelem = (typeof window === "undefined") ? get_individual(ticket, element_uri) : new veda.IndividualModel(element_uri);
+
                         for (var i = 0; i < path.length - 1; i++)
                         {
                             if (!curelem || !curelem[path[i]]) return;
-                            curelem = (typeof window === "undefined") ?
-                                get_individual(ticket, curelem[path[i]].data ? curelem[path[i]].data : curelem[path[i]]) :
-                                new veda.IndividualModel(curelem[path[i]][0]);
+
+                            if (typeof window === "undefined") {
+                        		curelem = get_individual(ticket, curelem[path[i]].data ? curelem[path[i]].data : curelem[path[i]]);
+                            } else {
+                        		curelem = new veda.IndividualModel(curelem[path[i]][0]);
+                            }
                         }
                         if (!curelem || !curelem[path[path.length - 1]]) return;
-                        out_data0_el_arr.push(
-                        {
-                            data: (typeof window === "undefined") ? curelem[path[path.length - 1]].data : curelem[path[path.length - 1]][0],
-                            type: _Uri
-                        });
+
+                        if (typeof window === "undefined") {
+                            out_data0_el_arr.push(curelem[path[path.length - 1]]);
+                        } else {
+	                        var value = curelem[path[path.length - 1]][0];
+	                        var valueType = _Uri;
+
+	        				if (value instanceof String) valueType = _String;
+	        				if (value instanceof Date) valueType = _Datetime;
+	        				if (value instanceof Number) valueType = _Decimal;
+	        				if (value instanceof Boolean) valueType = _Boolean;
+
+	        				if (valueType == _Uri && typeof transform != 'undefined') {
+                        		if (transform == 'clone') {
+                        			value = value.clone();
+                        		} else {
+                        			value = veda.Util.buildStartFormByTransformation(value, new veda.IndividualModel(transform));
+                        		}
+	        				}
+
+	        				if (typeof value !== "undefined") {
+		                        out_data0_el_arr.push(
+		                        {
+		                            data: value,
+		                            type: valueType
+		                        });
+	        				}
+                        }
 
                         out_data0_el[name] = out_data0_el_arr;
                     }
@@ -804,7 +896,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
             }
         }
 
-        //if (typeof window === "undefined") 
+        //if (typeof window === "undefined")
         //	print("@E out_data0=", toJson (out_data0));
 
         var out_data = [];
@@ -831,7 +923,7 @@ function transformation(ticket, individuals, transform, executor, work_order)
 
 /**
  * General function for getNextValue method for numerators
- * 
+ *
  * @param ticket
  * @param scope - numerator scope
  * @param FIRST_VALUE - first value in scope
@@ -850,7 +942,7 @@ function getNextValueSimple(ticket, scope, FIRST_VALUE)
             return FIRST_VALUE;
         }
     }
-    if (typeof scope === 'undefined' || !scope['v-s:numerationCommitedInterval'])
+    if (typeof scope === 'undefined' || !scope['v-s:numerationCommitedInterval'] || scope['v-s:numerationCommitedInterval'].length == 0)
     {
         return FIRST_VALUE;
     }
@@ -904,42 +996,6 @@ function isNumerationValueAvailable(scope, value)
             }
         }
         return true;
-    }
-}
-
-function putDraftToUserAspect(individual)
-{
-    if (!veda.user.aspect['v-s:hasDocumentDraft'])
-    {
-        veda.user.aspect['v-s:hasDocumentDraft'] = [individual];
-        veda.user.aspect.save();
-    }
-    else
-    {
-        var alreadyInDrafts = false;
-        veda.user.aspect['v-s:hasDocumentDraft'].forEach(function(draft)
-        {
-            alreadyInDrafts |= draft.id == individual.id;
-        });
-        if (!alreadyInDrafts)
-        {
-            veda.user.aspect['v-s:hasDocumentDraft'] = veda.user.aspect['v-s:hasDocumentDraft'].concat([individual]);
-            veda.user.aspect.save();
-        }
-    }
-}
-
-function removeDraftFromUserAspect(individual)
-{
-    if (veda.user.aspect['v-s:hasDocumentDraft'])
-    {
-        var inDrafts = false;
-        veda.user.aspect['v-s:hasDocumentDraft'] = veda.user.aspect['v-s:hasDocumentDraft'].filter(function(draft)
-        {
-            inDrafts |= draft.id == individual.id;
-            return draft.id !== individual.id;
-        })
-        if (inDrafts) veda.user.aspect.save();
     }
 }
 
@@ -1128,12 +1184,12 @@ function addToGroup(ticket, group, resource, rights, new_uri)
 		{
 			//print ("JS: GROUP ALREADY EXISTS");
 			return;
-		}	
-	}	
-	
+		}
+	}
+
 	if (!new_uri)
 		new_uri = genUri();
-	
+
     var new_membership_uri = genUri();
     var new_membership = {
         '@': new_membership_uri,
@@ -1141,7 +1197,7 @@ function addToGroup(ticket, group, resource, rights, new_uri)
         'v-s:memberOf': newUri(group),
         'v-s:resource': newUri(resource)
     };
-    
+
     if (rights) {
 		for (var i = 0; i < rights.length; i++)
 		{
@@ -1163,7 +1219,7 @@ function addToGroup(ticket, group, resource, rights, new_uri)
 				new_membership['v-s:canCreate'] = newBool(false);
 		}
 	}
-    
+
     var res = put_individual(ticket.id, new_membership);
 
     return [new_membership, res];
@@ -1193,12 +1249,12 @@ function addRight(ticket, rights, subj_uri, obj_uri, new_uri)
 		{
 			//print ("JS: RIGHT ALREADY EXISTS");
 			return;
-		}	
-	}	
+		}
+	}
 
 	if (!new_uri)
 		new_uri = genUri();
-		
+
     var new_permission = {
         '@': new_uri,
         'rdf:type': newUri('v-s:PermissionStatement'),
@@ -1230,4 +1286,39 @@ function addRight(ticket, rights, subj_uri, obj_uri, new_uri)
 
     return [new_permission, res];
     //print("ADD RIGHT:", toJson(new_permission));
+}
+
+function clone(obj)
+{
+    var copy;
+
+    // Handle the 3 simple types, and null or undefined
+    if (null == obj || "object" != typeof obj) return obj;
+
+    // Handle Date
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+    }
+
+    // Handle Array
+    if (obj instanceof Array) {
+        copy = [];
+        for (var i = 0, len = obj.length; i < len; i++) {
+            copy[i] = clone(obj[i]);
+        }
+        return copy;
+    }
+
+    // Handle Object
+    if (obj instanceof Object) {
+        copy = {};
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+        }
+        return copy;
+    }
+
+    throw new Error("Unable to copy obj! Its type isn't supported.");
 }

@@ -1,0 +1,476 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+
+<http://semantic-machines.com/veda/generic-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Generic ontology."@en ;
+  rdfs:label "Онтология Generic."@ru ;
+  v-s:loadPriority 10 ;
+.
+#-- Классы --
+
+
+v-s:Dictionary
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:comment "Dictionary"@en ;
+  rdfs:comment "Словарь"@ru ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Dictionary"@en ;
+  rdfs:label "Словарь"@ru ;
+.
+v-s:Document
+  rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Exportable ;
+  rdfs:subClassOf v-s:Authorized ;
+  rdfs:comment "A document"@en ;
+  rdfs:comment "Документ"@ru ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Document"@en ;
+  rdfs:label "Документ"@ru ;
+.
+v-s:Level
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Dictionary ;
+  rdfs:label "Level"@en ;
+  rdfs:label "Уровень"@ru ;
+.
+v-s:YesNo
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Dictionary ;
+  rdfs:label "Yes No"@en ;
+  rdfs:label "Да Нет"@ru ;
+.
+v-s:Bond
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:label "Bond"@en ;
+  rdfs:label "Связь"@ru ;
+.
+
+#-- Аттрибуты --
+
+v-s:agenda
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Agenda"@en ;
+  rdfs:label "Повестка"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:alternativeTitle
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Level ;
+  rdfs:label "Description"@en ;
+  rdfs:label "Описание"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:attachment
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Document ;
+  rdfs:label "Attachment"@en ;
+  rdfs:label "Вложение"@ru ;
+  rdfs:range v-s:File ;
+.
+v-s:city
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "City"@en ;
+  rdfs:label "Город"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:contactInfo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Contact info"@en ;
+  rdfs:label "Контактные данные"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:contributor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Contributor"@en ;
+  rdfs:label "Содействующий"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:controller
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Controller"@en ;
+  rdfs:label "Контроллер"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:count
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Count"@en ;
+  rdfs:label "Количество"@ru ;
+  rdfs:range xsd:integer ;
+.
+v-s:country
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Country"@en ;
+  rdfs:label "Страна"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:dateBack
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date back"@en ;
+  rdfs:label "Дата возврата"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+v-s:dateFact
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date of fact"@en ;
+  rdfs:label "Дата фактическая"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+v-s:dateFrom
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date start"@en ;
+  rdfs:label "Дата начала"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+v-s:datePlan
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date plan"@en ;
+  rdfs:label "Плановая дата"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+v-s:dateTo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date finish"@en ;
+  rdfs:label "Дата окончания"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+v-s:published
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Document ;
+  rdfs:label "Date published"@en ;
+  rdfs:label "Дата публикации"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+v-s:decision
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Decision"@en ;
+  rdfs:label "Решение"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:description
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Description"@en ;
+  rdfs:label "Описание"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:duration
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Duration"@en ;
+  rdfs:label "Длительность"@ru ;
+  rdfs:range xsd:integer ;
+.
+v-s:foreignRegistrationDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Foreign registration date"@en ;
+  rdfs:label "Чужая регистрационная дата"@ru ;
+  rdfs:range xsd:date ;
+.
+v-s:foreignRegistrationNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Foreign registration number"@en ;
+  rdfs:label "Чужой регистрационный номер"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:hasAddDoc
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Add document"@en ;
+  rdfs:label "Связанные документы"@ru ;
+  rdfs:range v-s:Document ;
+.
+v-s:copyTo
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Copy to"@en ;
+  rdfs:label "В копию"@ru ;
+  rdfs:range v-s:Appointment ;
+#  rdfs:range v-s:OrganizationUnit ;
+.
+v-s:sender
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Sender"@en ;
+  rdfs:label "Отправитель"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:range v-s:OrganizationUnit ;
+.
+v-s:recipient
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Recipient"@en ;
+  rdfs:label "Получатель"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:range v-s:OrganizationUnit ;
+.
+v-s:hasBaseDoc
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Base doc"@en ;
+  rdfs:label "Документ основание"@ru ;
+  rdfs:range v-s:Document ;
+.
+v-s:hasChief
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:OrganizationUnit ;
+  rdfs:label "Chief"@en ;
+  rdfs:label "Непосредственный руководитель"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:hasDeveloper
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Developer"@en ;
+  rdfs:label "Разработчик"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:initiator
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Initiator"@en ;
+  rdfs:label "Инициатор"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:stakeholder
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Stakeholder"@en ;
+  rdfs:label "Заинтересованная сторона"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:customer
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Customer"@en ;
+  rdfs:label "Заказчик"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:supplier
+	rdf:type owl:ObjectProperty ;
+	rdfs:label "Supplier"@en ;
+	rdfs:label "Исполнитель"@ru ;
+	rdfs:range v-s:Appointment ;
+    rdfs:range v-s:OrganizationUnit ;
+.
+v-s:hasFunctionalChief
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Functional chief"@en ;
+  rdfs:label "Функциональный руководитель"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:hasHeadOfMember
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Head of member"@en ;
+  rdfs:label "Руководитель группы участников"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:hasLevel
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Level"@en ;
+  rdfs:label "Уровень"@ru ;
+  rdfs:range v-s:Level ;
+.
+v-s:hasManager
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Manager"@en ;
+  rdfs:label "Лидер"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:member
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Member"@en ;
+  rdfs:label "Участники"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:hasParentLink
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Parent document"@en ;
+  rdfs:label "Ссылка на родительский документ"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+v-s:hasRecipient
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Recipient"@en ;
+  rdfs:label "Список рассылки"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:hasYesNo
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Yes no"@en ;
+  rdfs:label "Да нет"@ru ;
+  rdfs:range v-s:YesNo ;
+.
+v-s:legalAddress
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Legal address"@en ;
+  rdfs:label "Юридический адрес"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:reason
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Reason"@en ;
+  rdfs:label "Причина"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:registrationDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Registration date of document"@en ;
+  rdfs:label "Дата составления или регистрации документа"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+v-s:registrationNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Registration number"@en ;
+  rdfs:label "Регистрационный номер"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:responsible
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Responsible"@en ;
+  rdfs:label "Ответственный"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:sum
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Sum"@en ;
+  rdfs:label "Сумма"@ru ;
+  rdfs:range xsd:integer ;
+.
+v-s:sum_decimal
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Sum"@en ;
+  rdfs:label "Сумма"@ru ;
+  rdfs:range xsd:decimal ;
+.
+v-s:cost
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Cost"@en ;
+  rdfs:label "Цена"@ru ;
+  rdfs:range xsd:decimal ;
+.
+v-s:summary
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Summary"@en ;
+  rdfs:label "Вывод"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:tags
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Tags"@en ;
+  rdfs:label "Ключевые слова"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:theme
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Theme"@en ;
+  rdfs:label "Тема"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:title
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Dictionary ;
+  rdfs:label "Name"@en ;
+  rdfs:label "Наименование"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:versionNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Version number"@en ;
+  rdfs:label "Номер версии"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:year
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Year"@en ;
+  rdfs:label "Год"@ru ;
+  rdfs:range xsd:integer ;
+.
+v-s:coauthor
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Document ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Co-author"@en ;
+  rdfs:label "Соавтор"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:shortLabel
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain rdfs:Resource ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "short label"@en ;
+  rdfs:label "краткое наименование"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:content
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Content"@en ;
+  rdfs:label "Содержание"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:rate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Level ;
+  rdfs:label "Rate"@en ;
+  rdfs:label "Степень"@ru ;
+  rdfs:range xsd:decimal ;
+.
+v-s:scope
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Scope"@en ;
+  rdfs:label "Рамки"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:alternativeScope
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Alternative scope"@en ;
+  rdfs:label "Альтернативные рамки"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:outOfScope
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "OutOfScope"@en ;
+  rdfs:label "Не в ходит в рамки"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:permission
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Permission"@en ;
+  rdfs:label "Разрешение"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:hasBond
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Document ;
+  rdfs:label "Bonded document"@en ;
+  rdfs:label "Связанный документ"@ru ;
+  rdfs:range v-s:Bond ;
+.
+v-s:from
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Bond ;
+  rdfs:label "from"@en ;
+  rdfs:label "от"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+v-s:to
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Bond ;
+  rdfs:label "to"@en ;
+  rdfs:label "к"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+v-s:placeDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Place description"@en ;
+  rdfs:label "Место проведения"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:numerationScope
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Document ;
+  rdfs:label "Numeration scope"@en ;
+  rdfs:label "Пространство нумерации"@ru ;
+  rdfs:range rdfs:Resource ;
+.

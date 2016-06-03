@@ -6,7 +6,7 @@ module search.xapian_reader;
 
 import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.container.slist;
 import bind.xapian_d_header;
-import util.utils, veda.util.cbor, veda.core.define, veda.core.know_predicates, veda.core.context, veda.core.log_msg;
+import veda.core.util.utils, veda.util.cbor, veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context, veda.core.log_msg;
 import search.vel, veda.core.search.xapian_vql, search.indexer_property;
 
 // ////// logger ///////////////////////////////////////////
@@ -211,8 +211,8 @@ class XapianReader : SearchReader
                         break;
 
                     reopen_db();
-                    log.trace("WARN! [%s][Q:%X] exec_xapian_query_and_queue_authorize, res=%d, attempt=%d",
-                              context.get_name(), cast(void *)str_query,
+                    log.trace("WARN! [%s][%s] exec_xapian_query_and_queue_authorize, res=%d, attempt=%d",
+                              context.get_name(), str_query,
                               state, attempt_count);
                 }
             }

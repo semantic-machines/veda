@@ -23,8 +23,8 @@ v-s:Numeration
 v-s:hasNumerationMapper
   rdf:type owl:ObjectProperty ;
   rdfs:domain owl:DatatypeProperty ;
-  rdfs:label "ссылка на связку: тип индивида + правило нумерации"@ru ;
-  rdfs:label "link to mapper: type of individual + numeration rule"@en ;
+  rdfs:label "Ссылка на связку: тип индивида + правило нумерации"@ru ;
+  rdfs:label "Link to mapper: type of individual + numeration rule"@en ;
   rdfs:range v-s:NumerationMapper;
 .
 v-s:NumerationMapper
@@ -36,15 +36,15 @@ v-s:NumerationMapper
 v-s:numerationClass
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:NumerationMapper ;
-  rdfs:label "ссылка на тип индивида"@ru ;
-  rdfs:label "link to numeration rule"@en ;
+  rdfs:label "Ссылка на тип индивида"@ru ;
+  rdfs:label "Link to numeration rule"@en ;
   rdfs:range owl:Class;
 .
 v-s:hasNumerationRule
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:NumerationMapper ;
-  rdfs:label "ссылка на правило нумерации"@ru ;
-  rdfs:label "link to numeration rule"@en ;
+  rdfs:label "Ссылка на правило нумерации"@ru ;
+  rdfs:label "Link to numeration rule"@en ;
   rdfs:range v-s:NumerationRule;
 .
 v-s:NumerationRule
@@ -56,15 +56,15 @@ v-s:NumerationRule
 v-s:numerationScope
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:NumerationRule ;
-  rdfs:label "скрипт, возвращает пространство нумерации"@ru ;
-  rdfs:label "script, returns numeration scope"@en ;
+  rdfs:label "Скрипт, возвращает пространство нумерации"@ru ;
+  rdfs:label "Script, returns numeration scope"@en ;
   rdfs:range xsd:string ;
 .
 v-s:numerationGetNextValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:NumerationRule ;
-  rdfs:label "скрипт, возвращает следующее незанятое значение из пространства нумерации"@ru ;
-  rdfs:label "script, returns next uncommited value for numeration scope"@en ;
+  rdfs:label "Скрипт, возвращает следующее незанятое значение из пространства нумерации"@ru ;
+  rdfs:label "Script, returns next uncommited value for numeration scope"@en ;
   rdfs:range xsd:string ;
 .
 v-s:NumerationScopeClass
@@ -78,7 +78,7 @@ v-s:numerationCommitedInterval
   rdfs:domain v-s:NumerationScopeClass ;
   rdfs:range v-s:NumerationCommitedIntervalClass;  
   rdfs:label "Numeration commited interval"@en ;
-  rdfs:label "занятый интервал"@ru ;
+  rdfs:label "Занятый интервал"@ru ;
 .
 v-s:NumerationCommitedIntervalClass
   rdf:type owl:Class ;
@@ -89,22 +89,22 @@ v-s:NumerationCommitedIntervalClass
 v-s:numerationCommitedIntervalBegin
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:NumerationCommitedIntervalClass ;
-  rdfs:label "начало занятого интервала нумерации"@ru ;
-  rdfs:label "numeration commited interval begin"@en ;
+  rdfs:label "Начало занятого интервала нумерации"@ru ;
+  rdfs:label "Numeration commited interval begin"@en ;
   rdfs:range xsd:integer ;
 .
 v-s:numerationCommitedIntervalEnd
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:NumerationCommitedIntervalClass ;
-  rdfs:label "конец занятого интервала нумерации"@ru ;
-  rdfs:label "numeration commited interval end"@en ;
+  rdfs:label "Конец занятого интервала нумерации"@ru ;
+  rdfs:label "Numeration commited interval end"@en ;
   rdfs:range xsd:integer ;
 .
 v-s:SimpleNumeration
   rdf:type v-s:NumerationRule ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Нумерация в пределах шаблона"@ru ;
-  rdfs:label "Numeration with type as scope"@en ;
+  rdfs:label "Нумерация в пределах класса"@ru ;
+  rdfs:label "Numeration with class as scope"@en ;
   v-s:numerationScope """
 (function (ticket, individual) 
 {
@@ -121,8 +121,8 @@ v-s:SimpleNumeration
 v-s:YearNumeration8
   rdf:type v-s:NumerationRule ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Нумерация в пределах шаблона"@ru ;
-  rdfs:label "Numeration with type as scope"@en ;
+  rdfs:label "Нумерация 2+6 (год+номер) в пределах класса и года"@ru ;
+  rdfs:label "Numeration 2+6 (year+number) with class as scope"@en ;
   v-s:numerationScope """
 (function (ticket, individual) 
 {
@@ -140,11 +140,7 @@ v-s:NumerationEvent
   rdf:type v-s:Event ;
   v-s:filter v-s:NumerationEvent ;
   v-s:script """
-  if (!document['v-s:isDraftOf'] || document['v-s:isDraftOf'].length==0) {
-	  //print("NUMERATION EVENT"); 
-	  var result = numerate(ticket, document, prev_state, _event_id);
-	  //print("RESULT : " +toJson(result));
-  }
+	var result = numerate(ticket, document, prev_state, _event_id);
 """
 .
 v-s:Permission1602021330

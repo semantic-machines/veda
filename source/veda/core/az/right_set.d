@@ -1,8 +1,8 @@
 module veda.core.az.right_set;
 
 private import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
-private import veda.type, veda.onto.individual, veda.onto.resource, veda.core.context, veda.core.log_msg, veda.core.know_predicates;
-private import util.utils, veda.util.cbor, util.logger;
+private import veda.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.log_msg, veda.core.common.know_predicates;
+private import veda.core.util.utils, veda.util.cbor, util.logger;
 
 public static string membership_prefix = "M";
 public static string permission_prefix = "P";

@@ -1,0 +1,44 @@
+{
+	"name": "veda-fanout",
+	"description": "veda-fanout",
+	"dependencies": {
+		"pacahon_third_party": "1.0.13", 
+		"backtrace-d": "0.1.0", 
+		"mysql-d": "0.3.2",
+		"smtp": "~master",
+                "requests": "0.1.5"
+	},
+        "versions": ["isModule"],
+        "license": "LGPL v3",
+	"sourcePaths":[
+	    "../../veda/fanout", 
+	    "../../veda/common", 
+	    "../../veda/onto",  
+	    "../../veda/util", 
+	    "../../veda/process",
+	    "../../veda/core/impl", 
+	    "../../veda/core/az", 
+	    "../../veda/core/search", 
+	    "../../veda/core/storage",
+	    "../../veda/core/common"
+	],
+        "sourceFiles":[
+	"../../lib64/libxapiand.a", 
+	"../../veda/core/bind/xapian_d_header.d",
+        "../../veda/core/bind/libwebsockets.d",
+ 	"../../veda/core/util/utils.d"
+	],
+        "libs":["websockets"],
+	"configurations": [
+	{
+	    "name": "app",
+	    "docs": ["syntaxOnly"],
+	    "targetType": "executable"
+	},
+	{
+	    "name": "trace-app",
+	    "versions": ["trace_api_l1"],
+	    "targetType": "executable"
+	    
+	}]
+}

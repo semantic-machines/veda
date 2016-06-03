@@ -3,23 +3,23 @@
 veda.Module(function (veda) { "use strict";
 
 	veda.UserModel = function (uri) {
-		
+
 		var self = new veda.IndividualModel(uri);
-		
+
 		var langs = query(veda.ticket, "'rdf:type' == 'v-ui:Language'");
-		self.availableLanguages = langs.reduce ( 
+		self.availableLanguages = langs.reduce (
 			function (acc, language_uri) {
 				var lang = new veda.IndividualModel(language_uri);
-				acc[lang["rdf:value"][0]] = lang;  
+				acc[lang["rdf:value"][0]] = lang;
 				return acc;
 			}, {});
-		
+
 		if ( self.hasValue("v-ui:hasPreferences") ) {
 			self.preferences = self["v-ui:hasPreferences"][0];
 			if ( !self.preferences.hasValue("v-ui:preferredLanguage") || !self.preferences.hasValue("v-ui:displayedElements")) {
 				self.preferences["v-ui:preferredLanguage"] = [ self.availableLanguages["RU"] ];
 				self.preferences["v-ui:displayedElements"] = [ 10 ];
-				self.preferences.saveIndividual(false);
+				self.preferences.save();
 			}
 		} else {
 			self.preferences = new veda.IndividualModel();
@@ -28,9 +28,9 @@ veda.Module(function (veda) { "use strict";
 			self.preferences["rdfs:label"] = [ "Preferences_" + self.id ];
 			self.preferences["v-ui:preferredLanguage"] = [ self.availableLanguages["RU"] ];
 			self.preferences["v-ui:displayedElements"] = [ 10 ];
-			self.preferences.saveIndividual(false);
+			self.preferences.save();
 			self["v-ui:hasPreferences"] = [ self.preferences ];
-			self.saveIndividual(false);
+			self.save();
 		}
 		self.language = self.preferences["v-ui:preferredLanguage"].reduce( function (acc, lang) {
 			acc[lang["rdf:value"][0]] = self.availableLanguages[lang["rdf:value"][0]];
@@ -42,28 +42,36 @@ veda.Module(function (veda) { "use strict";
 			self.aspect = self["v-s:hasAspect"][0];
 		} else {
 			self.aspect = new veda.IndividualModel();
-			self.aspect["rdf:type"] = [ veda.ontology["v-s:PersonalAspect"] ];
+			self.aspect["rdf:type"] = [ new veda.IndividualModel("v-s:PersonalAspect") ];
 			self.aspect["v-s:owner"] = [ self ];
 			self.aspect["rdfs:label"] = [ "PersonalAspect_" + self.id ];
-			self.aspect.saveIndividual(false);
+			self.aspect.save();
 			self["v-s:hasAspect"] = [ self.aspect ];
-			self.saveIndividual(false);
+			self.save();
 		}
-		
+
 		if (self.hasValue("v-s:defaultAppointment")) {
 			veda.appointment = self["v-s:defaultAppointment"][0];
 		} else if (self.hasValue("v-s:hasAppointment")) {
 			self["v-s:defaultAppointment"] = [ self["v-s:hasAppointment"][0] ];
-			self.saveIndividual(false);
+			self.save();
 			veda.appointment = self["v-s:defaultAppointment"][0];
 		} else {
 			veda.appointment = undefined;
 		}
- 
+
+		self.on("individual:propertyModified", function (property_uri) {
+			if (property_uri === "v-s:defaultAppointment") {
+				if (self["v-s:defaultAppointment"][0].id === veda.appointment.id) return;
+				self.save();
+				location.reload();
+			}
+		});
+
 		self.preferences.on("individual:propertyModified", function (property_uri, values) {
 			if (property_uri === "v-ui:displayedElements") {
 				self.displayedElements = values[0];
-			} 
+			}
 			if (property_uri === "v-ui:preferredLanguage") {
 				self.language = values.reduce( function (acc, lang) {
 					acc[lang["rdf:value"][0]] = self.availableLanguages[lang["rdf:value"][0]];
@@ -78,9 +86,9 @@ veda.Module(function (veda) { "use strict";
 			self.preferences["v-ui:preferredLanguage"] = Object.keys(self.language).map ( function (language_val) {
 				return self.language[language_val];
 			});
-			self.preferences.saveIndividual(false);
+			self.preferences.save();
 		};
-			
+
 		return self;
 	};
 

@@ -49,7 +49,7 @@ veda.Module(function SavedSearchList(veda) { "use strict";
 				var i = $("<i>", {"class": "glyphicon glyphicon-remove"}).appendTo(b);
 				b.click(function (e) {
 					e.preventDefault();
-					d["v-s:deleted"] = [new Boolean(true)];
+					d["v-s:deleted"] = [ true ];
 					d.save();
 					a.remove();
 					if ( !$("a", qActions).length ) btn.popover("hide");

@@ -10,17 +10,13 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	// Route on link click
 	$("body").on("click", "[href^='#/']", function (e) {
 		e.preventDefault();
-		var forced, 
-			hash = $(this).attr("href");
-		forced = (hash === location.hash ? false : true);
-		return riot.route(hash, forced);
+		var hash = $(this).attr("href");
+		return ( hash === location.hash ? false : riot.route(hash, true) );
 	});
 
 	// App loading indicator
 	var appLoadIndicator = $("#app-load-indicator");
-		//bar = $(".progress-bar", appLoadIndicator);
-	veda.on("init", function (progress) {
-		//bar.css("width", progress + "%");
+	veda.on("init:progress", function (progress) {
 		if (progress !== 100) {
 			appLoadIndicator.removeClass("hidden");
 		} else {
@@ -125,11 +121,11 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	});
 
 	// NTLM auth using iframe
-	var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider"),
-		ntlm = ntlmProvider.hasValue("rdf:value"),
+	var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider", undefined, undefined, undefined, true, false),
+		ntlm = ntlmProvider.properties["rdf:value"] && ntlmProvider.properties["rdf:value"].length,
 		iframe = $("<iframe>", {"class": "hidden"});
 	if (ntlm) {
-		var ntlmAddress = ntlmProvider["rdf:value"][0].toString();
+		var ntlmAddress = ntlmProvider.properties["rdf:value"][0].data;
 		iframe.appendTo(loginContainer);
 	}
 

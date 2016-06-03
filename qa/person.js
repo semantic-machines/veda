@@ -15,13 +15,9 @@ module.exports = {
 			assert(!flag);
 		}).thenCatch(function (e) {basic.errorHandler(e, "Save button must be inactive")});
 		
-		// Удаляем preferences
-		driver.executeScript("document.querySelector('[rel=\"v-ui:hasPreferences\"] button.button-delete').scrollIntoView(true);");
-		driver.findElement({css:'[rel="v-ui:hasPreferences"] button.button-delete'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot delete appointment")});
-		
 		// Удаляем раскрытый appointment
-		driver.executeScript("document.querySelector('[rel=\"v-s:hasAppointment\"] button.button-delete').scrollIntoView(true);");
-		driver.findElement({css:'[rel="v-s:hasAppointment"] button.button-delete'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot delete appointment")});
+		//driver.executeScript("document.querySelector('[rel=\"v-s:hasAppointment\"] button.button-delete').scrollIntoView(true);");
+		//driver.findElement({css:'[rel="v-s:hasAppointment"] button.button-delete'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot delete appointment")});
 		
 		// Заполняем обязательные поля
 		driver.findElement({css:'div[id="object"] [property="rdfs:label"] + veda-control input'}).sendKeys("Вася Пупкин "+somethingUnique).thenCatch(function (e) {basic.errorHandler(e, "Cannot fill rdfs:label for preson")});
@@ -32,13 +28,15 @@ module.exports = {
 	    var now = new Date();
 		driver.findElement({css:'[property="v-s:birthday"] + veda-control input'}).sendKeys(
 				now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2))
-				.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:birthday for preson")});
+				.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:birthday for person")});
+
+		driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot click middle name control for person")});
 		
-		basic.chooseFromDropdown(driver, 'v-s:hasAccount', 'karpovrt', 'karpovrt');
+		//basic.chooseFromDropdown(driver, 'v-s:hasAccount', 'karpovrt', 'karpovrt');
 		
-		driver.executeScript("document.querySelector('[rel=\"v-s:hasAppointment\"] + veda-control input').scrollIntoView(true);");
+		//driver.executeScript("document.querySelector('[rel=\"v-s:hasAppointment\"] + veda-control input').scrollIntoView(true);");
 		
-		basic.chooseFromDropdown(driver, 'v-s:hasAppointment', 'Роман Карпов', 'Роман Карпов : Аналитик');
+		//basic.chooseFromDropdown(driver, 'v-s:hasAppointment', 'Роман Карпов', 'Роман Карпов : Аналитик');
 
 		driver.executeScript("$('div[typeof=\"v-s:Person\"] > div.panel > div.panel-footer > button#save')[0].scrollIntoView(true);");
 

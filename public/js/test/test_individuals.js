@@ -68,6 +68,7 @@ function create_test_document1(ticket)
     var new_test_doc1 = generate_test_document1(ticket)
     var res = put_individual(ticket.id, new_test_doc1);
     wait_module(subject_manager, res.op_id);
+    wait_module(acl_manager, res.op_id);
     return new_test_doc1;
 }
 
@@ -224,8 +225,14 @@ for (i = 0; i < 1; i++)
             wait_module(condition, res.op_id);
             wait_module(acl_manager, res.op_id);
 
-            test_success_read(ticket_user1, new_test_doc1['@'], new_test_doc1)
-            test_fail_read(ticket_user2, new_test_doc1['@'], new_test_doc1)
+            test_success_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
+            test_fail_read(ticket_user2, new_test_doc1['@'], new_test_doc1);
+
+			res = remove_individual (ticket_user1.id, new_test_doc1['@']);
+            wait_module(condition, res.op_id);
+            wait_module(acl_manager, res.op_id);
+
+            test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
         });
 
     test(

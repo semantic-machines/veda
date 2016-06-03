@@ -22,42 +22,42 @@ vdi:ClassIndex
 vdi:forClass
   rdf:type owl:ObjectProperty ;
   rdfs:domain vdi:ClassIndex ;
-  rdfs:label "for class"@en ;
-  rdfs:label "для класса"@ru ;
+  rdfs:label "For class"@en ;
+  rdfs:label "Для класса"@ru ;
   rdfs:range owl:Class ;
 .
 vdi:forProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain vdi:ClassIndex ;
-  rdfs:label "for property"@en ;
-  rdfs:label "для свойства"@ru ;
+  rdfs:label "For property"@en ;
+  rdfs:label "Для свойства"@ru ;
   rdfs:range owl:Class ;
 .
 vdi:inherited_index
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vdi:ClassIndex ;
-  rdfs:label "inherited index"@en ;
-  rdfs:label "наследуемый индекс"@ru ;
+  rdfs:label "Inherited index"@en ;
+  rdfs:label "Наследуемый индекс"@ru ;
   rdfs:range rdfs:Resource ;
 .
 vdi:indexed_field
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vdi:ClassIndex ;
-  rdfs:label "indexed field"@en ;
-  rdfs:label "индексируемое поле"@ru ;
+  rdfs:label "Indexed field"@en ;
+  rdfs:label "Индексируемое поле"@ru ;
   rdfs:range rdfs:Resource ;
 .
 vdi:indexed_field_as_fwildcard
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vdi:ClassIndex ;
-  rdfs:label "для поиска вида [*xxx]"@ru ;
+  rdfs:label "Для поиска вида [*xxx]"@ru ;
   rdfs:range rdfs:Resource ;
 .
 vdi:indexed_to
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vdi:ClassIndex ;
-  rdfs:label "indexed to"@en ;
-  rdfs:label "индексировать в"@ru ;
+  rdfs:label "Indexed to"@en ;
+  rdfs:label "Индексировать в"@ru ;
   rdfs:range xsd:string ;
 .
 #---------------------------------------------

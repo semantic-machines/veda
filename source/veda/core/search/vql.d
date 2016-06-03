@@ -7,8 +7,8 @@ module search.vql;
 private
 {
     import std.string, std.array, std.stdio, std.conv, std.datetime, std.json, std.outbuffer, core.stdc.string, std.concurrency;
-    import veda.util.container, util.logger, util.utils, veda.util.cbor, veda.core.util.cbor8individual;
-    import veda.core.context, veda.core.define, veda.core.know_predicates;
+    import veda.util.container, util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual;
+    import veda.core.common.context, veda.core.common.define, veda.core.common.know_predicates;
     import search.vel, search.xapian_reader;
     import veda.onto.individual, veda.core.az.acl;
 }
@@ -72,7 +72,7 @@ class VQL
 
             if (data is null)
             {
-                log.trace_log_and_console("!ERR:Unable to find the object it should be, uri=[%s]", text(uri));
+                log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", text(uri), filter);
             }
             else
             {
@@ -82,7 +82,7 @@ class VQL
                 }
                 else
                 {
-                    writeln("!ERR:invalid individual=", uri);
+                    log.trace("ERR! invalid individual=%s", uri);
                 }
             }
         }
@@ -107,7 +107,7 @@ class VQL
 
             if (data is null)
             {
-                log.trace_log_and_console("!ERR:Unable to find the object it should be, uri=[%s]", text(uri));
+                log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", text(uri), filter);
             }
             else
             {
@@ -117,7 +117,7 @@ class VQL
                 }
                 else
                 {
-                    writeln("!ERR:invalid individual=", uri);
+                    log.trace("ERR!:invalid individual=%s", uri);
                 }
             }
         }
@@ -209,7 +209,7 @@ class VQL
 
                 if (data is null)
                 {
-                    log.trace_log_and_console("!ERR:Unable to find the object it should be, uri=[%s]", text(uri));
+                    log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", text(uri), query_str);
                 }
                 else
                 {
@@ -221,7 +221,7 @@ class VQL
                     }
                     else
                     {
-                        //writeln("!ERR:invalid individual=", uri);
+                        //writeln("ERR! invalid individual=", uri);
                         context.reopen_ro_subject_storage_db();
                         data = context.get_individual_from_storage(uri);
                         if (cbor2individual(&ind, data) > 0)
@@ -230,7 +230,7 @@ class VQL
                         }
                         else
                         {
-                            writeln("!ERR:vql.get attempt 2, invalid individual=", uri);
+                            log.trace("ERR! vql.get attempt 2, invalid individual=%s", uri);
                         }
                     }
                 }

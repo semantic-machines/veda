@@ -6,10 +6,10 @@
    Authors: Valeriy Bushenev
  */
 
-module veda.core.util.cbor8individual;
+module veda.util.cbor8individual;
 
 private import std.outbuffer, std.stdio, std.string;
-private import veda.type, veda.onto.resource, veda.onto.individual, onto.lang, veda.util.cbor;
+private import veda.type, veda.onto.resource, veda.onto.individual, veda.onto.lang, veda.util.cbor;
 import backtrace.backtrace;
 import Backtrace = backtrace.backtrace;
 
@@ -25,7 +25,7 @@ private static int read_element(Individual *individual, ubyte[] src, out string 
 
     if (pos == 0)
     {
-        writeln("EX! cbor8individual.read_element src.length=", src.length);
+        //writeln("EX! cbor8individual.read_element src.length=", src.length);
         throw new Exception("no content in pos");
     }
 
@@ -209,9 +209,10 @@ private void write_individual(Individual *ii, ref OutBuffer ou)
     write_string("@", ou);
     write_string(ii.uri, ou);
 
-    foreach (key, pp; ii.resources)
+    foreach (key, resources; ii.resources)
     {
-        write_resources(key, pp, ou);
+        if (resources.length > 0)
+            write_resources(key, resources, ou);
     }
 }
 
@@ -275,9 +276,9 @@ public int cbor2individual(Individual *individual, string in_str)
     {
         return read_element(individual, cast(ubyte[])in_str, dummy);
     }
-    catch (Exception ex)
+    catch (Throwable ex)
     {
-        writeln("!ERR:cbor2individual ex=", ex.msg, ", in_str=", in_str);
+        writeln("ERR! cbor2individual ex=", ex.msg, ", in_str=", in_str);
         //printPrettyTrace(stderr);
         //throw new Exception("invalid cbor");
         return -1;

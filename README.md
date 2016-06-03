@@ -22,7 +22,7 @@
   - Riot.js a React-like user interface micro-library. Used for implementing MVC pattern & client-side routing (http://riotjs.com).
   - jQuery general purpose client-side javascript library. Used for client-server interaction, event handling, DOM traversal & manipulation (https://jquery.com).
   - jsPlumb visual connectivity library for webapps. Used for workflow viewer/editor (http://jsplumbtoolkit.com).
-  - Various visualisation libraries & plugins.
+  - Various visualization libraries & plugins.
 
 ## II. System requirements
   - OS - Ubuntu 12.04 LTS, 14.04 LTS 64-Bit

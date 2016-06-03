@@ -6,9 +6,8 @@ module veda.onto.individual;
 private
 {
     import std.stdio, std.typecons, std.conv, std.exception : assumeUnique;
-    import veda.onto.resource;
-    import veda.core.know_predicates, veda.core.context;
-    import util.utils, veda.util.container, veda.core.util.cbor8individual;
+    import veda.onto.resource, veda.core.common.context, veda.core.common.know_predicates, veda.core.util.utils, veda.util.container,
+           veda.util.cbor8individual;
 }
 /// Массив индивидуалов
 alias Individual[] Individuals;
@@ -98,6 +97,17 @@ public struct Individual
         return default_value;
     }
 
+    bool getFirstBoolean(string predicate, bool default_value = false)
+    {
+        Resources rss;
+
+        rss = resources.get(predicate, rss);
+        if (rss.length > 0)
+            return rss[ 0 ].get!bool;
+
+        return default_value;
+    }
+
     void addResource(string uri, Resource rs)
     {
         Resources rss = resources.get(uri, Resources.init);
@@ -120,7 +130,7 @@ public struct Individual
 
     void removeResource(string uri)
     {
-            resources.remove(uri);    	
+        resources.remove(uri);
     }
 
     void removeResources(string uri, Resources in_rss)

@@ -50,8 +50,8 @@ v-fc:ChooseType
 .
 v-fc:typeToCreate
   rdf:type owl:ObjectProperty ;
-  rdfs:label "type"@en ;
-  rdfs:label "тип"@ru ;
+  rdfs:label "Type"@en ;
+  rdfs:label "Тип"@ru ;
   rdfs:domain v-fc:Blank ;
   rdfs:range owl:Class ;
   rdfs:range rdfs:Class ;
@@ -59,7 +59,7 @@ v-fc:typeToCreate
 v-fc:TypeToCreateSpec
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства v-fc:typeToCreate"@ru ;
-  rdfs:label "v-fc:typeToCreate property specification"@en ;
+  rdfs:label "V-fc:typeToCreate property specification"@en ;
   v-ui:forClass v-fc:Blank, v-fc:FunctionCreate ;
   v-ui:forProperty v-fc:typeToCreate ;
   v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
@@ -71,7 +71,7 @@ v-fc:TypeToCreateSpec
 v-fc:LabelSpec
   rdf:type v-ui:StringPropertySpecification ;
   rdfs:label "Спецификация свойства rdfs:label для класса v-fc:Blank"@ru ;
-  rdfs:label "rdfs:label property specification for class v-fc:Blank"@en ;
+  rdfs:label "Rdfs:label property specification for class v-fc:Blank"@en ;
   v-ui:forClass v-fc:Blank ;
   v-ui:forProperty rdfs:label ;
   v-ui:tooltip "Обязательно. Строка произвольной длины."@ru ;
@@ -81,22 +81,22 @@ v-fc:LabelSpec
 .
 v-fc:FunctionCreateModel
   rdf:type v-s:ClassModel ;
-  rdfs:label "v-fc:FunctionCreate class model"@en ;
+  rdfs:label "V-fc:FunctionCreate class model"@en ;
   rdfs:label "Модель класса v-fc:FunctionCreate"@ru ;
   v-ui:forClass v-fc:FunctionCreate ;
   v-s:script """
-var self = individual;
+var self = this;
   """
 .
 v-fc:FunctionCreateTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "v-fc:FunctionCreate class template"@en ;
+  rdfs:label "V-fc:FunctionCreate class template"@en ;
   rdfs:label "Шаблон класса v-fc:FunctionCreate"@ru ;
   v-ui:forClass v-fc:FunctionCreate ;
   v-ui:template """
 <div class="container-fluid">
 	<h3 property="rdfs:label"></h3>
-	<hr>	
+	<hr>
 	<div class="row">
 		<div class="col-md-2 col-sm-3">
 			<h4 about="v-fc:SavedBlanks" property="rdfs:label"></h4>
@@ -119,8 +119,8 @@ v-fc:FunctionCreateTemplate
 			var holder = $("#holder", template).empty();
 			if (values.length) {
 				var blank = new veda.IndividualModel();
-				blank["rdf:type"] = [ veda.ontology["v-fc:Blank"] ];
 				blank["v-fc:typeToCreate"] = values;
+				blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
 				blank.present(holder, undefined, "edit");
 			}
 		}
@@ -134,19 +134,99 @@ v-fc:FunctionCreateTemplate
 	if (blanks) {
 		blanks.map( function (blank) {
 			var cont = $("<li>").appendTo(blanksHolder);
-			blank.present(cont, veda.ontology["v-ui:LabelBlockLinkTemplate"]);
+			blank.present( cont, new veda.IndividualModel("v-ui:LabelBlockLinkTemplate") );
 		});
 	}
 </script>
   """
 .
+
+v-fc:BlankModel
+  rdf:type v-s:ClassModel ;
+  rdfs:label "v-fc:Blank class model"@en ;
+  rdfs:label "Модель класса v-fc:Blank"@ru ;
+  v-ui:forClass v-fc:Blank ;
+  v-s:script """
+var self = this,
+	asp = veda.user.aspect;
+
+var stopList = [
+	"@",
+	"rdf:type",
+	"v-s:author",
+	"v-s:publisher",
+	"v-s:lastEditor",
+	"v-s:created",
+	"v-s:edited",
+	"v-s:updateCounter",
+	"v-s:deleted",
+	"rdfs:label",
+	"rdfs:isDefinedBy",
+	"v-fc:typeToCreate"
+];
+
+this._init = function () {
+	self.object = new veda.IndividualModel(),
+	self.object["rdf:type"] = self["v-fc:typeToCreate"].slice(0);
+	Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
+		if ( stopList.indexOf(property_uri) >= 0 ) { return; }
+		if ( self.hasValue(property_uri) && self[property_uri][0] instanceof veda.IndividualModel && self[property_uri][0].is("v-fc:Blank") ) {
+			self.object[property_uri] = self[property_uri].map(function (item) {
+				// Embedded blanks are for v-s:Embedded objects only
+				item.object["v-s:parent"] = [ self.object ];
+				return item.object;
+			});
+		} else {
+			self.object[property_uri] = self[property_uri].slice(0);
+		}
+	});
+}
+
+this._init();
+self.on("individual:beforeSave", updateBlank);
+self.on("individual:afterSave", updateAspect);
+
+function updateBlank() {
+	Object.getOwnPropertyNames(self.object.properties).map( function (property_uri) {
+		if ( stopList.indexOf(property_uri) >= 0 ) { return; }
+		if ( self.object.hasValue(property_uri) && self.object[property_uri][0] instanceof veda.IndividualModel && self.object[property_uri][0].is("v-s:Embedded")) {
+			self[property_uri] = self.object[property_uri].map(function (item) {
+				var blank = item.clone();
+				var types = blank["rdf:type"];
+				blank["v-fc:typeToCreate"] = types;
+				blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
+				blank["v-s:parent"] = [ self ];
+				blank.save();
+				return blank;
+			});
+		} else {
+			self[property_uri] = self.object[property_uri].slice(0);
+		}
+	});
+}
+function updateAspect() {
+	if (self["v-s:deleted"][0] == true) {
+		asp["v-s:hasBlank"] = asp["v-s:hasBlank"].filter( function (i) { return i.id !== self.id;});
+		asp.save();
+	} else if (
+		!asp["v-s:hasBlank"].filter( function (i) {return i.id === self.id;}).length
+		&& !self.hasValue("v-s:parent") // Not embedded
+	) {
+		asp["v-s:hasBlank"] = asp["v-s:hasBlank"].concat(self);
+		asp.save();
+	}
+}
+
+  """
+.
+
 v-fc:BlankTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "v-fc:Blank class template"@en ;
+  rdfs:label "V-fc:Blank class template"@en ;
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
-<div role="tabpanel">
+<div role="tabpanel" class="container-fluid">
 	<br>
 	<!-- Nav tabs -->
 	<ul class="nav nav-tabs nav-right" role="tablist">
@@ -174,48 +254,11 @@ v-fc:BlankTemplate
 	</div>
 </div>
 <script>
+	individual._init();
 	var self = individual,
-		holder = $("#object", template),
-		object = new veda.IndividualModel(),
-		asp = veda.user.aspect;
-	object["rdf:type"] = self["v-fc:typeToCreate"];
-	if ( self.isSync() ) {
-		Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
-			if (property_uri === "rdf:type") return;
-			if (property_uri === "rdfs:label") return;
-			if (property_uri === "v-s:deleted") return;
-			if (property_uri === "rdfs:isDefinedBy") return;
-			object.defineProperty(property_uri);
-			object[property_uri] = self[property_uri].slice(0);
-		});
-	}
+			holder = $("#object", template),
+			object = self.object;
 	object.present(holder, undefined, "edit");
-	self.on("individual:beforeSave", updateBlank);	
-	self.on("individual:afterSave", updateAspect);	
-	template.one("remove", function () {
-		self.off("individual:beforeSave", updateBlank);
-		self.off("individual:afterSave", updateAspect);
-	});
-	function updateBlank() {
-		Object.getOwnPropertyNames(object.properties).map( function (property_uri) {
-			if (property_uri === "rdf:type") return;
-			if (property_uri === "rdfs:label") return;
-			if (property_uri === "v-s:deleted") return;
-			if (property_uri === "rdfs:isDefinedBy") return;
-			self.defineProperty(property_uri);
-			self[property_uri] = object[property_uri].slice(0);
-		});
-	}
-	function updateAspect() {
-		if (self["v-s:deleted"][0] == true) {
-			asp["v-s:hasBlank"] = asp["v-s:hasBlank"].filter( function (i) { return i.id !== self.id;});
-		} else if (
-			!asp["v-s:hasBlank"].filter( function (i) {return i.id === self.id;}).length
-		) {
-			asp["v-s:hasBlank"] = asp["v-s:hasBlank"].concat(self);
-		}
-		asp.save();
-	}
 </script>
   """
 .

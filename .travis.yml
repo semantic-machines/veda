@@ -1,3 +1,6 @@
+sudo: required
+dist: trusty
+
 addons:
   sauce_connect:
     username: semanticmachines
@@ -8,15 +11,14 @@ env:
     - secure: PYwCZBpLe87Qg2RXibiGk9LrNrkFMlGuFnf/mp+f5kc4bFoVMo7Pl+Rdl4S1H33kLYK6d3pFggddwWxO7HGH9IyHzQ6Gfu3u9gR9rJXovQYfEp8muDCJDXvLEUoMxRgnRPa202p+BUnrNMwebxYHmwgef0s1dYQpRsewmPWHevk=
     - secure: s1BV5JjhQIIdasowuMW2OqH5LjvN3tnU+sEGdz4HxWpHufgFUeNBVzu13S85qSxdch55lCyB4ft58PAX3q0wHFPYvBEwkvMlSFny7LeiytW9HZ/fkCG+Dwh6H6OEK1jKQriXZrYLQm4m6gnnAQYsUpDhxP12YejyyBbfaVW73Og=
 
-language: d
-d: dmd-2.070.0
+#language: d
+#d: dmd-2.070.0
 
 # Load all dependencies
 # Compile vibe-d before main project to prevent OutOfMemory issue
 before_install:
-  - sudo apt-get update
   - ./control-install.sh    
-  - dub -v fetch vibe-d
+  - dub -v fetch vibe-d --version=0.7.26
   - npm install selenium-webdriver@2.47.0
   - npm install -g grunt-cli
   - npm install grunt-contrib-qunit --save-dev
@@ -25,15 +27,19 @@ before_install:
 
 # Build
 install:
-  - ./m.sh
+  - ./build.sh
 
 # Run service as daemon and GUI
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
-  - start-stop-daemon --start --verbose --chdir $PWD --make-pidfile --pidfile $PWD/veda-pid --background --startas /bin/bash -- -c "exec ./veda >> $PWD/veda.log 2>&1"
+  - start-stop-daemon --start --verbose --chdir $PWD --make-pidfile --pidfile $PWD/veda-pid --background --startas /bin/bash -- -c "exec ./veda >> $PWD/veda_s.log 2>&1"
   - sleep 90  # give Web server some time to bind to sockets, load startup data, etc
+  - cat $PWD/veda-core-_*.log          
+  - cat $PWD/veda-core-scripts_*.log          
+  - cat $PWD/veda-core-fanout_*.log          
+  - cat $PWD/veda_s.log              
 
 # Run API & integration test
 script:

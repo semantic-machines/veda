@@ -1,6 +1,6 @@
 # берет новые исходники из github, но не собирает
 
-DMD_VER=2.070.0
+DMD_VER=2.070.2
 DUB_VER=0.9.24
 
 sudo apt-get update
@@ -25,10 +25,25 @@ if ! dub --version | grep $DUB_VER ; then
 fi
 
 # Get other dependencies
-sudo apt-get install -y libzmq3-dev
 sudo apt-get install -y libevent-pthreads-2.0-5
 sudo apt-get install -y libraptor2-dev
 sudo apt-get install -y libevent-dev libssl-dev
 sudo apt-get install -y libmysqlclient-dev
+sudo apt-get install libtool pkg-config build-essential autoconf automake
+sudo apt-get install cmake
 
+# make libwebsockets dependency
+mkdir tmp
+wget https://github.com/warmcat/libwebsockets/archive/v2.0.1.tar.gz -P tmp
+cd tmp
+tar -xvzf v2.0.1.tar.gz
+cd libwebsockets-2.0.1
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
 sudo ldconfig
+cd ..
+cd ..
+cd ..

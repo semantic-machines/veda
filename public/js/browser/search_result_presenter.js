@@ -4,10 +4,9 @@ veda.Module(function SearchResultPresenter(veda) { "use strict";
 	
 	function renderIndividualProperty (veda, individual, property_uri, template, container) {
 		var label, uri, values;
-		label = typeof individual.properties[property_uri] == "object" ? 
-					individual.properties[property_uri]["rdfs:label"].join(", ")
-					: individual.properties[property_uri];
-		uri = typeof individual.properties[property_uri] == "object" ? individual.properties[property_uri].id : "";
+		var property = new veda.IndividualModel(property_uri);
+		label = property["rdfs:label"].join(", ");
+		uri = property.id;
 		values = individual[property_uri]
 					.map( function (item) {
 						if (item instanceof String)
@@ -60,6 +59,7 @@ veda.Module(function SearchResultPresenter(veda) { "use strict";
 		
 		// Render individual properties
 		Object.getOwnPropertyNames(individual.properties).reduce ( function (limit, property_uri) {
+			if(property_uri === "@") { return }
 			if (limit <= 0) return limit;
 			try {
 				renderIndividualProperty (veda, individual, property_uri, individual_single_property_template, $("#individual-properties", container));

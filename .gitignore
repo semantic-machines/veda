@@ -5,6 +5,8 @@
 data
 pacahon-properties.json
 veda
+veda-fanout
+veda-scripts
 dub
 veda.geany
 m.sh
@@ -21,3 +23,8 @@ dub.selections.json
 /*.dprojectoptions
 /*.buildpath
 veda.properties
+/.coverage-results/
+/veda-fts-worker
+/veda-js-worker
+/veda-server
+/tmp/

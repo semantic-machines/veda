@@ -29,6 +29,7 @@
 			self.user_uri = self.ticket = self.end_time = "";
 			self.cache = {};
 			self.ontology = {};
+			self.drafts = {};
 			self.trigger("logout");
 		};
 		
@@ -43,6 +44,9 @@
 				case "graph":
 					self.trigger.apply(self, ["load:graph"].concat(params));
 					break;
+				case "drafts":
+					self.trigger.apply(self, ["load:drafts"].concat(params));
+					break;
 				default:
 					if (!params[0]) { params[0] = "#main"; }
 					veda.Util.construct(veda.IndividualModel, [page].concat(params));
@@ -52,6 +56,7 @@
 		// Load ontology
 		self.init = function () {
 			self.ontology = new veda.OntologyModel();
+			self.drafts = new veda.DraftsModel();
 			self.user = new veda.UserModel(self.user_uri);
 			self.trigger("started");
 		};

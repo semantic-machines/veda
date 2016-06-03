@@ -4,7 +4,8 @@ veda.Module(function Backend(veda) { "use strict";
 
 	$.ajaxSetup ({
 		dataType: "json",
-		cache: false
+		cache: false,
+		timeout: 3000
 	});
 
 	function call_server(ticket, params, success, fail) {
@@ -81,11 +82,23 @@ veda.Module(function Backend(veda) { "use strict";
 		return call_server(undefined, params, success, fail);
 	}
 
-	window.wait_module = function (module_id, op_id, success, fail) {
+	window.wait_module = function (module_id, op_id, success, fail) 
+	{		
+		var op_id_from_module;
+		for (var i = 0; i < 100; i++)
+		{
+			op_id_from_module = get_operation_state (module_id);
+			
+			if (op_id_from_module >= op_id)
+				break;
+		}
+	}
+
+	window.restart = function (ticket, success, fail) {
 		var params = {
 			type: "GET",
-			url: "wait_module",
-			data: { "module_id": module_id, "op_id": op_id }
+			url: "restart",
+			data: { "ticket": ticket }
 		};
 		return call_server(undefined, params, success, fail);
 	}
@@ -168,49 +181,64 @@ veda.Module(function Backend(veda) { "use strict";
 		$.ajax(params).done(success).fail(fail);
 	}
 
-	window.put_individual = function (ticket, individual, prepare_events, event_id, wait1, wait2, wait3, wait4, success, fail) {
+//////////////////////////
+
+	window.remove_individual = function (ticket, uri, prepare_events, event_id, transaction_id, success, fail) {
+		var params = {
+			type: "PUT",
+			url: "remove_individual",
+			data: JSON.stringify({"ticket": ticket, "uri": uri, 
+			"prepare_events" : prepare_events || true,  "event_id" : event_id || "", "transaction_id" : transaction_id || ""}),
+			contentType: "application/json"
+		};
+		return call_server(ticket, params, success, fail);
+	}
+
+	window.put_individual = function (ticket, individual, prepare_events, event_id, transaction_id, success, fail) {
 		var params = {
 			type: "PUT",
 			url: "put_individual",
 			data: JSON.stringify({"ticket": ticket, "individual": individual, 
-			"prepare_events" : prepare_events || true,  "event_id" : event_id || ""}),
+			"prepare_events" : prepare_events || true,  "event_id" : event_id || "", "transaction_id" : transaction_id || ""}),
 			contentType: "application/json"
 		};
 		return call_server(ticket, params, success, fail);
 	}
 
-	window.add_to_individual = function (ticket, individual, prepare_events, event_id, wait1, wait2, wait3, wait4, success, fail) {
+	window.add_to_individual = function (ticket, individual, prepare_events, event_id, transaction_id, success, fail) {
 		var params = {
 			type: "PUT",
 			url: "add_to_individual",
 			data: JSON.stringify({"ticket": ticket, "individual": individual, 
-			"prepare_events" : prepare_events || true,  "event_id" : event_id || ""}),
+			"prepare_events" : prepare_events || true,  "event_id" : event_id || "", "transaction_id" : transaction_id || ""}),
 			contentType: "application/json"
 		};
 		return call_server(ticket, params, success, fail);
 	}
 
-	window.set_in_individual = function (ticket, individual, prepare_events, event_id, wait1, wait2, wait3, wait4, success, fail) {
+	window.set_in_individual = function (ticket, individual, prepare_events, event_id, transaction_id, success, fail) {
 		var params = {
 			type: "PUT",
 			url: "set_in_individual",
 			data: JSON.stringify({"ticket": ticket, "individual": individual,
-			"prepare_events" : prepare_events || true,  "event_id" : event_id || ""}),
+			"prepare_events" : prepare_events || true,  "event_id" : event_id || "", "transaction_id" : transaction_id || ""}),
 			contentType: "application/json"
 		};
 		return call_server(ticket, params, success, fail);
 	}
 
-	window.remove_from_individual = function (ticket, individual, prepare_events, event_id, wait1, wait2, wait3, wait4, success, fail) {
+	window.remove_from_individual = function (ticket, individual, prepare_events, event_id, transaction_id, success, fail) {
 		var params = {
 			type: "PUT",
 			url: "remove_from_individual",
 			data: JSON.stringify({"ticket": ticket, "individual": individual,
-			"prepare_events" : prepare_events || true,  "event_id" : event_id || ""}),
+			"prepare_events" : prepare_events || true,  "event_id" : event_id || "", "transaction_id" : transaction_id || ""}),
 			contentType: "application/json"
 		};
 		return call_server(ticket, params, success, fail);
 	}
+
+/////////////////////////////////////////
 
 	window.get_property_value = function (ticket, uri, property_uri, success, fail) {
 		var params = {
