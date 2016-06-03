@@ -60,16 +60,11 @@ veda.Module(function (veda) { "use strict";
 			veda.appointment = undefined;
 		}
 
-		if (self.hasValue("v-s:hasAppointment")) {
-			veda.appointmentList = self["v-s:hasAppointment"].filter( function (item) {
-				return item.hasValue("v-s:official") && item["v-s:official"][0] == true;
-			});
-		}
-		self.on("individual:propertyModified", function (property_uri, values) {
+		self.on("individual:propertyModified", function (property_uri) {
 			if (property_uri === "v-s:defaultAppointment") {
-				if (self["v-s:defaultAppointment"][0].id === values[0].id) return;
+				if (self["v-s:defaultAppointment"][0].id === veda.appointment.id) return;
 				self.save();
-				veda.appointment = self["v-s:defaultAppointment"][0];
+				location.reload();
 			}
 		});
 

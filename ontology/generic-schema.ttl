@@ -191,7 +191,7 @@ v-s:copyTo
   rdfs:label "Copy to"@en ;
   rdfs:label "В копию"@ru ;
   rdfs:range v-s:Appointment ;
-  rdfs:range v-s:OrganizationUnit ;
+#  rdfs:range v-s:OrganizationUnit ;
 .
 v-s:sender
   rdf:type owl:ObjectProperty ;
@@ -329,7 +329,7 @@ v-s:registrationNumber
 v-s:responsible
   rdf:type owl:ObjectProperty ;
   rdfs:label "Responsible"@en ;
-  rdfs:label "Ответственное лицо"@ru ;
+  rdfs:label "Ответственный"@ru ;
   rdfs:range v-s:Appointment ;
 .
 v-s:sum

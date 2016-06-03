@@ -76,6 +76,9 @@ v-s:agenda
 v-s:decision
   rdfs:domain v-s:Meeting ;
 .
+v-s:copyTo
+  rdfs:domain v-s:Meeting ;
+.
 
 
 v-s:responsible

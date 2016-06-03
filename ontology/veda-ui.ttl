@@ -453,15 +453,9 @@ v-ui:PersonAppointmentTemplate
   rdfs:label "Шаблон персоны с выбором назначения"@ru ;
   rdfs:label "Person template with appointment select"@en ;
   v-ui:template """
-<div>
-	<veda-control type="link" rel="v-s:defaultAppointment" class="fulltext dropdown" template="{individual['v-s:occupation'][0]['rdfs:label'].join(', ')}"></veda-control>
-</div>
-<script>
-	var prev = individual["v-s:defaultAppointment"];
-	function handler (property_uri, values) { if (property_uri === "v-s:defaultAppointment" && prev[0].id !== values[0].id) location.reload(); }
-	individual.on("individual:propertyModified", handler);
-	template.on("remove", function () { individual.off("individual:propertyModified", handler); });
-</script>
+	<div>
+		<veda-control type="link" rel="v-s:defaultAppointment" class="fulltext dropdown" template="{individual['v-s:occupation'][0]['rdfs:label'].join(', ')}"></veda-control>
+	</div>
 """ ;
 .
 v-ui:PS_PersonDefaultAppointment
@@ -470,13 +464,8 @@ v-ui:PS_PersonDefaultAppointment
   rdfs:label "Default appointment property specification for Person class"@en ;
   v-ui:forClass v-s:Person ;
   v-ui:forProperty v-s:defaultAppointment ;
-#  v-ui:tooltip "Выбор назначения"@ru ;
-#  v-ui:tooltip "Appointment select"@en ;
-#  v-ui:queryPrefix "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='{individual.id}' && 'v-s:official'=='true')"^^xsd:string ;
-  v-ui:queryPrefix "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='{individual.id}')"^^xsd:string ;
-  v-ui:placeholder "Учетная запись"@ru ;
-  v-ui:placeholder "Account"@en ;
-  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:queryPrefix "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='{individual.id}' && 'v-s:official'=='true')"^^xsd:string ;
+  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
 .
 v-ui:ClassTemplateTemplate
@@ -616,10 +605,7 @@ v-ui:LabelTemplate
     if (!individual.hasValue("rdfs:label")) {
   	  template.text(individual.id);
     }
-    template.css({
-			"display": "inline-block",
-			"white-space": "pre",
-		});
+    template.css("display", "inline-block");
   </script>
   """ ;
 .
