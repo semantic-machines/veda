@@ -431,13 +431,18 @@ v-ui:ImageAppointmentTemplate
   rdfs:label "Шаблон персоны с иконкой"@ru ;
   rdfs:label "Person template with icon"@en ;
   v-ui:template """
-<div class="media" style="display:inline-block; max-width:250px; height:60px; margin:10px; padding:5px; border:1px solid #ddd; border-radius: 5px">
+<div class="media" style="display:inline-block; max-width:250px; height:60px; margin:15px 30px 15px 0px; padding:5px; border:1px solid #ddd; border-radius: 5px">
   <div class="media-left">
 		<a href="#/@" about="@" rel="v-s:employee">
-			<!--div about="@" rel="v-s:hasImage" template="v-ui:ImageSimpleTemplateWithoutBorder" style="width:50px"></div-->
-			<div style="width:50px">
-				<span class="glyphicon glyphicon-picture" style="font-size:3em"></span>
-			</div>
+				<div>
+					<div class="has-image" about="@" rel="v-s:hasImage" template="v-ui:ImageSimpleTemplateWithoutBorder" style="width:50px"></div>
+					<div class="no-image" style="width:50px">
+						<span class="glyphicon glyphicon-user" style="font-size:3em"></span>
+					</div>
+				</div>
+				<script>
+					individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
+				</script>
 		</a>
   </div>
   <div class="media-body">
@@ -605,7 +610,10 @@ v-ui:LabelTemplate
     if (!individual.hasValue("rdfs:label")) {
   	  template.text(individual.id);
     }
-    template.css("display", "inline-block");
+    template.css({
+			"display": "inline-block",
+			"margin-bottom": "7px"
+		});
   </script>
   """ ;
 .
@@ -954,6 +962,15 @@ v-ui:TestUITemplate
 </div>
   """ ;
 .
+v-ui:PsDescriptionFile
+  rdf:type v-ui:PropertySpecification ;
+  rdfs:label "Спецификация тестового целочисленного свойства"@ru ;
+  rdfs:label "Specification for test integer property"@en ;
+  v-ui:forClass v-s:File ;
+  v-ui:forProperty v-s:description ;
+  v-ui:minCardinality "0"^^xsd:integer ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+.
 v-ui:FileTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для файла"@ru ;
@@ -962,6 +979,35 @@ v-ui:FileTemplate
   v-ui:template """
 <div style="word-wrap: break-word;" class="margin-sm">
 	<span id="icon" class="label label-primary"></span> <a href="/files/@"><span about="@" property="v-s:fileName"></span></a>
+</div>
+<script>
+	var fn = individual["v-s:fileName"][0],
+		idx = fn.lastIndexOf("."),
+		ext = fn.substr(idx + 1);
+	$("span#icon", template).text(ext);
+</script>
+  """ ;
+.
+v-ui:FileTemplateWithComment
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для файла 2"@ru ;
+  rdfs:label "File template 2"@en ;
+  v-ui:forClass v-s:File ;
+  v-ui:template """
+<div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:15px; overflow: hidden">
+	<div class="panel-body">
+		<strong property="v-s:description" class="view -edit -search"></strong>
+		<veda-control type="string" property="v-s:description" class="-view edit search"></veda-control>
+		<div>
+			<span id="icon" class="label label-primary"></span>
+			<a href="/files/@">
+				<span about="@" property="v-s:fileName"></span>
+			</a>
+		</div>
+		<div class="view -edit -search" style="font-style:italic">
+			<small property="v-s:publisher"></small><small property="v-s:created"></small>
+		</div>
+	</div>
 </div>
 <script>
 	var fn = individual["v-s:fileName"][0],
