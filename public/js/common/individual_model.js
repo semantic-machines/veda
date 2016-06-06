@@ -29,7 +29,7 @@ veda.Module(function (veda) { "use strict";
 
 		if (!uri) {
 			this._.isNew = true;
-			let id = veda.Util.genUri();
+			var id = veda.Util.genUri();
 			this.properties["@"] = id;
 			if (this._.cache && veda.cache) {
 				veda.cache[id] = this;
