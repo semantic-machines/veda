@@ -24,7 +24,7 @@ if ! dub --version | grep $DUB_VER ; then
 fi
 
 # Get other dependencies
-LIB_NAME[1]="libevent-pthreads-2.0-51"
+LIB_NAME[1]="libevent-pthreads-2.0-5"
 LIB_NAME[2]="libraptor2-dev"
 LIB_NAME[3]="libevent-dev"
 LIB_NAME[4]="libssl-dev"
