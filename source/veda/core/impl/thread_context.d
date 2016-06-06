@@ -585,6 +585,9 @@ class PThreadContext : Context
     public Ticket *get_systicket_from_storage()
     {
         string systicket_id = tickets_storage.find("systicket");
+		
+		if (systicket_id is null)
+			log.trace ("SYSTICKET NOT FOUND");
 
         return get_ticket(systicket_id);
     }
@@ -1218,6 +1221,7 @@ class PThreadContext : Context
                         }
                         catch (ConnectError ce)
                         {
+                            log.trace("ERR! [%s] store_individual, use EXTERNAL, err=[%s], req=[%s]", name, ce.msg, text(req_body));
                             res.result = ResultCode.Connect_Error;
                         }
                         catch (TimeoutException)

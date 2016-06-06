@@ -79,32 +79,7 @@ class ChildProcess
         host            = _host;
         _log            = new logger("veda-core-" ~ process_name, "log", "PROCESS");
         context         = new PThreadContext("cfg:standart_node", process_name, _module_name, parent_url);
-/*
-        sticket         = *context.get_systicket_from_storage();
 
-        //if (sticket is Ticket.init || sticket.result != ResultCode.OK)
-        {
-            writeln("SYS TICKET, systicket=", sticket);
-
-            bool is_superadmin = false;
-
-            void trace(string resource_group, string subject_group, string right)
-            {
-                if (subject_group == "cfg:SuperUser")
-                    is_superadmin = true;
-            }
-
-            while (is_superadmin == false)
-            {
-                context.get_rights_origin(&sticket, "cfg:SuperUser", &trace);
-
-                writeln("@@ child_process is_superadmin=", is_superadmin);
-                core.thread.Thread.sleep(dur!("seconds")(1));
-            }
-        }
-
-        set_global_systicket(sticket);
- */
         if (node == Individual.init)
         {
             node = context.getConfiguration();
@@ -178,6 +153,8 @@ class ChildProcess
         //    prepare_queue();
 
         init_chanel();
+
+        load_systicket();
 
         bool f1 = false;
         while (!destroy_flag)
@@ -284,6 +261,34 @@ class ChildProcess
         if (count_readed != count_success_prepared)
             log.trace("WARN! : readed=%d, success_prepared=%d", count_readed, count_success_prepared);
     }
+
+    void load_systicket()
+    {
+        sticket = *context.get_systicket_from_storage();
+
+        if (sticket is Ticket.init || sticket.result != ResultCode.OK)
+        {
+            writeln("SYS TICKET, systicket=", sticket);
+
+            bool is_superadmin = false;
+
+            void trace(string resource_group, string subject_group, string right)
+            {
+                if (subject_group == "cfg:SuperUser")
+                    is_superadmin = true;
+            }
+
+            while (is_superadmin == false)
+            {
+                context.get_rights_origin(&sticket, "cfg:SuperUser", &trace);
+
+                writeln("@@ child_process is_superadmin=", is_superadmin);
+                core.thread.Thread.sleep(dur!("seconds")(1));
+            }
+        }
+
+        set_global_systicket(sticket);
+    }
 }
 
 int websocket_write_back(lws *wsi_in, string str)
@@ -364,4 +369,3 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
 
     return 0;
 }
-
