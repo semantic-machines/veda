@@ -169,19 +169,11 @@ v-s:File
   rdfs:subClassOf v-s:Exportable ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Authorized ;
-  rdfs:comment "File description"@en ;
-  rdfs:comment "Описание файла"@ru ;
+  rdfs:comment "File"@en ;
+  rdfs:comment "Файл"@ru ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "File"@en ;
   rdfs:label "Файл"@ru ;
-.
-
-v-s:fileDescription
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:File ;
-  rdfs:label "File name"@en ;
-  rdfs:label "Описание файла"@ru ;
-  rdfs:range xsd:string ;
 .
 v-s:fileName
   rdf:type owl:DatatypeProperty ;
@@ -204,7 +196,6 @@ v-s:fileThumbnail
   rdfs:label "Миниатюра"@ru ;
   rdfs:range v-s:File ;
 .
-
 ### veda-workflow
 v-s:hasStatusWorkflow
   rdf:type owl:ObjectProperty ;
@@ -537,7 +528,7 @@ v-s:DocumentLinkRulesTemplate
 """ ;
 .
 
-### добавляем Назначение ссылку на подразделение (связка через должность) 
+### добавляем Назначение ссылку на подразделение (связка через должность)
 v-s:AppointmentSaveEvent
   rdf:type v-s:Event ;
   v-s:filter v-s:Appointment ;

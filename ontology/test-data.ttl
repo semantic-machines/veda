@@ -80,6 +80,13 @@ td:File_1
     v-s:fileURI "111.pdf" ;
 .
 
+td:khvostiaImage
+    rdf:type v-s:File ;
+    v-s:fileUri "Khvostia" ;
+    v-s:fileName "Khvostia" ;
+    v-s:filePath "/mondi" ;
+.
+
 td:AdministrativeDocument_2
   rdf:type td:AdministrativeDocument ;
   td:content "To comply the federal law №135-FL issued 12.10.2012 I order..."@en ;
