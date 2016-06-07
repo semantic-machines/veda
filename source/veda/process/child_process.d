@@ -108,7 +108,7 @@ class ChildProcess
 
         if (ws_context is null)
         {
-            //writeln("[Main] context is NULL.");
+            log.trace("init_chanel: ws_context is NULL");
             return;
         }
 
@@ -129,7 +129,8 @@ class ChildProcess
             return;
         }
 
-        //writeln("[Main] wsi create success.");
+        destroy_flag = 0;
+        log.trace("init_chanel: %s, is Ok", process_name);
     }
 
     void run()
@@ -152,27 +153,38 @@ class ChildProcess
         //if (count_signal == 0)
         //    prepare_queue();
 
-        init_chanel();
-
         load_systicket();
 
-        bool f1 = false;
-        while (!destroy_flag)
+        try
         {
-            lws_service(ws_context, 50);
-
-            // send module name
-            if (connection_flag && f1 == false)
+            while (true)
             {
-                websocket_write_back(wsi, "module-name=" ~ process_name);
-                lws_callback_on_writable(wsi);
-                f1 = true;
+                init_chanel();
+
+                bool f1 = false;
+                while (!destroy_flag)
+                {
+                    lws_service(ws_context, 50);
+
+                    // send module name
+                    if (connection_flag && f1 == false)
+                    {
+                        websocket_write_back(wsi, "module-name=" ~ process_name);
+                        lws_callback_on_writable(wsi);
+                        f1 = true;
+                    }
+                }
+
+                log.trace("DISCONNECT");
+                lws_context_destroy(ws_context);
+
+                core.thread.Thread.sleep(dur!("seconds")(1));
             }
         }
-
-        lws_context_destroy(ws_context);
-
-        log.trace("EXIT");
+        catch (Throwable tr)
+        {
+            log.trace("MAIN LOOP EXIT %s", tr.msg);
+        }
     }
 
 ///////////////////////////////////////////////////
@@ -325,7 +337,7 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
-        //writeln("[CP] Connect with server error.");
+        _log.trace("[CP] Connect with server error.");
         destroy_flag    = 1;
         connection_flag = 0;
         break;

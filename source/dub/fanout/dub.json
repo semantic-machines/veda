@@ -6,7 +6,7 @@
 		"backtrace-d": "0.1.0", 
 		"mysql-d": "0.3.2",
 		"smtp": "~master",
-                "requests": "0.1.5"
+                "requests": "0.1.6"
 	},
         "versions": ["isModule"],
         "license": "LGPL v3",
@@ -24,6 +24,7 @@
 	],
         "sourceFiles":[
 	"../../lib64/libxapiand.a", 
+        "../../veda/core/bind/lmdb_header.d",
 	"../../veda/core/bind/xapian_d_header.d",
         "../../veda/core/bind/libwebsockets.d",
  	"../../veda/core/util/utils.d"

@@ -199,7 +199,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                         }
                         catch (Throwable tr)
                         {
-                            log.trace("%s", tr);
+                            log.trace("recv %s, %s", uid_count[ 1 ], tr);
                         }
                     }
                 }
@@ -212,7 +212,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                 while (true)
                 {
                     string msg;
-
+                    // sleep 1s
                     vibe.core.concurrency.receiveTimeout(dur!("msecs")(1000), (string _msg)
                                                          {
                                                              msg = _msg;
