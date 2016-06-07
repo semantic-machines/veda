@@ -6,13 +6,6 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	$("body").on("click", "[href='']", function (e) {
 		e.preventDefault();
 	});
-	
-	// Route on link click
-	$("body").on("click", "[href^='#/']", function (e) {
-		e.preventDefault();
-		var hash = $(this).attr("href");
-		return ( hash === location.hash ? false : riot.route(hash, true) );
-	});
 
 	// App loading indicator
 	var appLoadIndicator = $("#app-load-indicator");
@@ -30,6 +23,9 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			welcome = new veda.IndividualModel(welcomeUri);
 		// Router function
 		riot.route( function (hash) {
+			if (hash.indexOf("#/") < 0 ) {
+				return;
+			}
 			var hash_tokens = hash.slice(2).split("/");
 			var page = hash_tokens[0];
 			var params = hash_tokens.slice(1);
@@ -38,7 +34,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			} else {
 				welcome.present("#main");
 			}
-		});		
+		});
 	});
 	veda.on("started", function () {
 		var layoutUri = (new veda.IndividualModel("cfg:Layout"))["rdf:value"][0];
@@ -46,7 +42,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		layout.present("#app");
 		riot.route(location.hash, true);
 	});
-	
+
 	// Error handling
 	veda.on("error", function (error) {
 		switch (error.status) {
@@ -65,27 +61,27 @@ veda.Module(function AppPresenter(veda) { "use strict";
 				$('#error-description').text( JSON.stringify(error) );
 				$('#error-modal').modal('show');
 				break;
-			case 471: 
-				veda.logout(); 
+			case 471:
+				veda.logout();
 				break;
 			case 472:
 				console.log ? console.log("Error:", JSON.stringify(error)) : null;
 				break;
-			case 473: 
+			case 473:
 				break; // handled in login screen
-			default: 
+			default:
 				$('#error-message').html("Операция не выполнена. <br/> Пожалуйста, оставайтесь на этой странице и обратитесь в службу тех. поддержки. <br/><br/> Operation failed. <br/> Please keep this page open and call support team.");
 				$('#error-description').text( JSON.stringify(error) );
 				$('#error-modal').modal('show');
 				console.log ? console.log("Error:", JSON.stringify(error)) : null;
 		}
-	});	
-	
+	});
+
 	// Login invitation
 	var loginTmpl = $("#login-template").html();
 	var loginContainer = $("#login-container");
 	loginContainer.html(loginTmpl);
-	var errorMsg = $("#login-error", loginContainer);	
+	var errorMsg = $("#login-error", loginContainer);
 	var submit = $("#submit", loginContainer);
 	submit.click( function (e) {
 		e.preventDefault();
@@ -117,7 +113,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			}
 			errorMsg.removeClass("hidden");
 			veda.trigger("login:failed");
-		}		
+		}
 	});
 
 	// NTLM auth using iframe
@@ -131,8 +127,8 @@ veda.Module(function AppPresenter(veda) { "use strict";
 
 	veda.on("login:failed", function () {
 		$("#app").empty();
-		delCookie("user_uri"); 
-		delCookie("ticket"); 
+		delCookie("user_uri");
+		delCookie("ticket");
 		delCookie("end_time");
 		if (ntlm) {
 			iframe.one("load", function () {
@@ -178,24 +174,24 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	// Logout handler
 	veda.on("logout", function () {
 		$("#app").empty();
-		delCookie("ticket"); 
-		delCookie("user_uri"); 
+		delCookie("ticket");
+		delCookie("user_uri");
 		delCookie("end_time");
 		loginContainer.removeClass("hidden");
 	});
 
 	// Check if ticket in cookies is valid
-	var ticket = getCookie("ticket") == "undefined" ? undefined : getCookie("ticket"), 
-		user_uri = getCookie("user_uri") == "undefined" ? undefined : getCookie("user_uri"),  
+	var ticket = getCookie("ticket") == "undefined" ? undefined : getCookie("ticket"),
+		user_uri = getCookie("user_uri") == "undefined" ? undefined : getCookie("user_uri"),
 		end_time = getCookie("end_time") == "undefined" ? undefined : getCookie("end_time");
-	
-	if ( ticket && user_uri && end_time && is_ticket_valid(ticket) ) { 
+
+	if ( ticket && user_uri && end_time && is_ticket_valid(ticket) ) {
 		veda.trigger("login:success", {
-			ticket: ticket, 
+			ticket: ticket,
 			user_uri: user_uri,
 			end_time: end_time
 		});
-	} else { 
+	} else {
 		veda.trigger("login:failed");
 	}
 
