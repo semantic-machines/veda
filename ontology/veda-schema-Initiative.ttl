@@ -40,6 +40,12 @@ v-s:Effect
   rdfs:label "Effect"@en ;
   rdfs:label "Эффект"@ru ;
 .
+v-s:Effects
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:label "Effects"@en ;
+  rdfs:label "Эффекты"@ru ;
+.
 v-s:KpiGroup
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Dictionary ;
@@ -377,19 +383,38 @@ v-s:kpiFactLevel
 .
 v-s:hasEffect
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Initiative ;
+  rdfs:domain v-s:Effects ;
   rdfs:label "Effect"@en ;
   rdfs:label "Эффект"@ru ;
   rdfs:range v-s:Effect ;
 .
 v-s:PsHasEffect
   rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:Idea ;
-  v-ui:forClass v-s:Project ;
+  v-ui:forClass v-s:Effects ;
   v-ui:forProperty v-s:hasEffect ;
   v-ui:maxCardinality 50 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Effect')"^^xsd:string ;
+  v-ui:tooltip "Non-required, multy value. Link to instance of Effect class"@en ;
+  v-ui:tooltip "Необязательно к заполнению, множественное значение. Ссылка на объект класса Эффект."@ru ;
+  rdfs:label "hasEffect property specification for Initiative class"@en ;
+  rdfs:label "Спецификация эффекта для класса Инициатива"@ru ;
+.
+v-s:hasEffects
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Initiative ;
+  rdfs:label "Effects"@en ;
+  rdfs:label "Эффекты"@ru ;
+  rdfs:range v-s:Effects ;
+.
+v-s:PsHasEffects
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Idea ;
+  v-ui:forClass v-s:Project ;
+  v-ui:forProperty v-s:hasEffects ;
+  v-ui:maxCardinality 50 ;
+  v-ui:minCardinality 0 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Effects')"^^xsd:string ;
   v-ui:tooltip "Non-required, multy value. Link to instance of Effect class"@en ;
   v-ui:tooltip "Необязательно к заполнению, множественное значение. Ссылка на объект класса Эффект."@ru ;
   rdfs:label "hasEffect property specification for Initiative class"@en ;
