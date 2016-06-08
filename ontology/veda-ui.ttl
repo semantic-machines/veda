@@ -1493,7 +1493,7 @@ td:PersonTemplate1
   rdfs:label "Person template"@en ;
   v-ui:forClass v-s:Person ;
   v-ui:template """
-  <div class="container-fluid">
+  <div class="container">
     <div class="panel panel-default">
       <div class="panel-heading">
         <div class="row">
@@ -1548,17 +1548,16 @@ td:PersonTemplate1
         <hr />
         <div class="row">
           <div class="col-md-6">
-            <div about="@" rel="v-s:hasAccount" template="td:AccountTemplate1">шаблон: td:AccountTemplate1</div>
-            <!--div rel="v-s:hasAccount" template="td:AccountTemplate1">шаблон: td:AccountTemplate1</div>
+            <div about="@" rel="v-s:hasAccount" template="td:AccountTemplate1"></div>
+            <!--div rel="v-s:hasAccount" template="td:AccountTemplate1"></div>
             <veda-control rel="v-s:hasAccount" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
           </div>
           <div class="col-md-6">
-		    <div about="@" rel="v-ui:hasPreferences" template="td:PreferencesTemplate1">шаблон: td:PreferencesTemplate1</div>
-		    <!--div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" embedded="true">шаблон: td:PreferencesTemplate1</div>
+		    <div about="@" rel="v-ui:hasPreferences" template="td:PreferencesTemplate1"></div>
+		    <!--div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" embedded="true"></div>
 		    <veda-control rel="v-ui:hasPreferences" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
 		    <br />
-		    <div about="@" rel="v-s:hasAppointment"></div>
-		    <!--div rel="v-s:hasAppointment" embedded="true"></div>
+		    <div about="@" rel="v-s:hasAppointment" template="td:AppointmentTemplate1"></div>
 		    <veda-control rel="v-s:hasAppointment" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
           </div>
         </div>
@@ -1589,7 +1588,6 @@ td:AppointmentTemplate1
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон Назначения"@ru ;
   rdfs:label "Appointment template"@en ;
-  v-ui:forClass v-s:Appointment ;
   v-ui:template """
   <div class="container-fluid">
     <div class="panel panel-default">
@@ -1721,7 +1719,6 @@ td:PreferencesTemplate1
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Предпочтения"@ru ;
   rdfs:label "Template for Preferences class"@en ;
-  v-ui:forClass v-ui:Preferences ;
   v-ui:template """
 <div class="container-fluid">
 	<div class="panel panel-default">
