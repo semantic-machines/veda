@@ -616,7 +616,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 							defaultValue = spec && spec.hasValue("v-ui:defaultStringValue") ? spec["v-ui:defaultStringValue"][0] : undefined;
 							break;
 					}
-					if (defaultValue) individual[property_uri] = [ defaultValue ];
+					if (defaultValue !== undefined) individual[property_uri] = [ defaultValue ];
 				}
 				e.stopPropagation();
 			}

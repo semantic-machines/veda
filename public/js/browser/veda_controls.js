@@ -509,9 +509,9 @@
 			if (doc_property_uri === property_uri) {
 				if (individual.hasValue(property_uri)) {
 					if (individual[property_uri][0] == true) {
-						input.prop("checked", true);
+						input.prop("checked", true).prop("readonly", false).prop("indeterminate", false);
 					} else {
-						input.prop("checked", false).prop("readonly", false);
+						input.prop("checked", false).prop("readonly", false).prop("indeterminate", false);
 					}
 				} else {
 					input.prop("readonly", true).prop("indeterminate", true);
