@@ -179,7 +179,7 @@ v-df:InstructionRouteStartForm
   rdfs:comment "Задача bcgjkybnm gjhextybt"@ru ;
 .
 
-v-s:hasAppointmentTo
+v-s:hasAppointment
   rdfs:domain v-df:QuestionRouteStartForm ;
   rdfs:domain v-df:InstructionRouteStartForm ;
 .
@@ -288,9 +288,9 @@ v-df:QuestionRouteStartFormTemplate
 
 			<div class="row">
 			  <div class="col-md-3">
-					<em about="v-s:hasAppointmentTo" property="rdfs:label"></em>
-					<div rel="v-s:hasAppointmentTo" template="v-ui:LabelTemplate" class="view edit -search"></div>
-					<veda-control rel="v-s:hasAppointmentTo" type="link" class="-view edit search fullsearch fulltext"></veda-control>
+					<em about="v-s:hasAppointment" property="rdfs:label"></em>            
+					<div rel="v-s:hasAppointment" template="v-ui:LabelTemplate" class="view edit -search"></div>
+					<veda-control rel="v-s:hasAppointment" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
 			  </div>
 			  <div class="col-md-2">
 					<em about="v-s:dateTo" property="rdfs:label"></em>
@@ -356,9 +356,9 @@ v-df:InstructionRouteStartFormTemplate
 
 			<div class="row">
 			  <div class="col-md-3">
-					<em about="v-s:hasAppointmentTo" property="rdfs:label"></em>
-					<div rel="v-s:hasAppointmentTo" template="v-ui:LabelTemplate" class="view edit -search"></div>
-					<veda-control rel="v-s:hasAppointmentTo" type="link" class="-view edit search fullsearch fulltext"></veda-control>
+					<em about="v-s:hasAppointment" property="rdfs:label"></em>            
+					<div rel="v-s:hasAppointment" template="v-ui:LabelTemplate" class="view edit -search"></div>
+					<veda-control rel="v-s:hasAppointment" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
 			  </div>
 			  <div class="col-md-2">
 					<em about="v-s:dateTo" property="rdfs:label"></em>
@@ -426,10 +426,10 @@ v-df:rul_QuestionTransform1
 .
 v-df:rul_QuestionTransform2
 	rdf:type v-wf:Rule ;
-	v-wf:segregateElement "contentName('v-s:hasAppointmentTo')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
-	v-wf:aggregate	"putValue ('v-wf:variableValue')";
-	v-wf:aggregate	"putString ('v-wf:variableName', 'actor')";
+	v-wf:segregateElement "contentName('v-s:hasAppointment')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor')"; 	
 .
 v-df:rul_QuestionTransform3
 	rdf:type v-wf:Rule ;
@@ -523,10 +523,10 @@ v-df:rul_InstructionTransform1
 .
 v-df:rul_InstructionTransform2
 	rdf:type v-wf:Rule ;
-	v-wf:segregateElement "contentName('v-s:hasAppointmentTo')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
-	v-wf:aggregate	"putValue ('v-wf:variableValue')";
-	v-wf:aggregate	"putString ('v-wf:variableName', 'actor')";
+	v-wf:segregateElement "contentName('v-s:hasAppointment')" ;
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
+	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor')"; 	
 .
 v-df:rul_InstructionTransform3
 	rdf:type v-wf:Rule ;
@@ -588,13 +588,13 @@ v-df:rul_InstructionTransform7
 
 # -- ФОРМА ОТВЕТА ЗАДАЧИ ИДЕЯ В РЕАЛИЗАЦИЮ --
 
-v-s:hasAction
+v-s:hasActivity
   rdfs:domain v-wf:DecisionAgreedToExecute ;
 .
 v-df:PsHasAction
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-wf:DecisionAgreedToExecute ;
-  v-ui:forProperty v-s:hasAction ;
+  v-ui:forProperty v-s:hasActivity ;
   v-ui:maxCardinality 20 ;
   v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Action')"^^xsd:string ;
@@ -614,8 +614,8 @@ v-df:DecisionTemplate2
   v-ui:forClass v-wf:DecisionAgreedToExecute ;
   v-ui:template """
 <div>
-	<div rel="v-s:hasAction" template="v-df:ActionInDecisionTemplate" embedded="true"></div>
-	<veda-control rel="v-s:hasAction" type="link" class="-view edit search fullsearch fulltext create"></veda-control>
+	<div rel="v-s:hasActivity" template="v-df:ActionInDecisionTemplate" embedded="true"></div>
+	<veda-control rel="v-s:hasActivity" type="link" class="-view edit search fullsearch fulltext create"></veda-control>
 </div>
   """ ;
 .
@@ -629,7 +629,7 @@ v-df:ActionInDecisionTemplate
   v-ui:template """
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<span about="v-s:hasAction" property="rdfs:label"></span>
+		<span about="v-s:hasActivity" property="rdfs:label"></span>
 	</div>
 	<div class="panel-body">
 		<em about="v-s:responsible" property="rdfs:label"></em>
