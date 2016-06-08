@@ -23,17 +23,12 @@ veda.Module(function AppPresenter(veda) { "use strict";
 			welcome = new veda.IndividualModel(welcomeUri);
 		// Router function
 		riot.route( function (hash) {
-			if (hash.indexOf("#/") < 0 ) {
-				return;
-			}
+			if ( !hash ) { return welcome.present("#main"); }
+			if ( hash.indexOf("#/") < 0 ) { return; }
 			var hash_tokens = hash.slice(2).split("/");
 			var page = hash_tokens[0];
 			var params = hash_tokens.slice(1);
-			if (page !== "") {
-				veda.load(page, params);
-			} else {
-				welcome.present("#main");
-			}
+			page ? veda.load(page, params) : welcome.present("#main");
 		});
 	});
 	veda.on("started", function () {
