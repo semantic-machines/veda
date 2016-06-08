@@ -177,7 +177,7 @@ veda.Module(function (veda) { "use strict";
 		get: function () {
 			if (this._.rights) return this._.rights;
 			if (this._.isNew) {
-				this._.rights = new veda.IndividualModel();
+				this._.rights = new veda.IndividualModel(undefined, undefined, undefined, undefined, false);
 				this._.rights["v-s:canRead"] = [ true ];
 				this._.rights["v-s:canUpdate"] = [ true ];
 				this._.rights["v-s:canDelete"] = [ true ];
@@ -185,7 +185,7 @@ veda.Module(function (veda) { "use strict";
 			}
 			try {
 				var rightsJSON = get_rights(veda.ticket, this.id);
-				this._.rights = new veda.IndividualModel( rightsJSON );
+				this._.rights = new veda.IndividualModel( rightsJSON, undefined, undefined, undefined, false );
 			} catch (e) {
 				this._.rights = null;
 			} finally {
@@ -202,7 +202,7 @@ veda.Module(function (veda) { "use strict";
 			try {
 				var rightsOriginArr = get_rights_origin(veda.ticket, this.id);
 				this._.rightsOrigin = rightsOriginArr.map(function (item) {
-					return new veda.IndividualModel( item );
+					return new veda.IndividualModel( item, undefined, undefined, undefined, false );
 				});
 			} catch (e) {
 				this._.rightsOrigin = null;
