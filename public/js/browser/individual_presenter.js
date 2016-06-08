@@ -981,7 +981,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					break;
 					default:
 						$(".value", result).append (
-							$("<div/>", {"rel": property_uri, "template": "v-ui:ClassNameLabelBlockTemplate"}),
+							$("<div/>", {"rel": property_uri, "template": "v-ui:ClassNameLabelTemplate"}),
 							$("<veda-control class='-view edit search fullsearch fulltext'></veda-control>").attr("rel", property_uri)
 						);
 					break;

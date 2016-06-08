@@ -25,7 +25,7 @@ v-df:ApprovalTask
   rdfs:isDefinedBy v-df: ;
   rdfs:label "Approval document"@en ;
   rdfs:label "Утвердить документ"@ru ;
-  rdfs:comment "Форма ответа на задачу утверждения"@ru ;  
+  rdfs:comment "Форма ответа на задачу утверждения"@ru ;
 .
 v-df:PsApprovalTask_from
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -55,7 +55,7 @@ v-df:approvalTask_decisionKind
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Примите решение по задаче"@ru ;
   rdfs:label "Take decision by task"@en ;
-  rdfs:comment "Виды решений по задаче утверждения"@ru ;  
+  rdfs:comment "Виды решений по задаче утверждения"@ru ;
   rdfs:domain v-df:ApprovalTask ;
   rdfs:range xsd:string ;
 .
@@ -68,7 +68,7 @@ v-df:PsApprovalTask_decisionKind
   v-ui:optionStringValue "Утверждено"^^xsd:string ;
   v-ui:optionStringValue "Отложено"^^xsd:string ;
   v-ui:optionStringValue "Отклонено"^^xsd:string ;
-  v-ui:optionStringValue "На доработку"^^xsd:string ;  
+  v-ui:optionStringValue "На доработку"^^xsd:string ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
 .
@@ -87,60 +87,60 @@ v-df:ApprovalTaskTemplate
 <div class="container-fluid">
     <div class="panel panel-default">
       <div class="panel-body">
-        
+
 			<div class="row">
 			  <div class="col-md-12">
-				<h3><span about="v-df:ApprovalTask" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>    
+				<h3><span about="v-df:ApprovalTask" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
 			  </div>
 			</div>
 			<br>
 
 			<div class="row">
 			  <div class="col-md-3">
-					<em about="v-wf:from" property="rdfs:label"></em>            
-			  </div>				
-			  <div class="col-md-3">	  
+					<em about="v-wf:from" property="rdfs:label"></em>
+			  </div>
+			  <div class="col-md-3">
 					<div rel="v-wf:from" template="v-ui:LabelTemplate" class="view -edit -search"></div>
-					<veda-control rel="v-wf:from" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
+					<veda-control rel="v-wf:from" type="link" class="-view edit search fullsearch fulltext"></veda-control>
 			  </div>
 			</div>
 			<div class="row">
 			  <div class="col-md-3">
-					<em about="v-wf:onDocument" property="rdfs:label"></em>            
-			  </div>				
-			  <div class="col-md-3">	  
+					<em about="v-wf:onDocument" property="rdfs:label"></em>
+			  </div>
+			  <div class="col-md-3">
 					<div rel="v-wf:onDocument" template="v-ui:LabelTemplate" class="view -edit -search"></div>
-					<veda-control rel="v-wf:onDocument" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
-			  </div>			  
-			</div>            
+					<veda-control rel="v-wf:onDocument" type="link" class="-view edit search fullsearch fulltext"></veda-control>
+			  </div>
+			</div>
 			<div class="row">
 			  <div class="col-md-3">
-					<em about="v-wf:dateGiven" property="rdfs:label"></em>            
-			  </div>				
-			  <div class="col-md-3">	  
+					<em about="v-wf:dateGiven" property="rdfs:label"></em>
+			  </div>
+			  <div class="col-md-3">
 					<div property="v-wf:dateGiven" class="view -edit -search"></div>
-					<veda-control property="v-wf:dateGiven" type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>            
-			  </div>			  
-			</div>            			
+					<veda-control property="v-wf:dateGiven" type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>
+			  </div>
+			</div>
 			<hr class="margin-sm">
 
 			<div class="row">
 			  <div class="col-md-3">
-					<em about="v-df:approvalTask_decisionKind" property="rdfs:label"></em>            
-			  </div>					
+					<em about="v-df:approvalTask_decisionKind" property="rdfs:label"></em>
+			  </div>
 			  <div class="col-md-3">
-					<veda-control property="v-df:approvalTask_decisionKind" type="stringRadio"></veda-control>					
-			  </div>		
+					<veda-control property="v-df:approvalTask_decisionKind" type="stringRadio"></veda-control>
+			  </div>
 			</div>
 
 
 			<div class="row">
 			  <div class="col-md-3">
-					<em about="v-wf:possibleDecisionClass" property="rdfs:label"></em>            
-			  </div>					
+					<em about="v-wf:possibleDecisionClass" property="rdfs:label"></em>
+			  </div>
 			  <div class="col-md-3">
-					<veda-control rel="v-wf:possibleDecisionClass" type="objectRadio"></veda-control>					
-			  </div>		
+					<veda-control rel="v-wf:possibleDecisionClass" type="objectRadio"></veda-control>
+			  </div>
 			</div>
 
 
@@ -151,11 +151,11 @@ v-df:ApprovalTaskTemplate
 			  <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
 			  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
 			  <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-			</div>    
-		
-	  </div>		
-	</div>			
-</div>			
+			</div>
+
+	  </div>
+	</div>
+</div>
 """ ;
 .
 
@@ -164,29 +164,29 @@ v-df:ApprovalTaskTemplate
 
 v-df:QuestionRouteStartForm
   rdf:type owl:Class ;
-  rdfs:subClassOf v-wf:StartForm ;  
+  rdfs:subClassOf v-wf:StartForm ;
   rdfs:isDefinedBy v-df: ;
   rdfs:label "Question document"@en ;
   rdfs:label "Задать вопрос"@ru ;
-  rdfs:comment "Задача задать вопрос"@ru ;  
+  rdfs:comment "Задача задать вопрос"@ru ;
 .
 v-df:InstructionRouteStartForm
   rdf:type owl:Class ;
-  rdfs:subClassOf v-wf:StartForm ;  
+  rdfs:subClassOf v-wf:StartForm ;
   rdfs:isDefinedBy v-df: ;
   rdfs:label "Instruction document"@en ;
   rdfs:label "Исполнить поручение"@ru ;
-  rdfs:comment "Задача bcgjkybnm gjhextybt"@ru ;  
+  rdfs:comment "Задача bcgjkybnm gjhextybt"@ru ;
 .
 
 v-s:hasAppointmentTo
   rdfs:domain v-df:QuestionRouteStartForm ;
-  rdfs:domain v-df:InstructionRouteStartForm ;    
+  rdfs:domain v-df:InstructionRouteStartForm ;
 .
-v-df:PsStartForm_hasAppointmentTo 
+v-df:PsStartForm_hasAppointmentTo
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
-  v-ui:forClass v-df:InstructionRouteStartForm ;  
+  v-ui:forClass v-df:InstructionRouteStartForm ;
   v-ui:forProperty v-s:hasAppointmentTo ;
   v-ui:maxCardinality 10 ;
   v-ui:minCardinality 0 ;
@@ -199,12 +199,12 @@ v-df:PsStartForm_hasAppointmentTo
 
 v-s:dateTo
   rdfs:domain v-df:QuestionRouteStartForm ;
-  rdfs:domain v-df:InstructionRouteStartForm ;    
+  rdfs:domain v-df:InstructionRouteStartForm ;
 .
 v-df:PsStartForm_dateTo
   rdf:type v-ui:DatetimePropertySpecification ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
-  v-ui:forClass v-df:InstructionRouteStartForm ;  
+  v-ui:forClass v-df:InstructionRouteStartForm ;
   v-ui:forProperty v-s:dateTo ;
   v-ui:minCardinality "0"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
@@ -222,7 +222,7 @@ v-df:PsCountForStartForm
   rdfs:label "Спецификация количества дней для класса QuestionRouteStartForm"@ru ;
   rdfs:label "Count day property specification for QuestionRouteStartForm"@en ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
-  v-ui:forClass v-df:InstructionRouteStartForm ;  
+  v-ui:forClass v-df:InstructionRouteStartForm ;
   v-ui:forProperty v-s:count ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -231,12 +231,12 @@ v-df:PsCountForStartForm
 .
 v-wf:processedDocument
   rdfs:domain v-df:QuestionRouteStartForm ;
-  rdfs:domain v-df:InstructionRouteStartForm ;    
+  rdfs:domain v-df:InstructionRouteStartForm ;
 .
 v-df:PsStartForm_processedDocument
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
-  v-ui:forClass v-df:InstructionRouteStartForm ;    
+  v-ui:forClass v-df:InstructionRouteStartForm ;
   v-ui:forProperty v-wf:processedDocument ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -248,7 +248,7 @@ v-df:PsStartForm_processedDocument
 v-df:PsStartForm_comment
   rdf:type v-ui:PropertySpecification ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
-  v-ui:forClass v-df:InstructionRouteStartForm ;    
+  v-ui:forClass v-df:InstructionRouteStartForm ;
   v-ui:forProperty rdfs:comment ;
   rdfs:label "Спецификация к свойству комментарий для QuestionRouteStartForm"@ru ;
   rdfs:label "Spec for comment for QuestionRouteStartFormclass"@en ;
@@ -267,10 +267,10 @@ v-df:QuestionRouteStartFormTemplate
 <div class="container-fluid">
     <div class="panel panel-default">
       <div class="panel-body">
-        
+
 			<div class="row">
 			  <div class="col-md-12">
-				<h3><span about="v-df:QuestionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>    
+				<h3><span about="v-df:QuestionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
 			  </div>
 			</div>
 			<br>
@@ -280,48 +280,48 @@ v-df:QuestionRouteStartFormTemplate
 					<em about="v-wf:processedDocument" property="rdfs:label"></em>
 				</div>
 				<div class="col-md-10">
-					<div about="@" rel="v-wf:processedDocument" template="v-ui:LabelTemplateWithLink" class="view edit search"></div>
+					<div about="@" rel="v-wf:processedDocument" template="v-ui:LabelLinkTemplate" class="view edit search"></div>
 				</div>
-			</div>           
+			</div>
 
 			<br>
-						
+
 			<div class="row">
 			  <div class="col-md-3">
-					<em about="v-s:hasAppointmentTo" property="rdfs:label"></em>            
+					<em about="v-s:hasAppointmentTo" property="rdfs:label"></em>
 					<div rel="v-s:hasAppointmentTo" template="v-ui:LabelTemplate" class="view edit -search"></div>
-					<veda-control rel="v-s:hasAppointmentTo" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
+					<veda-control rel="v-s:hasAppointmentTo" type="link" class="-view edit search fullsearch fulltext"></veda-control>
 			  </div>
 			  <div class="col-md-2">
-					<em about="v-s:dateTo" property="rdfs:label"></em>            
+					<em about="v-s:dateTo" property="rdfs:label"></em>
 					<div property="v-s:dateTo" class="view -edit -search"></div>
-					<veda-control property="v-s:dateTo" type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>            
-			  </div>			  
+					<veda-control property="v-s:dateTo" type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>
+			  </div>
 			  <div class="col-md-1">
 					<em about="v-s:count" property="rdfs:label"></em>
 					<div property="v-s:count" class="view -edit -search"></div>
 					<veda-control property="v-s:count" type="integer" class="-view edit search"></veda-control>
-			  </div>       			  
-			</div>            		
-				
+			  </div>
+			</div>
+
 			<br>
 
 			<div class="row">
 			  <div class="col-md-6">
-					<em about="rdfs:comment" property="rdfs:label"></em>            
+					<em about="rdfs:comment" property="rdfs:label"></em>
 					<div property="rdfs:comment" class="view -edit -search"></div>
-					<veda-control property="rdfs:comment" type="text" class="-view edit search"></veda-control>					
-			  </div>		
+					<veda-control property="rdfs:comment" type="text" class="-view edit search"></veda-control>
+			  </div>
 			</div>
 
 			<br><br>
 			<div class="well well-sm">
 			  <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
 			  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-			</div>    
-	  </div>		
-	</div>			
-</div>			
+			</div>
+	  </div>
+	</div>
+</div>
 """ ;
 .
 
@@ -335,10 +335,10 @@ v-df:InstructionRouteStartFormTemplate
 <div class="container-fluid">
     <div class="panel panel-default">
       <div class="panel-body">
-        
+
 			<div class="row">
 			  <div class="col-md-12">
-				<h3><span about="v-df:InstructionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>    
+				<h3><span about="v-df:InstructionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
 			  </div>
 			</div>
 			<br>
@@ -348,48 +348,48 @@ v-df:InstructionRouteStartFormTemplate
 					<em about="v-wf:processedDocument" property="rdfs:label"></em>
 				</div>
 				<div class="col-md-10">
-					<div about="@" rel="v-wf:processedDocument" template="v-ui:LabelTemplateWithLink" class="view edit search"></div>
+					<div about="@" rel="v-wf:processedDocument" template="v-ui:LabelLinkTemplate" class="view edit search"></div>
 				</div>
-			</div>           
-			
+			</div>
+
 			<br>
-						
+
 			<div class="row">
 			  <div class="col-md-3">
-					<em about="v-s:hasAppointmentTo" property="rdfs:label"></em>            
+					<em about="v-s:hasAppointmentTo" property="rdfs:label"></em>
 					<div rel="v-s:hasAppointmentTo" template="v-ui:LabelTemplate" class="view edit -search"></div>
-					<veda-control rel="v-s:hasAppointmentTo" type="link" class="-view edit search fullsearch fulltext"></veda-control>            
+					<veda-control rel="v-s:hasAppointmentTo" type="link" class="-view edit search fullsearch fulltext"></veda-control>
 			  </div>
 			  <div class="col-md-2">
-					<em about="v-s:dateTo" property="rdfs:label"></em>            
+					<em about="v-s:dateTo" property="rdfs:label"></em>
 					<div property="v-s:dateTo" class="view -edit -search"></div>
-					<veda-control property="v-s:dateTo" type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>            
-			  </div>			  
+					<veda-control property="v-s:dateTo" type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>
+			  </div>
 			  <div class="col-md-1">
 					<em about="v-s:count" property="rdfs:label"></em>
 					<div property="v-s:count" class="view -edit -search"></div>
 					<veda-control property="v-s:count" type="integer" class="-view edit search"></veda-control>
-			  </div>       			  
-			</div>            		
-				
+			  </div>
+			</div>
+
 			<br>
 
 			<div class="row">
 			  <div class="col-md-6">
-					<em about="rdfs:comment" property="rdfs:label"></em>        
+					<em about="rdfs:comment" property="rdfs:label"></em>
 					<div property="rdfs:comment" class="view -edit -search"></div>
-					<veda-control property="rdfs:comment" type="text" class="-view edit search"></veda-control>					
-			  </div>		
+					<veda-control property="rdfs:comment" type="text" class="-view edit search"></veda-control>
+			  </div>
 			</div>
 
 			<br><br>
 			<div class="well well-sm">
 			  <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
 			  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-			</div>    
-	  </div>		
-	</div>			
-</div>			
+			</div>
+	  </div>
+	</div>
+</div>
 """ ;
 .
 
@@ -397,95 +397,95 @@ v-df:InstructionRouteStartFormTemplate
 v-df:QuestionRouteStartFormToNet
   rdfs:label "Трансформация из СтФ Задать вопрос в стандартную сеть процесса"^^xsd:string;
   rdf:type v-wf:Transform ;
-  v-wf:transformRule v-df:rul_QuestionTransform0 ;  
+  v-wf:transformRule v-df:rul_QuestionTransform0 ;
   v-wf:transformRule v-df:rul_QuestionTransform1 ;
   v-wf:transformRule v-df:rul_QuestionTransform2 ;
   v-wf:transformRule v-df:rul_QuestionTransform3 ;
   v-wf:transformRule v-df:rul_QuestionTransform4 ;
-  v-wf:transformRule v-df:rul_QuestionTransform5 ;  
-  v-wf:transformRule v-df:rul_QuestionTransform6_0 ;  
-  v-wf:transformRule v-df:rul_QuestionTransform6_1 ;  
-  v-wf:transformRule v-df:rul_QuestionTransform6_2 ;  
-  v-wf:transformRule v-df:rul_QuestionTransform6_3 ;    
-  v-wf:transformRule v-df:rul_QuestionTransform7 ;  
+  v-wf:transformRule v-df:rul_QuestionTransform5 ;
+  v-wf:transformRule v-df:rul_QuestionTransform6_0 ;
+  v-wf:transformRule v-df:rul_QuestionTransform6_1 ;
+  v-wf:transformRule v-df:rul_QuestionTransform6_2 ;
+  v-wf:transformRule v-df:rul_QuestionTransform6_3 ;
+  v-wf:transformRule v-df:rul_QuestionTransform7 ;
   rdfs:isDefinedBy v-df: ;
 .
 v-df:rul_QuestionTransform0
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'startForm_id')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putValue ('v-wf:variableValue')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'startForm_id')";
 .
 v-df:rul_QuestionTransform1
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-wf:processedDocument')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'docId')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putValue ('v-wf:variableValue')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'docId')";
 .
 v-df:rul_QuestionTransform2
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-s:hasAppointmentTo')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'actor')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putValue ('v-wf:variableValue')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor')";
 .
 v-df:rul_QuestionTransform3
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('rdfs:comment')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_comment')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putValue ('v-wf:variableValue')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_comment')";
 .
 v-df:rul_QuestionTransform4
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-s:dateTo')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_date_to')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putValue ('v-wf:variableValue')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_date_to')";
 .
 v-df:rul_QuestionTransform5
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-s:author')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'initiator')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putValue ('v-wf:variableValue')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'initiator')";
 .
 v-df:rul_QuestionTransform6_0
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'possible_decision')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'possible_decision')";
 .
 v-df:rul_QuestionTransform6_1
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'possible_decision_for_add_reaction')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'possible_decision_for_add_reaction')";
 .
 v-df:rul_QuestionTransform6_2
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'decision_route_to_add_reaction')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'decision_route_to_add_reaction')";
 .
 v-df:rul_QuestionTransform6_3
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putUri ('v-wf:variableValue', 's-wf:UserTaskForm')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'decision_form_type')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 's-wf:UserTaskForm')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'decision_form_type')";
 .
 v-df:rul_QuestionTransform7
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableValue', 'Ответить на вопрос')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_action')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putString ('v-wf:variableValue', 'Ответить на вопрос')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_action')";
 .
 
 
@@ -494,96 +494,96 @@ v-df:rul_QuestionTransform7
 v-df:InstructionRouteStartFormToNet
   rdfs:label "Трансформация из СтФ исполнить поручение в стандартную сеть процесса"^^xsd:string;
   rdf:type v-wf:Transform ;
-  v-wf:transformRule v-df:rul_InstructionTransform0 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform0 ;
   v-wf:transformRule v-df:rul_InstructionTransform1 ;
   v-wf:transformRule v-df:rul_InstructionTransform2 ;
   v-wf:transformRule v-df:rul_InstructionTransform3 ;
   v-wf:transformRule v-df:rul_InstructionTransform4 ;
-  v-wf:transformRule v-df:rul_InstructionTransform5 ;  
-  v-wf:transformRule v-df:rul_InstructionTransform6_0 ;  
-  v-wf:transformRule v-df:rul_InstructionTransform6_1 ;  
-  v-wf:transformRule v-df:rul_InstructionTransform6_2 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform5 ;
+  v-wf:transformRule v-df:rul_InstructionTransform6_0 ;
+  v-wf:transformRule v-df:rul_InstructionTransform6_1 ;
+  v-wf:transformRule v-df:rul_InstructionTransform6_2 ;
   v-wf:transformRule v-df:rul_InstructionTransform6_3 ;
-  v-wf:transformRule v-df:rul_InstructionTransform7 ;  
+  v-wf:transformRule v-df:rul_InstructionTransform7 ;
   rdfs:isDefinedBy v-df: ;
 .
 v-df:rul_InstructionTransform0
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'startForm_id')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putValue ('v-wf:variableValue')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'startForm_id')";
 .
 v-df:rul_InstructionTransform1
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-wf:processedDocument')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'docId')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putValue ('v-wf:variableValue')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'docId')";
 .
 v-df:rul_InstructionTransform2
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-s:hasAppointmentTo')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'actor')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putValue ('v-wf:variableValue')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor')";
 .
 v-df:rul_InstructionTransform3
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('rdfs:comment')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_comment')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putValue ('v-wf:variableValue')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_comment')";
 .
 v-df:rul_InstructionTransform4
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-s:dateTo')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_date_to')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putValue ('v-wf:variableValue')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_date_to')";
 .
 v-df:rul_InstructionTransform5
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-s:author')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'initiator')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putValue ('v-wf:variableValue')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'initiator')";
 .
 v-df:rul_InstructionTransform6_0
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')"; 	
-	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionRemake')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'possible_decision')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')";
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionRemake')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'possible_decision')";
 .
 v-df:rul_InstructionTransform6_1
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'possible_decision_for_add_reaction')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'possible_decision_for_add_reaction')";
 .
 v-df:rul_InstructionTransform6_2
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'decision_route_to_add_reaction')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'decision_route_to_add_reaction')";
 .
 v-df:rul_InstructionTransform6_3
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putUri ('v-wf:variableValue', 's-wf:UserTaskForm')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'decision_form_type')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putUri ('v-wf:variableValue', 's-wf:UserTaskForm')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'decision_form_type')";
 .
 v-df:rul_InstructionTransform7
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('@')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableValue', 'Выполнить поручение')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_action')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putString ('v-wf:variableValue', 'Выполнить поручение')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'actor_task_action')";
 .
 
 # -- ФОРМА ОТВЕТА ЗАДАЧИ ИДЕЯ В РЕАЛИЗАЦИЮ --
@@ -611,7 +611,7 @@ v-df:DecisionTemplate2
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса -Решение-"@ru ;
   rdfs:label "Template for -Decision- class"@en ;
-  v-ui:forClass v-wf:DecisionAgreedToExecute ;    
+  v-ui:forClass v-wf:DecisionAgreedToExecute ;
   v-ui:template """
 <div>
 	<div rel="v-s:hasAction" template="v-df:ActionInDecisionTemplate" embedded="true"></div>
@@ -625,7 +625,7 @@ v-df:ActionInDecisionTemplate
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса Мероприятие внутри Ответа на задачу"@ru ;
   rdfs:label "Action in decision Template"@en ;
-# v-ui:forClass v-s:Action ;   
+# v-ui:forClass v-s:Action ;
   v-ui:template """
 <div class="panel panel-default">
 	<div class="panel-heading">
@@ -697,7 +697,7 @@ v-wf:permission_c_on_decision
 	v-s:permissionObject v-wf:DecisionNotPerformed ;
 	v-s:permissionObject v-wf:DecisionConfirm ;
 	v-s:permissionObject v-wf:DecisionRedirect ;
-	v-s:permissionObject v-wf:DecisionCalculationsPerformed ;  
+	v-s:permissionObject v-wf:DecisionCalculationsPerformed ;
   v-s:permissionSubject cfg:AllUsersGroup ;
 .
 
@@ -706,140 +706,140 @@ v-wf:DecisionAnswerToYourQuestion
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Ответ на ваш вопрос"@ru ;
-.	
+.
 
 v-wf:DecisionControll
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Принять отчет по поручению"@ru ;
-.	
+.
 
 v-wf:DecisionNotRequireReview
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Не требует рассмотрения"@ru ;
-.	
+.
 
 v-wf:DecisionAgreed
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Согласовано"@ru ;
-.	
+.
 
 v-wf:DecisionAgreedToProject
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Начать проект"@ru ;
-.	
+.
 
 v-wf:DecisionAgreedToExecute
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Согласовано в реализацию"@ru ;
-.	
+.
 
 v-wf:DecisionAgreedToExecuteComment
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Согласовано в реализацию"@ru ;
-.	
+.
 
 v-wf:DecisionSign
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Подписано"@ru ;
-.	
+.
 
 v-wf:DecisionApprove
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Утверждено"@ru ;
-.	
+.
 
 v-wf:DecisionReview
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Рассмотрено"@ru ;
-.	
+.
 
 v-wf:DecisionRejected
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Отклонено"@ru ;
-.	
+.
 
 v-wf:DecisionRemake
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Доработать"@ru ;
-.	
+.
 
 v-wf:DecisionRemaked
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Доработанно"@ru ;
-.	
+.
 
 v-wf:DecisionNotForMe
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Исполнитель не я"@ru ;
-.	
+.
 
 v-wf:DecisionBreak
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Прервать маршрут"@ru ;
-.	
+.
 
 v-wf:DecisionExamined
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Ознакомлен"@ru ;
-.	
+.
 
 v-wf:DecisionAchieved
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Выполнено"@ru ;
-.	
+.
 
 v-wf:DecisionNotPerformed
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Не выполнено"@ru ;
-.	
+.
 
 v-wf:DecisionConfirm
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Подтверждено"@ru ;
-.	
+.
 
 v-wf:DecisionRedirect
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Перенаправить другому"@ru ;
-.	
+.
 
 v-wf:DecisionCalculationsPerformed
 	rdf:type owl:Class ;
@@ -884,8 +884,8 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionRemaked ;
   v-ui:forClass v-wf:DecisionNotPerformed ;
   v-ui:forClass v-wf:DecisionConfirm ;
-  v-ui:forClass v-wf:DecisionAgreedToProject ;  
-  v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;   
+  v-ui:forClass v-wf:DecisionAgreedToProject ;
+  v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;
   v-ui:forClass v-wf:DecisionCalculationsPerformed ;
   v-ui:template """
 <div>
@@ -925,8 +925,8 @@ v-wf:DecisionRedirectTemplateSpec2
   v-ui:forClass v-wf:DecisionExamined ;
   v-ui:forClass v-wf:DecisionAchieved ;
   v-ui:forClass v-wf:DecisionAgreedToProject ;
-  v-ui:forClass v-wf:DecisionConfirm ;   
-  v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;   
+  v-ui:forClass v-wf:DecisionConfirm ;
+  v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;
   v-ui:forClass v-wf:DecisionCalculationsPerformed ;
 .
 
@@ -936,7 +936,7 @@ v-wf:DecisionRedirectTemplateSpec3
   rdfs:label "Спецификация свойств для класса -Перенаправить другому-"@ru ;
   rdfs:label "Spec for template for -Decision Redirect- class"@en ;
   v-ui:forClass v-wf:DecisionRedirect ;
-  v-ui:forClass v-wf:DecisionAgreedToExecute ;   
+  v-ui:forClass v-wf:DecisionAgreedToExecute ;
   v-ui:forProperty v-wf:to, rdfs:comment ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
@@ -972,7 +972,7 @@ v-wf:questionRouteStartForm
   rdf:type v-wf:Transform ;
   v-wf:transformRule v-wf:rule1question ;
   v-wf:transformRule v-wf:rule2question ;
-  v-wf:transformRule v-wf:rule3question ;  
+  v-wf:transformRule v-wf:rule3question ;
   rdfs:isDefinedBy v-wf: ;
 .
 v-wf:rule1question
@@ -980,14 +980,14 @@ v-wf:rule1question
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate "putValue ('v-wf:processedDocument')" ;
   rdfs:isDefinedBy v-wf: ;
-  v-wf:grouping	"1";    
+  v-wf:grouping	"1";
 .
 v-wf:rule2question
   rdf:type v-wf:Rule ;
   v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
-  v-wf:grouping	"1";    
+  v-wf:grouping	"1";
 .
 v-wf:rule3question
   rdf:type v-wf:Rule ;
@@ -995,14 +995,14 @@ v-wf:rule3question
   v-wf:aggregate "putUri ('v-wf:useTransformation', 'v-df:QuestionRouteStartFormToNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
-  v-wf:grouping	"1";  
+  v-wf:grouping	"1";
 .
 
 v-wf:instructionRouteStartForm
   rdf:type v-wf:Transform ;
   v-wf:transformRule v-wf:rule1instruction ;
   v-wf:transformRule v-wf:rule2instruction ;
-  v-wf:transformRule v-wf:rule3instruction ;  
+  v-wf:transformRule v-wf:rule3instruction ;
   rdfs:isDefinedBy v-wf: ;
 .
 v-wf:rule1instruction
@@ -1010,14 +1010,14 @@ v-wf:rule1instruction
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate "putValue ('v-wf:processedDocument')" ;
   rdfs:isDefinedBy v-wf: ;
-  v-wf:grouping	"1";    
+  v-wf:grouping	"1";
 .
 v-wf:rule2instruction
   rdf:type v-wf:Rule ;
   v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
-  v-wf:grouping	"1";    
+  v-wf:grouping	"1";
 .
 v-wf:rule3instruction
   rdf:type v-wf:Rule ;
@@ -1025,7 +1025,7 @@ v-wf:rule3instruction
   v-wf:aggregate "putUri ('v-wf:useTransformation', 'v-df:InstructionRouteStartFormToNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
-  v-wf:grouping	"1";  
+  v-wf:grouping	"1";
 .
 v-wf:ProcessStopEvent
   rdf:type v-s:Event ;
@@ -1042,49 +1042,49 @@ v-wf:ProcessStopEvent
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
- */	
+ */
 	function recursiveCall(elem) {
 		if (elem['v-wf:decisionFormList']) {
 			elem['v-wf:decisionFormList'].forEach(function(dfae) {
 			    var df = get_individual(ticket, dfae.data)
-				if (!df['v-wf:isCompleted'] || 
-				    df['v-wf:isCompleted'][0].data == false) 
-			    {				    
+				if (!df['v-wf:isCompleted'] ||
+				    df['v-wf:isCompleted'][0].data == false)
+			    {
 					df['v-wf:isCompleted'] = newBool(true);
-					df['v-wf:isStopped'] = newBool(true);					
-					put_individual(ticket, df, _event_id);					
+					df['v-wf:isStopped'] = newBool(true);
+					put_individual(ticket, df, _event_id);
 				}
 			});
 		}
-		
+
 		if (elem['v-wf:workItemList']) {
 			elem['v-wf:workItemList'].forEach(function(wi) {
 				recursiveCall(get_individual(ticket, wi.data));
     		});
     	}
-		
+
 		if (elem['v-wf:workOrderList']) {
 			elem['v-wf:workOrderList'].forEach(function(wo) {
 				recursiveCall(get_individual(ticket, wo.data));
 			});
 		}
-		
+
 		if (elem['v-wf:isProcess']) {
 			elem['v-wf:isProcess'].forEach(function(p) {
 				recursiveCall(get_individual(ticket, p.data));
 			});
 		}
-	} 
-	
-	if (document['v-wf:isStopped'] && 
+	}
+
+	if (document['v-wf:isStopped'] &&
 	    document['v-wf:isStopped'][0].data == true &&
 	    !prev_state['v-wf:isStopped']) {
 		// Disable all active tasks
 		recursiveCall(document);
 		// Add journal record to process
-		
+
 		var pb = get_individual(ticket, 'v-wf:ProcessStopped');
-				
+
 		var journal_record = newJournalRecord(document['@']+'j');
 
 	    journal_record['rdf:type'] = [
@@ -1099,8 +1099,8 @@ v-wf:ProcessStopEvent
         }];
 	    journal_record['rdfs:label'] = pb['rdfs:label'];
 	    journal_record['rdfs:comment'] = pb['rdfs:label'];
-	
-	    logToJournal(ticket, document['@']+'j', journal_record, true);	    
+
+	    logToJournal(ticket, document['@']+'j', journal_record, true);
 	}
 """ ;
 .

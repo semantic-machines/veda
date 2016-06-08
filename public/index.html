@@ -511,57 +511,60 @@
 
 		<!-- Generic class template -->
 		<script type="html/template" id="generic-class-template">
-			<div>
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<div class="row">
-							<div class="col-md-4 className">
-							</div>
-							<div class="col-md-8 text-right text-muted">
-								<a href="#/@"><span property="@"></span></a>
-								<a href="#/graph/@/#main"><span class="glyphicon glyphicon-link"></span></a>
-							</div>
-						</div>
+			<div class="container">
+				<div class="row">
+					<div class="col-md-3 col-xs-5 text-right">
+						<h2 class="text-muted className"></h2>
 					</div>
-					<div class="panel-body">
-						<div class="container-fluid properties">
-							<div class="row">
-								<div class="col-md-3 col-xs-5 text-right">
-									<h3 class="text-muted" about="rdfs:label" property="rdfs:label"></h3>
-								</div>
-								<div class="col-md-9 col-xs-7">
-									<h3 property="rdfs:label"></h3>
-									<veda-control property="rdfs:label" type="multilingualString" class='-view edit search'></veda-control>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-3 col-xs-5 text-right">
-									<strong about="rdf:type" property="rdfs:label" class="text-muted"></strong>
-								</div>
-								<div class="col-md-9 col-xs-7">
-									<div rel="rdf:type" template="v-ui:ClassNameLabelTemplate"/>
-									<veda-control rel="rdf:type" type="link" template="v-ui:ClassNameLabelTemplate" class='-view edit search fullsearch fulltext'></veda-control>
-								</div>
-							</div>
-							<hr style="margin: 10px 0px"/>
-						</div>
+					<div class="col-md-9 col-xs-7">
+						<h2 property="rdfs:label"></h2>
 					</div>
-					<div class="panel-footer">
-	    				<div class="btn-group dropup">
-							<button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		      					<span about="v-s:Send" property="rdfs:label"></span>
-		      					<span class="caret"></span>
-            				</button>
-							<ul class="dropdown-menu" id="standard-tasks">
-							</ul>
-						</div>
-						<button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
-						<button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
-						<button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
-						<button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
-						<button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin">Права доступа</button>
-						<button type="button" class="action btn btn-primary view -edit -search" id="journal">Журнал</button>
+				</div>
+				<div class="row">
+					<div class="col-md-3 col-xs-5 text-right">
+						<strong class="text-muted">@</strong>
 					</div>
+					<div class="col-md-9 col-xs-7">
+						<a href="#/@"><span property="@"></span></a>
+						<a href="#/graph/@/#main"><span class="glyphicon glyphicon-link"></span></a>
+					</div>
+				</div>
+				<hr style="margin: 10px 0px"/>
+				<div class="row">
+					<div class="col-md-3 col-xs-5 text-right">
+						<strong about="rdf:type" property="rdfs:label" class="text-muted"></strong>
+					</div>
+					<div class="col-md-9 col-xs-7">
+						<div rel="rdf:type" template="v-ui:ClassNameLabelTemplate"></div>
+						<veda-control rel="rdf:type" type="link" template="v-ui:ClassNameLabelTemplate" class='-view edit search fullsearch fulltext'></veda-control>
+					</div>
+				</div>
+				<hr style="margin: 10px 0px"/>
+				<div class="row">
+					<div class="col-md-3 col-xs-5 text-right">
+						<strong about="rdfs:label" property="rdfs:label" class="text-muted"></strong>
+					</div>
+					<div class="col-md-9 col-xs-7">
+						<div property="rdfs:label"></div>
+						<veda-control property="rdfs:label" type="multilingualString" class='-view edit search'></veda-control>
+					</div>
+				</div>
+				<div class="properties"></div>
+				<br>
+				<div class="well well-sm">
+					<div class="btn-group dropup">
+						<button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span about="v-s:Send" property="rdfs:label"></span>
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" id="standard-tasks"></ul>
+					</div>
+					<button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
+					<button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+					<button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+					<button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+					<button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin">Права доступа</button>
+					<button type="button" class="action btn btn-primary view -edit -search" id="journal">Журнал</button>
 				</div>
 			</div>
 		</script>

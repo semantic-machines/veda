@@ -612,46 +612,30 @@ v-ui:LabelTemplate
     }
     template.css({
 			"display": "inline-block",
-			"margin-bottom": "7px"
-		});
+			"margin": "0 7px 7px 0"
+    });
   </script>
   """ ;
 .
 v-ui:LabelTemplateWithEditLink
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с меткой на страницу редактирования"@ru ;
-  rdfs:label "Template with label"@en ;
+  rdfs:label "Шаблон с меткой и ссылкой на страницу редактирования"@ru ;
+  rdfs:label "Template with label & edit link"@en ;
   v-ui:template """
   <span>
-  # <a href="#/@///edit"><span id="label" property="rdfs:label"></span></a>
+		# <a href="#/@///edit"><span id="label" property="rdfs:label"></span></a>
   </span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
-  	  template.first().first().first().text(individual.id);
+			$("#label", template).text(individual.id);
     }
   </script>
   """ ;
 .
-v-ui:LabelTemplateWithLink
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с меткой на страницу просмотра"@ru ;
-  rdfs:label "Template with label"@en ;
-  v-ui:template """
-  <span>
-  <a href="#/@"><span id="label" property="rdfs:label"></span></a>
-  </span>
-  <script>
-    if (!individual.hasValue("rdfs:label")) {
-  	  template.first().first().first().text(individual.id);
-    }
-  </script>
-  """ ;
-.
-
 v-ui:LabelLinkTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон без имени класса, но с меткой"@ru ;
-  rdfs:label "Template without class name, with label"@en ;
+  rdfs:label "Шаблон с меткой и ссылкой"@ru ;
+  rdfs:label "Template with label & link"@en ;
   v-ui:template """
   <a href="#/@"><span property="rdfs:label"></span></a>
   <script>
@@ -693,24 +677,15 @@ v-ui:ClassNameLabelTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <span><a href="#/@"><span about="@" rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span id="label" property="rdfs:label"></span></a></span>
+  <span><a href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
   	  $("#label", template).text(individual.id);
     }
-  </script>
-  """ ;
-.
-v-ui:ClassNameLabelBlockTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с именем класса и меткой блочный"@ru ;
-  rdfs:label "Template with class name and label"@en ;
-  v-ui:template """
-  <div><a href="#/@"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span id="label" property="rdfs:label"></span></a></div>
-  <script>
-    if (!individual.hasValue("rdfs:label")) {
-  	  $("#label", template).text(individual.id);
-    }
+    template.css({
+			"display": "inline-block",
+			"margin": "0 7px 7px 0"
+    });
   </script>
   """ ;
 .
@@ -1211,13 +1186,13 @@ v-ui:DocumentEventTemplate
       <div rel="v-s:documentVersion">
 		<div>
 	        <span about="rdf:type" property="rdfs:label"></span>:
-		    <em about="@" template="v-ui:LabelTemplateWithLink"></em>
+		    <em about="@" template="v-ui:LabelLinkTemplate"></em>
 		</div>
 	  </div>
       <div rel="v-wf:onProcess">
 		<div>
 	        <span about="rdf:type" property="rdfs:label"></span>:
-		    <em about="@" template="v-ui:LabelTemplateWithLink"></em>
+		    <em about="@" template="v-ui:LabelLinkTemplate"></em>
 		    <a class="stop-process glyphicon glyphicon-remove" style="display:none"></a>
 		</div>
 	  </div>
