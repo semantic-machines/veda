@@ -474,6 +474,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var aboutContainer = $(this),
 				about_template_uri = aboutContainer.attr("template"),
 				about_inline_template = aboutContainer.children(),
+				isEmbedded = aboutContainer.attr("embedded") === "true",
 				about, aboutTemplate;
 			if ( about_template_uri ) {
 				var templateIndividual = new veda.IndividualModel( about_template_uri );
@@ -490,6 +491,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			aboutContainer.empty();
 			about.present(aboutContainer, aboutTemplate);
+			if (isEmbedded) {
+				embedded.push(aboutTemplate);
+			}
 		});
 
 		// About resource property

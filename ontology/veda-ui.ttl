@@ -414,6 +414,43 @@ v-ui:displayedElements
   rdfs:range xsd:nonNegativeInteger ;
 .
 
+v-ui:SystemPropertiesTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с набором системных свойств"@ru ;
+  rdfs:label "Template with system properties"@en ;
+  v-ui:template """
+<div>
+	<h4 about="v-s:SystemProperties" property="rdfs:label"></h4>
+	<br>
+	<div class="row">
+		<div class="col-md-3 col-xs-6">
+			<em about="v-s:publisher" property="rdfs:label"></em>
+			<veda-control type="link" rel="v-s:publisher" class="-view -edit search fulltext dropdown"></veda-control>
+			<div about="@" rel="v-s:publisher" template="v-ui:LabelTemplate" class="view edit -search"></div>
+			<div rel="v-s:publisher" template="v-ui:LabelTemplate" class="-view -edit search"></div>
+		</div>
+		<div class="col-md-3 col-xs-6">
+			<em about="v-s:created" property="rdfs:label"></em>
+			<veda-control property="v-s:created" type="dateTime" class="-view -edit search"></veda-control>
+			<div about="@" property="v-s:created" class="view edit -search"></div>
+			<div property="v-s:created" class="-view -edit search"></div>
+		</div>
+		<div class="col-md-3 col-xs-6">
+			<em about="v-s:lastEditor" property="rdfs:label"></em>
+			<veda-control type="link" rel="v-s:lastEditor" class="-view -edit search fulltext dropdown"></veda-control>
+			<div about="@" rel="v-s:lastEditor" template="v-ui:LabelTemplate" class="view edit -search"></div>
+			<div rel="v-s:lastEditor" template="v-ui:LabelTemplate" class="-view -edit search"></div>
+		</div>
+		<div class="col-md-3 col-xs-6">
+			<em about="v-s:edited" property="rdfs:label"></em>
+			<veda-control type="dateTime" rel="v-s:edited" class="-view -edit search"></veda-control>
+			<div about="@" property="v-s:edited" class="view edit -search"></div>
+			<div property="v-s:edited" class="-view -edit search"></div>
+		</div>
+	</div>
+</div>
+""" ;
+.
 v-ui:IconPersonTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон персоны с иконкой"@ru ;
