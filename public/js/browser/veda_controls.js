@@ -1051,9 +1051,9 @@
 				individual = opts.individual,
 				rel_uri = opts.rel_uri,
 				isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1;
-			var fileInput = $("input", control);
+			var fileInput = $("#file", control);
 			if (!isSingle) fileInput.attr("multiple", "multiple");
-			var btn = $("button", control);
+			var btn = $("#btn", control);
 			btn.click(function (e) {
 				fileInput.click();
 			});
