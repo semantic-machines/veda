@@ -48,7 +48,12 @@ veda.Module(function (veda) { "use strict";
 		this.on("individual:beforeSave", function () {
 			var now = new Date();
 			var editor = veda.appointment ? veda.appointment : veda.user;
-			if ( this["v-s:lastEditor"][0].id === editor.id && (now - this["v-s:edited"][0]) < 1000 ) { return; }
+			if (
+				this.hasValue("v-s:lastEditor")
+				&& this.hasValue("v-s:edited")
+				&& this["v-s:lastEditor"][0].id === editor.id
+				&& (now - this["v-s:edited"][0]) < 1000
+			) { return; }
 			this["v-s:edited"] = [ now ];
 			this["v-s:lastEditor"] = [ editor ];
 			if (!this.hasValue("v-s:created")) this["v-s:created"] = [ now ];
