@@ -123,6 +123,10 @@ footer {
 .has-error + * {
 	color: #a94442;
 }
+.has-error input[type='button'], .has-error input[type='button']:hover {
+  color: #a94442;
+  border-color: #a94442;
+}
 textarea {
   resize: vertical;
   max-height: 300px;
