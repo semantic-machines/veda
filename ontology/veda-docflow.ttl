@@ -187,7 +187,7 @@ v-df:PsStartForm_hasAppointmentTo
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
   v-ui:forClass v-df:InstructionRouteStartForm ;
-  v-ui:forProperty v-s:hasAppointmentTo ;
+  v-ui:forProperty v-s:hasAppointment ;
   v-ui:maxCardinality 10 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
