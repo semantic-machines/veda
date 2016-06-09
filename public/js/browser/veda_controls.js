@@ -535,13 +535,21 @@
 			}
 		});
 
+		if ( input.closest(".checkbox.disabled").length ) {
+			input.attr("disabled", "disabled");
+		}
+
 		this.on("view edit search", function (e) {
 			e.stopPropagation();
 			if (e.type === "view") {
 				input.attr("disabled", "disabled")
 				control.parents("label").tooltip("destroy");
 			} else {
-				input.removeAttr("disabled");
+				if ( input.closest(".checkbox.disabled").length ) {
+					input.attr("disabled", "disabled");
+				} else {
+					input.removeAttr("disabled");
+				}
 				if (spec && spec.hasValue("v-ui:tooltip")) {
 					control.parents("label").tooltip({
 						title: spec["v-ui:tooltip"].join(", "),
