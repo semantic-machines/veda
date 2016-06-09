@@ -7,6 +7,13 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		e.preventDefault();
 	});
 
+	// Route on link click (IE mandatory!)
+	$("body").on("click", "[href^='#/']", function (e) {
+		e.preventDefault();
+		var hash = $(this).attr("href");
+		return ( hash === location.hash ? false : riot.route(hash, true) );
+	});
+
 	// App loading indicator
 	var appLoadIndicator = $("#app-load-indicator");
 	veda.on("init:progress", function (progress) {
