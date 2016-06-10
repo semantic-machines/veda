@@ -148,9 +148,14 @@ textarea {
 .margin-md {
   margin: 10px 0px;
 }
-
 .no-padding {
   padding: 0px;
+}
+.padding-sm {
+  padding: 5px 0px;
+}
+.padding-md {
+  padding: 10px 0px;
 }
 .no-border {
   border: none;
