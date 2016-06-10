@@ -39,6 +39,26 @@ function restore_right(task)
     }
 }
 
+function interrupt_process(process)
+{
+	print("0*0 > "+toJson(process));
+	var vars = process['v-wf:inVars']
+	for (var i = 0; i < vars.length; i++)
+    {
+        var variable = get_individual(process.ticket, vars[i].data);
+		if (variable
+			&& variable['v-wf:variableName'][0]
+			&& variable['v-wf:variableName'][0].data == 'docId') {
+			print("1*1 > "+variable['v-wf:variableName'][0].data);
+            var doc = get_individual(process.ticket, variable['v-wf:variableValue'][0].data);
+        	print("2*2 > "+toJson(doc));
+			delete doc['v-wf:isProcess'];
+			print("3*3 > "+toJson(doc));
+			put_individual(process.ticket, doc, _event_id);
+		}
+    }
+}
+
 function is_exists_net_executor(process)
 {
     try

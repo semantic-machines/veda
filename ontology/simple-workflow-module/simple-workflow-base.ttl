@@ -702,6 +702,16 @@ s-wf:codelet_restore_right
 	restore_right (task)	
 """ ;
 	rdfs:isDefinedBy s-wf: ;
+.
+
+# ------------------------------ CODELET : "вывести из документооборота" ----------------------------- #
+s-wf:codelet_interrupt_process
+	rdf:type v-s:Codelet ;
+	rdfs:label "Вывести из документооборота" ;
+	v-s:script """
+	interrupt_process (process)	
+""" ;
+	rdfs:isDefinedBy s-wf: ;
 .	
 
 # ------------------------------ CODELET : "рассылка" ----------------------------- #
