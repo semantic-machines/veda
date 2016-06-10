@@ -6,7 +6,12 @@
 veda.Module(function IndividualActions(veda) { "use strict";
 
 	veda.on("individual:loaded", function (individual, container, templateOriginal, mode) {
+
 		function actionsHandler(template) {
+
+			template.one("remove", function () {
+				individual.off("individual:templateReady", actionsHandler);
+			});
 
 			// Prevent excessive calls for individual that was displayed multiple times
 			if ( container !== "#main" && template !== templateOriginal) { return; }
@@ -45,10 +50,6 @@ veda.Module(function IndividualActions(veda) { "use strict";
 				} else {
 					alert("Журнал отсутсвует / Journal empty");
 				}
-			});
-
-			template.one("remove", function () {
-				individual.off("individual:templateReady", actionsHandler);
 			});
 		}
 
