@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # You must have Ruby development kit on your computer.
 # To install jsduck run: gem install jsduck
 # You also need `make` and `ruby-dev` packages
