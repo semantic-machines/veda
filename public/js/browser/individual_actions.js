@@ -5,8 +5,12 @@
  */
 veda.Module(function IndividualActions(veda) { "use strict";
 
-	veda.on("individual:loaded", function (individual, container, template, mode) {
+	veda.on("individual:loaded", function (individual, container, templateOriginal, mode) {
 		function actionsHandler(template) {
+
+			// Prevent excessive calls for individual that was displayed multiple times
+			if ( container !== "#main" && template !== templateOriginal) { return; }
+
 			var $send = template.find("#send.action");
 			var $sendButtons = template.find(".sendbutton");
 			var $createReport = template.find("#createReport.action");
@@ -35,9 +39,11 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			$createReport.on("click", function () {veda.Util.createReport(individual);});
 			$showRights.on("click", function () {veda.Util.showRights(individual);});
 			$journal.on("click", function() {
-				var journal = new veda.IndividualModel(individual.id+'j', null, null, null, false);
+				var journal = new veda.IndividualModel(individual.id+'j', undefined, undefined, undefined, false);
 				if (journal.hasValue('rdf:type') && journal['rdf:type'][0].id != 'rdfs:Resource') {
-					changeHash(individual.id + "j");
+					//changeHash(individual.id + "j");
+					var hash = location.hash + "j" + "/#main///true";
+					riot.route(hash);
 				} else {
 					alert("Журнал отсутсвует / Journal empty");
 				}
@@ -47,6 +53,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 				individual.off("individual:templateReady", actionsHandler);
 			});
 		}
+
 		individual.on("individual:templateReady", actionsHandler);
 	});
 
