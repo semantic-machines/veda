@@ -54,7 +54,7 @@ td:script_onto_rename
 td:AdministrativeDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Document ;
-  rdfs:subClassOf v-s:Versioned ;
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:label "Administrative document"@en ;
   rdfs:label "Распорядительный документ"@ru ;
 .
