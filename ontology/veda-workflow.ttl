@@ -2226,7 +2226,15 @@ v-ui:TaskCompletedTemplate
 	    <em rel="v-wf:executor" template="v-ui:LabelTemplate"></em>
 	  </span>
       <div id="decision">
-        <span about="v-wf:takenDecision" property="rdfs:label"></span>:
+	    <span rel="v-wf:takenDecision">
+	      <span>
+			<span about="v-s:publisher" property="rdfs:label"></span>: 
+			<strong property="v-s:publisher"></strong><br/>
+		  </span>
+	    </span>
+	    <div>
+        	<span about="v-wf:takenDecision" property="rdfs:label"></span>:
+        </div> 
 	    <em rel="v-wf:takenDecision">
 	      <span>
 			<strong property="rdfs:label"></strong>
