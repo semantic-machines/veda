@@ -172,7 +172,8 @@ veda.Module(function GraphPresenter(veda) { "use strict";
 			var modalBody = $(".modal-body", modal);
 			var modalTitle = $(".modal-title", modal);
 			modalTitle.text(nodes.get(id).label);
-			var doc = new veda.IndividualModel(id, modalBody);
+			var doc = new veda.IndividualModel(id)
+			doc.present(modalBody);
 			modal.on('hidden.bs.modal', function (e) {
 				modal.remove();
 			});
