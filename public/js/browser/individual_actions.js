@@ -41,9 +41,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			$journal.on("click", function() {
 				var journal = new veda.IndividualModel(individual.id+'j', undefined, undefined, undefined, false);
 				if (journal.hasValue('rdf:type') && journal['rdf:type'][0].id != 'rdfs:Resource') {
-					//changeHash(individual.id + "j");
-					var hash = location.hash + "j" + "/#main///true";
-					riot.route(hash);
+					riot.route("#/" + individual.id + "j");
 				} else {
 					alert("Журнал отсутсвует / Journal empty");
 				}
@@ -57,8 +55,4 @@ veda.Module(function IndividualActions(veda) { "use strict";
 		individual.on("individual:templateReady", actionsHandler);
 	});
 
-	function changeHash(individualId, mode) {
-		var hash = "#/"+individualId+(mode?("///"+mode):"");
-		if (hash !== location.hash) riot.route(hash, true);
-	}
 });
