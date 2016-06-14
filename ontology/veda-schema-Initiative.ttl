@@ -1059,7 +1059,7 @@ v-s:riskAttachment
   rdfs:subPropertyOf v-s:attachment ;
 .
 v-s:hasProjectPhase
-  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:ProjectPlan ;
   rdfs:label "Project phase"@en ;
   rdfs:label "Фаза проекта"@ru ;
@@ -1070,7 +1070,7 @@ v-s:PsProjectPhases
   v-ui:forProperty v-s:hasProjectPhase ;
   v-ui:forClass v-s:ProjectPlan ;    
   v-ui:maxCardinality 20 ;
-  v-ui:minCardinality 1 ;
+  v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectPhase')"^^xsd:string ;
   v-ui:tooltip "Non-required, simple value. Link to instance of ProjectPhase class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса ProjectPhase."@ru ;
@@ -1078,7 +1078,7 @@ v-s:PsProjectPhases
   rdfs:label "Спецификация cвойств затрат на реализацию проекта для класса Проект"@ru ;
 .
 v-s:hasProjectMilestone
-  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:ProjectPlan ;
   rdfs:label "Project milestone"@en ;
   rdfs:label "Контрольная точка проекта"@ru ;
@@ -1089,7 +1089,7 @@ v-s:PsProjectMilestones
   v-ui:forProperty v-s:hasProjectMilestone ;
   v-ui:forClass v-s:ProjectPlan ;  
   v-ui:maxCardinality 20 ;
-  v-ui:minCardinality 1 ;
+  v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectMilestone')"^^xsd:string ;
   v-ui:tooltip "Non-required, simple value. Link to instance of ProjectPhase class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса ProjectPhase."@ru ;
