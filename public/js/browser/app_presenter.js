@@ -26,8 +26,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 
 	// Triggered in veda.init()
 	veda.one("started", function () {
-		var welcomeUri = (new veda.IndividualModel("cfg:Welcome"))["rdf:value"][0],
-			welcome = new veda.IndividualModel(welcomeUri);
+		var welcome = (new veda.IndividualModel("cfg:Welcome"))["rdf:value"][0];
 		// Router function
 		riot.route( function (hash) {
 			if ( !hash ) { return welcome.present("#main"); }
@@ -39,8 +38,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		});
 	});
 	veda.on("started", function () {
-		var layoutUri = (new veda.IndividualModel("cfg:Layout"))["rdf:value"][0];
-		var layout = new veda.IndividualModel(layoutUri);
+		var layout = (new veda.IndividualModel("cfg:Layout"))["rdf:value"][0];
 		layout.present("#app");
 		riot.route(location.hash, true);
 	});

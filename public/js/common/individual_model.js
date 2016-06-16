@@ -18,6 +18,16 @@ veda.Module(function (veda) { "use strict";
 
 		var self = riot.observable(this);
 
+		// veda.IndividualModel({...})
+		if (typeof uri === "object" && !uri["@"]) {
+			container = uri.container;
+			template  = uri.template;
+			mode      = uri.mode;
+			cache     = uri.cache;
+			init      = uri.init;
+			uri       = uri.uri;
+		}
+
 		// Define Model functions
 		this._ = {};
 		this._.cache = typeof cache !== "undefined" ? cache : true;
@@ -244,9 +254,6 @@ veda.Module(function (veda) { "use strict";
 					"rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
 				};
 			}
-		} else if (uri instanceof veda.IndividualModel) {
-			self.trigger("individual:afterLoad", uri);
-			return uri;
 		} else {
 			self.properties = uri;
 		}
