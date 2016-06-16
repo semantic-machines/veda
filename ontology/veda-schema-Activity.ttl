@@ -130,3 +130,6 @@ v-s:PsDescriptionForAction
   rdfs:label "Описание"@ru ;
   rdfs:range xsd:string ;
 .
+v-s:hasPriority
+  rdfs:domain v-s:Action ;
+.

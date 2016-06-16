@@ -272,6 +272,12 @@ v-s:hasLevel
   rdfs:label "Уровень"@ru ;
   rdfs:range v-s:Level ;
 .
+v-s:hasPriority
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Priority"@en ;
+  rdfs:label "Приоритет"@ru ;
+  rdfs:range v-s:Level ;
+.
 v-s:hasManager
   rdf:type owl:ObjectProperty ;
   rdfs:label "Manager"@en ;
