@@ -1008,7 +1008,7 @@ v-s:PsProjectPlan
   v-ui:forProperty v-s:hasProjectPlan ;
   v-ui:forClass v-s:Initiative ;
   v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:minCardinality "0"^^xsd:integer ;
+  v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:tooltip "Required, simple value. Link to instance of ProjectPhaseRisk class"@en ;
   v-ui:tooltip "План мероприятий проекта"@ru ;
   rdfs:label "Project plan property specification for Initiative class"@en ;
