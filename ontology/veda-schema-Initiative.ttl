@@ -923,12 +923,10 @@ v-s:PsCompletion
   rdfs:label "Completion of Project phase property specification for ProjectPhase class"@en ;
   rdfs:label "Спецификация cвойства процент выполнения для класса ProjectPhase"@ru ;
 .
-rdfs:comment
-  rdfs:domain v-s:ProjectPhase ;
-.
 v-s:PsCommentForProjectPhase
   rdf:type v-ui:StringPropertySpecification ;
   v-ui:forClass v-s:ProjectPhase ;
+  v-ui:forClass v-s:ProjectMilestone ;  
   v-ui:forProperty rdfs:comment ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -1035,7 +1033,7 @@ v-s:hasCurrencyKind
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:ProjectPhaseCost ;
   rdfs:label "Currency kind"@en ;
-  rdfs:label "Вид валюты"@ru ;
+  rdfs:label "Валюта"@ru ;
   rdfs:range v-s:CurrencyKind ;
 .
 v-s:PsHasCurrencyKind
