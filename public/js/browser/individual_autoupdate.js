@@ -32,7 +32,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 				var ind = new veda.IndividualModel(uri);
 				ind.reset();
 			}
-			console.log("ws received:", msg);
+			//console.log("ccus received:", msg);
 		} catch (e) {
 			"individual update failed";
 		}
@@ -84,7 +84,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 							})
 							.join(",");
 						socket.send(msg);
-						console.log("ws sent:", msg);
+						//console.log("ccus sent:", msg);
 					}
 				}, 1000);
 			}

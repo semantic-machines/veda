@@ -259,14 +259,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 		// Check rights to manage buttons
 		// Update
-		if ( individual.isSync() ) {
-			if ($edit.length   && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $edit.remove();
-			if ($save.length   && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $save.remove();
-			if ($draft.length  && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $draft.remove();
-			if ($cancel.length && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $cancel.remove();
-			// Delete
-			if ($delete.length && !(individual.rights && individual.rights.hasValue("v-s:canDelete") && individual.rights["v-s:canDelete"][0] == true) ) $delete.remove();
-		}
+		if ($edit.length   && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $edit.remove();
+		if ($save.length   && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $save.remove();
+		if ($draft.length  && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $draft.remove();
+		if ($cancel.length && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $cancel.remove();
+		// Delete
+		if ($delete.length && !(individual.rights && individual.rights.hasValue("v-s:canDelete") && individual.rights["v-s:canDelete"][0] == true) ) $delete.remove();
 
 		// Buttons handlers
 		// Edit
@@ -476,6 +474,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			var aboutContainer = $(this),
 				about_template_uri = aboutContainer.attr("template"),
 				about_inline_template = aboutContainer.children(),
+				isEmbedded = aboutContainer.attr("embedded") === "true",
 				about, aboutTemplate;
 			if ( about_template_uri ) {
 				var templateIndividual = new veda.IndividualModel( about_template_uri );
@@ -492,6 +491,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			aboutContainer.empty();
 			about.present(aboutContainer, aboutTemplate);
+			if (isEmbedded) {
+				embedded.push(aboutTemplate);
+			}
 		});
 
 		// About resource property
@@ -618,7 +620,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 							defaultValue = spec && spec.hasValue("v-ui:defaultStringValue") ? spec["v-ui:defaultStringValue"][0] : undefined;
 							break;
 					}
-					if (defaultValue) individual[property_uri] = [ defaultValue ];
+					if (defaultValue !== undefined) individual[property_uri] = [ defaultValue ];
 				}
 				e.stopPropagation();
 			}
@@ -983,7 +985,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					break;
 					default:
 						$(".value", result).append (
-							$("<div/>", {"rel": property_uri, "template": "v-ui:ClassNameLabelBlockTemplate"}),
+							$("<div/>", {"rel": property_uri, "template": "v-ui:ClassNameLabelTemplate"}),
 							$("<veda-control class='-view edit search fullsearch fulltext'></veda-control>").attr("rel", property_uri)
 						);
 					break;

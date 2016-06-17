@@ -468,7 +468,7 @@ veda.Module(function Util(veda) { "use strict";
 			var main = $('#main');
 			main.empty();
 			if (typeof redirectIndividual === 'string') {
-				redirectIndividual = new veda.IndividualModel(redirectIndividual, null, null, null, false);
+				redirectIndividual = new veda.IndividualModel(redirectIndividual, undefined, undefined, undefined, false);
 			}
 			redirectIndividual.present(main, undefined, redirectIndividualMode);
 		}

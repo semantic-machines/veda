@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # 1. Run `control-stop.sh` on remote server (if server has no internet connection. Otherwise, don't use this sript, use `control-update.sh` instead. )
 # 2. Run `update-remote.sh` and specify remote folder with veda
 # 3. Run `cotrol-start.sh` on remote server

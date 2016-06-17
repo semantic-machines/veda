@@ -414,6 +414,43 @@ v-ui:displayedElements
   rdfs:range xsd:nonNegativeInteger ;
 .
 
+v-ui:SystemPropertiesTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с набором системных свойств"@ru ;
+  rdfs:label "Template with system properties"@en ;
+  v-ui:template """
+<div>
+	<h4 about="v-s:SystemProperties" property="rdfs:label"></h4>
+	<br>
+	<div class="row">
+		<div class="col-md-3 col-xs-6">
+			<em about="v-s:publisher" property="rdfs:label"></em>
+			<veda-control type="link" rel="v-s:publisher" class="-view -edit search fulltext dropdown"></veda-control>
+			<div about="@" rel="v-s:publisher" template="v-ui:LabelTemplate" class="view edit -search"></div>
+			<div rel="v-s:publisher" template="v-ui:LabelTemplate" class="-view -edit search"></div>
+		</div>
+		<div class="col-md-3 col-xs-6">
+			<em about="v-s:created" property="rdfs:label"></em>
+			<veda-control property="v-s:created" type="dateTime" class="-view -edit search"></veda-control>
+			<div about="@" property="v-s:created" class="view edit -search"></div>
+			<div property="v-s:created" class="-view -edit search"></div>
+		</div>
+		<div class="col-md-3 col-xs-6">
+			<em about="v-s:lastEditor" property="rdfs:label"></em>
+			<veda-control type="link" rel="v-s:lastEditor" class="-view -edit search fulltext dropdown"></veda-control>
+			<div about="@" rel="v-s:lastEditor" template="v-ui:LabelTemplate" class="view edit -search"></div>
+			<div rel="v-s:lastEditor" template="v-ui:LabelTemplate" class="-view -edit search"></div>
+		</div>
+		<div class="col-md-3 col-xs-6">
+			<em about="v-s:edited" property="rdfs:label"></em>
+			<veda-control type="dateTime" rel="v-s:edited" class="-view -edit search"></veda-control>
+			<div about="@" property="v-s:edited" class="view edit -search"></div>
+			<div property="v-s:edited" class="-view -edit search"></div>
+		</div>
+	</div>
+</div>
+""" ;
+.
 v-ui:IconPersonTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон персоны с иконкой"@ru ;
@@ -612,46 +649,30 @@ v-ui:LabelTemplate
     }
     template.css({
 			"display": "inline-block",
-			"margin-bottom": "7px"
-		});
+			"margin": "0 7px 7px 0"
+    });
   </script>
   """ ;
 .
 v-ui:LabelTemplateWithEditLink
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с меткой на страницу редактирования"@ru ;
-  rdfs:label "Template with label"@en ;
+  rdfs:label "Шаблон с меткой и ссылкой на страницу редактирования"@ru ;
+  rdfs:label "Template with label & edit link"@en ;
   v-ui:template """
   <span>
-  # <a href="#/@///edit"><span id="label" property="rdfs:label"></span></a>
+		# <a href="#/@///edit"><span id="label" property="rdfs:label"></span></a>
   </span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
-  	  template.first().first().first().text(individual.id);
+			$("#label", template).text(individual.id);
     }
   </script>
   """ ;
 .
-v-ui:LabelTemplateWithLink
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с меткой на страницу просмотра"@ru ;
-  rdfs:label "Template with label"@en ;
-  v-ui:template """
-  <span>
-  <a href="#/@"><span id="label" property="rdfs:label"></span></a>
-  </span>
-  <script>
-    if (!individual.hasValue("rdfs:label")) {
-  	  template.first().first().first().text(individual.id);
-    }
-  </script>
-  """ ;
-.
-
 v-ui:LabelLinkTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон без имени класса, но с меткой"@ru ;
-  rdfs:label "Template without class name, with label"@en ;
+  rdfs:label "Шаблон с меткой и ссылкой"@ru ;
+  rdfs:label "Template with label & link"@en ;
   v-ui:template """
   <a href="#/@"><span property="rdfs:label"></span></a>
   <script>
@@ -693,24 +714,15 @@ v-ui:ClassNameLabelTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <span><a href="#/@"><span about="@" rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span id="label" property="rdfs:label"></span></a></span>
+  <span><a href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
   	  $("#label", template).text(individual.id);
     }
-  </script>
-  """ ;
-.
-v-ui:ClassNameLabelBlockTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с именем класса и меткой блочный"@ru ;
-  rdfs:label "Template with class name and label"@en ;
-  v-ui:template """
-  <div><a href="#/@"><span rel="rdf:type" template="v-ui:LabelTemplate"></span>: <span id="label" property="rdfs:label"></span></a></div>
-  <script>
-    if (!individual.hasValue("rdfs:label")) {
-  	  $("#label", template).text(individual.id);
-    }
+    template.css({
+			"display": "inline-block",
+			"margin": "0 7px 7px 0"
+    });
   </script>
   """ ;
 .
@@ -1211,13 +1223,13 @@ v-ui:DocumentEventTemplate
       <div rel="v-s:documentVersion">
 		<div>
 	        <span about="rdf:type" property="rdfs:label"></span>:
-		    <em about="@" template="v-ui:LabelTemplateWithLink"></em>
+		    <em about="@" template="v-ui:LabelLinkTemplate"></em>
 		</div>
 	  </div>
       <div rel="v-wf:onProcess">
 		<div>
 	        <span about="rdf:type" property="rdfs:label"></span>:
-		    <em about="@" template="v-ui:LabelTemplateWithLink"></em>
+		    <em about="@" template="v-ui:LabelLinkTemplate"></em>
 		    <a class="stop-process glyphicon glyphicon-remove" style="display:none"></a>
 		</div>
 	  </div>
@@ -1518,7 +1530,7 @@ td:PersonTemplate1
   rdfs:label "Person template"@en ;
   v-ui:forClass v-s:Person ;
   v-ui:template """
-  <div class="container-fluid">
+  <div class="container">
     <div class="panel panel-default">
       <div class="panel-heading">
         <div class="row">
@@ -1573,17 +1585,16 @@ td:PersonTemplate1
         <hr />
         <div class="row">
           <div class="col-md-6">
-            <div about="@" rel="v-s:hasAccount" template="td:AccountTemplate1">шаблон: td:AccountTemplate1</div>
-            <!--div rel="v-s:hasAccount" template="td:AccountTemplate1">шаблон: td:AccountTemplate1</div>
+            <div about="@" rel="v-s:hasAccount" template="td:AccountTemplate1"></div>
+            <!--div rel="v-s:hasAccount" template="td:AccountTemplate1"></div>
             <veda-control rel="v-s:hasAccount" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
           </div>
           <div class="col-md-6">
-		    <div about="@" rel="v-ui:hasPreferences" template="td:PreferencesTemplate1">шаблон: td:PreferencesTemplate1</div>
-		    <!--div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" embedded="true">шаблон: td:PreferencesTemplate1</div>
+		    <div about="@" rel="v-ui:hasPreferences" template="td:PreferencesTemplate1"></div>
+		    <!--div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" embedded="true"></div>
 		    <veda-control rel="v-ui:hasPreferences" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
 		    <br />
-		    <div about="@" rel="v-s:hasAppointment"></div>
-		    <!--div rel="v-s:hasAppointment" embedded="true"></div>
+		    <div about="@" rel="v-s:hasAppointment" template="td:AppointmentTemplate1"></div>
 		    <veda-control rel="v-s:hasAppointment" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
           </div>
         </div>
@@ -1594,7 +1605,7 @@ td:PersonTemplate1
         <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
         <button type="button" class="action btn btn-default -view edit -search" id="draft" about="v-s:ToDraft" property="rdfs:label" />
         <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
-		<button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
+				<button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
         <!--button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/ --!>
       </div>
     </div>
@@ -1607,14 +1618,12 @@ td:PsHasAppointmentPerson
   rdfs:label "Appointment property specification for Person class"@en ;
   v-ui:forClass v-s:Person ;
   v-ui:forProperty v-s:hasAppointment ;
-  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
 .
 td:AppointmentTemplate1
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон Назначения"@ru ;
   rdfs:label "Appointment template"@en ;
-  v-ui:forClass v-s:Appointment ;
   v-ui:template """
   <div class="container-fluid">
     <div class="panel panel-default">
@@ -1746,7 +1755,6 @@ td:PreferencesTemplate1
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Предпочтения"@ru ;
   rdfs:label "Template for Preferences class"@en ;
-  v-ui:forClass v-ui:Preferences ;
   v-ui:template """
 <div class="container-fluid">
 	<div class="panel panel-default">

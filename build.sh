@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 rm *.log
 if [ ! -f ./ontology/config.ttl ]
 then

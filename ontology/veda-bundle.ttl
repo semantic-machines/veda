@@ -139,7 +139,7 @@ v-s:Draft
 .
 v-s:ToDraft
   rdf:type v-s:Bundle ;
-  rdfs:label "Сохранить в черновик"@ru ;
+  rdfs:label "В черновик"@ru ;
   rdfs:label "Save to draft"@en ;
 .
 v-s:Find

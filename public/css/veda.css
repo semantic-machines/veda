@@ -90,7 +90,7 @@ footer {
 .jumbotron {
   background-color: transparent;
 }
-.navbar {
+.navbar-veda {
   padding:7px 0px;
   margin-bottom:15px;
   background-image: none;
@@ -123,6 +123,10 @@ footer {
 .has-error + * {
 	color: #a94442;
 }
+.has-error input[type='button'], .has-error input[type='button']:hover {
+  color: #a94442;
+  border-color: #a94442;
+}
 textarea {
   resize: vertical;
   max-height: 300px;
@@ -144,9 +148,14 @@ textarea {
 .margin-md {
   margin: 10px 0px;
 }
-
 .no-padding {
   padding: 0px;
+}
+.padding-sm {
+  padding: 5px 0px;
+}
+.padding-md {
+  padding: 10px 0px;
 }
 .no-border {
   border: none;
@@ -530,6 +539,7 @@ veda-control {
 .value-holder {
   margin-right: 10px;
   display: inline-block;
+  white-space: pre-line;
 }
 
 #prop-actions, #rel-actions {

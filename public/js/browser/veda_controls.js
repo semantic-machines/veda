@@ -509,9 +509,9 @@
 			if (doc_property_uri === property_uri) {
 				if (individual.hasValue(property_uri)) {
 					if (individual[property_uri][0] == true) {
-						input.prop("checked", true);
+						input.prop("checked", true).prop("readonly", false).prop("indeterminate", false);
 					} else {
-						input.prop("checked", false).prop("readonly", false);
+						input.prop("checked", false).prop("readonly", false).prop("indeterminate", false);
 					}
 				} else {
 					input.prop("readonly", true).prop("indeterminate", true);
@@ -535,13 +535,21 @@
 			}
 		});
 
+		if ( input.closest(".checkbox.disabled").length ) {
+			input.attr("disabled", "disabled");
+		}
+
 		this.on("view edit search", function (e) {
 			e.stopPropagation();
 			if (e.type === "view") {
 				input.attr("disabled", "disabled")
 				control.parents("label").tooltip("destroy");
 			} else {
-				input.removeAttr("disabled");
+				if ( input.closest(".checkbox.disabled").length ) {
+					input.attr("disabled", "disabled");
+				} else {
+					input.removeAttr("disabled");
+				}
 				if (spec && spec.hasValue("v-ui:tooltip")) {
 					control.parents("label").tooltip({
 						title: spec["v-ui:tooltip"].join(", "),
@@ -1043,9 +1051,9 @@
 				individual = opts.individual,
 				rel_uri = opts.rel_uri,
 				isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1;
-			var fileInput = $("input", control);
+			var fileInput = $("#file", control);
 			if (!isSingle) fileInput.attr("multiple", "multiple");
-			var btn = $("button", control);
+			var btn = $("#btn", control);
 			btn.click(function (e) {
 				fileInput.click();
 			});

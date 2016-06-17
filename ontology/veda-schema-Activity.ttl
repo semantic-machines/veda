@@ -62,6 +62,18 @@ v-s:dateFrom
 v-s:dateTo
   rdfs:domain v-s:Activity ;
 .
+v-s:PsDateToForAction
+  rdf:type v-ui:DatetimePropertySpecification ;
+  v-ui:forClass v-s:Action ;
+  v-ui:forClass v-s:Activity ;    
+  v-ui:forProperty v-s:dateTo ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  v-ui:tooltip "Non-Required, single value. Format: 2011-08-19"@en ;
+  v-ui:tooltip "Небязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
+  rdfs:label "Preferences property specification for dateTo in Action class"@en ;
+  rdfs:label "Спецификация даты окончания для класса Action"@ru ;
+.
 v-s:placeDescription
   rdfs:domain v-s:Activity ;
 .
@@ -84,6 +96,19 @@ v-s:copyTo
 v-s:responsible
   rdfs:domain v-s:Action ;
 .
+v-s:PsResponsibleForAction
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Action ;
+  v-ui:forClass v-s:Activity ;  
+  v-ui:forProperty v-s:responsible ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 1 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
+  v-ui:tooltip "Non-required, simple value. Link to instance of Appointment class"@en ;
+  v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Назначение."@ru ;
+  rdfs:label "Responsible property specification for Action class"@en ;
+  rdfs:label "Спецификация свойства responsible для класса Action"@ru ;
+.
 v-s:contributor
   rdfs:domain v-s:Action ;
 .
@@ -94,5 +119,17 @@ v-s:dateFact
   rdfs:domain v-s:Action ;
 .
 v-s:description
+  rdfs:domain v-s:Action ;
+.
+v-s:PsDescriptionForAction
+  rdf:type owl:DatatypeProperty ;
+  v-ui:forClass v-s:Action ;
+  v-ui:forClass v-s:Activity ;    
+  v-ui:forProperty v-s:description ;
+  rdfs:label "Desription"@en ;
+  rdfs:label "Описание"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:hasPriority
   rdfs:domain v-s:Action ;
 .

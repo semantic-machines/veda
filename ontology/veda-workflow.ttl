@@ -62,10 +62,10 @@ v-wf:OutputCondition
 .
 v-wf:Task
 	rdf:type owl:Class ;
-	rdfs:subClassOf v-wf:NetElement ;	
+	rdfs:subClassOf v-wf:NetElement ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Task"@en ;
-	rdfs:label "Задача"@ru ;	
+	rdfs:label "Задача"@ru ;
 .
 v-wf:Flow
 	rdf:type owl:Class ;
@@ -76,14 +76,14 @@ v-wf:Flow
 .
 v-wf:ExecutorDefinition
 	rdf:type owl:Class ;
-	rdfs:subClassOf owl:Thing ;	
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Executor definition"@en ;
 	rdfs:label "Выбор исполнителя"@ru ;
 .
 v-wf:TransitionBehavior
 	rdf:type owl:Class ;
-	rdfs:subClassOf owl:Thing ;	
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Transition behavior"@en ;
 	rdfs:label "Тип перехода"@ru ;
@@ -435,7 +435,7 @@ v-wf:SimpleNetTemplate
   	  <tr>
   		<td style="width:25%"><span about="v-wf:Net" property="rdfs:label"></span></td>
   		<td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
-  	  </tr>	 
+  	  </tr>
   	</thead>
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
   		<td><span about="rdfs:label" property="rdfs:label"></span></td>
@@ -474,7 +474,7 @@ v-wf:SimpleNetTemplate
   			<div class="VClocalVariable" rel="v-wf:localVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
   			<div class="viewVClocalVariable" about="@" rel="v-wf:localVariable" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
-	</tr>			
+	</tr>
 	<tr onclick="javascript: $('.VCinputOutputVariable').show(); $('.viewVCinputOutputVariable').hide();">
   		<td><span about="v-wf:inputOutputVariable" property="rdfs:label"></span></td>
   		<td>
@@ -503,14 +503,14 @@ v-wf:SimpleNetTemplate
 				<div>
 			</div>
 		</td>
-	</tr>	
+	</tr>
   </table>
 </div>
 <script>
 	$('#taskTemplateProperties [rel="v-wf:inputVariable"] [typeof="v-wf:VarDefine"]').draggable({
 		revert:true
 	});
-</script>  
+</script>
   """ ;
 .
 
@@ -539,16 +539,16 @@ v-wf:NetTemplate
 						  <div class="btn-group">
 								<button type="button" class="btn btn-sm btn-default create-state create-task">
 									<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-								</button>								
+								</button>
 								<button type="button" class="btn btn-sm btn-default create-state create-condition">
 									<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
 								</button>
 								<button type="button" class="btn btn-sm btn-default edit-state">
 									<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-								</button>	
+								</button>
 								<button type="button" class="btn btn-sm btn-default copy-net-element">
 									<span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>
-								</button>															
+								</button>
 								<button type="button" class="btn btn-sm btn-default delete-state">
 									<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
 								</button>
@@ -556,13 +556,13 @@ v-wf:NetTemplate
 						  <div class="btn-group">
 								<button type="button" class="btn btn-sm btn-default zoom-in">
 									<span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>
-								</button>								
+								</button>
 								<button type="button" class="btn btn-sm btn-default zoom-default">
 									<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-								</button>				
+								</button>
 								<button type="button" class="btn btn-sm btn-default zoom-out">
 									<span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>
-								</button>						  
+								</button>
 						  </div>
 						  <div class="btn-group">
 								<button id="workflow-save-button" type="button" class="btn btn-sm btn-default" style="float:right;">
@@ -616,9 +616,9 @@ jsWorkflow.ready(function () {
 
     // Initialize workflow with workflow container id
     var net = workflow.init('workflow-canvas', veda, individual, template, container);
-    
+
     veda.net = net;
-    
+
     template.on("remove", function () {
     	delete veda.net
   	});
@@ -678,7 +678,7 @@ v-wf:ProcessTemplate
 		<div id="workflow-context-menu" class="dropdown clearfix">
     		<ul class="workflow-context-menu-list" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;">
     		</ul>
-		</div>		
+		</div>
 	</div>
 </div>
 
@@ -852,7 +852,7 @@ v-wf:TaskTemplateAsProperties
   	  <tr>
   		<td style="width:25%"><span about="v-wf:NetElement" property="rdfs:label"></span></td>
   		<td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
-  	  </tr>	 
+  	  </tr>
   	</thead>
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
   		<td><span about="rdfs:label" property="rdfs:label"></span></td>
@@ -927,9 +927,9 @@ v-wf:TaskTemplateAsProperties
 		  				<span rel="v-s:employee" template="v-ui:LabelTemplate"></span>
 	  				</a>
 				</div>
-			</div>		
+			</div>
   		</td>
-	</tr>	 
+	</tr>
 	<tr onclick="javascript: $('.VCexpectedResultType').show(); $('.viewVCexpectedResultType').hide();">
   		<td><span about="v-wf:expectedResultType" property="rdfs:label"></span></td>
   		<td>
@@ -953,7 +953,7 @@ v-wf:TaskTemplateAsProperties
   			<div class="VCoutputVariable" rel="v-wf:outputVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
   			<div about="@" class="viewVCoutputVariable" rel="v-wf:outputVariable" template="v-ui:LabelTemplateWithEditLink"></div>
   		</td>
-	</tr>		
+	</tr>
 	<tr onclick="javascript: $('.VCinputOutputVariable').show(); $('.viewVCinputOutputVariable').hide();">
   		<td><span about="v-wf:inputOutputVariable" property="rdfs:label"></span></td>
   		<td>
@@ -1021,7 +1021,7 @@ v-wf:TaskTemplateAsProperties
 				<div>
 			</div>
 		</td>
-	</tr>	
+	</tr>
 	<tr onclick="javascript: $('.button-delete', $('.VCstartingExecutorJournalMap').show()).show();">
 		<td>
 			<span about="v-wf:startingExecutorJournalMap" property="rdfs:label"></span>
@@ -1065,7 +1065,7 @@ v-wf:TaskTemplateAsProperties
 				<div>
 			</div>
 		</td>
-	</tr>		
+	</tr>
 	<tr onclick="javascript: $('.button-delete', $('.VCstartingJournalMap').show()).show();">
 		<td>
 			<span about="v-wf:startingJournalMap" property="rdfs:label"></span>
@@ -1157,7 +1157,7 @@ v-wf:TaskTemplateAsProperties
 </div>
 <script>
   function handler (property_uri, values) {
-    if (property_uri === "v-wf:join" || property_uri === "v-wf:split") {      
+    if (property_uri === "v-wf:join" || property_uri === "v-wf:split") {
        var $state = $('#' + veda.Util.escape4$(individual.id));
        $state.removeClass('split-and').removeClass('split-or').removeClass('split-xor');
        $state.removeClass('join-and').removeClass('join-or').removeClass('join-xor');
@@ -1167,15 +1167,15 @@ v-wf:TaskTemplateAsProperties
     }
     if (property_uri === "rdfs:label") {
     	var $state = $('#' + veda.Util.escape4$(individual.id));
-    	$('.state-name', $state).html(values);    	
+    	$('.state-name', $state).html(values);
     }
   }
   individual.on("individual:propertyModified", handler);
-  
+
   template.on("remove", function () {
     individual.off("individual:propertyModified");
   });
-  
+
   $('#taskTemplateProperties > tbody > tr > td > span[about]').each(function () {
   	 if (!individual.hasValue($(this).attr('about'))) {
   	 	$(this).parent().parent().appendTo($('#taskTemplateProperties'));
@@ -1184,7 +1184,7 @@ v-wf:TaskTemplateAsProperties
 </script>
   """ ;
   .
-  
+
 v-wf:ConditionTemplateAsProperties
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -1198,7 +1198,7 @@ v-wf:ConditionTemplateAsProperties
   	  <tr>
   		<td style="width:25%"><span about="v-wf:NetElement" property="rdfs:label"></span></td>
   		<td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
-  	  </tr>	 
+  	  </tr>
   	</thead>
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
   		<td><span about="rdfs:label" property="rdfs:label"></span></td>
@@ -1239,18 +1239,18 @@ v-wf:ConditionTemplateAsProperties
   function handler (property_uri, values) {
     if (property_uri === "rdfs:label") {
     	var $state = $('#' + veda.Util.escape4$(individual.id));
-    	$('.state-name', $state).html(values);    	
+    	$('.state-name', $state).html(values);
     }
   }
   individual.on("individual:propertyModified", handler);
-  
+
   template.on("remove", function () {
     individual.off("individual:propertyModified");
   });
 </script>
   """ ;
   .
-  
+
 v-wf:FlowTemplateAsProperties
   rdf:type v-ui:ClassTemplate ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1264,7 +1264,7 @@ v-wf:FlowTemplateAsProperties
   	  <tr>
   		<td style="width:25%"><span about="v-wf:Net" property="rdfs:label"></span></td>
   		<td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
-  	  </tr>	 
+  	  </tr>
   	</thead>
   	<tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
   		<td><span about="rdfs:label" property="rdfs:label"></span></td>
@@ -1286,7 +1286,7 @@ v-wf:FlowTemplateAsProperties
 			<veda-control id="VCpredicate" type="source" mode="javascript" property="v-wf:predicate" class="properties-editor" style="display:none;width:75%"></veda-control>
 			<div id="viewVCpredicate" about="@" property="v-wf:predicate"></div>
 		</td>
-	</tr>		
+	</tr>
 	<tr>
   		<td><span about="v-wf:flowsInto" property="rdfs:label"></span></td>
 		<td>
@@ -1296,13 +1296,13 @@ v-wf:FlowTemplateAsProperties
   </table>
 </div>
 <script>
-  function handler (property_uri, values) 
+  function handler (property_uri, values)
   {
-    if (property_uri === "rdfs:label") 
+    if (property_uri === "rdfs:label")
     {
       if (veda.net)
       {
-        $.each(veda.net.getAllConnections(), function (idx, connection) 
+        $.each(veda.net.getAllConnections(), function (idx, connection)
         {
            if(connection.id === individual.id) {
               var value = (typeof values[0] === 'undefined')?'':values[0];
@@ -1317,14 +1317,14 @@ v-wf:FlowTemplateAsProperties
     }
   }
   individual.on("individual:propertyModified", handler);
-  
+
   template.on("remove", function () {
     individual.off("individual:propertyModified");
   });
-</script>  
+</script>
   """ ;
 .
-  
+
 v-wf:ProcessPropsTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -1360,7 +1360,7 @@ v-wf:ProcessPropsTemplate
 		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
 		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
 		<hr>
-	</div>		
+	</div>
 </div>
 <script>
 	if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
@@ -1396,13 +1396,13 @@ v-wf:WorkItemTemplate
 	<div id="workOrderList">
 		<em><h5 about="v-wf:workOrderList" property="rdfs:label"></h5></em>
 		<span rel="v-wf:workOrderList" template="v-wf:WorkOrderTemplate"></span>
-		<hr>		
+		<hr>
 	</div>
 	<div id="traceJournal">
 		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
 		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
 		<hr>
-	</div>	
+	</div>
 </div>
 <script>
 	if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
@@ -1434,7 +1434,7 @@ v-wf:VariableTemplate
 	individual["v-wf:variableValue"].map( function (value) {
 		var el = $("<li>");
 		if (value instanceof veda.IndividualModel) {
-			new veda.IndividualModel(value, el, new veda.IndividualModel("v-ui:ClassNameLabelTemplate"));
+			value.present(el, new veda.IndividualModel("v-ui:ClassNameLabelTemplate"));
 		} else {
 			el.text(value.toString());
 		}
@@ -1473,8 +1473,8 @@ v-wf:WorkOrderTemplate
 		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
 		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
 		<hr>
-	</div>	
-	<br/>	
+	</div>
+	<br/>
 </div>
 <script>
 	if (!individual.hasValue("v-wf:decisionFormList")) $("#decisionFormList", template).remove();
@@ -1485,7 +1485,7 @@ v-wf:WorkOrderTemplate
 </script>
   """ ;
   .
-  
+
 v-wf:DecisionFormTemplate
   rdf:type v-ui:ClassTemplate ;
 	rdfs:isDefinedBy v-wf: ;
@@ -1647,7 +1647,7 @@ v-wf:useTransformation
 
 v-wf:Mapping
 	rdf:type owl:Class ;
-	rdfs:subClassOf owl:Thing ;	
+	rdfs:subClassOf owl:Thing ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Mapping"@en ;
 	rdfs:label "Преобразование"@ru ;
@@ -1919,9 +1919,9 @@ v-wf:event_df2
 
 //	print("Event df2: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
 
-	if ((!document['v-wf:isStopped'] || 
-	    document['v-wf:isStopped'][0].data == false) && parent_script_id && 
-		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || 
+	if ((!document['v-wf:isStopped'] ||
+	    document['v-wf:isStopped'][0].data == false) && parent_script_id &&
+		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' ||
 		 parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
 	{
 		prepare_process (ticket, document);
@@ -1940,13 +1940,13 @@ v-wf:event_df3
 
 	//print("Event df3: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
 
-	if (parent_script_id && 
-		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || 
+	if (parent_script_id &&
+		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' ||
 		 parent_script_id == 'v-wf:event_df4'))
 	{
 		prepare_work_item (ticket, document);
 	}
-	
+
 """ ;
 	rdfs:label "Триггер выполнения элемента сети"@ru ;
 .
@@ -1959,8 +1959,8 @@ v-wf:event_df4
 	v-s:script """
 
 	//print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-	if (parent_script_id && 
-		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || 
+	if (parent_script_id &&
+		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' ||
 		 parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
 	{
 		prepare_work_order (ticket, document);
@@ -1976,10 +1976,10 @@ v-wf:event_df5
 	v-s:filter v-wf:DecisionForm ;
 	v-s:script """
 
-	if (!parent_script_id || 
-		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || 
+	if (!parent_script_id ||
+		(parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' ||
 		 parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
-	{	 
+	{
 		prepare_decision_form (ticket, document);
 	}
 
@@ -2073,7 +2073,7 @@ v-wf:isProcess
   rdfs:label "Started process"@en ;
   rdfs:domain v-wf:StartForm ;
   rdfs:domain v-wf:WorkOrder ;
-  rdfs:domain v-s:Document ;  
+  rdfs:domain v-s:Document ;
   rdfs:range v-wf:Process ;
 .
 v-wf:ProcessStarted
@@ -2193,7 +2193,7 @@ v-ui:TaskGivenTemplate
 	<div class="col-md-7 col-sm-6 event-desc">
 	  <div property="rdfs:label"></div>
       <span id="executor">
-        <span about="v-wf:executor" property="rdfs:label"></span>: 
+        <span about="v-wf:executor" property="rdfs:label"></span>:
 	    <em rel="v-wf:executor" template="v-ui:LabelTemplate"></em>
 	  </span>
 	</div>
@@ -2222,14 +2222,22 @@ v-ui:TaskCompletedTemplate
 	<div class="col-md-7 col-sm-6 event-desc">
 	  <div property="rdfs:label"></div>
       <span id="executor">
-        <span about="v-wf:executor" property="rdfs:label"></span>: 
+        <span about="v-wf:executor" property="rdfs:label"></span>:
 	    <em rel="v-wf:executor" template="v-ui:LabelTemplate"></em>
 	  </span>
       <div id="decision">
-        <span about="v-wf:takenDecision" property="rdfs:label"></span>: 
+	    <span rel="v-wf:takenDecision">
+	      <span>
+			<span about="v-s:publisher" property="rdfs:label"></span>: 
+			<strong property="v-s:publisher"></strong><br/>
+		  </span>
+	    </span>
+	    <div>
+        	<span about="v-wf:takenDecision" property="rdfs:label"></span>:
+        </div> 
 	    <em rel="v-wf:takenDecision">
 	      <span>
-			<strong property="rdfs:label"></strong> 
+			<strong property="rdfs:label"></strong>
 			<span rel="v-wf:to"><span>(<span property="rdfs:label"></span>)</span></span>
 			, <span property="rdfs:comment"></span>
 		  </span>
@@ -2262,7 +2270,7 @@ v-ui:ProcessEventTemplate
 	<div class="col-md-7 col-sm-6 event-desc">
 	  <div property="rdfs:label"></div>
       <span id="initiator">
-        <span about="v-wf:initiator" property="rdfs:label"></span>: 
+        <span about="v-wf:initiator" property="rdfs:label"></span>:
 	    <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
 	  </span>
 	</div>
@@ -2301,7 +2309,7 @@ v-ui:WorkItemStartedEventTemplate
 	<div class="col-md-7 col-sm-6 event-desc">
 	  <div property="rdfs:label"></div>
 	  <span id="initiator">
-        <span about="v-wf:initiator" property="rdfs:label"></span>: 
+        <span about="v-wf:initiator" property="rdfs:label"></span>:
 	    <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
 	  </span>
 	</div>

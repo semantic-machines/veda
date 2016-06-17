@@ -40,6 +40,12 @@ v-s:Effect
   rdfs:label "Effect"@en ;
   rdfs:label "Эффект"@ru ;
 .
+v-s:Effects
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:label "Effects"@en ;
+  rdfs:label "Эффекты"@ru ;
+.
 v-s:KpiGroup
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Dictionary ;
@@ -87,7 +93,7 @@ v-s:Asset
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Asset"@en ;
-  rdfs:label "Информация об основном средстве"@ru ;
+  rdfs:label "Основное средство"@ru ;
 .
 v-s:MemberOfWorkGroup
   rdf:type owl:Class ;
@@ -96,12 +102,26 @@ v-s:MemberOfWorkGroup
   rdfs:label "Project team member"@en ;
   rdfs:label "Член рабочей группы в Проекте"@ru ;
 .
+v-s:ProjectPlan
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Project plan"@en ;
+  rdfs:label "План мероприятий проекта"@ru ;
+.
 v-s:ProjectPhase
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Project phase"@en ;
   rdfs:label "Фаза проекта"@ru ;
+.
+v-s:ProjectMilestone
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Project milestone"@en ;
+  rdfs:label "Контрольная точка проекта"@ru ;
 .
 v-s:ProjectPhaseCost
   rdf:type owl:Class ;
@@ -377,19 +397,38 @@ v-s:kpiFactLevel
 .
 v-s:hasEffect
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Initiative ;
+  rdfs:domain v-s:Effects ;
   rdfs:label "Effect"@en ;
   rdfs:label "Эффект"@ru ;
   rdfs:range v-s:Effect ;
 .
 v-s:PsHasEffect
   rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:Idea ;
-  v-ui:forClass v-s:Project ;
+  v-ui:forClass v-s:Effects ;
   v-ui:forProperty v-s:hasEffect ;
   v-ui:maxCardinality 50 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Effect')"^^xsd:string ;
+  v-ui:tooltip "Non-required, multy value. Link to instance of Effect class"@en ;
+  v-ui:tooltip "Необязательно к заполнению, множественное значение. Ссылка на объект класса Эффект."@ru ;
+  rdfs:label "hasEffect property specification for Initiative class"@en ;
+  rdfs:label "Спецификация эффекта для класса Инициатива"@ru ;
+.
+v-s:hasEffects
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Initiative ;
+  rdfs:label "Effects"@en ;
+  rdfs:label "Эффекты"@ru ;
+  rdfs:range v-s:Effects ;
+.
+v-s:PsHasEffects
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Idea ;
+  v-ui:forClass v-s:Project ;
+  v-ui:forProperty v-s:hasEffects ;
+  v-ui:maxCardinality 50 ;
+  v-ui:minCardinality 0 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Effects')"^^xsd:string ;
   v-ui:tooltip "Non-required, multy value. Link to instance of Effect class"@en ;
   v-ui:tooltip "Необязательно к заполнению, множественное значение. Ссылка на объект класса Эффект."@ru ;
   rdfs:label "hasEffect property specification for Initiative class"@en ;
@@ -845,13 +884,16 @@ v-s:PsPermission
 .
 v-s:datePlan
   rdfs:domain v-s:ProjectPhase ;
+  rdfs:domain v-s:ProjectMilestone ;  
 .
 v-s:dateFact
   rdfs:domain v-s:ProjectPhase ;
+  rdfs:domain v-s:ProjectMilestone ;    
 .
 v-s:PsDatesInProjectPhase
   rdf:type v-ui:DatetimePropertySpecification ;
   v-ui:forClass v-s:ProjectPhase ;
+  v-ui:forClass v-s:ProjectMilestone ;    
   v-ui:forProperty v-s:datePlan ;
   v-ui:forProperty v-s:dateFact ;
   v-ui:maxCardinality 1 ;
@@ -864,6 +906,7 @@ v-s:PsDatesInProjectPhase
 v-s:completion
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:ProjectPhase ;
+  rdfs:domain v-s:ProjectMilestone ;  
   rdfs:label "Completion of Project phase"@en ;
   rdfs:label "Процент выполнения"@ru ;
   rdfs:range xsd:integer ;
@@ -871,6 +914,7 @@ v-s:completion
 v-s:PsCompletion
   rdf:type v-ui:IntegerPropertySpecification ;
   v-ui:forClass v-s:ProjectPhase ;
+  v-ui:forClass v-s:ProjectMilestone ;  
   v-ui:forProperty v-s:completion ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -896,6 +940,7 @@ v-s:PsCommentForProjectPhase
 v-s:hasProjectPhaseKind
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:ProjectPhase ;
+  rdfs:domain v-s:ProjectMilestone ;  
   rdfs:label "Project phase kind"@en ;
   rdfs:label "Вид фазы проекта"@ru ;
   rdfs:range v-s:ProjectPhaseKind ;
@@ -904,6 +949,7 @@ v-s:PsProjectPhaseKind
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forProperty v-s:hasProjectPhaseKind ;
   v-ui:forClass v-s:ProjectPhase ;
+  v-ui:forClass v-s:ProjectMilestone ;  
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectPhaseKind')"^^xsd:string ;
@@ -950,6 +996,24 @@ v-s:PsProjectPhaseRisk
   rdfs:label "Project phase risks property specification for ProjectPhase class"@en ;
   rdfs:label "Спецификация рисков фазы проекта для класса фаза проекта"@ru ;
 .
+v-s:hasProjectPlan
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Initiative ;
+  rdfs:label "Project plan"@en ;
+  rdfs:label "План мероприятий проекта"@ru ;
+  rdfs:range v-s:ProjectPlan ;
+.
+v-s:PsProjectPlan
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forProperty v-s:hasProjectPlan ;
+  v-ui:forClass v-s:Initiative ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:tooltip "Required, simple value. Link to instance of ProjectPhaseRisk class"@en ;
+  v-ui:tooltip "План мероприятий проекта"@ru ;
+  rdfs:label "Project plan property specification for Initiative class"@en ;
+  rdfs:label "Спецификация плана мероприятий проекта для класса Инициатива"@ru ;
+.
 v-s:attachment
   rdfs:domain v-s:ProjectPhaseCost ;
 .
@@ -995,8 +1059,8 @@ v-s:riskAttachment
   rdfs:subPropertyOf v-s:attachment ;
 .
 v-s:hasProjectPhase
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Initiative ;
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:ProjectPlan ;
   rdfs:label "Project phase"@en ;
   rdfs:label "Фаза проекта"@ru ;
   rdfs:range v-s:ProjectPhase ;
@@ -1004,9 +1068,29 @@ v-s:hasProjectPhase
 v-s:PsProjectPhases
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forProperty v-s:hasProjectPhase ;
+  v-ui:forClass v-s:ProjectPlan ;    
   v-ui:maxCardinality 20 ;
-  v-ui:minCardinality 1 ;
+  v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectPhase')"^^xsd:string ;
+  v-ui:tooltip "Non-required, simple value. Link to instance of ProjectPhase class"@en ;
+  v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса ProjectPhase."@ru ;
+  rdfs:label "Costs property specification for Project class"@en ;
+  rdfs:label "Спецификация cвойств затрат на реализацию проекта для класса Проект"@ru ;
+.
+v-s:hasProjectMilestone
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:ProjectPlan ;
+  rdfs:label "Project milestone"@en ;
+  rdfs:label "Контрольная точка проекта"@ru ;
+  rdfs:range v-s:ProjectMilestone ;
+.
+v-s:PsProjectMilestones
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forProperty v-s:hasProjectMilestone ;
+  v-ui:forClass v-s:ProjectPlan ;  
+  v-ui:maxCardinality 20 ;
+  v-ui:minCardinality 0 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:ProjectMilestone')"^^xsd:string ;
   v-ui:tooltip "Non-required, simple value. Link to instance of ProjectPhase class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса ProjectPhase."@ru ;
   rdfs:label "Costs property specification for Project class"@en ;
@@ -1067,4 +1151,11 @@ v-s:PsHasClassifiedAttachment
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Классифицированное вложение."@ru ;
   rdfs:label "hasClassifiedAttachment property specification for Document class"@en ;
   rdfs:label "Спецификация свойства hasClassifiedAttachment для класса Документ"@ru ;
+.
+v-s:disposalPercent
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Asset ;
+  rdfs:label "Disposal percent"@en ;
+  rdfs:label "Процент выбытия"@ru ;
+  rdfs:range xsd:integer ;
 .

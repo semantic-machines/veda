@@ -140,7 +140,7 @@ v-s:PermissionStatement
 v-s:Person
   rdf:type owl:Class ;
   rdfs:subClassOf owl:Thing ;
-  rdfs:subClassOf v-s:Versioned ;
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Exportable ;
   rdfs:comment "A person." ;
@@ -160,6 +160,28 @@ v-s:Versioned
   rdfs:subClassOf owl:Thing ;
   rdfs:label "Versioned thing"@en ;
   rdfs:label "Версионная сущность"@ru ;
+.
+
+v-s:ManuallyVersioned
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Versioned ;
+  rdfs:label "Versioned thing, versions are created manually"@en ;
+  rdfs:label "Версионная сущность, версии создаются вручную"@ru ;
+.
+
+v-s:triggerVersionCreation
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:ManuallyVersioned ;
+  rdfs:label "Initiate version creation"@en ;
+  rdfs:label "Инициировать создание версии"@ru ;
+  rdfs:range xsd:boolean ;
+.
+
+v-s:AutomaticallyVersioned
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Versioned ;
+  rdfs:label "Versioned thing, versions are created automatically"@en ;
+  rdfs:label "Версионная сущность, версии создаются автоматически"@ru ;
 .
 
 v-s:Version

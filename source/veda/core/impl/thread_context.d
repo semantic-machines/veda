@@ -586,6 +586,9 @@ class PThreadContext : Context
     {
         string systicket_id = tickets_storage.find("systicket");
 
+        if (systicket_id is null)
+            log.trace("SYSTICKET NOT FOUND");
+
         return get_ticket(systicket_id);
     }
 
@@ -987,11 +990,11 @@ class PThreadContext : Context
                     if (trace_msg[ T_API_220 ] == 1)
                         log.trace("[%s] store_individual[%s] use EXTERNAL, start", name, indv.uri);
 
-                    string url = external_write_storage_url ~ "/remove_individual";
-                    
+                    string    url = external_write_storage_url ~ "/remove_individual";
+
                     JSONValue req_body;
                     req_body[ "ticket" ]         = ticket.id;
-                    req_body[ "uri" ]     = uri;
+                    req_body[ "uri" ]            = uri;
                     req_body[ "prepare_events" ] = prepare_events;
                     req_body[ "event_id" ]       = event_id;
                     req_body[ "transaction_id" ] = "";
@@ -1047,21 +1050,18 @@ class PThreadContext : Context
                     if (trace_msg[ T_API_220 ] == 1)
                         log.trace("[%s] remove_individual[%s] use EXTERNAL, end", name, uri);
                 }
-                    
-                    
-                
             }
             else
-            {    
-            Resources   _types = prev_indv.resources.get(rdf__type, Resources.init);
-            MapResource rdfType;
-            setMapResources(_types, rdfType);
-
-            if (rdfType.anyExists(owl_tags) == true)
             {
-                // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-                inc_count_onto_update();
-            }
+                Resources   _types = prev_indv.resources.get(rdf__type, Resources.init);
+                MapResource rdfType;
+                setMapResources(_types, rdfType);
+
+                if (rdfType.anyExists(owl_tags) == true)
+                {
+                    // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
+                    inc_count_onto_update();
+                }
             }
             //veda.core.fanout.send_put(this, null, prev_state, res.op_id);
 
@@ -1176,7 +1176,8 @@ class PThreadContext : Context
                     import requests.http, requests.streams, requests;
 
                     auto rq = Request();
-                    rq.timeout = 1.seconds;
+                    rq.timeout   = 1.seconds;
+                    rq.keepAlive = false;
                     //rq.verbosity = 2;
 
                     if (trace_msg[ T_API_220 ] == 1)
@@ -1205,8 +1206,6 @@ class PThreadContext : Context
 
                     while (count_attempt < max_count_attempt)
                     {
-                        count_attempt++;
-
                         if (count_attempt > 1)
                             log.trace("WARN! [%s] store_individual[%s] use EXTERNAL, retry, attempt=%d ", name, indv.uri, count_attempt);
 
@@ -1218,6 +1217,7 @@ class PThreadContext : Context
                         }
                         catch (ConnectError ce)
                         {
+                            log.trace("ERR! [%s] store_individual, use EXTERNAL, err=[%s], req=[%s]", name, ce.msg, text(req_body));
                             res.result = ResultCode.Connect_Error;
                         }
                         catch (TimeoutException)
@@ -1242,7 +1242,8 @@ class PThreadContext : Context
                             break;
                         }
 
-                        core.thread.Thread.sleep(dur!("msecs")(count_attempt * 10));
+                        core.thread.Thread.sleep(dur!("msecs")(count_attempt * 100));
+                        count_attempt++;
                     }
 
                     if (res.result != ResultCode.OK && res.result != ResultCode.Duplicate_Key)

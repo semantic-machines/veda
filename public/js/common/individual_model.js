@@ -18,6 +18,16 @@ veda.Module(function (veda) { "use strict";
 
 		var self = riot.observable(this);
 
+		// veda.IndividualModel({...})
+		if (typeof uri === "object" && !uri["@"]) {
+			container = uri.container;
+			template  = uri.template;
+			mode      = uri.mode;
+			cache     = uri.cache;
+			init      = uri.init;
+			uri       = uri.uri;
+		}
+
 		// Define Model functions
 		this._ = {};
 		this._.cache = typeof cache !== "undefined" ? cache : true;
@@ -48,6 +58,12 @@ veda.Module(function (veda) { "use strict";
 		this.on("individual:beforeSave", function () {
 			var now = new Date();
 			var editor = veda.appointment ? veda.appointment : veda.user;
+			if (
+				this.hasValue("v-s:lastEditor")
+				&& this.hasValue("v-s:edited")
+				&& this["v-s:lastEditor"][0].id === editor.id
+				&& (now - this["v-s:edited"][0]) < 1000
+			) { return; }
 			this["v-s:edited"] = [ now ];
 			this["v-s:lastEditor"] = [ editor ];
 			if (!this.hasValue("v-s:created")) this["v-s:created"] = [ now ];
@@ -177,7 +193,7 @@ veda.Module(function (veda) { "use strict";
 		get: function () {
 			if (this._.rights) return this._.rights;
 			if (this._.isNew) {
-				this._.rights = new veda.IndividualModel();
+				this._.rights = new veda.IndividualModel(undefined, undefined, undefined, undefined, false);
 				this._.rights["v-s:canRead"] = [ true ];
 				this._.rights["v-s:canUpdate"] = [ true ];
 				this._.rights["v-s:canDelete"] = [ true ];
@@ -185,7 +201,7 @@ veda.Module(function (veda) { "use strict";
 			}
 			try {
 				var rightsJSON = get_rights(veda.ticket, this.id);
-				this._.rights = new veda.IndividualModel( rightsJSON );
+				this._.rights = new veda.IndividualModel( rightsJSON, undefined, undefined, undefined, false );
 			} catch (e) {
 				this._.rights = null;
 			} finally {
@@ -202,7 +218,7 @@ veda.Module(function (veda) { "use strict";
 			try {
 				var rightsOriginArr = get_rights_origin(veda.ticket, this.id);
 				this._.rightsOrigin = rightsOriginArr.map(function (item) {
-					return new veda.IndividualModel( item );
+					return new veda.IndividualModel( item, undefined, undefined, undefined, false );
 				});
 			} catch (e) {
 				this._.rightsOrigin = null;
@@ -238,9 +254,6 @@ veda.Module(function (veda) { "use strict";
 					"rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
 				};
 			}
-		} else if (uri instanceof veda.IndividualModel) {
-			self.trigger("individual:afterLoad", uri);
-			return uri;
 		} else {
 			self.properties = uri;
 		}
@@ -258,7 +271,7 @@ veda.Module(function (veda) { "use strict";
 		var self = this;
 		self.trigger("individual:beforeSave");
 		// Do not save individual to server if nothing changed
-		//if (self._.isSync) return;
+		if (self._.isSync) return;
 		if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
 			veda.drafts.remove(this.id);
 		}

@@ -19,9 +19,9 @@
 	v-s:loadPriority 9 ;
 .
 
-### MAIN PAGE ### 
+### MAIN PAGE ###
 
-v-l:MainPage 
+v-l:MainPage
 	rdf:type owl:Class ;
 	rdfs:subClassOf owl:Thing ;
 	rdfs:label "Page"@en ;
@@ -34,7 +34,7 @@ v-l:MainPageTemplate
 	v-ui:forClass v-l:MainPage ;
 	v-ui:template """
 <div class="page">
-	<nav role="navigation" class="navbar">
+	<nav role="navigation" class="navbar navbar-veda">
 		<div class="container-fluid">
 			<div class="navbar-header">
 				<button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
@@ -52,9 +52,9 @@ v-l:MainPageTemplate
 			</div>
 		</div>
 	</nav>
-	
+
 	<div id="main" class="container-fluid" about="v-l:Welcome"></div>
-	
+
 	<nav style="min-height:12px;" class="navbar navbar-fixed-bottom" id="copyright">
 		<footer>
 			<div class="container-fluid clearfix" style="background-color: white; border-top: 1px solid lightgray">
@@ -81,7 +81,7 @@ v-l:MainPageTemplate
 		languages += riot.render(languageTemplate, veda.user.availableLanguages[language_uri]);
 	});
 	languageSelector.html(languages);
-	
+
 	// Render user
 	userInfo.empty();
 	var userTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
@@ -90,7 +90,7 @@ v-l:MainPageTemplate
 	var $languages = $("label", languageSelector);
 	$languages.each( function() {
 		if (this.id in veda.user.language) $(this).addClass("active");
-		$(this).on("click", function() { 
+		$(this).on("click", function() {
 			veda.user.toggleLanguage(this.id);
 			location.reload();
 			//this.id in veda.user.language ? $(this).addClass("active") : $(this).removeClass("active");
@@ -160,7 +160,7 @@ v-l:MenuItemViewTemplate
 <li class="divider"></li>
 <script>
 	var stcTmpl = template.eq(0), objTmpl = template.eq(1), subTmpl = template.eq(2), divTmpl = template.eq(3);
-	if (individual.id === "v-l:Divider") { 
+	if (individual.id === "v-l:Divider") {
 		stcTmpl.remove();
 		objTmpl.remove();
 		subTmpl.remove();
@@ -220,7 +220,7 @@ v-l:PsMenuItem
 
 ### WELCOME ###
 
-v-l:WelcomeAspect 
+v-l:WelcomeAspect
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-s:Aspect ;
 	rdfs:label "Welcome aspect"@en ;
@@ -289,11 +289,11 @@ v-l:MainMenu
 	v-l:menuItem v-l:Completed ;
 	v-l:menuItem v-l:Divider ;
 	v-l:menuItem v-l:Create ;
-	v-l:menuItem v-l:Find ;	
+	v-l:menuItem v-l:Find ;
 	v-l:menuItem v-l:Drafts ;
 	v-l:menuItem v-l:Divider ;
 	v-l:menuItem v-l:Search ;
-	v-l:menuItem v-l:Divider ;	
+	v-l:menuItem v-l:Divider ;
 	v-l:menuItem v-l:Graph ;
 	v-l:menuItem v-l:Console ;
 	v-l:menuItem v-l:Tests ;
