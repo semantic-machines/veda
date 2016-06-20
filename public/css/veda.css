@@ -535,7 +535,9 @@ html, body {
 veda-control {
   display: block;
 }
-
+.form-inline veda-control {
+  display: inline-block;
+}
 .value-holder {
   margin-right: 10px;
   display: inline-block;
