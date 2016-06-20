@@ -19,6 +19,7 @@
 v-s:Initiative
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Enumerable ;
   rdfs:label "Initiative"@en ;
   rdfs:label "Инициатива"@ru ;
 .
