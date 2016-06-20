@@ -23,12 +23,13 @@
  * 	  2.3 Add `type="numeration"` property to your `<veda-control>` at your template. 
  * 	
  * 	  2.4 You can use already existed rule for v-ui:hasNumerationRule. Or create your own. See examples : `v-s:SimpleNumeration`, `v-s:YearNumeration`
+ * 
+ *    2.5 add `rdfs:subClassOf v-s:Enumerable ;` to your class description to trigger numeration event on server side.
  *    
- *    2.4 Now when you click "Get number" button you get next uncommited value for you numeration scope. 
+ *    2.6 Now when you click "Get number" button you get next uncommited value for you numeration scope. 
  *        Another way - you can type a number and it will be checked for uniqueness
- */
- 
-function numerate(ticket, individual, oldstate, _event_id) {
+ */ 
+function numerate(ticket, individual, super_classes, oldstate, _event_id) {
   try {
 	if (individual['v-s:actualVersion'] && individual['v-s:actualVersion'][0].data != individual['@']) return;
 	for (var key in individual) {
@@ -37,7 +38,8 @@ function numerate(ticket, individual, oldstate, _event_id) {
 		  var rule;
 		  for (var mapperkey in property['v-s:hasNumerationMapper']) {
 			  var mapper = get_individual(ticket, property['v-s:hasNumerationMapper'][mapperkey].data);
-			  if (mapper['v-s:numerationClass'][0].data == individual['rdf:type'][0].data) {
+			  if ((mapper['v-s:numerationClass'][0].data == individual['rdf:type'][0].data) 
+				  || (super_classes.indexOf(mapper['v-s:numerationClass'][0].data)>=0)) {
 				  rule = mapper['v-s:hasNumerationRule'][0].data
 			  }
 		  }

@@ -20,6 +20,14 @@ v-s:Numeration
   rdfs:label "Parent class for Numeration feature"@en ;
   rdfs:label "Родительский класс для возможностей нумерации"@ru ;
 .
+
+v-s:Enumerable
+  rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+  rdfs:label "Enumerable thing"@en ;
+  rdfs:label "Перечисляемая сущность"@ru ;
+.
+
 v-s:hasNumerationMapper
   rdf:type owl:ObjectProperty ;
   rdfs:domain owl:DatatypeProperty ;
@@ -109,7 +117,7 @@ v-s:SimpleNumeration
 (function (ticket, individual) 
 {
     if (!individual['rdf:type']) return '';
-	return "numeration-scope:"+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id);
+	return "numeration-scope_"+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id).replace(':','_');
 })
 """ ;
   v-s:numerationGetNextValue """  
@@ -127,7 +135,7 @@ v-s:YearNumeration8
 (function (ticket, individual) 
 {
     if (!individual['rdf:type']) return '';
-	return "numeration-scope:"+(new Date()).getFullYear()+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id);
+	return "numeration-scope_"+(new Date()).getFullYear()+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id).replace(':','_');
 })
 """ ;
   v-s:numerationGetNextValue """  
@@ -136,11 +144,29 @@ v-s:YearNumeration8
 })
 """ ;  
 .
+v-s:IdeaAndProjectsNumeration
+  rdf:type v-s:NumerationRule ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Нумерация среди идей и проектов"@ru ;
+  rdfs:label "Numeration among ideas and projects"@en ;
+  v-s:numerationScope """
+(function (ticket, individual) 
+{
+    if (!individual['rdf:type']) return '';
+	return "numeration-scope_ideas_and_projects";
+})
+""" ;
+  v-s:numerationGetNextValue """  
+(function getNextValue(ticket, scope) {
+	return getNextValueSimple(ticket, scope, 1);
+})
+""" ;  
+.
 v-s:NumerationEvent
   rdf:type v-s:Event ;
-  v-s:filter v-s:NumerationEvent ;
-  v-s:script """
-	var result = numerate(ticket, document, prev_state, _event_id);
+  v-s:filter v-s:Enumerable ;
+  v-s:script """  
+	var result = numerate(ticket, document, super_classes, prev_state, _event_id);
 """
 .
 v-s:Permission1602021330

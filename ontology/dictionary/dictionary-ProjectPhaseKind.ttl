@@ -85,3 +85,12 @@ d:InvestmentCost
     rdfs:label "Инвестиционные затраты внутри холдинга"@ru ;
     rdfs:label "Investment costs"@en.
 
+d:Transfer
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Вынос/перенос из пятна демонтажа"@ru ;
+    rdfs:label "Transfer from dismantling"@en.
+
+d:UnexpectedWork
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Непредвиденные работы"@ru ;
+    rdfs:label "UnexpectedWork"@en.

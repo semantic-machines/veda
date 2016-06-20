@@ -10,8 +10,8 @@ veda.Module(function (veda) { "use strict";
 			});
 		}
 	}
-	
-	if (!storage.ontology) storage.clear(); 
+
+	if (!storage.ontology) storage.clear();
 
 	/* owl:Thing && rdfs:Resource domain properties */
 	var stopList = [
@@ -38,23 +38,23 @@ veda.Module(function (veda) { "use strict";
 	];
 
 	veda.OntologyModel = function () {
-		
+
 		// Initialization percentage
 		veda.trigger("init:progress", 0);
 
 		//var t1 = new Date();
-		
+
 		var self = this;
-		
+
 		var classes = {},
 			properties = {},
 			specs = {},
 			models = {},
 			templates = {},
 			other = {};
-		
+
 		var ontology;
-		try { 
+		try {
 			ontology = JSON.parse(storage.ontology);
 		} catch (e) {
 			ontology = getOntology();
@@ -75,30 +75,32 @@ veda.Module(function (veda) { "use strict";
 			var individual = ontology[property_uri],
 				type = individual["rdf:type"][0].data;
 			if (
-				type === 'rdf:Property'
-				|| type === 'owl:DatatypeProperty'
-				|| type === 'owl:ObjectProperty'
-				|| type === 'owl:OntologyProperty'
-				|| type === 'owl:AnnotationProperty'
+				(	type === 'rdf:Property'
+					|| type === 'owl:DatatypeProperty'
+					|| type === 'owl:ObjectProperty'
+					|| type === 'owl:OntologyProperty'
+					|| type === 'owl:AnnotationProperty'
+				)
+				&& !veda.IndividualModel.prototype.hasOwnProperty(property_uri)
 			) {
 				veda.IndividualModel.defineProperty(property_uri);
 			}
 		});
-		
+
 		// Construct ontology individuals
 		Object.keys(ontology).map(function (key) {
 			var individual = ontology[key];
 			if (individual) self[key] = new veda.IndividualModel( individual, undefined, undefined, undefined, true, false );
 		});
-		
+
 		// Initialization percentage
 		veda.trigger("init:progress", 10);
-		
+
 		// Allocate ontology objects
 		Object.keys(self).map( function (uri) {
 			var individual = self[uri];
 			if (!individual || !individual.id) return;
-			
+
 			switch ( individual["rdf:type"][0].id ) {
 				case "rdfs:Class" :
 				case "owl:Class" :
@@ -192,7 +194,7 @@ veda.Module(function (veda) { "use strict";
 		// Process templates
 		Object.keys(templates).map( function (uri) {
 			var template = templates[uri];
-			if (!template["v-ui:forClass"]) return; 
+			if (!template["v-ui:forClass"]) return;
 			template["v-ui:forClass"].map( function ( item ) {
 				item.template = template;
 			});
@@ -204,7 +206,7 @@ veda.Module(function (veda) { "use strict";
 		// Process models
 		Object.keys(models).map( function (uri) {
 			var model = models[uri];
-			if (!model["v-ui:forClass"]) return; 
+			if (!model["v-ui:forClass"]) return;
 			model["v-ui:forClass"].map( function ( item ) {
 				item.model = model;
 			});
@@ -226,12 +228,12 @@ veda.Module(function (veda) { "use strict";
 		//console.log("onto load", (t2-t1)/1000, "sec", storage.length);
 
 		return self;
-		
+
 		// Get ontology from server
 		function getOntology () {
-			var q = /* Ontology version */ 
+			var q = /* Ontology version */
 					"'@' == 'cfg:OntoVsn' || " +
-					/* Classes */ 
+					/* Classes */
 					"'rdf:type' === 'rdfs:Class' || " +
 					"'rdf:type' === 'owl:Class' || " +
 					"'rdf:type' === 'rdfs:Datatype' || " +
@@ -248,13 +250,13 @@ veda.Module(function (veda) { "use strict";
 					"'rdf:type' === 'v-ui:ClassTemplate' || " +
 					/* Property specifications */
 					"'rdf:type' === 'v-ui:PropertySpecification' || " +
-					"'rdf:type' === 'v-ui:IntegerPropertySpecification' || " + 
+					"'rdf:type' === 'v-ui:IntegerPropertySpecification' || " +
 					"'rdf:type' === 'v-ui:DecimalPropertySpecification' || " +
 					"'rdf:type' === 'v-ui:DatetimePropertySpecification' || " +
 					"'rdf:type' === 'v-ui:StringPropertySpecification' || " +
 					"'rdf:type' === 'v-ui:BooleanPropertySpecification' || " +
 					"'rdf:type' === 'v-ui:ObjectPropertySpecification'";
-			
+
 			var result = {};
 			get_individuals(veda.ticket, query(veda.ticket, q)).map( function (item) {
 				result[ item["@"] ] = item;
