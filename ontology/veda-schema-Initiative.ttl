@@ -187,28 +187,28 @@ v-s:planYearEffect
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Effect ;
   rdfs:label "Plan year effect"@en ;
-  rdfs:label "Плановый годовой эффект"@ru ;
+  rdfs:label "Плановый годовой эффект, тыс.евро"@ru ;
   rdfs:range xsd:decimal ;
 .
 v-s:planOnceEffect
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Effect ;
   rdfs:label "Plan once effect"@en ;
-  rdfs:label "Плановый разовый эффект"@ru ;
+  rdfs:label "Плановый разовый эффект, тыс.евро"@ru ;
   rdfs:range xsd:decimal ;
 .
 v-s:factYearEffect
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Effect ;
   rdfs:label "Fact year effect"@en ;
-  rdfs:label "Фактический годовой эффект"@ru ;
+  rdfs:label "Фактический годовой эффект, тыс.евро"@ru ;
   rdfs:range xsd:decimal ;
 .
 v-s:factOnceEffect
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Effect ;
   rdfs:label "Fact once effect"@en ;
-  rdfs:label "Фактический разовый эффект"@ru ;
+  rdfs:label "Фактический разовый эффект, тыс.евро"@ru ;
   rdfs:range xsd:decimal ;
 .
 v-s:hasTotalPlanYearEffect
@@ -1157,4 +1157,7 @@ v-s:disposalPercent
   rdfs:label "Disposal percent"@en ;
   rdfs:label "Процент выбытия"@ru ;
   rdfs:range xsd:integer ;
+.
+v-s:attachment
+  rdfs:domain v-s:ProjectPlan ;
 .
