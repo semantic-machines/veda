@@ -1096,7 +1096,8 @@ function prepare_process(ticket, document)
  */
 function prepare_start_form(ticket, document)
 {
-    //print("@js prepare_start_form, doc_id=" + document['@']);
+    print("@js prepare_start_form, doc_id=" + document['@']);
+    print("@" + toJson(document));
 
     var isTrace = document['v-wf:isTrace'];
     if (isTrace && getFirstValue(isTrace) == true)
@@ -1109,7 +1110,7 @@ function prepare_start_form(ticket, document)
     {
         if (getUri(hasStatusWorkflowif) != 'v-s:ToBeSent')
         {
-            // print("[WORKFLOW]:prepare_start_form, not ready to start.");
+            print("[WORKFLOW]:prepare_start_form, not ready to start.");
             return;
         }
     }
@@ -1136,7 +1137,7 @@ function prepare_start_form(ticket, document)
     var new_vars = [];
     var transform_link = getUri(document['v-wf:useTransformation']);
 
-    //print ('@js transform_link=', transform_link);
+    print ('@js transform_link=', transform_link);
 
     if (transform_link)
     {
@@ -1177,9 +1178,11 @@ function prepare_start_form(ticket, document)
 
     var trace_journal_uri;
 
+    var processedDocumentId = document['v-wf:processedDocument']?document['v-wf:processedDocument'][0].data:document['@'];
+    var processedDocument = document['v-wf:processedDocument']?document['v-wf:processedDocument']:[{data:document['@'], type: _Uri}];
     if (isTrace)
     {
-        trace_journal_uri = create_new_journal(ticket, getTraceJournalUri(new_process_uri), getJournalUri(document['v-wf:processedDocument'][0].data), _net['rdfs:label'], true);
+        trace_journal_uri = create_new_journal(ticket, getTraceJournalUri(new_process_uri), getJournalUri(processedDocumentId), _net['rdfs:label'], true);
 
         if (trace_journal_uri)
         {
@@ -1190,7 +1193,7 @@ function prepare_start_form(ticket, document)
 
     put_individual(ticket, new_process, _event_id);
 
-    create_new_journal(ticket, getJournalUri(new_process_uri), getJournalUri(document['v-wf:processedDocument'][0].data), _net['rdfs:label']);
+    create_new_journal(ticket, getJournalUri(new_process_uri), getJournalUri(processedDocumentId), _net['rdfs:label']);
 
     var jrId = genUri();
     var journalRecord = {
@@ -1199,7 +1202,7 @@ function prepare_start_form(ticket, document)
         'v-s:actor': newUri(author_uri),
         'v-s:processJournal': newUri(getJournalUri(new_process_uri)),
         'v-wf:onProcess': newUri(new_process_uri),
-        'v-s:onDocument': document['v-wf:processedDocument'],
+        'v-s:onDocument': processedDocument,
         'v-s:created': [
         {
             data: new Date(),
@@ -1212,14 +1215,14 @@ function prepare_start_form(ticket, document)
         '@': genUri(),
         'rdf:type': newUri('v-s:Membership'),
         'v-s:resource': newUri(new_process_uri),
-        'v-s:memberOf': document['v-wf:processedDocument'],
+        'v-s:memberOf': processedDocument,
         'rdfs:comment': newStr('Process is in document group')
     };
     put_individual(ticket, membership, _event_id);
 
     add_to_individual(ticket,
     {
-        '@': document['v-wf:processedDocument'][0].data + 'j',
+        '@': processedDocumentId + 'j',
         'v-s:childRecord': newUri(jrId)
     }, _event_id);
 
