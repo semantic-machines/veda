@@ -458,14 +458,14 @@ v-s:from
   rdfs:domain v-s:Bond ;
   rdfs:label "from"@en ;
   rdfs:label "от"@ru ;
-  rdfs:range rdfs:Resource ;
+  rdfs:range v-s:Document ;
 .
 v-s:to
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Bond ;
   rdfs:label "to"@en ;
   rdfs:label "к"@ru ;
-  rdfs:range rdfs:Resource ;
+  rdfs:range v-s:Document ;
 .
 v-s:placeDescription
   rdf:type owl:DatatypeProperty ;
