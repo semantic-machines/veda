@@ -1,0 +1,39 @@
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+
+<http://semantic-machines.com/veda/mondi-schema-ContractManagment/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system ontology. ContractManagment"@en ;
+  rdfs:label "Онтология системы Veda. Управление контрактами"@ru ;
+  v-s:loadPriority 10 ;
+.
+#-- Классы --
+
+v-s:InternalAccountingDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "InternalAccountingDocument"@en ;
+  rdfs:label "Внутренний бухгалтерский документ"@ru ;
+.
+
+#-- Аттрибуты --
+
+v-s:attachment
+  rdfs:domain v-s:InternalAccountingDocument ;
+.
+v-s:PsAttachmentForInternalAccountingDocument
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:InternalAccountingDocument ;
+  v-ui:forProperty v-s:attachment ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  rdfs:label "Attachments specification for InternalAccountingDocument class"@en ;
+  rdfs:label "Спецификация файлов для класса Внутренний бухгалтерский документ"@ru ;
+.
