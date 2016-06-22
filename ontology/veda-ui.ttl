@@ -451,14 +451,24 @@ v-ui:SystemPropertiesTemplate
 </div>
 """ ;
 .
-v-ui:PSBond
+v-ui:PSCommentForBond
   rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация свойств для класса v-s:Bond"@ru ;
   rdfs:label "Specification for v-s:Bond class"@en ;
   v-ui:forClass v-s:Bond ;
-  v-ui:forProperty v-s:from, v-s:to, rdfs:comment ;
+  v-ui:forProperty rdfs:comment ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
+.
+v-ui:PSFromToForBond
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойств from to для класса v-s:Bond"@ru ;
+  rdfs:label "Specification from to for v-s:Bond class"@en ;
+  v-ui:forClass v-s:Bond ;
+  v-ui:forProperty v-s:from, v-s:to ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "('rdf:type'=='mnd-s:Idea')"^^xsd:string ;  
 .
 v-ui:BondTemplate
   rdf:type v-ui:ClassTemplate ;
