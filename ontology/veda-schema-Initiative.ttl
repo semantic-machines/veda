@@ -908,6 +908,7 @@ v-s:completion
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:ProjectPhase ;
   rdfs:domain v-s:ProjectMilestone ;  
+  rdfs:domain v-s:ProjectPlan ;    
   rdfs:label "Completion of Project phase"@en ;
   rdfs:label "Процент выполнения"@ru ;
   rdfs:range xsd:integer ;
@@ -916,6 +917,7 @@ v-s:PsCompletion
   rdf:type v-ui:IntegerPropertySpecification ;
   v-ui:forClass v-s:ProjectPhase ;
   v-ui:forClass v-s:ProjectMilestone ;  
+  v-ui:forClass v-s:ProjectPlan ;    
   v-ui:forProperty v-s:completion ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -927,7 +929,8 @@ v-s:PsCompletion
 v-s:PsCommentForProjectPhase
   rdf:type v-ui:StringPropertySpecification ;
   v-ui:forClass v-s:ProjectPhase ;
-  v-ui:forClass v-s:ProjectMilestone ;  
+  v-ui:forClass v-s:ProjectMilestone ;
+  v-ui:forClass v-s:ProjectPlan ;  
   v-ui:forProperty rdfs:comment ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
