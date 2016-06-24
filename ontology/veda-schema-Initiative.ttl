@@ -11,7 +11,7 @@
   rdfs:label "Veda system ontology. Initiative"@en ;
   rdfs:label "Онтология системы Veda. Инициатива"@ru ;
   owl:versionInfo "1.3" ;
-  v-s:loadPriority 6 ;
+  v-s:loadPriority 11 ;
 .
 
 # -- КЛАССЫ START --

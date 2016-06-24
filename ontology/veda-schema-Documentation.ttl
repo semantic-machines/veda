@@ -11,7 +11,7 @@
   rdf:type owl:Ontology ;
   rdfs:label "Veda system ontology. Documentation"@en ;
   rdfs:label "Онтология системы Veda. Документация"@ru ;
-  v-s:loadPriority 10 ;
+  v-s:loadPriority 11 ;
 .
 #-- Классы --
 

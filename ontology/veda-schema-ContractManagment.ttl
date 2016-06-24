@@ -11,7 +11,7 @@
   rdf:type owl:Ontology ;
   rdfs:label "Veda system ontology. ContractManagment"@en ;
   rdfs:label "Онтология системы Veda. Управление контрактами"@ru ;
-  v-s:loadPriority 10 ;
+  v-s:loadPriority 11 ;
 .
 #-- Классы --
 
