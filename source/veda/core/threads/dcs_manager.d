@@ -167,7 +167,6 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                 break;
 
             string   inital_message = socket.receiveText();
-            //writeln("@inital_message=", inital_message);
             string[] kv = inital_message.split('=');
 
             if (kv.length == 2)
@@ -175,6 +174,8 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                 if (kv[ 0 ] == "ccus")
                 {
                     chid = kv[ 1 ];
+                    
+                    log.trace ("init chanel [%s]", chid);
 //                    task_2_client[hsr.clientAddress] = Task.getThis();
                     //task_2_client ~= Task.getThis();
                 }
@@ -199,7 +200,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                         }
                         catch (Throwable tr)
                         {
-                            log.trace("recv %s, %s", uid_count[ 1 ], tr);
+                            log.trace("recv msg:[%s], %s", data, tr);
                         }
                     }
                 }

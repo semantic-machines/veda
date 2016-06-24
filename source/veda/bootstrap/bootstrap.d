@@ -8,6 +8,17 @@ struct ProcessInfo
     string command;
 }
 
+extern (C) void handleTermination(int _signal)
+{
+    writefln("!SYS: VEDA, caught signal: %s", text(_signal));
+}
+
+shared static this()
+{
+    bsd_signal(SIGINT, &handleTermination);
+}
+
+
 private int[][ string ] get_processes_info(string[] command_patterns, ref ProcessInfo[ int ] processes)
 {
     int[][ string ] command_2_pid;

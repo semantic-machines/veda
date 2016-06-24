@@ -18,13 +18,13 @@ logger _log;
 
 extern (C) void handleTermination(int _signal)
 {
-    f_listen_exit = true;
-
     _log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
     writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));
-    _log.close();
+    //_log.close();
 
-    writeln("!SYS: ", process_name, ": exit");
+    writeln("!SYS: ", process_name, ": preparation for the exit.");
+
+    f_listen_exit = true;
 }
 
 shared static this()
@@ -159,6 +159,12 @@ class ChildProcess
         {
             while (true)
             {
+	            if (f_listen_exit == true)
+	            {
+	                log.trace("EXIT");
+	                break;
+	            }    
+
                 init_chanel();
 
                 bool f1 = false;
@@ -185,6 +191,8 @@ class ChildProcess
         {
             log.trace("MAIN LOOP EXIT %s", tr.msg);
         }
+        
+        _log.close();
     }
 
 ///////////////////////////////////////////////////
@@ -327,7 +335,7 @@ int websocket_write_back(lws *wsi_in, string str)
 
 extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason, void *user, void *_in, size_t len)
 {
-    //writeln ("@@reason=", reason,  ", msg_count=", msg_count);
+    // writeln ("@@reason=", reason);
 
     switch (reason)
     {
