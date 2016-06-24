@@ -1631,6 +1631,7 @@ v-wf:forNet
 	rdfs:label "Для сети..."@ru ;
 	rdfs:label "For net..."@en ;
 	rdfs:domain v-wf:StartForm ;
+	rdfs:domain v-s:SelfStarting ;
 	rdfs:range v-wf:Net ;
 .
 
@@ -1640,6 +1641,7 @@ v-wf:useTransformation
 	rdfs:label "Использовать преобразование"@ru ;
 	rdfs:label "Use transformation"@en ;
 	rdfs:domain v-wf:StartForm ;
+	rdfs:domain v-s:SelfStarting ;
 	rdfs:range v-wf:Transform ;
 .
 
@@ -1901,6 +1903,7 @@ v-wf:event_df1
 	rdfs:isDefinedBy v-wf: ;
 	v-s:author cfg:VedaSystemAccount ;
 	v-s:filter v-wf:StartForm ;
+	v-s:filter v-s:SelfStarting ;
 	v-s:script """
 
 	if (!parent_script_id)

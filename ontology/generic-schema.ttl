@@ -5,6 +5,8 @@
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+#временно перенесено 
 
 <http://semantic-machines.com/veda/generic-schema/>
   rdf:type owl:Ontology ;
@@ -332,6 +334,14 @@ v-s:registrationNumber
   rdfs:label "Регистрационный номер"@ru ;
   rdfs:range xsd:string ;
 .
+
+#временно перенесено begin 
+v-s:registrationNumber
+  v-s:hasNumerationMapper mnd-s:registrationNumberNumerationMapperMeeting;
+  v-s:hasNumerationMapper mnd-s:registrationNumberNumerationMapperAction;
+.
+#временно перенесено end
+
 v-s:responsible
   rdf:type owl:ObjectProperty ;
   rdfs:label "Responsible"@en ;
@@ -458,14 +468,14 @@ v-s:from
   rdfs:domain v-s:Bond ;
   rdfs:label "from"@en ;
   rdfs:label "от"@ru ;
-  rdfs:range rdfs:Resource ;
+  rdfs:range v-s:Document ;
 .
 v-s:to
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Bond ;
   rdfs:label "to"@en ;
   rdfs:label "к"@ru ;
-  rdfs:range rdfs:Resource ;
+  rdfs:range v-s:Document ;
 .
 v-s:placeDescription
   rdf:type owl:DatatypeProperty ;

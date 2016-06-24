@@ -894,7 +894,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				values.length >= spec["v-ui:minCardinality"][0] &&
 				// filter empty values
 				values.length === values.filter(function(item) {
-					return ( typeof item === "boolean" ? true : !!item ) ;
+					return (
+						typeof item === "boolean" ? true :
+						typeof item === "number" ? true : !!item
+					) ;
 				}).length
 			);
 		}
@@ -903,7 +906,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				values.length <= spec["v-ui:maxCardinality"][0] &&
 				// filter empty values
 				values.length === values.filter(function(item) {
-					return ( typeof item === "boolean" ? true : !!item ) ;
+					return (
+						typeof item === "boolean" ? true :
+						typeof item === "number" ? true : !!item
+					) ;
 				}).length
 			);
 		}
