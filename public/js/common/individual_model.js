@@ -239,10 +239,12 @@ veda.Module(function (veda) { "use strict";
 		var self = this;
 		self.trigger("individual:beforeLoad");
 		if (typeof uri === "string") {
+			/*
 			if (self._.cache && veda.cache[uri]) {
 				self.trigger("individual:afterLoad", veda.cache[uri]);
 				return veda.cache[uri];
 			}
+			*/
 			try {
 				self.properties = get_individual(veda.ticket, uri);
 				self._.isNew = false;
