@@ -62,6 +62,9 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
         processed(files, context);
     }
 
+    // ? now variable [oFiles] is empty, reinit
+    oFiles = dirEntries(onto_path, SpanMode.depth);
+
     auto ev_loop = getThreadEventLoop();
     auto watcher = new AsyncDirectoryWatcher(ev_loop);
 
@@ -69,7 +72,7 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
 
     watcher.run(
                 {
-                    //writeln("Enter Handler (directory event captured), path=", path);
+                    log.trace("Enter Handler (directory event captured), path=%s", onto_path);
                     DWChangeInfo[] changes = change_buf[];
                     uint cnt;
                     do
