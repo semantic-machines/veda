@@ -307,6 +307,7 @@ class FanoutProcess : ChildProcess
     {
         try
         {
+        	isExistsTable = isExistsTable.init;
             //log.trace ("push_to_mysql: prev_indv=%s", prev_indv);
             //log.trace ("push_to_mysql: new_indv=%s", new_indv);
 
@@ -343,13 +344,19 @@ class FanoutProcess : ChildProcess
             {
                 foreach (predicate, rss; prev_indv.resources)
                 {
-                    try
+                    if (rss.length > 0)
                     {
-                        mysql_conn.query("DELETE FROM `?` WHERE doc_id = ?", predicate, prev_indv.uri);
-                    }
-                    catch (Exception ex)
-                    {
-                        log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+                        if (create_table_if_not_exists(predicate, rss[ 0 ]) == true)
+                        {
+                            try
+                            {
+                                mysql_conn.query("DELETE FROM `?` WHERE doc_id = ?", predicate, prev_indv.uri);
+                            }
+                            catch (Throwable ex)
+                            {
+                                log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+                            }
+                        }
                     }
                 }
 
@@ -384,8 +391,9 @@ class FanoutProcess : ChildProcess
                                                          rs.asString().toUTF8(), text(rs.lang));
                                     }
 
-                                    //log.trace ("push_to_mysql: INSERT INTO `%s` (doc_id, created, value, lang) VALUES (%s, %s, %s, %s)", predicate, new_indv.uri,
-                                    //created.asString(), rs.asString().toUTF8(), text(rs.lang));
+                                    log.trace("push_to_mysql: INSERT INTO `%s` (doc_id, created, value, lang) VALUES (%s, %s, %s, %s)", predicate,
+                                              new_indv.uri,
+                                              created.asString(), rs.asString().toUTF8(), text(rs.lang));
                                 }
                             }
                         }
@@ -407,10 +415,10 @@ class FanoutProcess : ChildProcess
         //writeln("@@fanout indv.uri=", indv.uri);
     }
 
-    private void create_table_if_not_exists(string predicate, Resource rs)
+    private bool create_table_if_not_exists(string predicate, Resource rs)
     {
         if (isExistsTable.get(predicate, false) == true)
-            return;
+            return true;
 
         auto rows = mysql_conn.query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = ? AND table_name = ?;", database_name,
                                      predicate);
@@ -467,10 +475,12 @@ class FanoutProcess : ChildProcess
                 log.trace("ERR! create_table_if_not_exists LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
                 throw ex;
             }
+            return false;
         }
         else
         {
             isExistsTable[ predicate ] = true;
+            return true;
         }
     }
 
@@ -531,9 +541,11 @@ class FanoutProcess : ChildProcess
     {
         try
         {
-            Ticket    sticket = context.sys_ticket();
+            Ticket sticket = context.sys_ticket();
 
+            log.trace("use configuration: %s", node);
             Resources gates = node.resources.get("v-s:push_individual_by_event", Resources.init);
+            log.trace("found gates: %s", gates);
             foreach (gate; gates)
             {
                 Individual connection = context.get_individual(&sticket, gate.uri);
@@ -554,7 +566,7 @@ class FanoutProcess : ChildProcess
 
                             mysql_conn.query("SET NAMES 'utf8'");
 
-                            //writeln("@@@@1 CONNECT TO MYSQL IS OK ", text(mysql_conn));
+                            log.trace("CONNECT TO MYSQL IS OK, %s", text(mysql_conn));
                         }
                         catch (Throwable ex)
                         {

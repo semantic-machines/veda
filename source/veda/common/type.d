@@ -245,6 +245,38 @@ struct decimal
         }
     }
 
+    string asString()
+    {
+        string str_res;
+
+        string str_mantissa = text(mantissa);
+
+        long   lh = exponent * -1;
+
+        lh = str_mantissa.length - lh;
+        string slh;
+
+        if (lh >= 0)
+        {
+            if (lh <= str_mantissa.length)
+                slh = str_mantissa[ 0 .. lh ];
+        }
+        else
+            slh = "";
+
+        string slr;
+
+        if (lh >= 0)
+        {
+            slr = str_mantissa[ lh..$ ];
+        }
+        else
+            slr = nullz[ 0.. (-lh) ] ~str_mantissa;
+
+        str_res = slh ~ "." ~ slr;
+        return str_res;
+    }
+
     ///
     double toDouble_wjp()
     {

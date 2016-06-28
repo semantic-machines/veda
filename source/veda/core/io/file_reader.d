@@ -62,6 +62,9 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
         processed(files, context);
     }
 
+    // ? now variable [oFiles] is empty, reinit
+    oFiles = dirEntries(onto_path, SpanMode.depth);
+
     auto ev_loop = getThreadEventLoop();
     auto watcher = new AsyncDirectoryWatcher(ev_loop);
 
@@ -69,20 +72,40 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
 
     watcher.run(
                 {
-                    //writeln("Enter Handler (directory event captured), path=", path);
+                    log.trace("Enter Handler (directory event captured), path=%s", onto_path);
                     DWChangeInfo[] changes = change_buf[];
                     uint cnt;
                     do
                     {
                         cnt = watcher.readChanges(changes);
-                        string[] files;
+                        string[] _files;
 
                         foreach (i; 0 .. cnt)
                         {
-                            files ~= changes[ i ].path.dup;
+                            string file_name = changes[ i ].path.dup;
+
+                            if (file_name.indexOf(".#") > 0)
+                                continue;
+
+                            _files ~= file_name;
                         }
 
-                        processed(files, context);
+//                        processed(files, context);
+                        if (_files.length > 0)
+                        {
+                            auto oFiles = dirEntries(onto_path, SpanMode.depth);
+                            string[] files;
+
+                            foreach (o; oFiles)
+                            {
+                                if (extension(o.name) == ".ttl")
+                                {
+                                    files ~= o.name.dup;
+                                }
+                            }
+
+                            processed(files, context);
+                        }
                     } while (cnt > 0);
                 });
 
@@ -143,11 +166,10 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
 
                 if (new_hash != old_hash)
                 {
-                    is_reload = true;
-                    files_to_load ~= fname;
-
                     log.trace("file is modifed (hash), %s", fname);
                 }
+                files_to_load ~= fname;
+                is_reload = true;
             }
         }
     }
@@ -241,21 +263,35 @@ void processed(string[] changes, Context context)
                         individuals[ uri ] = Individual.init;
 
                         Individual indv_in_storage = context.get_individual(&sticket, uri);
+                        indv_in_storage.removeResource("v-s:updateCounter");
+                        indv_in_storage.removeResource("v-s:previousVersion");
+                        indv_in_storage.removeResource("v-s:actualVersion");
+
+                        indv.removeResource("v-s:updateCounter");
+                        indv.removeResource("v-s:previousVersion");
+                        indv.removeResource("v-s:actualVersion");
 //                        log.trace("in storage, uri=%s \n%s", indv_in_storage.uri, text(indv_in_storage));
 
                         if (indv_in_storage == Individual.init || indv.compare(indv_in_storage) == false)
                         {
                             if (indv.getResources("rdf:type").length > 0)
                             {
+                                if (trace_msg[ 33 ] == 1)
+                                    log.trace("store, uri=%s %s \n--- prev ---\n%s \n--- new ----\n%s", indv.uri, uri, text(indv),
+                                              text(indv_in_storage));
+
                                 ResultCode res = context.put_individual(&sticket, indv.uri, indv, true, null, false, false).result;
                                 if (trace_msg[ 33 ] == 1)
                                     log.trace("file reader:store, uri=%s", indv.uri);
 
-                                //log.trace("store, uri=%s %s \n%s \n%s", indv.uri, uri, text(indv), text(indv_in_storage));
                                 if (res != ResultCode.OK)
-                                    log.trace("individual =%s, not store, errcode =%s", indv.uri, text(res));
+                                    log.trace("individual [%s], not store, errcode =%s", indv.uri, text(res));
 
                                 is_loaded = true;
+                            }
+                            else
+                            {
+                                log.trace("individual [%s], not contain rdf:type", indv.uri);
                             }
                         }
                     }

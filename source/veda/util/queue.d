@@ -173,6 +173,7 @@ class Consumer
         }
         catch (Throwable tr)
         {
+            log.trace("consumer:put_info [%s;%d;%s;%d;%d] %s", queue.name, queue.chunk, name, first_element, count_popped, tr.msg);        	
             return false;
         }
         return true;
@@ -281,10 +282,16 @@ class Consumer
     public bool commit()
     {
         if (!queue.isReady || !isReady)
+        {
+            log.trace("ERR! queue:commit:!queue.isReady || !isReady");
             return false;
+        }    
 
         if (count_popped >= queue.count_pushed)
+        {
+            log.trace("ERR! queue:commit:count_popped(%d) >= queue.count_pushed(%d)", count_popped,queue.count_pushed);
             return false;
+        }    
 
         header_buff[ header_buff.length - 4 ] = 0;
         header_buff[ header_buff.length - 3 ] = 0;
@@ -298,7 +305,7 @@ class Consumer
 
         if (header.crc[ 0 ] != crc[ 0 ] || header.crc[ 1 ] != crc[ 1 ] || header.crc[ 2 ] != crc[ 2 ] || header.crc[ 3 ] != crc[ 3 ])
         {
-            log.trace("ERR! queue:pop:invalid msg: fail crc[%s] : %s", text(crc), text(header));
+            log.trace("ERR! queue:commit:invalid msg: fail crc[%s] : %s", text(crc), text(header));
             log.trace(text(last_read_msg.length));
             log.trace(cast(string)last_read_msg);
             return false;

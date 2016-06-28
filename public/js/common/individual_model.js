@@ -25,7 +25,7 @@ veda.Module(function (veda) { "use strict";
 			mode      = uri.mode;
 			cache     = uri.cache;
 			init      = uri.init;
-			uri       = uri.uri;
+			uri       = uri.uri?uri.uri:uri.id;
 		}
 
 		// Define Model functions
@@ -239,6 +239,7 @@ veda.Module(function (veda) { "use strict";
 		var self = this;
 		self.trigger("individual:beforeLoad");
 		if (typeof uri === "string") {
+			self.id = uri;
 			if (self._.cache && veda.cache[uri]) {
 				self.trigger("individual:afterLoad", veda.cache[uri]);
 				return veda.cache[uri];

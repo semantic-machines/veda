@@ -120,7 +120,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 	var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider", undefined, undefined, undefined, true, false),
 		ntlm = ntlmProvider.properties["rdf:value"] && ntlmProvider.properties["rdf:value"].length,
 		iframe = $("<iframe>", {"class": "hidden"});
-	if (ntlm) {
+	if (ntlm && (!ntlmProvider.properties['v-s:deleted'] || ntlmProvider.properties['v-s:deleted'][0] == false)) {
 		var ntlmAddress = ntlmProvider.properties["rdf:value"][0].data;
 		iframe.appendTo(loginContainer);
 	}
@@ -130,7 +130,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		delCookie("user_uri");
 		delCookie("ticket");
 		delCookie("end_time");
-		if (ntlm) {
+		if (ntlm && (!ntlmProvider.properties['v-s:deleted'] || ntlmProvider.properties['v-s:deleted'][0] == false)) {
 			iframe.one("load", function () {
 				try {
 					loginContainer.addClass("hidden");

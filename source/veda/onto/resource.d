@@ -288,7 +288,7 @@ struct Resource
             return st.toISOExtString();
         }
         else if (type == DataType.Decimal)
-            return text(get!decimal().toDouble_wjp());
+            return text(get!decimal().asString());
         else if (type == DataType.Integer)
             return text(get!long ());
 

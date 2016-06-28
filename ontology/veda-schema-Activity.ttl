@@ -10,7 +10,7 @@
   rdf:type owl:Ontology ;
   rdfs:label "Veda system ontology. Activity"@en ;
   rdfs:label "Онтология системы Veda. Мероприятие"@ru ;
-  v-s:loadPriority 10 ;
+  v-s:loadPriority 11 ;
 .
 #-- Классы --
 
@@ -49,8 +49,10 @@ v-s:hasActivity
   rdfs:range v-s:Activity ;
   rdfs:domain v-s:Activity ;
 .
+
+
 v-s:theme
-  rdfs:domain v-s:Activity ;
+  rdfs:domain v-s:Meeting, v-s:Activity;
 .
 v-s:member
   rdfs:domain v-s:Activity ;
@@ -76,10 +78,10 @@ v-s:PsDateToForAction
 v-s:placeDescription
   rdfs:domain v-s:Activity ;
 .
+
 v-s:registrationNumber
   rdfs:domain v-s:Activity ;
 .
-
 
 v-s:agenda
   rdfs:domain v-s:Meeting ;
