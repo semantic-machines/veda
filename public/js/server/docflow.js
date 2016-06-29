@@ -420,12 +420,12 @@ function prepare_work_order(ticket, document)
                                 if (varValue)
                                     val = varValue;
 
-                                if (val !== undefined && key !== undefined)
+                                if (/*val !== undefined &&*/ key !== undefined)
                                 {
                                     el[key] = val;
                                     f_set = true;
                                 }
-                                //print("[WORKFLOW][WO3.3] result=" + toJson(result) + "");
+                                //print("[WORKFLOW][WO3.3] el=" + toJson(el) + "");
                             }
                         }
                     }

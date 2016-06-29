@@ -1070,6 +1070,8 @@ function get_properties_chain(var1, query, result_if_fail_search)
 
     var doc;
     //    print('@@@get_properties_chain#1 var1=', toJson(var1), ", query=", toJson (query));
+    try
+    {
     doc = get_individual(ticket, getUri(var1));
 
     if (doc)
@@ -1081,6 +1083,11 @@ function get_properties_chain(var1, query, result_if_fail_search)
 		res = result_if_fail_search;
 
      //   print('@@@get_properties_chain #3 res=', toJson(res));
+    }
+    catch (e)
+    {
+        print(e.stack);
+    }
 
     return res;
 }
