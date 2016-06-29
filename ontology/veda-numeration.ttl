@@ -158,7 +158,7 @@ v-s:IdeaAndProjectsNumeration
 """ ;
   v-s:numerationGetNextValue """  
 (function getNextValue(ticket, scope) {
-	return getNextValueSimple(ticket, scope, 1);
+	return getNextValueSimple(ticket, scope, (new Date()).getFullYear()*10000+1);
 })
 """ ;  
 .

@@ -17,30 +17,30 @@
 
 d:currency_usd
     a v-s:CurrencyKind;
-    v-s:title "USD"^^xsd:string;
+    v-s:shortLabel "USD"^^xsd:string;
     rdfs:label "Доллар США"^^xsd:string.
 
 d:currency_eur
     a v-s:CurrencyKind;
-    v-s:title "EUR"^^xsd:string;
+    v-s:shortLabel "EUR"^^xsd:string;
     rdfs:label "Евро"^^xsd:string.
 
 d:currency_rub
     a v-s:CurrencyKind;
-    v-s:title "RUB"^^xsd:string;
+    v-s:shortLabel "RUB"^^xsd:string;
     rdfs:label "Российский рубль RUR"^^xsd:string.
 
 d:currency_gbp
     a v-s:CurrencyKind;
-    v-s:title "GBP"^^xsd:string;
+    v-s:shortLabel "GBP"^^xsd:string;
     rdfs:label "Британский фунт"^^xsd:string.
 
 d:currency_rureur
     a v-s:CurrencyKind;
-    v-s:title "RUEUR"^^xsd:string;
+    v-s:shortLabel "RUEUR"^^xsd:string;
     rdfs:label "Условная единица EUR"^^xsd:string.
 
 d:currency_ruusd
     a v-s:CurrencyKind;
-    v-s:title "RUUSD"^^xsd:string;
+    v-s:shortLabel "RUUSD"^^xsd:string;
     rdfs:label "Условная единица USD"^^xsd:string.

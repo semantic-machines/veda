@@ -632,7 +632,7 @@ v-df:ActionInDecisionTemplate
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса Мероприятие внутри Ответа на задачу"@ru ;
   rdfs:label "Action in decision Template"@en ;
-# v-ui:forClass v-s:Action ;
+  v-ui:forClass v-s:Activity ;  
   v-ui:template """
 <div class="panel panel-default">
 	<div class="panel-heading">
@@ -656,7 +656,7 @@ v-df:ActionInDecisionTemplate
 .
 v-df:PsresponsibleInDecision
   rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:Action ;
+  v-ui:forClass v-s:Activity ;
   v-ui:forProperty v-s:responsible ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
@@ -668,10 +668,10 @@ v-df:PsresponsibleInDecision
 
 v-df:PsDescriptionInDecision
   rdf:type v-ui:StringPropertySpecification ;
-  v-ui:forClass v-s:Action ;
+  v-ui:forClass v-s:Activity ;
   v-ui:forProperty v-s:description ;
   v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 0 ;
+  v-ui:minCardinality 1 ;
   v-ui:tooltip "non-Required, single Text"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Текст без ограничений."@ru ;
   rdfs:label "Comment propertys specification for IdeaRouteStartForm"@en ;
