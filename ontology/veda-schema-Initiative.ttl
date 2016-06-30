@@ -589,7 +589,7 @@ v-s:hasAsset
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Initiative ;
   rdfs:label "Asset"@en ;
-  rdfs:label "Информация об основном средстве"@ru ;
+  rdfs:label "Основное средство"@ru ;
   rdfs:range v-s:Asset ;
 .
 v-s:PsHasAsset
@@ -622,6 +622,66 @@ v-s:PsAssetNumber
   v-ui:tooltip "Необязательно к заполнению, единичное десятичное значение."@ru ;
   rdfs:label "Some decimal property specification for Asset class"@en ;
   rdfs:label "Спецификация некоторых десятичных cвойств для класса Asset"@ru ;
+.
+v-s:msfo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Asset ;
+  rdfs:label "Msfo"@en ;
+  rdfs:label "МСФО"@ru ;
+  rdfs:range xsd:decimal ;
+.
+v-s:rsbu
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Asset ;
+  rdfs:label "Rsbu"@en ;
+  rdfs:label "РСБУ"@ru ;
+  rdfs:range xsd:decimal ;
+.
+v-s:nu
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Asset ;
+  rdfs:label "Nu"@en ;
+  rdfs:label "НУ"@ru ;
+  rdfs:range xsd:decimal ;
+.
+v-s:PsSomeDecimalInAsset
+  rdf:type v-ui:DecimalPropertySpecification ;
+  v-ui:forClass v-s:Asset ;
+  v-ui:forProperty v-s:msfo ;
+  v-ui:forProperty v-s:rsbu ;
+  v-ui:forProperty v-s:nu ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  v-ui:tooltip "non-required, single decimal value."@en ;
+  v-ui:tooltip "Необязательно к заполнению, единичное десятичное значение."@ru ;
+  rdfs:label "Some decimal property specification for Asset class"@en ;
+  rdfs:label "Спецификация некоторых десятичных cвойств для класса Asset"@ru ;
+.
+v-s:assetDateTo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Asset ;
+  rdfs:label "to date"@en ;
+  rdfs:label "на дату"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:subPropertyOf v-s:dateTo ;
+.
+v-s:isIncludingToReserv
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Asset ;  
+  rdfs:label "is including to reserv"@en ;
+  rdfs:label "Включено в резерв на обесценение"@ru ;
+  rdfs:range xsd:boolean ;
+.
+v-s:PsIsIncludingToReserv
+  rdf:type v-ui:BooleanPropertySpecification ;
+  v-ui:forClass v-s:Asset ;    
+  v-ui:forProperty v-s:isIncludingToReserv ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  rdfs:label "isIncludingToReserv property specification for Initiative class"@en ;
+  rdfs:label "Спецификация isIncludingToReserv для класса инициатива"@ru ;
+  v-ui:tooltip "Если ваш проект включен в резерв на обесценение, отметьте данный переключатель"@ru ;
+  v-ui:tooltip "Tick this box if implementation of your initiative is including to reserv"@en ;
 .
 v-s:description
   rdfs:domain v-s:Initiative ;
