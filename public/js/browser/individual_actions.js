@@ -14,7 +14,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			});
 
 			// Prevent excessive calls for individual that was displayed multiple times
-			if ( container !== "#main" && template !== templateOriginal) { return; }
+			// if ( container !== "#main" && template !== templateOriginal) { return; }
 
 			var $send = template.find("#send.action");
 			var $sendButtons = template.find(".sendbutton");
