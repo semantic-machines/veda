@@ -621,6 +621,14 @@ v-s:script
   rdfs:range xsd:string ;
 .
 
+v-s:dependency
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Event ;
+  rdfs:label "Dependency"@en ;
+  rdfs:label "Зависимость"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+
 v-s:disabled
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Event ;

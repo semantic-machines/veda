@@ -35,6 +35,7 @@ class Onto
     private         Individual[ string ] individuals;
     private         Classes[ string ] class2superclasses;
     private         Classes[ string ] class2subclasses;
+    private         bool[ string ]    orphans;
 
     public this(Context _context)
     {
@@ -117,6 +118,8 @@ class Onto
 
     public void update_class_in_hierarchy(ref Individual indv, bool replace = false)
     {
+        //log.trace ("@1#update_class_in_hierarchy[%s] replace=%s", indv.uri, text (replace));
+
         if (replace == true && indv.anyExists("rdf:type", [ "rdf:Property", "owl:ObjectProperty", "owl:DatatypeProperty" ]))
             individuals[ indv.uri ] = indv;
 
@@ -133,24 +136,47 @@ class Onto
                 icl = class2superclasses.get(type_uri, null);
 
             if (icl is null)
-            {
-                //                  writeln ("@b1 update_class_in_hierarchy, uri=", indv.uri);
-                Classes superclasses = Classes.init;
-                prepare_superclasses(superclasses, individuals, type_uri);
-                class2superclasses[ type_uri ] = superclasses;
+                _update_class(type_uri);
+        }
 
-                foreach (classz; superclasses.keys)
-                {
-                    Classes subclasses = class2subclasses.get(classz, Classes.init);
-                    subclasses[ type_uri ]     = true;
-                    class2subclasses[ classz ] = subclasses;
-                }
+        // если этот класс числится в осиротевших ссылках, найти в подклассах где он упоминается и так-же обновить.
+        if (orphans.get(indv.uri, false) == true)
+        {
+            Classes nuscs = class2subclasses.get(indv.uri, null);
+
+            foreach (cl; nuscs.keys)
+            {
+                _update_class(cl);
+                orphans[ cl ] = false;
             }
+
+            //log.trace ("@0 need update [%s]->[%s]", indv.uri, nuscs);
+        }
+    }
+
+    private void _update_class(string type_uri)
+    {
+        //                  writeln ("@b1 update_class_in_hierarchy, uri=", indv.uri);
+        Classes superclasses = Classes.init;
+
+        prepare_superclasses(superclasses, individuals, type_uri);
+        class2superclasses[ type_uri ] = superclasses;
+
+        foreach (classz; superclasses.keys)
+        {
+            if (individuals.get(classz, Individual.init) == Individual.init)
+                orphans[ classz ] = true;
+
+            Classes subclasses = class2subclasses.get(classz, Classes.init);
+            subclasses[ type_uri ]     = true;
+            class2subclasses[ classz ] = subclasses;
         }
     }
 
     private void prepare_superclasses(ref Classes superclasses, ref Individual[ string ] classes, string look_cl, int level = 0)
     {
+        //log.trace ("#1 prepare_superclasses=%s", look_cl);
+
         Individual ii = classes.get(look_cl, Individual.init);
 
         Resource[] list = ii.getResources(rdfs__subClassOf);

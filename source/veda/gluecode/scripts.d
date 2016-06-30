@@ -3,7 +3,7 @@
  */
 module veda.gluecode.scripts;
 
-private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime;
+private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range;
 private import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.log_msg, veda.core.common.know_predicates, veda.onto.onto;
@@ -24,6 +24,7 @@ void main(char[][] args)
 class ScriptProcess : ChildProcess
 {
     private          ScriptInfo[ string ] event_scripts;
+    private          Array!string event_scripts_order;
 
     private VQL      vql;
     private string   empty_uid;
@@ -72,7 +73,7 @@ class ScriptProcess : ChildProcess
 
         if (prepare_if_is_script)
         {
-            prepare_script(event_scripts, new_indv, script_vm, vars_for_event_script);
+            prepare_script(event_scripts, event_scripts_order, new_indv, script_vm, vars_for_event_script);
         }
 
         set_g_parent_script_id_etc(event_id);
@@ -100,20 +101,30 @@ class ScriptProcess : ChildProcess
 
         set_g_super_classes(indv_types, context.get_onto());
 
-        foreach (script_id, script; event_scripts)
+        //log.trace("-------------------");
+        //log.trace ("indv=%s, indv_types=%s", individual_id, indv_types);
+        //log.trace ("queue of scripts:%s", event_scripts_order.array());
+
+
+        foreach (script_id; event_scripts_order)
         {
+            auto script = event_scripts[ script_id ];
+
             if (script.compiled_script !is null)
             {
-                if (script.filters.length > 0 && isFiltred(&script, indv_types, context.get_onto()) == false)
-                    continue;
-
-                //log.trace("execute script:%s", script_id);
-
+                //log.trace("look script:%s", script_id);
                 if (event_id !is null && event_id.length > 1 && event_id == (individual_id ~ '+' ~ script_id))
                 {
                     //writeln("skip script [", script_id, "], type:", type, ", indiv.:[", individual_id, "]");
                     continue;
                 }
+
+                //log.trace("first check pass script:%s, filters=%s", script_id, script.filters);
+
+                if (script.filters.length > 0 && isFiltred(&script, indv_types, context.get_onto()) == false)
+                    continue;
+
+                //log.trace("filter pass script:%s", script_id);
 
                 try
                 {
@@ -195,7 +206,7 @@ class ScriptProcess : ChildProcess
 
         foreach (ss; res)
         {
-            prepare_script(event_scripts, ss, script_vm, vars_for_event_script);
+            prepare_script(event_scripts, event_scripts_order, ss, script_vm, vars_for_event_script);
         }
 
         if (trace_msg[ 300 ] == 1)

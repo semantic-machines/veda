@@ -1303,6 +1303,13 @@ class PThreadContext : Context
 
                         if (is_api_request)
                         {
+                            // для обновляемого индивида проверим доступность бита Update
+                            if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, this, true) != Access.can_update)
+                            {
+//		                        res.result = ResultCode.Not_Authorized;
+//	                            return res;
+                            }
+
                             // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
                             foreach (rs; _types)
                             {
@@ -1331,6 +1338,7 @@ class PThreadContext : Context
                             }
                         }
                     }
+
 
                     if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM)
                     {

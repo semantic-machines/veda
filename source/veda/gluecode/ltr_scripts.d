@@ -7,7 +7,7 @@ module veda.gluecode.ltr_scripts;
 
 private
 {
-    import core.thread, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
+    import core.thread, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, std.container.array;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm;
     import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
@@ -67,9 +67,11 @@ enum CMD : byte
     START = 52
 }
 
-Onto     onto;
-Context  context;
+Onto    onto;
+Context context;
 ScriptInfo[ string ] codelet_scripts;
+Array!string codelet_scripts_order;
+
 VQL      vql;
 string   empty_uid;
 string   vars_for_codelet_script;
@@ -289,7 +291,7 @@ bool execute_script(string user_uri, string msg, string script_uri, string execu
     if (script is ScriptInfo.init)
     {
         Individual codelet = context.get_individual(&sticket, script_uri);
-        prepare_script(codelet_scripts, codelet, script_vm, vars_for_codelet_script);
+        prepare_script(codelet_scripts, codelet_scripts_order, codelet, script_vm, vars_for_codelet_script);
     }
 
     if (script.compiled_script !is null)

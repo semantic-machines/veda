@@ -848,9 +848,13 @@ void xapian_indexer(string thread_name, string _node_id)
     string db_path_system  = get_xapiab_db_path("system");
     string db_path_deleted = get_xapiab_db_path("deleted");
 
+    bool   need_all_reindex = false;
+
+    byte   count_created_db_folder = 0;
     try
     {
         mkdir(db_path_base);
+        count_created_db_folder++;
     }
     catch (Exception ex)
     {
@@ -859,6 +863,7 @@ void xapian_indexer(string thread_name, string _node_id)
     try
     {
         mkdir(db_path_system);
+        count_created_db_folder++;
     }
     catch (Exception ex)
     {
@@ -867,10 +872,12 @@ void xapian_indexer(string thread_name, string _node_id)
     try
     {
         mkdir(db_path_deleted);
+        count_created_db_folder++;
     }
     catch (Exception ex)
     {
     }
+
     // /////////// XAPIAN INDEXER ///////////////////////////
     XapianStem stemmer = new_Stem(cast(char *)ictx.lang, cast(uint)ictx.lang.length, &err);
 
@@ -925,6 +932,26 @@ void xapian_indexer(string thread_name, string _node_id)
             {
                 send(tid_response_reciever, true);
             });
+
+    if (count_created_db_folder != 0)
+    {
+        try
+        {
+//		if (ictx.context.count_individuals() > 16)
+//			need_all_reindex = true;
+        }
+        catch (Throwable tr)
+        {
+//			writeln ("tr=", tr.toString());
+        }
+
+        log.trace("index is empty or not completed");
+
+        if (need_all_reindex == true)
+        {
+            log.trace("it does not correspond to the index database, need reindexes");
+        }
+    }
 
     while (true)
     {

@@ -1,6 +1,6 @@
 module veda.gluecode.script;
 
-import std.stdio, std.path;
+import std.stdio, std.path, std.container.array, std.algorithm, std.conv, std.range;
 import veda.gluecode.v8d_header, veda.core.common.context, veda.onto.individual, veda.core.log_msg, veda.core.common.know_predicates,
        veda.onto.resource;
 
@@ -9,10 +9,11 @@ struct ScriptInfo
     string id;
     string str_script;
     bool[ string ] filters;
+    bool[ string ] dependency;
     Script compiled_script;
 }
 
-void prepare_script(ref ScriptInfo[ string ] scripts, Individual ss, ScriptVM script_vm, string vars_env)
+void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scripts_order, Individual ss, ScriptVM script_vm, string vars_env)
 {
     if (trace_msg[ 310 ] == 1)
         log.trace("prepare_script uri=%s", ss.uri);
@@ -61,11 +62,68 @@ void prepare_script(ref ScriptInfo[ string ] scripts, Individual ss, ScriptVM sc
             Resources filters = ss.getResources(veda_schema__filter);
 
             foreach (filter; filters)
-            {
                 script.filters[ filter.uri ] = true;
-            }
+
+            Resources dependency = ss.getResources("v-s:dependency");
+            foreach (dp; dependency)
+                script.dependency[ dp.uri ] = true;
 
             scripts[ ss.uri ] = script;
+
+
+            // удалить вхождение
+            auto rr = event_scripts_order[].find(ss.uri);
+
+            if (rr.length > 0)
+                event_scripts_order.linearRemove(rr);
+
+            // найти новую позицию с учетом зависимостей
+            long max_pos = 0;
+
+            long idx                = 0;
+            bool need_before_insert = false;
+
+            foreach (oo; event_scripts_order)
+            {
+                // проверить зависит ли [oo] от [script]
+                auto soo = scripts[ oo ];
+                foreach (dp; soo.dependency.keys)
+                {
+                    if (script.id == dp)
+                    {
+                        need_before_insert = true;
+                        max_pos            = idx;
+                    }
+                }
+
+                if (need_before_insert == true)
+                    break;
+
+                // проверить зависит ли [script] от [oo]
+                foreach (dp; script.dependency.keys)
+                {
+                    if (oo == dp && max_pos < idx)
+                        max_pos = idx;
+                }
+                idx++;
+            }
+            if (max_pos > 0)
+            {
+                rr = event_scripts_order[].find(event_scripts_order[ max_pos ]);
+
+                // добавить новое вхождение
+                if (rr.length > 0)
+                {
+                    if (need_before_insert)
+                        event_scripts_order.insertBefore(rr, ss.uri);
+                    else
+                        event_scripts_order.insertAfter(rr, ss.uri);
+                }
+                else
+                    event_scripts_order.insertBack(ss.uri);
+            }
+            else
+                event_scripts_order.insertBack(ss.uri);
         }
         catch (Exception ex)
         {
