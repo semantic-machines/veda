@@ -58,6 +58,13 @@ cfg:VedaSystem
   rdfs:label "Система Веда"@ru ;
 .
 
+cfg:Permission_VedaSystem_allRead
+  rdf:type v-s:PermissionStatement ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:permissionObject cfg:VedaSystem ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+.
+
 cfg:VedaSystemAppointment
   rdf:type v-s:Appointment ;
   v-s:author cfg:VedaSystem ;
