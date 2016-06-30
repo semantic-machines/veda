@@ -1311,6 +1311,9 @@ v-ui:DocumentEventTemplate
 </div>
 <script>
   if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
+  if (individual.hasValue("v-s:actor") && individual['v-s:actor'][0].id == 'cfg:VedaSystem') {
+    template.hide();
+  }
   $("#exp", template).click(function (e) {
     e.preventDefault();
     $("div[rel='v-s:processJournal']", template).toggle();
