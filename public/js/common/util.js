@@ -659,7 +659,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
                             if (typeof window === "undefined") {
                         		curelem = get_individual(ticket, curelem[path[i]].data ? curelem[path[i]].data : curelem[path[i]]);
                             } else {
-                        		curelem = new veda.IndividualModel(curelem[path[i]][0]);
+                        		curelem = curelem[path[i]][0];
                             }
                         }
                         if (!curelem || !curelem[path[path.length - 1]]) return;
@@ -671,12 +671,13 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
                     			function(item) {
 			                        var value = item;
 			                        var valueType = _Uri;
-		
-			        				if (value instanceof String) valueType = _String;
-			        				if (value instanceof Date) valueType = _Datetime;
-			        				if (value instanceof Number) valueType = _Decimal;
-			        				if (value instanceof Boolean) valueType = _Boolean;
-		
+
+			        				if (value instanceof String) { valueType = _String; }
+			        				    else if (value instanceof Date) { valueType = _Datetime; }
+			        				    else if (value instanceof Number) { valueType = _Decimal; }
+			        				    else if (value instanceof Boolean) { valueType = _Boolean; }
+			        				    else value = value.id;
+
 			        				if (valueType == _Uri && typeof transform != 'undefined') {
 		                        		if (transform == 'clone') {
 		                        			value = value.clone();
@@ -684,7 +685,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
 		                        			value = veda.Util.buildStartFormByTransformation(value, new veda.IndividualModel(transform));
 		                        		}
 			        				}
-		
+
 			        				if (typeof value !== "undefined") {
 				                        out_data0_el_arr.push(
 				                        {

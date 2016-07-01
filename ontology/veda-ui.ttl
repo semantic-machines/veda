@@ -468,7 +468,7 @@ v-ui:PSFromToForBond
   v-ui:forProperty v-s:from, v-s:to ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type'=='mnd-s:Idea')"^^xsd:string ;  
+  v-ui:queryPrefix "('rdf:type'=='mnd-s:Idea')"^^xsd:string ;
 .
 v-ui:BondTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -1069,7 +1069,7 @@ v-ui:FileTemplateWithComment
   rdfs:label "File template 2"@en ;
   v-ui:forClass v-s:File ;
   v-ui:template """
-<div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:15px; overflow: hidden">
+<div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:20px 20px 0 0; overflow: hidden">
 	<div class="panel-body">
 		<em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
 		<strong property="rdfs:comment" class="view -edit -search"></strong>

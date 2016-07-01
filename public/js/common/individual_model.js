@@ -25,7 +25,7 @@ veda.Module(function (veda) { "use strict";
 			mode      = uri.mode;
 			cache     = uri.cache;
 			init      = uri.init;
-			uri       = uri.uri?uri.uri:uri.id;
+			uri       = uri.uri;
 		}
 
 		// Define Model functions
