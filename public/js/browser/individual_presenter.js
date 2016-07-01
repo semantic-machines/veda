@@ -536,29 +536,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 			control.removeAttr("property");
 
-			switch (type) {
-				case "rdfs:Literal":
-				case "xsd:string":
-					controlType = $.fn.veda_multilingualString;
-					break;
-				case "xsd:boolean":
-					controlType = $.fn.veda_boolean;
-					break;
-				case "xsd:integer":
-				case "xsd:nonNegativeInteger":
-					controlType = $.fn.veda_integer;
-					break;
-				case "xsd:decimal":
-					controlType = $.fn.veda_decimal;
-					break;
-				case "xsd:dateTime":
-					controlType = $.fn.veda_dateTime;
-					break;
-				default:
-					controlType = $.fn["veda_" + type];
-					break;
-			}
-
 			var opts = {
 				individual: individual,
 				property_uri: property_uri,
@@ -568,6 +545,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
 			if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
 				controlType = $.fn.veda_source;
+			} else {
+				controlType = $.fn["veda_" + type];
 			}
 
 			controlType.call(control, opts);
@@ -966,9 +945,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		$(".properties", template).append (
 			Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
-				if(property_uri === "@") { return }
+
+				if (property_uri === "@" || property_uri === "rdfs:label" || property_uri === "rdf:type" || property_uri === "v-s:deleted") { return; }
+
 				var property = new veda.IndividualModel(property_uri);
-				if (property_uri === "rdfs:label" || property_uri === "rdf:type" || property_uri === "v-s:deleted") return;
 
 				var result = $("<div/>").append( propTmpl );
 				$(".name", result).append (
@@ -976,31 +956,61 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				);
 
 				var range = property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal";
-				switch( range ) {
-					case "rdfs:Literal" :
-					case "xsd:string" :
-					case "xsd:boolean" :
-					case "xsd:nonNegativeInteger" :
-					case "xsd:integer" :
-					case "xsd:decimal" :
-					case "xsd:dateTime" :
+
+				switch ( range ) {
+					case "rdfs:Literal":
+					case "xsd:string":
 						$(".value", result).append (
-							$("<div/>").attr("property", property_uri),
-							$("<veda-control class='-view edit search'></veda-control>").attr("property", property_uri).attr("type", range)
+							"<div property='" + property_uri + "' />" +
+							"<veda-control property='" + property_uri + "' type='multilingualText' class='-view edit search'></veda-control>"
 						);
-					break;
+						break;
+					case "xsd:integer":
+					case "xsd:nonNegativeInteger":
+						$(".value", result).append (
+							"<div property='" + property_uri + "' />" +
+							"<veda-control property='" + property_uri + "' type='integer' class='-view edit search'></veda-control>"
+						);
+						break;
+					case "xsd:decimal":
+						$(".value", result).append (
+							"<div property='" + property_uri + "' />" +
+							"<veda-control property='" + property_uri + "' type='decimal' class='-view edit search'></veda-control>"
+						);
+						break;
+					case "xsd:dateTime":
+						$(".value", result).append (
+							"<div property='" + property_uri + "' />" +
+							"<veda-control property='" + property_uri + "' type='dateTime' class='-view edit search'></veda-control>"
+						);
+						break;
+					case "xsd:boolean":
+						$(".name", result).empty();
+						$(".value", result).append (
+							"<div class='checkbox'>" +
+								"<label>" +
+									"<veda-control property='" + property_uri + "' type='booleanCheckbox'></veda-control>" +
+									"<em about='" + property_uri + "' property='rdfs:label' class='text-muted'></em>" +
+								"</label>" +
+							"</div>"
+						);
+						break;
+					case "rdfs:Resource":
+						$(".value", result).append (
+							"<div property='" + property_uri + "' />" +
+							"<veda-control property='" + property_uri + "' type='generic' class='-view edit search'></veda-control>"
+						);
+						break;
 					default:
 						$(".value", result).append (
-							$("<div/>", {"rel": property_uri, "template": "v-ui:ClassNameLabelTemplate"}),
-							$("<veda-control class='-view edit search fullsearch fulltext'></veda-control>").attr("rel", property_uri)
+							"<div rel='" + property_uri + "' template='v-ui:ClassNameLabelTemplate' />" +
+							"<veda-control rel='" + property_uri + "' type='link' class='-view edit search fullsearch fulltext dropdown'></veda-control>"
 						);
-					break;
+						break;
 				}
-
 				if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") );
 
 				return result;
-
 			})
 		);
 		return template;

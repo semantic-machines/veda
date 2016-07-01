@@ -95,6 +95,35 @@
 		}
 	};
 
+	// Generic input
+	$.fn.veda_generic = function( options ) {
+		var opts = $.extend( {}, $.fn.veda_generic.defaults, options ),
+			control = veda_literal_input.call(this, opts);
+
+		this.append(control);
+		return this;
+	};
+	$.fn.veda_generic.defaults = {
+		template: $("#string-control-template").html(),
+		parser: function (input) {
+			if ( moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD"], true).isValid() ) {
+				return moment(input, "DD.MM.YYYY HH:mm").toDate();
+			} else if ( !isNaN( parseFloat( input.replace(",", ".") ) ) ) {
+				return parseFloat( input.replace(",", ".") )
+			} else if ( !isNaN( parseInt( input.replace(",", "."), 10 ) ) ) {
+				return parseInt( input.replace(",", "."), 10 )
+			} else if ( input === "true" ) {
+				return true;
+			} else if ( input === "false" ) {
+				return false;
+			} else {
+				var ind = new veda.IndividualModel(input);
+				if ( ind["rdf:type"][0].id !== "rdfs:Resource" ) { return ind; }
+			}
+			return (input || null);
+		}
+	};
+
 	// String input
 	$.fn.veda_string = function( options ) {
 		var opts = $.extend( {}, $.fn.veda_string.defaults, options ),
@@ -105,7 +134,7 @@
 	};
 	$.fn.veda_string.defaults = {
 		template: $("#string-control-template").html(),
-		parser: function (input, el) {
+		parser: function (input) {
 			return (input || null);
 		}
 	};
@@ -127,7 +156,7 @@
 	};
 	$.fn.veda_text.defaults = {
 		template: $("#text-control-template").html(),
-		parser: function (input, el) {
+		parser: function (input) {
 			return (input || null);
 		}
 	};
