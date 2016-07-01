@@ -1469,7 +1469,7 @@ v-wf:VariableTemplate
 		=
 	</strong>
 	<div about="v-wf:variableValue" property="rdfs:label"></div>		
-	<veda-control about="@" rel="v-wf:variableValue" type="string" class="-view edit search fulltext dropdown"></veda-control> 		
+	<veda-control about="@" rel="v-wf:variableValue" type="generic" class="-view edit search fulltext dropdown"></veda-control> 		
 	<ul id="values"></ul>
 	<div id="variableScope">
 		<em about="v-wf:variableScope" property="rdfs:label"></em>
