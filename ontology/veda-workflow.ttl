@@ -1341,7 +1341,7 @@ v-wf:ProcessPropsTemplate
   rdfs:label "Template for Work order class"@en ;
   v-ui:template """
 <div>
-  <table id="workItemTemplateProperties" class="table table-condensed table-hover properties-editor">
+  <table id="processTemplateProperties" class="table table-condensed table-hover properties-editor">
   	<thead>
   	  <tr>
   		<td style="width:25%"><span about="v-wf:NetElement" property="rdfs:label"></span></td>
@@ -1386,11 +1386,13 @@ v-wf:ProcessPropsTemplate
 	</tr>
 </div>
 <script>
-  $('#workItemTemplateProperties > tbody > tr > td > span[about]').each(function () {
-  	 if (!individual.hasValue($(this).attr('about'))) {
-  	 	$(this).parent().parent().appendTo($('#workItemTemplateProperties'));
-  	 }
-  });
+  if (individual) {
+	  $('#processTemplateProperties > tbody > tr > td > span[about]').each(function () {
+	  	 if (!individual.hasValue($(this).attr('about'))) {
+	  	 	$(this).parent().parent().appendTo($('#workItemTemplateProperties'));
+	  	 }
+	  });
+  }
 </script>
   """
 .
@@ -1445,11 +1447,13 @@ v-wf:WorkItemTemplate
 	</tr>
 </div>
 <script>
-  $('#workItemTemplateProperties > tbody > tr > td > span[about]').each(function () {
-  	 if (!individual.hasValue($(this).attr('about'))) {
-  	 	$(this).parent().parent().appendTo($('#workItemTemplateProperties'));
-  	 }
-  });
+  if (individual) {
+	  $('#workItemTemplateProperties > tbody > tr > td > span[about]').each(function () {
+	  	 if (!individual.hasValue($(this).attr('about'))) {
+	  	 	$(this).parent().parent().appendTo($('#workItemTemplateProperties'));
+	  	 }
+	  });
+  }
 </script>
 """ ;
   .
