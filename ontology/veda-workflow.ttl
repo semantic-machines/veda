@@ -1325,6 +1325,15 @@ v-wf:FlowTemplateAsProperties
   """ ;
 .
 
+v-wf:varPPropertySpecification1
+  rdf:type v-ui:StringPropertySpecification ;
+  rdfs:label "Спецификация свойства переменных"@ru ;
+  rdfs:label "Property specification for variables"@en ;
+  v-ui:forClass v-wf:Process ;
+  v-ui:forProperty v-wf:localVariable, v-wf:inVars, v-wf:outVars, v-wf:localVars ;
+  v-ui:queryPrefix "('rdf:type'=='v-wf:Variable')"^^xsd:string ;
+.
+
 v-wf:ProcessPropsTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -1332,46 +1341,69 @@ v-wf:ProcessPropsTemplate
   rdfs:label "Template for Work order class"@en ;
   v-ui:template """
 <div>
-	<div id="executor">
-		<em><h5 about="v-wf:executor" property="rdfs:label"></h5></em>
-		<ol><li rel="v-wf:executor" template="v-ui:ClassNameLabelTemplate"></li></ol>
-		<hr>
-	</div>
-	<div id="localVariable">
-		<em><h5 about="v-wf:localVariable" property="rdfs:label"></h5></em>
-		<span rel="v-wf:localVariable" template="v-wf:VariableTemplate"></span>
-		<hr>
-	</div>
-	<div id="inVars">
-		<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
-		<span rel="v-wf:inVars" template="v-wf:VariableTemplate"></span>
-		<hr>
-	</div>
-	<div id="outVars">
-		<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
-		<span rel="v-wf:outVars" template="v-wf:VariableTemplate"></span>
-	</div>
-	<div id="localVars">
-		<em><h5 about="v-wf:localVars" property="rdfs:label"></h5></em>
-		<span rel="v-wf:localVars" template="v-wf:VariableTemplate"></span>
-		<hr>
-	</div>
-	<div id="traceJournal">
-		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
-		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
-		<hr>
-	</div>
+  <table id="workItemTemplateProperties" class="table table-condensed table-hover properties-editor">
+  	<thead>
+  	  <tr>
+  		<td style="width:25%"><span about="v-wf:NetElement" property="rdfs:label"></span></td>
+  		<td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
+  	  </tr>
+  	</thead>
+	<tr onclick="javascript: $('.VClocVariable').show(); javascript: $('.viewVClocVariable').hide();">
+  		<td><span about="v-wf:localVariable" property="rdfs:label"></span></td>
+  		<td>
+  			<veda-control about="@" rel="v-wf:localVariable" type="link" class="VClocVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<div class="VClocVariable" rel="v-wf:localVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
+  			<div about="@" class="viewVClocVariable" rel="v-wf:localVariable" template="v-ui:LabelTemplateWithEditLink"></div>
+  		</td>
+	</tr>
+	<tr onclick="javascript: $('.VCinVariable').show(); javascript: $('.viewVCinVariable').hide();">
+  		<td><span about="v-wf:inVars" property="rdfs:label"></span></td>
+  		<td>
+  			<veda-control about="@" rel="v-wf:inVars" type="link" class="VCinVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<div class="VCinVariable" rel="v-wf:inVars" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
+  			<div about="@" class="viewVCinVariable" rel="v-wf:inVars" template="v-ui:LabelTemplateWithEditLink"></div>
+  		</td>
+	</tr>
+	<tr onclick="javascript: $('.VCoutVariable').show(); javascript: $('.viewVCoutVariable').hide();">
+  		<td><span about="v-wf:outVars" property="rdfs:label"></span></td>
+  		<td>
+  			<veda-control about="@" rel="v-wf:outVars" type="link" class="VCoutVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<div class="VCoutVariable" rel="v-wf:outVars" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
+  			<div about="@" class="viewVCoutVariable" rel="v-wf:outVars" template="v-ui:LabelTemplateWithEditLink"></div>
+  		</td>
+	</tr>
+	<tr onclick="javascript: $('.VClocalVariable').show(); javascript: $('.viewVClocalVariable').hide();">
+  		<td><span about="v-wf:localVars" property="rdfs:label"></span></td>
+  		<td>
+  			<veda-control about="@" rel="v-wf:localVars" type="link" class="VClocalVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<div class="VClocalVariable" rel="v-wf:localVars" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
+  			<div about="@" class="viewVClocalVariable" rel="v-wf:localVars" template="v-ui:LabelTemplateWithEditLink"></div>
+  		</td>
+	</tr>
+	<tr id="traceJournal">
+		<td><em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em></td>
+		<td><span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span></td>
+	</tr>
 </div>
 <script>
-	if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
-	if (!individual.hasValue("v-wf:localVariable")) $("#localVariable", template).remove();
-	if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
-	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
-	if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
-	if (!individual.hasValue("v-wf:localVars")) $("#localVars", template).remove();
+  $('#workItemTemplateProperties > tbody > tr > td > span[about]').each(function () {
+  	 if (!individual.hasValue($(this).attr('about'))) {
+  	 	$(this).parent().parent().appendTo($('#workItemTemplateProperties'));
+  	 }
+  });
 </script>
   """
 .
+
+v-wf:varWIPropertySpecification1
+  rdf:type v-ui:StringPropertySpecification ;
+  rdfs:label "Спецификация свойства переменных"@ru ;
+  rdfs:label "Property specification for variables"@en ;
+  v-ui:forClass v-wf:WorkItem ;
+  v-ui:forProperty v-wf:inVars, v-wf:outVars ;
+  v-ui:queryPrefix "('rdf:type'=='v-wf:Variable')"^^xsd:string ;
+.
+
 v-wf:WorkItemTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -1380,37 +1412,46 @@ v-wf:WorkItemTemplate
   v-ui:forClass v-wf:WorkItem ;
   v-ui:template """
 <div>
-	<h4><span about="v-wf:WorkItem" property="rdfs:label"></span></h4>
-	<h5><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></h5>
-	<hr>
-	<div id="inVars">
-		<em><h5 about="v-wf:inVars" property="rdfs:label"></h5></em>
-		<span rel="v-wf:inVars" template="v-wf:VariableTemplate"></span>
-		<hr>
+  <table id="workItemTemplateProperties" class="table table-condensed table-hover properties-editor">
+  	<thead>
+  	  <tr>
+  		<td style="width:25%"><span about="v-wf:NetElement" property="rdfs:label"></span></td>
+  		<td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
+  	  </tr>
+  	</thead>
+	<tr onclick="javascript: $('.VCinVariable').show(); javascript: $('.viewVCinVariable').hide();">
+  		<td><span about="v-wf:inVars" property="rdfs:label"></span></td>
+  		<td>
+  			<veda-control about="@" rel="v-wf:inVars" type="link" class="VCinVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<div class="VCinVariable" rel="v-wf:inVars" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
+  			<div about="@" class="viewVCinVariable" rel="v-wf:inVars" template="v-ui:LabelTemplateWithEditLink"></div>
+  		</td>
+	</tr>
+	<tr onclick="javascript: $('.VCoutVariable').show(); javascript: $('.viewVCoutVariable').hide();">
+  		<td><span about="v-wf:outVars" property="rdfs:label"></span></td>
+  		<td>
+  			<veda-control about="@" rel="v-wf:outVars" type="link" class="VCoutVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+  			<div class="VCoutVariable" rel="v-wf:outVars" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
+  			<div about="@" class="viewVCoutVariable" rel="v-wf:outVars" template="v-ui:LabelTemplateWithEditLink"></div>
+  		</td>
+	</tr>
+	<tr id="workOrderList">
+		<td><em><h5 about="v-wf:workOrderList" property="rdfs:label"></h5></em></td>
+		<td><span rel="v-wf:workOrderList" template="v-wf:WorkOrderTemplate"></span></td>
 	</div>
-	<div id="outVars">
-		<em><h5 about="v-wf:outVars" property="rdfs:label"></h5></em>
-		<span rel="v-wf:outVars" template="v-wf:VariableTemplate"></span>
-		<hr>
-	</div>
-	<div id="workOrderList">
-		<em><h5 about="v-wf:workOrderList" property="rdfs:label"></h5></em>
-		<span rel="v-wf:workOrderList" template="v-wf:WorkOrderTemplate"></span>
-		<hr>
-	</div>
-	<div id="traceJournal">
-		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>
-		<span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span>
-		<hr>
-	</div>
+	<tr id="traceJournal">
+		<td><em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em></td>
+		<td><span rel="v-wf:traceJournal" template="v-ui:LabelLinkTemplate"></span></td>
+	</tr>
 </div>
 <script>
-	if (!individual.hasValue("v-wf:inVars")) $("#inVars", template).remove();
-	if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
-	if (!individual.hasValue("v-wf:workOrderList")) $("#workOrderList", template).remove();
-	if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
+  $('#workItemTemplateProperties > tbody > tr > td > span[about]').each(function () {
+  	 if (!individual.hasValue($(this).attr('about'))) {
+  	 	$(this).parent().parent().appendTo($('#workItemTemplateProperties'));
+  	 }
+  });
 </script>
-  """ ;
+""" ;
   .
 
 v-wf:VariableTemplate
@@ -1421,7 +1462,14 @@ v-wf:VariableTemplate
   v-ui:forClass v-wf:Variable ;
   v-ui:template """
 <span>
-	<strong><span property="v-wf:variableName"></span> =</strong>
+	<strong>
+		<div about="v-wf:variableName" property="rdfs:label"></div>		
+		<span property="v-wf:variableName"></span> 
+		<veda-control about="@" rel="v-wf:variableName" type="string" class="-view edit search fulltext dropdown"></veda-control> 
+		=
+	</strong>
+	<div about="v-wf:variableValue" property="rdfs:label"></div>		
+	<veda-control about="@" rel="v-wf:variableValue" type="string" class="-view edit search fulltext dropdown"></veda-control> 		
 	<ul id="values"></ul>
 	<div id="variableScope">
 		<em about="v-wf:variableScope" property="rdfs:label"></em>
