@@ -1386,7 +1386,7 @@ v-wf:ProcessPropsTemplate
 	</tr>
 </div>
 <script>
-  if (individual) {
+  if (typeof individual !== "undefined") {
 	  $('#processTemplateProperties > tbody > tr > td > span[about]').each(function () {
 	  	 if (!individual.hasValue($(this).attr('about'))) {
 	  	 	$(this).parent().parent().appendTo($('#workItemTemplateProperties'));
@@ -1447,7 +1447,7 @@ v-wf:WorkItemTemplate
 	</tr>
 </div>
 <script>
-  if (individual) {
+  if (typeof individual !== "undefined") {
 	  $('#workItemTemplateProperties > tbody > tr > td > span[about]').each(function () {
 	  	 if (!individual.hasValue($(this).attr('about'))) {
 	  	 	$(this).parent().parent().appendTo($('#workItemTemplateProperties'));
