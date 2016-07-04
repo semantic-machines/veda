@@ -1069,7 +1069,7 @@ v-ui:FileTemplateWithComment
   rdfs:label "File template 2"@en ;
   v-ui:forClass v-s:File ;
   v-ui:template """
-<div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:20px 20px 0 0; overflow: hidden">
+<div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:0 20px 20px 0; overflow: hidden">
 	<div class="panel-body">
 		<em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
 		<strong property="rdfs:comment" class="view -edit -search"></strong>
