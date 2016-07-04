@@ -1352,32 +1352,32 @@ v-wf:ProcessPropsTemplate
   		<td><span about="v-wf:localVariable" property="rdfs:label"></span></td>
   		<td>
   			<veda-control about="@" rel="v-wf:localVariable" type="link" class="VClocVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-  			<div class="VClocVariable" rel="v-wf:localVariable" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
-  			<div about="@" class="viewVClocVariable" rel="v-wf:localVariable" template="v-ui:LabelTemplateWithEditLink"></div>
+  			<div class="VClocVariable" rel="v-wf:localVariable" template="v-wf:VariableTemplate" style="display:none;"></div>
+  			<div about="@" class="viewVClocVariable" rel="v-wf:localVariable" template="v-wf:VariableTemplate"></div>
   		</td>
 	</tr>
 	<tr onclick="javascript: $('.VCinVariable').show(); javascript: $('.viewVCinVariable').hide();">
   		<td><span about="v-wf:inVars" property="rdfs:label"></span></td>
   		<td>
   			<veda-control about="@" rel="v-wf:inVars" type="link" class="VCinVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-  			<div class="VCinVariable" rel="v-wf:inVars" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
-  			<div about="@" class="viewVCinVariable" rel="v-wf:inVars" template="v-ui:LabelTemplateWithEditLink"></div>
+  			<div class="VCinVariable" rel="v-wf:inVars" template="v-wf:VariableTemplate" style="display:none;"></div>
+  			<div about="@" class="viewVCinVariable" rel="v-wf:inVars" template="v-wf:VariableTemplate"></div>
   		</td>
 	</tr>
 	<tr onclick="javascript: $('.VCoutVariable').show(); javascript: $('.viewVCoutVariable').hide();">
   		<td><span about="v-wf:outVars" property="rdfs:label"></span></td>
   		<td>
   			<veda-control about="@" rel="v-wf:outVars" type="link" class="VCoutVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-  			<div class="VCoutVariable" rel="v-wf:outVars" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
-  			<div about="@" class="viewVCoutVariable" rel="v-wf:outVars" template="v-ui:LabelTemplateWithEditLink"></div>
+  			<div class="VCoutVariable" rel="v-wf:outVars" template="v-wf:VariableTemplate" style="display:none;"></div>
+  			<div about="@" class="viewVCoutVariable" rel="v-wf:outVars" template="v-wf:VariableTemplate"></div>
   		</td>
 	</tr>
 	<tr onclick="javascript: $('.VClocalVariable').show(); javascript: $('.viewVClocalVariable').hide();">
   		<td><span about="v-wf:localVars" property="rdfs:label"></span></td>
   		<td>
   			<veda-control about="@" rel="v-wf:localVars" type="link" class="VClocalVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-  			<div class="VClocalVariable" rel="v-wf:localVars" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
-  			<div about="@" class="viewVClocalVariable" rel="v-wf:localVars" template="v-ui:LabelTemplateWithEditLink"></div>
+  			<div class="VClocalVariable" rel="v-wf:localVars" template="v-wf:VariableTemplate" style="display:none;"></div>
+  			<div about="@" class="viewVClocalVariable" rel="v-wf:localVars" template="v-wf:VariableTemplate"></div>
   		</td>
 	</tr>
 	<tr id="traceJournal">
@@ -1425,16 +1425,16 @@ v-wf:WorkItemTemplate
   		<td><span about="v-wf:inVars" property="rdfs:label"></span></td>
   		<td>
   			<veda-control about="@" rel="v-wf:inVars" type="link" class="VCinVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-  			<div class="VCinVariable" rel="v-wf:inVars" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
-  			<div about="@" class="viewVCinVariable" rel="v-wf:inVars" template="v-ui:LabelTemplateWithEditLink"></div>
+  			<div class="VCinVariable" rel="v-wf:inVars" template="v-wf:VariableTemplate" style="display:none;"></div>
+  			<div about="@" class="viewVCinVariable" rel="v-wf:inVars" template="v-wf:VariableTemplate"></div>
   		</td>
 	</tr>
 	<tr onclick="javascript: $('.VCoutVariable').show(); javascript: $('.viewVCoutVariable').hide();">
   		<td><span about="v-wf:outVars" property="rdfs:label"></span></td>
   		<td>
   			<veda-control about="@" rel="v-wf:outVars" type="link" class="VCoutVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-  			<div class="VCoutVariable" rel="v-wf:outVars" template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
-  			<div about="@" class="viewVCoutVariable" rel="v-wf:outVars" template="v-ui:LabelTemplateWithEditLink"></div>
+  			<div class="VCoutVariable" rel="v-wf:outVars" template="v-wf:VariableTemplate" style="display:none;"></div>
+  			<div about="@" class="viewVCoutVariable" rel="v-wf:outVars" template="v-wf:VariableTemplate"></div>
   		</td>
 	</tr>
 	<tr id="workOrderList">
