@@ -1166,7 +1166,7 @@ function traversal(indv, query, pos_in_path, result)
             is_get = true;
         }
 
-        if (is_get)
+        if (is_get && indv != undefined)
         {
             //print ("@2 op_get=", op_get);
             var ffs = indv[op_get];
