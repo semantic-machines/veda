@@ -532,7 +532,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				property = new veda.IndividualModel(property_uri),
 				type = control.attr("type") || property["rdfs:range"][0].id,
 				spec = specs[property_uri],
-				controlType;
+				controlType = control.attr("type") ? $.fn["veda_" + control.attr("type")] : $.fn.veda_generic;
 
 			control.removeAttr("property");
 
@@ -542,12 +542,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				spec: spec,
 				mode: mode
 			};
-
-			if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
-				controlType = $.fn.veda_source;
-			} else {
-				controlType = $.fn["veda_" + type];
-			}
 
 			controlType.call(control, opts);
 
@@ -901,7 +895,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			}
 			// range check
 			switch (spec["rdf:type"][0].id) {
-				case "v-ui:PropertySpecification" :
 				case "v-ui:IntegerPropertySpecification" :
 					if (spec.hasValue("v-ui:minIntegerValue")) result = result && (value >= spec["v-ui:minIntegerValue"][0]);
 					if (spec.hasValue("v-ui:maxIntegerValue")) result = result && (value <= spec["v-ui:maxIntegerValue"][0]);
@@ -918,6 +911,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 					if (spec.hasValue("v-ui:minLength")) result = result && (value.length >= spec["v-ui:minLength"][0]);
 					if (spec.hasValue("v-ui:maxLength")) result = result && (value.length <= spec["v-ui:maxLength"][0]);
 					break;
+				case "v-ui:PropertySpecification" :
 				case "v-ui:BooleanPropertySpecification" :
 				case "v-ui:ObjectPropertySpecification" :
 					break;
@@ -960,10 +954,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				switch ( range ) {
 					case "rdfs:Literal":
 					case "xsd:string":
-						$(".value", result).append (
-							"<div property='" + property_uri + "' />" +
-							"<veda-control property='" + property_uri + "' type='multilingualText' class='-view edit search'></veda-control>"
-						);
+						if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
+							$(".value", result).append (
+								"<veda-control property='" + property_uri + "' type='source' class='-view edit search'></veda-control>"
+							);
+						} else {
+							$(".value", result).append (
+								"<div property='" + property_uri + "' />" +
+								"<veda-control property='" + property_uri + "' type='multilingualText' class='-view edit search'></veda-control>"
+							);
+						}
 						break;
 					case "xsd:integer":
 					case "xsd:nonNegativeInteger":
@@ -1002,10 +1002,17 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						);
 						break;
 					default:
-						$(".value", result).append (
-							"<div rel='" + property_uri + "' template='v-ui:ClassNameLabelTemplate' />" +
-							"<veda-control rel='" + property_uri + "' type='link' class='-view edit search fullsearch fulltext dropdown'></veda-control>"
-						);
+						if (property_uri === "v-s:attachment") {
+							$(".value", result).append (
+								"<div rel='" + property_uri + "' template='v-ui:FileTemplateWithComment' embedded='true' />" +
+								"<veda-control rel='" + property_uri + "' type='file' class='-view edit -search'></veda-control>"
+							);
+						} else {
+							$(".value", result).append (
+								"<div rel='" + property_uri + "' template='v-ui:ClassNameLabelTemplate' />" +
+								"<veda-control rel='" + property_uri + "' type='link' class='-view edit search fullsearch fulltext dropdown'></veda-control>"
+							);
+						}
 						break;
 				}
 				if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") );
