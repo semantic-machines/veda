@@ -1466,14 +1466,7 @@ v-wf:VariableTemplate
   v-ui:forClass v-wf:Variable ;
   v-ui:template """
 <span>
-	<strong>
-		<div about="v-wf:variableName" property="rdfs:label"></div>		
-		<span property="v-wf:variableName"></span> 
-		<veda-control about="@" rel="v-wf:variableName" type="string" class="-view edit search fulltext dropdown"></veda-control> 
-		=
-	</strong>
-	<div about="v-wf:variableValue" property="rdfs:label"></div>		
-	<veda-control about="@" rel="v-wf:variableValue" type="generic" class="-view edit search fulltext dropdown"></veda-control> 		
+	<strong><span property="v-wf:variableName"></span> =</strong>
 	<ul id="values"></ul>
 	<div id="variableScope">
 		<em about="v-wf:variableScope" property="rdfs:label"></em>
