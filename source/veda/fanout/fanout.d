@@ -1,5 +1,5 @@
 /**
- * fanout thread
+ * fanout module
  */
 module veda.fanout;
 
@@ -63,10 +63,12 @@ class FanoutProcess : ChildProcess
         return true;
     }
 
-    override void configure()
+    override bool configure()
     {
         connect_to_mysql(context);
         connect_to_smtp(context);
+        
+        return true;
     }
 
 ///////////////////////////////////////// SMTP FANOUT ///////////////////////////////////////////////////////////////////

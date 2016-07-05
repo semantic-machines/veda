@@ -172,7 +172,7 @@ class ScriptProcess : ChildProcess
         return true;
     }
 
-    override void configure()
+    override bool configure()
     {
         vars_for_event_script =
             "var user_uri = get_env_str_var ('$user');"
@@ -186,6 +186,8 @@ class ScriptProcess : ChildProcess
 
         script_vm = get_ScriptVM(context);
         load_event_scripts();
+        
+        return true;
     }
 
     public void load_event_scripts()

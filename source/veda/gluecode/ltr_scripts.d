@@ -15,6 +15,16 @@ private
     import veda.process.child_process;
     import search.vel, search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 }
+// ////// logger ///////////////////////////////////////////
+import util.logger;
+logger _log;
+logger log()
+{
+    if (_log is null)
+        _log = new logger("veda-core-ltr_scripts", "log", "LTR-SCRIPTS");
+    return _log;
+}
+// ////// ////// ///////////////////////////////////////////
 
 Tid tid_ltr_scripts;
 
@@ -80,17 +90,6 @@ ScriptVM script_vm;
 
 Tasks *[ int ] tasks_2_priority;
 Task *task;
-
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
-{
-    if (_log is null)
-        _log = new logger("veda-core-ltr_scripts", "log", "LTR-SCRIPTS");
-    return _log;
-}
-// ////// ////// ///////////////////////////////////////////
 
 private void ltrs_thread(string parent_url)
 {
@@ -352,8 +351,9 @@ class ScriptProcess : ChildProcess
         return true;
     }
 
-    override void configure()
+    override bool configure()
     {
+        return true;    	
     }
 }
 

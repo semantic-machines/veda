@@ -83,7 +83,6 @@ class ChildProcess
         if (node == Individual.init)
         {
             node = context.getConfiguration();
-            configure();
         }
     }
 
@@ -135,6 +134,12 @@ class ChildProcess
 
     void run()
     {
+        if (configure() == false)
+        {
+            log.trace("[%s] configure is fail, terminate", process_name);        	
+	        return;
+        }        	
+    	
         ubyte[] buffer = new ubyte[ 1024 ];
 
         queue = new Queue(queue_name, Mode.R);
@@ -202,7 +207,7 @@ class ChildProcess
                           string event_id,
                           long op_id);
 
-    abstract void configure();
+    abstract bool configure();
 
 
     private void prepare_queue()
