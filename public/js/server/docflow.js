@@ -173,9 +173,10 @@ function prepare_work_order(ticket, document)
             else
             {
 				var is_appointment = is_exist(executor, 'rdf:type', 'v-s:Appointment');
-				var is_position = is_exist(executor, 'rdf:type', 'v-s:Position');				
+				var is_position = is_exist(executor, 'rdf:type', 'v-s:Position');
+				var is_codelet = is_exist(executor, 'rdf:type', 'v-s:Codelet');				
 				
-                if (is_exist(executor, 'rdf:type', 'v-s:Codelet'))
+                if (is_codelet)
                 {
                     //print("[WORKFLOW][WO1.2] executor=" + getUri(f_executor) + ", is codelet");
 
@@ -359,7 +360,8 @@ function prepare_work_order(ticket, document)
 
                     //print("[WORKFLOW][WO2.3] transform_result=" + toJson(transform_result));
                 }
-                if (is_exist(executor, 'rdf:type', 'v-wf:Net') || f_useSubNet)
+                
+                if ((is_exist(executor, 'rdf:type', 'v-wf:Net') || f_useSubNet) && !is_codelet)
                 {
                     create_new_subprocess(ticket, f_useSubNet, f_executor, net_element, f_inVars, document, trace_journal_uri);
 
