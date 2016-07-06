@@ -98,6 +98,12 @@ class XapianReader : SearchReader
         XapianQuery query;
         TTA         tta = parse_expr(str_query);
 
+       	if (tta is null)
+       	{
+           	log.trace("[%s]fail parse query (phase 1) [%s], tta is null", context.get_name(), str_query);
+           	return 0;        		
+       	}
+
         string[]    db_names;
 
         if (_db_names is null || _db_names.length == 0)
@@ -148,7 +154,7 @@ class XapianReader : SearchReader
         int                  attempt_count = 1;
 
         while (state < 0)
-        {
+        {        	
             try
             {
                 transform_vql_to_xapian(context, tta, "", dummy, dummy, query, key2slot, d_dummy, 0, db_qp.qp);
@@ -156,8 +162,14 @@ class XapianReader : SearchReader
             }
             catch (XapianError ex)
             {
+            	log.trace("[%s]fail parse query (phase 2) [%s], err:[%s]", context.get_name(), str_query, ex.msg);
                 state = ex.code;
             }
+            catch (Throwable tr)
+            {
+            	log.trace("[%s]fail parse query (phase 2) [%s], err:[%s]", context.get_name(), str_query, tr.msg);
+            	return 0;
+            }            
 
             if (state < 0)
             {

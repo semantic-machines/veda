@@ -114,7 +114,9 @@ private TokenType get_token_type(string token, out double value)
 
 public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out string l_token, out string op, out XapianQuery query,
                                       ref int[ string ] key2slot, out double _rd, int level, XapianQueryParser qp)
-{
+{	
+	try
+	{
     if (key2slot.length == 0)
     {
         //log.trace("!!! WARN: key2slot is EMPTY, tta=%s", tta);
@@ -128,6 +130,12 @@ public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out str
 
     if (tta.op == ">" || tta.op == "<")
     {
+    	if (tta.L is null || tta.R is null)
+    	{
+	        log.trace("transform_vql_to_xapian, invalid tta=[%s]", tta);
+	    	return null;
+    	}	
+    	
         string    ls = transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
         string    rs = transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
 
@@ -152,6 +160,11 @@ public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out str
             tta.op             = "==";
         }
 
+    	if (tta.L is null || tta.R is null)
+    	{
+	        log.trace("transform_vql_to_xapian, invalid tta=[%s]", tta);
+	    	return null;
+    	}	
         string ls = transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
         string rs = transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
 
@@ -357,7 +370,7 @@ public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out str
         string token_L;
 
         string tta_R;
-        if (tta.R !is null)
+        if (tta.R !is null)        
             tta_R = transform_vql_to_xapian(ctx, tta.R, tta.op, token_L, t_op_r, query_r, key2slot, rd, level + 1, qp);
 
         if (t_op_r !is null)
@@ -495,6 +508,12 @@ public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out str
     }
 //    writeln("#6 null");
     return null;
+	}
+	catch (Throwable tr)
+	{
+		log.trace ("EX: transform_vql_to_xapian, err=[%s]", tr.info);
+    return null;
+	}
 }
 
 public int exec_xapian_query_and_queue_authorize(Ticket *ticket,
