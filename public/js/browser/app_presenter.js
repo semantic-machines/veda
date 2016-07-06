@@ -2,6 +2,15 @@
 
 veda.Module(function AppPresenter(veda) { "use strict";
 
+	var storage = typeof localStorage !== "undefined" ? localStorage : {
+		clear: function () {
+			var self = this;
+			Object.keys(this).map(function (key) {
+				if (typeof self[key] !== "function") delete self[key];
+			});
+		}
+	}
+
 	// Prevent empty links routing
 	$("body").on("click", "[href='']", function (e) {
 		e.preventDefault();
@@ -127,9 +136,10 @@ veda.Module(function AppPresenter(veda) { "use strict";
 
 	veda.on("login:failed", function () {
 		$("#app").empty();
-		delCookie("user_uri");
+		delete storage.ticket;
+		delete storage.user_uri;
+		delete storage.end_time;
 		delCookie("ticket");
-		delCookie("end_time");
 		if (ntlm && (!ntlmProvider.properties['v-s:deleted'] || ntlmProvider.properties['v-s:deleted'][0] == false)) {
 			iframe.one("load", function () {
 				try {
@@ -165,25 +175,27 @@ veda.Module(function AppPresenter(veda) { "use strict";
 		veda.user_uri = authResult.user_uri;
 		veda.ticket = authResult.ticket;
 		veda.end_time = authResult.end_time;
-		setCookie("ticket", authResult.ticket, { path: "/", expires: new Date(parseInt(authResult.user_uri)) });
-		setCookie("user_uri", authResult.user_uri, { path: "/", expires: new Date(parseInt(authResult.user_uri)) });
-		setCookie("end_time", authResult.end_time, { path: "/", expires: new Date(parseInt(authResult.user_uri)) });
+		storage.ticket = authResult.ticket;
+		storage.user_uri = authResult.user_uri;
+		storage.end_time = authResult.end_time.toString();
+		setCookie("ticket", authResult.ticket);
 		veda.init();
 	});
 
 	// Logout handler
 	veda.on("logout", function () {
 		$("#app").empty();
+		delete storage.ticket;
+		delete storage.user_uri;
+		delete storage.end_time;
 		delCookie("ticket");
-		delCookie("user_uri");
-		delCookie("end_time");
 		loginContainer.removeClass("hidden");
 	});
 
 	// Check if ticket in cookies is valid
-	var ticket = getCookie("ticket") == "undefined" ? undefined : getCookie("ticket"),
-		user_uri = getCookie("user_uri") == "undefined" ? undefined : getCookie("user_uri"),
-		end_time = getCookie("end_time") == "undefined" ? undefined : getCookie("end_time");
+	var ticket = storage.ticket,
+			user_uri = storage.user_uri,
+			end_time = storage.end_time && ( new Date() < new Date(parseInt(storage.end_time)) ) ? storage.end_time : undefined ;
 
 	if ( ticket && user_uri && end_time && is_ticket_valid(ticket) ) {
 		veda.trigger("login:success", {
