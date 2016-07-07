@@ -236,7 +236,15 @@ public TTA parse_expr(string s)
                         while (i < s.length && s[ i ] != ' ' && s[ i ] != '&' && s[ i ] != '|' && s[ i ] != '=' && s[ i ] != '<' &&
                                s[ i ] != '>' && s[ i ] != '!' && s[ i ] != '-' && s[ i ] != ' ')
                             i++;
+						
+						int ep = i;
 
+						 if (s[ ep - 1 ] == '(' || s[ ep - 1] == ')')
+						 {
+							 ep = i - 1;
+							 i -= 2;
+						 }	 
+ 
                         //writeln ("@p #7	operand=", operand);
                         operand = s[ bp .. i ];
                         //writeln ("@p #8	operand=", operand);
