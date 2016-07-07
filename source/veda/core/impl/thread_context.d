@@ -1354,6 +1354,13 @@ class PThreadContext : Context
                     indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
 
                     string new_state = individual2cbor(indv);
+                    
+                    if (new_state.length > max_size_of_individual)
+                    {
+	                    res.result = ResultCode.Size_too_large;
+	                    return res;
+                    }    
+	                    
 
                     res.result = storage_module.put(P_MODULE.subject_manager, indv.uri, new_state, ignore_freeze,
                                                     res.op_id);

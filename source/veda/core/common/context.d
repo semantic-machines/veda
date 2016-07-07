@@ -130,7 +130,11 @@ public enum ResultCode
 
     /// 1022
     Duplicate_Key         = 1022,
+    
+    /// 1118
+    Size_too_large 		  = 1118,
 
+	/// 4000
     Connect_Error         = 4000
 }
 
