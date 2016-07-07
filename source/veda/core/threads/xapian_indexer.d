@@ -148,12 +148,27 @@ public void xapian_thread_context(string thread_name)
     }
 }
 
+    File          *ff_key2slot_w = null;
+
 private void store__key2slot(ref int[ string ] key2slot, Tid tid_subject_manager)
 {
 //	writeln ("#1 store__key2slot");
     string data = serialize_key2slot(key2slot);
 
     send(tid_subject_manager, CMD.PUT_KEY2SLOT, xapian_metadata_doc_id, data);
+
+        try
+        {
+            ff_key2slot_w.seek(0);
+            ff_key2slot_w.writef("%s", data);
+            ff_key2slot_w.flush();
+        }
+        catch (Throwable tr)
+        {
+            log.trace("fail store__key2slot [%s] [%s]", data, tr.msg);
+            return;
+        }
+
 }
 
 private int[ string ] read_key2slot(Tid tid_subject_manager)
@@ -823,6 +838,18 @@ string node_id;
 
 void xapian_indexer(string thread_name, string _node_id)
 {
+        string file_name_key2slot = xapian_info_path ~ "/key2slot";
+
+        if (exists(file_name_key2slot) == false)
+            ff_key2slot_w = new File(file_name_key2slot, "w");
+        else
+        {
+            ff_key2slot_w = new File(file_name_key2slot, "r+");
+
+            ff_key2slot_w.seek(0);
+        }
+
+
     node_id = _node_id;
     scope (exit)
     {
