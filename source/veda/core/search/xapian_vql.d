@@ -195,10 +195,17 @@ public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out str
                 {
                     feature_flag flags = feature_flag.FLAG_DEFAULT | feature_flag.FLAG_WILDCARD;
 
-                    string       uid = "uid_" ~ to_lower_and_replace_delimeters(rs);
-                    query = qp.parse_query(cast(char *)uid, uid.length, flags, &err);
+                    string       query_str = "uid_" ~ to_lower_and_replace_delimeters(rs);
+                    
+	                if (tta.op == "!=")
+                    {
+	                    flags     = flags | feature_flag.FLAG_PURE_NOT;
+                        query_str = "NOT " ~ query_str;
+                    }
+                    
+                    query = qp.parse_query(cast(char *)query_str, query_str.length, flags, &err);
                     if (err != 0)
-                        throw new XapianError(err, "parse_query1 query=" ~ uid);
+                        throw new XapianError(err, "parse_query1 query=" ~ query_str);
                 }
                 else
                 {
