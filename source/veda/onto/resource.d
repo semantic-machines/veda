@@ -112,26 +112,21 @@ struct Resource
             {
                 return rv.get!bool == m_bool;
             }
-            else
+            else  if (type == DataType.Decimal)
             {
-                if (type == DataType.Decimal)
-                {
-                    return rv.get!decimal == m_decimal;
-                }
-                else
-                {
-                    if (type == DataType.Integer)
-                    {
-                        return rv.get!long == m_int;
-                    }
-                    else
-                    {
-                        if (type == DataType.String || type == DataType.Uri)
-                        {
-                            return rv.get!string == m_string;
-                        }
-                    }
-                }
+                return rv.get!decimal == m_decimal;
+            }
+            else if (type == DataType.Integer)
+            {
+                return rv.get!long == m_int;
+            }
+            else if (type == DataType.Datetime)
+            {
+                return rv.get!long == m_int;
+            }
+            else  if (type == DataType.String || type == DataType.Uri)
+            {
+                return rv.get!string == m_string;
             }
         }
 
