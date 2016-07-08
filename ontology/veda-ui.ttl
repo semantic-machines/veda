@@ -533,7 +533,7 @@ v-ui:ImageAppointmentTemplate
   rdfs:label "Шаблон персоны с иконкой"@ru ;
   rdfs:label "Person template with icon"@en ;
   v-ui:template """
-<div class="media" style="display:inline-block; max-width:250px; height:60px; margin:15px 30px 15px 0px; padding:5px; border:1px solid #ddd; border-radius: 5px">
+<div class="media" style="display:inline-block; max-width:250px; min-width:250px; height:60px; margin:0 20px 20px 0; padding:5px; border:1px solid #ddd; border-radius: 5px">
   <div class="media-left">
 		<a href="#/@" about="@" rel="v-s:employee">
 				<div>
