@@ -388,7 +388,7 @@ v-s:title
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Dictionary ;
   rdfs:label "Name"@en ;
-  rdfs:label "Наименование"@ru ;
+  rdfs:label "Название"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:versionNumber

@@ -94,3 +94,8 @@ d:UnexpectedWork
     a v-s:ProjectPhaseKind;
     rdfs:label "Непредвиденные работы"@ru ;
     rdfs:label "UnexpectedWork"@en.
+
+d:Realization
+    a v-s:ProjectPhaseKind;
+    rdfs:label "Реализация"@ru ;
+    rdfs:label "Realization"@en.

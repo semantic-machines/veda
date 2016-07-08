@@ -729,6 +729,24 @@ v-s:PsActualState
   rdfs:label "actualState property specification for Initiaitve class"@en ;
   rdfs:label "Спецификация  описания актуального для класса Инициативы"@ru ;
 .
+v-s:goalState
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Initiative ;
+  rdfs:label "Description of goal state"@en ;
+  rdfs:label "Описание предложения"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:PsGoalState
+  rdf:type v-ui:StringPropertySpecification ;
+  v-ui:forClass v-s:Initiative ;
+  v-ui:forProperty v-s:goalState ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  v-ui:tooltip "Describe goal status of the facility requiring changes"@en ;
+  v-ui:tooltip "Введите описание вашего предложения"@ru ;
+  rdfs:label "goalState property specification for Initiaitve class"@en ;
+  rdfs:label "Спецификация  описания предложения для класса Инициативы"@ru ;
+.
 v-s:backgroundToChange
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Initiative ;
