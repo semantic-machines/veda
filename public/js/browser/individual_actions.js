@@ -46,7 +46,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			$journal.on("click", function() {
 				var journal = new veda.IndividualModel(individual.id+'j', undefined, undefined, undefined, false);
 				if (journal.hasValue('rdf:type') && journal['rdf:type'][0].id != 'rdfs:Resource') {
-					riot.route("#/" + individual.id + "j");
+					riot.route("#/" + individual.id + "j/////");
 				} else {
 					alert("Журнал отсутсвует / Journal empty");
 				}
