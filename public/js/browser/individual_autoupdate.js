@@ -119,26 +119,44 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	socket.onmessage = function (event) {
 		try {
 			var msg = event.data,
-					uris = msg.split(",");
-			for (var i = 0, uri; (uri = uris[i] && uris[i].split("=")[0]); i++) {
-				var ind = new veda.IndividualModel(uri);
-				ind.reset();
+					uris;
+			if ( msg.indexOf("=") === 0 ) {
+				// Synchronize subscribeList
+				uris = msg.substr(1).split(",");
+				for (var i = 0; i < uris.length; i++) {
+					var uri = uris[i].split("=")[0],
+							updateCounter = uris[i].split("=")[1],
+							list = subscribeList.get();
+					list[uri] = list[uri] ? {
+						displayCounter: list[uri].displayCounter,
+						updateCounter: updateCounter
+					} : {
+						displayCounter: 1,
+						updateCounter: updateCounter
+					};
+				}
+			} else {
+				// Update individuals
+				uris = msg.split(",");
+				for (var i = 0, uri; (uri = uris[i] && uris[i].split("=")[0]); i++) {
+					var ind = new veda.IndividualModel(uri);
+					ind.reset();
+				}
 			}
-			//console.log("ccus received:", msg);
 		} catch (e) {
-			console.log("individual update failed");
+			console.log("individual update service failed");
 		}
 	};
 
-//	socket.onmessage = function (event) { console.log("ccus received:", event.data); };
+	//socket.onmessage = function (event) { console.log("ccus received:", event.data); };
 
-	veda.on("individual:loaded", watch);
+	veda.on("individual:loaded", updateWatch);
 
-	function watch(individual) {
-		individual.one("individual:templateReady", displayedHandler);
+	function updateWatch(individual) {
+		individual.one("individual:templateReady", subscribeDisplayed);
 	}
 
-	function displayedHandler(template) {
+	function subscribeDisplayed(template) {
 		var individual = this;
 		subscribeList.subscribe(individual.id);
 
@@ -150,11 +168,12 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	var subscribeList = (function (socket) {
 		var list = {};
 		return {
-			get: function (uri) {
+			get: function () {
 				return list;
 			},
-			syncronize: function() {
+			synchronize: function() {
 				var msg = "=";
+				socket.send(msg);
 			},
 			subscribe: function(uri) {
 				setTimeout(function () {
@@ -165,7 +184,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 						displayCounter: displayCounter,
 						updateCounter: updateCounter
 					}
-					var msg = "+" + uri;
+					var msg = "+" + uri + "=" + updateCounter;
 					socket.send(msg);
 
 					console.log("subscribe", msg, list);
@@ -181,15 +200,15 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 						return;
 					} else if ( list[uri].displayCounter === 1 ) {
 						delete list[uri];
-						var msg = "-" + uri;
-						socket.send(msg);
-
-						console.log("unsubscribe", msg, list);
-
 					} else {
 						--list[uri].displayCounter;
 						return;
 					}
+					var msg = "-" + uri;
+					socket.send(msg);
+
+					console.log("unsubscribe", msg, list);
+
 				}
 			},
 		}
