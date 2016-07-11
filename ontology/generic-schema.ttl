@@ -483,10 +483,3 @@ v-s:placeDescription
   rdfs:label "Место проведения"@ru ;
   rdfs:range xsd:string ;
 .
-v-s:numerationScope
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Document ;
-  rdfs:label "Numeration scope"@en ;
-  rdfs:label "Пространство нумерации"@ru ;
-  rdfs:range rdfs:Resource ;
-.
