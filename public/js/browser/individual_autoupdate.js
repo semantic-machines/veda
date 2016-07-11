@@ -3,7 +3,7 @@
 Autoupdate displayed individuals on client when they change on server
 
  */
-
+/*
 veda.Module(function IndividualAutoupdate(veda) { "use strict";
 
 	var socket,
@@ -91,3 +91,106 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 		}
 	})(socket);
 });
+
+*/
+
+// New protocol
+
+veda.Module(function IndividualAutoupdate(veda) { "use strict";
+
+	var socket,
+		address = "ws://" + location.hostname + ":8088/ccus";
+		//address = "ws://echo.websocket.org";
+
+	try {
+		socket = new WebSocket(address);
+	} catch (ex) {
+		return socket = null;
+	}
+
+	socket.onopen = function (event) {
+		socket.send("ccus=" + veda.ticket);
+	};
+
+	socket.onclose = function (event) {
+		veda.off("individual:loaded", updateWatch);
+	};
+
+	socket.onmessage = function (event) {
+		try {
+			var msg = event.data,
+				uris = msg.split(",");
+			for (var i = 0, uri; (uri = uris[i] && uris[i].split("=")[0]); i++) {
+				var ind = new veda.IndividualModel(uri);
+				ind.reset();
+			}
+			//console.log("ccus received:", msg);
+		} catch (e) {
+			console.log("individual update failed");
+		}
+	};
+
+//	socket.onmessage = function (event) { console.log("ccus received:", event.data); };
+
+	veda.on("individual:loaded", watch);
+
+	function watch(individual) {
+		individual.one("individual:templateReady", displayedHandler);
+	}
+
+	function displayedHandler(template) {
+		var individual = this;
+		subscribeList.subscribe(individual.id);
+
+		template.one("remove", function () {
+			subscribeList.unsubscribe(individual.id);
+		});
+	}
+
+	var subscribeList = (function (socket) {
+		var list = {};
+		return {
+			get: function (uri) {
+				return list;
+			},
+			subscribe: function(uri) {
+				setTimeout(function () {
+					if (socket.readyState !== 1 || !uri) { return; }
+					var displayCounter = list[uri] ? ++list[uri].displayCounter : 1 ;
+					var updateCounter = (new veda.IndividualModel(uri))["v-s:updateCounter"][0] ;
+					list[uri] = {
+						displayCounter: displayCounter,
+						updateCounter: updateCounter
+					}
+					var msg = "+" + uri;
+					socket.send(msg);
+
+					console.log("subscribe", msg, list);
+
+				}, 1000);
+			},
+			unsubscribe: function (uri) {
+				if (socket.readyState !== 1) { return };
+				if (uri === "*") {
+					list = {};
+				} else {
+					if ( !list[uri] ) {
+						return;
+					} else if ( list[uri].displayCounter === 1 ) {
+						delete list[uri];
+						var msg = "-" + uri;
+						socket.send(msg);
+
+						console.log("unsubscribe", msg, list);
+
+					} else {
+						--list[uri].displayCounter;
+						return;
+					}
+				}
+			},
+		}
+	})(socket);
+});
+
+
