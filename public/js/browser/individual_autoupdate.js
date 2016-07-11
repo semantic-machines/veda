@@ -119,7 +119,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	socket.onmessage = function (event) {
 		try {
 			var msg = event.data,
-				uris = msg.split(",");
+					uris = msg.split(",");
 			for (var i = 0, uri; (uri = uris[i] && uris[i].split("=")[0]); i++) {
 				var ind = new veda.IndividualModel(uri);
 				ind.reset();
@@ -152,6 +152,9 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 		return {
 			get: function (uri) {
 				return list;
+			},
+			syncronize: function() {
+				var msg = "=";
 			},
 			subscribe: function(uri) {
 				setTimeout(function () {
