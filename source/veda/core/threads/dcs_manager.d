@@ -255,7 +255,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
 
                             if (res !is null)
                             {
-                                socket.send(res);
+                                socket.send("=" ~ res);
                             }
                         }
                         else if (msg_from_sock.length == 2 && msg_from_sock[ 0 ] == '*' && msg_from_sock[ 1 ] == '-')
