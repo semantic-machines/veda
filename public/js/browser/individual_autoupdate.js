@@ -43,10 +43,10 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 								updateCounter = tmp[1],
 								list = subscription.get();
 						list[uri] = list[uri] ? {
-							displayCounter: list[uri].displayCounter,
+							subscribeCounter: list[uri].subscribeCounter,
 							updateCounter: updateCounter
 						} : {
-							displayCounter: 1,
+							subscribeCounter: 1,
 							updateCounter: updateCounter
 						};
 					}
@@ -73,49 +73,91 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	//socket.onmessage = function (event) { console.log("ccus received:", event.data); };
 
 	var subscription = (function (socket) {
-		var list = {};
+		var list = {},
+				delta = {},
+				interval,
+				delay = 1000,
+				last;
+		function pushDelta() {
+			var subscribe = [],
+					unsubscribe = [],
+					subscribeMsg,
+					unsubscribeMsg;
+			for (var uri in delta) {
+				if (delta[uri].operation === "+") {
+					subscribe.push("+" + uri + "=" + delta[uri].updateCounter);
+				} else {
+					unsubscribe.push("-" + uri);
+				}
+			}
+			subscribeMsg = subscribe.join(",");
+			unsubscribeMsg = unsubscribe.join(",");
+			delta = {};
+			if (subscribeMsg) {
+				socket.send(subscribeMsg);
+				console.log("subscribe", subscribeMsg);
+			}
+			if (unsubscribeMsg) {
+				socket.send(unsubscribeMsg);
+				console.log("unsubscribe", unsubscribeMsg);
+			}
+
+			clearInterval(interval);
+			interval = undefined;
+		}
 		return {
 			get: function () {
 				return list;
 			},
 			synchronize: function() {
-				var msg = "=";
-				socket.send(msg);
+				clearInterval(interval);
+				interval = undefined;
+				list = {};
+				delta = {};
+				socket.send("=");
+				console.log("synchronize");
 			},
 			subscribe: function(uri) {
-				setTimeout(function () {
-					if (socket.readyState !== 1 || !uri) { return; }
-					var displayCounter = list[uri] ? ++list[uri].displayCounter : 1 ;
-					var updateCounter = (new veda.IndividualModel(uri))["v-s:updateCounter"][0] ;
-					list[uri] = {
-						displayCounter: displayCounter,
-						updateCounter: updateCounter
-					}
-					var msg = "+" + uri + "=" + updateCounter;
-					socket.send(msg);
-
-					console.log("subscribe", msg, list);
-
-				}, 1000);
+				if (list[uri]) {
+					++list[uri].subscribeCounter;
+					return;
+				}
+				var updateCounter = (new veda.IndividualModel(uri))["v-s:updateCounter"][0];
+				list[uri] = {
+					subscribeCounter: 1,
+					updateCounter: updateCounter
+				};
+				delta[uri] = {
+					operation: "+",
+					updateCounter: updateCounter
+				};
+				if (!interval) {
+					interval = setInterval(pushDelta, delay);
+				}
 			},
 			unsubscribe: function (uri) {
-				if (socket.readyState !== 1) { return };
 				if (uri === "*") {
+					clearInterval(interval);
+					interval = undefined;
 					list = {};
+					delta = {};
+					socket.send("-*");
+					console.log("unsubscribe all");
 				} else {
 					if ( !list[uri] ) {
 						return;
-					} else if ( list[uri].displayCounter === 1 ) {
+					} else if ( list[uri].subscribeCounter === 1 ) {
 						delete list[uri];
+						delta[uri] = {
+							operation: "-"
+						};
+						if (!interval) {
+							interval = setInterval(pushDelta, delay);
+						}
 					} else {
-						--list[uri].displayCounter;
+						--list[uri].subscribeCounter;
 						return;
 					}
-					var msg = "-" + uri;
-					socket.send(msg);
-
-					console.log("unsubscribe", msg, list);
-
 				}
 			},
 		}
@@ -135,6 +177,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 			subscription.unsubscribe(individual.id);
 		});
 	}
+
+	veda.updateSubscription = subscription;
+
 });
-
-
