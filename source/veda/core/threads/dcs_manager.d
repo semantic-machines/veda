@@ -242,7 +242,10 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
 
                 while (true)
                 {
-                    string msg_from_sock;
+                    if (!socket.connected)
+                        break;
+
+                    string msg_from_sock = null;
 
                     if (socket.waitForData(dur!("msecs")(1000)) == true)
                         msg_from_sock = socket.receiveText();
@@ -258,7 +261,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                                 socket.send("=" ~ res);
                             }
                         }
-                        else if (msg_from_sock.length == 2 && msg_from_sock[ 0 ] == '*' && msg_from_sock[ 1 ] == '-')
+                        else if (msg_from_sock.length == 2 && msg_from_sock[ 0 ] == '-' && msg_from_sock[ 1 ] == '*')
                         {
                             count_2_uid = count_2_uid.init;
                         }
@@ -303,20 +306,11 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                                 }
                                 catch (Throwable tr)
                                 {
-                                    log.trace("recv msg:[%s], %s", data, tr);
+                                    log.trace("Client Cache Update Subscription: recv msg:[%s], %s", data, tr.msg);
                                 }
                             }
                         }
                     }
-
-
-                    string msg;
-                    vibe.core.concurrency.receiveTimeout(dur!("msecs")(1), (string _msg)
-                                                         {
-                                                             writeln("@@recv ch data from thread");
-                                                             msg = _msg;
-                                                         }
-                                                         );
 
                     long last_opid = get_last_opid();
                     if (last_check_opid < last_opid)
