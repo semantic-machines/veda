@@ -6,7 +6,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
-#временно перенесено 
+#временно перенесено
 
 <http://semantic-machines.com/veda/generic-schema/>
   rdf:type owl:Ontology ;
@@ -100,7 +100,7 @@ v-s:contributor
 v-s:controller
   rdf:type owl:ObjectProperty ;
   rdfs:label "Controller"@en ;
-  rdfs:label "Контроллер"@ru ;
+  rdfs:label "Контролер"@ru ;
   rdfs:range v-s:Appointment ;
 .
 v-s:count
@@ -335,7 +335,7 @@ v-s:registrationNumber
   rdfs:range xsd:string ;
 .
 
-#временно перенесено begin 
+#временно перенесено begin
 v-s:registrationNumber
   v-s:hasNumerationMapper mnd-s:registrationNumberNumerationMapperMeeting;
   v-s:hasNumerationMapper mnd-s:registrationNumberNumerationMapperAction;
