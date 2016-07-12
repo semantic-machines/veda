@@ -11,6 +11,7 @@ import veda.type, veda.core.bind.lmdb_header, veda.core.common.context, veda.cor
 import vibe.core.concurrency, vibe.core.task, vibe.http.router                 : URLRouter;
 import vibe.inet.url, vibe.http.client, vibe.http.server, vibe.http.websockets : WebSocket, handleWebSockets;
 
+private shared Task task_of_ft_indexer;
 private shared Task task_of_scripts;
 private shared Task task_of_ltr_scripts;
 private shared Task task_of_fanout;
@@ -84,12 +85,17 @@ void handleWebSocketConnection(scope WebSocket socket)
                 if (kv[ 0 ] == "module-name")
                 {
                     module_name = kv[ 1 ];
+
+                    //writeln ("@module_name=", module_name);
+
                     if (module_name == "scripts")
                         task_of_scripts = Task.getThis();
                     else if (module_name == "ltr_scripts")
                         task_of_ltr_scripts = Task.getThis();
                     else if (module_name == "fanout")
                         task_of_fanout = Task.getThis();
+                    else if (module_name == "fulltext_indexer")
+                        task_of_ft_indexer = Task.getThis();
                     else
                         module_name = null;
                 }
@@ -146,6 +152,8 @@ void handleWebSocketConnection(scope WebSocket socket)
         task_of_ltr_scripts = shared(Task).init;
     else if (module_name == "fanout")
         task_of_fanout = shared(Task).init;
+    else if (module_name == "fulltext_indexer")
+        task_of_ft_indexer = shared(Task).init;
 
     log.trace("chanel [%s] is closed", module_name);
 }
@@ -156,95 +164,142 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
     //writeln("@@@1 hsr=", hsr.clientAddress);
     // Client Cache Update Subscription
     string chid;
+    long[ string ] count_2_uid;
+
+    string get_list_of_changes()
+    {
+        string   res;
+
+        string[] keys = count_2_uid.keys;
+        foreach (i_uid; keys)
+        {
+            long i_count = count_2_uid[ i_uid ];
+            long g_count = get_counter_4_uid(i_uid);
+            if (g_count > i_count)
+            {
+                if (res is null)
+                    res ~= i_uid ~ "=" ~ text(i_count);
+                else
+                    res ~= "," ~ i_uid ~ "=" ~ text(i_count);
+
+                count_2_uid[ i_uid ] = g_count;
+            }
+        }
+        return res;
+    }
 
     try
     {
-        long[ string ] count_2_uid;
-
         while (true)
         {
             if (!socket.connected)
                 break;
 
             string   inital_message = socket.receiveText();
-            string[] kv = inital_message.split('=');
+            string[] kv             = inital_message.split('=');
 
             if (kv.length == 2)
             {
                 if (kv[ 0 ] == "ccus")
                 {
                     chid = kv[ 1 ];
-                    
-                    log.trace ("init chanel [%s]", chid);
-//                    task_2_client[hsr.clientAddress] = Task.getThis();
+
+                    log.trace("init chanel [%s]", chid);
+					//task_2_client[hsr.clientAddress] = Task.getThis();
                     //task_2_client ~= Task.getThis();
                 }
             }
 
             if (chid !is null)
             {
-                //writeln("*last_opid=", get_last_opid);
-
-                string list_uids = socket.receiveText();
-                if (list_uids is null || list_uids.length < 2)
-                    return;
-
-                foreach (data; list_uids.split(','))
-                {
-                    string[] uid_count = data.split('=');
-                    if (uid_count.length == 2)
-                    {
-                        try
-                        {
-                            count_2_uid[ uid_count[ 0 ] ] = to!long (uid_count[ 1 ]);
-                        }
-                        catch (Throwable tr)
-                        {
-                            log.trace("recv msg:[%s], %s", data, tr);
-                        }
-                    }
-                }
-
-                //writeln("count_2_uids=", count_2_uid);
                 long last_check_opid = 0;
 
                 long timeout = 1;
 
                 while (true)
                 {
+                    string msg_from_sock;
+
+                    if (socket.waitForData(dur!("msecs")(1000)) == true)
+                        msg_from_sock = socket.receiveText();
+
+                    if (msg_from_sock !is null && msg_from_sock.length > 0)
+                    {
+                        if (msg_from_sock[ 0 ] == '=')
+                        {
+                            string res = get_list_of_changes();
+
+                            if (res !is null)
+                            {
+                                socket.send(res);
+                            }
+                        }
+                        else if (msg_from_sock.length == 2 && msg_from_sock[ 0 ] == '*' && msg_from_sock[ 1 ] == '-')
+                        {
+                            count_2_uid = count_2_uid.init;
+                        }
+                        else if (msg_from_sock.length > 3)
+                        {
+                            foreach (data; msg_from_sock.split(','))
+                            {
+                                try
+                                {
+                                    string[] expr = data.split('=');
+
+                                    string uid_info;
+                                    if (expr.length > 0)
+                                        uid_info = expr[ 0 ];
+
+                                    if (expr.length == 2)
+                                    {
+                                        if (uid_info.length > 2)
+                                        {
+                                            string uid = uid_info[ 1..$ ];
+
+                                            if (uid_info[ 0 ] == '+')
+                                            {
+                                                uid = uid_info[ 1..$ ];
+                                                long uid_counter = to!long (expr[ 1 ]);
+                                                count_2_uid[ uid ] = uid_counter;
+                                            }
+                                        }
+                                    }
+                                    else if (expr.length == 1)
+                                    {
+                                        if (uid_info.length > 2)
+                                        {
+                                            string uid = uid_info[ 1..$ ];
+                                            if (uid_info[ 0 ] == '-')
+                                            {
+                                                uid = uid_info[ 1..$ ];
+                                                count_2_uid.remove(uid);
+                                            }
+                                        }
+                                    }
+                                }
+                                catch (Throwable tr)
+                                {
+                                    log.trace("recv msg:[%s], %s", data, tr);
+                                }
+                            }
+                        }
+                    }
+
+
                     string msg;
-                    // sleep 1s
-                    vibe.core.concurrency.receiveTimeout(dur!("msecs")(1000), (string _msg)
+                    vibe.core.concurrency.receiveTimeout(dur!("msecs")(1), (string _msg)
                                                          {
+                                                             writeln("@@recv ch data from thread");
                                                              msg = _msg;
                                                          }
                                                          );
 
                     long last_opid = get_last_opid();
-                    //writeln ("@1 last_check_opid=", last_check_opid, ", last_opid=", last_opid);
                     if (last_check_opid < last_opid)
                     {
-                        string   res;
-
-                        string[] keys = count_2_uid.keys;
-                        foreach (i_uid; keys)
-                        {
-                            long i_count = count_2_uid[ i_uid ];
-                            long g_count = get_counter_4_uid(i_uid);
-                            if (g_count > i_count)
-                            {
-                                if (res is null)
-                                    res ~= i_uid ~ "=" ~ text(i_count);
-                                else
-                                    res ~= "," ~ i_uid ~ "=" ~ text(i_count);
-
-                                count_2_uid[ i_uid ] = g_count;
-                            }
-                        }
-
+                        string res = get_list_of_changes();
                         if (res !is null)
                         {
-                            //writeln("@@send to=", res);
                             socket.send(res);
                         }
                         last_check_opid = last_opid;
@@ -350,6 +405,8 @@ public shared(Task) getTaskOfPMODULE(P_MODULE pm)
         return task_of_ltr_scripts;
     else if (pm == P_MODULE.fanout)
         return task_of_fanout;
+    else if (pm == P_MODULE.fulltext_indexer)
+        return task_of_ft_indexer;
 
     return shared(Task).init;
 }
@@ -515,6 +572,9 @@ void dcs_thread(string thread_name, string _node_id)
 
                                         if (task_of_fanout !is shared(Task).init)
                                             vibe.core.concurrency.send(task_of_fanout, text(opid), main_loop_task);
+
+                                        if (task_of_ft_indexer !is shared(Task).init)
+                                            vibe.core.concurrency.send(task_of_ft_indexer, text(opid), main_loop_task);
 
                                         set_updated_uid(indv_uri, opid, update_counter);
                                     },
