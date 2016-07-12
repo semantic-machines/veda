@@ -1540,7 +1540,7 @@ v-wf:DecisionFormTemplate
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
 <script>
-	if (individual["v-wf:to"][0].id === veda.appointment.id && !individual.hasValue("v-wf:read")) {
+	if ( (individual["v-wf:to"][0].id === veda.appointment.id || individual["v-wf:to"][0].id === veda.appointment["v-s:occupation"][0].id) && !individual.hasValue("v-wf:read")) {
 		individual["v-wf:read"] = [true];
 		individual.save();
 	}
@@ -2277,13 +2277,13 @@ v-ui:TaskCompletedTemplate
       <div id="decision">
 	    <span rel="v-wf:takenDecision">
 	      <span>
-			<span about="v-s:publisher" property="rdfs:label"></span>: 
+			<span about="v-s:publisher" property="rdfs:label"></span>:
 			<strong property="v-s:publisher"></strong><br/>
 		  </span>
 	    </span>
 	    <div>
         	<span about="v-wf:takenDecision" property="rdfs:label"></span>:
-        </div> 
+        </div>
 	    <em rel="v-wf:takenDecision">
 	      <span>
 			<strong property="rdfs:label"></strong>
