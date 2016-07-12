@@ -47,7 +47,7 @@ rdfs:Resource a rdfs:Class ;
 
 rdfs:comment a rdf:Property ;
     rdfs:label "comment"@en ;
-    rdfs:label "комментарий"@ru ;
+    rdfs:label "Комментарий"@ru ;
     rdfs:comment "A description of the subject resource." ;
     rdfs:domain rdfs:Resource ;
     rdfs:isDefinedBy rdfs: ;
