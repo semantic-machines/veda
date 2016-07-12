@@ -98,8 +98,8 @@ rdf:subject a rdf:Property ;
     rdfs:range rdfs:Resource .
 
 rdf:type a rdf:Property ;
-    rdfs:label "type"@en ;
-    rdfs:label "тип"@ru ;
+    rdfs:label "Type"@en ;
+    rdfs:label "Tип"@ru ;
     rdfs:comment "The subject is an instance of a class." ;
     rdfs:domain rdfs:Resource ;
     rdfs:isDefinedBy rdf: ;

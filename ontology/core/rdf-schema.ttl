@@ -46,7 +46,7 @@ rdfs:Resource a rdfs:Class ;
     rdfs:isDefinedBy rdfs: .
 
 rdfs:comment a rdf:Property ;
-    rdfs:label "comment"@en ;
+    rdfs:label "Сomment"@en ;
     rdfs:label "Комментарий"@ru ;
     rdfs:comment "A description of the subject resource." ;
     rdfs:domain rdfs:Resource ;
@@ -54,8 +54,8 @@ rdfs:comment a rdf:Property ;
     rdfs:range rdfs:Literal .
 
 rdfs:domain a rdf:Property ;
-    rdfs:label "domain"@en ;
-    rdfs:label "домен"@ru ;
+    rdfs:label "Domain"@en ;
+    rdfs:label "Домен"@ru ;
     rdfs:comment "A domain of the subject property." ;
     rdfs:domain rdf:Property ;
     rdfs:isDefinedBy rdfs: ;
@@ -71,47 +71,47 @@ rdfs:isDefinedBy a rdf:Property ;
     rdfs:subPropertyOf rdfs:seeAlso .
 
 rdfs:label a rdf:Property ;
-    rdfs:label "label"@en ;
-    rdfs:label "наименование"@ru ;
+    rdfs:label "Label"@en ;
+    rdfs:label "Наименование"@ru ;
     rdfs:comment "A human-readable name for the subject." ;
     rdfs:domain rdfs:Resource ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:range rdfs:Literal .
 
 rdfs:member a rdf:Property ;
-    rdfs:label "member" ;
+    rdfs:label "Member" ;
     rdfs:comment "A member of the subject resource." ;
     rdfs:domain rdfs:Resource ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:range rdfs:Resource .
 
 rdfs:range a rdf:Property ;
-    rdfs:label "range"@en ;
-    rdfs:label "область значений"@ru ;
+    rdfs:label "Range"@en ;
+    rdfs:label "Область значений"@ru ;
     rdfs:comment "A range of the subject property." ;
     rdfs:domain rdf:Property ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:range rdfs:Class .
 
 rdfs:subClassOf a rdf:Property ;
-    rdfs:label "subClassOf"@en ;
-    rdfs:label "подкласс класса"@ru ;
+    rdfs:label "SubClassOf"@en ;
+    rdfs:label "Подкласс класса"@ru ;
     rdfs:comment "The subject is a subclass of a class." ;
     rdfs:domain rdfs:Class ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:range rdfs:Class .
 
 rdfs:subPropertyOf a rdf:Property ;
-    rdfs:label "subPropertyOf"@en ;
-    rdfs:label "подсвойство свойства"@ru ;
+    rdfs:label "SubPropertyOf"@en ;
+    rdfs:label "Подсвойство свойства"@ru ;
     rdfs:comment "The subject is a subproperty of a property." ;
     rdfs:domain rdf:Property ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:range rdf:Property .
 
 rdfs:seeAlso a rdf:Property ;
-    rdfs:label "seeAlso"@en ;
-    rdfs:label "смотрите также"@ru ;
+    rdfs:label "SeeAlso"@en ;
+    rdfs:label "Cмотрите также"@ru ;
     rdfs:comment "Further information about the subject resource." ;
     rdfs:domain rdfs:Resource ;
     rdfs:isDefinedBy rdfs: ;
