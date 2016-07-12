@@ -161,7 +161,7 @@ void handleWebSocketConnection(scope WebSocket socket)
 void handleWebSocketConnection_CCUS(scope WebSocket socket)
 {
     const(HTTPServerRequest)hsr = socket.request();
-    //writeln("@@@1 hsr=", hsr.clientAddress);
+
     // Client Cache Update Subscription
     string chid;
     long[ string ] count_2_uid;
@@ -177,13 +177,37 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
             long g_count = get_counter_4_uid(i_uid);
             if (g_count > i_count)
             {
+                i_count = g_count;
+
                 if (res is null)
                     res ~= i_uid ~ "=" ~ text(i_count);
                 else
                     res ~= "," ~ i_uid ~ "=" ~ text(i_count);
 
-                count_2_uid[ i_uid ] = g_count;
+                count_2_uid[ i_uid ] = i_count;
             }
+        }
+        return res;
+    }
+
+    string get_list_of_subscribe()
+    {
+        string   res;
+
+        string[] keys = count_2_uid.keys;
+        foreach (i_uid; keys)
+        {
+            long i_count = count_2_uid[ i_uid ];
+            long g_count = get_counter_4_uid(i_uid);
+            if (g_count > i_count)
+            {
+                i_count              = g_count;
+                count_2_uid[ i_uid ] = i_count;
+            }
+            if (res is null)
+                res ~= i_uid ~ "=" ~ text(i_count);
+            else
+                res ~= "," ~ i_uid ~ "=" ~ text(i_count);
         }
         return res;
     }
@@ -205,7 +229,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                     chid = kv[ 1 ];
 
                     log.trace("init chanel [%s]", chid);
-					//task_2_client[hsr.clientAddress] = Task.getThis();
+                    //task_2_client[hsr.clientAddress] = Task.getThis();
                     //task_2_client ~= Task.getThis();
                 }
             }
@@ -227,7 +251,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                     {
                         if (msg_from_sock[ 0 ] == '=')
                         {
-                            string res = get_list_of_changes();
+                            string res = get_list_of_subscribe();
 
                             if (res !is null)
                             {
@@ -246,7 +270,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                                 {
                                     string[] expr = data.split('=');
 
-                                    string uid_info;
+                                    string   uid_info;
                                     if (expr.length > 0)
                                         uid_info = expr[ 0 ];
 
