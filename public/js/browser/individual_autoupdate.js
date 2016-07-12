@@ -41,7 +41,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 					for (var i = 0; i < uris.length; i++) {
 						var tmp = uris[i].split("="),
 								uri = tmp[0],
-								updateCounter = tmp[1],
+								updateCounter = parseInt(tmp[1]),
 								list = subscription.get();
 						list[uri] = list[uri] ? {
 							subscribeCounter: list[uri].subscribeCounter,
@@ -79,6 +79,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 				interval,
 				delay = 1000,
 				last;
+
 		function pushDelta() {
 			var subscribe = [],
 					unsubscribe = [],
@@ -106,6 +107,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 			clearInterval(interval);
 			interval = undefined;
 		}
+
 		return {
 			get: function () {
 				return list;
