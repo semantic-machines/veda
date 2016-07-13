@@ -689,7 +689,7 @@ s-wf:codelet_down_right
 	rdf:type v-s:Codelet ;
 	rdfs:label "Понизить права" ;
 	v-s:script """
-	down_right_and_store (task)	
+	down_right_and_store (process, task)	
 """ ;
 	rdfs:isDefinedBy s-wf: ;
 .	

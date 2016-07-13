@@ -1098,8 +1098,8 @@ function prepare_process(ticket, document)
  */
 function prepare_start_form(ticket, document)
 {
-    print("@js prepare_start_form, doc_id=" + document['@']);
-    print("@" + toJson(document));
+    //print("@js prepare_start_form, doc_id=" + document['@']);
+    //print("@" + toJson(document));
 
     var isTrace = document['v-wf:isTrace'];
     if (isTrace && getFirstValue(isTrace) == true)

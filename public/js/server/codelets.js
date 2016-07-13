@@ -1,13 +1,20 @@
 "use strict";
 
-function down_right_and_store(task)
+function down_right_and_store(process, task)
 {
     try
     {
-        var doc_id = task.getInputVariable('docId');
+print ("@JS down_right_and_store");
+        var doc_id = process.getInputVariable('docId');
+print ("@JS doc_id=", toJson (doc_id));
 
         if (doc_id)
         {
+	    var executor = process.getExecutor();
+print ("@JS executor=", toJson (executor));
+	    if (executor)
+        	addRight(ticket, [can_read], getUri (executor), getUri (doc_id));
+
             var instanceOf = getUri(process['v-wf:instanceOf']);
 
             var net_doc_id = instanceOf + "_" + doc_id[0].data;
