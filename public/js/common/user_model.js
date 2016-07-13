@@ -6,6 +6,8 @@ veda.Module(function (veda) { "use strict";
 
 		var self = new veda.IndividualModel(uri);
 
+		if ( self["rdf:type"][0].id !== "v-s:Person" ) { return self; }
+
 		var langs = query(veda.ticket, "'rdf:type' == 'v-ui:Language'");
 		self.availableLanguages = langs.reduce (
 			function (acc, language_uri) {
