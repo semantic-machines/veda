@@ -237,7 +237,7 @@ v-ft:TaskTemplate
 		<a href="#/@" property="rdfs:label"></a>
 		<p><span property="v-s:description"></span></p>
 	</td>
-	<td rel="v-wf:onDocument" template="v-ui:LabelTemplate"></td>
+	<td rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate"></td>
 	<td property="v-wf:dateGiven"></td>
 </tr>
 <script>

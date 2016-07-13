@@ -206,6 +206,15 @@ cfg:Permission_6
   rdfs:label "Permission to read dictionaries for all users"@en ;
   rdfs:label "Разрешение на чтение справочников для всех пользователей"@ru ;
 .
+cfg:Permission_7
+  rdf:type v-s:PermissionStatement ;
+  v-s:author cfg:VedaSystem ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:permissionObject v-s:Group_group ;
+  v-s:canRead "true"^^xsd:boolean ;
+  rdfs:label "Permission to read groups for all users"@en ;
+  rdfs:label "Разрешение на чтение групп для всех пользователей"@ru ;
+.
 
 ##################### EVENT HANDLERS #####################
 
@@ -225,8 +234,9 @@ cfg:Event_1
  * parent_document_id = id of the document that triggered this event.
  */
 var doc_uri = document['@'],
-	isDefinedBy = document['rdfs:isDefinedBy'];
-if ( !isDefinedBy ) return;
+	isDefinedBy = document['rdfs:isDefinedBy'],
+	isGroup = getUri(document['rdf:type']) === "v-s:Group";
+if ( !isDefinedBy || isGroup) return;
 var uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + 'cfg_TTLResourcesGroup',
 	membership = {
 		'@' : uri,

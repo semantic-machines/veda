@@ -58,8 +58,16 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 					for (var i = 0; i < uris.length; i++) {
 						var tmp = uris[i].split("="),
 								uri = tmp[0],
-								updateCounter = tmp[1],
-								individual = new veda.IndividualModel(uri);
+								updateCounter = parseInt(tmp[1]),
+								individual = new veda.IndividualModel(uri),
+								list = subscription.get();
+						list[uri] = list[uri] ? {
+							subscribeCounter: list[uri].subscribeCounter,
+							updateCounter: updateCounter
+						} : {
+							subscribeCounter: 1,
+							updateCounter: updateCounter
+						};
 						if ( !individual.hasValue("v-s:updateCounter") || individual["v-s:updateCounter"][0] !== updateCounter ) {
 							individual.reset();
 						}

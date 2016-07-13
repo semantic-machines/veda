@@ -1470,7 +1470,7 @@ v-wf:VariableTemplate
 	<ul id="values"></ul>
 	<div id="variableScope">
 		<em about="v-wf:variableScope" property="rdfs:label"></em>
-		<ul><li rel="v-wf:variableScope" template="v-ui:ClassNameLabelTemplate"></li></ul>
+		<ul><li rel="v-wf:variableScope" template="v-ui:ClassNameLabelLinkTemplate"></li></ul>
 	</div>
 </span>
 <script type="text/javascript">
@@ -1479,7 +1479,7 @@ v-wf:VariableTemplate
 	individual["v-wf:variableValue"].map( function (value) {
 		var el = $("<li>");
 		if (value instanceof veda.IndividualModel) {
-			value.present(el, new veda.IndividualModel("v-ui:ClassNameLabelTemplate"));
+			value.present(el, new veda.IndividualModel("v-ui:ClassNameLabelLinkTemplate"));
 		} else {
 			el.text(value.toString());
 		}
@@ -1500,11 +1500,11 @@ v-wf:WorkOrderTemplate
 	<strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
 	<div id="executor">
 		<em about="v-wf:executor" property="rdfs:label"></em>
-		<ul><li rel="v-wf:executor" template="v-ui:ClassNameLabelTemplate"></li></ul>
+		<ul><li rel="v-wf:executor" template="v-ui:ClassNameLabelLinkTemplate"></li></ul>
 	</div>
 	<div id="decisionFormList">
 		<em about="v-wf:decisionFormList" property="rdfs:label"></em>
-		<ul><li rel="v-wf:decisionFormList" template="v-ui:ClassNameLabelTemplate"></li></ul>
+		<ul><li rel="v-wf:decisionFormList" template="v-ui:ClassNameLabelLinkTemplate"></li></ul>
 	</div>
 	<div id="outVars">
 		<em about="v-wf:outVars" property="rdfs:label"></em>
@@ -1512,7 +1512,7 @@ v-wf:WorkOrderTemplate
 	</div>
 	<div id="isProcess">
 		<em about="v-wf:isProcess" property="rdfs:label"></em>
-		<ul><li rel="v-wf:isProcess" template="v-ui:ClassNameLabelTemplate"></li></ul>
+		<ul><li rel="v-wf:isProcess" template="v-ui:ClassNameLabelLinkTemplate"></li></ul>
 	</div>
 	<div id="traceJournal">
 		<em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em>

@@ -3,12 +3,12 @@
 veda.Module(function DraftsPresenter(veda) { "use strict";
 
 	var template = $("#drafts-template").html();
-	
+
 	veda.on("load:drafts", function () {
 		var container = $("#main");
 		var tmpl = $(template);
 		var ol = $("#drafts-list", tmpl);
-		var deleteAllBtn = $("#delete-all", tmpl).click( function () { 
+		var deleteAllBtn = $("#delete-all", tmpl).click( function () {
 			ol.empty();
 			veda.drafts.clear();
 		});
@@ -20,9 +20,9 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
 		deleteAll.present( $("#delete-all", tmpl), new veda.IndividualModel("v-ui:LabelTemplate") );
 
 		var tree = {};
-		var linkTmpl = new veda.IndividualModel("v-ui:ClassNameLabelTemplate");
+		var linkTmpl = new veda.IndividualModel("v-ui:ClassNameLabelLinkTemplate");
 		var labelTmpl = new veda.IndividualModel("v-ui:LabelTemplate");
-		
+
 		if (veda.drafts.length) {
 			Object.keys(veda.drafts).map(function (uri) {
 				var draft = veda.drafts[uri],
