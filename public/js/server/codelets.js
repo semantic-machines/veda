@@ -11,6 +11,9 @@ print ("@JS doc_id=", toJson (doc_id));
         if (doc_id)
         {
 	    var executor = process.getExecutor();
+
+	    executor = get_properties_chain (executor, [{$get:'v-s:occupation'}], executor);
+
 print ("@JS executor=", toJson (executor));
 	    if (executor)
         	addRight(ticket, [can_read], getUri (executor), getUri (doc_id));
@@ -214,7 +217,7 @@ function onto_rename(ticket, document, execute_script)
     //    print ('$$$$$$$$$$$$$$ script_onto_rename:doc= ' + document['@']);
     try
     {
-        //print ('$ script_onto_rename:execute_script= ' + toJson (execute_script));        
+        //print ('$ script_onto_rename:execute_script= ' + toJson (execute_script));
         if (document['@'] === execute_script['@'])
             return;
 
@@ -294,7 +297,7 @@ function onto_rename(ticket, document, execute_script)
                 for (var from in from_2_to)
                 {
                     var to = from_2_to[from];
-                    //print ('values=', values, ', from=', from, ', to=', to); 
+                    //print ('values=', values, ', from=', from, ', to=', to);
                     var new_str = replace_word(values, from, to);
                     if (new_str !== values)
                     {
