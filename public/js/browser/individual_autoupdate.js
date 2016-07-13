@@ -59,9 +59,9 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 						var tmp = uris[i].split("="),
 								uri = tmp[0],
 								updateCounter = tmp[1],
-								ind = new veda.IndividualModel(uri);
-						if ( ind["v-s:updateCounter"][0] !== updateCounter ) {
-							ind.reset();
+								individual = new veda.IndividualModel(uri);
+						if ( !individual.hasValue("v-s:updateCounter") || individual["v-s:updateCounter"][0] !== updateCounter ) {
+							individual.reset();
 						}
 					}
 				break;
@@ -125,7 +125,8 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 					++list[uri].subscribeCounter;
 					return;
 				}
-				var updateCounter = (new veda.IndividualModel(uri))["v-s:updateCounter"][0];
+				var individual = new veda.IndividualModel(uri);
+				var updateCounter = individual.hasValue("v-s:updateCounter") ? individual["v-s:updateCounter"][0] : 0;
 				list[uri] = {
 					subscribeCounter: 1,
 					updateCounter: updateCounter
