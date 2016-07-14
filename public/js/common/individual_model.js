@@ -324,13 +324,20 @@ veda.Module(function (veda) { "use strict";
 		} catch (e) {
 			original = {};
 		}
-		Object.getOwnPropertyNames(self.properties).map(function (property_uri) {
-			if (property_uri === "@" || property_uri === "rdf:type") { return; }
+		Object.keys(self.properties).map(function (property_uri) {
+			if (property_uri === "@" || property_uri === "rdf:type") {
+				delete original[property_uri];
+				return;
+			}
 			if (original[property_uri] && original[property_uri].length) {
 				self[property_uri] = original[property_uri].map( parser );
 			} else {
 				self[property_uri] = [];
 			}
+			delete original[property_uri];
+		});
+		Object.keys(original).map(function (property_uri) {
+			self[property_uri] = original[property_uri].map( parser );
 		});
 		self._.isNew = false;
 		self._.isSync = true;
