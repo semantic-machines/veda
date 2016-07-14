@@ -689,7 +689,7 @@ s-wf:codelet_down_right
 	rdf:type v-s:Codelet ;
 	rdfs:label "Понизить права" ;
 	v-s:script """
-	down_right_and_store (process, task)	
+	down_right_and_store (process, task)
 """ ;
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -802,6 +802,12 @@ s-wf:UserTaskFormTemplate
 		individual["v-wf:possibleDecisionClass"].map( function (value, index) {
 			var tmpl = radioTmpl.clone().insertBefore(radioTmpl);
 			var input = $("input", tmpl).val(index);
+			$("label", tmpl).append(value["rdfs:label"].join(", "));
+			input.change(function () {
+				var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
+				var decision = createDecision(type);
+				individual["v-wf:takenDecision"] = [ decision ];
+			});
 			if (
 				individual.hasValue("v-wf:takenDecision")
 				&& individual.isSync()
@@ -809,12 +815,6 @@ s-wf:UserTaskFormTemplate
 			) {
 				input.prop("checked", true);
 			}
-			$("label", tmpl).append(value["rdfs:label"].join(", "));
-			input.change(function () {
-				var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
-				var decision = createDecision(type);
-				individual["v-wf:takenDecision"] = [ decision ];
-			});
 		});
 	}
 	radioTmpl.remove();
@@ -823,17 +823,17 @@ s-wf:UserTaskFormTemplate
 		e.type === "edit" ? $(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false) :
 							$(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false);
 	});
-	if (!individual.hasValue("v-wf:takenDecision") || !individual.isSync()) {
-		$(".radio.decision input", template).first().prop("checked", true).change();
-		template.trigger("edit");
-	} else {
-		template.trigger("view");
-	}
 	function createDecision(type) {
 		var decision = new veda.IndividualModel();
 		decision["rdf:type"] = [ type ];
 		decision["rdfs:label"] = type["rdfs:label"];
 		return decision;
+	}
+	if (!individual.hasValue("v-wf:takenDecision") || !individual.isSync()) {
+		$(".radio.decision input", template).first().prop("checked", true).change();
+		template.trigger("edit");
+	} else {
+		template.trigger("view");
 	}
 </script>
   """ ;
