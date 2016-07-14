@@ -7,7 +7,7 @@ private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime,
 private import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.log_msg, veda.core.common.know_predicates, veda.onto.onto;
-private import veda.process.child_process;
+private import veda.vmodule.vmodule;
 private import search.vel, search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 
 void main(char[][] args)
@@ -21,7 +21,7 @@ void main(char[][] args)
     p_script.run();
 }
 
-class ScriptProcess : ChildProcess
+class ScriptProcess : VedaModule
 {
     private          ScriptInfo[ string ] event_scripts;
     private          Array!string event_scripts_order;
@@ -36,9 +36,15 @@ class ScriptProcess : ChildProcess
     this(P_MODULE _module_name, string _host, ushort _port)
     {
         super(_module_name, _host, _port);
+
+        g_cache_of_indv = cache_of_indv;
     }
 
     long count_sckip = 0;
+
+    override void thread_id()
+    {
+    }
 
     override bool prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                           string event_id,
@@ -186,7 +192,7 @@ class ScriptProcess : ChildProcess
 
         script_vm = get_ScriptVM(context);
         load_event_scripts();
-        
+
         return true;
     }
 

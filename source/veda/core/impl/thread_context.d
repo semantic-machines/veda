@@ -273,7 +273,7 @@ class PThreadContext : Context
     }
 
 
-    public string get_individual_from_storage(string uri)
+    public string get_from_individual_storage(string uri)
     {
         //writeln ("@ get_individual_as_cbor, uri=", uri);
         string res;
@@ -284,7 +284,7 @@ class PThreadContext : Context
             res = find(uri);
 
         if (res !is null && res.length < 10)
-            log.trace_log_and_console("ERR! get_individual_from_storage, found invalid CBOR, uri=%s", uri);
+            log.trace_log_and_console("ERR! get_from_individual_storage, found invalid CBOR, uri=%s", uri);
 
         return res;
     }
@@ -822,7 +822,7 @@ class PThreadContext : Context
 
             if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true) == Access.can_read)
             {
-                string individual_as_cbor = get_individual_from_storage(uri);
+                string individual_as_cbor = get_from_individual_storage(uri);
 
                 if (individual_as_cbor !is null && individual_as_cbor.length > 1)
                 {
@@ -870,7 +870,7 @@ class PThreadContext : Context
                 if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true) == Access.can_read)
                 {
                     Individual individual         = Individual.init;
-                    string     individual_as_cbor = get_individual_from_storage(uri);
+                    string     individual_as_cbor = get_from_individual_storage(uri);
 
                     if (individual_as_cbor !is null && individual_as_cbor.length > 1)
                     {
@@ -915,7 +915,7 @@ class PThreadContext : Context
         {
             if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true) == Access.can_read)
             {
-                string individual_as_cbor = get_individual_from_storage(uri);
+                string individual_as_cbor = get_from_individual_storage(uri);
 
                 if (individual_as_cbor !is null && individual_as_cbor.length > 1)
                 {

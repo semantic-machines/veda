@@ -6,6 +6,7 @@ module veda.gluecode.v8d_header;
 import std.stdio, std.conv, std.file, std.path;
 import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
 import veda.core.common.context, veda.core.common.define, veda.util.cbor8individual, veda.core.util.utils;
+import veda.util.container;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -20,23 +21,24 @@ logger log()
 // //////////////////////////  call D from C //////////////////////////////////////////
 
 string[ string ] g_prop;
-Context        g_context;
+Context    g_context;
 
-_Buff          g_super_classes;
-_Buff          g_parent_script_id;
-_Buff          g_parent_document_id;
-_Buff          g_prev_state;
-_Buff          g_execute_script;
-_Buff          g_document;
-_Buff          g_user;
-_Buff          g_ticket;
+_Buff      g_super_classes;
+_Buff      g_parent_script_id;
+_Buff      g_parent_document_id;
+_Buff      g_prev_state;
+_Buff      g_execute_script;
+_Buff      g_document;
+_Buff      g_user;
+_Buff      g_ticket;
 
-_Buff          tmp_individual;
+_Buff      tmp_individual;
 
-_Buff          g_script_result;
-_Buff          g_script_out;
+_Buff      g_script_result;
+_Buff      g_script_out;
 
-ResultCode     g_last_result;
+ResultCode g_last_result;
+Cache!(string, string) g_cache_of_indv;
 
 private string empty_uid;
 
@@ -186,26 +188,26 @@ public bool commit()
         //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
 
         ResultCode rc;
-        if (item.cmd == INDV_OP.PUT)
-        {
-            rc = g_context.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
-        }
-        else if (item.cmd == INDV_OP.ADD_IN)
-        {
-            rc = g_context.add_to_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
-        }
-        else if (item.cmd == INDV_OP.SET_IN)
-        {
-            rc = g_context.set_in_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
-        }
-        else if (item.cmd == INDV_OP.REMOVE_FROM)
-        {
-            rc = g_context.remove_from_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
-        }
-        else if (item.cmd == INDV_OP.REMOVE)
-        {
-            rc = g_context.remove_individual(ticket, item.indv_serl, true, item.event_id, ignore_freeze).result;
-        }
+//        if (item.cmd == INDV_OP.PUT)
+//        {
+        rc = g_context.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
+//        }
+//        else if (item.cmd == INDV_OP.ADD_IN)
+//        {
+//            rc = g_context.add_to_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
+//        }
+//        else if (item.cmd == INDV_OP.SET_IN)
+//        {
+//            rc = g_context.set_in_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
+//        }
+//        else if (item.cmd == INDV_OP.REMOVE_FROM)
+//        {
+//            rc = g_context.remove_from_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
+//        }
+//        else if (item.cmd == INDV_OP.REMOVE)
+//        {
+//            rc = g_context.remove_individual(ticket, item.indv_serl, true, item.event_id, ignore_freeze).result;
+//        }
 
         if (rc != ResultCode.OK)
         {
@@ -375,17 +377,7 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
 {
     try
     {
-        string          uri = cast(string)_uri[ 0.._uri_length ];
-
-        TransactionItem *ti = transaction_buff.get(uri, null);
-        if (ti !is null && ti.indv_serl.length > 0)
-        {
-            tmp_individual.data   = cast(char *)ti.indv_serl;
-            tmp_individual.length = cast(int)ti.indv_serl.length;
-            return &tmp_individual;
-        }
-
-        string ticket = cast(string)_ticket[ 0.._ticket_length ];
+        string uri = cast(string)_uri[ 0.._uri_length ];
 
         //writeln ("@p:v8d read_individual, uri=[", uri, "],  ticket=[", ticket, "]");
 
@@ -409,9 +401,31 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
         }
         else
         {
+            TransactionItem *ti = transaction_buff.get(uri, null);
+            if (ti !is null && ti.indv_serl.length > 0)
+            {
+                tmp_individual.data   = cast(char *)ti.indv_serl;
+                tmp_individual.length = cast(int)ti.indv_serl.length;
+                return &tmp_individual;
+            }
+
+            string ticket = cast(string)_ticket[ 0.._ticket_length ];
+
             if (g_context !is null)
             {
-                string icb = g_context.get_individual_from_storage(uri);
+                string icb;
+
+                if (g_cache_of_indv !is null)
+                {
+                    icb = g_cache_of_indv.get(uri);
+
+//                    if (icb !is null)
+//                        writefln("@v8 success get from cache, uri=%s", uri);
+                }
+
+                if (icb is null)
+                    icb = g_context.get_from_individual_storage(uri);
+
                 if (icb !is null)
                 {
                     tmp_individual.data   = cast(char *)icb;

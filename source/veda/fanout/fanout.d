@@ -10,7 +10,7 @@ private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp
 private import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools;
-private import veda.process.child_process;
+private import veda.vmodule.vmodule;
 
 void main(char[][] args)
 {
@@ -23,7 +23,7 @@ void main(char[][] args)
     p_fanout.run();
 }
 
-class FanoutProcess : ChildProcess
+class FanoutProcess : VedaModule
 {
     Mysql      mysql_conn;
     string     database_name;
@@ -63,6 +63,10 @@ class FanoutProcess : ChildProcess
         return true;
     }
 
+	override void thread_id ()
+	{
+	}
+	
     override bool configure()
     {
         connect_to_mysql(context);
