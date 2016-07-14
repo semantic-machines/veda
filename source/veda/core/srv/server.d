@@ -59,7 +59,7 @@ void commiter(string thread_name)
 
     while (true)
     {
-        core.thread.Thread.sleep(dur!("seconds")(10));
+//        core.thread.Thread.sleep(dur!("seconds")(1));
         veda.core.threads.xapian_indexer.flush();
         core.thread.Thread.sleep(dur!("seconds")(1));
         veda.core.threads.storage_manager.flush(false);
