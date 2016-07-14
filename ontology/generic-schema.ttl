@@ -338,7 +338,7 @@ v-s:registrationNumber
 #временно перенесено begin
 v-s:registrationNumber
   v-s:hasNumerationMapper mnd-s:registrationNumberNumerationMapperMeeting;
-  v-s:hasNumerationMapper mnd-s:registrationNumberNumerationMapperAction;
+#  v-s:hasNumerationMapper mnd-s:registrationNumberNumerationMapperAction;
 .
 #временно перенесено end
 
