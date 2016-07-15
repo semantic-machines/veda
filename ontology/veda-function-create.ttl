@@ -229,7 +229,7 @@ v-fc:BlankTemplate
 <div role="tabpanel" class="container-fluid">
 	<br>
 	<!-- Nav tabs -->
-	<ul class="nav nav-tabs nav-right" role="tablist">
+	<ul class="nav nav-tabs nav-right hidden-print" role="tablist">
 		<li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
 		<li role="presentation"><a id="mgmt-pill" href="#mgmt" about="v-fc:BlankMgmt" property="rdfs:label" aria-controls="mgmt" role="tab" data-toggle="tab"></a></li>
 		<li role="presentation" class="active"><a id="blank-pill" href="#blank" about="v-fc:Blank" property="rdfs:label" aria-controls="blank" role="tab" data-toggle="tab"></a></li>
