@@ -13,11 +13,6 @@
 # owl:versionInfo "1.3" ;
 .
 
-cfg:OntoVsn
-  rdf:type rdfs:Resource ;
-  rdf:value "start onto vsn"^^xsd:string ;
-.
-
 # -- статусы --
 
 v-s:StatusDraft
