@@ -62,8 +62,8 @@ veda.Module(function (veda) { "use strict";
 		}
 
 		// Check whether server & client cfg:OntoVsn objects are equal
-		var clientVsn = JSON.stringify( ontology["cfg:OntoVsn"] );
-		var serverVsn = JSON.stringify( get_individual(veda.ticket, "cfg:OntoVsn") );
+		var clientVsn = ontology["cfg:OntoVsn"]["rdf:value"][0].data;
+		var serverVsn = get_individual(veda.ticket, "cfg:OntoVsn")["rdf:value"][0].data;
 		if ( clientVsn !== serverVsn ) {
 			// Get ontology from server
 			ontology = getOntology();

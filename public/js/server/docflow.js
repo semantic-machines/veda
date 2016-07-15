@@ -188,7 +188,7 @@ function prepare_work_order(ticket, document)
                     var task = new Context(work_item, ticket);
                     var process = new Context(_process, ticket);
                     var codelet_output_vars = eval(expression);
-                    if (codelet_output_vars.length > 0)
+                    if (codelet_output_vars && codelet_output_vars.length > 0)
                     {
                         var localVariablesUri = store_items_and_set_minimal_rights(ticket, codelet_output_vars);
                         _work_order['v-wf:outVars'] = localVariablesUri;
@@ -1098,8 +1098,8 @@ function prepare_process(ticket, document)
  */
 function prepare_start_form(ticket, document)
 {
-    print("@js prepare_start_form, doc_id=" + document['@']);
-    print("@" + toJson(document));
+    //print("@js prepare_start_form, doc_id=" + document['@']);
+    //print("@" + toJson(document));
 
     var isTrace = document['v-wf:isTrace'];
     if (isTrace && getFirstValue(isTrace) == true)

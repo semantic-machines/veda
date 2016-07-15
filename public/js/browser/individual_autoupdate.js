@@ -4,6 +4,10 @@ Autoupdate displayed individuals on client when they change on server
 
  */
 
+// TODO: optimize calls to websocket - combine subscribe/unsubscribe commands for several individuals
+
+// New protocol
+
 veda.Module(function IndividualAutoupdate(veda) { "use strict";
 
 	var socket,
@@ -16,6 +20,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 		return socket = null;
 	}
 
+	// Handshake
 	socket.onopen = function (event) {
 		socket.send("ccus=" + veda.ticket);
 	};
@@ -27,67 +32,164 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	socket.onmessage = function (event) {
 		try {
 			var msg = event.data,
-				uris = msg.split(",");
-			for (var i = 0, uri; (uri = uris[i] && uris[i].split("=")[0]); i++) {
-				var ind = new veda.IndividualModel(uri);
-				ind.reset();
+					uris;
+			console.log("server:", msg);
+			switch ( true ) {
+				case ( msg.indexOf("=") === 0 ):
+					// Synchronize subscription
+					uris = msg.substr(1).split(",");
+					for (var i = 0; i < uris.length; i++) {
+						var tmp = uris[i].split("="),
+								uri = tmp[0],
+								updateCounter = parseInt(tmp[1]),
+								list = subscription.get();
+						list[uri] = list[uri] ? {
+							subscribeCounter: list[uri].subscribeCounter,
+							updateCounter: updateCounter
+						} : {
+							subscribeCounter: 1,
+							updateCounter: updateCounter
+						};
+					}
+				break;
+				default:
+					// Update individuals
+					uris = msg.split(",");
+					for (var i = 0; i < uris.length; i++) {
+						var tmp = uris[i].split("="),
+								uri = tmp[0],
+								updateCounter = parseInt(tmp[1]),
+								individual = new veda.IndividualModel(uri),
+								list = subscription.get();
+						list[uri] = list[uri] ? {
+							subscribeCounter: list[uri].subscribeCounter,
+							updateCounter: updateCounter
+						} : {
+							subscribeCounter: 1,
+							updateCounter: updateCounter
+						};
+						if ( !individual.hasValue("v-s:updateCounter") || individual["v-s:updateCounter"][0] !== updateCounter ) {
+							individual.reset();
+						}
+					}
+				break;
 			}
-			//console.log("ccus received:", msg);
 		} catch (e) {
-			"individual update failed";
+			console.log("error: individual update service failed");
 		}
 	};
 
+	//socket.onmessage = function (event) { console.log("server:", event.data); };
+
+	var subscription = (function (socket) {
+		var list = {},
+				delta = {},
+				interval,
+				delay = 1000,
+				last;
+
+		function pushDelta() {
+			var subscribe = [],
+					unsubscribe = [],
+					subscribeMsg,
+					unsubscribeMsg;
+			for (var uri in delta) {
+				if (delta[uri].operation === "+") {
+					subscribe.push("+" + uri + "=" + delta[uri].updateCounter);
+				} else {
+					unsubscribe.push("-" + uri);
+				}
+			}
+			subscribeMsg = subscribe.join(",");
+			unsubscribeMsg = unsubscribe.join(",");
+			delta = {};
+			if (subscribeMsg) {
+				socket.send(subscribeMsg);
+				console.log("client: subscribe", subscribeMsg);
+			}
+			if (unsubscribeMsg) {
+				socket.send(unsubscribeMsg);
+				console.log("client: unsubscribe", unsubscribeMsg);
+			}
+
+			clearInterval(interval);
+			interval = undefined;
+		}
+
+		return {
+			get: function () {
+				return list;
+			},
+			synchronize: function() {
+				clearInterval(interval);
+				interval = undefined;
+				list = {};
+				delta = {};
+				socket.send("=");
+				console.log("client: synchronize");
+			},
+			subscribe: function(uri) {
+				if (list[uri]) {
+					++list[uri].subscribeCounter;
+					return;
+				}
+				var individual = new veda.IndividualModel(uri);
+				var updateCounter = individual.hasValue("v-s:updateCounter") ? individual["v-s:updateCounter"][0] : 0;
+				list[uri] = {
+					subscribeCounter: 1,
+					updateCounter: updateCounter
+				};
+				delta[uri] = {
+					operation: "+",
+					updateCounter: updateCounter
+				};
+				if (!interval) {
+					interval = setInterval(pushDelta, delay);
+				}
+			},
+			unsubscribe: function (uri) {
+				if (uri === "*") {
+					clearInterval(interval);
+					interval = undefined;
+					list = {};
+					delta = {};
+					socket.send("-*");
+					console.log("client: unsubscribe all");
+				} else {
+					if ( !list[uri] ) {
+						return;
+					} else if ( list[uri].subscribeCounter === 1 ) {
+						delete list[uri];
+						delta[uri] = {
+							operation: "-"
+						};
+						if (!interval) {
+							interval = setInterval(pushDelta, delay);
+						}
+					} else {
+						--list[uri].subscribeCounter;
+						return;
+					}
+				}
+			},
+		}
+	})(socket);
+
 	veda.on("individual:loaded", updateWatch);
 
-	function updateWatch(individual, container, template, mode) {
-		individual.one("individual:templateReady", displayedHandler);
-		if (container === "#main") {
-			visible.subscribe();
-		}
+	function updateWatch(individual) {
+		individual.one("individual:templateReady", subscribeDisplayed);
 	}
 
-	function displayedHandler(template) {
+	function subscribeDisplayed(template) {
 		var individual = this;
-		visible.add(individual.id);
+		subscription.subscribe(individual.id);
+
 		template.one("remove", function () {
-			visible.remove(individual.id);
+			subscription.unsubscribe(individual.id);
 		});
 	}
 
-	var visible = (function (socket) {
-		var counter = {};
-		return {
-			add: function (uri) {
-				var displayCounter = counter[uri] ? ++counter[uri].displayCounter : 1 ;
-				var updateCounter = (new veda.IndividualModel(uri))["v-s:updateCounter"][0] ;
-				counter[uri] = {
-					displayCounter: displayCounter,
-					updateCounter: updateCounter
-				}
-			},
-			remove: function (uri) {
-				if ( !counter[uri] ) {
-					return;
-				} else if ( counter[uri].displayCounter === 1) {
-					delete counter[uri];
-				} else {
-					--counter[uri].displayCounter;
-				}
-			},
-			subscribe: function () {
-				setTimeout( function () {
-					if (socket.readyState === 1) {
-						var msg = Object.keys(counter)
-							.map(function (uri) {
-								return uri + "=" + counter[uri].updateCounter;
-							})
-							.join(",");
-						socket.send(msg);
-						//console.log("ccus sent:", msg);
-					}
-				}, 1000);
-			}
-		}
-	})(socket);
+	veda.updateSubscription = subscription;
+
 });

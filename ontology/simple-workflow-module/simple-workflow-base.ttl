@@ -27,7 +27,7 @@ s-wf:var_initiator
     rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "initiator" ;
     rdfs:label "Инициатор"@ru ;
-	v-wf:varDefineScope v-wf:Net ;        
+	v-wf:varDefineScope v-wf:Net ;
 	rdfs:isDefinedBy s-wf: ;
 .
 s-wf:var_task_comment
@@ -64,7 +64,7 @@ s-wf:var_coordinator
     rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "coordinator" ;
     rdfs:label "Список согласующих"@ru ;
-	v-wf:varDefineScope v-wf:Net ;        
+	v-wf:varDefineScope v-wf:Net ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -72,7 +72,7 @@ s-wf:var_documentType
     rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "documentType" ;
     rdfs:label "тип документа"@ru ;
-	v-wf:varDefineScope v-wf:Net ;        
+	v-wf:varDefineScope v-wf:Net ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -143,7 +143,7 @@ s-wf:var_right_1
         rdfs:label "Исходные права на документ"@ru ;
 	rdfs:isDefinedBy s-wf: ;
 .
-    
+
 s-wf:var_result
         rdf:type v-wf:VarDefine ;
 	v-wf:varDefineScope v-wf:Net ;
@@ -201,35 +201,35 @@ s-wf:map_possible_decision_for_add_reaction
 
 s-wf:map_decision_of_set_responsible
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_decision_of_set_responsible ;	
+	v-wf:mapToVariable s-wf:var_decision_of_set_responsible ;
 	v-wf:mappingExpression	"task_result.getValue ('result_decision')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_last_actor_4_TR_last_actor
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_last_actor ;	
+	v-wf:mapToVariable s-wf:var_last_actor ;
 	v-wf:mappingExpression	"task_result.getValue ('last_actor')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_initiator_4_PLV_last_actor
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_initiator ;	
+	v-wf:mapToVariable s-wf:var_initiator ;
 	v-wf:mappingExpression	"process.getLocalVariable ('last_actor')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_get_rights
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_right_1 ;	
+	v-wf:mapToVariable s-wf:var_right_1 ;
 	v-wf:mappingExpression	"task_result.getValue ('right')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_orig_rights
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_right_1 ;	
+	v-wf:mapToVariable s-wf:var_right_1 ;
 	v-wf:mappingExpression	"process.getInputVariable ('originalRights')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -266,21 +266,21 @@ s-wf:map_initiator_4_PLV_initiator
 
 s-wf:map_doc_id
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_doc_id ;	
+	v-wf:mapToVariable s-wf:var_doc_id ;
 	v-wf:mappingExpression	"process.getInputVariable ('docId')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_decision_form_type_4_PLV_decision_form_type
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_decision_form_type ;	
+	v-wf:mapToVariable s-wf:var_decision_form_type ;
 	v-wf:mappingExpression	"process.getLocalVariable ('decision_form_type')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_decision_form_type_4_PIV_decision_form_type
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_decision_form_type ;	
+	v-wf:mapToVariable s-wf:var_decision_form_type ;
 	v-wf:mappingExpression	"process.getInputVariable ('decision_form_type')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -301,7 +301,7 @@ s-wf:map_coord_level
 
 s-wf:map_project2_to_docId
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_doc_id ;	
+	v-wf:mapToVariable s-wf:var_doc_id ;
 	v-wf:mappingExpression	"process.getLocalVariable ('project2')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -334,7 +334,7 @@ s-wf:var_result_t1
 .
 s-wf:map_t1_e
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_result_t1 ;	
+	v-wf:mapToVariable s-wf:var_result_t1 ;
 	v-wf:mappingExpression	"task_result.getValue ('res')" ;
 	rdfs:isDefinedBy s-wf: ;
 	rdfs:label "Вытащить из задачи результаты работы"@ru ;
@@ -401,10 +401,10 @@ s-wf:ComplexRouteStartForm_Template
         <div class="row">
           <div class="col-md-6">
 	        <span about="s-wf:ComplexRouteStartForm" property="rdfs:label" />
-  	      </div>  
+  	      </div>
           <div class="col-md-6 text-right">
                 <a href="#/@"><span property="@">ID</span></a>
-	      </div>  
+	      </div>
 	    </div>
       </div>
       <div class="panel-body">
@@ -415,19 +415,19 @@ s-wf:ComplexRouteStartForm_Template
             </div>
             <div class="col-md-4">
                <em about="v-wf:processedDocument" property="rdfs:label"></em>
-               <div rel="v-wf:processedDocument" template="v-ui:ClassNameLabelTemplate"></div>
+               <div rel="v-wf:processedDocument" template="v-ui:ClassNameLabelLinkTemplate"></div>
             </div>
             <div class="col-md-4">
                <em about="v-wf:forNet" property="rdfs:label"></em>
-               <div rel="v-wf:forNet" template="v-ui:ClassNameLabelTemplate"></div>
+               <div rel="v-wf:forNet" template="v-ui:ClassNameLabelLinkTemplate"></div>
             </div>
             <div class="col-md-4">
                <em about="v-wf:isProcess" property="rdfs:label"></em>
-               <div rel="v-wf:isProcess" template="v-ui:ClassNameLabelTemplate"></div>
+               <div rel="v-wf:isProcess" template="v-ui:ClassNameLabelLinkTemplate"></div>
             </div>
             <div class="col-md-4">
                <em about="v-wf:useTransformation" property="rdfs:label"></em>
-               <div rel="v-wf:useTransformation" template="v-ui:ClassNameLabelTemplate"></div>
+               <div rel="v-wf:useTransformation" template="v-ui:ClassNameLabelLinkTemplate"></div>
             </div>
         </div>
         <hr />
@@ -490,27 +490,27 @@ s-wf:tr_taken_decision
 s-wf:rul_transform3_1
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-wf:takenDecision')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putFieldOfIndividFromElement ('v-wf:variableValue', 'rdf:type')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'result')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putFieldOfIndividFromElement ('v-wf:variableValue', 'rdf:type')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'result')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:rul_transform3_2
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-wf:takenDecision')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putValue ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'result_data')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putValue ('v-wf:variableValue')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'result_data')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:rul_transform3_3
 	rdf:type v-wf:Rule ;
 	v-wf:segregateElement "contentName('v-wf:takenDecision')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')"; 	
-	v-wf:aggregate	"putExecutor ('v-wf:variableValue')"; 	
-	v-wf:aggregate	"putString ('v-wf:variableName', 'executor')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:Variable')";
+	v-wf:aggregate	"putExecutor ('v-wf:variableValue')";
+	v-wf:aggregate	"putString ('v-wf:variableName', 'executor')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -518,16 +518,16 @@ s-wf:rul_transform3_3
 
 s-wf:tr_sign_form
         rdf:type v-wf:Transform ;
-	v-wf:transformRule s-wf:rul_transform22_1 ;	
-	v-wf:transformRule s-wf:rul_transform22_2 ;	
+	v-wf:transformRule s-wf:rul_transform22_1 ;
+	v-wf:transformRule s-wf:rul_transform22_2 ;
 	rdfs:isDefinedBy s-wf: ;
-.		
+.
 
 s-wf:rul_transform22_1
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'initiator')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putValue ('v-wf:from')"; 	
+	v-wf:aggregate	"putValue ('v-wf:from')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -535,15 +535,15 @@ s-wf:rul_transform22_2
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'docId')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')";
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
 	v-wf:aggregate	"putString ('rdfs:label', 'подписание документа ' + getElement ()[0].data)";
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
-	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
-	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionSign')"; 	
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionRemake')"; 	
+	v-wf:aggregate	"putValue ('v-wf:onDocument')";
+	v-wf:aggregate	"putExecutor ('v-wf:to')";
+	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')";
+	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionSign')";
+	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionRemake')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -551,86 +551,86 @@ s-wf:rul_transform22_2
 #--------------------------------------------------------------------------------------
 s-wf:tr_review_form
         rdf:type v-wf:Transform ;
-	v-wf:transformRule s-wf:rul_transform23_1 ;	
-	v-wf:transformRule s-wf:rul_transform23_5 ;	
+	v-wf:transformRule s-wf:rul_transform23_1 ;
+	v-wf:transformRule s-wf:rul_transform23_5 ;
 	rdfs:isDefinedBy s-wf: ;
-.		
+.
 
 s-wf:rul_transform23_5
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'docId')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')";
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
 	v-wf:aggregate	"putString ('rdfs:label', 'рассмотрение по документу ' + getElement ()[0].data)";
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
-	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
-	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionReview')"; 	
+	v-wf:aggregate	"putValue ('v-wf:onDocument')";
+	v-wf:aggregate	"putExecutor ('v-wf:to')";
+	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')";
+	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionReview')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:tr_instruct_form
         rdf:type v-wf:Transform ;
-	v-wf:transformRule s-wf:rul_transform23_1 ;	
-	v-wf:transformRule s-wf:rul_transform23_4 ;	
+	v-wf:transformRule s-wf:rul_transform23_1 ;
+	v-wf:transformRule s-wf:rul_transform23_4 ;
 	rdfs:isDefinedBy s-wf: ;
-.		
+.
 
 s-wf:rul_transform23_4
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'docId')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')";
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
 	v-wf:aggregate	"putString ('rdfs:label', 'поручение по документу ' + getElement ()[0].data)";
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
-	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
-	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')"; 	
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')"; 	
+	v-wf:aggregate	"putValue ('v-wf:onDocument')";
+	v-wf:aggregate	"putExecutor ('v-wf:to')";
+	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')";
+	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')";
+	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:tr_examin_form
         rdf:type v-wf:Transform ;
-	v-wf:transformRule s-wf:rul_transform23_1 ;	
-	v-wf:transformRule s-wf:rul_transform23_3 ;	
+	v-wf:transformRule s-wf:rul_transform23_1 ;
+	v-wf:transformRule s-wf:rul_transform23_3 ;
 	rdfs:isDefinedBy s-wf: ;
-.		
+.
 
 s-wf:rul_transform23_3
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'docId')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')";
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
 	v-wf:aggregate	"putString ('rdfs:label', 'ознакомление по документу ' + getElement ()[0].data)";
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
-	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
-	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionExamined')"; 	
+	v-wf:aggregate	"putValue ('v-wf:onDocument')";
+	v-wf:aggregate	"putExecutor ('v-wf:to')";
+	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')";
+	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionExamined')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:tr_approv_form
         rdf:type v-wf:Transform ;
-	v-wf:transformRule s-wf:rul_transform23_1 ;	
-	v-wf:transformRule s-wf:rul_transform23_2 ;	
+	v-wf:transformRule s-wf:rul_transform23_1 ;
+	v-wf:transformRule s-wf:rul_transform23_2 ;
 	rdfs:isDefinedBy s-wf: ;
-.		
+.
 
 s-wf:rul_transform23_1
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'initiator')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putValue ('v-wf:from')"; 	
+	v-wf:aggregate	"putValue ('v-wf:from')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -639,15 +639,15 @@ s-wf:rul_transform23_2
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'docId')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')";
 	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
 	v-wf:aggregate	"putString ('rdfs:label', 'утверждение подписанного документа ' + getElement ()[0].data)";
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
-	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
-	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionApprove')"; 	
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionRemake')"; 	
+	v-wf:aggregate	"putValue ('v-wf:onDocument')";
+	v-wf:aggregate	"putExecutor ('v-wf:to')";
+	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')";
+	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionApprove')";
+	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionRemake')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -658,7 +658,7 @@ s-wf:codelet_create_use_transformation
 	rdf:type v-s:Codelet ;
 	rdfs:label "Создать на основе трансформации (src_uri, transformation_uri)" ;
 	v-s:script """
-	create_use_transformation (process, task)	
+	create_use_transformation (process, task)
 """ ;
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -669,7 +669,7 @@ s-wf:codelet_get_type_of_docId
 	rdf:type v-s:Codelet ;
 	rdfs:label "Взять тип документа в переменной docId" ;
 	v-s:script """
-	get_type_of_docId (task)	
+	get_type_of_docId (task)
 """ ;
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -679,27 +679,27 @@ s-wf:codelet_is_run
 	rdf:type v-s:Codelet ;
 	rdfs:label "Запущен ли процесс по документу" ;
 	v-s:script """
-	is_in_docflow_and_set_if_true (task)	
+	is_in_docflow_and_set_if_true (task)
 """ ;
 	rdfs:isDefinedBy s-wf: ;
 .
-	
+
 # ------------------------------ CODELET : "понизить права" ----------------------------- #
 s-wf:codelet_down_right
 	rdf:type v-s:Codelet ;
 	rdfs:label "Понизить права" ;
 	v-s:script """
-	down_right_and_store (task)	
+	down_right_and_store (process, task)
 """ ;
 	rdfs:isDefinedBy s-wf: ;
-.	
+.
 
 # ------------------------------ CODELET : "восстановить права" ----------------------------- #
 s-wf:codelet_restore_right
 	rdf:type v-s:Codelet ;
 	rdfs:label "Восстановить права" ;
 	v-s:script """
-	restore_right (task)	
+	restore_right (task)
 """ ;
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -709,20 +709,20 @@ s-wf:codelet_interrupt_process
 	rdf:type v-s:Codelet ;
 	rdfs:label "Вывести из документооборота" ;
 	v-s:script """
-	interrupt_process (process)	
+	interrupt_process (process)
 """ ;
 	rdfs:isDefinedBy s-wf: ;
-.	
+.
 
 # ------------------------------ CODELET : "рассылка" ----------------------------- #
 s-wf:codelet_distribution
 	rdf:type v-s:Codelet ;
 	rdfs:label "Рассылка" ;
 	v-s:script """
-	distribution (process, task)	
+	distribution (process, task)
 """ ;
 	rdfs:isDefinedBy s-wf: ;
-.	
+.
 
 # ------------------------------- NET Complex Route : User Form ---------------------------- #
 s-wf:UserTaskForm
@@ -758,7 +758,7 @@ s-wf:UserTaskFormTemplate
 				<div class="col-md-3">
 					<em about="v-s:description" property="rdfs:label"></em>
 					<div about="@" property="v-s:description"></div>
-				</div>            
+				</div>
 				<div class="col-md-3">
 					<em about="v-wf:dateGiven" property="rdfs:label"></em>
 					<div about="@" property="v-wf:dateGiven"></div>
@@ -772,28 +772,28 @@ s-wf:UserTaskFormTemplate
 				</label>
 			</div>
 			<div about="@" rel="v-wf:takenDecision" embedded="true"></div>
-		</div>	
-		
+		</div>
+
 		<div class="panel-footer">
 			<button type="button" class="action btn btn-warning -view edit -search" id="send" about="v-s:Send" property="rdfs:label"/>
 <!--  Добавить кнопку Выдать задачу
 			<div class="btn-group dropup">
 				<button class="btn btn-warning btn-block dropdown-toggle sendbutton" data-toggle="dropdown">
-					<span about="v-s:SendTask" property="rdfs:label"> </span> 			
+					<span about="v-s:SendTask" property="rdfs:label"> </span>
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" id="standard-tasks">
 				</ul>
-			</div> 			
+			</div>
 -->
 			<!-- button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/ -->
 			<!-- button type="button" class="action btn btn-warning view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"/ -->
 		</div>
 		<div class="panel-body">
 			<em about="v-wf:onDocument" property="rdfs:label"></em>
-			<div about="@" rel="v-wf:onDocument" class="view edit -search"></div>			
+			<div about="@" rel="v-wf:onDocument" class="view edit -search"></div>
 		</div>
-			
+
 	</div>
 </div>
 <script type="text/javascript">
@@ -802,43 +802,43 @@ s-wf:UserTaskFormTemplate
 		individual["v-wf:possibleDecisionClass"].map( function (value, index) {
 			var tmpl = radioTmpl.clone().insertBefore(radioTmpl);
 			var input = $("input", tmpl).val(index);
-			if ( 
-				individual.hasValue("v-wf:takenDecision") 
-				&& individual.isSync() 
-				&& individual["v-wf:takenDecision"][0]["rdf:type"][0].id === individual["v-wf:possibleDecisionClass"][index].id
-			) {
-				input.prop("checked", true);
-			}
 			$("label", tmpl).append(value["rdfs:label"].join(", "));
 			input.change(function () {
 				var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
 				var decision = createDecision(type);
 				individual["v-wf:takenDecision"] = [ decision ];
 			});
+			if (
+				individual.hasValue("v-wf:takenDecision")
+				&& individual.isSync()
+				&& individual["v-wf:takenDecision"][0]["rdf:type"][0].id === individual["v-wf:possibleDecisionClass"][index].id
+			) {
+				input.prop("checked", true);
+			}
 		});
 	}
 	radioTmpl.remove();
 	template.on("view edit search", function (e) {
 		e.type === "view" ? $(".radio.decision", template).addClass("disabled").find("input").prop("disabled", true) :
-		e.type === "edit" ? $(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false) : 
+		e.type === "edit" ? $(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false) :
 							$(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false);
 	});
-	if (!individual.hasValue("v-wf:takenDecision") || !individual.isSync()) {
-		$(".radio.decision input", template).first().prop("checked", true).change();
-		template.trigger("edit");
-	} else {
-		template.trigger("view");
-	}
 	function createDecision(type) {
 		var decision = new veda.IndividualModel();
 		decision["rdf:type"] = [ type ];
 		decision["rdfs:label"] = type["rdfs:label"];
 		return decision;
 	}
+	if (!individual.hasValue("v-wf:takenDecision") || !individual.isSync()) {
+		$(".radio.decision input", template).first().prop("checked", true).change();
+		template.trigger("edit");
+	} else {
+		template.trigger("view");
+	}
 </script>
   """ ;
   .
-  
+
 v-wf:DecisionGoSign
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
@@ -856,23 +856,23 @@ v-wf:DecisionGoReview
 #----------------------- Coordination Net ------------------------------
 s-wf:tr_actor_add_request_form
     rdf:type v-wf:Transform ;
-	v-wf:transformRule s-wf:rul_tr_form_1 ;	
-	v-wf:transformRule s-wf:rul_tr_form_1a ;	
+	v-wf:transformRule s-wf:rul_tr_form_1 ;
+	v-wf:transformRule s-wf:rul_tr_form_1a ;
     v-wf:transformRule s-wf:rul_tr_form_2 ;
     v-wf:transformRule s-wf:rul_tr_form_6a ;
     v-wf:transformRule s-wf:rul_tr_form_9a ;
     v-wf:transformRule s-wf:rul_tr_form_a ;
 	rdfs:isDefinedBy s-wf: ;
-    rdfs:label "Трансформация создания пользовательской формы дополнительного запроса по задаче"@ru ;		
-.		
+    rdfs:label "Трансформация создания пользовательской формы дополнительного запроса по задаче"@ru ;
+.
 
 s-wf:rul_tr_form_6a
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'possible_decision_for_add_reaction')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putValue ('v-wf:possibleDecisionClass')"; 	
+	v-wf:aggregate	"putValue ('v-wf:possibleDecisionClass')";
 	v-wf:grouping	"1";
-	rdfs:label "Установить возможные варианты ответов"@ru ;	
+	rdfs:label "Установить возможные варианты ответов"@ru ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -883,7 +883,7 @@ s-wf:rul_tr_form_9a
 	v-wf:aggregate	"putValue ('v-s:description')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
-	rdfs:label "Установить v-s:description из переменной s-wf:var_actor_task_action"@ru ;	
+	rdfs:label "Установить v-s:description из переменной s-wf:var_actor_task_action"@ru ;
 .
 
 
@@ -891,51 +891,51 @@ s-wf:tr_actor_form
     rdf:type v-wf:Transform ;
 	v-wf:transformRule s-wf:rul_tr_form_1 ;
 	v-wf:transformRule s-wf:rul_tr_form_1a ;
-	v-wf:transformRule s-wf:rul_tr_form_a ;	
-	v-wf:transformRule s-wf:rul_tr_form_2 ;	
-	v-wf:transformRule s-wf:rul_tr_form_3 ;	
-	v-wf:transformRule s-wf:rul_tr_form_4 ;	
-	v-wf:transformRule s-wf:rul_tr_form_5 ;	
+	v-wf:transformRule s-wf:rul_tr_form_a ;
+	v-wf:transformRule s-wf:rul_tr_form_2 ;
+	v-wf:transformRule s-wf:rul_tr_form_3 ;
+	v-wf:transformRule s-wf:rul_tr_form_4 ;
+	v-wf:transformRule s-wf:rul_tr_form_5 ;
 	v-wf:transformRule s-wf:rul_tr_form_6 ;
 	v-wf:transformRule s-wf:rul_tr_form_8 ;
 	v-wf:transformRule s-wf:rul_tr_form_9 ;
 	rdfs:isDefinedBy s-wf: ;
-    rdfs:label "Трансформация создания пользовательской формы ответа на задачу"@ru ;		
-.		
+    rdfs:label "Трансформация создания пользовательской формы ответа на задачу"@ru ;
+.
 
 s-wf:rul_tr_form_1
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'docId')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')"; 	
-#	v-wf:aggregate	"putFieldOfIndividFromElement ('rdfs:label', 'rdfs:label')"; 	
+	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')";
+#	v-wf:aggregate	"putFieldOfIndividFromElement ('rdfs:label', 'rdfs:label')";
 	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:aggregate	"putValue ('v-wf:onDocument')"; 	
-	v-wf:aggregate	"putExecutor ('v-wf:to')"; 	
-	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')"; 	
+	v-wf:aggregate	"putValue ('v-wf:onDocument')";
+	v-wf:aggregate	"putExecutor ('v-wf:to')";
+	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
-    rdfs:label "Варианты ответа"@ru ;	
+    rdfs:label "Варианты ответа"@ru ;
 .
 
 s-wf:rul_tr_form_1a
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'decision_form_type')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putValue ('rdf:type')"; 	
+	v-wf:aggregate	"putValue ('rdf:type')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
-	rdfs:label "Тип формы из переменной decision_form_type"@ru ;		
+	rdfs:label "Тип формы из переменной decision_form_type"@ru ;
 .
 
 s-wf:rul_tr_form_2
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'initiator')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putValue ('v-wf:from')"; 	
+	v-wf:aggregate	"putValue ('v-wf:from')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
-	rdfs:label "От кого = инициатор"@ru ;		
+	rdfs:label "От кого = инициатор"@ru ;
 .
 
 s-wf:rul_tr_form_3
@@ -945,7 +945,7 @@ s-wf:rul_tr_form_3
 	v-wf:aggregate	"putString ('rdfs:label', '1 уровень')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
-	rdfs:label "Определение согласования 1 уровень"@ru ;	
+	rdfs:label "Определение согласования 1 уровень"@ru ;
 .
 
 s-wf:rul_tr_form_4
@@ -955,7 +955,7 @@ s-wf:rul_tr_form_4
 	v-wf:aggregate	"putString ('rdfs:label', '2 уровень')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
-	rdfs:label "Определение согласования 2 уровень"@ru ;		
+	rdfs:label "Определение согласования 2 уровень"@ru ;
 .
 
 s-wf:rul_tr_form_5
@@ -965,16 +965,16 @@ s-wf:rul_tr_form_5
 	v-wf:aggregate	"putString ('rdfs:label', '3 уровень')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
-	rdfs:label "Определение согласования 3 уровень"@ru ;		
+	rdfs:label "Определение согласования 3 уровень"@ru ;
 .
 
 s-wf:rul_tr_form_6
 	rdf:type v-wf:Rule ;
 	v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'possible_decision')" ;
 	v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-	v-wf:aggregate	"putValue ('v-wf:possibleDecisionClass')"; 	
+	v-wf:aggregate	"putValue ('v-wf:possibleDecisionClass')";
 	v-wf:grouping	"1";
-	rdfs:label "Установить возможные варианты ответов"@ru ;	
+	rdfs:label "Установить возможные варианты ответов"@ru ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -985,7 +985,7 @@ s-wf:rul_tr_form_a
 	v-wf:aggregate	"putFrontValue ('rdfs:label')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
-	rdfs:label "Установить rdfs:label из переменной actor_task_action"@ru ;	
+	rdfs:label "Установить rdfs:label из переменной actor_task_action"@ru ;
 .
 
 s-wf:rul_tr_form_8
@@ -995,7 +995,7 @@ s-wf:rul_tr_form_8
 	v-wf:aggregate	"putValue ('v-wf:dateGiven')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
-	rdfs:label "Установить v-wf:dateGiven из переменной s-wf:var_actor_task_date_to"@ru ;	
+	rdfs:label "Установить v-wf:dateGiven из переменной s-wf:var_actor_task_date_to"@ru ;
 .
 
 s-wf:rul_tr_form_9
@@ -1005,7 +1005,7 @@ s-wf:rul_tr_form_9
 	v-wf:aggregate	"putValue ('v-s:description')";
 	v-wf:grouping	"1";
 	rdfs:isDefinedBy s-wf: ;
-	rdfs:label "Установить v-s:description из переменной s-wf:var_actor_task_action"@ru ;	
+	rdfs:label "Установить v-s:description из переменной s-wf:var_actor_task_action"@ru ;
 .
 
 # ------------- journal ------------------------
@@ -1061,63 +1061,63 @@ s-wf:var_journal_process_id
 
 s-wf:map_journal_to
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_journal_to ;	
+	v-wf:mapToVariable s-wf:var_journal_to ;
 	v-wf:mappingExpression	"order.getExecutor ()" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_journal_to_4_PLV_actor
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_journal_to ;	
+	v-wf:mapToVariable s-wf:var_journal_to ;
 	v-wf:mappingExpression	"process.getLocalVariable ('actor')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_journal_to_4_OOV_result_data_N_author
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_journal_to ;	
+	v-wf:mapToVariable s-wf:var_journal_to ;
 	v-wf:mappingExpression	"get_properties_chain (order.getOutVariable ('result_data'), [{$get:'v-s:author'}])" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_journal_to_fc
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_journal_to ;	
+	v-wf:mapToVariable s-wf:var_journal_to ;
 	v-wf:mappingExpression	"process.getInputVariable ('financial_controller')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_journal_msg_4_task_label_start
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_journal_msg ;	
+	v-wf:mapToVariable s-wf:var_journal_msg ;
 	v-wf:mappingExpression	"task.getLabel ()" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_journal_msg_4_task_label_complete
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_journal_msg ;	
+	v-wf:mapToVariable s-wf:var_journal_msg ;
 	v-wf:mappingExpression	"task.getLabel ()" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_journal_initiator
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_journal_initiator ;	
+	v-wf:mapToVariable s-wf:var_journal_initiator ;
 	v-wf:mappingExpression	"process.getInputVariable ('initiator')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_journal_process_id
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_journal_process_id ;	
+	v-wf:mapToVariable s-wf:var_journal_process_id ;
 	v-wf:mappingExpression	"newUri (process.src_data['@'])" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_journal_doc_id
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_journal_doc_id ;	
+	v-wf:mapToVariable s-wf:var_journal_doc_id ;
 	v-wf:mappingExpression	"process.getInputVariable ('docId')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -1131,14 +1131,14 @@ s-wf:src_uri
 
 s-wf:map_docID_to_src
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:src_uri ;	
+	v-wf:mapToVariable s-wf:src_uri ;
 	v-wf:mappingExpression	"process.getInputVariable ('docId')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 ##########################################################################################################################################
 
-s-wf:var_actor_task 
+s-wf:var_actor_task
         rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "actor_task" ;
         rdfs:label "Actor task" ;
@@ -1147,12 +1147,12 @@ s-wf:var_actor_task
 
 s-wf:map_decision_of_set_responsible_2_actor_task
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_actor_task ;	
+	v-wf:mapToVariable s-wf:var_actor_task ;
 	v-wf:mappingExpression	"process.getLocalVariable ('decision_of_set_responsible')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:var_actor_task_action 
+s-wf:var_actor_task_action
     rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "actor_task_action" ;
 	v-wf:varDefineScope v-wf:Net ;
@@ -1160,7 +1160,7 @@ s-wf:var_actor_task_action
 	rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:var_actor_task_comment 
+s-wf:var_actor_task_comment
     rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "actor_task_comment" ;
 	v-wf:varDefineScope v-wf:Net ;
@@ -1179,10 +1179,10 @@ s-wf:var_actor_task_description
 s-wf:map_actor_task_comment_4_actor_task
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_actor_task_comment ;
-	v-wf:mappingExpression 
-    """	
-	get_properties_chain (process.getInputVariable('actor_task'), 
-							[{$go:'v-s:hasActivity'}, {$get:'v-s:description', $eq:{'v-s:responsible':process.getExecutor ()}}] )	
+	v-wf:mappingExpression
+    """
+	get_properties_chain (process.getInputVariable('actor_task'),
+							[{$go:'v-s:hasActivity'}, {$get:'v-s:description', $eq:{'v-s:responsible':process.getExecutor ()}}] )
 	""";
 	rdfs:label "Описание задачи из формы решения пользователя [actor_task]"@ru ;
 .
@@ -1190,10 +1190,10 @@ s-wf:map_actor_task_comment_4_actor_task
 s-wf:map_initiator_4_actor_task
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_initiator ;
-	v-wf:mappingExpression """	
-	get_properties_chain (process.getInputVariable('actor_task'), 
-							[{$go:'v-s:hasActivity'}, {$get:'v-s:author', $eq:{'v-s:responsible':process.getExecutor ()}}] 
-						  )	
+	v-wf:mappingExpression """
+	get_properties_chain (process.getInputVariable('actor_task'),
+							[{$go:'v-s:hasActivity'}, {$get:'v-s:author', $eq:{'v-s:responsible':process.getExecutor ()}}]
+						  )
 	""";
 	rdfs:label "Описание задачи из формы решения пользователя [actor_task]"@ru ;
 .
@@ -1201,9 +1201,9 @@ s-wf:map_initiator_4_actor_task
 s-wf:map_actor_task_date_to_4_actor_task
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_actor_task_date_to ;
-	v-wf:mappingExpression """	
-	get_properties_chain (process.getInputVariable('actor_task'), 
-							[{$go:'v-s:hasActivity'}, {$get:'v-s:dateTo', $eq:{'v-s:responsible':process.getExecutor ()}}] )	
+	v-wf:mappingExpression """
+	get_properties_chain (process.getInputVariable('actor_task'),
+							[{$go:'v-s:hasActivity'}, {$get:'v-s:dateTo', $eq:{'v-s:responsible':process.getExecutor ()}}] )
 	""";
 	rdfs:label "Описание задачи из формы решения пользователя [actor_task]"@ru ;
 .
@@ -1219,17 +1219,17 @@ s-wf:map_actor_task_action_4LV_result_decision
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_actor_task_action ;
 	v-wf:mappingExpression """
-	get_properties_chain (process.getLocalVariable('result_decision'), 
-                            [{$go:'rdf:type'}, {$get:'rdfs:label'}] )	
+	get_properties_chain (process.getLocalVariable('result_decision'),
+                            [{$go:'rdf:type'}, {$get:'rdfs:label'}] )
     """;
 	rdfs:label "Описание задачи из формы решения пользователя [result_decision]"@ru ;
 .
 
-s-wf:var_actor_task_date_to 
+s-wf:var_actor_task_date_to
     rdf:type v-wf:VarDefine ;
 	v-wf:varDefineName "actor_task_date_to" ;
     rdfs:label "Actor_task_date_to" ;
-	v-wf:varDefineScope v-wf:Net ;        
+	v-wf:varDefineScope v-wf:Net ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
@@ -1237,45 +1237,45 @@ s-wf:map_task_date_to_2_actor_task
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_actor_task_date_to ;
 	v-wf:mappingExpression """
-	
-	get_properties_chain (process.getInputVariable('actor_task'), 
-							[{$go:'v-s:hasActivity'}, {$get:'v-s:dateTo', $eq:{'v-s:responsible':process.getExecutor ()}}] 
+
+	get_properties_chain (process.getInputVariable('actor_task'),
+							[{$go:'v-s:hasActivity'}, {$get:'v-s:dateTo', $eq:{'v-s:responsible':process.getExecutor ()}}]
 						  )
-	
+
 	""";
 	rdfs:label "Описание задачи из формы решения пользователя"@ru ;
 .
 
 s-wf:map_PI_actor_task_4_actor_task
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_actor_task ;	
+	v-wf:mapToVariable s-wf:var_actor_task ;
 	v-wf:mappingExpression	"process.getInputVariable ('actor_task')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_PI_actor_task_date_to_4_actor_task_date_to
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_actor_task_date_to ;	
-	v-wf:mappingExpression	
+	v-wf:mapToVariable s-wf:var_actor_task_date_to ;
+	v-wf:mappingExpression
     """
     if (process.getInputVariable ('actor_task_add_to_date_to'))
         newDate (addDay (getFirstValue (process.getInputVariable ('actor_task_date_to')), getFirstValue (process.getInputVariable ('actor_task_add_to_date_to'))));
-    else            
+    else
         process.getInputVariable ('actor_task_date_to');
-    """;    
+    """;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_PI_actor_task_action_4_actor_task_action
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_actor_task_action ;	
+	v-wf:mapToVariable s-wf:var_actor_task_action ;
 	v-wf:mappingExpression	"process.getInputVariable ('actor_task_action')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_PI_actor_task_comment_4_actor_task_comment
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_actor_task_comment ;	
+	v-wf:mapToVariable s-wf:var_actor_task_comment ;
 	v-wf:mappingExpression	"process.getInputVariable ('actor_task_comment')" ;
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -1284,11 +1284,11 @@ s-wf:map_actor_2_result_decision
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_actor ;
 	v-wf:mappingExpression """
-	
-	get_properties_chain (process.getLocalVariable('result_decision'), 
-							[{$get:'v-wf:to'}] 
+
+	get_properties_chain (process.getLocalVariable('result_decision'),
+							[{$get:'v-wf:to'}]
 						 )
-	
+
 	""";
 	rdfs:label "Исполнитель из формы решения пользователя"@ru ;
 .
@@ -1318,7 +1318,7 @@ s-wf:def_exec_initiator
 
 s-wf:map_set_if_result
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_result ;	
+	v-wf:mapToVariable s-wf:var_result ;
 	v-wf:mappingExpression	"task_result.if_all_executors_taken_decision('v-wf:DecisionAgreed', 'v-wf:DecisionRemake')";
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -1340,7 +1340,7 @@ s-wf:map_set_actor_task_description_from_TR_result_data
 s-wf:map_set_actor_from_executor_or_PI_actor
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:var_actor ;
-	v-wf:mappingExpression	
+	v-wf:mappingExpression
     """
         if (process.getInputVariable ('actor'))
             process.getInputVariable ('actor');
@@ -1392,7 +1392,7 @@ s-wf:map_jrn_decision_b
     v-wf:mappingExpression "order.getOutVariable ('result_data')" ;
 .
 
-s-wf:net_coordination 
+s-wf:net_coordination
     a v-wf:Net;
     rdfs:label "Универсальный маршрут 1"@ru;
     v-wf:consistsOf s-wf:nc_ic, s-wf:nc_t1, s-wf:nc_t2, s-wf:nc_t3, s-wf:nc_oc, s-wf:nc_f_ic_t1, s-wf:nc_f_t1_t2, s-wf:nc_f_t3_t1;
@@ -1420,7 +1420,7 @@ d:abaa42215-965f-a032-aada-31be82a54e95 a v-wf:Flow;
     v-s:created "2015-11-09T12:51:20.156Z"^^xsd:dateTime;
     v-wf:flowsInto s-wf:nc_t1.
 
-d:a65787936-f51e-a83c-f537-95eaaa02c21a 
+d:a65787936-f51e-a83c-f537-95eaaa02c21a
 	a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-09T12:51:20.163Z"^^xsd:dateTime;
@@ -1436,40 +1436,40 @@ d:afdd3ebd0-7934-8d38-1f68-158a05f0330d a v-wf:Flow;
 d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23 a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-09T14:25:56.755Z"^^xsd:dateTime;
-    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionBreak')) == true"^^xsd:string;       
+    v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionBreak')) == true"^^xsd:string;
     v-wf:flowsInto s-wf:nc_oc.
 
 s-wf:map_set_result_from_local
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_result ;	
+	v-wf:mapToVariable s-wf:var_result ;
 	v-wf:mappingExpression	"process.getLocalVariable ('result')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_last_actor_4_PLV_actor
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_last_actor ;	
+	v-wf:mapToVariable s-wf:var_last_actor ;
 	v-wf:mappingExpression	"process.getLocalVariable ('actor')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:m_result_f_out_var
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_result ;	
+	v-wf:mapToVariable s-wf:var_result ;
 	v-wf:mappingExpression	"task.getOutVariable ('result')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_set_result_decision_from_local
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_result_decision ;	
+	v-wf:mapToVariable s-wf:var_result_decision ;
 	v-wf:mappingExpression	"process.getLocalVariable ('result_decision')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_now_plus_30_4_actor_task_date_to
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_actor_task_date_to ;	
+	v-wf:mapToVariable s-wf:var_actor_task_date_to ;
 	v-wf:mappingExpression	"newDate (addDay (new Date (), 30))";
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -1483,7 +1483,7 @@ s-wf:nc_ic v-wf:hasFlow s-wf:nc_f_ic_t1;
     rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow/>.
 
 
-s-wf:nc_t3 
+s-wf:nc_t3
     v-wf:hasFlow s-wf:nc_f_t3_t1, d:aec10d9da-789d-fd65-a094-bd4ed7b14822;
     v-wf:join v-wf:None;
     v-wf:locationY "516"^^xsd:integer;
@@ -1498,26 +1498,26 @@ s-wf:nc_t3
 d:aec10d9da-789d-fd65-a094-bd4ed7b14822 a v-wf:Flow;
     v-s:author td:RomanKarpov-Analyst1;
     v-s:created "2015-11-17T11:54:51.991Z"^^xsd:dateTime;
-    v-wf:predicate "process.getInputVariable ('actor_task') != undefined"^^xsd:string;   
+    v-wf:predicate "process.getInputVariable ('actor_task') != undefined"^^xsd:string;
     v-wf:flowsInto d:a16bb1fd3-64eb-a7bb-501d-889b2aa4500d.
-    
+
 s-wf:nc_f_t3_t1 a v-wf:Flow;
     rdfs:isDefinedBy s-wf: ;
     v-wf:belongsTo s-wf:net_coordination;
-    v-wf:predicate "process.getInputVariable ('actor_task') == undefined"^^xsd:string;  
+    v-wf:predicate "process.getInputVariable ('actor_task') == undefined"^^xsd:string;
     v-wf:flowsInto s-wf:c1;
-    .    
-    
+    .
+
 d:a16bb1fd3-64eb-a7bb-501d-889b2aa4500d v-wf:hasFlow d:a8b89a22d-23b9-1c1c-c5dc-3443fd3972de;
     v-wf:locationY "388"^^xsd:integer;
     a v-wf:Task;
     rdfs:label "Установить параметры из переменной actor_task"^^xsd:string;
     v-s:author td:RomanKarpov-Analyst1;
-    v-wf:completedMapping s-wf:map_actor_task_date_to_4_actor_task, s-wf:map_actor_task_comment_4_actor_task, s-wf:map_initiator_4_actor_task;    
+    v-wf:completedMapping s-wf:map_actor_task_date_to_4_actor_task, s-wf:map_actor_task_comment_4_actor_task, s-wf:map_initiator_4_actor_task;
     v-s:created "2015-11-17T11:54:51.988Z"^^xsd:dateTime;
     v-wf:locationX "381"^^xsd:integer.
 
-s-wf:nc_t1 
+s-wf:nc_t1
     a v-wf:Task;
 	rdfs:isDefinedBy s-wf: ;
     v-wf:locationX "660"^^xsd:integer;
@@ -1528,7 +1528,7 @@ s-wf:nc_t1
     rdfs:label "Установить права"^^xsd:string;
 .
 
-s-wf:nc_t2 
+s-wf:nc_t2
     a v-wf:Task;
     v-wf:locationX "865"^^xsd:integer;
     v-wf:locationY "529"^^xsd:integer;
@@ -1551,14 +1551,14 @@ s-wf:nc_t2
     v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
 .
 
-s-wf:additional_user_response 
+s-wf:additional_user_response
     a v-wf:Task;
     v-wf:hasFlow d:afdd3ebd0-7934-8d38-1f68-158a05f0330d, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23, d:a74e1dea7-75e9-9d5f-b942-d1a7f2b91b2b;
-	v-wf:split v-wf:XOR;    
+	v-wf:split v-wf:XOR;
     v-wf:locationY "356"^^xsd:integer;
 	v-wf:startDecisionTransform s-wf:tr_actor_add_request_form;
-    v-wf:completeDecisionTransform s-wf:tr_taken_decision;    
-	v-wf:startingMapping s-wf:map_doc_id, s-wf:map_set_add_request_actor_from_initiator, s-wf:map_initiator_from_actor, s-wf:map_possible_decision_for_add_reaction;   
+    v-wf:completeDecisionTransform s-wf:tr_taken_decision;
+	v-wf:startingMapping s-wf:map_doc_id, s-wf:map_set_add_request_actor_from_initiator, s-wf:map_initiator_from_actor, s-wf:map_possible_decision_for_add_reaction;
     v-wf:startingMapping s-wf:map_actor_task_description_from_LV_result_decision, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_action_4LV_result_decision;
     v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_set_actor_task_description_from_TR_result_data;
     rdfs:label "Дополнительная реакция"^^xsd:string;
@@ -1570,28 +1570,28 @@ s-wf:additional_user_response
 
 s-wf:map_set_decision_from_local
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_result ;	
+	v-wf:mapToVariable s-wf:var_result ;
 	v-wf:mappingExpression	"task_result.getValue ('result')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_t2_sm1
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_actor_task_date_to ;	
+	v-wf:mapToVariable s-wf:var_actor_task_date_to ;
 	v-wf:mappingExpression	"process.getLocalVariable ('actor_task_date_to')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_t2_sm2
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_actor_task_action ;	
+	v-wf:mapToVariable s-wf:var_actor_task_action ;
 	v-wf:mappingExpression	"process.getLocalVariable ('actor_task_action')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_t2_sm3
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_actor_task_comment ;	
+	v-wf:mapToVariable s-wf:var_actor_task_comment ;
 	v-wf:mappingExpression	"process.getLocalVariable ('actor_task_comment')";
 	rdfs:isDefinedBy s-wf: ;
 .
@@ -1623,7 +1623,7 @@ s-wf:nc_f_t2_t1 a v-wf:Flow;
     v-wf:flowsInto d:abc5142af-b501-1ec6-8ee0-acb767f078a4;
     rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow-base/>.
 
-d:abc5142af-b501-1ec6-8ee0-acb767f078a4 
+d:abc5142af-b501-1ec6-8ee0-acb767f078a4
 	v-wf:hasFlow d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e;
     v-wf:locationY "637"^^xsd:integer;
     a v-wf:Task;
@@ -1678,55 +1678,55 @@ s-wf:ss1 a v-s:SavedSearch;
 # ----------- define vars for message template -------
 s-wf:map_msg_template_4_SV_default_template
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_msg_template ;	
+	v-wf:mapToVariable s-wf:var_msg_template ;
 	v-wf:mappingExpression	"newUri ('m-l:msg-template-optiflow')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_from_4_TIV_initiator
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_from ;	
+	v-wf:mapToVariable s-wf:var_from ;
 	v-wf:mappingExpression	"task.getInputVariable ('initiator')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_wf_from_4_TIV_initiator
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_wf_from ;	
+	v-wf:mapToVariable s-wf:var_wf_from ;
 	v-wf:mappingExpression	"newUri ('cfg:VedaSystemAppointment')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_document_4_TIV_docId
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_document ;	
+	v-wf:mapToVariable s-wf:var_document ;
 	v-wf:mappingExpression	"task.getInputVariable ('docId')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_comment_4_TIV_actor_task_action
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_comment ;	
+	v-wf:mapToVariable s-wf:var_comment ;
 	v-wf:mappingExpression	"task.getInputVariable ('actor_task_action')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_inbox_url_4_vedaInfo_appInboxUrl
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_inbox_url ;	
+	v-wf:mapToVariable s-wf:var_inbox_url ;
 	rdfs:isDefinedBy s-wf: ;
-    v-wf:mappingExpression  
+    v-wf:mappingExpression
     """
-	get_properties_chain (newUri ('v-s:vedaInfo'), 
-							[{$get:'v-wf:appInboxUrl'}])	
+	get_properties_chain (newUri ('v-s:vedaInfo'),
+							[{$get:'v-wf:appInboxUrl'}])
 	""";
 .
 
 s-wf:map_doc_url_4_vedaInfo_appUrl
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_document_url ;	
+	v-wf:mapToVariable s-wf:var_document_url ;
 	rdfs:isDefinedBy s-wf: ;
-    v-wf:mappingExpression  
+    v-wf:mappingExpression
     """
 	newStr (getFirstValue (get_properties_chain (newUri ('v-s:vedaInfo'), [{$get:'v-s:appUrl'}])) + "/" + getFirstValue(task.getInputVariable ('docId')))
 	""";
@@ -1734,22 +1734,22 @@ s-wf:map_doc_url_4_vedaInfo_appUrl
 
 s-wf:map_vf_to_4_O_executor
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_wf_to ;	
+	v-wf:mapToVariable s-wf:var_wf_to ;
 	v-wf:mappingExpression	"order.getExecutor ()";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_to_4_O_executor
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_to ;	
+	v-wf:mapToVariable s-wf:var_to ;
 	v-wf:mappingExpression	"order.getExecutor ()";
 	rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_task_url_4_O_DecisionForms
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_task_url;	
-    v-wf:mappingExpression  
+	v-wf:mapToVariable s-wf:var_task_url;
+    v-wf:mappingExpression
     """
 	newStr (getFirstValue (get_properties_chain (newUri ('v-s:vedaInfo'), [{$get:'v-s:appUrl'}])) + "/" + getFirstValue(order.getDecisionForms ()))
 	""";
@@ -1758,12 +1758,12 @@ s-wf:map_task_url_4_O_DecisionForms
 
 s-wf:map_rdf_type_4_v_s_Email
 	rdf:type v-wf:Mapping ;
-	v-wf:mapToVariable s-wf:var_rdf_type ;	
+	v-wf:mapToVariable s-wf:var_rdf_type ;
 	v-wf:mappingExpression	"newUri ('v-s:Email')";
 	rdfs:isDefinedBy s-wf: ;
 .
 
-# # # # # # # # # # # # # # # # # # #   
+# # # # # # # # # # # # # # # # # # #
 
 s-wf:var_msg_template
     rdf:type v-wf:VarDefine ;
@@ -1846,24 +1846,24 @@ s-wf:msg-default-template
 	rdf:type v-s:TemplateForText ;
 	v-s:templateLanguage v-ui:RU ;
 	v-s:templateSubject "СЭД Задача: Исполнить поручение по документу: {{document}}" ;
-	v-s:templateBody 
+	v-s:templateBody
 	"""
 от пользователя: {{from}}, Вам поступило поручение по документу: {{document}}
 Комментарий: {{comment}}.
 
 Используйте ссылки для перехода на нужные страницы:
 
-документ: {{document_url}} 
-задача: {{task_url}} 
-все входящие задачи: {{inbox_url}} 
+документ: {{document_url}}
+задача: {{task_url}}
+все входящие задачи: {{inbox_url}}
 	""";
-.	
+.
 
 s-wf:map_currentNetToIsProcess_to_transformation
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:transformation_uri ;
 	v-wf:mappingExpression  "newUri('s-wf:currentNetToIsProcess')" ;
-    rdfs:label "добавление id процесса в поле документа"@ru ;  
+    rdfs:label "добавление id процесса в поле документа"@ru ;
 .
 
 s-wf:currentNetToIsProcess
@@ -1874,13 +1874,13 @@ s-wf:currentNetToIsProcess
 s-wf:rule1currentNetToIsProcess
   rdf:type v-wf:Rule ;
   v-wf:aggregate "putElement ()" ;
-  v-wf:grouping	"@", "1";    
+  v-wf:grouping	"@", "1";
 .
 s-wf:rule2currentNetToIsProcess
   rdf:type v-wf:Rule ;
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate  "putThisProcess ('v-wf:isProcess')";
-  v-wf:grouping	"@", "1";    
+  v-wf:grouping	"@", "1";
 .
 
 
@@ -1888,7 +1888,7 @@ s-wf:map_currentNetFromIsProcess_to_transformation
 	rdf:type v-wf:Mapping ;
 	v-wf:mapToVariable s-wf:transformation_uri ;
 	v-wf:mappingExpression  "newUri('s-wf:currentNetFromIsProcess')" ;
-    rdfs:label "удаление id процесса из поля документа"@ru ;  
+    rdfs:label "удаление id процесса из поля документа"@ru ;
 .
 s-wf:currentNetFromIsProcess
   rdf:type v-wf:Transform ;
@@ -1898,11 +1898,11 @@ s-wf:currentNetFromIsProcess
 s-wf:rule1currentNetFromIsProcess
   rdf:type v-wf:Rule ;
   v-wf:aggregate "putElement ()" ;
-  v-wf:grouping	"@", "1";    
+  v-wf:grouping	"@", "1";
 .
 s-wf:rule2currentNetFromIsProcess
   rdf:type v-wf:Rule ;
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate  "removeThisProcess ('v-wf:isProcess')";
-  v-wf:grouping	"@", "1";    
+  v-wf:grouping	"@", "1";
 .

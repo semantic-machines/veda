@@ -12,7 +12,7 @@
 	    "../../veda/common", 
 	    "../../veda/onto",  
 	    "../../veda/util", 
-	    "../../veda/process",
+            "../../veda/vmodule",
 	    "../../veda/core/impl", 
 	    "../../veda/core/az", 
 	    "../../veda/core/search", 

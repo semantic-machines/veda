@@ -1111,6 +1111,17 @@ v-s:PsSum_decimal
   rdfs:label "Sum property specification for ProjectPhase class"@en ;
   rdfs:label "Спецификация суммы для класса ProjectPhase"@ru ;
 .
+v-s:PsCommentForProjectPhaseCost
+  rdf:type v-ui:StringPropertySpecification ;
+  v-ui:forClass v-s:ProjectPhaseCost ;
+  v-ui:forProperty rdfs:comment ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  v-ui:tooltip "non-Required, single Text"@en ;
+  v-ui:tooltip "Необязательно к заполнению, единичное значение. Текст без ограничений."@ru ;
+  rdfs:label "Comment property specification for ProjectPhaseCost class"@en ;
+  rdfs:label "Спецификация комментария класса ProjectPhaseCost"@ru ;
+.
 v-s:hasCurrencyKind
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:ProjectPhaseCost ;

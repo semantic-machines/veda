@@ -1,4 +1,4 @@
-module veda.process.child_process;
+module veda.vmodule.vmodule;
 
 private
 {
@@ -10,6 +10,7 @@ private
     import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.onto.onto;
     import veda.core.bind.libwebsocketd;
+    import veda.util.container;
 }
 
 bool   f_listen_exit = false;
@@ -32,15 +33,18 @@ shared static this()
     bsd_signal(SIGINT, &handleTermination);
 }
 
-int          connection_flag = 0;
-int          destroy_flag    = 0;
-int          writeable_flag  = 0;
+int        connection_flag = 0;
+int        destroy_flag    = 0;
+int        writeable_flag  = 0;
 
-ChildProcess g_child_process;
+VedaModule g_child_process;
 
-class ChildProcess
+class VedaModule
 {
-    long                      op_id;
+    Cache!(string, string) cache_of_indv;
+
+    long                      op_id          = 0;
+    long                      commited_op_id = 0;
 
     long                      count_signal           = 0;
     long                      count_readed           = 0;
@@ -84,6 +88,8 @@ class ChildProcess
         {
             node = context.getConfiguration();
         }
+
+        cache_of_indv = new Cache!(string, string)(1000, "individuals");
     }
 
     private void init_chanel()
@@ -136,10 +142,10 @@ class ChildProcess
     {
         if (configure() == false)
         {
-            log.trace("[%s] configure is fail, terminate", process_name);        	
-	        return;
-        }        	
-    	
+            log.trace("[%s] configure is fail, terminate", process_name);
+            return;
+        }
+
         ubyte[] buffer = new ubyte[ 1024 ];
 
         queue = new Queue(queue_name, Mode.R);
@@ -164,11 +170,11 @@ class ChildProcess
         {
             while (true)
             {
-	            if (f_listen_exit == true)
-	            {
-	                log.trace("EXIT");
-	                break;
-	            }    
+                if (f_listen_exit == true)
+                {
+                    log.trace("EXIT");
+                    break;
+                }
 
                 init_chanel();
 
@@ -196,7 +202,7 @@ class ChildProcess
         {
             log.trace("MAIN LOOP EXIT %s", tr.msg);
         }
-        
+
         _log.close();
     }
 
@@ -209,6 +215,7 @@ class ChildProcess
 
     abstract bool configure();
 
+    abstract void thread_id();
 
     private void prepare_queue()
     {
@@ -262,6 +269,8 @@ class ChildProcess
                     onto = context.get_onto();
 
                 onto.update_class_in_hierarchy(new_indv, true);
+
+                cache_of_indv.put(new_indv.uri, new_bin);
 
                 try
                 {
@@ -340,10 +349,14 @@ int websocket_write_back(lws *wsi_in, string str)
 
 extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason, void *user, void *_in, size_t len)
 {
-    // writeln ("@@reason=", reason);
+    //writeln ("@@reason=", reason);
 
     switch (reason)
     {
+    case lws_callback_reasons.LWS_CALLBACK_GET_THREAD_ID:
+        g_child_process.thread_id();
+        break;
+
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_ESTABLISHED:
         //writeln("[CP]Connect with server success.");
         connection_flag = 1;
@@ -367,7 +380,18 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
 
         string res;
         if (msg == "get_opid")
-            res = text(g_child_process.op_id);
+        {
+            long prepared_op_id;
+
+            if (g_child_process.commited_op_id != 0)
+                prepared_op_id = g_child_process.commited_op_id;
+            else
+                prepared_op_id = g_child_process.op_id;
+
+            //writeln ("@module[", process_name, "] get_op_id, return op_id=", prepared_op_id);
+
+            res = text(prepared_op_id);
+        }
         else
             res = "Ok";
 

@@ -68,7 +68,7 @@ v-ft:Completed
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Completed"@en ;
   rdfs:label "Выполненные"@ru ;
-  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$2')"^^xsd:string ;  
+  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$2')"^^xsd:string ;
   v-ft:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
 .
 v-ft:TasksNotFound
@@ -91,7 +91,8 @@ v-ft:FunctionTasksTemplate
 	<table class="table table-condensed table-bordered table-striped">
 		<thead>
 			<tr>
-				<th width="20px">#</span></th>
+				<th width="20px">#</th>
+				<th width="20px"><span class="glyphicon glyphicon-search"></span></th>
 				<th width="10%">
 					<a id="v-wf:from" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
 					<span about="v-wf:from" property="rdfs:label"></span>
@@ -129,12 +130,12 @@ v-ft:FunctionTasksTemplate
 </div>
 <script>
 	var tasks = individual.tasks;
-	
+
 	tasks.on("afterSearch", renderTasks);
 	template.on("remove", function () {
 		tasks.off("afterSearch", renderTasks);
 	});
-	
+
 	var tmplInd = new veda.IndividualModel("v-ft:TaskTemplate");
 	var tmpl = tmplInd["v-ui:template"][0].toString();
 	var cnt = $("#tasks", template);
@@ -144,7 +145,7 @@ v-ft:FunctionTasksTemplate
 		e.preventDefault();
 		var sortOrder = $(this);
 		var dir = sortOrder.hasClass("glyphicon-sort-by-attributes-alt") ? " asc" : " desc";
-		sortOrder.toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");					
+		sortOrder.toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");
 		if (this.id === "v-s:description") {
 			tasks["v-fs:sortOrder"] = ["'" + this.id + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir];
 		} else {
@@ -155,18 +156,18 @@ v-ft:FunctionTasksTemplate
 	});
 
 	tasks.search();
-	
+
 	$("#refresh", template).click(function (e) {
 		e.preventDefault();
 		tasks.search();
 	});
-	
+
 	function renderTasks(result) {
 		if (result.length) {
-			
+
 			cnt.empty();
 			pager.empty();
-			
+
 			var sortBy = dir = "";
 			if ( tasks.hasValue("v-fs:sortOrder") ) {
 				var t = tasks["v-fs:sortOrder"][0].split(" ");
@@ -187,7 +188,7 @@ v-ft:FunctionTasksTemplate
 			if (tasks.count < tasks.page * veda.user.displayedElements) {
 				tasks.page = Math.floor(tasks.count / veda.user.displayedElements) + 1 * (tasks.count % veda.user.displayedElements ? 1 : 0) - 1;
 			}
-			
+
 			for (var i = tasks.page * veda.user.displayedElements; i < (tasks.page + 1) * veda.user.displayedElements && i < tasks.count; i++) {
 				(function (i) {
 					setTimeout(function () {
@@ -197,7 +198,7 @@ v-ft:FunctionTasksTemplate
 					}, 0);
 				}(i));
 			}
-			
+
 			// Show pager
 			for (var pg = 0; pg < Math.floor(tasks.count / veda.user.displayedElements) + 1 * (tasks.count % veda.user.displayedElements ? 1 : 0); pg++) {
 				var $pg = $("<li/>")
@@ -229,13 +230,14 @@ v-ft:TaskTemplate
   v-ui:template """
 <tr>
 	<td>###</td>
+	<td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
 	<td rel="v-wf:from" template="v-ui:LabelTemplate"></td>
 	<td rel="v-wf:to" template="v-ui:LabelTemplate"></td>
 	<td>
 		<a href="#/@" property="rdfs:label"></a>
 		<p><span property="v-s:description"></span></p>
 	</td>
-	<td rel="v-wf:onDocument" template="v-ui:LabelTemplate"></td>
+	<td rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate"></td>
 	<td property="v-wf:dateGiven"></td>
 </tr>
 <script>

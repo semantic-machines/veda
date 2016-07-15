@@ -215,7 +215,7 @@ interface Context
     public bool acl_check_for_reload(void delegate() load);
 
     bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
-    string get_individual_from_storage(string uri);
+    string get_from_individual_storage(string uri);
     Onto get_onto();
 
     public string get_ticket_from_storage(string ticket_id);

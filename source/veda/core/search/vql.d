@@ -68,7 +68,7 @@ class VQL
         {
             Individual individual = Individual();
 
-            string     data = context.get_individual_from_storage(uri);
+            string     data = context.get_from_individual_storage(uri);
 
             if (data is null)
             {
@@ -103,7 +103,7 @@ class VQL
         {
             Individual individual = Individual();
 
-            string     data = context.get_individual_from_storage(uri);
+            string     data = context.get_from_individual_storage(uri);
 
             if (data is null)
             {
@@ -205,7 +205,7 @@ class VQL
             void delegate(string uri) dg;
             void collect_subject(string uri)
             {
-                string data = context.get_individual_from_storage(uri);
+                string data = context.get_from_individual_storage(uri);
 
                 if (data is null)
                 {
@@ -223,7 +223,7 @@ class VQL
                     {
                         //writeln("ERR! invalid individual=", uri);
                         context.reopen_ro_subject_storage_db();
-                        data = context.get_individual_from_storage(uri);
+                        data = context.get_from_individual_storage(uri);
                         if (cbor2individual(&ind, data) > 0)
                         {
                             res ~= ind;

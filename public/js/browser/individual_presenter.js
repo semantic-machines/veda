@@ -1009,7 +1009,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 							);
 						} else {
 							$(".value", result).append (
-								"<div rel='" + property_uri + "' template='v-ui:ClassNameLabelTemplate' />" +
+								"<div rel='" + property_uri + "' template='v-ui:ClassNameLabelLinkTemplate' />" +
 								"<veda-control rel='" + property_uri + "' type='link' class='-view edit search fullsearch fulltext dropdown'></veda-control>"
 							);
 						}

@@ -372,7 +372,7 @@ v-fs:FulltextRequestTemplate
 					</div>
 				</div>
 				<h4 about="v-fs:ChooseType" property="rdfs:label"></h4>
-				<div rel="v-fs:typeToSearch" template="v-ui:ClassNameLabelTemplate"></div>
+				<div rel="v-fs:typeToSearch" template="v-ui:ClassNameLabelLinkTemplate"></div>
 				<veda-control rel="v-fs:typeToSearch" type="link" class="fulltext dropdown"></veda-control>
 			</form>
 		</div>
