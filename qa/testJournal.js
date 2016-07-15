@@ -39,7 +39,7 @@ basic.getDrivers().forEach (function (drv) {
 
 	basic.login(driver, 'bychinat', '123', 'Андрей', 'Бычин');
 	
-	person.createPerson(driver, drv, 'first');
+	person.createPerson(driver, drv, 'Букин', 'Геннадий','first');
 	
 	// Check Journal (+1 new version)	
 	assertCounts(driver, drv, 1, 1, 0);

@@ -10,11 +10,11 @@ basic.getDrivers().forEach (function (drv) {
 	basic.openPage(driver, drv);
 	basic.login(driver, 'karpovrt', '123', 'Роман', 'Карпов');
 	
-	person.createPerson(driver, drv, timeStamp);
+	person.createPerson(driver, drv, 'Пупкин', 'Вася', timeStamp);
 	
 	// Открываем поисковый бланк
 	basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
-	
+
 	// Вводим текст запроса
 	driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input'}).sendKeys(timeStamp)
 		  .thenCatch(function (e) {basic.errorHandler(e, "Cannot input search request")});;

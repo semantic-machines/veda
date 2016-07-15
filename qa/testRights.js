@@ -55,16 +55,19 @@ basic.getDrivers().forEach (function (drv) {
 
     //Создание документа пользователем с большими правами
     basic.login(driver, 'karpovrt', '123', 'Роман', 'Карпов');
-    person.createPerson(driver, drv, timeStamp);
+    person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp);
     basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
     search(driver, timeStamp, 1);
     logout(driver);
 
     //Проверка отсутсвия созданного документа и создание нового документа пользователем с меньшими правами
     basic.login(driver, 'bychinat', '123', 'Андрей', 'Бычин');
-    basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
+    driver.findElement({id:'params-pill-ft'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'params' button")});
+    driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).clear();
+    driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).sendKeys('Персона');
     search(driver, timeStamp, 0);
-    person.createPerson(driver, drv, timeStamp + 1);
+    person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp + 1);
     logout(driver);
 
     //Проверка наличия созданного документа пользователем с меньшими правами
