@@ -599,17 +599,13 @@ cfg:Event_6
  * parent_document_id = id of the document that triggered this event.
  */
 
-var prev_onto_vsn = get_individual(ticket, "cfg:OntoVsn");
-if (prev_onto_vsn)
-{
-	// Update ontology vsn
-	var vsn = {
-		"@" : "cfg:OntoVsn",
-		"rdf:type"  : newUri("rdfs:Resource"),
-		"rdf:value" : newStr( guid() )
-	};
-	put_individual (ticket, vsn, _event_id);
-}
+// Update ontology vsn
+var vsn = {
+	"@" : "cfg:OntoVsn",
+	"rdf:type"  : newUri("rdfs:Resource"),
+	"rdf:value" : newStr( guid() )
+};
+put_individual (ticket, vsn, _event_id);
 
 // Add to cfg:OntologyGroup
 var doc_uri = document['@'],
