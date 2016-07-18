@@ -28,7 +28,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	socket.onmessage = function (event) {
 		var msg = event.data,
 				uris;
-		//console.log("server:", msg);
+		console.log("server:", msg);
 		switch ( true ) {
 			case ( msg.indexOf("=") === 0 ):
 				// Synchronize subscription
@@ -101,11 +101,11 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 			delta = {};
 			if (subscribeMsg) {
 				socket.send(subscribeMsg);
-				//console.log("client: subscribe", subscribeMsg);
+				console.log("client: subscribe", subscribeMsg);
 			}
 			if (unsubscribeMsg) {
 				socket.send(unsubscribeMsg);
-				//console.log("client: unsubscribe", unsubscribeMsg);
+				console.log("client: unsubscribe", unsubscribeMsg);
 			}
 
 			clearInterval(interval);
@@ -122,7 +122,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 				list = {};
 				delta = {};
 				socket.send("=");
-				//console.log("client: synchronize");
+				console.log("client: synchronize");
 			},
 			subscribe: function(uri) {
 				if (list[uri]) {
@@ -150,7 +150,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 					list = {};
 					delta = {};
 					socket.send("-*");
-					//console.log("client: unsubscribe all");
+					console.log("client: unsubscribe all");
 				} else {
 					if ( !list[uri] ) {
 						return;
