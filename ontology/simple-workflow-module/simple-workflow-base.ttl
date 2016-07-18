@@ -1375,7 +1375,7 @@ s-wf:map_jrn_msg_nce_t2_b
         rdf:type v-wf:Mapping ;
 	rdfs:isDefinedBy s-wf: ;
         v-wf:mapToVariable s-wf:var_journal_msg ;
-        v-wf:mappingExpression "newStr ('получен ответ на задачу')" ;
+        v-wf:mappingExpression "newStr ('Получен ответ на задачу')" ;
 .
 
 s-wf:map_jrn_msg_nce_t2_b_ev
