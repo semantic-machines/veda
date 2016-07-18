@@ -7,7 +7,8 @@ private
 {
     import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string;
     import veda.core.bind.lmdb_header, veda.onto.individual;
-    import util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.core.common.context, veda.core.common.define, veda.core.storage.binlog_tools;
+    import util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.core.common.context, veda.core.common.define,
+           veda.core.storage.binlog_tools;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -56,6 +57,7 @@ public class LmdbStorage : Storage
     private string      _path;
     string              db_name;
     string              parent_thread_name;
+    long                last_op_id;
 
     /// конструктор
     this(string _path_, DBMode _mode, string _parent_thread_name)
@@ -198,7 +200,21 @@ public class LmdbStorage : Storage
 
             if (rc == 0 && mode == DBMode.RW)
             {
-                string hash_str = find(summ_hash_this_db_id);
+                string   data_str = find(summ_hash_this_db_id);
+
+                string[] dataff = data_str.split(',');
+                string   hash_str;
+                if (dataff.length == 2)
+                {
+                    hash_str = dataff[ 0 ];
+
+                    try
+                    {
+                        last_op_id = to!long (dataff[ 1 ]);
+                        log.trace("%s last_op_id=%d", _path, last_op_id);
+                    }
+                    catch (Throwable tr) {}
+                }
 
                 if (hash_str is null || hash_str.length < 1)
                     hash_str = "0";
@@ -440,9 +456,7 @@ public class LmdbStorage : Storage
 
 
 
-    long count_update;
-
-    public int update_or_create(string uri, string content, out string new_hash)
+    public int update_or_create(string uri, string content, long op_id, out string new_hash)
     {
         try
         {
@@ -482,7 +496,7 @@ public class LmdbStorage : Storage
                 growth_db(env, txn);
 
                 // retry
-                return update_or_create(uri, content, new_hash);
+                return update_or_create(uri, content, op_id, new_hash);
             }
 
             if (rc != 0)
@@ -492,14 +506,14 @@ public class LmdbStorage : Storage
                 throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
             }
 
-            count_update++;
-
             if (summ_hash_this_db != BigInt.init)
             {   // put current db summ hash
+                string f_data = new_hash ~ "," ~ text(op_id);
+
                 key.mv_data  = cast(char *)summ_hash_this_db_id;
                 key.mv_size  = summ_hash_this_db_id.length;
-                data.mv_data = cast(char *)new_hash;
-                data.mv_size = new_hash.length;
+                data.mv_data = cast(char *)f_data;
+                data.mv_size = f_data.length;
                 rc           = mdb_put(txn, dbi, &key, &data, 0);
 
                 if (rc == MDB_MAP_FULL)
@@ -507,7 +521,7 @@ public class LmdbStorage : Storage
                     growth_db(env, txn);
 
                     // retry
-                    return update_or_create(uri, content, new_hash);
+                    return update_or_create(uri, content, op_id, new_hash);
                 }
 
                 if (rc != 0)
@@ -526,7 +540,7 @@ public class LmdbStorage : Storage
                 growth_db(env, null);
 
                 // retry
-                return update_or_create(uri, content, new_hash);
+                return update_or_create(uri, content, op_id, new_hash);
             }
 
             if (rc != 0)

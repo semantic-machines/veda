@@ -448,16 +448,16 @@ public long get_count_onto_update()
 
 ///
 
-private shared long count_put = 0;
+private shared long subject_manager_op_id = 0;
 
-public void inc_count_put(long delta = 1)
+public void set_subject_manager_op_id(long data)
 {
-    atomicOp !"+=" (count_put, delta);
+    atomicStore(subject_manager_op_id, data);
 }
 
-public long get_count_put()
+public long get_subject_manager_op_id()
 {
-    return atomicLoad(count_put);
+    return atomicLoad(subject_manager_op_id);
 }
 
 ///
