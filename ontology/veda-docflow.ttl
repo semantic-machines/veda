@@ -713,6 +713,7 @@ v-wf:DecisionAnswerToYourQuestion
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Ответ на ваш вопрос"@ru ;
+	rdfs:label "Answer to your question"@en ;
 .
 
 v-wf:DecisionControll
@@ -720,6 +721,7 @@ v-wf:DecisionControll
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Принять отчет по поручению"@ru ;
+	rdfs:label "Accept report"@en ;
 .
 
 v-wf:DecisionNotRequireReview
@@ -727,6 +729,7 @@ v-wf:DecisionNotRequireReview
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Не требует рассмотрения"@ru ;
+	rdfs:label "Review is not necessary"@en ;
 .
 
 v-wf:DecisionAgreed
@@ -734,6 +737,7 @@ v-wf:DecisionAgreed
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Согласовано"@ru ;
+	rdfs:label "Approved"@en ;
 .
 
 v-wf:DecisionAgreedToProject
@@ -741,6 +745,7 @@ v-wf:DecisionAgreedToProject
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Начать проект"@ru ;
+	rdfs:label "Start project"@en ;
 .
 
 v-wf:DecisionAgreedToExecute
@@ -748,6 +753,7 @@ v-wf:DecisionAgreedToExecute
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Согласовано в реализацию"@ru ;
+	rdfs:label "Approved for implementation"@en ;
 .
 
 v-wf:DecisionAgreedToExecuteComment
@@ -755,6 +761,7 @@ v-wf:DecisionAgreedToExecuteComment
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Согласовано в реализацию"@ru ;
+	rdfs:label "Approved for implementation"@en ;
 .
 
 v-wf:DecisionSign
@@ -762,6 +769,7 @@ v-wf:DecisionSign
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Подписано"@ru ;
+	rdfs:label "Signed"@en ;
 .
 
 v-wf:DecisionApprove
@@ -769,6 +777,7 @@ v-wf:DecisionApprove
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Утверждено"@ru ;
+	rdfs:label "Approved"@en ;
 .
 
 v-wf:DecisionReview
@@ -776,6 +785,7 @@ v-wf:DecisionReview
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Рассмотрено"@ru ;
+	rdfs:label "Reviewed"@en ;
 .
 
 v-wf:DecisionRejected
@@ -783,6 +793,7 @@ v-wf:DecisionRejected
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Отклонено"@ru ;
+	rdfs:label "Declined"@en ;
 .
 
 v-wf:DecisionRemake
@@ -790,6 +801,7 @@ v-wf:DecisionRemake
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Доработать"@ru ;
+	rdfs:label "Rework"@en ;
 .
 
 v-wf:DecisionRemaked
@@ -797,13 +809,15 @@ v-wf:DecisionRemaked
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Доработано"@ru ;
+	rdfs:label "Reworked"@en ;
 .
 
 v-wf:DecisionNotForMe
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
-	rdfs:label "Исполнитель не я"@ru ;
+	rdfs:label "Ошибочный исполнитель"@ru ;
+	rdfs:label "Wrong executor"@en ;
 .
 
 v-wf:DecisionBreak
@@ -811,6 +825,7 @@ v-wf:DecisionBreak
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Прервать маршрут"@ru ;
+	rdfs:label "Cancel route"@en ;
 .
 
 v-wf:DecisionExamined
@@ -818,6 +833,7 @@ v-wf:DecisionExamined
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Ознакомлен"@ru ;
+	rdfs:label "Examined"@en ;
 .
 
 v-wf:DecisionAchieved
@@ -825,6 +841,7 @@ v-wf:DecisionAchieved
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Выполнено"@ru ;
+	rdfs:label "Completed"@en ;
 .
 
 v-wf:DecisionNotPerformed
@@ -832,6 +849,7 @@ v-wf:DecisionNotPerformed
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Не выполнено"@ru ;
+	rdfs:label "Not completed"@en ;
 .
 
 v-wf:DecisionConfirm
@@ -839,6 +857,7 @@ v-wf:DecisionConfirm
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Подтверждено"@ru ;
+	rdfs:label "Confirmed"@en ;
 .
 
 v-wf:DecisionRedirect
@@ -846,6 +865,7 @@ v-wf:DecisionRedirect
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Перенаправить другому"@ru ;
+	rdfs:label "Redirect"@en ;
 .
 
 v-wf:DecisionCalculationsPerformed
@@ -853,8 +873,8 @@ v-wf:DecisionCalculationsPerformed
 	rdfs:subClassOf v-wf:Decision ;
 	rdfs:isDefinedBy v-wf: ;
 	rdfs:label "Расчет выполнен"@ru ;
+	rdfs:label "Calculations performed"@en ;
 .
-
 
 v-wf:DecisionRedirectTemplate
   rdf:type v-ui:ClassTemplate ;
