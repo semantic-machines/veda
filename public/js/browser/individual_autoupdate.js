@@ -4,10 +4,6 @@ Autoupdate displayed individuals on client when they change on server
 
  */
 
-// TODO: optimize calls to websocket - combine subscribe/unsubscribe commands for several individuals
-
-// New protocol
-
 veda.Module(function IndividualAutoupdate(veda) { "use strict";
 
 	var socket,
