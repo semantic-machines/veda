@@ -1229,28 +1229,28 @@ v-ui:JournalTemplate
   v-ui:forClass v-s:Journal ;
   v-ui:template """
 <div class="container-fluid journal">
-    <style>
-      .journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
-      .journal hr.margin-sm {margin: 10px 0px;}
-    </style>
-    <h2 about="v-s:Journal" property="rdfs:label"></h2>
-    <div rel="v-s:onDocument">
+	<style>
+		.journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
+		.journal hr.margin-sm {margin: 10px 0px;}
+	</style>
+	<h2 about="v-s:Journal" property="rdfs:label"></h2>
+	<div rel="v-s:onDocument">
 		<div>
-		    <h4>
-		      <span about="rdf:type" property="rdfs:label"></span>:
-		      <span about="@" template="v-ui:ClassNameLabelLinkTemplate"></span>
-		    </h4>
+			<h4>
+				<span about="rdf:type" property="rdfs:label"></span>:
+				<span about="@" template="v-ui:ClassNameLabelLinkTemplate"></span>
+			</h4>
 		</div>
 	</div>
-    <div rel="v-wf:onProcess">
+	<div rel="v-wf:onProcess">
 		<div>
-		    <h4>
-		      <span about="rdf:type" property="rdfs:label"></span>:
-		      <span about="@" template="v-ui:ClassNameLabelLinkTemplate"></span>
-		    </h4>
+			<h4>
+				<span about="rdf:type" property="rdfs:label"></span>:
+				<span about="@" template="v-ui:ClassNameLabelLinkTemplate"></span>
+			</h4>
 		</div>
 	</div>
-    <div class="panel panel-default">
+	<div class="panel panel-default">
 		<div class="panel-heading">
 			<div class="row">
 				<div class="col-md-3 col-sm-3">
@@ -1292,37 +1292,36 @@ v-ui:DocumentEventTemplate
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
-	<div class="col-md-3 col-sm-3 event-type">
-	  <a id="exp" class="start-process" href="#" style="display:none"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
-	  <span class="non-start-process" rel="rdf:type" template="v-ui:LabelTemplate"></span>
-	</div>
-	<div class="col-md-3 col-sm-6 event-desc">
-	  <div property="rdfs:label"></div>
-      <span class="actor">
-        <span about="v-s:actor" property="rdfs:label"></span>:
-	    <em rel="v-s:actor" template="v-ui:LabelTemplate"></em>
-	  </span>
-	</div>
-	<div class="col-md-4 col-sm-6 event-desc">
-	  <div property="rdfs:label"></div>
-      <div rel="v-s:documentVersion">
-		<div>
-	        <span about="rdf:type" property="rdfs:label"></span>:
-		    <em about="@" template="v-ui:LabelLinkTemplate"></em>
+		<div class="col-md-3 col-sm-3 event-type">
+			<a id="exp" class="start-process" href="#" style="display:none"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
+			<span class="non-start-process" rel="rdf:type" template="v-ui:LabelTemplate"></span>
 		</div>
-	  </div>
-      <div rel="v-wf:onProcess">
-		<div>
-	        <span about="rdf:type" property="rdfs:label"></span>:
-		    <em about="@" template="v-ui:LabelLinkTemplate"></em>
-		    <a class="stop-process glyphicon glyphicon-remove" style="display:none"></a>
+		<div class="col-md-3 col-sm-6 event-desc">
+			<div property="rdfs:label"></div>
+			<span class="actor">
+				<span about="v-s:actor" property="rdfs:label"></span>:
+				<em rel="v-s:actor" template="v-ui:LabelTemplate"></em>
+			</span>
 		</div>
-	  </div>
-	</div>
-
-	<div class="col-md-2 col-sm-3 event-date text-right">
-	  <span property="v-s:created"></span>
-	</div>
+		<div class="col-md-4 col-sm-6 event-desc">
+			<div property="rdfs:label"></div>
+			<div rel="v-s:documentVersion">
+				<div>
+						<span about="rdf:type" property="rdfs:label"></span>:
+						<em about="@" template="v-ui:LabelLinkTemplate"></em>
+				</div>
+			</div>
+			<div rel="v-wf:onProcess">
+				<div>
+					<span about="rdf:type" property="rdfs:label"></span>:
+					<em about="@" template="v-ui:LabelLinkTemplate"></em>
+					<a class="stop-process glyphicon glyphicon-remove" style="display:none"></a>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-2 col-sm-3 event-date text-right">
+			<span property="v-s:created"></span>
+		</div>
   </div>
   <div rel="v-s:processJournal" template="v-ui:SubJournalTemplate"></div>
 </div>
