@@ -24,17 +24,15 @@ struct UidInfo
 
 private shared        UidInfo[ string ] _info_2_uid;
 private shared long   _last_opid;
-//private shared long   _count_opid;
 private shared Object _mutex = new Object();
 
 public void set_updated_uid(string uid, long opid, long update_counter)
 {
     synchronized (_mutex)
     {
-        //writeln ("@ uid=", uid, ", opid=", opid, ", update_counter=", update_counter);
+        //log.trace ("set_updated_uid (uid=%s, opid=%d, update_counter=%d)", uid, opid, update_counter);
         _info_2_uid[ uid ] = UidInfo(update_counter, opid);
-        _last_opid         = opid;
-//        core.atomic.atomicOp !"+=" (_count_opid, 1);
+        atomicStore(_last_opid, opid);
     }
 }
 
@@ -46,6 +44,7 @@ public long get_counter_4_uid(string uid)
     {
         if ((uid in _info_2_uid) !is null)
             res = _info_2_uid[ uid ].update_counter;
+        //log.trace ("get_counter_4_uid(uid=%s)=%d", uid, res);
     }
     return res;
 }
@@ -54,18 +53,11 @@ public long get_last_opid()
 {
     synchronized (_mutex)
     {
+        //log.trace ("@ get_last_opid()=[%d]", _last_opid);
         return _last_opid;
     }
 }
-/*
-   public long get_count_opid()
-   {
-    synchronized (_mutex)
-    {
-        return _count_opid;
-    }
-   }
- */
+
 void handleWebSocketConnection(scope WebSocket socket)
 {
     string module_name;
@@ -162,14 +154,17 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
 {
     const(HTTPServerRequest)hsr = socket.request();
 
+    //log.trace ("@ spawn socket connection [%s]", hsr.json);
+
     // Client Cache Update Subscription
     string chid;
     long[ string ] count_2_uid;
 
     string get_list_of_changes()
     {
-        string   res;
+        string res;
 
+        //log.trace ("get_list_of_changes, current subscr()=[%s]", text (count_2_uid.keys));
         string[] keys = count_2_uid.keys;
         foreach (i_uid; keys)
         {
@@ -288,6 +283,18 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                                                 uid = uid_info[ 1..$ ];
                                                 long uid_counter = to!long (expr[ 1 ]);
                                                 count_2_uid[ uid ] = uid_counter;
+                                                long g_count = get_counter_4_uid(uid);
+                                                if (uid_counter < g_count)
+                                                {
+                                                    string res = get_list_of_changes();
+                                                    if (res !is null)
+                                                    {
+                                                        socket.send(res);
+                                                    }
+                                                    last_check_opid = get_last_opid();
+                                                }
+
+                                                //log.trace ("subscribe uid=%s, counter=%d", uid, uid_counter);
                                             }
                                         }
                                     }
@@ -300,6 +307,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                                             {
                                                 uid = uid_info[ 1..$ ];
                                                 count_2_uid.remove(uid);
+                                                //log.trace ("unsubscribe uid=%s", uid);
                                             }
                                         }
                                     }
@@ -312,6 +320,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                         }
                     }
 
+                    //writefln ("@ last_check_opid=%d", last_check_opid);
                     long last_opid = get_last_opid();
                     if (last_check_opid < last_opid)
                     {
