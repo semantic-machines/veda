@@ -2203,7 +2203,7 @@ v-wf:TaskCompleted
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Действие выполнено"@ru ;
+  rdfs:label "Задача выполнена"@ru ;
   rdfs:label "Task completed"@en ;
 .
 v-wf:TraceRecord
@@ -2245,19 +2245,19 @@ v-ui:TaskGivenTemplate
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
-	<div class="col-md-3 col-sm-3 event-type">
-	  <span rel="rdf:type" template="v-ui:LabelTemplate"></span>
-	</div>
-	<div class="col-md-7 col-sm-6 event-desc">
-	  <div property="rdfs:label"></div>
-      <span id="executor">
-        <span about="v-wf:executor" property="rdfs:label"></span>:
-	    <em rel="v-wf:executor" template="v-ui:LabelTemplate"></em>
-	  </span>
-	</div>
-	<div class="col-md-2 col-sm-3 event-date text-right">
-	  <span property="v-s:created"></span>
-	</div>
+		<div class="col-md-3 col-sm-3 event-type">
+			<span rel="rdf:type" template="v-ui:LabelTemplate"></span>
+		</div>
+		<div class="col-md-7 col-sm-6 event-desc">
+			<div property="rdfs:label"></div>
+			<span id="executor">
+				<span about="v-wf:executor" property="rdfs:label"></span>:
+				<em rel="v-wf:executor" template="v-ui:LabelTemplate"></em>
+			</span>
+		</div>
+		<div class="col-md-2 col-sm-3 event-date text-right">
+			<span property="v-s:created"></span>
+		</div>
   </div>
 </div>
 <script>
@@ -2274,37 +2274,34 @@ v-ui:TaskCompletedTemplate
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
-	<div class="col-md-3 col-sm-3 event-type">
-	  <span rel="rdf:type" template="v-ui:LabelTemplate"></span>
-	</div>
-	<div class="col-md-7 col-sm-6 event-desc">
-	  <div property="rdfs:label"></div>
-      <span id="executor">
-        <span about="v-wf:executor" property="rdfs:label"></span>:
-	    <em rel="v-wf:executor" template="v-ui:LabelTemplate"></em>
-	  </span>
-      <div id="decision">
-	    <span rel="v-wf:takenDecision">
-	      <span>
-			<span about="v-s:publisher" property="rdfs:label"></span>:
-			<strong property="v-s:publisher"></strong><br/>
-		  </span>
-	    </span>
-	    <div>
-        	<span about="v-wf:takenDecision" property="rdfs:label"></span>:
-        </div>
-	    <em rel="v-wf:takenDecision">
-	      <span>
-			<strong property="rdfs:label"></strong>
-			<span rel="v-wf:to"><span>(<span property="rdfs:label"></span>)</span></span>
-			, <span property="rdfs:comment"></span>
-		  </span>
-	    </em>
-	  </div>
-	</div>
-	<div class="col-md-2 col-sm-3 event-date text-right">
-	  <span property="v-s:created"></span>
-	</div>
+		<div class="col-md-3 col-sm-3 event-type">
+			<span rel="rdf:type" template="v-ui:LabelTemplate"></span>
+		</div>
+		<div class="col-md-7 col-sm-6 event-desc">
+			<div property="rdfs:label"></div>
+			<span id="executor">
+				<span about="v-wf:executor" property="rdfs:label"></span>:
+				<em rel="v-wf:executor" template="v-ui:LabelTemplate"></em>
+			</span>
+			<div id="decision">
+				<div rel="v-wf:takenDecision">
+					<span>
+						<span about="v-s:publisher" property="rdfs:label"></span>:
+						<strong rel="v-s:publisher" template="v-ui:LabelTemplate"></strong>
+					</span>
+				</div>
+				<span about="v-wf:takenDecision" property="rdfs:label"></span>:
+				<span rel="v-wf:takenDecision">
+					<span>
+						<strong property="rdfs:label"></strong>
+						<span rel="v-wf:to"><span>(<span property="rdfs:label"></span>)</span></span><span property="rdfs:comment"></span>
+					</span>
+				</span>
+			</div>
+		</div>
+		<div class="col-md-2 col-sm-3 event-date text-right">
+			<span property="v-s:created"></span>
+		</div>
   </div>
 </div>
 <script>
@@ -2403,23 +2400,23 @@ v-ui:DecisionFormStartedEventTemplate
   v-ui:forClass v-wf:DecisionFormStarted ;
   v-ui:template """
 <div class="journal-record">
-  <hr class="margin-sm">
-  <div class="row">
-        <div class="col-md-3 col-sm-3 event-type">
-          <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
-        </div>
-        <div class="col-md-7 col-sm-6 event-desc">
-          <div property="rdfs:label"></div>
-          <span id="initiator">
-        <span about="v-wf:initiator" property="rdfs:label"></span>:
-            <em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
-          </span>
-        </div>
-        <div class="col-md-2 col-sm-3 event-date text-right">
-          <span property="v-s:created"></span>
-        </div>
-  </div>
-  <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
+	<hr class="margin-sm">
+	<div class="row">
+		<div class="col-md-3 col-sm-3 event-type">
+			<a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
+		</div>
+		<div class="col-md-7 col-sm-6 event-desc">
+			<div property="rdfs:label"></div>
+			<span id="initiator">
+				<span about="v-wf:initiator" property="rdfs:label"></span>:
+				<em rel="v-wf:initiator" template="v-ui:LabelTemplate"></em>
+			</span>
+		</div>
+		<div class="col-md-2 col-sm-3 event-date text-right">
+			<span property="v-s:created"></span>
+		</div>
+	</div>
+	<div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
 </div>
 <script>
   if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
