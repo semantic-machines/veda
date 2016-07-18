@@ -30,29 +30,29 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	};
 
 	socket.onmessage = function (event) {
-		try {
-			var msg = event.data,
-					uris;
-			console.log("server:", msg);
-			switch ( true ) {
-				case ( msg.indexOf("=") === 0 ):
-					// Synchronize subscription
-					uris = msg.substr(1).split(",");
-					for (var i = 0; i < uris.length; i++) {
-						var tmp = uris[i].split("="),
-								uri = tmp[0],
-								updateCounter = parseInt(tmp[1]),
-								list = subscription.get();
-						list[uri] = list[uri] ? {
-							subscribeCounter: list[uri].subscribeCounter,
-							updateCounter: updateCounter
-						} : {
-							subscribeCounter: 1,
-							updateCounter: updateCounter
-						};
-					}
-				break;
-				default:
+		var msg = event.data,
+				uris;
+		//console.log("server:", msg);
+		switch ( true ) {
+			case ( msg.indexOf("=") === 0 ):
+				// Synchronize subscription
+				uris = msg.substr(1).split(",");
+				for (var i = 0; i < uris.length; i++) {
+					var tmp = uris[i].split("="),
+							uri = tmp[0],
+							updateCounter = parseInt(tmp[1]),
+							list = subscription.get();
+					list[uri] = list[uri] ? {
+						subscribeCounter: list[uri].subscribeCounter,
+						updateCounter: updateCounter
+					} : {
+						subscribeCounter: 1,
+						updateCounter: updateCounter
+					};
+				}
+			break;
+			default:
+				try {
 					// Update individuals
 					uris = msg.split(",");
 					for (var i = 0; i < uris.length; i++) {
@@ -72,10 +72,10 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 							individual.reset();
 						}
 					}
-				break;
-			}
-		} catch (e) {
-			console.log("error: individual update service failed");
+				} catch (e) {
+					console.log("error: individual update service failed");
+				}
+			break;
 		}
 	};
 
@@ -105,11 +105,11 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 			delta = {};
 			if (subscribeMsg) {
 				socket.send(subscribeMsg);
-				console.log("client: subscribe", subscribeMsg);
+				//console.log("client: subscribe", subscribeMsg);
 			}
 			if (unsubscribeMsg) {
 				socket.send(unsubscribeMsg);
-				console.log("client: unsubscribe", unsubscribeMsg);
+				//console.log("client: unsubscribe", unsubscribeMsg);
 			}
 
 			clearInterval(interval);
@@ -126,7 +126,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 				list = {};
 				delta = {};
 				socket.send("=");
-				console.log("client: synchronize");
+				//console.log("client: synchronize");
 			},
 			subscribe: function(uri) {
 				if (list[uri]) {
@@ -154,7 +154,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 					list = {};
 					delta = {};
 					socket.send("-*");
-					console.log("client: unsubscribe all");
+					//console.log("client: unsubscribe all");
 				} else {
 					if ( !list[uri] ) {
 						return;
