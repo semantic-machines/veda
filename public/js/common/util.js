@@ -997,7 +997,7 @@ function isNumerationValueAvailable(scope, value)
             if (interval['v-s:numerationCommitedIntervalBegin'][0] <= value && value <= interval['v-s:numerationCommitedIntervalEnd'][0])
             {
                 return false;
-                max = interval['v-s:numerationCommitedIntervalEnd'][0];
+                //max = interval['v-s:numerationCommitedIntervalEnd'][0];
             }
         }
         return true;
