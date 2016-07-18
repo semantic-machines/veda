@@ -15,8 +15,6 @@ bool check_binlog(string file_name)
 
 public string write_in_binlog(string msg, string new_hash, string bin_log_name, out int size_bin_log, int max_size_bin_log, string db_path)
 {
-    inc_count_put();
-
     long      now = Clock.currTime().stdTime();
     OutBuffer oub = new OutBuffer();
     oub.write('\n');

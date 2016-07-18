@@ -122,7 +122,7 @@ class PThreadContext : Context
         onto = new Onto(this);
         onto.load();
 
-        local_count_put = get_count_put();
+        local_count_put = get_subject_manager_op_id();
         ft_local_count  = get_count_indexed();
 
         log.trace_log_and_console("NEW CONTEXT [%s]", context_name);
@@ -281,10 +281,10 @@ class PThreadContext : Context
         if (inividuals_storage !is null)
             res = inividuals_storage.find(uri);
         else
-            res = find(uri);
+            res = get_from_individual_storage_thread(uri);
 
         if (res !is null && res.length < 10)
-            log.trace_log_and_console("ERR! get_from_individual_storage, found invalid CBOR, uri=%s", uri);
+            log.trace_log_and_console("ERR! get_individual_from_storage, found invalid CBOR, uri=%s", uri);
 
         return res;
     }
@@ -296,7 +296,7 @@ class PThreadContext : Context
         if (inividuals_storage !is null)
             key2slot_str = inividuals_storage.find(xapian_metadata_doc_id);
         else
-            key2slot_str = find(xapian_metadata_doc_id);
+            key2slot_str = get_from_individual_storage_thread(xapian_metadata_doc_id);
 
         if (key2slot_str !is null)
         {
@@ -959,7 +959,7 @@ class PThreadContext : Context
             Individual indv;
             Individual prev_indv;
 
-            prev_state = find(uri);
+            prev_state = get_from_individual_storage_thread(uri);
             if (prev_state !is null)
             {
                 int code = cbor2individual(&prev_indv, prev_state);
@@ -1278,7 +1278,7 @@ class PThreadContext : Context
 
                     try
                     {
-                        prev_state = find(indv.uri);
+                        prev_state = get_from_individual_storage_thread(indv.uri);
 
                         if ((prev_state is null ||
                              prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
@@ -1468,7 +1468,7 @@ class PThreadContext : Context
         {
             if (module_id == P_MODULE.scripts)
             {
-                res = veda.core.threads.dcs_manager.get_opid(P_MODULE.scripts);
+                res = veda.core.threads.dcs_manager.get_opid(module_id);
             }
             else if (module_id == P_MODULE.acl_manager)
             {
@@ -1480,7 +1480,7 @@ class PThreadContext : Context
             }
             else if (module_id == P_MODULE.subject_manager)
             {
-                return get_count_put;
+                return get_subject_manager_op_id;
             }
         }
         return res;
@@ -1513,9 +1513,9 @@ class PThreadContext : Context
  */
             if (module_id == P_MODULE.scripts)
             {
-                veda.core.threads.dcs_manager.wait_module(P_MODULE.scripts, op_id);
+                veda.core.threads.dcs_manager.wait_module(module_id, op_id);
             }
-            else
+            else 
             {
                 Tid tid = getTid(module_id);
                 if (tid != Tid.init)
@@ -1644,7 +1644,7 @@ class PThreadContext : Context
         }
     }
 
-    private string find(string uri)
+    private string get_from_individual_storage_thread(string uri)
     {
         string res;
 

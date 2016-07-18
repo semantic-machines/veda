@@ -226,7 +226,7 @@ public ResultCode put(P_MODULE storage_id, string uri, string cur_state, bool ig
                 {
                     if (from == getTid(storage_id))
                         rc = _rc;
-                    op_id = get_count_put();
+                    op_id = get_subject_manager_op_id();
                     return true;
                 });
     }
@@ -246,7 +246,7 @@ public ResultCode remove(P_MODULE storage_id, string uri, bool ignore_freeze, ou
                 {
                     if (from == getTid(storage_id))
                         rc = _rc;
-                    op_id = get_count_put();
+                    op_id = get_subject_manager_op_id();
                     return true;
                 });
     }
@@ -271,6 +271,9 @@ public void individuals_manager(string thread_name, string db_path, string node_
     int                          size_bin_log     = 0;
     int                          max_size_bin_log = 10_000_000;
     string                       bin_log_name     = get_new_binlog_name(db_path);
+
+    long        op_id            = storage.last_op_id;
+    long                      commited_op_id = 0;
 
     // SEND ready
     receive((Tid tid_response_reciever)
@@ -394,8 +397,12 @@ public void individuals_manager(string thread_name, string db_path, string node_
                             {
                                 string new_hash;
 
-                                if (storage.update_or_create(uri, msg, new_hash) == 0)
+                                if (storage.update_or_create(uri, msg, op_id, new_hash) == 0)
+                                {
                                     rc = ResultCode.OK;
+                               	    op_id++;								    
+								    set_subject_manager_op_id(op_id);
+                                }    
                                 else
                                     rc = ResultCode.Fail_Store;
 
