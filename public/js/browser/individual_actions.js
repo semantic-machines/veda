@@ -44,9 +44,10 @@ veda.Module(function IndividualActions(veda) { "use strict";
 			$createReport.on("click", function () {veda.Util.createReport(individual);});
 			$showRights.on("click", function () {veda.Util.showRights(individual);});
 			$journal.on("click", function() {
-				var journal = new veda.IndividualModel(individual.id+'j', undefined, undefined, undefined, false);
-				if (journal.hasValue('rdf:type') && journal['rdf:type'][0].id != 'rdfs:Resource') {
-					riot.route("#/" + individual.id + "j/////");
+				var journal_uri = individual.id + "j",
+						journal = new veda.IndividualModel(journal_uri);
+				if (journal.hasValue("rdf:type") && journal["rdf:type"][0].id !== "rdfs:Resource") {
+					riot.route("#/" + journal_uri);
 				} else {
 					alert("Журнал отсутсвует / Journal empty");
 				}
