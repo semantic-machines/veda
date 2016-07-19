@@ -41,6 +41,10 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 		console.log("handshake", "ccus=" + veda.ticket);
 	};
 
+	socket.onerror = function (event) {
+		console.log("socket error", event);
+	};
+
 	socket.onmessage = function (event) {
 		var msg = event.data,
 				uris;
