@@ -1,6 +1,6 @@
 /**
 
-Autoupdate displayed individuals on client when they change on server
+Autoupdate subscription service for individuals that were changed on server
 
  */
 
@@ -13,7 +13,6 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	try {
 		socket = new WebSocket(address);
 	} catch (ex) {
-		$("#main").prepend("<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" + ex + "</div>");
 		return socket = null;
 	}
 
@@ -172,6 +171,9 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 		}
 	})(socket);
 
+	veda.updateSubscription = subscription;
+
+	// Autoupdate displayed individuals
 	veda.on("individual:loaded", updateWatch);
 
 	function updateWatch(individual) {
@@ -186,7 +188,5 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 			subscription.unsubscribe(individual.id);
 		});
 	}
-
-	veda.updateSubscription = subscription;
 
 });
