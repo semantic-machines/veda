@@ -6,23 +6,39 @@ Autoupdate subscription service for individuals that were changed on server
 
 veda.Module(function IndividualAutoupdate(veda) { "use strict";
 
+	var console = (function () {
+		var log = $("<pre style='width:29%; max-height:100%;overflow-y:visible;font-size:10px;padding:10px; white-space:pre-wrap'></pre>").addClass("pull-right");
+		log.prependTo("body");
+		$("#app").css("width", "70%").addClass("pull-left");
+		return {
+			log: function () {
+				var msg = "";
+				for (var i=0; i < arguments.length; i++) {
+					msg += arguments[i].toString() + " ";
+				}
+				msg += "\n\n";
+				log.append(msg);
+				log.scrollTop(log.prop("scrollHeight"));
+			}
+		}
+	})();
+
 	var socket,
 		address = "ws://" + location.hostname + ":8088/ccus";
 		//address = "ws://echo.websocket.org";
 
 	try {
 		socket = new WebSocket(address);
+		console.log("socket created");
 	} catch (ex) {
+		console.log("socket failed", ex);
 		return socket = null;
 	}
 
 	// Handshake
 	socket.onopen = function (event) {
 		socket.send("ccus=" + veda.ticket);
-	};
-
-	socket.onclose = function (event) {
-		veda.off("individual:loaded", updateWatch);
+		console.log("handshake", "ccus=" + veda.ticket);
 	};
 
 	socket.onmessage = function (event) {
@@ -69,7 +85,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 						}
 					}
 				} catch (e) {
-					console.log("error: individual update service failed");
+					console.log("error: individual update service failed", e);
 				}
 			break;
 		}
@@ -101,11 +117,11 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 			delta = {};
 			if (subscribeMsg) {
 				socket.send(subscribeMsg);
-				console.log("client: subscribe", subscribeMsg);
+				console.log("client:", subscribeMsg);
 			}
 			if (unsubscribeMsg) {
 				socket.send(unsubscribeMsg);
-				console.log("client: unsubscribe", unsubscribeMsg);
+				console.log("client:", unsubscribeMsg);
 			}
 
 			clearInterval(interval);
@@ -122,7 +138,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 				list = {};
 				delta = {};
 				socket.send("=");
-				console.log("client: synchronize");
+				console.log("client: =");
 			},
 			subscribe: function(uri) {
 				if (list[uri]) {
@@ -150,7 +166,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 					list = {};
 					delta = {};
 					socket.send("-*");
-					console.log("client: unsubscribe all");
+					console.log("client: -*");
 				} else {
 					if ( !list[uri] ) {
 						return;
@@ -174,7 +190,12 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	veda.updateSubscription = subscription;
 
 	// Autoupdate displayed individuals
+
 	veda.on("individual:loaded", updateWatch);
+
+	socket.onclose = function (event) {
+		veda.off("individual:loaded", updateWatch);
+	};
 
 	function updateWatch(individual) {
 		individual.one("individual:templateReady", subscribeDisplayed);
