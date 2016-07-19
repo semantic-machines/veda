@@ -6,10 +6,10 @@ Autoupdate subscription service for individuals that were changed on server
 
 veda.Module(function IndividualAutoupdate(veda) { "use strict";
 
-	var console = (function () {
-		var log = $("<pre style='width:29%; max-height:100%;overflow-y:visible;font-size:10px;padding:10px; white-space:pre-wrap'></pre>").addClass("pull-right");
+/*	var console = (function () {
+		var log = $("<pre style='width:24%; max-height:100%;overflow-y:visible;overflow-x:hidden;font-size:10px;padding:10px; white-space:pre-wrap'></pre>").addClass("pull-right");
 		log.prependTo("body");
-		$("#app").css("width", "70%").addClass("pull-left");
+		$("#app").css("width", "75%").addClass("pull-left");
 		return {
 			log: function () {
 				var msg = "";
@@ -22,6 +22,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 			}
 		}
 	})();
+*/
 
 	var socket,
 		address = "ws://" + location.hostname + ":8088/ccus";
@@ -29,31 +30,27 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 
 	try {
 		socket = new WebSocket(address);
-		console.log("socket created");
+		//console.log("socket created");
 	} catch (ex) {
-		console.log("socket failed", ex);
+		//console.log("socket failed", ex);
 		return socket = null;
 	}
 
 	// Handshake
 	socket.onopen = function (event) {
 		socket.send("ccus=" + veda.ticket);
-		console.log("handshake", "ccus=" + veda.ticket);
+		//console.log("handshake", "ccus=" + veda.ticket);
 	};
 
 	socket.onerror = function (event) {
-		var error = "{ ";
-		for (var key in event) {
-			error += key + ": " + event[key].toString() + ", ";
-		}
-		error += " }";
-		console.log("socket error", error, JSON.stringify(error, null, 2));
+		//console.log("socket error");
+		socket.close();
 	};
 
 	socket.onmessage = function (event) {
 		var msg = event.data,
 				uris;
-		console.log("server:", msg);
+		//console.log("server:", msg);
 		switch ( true ) {
 			case ( msg.indexOf("=") === 0 ):
 				// Synchronize subscription
@@ -94,13 +91,15 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 						}
 					}
 				} catch (e) {
-					console.log("error: individual update service failed", e);
+					//console.log("error: individual update service failed", e);
 				}
 			break;
 		}
 	};
 
-	//socket.onmessage = function (event) { console.log("server:", event.data); };
+	/*socket.onmessage = function (event) {
+		//console.log("server:", event.data);
+	};*/
 
 	var subscription = (function (socket) {
 		var list = {},
@@ -126,11 +125,11 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 			delta = {};
 			if (subscribeMsg) {
 				socket.send(subscribeMsg);
-				console.log("client:", subscribeMsg);
+				//console.log("client:", subscribeMsg);
 			}
 			if (unsubscribeMsg) {
 				socket.send(unsubscribeMsg);
-				console.log("client:", unsubscribeMsg);
+				//console.log("client:", unsubscribeMsg);
 			}
 
 			clearInterval(interval);
@@ -147,7 +146,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 				list = {};
 				delta = {};
 				socket.send("=");
-				console.log("client: =");
+				//console.log("client: =");
 			},
 			subscribe: function(uri) {
 				if (list[uri]) {
@@ -175,7 +174,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 					list = {};
 					delta = {};
 					socket.send("-*");
-					console.log("client: -*");
+					//console.log("client: -*");
 				} else {
 					if ( !list[uri] ) {
 						return;
