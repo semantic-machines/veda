@@ -13,6 +13,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	try {
 		socket = new WebSocket(address);
 	} catch (ex) {
+		$("#main").prepend("<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" + ex + "</div>");
 		return socket = null;
 	}
 

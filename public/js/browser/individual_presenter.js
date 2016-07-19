@@ -15,6 +15,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		mode = mode || "view";
 
+		var inMain = !!container.closest("#main").length;
+
+		if (inMain) { container.hide(); }
+
 		// Change location.hash if individual was presented in #main container
 		/*if (container.prop("id") === "main" && location.hash.indexOf(individual.id) < 0) {
 			var hash = ["#", individual.id].join("/");
@@ -125,6 +129,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		//	console ? console.log("Error presenting", individual.id, ex) : null;
 		//	individual.present(container, new veda.IndividualModel("v-ui:LabelBlockLinkTemplate"));
 		//}
+
+		if (inMain) { container.show("fade", 120); }
 	});
 
 	function renderTemplate (individual, container, template, specs, mode) {
