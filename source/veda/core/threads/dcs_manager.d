@@ -154,7 +154,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
 {
     const(HTTPServerRequest)hsr = socket.request();
 
-    //log.trace ("@ spawn socket connection [%s]", hsr.json);
+    log.trace ("spawn socket connection [%s]", text (hsr.clientAddress));
 
     // Client Cache Update Subscription
     string chid;
