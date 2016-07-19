@@ -42,7 +42,12 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	};
 
 	socket.onerror = function (event) {
-		console.log("socket error", event);
+		var error = "{ ";
+		for (var key in event) {
+			error += key + ": " + event[key].toString() + ", ";
+		}
+		error += " }";
+		console.log("socket error", error, JSON.stringify(error, null, 2));
 	};
 
 	socket.onmessage = function (event) {
