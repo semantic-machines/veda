@@ -264,7 +264,8 @@ veda.Module(function Util(veda) { "use strict";
 			if (modal) {
 				veda.Util.showModal(startForm, 'edit');
 			} else {
-				startForm.present('#main', undefined, 'edit');
+				riot.route( ["#", startForm.id, '#main', undefined, "edit"].join("/") );
+				//startForm.present('#main', undefined, 'edit');
 			}
 		} else {
 			var s = new veda.SearchModel("'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
