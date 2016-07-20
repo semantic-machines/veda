@@ -1253,3 +1253,9 @@ v-s:disposalPercent
 v-s:attachment
   rdfs:domain v-s:ProjectPlan ;
 .
+v-s:hasInitiative
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Initiative"@en ;
+  rdfs:label "Связанная инициатива"@ru ;
+  rdfs:range v-s:Initiative ;
+.
