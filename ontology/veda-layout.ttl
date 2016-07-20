@@ -83,17 +83,17 @@ v-l:MainPageTemplate
 	languageSelector.html(languages);
 
 	// Render user
+	var userInfo = $("#user-info", template);
+	var userInfoTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
 	userInfo.empty();
-	var userTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
-	veda.user.present(userInfo, userTmpl);
+	veda.user.present(userInfo, userInfoTmpl);
 
-	var $languages = $("label", languageSelector);
+	var $languages = $("button", languageSelector);
 	$languages.each( function() {
 		if (this.id in veda.user.language) $(this).addClass("active");
 		$(this).on("click", function() {
 			veda.user.toggleLanguage(this.id);
 			location.reload();
-			//this.id in veda.user.language ? $(this).addClass("active") : $(this).removeClass("active");
 		});
 	});
 </script>
