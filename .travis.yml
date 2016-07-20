@@ -53,6 +53,7 @@ script:
   - node ./qa/testRights.js
   - node ./qa/testAttributiveSearchPerson.js
   - node ./qa/testDrafts.js
+  - node ./qa/testLanguage.js
 
 # Stop deamon and show log
 after_script:
