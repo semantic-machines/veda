@@ -53,7 +53,7 @@ v-l:MainPageTemplate
 		</div>
 	</nav>
 
-	<div id="main" class="container-fluid" about="v-l:Welcome"></div>
+	<div id="main"></div>
 
 	<nav style="min-height:12px;" class="navbar navbar-fixed-bottom" id="copyright">
 		<footer>
