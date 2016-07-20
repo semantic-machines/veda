@@ -53,10 +53,11 @@ module.exports = {
 		
 		// Проверяем что сохранение успешно
 		// Переходим на страницу просмотра документа
+/*
 		driver.findElement({css:'div[id="object"] > [typeof="v-s:Person"]'}).getAttribute('resource').then(function (individualId) {
 			basic.openPage(driver, drv, '#/'+individualId);	
 		}).thenCatch(function (e) {basic.errorHandler(e, "Seems person is not saved")});
-
+*/
 		driver.sleep(basic.FAST_OPERATION);
 		// Смотрим что в нём содержится введённый ранее текст
 		driver.findElement({css:'div[property="v-s:firstName"] span[class="value-holder"]'}).getText().then(function (txt) {
