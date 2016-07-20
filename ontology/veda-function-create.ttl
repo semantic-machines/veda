@@ -259,6 +259,15 @@ v-fc:BlankTemplate
 			holder = $("#object", template),
 			object = self.object;
 	object.present(holder, undefined, "edit");
+
+	object.one("individual:afterSave", saveHandler);
+	object.one("individual:afterReset", cancelHandler);
+	template.on("remove", function () {
+		object.off("individual:afterSave", saveHandler);
+		object.off("individual:afterReset", cancelHandler);
+	});
+	function saveHandler () { riot.route("#/" + object.id); }
+	function cancelHandler () { window.history.back(); }
 </script>
   """
 .
