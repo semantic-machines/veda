@@ -242,6 +242,15 @@ veda.Module(function Util(veda) { "use strict";
 		return query;
 	}
 
+	veda.Util.transform = function (individual, template, transformId, modal) {
+		var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));	
+		if (modal) {
+			veda.Util.showModal(startForm, 'edit');
+		} else {
+			startForm.present('#main', undefined, 'edit');
+		}
+	}
+	
 	/**
 	 * Event `send` handler:
 	 *  - Find transformation to start form or use transformation specified by `transformId` parameter
@@ -271,11 +280,11 @@ veda.Module(function Util(veda) { "use strict";
 			var s = new veda.SearchModel("'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
 			if (Object.getOwnPropertyNames(s.results).length == 0) {
 				var individualNode = $('[resource="'+individual.id+'"]');
-				individualNode.find("#send").remove();
-				individualNode.find("#edit").remove();
-				individualNode.find("#save").remove();
-				individualNode.find("#cancel").remove();
-				individualNode.find("#delete").remove();
+				individualNode.find("#send.action").remove();
+				individualNode.find("#edit.action").remove();
+				individualNode.find("#save.action").remove();
+				individualNode.find("#cancel.action").remove();
+				individualNode.find("#delete.action").remove();
 				if (individual.is('v-s:SelfStarting') || individual.hasValue('v-wf:processedDocument') || individual.hasValue('v-wf:onDocument')) {
 					individual.trigger("individual:afterSend");
 					if (individual.sendConfirmed != true) {
