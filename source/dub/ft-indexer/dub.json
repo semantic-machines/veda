@@ -1,0 +1,43 @@
+{
+	"name": "veda-ft-indexer",
+	"description": "veda-ft-indexer",
+	"dependencies": {
+		"pacahon_third_party": "1.0.13", 
+		"backtrace-d": "0.1.0", 
+		"requests": "0.2.0"
+	},
+        "versions": ["libRequests", "isModule"],
+        "license": "LGPL v3",
+	"sourcePaths":[
+            "../../veda/common",
+            "../../veda/ft_indexer",
+            "../../veda/onto",
+            "../../veda/util",
+            "../../veda/vmodule",
+            "../../veda/core/impl",
+            "../../veda/core/az",
+            "../../veda/core/search",
+            "../../veda/core/storage",
+            "../../veda/core/common"
+	],
+        "sourceFiles":[
+        "../../veda/core/bind/lmdb_header.d",
+	"../../veda/core/bind/xapian_d_header.d",
+	"../../veda/core/util/utils.d",
+	"../../veda/core/bind/libwebsockets.d",
+	"../../lib64/libxapiand.a"
+	],
+	"libs":["websockets"],
+	"configurations": [
+	{
+	    "name": "app",
+	    "docs": ["syntaxOnly"],
+	    "targetType": "executable"
+	},
+	{
+	    "name": "trace-app",
+	    "versions": ["trace_api_l1"],
+	    "targetType": "executable"
+	    
+	}]
+}
