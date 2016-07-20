@@ -14,9 +14,9 @@ function logout(driver) {
     driver.findElement({css:'li[id="menu"] li[resource="v-l:Exit"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `exit` button")});
     driver.sleep(basic.FAST_OPERATION);
-    driver.findElement({css:'input[id="login"'}).clear()
+    driver.findElement({css:'input[id="login"]'}).clear()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot clear 'login' field")});
-    driver.findElement({css:'input[id="password"'}).clear()
+    driver.findElement({css:'input[id="password"]'}).clear()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot clear 'password' field")});
 }
 
@@ -29,7 +29,7 @@ function logout(driver) {
 
 function search(driver, somethingUnique, count) {
     driver.findElement({id:'params-pill-ft'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'params' button")});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'params-pill-ft' button")});
     driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input'}).sendKeys(somethingUnique)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot input search request")});;
 
@@ -63,7 +63,7 @@ basic.getDrivers().forEach (function (drv) {
     //Проверка отсутсвия созданного документа и создание нового документа пользователем с меньшими правами
     basic.login(driver, 'bychinat', '123', 'Андрей', 'Бычин');
     driver.findElement({id:'params-pill-ft'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'params' button")});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'params-pill-ft' button")});
     driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).clear();
     driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).sendKeys('Персона');
     search(driver, timeStamp, 0);

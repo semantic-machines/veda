@@ -37,7 +37,7 @@ function search(driver, templateName, somethingUnique, count) {
         basic.EXTRA_SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "Number of documents is incorrect, expected: " + count)});
     driver.findElement({id:'params-pill-at'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'params' button")});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'params-pill-at' button")});
     for (var i = 0; i < templateName.length; i++) {
         (templateName[i] == 'rdfs:label') ? driver.findElement({css: 'div[id="form-holder"] [property="' + templateName[i] + '"] .glyphicon-remove'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot remove old" + templateName[i] + "value")})
@@ -70,9 +70,9 @@ basic.getDrivers().forEach(function (drv) {
     (
         webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Find"]'})),
         basic.FAST_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `search` button inside settings")});
+    ).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `find` button inside settings")});
     driver.findElement({css:'li[id="menu"] li[resource="v-l:Find"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `search` button")});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `find` button")});
     driver.wait
     (
         webdriver.until.elementIsVisible(driver.findElement({css:'div[resource="v-fs:Search"]'})),
