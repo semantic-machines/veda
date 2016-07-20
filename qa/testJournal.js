@@ -13,11 +13,13 @@ function assertCounts(driver, drv, totalCount, createCount, updateCount) {
 	  },
 	  basic.EXTRA_SLOW_OPERATION
 	).thenCatch(function (e) {basic.errorHandler(e, "Cannot find person, after save operation")});
-		
+
 	driver.sleep(basic.SLOW_OPERATION).then(function() {
 		driver.findElement({css:'#journal'}).click()
 			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `View Journal` button")});
 	}).then(function() {
+		driver.sleep(basic.FAST_OPERATION);
+		driver.navigate().refresh();
 		driver.findElements({css:'div.journal-record'}).then(function (result) {
 			assert.equal(totalCount, result.length);
 		}).thenCatch(function (e) {basic.errorHandler(e, "Invalid `total` journal elements count")});
