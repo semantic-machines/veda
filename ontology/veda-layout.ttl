@@ -45,10 +45,10 @@ v-l:MainPageTemplate
 			<div class="collapse navbar-collapse" id="navbar-collapse">
 				<div id="user-menu"></div>
 				<ul class="nav navbar-nav navbar-right">
+					<li class="btn-group" id="preferred-language"></li>
 					<li id="user-info"></li>
 					<li id="menu" class="dropdown" about="v-l:MainMenu" template="v-l:MenuTemplate"></li>
 				</ul>
-				<div class="navbar-right btn-group" id="preferred-language"></div>
 			</div>
 		</div>
 	</nav>
@@ -72,7 +72,6 @@ v-l:MainPageTemplate
 </div>
 <script>
 	var languageTemplate = $("#language-template").html();
-	var userInfo = $("#user-info", template);
 	var languageSelector = $("#preferred-language", template);
 
 	// Render languages
