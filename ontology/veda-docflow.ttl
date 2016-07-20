@@ -1077,7 +1077,7 @@ v-wf:ProcessStopEvent
 				if (!df['v-wf:isCompleted'] ||
 				    df['v-wf:isCompleted'][0].data == false)
 			    {
-					df['v-wf:isCompleted'] = newBool(true);
+					df['v-s:deleted'] = newBool(true);
 					df['v-wf:isStopped'] = newBool(true);
 					put_individual(ticket, df, _event_id);
 				}
