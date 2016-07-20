@@ -19,7 +19,9 @@ function assertCounts(driver, drv, totalCount, createCount, updateCount) {
 			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `View Journal` button")});
 	}).then(function() {
 		driver.sleep(basic.FAST_OPERATION);
-		driver.navigate().refresh();
+		var container = driver.findElement({id:'main'});
+		var content = container.innerHTML;
+		container.innerHTML = content;
 		driver.findElements({css:'div.journal-record'}).then(function (result) {
 			assert.equal(totalCount, result.length);
 		}).thenCatch(function (e) {basic.errorHandler(e, "Invalid `total` journal elements count")});
