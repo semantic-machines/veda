@@ -166,6 +166,7 @@ var stopList = [
 ];
 
 this._init = function () {
+	if (self.object) { return; }
 	self.object = new veda.IndividualModel(),
 	self.object["rdf:type"] = self["v-fc:typeToCreate"].slice(0);
 	Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
@@ -266,7 +267,10 @@ v-fc:BlankTemplate
 		object.off("individual:afterSave", saveHandler);
 		object.off("individual:afterReset", cancelHandler);
 	});
-	function saveHandler () { riot.route("#/" + object.id); }
+	function saveHandler () {
+		delete self.object;
+		riot.route("#/" + object.id);
+	}
 	function cancelHandler () { window.history.back(); }
 </script>
   """
