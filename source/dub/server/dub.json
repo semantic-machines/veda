@@ -12,7 +12,7 @@
                 "raptor2"
         ],
         "license": "LGPL v3",
-	"sourceFiles":["../../lib64/libv8d.a", "../../lib64/libxapiand.a"],
+	"sourceFiles":["../../lib64/libxapiand.a"],
 	"sourcePaths":[
 	    "../../veda/common", 
 	    "../../veda/core",  

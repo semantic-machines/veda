@@ -78,7 +78,7 @@ void main(char[][] args)
     string[ string ] env;
     int      exit_code;
 
-    string[] modules = [ "veda", "veda-server", "veda-fanout", "veda-scripts", "veda-ltr-scripts" ];
+    string[] modules = [ "veda", "veda-server", "veda-fanout", "veda-scripts", "veda-ft-indexer", "veda-ltr-scripts" ];
     int[][ string ] command_2_pid;
 
     bool is_found_modules = false;
@@ -119,34 +119,25 @@ void main(char[][] args)
         return;
     }
 
-    auto server_logFile = File("veda-server-errors.log", "w");
-    writeln("start veda-server");
-    auto server_pid = spawnProcess("./veda-server",
-                                   std.stdio.stdin,
-                                   std.stdio.stdout,
-                                   server_logFile, env, Config.suppressConsole);
+    Pid server_pid;
 
+    foreach (ml; modules)
+    {
+        if (ml != "veda")
+        {
+            auto _logFile = File(ml ~ "-errors.log", "w");
+            writeln("start " ~ ml);
+            auto _pid = spawnProcess("./" ~ ml,
+                                     std.stdio.stdin,
+                                     std.stdio.stdout,
+                                     _logFile, env, Config.suppressConsole);
 
-    auto fanout_logFile = File("veda-fanout-errors.log", "w");
-    writeln("start veda-fanout");
-    auto pid_fanout = spawnProcess("./veda-fanout",
-                                   std.stdio.stdin,
-                                   std.stdio.stdout,
-                                   fanout_logFile, env, Config.suppressConsole);
-
-    auto scripts_logFile = File("veda-scripts-errors.log", "w");
-    writeln("start veda-scripts");
-    auto pid_scripts = spawnProcess("./veda-scripts",
-                                    std.stdio.stdin,
-                                    std.stdio.stdout,
-                                    scripts_logFile, env, Config.suppressConsole);
-
-    auto ltr_scripts_logFile = File("veda-ltr-scripts-errors.log", "w");
-    writeln("start veda-ltr-scripts");
-    auto pid_ltr_scripts = spawnProcess("./veda-ltr-scripts",
-                                    std.stdio.stdin,
-                                    std.stdio.stdout,
-                                    ltr_scripts_logFile, env, Config.suppressConsole);
+            if (ml == "veda-server")
+            {
+                server_pid = _pid;
+            }
+        }
+    }
 
     exit_code = wait(server_pid);
 

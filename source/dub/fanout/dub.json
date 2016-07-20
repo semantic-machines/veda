@@ -6,13 +6,13 @@
 		"backtrace-d": "0.1.0", 
 		"mysql-d": "0.3.2",
 		"smtp": "~master",
-                "requests": "0.1.6"
+                "requests": "0.2.0"
 	},
         "versions": ["isModule"],
         "license": "LGPL v3",
 	"sourcePaths":[
-	    "../../veda/fanout", 
 	    "../../veda/common", 
+	    "../../veda/fanout", 
 	    "../../veda/onto",  
 	    "../../veda/util", 
 	    "../../veda/vmodule",

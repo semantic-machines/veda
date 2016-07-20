@@ -9,7 +9,7 @@ private
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import util.logger, veda.core.util.utils, veda.core.threads.load_info;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.log_msg, veda.core.impl.thread_context, veda.core.io.file_reader;
-    import veda.core.common.define, veda.type, veda.core.threads.acl_manager, veda.core.threads.storage_manager, veda.core.threads.xapian_indexer;
+    import veda.core.common.define, veda.type, veda.core.threads.acl_manager, veda.core.threads.storage_manager;
     import veda.onto.individual, veda.onto.resource;
 }
 
@@ -59,8 +59,8 @@ void commiter(string thread_name)
 
     while (true)
     {
-//        core.thread.Thread.sleep(dur!("seconds")(1));
-        veda.core.threads.xapian_indexer.flush();
+        //core.thread.Thread.sleep(dur!("seconds")(1));
+        //veda.core.threads.xapian_indexer.flush();
         core.thread.Thread.sleep(dur!("seconds")(1));
         veda.core.threads.storage_manager.flush(false);
         core.thread.Thread.sleep(dur!("seconds")(1));
@@ -119,10 +119,10 @@ Context init_core(string node_id)
 
         log.trace("init core");
 
-        tids[ P_MODULE.fulltext_indexer ] =
-            spawn(&xapian_indexer, text(P_MODULE.fulltext_indexer), node_id);
-        if (wait_starting_thread(P_MODULE.fulltext_indexer, tids) == false)
-            return null;
+        //tids[ P_MODULE.fulltext_indexer ] =
+        //    spawn(&xapian_indexer, text(P_MODULE.fulltext_indexer), node_id);
+        //if (wait_starting_thread(P_MODULE.fulltext_indexer, tids) == false)
+        //    return null;
 
         tids[ P_MODULE.subject_manager ] = spawn(&individuals_manager, text(P_MODULE.subject_manager), individuals_db_path, node_id);
         wait_starting_thread(P_MODULE.subject_manager, tids);
@@ -133,12 +133,12 @@ Context init_core(string node_id)
         tids[ P_MODULE.acl_manager ] = spawn(&acl_manager, text(P_MODULE.acl_manager), acl_indexes_db_path);
         wait_starting_thread(P_MODULE.acl_manager, tids);
 
-        tids[ P_MODULE.xapian_thread_context ] = spawn(&xapian_thread_context, text(P_MODULE.xapian_thread_context));
-        wait_starting_thread(P_MODULE.xapian_thread_context, tids);
+        //tids[ P_MODULE.xapian_thread_context ] = spawn(&xapian_thread_context, text(P_MODULE.xapian_thread_context));
+        //wait_starting_thread(P_MODULE.xapian_thread_context, tids);
 
-        send(tids[ P_MODULE.fulltext_indexer ], CMD.SET, P_MODULE.subject_manager, tids[ P_MODULE.subject_manager ]);
-        send(tids[ P_MODULE.fulltext_indexer ], CMD.SET, P_MODULE.acl_manager, tids[ P_MODULE.acl_manager ]);
-        send(tids[ P_MODULE.fulltext_indexer ], CMD.SET, P_MODULE.xapian_thread_context, tids[ P_MODULE.xapian_thread_context ]);
+//        send(tids[ P_MODULE.fulltext_indexer ], CMD.SET, P_MODULE.subject_manager, tids[ P_MODULE.subject_manager ]);
+//        send(tids[ P_MODULE.fulltext_indexer ], CMD.SET, P_MODULE.acl_manager, tids[ P_MODULE.acl_manager ]);
+//        send(tids[ P_MODULE.fulltext_indexer ], CMD.SET, P_MODULE.xapian_thread_context, tids[ P_MODULE.xapian_thread_context ]);
 
         tids[ P_MODULE.commiter ] =
             spawn(&commiter, text(P_MODULE.commiter));

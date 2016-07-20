@@ -104,7 +104,7 @@ public void core_thread(string node_id)
                                     }
                                 }
                             }
-                            catch (Exception ex) { writeln(ex.msg); }
+                            catch (Throwable ex) { writeln(ex.msg); }
 
                             send(tid, res, rc, worker_id);
                         }
@@ -132,7 +132,7 @@ public void core_thread(string node_id)
                                     res = context.get_individuals_ids_via_query(ticket, query, sort, databases, top, limit);
                                 }
                             }
-                            catch (Exception ex) { writeln(ex.msg); }
+                            catch (Throwable ex) { writeln(ex.msg); }
                             send(tid, res, rc, worker_id);
                         }
                     }
@@ -263,7 +263,7 @@ public void core_thread(string node_id)
                                     context.reopen_ro_fulltext_indexer_db();
                                 rc = ResultCode.OK;
                             }
-                            catch (Exception ex)
+                            catch (Throwable ex)
                             {
                                 log.trace("pacahon_driver:wait_thread, err=%s", ex.msg);
                             }

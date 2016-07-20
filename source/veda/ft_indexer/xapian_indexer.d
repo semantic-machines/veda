@@ -2,7 +2,7 @@
  * XAPIAN indexer thread
  */
 
-module veda.core.threads.xapian_indexer;
+module veda.veda.ft_indexer.xapian_indexer;
 
 private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.algorithm;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
@@ -24,175 +24,9 @@ logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
-/// Команды используемые процессами
-enum CMD : byte
-{
-    /// Сохранить
-    PUT          = 1,
-
-    /// Найти
-    FIND         = 2,
-
-    /// Получить
-    GET          = 2,
-
-    /// Установить
-    SET          = 50,
-
-    /// Удалить
-    DELETE       = 46,
-
-    /// Коммит
-    COMMIT       = 16,
-
-    /// Включить/выключить отладочные сообщения
-    SET_TRACE    = 33,
-
-    /// Перезагрузить
-    RELOAD       = 40,
-
-    /// Сохранить соответствие ключ - слот (xapian)
-    PUT_KEY2SLOT = 44,
-
-    BACKUP       = 41,
-
-    /// Пустая комманда
-    NOP          = 64
-}
-
 protected byte err;
 
-public ResultCode flush(bool is_wait = false)
-{
-    ResultCode rc;
-    Tid        tid = getTid(P_MODULE.fulltext_indexer);
-
-    if (tid != Tid.init)
-    {
-        send(tid, CMD.COMMIT, "");
-        rc = ResultCode.OK;
-    }
-    return rc;
-}
-
-public string backup(string backup_id)
-{
-    string res;
-    Tid    tid_fulltext_indexer = getTid(P_MODULE.fulltext_indexer);
-
-    send(tid_fulltext_indexer, CMD.BACKUP, backup_id, thisTid);
-    receive((string _res) { res = _res; });
-    return res;
-}
-
-public void send_put(string cur_state, string prev_state, long op_id)
-{
-    Tid tid_search_manager = getTid(P_MODULE.fulltext_indexer);
-
-    if (tid_search_manager != Tid.init)
-    {
-        send(tid_search_manager, CMD.PUT, cur_state, prev_state, op_id);
-        inc_count_recv_put();
-    }
-}
-
-public void send_delete(string cur_state, string prev_state, long op_id)
-{
-    Tid tid_search_manager = getTid(P_MODULE.fulltext_indexer);
-
-    if (tid_search_manager != Tid.init)
-    {
-        send(tid_search_manager, CMD.DELETE, cur_state, prev_state, op_id);
-        inc_count_recv_put();
-    }
-}
-
-public void xapian_thread_context(string thread_name)
-{
-    core.thread.Thread.getThis().name = thread_name;
-
-    long                         last_update_time;
-
-//    writeln("SPAWN: xapian_thread_io");
-    last_update_time = Clock.currTime().stdTime();
-
-    // SEND ready
-    receive((Tid tid_response_reciever)
-            {
-                send(tid_response_reciever, true);
-            });
-    while (true)
-    {
-        receive(
-                (CMD cmd, CNAME cname, string _key2slot_str)
-                {
-                    if (cmd == CMD.PUT)
-                    {
-                        if (cname == CNAME.LAST_UPDATE_TIME)
-                        {
-                            last_update_time = Clock.currTime().stdTime() / 10000;
-                        }
-                    }
-                },
-                (CMD cmd, CNAME cname, Tid tid_sender)
-                {
-                    if (cmd == CMD.GET)
-                    {
-                        if (cname == CNAME.LAST_UPDATE_TIME)
-                        {
-                            //writeln ("GET:\n", last_update_time, ");
-                            send(tid_sender, last_update_time);
-                        }
-                    }
-                }, (Variant v) { writeln(thread_name, "::xapian_thread_context::Received some other type.", v); });
-    }
-}
-
-    File          *ff_key2slot_w = null;
-
-private void store__key2slot(ref int[ string ] key2slot, Tid tid_subject_manager)
-{
-//	writeln ("#1 store__key2slot");
-    string data = serialize_key2slot(key2slot);
-
-    send(tid_subject_manager, CMD.PUT_KEY2SLOT, xapian_metadata_doc_id, data);
-
-        try
-        {
-            ff_key2slot_w.seek(0);
-            ff_key2slot_w.writef("%s", data);
-            ff_key2slot_w.flush();
-        }
-        catch (Throwable tr)
-        {
-            log.trace("fail store__key2slot [%s] [%s]", data, tr.msg);
-            return;
-        }
-
-}
-
-private int[ string ] read_key2slot(Tid tid_subject_manager)
-{
-    int[ string ] key2slot;
-
-    send(tid_subject_manager, CMD.FIND, xapian_metadata_doc_id, thisTid);
-    receive((string key, string data, Tid tid)
-            {
-//    writeln ("@KEY@SLOT=", data);
-                key2slot = deserialize_key2slot(data);
-            });
-
-//    writeln("slot size=", key2slot.length);
-    return key2slot;
-}
-
-private void printTid(string tag)
-{
-    writefln("%s: %s, address: %s", tag, thisTid, &thisTid);
-}
-
-
-private class IndexerContext
+public class IndexerContext
 {
     Context                context;
 
@@ -206,18 +40,124 @@ private class IndexerContext
     string                 lang = "russian";
 
     int[ string ] key2slot;
+    File          *ff_key2slot_w = null;
 
     long   counter                         = 0;
     long   last_counter_after_timed_commit = 0;
 
     ulong  last_size_key2slot = 0;
 
-    Tid    tid_subject_manager;
-    Tid    tid_acl_manager;
-    Tid    key2slot_accumulator;
     string thread_name;
 
     Ticket *ticket;
+
+    bool init()
+    {
+        string file_name_key2slot = xapian_info_path ~ "/key2slot";
+
+        if (exists(file_name_key2slot) == false)
+            ff_key2slot_w = new File(file_name_key2slot, "w");
+        else
+        {
+            ff_key2slot_w = new File(file_name_key2slot, "r+");
+
+            ff_key2slot_w.seek(0);
+            auto buf = ff_key2slot_w.rawRead(new char[ 100 * 1024 ]);
+
+            //writefln("@indexer:init:data [%s]", cast(string)buf);
+            key2slot = deserialize_key2slot(cast(string)buf);
+            //writeln("@indexer:init:key2slot", key2slot);
+        }
+
+        // attempt to create a path
+        try
+        {
+            mkdir("data");
+        }
+        catch (Exception ex)
+        {
+        }
+
+        string db_path_base    = get_xapiab_db_path("base");
+        string db_path_system  = get_xapiab_db_path("system");
+        string db_path_deleted = get_xapiab_db_path("deleted");
+
+        bool   need_all_reindex = false;
+
+        byte   count_created_db_folder = 0;
+        try
+        {
+            mkdir(db_path_base);
+            count_created_db_folder++;
+        } catch (Exception ex) {}
+
+        try
+        {
+            mkdir(db_path_system);
+            count_created_db_folder++;
+        } catch (Exception ex) {}
+
+        try
+        {
+            mkdir(db_path_deleted);
+            count_created_db_folder++;
+        }
+        catch (Exception ex) {}
+
+        // /////////// XAPIAN INDEXER ///////////////////////////
+        XapianStem stemmer = new_Stem(cast(char *)this.lang, cast(uint)this.lang.length, &err);
+
+        string     dummy;
+        double     d_dummy;
+
+        //bool       is_exist_db = exists(xapian_search_db_path);
+
+        this.indexer_base_db = new_WritableDatabase(db_path_base.ptr, cast(uint)db_path_base.length, DB_CREATE_OR_OPEN, xapian_db_type, &err);
+        if (err == 0)
+        {
+            this.indexer_system_db = new_WritableDatabase(db_path_system.ptr, cast(uint)db_path_system.length, DB_CREATE_OR_OPEN,
+                                                          xapian_db_type, &err);
+            if (err != 0)
+            {
+                writeln("!!!!!!! Err in new_WritableDatabase, err=", err);
+                return false;
+            }
+
+            this.indexer_deleted_db = new_WritableDatabase(db_path_deleted.ptr, cast(uint)db_path_deleted.length, DB_CREATE_OR_OPEN,
+                                                           xapian_db_type, &err);
+            if (err != 0)
+            {
+                writeln("!!!!!!! Err in new_WritableDatabase, err=", err);
+                return false;
+            }
+        }
+
+        this.indexer = new_TermGenerator(&err);
+        this.indexer.set_stemmer(stemmer, &err);
+
+        this.commit_all_db();
+
+        if (count_created_db_folder != 0)
+        {
+            try
+            {
+//		if (ictx.context.count_individuals() > 16)
+//			need_all_reindex = true;
+            }
+            catch (Throwable tr)
+            {
+//			writeln ("tr=", tr.toString());
+            }
+
+            log.trace("index is empty or not completed");
+
+            if (need_all_reindex == true)
+            {
+                log.trace("it does not correspond to the index database, need reindexes");
+            }
+        }
+        return true;
+    }
 
     void reload_index_schema()
     {
@@ -229,37 +169,20 @@ private class IndexerContext
         }
     }
 
-    void index_msg(string msg, string prev_msg, bool is_deleted, long op_id)
+    void index_msg(ref Individual indv, ref Individual prev_indv, INDV_OP cmd, long op_id, Context context)
     {
-        Individual indv;
-        Individual prev_indv;
+        //writeln("@ft index, indv.uri=", indv.uri);
+        bool is_deleted;
+
+        if (cmd == INDV_OP.REMOVE)
+            is_deleted = true;
 
         try
         {
-            if (msg !is null && cbor2individual(&indv, msg) < 0)
-            {
-                log.trace("ERR! index_msg invalid individual:[%s]", msg);
-                return;
-            }
-
-            if (prev_msg !is null)
-            {
-                if (cbor2individual(&prev_indv, prev_msg) < 0)
-                {
-                    log.trace("ERR! index_msg, prev_state: invalid individual:[%s]", msg);
-                    return;
-                }
-            }
-
             if (iproperty is null)
-            {
-                if (context is null)
-                    context = new PThreadContext(node_id, thread_name, P_MODULE.fulltext_indexer);
                 iproperty = new IndexerProperty(context);
-            }
 
             iproperty.load(false);
-
 
             if (indv.uri !is null && indv.resources.length > 0)
             {
@@ -799,7 +722,7 @@ private class IndexerContext
                         log.trace("commit index..");
 
                     if (key2slot.length > 0)
-                        store__key2slot(key2slot, tid_subject_manager);
+                        store__key2slot();
 
                     commit_all_db();
                 }
@@ -832,371 +755,46 @@ private class IndexerContext
         set_count_indexed(counter);
         //log.trace("@FT:commit=%d", counter);
     }
+
+    private void store__key2slot()
+    {
+        //writeln("#1 store__key2slot");
+        string data = serialize_key2slot(key2slot);
+
+        try
+        {
+            ff_key2slot_w.seek(0);
+            ff_key2slot_w.writef("%s", data);
+            ff_key2slot_w.flush();
+        }
+        catch (Throwable tr)
+        {
+            log.trace("fail store__key2slot [%s] [%s]", data, tr.msg);
+            return;
+        }
+
+
+//    send(tid_subject_manager, CMD.PUT_KEY2SLOT, xapian_metadata_doc_id, data);
+    }
+
+    private int get_slot_and_set_if_not_found(string field, ref int[ string ] key2slot)
+    {
+//	writeln ("get_slot:", field);
+        int slot = key2slot.get(field, -1);
+
+        if (slot == -1)
+        {
+            // create new slot
+            slot              = cast(int)key2slot.length + 1;
+            key2slot[ field ] = slot;
+            store__key2slot();
+//        send (key2slot_accumulator, PUT, data);
+        }
+
+        return slot;
+    }
 }
 
 string node_id;
 
-void xapian_indexer(string thread_name, string _node_id)
-{
-        string file_name_key2slot = xapian_info_path ~ "/key2slot";
-
-        if (exists(file_name_key2slot) == false)
-            ff_key2slot_w = new File(file_name_key2slot, "w");
-        else
-        {
-            ff_key2slot_w = new File(file_name_key2slot, "r+");
-
-            ff_key2slot_w.seek(0);
-        }
-
-
-    node_id = _node_id;
-    scope (exit)
-    {
-        log.trace("ERR! indexer thread dead (exit)");
-    }
-
-    IndexerContext ictx = new IndexerContext;
-    ictx.thread_name = thread_name;
-    // //////////////////////////////////
-
-    core.thread.Thread.getThis().name = thread_name;
-
-    // attempt to create a path
-    try
-    {
-        mkdir("data");
-    }
-    catch (Exception ex)
-    {
-    }
-
-    string db_path_base    = get_xapiab_db_path("base");
-    string db_path_system  = get_xapiab_db_path("system");
-    string db_path_deleted = get_xapiab_db_path("deleted");
-
-    bool   need_all_reindex = false;
-
-    byte   count_created_db_folder = 0;
-    try
-    {
-        mkdir(db_path_base);
-        count_created_db_folder++;
-    }
-    catch (Exception ex)
-    {
-    }
-
-    try
-    {
-        mkdir(db_path_system);
-        count_created_db_folder++;
-    }
-    catch (Exception ex)
-    {
-    }
-
-    try
-    {
-        mkdir(db_path_deleted);
-        count_created_db_folder++;
-    }
-    catch (Exception ex)
-    {
-    }
-
-    // /////////// XAPIAN INDEXER ///////////////////////////
-    XapianStem stemmer = new_Stem(cast(char *)ictx.lang, cast(uint)ictx.lang.length, &err);
-
-    string     dummy;
-    double     d_dummy;
-
-    //bool       is_exist_db = exists(xapian_search_db_path);
-
-    ictx.indexer_base_db = new_WritableDatabase(db_path_base.ptr, cast(uint)db_path_base.length, DB_CREATE_OR_OPEN, xapian_db_type, &err);
-    if (err == 0)
-    {
-        ictx.indexer_system_db = new_WritableDatabase(db_path_system.ptr, cast(uint)db_path_system.length, DB_CREATE_OR_OPEN,
-                                                      xapian_db_type, &err);
-        if (err != 0)
-        {
-            writeln("!!!!!!! Err in new_WritableDatabase, err=", err);
-
-            receive((Tid tid_response_reciever)
-                    {
-                        send(tid_response_reciever, false);
-                    });
-            return;
-        }
-
-        ictx.indexer_deleted_db = new_WritableDatabase(db_path_deleted.ptr, cast(uint)db_path_deleted.length, DB_CREATE_OR_OPEN,
-                                                       xapian_db_type, &err);
-        if (err != 0)
-        {
-            writeln("!!!!!!! Err in new_WritableDatabase, err=", err);
-
-            receive((Tid tid_response_reciever)
-                    {
-                        send(tid_response_reciever, false);
-                    });
-            return;
-        }
-    }
-
-    ictx.indexer = new_TermGenerator(&err);
-    ictx.indexer.set_stemmer(stemmer, &err);
-
-    ictx.commit_all_db();
-
-    //ictx.xapian_enquire = ictx.indexer_base_db.new_Enquire(&err);
-    //ictx.xapian_qp      = new_QueryParser(&err);
-    //ictx.xapian_qp.set_stemmer(stemmer, &err);
-    //ictx.xapian_qp.set_database(ictx.indexer_base_db, &err);
-
-
-    // SEND ready
-    receive((Tid tid_response_reciever)
-            {
-                send(tid_response_reciever, true);
-            });
-
-    if (count_created_db_folder != 0)
-    {
-        try
-        {
-//		if (ictx.context.count_individuals() > 16)
-//			need_all_reindex = true;
-        }
-        catch (Throwable tr)
-        {
-//			writeln ("tr=", tr.toString());
-        }
-
-        log.trace("index is empty or not completed");
-
-        if (need_all_reindex == true)
-        {
-            log.trace("it does not correspond to the index database, need reindexes");
-        }
-    }
-
-    while (true)
-    {
-        try
-        {
-            receive(
-                    (CMD cmd, P_MODULE module_id, Tid tid_response_reciever)
-                    {
-                        if (cmd == CMD.SET)
-                        {
-                            if (module_id == P_MODULE.subject_manager)
-                            {
-                                ictx.tid_subject_manager = tid_response_reciever;
-
-                                if (ictx.key2slot.length == 0 && ictx.tid_subject_manager != Tid.init)
-                                    ictx.key2slot = read_key2slot(ictx.tid_subject_manager);
-                            }
-                            else if (module_id == P_MODULE.acl_manager)
-                            {
-                                ictx.tid_acl_manager = tid_response_reciever;
-                            }
-                            else if (module_id == P_MODULE.xapian_thread_context)
-                            {
-                                ictx.key2slot_accumulator = tid_response_reciever;
-                            }
-//                        return;
-                        }
-                    },
-                    (CMD cmd, string msg, Tid tid_response_reciever)
-                    {
-                        if (ictx.key2slot.length - ictx.last_size_key2slot > 0)
-                        {
-                            store__key2slot(ictx.key2slot, ictx.tid_subject_manager);
-                            if (trace_msg[ 210 ] == 1)
-                                log.trace("store__key2slot #1");
-                            ictx.last_size_key2slot = ictx.key2slot.length;
-                        }
-
-                        ictx.commit_all_db();
-
-                        if (cmd == CMD.BACKUP)
-                        {
-                            string new_path_backup_xapian = dbs_backup ~ "/" ~ msg ~ "/" ~ get_xapiab_db_path("base");
-                            try
-                            {
-                                mkdir(new_path_backup_xapian);
-                            }
-                            catch (Exception ex)
-                            {
-                                writeln("ex!", ex.msg);
-                            }
-
-                            try
-                            {
-                                auto oFiles = dirEntries(get_xapiab_db_path("base"), "*.*", SpanMode.depth);
-                                foreach (o; oFiles)
-                                {
-                                    string new_path;
-                                    string[] tt = o.name.split("/");
-                                    if (tt.length > 1)
-                                        new_path = tt[ $ - 1 ];
-                                    else
-                                        new_path = o.name;
-
-                                    new_path = new_path_backup_xapian ~ "/" ~ new_path;
-
-                                    //writeln ("COPY TO:", new_path);
-                                    copy(o.name, new_path);
-                                    //writeln ("OK");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                writeln("ex!", ex.msg);
-                                send(tid_response_reciever, "");
-                            }
-                        }
-
-                        send(tid_response_reciever, msg);
-                    },
-                    (CMD cmd, Tid tid_response_reciever)
-                    {
-                        if (cmd == CMD.RELOAD)
-                        {
-                            ictx.reload_index_schema();
-                            send(tid_response_reciever, true);
-                        }
-                        else
-                        {
-                            //if (cmd == CMD.NOP)
-                            //	log.trace ("@indexer: NOP #1");
-
-                            // если ожидают окончания операции для indexer, то вероятнее всего собираются сразу-же читать из поиска
-                            // следовательно нужно сделать коммит
-                            if (ictx.key2slot.length - ictx.last_size_key2slot > 0)
-                            {
-                                store__key2slot(ictx.key2slot, ictx.tid_subject_manager);
-                                if (trace_msg[ 210 ] == 1)
-                                    log.trace("store__key2slot #2");
-                                ictx.last_size_key2slot = ictx.key2slot.length;
-                            }
-                            ictx.commit_all_db();
-
-                            ictx.last_counter_after_timed_commit = ictx.counter;
-
-                            //if (cmd == CMD.NOP)
-                            //	log.trace ("@indexer: NOP #2");
-
-                            if (cmd == CMD.NOP)
-                                send(tid_response_reciever, true);
-                            else
-                                send(tid_response_reciever, false);
-                        }
-                    },
-                    (CMD cmd, string msg)
-                    {
-                        //writeln (cast(void*)indexer_base_db, " @1 cmd=", cmd, ", msg: ", msg);
-                        if (cmd == CMD.COMMIT)
-                        {
-                            //writeln ("@@ XAPIAN:COMMIT");
-
-                            if (ictx.counter - ictx.last_counter_after_timed_commit > 0)
-                            {
-                                if (trace_msg[ 210 ] == 1)
-                                    log.trace("counter: %d, timer: commit index..", ictx.counter);
-                                if (ictx.key2slot.length - ictx.last_size_key2slot > 0)
-                                {
-                                    store__key2slot(ictx.key2slot, ictx.tid_subject_manager);
-                                    if (trace_msg[ 210 ] == 1)
-                                        log.trace("store__key2slot");
-                                    ictx.last_size_key2slot = ictx.key2slot.length;
-                                }
-
-                                ictx.commit_all_db();
-
-                                //indexer_base_db.close (&err);
-                                //indexer_base_db = new_WritableDatabase(xapian_search_db_path.ptr, xapian_search_db_path.length, DB_CREATE_OR_OPEN, &err);
-                                ictx.last_counter_after_timed_commit = ictx.counter;
-                                send(ictx.key2slot_accumulator, CMD.PUT, CNAME.LAST_UPDATE_TIME, "");
-                                //core.memory.GC.collect ();
-                                //writeln ("GC COLLECT");
-                            }
-                        }
-                    },
-                    (CMD cmd, string msg, string prev_msg, long op_id)
-                    {
-                        //writeln ("@@XAPIAN INDEXER START op_id=", op_id);
-                        if (cmd == CMD.PUT)
-                        {
-                            ictx.index_msg(msg, prev_msg, false, op_id);
-                        }
-                        else if (cmd == CMD.DELETE)
-                        {
-                            ictx.index_msg(msg, prev_msg, true, op_id);
-                        }
-
-                        inc_count_prep_put();
-                        //writeln ("@@XAPIAN INDEXER END op_id=", op_id);
-                    },
-                    (CMD cmd, int arg, bool arg2)
-                    {
-                        if (cmd == CMD.SET_TRACE)
-                            set_trace(arg, arg2);
-                    },
-                    (Variant v) { writeln(thread_name, "::xapian_indexer::Received some other type.", v); printPrettyTrace(stderr); });
-        }
-        catch (Throwable ex)
-        {
-            log.trace("xapian indexer# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
-        }
-    }
-}
-
-
-private int get_slot_and_set_if_not_found(string field, ref int[ string ] key2slot)
-{
-//	writeln ("get_slot:", field);
-    int slot = key2slot.get(field, -1);
-
-    if (slot == -1)
-    {
-        // create new slot
-        slot              = cast(int)key2slot.length + 1;
-        key2slot[ field ] = slot;
-//        send (key2slot_accumulator, PUT, data);
-    }
-
-    return slot;
-}
-
-///////////////////////////// STAT //////////////////////////////
-
-import core.atomic;
-
-private shared long _count_recv_put = 0;
-
-private long inc_count_recv_put(long delta = 1)
-{
-    return atomicOp !"+=" (_count_recv_put, delta);
-}
-
-public long get_count_recv_put()
-{
-    return atomicLoad(_count_recv_put);
-}
-
-////////////////////////////
-
-private shared long _count_prep_put = 0;
-
-private long inc_count_prep_put(long delta = 1)
-{
-    return atomicOp !"+=" (_count_prep_put, delta);
-}
-
-public long get_count_prep_put()
-{
-    return atomicLoad(_count_prep_put);
-}
 /////////////////////////////////////////////////////////////
-

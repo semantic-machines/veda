@@ -26,7 +26,7 @@ public enum P_MODULE : byte
     acl_manager                = 2,
 
     /// Полнотекстовое индексирование
-    xapian_thread_context      = 3,
+    //xapian_thread_context      = 3,
 
     /// Полнотекстовое индексирование
     fulltext_indexer           = 4,
@@ -461,7 +461,7 @@ public long get_subject_manager_op_id()
 }
 
 ///
-
+/*
 private shared long indexer_op_id = 0;
 
 public void set_indexer_op_id(long data)
@@ -473,7 +473,7 @@ public long get_indexer_op_id()
 {
     return atomicLoad(indexer_op_id);
 }
-
+*/
 ////
 
 private shared long acl_manager_op_id = 0;

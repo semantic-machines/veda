@@ -57,6 +57,32 @@ private enum CMD : byte
     NOP    = 64
 }
 
+File          *ff_key2slot_r = null;
+public int[ string ] read_key2slot()
+{
+    int[ string ] key2slot;
+
+	if (ff_key2slot_r is null)
+	{
+		string file_name_key2slot = xapian_info_path ~ "/key2slot";
+	try
+	{
+		ff_key2slot_r = new File(file_name_key2slot, "r");
+	}
+	catch (Exception ex){}
+	
+	}
+
+	if (ff_key2slot_r !is null)
+	{
+            ff_key2slot_r.seek(0);
+            auto buf = ff_key2slot_r.rawRead(new char[ 100 * 1024 ]);
+            key2slot = deserialize_key2slot(cast(string)buf);
+//            writeln("@context:read_key2slot:key2slot", key2slot);
+	}
+    return key2slot;
+}
+
 /// реализация интерфейса Context
 class PThreadContext : Context
 {
@@ -112,7 +138,7 @@ class PThreadContext : Context
         is_traced_module[ P_MODULE.ticket_manager ]   = true;
         is_traced_module[ P_MODULE.subject_manager ]  = true;
         is_traced_module[ P_MODULE.acl_manager ]      = true;
-        is_traced_module[ P_MODULE.fulltext_indexer ] = true;
+//        is_traced_module[ P_MODULE.fulltext_indexer ] = true;
         is_traced_module[ P_MODULE.scripts ]          = true;
 
         getConfiguration();
@@ -291,19 +317,20 @@ class PThreadContext : Context
 
     public int[ string ] get_key2slot()
     {
-        string key2slot_str;
+		return read_key2slot ();
+//        string key2slot_str;
 
-        if (inividuals_storage !is null)
-            key2slot_str = inividuals_storage.find(xapian_metadata_doc_id);
-        else
-            key2slot_str = get_from_individual_storage_thread(xapian_metadata_doc_id);
+//        if (inividuals_storage !is null)
+//            key2slot_str = inividuals_storage.find(xapian_metadata_doc_id);
+//        else
+//            key2slot_str = get_from_individual_storage_thread(xapian_metadata_doc_id);
 
-        if (key2slot_str !is null)
-        {
-            int[ string ] key2slot = deserialize_key2slot(key2slot_str);
-            return key2slot;
-        }
-        return (int[ string ]).init;
+//        if (key2slot_str !is null)
+//        {
+//            int[ string ] key2slot = deserialize_key2slot(key2slot_str);
+//            return key2slot;
+//        }
+//        return (int[ string ]).init;
     }
 
     ref string[ string ] get_prefix_map()
@@ -730,12 +757,12 @@ class PThreadContext : Context
 
     public void reopen_ro_fulltext_indexer_db()
     {
-        try
-        {
-            if (getTid(P_MODULE.fulltext_indexer) != Tid.init)
-                this.wait_thread(P_MODULE.fulltext_indexer);
-        }
-        catch (Exception ex) {}
+//        try
+//        {
+//            if (getTid(P_MODULE.fulltext_indexer) != Tid.init)
+//                this.wait_thread(P_MODULE.fulltext_indexer);
+//        }
+//        catch (Exception ex) {}
 
         if (_vql !is null)
             _vql.reopen_db();
@@ -974,7 +1001,7 @@ class PThreadContext : Context
             version (useInnerModules)
             {
                 res.result = storage_module.remove(P_MODULE.subject_manager, uri, ignore_freeze, res.op_id);
-                veda.core.threads.xapian_indexer.send_delete(null, prev_state, res.op_id);
+                //veda.core.threads.xapian_indexer.send_delete(null, prev_state, res.op_id);
             }
             if (external_write_storage_url !is null)
             {
@@ -1369,10 +1396,10 @@ class PThreadContext : Context
 
                     if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
                     {
-                        if (indv.isExists(veda_schema__deleted, true) == false)
-                            veda.core.threads.xapian_indexer.send_put(new_state, prev_state, res.op_id);
-                        else
-                            veda.core.threads.xapian_indexer.send_delete(new_state, prev_state, res.op_id);
+                        //if (indv.isExists(veda_schema__deleted, true) == false)
+                        //    veda.core.threads.xapian_indexer.send_put(new_state, prev_state, res.op_id);
+                        //else
+                        //    veda.core.threads.xapian_indexer.send_delete(new_state, prev_state, res.op_id);
 
                         if (rdfType.anyExists(owl_tags) == true && new_state != prev_state)
                         {
@@ -1466,7 +1493,7 @@ class PThreadContext : Context
 
         version (useInnerModules)
         {
-            if (module_id == P_MODULE.scripts)
+            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout || module_id == P_MODULE.ltr_scripts)
             {
                 res = veda.core.threads.dcs_manager.get_opid(module_id);
             }
@@ -1499,19 +1526,7 @@ class PThreadContext : Context
 
         version (useInnerModules)
         {
-/*
-                if (module_id == P_MODULE.fulltext_indexer)
-                {
-                Tid tid = getTid(module_id);
-                if (tid != Tid.init)
-                {
-                        //writeln ("SEND COMMIT");
-                        send(tid, CMD.COMMIT, "", thisTid);
-                        core.thread.Thread.sleep(10.msecs);
-                        }
-        }
- */
-            if (module_id == P_MODULE.scripts)
+            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout || module_id == P_MODULE.ltr_scripts)
             {
                 veda.core.threads.dcs_manager.wait_module(module_id, op_id);
             }
@@ -1584,7 +1599,7 @@ class PThreadContext : Context
                                 result = false;
                             else
                             {
-                                res = veda.core.threads.xapian_indexer.backup(backup_id);
+                                //res = veda.core.threads.xapian_indexer.backup(backup_id);
 
                                 if (res == "")
                                     result = false;

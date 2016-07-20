@@ -84,9 +84,6 @@ interface VedaStorageRest_API {
     @path("get_operation_state") @method(HTTPMethod.GET)
     long get_operation_state(int module_id);
 
-//    @path("wait_module") @method(HTTPMethod.GET)
-//    long wait_module(int module_id, long op_id);
-
     @path("restart") @method(HTTPMethod.GET)
     OpResult restart(string ticket);
 
@@ -163,7 +160,7 @@ class VedaStorageRest : VedaStorageRest_API
     string[ string ] properties;
     int                last_used_tid = 0;
     void function(int sig) shutdown;
-        int max_count_workers_on_thread = 100;
+	int max_count_workers_on_thread = 100;
 
     this(std.concurrency.Tid[] _pool, Context _local_context, void function(int sig) _shutdown)
     {
@@ -171,11 +168,11 @@ class VedaStorageRest : VedaStorageRest_API
         context  = _local_context;
         foreach (idx, tid; _pool)
         {
-                for (int i = 0; i < max_count_workers_on_thread; i++)
-                {
-                    Worker *worker = new Worker(tid, cast(int)idx, true, false, 0, ResultCode.No_Content);
-                    pool ~= worker;
-                }
+        	for (int i = 0; i < max_count_workers_on_thread; i++)
+        	{
+	            Worker *worker = new Worker(tid, cast(int)idx, true, false, 0, ResultCode.No_Content);
+	            pool ~= worker;
+        	}
         }
         log.trace ("create pool.size=%d", pool.length);
     }
@@ -473,16 +470,7 @@ class VedaStorageRest : VedaStorageRest_API
     {
         return context.get_operation_state(cast(P_MODULE)module_id);
     }
-/*
-    long wait_module(int module_id, long op_id)
-    {
-        writeln ("@z1 wait_module ", cast(P_MODULE)module_id);
-        long res = context.wait_thread(cast(P_MODULE)module_id, op_id);
 
-        writeln ("@ze wait_module");
-        return res;
-    }
- */
     OpResult restart(string _ticket)
     {
         OpResult res;
