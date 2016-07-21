@@ -54,6 +54,7 @@ script:
   - node ./qa/testAttributiveSearchPerson.js
   - node ./qa/testDrafts.js
   - node ./qa/testLanguage.js
+  - node ./qa/testSimpleNet.js
 
 # Stop deamon and show log
 after_script:
