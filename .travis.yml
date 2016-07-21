@@ -60,8 +60,6 @@ after_script:
   - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
   - grunt coveralls
   - date    
-  - sleep 90
-  - date    
   - cat $PWD/veda-core-_*.log          
   - cat $PWD/veda-core-scripts_*.log          
   - cat $PWD/veda-core-fanout_*.log          
