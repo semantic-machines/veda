@@ -45,7 +45,29 @@ v-l:MainPageTemplate
 			<div class="collapse navbar-collapse" id="navbar-collapse">
 				<div id="user-menu"></div>
 				<ul class="nav navbar-nav navbar-right">
-					<li class="btn-group" id="preferred-language"></li>
+					<li class="btn-group" id="preferred-language" about="v-ui:AvailableLanguage" rel="rdf:value">
+						<button about="@" property="rdfs:label" class="btn btn-xs btn-success navbar-btn"></button>
+						<script>
+							handler("v-ui:preferredLanguage");
+							veda.user.preferences.on("individual:propertyModified", handler);
+							template.on("remove", function () {
+								veda.user.preferences.off("individual:propertyModified", handler);
+							});
+							template.on("click", function() {
+								veda.user.toggleLanguage(individual["rdf:value"][0].toString());
+							});
+							function handler(property_uri) {
+								if (property_uri === "v-ui:preferredLanguage") {
+									var preferredLanguage = veda.user.preferences["v-ui:preferredLanguage"].map(function (language) { return language.id; });
+									if (preferredLanguage.indexOf(individual.id) >= 0) {
+										template.addClass("active");
+									} else {
+										template.removeClass("active");
+									}
+								}
+							}
+						</script>
+					</li>
 					<li id="user-info"></li>
 					<li id="menu" class="dropdown" about="v-l:MainMenu" template="v-l:MenuTemplate"></li>
 				</ul>
@@ -71,30 +93,11 @@ v-l:MainPageTemplate
 	</nav>
 </div>
 <script>
-	var languageTemplate = $("#language-template").html();
-	var languageSelector = $("#preferred-language", template);
-
-	// Render languages
-	var languages = "";
-	Object.keys(veda.user.availableLanguages).map ( function (language_uri) {
-		languages += riot.render(languageTemplate, veda.user.availableLanguages[language_uri]);
-	});
-	languageSelector.html(languages);
-
 	// Render user
 	var userInfo = $("#user-info", template);
 	var userInfoTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
 	userInfo.empty();
 	veda.user.present(userInfo, userInfoTmpl);
-
-	var $languages = $("button", languageSelector);
-	$languages.each( function() {
-		if (this.id in veda.user.language) $(this).addClass("active");
-		$(this).on("click", function() {
-			veda.user.toggleLanguage(this.id);
-			location.reload();
-		});
-	});
 </script>
   """ ;
 .
