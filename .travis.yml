@@ -55,6 +55,7 @@ script:
   - node ./qa/testDrafts.js
   - node ./qa/testLanguage.js
   - node ./qa/testSimpleNet.js
+  - node ./qa/testSimpleNet2.js
 
 # Stop deamon and show log
 after_script:
