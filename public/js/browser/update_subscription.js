@@ -6,24 +6,6 @@ Autoupdate subscription service for individuals that were changed on server
 
 veda.Module(function IndividualAutoupdate(veda) { "use strict";
 
-/*	var console = (function () {
-		var log = $("<pre style='width:24%; max-height:100%;overflow-y:visible;overflow-x:hidden;font-size:10px;padding:10px; white-space:pre-wrap'></pre>").addClass("pull-right");
-		log.prependTo("body");
-		$("#app").css("width", "75%").addClass("pull-left");
-		return {
-			log: function () {
-				var msg = "";
-				for (var i=0; i < arguments.length; i++) {
-					msg += arguments[i].toString() + " ";
-				}
-				msg += "\n\n";
-				log.append(msg);
-				log.scrollTop(log.prop("scrollHeight"));
-			}
-		}
-	})();
-*/
-
 	var socket,
 		address = "ws://" + location.hostname + ":8088/ccus";
 		//address = "ws://echo.websocket.org";
@@ -45,6 +27,10 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 	socket.onerror = function (event) {
 		//console.log("socket error");
 		socket.close();
+	};
+
+	socket.onclose = function (event) {
+		subscription.trigger("closed");
 	};
 
 	socket.onmessage = function (event) {
@@ -101,7 +87,7 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 		//console.log("server:", event.data);
 	};*/
 
-	var subscription = (function (socket) {
+	var subscription = riot.observable(function (socket) {
 		var list = {},
 				delta = {},
 				interval,
@@ -192,30 +178,9 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 					}
 				}
 			},
-		}
-	})(socket);
+		};
+	}(socket));
 
 	veda.updateSubscription = subscription;
-
-	// Autoupdate displayed individuals
-
-	veda.on("individual:loaded", updateWatch);
-
-	socket.onclose = function (event) {
-		veda.off("individual:loaded", updateWatch);
-	};
-
-	function updateWatch(individual) {
-		individual.one("individual:templateReady", subscribeDisplayed);
-	}
-
-	function subscribeDisplayed(template) {
-		var individual = this;
-		subscription.subscribe(individual.id);
-
-		template.one("remove", function () {
-			subscription.unsubscribe(individual.id);
-		});
-	}
 
 });
