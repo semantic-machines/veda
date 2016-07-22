@@ -8,11 +8,11 @@ veda.Module(function (veda) { "use strict";
 
 		if ( self["rdf:type"][0].id !== "v-s:Person" ) { return self; }
 
-		var langs = query(veda.ticket, "'rdf:type' == 'v-ui:Language'");
+		var langs = (new veda.IndividualModel("v-ui:AvailableLanguage"))["rdf:value"];
 		self.availableLanguages = langs.reduce (
-			function (acc, language_uri) {
-				var lang = new veda.IndividualModel(language_uri);
-				acc[lang["rdf:value"][0]] = lang;
+			function (acc, language) {
+				var name = language["rdf:value"][0];
+				acc[name] = language;
 				return acc;
 			}, {});
 
@@ -89,6 +89,7 @@ veda.Module(function (veda) { "use strict";
 				return self.language[language_val];
 			});
 			self.preferences.save();
+			veda.trigger("language:changed");
 		};
 
 		return self;
