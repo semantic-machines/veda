@@ -132,7 +132,6 @@ class TTA
 
     override public string toString()
     {
-        //	string res = "[" ~ text (count) ~ "]:{";
         string res = "{";
 
         if (L !is null)
@@ -167,7 +166,7 @@ public TTA parse_expr(string s)
                 op.pushBack("(");
             else if (s[ i ] == ')')
             {
-                while (op.back() != "(")
+                while (!op.empty() && op.back() != "(")
                     process_op(st, op.popBack());
                 op.popBack();
             }
@@ -236,15 +235,15 @@ public TTA parse_expr(string s)
                         while (i < s.length && s[ i ] != ' ' && s[ i ] != '&' && s[ i ] != '|' && s[ i ] != '=' && s[ i ] != '<' &&
                                s[ i ] != '>' && s[ i ] != '!' && s[ i ] != '-' && s[ i ] != ' ')
                             i++;
-						
-						int ep = i;
 
-						 if (s[ ep - 1 ] == '(' || s[ ep - 1] == ')')
-						 {
-							 ep = i - 1;
-							 i -= 2;
-						 }	 
- 
+                        int ep = i;
+
+                        if (s[ ep - 1 ] == '(' || s[ ep - 1 ] == ')')
+                        {
+                            ep = i - 1;
+                            i -= 2;
+                        }
+
                         //writeln ("@p #7	operand=", operand);
                         operand = s[ bp .. i ];
                         //writeln ("@p #8	operand=", operand);
