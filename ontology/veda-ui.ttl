@@ -14,6 +14,10 @@
 #  owl:versionInfo "3.4" ;
   v-s:loadPriority 8 ;
 .
+v-ui:AvailableLanguage
+  rdf:type rdfs:Resource ;
+  rdf:value v-ui:EN, v-ui:RU ;
+.
 v-ui:EN
   rdf:type v-ui:Language ;
   rdfs:label "Eng"^^xsd:string ;
