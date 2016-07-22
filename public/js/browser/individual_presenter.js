@@ -527,6 +527,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			template.one("remove", function () {
 				about.off("individual:propertyModified", propertyModifiedHandler);
 			});
+			veda.on("language:changed", langWatch);
+			template.one("remove", function () {
+				veda.off("language:changed", langWatch);
+			});
+			function langWatch () {
+				propertyModifiedHandler(property_uri);
+			}
 		});
 
 		// Property control
