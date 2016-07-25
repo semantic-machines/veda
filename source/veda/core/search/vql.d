@@ -66,6 +66,12 @@ class VQL
         void delegate(string uri) dg;
         void collect_subject(string uri)
         {
+            if (uri is null)
+            {
+                individuals = individuals.init;
+                return;
+            }
+
             Individual individual = Individual();
 
             string     data = context.get_from_individual_storage(uri);
@@ -101,6 +107,12 @@ class VQL
         void delegate(string uri) dg;
         void collect_subject(string uri)
         {
+            if (uri is null)
+            {
+                individuals = individuals.init;
+                return;
+            }
+
             Individual individual = Individual();
 
             string     data = context.get_from_individual_storage(uri);
@@ -136,6 +148,11 @@ class VQL
         void delegate(string uri) dg;
         void collect_subject(string uri)
         {
+            if (uri is null)
+            {
+                ids = ids.init;
+                return;
+            }
             ids ~= uri;
         }
         dg = &collect_subject;
@@ -205,6 +222,11 @@ class VQL
             void delegate(string uri) dg;
             void collect_subject(string uri)
             {
+                if (uri is null)
+                {
+                    res = res.init;
+                    return;
+                }
                 string data = context.get_from_individual_storage(uri);
 
                 if (data is null)

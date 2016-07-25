@@ -36,7 +36,7 @@ class FTIndexerProcess : VedaModule
 {
     IndexerContext ictx = new IndexerContext;
 
-    long           last_update_time  = 0;
+    long           last_update_time = 0;
 
     this(P_MODULE _module_name, string _host, ushort _port)
     {
@@ -62,8 +62,8 @@ class FTIndexerProcess : VedaModule
         if (now - last_update_time > 10_000_000)
         {
             ictx.commit_all_db();
-            last_update_time  = now;
-            commited_op_id = op_id;
+            last_update_time = now;
+            commited_op_id   = op_id;
             //writeln("@ commit, commited_op_id=", commited_op_id);
         }
     }

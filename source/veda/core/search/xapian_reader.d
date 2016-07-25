@@ -218,6 +218,7 @@ class XapianReader : SearchReader
                                                               context);
                 if (state < 0)
                 {
+                    add_out_element(null); // reset previous collected data
                     attempt_count++;
                     if (attempt_count > 10)
                         break;
