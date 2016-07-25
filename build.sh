@@ -7,6 +7,7 @@ fi
 ./update-version-ttl.sh
 
 ./build-component.sh veda-bootstrap bootstrap
+rm veda
 rename "s/veda-bootstrap/veda/g" *
 ./build-component.sh veda-server server
 ./build-component.sh veda-fanout fanout
