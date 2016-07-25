@@ -40,7 +40,7 @@ public class IndexerContext
     string                 lang = "russian";
 
     int[ string ] key2slot;
-    File          *ff_key2slot_w = null;
+    File   *ff_key2slot_w = null;
 
     long   counter                         = 0;
     long   last_counter_after_timed_commit = 0;
@@ -175,6 +175,9 @@ public class IndexerContext
         bool is_deleted;
 
         if (cmd == INDV_OP.REMOVE)
+            is_deleted = true;
+
+        if (is_deleted == false && indv.isExists(veda_schema__deleted, true) == true)
             is_deleted = true;
 
         try
