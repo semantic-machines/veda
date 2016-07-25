@@ -778,7 +778,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
                         if (iteratedObject[key2] !== name)
                             return false;
                         //print("individual[name]=", toJson(individual[name]));
-                        var str = typeof window === "undefined" ? element[0].data : element[0];
+                        var str = typeof window === "undefined" ? element[0].data : element[0].id;
                         //print("str=", str);
                         if (str == value)
                             return true;
