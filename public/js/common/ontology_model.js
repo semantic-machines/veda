@@ -46,12 +46,13 @@ veda.Module(function (veda) { "use strict";
 
 		var self = this;
 
-		var classes = {},
-			properties = {},
-			specs = {},
-			models = {},
-			templates = {},
-			other = {};
+		var classes = self.classes = {},
+				properties = self.properties = {},
+				specifications = self.specifications = {},
+				models = self.models = {},
+				templates = self.templates = {},
+				ontologies = self.ontologies = {},
+				datatypes = self.datatypes = {};
 
 		var ontology;
 		try {
@@ -102,6 +103,9 @@ veda.Module(function (veda) { "use strict";
 			if (!individual || !individual.id) return;
 
 			switch ( individual["rdf:type"][0].id ) {
+				case "owl:Ontology" :
+					ontologies[individual.id] = individual;
+					break;
 				case "rdfs:Class" :
 				case "owl:Class" :
 					classes[individual.id] = individual;
@@ -113,6 +117,9 @@ veda.Module(function (veda) { "use strict";
 				case "owl:AnnotationProperty" :
 					properties[individual.id] = individual;
 					break;
+				case "rdfs:Datatype" :
+					datatypes[individual.id] = individual;
+					break;
 				case "v-ui:PropertySpecification" :
 				case "v-ui:IntegerPropertySpecification" :
 				case "v-ui:DecimalPropertySpecification" :
@@ -120,16 +127,13 @@ veda.Module(function (veda) { "use strict";
 				case "v-ui:StringPropertySpecification" :
 				case "v-ui:BooleanPropertySpecification" :
 				case "v-ui:ObjectPropertySpecification" :
-					specs[individual.id] = individual;
+					specifications[individual.id] = individual;
 					break;
 				case "v-s:ClassModel" :
 					models[individual.id] = individual;
 					break;
 				case "v-ui:ClassTemplate" :
 					templates[individual.id] = individual;
-					break;
-				default :
-					other[individual.id] = individual;
 					break;
 			}
 		});
@@ -177,8 +181,8 @@ veda.Module(function (veda) { "use strict";
 		veda.trigger("init:progress", 60);
 
 		// Process specifications
-		Object.keys(specs).map( function (uri) {
-			var spec = specs[uri];
+		Object.keys(specifications).map( function (uri) {
+			var spec = specifications[uri];
 			if (!spec["v-ui:forClass"]) return;
 			spec["v-ui:forClass"].map( function ( _class ) {
 				_class.specsByProps = _class.specsByProps || {};
@@ -218,14 +222,15 @@ veda.Module(function (veda) { "use strict";
 		// Initialization percentage
 		Object.keys(self).map( function (uri) {
 			var individual = self[uri];
-			if (!individual || !individual.id) return;
+			if (!individual.id || individual.id === "cfg:OntoVsn") return;
 			individual.init();
+			delete self[uri];
 		});
 
 		veda.trigger("init:progress", 100);
 
 		//var t2 = new Date();
-		//console.log("onto load", (t2-t1)/1000, "sec", storage.length);
+		//console.log("onto load", (t2-t1)/1000, "sec");
 
 		return self;
 
