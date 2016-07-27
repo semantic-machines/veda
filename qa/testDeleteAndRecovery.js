@@ -13,7 +13,6 @@ function check(driver, count) {
     (
         function () {
             driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] button[id="submit"]'}).click()
-                .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'submit' button")})
             driver.sleep(basic.FAST_OPERATION);
             return driver.findElement({css:'span[href="#params-ft"]+span[class="badge"]'}).getText().then(function (txt) {
                 return txt == count;
