@@ -7,13 +7,13 @@ function check(driver, count) {
     driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input'}).clear();
     driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input'}).sendKeys(timeStamp)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot input search request")});
-    driver.sleep(basic.SLOW_OPERATION);
+    driver.sleep(basic.EXTRA_SLOW_OPERATION);
 
-    driver.findElement({css:'button[id="submit"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'submit' butoon")});
     driver.wait
     (
         function () {
+            driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] button[id="submit"]'}).click()
+                .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'submit' button")})
             driver.sleep(basic.FAST_OPERATION);
             return driver.findElement({css:'span[href="#params-ft"]+span[class="badge"]'}).getText().then(function (txt) {
                 return txt == count;
@@ -21,7 +21,7 @@ function check(driver, count) {
             driver.findElement({css:'div[id="fulltext-search"] a[id="refresh"]'}).click()
                 .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'refresh' button")});
         },
-        basic.SLOW_OPERATION
+        basic.EXTRA_SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "Number of elements is wrong, expected: " + count)});
 }
 
