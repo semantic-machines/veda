@@ -67,6 +67,12 @@ class FanoutProcess : VedaModule
 	{
 	}
 	
+	override Context create_context ()
+	{
+		return null; 
+	}
+
+	
     override bool configure()
     {
         connect_to_mysql(context);

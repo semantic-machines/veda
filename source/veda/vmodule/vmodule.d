@@ -67,6 +67,7 @@ class VedaModule
     string                    queue_name = "individuals-flow";
     string                    parent_url = "http://127.0.0.1:8080";
     Ticket                    sticket;
+    P_MODULE	module_name;
 
     logger log()
     {
@@ -79,17 +80,10 @@ class VedaModule
     {
         g_child_process = this;
         process_name    = text(_module_name);
+        module_name		= _module_name;	
         port            = _port;
         host            = _host;
         _log            = new logger("veda-core-" ~ process_name, "log", "PROCESS");
-        context         = new PThreadContext("cfg:standart_node", process_name, _module_name, parent_url);
-
-        if (node == Individual.init)
-        {
-            node = context.getConfiguration();
-        }
-
-        cache_of_indv = new Cache!(string, string)(1000, "individuals");
     }
 
     private void init_chanel()
@@ -140,6 +134,18 @@ class VedaModule
 
     void run()
     {
+    	context = create_context ();
+    	
+    	if (context is null)
+	        context         = new PThreadContext("cfg:standart_node", process_name, module_name, parent_url);
+
+        if (node == Individual.init)
+        {
+            node = context.getConfiguration();
+        }
+
+        cache_of_indv = new Cache!(string, string)(1000, "individuals");
+    	
         if (configure() == false)
         {
             log.trace("[%s] configure is fail, terminate", process_name);
@@ -214,6 +220,8 @@ class VedaModule
                           long op_id);
 
     abstract bool configure();
+
+	abstract Context create_context ();
 
     abstract void thread_id();
 

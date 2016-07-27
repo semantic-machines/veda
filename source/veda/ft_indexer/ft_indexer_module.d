@@ -42,6 +42,11 @@ class FTIndexerProcess : VedaModule
     {
         super(_module_name, _host, _port);
     }
+    
+	override Context create_context ()
+	{
+		return null; 
+	}
 
     override bool prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                           string event_id,
