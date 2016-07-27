@@ -9,10 +9,11 @@ function check(driver, count) {
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot input search request")});
     driver.sleep(basic.SLOW_OPERATION);
 
+    driver.findElement({css:'button[id="submit"]'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'submit' butoon")});
     driver.wait
     (
         function () {
-            driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] button[id="submit"]'}).click();
             driver.sleep(basic.FAST_OPERATION);
             return driver.findElement({css:'span[href="#params-ft"]+span[class="badge"]'}).getText().then(function (txt) {
                 return txt == count;
