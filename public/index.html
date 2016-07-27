@@ -689,6 +689,21 @@
 				</div>
 			</div>
 		</script>
+
+		<!-- Ontology editor template -->
+		<script type="html/template" id="ontology-editor-template">
+			<div class="container-fluid" id="ontology-editor">
+				<div class="row">
+					<div class="col-md-3 sidebar">
+						<ol id="ontologies-list" class="nav nav-pills nav-stacked"></ol>
+					</div>
+					<div class="col-md-9 col-md-offset-3 mainbar">
+						<button id="expand" class="pull-right btn btn-default btn-xs glyphicon glyphicon-resize-full" style="position:fixed;top:80px;right:25px;z-index:1000;"></button>
+						<div id="ontology-container"></div>
+					</div>
+				</div>
+			</div>
+		</script>
 		<!-- Javascript -->
 
 		<!-- Utils & UI -->
@@ -753,6 +768,7 @@
 		<script type="text/javascript" src="/js/browser/graph_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/drafts_presenter.js"></script>
 		<script type="text/javascript" src="/js/browser/veda_net_editor.js"></script>
+		<script type="text/javascript" src="/js/browser/ontology_editor.js"></script>
 		<script type="text/javascript" src="/js/browser/app_presenter.js"></script>
 
 		<script type="text/javascript">

@@ -5,7 +5,7 @@
 	veda.AppModel = function (config) {
 
 		var self = riot.observable(this);
-		
+
 		self.config = config;
 		self.user_uri = self.ticket = self.end_time = "";
 		self.cache = {};
@@ -19,12 +19,12 @@
 			self.user_uri = res.user_uri;
 			self.end_time = Math.floor((res.end_time - 621355968000000000) / 10000 );
 			return {
-				ticket: self.ticket, 
-				user_uri: self.user_uri, 
+				ticket: self.ticket,
+				user_uri: self.user_uri,
 				end_time: self.end_time
 			};
 		};
-		
+
 		self.logout = function() {
 			self.user_uri = self.ticket = self.end_time = "";
 			self.cache = {};
@@ -32,7 +32,7 @@
 			self.drafts = {};
 			self.trigger("logout");
 		};
-		
+
 		self.load = function (page, params) {
 			switch (page) {
 				case "console":
@@ -44,6 +44,9 @@
 				case "graph":
 					self.trigger.apply(self, ["load:graph"].concat(params));
 					break;
+				case "ontology":
+					self.trigger.apply(self, ["load:ontology"].concat(params));
+					break;
 				case "drafts":
 					self.trigger.apply(self, ["load:drafts"].concat(params));
 					break;
@@ -52,7 +55,7 @@
 					veda.Util.construct(veda.IndividualModel, [page].concat(params));
 			}
 		};
-		
+
 		// Load ontology
 		self.init = function () {
 			self.ontology = new veda.OntologyModel();
@@ -60,8 +63,8 @@
 			self.user = new veda.UserModel(self.user_uri);
 			self.trigger("started");
 		};
-		
+
 		return self;
 	};
-	
+
 })(veda);
