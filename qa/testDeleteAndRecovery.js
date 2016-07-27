@@ -52,14 +52,14 @@ basic.getDrivers().forEach(function(drv){
     driver.findElement({css:'veda-control[type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill label field")});
     clickButton(driver, "save");
-    
+    driver.sleep(basic.FAST_OPERATION);
     check(driver, 1);
 
     driver.findElement({css:'span[typeof="v-wf:StartForm"]'}).click()
         .thenCatch(function (e) {bssic.errorHandler(e, "Cannot click on 'StartForm' button")});
     clickButton(driver, "delete");
     driver.switchTo().alert().accept();
-
+    driver.sleep(basic.FAST_OPERATION);
     check(driver, 0);
 
     driver.findElement({id:"menu"}).click()
@@ -80,7 +80,7 @@ basic.getDrivers().forEach(function(drv){
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'individual-label'")});
     driver.findElement({css:'div[role="alert"] button[class="btn btn-default btn-sm"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Recovery' button")});
-
+    driver.sleep(basic.FAST_OPERATION);
     check(driver, 1);
 
     driver.quit();
