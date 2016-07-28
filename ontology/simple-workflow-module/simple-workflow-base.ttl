@@ -285,6 +285,14 @@ s-wf:map_decision_form_type_4_PIV_decision_form_type
 	rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_actor_task_action_4_PIV_actor_task_action
+	rdf:type v-wf:Mapping ;
+	v-wf:mapToVariable s-wf:var_actor_task_action ;
+	v-wf:mappingExpression	"process.getInputVariable ('actor_task_action')" ;
+	rdfs:isDefinedBy s-wf: ;
+	rdfs:label "actor_task_action <- actor_task_action" ;
+.
+
 s-wf:map_coordinator
         rdf:type v-wf:Mapping ;
         v-wf:mapToVariable s-wf:var_coordinator ;
@@ -1561,6 +1569,7 @@ s-wf:additional_user_response
 	v-wf:startingMapping s-wf:map_doc_id, s-wf:map_set_add_request_actor_from_initiator, s-wf:map_initiator_from_actor, s-wf:map_possible_decision_for_add_reaction;
     v-wf:startingMapping s-wf:map_actor_task_description_from_LV_result_decision, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_action_4LV_result_decision;
     v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_set_actor_task_description_from_TR_result_data;
+    v-wf:completedMapping s-wf:map_actor_task_action_4_PIV_actor_task_action;
     rdfs:label "Дополнительная реакция"^^xsd:string;
     v-wf:executor s-wf:def_exec_initiator;
     v-s:author td:RomanKarpov-Analyst1;
