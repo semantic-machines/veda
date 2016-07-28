@@ -26,7 +26,6 @@ basic.getDrivers().forEach (function (drv) {
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'executor' field ")});
     driver.findElement({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'VCexecutor fulltext dropdown create properties-editor' field ")})
-    //basic.chooseFromDropdown(driver, 'VCexecutor fulltext dropdown create properties-editor', 'Андрей Бычин : Аналитик', 'Андрей Бычин : Аналитик');
 
     var find = 'Андрей Бычин';
     driver.findElement({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"] input[id="fulltext"]'}).sendKeys(find)
@@ -46,12 +45,9 @@ basic.getDrivers().forEach (function (drv) {
         basic.FAST_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'Андрей Бычин : Аналитик' from dropdown")});
 
-
-    // Кликаем на запрашиваемый тип в выпавшем списке
     driver.findElements({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"] span[class="tt-dropdown-menu"] div[class="tt-dataset-dataset"] p'}).then(function (suggestions) {
         webdriver.promise.filter(suggestions, function(suggestion) {
             return suggestion.getText().then(function(txt){
-                console.log(txt.toLowerCase()===executor.toLowerCase());
                 if (executor == undefined) {
                     return txt.toLowerCase() == find.toLowerCase();
                 } else {
@@ -61,11 +57,9 @@ basic.getDrivers().forEach (function (drv) {
         }).then(function(x) { x[0].click();})
     }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Андрей Бычин :  Аналитик' from dropdown")});
 
-    //var a = getIndividual("veda-control[class=\"VCexecutor fulltext dropdown create properties-editor\"] input[id=\"fulltext\"]");
 
     new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-io-condition-input .ep'}), driver.findElement({css:'.state-task'})).perform();
     new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-task .ep'}), driver.findElement({css:'.state-io-condition-output'})).perform();
-    //driver.executeScript("$('div[class=\"w state-task split-join split-no join-no jsplumb-draggable jsplumb-droppable _jsPlumb_connected _jsPlumb_endpoint_anchor\"]')[0].scrollIntoView(true);");
     driver.findElement({css:'#workflow-save-button'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot click save net")});
 
     startForm.createStartForm(driver, timeStamp, 'Ожидает отправки');
@@ -73,7 +67,7 @@ basic.getDrivers().forEach (function (drv) {
     driver.findElement({css:'div[class="w state-io-condition state-io-condition-input jsplumb-droppable _jsPlumb_endpoint_anchor _jsPlumb_connected"][colored-to="red"]'})
         .thenCatch(function (e) {basic.errorHandler(e, "Seems 'input' button is not located/red")});
     driver.sleep(basic.FAST_OPERATION);
-    driver.findElement({css:'div[class="w state-task split-join split-no join-no jsplumb-droppable _jsPlumb_endpoint_anchor _jsPlumb_connected"][colored-to="green"]'})
+    driver.findElement({css:'div[class="w state-task split-join split-no join-no jsplumb-droppable _jsPlumb_endpoint_anchor _jsPlumb_connected"][colored-to="red"]'})
         .thenCatch(function (e) {basic.errorHandler(e, "Seems 'output' button is not located/red")});
     driver.sleep(basic.FAST_OPERATION);
     driver.findElement({css:'div[class="w state-io-condition state-io-condition-output jsplumb-droppable _jsPlumb_endpoint_anchor _jsPlumb_connected"]'})
