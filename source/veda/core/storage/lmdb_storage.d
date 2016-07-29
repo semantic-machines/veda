@@ -416,7 +416,7 @@ public class LmdbStorage : Storage
     {
         try
         {		
-	            log.trace("flush %s last_op_id=%d", _path, last_op_id);
+	        //    log.trace("flush %s last_op_id=%d", _path, last_op_id);
 			if (mode == DBMode.RW && last_op_id > committed_last_op_id)
 			{
 	 			put (summ_hash_this_db_id, "0," ~ text (last_op_id), -1);
