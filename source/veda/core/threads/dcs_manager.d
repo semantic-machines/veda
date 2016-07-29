@@ -444,7 +444,7 @@ public void wait_module(P_MODULE pm, long op_id)
 
     Task task = getTaskOfPMODULE(pm);
 
-    if (task_of_scripts is shared(Task).init)
+    if (task is Task.init)
         return;
 
     long wait_time = 0;

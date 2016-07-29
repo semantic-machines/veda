@@ -130,8 +130,8 @@ Context init_core(string node_id)
         tids[ P_MODULE.ticket_manager ] = spawn(&individuals_manager, text(P_MODULE.ticket_manager), tickets_db_path, node_id);
         wait_starting_thread(P_MODULE.ticket_manager, tids);
 
-        tids[ P_MODULE.acl_manager ] = spawn(&acl_manager, text(P_MODULE.acl_manager), acl_indexes_db_path);
-        wait_starting_thread(P_MODULE.acl_manager, tids);
+        tids[ P_MODULE.acl_preparer ] = spawn(&acl_manager, text(P_MODULE.acl_preparer), acl_indexes_db_path);
+        wait_starting_thread(P_MODULE.acl_preparer, tids);
 
         //tids[ P_MODULE.xapian_thread_context ] = spawn(&xapian_thread_context, text(P_MODULE.xapian_thread_context));
         //wait_starting_thread(P_MODULE.xapian_thread_context, tids);

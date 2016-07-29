@@ -322,7 +322,7 @@ public void individuals_manager(string thread_name, string db_path, string node_
                     {
                         if (cmd == CMD.PUT_KEY2SLOT)
                         {
-                            storage.put(key, msg);
+                            storage.put(key, msg, -1);
                         }
                     },
                     (CMD cmd, string arg, Tid tid_response_reciever)

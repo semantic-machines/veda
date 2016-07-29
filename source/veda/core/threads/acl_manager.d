@@ -48,7 +48,7 @@ public string backup(string backup_id)
 {
     string res;
 
-    Tid    tid_acl_manager = getTid(P_MODULE.acl_manager);
+    Tid    tid_acl_manager = getTid(P_MODULE.acl_preparer);
 
     send(tid_acl_manager, CMD.BACKUP, backup_id, thisTid);
     receive((string _res) { res = _res; });
@@ -59,7 +59,7 @@ public string backup(string backup_id)
 public ResultCode flush(bool is_wait)
 {
     ResultCode rc;
-    Tid        tid = getTid(P_MODULE.acl_manager);
+    Tid        tid = getTid(P_MODULE.acl_preparer);
 
     if (tid != Tid.init)
     {

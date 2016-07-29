@@ -93,7 +93,7 @@ class PThreadContext : Context
     private Ticket *[ string ] user_of_ticket;
 
     // // // authorization
-    private Authorization acl_indexes;
+    private Authorization _acl_indexes;
 
     private Onto          onto;
 
@@ -116,9 +116,20 @@ class PThreadContext : Context
     private bool        API_ready = true;
     private string      external_write_storage_url;
 
-    this(string _node_id, string context_name, P_MODULE _id, string _external_write_storage_url = null)
+	public Authorization acl_indexes ()
+	{
+		if (_acl_indexes is null)
+	        _acl_indexes        = new Authorization(acl_indexes_db_path, DBMode.R, name ~ ":acl");
+	        
+		return  _acl_indexes;
+	}
+	
+    this(string _node_id, string context_name, P_MODULE _id, string _external_write_storage_url = null, Authorization in_acl_indexes = null)
     {
+		_acl_indexes = in_acl_indexes;
+
         external_write_storage_url = _external_write_storage_url;
+
         {
             import std.experimental.logger;
             import std.experimental.logger.core;
@@ -130,16 +141,15 @@ class PThreadContext : Context
 
         inividuals_storage = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals");
         tickets_storage    = new LmdbStorage(tickets_db_path, DBMode.R, context_name ~ ":tickets");
-        acl_indexes        = new Authorization(acl_indexes_db_path, DBMode.R, context_name ~ ":acl");
 
         name = context_name;
         id   = _id;
 
         is_traced_module[ P_MODULE.ticket_manager ]   = true;
         is_traced_module[ P_MODULE.subject_manager ]  = true;
-        is_traced_module[ P_MODULE.acl_manager ]      = true;
+//        is_traced_module[ P_MODULE.acl_preparer ]      = true;
 //        is_traced_module[ P_MODULE.fulltext_indexer ] = true;
-        is_traced_module[ P_MODULE.scripts ]          = true;
+//        is_traced_module[ P_MODULE.scripts ]          = true;
 
         getConfiguration();
 
@@ -149,7 +159,7 @@ class PThreadContext : Context
         onto.load();
 
         local_count_put = get_subject_manager_op_id();
-        ft_local_count  = get_count_indexed();
+        //ft_local_count  = get_count_indexed();
 
         log.trace_log_and_console("NEW CONTEXT [%s]", context_name);
     }
@@ -757,13 +767,6 @@ class PThreadContext : Context
 
     public void reopen_ro_fulltext_indexer_db()
     {
-//        try
-//        {
-//            if (getTid(P_MODULE.fulltext_indexer) != Tid.init)
-//                this.wait_thread(P_MODULE.fulltext_indexer);
-//        }
-//        catch (Exception ex) {}
-
         if (_vql !is null)
             _vql.reopen_db();
     }
@@ -785,8 +788,8 @@ class PThreadContext : Context
     {
         try
         {
-            if (getTid(P_MODULE.acl_manager) != Tid.init)
-                this.wait_thread(P_MODULE.acl_manager);
+            if (getTid(P_MODULE.acl_preparer) != Tid.init)
+                this.wait_thread(P_MODULE.acl_preparer);
         }
         catch (Exception ex) {}
 
@@ -1409,7 +1412,7 @@ class PThreadContext : Context
 
                         if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
                         {
-                            tid_acl = getTid(P_MODULE.acl_manager);
+                            tid_acl = getTid(P_MODULE.acl_preparer);
                             if (tid_acl != Tid.init)
                             {
                                 send(tid_acl, CMD.PUT, ev, new_state, res.op_id);
@@ -1497,13 +1500,9 @@ class PThreadContext : Context
             {
                 res = veda.core.threads.dcs_manager.get_opid(module_id);
             }
-            else if (module_id == P_MODULE.acl_manager)
+            else if (module_id == P_MODULE.acl_preparer)
             {
                 return get_acl_manager_op_id;
-            }
-            else if (module_id == P_MODULE.fulltext_indexer)
-            {
-                return get_count_indexed;
             }
             else if (module_id == P_MODULE.subject_manager)
             {
@@ -1586,7 +1585,7 @@ class PThreadContext : Context
                     {
                         result = true;
 
-                        string res = veda.core.threads.acl_manager.backup(backup_id);
+                        string res;// = veda.core.threads.acl_manager.backup(backup_id);
 
                         if (res == "")
                             result = false;

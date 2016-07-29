@@ -58,6 +58,7 @@ public class LmdbStorage : Storage
     string              db_name;
     string              parent_thread_name;
     long                last_op_id;
+    long                committed_last_op_id;
 
     /// конструктор
     this(string _path_, DBMode _mode, string _parent_thread_name)
@@ -142,9 +143,9 @@ public class LmdbStorage : Storage
     {
         if (mode == DBMode.R)
         {
-//      writeln ("@@@ reopen_db, thread:", core.thread.Thread.getThis().name);
             close_db();
             open_db();
+	      	log.trace ("reopen_db %s, mode=%s, thread:%s, last_op_id=%d",  _path, text(mode), core.thread.Thread.getThis().name, last_op_id);
         }
 
 /*
@@ -167,13 +168,13 @@ public class LmdbStorage : Storage
 
     public void open_db()
     {
-//      string thread_name  = core.thread.Thread.getThis().name;
-//      writeln ("@@@ open_db ", _path, ", thread:", thread_name);
+      //string thread_name  = core.thread.Thread.getThis().name;
+      //writefln ("@@@ open_db #1 %s, mode=%s, thread:%s",  _path, text(mode), thread_name);
 
         if (db_is_open.get(_path, false) == true)
         {
-            string thread_name = core.thread.Thread.getThis().name;
-            writeln("@@@ open_db ", _path, ", thread:", thread_name, ", ALREADY OPENNING");
+            //string thread_name = core.thread.Thread.getThis().name;
+            //writeln("@@@ open_db #2 ", _path, ", thread:", thread_name, ", ALREADY OPENNING, db_is_open=", db_is_open);
             return;
         }
 
@@ -198,7 +199,7 @@ public class LmdbStorage : Storage
             else
                 db_is_open[ _path ] = true;
 
-            if (rc == 0 && mode == DBMode.RW)
+            if (rc == 0)
             {
                 string   data_str = find(summ_hash_this_db_id);
 
@@ -211,7 +212,7 @@ public class LmdbStorage : Storage
                     try
                     {
                         last_op_id = to!long (dataff[ 1 ]);
-                        log.trace("%s last_op_id=%d", _path, last_op_id);
+                        committed_last_op_id = last_op_id;
                     }
                     catch (Throwable tr) {}
                 }
@@ -220,7 +221,7 @@ public class LmdbStorage : Storage
                     hash_str = "0";
 
                 summ_hash_this_db = BigInt("0x" ~ hash_str);
-                log.trace("%s summ_hash_this_db=%s", _path, hash_str);
+                log.trace("open %s data_str=[%s], last_op_id=%d", _path, data_str, last_op_id);
             }
         }
     }
@@ -254,8 +255,11 @@ public class LmdbStorage : Storage
         return rc;
     }
 
-    public ResultCode put(string in_key, string in_value)
+    public ResultCode put(string in_key, string in_value, long op_id)
     {
+    	if (op_id > 0)
+	    	last_op_id = op_id;
+    	
         try
         {
             string _key  = in_key.dup;
@@ -304,7 +308,7 @@ public class LmdbStorage : Storage
                 growth_db(env, txn);
 
                 // retry
-                return put(_key, value);
+                return put(_key, value, op_id);
             }
             if (rc != 0)
             {
@@ -320,7 +324,7 @@ public class LmdbStorage : Storage
                 growth_db(env, null);
 
                 // retry
-                return put(_key, value);
+                return put(_key, value, op_id);
             }
 
             if (rc != 0)
@@ -430,8 +434,14 @@ public class LmdbStorage : Storage
     public void flush(int force)
     {
         try
-        {
-//      writeln ("@FLUSH");
+        {		
+	            log.trace("flush %s last_op_id=%d", _path, last_op_id);
+			if (mode == DBMode.RW && last_op_id > committed_last_op_id)
+			{
+	 			put (summ_hash_this_db_id, "0," ~ text (last_op_id), -1);
+	 			committed_last_op_id = last_op_id;
+			}	
+
             int rc = mdb_env_sync(env, force);
 
             if (rc != 0)
@@ -458,6 +468,8 @@ public class LmdbStorage : Storage
 
     public int update_or_create(string uri, string content, long op_id, out string new_hash)
     {
+    	last_op_id = op_id;
+    	
         try
         {
 //                                      StopWatch sw; sw.start;
@@ -505,7 +517,7 @@ public class LmdbStorage : Storage
                 mdb_txn_abort(txn);
                 throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
             }
-
+/*
             if (summ_hash_this_db != BigInt.init)
             {   // put current db summ hash
                 string f_data = new_hash ~ "," ~ text(op_id);
@@ -532,7 +544,7 @@ public class LmdbStorage : Storage
                     throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
                 }
             }
-
+*/
             rc = mdb_txn_commit(txn);
 
             if (rc == MDB_MAP_FULL)

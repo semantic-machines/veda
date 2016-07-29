@@ -22,8 +22,8 @@ public enum P_MODULE : byte
     /// Чтение и сохранение индивидуалов
     subject_manager            = 1,
 
-    /// Индексирование прав, проверка прав
-    acl_manager                = 2,
+    /// Индексирование прав
+    acl_preparer                = 2,
 
     /// Полнотекстовое индексирование
     //xapian_thread_context      = 3,
@@ -187,7 +187,7 @@ public struct Ticket
 
 interface Storage
 {
-    public ResultCode put(string in_key, string in_value);
+    public ResultCode put(string in_key, string in_value, long op_id);
     public string find(string uri, bool return_value = true);
     public int get_of_cursor(bool delegate(string key, string value) prepare);
 }

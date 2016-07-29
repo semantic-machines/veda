@@ -133,7 +133,7 @@ public string rights_as_string(RightSet new_rights)
     return outbuff.toString();
 }
 
-void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, string prefix, ubyte default_access, Storage storage)
+void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, string prefix, ubyte default_access, long op_id, Storage storage)
 {
     bool     is_deleted = ind.isExists("v-s:deleted", true);
 
@@ -222,7 +222,7 @@ void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, s
         else
             key = prefix ~ rs.uri;
 
-        ResultCode res = storage.put(key, new_record);
+        ResultCode res = storage.put(key, new_record, op_id);
 
         if (trace_msg[ 101 ] == 1)
             log.trace("[acl index] (%s) new right set: %s : [%s]", text(res), rs.uri, new_record);
@@ -235,7 +235,7 @@ void prepare_membership(ref Individual ind, long op_id, Storage storage)
         log.trace("store Membership: [%s] op_id=%d", ind, op_id);
 
     prepare_right_set(ind, veda_schema__resource, veda_schema__memberOf, membership_prefix,
-                      Access.can_create | Access.can_read | Access.can_update | Access.can_delete, storage);
+                      Access.can_create | Access.can_read | Access.can_update | Access.can_delete, op_id, storage);
 }
 
 void prepare_permission_filter(ref Individual ind, long op_id, Storage storage)
@@ -245,7 +245,7 @@ void prepare_permission_filter(ref Individual ind, long op_id, Storage storage)
 
     Resource   permissionObject = ind.getFirstResource(veda_schema__permissionObject);
 
-    ResultCode res = storage.put(filter_prefix ~ permissionObject.uri, ind.uri);
+    ResultCode res = storage.put(filter_prefix ~ permissionObject.uri, ind.uri, op_id);
 
     if (trace_msg[ 101 ] == 1)
         log.trace("[acl index] (%s) PermissionFilter: %s : %s", text(res), permissionObject.uri, ind.uri);
@@ -256,7 +256,7 @@ void prepare_permission_statement(ref Individual ind, long op_id, Storage storag
     if (trace_msg[ 114 ] == 1)
         log.trace("store PermissionStatement: [%s] op_id=%d", ind, op_id);
 
-    prepare_right_set(ind, veda_schema__permissionObject, veda_schema__permissionSubject, permission_prefix, 0, storage);
+    prepare_right_set(ind, veda_schema__permissionObject, veda_schema__permissionSubject, permission_prefix, 0, op_id, storage);
 }
 
 Access[] getAccessListFromByte(ubyte permission)
