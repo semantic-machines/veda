@@ -146,7 +146,13 @@ class XapianReader : SearchReader
             log.trace("[%s][Q:%X] TTA [%s]", context.get_name(), cast(void *)str_query, tta.toString());
 
         //log.trace("@xapian_reader:get #1 [%s]", str_query);
-        context.ft_check_for_reload(&reopen_db);
+        //context.ft_check_for_reload(&reopen_db);
+        long cur_committed_op_id = context.get_operation_state(P_MODULE.fulltext_indexer);
+        if (cur_committed_op_id > committed_op_id)
+        {
+	        log.trace("cur_committed_op_id(%d) > committed_op_id(%d)", cur_committed_op_id, committed_op_id);
+	        reopen_db ();
+        }    
 
         Database_QueryParser db_qp = get_dbqp(db_names);
 
@@ -255,9 +261,11 @@ class XapianReader : SearchReader
     }
 
 ////////////////////////////////////////////////////////
+long committed_op_id;
 
     Database_QueryParser get_dbqp(string[] db_names)
     {
+    	committed_op_id = context.get_operation_state(P_MODULE.fulltext_indexer);
         Database_QueryParser dbqp = using_dbqp.get(db_names, null);
 
         if (dbqp is null)
@@ -329,7 +337,8 @@ class XapianReader : SearchReader
 
     public void reopen_db()
     {
-        //log.trace("@FTR:reopen_db");
+        log.trace("reopen_db, committed_op_id=%d", committed_op_id);
+    	committed_op_id = context.get_operation_state(P_MODULE.fulltext_indexer);
 
         foreach (el; using_dbqp.values)
         {
