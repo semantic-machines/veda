@@ -249,28 +249,6 @@ public void core_thread(string node_id)
                         }
                     }
                 },
-                (Command cmd, Function fn, int arg, int worker_id, Tid tid)
-                {
-                    if (tid !is Tid.init)
-                    {
-                        if (cmd == Command.Wait && fn == Function.PModule)
-                        {
-                            ResultCode rc = ResultCode.Internal_Server_Error;
-                            try
-                            {
-                                context.wait_thread(cast(P_MODULE)arg);
-                                if (arg == P_MODULE.fulltext_indexer)
-                                    context.reopen_ro_fulltext_indexer_db();
-                                rc = ResultCode.OK;
-                            }
-                            catch (Throwable ex)
-                            {
-                                log.trace("pacahon_driver:wait_thread, err=%s", ex.msg);
-                            }
-                            send(tid, 0L, worker_id);
-                        }
-                    }
-                },
                 (Variant v) { writeln("pacahon_driver::Received some other type. ", v); }
                 );
     }

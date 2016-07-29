@@ -145,36 +145,17 @@ public class LmdbStorage : Storage
         {
             close_db();
             open_db();
-	      	log.trace ("reopen_db %s, mode=%s, thread:%s, last_op_id=%d",  _path, text(mode), core.thread.Thread.getThis().name, last_op_id);
+	      	//log.trace ("reopen_db %s, mode=%s, thread:%s, last_op_id=%d",  _path, text(mode), core.thread.Thread.getThis().name, last_op_id);
         }
-
-/*
-        flush(1);
-
-        bool is_cooperative = db_is_rw.get(_path, false);
-        //log.trace_log_and_console("%s(%s) INFO: is_cooperative=%s", __FUNCTION__ ~ ":" ~ text(__LINE__), _path, text (is_cooperative));
-
-        if (is_cooperative == true && mode == DBMode.RW || is_cooperative == false)
-        {
-            mdb_env_close(env);
-
-            if (mode == DBMode.RW)
-                log.trace_log_and_console("%s(%s) INFO: reopen rw db %s", __FUNCTION__ ~ ":" ~ text(__LINE__), _path, text(mode));
-
-            open_db();
-        }
- */
     }
 
     public void open_db()
     {
-      //string thread_name  = core.thread.Thread.getThis().name;
-      //writefln ("@@@ open_db #1 %s, mode=%s, thread:%s",  _path, text(mode), thread_name);
+      //writefln ("@@@ open_db #1 %s, mode=%s, thread:%s",  _path, text(mode), core.thread.Thread.getThis().name);
 
         if (db_is_open.get(_path, false) == true)
         {
-            //string thread_name = core.thread.Thread.getThis().name;
-            //writeln("@@@ open_db #2 ", _path, ", thread:", thread_name, ", ALREADY OPENNING, db_is_open=", db_is_open);
+            //writeln("@@@ open_db #2 ", _path, ", thread:", core.thread.Thread.getThis().name, ", ALREADY OPENNING, db_is_open=", db_is_open);
             return;
         }
 
@@ -221,7 +202,7 @@ public class LmdbStorage : Storage
                     hash_str = "0";
 
                 summ_hash_this_db = BigInt("0x" ~ hash_str);
-                log.trace("open %s data_str=[%s], last_op_id=%d", _path, data_str, last_op_id);
+                //log.trace("open db %s data_str=[%s], last_op_id=%d", _path, data_str, last_op_id);
             }
         }
     }

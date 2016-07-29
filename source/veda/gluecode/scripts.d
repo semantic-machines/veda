@@ -46,12 +46,12 @@ class ScriptProcess : VedaModule
     {
     }
 
-	override Context create_context ()
-	{
-		return null; 
-	}
+    override Context create_context()
+    {
+        return null;
+    }
 
-	
+
     override bool prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                           string event_id,
                           long op_id)
@@ -71,7 +71,10 @@ class ScriptProcess : VedaModule
         foreach (itype; indv_types)
         {
             if (itype == veda_schema__PermissionStatement || itype == veda_schema__Membership)
+            {
+                committed_op_id = op_id;
                 return true;
+            }
 
             if (itype == veda_schema__Event)
                 prepare_if_is_script = true;
@@ -181,6 +184,8 @@ class ScriptProcess : VedaModule
 
         //clear_script_data_cache ();
         // writeln("scripts B #e *", process_name);
+        committed_op_id = op_id;
+
         return true;
     }
 

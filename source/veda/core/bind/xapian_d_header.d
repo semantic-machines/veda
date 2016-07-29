@@ -227,7 +227,7 @@ enum feature_flag
     FLAG_DEFAULT                 = FLAG_PHRASE | FLAG_BOOLEAN | FLAG_LOVEHATE
 };
 
-alias int   size_t;
+//alias int   size_t;
 alias int   int32_t;
 alias byte  int8_t;
 alias ubyte uint8_t;

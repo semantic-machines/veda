@@ -60,6 +60,7 @@ class FanoutProcess : VedaModule
             log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
         }
 
+        committed_op_id   = op_id;
         return true;
     }
 

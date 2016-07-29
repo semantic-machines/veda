@@ -160,7 +160,7 @@ class VedaStorageRest : VedaStorageRest_API
     string[ string ] properties;
     int                last_used_tid = 0;
     void function(int sig) shutdown;
-	int max_count_workers_on_thread = 100;
+    int                max_count_workers_on_thread = 100;
 
     this(std.concurrency.Tid[] _pool, Context _local_context, void function(int sig) _shutdown)
     {
@@ -168,13 +168,13 @@ class VedaStorageRest : VedaStorageRest_API
         context  = _local_context;
         foreach (idx, tid; _pool)
         {
-        	for (int i = 0; i < max_count_workers_on_thread; i++)
-        	{
-	            Worker *worker = new Worker(tid, cast(int)idx, true, false, 0, ResultCode.No_Content);
-	            pool ~= worker;
-        	}
+            for (int i = 0; i < max_count_workers_on_thread; i++)
+            {
+                Worker *worker = new Worker(tid, cast(int)idx, true, false, 0, ResultCode.No_Content);
+                pool ~= worker;
+            }
         }
-        log.trace ("create pool.size=%d", pool.length);
+        log.trace("create pool.size=%d", pool.length);
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

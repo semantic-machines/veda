@@ -59,16 +59,16 @@ class FTIndexerProcess : VedaModule
 
     override void thread_id()
     {
-        if (commited_op_id == op_id)
+        if (committed_op_id == op_id)
             return;
 
         long now = Clock.currTime().stdTime();
 
-        if (now - last_update_time > 10_000_000)
+        if (now - last_update_time > 1_000_000)
         {
             ictx.commit_all_db();
             last_update_time = now;
-            commited_op_id   = op_id;
+            committed_op_id   = op_id;
             //writeln("@ commit, commited_op_id=", commited_op_id);
         }
     }

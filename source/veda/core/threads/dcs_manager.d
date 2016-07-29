@@ -114,21 +114,6 @@ void handleWebSocketConnection(scope WebSocket socket)
                     //log.trace("Ok");
                     string resp = socket.receiveText();
                     //log.trace("recv '%s'", resp);
-
-                    if (msg == "get_opid")
-                    {
-                        long l_res;
-
-                        try
-                        {
-                            l_res = to!long (resp);
-                        }
-                        catch (Throwable tr)
-                        {
-                            l_res = -1;
-                        }
-                        vibe.core.concurrency.send(task_to, l_res);
-                    }
                 }
             }
         }
@@ -154,7 +139,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
 {
     const(HTTPServerRequest)hsr = socket.request();
 
-    log.trace ("spawn socket connection [%s]", text (hsr.clientAddress));
+    log.trace("spawn socket connection [%s]", text(hsr.clientAddress));
 
     // Client Cache Update Subscription
     string chid;
@@ -438,38 +423,6 @@ public shared(Task) getTaskOfPMODULE(P_MODULE pm)
     return shared(Task).init;
 }
 
-public void wait_module(P_MODULE pm, long op_id)
-{
-    long op_id_from_module;
-
-    Task task = getTaskOfPMODULE(pm);
-
-    if (task is Task.init)
-        return;
-
-    long wait_time = 0;
-
-    while (op_id > op_id_from_module)
-    {
-        vibe.core.concurrency.send(task, "get_opid", Task.getThis());
-        vibe.core.concurrency.receive((long _op_id)
-                                      {
-                                          op_id_from_module = _op_id;
-                                      });
-
-        if (op_id_from_module >= op_id)
-            break;
-
-        core.thread.Thread.sleep(dur!("msecs")(100));
-        wait_time += 100;
-
-        if (wait_time > timeout)
-        {
-            writeln("WARN! timeout (wait opid=", op_id, ", opid from module = ", op_id_from_module, ") wait_module:", pm);
-            break;
-        }
-    }
-}
 
 public long get_opid(P_MODULE pm)
 {
@@ -613,3 +566,5 @@ void dcs_thread(string thread_name, string _node_id)
         }
     }
 }
+
+

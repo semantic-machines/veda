@@ -337,15 +337,17 @@ class ScriptProcess : VedaModule
     {
     }
 
-	override Context create_context ()
-	{
-		return null; 
-	}
+    override Context create_context()
+    {
+        return null;
+    }
 
     override bool prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                           string event_id,
                           long op_id)
     {
+        committed_op_id = op_id;
+
         if (new_indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
             return true;
 

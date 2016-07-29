@@ -43,8 +43,11 @@ class VedaModule
 {
     Cache!(string, string) cache_of_indv;
 
-    long                      op_id          = 0;
-    long                      commited_op_id = 0;
+    string                    fn_module_info_w  = null;
+    File                      *ff_module_info_w = null;
+
+    long                      op_id           = 0;
+    long                      committed_op_id = 0;
 
     long                      count_signal           = 0;
     long                      count_readed           = 0;
@@ -67,7 +70,7 @@ class VedaModule
     string                    queue_name = "individuals-flow";
     string                    parent_url = "http://127.0.0.1:8080";
     Ticket                    sticket;
-    P_MODULE	module_name;
+    P_MODULE                  module_name;
 
     logger log()
     {
@@ -78,12 +81,19 @@ class VedaModule
 
     this(P_MODULE _module_name, string _host, ushort _port)
     {
-        g_child_process = this;
-        process_name    = text(_module_name);
-        module_name		= _module_name;	
-        port            = _port;
-        host            = _host;
-        _log            = new logger("veda-core-" ~ process_name, "log", "PROCESS");
+        g_child_process  = this;
+        process_name     = text(_module_name);
+        module_name      = _module_name;
+        port             = _port;
+        host             = _host;
+        _log             = new logger("veda-core-" ~ process_name, "log", "PROCESS");
+        fn_module_info_w = module_info_path ~ "/" ~ process_name ~ "_info";
+    }
+
+    ~this()
+    {
+        ff_module_info_w.flush();
+        ff_module_info_w.close();
     }
 
     private void init_chanel()
@@ -134,10 +144,15 @@ class VedaModule
 
     void run()
     {
-    	context = create_context ();
-    	
-    	if (context is null)
-	        context         = new PThreadContext("cfg:standart_node", process_name, module_name, parent_url);
+        if (exists(fn_module_info_w) == false)
+            ff_module_info_w = new File(fn_module_info_w, "w");
+        else
+            ff_module_info_w = new File(fn_module_info_w, "r+");
+
+        context = create_context();
+
+        if (context is null)
+            context = new PThreadContext("cfg:standart_node", process_name, module_name, parent_url);
 
         if (node == Individual.init)
         {
@@ -145,7 +160,7 @@ class VedaModule
         }
 
         cache_of_indv = new Cache!(string, string)(1000, "individuals");
-    	
+
         if (configure() == false)
         {
             log.trace("[%s] configure is fail, terminate", process_name);
@@ -221,7 +236,7 @@ class VedaModule
 
     abstract bool configure();
 
-	abstract Context create_context ();
+    abstract Context create_context();
 
     abstract void thread_id();
 
@@ -285,7 +300,10 @@ class VedaModule
                     bool res = prepare(cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, op_id);
 
                     if (res == true)
+                    {
                         cs.commit();
+                        put_info();
+                    }
                     else
                     {
                         log.trace("message fail prepared, sleep and repeate...");
@@ -331,9 +349,25 @@ class VedaModule
 
         set_global_systicket(sticket);
     }
+
+    bool put_info()
+    {
+        try
+        {
+            ff_module_info_w.seek(0);
+            ff_module_info_w.writefln("%s;%d;%d", process_name, op_id, committed_op_id);
+            ff_module_info_w.flush();
+            return true;
+        }
+        catch (Throwable tr)
+        {
+            log.trace("module:put_info [%s;%d;%d] %s", process_name, op_id, committed_op_id, tr.msg);
+            return false;
+        }
+    }
 }
 
-int websocket_write_back(lws *wsi_in, string str)
+private int websocket_write_back(lws *wsi_in, string str)
 {
     if (str is null)
         return -1;
@@ -355,6 +389,8 @@ int websocket_write_back(lws *wsi_in, string str)
     return n;
 }
 
+long last_committed_op_id;
+
 extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason, void *user, void *_in, size_t len)
 {
     //writeln ("@@reason=", reason);
@@ -363,6 +399,11 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
     {
     case lws_callback_reasons.LWS_CALLBACK_GET_THREAD_ID:
         g_child_process.thread_id();
+        if (last_committed_op_id < g_child_process.committed_op_id)
+        {
+            last_committed_op_id = g_child_process.committed_op_id;
+            g_child_process.put_info();
+        }
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_ESTABLISHED:
@@ -384,15 +425,15 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_RECEIVE:
         char[] msg = fromStringz(cast(char *)_in);
-        //writeln("[CP] Client recieved:", msg);
 
         string res;
         if (msg == "get_opid")
         {
+            writeln("[CP] Client recieved:", msg);
             long prepared_op_id;
 
-            if (g_child_process.commited_op_id != 0)
-                prepared_op_id = g_child_process.commited_op_id;
+            if (g_child_process.committed_op_id != 0)
+                prepared_op_id = g_child_process.committed_op_id;
             else
                 prepared_op_id = g_child_process.op_id;
 

@@ -17,13 +17,13 @@ private import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resour
 public enum P_MODULE : byte
 {
     /// Выдача и проверка тикетов
-    ticket_manager             = 0,
+    ticket_manager  = 0,
 
     /// Чтение и сохранение индивидуалов
-    subject_manager            = 1,
+    subject_manager = 1,
 
     /// Индексирование прав
-    acl_preparer                = 2,
+    acl_preparer    = 2,
 
     /// Полнотекстовое индексирование
     //xapian_thread_context      = 3,
@@ -130,11 +130,11 @@ public enum ResultCode
 
     /// 1022
     Duplicate_Key         = 1022,
-    
-    /// 1118
-    Size_too_large 		  = 1118,
 
-	/// 4000
+    /// 1118
+    Size_too_large        = 1118,
+
+    /// 4000
     Connect_Error         = 4000
 }
 
@@ -385,12 +385,13 @@ interface Context
     // ////////////////////////////////////////////// TOOLS ////////////////////////////////////////////
 
     /**
-       Ожидать, пока освободится процесс
+       Ожидать, пока завершится выполнение операции
        Params:
-                 thread_id = id процесса из перечисления P_MODULE
-                 op_id - id операции изменения данных, если не указанно то ожидание организуется через внутреннюю очередь модуля
+                 module_id = id процесса из перечисления P_MODULE
+                 op_id - id операции изменения данных, если 0, то ожидание организуется через внутреннюю очередь модуля
      */
-    public long wait_thread(P_MODULE module_id, long op_id = 0);
+
+    public bool wait_operation_complete(P_MODULE module_id, long op_id, long timeout = 10_000);
 
     /**
        Перезагрузить модуль
@@ -462,18 +463,18 @@ public long get_subject_manager_op_id()
 
 ///
 /*
-private shared long indexer_op_id = 0;
+   private shared long indexer_op_id = 0;
 
-public void set_indexer_op_id(long data)
-{
+   public void set_indexer_op_id(long data)
+   {
     atomicStore(indexer_op_id, data);
-}
+   }
 
-public long get_indexer_op_id()
-{
+   public long get_indexer_op_id()
+   {
     return atomicLoad(indexer_op_id);
-}
-*/
+   }
+ */
 ////
 
 private shared long acl_manager_op_id = 0;

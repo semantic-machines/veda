@@ -404,7 +404,7 @@ class PThreadContext : Context
             veda.core.threads.load_info.stat(command_type, sw);
     }
 
-    int  timeout = 10;
+    int  _timeout = 10;
 
     long ft_local_count;
     long ft_local_time_check = 0;
@@ -426,7 +426,7 @@ class PThreadContext : Context
 
 //        log.trace ("@ft_check_for_reload: #1");
 
-        if (now - local_time_check > timeout)
+        if (now - local_time_check > _timeout)
         {
             long count_now = get_now_count();
             //log.trace("@_check_for_reload:count_now=%d, local_count=%d", count_now, local_count);
@@ -757,7 +757,7 @@ class PThreadContext : Context
         try
         {
             if (getTid(P_MODULE.ticket_manager) != Tid.init)
-                this.wait_thread(P_MODULE.ticket_manager);
+                this.wait_operation_complete(P_MODULE.ticket_manager, 0);
         }
         catch (Exception ex) {}
 
@@ -776,7 +776,7 @@ class PThreadContext : Context
         try
         {
             if (getTid(P_MODULE.subject_manager) != Tid.init)
-                this.wait_thread(P_MODULE.subject_manager);
+                this.wait_operation_complete(P_MODULE.subject_manager, 0);
         }
         catch (Exception ex) {}
 
@@ -789,12 +789,15 @@ class PThreadContext : Context
         try
         {
             if (getTid(P_MODULE.acl_preparer) != Tid.init)
-                this.wait_thread(P_MODULE.acl_preparer);
+                this.wait_operation_complete(P_MODULE.acl_preparer, 0);
         }
         catch (Exception ex) {}
 
         if (acl_indexes !is null)
+        {
+        	//log.trace ("reopen_ro_acl_storage_db");
             acl_indexes.reopen_db();
+        }    
     }
 
     // ////////// external ////////////
@@ -1489,60 +1492,6 @@ class PThreadContext : Context
         return store_individual(INDV_OP.REMOVE_FROM, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
-/////////////////////////////////////////////////////////////////////////////
-    public long get_operation_state(P_MODULE module_id)
-    {
-        long res = -1;
-
-        version (useInnerModules)
-        {
-            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout || module_id == P_MODULE.ltr_scripts)
-            {
-                res = veda.core.threads.dcs_manager.get_opid(module_id);
-            }
-            else if (module_id == P_MODULE.acl_preparer)
-            {
-                return get_acl_manager_op_id;
-            }
-            else if (module_id == P_MODULE.subject_manager)
-            {
-                return get_subject_manager_op_id;
-            }
-        }
-        return res;
-    }
-
-    public long restart_module(P_MODULE module_id)
-    {
-        return 0;
-    }
-
-
-    public long wait_thread(P_MODULE module_id, long op_id = 0)
-    {
-        if (module_id == id)
-            return -1;
-
-        version (useInnerModules)
-        {
-            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout || module_id == P_MODULE.ltr_scripts)
-            {
-                veda.core.threads.dcs_manager.wait_module(module_id, op_id);
-            }
-            else 
-            {
-                Tid tid = getTid(module_id);
-                if (tid != Tid.init)
-                {
-                    send(tid, CMD.NOP, thisTid);
-                    //                receiveTimeout(1000.msecs, (bool res) {});
-                    receive((bool res) {});
-                }
-            }
-        }
-        return 0;
-    }
-
     public void set_trace(int idx, bool state)
     {
 //        writeln("set trace idx=", idx, ":", state);
@@ -1668,4 +1617,161 @@ class PThreadContext : Context
         }
         return res;
     }
+    
+    //////////////////////////////////////////////// MODULES INTERACTION
+    
+private struct ModuleInfo
+{
+    string name;
+    long   op_id;
+    long   committed_op_id;
+    bool   is_Ok;
+}
+
+private string[ P_MODULE ] fn_info_r__2__pmodule;
+private File *[ P_MODULE ] ff_info_r__2__pmodule;
+private ubyte[] buff;
+
+private ModuleInfo get_info(P_MODULE _module)
+{
+    ModuleInfo res;
+
+    res.is_Ok = false;
+
+    try
+    {
+        string fn_info_r = fn_info_r__2__pmodule.get(_module, null);
+		File *ff_info_r;
+		
+        if (fn_info_r is null)
+        {
+            fn_info_r = module_info_path ~ "/" ~ text(_module) ~ "_info";
+            ff_info_r = new File(fn_info_r, "r");
+            fn_info_r__2__pmodule[ _module ] = fn_info_r;
+            ff_info_r__2__pmodule[ _module ] = ff_info_r;
+        }
+        else
+        {
+	        ff_info_r = ff_info_r__2__pmodule.get(_module, null);
+        }   
+        
+        if (ff_info_r !is null)
+        {
+			ff_info_r.seek(0);
+			
+			if (buff is null) buff  = new ubyte[ 4096];
+			        	
+			ubyte[] newbuff = ff_info_r.rawRead(buff);
+            string str = cast(string)newbuff[0..$];
+            if (str !is null)
+            {            	
+                string[] ch = str[ 0..$ - 1 ].split(';');
+                //writeln("@ queue.get_info ch=", ch);
+                if (ch.length != 3)
+                {
+                    return res;
+                }
+                res.name            = ch[ 0 ];
+                res.op_id           = to!long (ch[ 1 ]);
+                res.committed_op_id = to!long (ch[ 2 ]);
+                res.is_Ok = true;
+            }
+        }
+    }
+    catch (Throwable tr)
+    {
+        log.trace("vmodule:get_info fail, err=%s", tr.msg);
+    }
+
+                    	//writefln ("info[%s], res(%s): name=%s, op_id=%d, committed_op_id=%d", text (_module), text (res.is_Ok), res.name, res.op_id, res.committed_op_id);
+
+    return res;
+}    
+    
+
+    public long get_operation_state(P_MODULE module_id)
+    {
+        long res = -1;
+
+        version (useInnerModules)
+        {
+            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout || module_id == P_MODULE.ltr_scripts)
+            {
+            	ModuleInfo info = get_info(module_id);
+            	
+            	if (info.is_Ok)
+	            	res = info.committed_op_id;
+            }
+            else if (module_id == P_MODULE.acl_preparer)
+            {
+                return get_acl_manager_op_id;
+            }
+            else if (module_id == P_MODULE.subject_manager)
+            {
+                return get_subject_manager_op_id;
+            }
+        }
+        return res;
+    }
+
+    public long restart_module(P_MODULE module_id)
+    {
+        return 0;
+    }
+
+
+    public  bool wait_operation_complete(P_MODULE module_id, long op_id, long timeout = 10_000)
+    {
+        if (module_id == id)
+            return false;
+
+        version (useInnerModules)
+        {
+            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout || module_id == P_MODULE.ltr_scripts)
+            {
+                return wait_module(module_id, op_id, timeout);
+            }
+            else 
+            {
+                Tid tid = getTid(module_id);
+                if (tid != Tid.init)
+                {
+                    send(tid, CMD.NOP, thisTid);
+                    //                receiveTimeout(1000.msecs, (bool res) {});
+                    receive((bool res) {});
+                }
+            }
+        }
+        return true;
+    }
+    
+private bool wait_module(P_MODULE pm, long wait_op_id, long timeout)
+{    
+    long wait_time = 0;
+    long op_id_from_module = 0;
+    //writefln ("wait_module pm=%s op_id=%d", text (pm), op_id);
+    while (wait_op_id > op_id_from_module)
+    {
+		ModuleInfo info = get_info(pm);
+            	
+        if (info.is_Ok)
+	       	op_id_from_module = info.committed_op_id;
+		else
+            return false;		
+	       	    	
+        if (op_id_from_module >= wait_op_id)
+            return true;
+
+        core.thread.Thread.sleep(dur!("msecs")(100));
+        wait_time += 100;
+
+        if (wait_time > timeout)
+        {
+            log.trace("WARN! timeout (wait opid=%d, opid from module = %d) wait_module:%s", wait_op_id, op_id_from_module, text (pm));
+            return false;
+        }
+    }
+    return true;
+}
+    
 }
