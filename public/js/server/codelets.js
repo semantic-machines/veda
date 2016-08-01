@@ -167,6 +167,47 @@ function is_in_docflow_and_set_if_true(task)
 function distribution(process, task)
 {}
 
+function add_to_individual(process, task)
+{
+    try
+    {
+	var updated_doc = {};
+
+        if (task)
+        {
+            var src_uri = task.getInputVariable('src_uri');
+            var name_uri = task.getInputVariable('name_uri');
+            var value = task.getInputVariable('value');
+
+	    var src;
+
+	    if (name_uri && value)
+	    {
+                    src = get_individual(task.ticket, getUri(src_uri));
+                    if (src)
+                    {
+			var ch_value = src[name_uri];
+
+	    		if (!ch_value)
+				ch_value = [];
+
+			ch_value.push (value);
+			src[name_uri] = ch_value;
+
+                        put_individual(ticket, src, _event_id);
+		    }
+	    }
+	}
+
+        return [get_new_variable('res', src)];
+    }
+    catch (e)
+    {
+        print(e.stack);
+    }
+    
+}
+
 function create_use_transformation(process, task)
 {
     try
