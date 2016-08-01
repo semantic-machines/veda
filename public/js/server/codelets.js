@@ -169,46 +169,80 @@ function distribution(process, task)
 
 function add_value_to_document(process, task)
 {
-    try
-    {
-        var src;
+     try
+     {
+         var src;
 
-        if (task)
-        {
-            var src_uri = task.getInputVariable('src_uri');
-            var name_uri = task.getInputVariable('name_uri');
-            var value = task.getInputVariable('value');
+         if (task)
+         {
+             var src_uri = task.getInputVariable('src_uri');
+             var name_uri = task.getInputVariable('name_uri');
+             var value = task.getInputVariable('value');
 
-	    var src;
+             var src;
 
-	    if (name_uri && value)
-	    {
-                    src = get_individual(task.ticket, getUri(src_uri));
-                    if (src)
-                    {
-			name_uri = getUri (name_uri);
-			var ch_value = src[name_uri];
+             if (name_uri && value)
+             {
+                 src = get_individual(task.ticket, getUri(src_uri));
+                 if (src)
+                 {
+                     name_uri = getUri(name_uri);
+                     var ch_value = src[name_uri];
 
-	    		if (!ch_value)
-				ch_value = [];
+                     if (!ch_value)
+                         ch_value = [];
 
-			ch_value.push (value);
-			src[name_uri] = ch_value;
+                     for (var key in value)
+                         ch_value.push(value[key]);
 
-                        put_individual(ticket, src, _event_id);
-		    }
-	    }
-	}
+                     src[name_uri] = ch_value;
+                     put_individual(ticket, src, _event_id);
+                 }
+             }
+         }
 
-        return [get_new_variable('res', src)];
-    }
-    catch (e)
-    {
-        print(e.stack);
-    }
-    
+         return [get_new_variable('res', src_uri)];
+     }
+     catch (e)
+     {
+         print(e.stack);
+     }
 }
+ 
+function set_value_to_document(process, task)
+{
+     try
+     {
+         var src;
 
+         if (task)
+         {
+             var src_uri = task.getInputVariable('src_uri');
+             var name_uri = task.getInputVariable('name_uri');
+             var value = task.getInputVariable('value');
+
+             var src;
+
+             if (name_uri && value)
+             {
+                 src = get_individual(task.ticket, getUri(src_uri));
+                 if (src)
+                 {
+                     name_uri = getUri(name_uri);
+                     src[name_uri] = value;
+                     put_individual(ticket, src, _event_id);
+                 }
+             }
+         }
+
+         return [get_new_variable('res', src_uri)];
+     }
+     catch (e)
+     {
+         print(e.stack);
+     }
+} 
+ 
 function create_use_transformation(process, task)
 {
     try
