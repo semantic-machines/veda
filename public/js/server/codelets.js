@@ -167,11 +167,11 @@ function is_in_docflow_and_set_if_true(task)
 function distribution(process, task)
 {}
 
-function add_to_individual(process, task)
+function add_value_to_document(process, task)
 {
     try
     {
-	var updated_doc = {};
+        var src;
 
         if (task)
         {
@@ -186,6 +186,7 @@ function add_to_individual(process, task)
                     src = get_individual(task.ticket, getUri(src_uri));
                     if (src)
                     {
+			name_uri = getUri (name_uri);
 			var ch_value = src[name_uri];
 
 	    		if (!ch_value)
