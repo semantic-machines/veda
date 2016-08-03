@@ -55,6 +55,7 @@ script:
   - node ./qa/testRights.js
   - node ./qa/testJournal.js
   - node ./qa/testAttributiveSearchPerson.js
+  - node ./qa/testCreatingNetInterface.js
   - node ./qa/testSimpleNet.js
   - node ./qa/testSimpleNet2.js
   - node ./qa/testSimpleNet3.js
