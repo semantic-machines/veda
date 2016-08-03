@@ -27,13 +27,13 @@ function check(driver, count) {
                     .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on selected draft")})
             }
             if (count == "false") {
-                console.log("Expected number of drafts is 0, but get 1");
+                console.trace("Expected number of drafts is 0, but get 1");
                 process.exit(1);
             }
         }
         if (elements_arr.length == 0){
             if (count == "true") {
-                console.log("Expected number of drafts is 1, but get 0");
+                console.trace("Expected number of drafts is 1, but get 0");
                 process.exit(1);
             }
         }

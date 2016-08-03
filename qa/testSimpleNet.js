@@ -24,11 +24,11 @@ basic.getDrivers().forEach (function (drv) {
 
     startForm.createStartForm(driver, timeStamp, 'Ожидает отправки');
     driver.findElement({css:'.workflow-canvas-wrapper'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas")});
-    driver.findElement({css:'div[class="w state-io-condition state-io-condition-input jsplumb-droppable _jsPlumb_endpoint_anchor _jsPlumb_connected"][colored-to="red"]'}).click()
+    driver.findElement({css:'.state-io-condition-input[colored-to="red"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'input' button")});
     driver.sleep(basic.FAST_OPERATION);
     //driver.findElement({css:'.w state-io-condition state-io-condition-output [colored-to="red"]'}).click()
-    driver.findElement({css:'div[class="w state-io-condition state-io-condition-output jsplumb-droppable _jsPlumb_endpoint_anchor _jsPlumb_connected"][colored-to="red"]'}).click()
+    driver.findElement({css:'.state-io-condition-output[colored-to="red"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'output' button")});
     driver.sleep(basic.FAST_OPERATION);
     driver.quit();

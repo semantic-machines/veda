@@ -64,13 +64,13 @@ basic.getDrivers().forEach (function (drv) {
 
     startForm.createStartForm(driver, timeStamp, 'Ожидает отправки');
     driver.findElement({css:'.workflow-canvas-wrapper'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas")});
-    driver.findElement({css:'div[class="w state-io-condition state-io-condition-input jsplumb-droppable _jsPlumb_endpoint_anchor _jsPlumb_connected"][colored-to="red"]'})
+    driver.findElement({css:'.state-io-condition-input[colored-to="red"]'})
         .thenCatch(function (e) {basic.errorHandler(e, "Seems 'input' button is not located/red")});
     driver.sleep(basic.FAST_OPERATION);
-    driver.findElement({css:'div[class="w state-task split-join split-no join-no jsplumb-droppable _jsPlumb_endpoint_anchor _jsPlumb_connected"][colored-to="red"]'})
-        .thenCatch(function (e) {basic.errorHandler(e, "Seems 'output' button is not located/red")});
+    driver.findElement({css:'.state-task[colored-to="red"]'})
+        .thenCatch(function (e) {basic.errorHandler(e, "Seems 'state-task' button is not located/red")});
     driver.sleep(basic.FAST_OPERATION);
-    driver.findElement({css:'div[class="w state-io-condition state-io-condition-output jsplumb-droppable _jsPlumb_endpoint_anchor _jsPlumb_connected"]'})
+    driver.findElement({css:'.state-io-condition-output'})
         .thenCatch(function (e) {basic.errorHandler(e, "Seems 'output' button is not located/not colored")});
     driver.sleep(basic.FAST_OPERATION);
     
