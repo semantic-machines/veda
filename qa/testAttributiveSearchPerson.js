@@ -60,8 +60,9 @@ basic.getDrivers().forEach(function (drv) {
         last += possible.charAt(Math.floor(Math.random() * possible.length));
         middle += possible.charAt(Math.floor(Math.random() * possible.length));
     }
-    person.createPerson(driver, drv, 'a' + last, first + 'bcc', 'T' + middle);
-    person.createPerson(driver, drv, last + 'b', first + 'cbb', middle + 'Q');
+    var now = new Date();
+    person.createPerson(driver, drv, 'a' + last, first + 'bcc', 'T' + middle, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
+    person.createPerson(driver, drv, last + 'b', first + 'cbb', middle + 'Q', ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
 
     // Открываем Аттрибутивный поиск
     driver.findElement({css:'li[id="menu"]'}).click()

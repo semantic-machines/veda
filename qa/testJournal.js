@@ -42,8 +42,8 @@ basic.getDrivers().forEach (function (drv) {
 	basic.openPage(driver, drv);
 
 	basic.login(driver, 'bychinat', '123', 'Андрей', 'Бычин');
-	
-	person.createPerson(driver, drv, 'Букин', 'Геннадий','first');
+	var now = new Date();
+	person.createPerson(driver, drv, 'Букин', 'Геннадий','first', ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
 	
 	// Check Journal (+1 new version)	
 	assertCounts(driver, drv, 1, 1, 0);

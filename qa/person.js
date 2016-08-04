@@ -7,7 +7,7 @@ module.exports = {
 	/**
 	 * Создать Персону с указанием уникального значения в качестве отчества
 	 */
-	createPerson: function (driver, drv, lastName, firstName, middleName) {
+	createPerson: function (driver, drv, lastName, firstName, middleName, date) {
 		basic.openCreateDocumentForm(driver, 'Персона', 'v-s:Person');
 		
 		// Документ нельзя создать или отправить пока не заполнены обязательные поля
@@ -24,10 +24,11 @@ module.exports = {
 		driver.findElement({css:'[property="v-s:lastName"] + veda-control input'}).sendKeys(lastName).thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:lastName for preson")});
 		driver.findElement({css:'[property="v-s:firstName"] + veda-control input'}).sendKeys(firstName).thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:firstName for preson")});
 		driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).sendKeys(middleName).thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for preson")});
-		
-	    var now = new Date();
-		driver.findElement({css:'[property="v-s:birthday"] + veda-control input'}).sendKeys(
-			now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2))
+
+		driver.findElement({css:'[property="v-s:birthday"] + veda-control input'}).click()
+			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click v-s:birthday for person")});
+		driver.findElement({css:'[property="v-s:birthday"] + veda-control input'}).clear()
+		driver.findElement({css:'[property="v-s:birthday"] + veda-control input'}).sendKeys(date)
 			.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:birthday for person")});
 
 		driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot click middle name control for person")});

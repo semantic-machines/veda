@@ -9,8 +9,8 @@ basic.getDrivers().forEach (function (drv) {
 	
 	basic.openPage(driver, drv);
 	basic.login(driver, 'karpovrt', '123', 'Роман', 'Карпов');
-	
-	person.createPerson(driver, drv, 'Пупкин', 'Вася', timeStamp);
+	var now = new Date();
+	person.createPerson(driver, drv, 'Пупкин', 'Вася', timeStamp, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
 	
 	// Открываем поисковый бланк
 	basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');

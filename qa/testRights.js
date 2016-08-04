@@ -55,7 +55,8 @@ basic.getDrivers().forEach (function (drv) {
 
     //Создание документа пользователем с большими правами
     basic.login(driver, 'karpovrt', '123', 'Роман', 'Карпов');
-    person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp);
+    var now = new Date();
+    person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
     basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
     search(driver, timeStamp, 1);
     logout(driver);
@@ -67,7 +68,7 @@ basic.getDrivers().forEach (function (drv) {
     driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).clear();
     driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).sendKeys('Персона');
     search(driver, timeStamp, 0);
-    person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp + 1);
+    person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp + 1, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
     logout(driver);
 
     //Проверка наличия созданного документа пользователем с меньшими правами

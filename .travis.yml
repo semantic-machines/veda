@@ -54,6 +54,7 @@ script:
   - node ./qa/testDeleteAndRecovery.js
   - node ./qa/testRights.js
   - node ./qa/testJournal.js
+  - node ./qa/testSearchRangeOfDates.js
   - node ./qa/testAttributiveSearchPerson.js
   - node ./qa/testCreatingNetInterface.js
   - node ./qa/testSimpleNet.js
