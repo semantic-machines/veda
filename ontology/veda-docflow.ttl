@@ -695,6 +695,7 @@ v-wf:permission_c_on_decision
 	v-s:permissionObject v-wf:DecisionApprove ;
 	v-s:permissionObject v-wf:DecisionReview ;
 	v-s:permissionObject v-wf:DecisionRejected ;
+	v-s:permissionObject v-wf:DecisionPostponed ;
 	v-s:permissionObject v-wf:DecisionRemake ;
 	v-s:permissionObject v-wf:DecisionRemaked ;
 	v-s:permissionObject v-wf:DecisionNotForMe ;
@@ -868,6 +869,14 @@ v-wf:DecisionRedirect
 	rdfs:label "Redirect"@en ;
 .
 
+v-wf:DecisionPostponed
+	rdf:type owl:Class ;
+	rdfs:subClassOf v-wf:Decision ;
+	rdfs:isDefinedBy v-wf: ;
+	rdfs:label "Отложено"@ru ;
+	rdfs:label "Postponed"@en ;
+.
+
 v-wf:DecisionCalculationsPerformed
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-wf:Decision ;
@@ -907,6 +916,7 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionExamined ;
   v-ui:forClass v-wf:DecisionAchieved ;
   v-ui:forClass v-wf:DecisionRejected ;
+  v-ui:forClass v-wf:DecisionPostponed ;  
   v-ui:forClass v-wf:DecisionRemake ;
   v-ui:forClass v-wf:DecisionRemaked ;
   v-ui:forClass v-wf:DecisionNotPerformed ;
@@ -932,6 +942,7 @@ v-wf:DecisionRedirectTemplateSpec1
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:forProperty rdfs:comment ;
   v-ui:forClass v-wf:DecisionRejected ;
+  v-ui:forClass v-wf:DecisionPostponed ;
   v-ui:forClass v-wf:DecisionRemake ;
   v-ui:forClass v-wf:DecisionNotPerformed ;
 .

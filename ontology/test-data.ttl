@@ -225,6 +225,7 @@ td:CCIP
   v-s:parentUnit td:MondiSyktyvkar ;
   rdfs:label "Competence center information process"@en ;
   rdfs:label "Управление информационных технологий"@ru ;
+  v-s:hasChief d:khvostia_administratorAsppd;
 .
 
 td:CommercialDirector

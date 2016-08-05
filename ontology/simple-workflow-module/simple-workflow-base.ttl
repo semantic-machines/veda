@@ -673,6 +673,28 @@ s-wf:codelet_create_use_transformation
 
 # ------------------------------ CODELET : ------------------------------------- #
 
+s-wf:codelet_add_value_to_document
+	rdf:type v-s:Codelet ;
+	rdfs:label "Добавить значение в поле документа (src_uri, name_uri, value)" ;
+	v-s:script """
+	add_value_to_document(process, task)
+""" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+# ------------------------------ CODELET : ------------------------------------- #
+
+s-wf:codelet_set_value_to_document
+	rdf:type v-s:Codelet ;
+	rdfs:label "Заменить значение в поле документа (src_uri, name_uri, value)" ;
+	v-s:script """
+	set_value_to_document(process, task)
+""" ;
+	rdfs:isDefinedBy s-wf: ;
+.
+
+# ------------------------------ CODELET : ------------------------------------- #
+
 s-wf:codelet_get_type_of_docId
 	rdf:type v-s:Codelet ;
 	rdfs:label "Взять тип документа в переменной docId" ;
@@ -1135,6 +1157,20 @@ s-wf:src_uri
 	rdfs:isDefinedBy s-wf: ;
 	v-wf:varDefineName "src_uri" ;
         rdfs:label "Документ-источник"@ru ;
+.
+
+s-wf:name_uri
+        rdf:type v-wf:VarDefine ;
+	rdfs:isDefinedBy s-wf: ;
+	v-wf:varDefineName "name_uri" ;
+        rdfs:label "ID поля"@ru ;
+.
+
+s-wf:value
+        rdf:type v-wf:VarDefine ;
+	rdfs:isDefinedBy s-wf: ;
+	v-wf:varDefineName "value" ;
+        rdfs:label "Значение"@ru ;
 .
 
 s-wf:map_docID_to_src
