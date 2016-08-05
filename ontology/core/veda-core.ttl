@@ -672,8 +672,8 @@ v-s:endTime
 v-s:updateCounter
   rdf:type owl:DatatypeProperty ;
   rdfs:domain rdfs:Resource ;
-  rdfs:label "update counter"@en ;
-  rdfs:label "счетчик обновлений"@ru ;
+  rdfs:label "Update counter"@en ;
+  rdfs:label "Счетчик обновлений"@ru ;
   rdfs:range xsd:integer ;
 .
 
