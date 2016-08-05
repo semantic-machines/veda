@@ -546,7 +546,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				spec = specs[property_uri],
 				controlType = control.attr("type") ? $.fn["veda_" + control.attr("type")] : $.fn.veda_generic;
 
-			control.removeAttr("property");
+			//control.removeAttr("property");
 
 			var opts = {
 				individual: individual,
@@ -622,7 +622,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 				rel = new veda.IndividualModel(rel_uri),
 				controlType = control.attr("type") ? $.fn["veda_" + control.attr("type")] : $.fn.veda_link;
 
-			control.removeAttr("rel");
+			//control.removeAttr("rel");
 
 			var opts = {
 				individual: individual,
