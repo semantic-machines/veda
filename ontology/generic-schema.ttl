@@ -415,8 +415,8 @@ v-s:shortLabel
   rdf:type owl:DatatypeProperty ;
   rdfs:domain rdfs:Resource ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "short label"@en ;
-  rdfs:label "краткое наименование"@ru ;
+  rdfs:label "Short label"@en ;
+  rdfs:label "Краткое наименование"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:content
