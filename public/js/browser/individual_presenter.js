@@ -15,8 +15,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		}
 		mode = mode || "view";
 
-		//var inMain = !!container.closest("#main").length;
-		//if (inMain) { container.hide(); }
+		if (container.prop("id") === "main") { container.hide(); }
 
 		// Change location.hash if individual was presented in #main container
 		if (container.prop("id") === "main" && location.hash.indexOf(individual.id) < 0) {
@@ -54,12 +53,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 						json = JSON.stringify(ordered, null, 2);
 						pre.text(json);
 						container.html(pre);
+            container.show(250);
 						return;
 					} else if (template === "ttl") {
 						var list = new veda.IndividualListModel(individual);
 						veda.Util.toTTL(list, function (error, result) {
 							var ttl = $("<div class='container-fluid'></div>").append( $("<pre></pre>").text(result) );
 							container.html(ttl);
+              container.show(250);
 						});
 						return;
 					} else {
@@ -111,9 +112,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			rendered.map( function (view) {
 				view.template
 					.attr("resource", individual.id)
-					.attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") )
-					.addClass("mode-" + mode);
+					.attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") );
 				container.append(view.template);
+
 				individual.trigger("individual:templateReady", view.template);
 				// Timeout to wait all related individuals to render
 				setTimeout(function () {
@@ -129,7 +130,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		//	individual.present(container, new veda.IndividualModel("v-ui:LabelBlockLinkTemplate"));
 		//}
 
-		//if (inMain) { container.show("fade", 120); }
+    if (container.prop("id") === "main") { container.show("fade", 250); }
 	});
 
 	function renderTemplate (individual, container, template, specs, mode) {
@@ -144,35 +145,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 		var _edit = $(".-edit", wrapper);
 		var _search = $(".-search", wrapper);
 		function showHideHandler (e) {
-			switch (e.type) {
-				case "view": view.show(); _view.hide(); break;
-				case "edit": edit.show(); _edit.hide(); break;
-				case "search": search.show(); _search.hide(); break;
-			}
-			e.stopPropagation();
-		}
+      switch (e.type) {
+        case "view": view.show(); _view.hide(); break;
+        case "edit": edit.show(); _edit.hide(); break;
+        case "search": search.show(); _search.hide(); break;
+      }
+      e.stopPropagation();
+    }
 		template.on("view edit search", showHideHandler);
-
-		if (container.prop("id") === "main"
-			&& individual.is('v-s:Versioned')
-			&& individual.hasValue('v-s:actualVersion')
-			&& individual['v-s:actualVersion'][0].id !== individual.id
-		) {
-			var versionBundle = new veda.IndividualModel('v-s:DocumentIsVersion');
-			var actualVersionClass = new veda.IndividualModel('v-s:actualVersion');
-			var previousVersionClass = new veda.IndividualModel('v-s:previousVersion');
-			var nextVersionClass = new veda.IndividualModel('v-s:nextVersion');
-			var $versionToolbar = $('<div />', {
-	   			   "class" : "alert alert-warning margin-sm",
-	   			   "style" : "padding:5px;",
-	   			   "role" : "alert",
-         		   "html" : ('<div>'+versionBundle['rdfs:label']+'</div>')
-         		   		   +('<div>'+actualVersionClass['rdfs:label']+' : <a href="/#/'+individual['v-s:actualVersion'][0].id+'">'+individual['v-s:actualVersion'][0]['rdfs:label'][0]+'</a></div>')
-	   		   			   +(individual.hasValue('v-s:previousVersion')?('<div>'+previousVersionClass['rdfs:label']+' : <a href="/#/'+individual['v-s:previousVersion'][0].id+'">'+individual['v-s:previousVersion'][0]['rdfs:label'][0]+'</a></div>'):'')
-		   		           +((individual.hasValue('v-s:nextVersion') && individual['v-s:nextVersion'][0].id !== individual['v-s:actualVersion'][0].id)?('<div>'+nextVersionClass['rdfs:label']+' : <a href="/#/'+individual['v-s:nextVersion'][0].id+'">'+individual['v-s:nextVersion'][0]['rdfs:label'][0]+'</a></div>'):'')
-         	   });
-			$('#main').prepend($versionToolbar);
-		}
 
 		// Cleanup memory
 		/*template.on("remove", function (event) {

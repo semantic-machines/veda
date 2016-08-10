@@ -455,6 +455,74 @@ v-ui:SystemPropertiesTemplate
 </div>
 """ ;
 .
+v-ui:VersionTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:Version"@ru ;
+  rdfs:label "Template for class v-s:Version"@en ;
+  v-ui:forClass v-s:Version ;
+  v-ui:template "" ;
+.
+v-ui:VersionedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для отображения версий объекта"@ru ;
+  rdfs:label "Template for versions display"@en ;
+  v-ui:template """
+<div>
+  <h4 about="v-s:Versions" property="rdfs:label"></h4>
+  <div class="panel panel-default">
+    <table class="table table-condensed">
+      <thead>
+        <tr>
+          <th width="1%">#</th>
+          <th about="rdfs:label" property="rdfs:label"></th>
+          <th width="20%" about="v-s:created" property="rdfs:label"></th>
+          <th width="20%" about="v-s:publisher" property="rdfs:label"></th>
+        </tr>
+      </thead>
+      <tbody id="versions"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="10" class="clearfix">
+            <button class="pull-left btn btn-xs btn-primary glyphicon glyphicon-chevron-down"></button>
+            <div class="pull-right">
+              <span class="bg-warning" style="padding:0px 5px;display: inline-block">Актуальная версия</span>
+              <strong>Текущая версия</strong>
+            </div>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+<script>
+  var actual = individual["v-s:actualVersion"][0];
+  if (!actual) { return; }
+  var tmpl = ''
+    + '<tr>'
+      + '<td>#</td>'
+      + '<td about="@" template="v-ui:LabelLinkTemplate" class="view edit -search"></td>'
+      + '<td about="@" property="v-s:created" class="view edit -search"></td>'
+      + '<td about="@" rel="v-s:publisher" template="v-ui:LabelTemplate" class="view edit -search"></td>'
+    + '</tr>';
+  var tbody = $("#versions", template);
+  var btn = $("button", template).click(function () {
+    tbody.empty();
+    renderVersion(actual, 1, -1)
+  });
+  renderVersion(actual, 1, 5);
+  function renderVersion(current, counter, limit) {
+    if (!current) { return btn.remove(); }
+    if (!limit) { return; }
+    var previous = current["v-s:previousVersion"][0];
+    var row = tmpl.replace("#", counter);
+    if (current.id === actual.id) { row = row.replace("<tr>", "<tr class='warning'>"); }
+    if (current.id === individual.id) { row = row.replace(/td/g, "th").replace("v-ui:LabelLinkTemplate", "v-ui:LabelTemplate"); }
+    current.present(tbody, row);
+    renderVersion(previous, ++counter, --limit);
+  }
+</script>
+""" ;
+.
 v-ui:PSCommentForBond
   rdf:type v-ui:PropertySpecification ;
   rdfs:label "Спецификация свойств для класса v-s:Bond"@ru ;
@@ -1626,53 +1694,53 @@ td:PersonTemplate1
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <span about="v-s:Person" property="rdfs:label">Персона</span>
+            <span about="v-s:Person" property="rdfs:label">Персона</span>
   	      </div>
           <div class="col-md-6 text-right">
   	        <a href="#/@"><span property="@">ID</span></a>
   	        <a href="#/graph/@"><span class="glyphicon glyphicon-link"></span></a>
+          </div>
 	      </div>
 	    </div>
-      </div>
       <div class="panel-body">
-		<div class="row">
-			<div class="col-md-2">
-				<div rel="v-s:hasImage" template="v-ui:ImageTemplate"></div>
-				<veda-control type="file" rel="v-s:hasImage" class="-view edit -search"></veda-control>
-			</div>
-			<div class="col-md-10">
-				<div class="row">
-					<div class="col-md-12">
-						<h3>
-						  <span property="rdfs:label"><br></span>
-						  <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
-						</h3>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-3">
-						<em about="v-s:lastName" property="rdfs:label">Фамилия</em>
-						<div property="v-s:lastName"><br></div>
-						<veda-control property="v-s:lastName" type="string" class="-view edit search"></veda-control>
-					</div>
-					<div class="col-md-3">
-						<em about="v-s:firstName" property="rdfs:label">Имя</em>
-						<div property="v-s:firstName"><br></div>
-						<veda-control property="v-s:firstName" type="string" class="-view edit search"></veda-control>
-					</div>
-					<div class="col-md-3">
-						<em about="v-s:middleName" property="rdfs:label">Отчество</em>
-						<div property="v-s:middleName"><br></div>
-						<veda-control property="v-s:middleName" type="string" class="-view edit search"></veda-control>
-					</div>
-						<div class="col-md-3">
-						<em about="v-s:birthday" property="rdfs:label">День рождения</em>
-						<div property="v-s:birthday"><br></div>
-						<veda-control property="v-s:birthday" type="dateTime" class="-view edit search"></veda-control>
-					</div>
-				</div>
-			</div>
-		</div>
+        <div class="row">
+          <div class="col-md-2">
+            <div rel="v-s:hasImage" template="v-ui:ImageTemplate"></div>
+            <veda-control type="file" rel="v-s:hasImage" class="-view edit -search"></veda-control>
+          </div>
+          <div class="col-md-10">
+            <div class="row">
+              <div class="col-md-12">
+                <h3>
+                  <span property="rdfs:label"><br></span>
+                  <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
+                </h3>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-3">
+                <em about="v-s:lastName" property="rdfs:label">Фамилия</em>
+                <div property="v-s:lastName"><br></div>
+                <veda-control property="v-s:lastName" type="string" class="-view edit search"></veda-control>
+              </div>
+              <div class="col-md-3">
+                <em about="v-s:firstName" property="rdfs:label">Имя</em>
+                <div property="v-s:firstName"><br></div>
+                <veda-control property="v-s:firstName" type="string" class="-view edit search"></veda-control>
+              </div>
+              <div class="col-md-3">
+                <em about="v-s:middleName" property="rdfs:label">Отчество</em>
+                <div property="v-s:middleName"><br></div>
+                <veda-control property="v-s:middleName" type="string" class="-view edit search"></veda-control>
+              </div>
+                <div class="col-md-3">
+                <em about="v-s:birthday" property="rdfs:label">День рождения</em>
+                <div property="v-s:birthday"><br></div>
+                <veda-control property="v-s:birthday" type="dateTime" class="-view edit search"></veda-control>
+              </div>
+            </div>
+          </div>
+        </div>
         <hr />
         <div class="row">
           <div class="col-md-6">
@@ -1681,23 +1749,23 @@ td:PersonTemplate1
             <veda-control rel="v-s:hasAccount" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
           </div>
           <div class="col-md-6">
-		    <div about="@" rel="v-ui:hasPreferences" template="td:PreferencesTemplate1"></div>
-		    <!--div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" embedded="true"></div>
-		    <veda-control rel="v-ui:hasPreferences" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
-		    <br />
-		    <div about="@" rel="v-s:hasAppointment" template="td:AppointmentTemplate1"></div>
-		    <veda-control rel="v-s:hasAppointment" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
+            <div about="@" rel="v-ui:hasPreferences" template="td:PreferencesTemplate1"></div>
+            <!--div rel="v-ui:hasPreferences" template="td:PreferencesTemplate1" embedded="true"></div>
+            <veda-control rel="v-ui:hasPreferences" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
+            <br />
+            <div about="@" rel="v-s:hasAppointment" template="td:AppointmentTemplate1"></div>
+            <veda-control rel="v-s:hasAppointment" type="link" class="-view edit search fulltext dropdown create"></veda-control-->
           </div>
         </div>
       </div>
       <div class="panel-footer">
-        <!--button type="button" class="action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label" /--!>
+        <!--button type="button" class="action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label" /-->
         <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
         <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
         <button type="button" class="action btn btn-default -view edit -search" id="draft" about="v-s:ToDraft" property="rdfs:label" />
         <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
 				<button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
-        <!--button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/ --!>
+        <!--button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/-->
       </div>
     </div>
   </div>
@@ -1772,15 +1840,6 @@ td:AppointmentTemplate2
 		<span rel="v-s:employee" template="v-ui:LabelTemplate">Работник</span>,
 		<span rel="v-s:occupation" template="v-ui:LabelTemplate">Должность</span>
 	</div>
-  """ ;
-.
-
-td:VersionTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон версии"@ru ;
-  rdfs:label "Version template"@en ;
-  v-ui:forClass v-s:Version ;
-  v-ui:template """
   """ ;
 .
 
