@@ -17,6 +17,7 @@
 v-s:Activity
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Activity"@en ;
   rdfs:label "Активность"@ru ;
@@ -49,24 +50,16 @@ v-s:hasActivity
   rdfs:range v-s:Activity ;
   rdfs:domain v-s:Activity ;
 .
-
-
 v-s:theme
   rdfs:domain v-s:Meeting, v-s:Activity;
 .
 v-s:member
   rdfs:domain v-s:Activity ;
 .
-v-s:dateFrom
-  rdfs:domain v-s:Activity ;
-.
-v-s:dateTo
-  rdfs:domain v-s:Activity ;
-.
 v-s:PsDateToForAction
   rdf:type v-ui:DatetimePropertySpecification ;
   v-ui:forClass v-s:Action ;
-  v-ui:forClass v-s:Activity ;    
+  v-ui:forClass v-s:Activity ;
   v-ui:forProperty v-s:dateTo ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -78,11 +71,9 @@ v-s:PsDateToForAction
 v-s:placeDescription
   rdfs:domain v-s:Activity ;
 .
-
 v-s:registrationNumber
   rdfs:domain v-s:Activity ;
 .
-
 v-s:agenda
   rdfs:domain v-s:Meeting ;
 .
@@ -92,15 +83,13 @@ v-s:decision
 v-s:copyTo
   rdfs:domain v-s:Meeting ;
 .
-
-
 v-s:responsible
   rdfs:domain v-s:Action ;
 .
 v-s:PsResponsibleForAction
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:Action ;
-  v-ui:forClass v-s:Activity ;  
+  v-ui:forClass v-s:Activity ;
   v-ui:forProperty v-s:responsible ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
@@ -116,16 +105,13 @@ v-s:contributor
 v-s:controller
   rdfs:domain v-s:Action ;
 .
-v-s:dateFact
-  rdfs:domain v-s:Action ;
-.
 v-s:description
   rdfs:domain v-s:Action ;
 .
 v-s:PsDescriptionForAction
   rdf:type owl:DatatypeProperty ;
   v-ui:forClass v-s:Action ;
-  v-ui:forClass v-s:Activity ;    
+  v-ui:forClass v-s:Activity ;
   v-ui:forProperty v-s:description ;
   rdfs:label "Desription"@en ;
   rdfs:label "Описание"@ru ;

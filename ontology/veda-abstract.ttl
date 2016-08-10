@@ -1,0 +1,54 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-abstract>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system ontology"@en ;
+  rdfs:label "Онтология системы Veda"@ru ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+v-s:Temporal
+  rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+  rdfs:label "Temporal thing"@en ;
+  rdfs:label "Временная сущность"@ru ;
+.
+v-s:date
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date"@en ;
+  rdfs:label "Дата"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateFact
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date of fact"@en ;
+  rdfs:label "Дата фактическая"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateFrom
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date start"@en ;
+  rdfs:label "Дата начала"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:datePlan
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date plan"@en ;
+  rdfs:label "Плановая дата"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateTo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date finish"@en ;
+  rdfs:label "Дата окончания"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.

@@ -115,36 +115,6 @@ v-s:country
   rdfs:label "Страна"@ru ;
   rdfs:range xsd:string ;
 .
-v-s:dateBack
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date back"@en ;
-  rdfs:label "Дата возврата"@ru ;
-  rdfs:range xsd:dateTime ;
-.
-v-s:dateFact
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date of fact"@en ;
-  rdfs:label "Дата фактическая"@ru ;
-  rdfs:range xsd:dateTime ;
-.
-v-s:dateFrom
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date start"@en ;
-  rdfs:label "Дата начала"@ru ;
-  rdfs:range xsd:dateTime ;
-.
-v-s:datePlan
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date plan"@en ;
-  rdfs:label "Плановая дата"@ru ;
-  rdfs:range xsd:dateTime ;
-.
-v-s:dateTo
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date finish"@en ;
-  rdfs:label "Дата окончания"@ru ;
-  rdfs:range xsd:dateTime ;
-.
 v-s:published
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Document ;
@@ -209,23 +179,11 @@ v-s:recipient
   rdfs:range v-s:Appointment ;
   rdfs:range v-s:OrganizationUnit ;
 .
-v-s:hasBaseDoc
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Base doc"@en ;
-  rdfs:label "Документ основание"@ru ;
-  rdfs:range v-s:Document ;
-.
 v-s:hasChief
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
   rdfs:label "Chief"@en ;
   rdfs:label "Непосредственный руководитель"@ru ;
-  rdfs:range v-s:Appointment ;
-.
-v-s:hasDeveloper
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Developer"@en ;
-  rdfs:label "Разработчик"@ru ;
   rdfs:range v-s:Appointment ;
 .
 v-s:initiator
@@ -262,12 +220,6 @@ v-s:hasFunctionalChief
   rdfs:label "Функциональный руководитель"@ru ;
   rdfs:range v-s:Appointment ;
 .
-v-s:hasHeadOfMember
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Head of member"@en ;
-  rdfs:label "Руководитель группы участников"@ru ;
-  rdfs:range v-s:Appointment ;
-.
 v-s:hasLevel
   rdf:type owl:ObjectProperty ;
   rdfs:label "Level"@en ;
@@ -280,12 +232,6 @@ v-s:hasPriority
   rdfs:label "Приоритет"@ru ;
   rdfs:range v-s:Level ;
 .
-v-s:hasManager
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Manager"@en ;
-  rdfs:label "Лидер"@ru ;
-  rdfs:range v-s:Appointment ;
-.
 v-s:member
   rdf:type owl:ObjectProperty ;
   rdfs:label "Member"@en ;
@@ -297,12 +243,6 @@ v-s:hasParentLink
   rdfs:label "Parent document"@en ;
   rdfs:label "Ссылка на родительский документ"@ru ;
   rdfs:range rdfs:Resource ;
-.
-v-s:hasRecipient
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Recipient"@en ;
-  rdfs:label "Список рассылки"@ru ;
-  rdfs:range v-s:Appointment ;
 .
 v-s:hasYesNo
   rdf:type owl:ObjectProperty ;
@@ -389,12 +329,6 @@ v-s:title
   rdfs:domain v-s:Dictionary ;
   rdfs:label "Name"@en ;
   rdfs:label "Название"@ru ;
-  rdfs:range xsd:string ;
-.
-v-s:versionNumber
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Version number"@en ;
-  rdfs:label "Номер версии"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:year

@@ -201,9 +201,8 @@ v-s:Exportable
 v-s:Deliverable
   rdf:type owl:Class ;
   rdfs:subClassOf owl:Thing ;
-  rdfs:label "Сущность подлежащая доставке" ;
-  rdfs:label "Exportable thing"@en ;
-  rdfs:label "Экспортируемая сущность"@ru ;
+  rdfs:label "Сущность подлежащая доставке"@ru ;
+  rdfs:label "Deliverable thing"@en ;
 .
 
 v-s:Authorized

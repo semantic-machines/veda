@@ -23,6 +23,11 @@ v-s:MainProperties
   rdfs:label "Основные свойства"@ru ;
   rdfs:label "Main properties"@en ;
 .
+v-s:Versions
+  rdf:type v-s:Bundle ;
+  rdfs:label "Версии"@ru ;
+  rdfs:label "Versions"@en ;
+.
 v-s:Back
   rdf:type v-s:Bundle ;
   rdfs:label "Назад"@ru ;
