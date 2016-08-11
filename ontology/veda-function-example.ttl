@@ -39,6 +39,7 @@ v-fe:FunctionExampleModel
   rdfs:label "Модель Функции-примера"@ru ;
   v-ui:forClass v-fe:FunctionExample ;
   v-s:script """
+  //# sourceURL=v-fe:FunctionExampleModel
 	var self = this;
     self.press = function () {
       alert("model extention works! self['v-fe:exampleProperty']:" + self["v-fe:exampleProperty"].join(", "));
@@ -58,6 +59,7 @@ v-fe:FunctionExampleTemplate
       <button id="press-me" class="btn btn-success">Press me</button>
     </div>
     <script type="text/javascript">
+      //# sourceURL=v-fe:FunctionExampleTemplate
       $("#press-me", template).click(function () {
         individual.press();
       });

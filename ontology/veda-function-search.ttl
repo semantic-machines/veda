@@ -244,6 +244,7 @@ v-fs:SearchTemplate
 		</div>
 	</div>
 	<script>
+    //# sourceURL=v-fs:SearchTemplate
 		var self = individual,
 			ftHolder = $("#fulltext-search", template),
 			attrHolder = $("#attributive-search", template);
@@ -294,6 +295,7 @@ v-fs:FulltextRequestModel
   rdfs:label "Модель класса v-fs:FulltextRequest"@ru ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-s:script """
+  //# sourceURL=v-fs:FulltextRequestModel
 	var self = this,
 		q = mkQuery(),
 		sort = self.hasValue("v-fs:sortOrder")      ? self["v-fs:sortOrder"][0] : undefined,
@@ -413,6 +415,7 @@ v-fs:FulltextRequestTemplate
 	</div>
 </div>
 <script>
+  //# sourceURL=v-fs:FulltextRequestTemplate
 	var self = individual,
 		asp = veda.user.aspect,
 		notFound = $(".not-found", template),
@@ -563,7 +566,8 @@ v-fs:AttributiveRequestModel
   rdfs:label "Модель класса v-fs:AttributiveRequest"@ru ;
   v-ui:forClass v-fs:AttributiveRequest ;
   v-s:script """
-	var stopList = [
+	//# sourceURL=v-fs:AttributiveRequestModel
+  var stopList = [
 		"@",
 		"rdf:type",
 		"v-s:author",
@@ -720,6 +724,7 @@ v-fs:AttributiveRequestTemplate
 	</div>
 </div>
 <script>
+  //# sourceURL=v-fs:AttributiveRequestTemplate
 	var self = individual,
 		asp = veda.user.aspect,
 		notFound = $("#not-found", template),

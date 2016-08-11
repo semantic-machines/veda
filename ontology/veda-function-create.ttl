@@ -85,6 +85,7 @@ v-fc:FunctionCreateModel
   rdfs:label "Модель класса v-fc:FunctionCreate"@ru ;
   v-ui:forClass v-fc:FunctionCreate ;
   v-s:script """
+//# sourceURL=v-fc:FunctionCreateModel
 var self = this;
   """
 .
@@ -111,6 +112,7 @@ v-fc:FunctionCreateTemplate
 	</div>
 </div>
 <script>
+  //# sourceURL=v-fc:FunctionCreateTemplate
 	var self = individual;
 	if (self.hasValue("v-fc:typeToCreate")) { modHandler("v-fc:typeToCreate", self["v-fc:typeToCreate"]) };
 	self.on("individual:propertyModified", modHandler);
@@ -147,6 +149,7 @@ v-fc:BlankModel
   rdfs:label "Модель класса v-fc:Blank"@ru ;
   v-ui:forClass v-fc:Blank ;
   v-s:script """
+//# sourceURL=v-fc:BlankModel
 var self = this,
 	asp = veda.user.aspect;
 
@@ -255,6 +258,7 @@ v-fc:BlankTemplate
 	</div>
 </div>
 <script>
+  //# sourceURL=v-fc:BlankTemplate
 	individual._init();
 	var self = individual,
 			holder = $("#object", template),

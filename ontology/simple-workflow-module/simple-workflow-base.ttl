@@ -475,6 +475,7 @@ s-wf:ComplexRouteStartForm_Template
     </div>
   </div>
 <script type="text/javascript">
+//# sourceURL=s-wf:ComplexRouteStartForm_Template
 jsWorkflow.ready(function () {
 
 $( "#save_and_start_process" ).click(function() {
@@ -827,6 +828,7 @@ s-wf:UserTaskFormTemplate
 	</div>
 </div>
 <script type="text/javascript">
+	//# sourceURL=s-wf:UserTaskFormTemplate
 	var radioTmpl = $(".radio.decision", template);
 	if (individual.hasValue("v-wf:possibleDecisionClass")) {
 		individual["v-wf:possibleDecisionClass"].map( function (value, index) {

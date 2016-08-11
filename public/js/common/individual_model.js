@@ -437,9 +437,7 @@ veda.Module(function (veda) { "use strict";
 		var self = this;
 		self["rdf:type"].map(function (_class) {
 			if (_class.model) {
-				var model = new Function (
-					_class.model["v-s:script"][0] + "//# sourceURL=" + _class.id + "Model.js"
-				);
+				var model = new Function(_class.model["v-s:script"][0]);
 				model.call(self);
 			}
 		});

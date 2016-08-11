@@ -18,21 +18,21 @@
   v-s:loadPriority 9 ;
 .
 
-v-s:Aspect 
+v-s:Aspect
 	rdf:type owl:Class ;
 	rdfs:subClassOf owl:Thing ;
 	rdfs:label "Aspect"@en ;
 	rdfs:label "Аспект"@ru ;
 .
 
-v-s:PersonalAspect 
+v-s:PersonalAspect
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-s:Aspect ;
 	rdfs:label "Personal aspect"@en ;
 	rdfs:label "Персональный аспект"@ru ;
 .
 
-v-s:BusinessAspect 
+v-s:BusinessAspect
 	rdf:type owl:Class ;
 	rdfs:subClassOf v-s:Aspect ;
 	rdfs:label "Business aspect"@en ;
@@ -181,6 +181,7 @@ v-s:PersonalAspectTemplate
 							</a>
 						</div>
 						<script>
+              //# sourceURL=v-s:PersonalAspectTemplate_inline_tasks_template
 							var tasks = individual.tasks;
 							tasks.search();
 							$("#tasks-count", template).text(tasks.count);
@@ -210,6 +211,7 @@ v-s:PersonalAspectTemplate
 							</a>
 						</div>
 						<script>
+              //# sourceURL=v-s:PersonalAspectTemplate_inline_tasks_template_2
 							var tasks = individual.tasks;
 							tasks.search();
 							$("#tasks-count", template).text(tasks.count);
@@ -239,6 +241,7 @@ v-s:PersonalAspectTemplate
 							</a>
 						</div>
 						<script>
+              //# sourceURL=v-s:PersonalAspectTemplate_inline_tasks_template_3
 							var tasks = individual.tasks;
 							tasks.search();
 							$("#tasks-count", template).text(tasks.count);
@@ -248,9 +251,9 @@ v-s:PersonalAspectTemplate
 			</div>
 		</div>
 	</div>
-	
+
 	<hr/>
-	
+
 	<div class="row">
 		<div class="col-md-4">
 			<div class="panel panel-warning">
@@ -262,7 +265,7 @@ v-s:PersonalAspectTemplate
 						<div>
 							<a href="#/@" class="btn btn-warning btn-lg btn-block"><span property="rdfs:label"></span></a>
 							<br>
-						</div>								
+						</div>
 					</div>
 					<veda-control type="link" rel="v-s:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control>
 				</div>
@@ -309,14 +312,14 @@ v-s:PersonalAspectTemplate
 				</div>
 				<div class="panel-body">
 					<ol rel="v-s:hasDocumentDraft">
-						<li><a href="#/@" property="rdfs:label"></a></li>								
+						<li><a href="#/@" property="rdfs:label"></a></li>
 					</ol>
 					<!--veda-control type="link" rel="v-s:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control-->
 				</div>
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="well well-sm">
 		<button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
 		<button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>

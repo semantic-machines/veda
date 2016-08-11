@@ -40,6 +40,7 @@ v-ft:FunctionTasksModel
   rdfs:label "Шаблон для класса v-ft:FunctionTasks"@ru ;
   v-ui:forClass v-ft:FunctionTasks ;
   v-s:script """
+  //# sourceURL=v-ft:FunctionTasksModel
 	var self = this;
 	var q = self["v-ft:query"][0].replace("$1", veda.appointment ? veda.appointment.id : veda.user.id).replace("$2", veda.appointment ? veda.appointment["v-s:occupation"][0].id : veda.user.id);
 	self["v-ft:query"] = [q];
@@ -129,8 +130,8 @@ v-ft:FunctionTasksTemplate
 	<br />
 </div>
 <script>
-	var tasks = individual.tasks;
-
+  //# sourceURL=v-ft:FunctionTasksTemplate
+  var tasks = individual.tasks;
 	tasks.on("afterSearch", renderTasks);
 	template.on("remove", function () {
 		tasks.off("afterSearch", renderTasks);
@@ -241,6 +242,7 @@ v-ft:TaskTemplate
 	<td property="v-wf:dateGiven"></td>
 </tr>
 <script>
+  //# sourceURL=v-ft:TaskTemplate
 	if ( !individual.hasValue("v-wf:read") || individual["v-wf:read"][0] != true) {
 		template.css("font-weight", "bold");
 	}
