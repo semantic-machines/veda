@@ -485,7 +485,7 @@ v-ui:VersionedTemplate
           <td colspan="10" class="clearfix">
             <button class="pull-left btn btn-xs btn-primary glyphicon glyphicon-chevron-down"></button>
             <div class="pull-right">
-              <span class="bg-warning" style="padding:0px 5px;display: inline-block">Актуальная версия</span>
+              <span class="bg-info" style="padding:0px 5px;display: inline-block">Актуальная версия</span>
               <strong>Текущая версия</strong>
             </div>
           </td>
@@ -515,7 +515,7 @@ v-ui:VersionedTemplate
     if (!limit) { return; }
     var previous = current["v-s:previousVersion"][0];
     var row = tmpl.replace("#", counter);
-    if (current.id === actual.id) { row = row.replace("<tr>", "<tr class='warning'>"); }
+    if (current.id === actual.id) { row = row.replace("<tr>", "<tr class='info'>"); }
     if (current.id === individual.id) { row = row.replace(/td/g, "th").replace("v-ui:LabelLinkTemplate", "v-ui:LabelTemplate"); }
     current.present(tbody, row);
     renderVersion(previous, ++counter, --limit);
