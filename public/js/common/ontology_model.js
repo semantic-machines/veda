@@ -148,7 +148,7 @@ veda.Module(function (veda) { "use strict";
 			if ( _class.id === "rdfs:Resource" ) return;
 			// If class is not a subclass of another then make it a subclass of rdfs:Resource
 			if ( !_class.hasValue("rdfs:subClassOf") ) {
-				_class["rdfs:subClassOf"] = [ self["rdfs:Resource"] ];
+				_class["rdfs:subClassOf"] = [ classes["rdfs:Resource"] ];
 			}
 			_class["rdfs:subClassOf"].map( function ( item ) {
 				item.subClasses = item.subClasses || {};
@@ -215,6 +215,29 @@ veda.Module(function (veda) { "use strict";
 				item.model = model;
 			});
 		});
+
+    // Inherit templates & specifications from superClasses
+    inheritSpecs("rdfs:Resource");
+    function inheritSpecs(class_uri) {
+      var _class = classes[class_uri];
+      for (var subClass_uri in _class.subClasses) {
+        var subClass = _class.subClasses[subClass_uri];
+        // Inherit template
+        /*if (!subClass.template) {
+          subClass.template = _class.template;
+        }*/
+        // Inherit specs
+        for (var property_uri in _class.specsByProps) {
+          if (!subClass.specsByProps || !subClass.specsByProps[property_uri]) {
+            subClass.specsByProps ?
+              subClass.specsByProps[property_uri] = _class.specsByProps[property_uri] :
+              subClass.specsByProps = {}, subClass.specsByProps[property_uri] = _class.specsByProps[property_uri];
+          }
+        }
+        inheritSpecs(subClass_uri);
+      }
+    }
+
 
 		// Initialization percentage
 		veda.trigger("init:progress", 90);
