@@ -2,18 +2,18 @@
 
 veda.Module(function (veda) { "use strict";
 
-	veda.SearchResultModel = function (uri, container, template) {
+  veda.SearchResultModel = function (uri, container, template) {
 
-//		var individual = new veda.IndividualModel(uri);
+//    var individual = new veda.IndividualModel(uri);
 
-//		var self = riot.observable( Object.create(individual) );
+//    var self = riot.observable( Object.create(individual) );
 
-		var self = uri;
+    var self = uri;
 
-		veda.trigger("search_result:loaded", self, container, template);
+    veda.trigger("search_result:loaded", self, container, template);
 
-		return self;
+    return self;
 
-	};
+  };
 
 });

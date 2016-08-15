@@ -14,8 +14,8 @@ function removeV(arr, what) {
     print ("@b in=", toJson (arr));
     for (var i = 0; i < arr.length; i++)
     {
-	if (what.data != arr[i].data)
-	    res = arr[i];
+  if (what.data != arr[i].data)
+      res = arr[i];
     }
     print ("@e out=", toJson (res));
     return res;
@@ -56,8 +56,8 @@ function compare(a, b)
         var tbb = typeof bb;
         var taa = typeof aa;
 
-	if (key == "v-s:updateCounter")
-	    continue;
+  if (key == "v-s:updateCounter")
+      continue;
 
         if (key == "type")
         {
@@ -129,8 +129,8 @@ function get_property_chain(ticket, first, rest)
     var doc;
     doc = typeof first == "object" ? first : get_individual(ticket, first);
 
-    //	print ('@js ------------------');
-    //	print ('@js #1 doc=', toJson (doc));;
+    //  print ('@js ------------------');
+    //  print ('@js #1 doc=', toJson (doc));;
 
     var doc_first = doc;
     var field;
@@ -141,7 +141,7 @@ function get_property_chain(ticket, first, rest)
         if (field && (field[0].type == "Uri" || field[0].type == _Uri))
         {
             doc = get_individual(ticket, field[0].data);
-            //			print ('@js #2 doc=', toJson (doc));;
+            //      print ('@js #2 doc=', toJson (doc));;
             if (!doc) break;
         }
     }
@@ -203,8 +203,8 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         {
             //print ("@B start transform");
             var tmp_rules = [];
-            //    	print ("rules_in=", toJson (rules));
-            //		print ("individuals=", toJson (individuals));
+            //      print ("rules_in=", toJson (rules));
+            //    print ("individuals=", toJson (individuals));
             for (var i in rules)
             {
                 var rul = get_individual(ticket, rules[i].data);
@@ -290,8 +290,8 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
             }];
 
             //if (typeof window === "undefined")
-            //	print ("@1 out_data0_el=", toJson (out_data0_el));
-            //    		print ("@1 out_data0_el[",name, "]=", toJson (out_data0_el[name]));
+            //  print ("@1 out_data0_el=", toJson (out_data0_el));
+            //        print ("@1 out_data0_el[",name, "]=", toJson (out_data0_el[name]));
         }
 
         var putString = (function()
@@ -535,9 +535,9 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
                     }
                 }
                 else
-				{
+        {
                     out_data0_el_arr = removeV (out_data0_el_arr, process);
-				}
+        }
 
                 out_data0_el[name] = out_data0_el_arr;
             }
@@ -641,25 +641,25 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
                         if (!out_data0_el_arr)
                             out_data0_el_arr = [];
 
-						var element_uri;
+            var element_uri;
 
-						if (Array.isArray(element) === true)
-							element_uri = getUri (element);
-						else
-							element_uri = element.data ? element.data : element;
+            if (Array.isArray(element) === true)
+              element_uri = getUri (element);
+            else
+              element_uri = element.data ? element.data : element;
 
                         var curelem;
 
-						curelem = (typeof window === "undefined") ? get_individual(ticket, element_uri) : new veda.IndividualModel(element_uri);
+            curelem = (typeof window === "undefined") ? get_individual(ticket, element_uri) : new veda.IndividualModel(element_uri);
 
                         for (var i = 0; i < path.length - 1; i++)
                         {
                             if (!curelem || !curelem[path[i]]) return;
 
                             if (typeof window === "undefined") {
-                        		curelem = get_individual(ticket, curelem[path[i]].data ? curelem[path[i]].data : curelem[path[i]]);
+                            curelem = get_individual(ticket, curelem[path[i]].data ? curelem[path[i]].data : curelem[path[i]]);
                             } else {
-                        		curelem = curelem[path[i]][0];
+                            curelem = curelem[path[i]][0];
                             }
                         }
                         if (!curelem || !curelem[path[path.length - 1]]) return;
@@ -667,34 +667,34 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
                         if (typeof window === "undefined") {
                             out_data0_el_arr.push(curelem[path[path.length - 1]]);
                         } else {
-                        	curelem[path[path.length - 1]].forEach(
-                    			function(item) {
-			                        var value = item;
-			                        var valueType = _Uri;
+                          curelem[path[path.length - 1]].forEach(
+                          function(item) {
+                              var value = item;
+                              var valueType = _Uri;
 
-			        				if (value instanceof String) { valueType = _String; }
-			        				    else if (value instanceof Date) { valueType = _Datetime; }
-			        				    else if (value instanceof Number) { valueType = _Decimal; }
-			        				    else if (value instanceof Boolean) { valueType = _Boolean; }
-			        				    else value = value.id;
+                      if (value instanceof String) { valueType = _String; }
+                          else if (value instanceof Date) { valueType = _Datetime; }
+                          else if (value instanceof Number) { valueType = _Decimal; }
+                          else if (value instanceof Boolean) { valueType = _Boolean; }
+                          else value = value.id;
 
-			        				if (valueType == _Uri && typeof transform != 'undefined') {
-		                        		if (transform == 'clone') {
-		                        			value = value.clone();
-		                        		} else {
-		                        			value = veda.Util.buildStartFormByTransformation(value, new veda.IndividualModel(transform));
-		                        		}
-			        				}
+                      if (valueType == _Uri && typeof transform != 'undefined') {
+                                if (transform == 'clone') {
+                                  value = value.clone();
+                                } else {
+                                  value = veda.Util.buildStartFormByTransformation(value, new veda.IndividualModel(transform));
+                                }
+                      }
 
-			        				if (typeof value !== "undefined") {
-				                        out_data0_el_arr.push(
-				                        {
-				                            data: value,
-				                            type: valueType
-				                        });
-			        				}
-                    			}
-                			);
+                      if (typeof value !== "undefined") {
+                                out_data0_el_arr.push(
+                                {
+                                    data: value,
+                                    type: valueType
+                                });
+                      }
+                          }
+                      );
                         }
 
                         out_data0_el[name] = out_data0_el_arr;
@@ -843,7 +843,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
                     //print("#7 element=", toJson(element));
 
                     //if (segregateElement)
-                    //	print("#8 segregateElement=", segregateElement[0].data);
+                    //  print("#8 segregateElement=", segregateElement[0].data);
 
                     // 3. v-wf:aggregate
                     var group_key;
@@ -902,7 +902,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         }
 
         //if (typeof window === "undefined")
-        //	print("@E out_data0=", toJson (out_data0));
+        //  print("@E out_data0=", toJson (out_data0));
 
         var out_data = [];
         for (var key in out_data0)
@@ -1182,18 +1182,18 @@ var cant_delete = 128;
 
 function addToGroup(ticket, group, resource, rights, new_uri)
 {
-	if (new_uri)
-	{
-		var prev = get_individual(ticket, new_uri);
-		if (prev)
-		{
-			//print ("JS: GROUP ALREADY EXISTS");
-			return;
-		}
-	}
+  if (new_uri)
+  {
+    var prev = get_individual(ticket, new_uri);
+    if (prev)
+    {
+      //print ("JS: GROUP ALREADY EXISTS");
+      return;
+    }
+  }
 
-	if (!new_uri)
-		new_uri = genUri();
+  if (!new_uri)
+    new_uri = genUri();
 
     var new_membership_uri = genUri();
     var new_membership = {
@@ -1204,26 +1204,26 @@ function addToGroup(ticket, group, resource, rights, new_uri)
     };
 
     if (rights) {
-		for (var i = 0; i < rights.length; i++)
-		{
-			if (rights[i] == can_read)
-				new_membership['v-s:canRead'] = newBool(true);
-			else if (rights[i] == can_update)
-				new_membership['v-s:canUpdate'] = newBool(true);
-			else if (rights[i] == can_delete)
-				new_membership['v-s:canDelete'] = newBool(true);
-			else if (rights[i] == can_create)
-				new_membership['v-s:canCreate'] = newBool(true);
-			else if (rights[i] == cant_read)
-				new_membership['v-s:canRead'] = newBool(false);
-			else if (rights[i] == cant_update)
-				new_membership['v-s:canUpdate'] = newBool(false);
-			else if (rights[i] == cant_delete)
-				new_membership['v-s:canDelete'] = newBool(false);
-			else if (rights[i] == cant_create)
-				new_membership['v-s:canCreate'] = newBool(false);
-		}
-	}
+    for (var i = 0; i < rights.length; i++)
+    {
+      if (rights[i] == can_read)
+        new_membership['v-s:canRead'] = newBool(true);
+      else if (rights[i] == can_update)
+        new_membership['v-s:canUpdate'] = newBool(true);
+      else if (rights[i] == can_delete)
+        new_membership['v-s:canDelete'] = newBool(true);
+      else if (rights[i] == can_create)
+        new_membership['v-s:canCreate'] = newBool(true);
+      else if (rights[i] == cant_read)
+        new_membership['v-s:canRead'] = newBool(false);
+      else if (rights[i] == cant_update)
+        new_membership['v-s:canUpdate'] = newBool(false);
+      else if (rights[i] == cant_delete)
+        new_membership['v-s:canDelete'] = newBool(false);
+      else if (rights[i] == cant_create)
+        new_membership['v-s:canCreate'] = newBool(false);
+    }
+  }
 
     var res = put_individual(ticket.id, new_membership);
 
@@ -1247,18 +1247,18 @@ function removeFromGroup(ticket, group, resource)
 
 function addRight(ticket, rights, subj_uri, obj_uri, new_uri)
 {
-	if (new_uri)
-	{
-		var prev = get_individual(ticket, new_uri);
-		if (prev)
-		{
-			//print ("JS: RIGHT ALREADY EXISTS");
-			return;
-		}
-	}
+  if (new_uri)
+  {
+    var prev = get_individual(ticket, new_uri);
+    if (prev)
+    {
+      //print ("JS: RIGHT ALREADY EXISTS");
+      return;
+    }
+  }
 
-	if (!new_uri)
-		new_uri = genUri();
+  if (!new_uri)
+    new_uri = genUri();
 
     var new_permission = {
         '@': new_uri,

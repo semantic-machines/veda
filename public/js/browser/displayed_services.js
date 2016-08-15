@@ -6,55 +6,55 @@ Displayed individuals services
 
 veda.Module(function IndividualAutoupdate(veda) { "use strict";
 
-	// Autoupdate displayed individuals that were changed on server
+  // Autoupdate displayed individuals that were changed on server
 
-	var subscription = veda.updateSubscription;
+  var subscription = veda.updateSubscription;
 
-	veda.on("individual:loaded", updateWatch);
+  veda.on("individual:loaded", updateWatch);
 
-	subscription.on("closed", function (event) {
-		veda.off("individual:loaded", updateWatch);
-	});
+  subscription.on("closed", function (event) {
+    veda.off("individual:loaded", updateWatch);
+  });
 
-	function updateWatch(individual) {
-		individual.one("individual:templateReady", subscribeDisplayed);
-	}
+  function updateWatch(individual) {
+    individual.one("individual:templateReady", subscribeDisplayed);
+  }
 
-	function subscribeDisplayed(template) {
-		var individual = this;
-		subscription.subscribe(individual.id);
+  function subscribeDisplayed(template) {
+    var individual = this;
+    subscription.subscribe(individual.id);
 
-		template.one("remove", function () {
-			subscription.unsubscribe(individual.id);
-		});
-	}
+    template.one("remove", function () {
+      subscription.unsubscribe(individual.id);
+    });
+  }
 
-	// Re-read strings in individuals on language switch
+  // Re-read strings in individuals on language switch
 
-	veda.on("individual:loaded", languageWatch);
+  veda.on("individual:loaded", languageWatch);
 
-	function languageWatch(individual) {
-		individual.one("individual:templateReady", localizeDisplayed);
-	}
+  function languageWatch(individual) {
+    individual.one("individual:templateReady", localizeDisplayed);
+  }
 
-	function localizeDisplayed(template) {
-		var self = this;
+  function localizeDisplayed(template) {
+    var self = this;
 
-		veda.on("language:changed", localizeIndividual);
-		template.one("remove", function () {
-			veda.off("language:changed", localizeIndividual);
-		});
+    veda.on("language:changed", localizeIndividual);
+    template.one("remove", function () {
+      veda.off("language:changed", localizeIndividual);
+    });
 
-		function localizeIndividual () {
-			for (var property_uri in self.properties) {
-				if (property_uri === "@" || property_uri === "rdf:type") { continue; }
-				var property = new veda.IndividualModel(property_uri),
-						range = property.hasValue("rdfs:range") ?  property["rdfs:range"][0].id : undefined;
-				if (range === "xsd:string" || range === "rdfs:Literal") {
-					self.trigger("individual:propertyModified", property_uri, self[property_uri]);
-				}
-			}
-		}
-	}
+    function localizeIndividual () {
+      for (var property_uri in self.properties) {
+        if (property_uri === "@" || property_uri === "rdf:type") { continue; }
+        var property = new veda.IndividualModel(property_uri),
+            range = property.hasValue("rdfs:range") ?  property["rdfs:range"][0].id : undefined;
+        if (range === "xsd:string" || range === "rdfs:Literal") {
+          self.trigger("individual:propertyModified", property_uri, self[property_uri]);
+        }
+      }
+    }
+  }
 
 });
