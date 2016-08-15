@@ -1015,3 +1015,4 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     return template;
   }
 });
+
