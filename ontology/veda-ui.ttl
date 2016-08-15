@@ -424,34 +424,34 @@ v-ui:SystemPropertiesTemplate
   rdfs:label "Template with system properties"@en ;
   v-ui:template """
 <div>
-	<h4 about="v-s:SystemProperties" property="rdfs:label"></h4>
-	<br>
-	<div class="row">
-		<div class="col-md-3 col-xs-6">
-			<em about="v-s:publisher" property="rdfs:label"></em>
-			<veda-control type="link" rel="v-s:publisher" class="-view -edit search fulltext dropdown"></veda-control>
-			<div about="@" rel="v-s:publisher" template="v-ui:LabelTemplate" class="view edit -search"></div>
-			<div rel="v-s:publisher" template="v-ui:LabelTemplate" class="-view -edit search"></div>
-		</div>
-		<div class="col-md-3 col-xs-6">
-			<em about="v-s:created" property="rdfs:label"></em>
-			<veda-control property="v-s:created" type="dateTime" class="-view -edit search"></veda-control>
-			<div about="@" property="v-s:created" class="view edit -search"></div>
-			<div property="v-s:created" class="-view -edit search"></div>
-		</div>
-		<div class="col-md-3 col-xs-6">
-			<em about="v-s:lastEditor" property="rdfs:label"></em>
-			<veda-control type="link" rel="v-s:lastEditor" class="-view -edit search fulltext dropdown"></veda-control>
-			<div about="@" rel="v-s:lastEditor" template="v-ui:LabelTemplate" class="view edit -search"></div>
-			<div rel="v-s:lastEditor" template="v-ui:LabelTemplate" class="-view -edit search"></div>
-		</div>
-		<div class="col-md-3 col-xs-6">
-			<em about="v-s:edited" property="rdfs:label"></em>
-			<veda-control type="dateTime" rel="v-s:edited" class="-view -edit search"></veda-control>
-			<div about="@" property="v-s:edited" class="view edit -search"></div>
-			<div property="v-s:edited" class="-view -edit search"></div>
-		</div>
-	</div>
+  <h4 about="v-s:SystemProperties" property="rdfs:label"></h4>
+  <br>
+  <div class="row">
+    <div class="col-md-3 col-xs-6">
+      <em about="v-s:publisher" property="rdfs:label"></em>
+      <veda-control type="link" rel="v-s:publisher" class="-view -edit search fulltext dropdown"></veda-control>
+      <div about="@" rel="v-s:publisher" template="v-ui:LabelTemplate" class="view edit -search"></div>
+      <div rel="v-s:publisher" template="v-ui:LabelTemplate" class="-view -edit search"></div>
+    </div>
+    <div class="col-md-3 col-xs-6">
+      <em about="v-s:created" property="rdfs:label"></em>
+      <veda-control property="v-s:created" type="dateTime" class="-view -edit search"></veda-control>
+      <div about="@" property="v-s:created" class="view edit -search"></div>
+      <div property="v-s:created" class="-view -edit search"></div>
+    </div>
+    <div class="col-md-3 col-xs-6">
+      <em about="v-s:lastEditor" property="rdfs:label"></em>
+      <veda-control type="link" rel="v-s:lastEditor" class="-view -edit search fulltext dropdown"></veda-control>
+      <div about="@" rel="v-s:lastEditor" template="v-ui:LabelTemplate" class="view edit -search"></div>
+      <div rel="v-s:lastEditor" template="v-ui:LabelTemplate" class="-view -edit search"></div>
+    </div>
+    <div class="col-md-3 col-xs-6">
+      <em about="v-s:edited" property="rdfs:label"></em>
+      <veda-control type="dateTime" rel="v-s:edited" class="-view -edit search"></veda-control>
+      <div about="@" property="v-s:edited" class="view edit -search"></div>
+      <div property="v-s:edited" class="-view -edit search"></div>
+    </div>
+  </div>
 </div>
 """ ;
 .
@@ -508,7 +508,7 @@ v-ui:VersionedTemplate
   var tbody = $("#versions", template);
   var btn = $("button", template).click(function () {
     tbody.empty();
-    renderVersion(actual, 1, -1)
+    renderVersion(actual, 1, -1);
   });
   renderVersion(actual, 1, 5);
   function renderVersion(current, counter, limit) {
@@ -518,8 +518,12 @@ v-ui:VersionedTemplate
     var row = tmpl.replace("#", counter);
     if (current.id === actual.id) { row = row.replace("<tr>", "<tr class='info'>"); }
     if (current.id === individual.id) { row = row.replace(/td/g, "th").replace("v-ui:LabelLinkTemplate", "v-ui:LabelTemplate"); }
-    current.present(tbody, row);
-    renderVersion(previous, ++counter, --limit);
+    if (current.hasValue("v-s:nextVersion") && current["v-s:nextVersion"][0].id === actual.id) {
+      renderVersion(previous, counter, limit);
+    } else {
+      current.present(tbody, row);
+      renderVersion(previous, ++counter, --limit);
+    }
   }
 </script>
 """ ;
@@ -549,43 +553,43 @@ v-ui:BondTemplate
   rdfs:label "Template with bond"@en ;
   v-ui:template """
 <div>
-	<h4 about="v-s:hasBond" property="rdfs:label"></h4>
-	<veda-control type="link" rel="v-s:hasBond" class="-view edit search create"></veda-control>
-	<div rel="v-s:hasBond" embedded="true">
-		<div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:20px 20px 0 0;">
-			<div class="panel-body">
-				<em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
-				<strong property="rdfs:comment" class="view -edit -search"></strong>
-				<veda-control type="string" property="rdfs:comment" class="-view edit search"></veda-control>
-				<br>
-				<hr class="margin-sm view -edit -search">
-				<em about="v-s:hasBond" property="rdfs:label" class="-view edit search"></em>
-				<veda-control type="link" rel="v-s:to" class="-view edit search fullsearch fulltext dropdown"></veda-control>
-				<span rel="v-s:from" template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
-				<div class="text-center view -edit -search">
-					<span class="fa fa-long-arrow-down"></span>
-				</div>
-				<span rel="v-s:to" template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
-				<div class="view -edit -search" style="font-style:italic">
-					<small property="v-s:publisher"></small><small property="v-s:created"></small>
-				</div>
-			</div>
-		</div>
-	</div>
+  <h4 about="v-s:hasBond" property="rdfs:label"></h4>
+  <veda-control type="link" rel="v-s:hasBond" class="-view edit search create"></veda-control>
+  <div rel="v-s:hasBond" embedded="true">
+    <div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:20px 20px 0 0;">
+      <div class="panel-body">
+        <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
+        <strong property="rdfs:comment" class="view -edit -search"></strong>
+        <veda-control type="string" property="rdfs:comment" class="-view edit search"></veda-control>
+        <br>
+        <hr class="margin-sm view -edit -search">
+        <em about="v-s:hasBond" property="rdfs:label" class="-view edit search"></em>
+        <veda-control type="link" rel="v-s:to" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+        <span rel="v-s:from" template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
+        <div class="text-center view -edit -search">
+          <span class="fa fa-long-arrow-down"></span>
+        </div>
+        <span rel="v-s:to" template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
+        <div class="view -edit -search" style="font-style:italic">
+          <small property="v-s:publisher"></small><small property="v-s:created"></small>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <script>
   //# sourceURL=v-ui:BondTemplate
-	individual.on("individual:propertyModified", handler);
-	template.on("remove", function () {
-		individual.off("individual:propertyModified", handler);
-	});
-	function handler (property_uri, values) {
-		if (property_uri === "v-s:hasBond" && values.length !== 0) {
-			values.map(function (item) {
-				item["v-s:from"] = [individual];
-			});
-		}
-	}
+  individual.on("individual:propertyModified", handler);
+  template.on("remove", function () {
+    individual.off("individual:propertyModified", handler);
+  });
+  function handler (property_uri, values) {
+    if (property_uri === "v-s:hasBond" && values.length !== 0) {
+      values.map(function (item) {
+        item["v-s:from"] = [individual];
+      });
+    }
+  }
 </script>
 """ ;
 .
@@ -596,8 +600,8 @@ v-ui:IconPersonTemplate
   rdfs:label "Person template with icon"@en ;
   v-ui:template """
 <a href="#/@">
-	<span class="glyphicon glyphicon-user"></span>
-	<span about="@" property="rdfs:label"></span>
+  <span class="glyphicon glyphicon-user"></span>
+  <span about="@" property="rdfs:label"></span>
 </a>
 """ ;
 .
@@ -609,22 +613,22 @@ v-ui:ImageAppointmentTemplate
   v-ui:template """
 <div class="media" style="display:inline-block; max-width:250px; min-width:250px; height:60px; margin:0 20px 20px 0; padding:5px; border:1px solid #ddd; border-radius: 5px">
   <div class="media-left">
-		<a href="#/@" about="@" rel="v-s:employee">
-				<div>
-					<div class="has-image" about="@" rel="v-s:hasImage" template="v-ui:ImageSimpleTemplateWithoutBorder" style="width:50px"></div>
-					<div class="no-image" style="width:50px">
-						<span class="glyphicon glyphicon-user" style="font-size:3em"></span>
-					</div>
-				</div>
-				<script>
+    <a href="#/@" about="@" rel="v-s:employee">
+        <div>
+          <div class="has-image" about="@" rel="v-s:hasImage" template="v-ui:ImageSimpleTemplateWithoutBorder" style="width:50px"></div>
+          <div class="no-image" style="width:50px">
+            <span class="glyphicon glyphicon-user" style="font-size:3em"></span>
+          </div>
+        </div>
+        <script>
           //# sourceURL=v-ui:ImageAppointmentTemplate
-					individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
-				</script>
-		</a>
+          individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
+        </script>
+    </a>
   </div>
   <div class="media-body">
     <strong rel="v-s:employee" template="v-ui:LabelTemplate"></strong><br>
-		<span rel="v-s:occupation" template="v-ui:LabelTemplate"></span>
+    <span rel="v-s:occupation" template="v-ui:LabelTemplate"></span>
   </div>
 </div>
 """ ;
@@ -635,9 +639,9 @@ v-ui:PersonAppointmentTemplate
   rdfs:label "Шаблон персоны с выбором назначения"@ru ;
   rdfs:label "Person template with appointment select"@en ;
   v-ui:template """
-	<div>
-		<veda-control type="link" rel="v-s:defaultAppointment" class="fulltext dropdown" template="{individual['v-s:occupation'][0]['rdfs:label'].join(', ')}"></veda-control>
-	</div>
+  <div>
+    <veda-control type="link" rel="v-s:defaultAppointment" class="fulltext dropdown" template="{individual['v-s:occupation'][0]['rdfs:label'].join(', ')}"></veda-control>
+  </div>
 """ ;
 .
 v-ui:PS_PersonDefaultAppointment
@@ -657,39 +661,39 @@ v-ui:ClassTemplateTemplate
   v-ui:forClass v-ui:ClassTemplate ;
   v-ui:template """
 <div class="container-fluid">
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<div class="row">
-				<div class="col-md-4">
-					<span about="v-ui:ClassTemplate" property="rdfs:label"></span>
-				</div>
-				<div class="col-md-8 text-right">
-					<a href="#/@"><span property="@"></span></a>
-				</div>
-			</div>
-		</div>
-		<div class="panel-body">
-			<em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
-			<h3 property="rdfs:label"></h3>
-			<veda-control property="rdfs:label" type="multilingualString" class="-view edit search"></veda-control>
-			<br class="-view edit search">
-			<em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
-			<div><em property="rdfs:comment"></em></div>
-			<veda-control property="rdfs:comment" type="multilingualString" class="-view edit search"></veda-control>
-			<br class="-view edit search">
-			<em about="v-ui:forClass" property="rdfs:label"></em>
-			<div rel="v-ui:forClass" template="v-ui:ClassNameLabelLinkTemplate"></div>
-			<veda-control rel="v-ui:forClass" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
-			<br>
-			<veda-control property="v-ui:template" type="source"></veda-control>
-		</div>
-		<div class="panel-footer">
-			<button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-			<button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-			<button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-			<button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-		</div>
-	</div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <div class="row">
+        <div class="col-md-4">
+          <span about="v-ui:ClassTemplate" property="rdfs:label"></span>
+        </div>
+        <div class="col-md-8 text-right">
+          <a href="#/@"><span property="@"></span></a>
+        </div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
+      <h3 property="rdfs:label"></h3>
+      <veda-control property="rdfs:label" type="multilingualString" class="-view edit search"></veda-control>
+      <br class="-view edit search">
+      <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
+      <div><em property="rdfs:comment"></em></div>
+      <veda-control property="rdfs:comment" type="multilingualString" class="-view edit search"></veda-control>
+      <br class="-view edit search">
+      <em about="v-ui:forClass" property="rdfs:label"></em>
+      <div rel="v-ui:forClass" template="v-ui:ClassNameLabelLinkTemplate"></div>
+      <veda-control rel="v-ui:forClass" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+      <br>
+      <veda-control property="v-ui:template" type="source"></veda-control>
+    </div>
+    <div class="panel-footer">
+      <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+      <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+      <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+      <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    </div>
+  </div>
 </div>
   """ ;
 .
@@ -712,54 +716,54 @@ v-ui:ResourceTemplate
   v-ui:forClass rdfs:Resource ;
   v-ui:template """
 <div class="panel panel-default">
-	<div class="panel-heading">
-		<div class="row">
-			<div class="col-md-4 className">
-			<span about="rdfs:Resource" property="rdfs:label"></span></div>
-			<div class="col-md-8 text-right">
-				<a href="#/@"><span property="@"></span></a>
-			</div>
-		</div>
-	</div>
-	<div class="panel-body">
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-md-3 col-xs-5 text-right">
-					<em about="rdf:type" property="rdfs:label"></em>
-				</div>
-				<div class="col-md-9 col-xs-7">
-					<div rel="rdf:type" template="v-ui:LabelTemplate"></div>
-					<veda-control rel="rdf:type" type="link" template="v-ui:LabelTemplate" class="-view edit search fulltext dropdown"></veda-control>
-				</div>
-			</div>
-			<hr class="margin-sm">
-			<div class="row">
-				<div class="col-md-3 col-xs-5 text-right">
-					<em about="rdfs:label" property="rdfs:label"></em>
-				</div>
-				<div class="col-md-9 col-xs-7">
-					<span property="rdfs:label"></span>
-					<veda-control property="rdfs:label" type="multilingualString" class="-view edit search"></veda-control>
-				</div>
-			</div>
-			<hr class="margin-sm">
-			<div class="row">
-				<div class="col-md-3 col-xs-5 text-right">
-					<em about="rdfs:comment" property="rdfs:label"></em>
-				</div>
-				<div class="col-md-9 col-xs-7">
-					<div property="rdfs:comment"></div>
-					<veda-control property="rdfs:comment" class="-view edit search" type="multilingualString"></veda-control>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="panel-footer">
-		<button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-		<button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-		<button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-		<button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-	</div>
+  <div class="panel-heading">
+    <div class="row">
+      <div class="col-md-4 className">
+      <span about="rdfs:Resource" property="rdfs:label"></span></div>
+      <div class="col-md-8 text-right">
+        <a href="#/@"><span property="@"></span></a>
+      </div>
+    </div>
+  </div>
+  <div class="panel-body">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3 col-xs-5 text-right">
+          <em about="rdf:type" property="rdfs:label"></em>
+        </div>
+        <div class="col-md-9 col-xs-7">
+          <div rel="rdf:type" template="v-ui:LabelTemplate"></div>
+          <veda-control rel="rdf:type" type="link" template="v-ui:LabelTemplate" class="-view edit search fulltext dropdown"></veda-control>
+        </div>
+      </div>
+      <hr class="margin-sm">
+      <div class="row">
+        <div class="col-md-3 col-xs-5 text-right">
+          <em about="rdfs:label" property="rdfs:label"></em>
+        </div>
+        <div class="col-md-9 col-xs-7">
+          <span property="rdfs:label"></span>
+          <veda-control property="rdfs:label" type="multilingualString" class="-view edit search"></veda-control>
+        </div>
+      </div>
+      <hr class="margin-sm">
+      <div class="row">
+        <div class="col-md-3 col-xs-5 text-right">
+          <em about="rdfs:comment" property="rdfs:label"></em>
+        </div>
+        <div class="col-md-9 col-xs-7">
+          <div property="rdfs:comment"></div>
+          <veda-control property="rdfs:comment" class="-view edit search" type="multilingualString"></veda-control>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="panel-footer">
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+  </div>
 </div>
   """ ;
 .
@@ -786,11 +790,11 @@ v-ui:LabelTemplate
   <script>
     //# sourceURL=v-ui:LabelTemplate
     if (!individual.hasValue("rdfs:label")) {
-  	  template.text(individual.id);
+      template.text(individual.id);
     }
     template.css({
-			"display": "inline-block",
-			"margin": "0 7px 7px 0"
+      "display": "inline-block",
+      "margin": "0 7px 7px 0"
     });
   </script>
   """ ;
@@ -801,12 +805,12 @@ v-ui:LabelTemplateWithEditLink
   rdfs:label "Template with label & edit link"@en ;
   v-ui:template """
   <span>
-		# <a href="#/@///edit"><span id="label" property="rdfs:label"></span></a>
+    # <a href="#/@///edit"><span id="label" property="rdfs:label"></span></a>
   </span>
   <script>
     //# sourceURL=v-ui:LabelTemplateWithEditLink
     if (!individual.hasValue("rdfs:label")) {
-			$("#label", template).text(individual.id);
+      $("#label", template).text(individual.id);
     }
   </script>
   """ ;
@@ -820,7 +824,7 @@ v-ui:LabelLinkTemplate
   <script>
     //# sourceURL=v-ui:LabelLinkTemplate
     if (!individual.hasValue("rdfs:label")) {
-  	  template.text(individual.id);
+      template.text(individual.id);
     }
   </script>
   """ ;
@@ -834,9 +838,9 @@ v-ui:LabelEmptyLinkTemplate
 <a href="#" property="rdfs:label"></a>
 <script>
   //# sourceURL=v-ui:LabelEmptyLinkTemplate
-	if (!individual.hasValue("rdfs:label")) {
-		template.text(individual.id);
-	}
+  if (!individual.hasValue("rdfs:label")) {
+    template.text(individual.id);
+  }
 </script>
   """ ;
 .
@@ -849,7 +853,7 @@ v-ui:LabelBlockLinkTemplate
   <script>
     //# sourceURL=v-ui:LabelBlockLinkTemplate
     if (!individual.hasValue("rdfs:label")) {
-  	  $("#label", template).text(individual.id);
+      $("#label", template).text(individual.id);
     }
   </script>
   """ ;
@@ -863,11 +867,11 @@ v-ui:ClassNameLabelLinkTemplate
   <script>
     //# sourceURL=v-ui:ClassNameLabelLinkTemplate
     if (!individual.hasValue("rdfs:label")) {
-  	  $("#label", template).text(individual.id);
+      $("#label", template).text(individual.id);
     }
     template.css({
-			"display": "inline-block",
-			"margin": "0 7px 7px 0"
+      "display": "inline-block",
+      "margin": "0 7px 7px 0"
     });
   </script>
   """ ;
@@ -881,11 +885,11 @@ v-ui:ClassNameLabelTemplate
   <script>
     //# sourceURL=v-ui:ClassNameLabelTemplate
     if (!individual.hasValue("rdfs:label")) {
-  	  $("#label", template).text(individual.id);
+      $("#label", template).text(individual.id);
     }
     template.css({
-			"display": "inline-block",
-			"margin": "0 7px 7px 0"
+      "display": "inline-block",
+      "margin": "0 7px 7px 0"
     });
   </script>
   """ ;
@@ -1048,93 +1052,93 @@ v-ui:TestUITemplate
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:template """
 <div class="container-fluid">
-	<div class="panel panel-warning">
-		<div class="panel-heading">
-			<div class="row">
-				<div class="col-md-4">
-					<span about="v-ui:TestUIClass" property="rdfs:label"></span>
-				</div>
-				<div class="col-md-8 text-right">
-					<a href="#/@"><span property="@"></span></a>
-				</div>
-			</div>
-		</div>
-		<div class="panel-body">
-			<em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
-			<h3 property="rdfs:label"></h3>
-			<veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
-			<br class="-view edit search">
-			<em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
-			<div><em property="rdfs:comment"></em></div>
-			<veda-control property="rdfs:comment" type="string" class="-view edit search"></veda-control>
-			<br class="-view edit search">
+  <div class="panel panel-warning">
+    <div class="panel-heading">
+      <div class="row">
+        <div class="col-md-4">
+          <span about="v-ui:TestUIClass" property="rdfs:label"></span>
+        </div>
+        <div class="col-md-8 text-right">
+          <a href="#/@"><span property="@"></span></a>
+        </div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
+      <h3 property="rdfs:label"></h3>
+      <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
+      <br class="-view edit search">
+      <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
+      <div><em property="rdfs:comment"></em></div>
+      <veda-control property="rdfs:comment" type="string" class="-view edit search"></veda-control>
+      <br class="-view edit search">
 
-			<div class="checkbox">
-				<label>
-					<veda-control property="v-ui:testBoolean" type="booleanCheckbox"></veda-control>
-					<em about="v-ui:testBoolean" property="rdfs:label"></em>
-				</label>
-			</div>
-			<!--em about="v-ui:testBoolean" property="rdfs:label"></em>
-			<veda-control property="v-ui:testBoolean" type="booleanCheckbox"></veda-control-->
-			<hr>
+      <div class="checkbox">
+        <label>
+          <veda-control property="v-ui:testBoolean" type="booleanCheckbox"></veda-control>
+          <em about="v-ui:testBoolean" property="rdfs:label"></em>
+        </label>
+      </div>
+      <!--em about="v-ui:testBoolean" property="rdfs:label"></em>
+      <veda-control property="v-ui:testBoolean" type="booleanCheckbox"></veda-control-->
+      <hr>
 
-			<em about="v-ui:testString" property="rdfs:label"></em>
-			<div property="v-ui:testString"></div>
-			<veda-control property="v-ui:testString" type="string" class="-view edit search"></veda-control>
-			<veda-control property="v-ui:testString" type="multilingualString" class="-view edit search"></veda-control>
-			<veda-control property="v-ui:testString" type="text" class="-view edit search"></veda-control>
-			<veda-control property="v-ui:testString" type="multilingualText" class="-view edit search"></veda-control>
-			<veda-control property="v-ui:testString" type="stringSelect" class="-view edit search"></veda-control>
-			<hr>
+      <em about="v-ui:testString" property="rdfs:label"></em>
+      <div property="v-ui:testString"></div>
+      <veda-control property="v-ui:testString" type="string" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testString" type="multilingualString" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testString" type="text" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testString" type="multilingualText" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testString" type="stringSelect" class="-view edit search"></veda-control>
+      <hr>
 
-			<em about="v-ui:testInteger" property="rdfs:label"></em>
-			<div property="v-ui:testInteger"></div>
-			<veda-control property="v-ui:testInteger" type="integer" class="-view edit search"></veda-control>
-			<veda-control property="v-ui:testInteger" type="integerSelect" class="-view edit search"></veda-control>
-			<veda-control property="v-ui:testInteger" type="integerCheckbox"></veda-control>
-			<veda-control property="v-ui:testInteger" type="integerRadio"></veda-control>
-			<hr>
+      <em about="v-ui:testInteger" property="rdfs:label"></em>
+      <div property="v-ui:testInteger"></div>
+      <veda-control property="v-ui:testInteger" type="integer" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testInteger" type="integerSelect" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testInteger" type="integerCheckbox"></veda-control>
+      <veda-control property="v-ui:testInteger" type="integerRadio"></veda-control>
+      <hr>
 
-			<em about="v-ui:testDecimal" property="rdfs:label"></em>
-			<div property="v-ui:testDecimal"></div>
-			<veda-control property="v-ui:testDecimal" type="decimal" class="-view edit search"></veda-control>
-			<veda-control property="v-ui:testDecimal" type="decimalSelect" class="-view edit search"></veda-control>
-			<hr>
+      <em about="v-ui:testDecimal" property="rdfs:label"></em>
+      <div property="v-ui:testDecimal"></div>
+      <veda-control property="v-ui:testDecimal" type="decimal" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testDecimal" type="decimalSelect" class="-view edit search"></veda-control>
+      <hr>
 
-			<em about="v-ui:testDatetime" property="rdfs:label"></em>
-			<div property="v-ui:testDatetime" class="view -edit -search"></div>
-			<veda-control property="v-ui:testDatetime" type="dateTime" class="-view edit search"></veda-control>
-			<veda-control property="v-ui:testDatetime" type="datetimeSelect" class="-view edit search"></veda-control>
-			<hr>
+      <em about="v-ui:testDatetime" property="rdfs:label"></em>
+      <div property="v-ui:testDatetime" class="view -edit -search"></div>
+      <veda-control property="v-ui:testDatetime" type="dateTime" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testDatetime" type="datetimeSelect" class="-view edit search"></veda-control>
+      <hr>
 
-			<em about="v-ui:testLink" property="rdfs:label"></em>
-			<div rel="v-ui:testLink" template="v-ui:ClassNameLabelLinkTemplate"></div>
-			<veda-control rel="v-ui:testLink" type="link" class="-view edit search full"></veda-control>
-			<veda-control rel="v-ui:testLink" type="objectCheckbox" template="v-ui:LabelTemplate"></veda-control>
-			<veda-control rel="v-ui:testLink" type="objectRadio" template="v-ui:LabelTemplate"></veda-control>
-			<veda-control rel="v-ui:testLink" type="objectSelect" class="-view edit search" template="v-ui:ClassNameLabelLinkTemplate"></veda-control>
+      <em about="v-ui:testLink" property="rdfs:label"></em>
+      <div rel="v-ui:testLink" template="v-ui:ClassNameLabelLinkTemplate"></div>
+      <veda-control rel="v-ui:testLink" type="link" class="-view edit search full"></veda-control>
+      <veda-control rel="v-ui:testLink" type="objectCheckbox" template="v-ui:LabelTemplate"></veda-control>
+      <veda-control rel="v-ui:testLink" type="objectRadio" template="v-ui:LabelTemplate"></veda-control>
+      <veda-control rel="v-ui:testLink" type="objectSelect" class="-view edit search" template="v-ui:ClassNameLabelLinkTemplate"></veda-control>
 
-			<!--hr>
-			<em about="v-ui:template" property="rdfs:label"></em>
-			<veda-control property="v-ui:template" type="source"></veda-control>
-			<hr>
-			<em about="v-s:script" property="rdfs:label"></em>
-			<veda-control property="v-s:script" type="source"></veda-control-->
+      <!--hr>
+      <em about="v-ui:template" property="rdfs:label"></em>
+      <veda-control property="v-ui:template" type="source"></veda-control>
+      <hr>
+      <em about="v-s:script" property="rdfs:label"></em>
+      <veda-control property="v-s:script" type="source"></veda-control-->
 
-			<hr>
-			<em about="v-ui:testFile" property="rdfs:label"></em>
-			<div rel="v-ui:testFile" template="v-ui:FileTemplate" class="view edit -search"></div>
-			<br>
-			<veda-control rel="v-ui:testFile" type="file" class="-view edit -search"></veda-control>
-		</div>
-		<div class="panel-footer">
-			<button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-			<button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-			<button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-			<button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-		</div>
-	</div>
+      <hr>
+      <em about="v-ui:testFile" property="rdfs:label"></em>
+      <div rel="v-ui:testFile" template="v-ui:FileTemplate" class="view edit -search"></div>
+      <br>
+      <veda-control rel="v-ui:testFile" type="file" class="-view edit -search"></veda-control>
+    </div>
+    <div class="panel-footer">
+      <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+      <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+      <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+      <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    </div>
+  </div>
 </div>
   """ ;
 .
@@ -1152,14 +1156,14 @@ v-ui:FileTemplate
   v-ui:forClass v-s:File ;
   v-ui:template """
 <div style="word-wrap: break-word;" class="margin-sm">
-	<span id="icon" class="label label-primary"></span> <a href="/files/@"><span about="@" property="v-s:fileName"></span></a>
+  <span id="icon" class="label label-primary"></span> <a href="/files/@"><span about="@" property="v-s:fileName"></span></a>
 </div>
 <script>
   //# sourceURL=v-ui:FileTemplate
-	var fn = individual["v-s:fileName"][0],
-		idx = fn.lastIndexOf("."),
-		ext = fn.substr(idx + 1);
-	$("span#icon", template).text(ext);
+  var fn = individual["v-s:fileName"][0],
+    idx = fn.lastIndexOf("."),
+    ext = fn.substr(idx + 1);
+  $("span#icon", template).text(ext);
 </script>
   """ ;
 .
@@ -1170,29 +1174,29 @@ v-ui:FileTemplateWithComment
   v-ui:forClass v-s:File ;
   v-ui:template """
 <div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:0 20px 20px 0; overflow: hidden">
-	<div class="panel-body">
-		<em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
-		<strong property="rdfs:comment" class="view -edit -search"></strong>
-		<veda-control type="string" property="rdfs:comment" class="-view edit search"></veda-control>
-		<br>
-		<hr class="margin-sm view -edit -search">
-		<div>
-			<span id="icon" class="label label-primary"></span>
-			<a href="/files/@">
-				<span about="@" property="v-s:fileName"></span>
-			</a>
-		</div>
-		<div class="view -edit -search" style="font-style:italic">
-			<small property="v-s:publisher"></small><small property="v-s:created"></small>
-		</div>
-	</div>
+  <div class="panel-body">
+    <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
+    <strong property="rdfs:comment" class="view -edit -search"></strong>
+    <veda-control type="string" property="rdfs:comment" class="-view edit search"></veda-control>
+    <br>
+    <hr class="margin-sm view -edit -search">
+    <div>
+      <span id="icon" class="label label-primary"></span>
+      <a href="/files/@">
+        <span about="@" property="v-s:fileName"></span>
+      </a>
+    </div>
+    <div class="view -edit -search" style="font-style:italic">
+      <small property="v-s:publisher"></small><small property="v-s:created"></small>
+    </div>
+  </div>
 </div>
 <script>
   //# sourceURL=v-ui:FileTemplateWithComment
-	var fn = individual["v-s:fileName"][0],
-		idx = fn.lastIndexOf("."),
-		ext = fn.substr(idx + 1);
-	$("span#icon", template).text(ext);
+  var fn = individual["v-s:fileName"][0],
+    idx = fn.lastIndexOf("."),
+    ext = fn.substr(idx + 1);
+  $("span#icon", template).text(ext);
 </script>
   """ ;
 .
@@ -1202,11 +1206,11 @@ v-ui:ImageTemplate
   rdfs:label "Image template"@en ;
   v-ui:template """
 <div>
-	<a href="/files/@"><img class="img-thumbnail"></a>
+  <a href="/files/@"><img class="img-thumbnail"></a>
 </div>
 <script>
   //# sourceURL=v-ui:ImageTemplate
-	 $("img", template).attr("src", "/files/" + individual.id);
+   $("img", template).attr("src", "/files/" + individual.id);
 </script>
   """ ;
 .
@@ -1216,26 +1220,26 @@ v-ui:ModalImageTemplate
   rdfs:label "Image template"@en ;
   v-ui:template """
 <div>
-	<a id="link" href="#"><img class="img-thumbnail"></a>
-	<div class="modal" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-body">
-					<img width="100%">
-				</div>
-			</div>
-		</div>
-	</div>
+  <a id="link" href="#"><img class="img-thumbnail"></a>
+  <div class="modal" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <img width="100%">
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <script>
   //# sourceURL=v-ui:ModalImageTemplate
-	$("img", template).attr("src", "/files/" + individual.id);
-	var modal;
-	$("#link", template).click(function (e) {
+  $("img", template).attr("src", "/files/" + individual.id);
+  var modal;
+  $("#link", template).click(function (e) {
     e.preventDefault();
-		if (!modal) modal = $("#modal", template).modal();
-		modal.modal("show");
-	});
+    if (!modal) modal = $("#modal", template).modal();
+    modal.modal("show");
+  });
 </script>
   """ ;
 .
@@ -1247,7 +1251,7 @@ v-ui:ImageSimpleTemplateWithoutBorder
 <img width="100%">
 <script>
   //# sourceURL=v-ui:ImageSimpleTemplateWithoutBorder
-	template.attr("src", "/files/" + individual.id);
+  template.attr("src", "/files/" + individual.id);
 </script>
   """ ;
 .
@@ -1257,11 +1261,11 @@ v-ui:ImageSimpleTemplate
   rdfs:label "Image template without link"@en ;
   v-ui:template """
 <div>
-	<img class="img-thumbnail">
+  <img class="img-thumbnail">
 </div>
 <script>
   //# sourceURL=v-ui:ImageSimpleTemplate
-	$("img", template).attr("src", "/files/" + individual.id);
+  $("img", template).attr("src", "/files/" + individual.id);
 </script>
   """ ;
 .
@@ -1273,7 +1277,7 @@ v-ui:ImageSimpleTemplateTransparent
 <img width="100%">
 <script>
   //# sourceURL=v-ui:ImageSimpleTemplateTransparent
-	template.attr("src", "/files/" + individual.id);
+  template.attr("src", "/files/" + individual.id);
 </script>
   """ ;
 .
@@ -1283,11 +1287,11 @@ v-ui:ImageTemplateTransparent
   rdfs:label "Image template with link transparent"@en ;
   v-ui:template """
 <div>
-	<a href="/files/@"><img width="100%"></a>
+  <a href="/files/@"><img width="100%"></a>
 </div>
 <script>
   //# sourceURL=v-ui:ImageTemplateTransparent
-	$("img", template).attr("src", "/files/" + individual.id);
+  $("img", template).attr("src", "/files/" + individual.id);
 </script>
   """ ;
 .
@@ -1319,47 +1323,47 @@ v-ui:JournalTemplate
   v-ui:forClass v-s:Journal ;
   v-ui:template """
 <div class="container-fluid journal">
-	<style>
-		.journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
-		.journal hr.margin-sm {margin: 10px 0px;}
-	</style>
-	<h2 about="v-s:Journal" property="rdfs:label"></h2>
-	<div rel="v-s:onDocument">
-		<div>
-			<h4>
-				<span about="rdf:type" property="rdfs:label"></span>:
-				<span about="@" template="v-ui:ClassNameLabelLinkTemplate"></span>
-			</h4>
-		</div>
-	</div>
-	<div rel="v-wf:onProcess">
-		<div>
-			<h4>
-				<span about="rdf:type" property="rdfs:label"></span>:
-				<span about="@" template="v-ui:ClassNameLabelLinkTemplate"></span>
-			</h4>
-		</div>
-	</div>
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<div class="row">
-				<div class="col-md-3 col-sm-3">
-					<strong about="v-s:JournalRecord" property="rdfs:label"></strong>
-				</div>
-				<div class="col-md-7 col-sm-6">
-					<strong about="v-s:description" property="rdfs:label"></strong>
-				</div>
-				<div class="col-md-2 col-sm-3 text-right">
-					<strong about="v-s:created" property="rdfs:label"></strong>
-				</div>
-			</div>
-		</div>
-		<div class="panel-body">
-			<div id="records">
-				<div rel="v-s:childRecord"></div>
-			</div>
-		</div>
-	</div>
+  <style>
+    .journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
+    .journal hr.margin-sm {margin: 10px 0px;}
+  </style>
+  <h2 about="v-s:Journal" property="rdfs:label"></h2>
+  <div rel="v-s:onDocument">
+    <div>
+      <h4>
+        <span about="rdf:type" property="rdfs:label"></span>:
+        <span about="@" template="v-ui:ClassNameLabelLinkTemplate"></span>
+      </h4>
+    </div>
+  </div>
+  <div rel="v-wf:onProcess">
+    <div>
+      <h4>
+        <span about="rdf:type" property="rdfs:label"></span>:
+        <span about="@" template="v-ui:ClassNameLabelLinkTemplate"></span>
+      </h4>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <div class="row">
+        <div class="col-md-3 col-sm-3">
+          <strong about="v-s:JournalRecord" property="rdfs:label"></strong>
+        </div>
+        <div class="col-md-7 col-sm-6">
+          <strong about="v-s:description" property="rdfs:label"></strong>
+        </div>
+        <div class="col-md-2 col-sm-3 text-right">
+          <strong about="v-s:created" property="rdfs:label"></strong>
+        </div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div id="records">
+        <div rel="v-s:childRecord"></div>
+      </div>
+    </div>
+  </div>
 </div>
   """ ;
 .
@@ -1382,36 +1386,36 @@ v-ui:DocumentEventTemplate
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
-		<div class="col-md-3 col-sm-3 event-type">
-			<a id="exp" class="start-process" href="#" style="display:none"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
-			<span class="non-start-process" rel="rdf:type" template="v-ui:LabelTemplate"></span>
-		</div>
-		<div class="col-md-3 col-sm-6 event-desc">
-			<div property="rdfs:label"></div>
-			<span class="actor">
-				<span about="v-s:actor" property="rdfs:label"></span>:
-				<em rel="v-s:actor" template="v-ui:LabelTemplate"></em>
-			</span>
-		</div>
-		<div class="col-md-4 col-sm-6 event-desc">
-			<div property="rdfs:label"></div>
-			<div rel="v-s:documentVersion">
-				<div>
-						<span about="rdf:type" property="rdfs:label"></span>:
-						<em about="@" template="v-ui:LabelLinkTemplate"></em>
-				</div>
-			</div>
-			<div rel="v-wf:onProcess">
-				<div>
-					<span about="rdf:type" property="rdfs:label"></span>:
-					<em about="@" template="v-ui:LabelLinkTemplate"></em>
-					<a class="stop-process glyphicon glyphicon-remove" style="display:none"></a>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-2 col-sm-3 event-date text-right">
-			<span property="v-s:created"></span>
-		</div>
+    <div class="col-md-3 col-sm-3 event-type">
+      <a id="exp" class="start-process" href="#" style="display:none"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" template="v-ui:LabelTemplate"></strong></a>
+      <span class="non-start-process" rel="rdf:type" template="v-ui:LabelTemplate"></span>
+    </div>
+    <div class="col-md-3 col-sm-6 event-desc">
+      <div property="rdfs:label"></div>
+      <span class="actor">
+        <span about="v-s:actor" property="rdfs:label"></span>:
+        <em rel="v-s:actor" template="v-ui:LabelTemplate"></em>
+      </span>
+    </div>
+    <div class="col-md-4 col-sm-6 event-desc">
+      <div property="rdfs:label"></div>
+      <div rel="v-s:documentVersion">
+        <div>
+            <span about="rdf:type" property="rdfs:label"></span>:
+            <em about="@" template="v-ui:LabelLinkTemplate"></em>
+        </div>
+      </div>
+      <div rel="v-wf:onProcess">
+        <div>
+          <span about="rdf:type" property="rdfs:label"></span>:
+          <em about="@" template="v-ui:LabelLinkTemplate"></em>
+          <a class="stop-process glyphicon glyphicon-remove" style="display:none"></a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-sm-3 event-date text-right">
+      <span property="v-s:created"></span>
+    </div>
   </div>
   <div rel="v-s:processJournal" template="v-ui:SubJournalTemplate"></div>
 </div>
@@ -1430,30 +1434,30 @@ v-ui:DocumentEventTemplate
 
 <script>
   //# sourceURL=v-ui:DocumentEventTemplate_2
-	if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id == 'v-s:ProcessStarted') {
-		$(".start-process", template).show();
-		$(".non-start-process", template).hide();
-		var process = individual['v-wf:onProcess'][0];
-		if ((!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] == false) &&
-		    (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] == false)) {
-			$(".stop-process", template).show();
-			$(".stop-process", template).on("click", function() {
-				if (confirm((new veda.IndividualModel("v-b:AreYouSure"))["rdfs:label"])) {
-					process['v-wf:isStopped'] = [ true ];
-					process.save();
-				}
-			});
-		}
-		if (process.hasValue("v-wf:isStopped") && process["v-wf:isStopped"][0] == true) {
-			$(".start-process", template).addClass('text-danger');
-			$(".start-process", template).css('text-decoration','line-through');
-			$(".start-process", template).trigger("click");
-		}
-	}
-	if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id == 'v-wf:ProcessStopped') {
-		$(".row", template).addClass('text-danger');
-		//$(".row", template).each(function(e) { $(e); });
-	}
+  if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id == 'v-s:ProcessStarted') {
+    $(".start-process", template).show();
+    $(".non-start-process", template).hide();
+    var process = individual['v-wf:onProcess'][0];
+    if ((!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] == false) &&
+        (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] == false)) {
+      $(".stop-process", template).show();
+      $(".stop-process", template).on("click", function() {
+        if (confirm((new veda.IndividualModel("v-b:AreYouSure"))["rdfs:label"])) {
+          process['v-wf:isStopped'] = [ true ];
+          process.save();
+        }
+      });
+    }
+    if (process.hasValue("v-wf:isStopped") && process["v-wf:isStopped"][0] == true) {
+      $(".start-process", template).addClass('text-danger');
+      $(".start-process", template).css('text-decoration','line-through');
+      $(".start-process", template).trigger("click");
+    }
+  }
+  if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id == 'v-wf:ProcessStopped') {
+    $(".row", template).addClass('text-danger');
+    //$(".row", template).each(function(e) { $(e); });
+  }
 </script>
   """ ;
 .
@@ -1465,64 +1469,64 @@ v-ui:PermissionStatementTemplate
   v-ui:forClass v-s:PermissionStatement ;
   v-ui:template """
   <div>
-	<div class="row right-header" style="display:none">
-		<div class="col-md-1">
-			<span about="v-s:canCreate" property="rdfs:label"></span>
-		</div>
-		<div class="col-md-1">
-			<span about="v-s:canRead" property="rdfs:label"></span>
-		</div>
-		<div class="col-md-1">
-			<span about="v-s:canUpdate" property="rdfs:label"></span>
-		</div>
-		<div class="col-md-1">
-			<span about="v-s:canDelete" property="rdfs:label"></span>
-		</div>
-		<div class="col-md-3">
-			<span about="v-s:permissionObject" property="rdfs:label"></span>
-		</div>
-		<div class="col-md-3">
-			<span about="v-s:permissionSubject" property="rdfs:label"></span>
-		</div>
-		<div class="col-md-1">
-			<span about="v-s:startTime" property="rdfs:label"></span>
-		</div>
-		<div class="col-md-1">
-			<span about="v-s:endTime" property="rdfs:label"></span>
-		</div>
-	</div>
-	<hr/>
-	<div class="row">
-		<div class="col-md-1">
-			<span about="@" property="v-s:canCreate"></span>
-		</div>
-		<div class="col-md-1">
-			<span about="@" property="v-s:canRead"></span>
-		</div>
-		<div class="col-md-1">
-			<span about="@" property="v-s:canUpdate"></span>
-		</div>
-		<div class="col-md-1">
-			<span about="@" property="v-s:canDelete"></span>
-		</div>
-		<div class="col-md-3">
-			<span rel="v-s:permissionObject" template="v-ui:LabelLinkTemplate"></span>
-		</div>
-		<div class="col-md-3">
-			<span rel="v-s:permissionSubject" template="v-ui:LabelLinkTemplate"></span>
-		</div>
-		<div class="col-md-1">
-			<span about="@" property="v-s:startTime"></span>
-		</div>
-		<div class="col-md-1">
-			<span about="@" property="v-s:endTime"></span>
-		</div>
-	</div>
+  <div class="row right-header" style="display:none">
+    <div class="col-md-1">
+      <span about="v-s:canCreate" property="rdfs:label"></span>
+    </div>
+    <div class="col-md-1">
+      <span about="v-s:canRead" property="rdfs:label"></span>
+    </div>
+    <div class="col-md-1">
+      <span about="v-s:canUpdate" property="rdfs:label"></span>
+    </div>
+    <div class="col-md-1">
+      <span about="v-s:canDelete" property="rdfs:label"></span>
+    </div>
+    <div class="col-md-3">
+      <span about="v-s:permissionObject" property="rdfs:label"></span>
+    </div>
+    <div class="col-md-3">
+      <span about="v-s:permissionSubject" property="rdfs:label"></span>
+    </div>
+    <div class="col-md-1">
+      <span about="v-s:startTime" property="rdfs:label"></span>
+    </div>
+    <div class="col-md-1">
+      <span about="v-s:endTime" property="rdfs:label"></span>
+    </div>
   </div>
-	<script>
+  <hr/>
+  <div class="row">
+    <div class="col-md-1">
+      <span about="@" property="v-s:canCreate"></span>
+    </div>
+    <div class="col-md-1">
+      <span about="@" property="v-s:canRead"></span>
+    </div>
+    <div class="col-md-1">
+      <span about="@" property="v-s:canUpdate"></span>
+    </div>
+    <div class="col-md-1">
+      <span about="@" property="v-s:canDelete"></span>
+    </div>
+    <div class="col-md-3">
+      <span rel="v-s:permissionObject" template="v-ui:LabelLinkTemplate"></span>
+    </div>
+    <div class="col-md-3">
+      <span rel="v-s:permissionSubject" template="v-ui:LabelLinkTemplate"></span>
+    </div>
+    <div class="col-md-1">
+      <span about="@" property="v-s:startTime"></span>
+    </div>
+    <div class="col-md-1">
+      <span about="@" property="v-s:endTime"></span>
+    </div>
+  </div>
+  </div>
+  <script>
     //# sourceURL=v-ui:PermissionStatementTemplate
-	  if (!individual.hasValue("v-s:permissionObject") && !individual.hasValue("v-s:permissionSubject")) $(".right-header", template).show();
-	</script>
+    if (!individual.hasValue("v-s:permissionObject") && !individual.hasValue("v-s:permissionSubject")) $(".right-header", template).show();
+  </script>
   """ ;
 .
 
@@ -1532,175 +1536,175 @@ v-ui:TreeTemplate
   rdfs:label "Template for tree-like structures"@en ;
   v-ui:template """
 <div class="table-responsive">
-	<table class="table table-condensed table-striped">
-		<thead id="thead"></thead>
-		<tbody id="tbody"></tbody>
-	</table>
+  <table class="table table-condensed table-striped">
+    <thead id="thead"></thead>
+    <tbody id="tbody"></tbody>
+  </table>
 </div>
 <script>
   //# sourceURL=v-ui:TreeTemplate
-	var tbody = $("#tbody", template),
-		thead = $("#thead", template),
-		headTmpl = "<th width='1px'><input type='checkbox' id='select-col' /></th>";
-		rowTmpl = "<td><input type='checkbox' class='select-row' /></td>",
-		literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"],
-		allowedClassIds = individual.treeConfig.allowedClass ? individual.treeConfig.allowedClass.reduce(function (acc, _class) {
-			acc.push( _class.id );
-			return acc;
-		}, []) : [],
-		selectableClassIds = individual.treeConfig.selectableClass ? individual.treeConfig.selectableClass.reduce(function (acc, _class) {
-			acc.push( _class.id );
-			return acc;
-		}, []) : [],
-		selectableFilter = individual.treeConfig.selectableFilter ? new Function( individual.treeConfig.selectableFilter[0].toString() ) : undefined;
+  var tbody = $("#tbody", template),
+    thead = $("#thead", template),
+    headTmpl = "<th width='1px'><input type='checkbox' id='select-col' /></th>";
+    rowTmpl = "<td><input type='checkbox' class='select-row' /></td>",
+    literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"],
+    allowedClassIds = individual.treeConfig.allowedClass ? individual.treeConfig.allowedClass.reduce(function (acc, _class) {
+      acc.push( _class.id );
+      return acc;
+    }, []) : [],
+    selectableClassIds = individual.treeConfig.selectableClass ? individual.treeConfig.selectableClass.reduce(function (acc, _class) {
+      acc.push( _class.id );
+      return acc;
+    }, []) : [],
+    selectableFilter = individual.treeConfig.selectableFilter ? new Function( individual.treeConfig.selectableFilter[0].toString() ) : undefined;
 
-	container.data("selected", []);
+  container.data("selected", []);
 
-	individual.treeConfig.displayedProperty.map( function (property, index) {
-		headTmpl += "<th>" + property["rdfs:label"].join(", ") + "</th>";
-		var isLiteral = (literals.indexOf(property["rdfs:range"][0].id) >= 0);
-		if ( index === 0 ) {
-			if (isLiteral) {
-				rowTmpl += "<td><div class='spacer'></div><a class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' property='" + property.id + "'></span></td>";
-			} else {
-				rowTmpl += "<td><div class='spacer'></div><a class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' rel='" + property.id + "' template='v-ui:LabelTemplate'></span></td>";
-			}
-			return;
-		} else {
-			if ( isLiteral ) {
-				rowTmpl += "<td about='@' property='" + property.id + "'></td>";
-			} else {
-				rowTmpl += "<td about='@' rel='" + property.id + "' template='v-ui:LabelTemplate'></td>";
-			}
-		}
-	});
-	headTmpl = "<tr>" + headTmpl + "</tr>";
-	thead.html(headTmpl);
-	individual.treeConfig.rowTmpl = rowTmpl;
+  individual.treeConfig.displayedProperty.map( function (property, index) {
+    headTmpl += "<th>" + property["rdfs:label"].join(", ") + "</th>";
+    var isLiteral = (literals.indexOf(property["rdfs:range"][0].id) >= 0);
+    if ( index === 0 ) {
+      if (isLiteral) {
+        rowTmpl += "<td><div class='spacer'></div><a class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' property='" + property.id + "'></span></td>";
+      } else {
+        rowTmpl += "<td><div class='spacer'></div><a class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' rel='" + property.id + "' template='v-ui:LabelTemplate'></span></td>";
+      }
+      return;
+    } else {
+      if ( isLiteral ) {
+        rowTmpl += "<td about='@' property='" + property.id + "'></td>";
+      } else {
+        rowTmpl += "<td about='@' rel='" + property.id + "' template='v-ui:LabelTemplate'></td>";
+      }
+    }
+  });
+  headTmpl = "<tr>" + headTmpl + "</tr>";
+  thead.html(headTmpl);
+  individual.treeConfig.rowTmpl = rowTmpl;
 
-	template.on("click", "a.expand", function () {
-		var that = $(this),
-			thatRow = that.parents("tr"),
-			thatLvl = parseInt( thatRow.attr("data-level") ),
-			uri = thatRow.attr("resource"),
-			self = new veda.IndividualModel(uri);
+  template.on("click", "a.expand", function () {
+    var that = $(this),
+      thatRow = that.parents("tr"),
+      thatLvl = parseInt( thatRow.attr("data-level") ),
+      uri = thatRow.attr("resource"),
+      self = new veda.IndividualModel(uri);
 
-		that.toggleClass("expanded glyphicon-chevron-right glyphicon-chevron-down");
+    that.toggleClass("expanded glyphicon-chevron-right glyphicon-chevron-down");
 
-		if ( that.hasClass("expanded") ) {
-			var nextLvl = parseInt( thatRow.next().attr("data-level") );
-			if ( nextLvl > thatLvl ) {
-				thatRow.nextUntil("[data-level=" + thatLvl + "]").show();
-			} else {
-				getOut(self).map(render);
-				getIn(self).map(render);
-				var newNextLvl = parseInt(thatRow.next().attr("data-level"));
-				if ( isNaN(newNextLvl) || newNextLvl <= thatLvl ) {
-					that.prev().css("width", 16 * (thatLvl + 1) - 2);
-					that.remove();
-				}
-			}
-		} else {
-			thatRow.nextAll().each( function () {
-				var that = $(this),
-					lvl = parseInt( that.attr("data-level") );
-				if ( isNaN(lvl) || lvl <= thatLvl) return false;
-				that.hide();
-			});
-		}
+    if ( that.hasClass("expanded") ) {
+      var nextLvl = parseInt( thatRow.next().attr("data-level") );
+      if ( nextLvl > thatLvl ) {
+        thatRow.nextUntil("[data-level=" + thatLvl + "]").show();
+      } else {
+        getOut(self).map(render);
+        getIn(self).map(render);
+        var newNextLvl = parseInt(thatRow.next().attr("data-level"));
+        if ( isNaN(newNextLvl) || newNextLvl <= thatLvl ) {
+          that.prev().css("width", 16 * (thatLvl + 1) - 2);
+          that.remove();
+        }
+      }
+    } else {
+      thatRow.nextAll().each( function () {
+        var that = $(this),
+          lvl = parseInt( that.attr("data-level") );
+        if ( isNaN(lvl) || lvl <= thatLvl) return false;
+        that.hide();
+      });
+    }
 
-		function render(item) {
-			var	cont = $("<div>"),
-				tmpl = $("<tr>").attr("data-level", thatLvl + 1).append(rowTmpl);
-			$(".spacer", tmpl).css({"width": 16 * (thatLvl + 1) + "px", "display": "inline-block"});
-			item.present(cont, tmpl);
-			if (selectableFilter) {
-				if ( !selectableFilter.call(item) ) {
-					$("input", tmpl).remove();
-				}
-			} else if (selectableClassIds.length && selectableClassIds.indexOf(item["rdf:type"][0].id) < 0) {
-				$("input", tmpl).remove();
-			}
-			thatRow.after( cont.html() );
-		}
-		return false;
-	});
+    function render(item) {
+      var cont = $("<div>"),
+        tmpl = $("<tr>").attr("data-level", thatLvl + 1).append(rowTmpl);
+      $(".spacer", tmpl).css({"width": 16 * (thatLvl + 1) + "px", "display": "inline-block"});
+      item.present(cont, tmpl);
+      if (selectableFilter) {
+        if ( !selectableFilter.call(item) ) {
+          $("input", tmpl).remove();
+        }
+      } else if (selectableClassIds.length && selectableClassIds.indexOf(item["rdf:type"][0].id) < 0) {
+        $("input", tmpl).remove();
+      }
+      thatRow.after( cont.html() );
+    }
+    return false;
+  });
 
-	template.on("click", "th > input", function () {
-		$("td > input:visible", tbody).click();
-	});
+  template.on("click", "th > input", function () {
+    $("td > input:visible", tbody).click();
+  });
 
-	template.on("click", "td", function () {
-		var row = $(this).parent();
-		$("input", row).click();
-	});
+  template.on("click", "td", function () {
+    var row = $(this).parent();
+    $("input", row).click();
+  });
 
-	template.on("click", "td > input", function (e) {
-		var row = $(this).parents("tr"),
-			uri = row.attr("resource"),
-			selected = container.data("selected");
-		if ( $(this).prop("checked") ) {
-			selected.push(uri);
-		} else {
-			var index = selected.indexOf(uri);
-			selected.splice(index, 1);
-		}
-		container.data("selected", selected);
-		e.stopPropagation();
-	});
+  template.on("click", "td > input", function (e) {
+    var row = $(this).parents("tr"),
+      uri = row.attr("resource"),
+      selected = container.data("selected");
+    if ( $(this).prop("checked") ) {
+      selected.push(uri);
+    } else {
+      var index = selected.indexOf(uri);
+      selected.splice(index, 1);
+    }
+    container.data("selected", selected);
+    e.stopPropagation();
+  });
 
-	individual.treeConfig.root.map( function (root) {
-		var tmpl = $("<tr>").attr("data-level", 0).append(rowTmpl);
-		if (selectableFilter) {
-			if ( !selectableFilter.call(root) ) {
-				$("input", tmpl).remove();
-			}
-		} else if (selectableClassIds.length && selectableClassIds.indexOf(root["rdf:type"][0].id) < 0) {
-			$("input", tmpl).remove();
-		}
-		root.present(tbody, tmpl);
-	});
-	template.one("remove", function () {
-		delete individual[treeConfig];
-	});
+  individual.treeConfig.root.map( function (root) {
+    var tmpl = $("<tr>").attr("data-level", 0).append(rowTmpl);
+    if (selectableFilter) {
+      if ( !selectableFilter.call(root) ) {
+        $("input", tmpl).remove();
+      }
+    } else if (selectableClassIds.length && selectableClassIds.indexOf(root["rdf:type"][0].id) < 0) {
+      $("input", tmpl).remove();
+    }
+    root.present(tbody, tmpl);
+  });
+  template.one("remove", function () {
+    delete individual[treeConfig];
+  });
 
-	function getOut(self) {
-		var res = [];
-		if (individual.treeConfig && individual.treeConfig.outProperty) {
-			individual.treeConfig.outProperty.map(function (property) {
-				if (self.hasValue(property.id)) {
-					self[property.id].map(function (value) {
-						if ( !allowedClassIds.length || allowedClassIds.indexOf(value["rdf:type"][0].id) > -1 ) {
-							res.push(value);
-						}
-					});
-				}
-			});
-		}
-		return res;
-	}
+  function getOut(self) {
+    var res = [];
+    if (individual.treeConfig && individual.treeConfig.outProperty) {
+      individual.treeConfig.outProperty.map(function (property) {
+        if (self.hasValue(property.id)) {
+          self[property.id].map(function (value) {
+            if ( !allowedClassIds.length || allowedClassIds.indexOf(value["rdf:type"][0].id) > -1 ) {
+              res.push(value);
+            }
+          });
+        }
+      });
+    }
+    return res;
+  }
 
-	function getIn(self) {
-		var res = [];
-		if (individual.treeConfig && individual.treeConfig.inProperty) {
-			var query = individual.treeConfig.inProperty.map(function (property) {
-					return "'" + property.id + "'=='" + self.id + "'";
-				}).join(" || ");
-			if (individual.treeConfig.allowedClass) {
-				query = "(" + query + ") && (" + individual.treeConfig.allowedClass.map(function (_class) {
-					return "'rdf:type'=='" + _class.id + "'";
-				}).join(" || ") + ")";
-			}
-			var search = new veda.IndividualModel();
-			search["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
-			search["v-fs:fulltextQuery"] = [ query ];
-			search.search();
-			search.result.map( function (uri) {
-				res.push( new veda.IndividualModel(uri) );
-			});
-		}
-		return res;
-	}
+  function getIn(self) {
+    var res = [];
+    if (individual.treeConfig && individual.treeConfig.inProperty) {
+      var query = individual.treeConfig.inProperty.map(function (property) {
+          return "'" + property.id + "'=='" + self.id + "'";
+        }).join(" || ");
+      if (individual.treeConfig.allowedClass) {
+        query = "(" + query + ") && (" + individual.treeConfig.allowedClass.map(function (_class) {
+          return "'rdf:type'=='" + _class.id + "'";
+        }).join(" || ") + ")";
+      }
+      var search = new veda.IndividualModel();
+      search["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
+      search["v-fs:fulltextQuery"] = [ query ];
+      search.search();
+      search.result.map( function (uri) {
+        res.push( new veda.IndividualModel(uri) );
+      });
+    }
+    return res;
+  }
 </script>
   """ ;
 .
@@ -1717,13 +1721,13 @@ td:PersonTemplate1
         <div class="row">
           <div class="col-md-6">
             <span about="v-s:Person" property="rdfs:label">Персона</span>
-  	      </div>
-          <div class="col-md-6 text-right">
-  	        <a href="#/@"><span property="@">ID</span></a>
-  	        <a href="#/graph/@"><span class="glyphicon glyphicon-link"></span></a>
           </div>
-	      </div>
-	    </div>
+          <div class="col-md-6 text-right">
+            <a href="#/@"><span property="@">ID</span></a>
+            <a href="#/graph/@"><span class="glyphicon glyphicon-link"></span></a>
+          </div>
+        </div>
+      </div>
       <div class="panel-body">
         <div class="row">
           <div class="col-md-2">
@@ -1786,7 +1790,7 @@ td:PersonTemplate1
         <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
         <button type="button" class="action btn btn-default -view edit -search" id="draft" about="v-s:ToDraft" property="rdfs:label" />
         <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
-				<button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
+        <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
         <!--button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/-->
       </div>
     </div>
@@ -1811,12 +1815,12 @@ td:AppointmentTemplate1
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <span about="v-s:Appointment" property="rdfs:label">Имя класса</span>
-  	      </div>
+          <span about="v-s:Appointment" property="rdfs:label">Имя класса</span>
+          </div>
           <div class="col-md-6 text-right">
-  	        <a href="#/@"><span property="@">ID</span></a>
-	      </div>
-	    </div>
+            <a href="#/@"><span property="@">ID</span></a>
+        </div>
+      </div>
       </div>
       <div class="panel-body">
         <h3 property="rdfs:label"></h3>
@@ -1858,10 +1862,10 @@ td:AppointmentTemplate2
   rdfs:label "Шаблон Назначения 2"@ru ;
   rdfs:label "Appointment template 2"@en ;
   v-ui:template """
-	<div>
-		<span rel="v-s:employee" template="v-ui:LabelTemplate">Работник</span>,
-		<span rel="v-s:occupation" template="v-ui:LabelTemplate">Должность</span>
-	</div>
+  <div>
+    <span rel="v-s:employee" template="v-ui:LabelTemplate">Работник</span>,
+    <span rel="v-s:occupation" template="v-ui:LabelTemplate">Должность</span>
+  </div>
   """ ;
 .
 
@@ -1876,12 +1880,12 @@ td:AccountTemplate1
       <div class="panel-heading">
         <div class="row">
           <div class="col-md-6">
-	        <span about="v-s:Account" property="rdfs:label">Имя класса</span>
-  	      </div>
+          <span about="v-s:Account" property="rdfs:label">Имя класса</span>
+          </div>
           <div class="col-md-6 text-right">
             <a href="#/@"><span property="@">ID</span></a>
-	      </div>
-	    </div>
+        </div>
+      </div>
       </div>
       <div class="panel-body">
         <h3 property="rdfs:label"><br></h3>
@@ -1904,7 +1908,7 @@ td:AccountTemplate1
                <em about="v-s:login" property="rdfs:label">Логин</em>
                <div property="v-s:login"><br></div>
                <veda-control property="v-s:login" type="string" class="-view edit search"></veda-control>
-	      </div>
+        </div>
         </div>
       </div>
         <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
@@ -1929,42 +1933,42 @@ td:PreferencesTemplate1
   rdfs:label "Template for Preferences class"@en ;
   v-ui:template """
 <div class="container-fluid">
-	<div class="panel panel-default">
-	  <div class="panel-heading">
-		<div class="row">
-		  <div class="col-md-4">
-			<span about="v-ui:Preferences" property="rdfs:label">Предпочтения</span>
-		  </div>
-		  <div class="col-md-8 text-right">
-			<a href="#/@"><span property="@">ID</span></a>
-		  </div>
-		</div>
-	  </div>
-	  <div class="panel-body">
-		<div>
-		  <em about="v-ui:preferredLanguage" property="rdfs:label">Язык</em>:
-		  <ul>
-			<li rel="v-ui:preferredLanguage" template="v-ui:LabelTemplate"></li>
-			<!--li rel="v-ui:preferredLanguage">
-			  <span>
-				  <span property="rdfs:label"></span>
-				  <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
-			  </span>
-			</li-->
-		  </ul>
-		  <veda-control rel="v-ui:preferredLanguage" type="link" class="-view edit search fulltext dropdown"></veda-control>
-		  <em about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</em>:
-		  <span property="v-ui:displayedElements"></span>
-		  <veda-control property="v-ui:displayedElements" type="integer" class="-view edit search"></veda-control>
-		</div>
-	  </div>
-	  <!--div class="panel-footer">
-		<button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
-		<button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
-		<button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
-		<button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
-	  </div-->
-	</div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+    <div class="row">
+      <div class="col-md-4">
+      <span about="v-ui:Preferences" property="rdfs:label">Предпочтения</span>
+      </div>
+      <div class="col-md-8 text-right">
+      <a href="#/@"><span property="@">ID</span></a>
+      </div>
+    </div>
+    </div>
+    <div class="panel-body">
+    <div>
+      <em about="v-ui:preferredLanguage" property="rdfs:label">Язык</em>:
+      <ul>
+      <li rel="v-ui:preferredLanguage" template="v-ui:LabelTemplate"></li>
+      <!--li rel="v-ui:preferredLanguage">
+        <span>
+          <span property="rdfs:label"></span>
+          <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
+        </span>
+      </li-->
+      </ul>
+      <veda-control rel="v-ui:preferredLanguage" type="link" class="-view edit search fulltext dropdown"></veda-control>
+      <em about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</em>:
+      <span property="v-ui:displayedElements"></span>
+      <veda-control property="v-ui:displayedElements" type="integer" class="-view edit search"></veda-control>
+    </div>
+    </div>
+    <!--div class="panel-footer">
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
+    <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+    <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+    </div-->
+  </div>
 </div>
   """ ;
 .
