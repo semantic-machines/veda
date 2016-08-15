@@ -203,6 +203,7 @@ function take_snapshot(type, projectStage)
 		var doc = get_individual(task.ticket, process.getInputVariable ('docId')[0].data);
 		doc['v-s:triggerVersionCreation'] = newBool(true);
 		doc['rdf:type'] = newUri(type);
+		doc['mnd-s:hasProjectStage'] = newUri(projectStage);
 		put_individual(task.ticket, doc, _event_id);
 }
 

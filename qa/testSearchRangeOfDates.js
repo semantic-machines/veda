@@ -1,27 +1,26 @@
 var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js'),
-    assert = require('assert'),
     person = require('./person.js');
 
 function search(driver, somethingUnique, count) {
     driver.findElement({id:"menu"}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button")});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
     driver.wait
     (
         webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Search"]'})),
         basic.FAST_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `search` button inside menu")});
+    ).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `search` button inside menu");});
     driver.findElement({css:'li[id="menu"] li[resource="v-l:Search"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `search` button")});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `search` button");});
     driver.findElement({css:'#q'}).sendKeys(somethingUnique)
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill input field")});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill input field");});
 
     driver.executeScript("document.querySelector('button[id=\"search-submit\"]').scrollIntoView(true);");
     driver.wait
     (
         webdriver.until.elementIsEnabled(driver.findElement({css:'button[id="search-submit"]'})),
         basic.SLOW_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find search-submit button")});
+    ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find search-submit button");});
 
     driver.sleep(basic.EXTRA_SLOW_OPERATION);
     driver.wait
@@ -30,11 +29,11 @@ function search(driver, somethingUnique, count) {
             driver.findElement({css:'button[id="search-submit"]'}).click();
             driver.sleep(basic.FAST_OPERATION); // Иначе слишком часто щелкает поиск
             return driver.findElement({css:'#results_count'}).getText().then(function (text) {
-                return text == count
+                return text == count;
             });
         },
         basic.EXTRA_SLOW_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Number of elements is wrong, expected: " + count)});
+    ).thenCatch(function (e) {basic.errorHandler(e, "Number of elements is wrong, expected: " + count);});
 }
 
 

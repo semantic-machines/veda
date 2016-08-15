@@ -1,0 +1,40 @@
+var webdriver = require('selenium-webdriver'),
+	basic = require('./basic.js');
+
+function search(driver, selector){
+	driver.findElement({id:"menu"}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
+	driver.wait
+	(
+		webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Search"]'})),
+		basic.FAST_OPERATION
+	).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no 'search' button inside menu");});
+	driver.findElement({css:'li[id="menu"] li[resource="v-l:Search"]'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'search' button");});
+	driver.findElement({css:'#q'}).sendKeys(selector)
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill input field");});
+	driver.findElement({id:'search-submit'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'search-submit' button");});
+}
+
+function testPager(driver) {
+	driver.sleep(basic.SLOW_OPERATION);
+	driver.executeScript("document.querySelector('ul[id=\"pager\"] li').scrollIntoView(true);");
+	driver.findElement({css:'#pager > li:nth-child(2) > a'}).click();
+	driver.sleep(basic.SLOW_OPERATION);
+	driver.executeScript("document.que 	rySelector('ul[id=\"pager\"] li').scrollIntoView(true);");
+	driver.findElement({css:'#pager > li:nth-child(1) > a'}).click();
+	driver.sleep(basic.SLOW_OPERATION);
+}
+
+basic.getDrivers().forEach(function(drv) {
+	var driver = basic.getDriver(drv);
+	basic.openPage(driver, drv);
+	basic.login(driver, 'karpovrt', '123', 'Роман', 'Карпов');
+	search(driver, "'v-s:created' == [2013-06-30T12:13:11, 2017-01-30T12:13:11]");
+	testPager(driver);
+
+	// TO DO: testPager in messages
+
+	driver.quit();
+});
