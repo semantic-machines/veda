@@ -20,10 +20,12 @@ function search(driver, selector){
 function testPager(driver) {
 	driver.sleep(basic.SLOW_OPERATION);
 	driver.executeScript("document.querySelector('ul[id=\"pager\"] li').scrollIntoView(true);");
-	driver.findElement({css:'#pager > li:nth-child(2) > a'}).click();
+	driver.findElement({css:'#pager > li:nth-child(2) > a'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 2 page");});
 	driver.sleep(basic.SLOW_OPERATION);
-	driver.executeScript("document.que 	rySelector('ul[id=\"pager\"] li').scrollIntoView(true);");
-	driver.findElement({css:'#pager > li:nth-child(1) > a'}).click();
+	driver.executeScript("document.querySelector('ul[id=\"pager\"] li').scrollIntoView(true);");
+	driver.findElement({css:'#pager > li:nth-child(1) > a'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 1 page");});
 	driver.sleep(basic.SLOW_OPERATION);
 }
 
