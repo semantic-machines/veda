@@ -741,6 +741,16 @@ jsWorkflow.ready = jsPlumb.ready;
               instance.detachAllConnections(element);
               instance.remove(element);
               net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', element.id);
+              net['v-wf:consistsOf'].forEach(function(state) {
+            	 if (state.hasValue('v-wf:hasFlow')) {
+            		 state['v-wf:hasFlow'].forEach(function(flow) {
+		            	 if (flow.hasValue("v-wf:flowsInto")
+		        			 && flow["v-wf:flowsInto"][0].id == element.id) {
+		            	 	instance.deleteFlow(flow, state);
+		            	 }
+            		 });
+            	 }
+              });
             };
 
             instance.createFlow = function(state, flow) {
