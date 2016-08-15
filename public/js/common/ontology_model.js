@@ -164,16 +164,9 @@ veda.Module(function (veda) { "use strict";
 			if (stopList.indexOf(uri) >= 0) return;
 			var property = properties[uri];
 			if (!property["rdfs:domain"]) return;
-			property["rdfs:domain"].map( function ( item ) {
-				(function fillDomainProperty (_class) {
-					_class.domainProperties = _class.domainProperties || {};
-					_class.domainProperties[property.id] = property;
-					if (_class.subClasses && Object.keys(_class.subClasses).length) {
-						Object.keys(_class.subClasses).map( function (subClass_uri) {
-							fillDomainProperty (_class.subClasses[subClass_uri]);
-						});
-					}
-				})(item);
+			property["rdfs:domain"].map( function ( _class ) {
+        _class.domainProperties = _class.domainProperties || {};
+        _class.domainProperties[property.id] = property;
 			});
 		});
 
@@ -216,28 +209,36 @@ veda.Module(function (veda) { "use strict";
 			});
 		});
 
-    // Inherit templates & specifications from superClasses
-    inheritSpecs("rdfs:Resource");
-    function inheritSpecs(class_uri) {
+    // Propagate properties, specifications and templates to sub-classes.
+    // rdfs:Resource is a top-level class.
+    propagate("rdfs:Resource");
+    function propagate(class_uri) {
       var _class = classes[class_uri];
       for (var subClass_uri in _class.subClasses) {
         var subClass = _class.subClasses[subClass_uri];
-        // Inherit template
-        /*if (!subClass.template) {
-          subClass.template = _class.template;
-        }*/
-        // Inherit specs
+        // Propagate properties
+        for (var property_uri in _class.domainProperties) {
+          if( !subClass.domainProperties || !subClass.domainProperties[property_uri] ) {
+            subClass.domainProperties ?
+              subClass.domainProperties[property_uri] = _class.domainProperties[property_uri] :
+              subClass.domainProperties = {}, subClass.domainProperties[property_uri] = _class.domainProperties[property_uri];
+          }
+        }
+        // Propagate specs
         for (var property_uri in _class.specsByProps) {
-          if (!subClass.specsByProps || !subClass.specsByProps[property_uri]) {
+          if ( !subClass.specsByProps || !subClass.specsByProps[property_uri] ) {
             subClass.specsByProps ?
               subClass.specsByProps[property_uri] = _class.specsByProps[property_uri] :
               subClass.specsByProps = {}, subClass.specsByProps[property_uri] = _class.specsByProps[property_uri];
           }
         }
-        inheritSpecs(subClass_uri);
+        // Propagate template
+        /*if (!subClass.template) {
+          subClass.template = _class.template;
+        }*/
+        propagate(subClass_uri);
       }
     }
-
 
 		// Initialization percentage
 		veda.trigger("init:progress", 90);
