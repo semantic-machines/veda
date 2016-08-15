@@ -291,7 +291,15 @@ function replace_word(src, from, to)
     return new_str;
 }
 
-function create_version(ticket, document, prev_state, _event_id) {
+/**
+ * Create document snapshot 
+ * @param ticket
+ * @param document Document
+ * @param prev_state Previous document state
+ * @param user_uri Initiator
+ * @param _event_id
+ */
+function create_version(ticket, document, prev_state, user_uri, _event_id) {
 	// Only if we save actual version of document (or it is first save of versioned document)
 	if (!document['v-s:actualVersion'] 
 		|| (document['v-s:actualVersion'][0].data == document['@']
@@ -329,6 +337,12 @@ function create_version(ticket, document, prev_state, _event_id) {
 				type: _Uri
 			}]
 		);
+		version['v-s:created'] = [{data: new Date(), type: _Datetime}];
+		version['v-s:edited'] = [];
+		version['v-s:publisher'] = newUri(user_uri);
+        version['s:lastEditor'] = [];
+		
+		user_uri
 		put_individual(ticket, version, _event_id);
 		
 		// Add rights to version
@@ -369,6 +383,8 @@ function create_version(ticket, document, prev_state, _event_id) {
 	        type: _Uri
 		}];
 		document['v-s:nextVersion'] = [];
+		document['v-s:edited'] = [{data: new Date(), type: _Datetime}];
+		document['s:lastEditor'] = newUri(user_uri);
 		put_individual(ticket, document, _event_id);
 	}
 }

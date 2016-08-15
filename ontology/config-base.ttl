@@ -337,7 +337,7 @@ cfg:Event_3
 if (super_classes.indexOf('v-s:AutomaticallyVersioned')>=0)
 {
 //	print('+V');
-	create_version(ticket, document, prev_state, _event_id);
+	create_version(ticket, document, prev_state, user_uri, _event_id);
 }
 
 if (super_classes.indexOf('v-s:Journaling')>=0)
@@ -980,7 +980,7 @@ cfg:Event_13
   if (document['v-s:triggerVersionCreation'] && document['v-s:triggerVersionCreation'][0]
   	&& document['v-s:triggerVersionCreation'][0].data == true) {
   	delete document['v-s:triggerVersionCreation'];
-	create_version(ticket, document, prev_state, _event_id);
+	create_version(ticket, document, prev_state, user_uri, _event_id);
   }
 
   """ ;
