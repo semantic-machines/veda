@@ -14,9 +14,9 @@ module.exports = {
         (
             webdriver.until.elementIsEnabled(driver.findElement({css:'#save'})),
             basic.FAST_OPERATION
-        ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find save button")});
+        ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find save button");});
         driver.findElement({css:'#save'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on save button")});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on save button");});
         //Смотрим на процесс
         driver.sleep(basic.FAST_OPERATION);
         driver.executeScript("document.querySelector('span[typeof=\"v-wf:Process\"]').scrollIntoView(true);");
@@ -24,9 +24,9 @@ module.exports = {
         (
             webdriver.until.elementIsEnabled(driver.findElement({css:'span[typeof="v-wf:Process"]'})),
             basic.FAST_OPERATION
-        ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'isProcess' button")});
+        ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'isProcess' button");});
         driver.sleep(basic.FAST_OPERATION);
         driver.findElement({css:'span[typeof="v-wf:Process"]'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'isProcess' button")});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'isProcess' button");});
     }
 }

@@ -16,33 +16,33 @@ function search(driver, templateName, somethingUnique, count) {
     driver.sleep(basic.FAST_OPERATION);
     for (var i = 0; i < templateName.length; i++) {
         (templateName[i] == 'rdfs:label') ? driver.findElement({css: 'div[id="form-holder"] [property="' + templateName[i] + '"] + veda-control input'}).sendKeys(somethingUnique[i])
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill " + templateName[i] + " field")})
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill " + templateName[i] + " field");})
             : driver.findElement({css: '[property="' + templateName[i] + '"] + veda-control input'}).sendKeys(somethingUnique[i])
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill " + templateName[i] + " field")});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill " + templateName[i] + " field");});
     }
     driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("document.querySelector('#find').scrollIntoView(true);");
     driver.findElement({css:'#find'}).click()
-       .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Find` button")});
+       .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Find` button");});
     driver.wait
     (
         function () {
             driver.findElement({css:'div[id="attributive-search"] a[id="refresh"]'}).click()
-                .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'refresh' button")});
+                .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'refresh' button");});
             driver.sleep(basic.FAST_OPERATION);
             return driver.findElement({css:'span[href="#params-at"]+span[class="badge"]'}).getText().then(function (txt) {
                 return txt >= count;
             });
         },
         basic.EXTRA_SLOW_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Number of documents is incorrect, expected: " + count)});
+    ).thenCatch(function (e) {basic.errorHandler(e, "Number of documents is incorrect, expected: " + count);});
     driver.findElement({id:'params-pill-at'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'params-pill-at' button")});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'params-pill-at' button");});
     for (var i = 0; i < templateName.length; i++) {
         (templateName[i] == 'rdfs:label') ? driver.findElement({css: 'div[id="form-holder"] [property="' + templateName[i] + '"] .glyphicon-remove'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot remove old" + templateName[i] + "value")})
+                .thenCatch(function (e) {basic.errorHandler(e, "Cannot remove old" + templateName[i] + "value");})
             : driver.findElement({css: '[property="' + templateName[i] + '"] .glyphicon-remove'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot remove old" + templateName[i] + "value")});
+                .thenCatch(function (e) {basic.errorHandler(e, "Cannot remove old" + templateName[i] + "value");});
     }
 }
 
@@ -66,23 +66,23 @@ basic.getDrivers().forEach(function (drv) {
 
     // Открываем Аттрибутивный поиск
     driver.findElement({css:'li[id="menu"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button")});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
     driver.wait
     (
         webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Find"]'})),
         basic.FAST_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `find` button inside settings")});
+    ).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `find` button inside settings");});
     driver.findElement({css:'li[id="menu"] li[resource="v-l:Find"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `find` button")});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `find` button");});
     driver.wait
     (
         webdriver.until.elementIsVisible(driver.findElement({css:'div[resource="v-fs:Search"]'})),
         basic.FAST_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Search template was not opened")});
+    ).thenCatch(function (e) {basic.errorHandler(e, "Search template was not opened");});
     driver.findElement({css:'a[href*="attributive-search"'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Attributive` button")});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Attributive` button");});
     driver.findElement({css:'div[typeof="v-fs:AttributiveRequest"] input[id="fulltext"]'}).sendKeys('Персона')
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot input templateName")});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot input templateName");});
     driver.wait
     (
         function () {
@@ -93,14 +93,13 @@ basic.getDrivers().forEach(function (drv) {
             });
         },
         basic.FAST_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Dropdown doesnt contains value `"+'Персона'+"`")});
+    ).thenCatch(function (e) {basic.errorHandler(e, "Dropdown doesnt contains value "+'Персона');});
     driver.findElements({css:"veda-control.fulltext div.tt-suggestion>p"}).then(function (suggestions) {
         webdriver.promise.filter(suggestions, function(suggestion) {
-            return suggestion.getText().then(function(txt){ return txt == 'Персона' });
+            return suggestion.getText().then(function(txt){ return txt == 'Персона';});
         }).then(function(x) { x[0].click();});
-    }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `"+'Персона'+"` from dropdown")});
+    }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "+'Персона'+" from dropdown");});
     //var possiblefield = ['v-s:firstName', 'v-s:lastName', 'v-s:middleName', 'v-s:birthday', 'rdfs:label'];
-    var now = new Date();
     var birthday = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2);
     search(driver, ['v-s:lastName'], [last], 1);
     search(driver, ['v-s:lastName'], ["a" + last], 1);

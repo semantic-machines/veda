@@ -40,7 +40,7 @@ before_script:
   - cat $PWD/veda-core-_*.log          
   - cat $PWD/veda-core-scripts_*.log          
   - cat $PWD/veda-core-fanout_*.log          
-  - cat $PWD/veda_s.log              
+  - cat $PWD/veda_s.log
 
 # Run API & integration test
 script:
@@ -54,6 +54,7 @@ script:
   - node ./qa/testDeleteAndRecovery.js
   - node ./qa/testRights.js
   - node ./qa/testJournal.js
+  - node ./qa/testPager.js
   - node ./qa/testSearchRangeOfDates.js
   - node ./qa/testAttributiveSearchPerson.js
   - node ./qa/testCreatingNetInterface.js
@@ -70,4 +71,5 @@ after_script:
   - cat $PWD/veda-core-_*.log          
   - cat $PWD/veda-core-scripts_*.log          
   - cat $PWD/veda-core-fanout_*.log          
-  - cat $PWD/veda_s.log              
+  - cat $PWD/veda_s.log
+  
