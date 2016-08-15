@@ -198,6 +198,14 @@ function isAlphaNumeric(src)
         return false;
 }
 
+function take_snapshot(type, projectStage)
+{
+		var doc = get_individual(task.ticket, process.getInputVariable ('docId')[0].data);
+		doc['v-s:triggerVersionCreation'] = newBool(true);
+		doc['rdf:type'] = newUri(type);
+		put_individual(task.ticket, doc, _event_id);
+}
+
 function replace_word(src, from, to)
 {
     var trace = true;
