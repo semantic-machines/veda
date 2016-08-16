@@ -1,806 +1,808 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8"/>
-		<title>Veda</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<meta name="description" content=""/>
-		<meta name="author" content=""/>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Veda</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
 
-		<link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
 
-		<!-- Bootstrap theme -->
-		<link href="/css/bootstrap-theme.min.css" rel="stylesheet"/>
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.min.css" rel="stylesheet"/>
 
-		<!-- Bootswatch themes (good) -->
-		<!--link href="/css/united.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/cerulean.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/journal.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/lumen.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/paper.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/simplex.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/spacelab.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/yeti.bootstrap.min.css" rel="stylesheet"/-->
+    <!-- Bootswatch themes (good) -->
+    <!--link href="/css/united.bootstrap.min.css" rel="stylesheet"/-->
+    <!--link href="/css/cerulean.bootstrap.min.css" rel="stylesheet"/-->
+    <!--link href="/css/journal.bootstrap.min.css" rel="stylesheet"/-->
+    <!--link href="/css/lumen.bootstrap.min.css" rel="stylesheet"/-->
+    <!--link href="/css/paper.bootstrap.min.css" rel="stylesheet"/-->
+    <!--link href="/css/simplex.bootstrap.min.css" rel="stylesheet"/-->
+    <!--link href="/css/spacelab.bootstrap.min.css" rel="stylesheet"/-->
+    <!--link href="/css/yeti.bootstrap.min.css" rel="stylesheet"/-->
 
-		<!-- Bootswatch themes (bad) -->
-		<!--link href="/css/readable.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/sandstone.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/slate.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/cosmo.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/cyborg.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/darkly.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/flatly.bootstrap.min.css" rel="stylesheet"/-->
-		<!--link href="/css/superhero.bootstrap.min.css" rel="stylesheet"/-->
+    <!-- Bootswatch themes (bad) -->
+    <!--link href="/css/readable.bootstrap.min.css" rel="stylesheet"/-->
+    <!--link href="/css/sandstone.bootstrap.min.css" rel="stylesheet"/-->
+    <!--link href="/css/slate.bootstrap.min.css" rel="stylesheet"/-->
+    <!--link href="/css/cosmo.bootstrap.min.css" rel="stylesheet"/-->
+    <!--link href="/css/cyborg.bootstrap.min.css" rel="stylesheet"/-->
+    <!--link href="/css/darkly.bootstrap.min.css" rel="stylesheet"/-->
+    <!--link href="/css/flatly.bootstrap.min.css" rel="stylesheet"/-->
+    <!--link href="/css/superhero.bootstrap.min.css" rel="stylesheet"/-->
 
-		<link href="/css/codemirror.css" rel="stylesheet"/>
-		<link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet"/>
-		<link href="/css/veda.css" rel="stylesheet"/>
-		<link href="/css/font-awesome.min.css" rel="stylesheet"/>
+    <link href="/css/codemirror.css" rel="stylesheet"/>
+    <link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet"/>
+    <link href="/css/veda.css" rel="stylesheet"/>
+    <link href="/css/font-awesome.min.css" rel="stylesheet"/>
 
-		<meta http-equiv="pragma" content="no-cache" />
-		<meta http-equiv="cache-control" content="no-cache" />
-	</head>
-	<body>
-		<div id="app"></div>
-		<div id="login-container" class="hidden" style="background-color:#eee"></div>
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="login-container" class="hidden" style="background-color:#eee"></div>
 
-		<!-- App loading indicator -->
-		<div class="container-fluid text-center hidden" id="app-load-indicator" style="margin: 20% auto">
-			<h4><i class="fa fa-cog fa-spin fa-lg text-primary"></i> <strong>Загрузка приложения / Application loading</strong></h4>
-		</div>
+    <!-- App loading indicator -->
+    <div class="container-fluid text-center hidden" id="app-load-indicator" style="margin: 20% auto">
+      <h4><i class="fa fa-cog fa-spin fa-lg text-primary"></i> <strong>Загрузка приложения / Application loading</strong></h4>
+    </div>
 
-		<!-- Error modal -->
-		<div id="error-modal" class="modal fade" tabindex="-1" role="dialog">
-		  <div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			        <h3 class="modal-title">Ой, ошибка / Oops, error</h3>
-			    </div>
-			    <div class="modal-body">
-			    	<p id="error-message"></p>
-			    	<hr>
-			    	<code id="error-description"></code>
-			    </div>
-			    <div class="modal-footer">
-					<button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
-				</div>
-		    </div>
-		  </div>
-		</div>
+    <!-- Error modal -->
+    <div id="error-modal" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h3 class="modal-title">Ой, ошибка / Oops, error</h3>
+          </div>
+          <div class="modal-body">
+            <p id="error-message"></p>
+            <hr>
+            <code id="error-description"></code>
+          </div>
+          <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+        </div>
+        </div>
+      </div>
+    </div>
 
-		<!-- Templates -->
+    <!-- Templates -->
 
-		<!-- Login -->
-		<script type="html/template" id="login-template">
-			<div class="container-fluid" id="login-form">
-				<div class="row">
-					<div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
-						<form role="form" id="credentials">
-							<h3>Войдите / Sign in</h3>
-							<input id="login" required="required" placeholder="login" type="text" name="login" class="form-control" autofocus="autofocus"/>
-							<input id="password" required="required" placeholder="password" type="password" name="password" class="form-control"/>
-							<br>
-							<button type="submit" id="submit" class="btn btn-primary btn-block">Войти / Sign in</button>
-							<br>
-							<div id="login-error" class="hidden">
-								<p><strong class="text-danger">Ошибка!</strong> Неверное имя пользователя или пароль.</p>
-								<p><strong class="text-danger">Error!</strong> Wrong login or password.</p>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</script>
+    <!-- Login -->
+    <script type="html/template" id="login-template">
+      <div class="container-fluid" id="login-form">
+        <div class="row">
+          <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
+            <form role="form" id="credentials">
+              <h3>Войдите / Sign in</h3>
+              <input id="login" required="required" placeholder="login" type="text" name="login" class="form-control" autofocus="autofocus"/>
+              <input id="password" required="required" placeholder="password" type="password" name="password" class="form-control"/>
+              <br>
+              <button type="submit" id="submit" class="btn btn-primary btn-block">Войти / Sign in</button>
+              <br>
+              <div id="login-error" class="hidden">
+                <p><strong class="text-danger">Ошибка!</strong> Неверное имя пользователя или пароль.</p>
+                <p><strong class="text-danger">Error!</strong> Wrong login or password.</p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </script>
 
-		<!-- Console template -->
-		<script type="html/template" id="console-template">
-			<div class="container-fluid" id="console">
-				<h3>Консоль JavaScript</h3>
-				<form role="form">
-					<div class="form-group row">
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<label for="script">Скрипт</label>
-							<textarea rows="10" class="form-control" autofocus="autofocus" id="script" bound>{script}</textarea>
-						</div>
-					</div>
-					<div class="form-group row">
-						<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
-							<select class="form-control" id="runat" bound>
-								<option value="browser">Браузер</option>
-								<option value="server">Сервер</option>
-							</select>
-						</div>
-						<button type="submit" class="btn btn-success" id="run">Выполнить!</button>
-						<button type="reset" class="btn" id="reset">Сброс</button>
-					</div>
-				</form>
-				<hr />
-				<p><strong><span>Результат</span> <span class="text-muted">(<span id="time" bound>{time}</span> msec)</span></label></strong></p>
-				<pre id="result" bound>{result}</pre>
-			</div>
-		</script>
+    <!-- Console template -->
+    <script type="html/template" id="console-template">
+      <div class="container-fluid" id="console">
+        <h3>Консоль JavaScript</h3>
+        <form role="form">
+          <div class="form-group row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <label for="script">Скрипт</label>
+              <textarea rows="10" class="form-control" autofocus="autofocus" id="script" bound>{script}</textarea>
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+              <select class="form-control" id="runat" bound>
+                <option value="browser">Браузер</option>
+                <option value="server">Сервер</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-success" id="run">Выполнить!</button>
+            <button type="reset" class="btn" id="reset">Сброс</button>
+          </div>
+        </form>
+        <hr />
+        <p><strong><span>Результат</span> <span class="text-muted">(<span id="time" bound>{time}</span> msec)</span></label></strong></p>
+        <pre id="result" bound>{result}</pre>
+      </div>
+    </script>
 
-		<!-- Individual template -->
-		<script type="html/template" id="individual-template">
-			<span id="individual-label"></span>
-			<div class="container-fluid" id="individual-properties"></div>
-			<br/>
-		</script>
+    <!-- Individual template -->
+    <script type="html/template" id="individual-template">
+      <span id="individual-label"></span>
+      <div class="container-fluid" id="individual-properties"></div>
+      <br/>
+    </script>
 
-		<!-- Individual label template -->
-		<script type="html/template" id="individual-label-template">
-			<a href="#/{uri}"><strong>{label}</strong></a>
-		</script>
+    <!-- Individual label template -->
+    <script type="html/template" id="individual-label-template">
+      <a href="#/{uri}"><strong>{label}</strong></a>
+    </script>
 
-		<!-- Individual single property template -->
-		<script type="html/template" id="individual-single-property-template">
-			<span class="text-muted">{label}: </span>
-			<span>{values};</span>
-		</script>
+    <!-- Individual single property template -->
+    <script type="html/template" id="individual-single-property-template">
+      <span class="text-muted">{label}: </span>
+      <span>{values};</span>
+    </script>
 
-		<!-- Current user template -->
-		<script type="html/template" id="user-template">
-			<a href="#/{user.id}" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {user.rdfs:label}</a>
-		</script>
+    <!-- Current user template -->
+    <script type="html/template" id="user-template">
+      <a href="#/{user.id}" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {user.rdfs:label}</a>
+    </script>
 
-		<!-- Language template -->
-		<script type="html/template" id="language-template">
-			<button id="{rdf:value.0}" class="btn btn-xs btn-success navbar-btn">
-				{rdfs:label}
-			</button>
-		</script>
+    <!-- Language template -->
+    <script type="html/template" id="language-template">
+      <button id="{rdf:value.0}" class="btn btn-xs btn-success navbar-btn">
+        {rdfs:label}
+      </button>
+    </script>
 
-		<!-- Drafts template -->
-		<script type="html/template" id="drafts-template">
-			<div id="drafts" class="container-fluid">
-				<h3 id="drafts-title"></h3>
-				<ol id="drafts-list"></ol>
-				<button id="delete-all" class="btn btn-default"></button>
-			</div>
-		</script>
+    <!-- Drafts template -->
+    <script type="html/template" id="drafts-template">
+      <div id="drafts" class="container-fluid">
+        <h3 id="drafts-title"></h3>
+        <ol id="drafts-list"></ol>
+        <button id="delete-all" class="btn btn-default"></button>
+      </div>
+    </script>
 
-		<!-- Search template -->
-		<script type="html/template" id="search-template">
-			<div class="container-fluid" role="tabpanel" id="search-tab-panel-{id}">
-				<!-- Nav tabs -->
-				<ul class="nav nav-pills" role="tablist">
-					<li role="presentation" id="params-pill-{id}" class="active"><a href="#params-{id}" aria-controls="params-{id}" role="tab" data-toggle="tab">Параметры</a></li>
-					<li role="presentation" id="results-pill-{id}"><a href="#results-{id}" id="results-link-{id}" aria-controls="results-{id}" role="tab" data-toggle="tab">Результаты <span class="badge" id="results_count" bound>{results_count}</span></a></li>
-					<li role="presentation" id="timing-pill-{id}" class="disabled">
-						<a id="timing-{id}" style="display: none">
-							<small><small>
-								<span><strong>timing: </strong>search query time = <span id="query_time" bound>{query_time}</span> ms | get request count = <span id="get_count"></span> | get summary time = <span id="get_summary_time"></span> ms | total render time = <span id="render_time"></span> ms </span>
-							</small></small>
-						</a>
-					</li>
-					<li role="presentation" id="query-pill-{id}" class="disabled">
-						<a id="query-{id}" style="display: none">
-							<small><small>
-								<span><strong>query: </strong><span id="query-text"></span></span>
-							</small></small>
-						</a>
-					</li>
-				</ul>
-				<br />
-				<!-- Tab panes -->
-				<div class="tab-content">
-					<div role="tabpanel" class="tab-pane active" id="params-{id}">
-						<div id="search">
-							<div class="well">
-								<div class="container-fluid">
-									<form role="form" class="form-horizontal">
-										<div class="input-group">
-											<input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
-											<span class="input-group-btn" id="q-actions">
-												<button type="submit" id="search-submit" class="btn btn-primary">Найти</button>
-											</span>
-										</div>
-									</form>
-								</div>
-							</div>
-						</div>
-						<div class="alert alert-warning not-found" style="display: none">
-							<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
-						</div>
-					</div>
+    <!-- Search template -->
+    <script type="html/template" id="search-template">
+      <div class="container-fluid">
+        <div role="tabpanel" id="search-tab-panel-{id}">
+          <!-- Nav tabs -->
+          <ul class="nav nav-pills" role="tablist">
+            <li role="presentation" id="params-pill-{id}" class="active"><a href="#params-{id}" aria-controls="params-{id}" role="tab" data-toggle="tab">Параметры</a></li>
+            <li role="presentation" id="results-pill-{id}"><a href="#results-{id}" id="results-link-{id}" aria-controls="results-{id}" role="tab" data-toggle="tab">Результаты <span class="badge" id="results_count" bound>{results_count}</span></a></li>
+            <li role="presentation" id="timing-pill-{id}" class="disabled">
+              <a id="timing-{id}" style="display: none">
+                <small><small>
+                  <span><strong>timing: </strong>search query time = <span id="query_time" bound>{query_time}</span> ms | get request count = <span id="get_count"></span> | get summary time = <span id="get_summary_time"></span> ms | total render time = <span id="render_time"></span> ms </span>
+                </small></small>
+              </a>
+            </li>
+            <li role="presentation" id="query-pill-{id}" class="disabled">
+              <a id="query-{id}" style="display: none">
+                <small><small>
+                  <span><strong>query: </strong><span id="query-text"></span></span>
+                </small></small>
+              </a>
+            </li>
+          </ul>
+          <br />
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="params-{id}">
+              <div id="search">
+                <div class="well">
+                  <div class="container-fluid">
+                    <form role="form" class="form-horizontal">
+                      <div class="input-group">
+                        <input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
+                        <span class="input-group-btn" id="q-actions">
+                          <button type="submit" id="search-submit" class="btn btn-primary">Найти</button>
+                        </span>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div class="alert alert-warning not-found" style="display: none">
+                <strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
+              </div>
+            </div>
 
-					<div role="tabpanel" class="tab-pane" id="results-{id}">
-						<div class="container-fluid" id="search-results" style="display: none">
-							<div id="search-features" class="form-inline">
-								<div class="checkbox">
-									<label>
-										<input type="checkbox" id="select-all"> <span>Выбрать все</span>
-									</label>
-								</div>
-							</div>
-							<hr class="margin-sm"/>
-							<ol id="search-results-list"></ol>
-							<hr/>
-							<div class="text-center">
-								<ul class="pagination" id="pager"></ul>
-								<br />
-							</div>
-						</div>
-						<div class="alert alert-warning not-found" style="display: none">
-							<strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
-						</div>
-						<div id="selected-actions-{id}">
-						</div>
-					</div>
-				</div>
-			</div>
-		</script>
+            <div role="tabpanel" class="tab-pane" id="results-{id}">
+              <div class="container-fluid" id="search-results" style="display: none">
+                <div id="search-features" class="form-inline">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" id="select-all"> <span>Выбрать все</span>
+                    </label>
+                  </div>
+                </div>
+                <hr class="margin-sm"/>
+                <ol id="search-results-list"></ol>
+                <hr/>
+                <div class="text-center">
+                  <ul class="pagination" id="pager"></ul>
+                  <br />
+                </div>
+              </div>
+              <div class="alert alert-warning not-found" style="display: none">
+                <strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
+              </div>
+              <div id="selected-actions-{id}">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </script>
 
-		<!-- Selected actions -->
-		<script type="html/template" id="selected-actions-template">
-			<div class="well well-sm" id="selected-actions">
-				<button id="export-ttl" class="btn btn-success">Экспорт в ttl</button>
-				<button id="update" class="btn btn-default">Обновить</button>
-				<button id="delete" class="btn btn-link">Удалить</button>
-			</div>
-			<br>
-		</script>
+    <!-- Selected actions -->
+    <script type="html/template" id="selected-actions-template">
+      <div class="well well-sm" id="selected-actions">
+        <button id="export-ttl" class="btn btn-success">Экспорт в ttl</button>
+        <button id="update" class="btn btn-default">Обновить</button>
+        <button id="delete" class="btn btn-link">Удалить</button>
+      </div>
+      <br>
+    </script>
 
-		<!-- Checkbox for search -->
-		<script type="html/template" id="search-select-template">
-			<label class="checkbox-inline">
-				<input type="checkbox"> &nbsp;
-			</label>
-		</script>
+    <!-- Checkbox for search -->
+    <script type="html/template" id="search-select-template">
+      <label class="checkbox-inline">
+        <input type="checkbox"> &nbsp;
+      </label>
+    </script>
 
-		<!-- Save search button -->
-		<script type="html/template" id="save-search-template">
-			<button class="btn btn-default" type="button" id="save-search">
-				<i class="glyphicon glyphicon-star-empty"></i>
-			</button>
-		</script>
+    <!-- Save search button -->
+    <script type="html/template" id="save-search-template">
+      <button class="btn btn-default" type="button" id="save-search">
+        <i class="glyphicon glyphicon-star-empty"></i>
+      </button>
+    </script>
 
-		<!-- Saved search list button -->
-		<script type="html/template" id="saved-search-list-button-template">
-			<button class="btn btn-default" type="button" id="saved-search-list">
-				<i class="glyphicon glyphicon-menu-hamburger"></i>
-			</button>
-		</script>
+    <!-- Saved search list button -->
+    <script type="html/template" id="saved-search-list-button-template">
+      <button class="btn btn-default" type="button" id="saved-search-list">
+        <i class="glyphicon glyphicon-menu-hamburger"></i>
+      </button>
+    </script>
 
-		<!-- Sort property template -->
-		<script type="html/template" id="sort-property-template">
-			<span class="form-inline" id="sort-property-container">
-				<div class="form-group" style="margin-right:15px"></div>
-				<div class="checkbox">
-					<label>
-						<strong>Упорядочить: </strong>
-					</label>
-				</div>
-				<div class="form-group sort-property">
-					<div class="form-group" style="margin-right:15px"></div>
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" name="order-by">
-							<span class="property-name">имя свойства</span>
-							<a href="" class="direction btn btn-xs disabled glyphicon glyphicon-sort-by-alphabet"></a>
-						</label>
-					</div>
-				</div>
-			</span>
-		</script>
+    <!-- Sort property template -->
+    <script type="html/template" id="sort-property-template">
+      <span class="form-inline" id="sort-property-container">
+        <div class="form-group" style="margin-right:15px"></div>
+        <div class="checkbox">
+          <label>
+            <strong>Упорядочить: </strong>
+          </label>
+        </div>
+        <div class="form-group sort-property">
+          <div class="form-group" style="margin-right:15px"></div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="order-by">
+              <span class="property-name">имя свойства</span>
+              <a href="" class="direction btn btn-xs disabled glyphicon glyphicon-sort-by-alphabet"></a>
+            </label>
+          </div>
+        </div>
+      </span>
+    </script>
 
-		<!-- Search modal -->
-		<script type="html/template" id="search-modal-template">
-			<div class="modal" id="search-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-				<div class="modal-dialog modal-lg">
-					<div class="modal-content">
-						<!--div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-							<h4 class="modal-title" id="myModalLabel">Поиск объекта</h4>
-						</div-->
-						<div class="modal-body">
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
-							<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Отмена</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</script>
+    <!-- Search modal -->
+    <script type="html/template" id="search-modal-template">
+      <div class="modal" id="search-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <!--div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <h4 class="modal-title" id="myModalLabel">Поиск объекта</h4>
+            </div-->
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
+              <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Отмена</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </script>
 
-		<!-- Show rights modal -->
-		<script type="html/template" id="show-rights-modal-template">
-			<div class="modal" id="show-rights-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-				<div class="modal-dialog modal-lg">
-					<div class="modal-content">
-						<!--div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-							<h4 class="modal-title" id="myModalLabel">Поиск объекта</h4>
-						</div-->
-						<div class="modal-body">
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
-							<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Отмена</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</script>
+    <!-- Show rights modal -->
+    <script type="html/template" id="show-rights-modal-template">
+      <div class="modal" id="show-rights-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <!--div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <h4 class="modal-title" id="myModalLabel">Поиск объекта</h4>
+            </div-->
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
+              <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Отмена</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </script>
 
-		<!-- Show rights modal -->
-		<script type="html/template" id="notification-modal-template">
-			<div class="modal" id="show-rights-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-				<div class="modal-dialog modal-lg">
-					<div class="modal-content">
-						<div class="modal-body">
-						</div>
-					</div>
-				</div>
-			</div>
-		</script>
+    <!-- Show rights modal -->
+    <script type="html/template" id="notification-modal-template">
+      <div class="modal" id="show-rights-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-body">
+            </div>
+          </div>
+        </div>
+      </div>
+    </script>
 
 <!-- BEGIN VEDA-CONTROLS -->
 
-		<!-- Link control template -->
-		<script type="html/template" id="link-control-template">
-			<div id="scrollable-typeahead">
-				<div class="input-group">
-					<span class="input-group-addon btn btn-default" id="fullsearch">
-						<i class="glyphicon glyphicon-search"></i>
-					</span>
-					<span class="input-group-addon btn btn-default" id="tree">
-						<i class="fa fa-sitemap"></i>
-					</span>
-					<input type="text" class="form-control" id="fulltext"/>
-					<span class="input-group-addon btn btn-default" id="dropdown">
-						<i class="caret"></i>
-					</span>
-					<span class="input-group-addon btn btn-default" id="create">
-						<i class="glyphicon glyphicon-plus"></i>
-					</span>
-				</div>
-			</div>
-		</script>
+    <!-- Link control template -->
+    <script type="html/template" id="link-control-template">
+      <div id="scrollable-typeahead">
+        <div class="input-group">
+          <span class="input-group-addon btn btn-default" id="fullsearch">
+            <i class="glyphicon glyphicon-search"></i>
+          </span>
+          <span class="input-group-addon btn btn-default" id="tree">
+            <i class="fa fa-sitemap"></i>
+          </span>
+          <input type="text" class="form-control" id="fulltext"/>
+          <span class="input-group-addon btn btn-default" id="dropdown">
+            <i class="caret"></i>
+          </span>
+          <span class="input-group-addon btn btn-default" id="create">
+            <i class="glyphicon glyphicon-plus"></i>
+          </span>
+        </div>
+      </div>
+    </script>
 
-		<!-- String control template -->
-		<script type="html/template" id="string-control-template">
-			<div>
-				<input type="text" class="form-control" />
-			</div>
-		</script>
+    <!-- String control template -->
+    <script type="html/template" id="string-control-template">
+      <div>
+        <input type="text" class="form-control" />
+      </div>
+    </script>
 
-		<!-- Text control template -->
-		<script type="html/template" id="text-control-template">
-			<div>
-				<textarea class="form-control" rows="1" />
-			</div>
-		</script>
+    <!-- Text control template -->
+    <script type="html/template" id="text-control-template">
+      <div>
+        <textarea class="form-control" rows="1" />
+      </div>
+    </script>
 
-		<!-- Multilingual string control template -->
-		<script type="html/template" id="multilingual-string-control-template">
-			<div class="input-group">
-				<span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown"><span class="language-tag"></span> <span class="caret"></span></span>
-				<ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
-					<li><a href="#" class="language">-</a></li>
-				</ul>
-				<input type="text" class="form-control" />
-			</div>
-		</script>
+    <!-- Multilingual string control template -->
+    <script type="html/template" id="multilingual-string-control-template">
+      <div class="input-group">
+        <span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown"><span class="language-tag"></span> <span class="caret"></span></span>
+        <ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
+          <li><a href="#" class="language">-</a></li>
+        </ul>
+        <input type="text" class="form-control" />
+      </div>
+    </script>
 
-		<!-- Multilingual text control template -->
-		<script type="html/template" id="multilingual-text-control-template">
-			<div class="input-group">
-				<span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown"><span class="language-tag"></span> <span class="caret"></span></span>
-				<ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
-					<li><a href="#" class="language">-</a></li>
-				</ul>
-				<textarea class="form-control" rows="1" />
-			</div>
-		</script>
+    <!-- Multilingual text control template -->
+    <script type="html/template" id="multilingual-text-control-template">
+      <div class="input-group">
+        <span style="font-size:10px; font-weight:bold" class="input-group-addon btn btn-default dropdown-toggle language-selector" data-toggle="dropdown"><span class="language-tag"></span> <span class="caret"></span></span>
+        <ul class="dropdown-menu dropdown-menu-left language-list" role="menu">
+          <li><a href="#" class="language">-</a></li>
+        </ul>
+        <textarea class="form-control" rows="1" />
+      </div>
+    </script>
 
-		<!-- Source code control template -->
-		<script type="html/template" id="source-control-template">
-			<div class="panel panel-default codemirror-editor">
-				<button id="full-screen" class="fs-btn btn btn-xs btn-default glyphicon glyphicon-resize-full"></button>
-			</div>
-		</script>
+    <!-- Source code control template -->
+    <script type="html/template" id="source-control-template">
+      <div class="panel panel-default codemirror-editor">
+        <button id="full-screen" class="fs-btn btn btn-xs btn-default glyphicon glyphicon-resize-full"></button>
+      </div>
+    </script>
 
-		<!-- Datetime control template -->
-		<script type="html/template" id="datetime-control-template">
-			<div class="input-group date">
-				<span class="input-group-addon btn btn-default">
-					<span class="glyphicon glyphicon-time"></span>
-				</span>
-				<input type="text" class="form-control" />
-			</div>
-		</script>
+    <!-- Datetime control template -->
+    <script type="html/template" id="datetime-control-template">
+      <div class="input-group date">
+        <span class="input-group-addon btn btn-default">
+          <span class="glyphicon glyphicon-time"></span>
+        </span>
+        <input type="text" class="form-control" />
+      </div>
+    </script>
 
-		<!-- Integer control template -->
-		<script type="html/template" id="integer-control-template">
-			<!--div class="input-group"-->
-			<div>
-				<!--span class="input-group-addon btn btn-default"><strong>#</strong></span-->
-				<input type="text" class="form-control" placeholder="#" />
-			</div>
-		</script>
+    <!-- Integer control template -->
+    <script type="html/template" id="integer-control-template">
+      <!--div class="input-group"-->
+      <div>
+        <!--span class="input-group-addon btn btn-default"><strong>#</strong></span-->
+        <input type="text" class="form-control" placeholder="#" />
+      </div>
+    </script>
 
-		<!-- Numeration control template -->
-		<script type="html/template" id="numeration-control-template">
-			<div class="input-group">
-				<span class="get-numeration-value input-group-addon btn btn-default" id="fullsearch">
-					<i class="glyphicon glyphicon-retweet"></i>
-				</span>
-				<input type="text" class="form-control" />
-			</div>
-		</script>
+    <!-- Numeration control template -->
+    <script type="html/template" id="numeration-control-template">
+      <div class="input-group">
+        <span class="get-numeration-value input-group-addon btn btn-default" id="fullsearch">
+          <i class="glyphicon glyphicon-retweet"></i>
+        </span>
+        <input type="text" class="form-control" />
+      </div>
+    </script>
 
-		<!-- Decimal control template -->
-		<script type="html/template" id="decimal-control-template">
-			<!--div class="input-group"-->
-			<div>
-				<!--span class="input-group-addon btn btn-default"><strong>#.#</strong></span-->
-				<input type="text" class="form-control" placeholder="#.#" />
-			</div>
-		</script>
+    <!-- Decimal control template -->
+    <script type="html/template" id="decimal-control-template">
+      <!--div class="input-group"-->
+      <div>
+        <!--span class="input-group-addon btn btn-default"><strong>#.#</strong></span-->
+        <input type="text" class="form-control" placeholder="#.#" />
+      </div>
+    </script>
 
-		<!-- Boolean control template -->
-		<script type="html/template" id="boolean-control-template">
-			<div class="input-group">
-				<span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-ok"></i></span>
-				<input type="text" class="form-control" />
-			</div>
-		</script>
+    <!-- Boolean control template -->
+    <script type="html/template" id="boolean-control-template">
+      <div class="input-group">
+        <span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-ok"></i></span>
+        <input type="text" class="form-control" />
+      </div>
+    </script>
 
-		<!-- Boolean checkbox control template -->
-		<script type="html/template" id="boolean-checkbox-control-template">
-			<span>
-				<input type="checkbox" />
-			</span>
-		</script>
+    <!-- Boolean checkbox control template -->
+    <script type="html/template" id="boolean-checkbox-control-template">
+      <span>
+        <input type="checkbox" />
+      </span>
+    </script>
 
-		<!-- Option select control template -->
-		<script type="html/template" id="select-control-template">
-			<div>
-				<select class="form-control">
-					<option value="">...</option>
-				</select>
-			</div>
-		</script>
+    <!-- Option select control template -->
+    <script type="html/template" id="select-control-template">
+      <div>
+        <select class="form-control">
+          <option value="">...</option>
+        </select>
+      </div>
+    </script>
 
-		<!-- Checkbox control template -->
-		<script type="html/template" id="checkbox-control-template">
-			<div>
-				<div class="checkbox">
-					<label>
-						<input type="checkbox" bound />
-					</label>
-				</div>
-			</div>
-		</script>
+    <!-- Checkbox control template -->
+    <script type="html/template" id="checkbox-control-template">
+      <div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" bound />
+          </label>
+        </div>
+      </div>
+    </script>
 
-		<!-- Radio control template -->
-		<script type="html/template" id="radio-control-template">
-			<div>
-				<div class="radio">
-					<label>
-						<input type="radio" bound />
-					</label>
-				</div>
-			</div>
-		</script>
+    <!-- Radio control template -->
+    <script type="html/template" id="radio-control-template">
+      <div>
+        <div class="radio">
+          <label>
+            <input type="radio" bound />
+          </label>
+        </div>
+      </div>
+    </script>
 
-		<!-- File control template with ajax support -->
-		<script type="html/template" id="file-control-template-ajax">
-			<div>
-				<input id="file" type="file" style="display:none"/>
-				<input id="btn" type="button" class="btn btn-default" value="Browse..."/>
-			</div>
-		</script>
+    <!-- File control template with ajax support -->
+    <script type="html/template" id="file-control-template-ajax">
+      <div>
+        <input id="file" type="file" style="display:none"/>
+        <input id="btn" type="button" class="btn btn-default" value="Browse..."/>
+      </div>
+    </script>
 
-		<!-- File control template using iframe -->
-		<script type="html/template" id="file-control-template-iframe">
-			<div>
-				<form action="/files" method="post" enctype="multipart/form-data">
-					<input type="file" id="file" name="file"/>
-					<input type="hidden" id="path" name="path"/>
-					<input type="hidden" id="uri" name="uri"/>
-				</form>
-				<iframe src="#" style="display:none"></iframe>
-			</div>
-		</script>
+    <!-- File control template using iframe -->
+    <script type="html/template" id="file-control-template-iframe">
+      <div>
+        <form action="/files" method="post" enctype="multipart/form-data">
+          <input type="file" id="file" name="file"/>
+          <input type="hidden" id="path" name="path"/>
+          <input type="hidden" id="uri" name="uri"/>
+        </form>
+        <iframe src="#" style="display:none"></iframe>
+      </div>
+    </script>
 
 <!-- END VEDA-CONTROLS -->
 
-		<!-- Generic class template -->
-		<script type="html/template" id="generic-class-template">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-3 col-xs-5 text-right">
-						<h2 class="text-muted className"></h2>
-					</div>
-					<div class="col-md-9 col-xs-7">
-						<h2 about="@" property="rdfs:label"></h2>
-					</div>
-				</div>
-				<hr style="margin: 10px 0px"/>
-				<div class="row">
-					<div class="col-md-3 col-xs-5 text-right">
-						<strong class="text-muted">@</strong>
-					</div>
-					<div class="col-md-9 col-xs-7">
-						<a href="#/@"><span property="@"></span></a>
-						<a href="#/graph/@/#main"><span class="glyphicon glyphicon-link"></span></a>
-					</div>
-				</div>
-				<hr style="margin: 10px 0px"/>
-				<div class="row">
-					<div class="col-md-3 col-xs-5 text-right">
-						<strong about="rdf:type" property="rdfs:label" class="text-muted"></strong>
-					</div>
-					<div class="col-md-9 col-xs-7">
-						<div rel="rdf:type" template="v-ui:ClassNameLabelLinkTemplate"></div>
-						<veda-control rel="rdf:type" type="link" template="v-ui:ClassNameLabelLinkTemplate" class='-view edit search fullsearch fulltext'></veda-control>
-					</div>
-				</div>
-				<hr style="margin: 10px 0px"/>
-				<div class="row">
-					<div class="col-md-3 col-xs-5 text-right">
-						<strong about="rdfs:label" property="rdfs:label" class="text-muted"></strong>
-					</div>
-					<div class="col-md-9 col-xs-7">
-						<div property="rdfs:label"></div>
-						<veda-control property="rdfs:label" type="multilingualString" class='-view edit search'></veda-control>
-					</div>
-				</div>
-				<hr style="margin: 10px 0px"/>
-				<div class="properties"></div>
-				<br>
-				<div class="well well-sm">
-					<div class="btn-group dropup">
-						<button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<span about="v-s:Send" property="rdfs:label"></span>
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu" id="standard-tasks"></ul>
-					</div>
-					<button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
-					<button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
-					<button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
-					<button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
-					<button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin">Права доступа</button>
-					<button type="button" class="action btn btn-primary view -edit -search" id="journal">Журнал</button>
-				</div>
-			</div>
-		</script>
-		<script type="html/template" id="generic-property-template">
-			<div class="row">
-				<div class="col-md-3 col-xs-5 text-right name">
-				</div>
-				<div class="col-md-9 col-xs-7 value">
-				</div>
-			</div>
-		</script>
+    <!-- Generic class template -->
+    <script type="html/template" id="generic-class-template">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 col-xs-5 text-right">
+            <h2 class="text-muted className"></h2>
+          </div>
+          <div class="col-md-8 col-xs-7">
+            <h2 about="@" property="rdfs:label"></h2>
+          </div>
+        </div>
+        <hr style="margin: 10px 0px"/>
+        <div class="row">
+          <div class="col-md-4 col-xs-5 text-right">
+            <strong class="text-muted">@</strong>
+          </div>
+          <div class="col-md-8 col-xs-7">
+            <a href="#/@"><span property="@"></span></a>
+            <a href="#/graph/@/#main"><span class="glyphicon glyphicon-link"></span></a>
+          </div>
+        </div>
+        <hr style="margin: 10px 0px"/>
+        <div class="row">
+          <div class="col-md-4 col-xs-5 text-right">
+            <strong about="rdf:type" property="rdfs:label" class="text-muted"></strong>
+          </div>
+          <div class="col-md-8 col-xs-7">
+            <div rel="rdf:type" template="v-ui:ClassNameLabelLinkTemplate"></div>
+            <veda-control rel="rdf:type" type="link" template="v-ui:ClassNameLabelLinkTemplate" class='-view edit search fullsearch fulltext'></veda-control>
+          </div>
+        </div>
+        <hr style="margin: 10px 0px"/>
+        <div class="row">
+          <div class="col-md-4 col-xs-5 text-right">
+            <strong about="rdfs:label" property="rdfs:label" class="text-muted"></strong>
+          </div>
+          <div class="col-md-8 col-xs-7">
+            <div property="rdfs:label"></div>
+            <veda-control property="rdfs:label" type="multilingualString" class='-view edit search'></veda-control>
+          </div>
+        </div>
+        <hr style="margin: 10px 0px"/>
+        <div class="properties"></div>
+        <br>
+        <div class="well well-sm">
+          <div class="btn-group dropup">
+            <button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span about="v-s:Send" property="rdfs:label"></span>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" id="standard-tasks"></ul>
+          </div>
+          <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
+          <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+          <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+          <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+          <button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin">Права доступа</button>
+          <button type="button" class="action btn btn-primary view -edit -search" id="journal">Журнал</button>
+        </div>
+      </div>
+    </script>
+    <script type="html/template" id="generic-property-template">
+      <div class="row">
+        <div class="col-md-4 col-xs-5 text-right name">
+        </div>
+        <div class="col-md-8 col-xs-7 value">
+        </div>
+      </div>
+    </script>
 
-		<!-- Deleted individual alert -->
-		<script type="html/template" id="deleted-individual-alert-template">
-			<div class="alert alert-warning no-margin" role="alert">
-				<p>Объект удален.  <button class="btn btn-default btn-sm">Восстановить</button></p>
-			</div>
-		</script>
+    <!-- Deleted individual alert -->
+    <script type="html/template" id="deleted-individual-alert-template">
+      <div class="alert alert-warning no-margin" role="alert">
+        <p>Объект удален.  <button class="btn btn-default btn-sm">Восстановить</button></p>
+      </div>
+    </script>
 
-		<!-- Graph template -->
-		<script type="html/template" id="graph-template">
-			<div class="container-fluid">
-				<button type="button" id="freeze" class="btn btn-success"><i class="glyphicon glyphicon-pause"></i></button>
-				<button type="button" id="export-ttl" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i> Экспорт в ttl</button>
+    <!-- Graph template -->
+    <script type="html/template" id="graph-template">
+      <div class="container-fluid">
+        <button type="button" id="freeze" class="btn btn-success"><i class="glyphicon glyphicon-pause"></i></button>
+        <button type="button" id="export-ttl" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i> Экспорт в ttl</button>
 
-				<div id="graph"></div>
+        <div id="graph"></div>
 
-				<div id="individual-context-menu">
-					<ul class="dropdown-menu" role="menu">
-						<li role="presentation" class="dropdown-header">Индивид</li>
-						<li role="presentation" class="divider"></li>
-						<li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
-						<li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
-						<li role="presentation" class="divider"></li>
-						<li><a tabindex="-1" id="delete">Удалить</a></li>
-						<li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
-						<li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
-					</ul>
-				</div>
-				<div id="class-context-menu">
-					<ul class="dropdown-menu" role="menu">
-						<li role="presentation" class="dropdown-header">Класс</li>
-						<li><a tabindex="-1" id="class-individuals">Все индивиды</a></li>
-						<li><a tabindex="-1" id="class-subclasses">Все подклассы</a></li>
-						<li><a tabindex="-1" id="class-properties">Свойства класса</a></li>
-						<li><a tabindex="-1" id="class-templates">Шаблоны класса</a></li>
-						<li><a tabindex="-1" id="class-specifications">Спецификации класса</a></li>
-						<li role="presentation" class="divider"></li>
-						<li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
-						<li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
-						<li role="presentation" class="divider"></li>
-						<li><a tabindex="-1" id="delete">Удалить</a></li>
-						<li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
-						<li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
-					</ul>
-				</div>
-				<div id="property-context-menu">
-					<ul class="dropdown-menu" role="menu">
-						<li role="presentation" class="dropdown-header">Свойство</li>
-						<li><a tabindex="-1" id="property-specifications">Спецификации свойства</a></li>
-						<li role="presentation" class="divider"></li>
-						<li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
-						<li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
-						<li role="presentation" class="divider"></li>
-						<li><a tabindex="-1" id="delete">Удалить</a></li>
-						<li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
-						<li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
-					</ul>
-				</div>
-				<div id="ontology-context-menu">
-					<ul class="dropdown-menu" role="menu">
-						<li role="presentation" class="dropdown-header">Онтология</li>
-						<li role="presentation" class="divider"></li>
-						<li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
-						<li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
-						<li role="presentation" class="divider"></li>
-						<li><a tabindex="-1" id="delete">Удалить</a></li>
-						<li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
-						<li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
-					</ul>
-				</div>
-				<div id="template-context-menu">
-					<ul class="dropdown-menu" role="menu">
-						<li role="presentation" class="dropdown-header">Шаблон</li>
-						<li role="presentation" class="divider"></li>
-						<li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
-						<li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
-						<li role="presentation" class="divider"></li>
-						<li><a tabindex="-1" id="delete">Удалить</a></li>
-						<li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
-						<li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
-					</ul>
-				</div>
-				<div id="specification-context-menu">
-					<ul class="dropdown-menu" role="menu">
-						<li role="presentation" class="dropdown-header">Спецификация</li>
-						<li role="presentation" class="divider"></li>
-						<li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
-						<li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
-						<li role="presentation" class="divider"></li>
-						<li><a tabindex="-1" id="delete">Удалить</a></li>
-						<li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
-						<li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
-					</ul>
-				</div>
-			</div>
-		</script>
+        <div id="individual-context-menu">
+          <ul class="dropdown-menu" role="menu">
+            <li role="presentation" class="dropdown-header">Индивид</li>
+            <li role="presentation" class="divider"></li>
+            <li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
+            <li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
+            <li role="presentation" class="divider"></li>
+            <li><a tabindex="-1" id="delete">Удалить</a></li>
+            <li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
+            <li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
+          </ul>
+        </div>
+        <div id="class-context-menu">
+          <ul class="dropdown-menu" role="menu">
+            <li role="presentation" class="dropdown-header">Класс</li>
+            <li><a tabindex="-1" id="class-individuals">Все индивиды</a></li>
+            <li><a tabindex="-1" id="class-subclasses">Все подклассы</a></li>
+            <li><a tabindex="-1" id="class-properties">Свойства класса</a></li>
+            <li><a tabindex="-1" id="class-templates">Шаблоны класса</a></li>
+            <li><a tabindex="-1" id="class-specifications">Спецификации класса</a></li>
+            <li role="presentation" class="divider"></li>
+            <li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
+            <li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
+            <li role="presentation" class="divider"></li>
+            <li><a tabindex="-1" id="delete">Удалить</a></li>
+            <li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
+            <li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
+          </ul>
+        </div>
+        <div id="property-context-menu">
+          <ul class="dropdown-menu" role="menu">
+            <li role="presentation" class="dropdown-header">Свойство</li>
+            <li><a tabindex="-1" id="property-specifications">Спецификации свойства</a></li>
+            <li role="presentation" class="divider"></li>
+            <li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
+            <li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
+            <li role="presentation" class="divider"></li>
+            <li><a tabindex="-1" id="delete">Удалить</a></li>
+            <li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
+            <li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
+          </ul>
+        </div>
+        <div id="ontology-context-menu">
+          <ul class="dropdown-menu" role="menu">
+            <li role="presentation" class="dropdown-header">Онтология</li>
+            <li role="presentation" class="divider"></li>
+            <li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
+            <li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
+            <li role="presentation" class="divider"></li>
+            <li><a tabindex="-1" id="delete">Удалить</a></li>
+            <li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
+            <li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
+          </ul>
+        </div>
+        <div id="template-context-menu">
+          <ul class="dropdown-menu" role="menu">
+            <li role="presentation" class="dropdown-header">Шаблон</li>
+            <li role="presentation" class="divider"></li>
+            <li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
+            <li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
+            <li role="presentation" class="divider"></li>
+            <li><a tabindex="-1" id="delete">Удалить</a></li>
+            <li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
+            <li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
+          </ul>
+        </div>
+        <div id="specification-context-menu">
+          <ul class="dropdown-menu" role="menu">
+            <li role="presentation" class="dropdown-header">Спецификация</li>
+            <li role="presentation" class="divider"></li>
+            <li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
+            <li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
+            <li role="presentation" class="divider"></li>
+            <li><a tabindex="-1" id="delete">Удалить</a></li>
+            <li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
+            <li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
+          </ul>
+        </div>
+      </div>
+    </script>
 
-		<!-- Graph modal template -->
-		<script type="html/template" id="graph-modal-template">
-			<div class="modal" id="graph-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-				<div class="modal-dialog modal-lg">
-					<div class="modal-content">
-						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-							<h4 class="modal-title"></h4>
-						</div>
-						<div class="modal-body"></div>
-					</div>
-				</div>
-			</div>
-		</script>
-		<!-- Javascript -->
+    <!-- Graph modal template -->
+    <script type="html/template" id="graph-modal-template">
+      <div class="modal" id="graph-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body"></div>
+          </div>
+        </div>
+      </div>
+    </script>
+    <!-- Javascript -->
 
-		<!-- Utils & UI -->
-		<script type="text/javascript" src="/js/browser/lib/jquery.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/jquery-ui.min.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/bootstrap.min.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/sha256.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/jsplumb.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/vis.min.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/bootstrap-contextmenu.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/n3-browser.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/FileSaver.min.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/typeahead.jquery.min.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/cookie.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/autosize.min.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/moment-with-locales.min.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/bootstrap-datetimepicker.min.js"></script>
+    <!-- Utils & UI -->
+    <script type="text/javascript" src="/js/browser/lib/jquery.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/sha256.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/jsplumb.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/vis.min.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/bootstrap-contextmenu.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/n3-browser.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/FileSaver.min.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/typeahead.jquery.min.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/cookie.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/autosize.min.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/bootstrap-datetimepicker.min.js"></script>
 
-		<!-- CodeMirror -->
-		<script type="text/javascript" src="/js/browser/lib/codemirror/codemirror.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/codemirror/mode/xml/xml.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/codemirror/mode/javascript/javascript.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/codemirror/mode/css/css.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/codemirror/mode/turtle/turtle.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/codemirror/mode/htmlmixed/htmlmixed.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/codemirror/addon/edit/closebrackets.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/codemirror/addon/edit/closetag.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/codemirror/addon/edit/matchbrackets.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/codemirror/addon/edit/matchtags.js"></script>
-		<script type="text/javascript" src="/js/browser/lib/codemirror/addon/fold/xml-fold.js"></script>
+    <!-- CodeMirror -->
+    <script type="text/javascript" src="/js/browser/lib/codemirror/codemirror.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/codemirror/mode/xml/xml.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/codemirror/mode/javascript/javascript.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/codemirror/mode/css/css.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/codemirror/mode/turtle/turtle.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/codemirror/addon/edit/closebrackets.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/codemirror/addon/edit/closetag.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/codemirror/addon/edit/matchbrackets.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/codemirror/addon/edit/matchtags.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/codemirror/addon/fold/xml-fold.js"></script>
 
-		<!-- Veda browser & server -->
-		<script type="text/javascript" src="/js/common/lib/riot.js"></script>
-		<script type="text/javascript" src="/js/common/util.js"></script>
-		<script type="text/javascript" src="/js/common/veda_spa.js"></script>
-		<script type="text/javascript" src="/js/common/app_model.js"></script>
-		<script type="text/javascript" src="/js/common/console_model.js"></script>
-		<script type="text/javascript" src="/js/common/individual_model.js"></script>
-		<script type="text/javascript" src="/js/common/individual_list_model.js"></script>
-		<script type="text/javascript" src="/js/common/search_result_model.js"></script>
-		<script type="text/javascript" src="/js/common/user_model.js"></script>
-		<script type="text/javascript" src="/js/common/search_model.js"></script>
-		<script type="text/javascript" src="/js/common/ontology_model.js"></script>
-		<script type="text/javascript" src="/js/common/drafts_model.js"></script>
+    <!-- Veda browser & server -->
+    <script type="text/javascript" src="/js/common/lib/riot.js"></script>
+    <script type="text/javascript" src="/js/common/util.js"></script>
+    <script type="text/javascript" src="/js/common/veda_spa.js"></script>
+    <script type="text/javascript" src="/js/common/app_model.js"></script>
+    <script type="text/javascript" src="/js/common/console_model.js"></script>
+    <script type="text/javascript" src="/js/common/individual_model.js"></script>
+    <script type="text/javascript" src="/js/common/individual_list_model.js"></script>
+    <script type="text/javascript" src="/js/common/search_result_model.js"></script>
+    <script type="text/javascript" src="/js/common/user_model.js"></script>
+    <script type="text/javascript" src="/js/common/search_model.js"></script>
+    <script type="text/javascript" src="/js/common/ontology_model.js"></script>
+    <script type="text/javascript" src="/js/common/drafts_model.js"></script>
 
-		<!-- Veda browser only -->
-		<script type="text/javascript" src="/js/browser/backend.js"></script>
-		<script type="text/javascript" src="/js/browser/util.js"></script>
-		<script type="text/javascript" src="/js/browser/console_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/veda_controls.js"></script>
-		<script type="text/javascript" src="/js/browser/pager.js"></script>
-		<script type="text/javascript" src="/js/browser/individual_actions.js"></script>
-		<script type="text/javascript" src="/js/browser/update_subscription.js"></script>
-		<script type="text/javascript" src="/js/browser/displayed_services.js"></script>
-		<script type="text/javascript" src="/js/browser/individual_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/saved_search_list.js"></script>
-		<script type="text/javascript" src="/js/browser/save_search.js"></script>
-		<script type="text/javascript" src="/js/browser/search_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/search_result_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/search_sort.js"></script>
-		<script type="text/javascript" src="/js/browser/search_selected_actions.js"></script>
-		<script type="text/javascript" src="/js/browser/graph_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/drafts_presenter.js"></script>
-		<script type="text/javascript" src="/js/browser/veda_net_editor.js"></script>
-		<script type="text/javascript" src="/js/browser/app_presenter.js"></script>
+    <!-- Veda browser only -->
+    <script type="text/javascript" src="/js/browser/backend.js"></script>
+    <script type="text/javascript" src="/js/browser/util.js"></script>
+    <script type="text/javascript" src="/js/browser/console_presenter.js"></script>
+    <script type="text/javascript" src="/js/browser/veda_controls.js"></script>
+    <script type="text/javascript" src="/js/browser/pager.js"></script>
+    <script type="text/javascript" src="/js/browser/individual_actions.js"></script>
+    <script type="text/javascript" src="/js/browser/update_subscription.js"></script>
+    <script type="text/javascript" src="/js/browser/displayed_services.js"></script>
+    <script type="text/javascript" src="/js/browser/individual_presenter.js"></script>
+    <script type="text/javascript" src="/js/browser/saved_search_list.js"></script>
+    <script type="text/javascript" src="/js/browser/save_search.js"></script>
+    <script type="text/javascript" src="/js/browser/search_presenter.js"></script>
+    <script type="text/javascript" src="/js/browser/search_result_presenter.js"></script>
+    <script type="text/javascript" src="/js/browser/search_sort.js"></script>
+    <script type="text/javascript" src="/js/browser/search_selected_actions.js"></script>
+    <script type="text/javascript" src="/js/browser/graph_presenter.js"></script>
+    <script type="text/javascript" src="/js/browser/drafts_presenter.js"></script>
+    <script type="text/javascript" src="/js/browser/veda_net_editor.js"></script>
+    <script type="text/javascript" src="/js/browser/app_presenter.js"></script>
 
-		<script type="text/javascript">
-			$(function(){
-				veda.Module({/* configuration object */});
-			});
-		</script>
-		<script>
-			var $buoop = {
-				vs:{i:10,f:39.0,o:11.5,s:8.0},
-				c:2,
-			    //vs: {i:11,f:40.0,o:11.60,s:8.1,c:43.0},
-			    reminder: 0
-			};
-			function $buo_f()
-			{
-				var e = document.createElement("script");
-				e.src = "/js/browser/lib/update.min.js";
-				document.body.appendChild(e);
-			};
-			try
-			{
-				document.addEventListener("DOMContentLoaded", $buo_f,false)
-			} catch(e) { window.attachEvent("onload", $buo_f) }
-		</script>
+    <script type="text/javascript">
+      $(function(){
+        veda.Module({/* configuration object */});
+      });
+    </script>
+    <script>
+      var $buoop = {
+        vs:{i:10,f:39.0,o:11.5,s:8.0},
+        c:2,
+          //vs: {i:11,f:40.0,o:11.60,s:8.1,c:43.0},
+          reminder: 0
+      };
+      function $buo_f()
+      {
+        var e = document.createElement("script");
+        e.src = "/js/browser/lib/update.min.js";
+        document.body.appendChild(e);
+      };
+      try
+      {
+        document.addEventListener("DOMContentLoaded", $buo_f,false)
+      } catch(e) { window.attachEvent("onload", $buo_f) }
+    </script>
 
 
-		<!--div class="container-fluid">
-			<div>Regex</div>
-			<input class="form-control" type="text" id="re-regex"></input>
-			<div>Replacer function</div>
-			<textarea class="form-control" rows="3" id="re-replacer"></textarea>
-			<div>Text</div>
-			<textarea class="form-control" rows="10" id="re-text"></textarea>
-			<div>Result</div>
-			<textarea class="form-control" rows="10" id="re-result"></textarea>
-			<button class="btn btn-success" id="re-go">Go</button>
-			<br>
-			<br>
-		</div>
-		<script>
-			$("#re-go").click( function () {
-				var str = $("#re-text").val();
-				var regex = new RegExp($("#re-regex").val(), "g");
-				var replacer = new Function("match", "group", $("#re-replacer").val());
-				var res = str.replace(regex, replacer);
-				var result = $("#re-result").val(res);
-			});
-		</script-->
-	</body>
+    <!--div class="container-fluid">
+      <div>Regex</div>
+      <input class="form-control" type="text" id="re-regex"></input>
+      <div>Replacer function</div>
+      <textarea class="form-control" rows="3" id="re-replacer"></textarea>
+      <div>Text</div>
+      <textarea class="form-control" rows="10" id="re-text"></textarea>
+      <div>Result</div>
+      <textarea class="form-control" rows="10" id="re-result"></textarea>
+      <button class="btn btn-success" id="re-go">Go</button>
+      <br>
+      <br>
+    </div>
+    <script>
+      $("#re-go").click( function () {
+        var str = $("#re-text").val();
+        var regex = new RegExp($("#re-regex").val(), "g");
+        var replacer = new Function("match", "group", $("#re-replacer").val());
+        var res = str.replace(regex, replacer);
+        var result = $("#re-result").val(res);
+      });
+    </script-->
+  </body>
 </html>
