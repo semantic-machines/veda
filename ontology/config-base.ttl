@@ -977,8 +977,8 @@ cfg:Event_13
   rdfs:comment "Пусто." ;
   v-s:filter v-s:ManuallyVersioned ;
   v-s:script """
-  if (document['v-s:triggerVersionCreation'] && document['v-s:triggerVersionCreation'][0]
-  	&& document['v-s:triggerVersionCreation'][0].data == true) {
+  if ((document['v-s:triggerVersionCreation'] && document['v-s:triggerVersionCreation'][0]
+  	&& document['v-s:triggerVersionCreation'][0].data == true) || !prev_state) {
   	delete document['v-s:triggerVersionCreation'];
 	create_version(ticket, document, prev_state, user_uri, _event_id);
   }
