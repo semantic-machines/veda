@@ -475,8 +475,8 @@ v-ui:VersionedTemplate
         <tr>
           <th width="1%">#</th>
           <th about="rdfs:label" property="rdfs:label"></th>
-          <th width="20%" about="v-s:created" property="rdfs:label"></th>
-          <th width="20%" about="v-s:publisher" property="rdfs:label"></th>
+          <th about="v-s:created" property="rdfs:label"></th>
+          <th about="v-s:publisher" property="rdfs:label"></th>
         </tr>
       </thead>
       <tbody id="versions"></tbody>
