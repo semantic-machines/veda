@@ -1187,7 +1187,7 @@ v-ui:FileTemplateWithComment
       </a>
     </div>
     <div class="view -edit -search" style="font-style:italic">
-      <small property="v-s:publisher"></small><small property="v-s:created"></small>
+      <small rel="v-s:publisher" template="v-ui:LabelTemplate"></small><small property="v-s:created"></small>
     </div>
   </div>
 </div>
