@@ -3,7 +3,6 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 
 <http://semantic-machines.com/veda/veda-abstract>
   rdf:type owl:Ontology ;
@@ -216,25 +215,11 @@ v-s:hasClassifiedAttachment
   rdfs:range v-s:ClassifiedAttachment ;
   rdfs:domain v-s:Thing ;
 .
-v-wf:isProcess
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Запущен процесс"@ru ;
-  rdfs:label "Started process"@en ;
-  rdfs:range v-wf:Process ;
-  rdfs:domain v-s:Thing ;
-.
 v-s:hasBond
   rdf:type owl:ObjectProperty ;
   rdfs:label "Bonded document"@en ;
   rdfs:label "Связанный документ"@ru ;
   rdfs:range v-s:Bond ;
-  rdfs:domain v-s:Thing ;
-.
-v-s:hasStatusWorkflow
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Status workflow"@en ;
-  rdfs:label "Статус документооборота"@ru ;
-  rdfs:range v-s:StatusWorkflow ;
   rdfs:domain v-s:Thing ;
 .
 v-s:tag

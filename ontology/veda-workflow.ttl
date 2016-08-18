@@ -2143,7 +2143,16 @@ v-wf:isProcess
   rdfs:domain v-wf:StartForm ;
   rdfs:domain v-wf:WorkOrder ;
   rdfs:domain v-s:Document ;
-  rdfs:range v-wf:Process ;
+  rdfs:range v-wf:Process ;  
+  rdfs:domain v-s:Thing ;
+
+.
+v-wf:hasStatusWorkflow
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Status workflow"@en ;
+  rdfs:label "Статус документооборота"@ru ;
+  rdfs:range v-s:StatusWorkflow ;
+  rdfs:domain v-s:Thing ;
 .
 v-wf:ProcessStarted
   rdf:type owl:Class ;
