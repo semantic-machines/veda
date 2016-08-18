@@ -56,7 +56,6 @@ v-s:variableValue
 	rdfs:range rdfs:Resource ;
 .
 
-
 v-s:Bundle
   rdf:type owl:Class ;
   rdfs:subClassOf owl:Thing ;
@@ -313,29 +312,12 @@ v-s:parent
   rdfs:range rdfs:Resource ;
 .
 
-v-s:isDraft
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain rdfs:Resource ;
-  rdfs:label "Is draft of"@en ;
-  rdfs:label "Является черновиком"@ru ;
-  rdfs:range xsd:boolean ;
-.
-
 v-s:actualVersion
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Versioned ;
   rdfs:label "Actual version"@en ;
   rdfs:label "Актуальная версия"@ru ;
   rdfs:range v-s:Versioned ;
-.
-
-v-s:author
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain rdfs:Resource ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Author"@en ;
-  rdfs:label "Автор"@ru ;
-  rdfs:range v-s:Appointment ;
 .
 
 v-s:birthday
@@ -383,30 +365,6 @@ v-s:canUpdate
   rdfs:domain v-s:Membership ;
   rdfs:label "Can update"@en ;
   rdfs:label "Можно изменять"@ru ;
-  rdfs:range xsd:boolean ;
-.
-
-v-s:created
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain rdfs:Resource ;
-  rdfs:label "Entry date"@en ;
-  rdfs:label "Дата создания"@ru ;
-  rdfs:range xsd:dateTime ;
-.
-
-v-s:edited
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain rdfs:Resource ;
-  rdfs:label "Edition date"@en ;
-  rdfs:label "Дата редактирования"@ru ;
-  rdfs:range xsd:dateTime ;
-.
-
-v-s:deleted
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain rdfs:Resource ;
-  rdfs:label "Deleted"@en ;
-  rdfs:label "Удален"@ru ;
   rdfs:range xsd:boolean ;
 .
 
@@ -514,13 +472,7 @@ v-s:nextVersion
   rdfs:range v-s:Versioned ;
 .
 
-v-s:owner
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain rdfs:Resource ;
-  rdfs:label "Owner"@en ;
-  rdfs:label "Владелец"@ru ;
-  rdfs:range v-s:Person ;
-.
+
 
 v-s:password
   rdf:type owl:DatatypeProperty ;
@@ -666,30 +618,6 @@ v-s:endTime
   rdfs:label "End time"@en ;
   rdfs:label "Время окончания"@ru ;
   rdfs:range xsd:dateTime ;
-.
-
-v-s:updateCounter
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain rdfs:Resource ;
-  rdfs:label "Update counter"@en ;
-  rdfs:label "Счетчик обновлений"@ru ;
-  rdfs:range xsd:integer ;
-.
-
-v-s:publisher
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain rdfs:Resource ;
-  rdfs:label "Publisher"@en ;
-  rdfs:label "Подготовил"@ru ;
-  rdfs:range v-s:Appointment ;
-.
-
-v-s:lastEditor
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain rdfs:Resource ;
-  rdfs:label "Last editor"@en ;
-  rdfs:label "Последний редактор"@ru ;
-  rdfs:range v-s:Appointment ;
 .
 
 ### INDIVIDUALS ###

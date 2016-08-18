@@ -43,6 +43,14 @@ v-s:Audit
 
 #-- Аттрибуты --
 
+v-s:agenda
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Agenda"@en ;
+  rdfs:label "Повестка"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Meeting ;
+.
+
 v-s:hasActivity
   rdf:type owl:ObjectProperty ;
   rdfs:label "Has activity"@en ;

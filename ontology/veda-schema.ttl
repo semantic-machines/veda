@@ -155,13 +155,7 @@ v-s:hasImage
 .
 
 ### veda-ui
-v-s:hasLogo
-  rdf:type owl:ObjectProperty ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Логотип"@ru ;
-  rdfs:label "Logo"@en ;
-  rdfs:range v-s:File ;
-.
+
 
 v-s:File
   rdf:type owl:Class ;
@@ -197,13 +191,7 @@ v-s:fileThumbnail
   rdfs:range v-s:File ;
 .
 ### veda-workflow
-v-s:hasStatusWorkflow
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Status workflow"@en ;
-  rdfs:label "Статус документооборота"@ru ;
-  rdfs:range v-s:StatusWorkflow ;
-  rdfs:domain rdfs:Resource ;
-.
+
 
 ### veda-function-search
 v-s:query

@@ -143,12 +143,7 @@ v-s:parentUnit
   owl:inverseOf v-s:childUnit ;
 .
 
-v-s:postalAddress
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Postal address"@en ;
-  rdfs:label "Почтовый адрес"@ru ;
-  rdfs:range xsd:string ;
-.
+
 
 v-s:valid
   rdf:type owl:DatatypeProperty ;

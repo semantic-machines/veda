@@ -3,6 +3,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 
 <http://semantic-machines.com/veda/veda-abstract>
   rdf:type owl:Ontology ;
@@ -11,9 +12,10 @@
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
+### ------------------------------------------------------- ####
 v-s:Temporal
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf rdfs:Resource  ;
   rdfs:label "Temporal thing"@en ;
   rdfs:label "Временная сущность"@ru ;
 .
@@ -21,6 +23,13 @@ v-s:date
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Date"@en ;
   rdfs:label "Дата"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:datePlan
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date plan"@en ;
+  rdfs:label "Плановая дата"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Temporal ;
 .
@@ -38,17 +47,460 @@ v-s:dateFrom
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Temporal ;
 .
-v-s:datePlan
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date plan"@en ;
-  rdfs:label "Плановая дата"@ru ;
-  rdfs:range xsd:dateTime ;
-  rdfs:domain v-s:Temporal ;
-.
 v-s:dateTo
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Date finish"@en ;
   rdfs:label "Дата окончания"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Temporal ;
+.
+v-s:year
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Year"@en ;
+  rdfs:label "Год"@ru ;
+  rdfs:range xsd:integer ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:duration
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Duration"@en ;
+  rdfs:label "Длительность"@ru ;
+  rdfs:range xsd:integer ;
+  rdfs:domain v-s:Temporal ;
+.
+
+### ------------------------------------------------------- ####
+v-s:Thing
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Thing"@en ;
+  rdfs:label "Любая сущность"@ru ;
+.
+v-s:updateCounter
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Update counter"@en ;
+  rdfs:label "Счетчик обновлений"@ru ;
+  rdfs:range xsd:integer ;
+  rdfs:domain v-s:Thing ;  
+.
+v-s:owner
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Owner"@en ;
+  rdfs:label "Владелец"@ru ;
+  rdfs:range v-s:Person ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:author
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Author"@en ;
+  rdfs:label "Автор"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:coauthor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Co-author"@en ;
+  rdfs:label "Соавтор"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:publisher
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Publisher"@en ;
+  rdfs:label "Подготовил"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:lastEditor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Last editor"@en ;
+  rdfs:label "Последний редактор"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:isDraft
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Is draft of"@en ;
+  rdfs:label "Является черновиком"@ru ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:created
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Entry date"@en ;
+  rdfs:label "Дата создания"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:published
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date published"@en ;
+  rdfs:label "Дата публикации"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:edited
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Edition date"@en ;
+  rdfs:label "Дата редактирования"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Thing ;  
+.
+v-s:deleted
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Deleted"@en ;
+  rdfs:label "Удален"@ru ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:title
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Name"@en ;
+  rdfs:label "Название"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:shortLabel
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Short label"@en ;
+  rdfs:label "Краткое наименование"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:description
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Description"@en ;
+  rdfs:label "Описание"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:theme
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Theme"@en ;
+  rdfs:label "Тема"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:content
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Content"@en ;
+  rdfs:label "Содержание"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:summary
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Summary"@en ;
+  rdfs:label "Вывод"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:reason
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Reason"@en ;
+  rdfs:label "Причина"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:attachment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Attachment"@en ;
+  rdfs:label "Вложение"@ru ;
+  rdfs:range v-s:File ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:hasClassifiedAttachment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Classified attachment"@en ;
+  rdfs:label "Классифицированное вложение"@ru ;
+  rdfs:range v-s:ClassifiedAttachment ;
+  rdfs:domain v-s:Thing ;
+.
+v-wf:isProcess
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Запущен процесс"@ru ;
+  rdfs:label "Started process"@en ;
+  rdfs:range v-wf:Process ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:hasBond
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Bonded document"@en ;
+  rdfs:label "Связанный документ"@ru ;
+  rdfs:range v-s:Bond ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:hasStatusWorkflow
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Status workflow"@en ;
+  rdfs:label "Статус документооборота"@ru ;
+  rdfs:range v-s:StatusWorkflow ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:tag
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Tags"@en ;
+  rdfs:label "Ключевые слова"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:hasParentLink
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Parent document"@en ;
+  rdfs:label "Ссылка на родительский документ"@ru ;
+  rdfs:range rdfs:Resource ;
+  rdfs:domain v-s:Thing ;  
+.
+v-s:hasImage
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Изображение"@ru ;
+  rdfs:label "Image"@en ;
+  rdfs:range v-s:File ;
+  rdfs:domain v-s:Thing ; 
+.
+v-s:hasLogo
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Логотип"@ru ;
+  rdfs:label "Logo"@en ;
+  rdfs:range v-s:File ;
+  rdfs:domain v-s:Thing ; 
+.
+### ------------------------------------------------------- ####
+v-s:Spatial
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Spatial thing"@en ;
+  rdfs:label "Cущность с местоположением"@ru ;
+.
+v-s:countryName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Country"@en ;
+  rdfs:label "Страна"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Spatial ;
+.
+v-s:cityName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "City"@en ;
+  rdfs:label "Город"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Spatial ;
+.
+v-s:legalAddress
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Legal address"@en ;
+  rdfs:label "Юридический адрес"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Spatial ;
+.
+v-s:postalAddress
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Postal address"@en ;
+  rdfs:label "Почтовый адрес"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Spatial ;
+.
+v-s:placeDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Place description"@en ;
+  rdfs:label "Место проведения"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Spatial ;
+.
+### ------------------------------------------------------- ####
+v-s:Contractual
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Contractual thing"@en ;
+  rdfs:label "Контрактная сущность"@ru ;
+.
+v-s:initiator
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Initiator"@en ;
+  rdfs:label "Инициатор"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:stakeholder
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Stakeholder"@en ;
+  rdfs:label "Заинтересованная сторона"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:customer
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Customer"@en ;
+  rdfs:label "Заказчик"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:supplier
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Supplier"@en ;
+  rdfs:label "Исполнитель"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:responsible
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Responsible"@en ;
+  rdfs:label "Ответственный"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:contributor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Contributor"@en ;
+  rdfs:label "Содействующий"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Contractual ;  
+.
+v-s:controller
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Controller"@en ;
+  rdfs:label "Контролер"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Contractual ;
+.
+### ------------------------------------------------------- ####
+v-s:Registered
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Registered thing"@en ;
+  rdfs:label "Регистрируемая сущность"@ru ;
+.
+v-s:registrationDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Registration date of document"@en ;
+  rdfs:label "Дата составления или регистрации документа"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Registered ;
+.
+v-s:registrationNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Registration number"@en ;
+  rdfs:label "Регистрационный номер"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Registered ;
+.
+v-s:registrationDateIn
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Registration date of document"@en ;
+  rdfs:label "Дата составления или регистрации документа"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Registered ;
+.
+v-s:registrationNumberIn
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Registration number"@en ;
+  rdfs:label "Регистрационный номер"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Registered ;
+.
+v-s:registrationDateOut
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Registration date of document"@en ;
+  rdfs:label "Дата составления или регистрации документа"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Registered ;
+.
+v-s:registrationNumberOut
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Registration number"@en ;
+  rdfs:label "Регистрационный номер"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Registered ;
+.
+### ------------------------------------------------------- ####
+v-s:Valuable
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Valuable thing"@en ;
+  rdfs:label "Оцениваемая сущность"@ru ;
+.
+v-s:sum
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Sum"@en ;
+  rdfs:label "Сумма"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Valuable ;
+.
+v-s:cost
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Cost"@en ;
+  rdfs:label "Цена"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Valuable ;
+.
+### ------------------------------------------------------- ####
+v-s:Deliverable2
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Deliverable thing"@en ;
+  rdfs:label "Доставляемая сущность"@ru ;
+.
+v-s:copyTo
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Copy to"@en ;
+  rdfs:label "В копию"@ru ;
+  rdfs:range v-s:Appointment ;
+#  rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:sender
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Sender"@en ;
+  rdfs:label "Отправитель"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:recipient
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Recipient"@en ;
+  rdfs:label "Получатель"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+### ------------------------------------------------------- ####
+v-s:Measurable
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Measurable thing"@en ;
+  rdfs:label "Измеряемая сущность"@ru ;
+.
+v-s:hasLevel
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Level"@en ;
+  rdfs:label "Уровень"@ru ;
+  rdfs:range v-s:Level ;
+  rdfs:domain v-s:Measurable ;
+.
+v-s:hasPriority
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Priority"@en ;
+  rdfs:label "Приоритет"@ru ;
+  rdfs:range v-s:Level ;
+  rdfs:domain v-s:Measurable ;
+.
+v-s:count
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Count"@en ;
+  rdfs:label "Количество"@ru ;
+  rdfs:range xsd:integer ;
+  rdfs:domain v-s:Measurable ;
+.
+v-s:rate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Level ;
+  rdfs:label "Rate"@en ;
+  rdfs:label "Степень"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Measurable ;
 .

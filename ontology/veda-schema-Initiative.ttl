@@ -1230,13 +1230,7 @@ v-s:PsInitiativeSnapshot
   rdfs:label "Link to Project in all stages property specification for Initiative class"@en ;
   rdfs:label "Спецификации ссылок на проект на разных стадиях"@ru ;
 .
-v-s:hasClassifiedAttachment
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Document ;
-  rdfs:label "Classified attachment"@en ;
-  rdfs:label "Классифицированное вложение"@ru ;
-  rdfs:range v-s:ClassifiedAttachment ;
-.
+
 v-s:PsHasClassifiedAttachment
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:Document ;
