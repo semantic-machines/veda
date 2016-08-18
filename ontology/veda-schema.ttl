@@ -68,41 +68,12 @@ v-s:NotEmpty
 ### veda-function-search
 v-s:SpecialSearchValues
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Logical operator"@en ;
   rdfs:label "Логический оператор"@ru ;
 .
 
-### veda-workflow
-v-s:StatusWorkflow
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
-  rdfs:label "StatusWorkflow"@en ;
-  rdfs:label "Статус документооборота"@ru ;
-.
-
-### veda-workflow
-v-s:ToBeSent
-  rdf:type v-s:StatusWorkflow ;
-  rdfs:label "To be sent"@en ;
-  rdfs:label "Ожидает отправки"@ru ;
-.
-
-### veda-workflow
-v-s:IsSent
-  rdf:type v-s:StatusWorkflow ;
-  rdfs:label "Is sent"@en ;
-  rdfs:label "Отправлено"@ru ;
-.
-
-### veda-workflow
-v-s:DoNotSent
-  rdf:type v-s:StatusWorkflow ;
-  rdfs:label "Do Not Send"@en ;
-  rdfs:label "Не отправлять"@ru ;
-.
-
-### veda-workflow
+### veda-function-search
 v-s:ThisMonth
   rdf:type v-s:SpecialSearchValues ;
   rdfs:label "This month"@en ;
@@ -144,22 +115,12 @@ v-s:Yesterday
   rdfs:label "Вчера"@ru ;
 .
 
-### veda-ui
-v-s:hasImage
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Person ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Изображение"@ru ;
-  rdfs:label "Image"@en ;
-  rdfs:range v-s:File ;
-.
 
 ### veda-ui
-
 
 v-s:File
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Exportable ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:ClassAuthorized ;
@@ -207,7 +168,7 @@ v-s:query
 
 v-s:ReportsForClass
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Reports list"@en ;
   rdfs:label "Список отчетов"@ru ;
@@ -230,7 +191,7 @@ v-s:fileFormat
 
 v-s:Report
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Report"@en ;
   rdfs:label "Отчет"@ru ;
@@ -243,7 +204,7 @@ v-s:Report
 ################################ JOURNAL ####################################################
 v-s:Journal
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:isDefinedBy v-s: ;
   rdfs:comment "A journal"@en ;
@@ -261,7 +222,7 @@ v-s:childRecord
 .
 v-s:JournalRecord
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Запись в журнале"@ru ;
@@ -291,7 +252,7 @@ v-s:subJournal
 .
 v-s:Journaling
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf rdfs:Resource ;
   rdfs:label "Журналируемая сущность"@ru ;
 .
 v-s:actor

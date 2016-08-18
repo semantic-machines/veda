@@ -19,6 +19,8 @@ v-s:Activity
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Spatial ;
+  rdfs:subClassOf v-s:Registered ;
   rdfs:label "Activity"@en ;
   rdfs:label "Активность"@ru ;
 .
@@ -51,6 +53,14 @@ v-s:agenda
   rdfs:domain v-s:Meeting ;
 .
 
+v-s:topic
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Topic"@en ;
+  rdfs:label "Предмет"@ru ;
+  rdfs:range v-s:Thing ;
+  rdfs:domain v-s:Activity ;
+.
+
 v-s:hasActivity
   rdf:type owl:ObjectProperty ;
   rdfs:label "Has activity"@en ;
@@ -76,18 +86,15 @@ v-s:PsDateToForAction
   rdfs:label "Preferences property specification for dateTo in Action class"@en ;
   rdfs:label "Спецификация даты окончания для класса Action"@ru ;
 .
-v-s:placeDescription
-  rdfs:domain v-s:Activity ;
-.
-v-s:registrationNumber
-  rdfs:domain v-s:Activity ;
-.
-v-s:agenda
+
+v-s:meetingDecision
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Decision"@en ;
+  rdfs:label "Решение"@ru ;
+  rdfs:range xsd:string ;
   rdfs:domain v-s:Meeting ;
 .
-v-s:decision
-  rdfs:domain v-s:Meeting ;
-.
+
 v-s:copyTo
   rdfs:domain v-s:Meeting ;
 .

@@ -107,6 +107,7 @@ v-s:ProjectPlan
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Valuable ;
   rdfs:label "Project plan"@en ;
   rdfs:label "План мероприятий проекта"@ru ;
 .
@@ -128,6 +129,7 @@ v-s:ProjectPhaseCost
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Valuable ;
   rdfs:label "Project phase costs"@en ;
   rdfs:label "Затраты на фазу проекта"@ru ;
 .
@@ -952,20 +954,6 @@ v-s:PsOutOfScope
   rdfs:label "OutOfScope description property specification for Project class"@en ;
   rdfs:label "Спецификация описания не входит в рамки проекта класса Проект"@ru ;
 .
-v-s:permission
-  rdfs:domain v-s:Project ;
-.
-v-s:PsPermission
-  rdf:type v-ui:StringPropertySpecification ;
-  v-ui:forClass v-s:Project ;
-  v-ui:forProperty v-s:permission ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 0 ;
-  v-ui:tooltip "non-Required, single Text"@en ;
-  v-ui:tooltip "Нужны ли специальные разрешения"@ru ;
-  rdfs:label "Permission description property specification for Project class"@en ;
-  rdfs:label "Спецификация специальных разрешений класса Проект"@ru ;
-.
 v-s:datePlan
   rdfs:domain v-s:ProjectPhase ;
   rdfs:domain v-s:ProjectMilestone ;
@@ -1099,16 +1087,10 @@ v-s:PsProjectPlan
   rdfs:label "Project plan property specification for Initiative class"@en ;
   rdfs:label "Спецификация плана мероприятий проекта для класса Инициатива"@ru ;
 .
-v-s:attachment
-  rdfs:domain v-s:ProjectPhaseCost ;
-.
-v-s:sum_decimal
-  rdfs:domain v-s:ProjectPhaseCost ;
-.
-v-s:PsSum_decimal
+v-s:PsSum
   rdf:type v-ui:DecimalPropertySpecification ;
   v-ui:forClass v-s:ProjectPhaseCost ;
-  v-ui:forProperty v-s:sum_decimal ;
+  v-ui:forProperty v-s:sum ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
   v-ui:tooltip "non-required, single decimal value."@en ;
@@ -1236,13 +1218,4 @@ v-s:disposalPercent
   rdfs:label "Disposal percent"@en ;
   rdfs:label "Процент выбытия"@ru ;
   rdfs:range xsd:integer ;
-.
-v-s:attachment
-  rdfs:domain v-s:ProjectPlan ;
-.
-v-s:hasInitiative
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Initiative"@en ;
-  rdfs:label "Связанная инициатива"@ru ;
-  rdfs:range v-s:Initiative ;
 .

@@ -22,12 +22,6 @@ v-s:Level
   rdfs:label "Level"@en ;
   rdfs:label "Уровень"@ru ;
 .
-v-s:YesNo
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
-  rdfs:label "Yes No"@en ;
-  rdfs:label "Да Нет"@ru ;
-.
 v-s:Bond
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
@@ -37,41 +31,6 @@ v-s:Bond
 
 #-- Аттрибуты --
 
-
-v-s:alternativeTitle
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Level ;
-  rdfs:label "Description"@en ;
-  rdfs:label "Описание"@ru ;
-  rdfs:range xsd:string ;
-.
-
-
-v-s:contactInfo
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Contact info"@en ;
-  rdfs:label "Контактные данные"@ru ;
-  rdfs:range xsd:string ;
-.
-
-
-
-
-v-s:decision
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Decision"@en ;
-  rdfs:label "Решение"@ru ;
-  rdfs:range xsd:string ;
-.
-
-
-
-v-s:hasAddDoc
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Add document"@en ;
-  rdfs:label "Связанные документы"@ru ;
-  rdfs:range v-s:Thing ;
-.
 
 v-s:hasChief
   rdf:type owl:ObjectProperty ;
@@ -95,16 +54,6 @@ v-s:member
   rdfs:label "Участники"@ru ;
   rdfs:range v-s:Appointment ;
 .
-
-v-s:hasYesNo
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Yes no"@en ;
-  rdfs:label "Да нет"@ru ;
-  rdfs:range v-s:YesNo ;
-.
-
-
-
 
 #временно перенесено begin
 v-s:registrationNumber
@@ -132,12 +81,6 @@ v-s:outOfScope
   rdf:type owl:DatatypeProperty ;
   rdfs:label "OutOfScope"@en ;
   rdfs:label "Не в ходит в рамки"@ru ;
-  rdfs:range xsd:string ;
-.
-v-s:permission
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Permission"@en ;
-  rdfs:label "Разрешение"@ru ;
   rdfs:range xsd:string ;
 .
 

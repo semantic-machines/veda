@@ -261,7 +261,7 @@ veda.Module(function Util(veda) { "use strict";
       modal = false;
     }
 
-    individual["v-s:hasStatusWorkflow"] = [ new veda.IndividualModel("v-s:ToBeSent") ];
+    individual["v-wf:hasStatusWorkflow"] = [ new veda.IndividualModel("v-wf:ToBeSent") ];
     //$('[resource="'+individual.id+'"]').find("#save").trigger("click");
     template.trigger('save');
     if (individual.redirectToIndividual) {

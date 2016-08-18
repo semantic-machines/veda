@@ -107,13 +107,13 @@ v-ui:template
 .
 v-ui:ClassTemplate
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Document template"@en ;
   rdfs:label "Шаблон документа"@ru ;
 .
 v-ui:PropertySpecification
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Property specification"@en ;
   rdfs:label "Спецификация свойства"@ru ;
 .
@@ -392,13 +392,13 @@ v-ui:treeDisplayedProperty
 
 v-ui:Language
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Language"@en ;
   rdfs:label "Язык"@ru ;
 .
 v-ui:Preferences
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Preferences"@en ;
   rdfs:label "Предпочтения"@ru ;
@@ -922,7 +922,7 @@ v-ui:SavedSearchTemplate
 
 v-ui:TestUIClass
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Класс для тестирования интерфейса"@ru ;
   rdfs:label "Test UI class"@en ;
 .

@@ -20,7 +20,7 @@
 
 v-ft:FunctionTasks
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Function 'Tasks'"@en ;
   rdfs:label "Функция 'Задачи'"@ru ;
 .
@@ -41,14 +41,14 @@ v-ft:FunctionTasksModel
   v-ui:forClass v-ft:FunctionTasks ;
   v-s:script """
   //# sourceURL=v-ft:FunctionTasksModel
-	var self = this;
-	var q = self["v-ft:query"][0].replace("$1", veda.appointment ? veda.appointment.id : veda.user.id).replace("$2", veda.appointment ? veda.appointment["v-s:occupation"][0].id : veda.user.id);
-	self["v-ft:query"] = [q];
-	var tasks = new veda.IndividualModel();
-	tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
-	tasks["v-fs:fulltextQuery"] = self["v-ft:query"].slice(0);
-	tasks["v-fs:sortOrder"] = self["v-ft:sortOrder"].slice(0);
-	self.tasks = tasks;
+  var self = this;
+  var q = self["v-ft:query"][0].replace("$1", veda.appointment ? veda.appointment.id : veda.user.id).replace("$2", veda.appointment ? veda.appointment["v-s:occupation"][0].id : veda.user.id);
+  self["v-ft:query"] = [q];
+  var tasks = new veda.IndividualModel();
+  tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
+  tasks["v-fs:fulltextQuery"] = self["v-ft:query"].slice(0);
+  tasks["v-fs:sortOrder"] = self["v-ft:sortOrder"].slice(0);
+  self.tasks = tasks;
   """
 .
 v-ft:Inbox
@@ -84,142 +84,142 @@ v-ft:FunctionTasksTemplate
   v-ui:forClass v-ft:FunctionTasks ;
   v-ui:template """
 <div class="container-fluid">
-	<br>
-	<ul class="nav nav-tabs nav-right" role="tablist">
-		<li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
-		<li role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li>
-	</ul>
-	<table class="table table-condensed table-bordered table-striped">
-		<thead>
-			<tr>
-				<th width="20px">#</th>
-				<th width="20px"><span class="glyphicon glyphicon-search"></span></th>
-				<th width="10%">
-					<a id="v-wf:from" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
-					<span about="v-wf:from" property="rdfs:label"></span>
-				</th>
-				<th width="10%">
-					<a id="v-wf:to" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
-					<span about="v-wf:to" property="rdfs:label"></span>
-				</th>
-				<th>
-					<a id="rdfs:label" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
-					<span about="v-s:description" property="rdfs:label"></span>
-				</th>
-				<th width="40%">
-					<a id="v-wf:onDocument" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
-					<span about="v-wf:onDocument" property="rdfs:label"></span>
-				</th>
-				<th width="10%">
-					<a id="v-wf:dateGiven" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
-					<span about="v-wf:dateGiven" property="rdfs:label"></span>
-				</th>
-			</tr>
-		</thead>
-		<tbody id="tasks">
-			<tr>
-				<td colspan="7">
-					<span about="v-ft:TasksNotFound" property="rdfs:label"></span>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-	<div class="text-center">
-		<ul class="pagination" id="pager"></ul>
-	</div>
-	<br />
+  <br>
+  <ul class="nav nav-tabs nav-right" role="tablist">
+    <li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
+    <li role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li>
+  </ul>
+  <table class="table table-condensed table-bordered table-striped">
+    <thead>
+      <tr>
+        <th width="20px">#</th>
+        <th width="20px"><span class="glyphicon glyphicon-search"></span></th>
+        <th width="10%">
+          <a id="v-wf:from" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
+          <span about="v-wf:from" property="rdfs:label"></span>
+        </th>
+        <th width="10%">
+          <a id="v-wf:to" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
+          <span about="v-wf:to" property="rdfs:label"></span>
+        </th>
+        <th>
+          <a id="rdfs:label" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
+          <span about="v-s:description" property="rdfs:label"></span>
+        </th>
+        <th width="40%">
+          <a id="v-wf:onDocument" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
+          <span about="v-wf:onDocument" property="rdfs:label"></span>
+        </th>
+        <th width="10%">
+          <a id="v-wf:dateGiven" href="#" class="btn btn-xs btn-link glyphicon glyphicon-sort-by-attributes text-muted"></a>
+          <span about="v-wf:dateGiven" property="rdfs:label"></span>
+        </th>
+      </tr>
+    </thead>
+    <tbody id="tasks">
+      <tr>
+        <td colspan="7">
+          <span about="v-ft:TasksNotFound" property="rdfs:label"></span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="text-center">
+    <ul class="pagination" id="pager"></ul>
+  </div>
+  <br />
 </div>
 <script>
   //# sourceURL=v-ft:FunctionTasksTemplate
   var tasks = individual.tasks;
-	tasks.on("afterSearch", renderTasks);
-	template.on("remove", function () {
-		tasks.off("afterSearch", renderTasks);
-	});
+  tasks.on("afterSearch", renderTasks);
+  template.on("remove", function () {
+    tasks.off("afterSearch", renderTasks);
+  });
 
-	var tmplInd = new veda.IndividualModel("v-ft:TaskTemplate");
-	var tmpl = tmplInd["v-ui:template"][0].toString();
-	var cnt = $("#tasks", template);
-	var sorts = $("th > a", template);
-	var pager = $("#pager", template);
-	sorts.on("click", function (e) {
-		e.preventDefault();
-		var sortOrder = $(this);
-		var dir = sortOrder.hasClass("glyphicon-sort-by-attributes-alt") ? " asc" : " desc";
-		sortOrder.toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");
-		if (this.id === "v-s:description") {
-			tasks["v-fs:sortOrder"] = ["'" + this.id + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir];
-		} else {
-			tasks["v-fs:sortOrder"] = ["'" + this.id + "'" + dir];
-		}
-		tasks.search();
-		return false;
-	});
+  var tmplInd = new veda.IndividualModel("v-ft:TaskTemplate");
+  var tmpl = tmplInd["v-ui:template"][0].toString();
+  var cnt = $("#tasks", template);
+  var sorts = $("th > a", template);
+  var pager = $("#pager", template);
+  sorts.on("click", function (e) {
+    e.preventDefault();
+    var sortOrder = $(this);
+    var dir = sortOrder.hasClass("glyphicon-sort-by-attributes-alt") ? " asc" : " desc";
+    sortOrder.toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");
+    if (this.id === "v-s:description") {
+      tasks["v-fs:sortOrder"] = ["'" + this.id + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir];
+    } else {
+      tasks["v-fs:sortOrder"] = ["'" + this.id + "'" + dir];
+    }
+    tasks.search();
+    return false;
+  });
 
-	tasks.search();
+  tasks.search();
 
-	$("#refresh", template).click(function (e) {
-		e.preventDefault();
-		tasks.search();
-	});
+  $("#refresh", template).click(function (e) {
+    e.preventDefault();
+    tasks.search();
+  });
 
-	function renderTasks(result) {
-		if (result.length) {
+  function renderTasks(result) {
+    if (result.length) {
 
-			cnt.empty();
-			pager.empty();
+      cnt.empty();
+      pager.empty();
 
-			var sortBy = dir = "";
-			if ( tasks.hasValue("v-fs:sortOrder") ) {
-				var t = tasks["v-fs:sortOrder"][0].split(" ");
-				sortBy = t[0]; dir = t[1];
-			}
+      var sortBy = dir = "";
+      if ( tasks.hasValue("v-fs:sortOrder") ) {
+        var t = tasks["v-fs:sortOrder"][0].split(" ");
+        sortBy = t[0]; dir = t[1];
+      }
 
-			sorts.each(function () {
-				var sortOrder = $(this);
-				if (sortBy.indexOf(this.id) >= 0) {
-					sortOrder.removeClass("text-muted");
-					if (dir === "desc") sortOrder.removeClass("glyphicon-sort-by-attributes").addClass("glyphicon-sort-by-attributes-alt");
-				} else {
-					sortOrder.addClass("text-muted");
-				}
-			});
+      sorts.each(function () {
+        var sortOrder = $(this);
+        if (sortBy.indexOf(this.id) >= 0) {
+          sortOrder.removeClass("text-muted");
+          if (dir === "desc") sortOrder.removeClass("glyphicon-sort-by-attributes").addClass("glyphicon-sort-by-attributes-alt");
+        } else {
+          sortOrder.addClass("text-muted");
+        }
+      });
 
-			tasks.page = tasks.page || 0;
-			if (tasks.count < tasks.page * veda.user.displayedElements) {
-				tasks.page = Math.floor(tasks.count / veda.user.displayedElements) + 1 * (tasks.count % veda.user.displayedElements ? 1 : 0) - 1;
-			}
+      tasks.page = tasks.page || 0;
+      if (tasks.count < tasks.page * veda.user.displayedElements) {
+        tasks.page = Math.floor(tasks.count / veda.user.displayedElements) + 1 * (tasks.count % veda.user.displayedElements ? 1 : 0) - 1;
+      }
 
-			for (var i = tasks.page * veda.user.displayedElements; i < (tasks.page + 1) * veda.user.displayedElements && i < tasks.count; i++) {
-				(function (i) {
-					setTimeout(function () {
-						var _tmpl = tmpl.replace("###", i+1);
-						var result = new veda.IndividualModel( tasks.result[i] );
-						result.present(cnt, _tmpl);
-					}, 0);
-				}(i));
-			}
+      for (var i = tasks.page * veda.user.displayedElements; i < (tasks.page + 1) * veda.user.displayedElements && i < tasks.count; i++) {
+        (function (i) {
+          setTimeout(function () {
+            var _tmpl = tmpl.replace("###", i+1);
+            var result = new veda.IndividualModel( tasks.result[i] );
+            result.present(cnt, _tmpl);
+          }, 0);
+        }(i));
+      }
 
-			// Show pager
-			for (var pg = 0; pg < Math.floor(tasks.count / veda.user.displayedElements) + 1 * (tasks.count % veda.user.displayedElements ? 1 : 0); pg++) {
-				var $pg = $("<li/>")
-					.attr("class", pg === tasks.page ? "active" : "")
-					.appendTo(pager);
-				var $a = $("<a/>", {
-					"text" : pg + 1,
-					"click": (function (pg) {
-						if (pg === tasks.page) return $.noop;
-						return function (event) {
-							event.preventDefault();
-							tasks.page = pg;
-							tasks.trigger("afterSearch", tasks.result);
-						}
-					})(pg),
-					"href" : ""
-				}).appendTo($pg);
-			}
-		}
-	}
+      // Show pager
+      for (var pg = 0; pg < Math.floor(tasks.count / veda.user.displayedElements) + 1 * (tasks.count % veda.user.displayedElements ? 1 : 0); pg++) {
+        var $pg = $("<li/>")
+          .attr("class", pg === tasks.page ? "active" : "")
+          .appendTo(pager);
+        var $a = $("<a/>", {
+          "text" : pg + 1,
+          "click": (function (pg) {
+            if (pg === tasks.page) return $.noop;
+            return function (event) {
+              event.preventDefault();
+              tasks.page = pg;
+              tasks.trigger("afterSearch", tasks.result);
+            }
+          })(pg),
+          "href" : ""
+        }).appendTo($pg);
+      }
+    }
+  }
 </script>
   """ ;
 .
@@ -230,26 +230,26 @@ v-ft:TaskTemplate
   rdfs:label "Шаблон задачи для таблицы задач"@ru ;
   v-ui:template """
 <tr>
-	<td>###</td>
-	<td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
-	<td rel="v-wf:from" template="v-ui:LabelTemplate"></td>
-	<td rel="v-wf:to" template="v-ui:LabelTemplate"></td>
-	<td>
-		<a href="#/@" property="rdfs:label"></a>
-		<p><span property="v-s:description"></span></p>
-	</td>
-	<td rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate"></td>
-	<td property="v-wf:dateGiven"></td>
+  <td>###</td>
+  <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+  <td rel="v-wf:from" template="v-ui:LabelTemplate"></td>
+  <td rel="v-wf:to" template="v-ui:LabelTemplate"></td>
+  <td>
+    <a href="#/@" property="rdfs:label"></a>
+    <p><span property="v-s:description"></span></p>
+  </td>
+  <td rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate"></td>
+  <td property="v-wf:dateGiven"></td>
 </tr>
 <script>
   //# sourceURL=v-ft:TaskTemplate
-	if ( !individual.hasValue("v-wf:read") || individual["v-wf:read"][0] != true) {
-		template.css("font-weight", "bold");
-	}
-	template.dblclick(function (e) {
-		riot.route("#/" + individual.id);
-		e.stopPropagation();
-	});
+  if ( !individual.hasValue("v-wf:read") || individual["v-wf:read"][0] != true) {
+    template.css("font-weight", "bold");
+  }
+  template.dblclick(function (e) {
+    riot.route("#/" + individual.id);
+    e.stopPropagation();
+  });
 </script>
   """
 .

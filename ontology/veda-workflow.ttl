@@ -27,14 +27,14 @@ v-wf:appInboxUrl
 
 v-wf:Net
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Net"@en ;
   rdfs:label "Сеть"@ru ;
 .
 v-wf:NetElement
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Net element"@en ;
   rdfs:label "Элемент сети"@ru ;
@@ -69,21 +69,21 @@ v-wf:Task
 .
 v-wf:Flow
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Flow"@en ;
   rdfs:label "Поток"@ru ;
 .
 v-wf:ExecutorDefinition
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Executor definition"@en ;
   rdfs:label "Выбор исполнителя"@ru ;
 .
 v-wf:TransitionBehavior
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Transition behavior"@en ;
   rdfs:label "Тип перехода"@ru ;
@@ -319,7 +319,7 @@ v-wf:executorExpression
 #------------------------------------------------------
 v-wf:VarDefine
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Variable"@en ;
   rdfs:label "Определение переменой"@ru ;
@@ -346,7 +346,7 @@ v-wf:varDefineScope
 
 v-wf:Variable
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Variable"@en ;
   rdfs:label "Переменная"@ru ;
@@ -1662,14 +1662,11 @@ v-wf:read
 
 # --------------------------- Start Form ---------------------------
 v-wf:StartForm
-  rdf:type rdfs:Class ;
+  rdf:type owl:Class ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Стартовая форма"@ru ;
   rdfs:label "Start form"@en ;
-.
-
-v-s:StatusWorkflow
-  rdfs:domain v-wf:StartForm ;
+  rdfs:subClassOf v-s:Thing ;
 .
 
 v-wf:processedDocument
@@ -1714,7 +1711,7 @@ v-wf:useTransformation
 
 v-wf:Mapping
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Mapping"@en ;
   rdfs:label "Преобразование"@ru ;
@@ -1933,7 +1930,7 @@ v-wf:isStopped
 # --------------------------- WorkOrder --------------------------
 v-wf:WorkOrder
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Work order"@en ;
   rdfs:label "Рабочее задание"@ru ;
@@ -2058,7 +2055,7 @@ v-wf:event_df5
 
 v-wf:Decision
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Decision"@en ;
@@ -2140,18 +2137,14 @@ v-wf:isProcess
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущен процесс"@ru ;
   rdfs:label "Started process"@en ;
-  rdfs:domain v-wf:StartForm ;
-  rdfs:domain v-wf:WorkOrder ;
   rdfs:domain v-s:Thing ;
   rdfs:range v-wf:Process ;
-  rdfs:domain v-s:Thing ;
-
 .
 v-wf:hasStatusWorkflow
   rdf:type owl:ObjectProperty ;
   rdfs:label "Status workflow"@en ;
   rdfs:label "Статус документооборота"@ru ;
-  rdfs:range v-s:StatusWorkflow ;
+  rdfs:range v-wf:StatusWorkflow ;
   rdfs:domain v-s:Thing ;
 .
 v-wf:ProcessStarted
@@ -2486,5 +2479,31 @@ v-ui:TraceEventTemplate
   pre.html(txt2);
 </script>
   """ ;
+.
+
+
+v-wf:StatusWorkflow
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "StatusWorkflow"@en ;
+  rdfs:label "Статус документооборота"@ru ;
+.
+
+v-wf:ToBeSent
+  rdf:type v-wf:StatusWorkflow ;
+  rdfs:label "To be sent"@en ;
+  rdfs:label "Ожидает отправки"@ru ;
+.
+
+v-wf:IsSent
+  rdf:type v-wf:StatusWorkflow ;
+  rdfs:label "Is sent"@en ;
+  rdfs:label "Отправлено"@ru ;
+.
+
+v-wf:DoNotSend
+  rdf:type v-wf:StatusWorkflow ;
+  rdfs:label "Do Not Send"@en ;
+  rdfs:label "Не отправлять"@ru ;
 .
 

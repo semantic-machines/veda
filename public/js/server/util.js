@@ -56,7 +56,7 @@ function newJournalRecord(journal_uri)
 function logToJournal(ticket, journal_uri, journal_record, jr_type)
 {
     //if (!jr_type)
-    //	print("@@@ logToJournal, new_journal_record=" + toJson(journal_record));
+    //  print("@@@ logToJournal, new_journal_record=" + toJson(journal_record));
 
     put_individual(ticket, journal_record, _event_id);
 
@@ -70,7 +70,7 @@ function logToJournal(ticket, journal_uri, journal_record, jr_type)
     };
 
     //if (!jr_type)
-    //	print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
+    //  print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
 
     //var before = get_individual(ticket, journal_uri);
     //print('BEFORE : '+toJson(before))
@@ -162,7 +162,7 @@ function isTechnicalAttribute(attName, oldvalue)
     if (!oldvalue && attName === 'v-s:nextVersion') return true;
     if (attName === 'v-s:isDraftOf') return true;
     if (attName === 'v-s:hasDraft') return true;
-    if (attName === 'v-s:hasStatusWorkflow') return true;
+    if (attName === 'v-wf:hasStatusWorkflow') return true;
     return false;
 }
 
@@ -204,7 +204,7 @@ function replace_word(src, from, to)
 
     var new_str = src;
     //if (trace)
-    //	print ('src=', src, ', from=', from, ', to=', to); 
+    //  print ('src=', src, ', from=', from, ', to=', to);
 
     var is_prepare = false;
 
@@ -283,7 +283,7 @@ function replace_word(src, from, to)
 }
 
 /**
- * Create document snapshot 
+ * Create document snapshot
  * @param ticket
  * @param document Document
  * @param prev_state Previous document state
@@ -291,91 +291,91 @@ function replace_word(src, from, to)
  * @param _event_id
  */
 function create_version(ticket, document, prev_state, user_uri, _event_id) {
-	// Only if we save actual version of document (or it is first save of versioned document)
-	if (!document['v-s:actualVersion'] 
-		|| (document['v-s:actualVersion'][0].data == document['@']
-			&& ( ( !document['v-s:previousVersion'] && (!prev_state || !prev_state['v-s:previousVersion']) ) 
-			    || (prev_state 
-			    	&& document['v-s:previousVersion']
-			    	&& prev_state['v-s:previousVersion']
-			    	&& document['v-s:previousVersion'][0].data == prev_state['v-s:previousVersion'][0].data)
-			   )
-		   )
-	   ) {
-	    if (!prev_state) prev_state = document;
-			var actualId = document['@']; 
-		var versionId = genUri();    
-	    	
-		// Create new version
-		var version = get_individual(ticket, document['@']);
-		version['@'] = versionId; 
-		if (prev_state['v-s:previousVersion']) {
-			version['v-s:previousVersion'] = prev_state['v-s:previousVersion'];
-		} else {
-			version['v-s:previousVersion'] = [];
-		}
-		version['v-s:actualVersion'] = [{
-	        data: document['@'],
-	        type: _Uri
-		}];
-		version['v-s:nextVersion'] = [{
-			data: actualId,
-			type: _Uri
-		}];
-		version['rdf:type'] = version['rdf:type'].concat(
-			[{
-				data: "v-s:Version",
-				type: _Uri
-			}]
-		);
-		version['v-s:created'] = [{data: new Date(), type: _Datetime}];
-		version['v-s:edited'] = [];
-		version['v-s:publisher'] = newUri(user_uri);
+  // Only if we save actual version of document (or it is first save of versioned document)
+  if (!document['v-s:actualVersion']
+    || (document['v-s:actualVersion'][0].data == document['@']
+      && ( ( !document['v-s:previousVersion'] && (!prev_state || !prev_state['v-s:previousVersion']) )
+          || (prev_state
+            && document['v-s:previousVersion']
+            && prev_state['v-s:previousVersion']
+            && document['v-s:previousVersion'][0].data == prev_state['v-s:previousVersion'][0].data)
+         )
+       )
+     ) {
+      if (!prev_state) prev_state = document;
+      var actualId = document['@'];
+    var versionId = genUri();
+
+    // Create new version
+    var version = get_individual(ticket, document['@']);
+    version['@'] = versionId;
+    if (prev_state['v-s:previousVersion']) {
+      version['v-s:previousVersion'] = prev_state['v-s:previousVersion'];
+    } else {
+      version['v-s:previousVersion'] = [];
+    }
+    version['v-s:actualVersion'] = [{
+          data: document['@'],
+          type: _Uri
+    }];
+    version['v-s:nextVersion'] = [{
+      data: actualId,
+      type: _Uri
+    }];
+    version['rdf:type'] = version['rdf:type'].concat(
+      [{
+        data: "v-s:Version",
+        type: _Uri
+      }]
+    );
+    version['v-s:created'] = [{data: new Date(), type: _Datetime}];
+    version['v-s:edited'] = [];
+    version['v-s:publisher'] = newUri(user_uri);
         version['s:lastEditor'] = [];
-		
-		user_uri
-		put_individual(ticket, version, _event_id);
-		
-		// Add rights to version
-		var uri = 'd:membership_' + versionId.split(':').join('_') + '_' + actualId.split(':').join('_');
-		
-		var membership = get_individual(ticket, uri);
-		
-		if (!membership) {
-			//print('+M '+uri);
-			membership = {
-				'@' : uri, 
-				'rdf:type'     : newUri('v-s:Membership'),
-				'v-s:memberOf' : newUri(actualId),
-				'v-s:resource' : newUri(versionId),
-				'rdfs:comment' : newStr('создано cfg:Event_3'),
-				'v-s:canRead'  : newBool(true)
-			};
-			put_individual (ticket, membership, _event_id);
-		} 			
-	
-		// Update previous version
-		if (document['v-s:previousVersion']) {
-			var previous = get_individual(ticket, getUri(document['v-s:previousVersion']));
-			previous['v-s:nextVersion'] = [{
-	        	data: versionId,
-	        	type: _Uri
-			}];
-			put_individual(ticket, previous, _event_id);
-		}
-				
-		// Update actual version
-		document['v-s:previousVersion'] = [{
-	        data: versionId,
-	        type: _Uri
-		}];
-		document['v-s:actualVersion'] = [{
-	        data: document['@'],
-	        type: _Uri
-		}];
-		document['v-s:nextVersion'] = [];
-		document['v-s:edited'] = [{data: new Date(), type: _Datetime}];
-		document['s:lastEditor'] = newUri(user_uri);
-		put_individual(ticket, document, _event_id);
-	}
+
+    user_uri
+    put_individual(ticket, version, _event_id);
+
+    // Add rights to version
+    var uri = 'd:membership_' + versionId.split(':').join('_') + '_' + actualId.split(':').join('_');
+
+    var membership = get_individual(ticket, uri);
+
+    if (!membership) {
+      //print('+M '+uri);
+      membership = {
+        '@' : uri,
+        'rdf:type'     : newUri('v-s:Membership'),
+        'v-s:memberOf' : newUri(actualId),
+        'v-s:resource' : newUri(versionId),
+        'rdfs:comment' : newStr('создано cfg:Event_3'),
+        'v-s:canRead'  : newBool(true)
+      };
+      put_individual (ticket, membership, _event_id);
+    }
+
+    // Update previous version
+    if (document['v-s:previousVersion']) {
+      var previous = get_individual(ticket, getUri(document['v-s:previousVersion']));
+      previous['v-s:nextVersion'] = [{
+            data: versionId,
+            type: _Uri
+      }];
+      put_individual(ticket, previous, _event_id);
+    }
+
+    // Update actual version
+    document['v-s:previousVersion'] = [{
+          data: versionId,
+          type: _Uri
+    }];
+    document['v-s:actualVersion'] = [{
+          data: document['@'],
+          type: _Uri
+    }];
+    document['v-s:nextVersion'] = [];
+    document['v-s:edited'] = [{data: new Date(), type: _Datetime}];
+    document['s:lastEditor'] = newUri(user_uri);
+    put_individual(ticket, document, _event_id);
+  }
 }

@@ -25,7 +25,7 @@ v-s:loadPriority
 
 v-s:Node
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Node"@en ;
   rdfs:label "Нода"@ru ;
@@ -38,7 +38,7 @@ v-s:count_thread
   rdfs:label "Количество процессов для паралельной обработки"@ru ;
   rdfs:label "Count thread"@en ;
   rdfs:range xsd:integer ;
-.    
+.
 
 v-s:push_individual_by_event
   rdf:type owl:DatatypeProperty ;
@@ -46,7 +46,7 @@ v-s:push_individual_by_event
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Push individual by event" ;
   rdfs:range v-s:Connection ;
-.    
+.
 
 v-s:send_an_email_individual_by_event
   rdf:type owl:DatatypeProperty ;
@@ -54,7 +54,7 @@ v-s:send_an_email_individual_by_event
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Send an e-mail individual by event" ;
   rdfs:range v-s:Connection ;
-.    
+.
 
 v-s:name
   rdf:type owl:DatatypeProperty ;
@@ -63,7 +63,7 @@ v-s:name
   rdfs:label "Имя"@ru ;
   rdfs:label "Name"@en ;
   rdfs:range xsd:string ;
-.    
+.
 
 v-s:checktime_onto_files
   rdf:type owl:DatatypeProperty ;
@@ -72,7 +72,7 @@ v-s:checktime_onto_files
   rdfs:label "Период между проверками изменений в файлах онтологии, секунд"@ru ;
   rdfs:label "Checktime for onto files, sec."@en ;
   rdfs:range xsd:integer ;
-.    
+.
 
 v-s:listener
   rdf:type owl:ObjectProperty ;
@@ -109,12 +109,12 @@ v-s:write_storage_node
 
 v-s:Connection
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Connection"@en ;
-  rdfs:label "Соединение"@ru ;        
+  rdfs:label "Соединение"@ru ;
 .
-    
+
 v-s:transport
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Connection ;
@@ -122,7 +122,7 @@ v-s:transport
   rdfs:label "Слушатель канала"@ru ;
   rdfs:label "Listener channel"@en ;
   rdfs:range xsd:string ;
-.    
+.
 
 v-s:point
   rdf:type owl:DatatypeProperty ;
@@ -131,7 +131,7 @@ v-s:point
   rdfs:label "Точка подключения"@ru ;
   rdfs:label "Connection point"@en ;
   rdfs:range xsd:string ;
-.    
+.
 
 v-s:host
   rdf:type owl:DatatypeProperty ;
@@ -139,7 +139,7 @@ v-s:host
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Host";
   rdfs:range xsd:string ;
-.    
+.
 
 v-s:port
   rdf:type owl:DatatypeProperty ;
@@ -147,7 +147,7 @@ v-s:port
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Port";
   rdfs:range xsd:integer ;
-.    
+.
 
 v-s:sql_database
   rdf:type owl:DatatypeProperty ;
@@ -155,7 +155,7 @@ v-s:sql_database
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Database name" ;
   rdfs:range xsd:string ;
-.    
+.
 
 v-s:amqp_vhost
   rdf:type owl:DatatypeProperty ;
@@ -163,7 +163,7 @@ v-s:amqp_vhost
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Amqp vhost" ;
   rdfs:range xsd:string ;
-.    
+.
 
 v-s:amqp_routingkey
   rdf:type owl:DatatypeProperty ;
@@ -171,15 +171,15 @@ v-s:amqp_routingkey
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Amqp routing key" ;
   rdfs:range xsd:string ;
-.    
+.
 
 v-s:login
   rdfs:domain v-s:Connection ;
-.    
+.
 
 v-s:password
   rdfs:domain v-s:Connection ;
-.    
+.
 
 v-s:queue
   rdf:type owl:DatatypeProperty ;
@@ -187,7 +187,7 @@ v-s:queue
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Queue" ;
   rdfs:range xsd:string ;
-.    
+.
 
 v-s:useTemplate
   rdf:type owl:ObjectProperty ;
@@ -199,7 +199,7 @@ v-s:useTemplate
 
 v-s:AppInfo
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Application info"@en ;
   rdfs:label "Информация о приложении"@ru ;

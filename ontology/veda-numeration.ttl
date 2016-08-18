@@ -23,7 +23,7 @@ v-s:Numeration
 
 v-s:Enumerable
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf rdfs:Resource ;
   rdfs:label "Enumerable thing"@en ;
   rdfs:label "Перечисляемая сущность"@ru ;
 .

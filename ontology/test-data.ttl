@@ -645,7 +645,7 @@ td:ComplexRouteStartForm1
 
 :start-form1
     a v-wf:StartForm;
-    v-s:hasStatusWorkflow v-s:DoNotSent;
+    v-wf:hasStatusWorkflow v-wf:DoNotSend;
     rdfs:label "Тест стартовой формы 1"@ru;
     v-wf:forNet :net1 ;
 .
@@ -677,7 +677,7 @@ td:ComplexRouteStartForm1
 
 :start-form2
     a v-wf:StartForm;
-    v-s:hasStatusWorkflow v-s:DoNotSent;
+    v-wf:hasStatusWorkflow v-wf:DoNotSend;
     rdfs:label "Тест стартовой формы 2"@ru;
     v-wf:forNet :net2 ;
 .
@@ -720,7 +720,7 @@ td:ComplexRouteStartForm1
 
 :start-form3
     a v-wf:StartForm;
-    v-s:hasStatusWorkflow v-s:DoNotSent;
+    v-wf:hasStatusWorkflow v-wf:DoNotSend;
     rdfs:label "Тест стартовой формы 3"@ru;
     v-wf:forNet :net3 ;
 .
@@ -764,7 +764,7 @@ td:ComplexRouteStartForm1
 
 :start-form4
     a v-wf:StartForm;
-    v-s:hasStatusWorkflow v-s:DoNotSent;
+    v-wf:hasStatusWorkflow v-wf:DoNotSend;
     rdfs:label "Тест стартовой формы 4"@ru;
     v-wf:forNet :net4 ;
 .
