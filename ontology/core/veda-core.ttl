@@ -27,33 +27,33 @@ v-s:ExecuteScript
 .
 
 v-s:TTLFile
-	rdf:type owl:Class ;
-	rdfs:subClassOf v-s:Container ;
-	rdfs:label "TTL file"@en ;
-	rdfs:label "TTL файл"@ru ;
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Container ;
+  rdfs:label "TTL file"@en ;
+  rdfs:label "TTL файл"@ru ;
 .
 
 v-s:Variable
-	rdf:type owl:Class ;
-	rdfs:subClassOf owl:Thing ;
-	rdfs:label "Variable"@en ;
-	rdfs:label "Переменная"@ru ;
+  rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+  rdfs:label "Variable"@en ;
+  rdfs:label "Переменная"@ru ;
 .
 
 v-s:variableName
-	rdf:type rdf:Property ;
-	rdfs:label "Variable name"@en ;
-	rdfs:label "Имя переменной"@ru ;
-	rdfs:domain v-s:Variable ;
-	rdfs:range xsd:string ;
+  rdf:type rdf:Property ;
+  rdfs:label "Variable name"@en ;
+  rdfs:label "Имя переменной"@ru ;
+  rdfs:domain v-s:Variable ;
+  rdfs:range xsd:string ;
 .
 
 v-s:variableValue
-	rdf:type rdf:Property ;
-	rdfs:label "Variable value"@en ;
-	rdfs:label "Значение переменной"@ru ;
-	rdfs:domain v-s:Variable ;
-	rdfs:range rdfs:Resource ;
+  rdf:type rdf:Property ;
+  rdfs:label "Variable value"@en ;
+  rdfs:label "Значение переменной"@ru ;
+  rdfs:domain v-s:Variable ;
+  rdfs:range rdfs:Resource ;
 .
 
 v-s:Bundle
@@ -204,13 +204,13 @@ v-s:Deliverable
   rdfs:label "Deliverable thing"@en ;
 .
 
-v-s:Authorized
+v-s:ClassAuthorized
   rdf:type owl:Class ;
   rdfs:subClassOf owl:Thing ;
-  rdfs:label "Authorized resource"@en ;
-  rdfs:label "Авторизуемый ресурс"@ru ;
-  rdfs:comment "Суперкласс всех классов, индивиды которых могут авторизоваться по типу"@en ;
-  rdfs:comment "Superclass for classes whose individuals should be authorized by type"@ru ;
+  rdfs:label "Class authorized resource"@en ;
+  rdfs:label "Ресурс авторизуемый по классу"@ru ;
+  rdfs:comment "Суперкласс всех классов, индивиды которых могут авторизоваться по классу"@en ;
+  rdfs:comment "Superclass for classes whose individuals should be authorized by class"@ru ;
 .
 
 v-s:ClassModel

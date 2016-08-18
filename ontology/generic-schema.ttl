@@ -16,43 +16,21 @@
 .
 #-- Классы --
 
-
-v-s:Dictionary
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
-  rdfs:comment "Dictionary"@en ;
-  rdfs:comment "Словарь"@ru ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Dictionary"@en ;
-  rdfs:label "Словарь"@ru ;
-.
-v-s:Document
-  rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Exportable ;
-  rdfs:subClassOf v-s:Authorized ;
-  rdfs:comment "A document"@en ;
-  rdfs:comment "Документ"@ru ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Document"@en ;
-  rdfs:label "Документ"@ru ;
-.
 v-s:Level
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Dictionary ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Level"@en ;
   rdfs:label "Уровень"@ru ;
 .
 v-s:YesNo
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Dictionary ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Yes No"@en ;
   rdfs:label "Да Нет"@ru ;
 .
 v-s:Bond
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Bond"@en ;
   rdfs:label "Связь"@ru ;
 .
@@ -92,7 +70,7 @@ v-s:hasAddDoc
   rdf:type owl:ObjectProperty ;
   rdfs:label "Add document"@en ;
   rdfs:label "Связанные документы"@ru ;
-  rdfs:range v-s:Document ;
+  rdfs:range v-s:Thing ;
 .
 
 v-s:hasChief
@@ -168,13 +146,13 @@ v-s:from
   rdfs:domain v-s:Bond ;
   rdfs:label "from"@en ;
   rdfs:label "от"@ru ;
-  rdfs:range v-s:Document ;
+  rdfs:range v-s:Thing ;
 .
 v-s:to
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Bond ;
   rdfs:label "to"@en ;
   rdfs:label "к"@ru ;
-  rdfs:range v-s:Document ;
+  rdfs:range v-s:Thing ;
 .
 

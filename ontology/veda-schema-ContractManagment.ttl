@@ -17,7 +17,7 @@
 
 v-s:InternalAccountingDocument
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "InternalAccountingDocument"@en ;
   rdfs:label "Внутренний бухгалтерский документ"@ru ;

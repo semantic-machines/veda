@@ -18,7 +18,7 @@
 
 v-s:Initiative
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Enumerable ;
   rdfs:label "Initiative"@en ;
   rdfs:label "Инициатива"@ru ;
@@ -37,37 +37,37 @@ v-s:Project
 .
 v-s:Effect
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Effect"@en ;
   rdfs:label "Эффект"@ru ;
 .
 v-s:Effects
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Effects"@en ;
   rdfs:label "Эффекты"@ru ;
 .
 v-s:KpiGroup
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Dictionary ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Kpi group"@en ;
   rdfs:label "Группа целевого показателя"@ru ;
 .
 v-s:Status
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Dictionary ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Status"@en ;
   rdfs:label "Статус"@ru ;
 .
 v-s:Sector
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Dictionary ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Sector"@en ;
   rdfs:label "Отрасль экономической деятельности"@ru ;
 .
 v-s:ClassifiedAttachment
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Classified attachment"@en ;
   rdfs:label "Классифицированное вложение"@ru ;
 .
@@ -75,84 +75,84 @@ v-s:DocumentKind
   rdf:type owl:Class ;
   rdfs:label "Document Kind"@en ;
   rdfs:label "Вид документа"@ru ;
-  rdfs:subClassOf v-s:Dictionary ;
+  rdfs:subClassOf v-s:Thing ;
 .
 v-s:ProjectStage
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Dictionary ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "ProjectStage"@en ;
   rdfs:label "Стадия проекта"@ru ;
 .
 v-s:ProjectKind
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Project category"@en ;
   rdfs:label "Вид проекта"@ru ;
 .
 v-s:Asset
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Asset"@en ;
   rdfs:label "Основное средство"@ru ;
 .
 v-s:MemberOfWorkGroup
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Project team member"@en ;
   rdfs:label "Член рабочей группы в Проекте"@ru ;
 .
 v-s:ProjectPlan
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Project plan"@en ;
   rdfs:label "План мероприятий проекта"@ru ;
 .
 v-s:ProjectPhase
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Project phase"@en ;
   rdfs:label "Фаза проекта"@ru ;
 .
 v-s:ProjectMilestone
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Project milestone"@en ;
   rdfs:label "Контрольная точка проекта"@ru ;
 .
 v-s:ProjectPhaseCost
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Project phase costs"@en ;
   rdfs:label "Затраты на фазу проекта"@ru ;
 .
 v-s:ProjectPhaseRisk
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Project phase risks"@en ;
   rdfs:label "Риски фазы проекта"@ru ;
 .
 v-s:ProjectPhaseKind
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Dictionary ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Project phase kind"@en ;
   rdfs:label "Вид фазы проекта"@ru ;
 .
 v-s:CurrencyKind
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Dictionary ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Currency kind"@en ;
   rdfs:label "Вид валюты"@ru ;
 .
 v-s:MaintenanceKind
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Dictionary ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Kind of maintenance"@en ;
   rdfs:label "Вид обуслуживания оборудования"@ru ;
 .
@@ -667,14 +667,14 @@ v-s:assetDateTo
 .
 v-s:isIncludingToReserv
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Asset ;  
+  rdfs:domain v-s:Asset ;
   rdfs:label "is including to reserv"@en ;
   rdfs:label "Включено в резерв на обесценение"@ru ;
   rdfs:range xsd:boolean ;
 .
 v-s:PsIsIncludingToReserv
   rdf:type v-ui:BooleanPropertySpecification ;
-  v-ui:forClass v-s:Asset ;    
+  v-ui:forClass v-s:Asset ;
   v-ui:forProperty v-s:isIncludingToReserv ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -968,16 +968,16 @@ v-s:PsPermission
 .
 v-s:datePlan
   rdfs:domain v-s:ProjectPhase ;
-  rdfs:domain v-s:ProjectMilestone ;  
+  rdfs:domain v-s:ProjectMilestone ;
 .
 v-s:dateFact
   rdfs:domain v-s:ProjectPhase ;
-  rdfs:domain v-s:ProjectMilestone ;    
+  rdfs:domain v-s:ProjectMilestone ;
 .
 v-s:PsDatesInProjectPhase
   rdf:type v-ui:DatetimePropertySpecification ;
   v-ui:forClass v-s:ProjectPhase ;
-  v-ui:forClass v-s:ProjectMilestone ;    
+  v-ui:forClass v-s:ProjectMilestone ;
   v-ui:forProperty v-s:datePlan ;
   v-ui:forProperty v-s:dateFact ;
   v-ui:maxCardinality 1 ;
@@ -990,8 +990,8 @@ v-s:PsDatesInProjectPhase
 v-s:completion
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:ProjectPhase ;
-  rdfs:domain v-s:ProjectMilestone ;  
-  rdfs:domain v-s:ProjectPlan ;    
+  rdfs:domain v-s:ProjectMilestone ;
+  rdfs:domain v-s:ProjectPlan ;
   rdfs:label "Completion of Project phase"@en ;
   rdfs:label "Процент выполнения"@ru ;
   rdfs:range xsd:integer ;
@@ -999,8 +999,8 @@ v-s:completion
 v-s:PsCompletion
   rdf:type v-ui:IntegerPropertySpecification ;
   v-ui:forClass v-s:ProjectPhase ;
-  v-ui:forClass v-s:ProjectMilestone ;  
-  v-ui:forClass v-s:ProjectPlan ;    
+  v-ui:forClass v-s:ProjectMilestone ;
+  v-ui:forClass v-s:ProjectPlan ;
   v-ui:forProperty v-s:completion ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -1013,7 +1013,7 @@ v-s:PsCommentForProjectPhase
   rdf:type v-ui:StringPropertySpecification ;
   v-ui:forClass v-s:ProjectPhase ;
   v-ui:forClass v-s:ProjectMilestone ;
-  v-ui:forClass v-s:ProjectPlan ;  
+  v-ui:forClass v-s:ProjectPlan ;
   v-ui:forProperty rdfs:comment ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -1025,7 +1025,7 @@ v-s:PsCommentForProjectPhase
 v-s:hasProjectPhaseKind
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:ProjectPhase ;
-  rdfs:domain v-s:ProjectMilestone ;  
+  rdfs:domain v-s:ProjectMilestone ;
   rdfs:label "Project phase kind"@en ;
   rdfs:label "Вид фазы проекта"@ru ;
   rdfs:range v-s:ProjectPhaseKind ;
@@ -1034,7 +1034,7 @@ v-s:PsProjectPhaseKind
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forProperty v-s:hasProjectPhaseKind ;
   v-ui:forClass v-s:ProjectPhase ;
-  v-ui:forClass v-s:ProjectMilestone ;  
+  v-ui:forClass v-s:ProjectMilestone ;
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectPhaseKind')"^^xsd:string ;
@@ -1164,7 +1164,7 @@ v-s:hasProjectPhase
 v-s:PsProjectPhases
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forProperty v-s:hasProjectPhase ;
-  v-ui:forClass v-s:ProjectPlan ;    
+  v-ui:forClass v-s:ProjectPlan ;
   v-ui:maxCardinality 20 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectPhase')"^^xsd:string ;
@@ -1183,7 +1183,7 @@ v-s:hasProjectMilestone
 v-s:PsProjectMilestones
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forProperty v-s:hasProjectMilestone ;
-  v-ui:forClass v-s:ProjectPlan ;  
+  v-ui:forClass v-s:ProjectPlan ;
   v-ui:maxCardinality 20 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectMilestone')"^^xsd:string ;
@@ -1229,18 +1229,6 @@ v-s:PsInitiativeSnapshot
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Инициатива."@ru ;
   rdfs:label "Link to Project in all stages property specification for Initiative class"@en ;
   rdfs:label "Спецификации ссылок на проект на разных стадиях"@ru ;
-.
-
-v-s:PsHasClassifiedAttachment
-  rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:Document ;
-  v-ui:forProperty v-s:hasClassifiedAttachment ;
-  v-ui:maxCardinality 100 ;
-  v-ui:minCardinality 0 ;
-  v-ui:tooltip "Non-required, single value. Link to instance of ClassifiedAttachment class"@en ;
-  v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Классифицированное вложение."@ru ;
-  rdfs:label "hasClassifiedAttachment property specification for Document class"@en ;
-  rdfs:label "Спецификация свойства hasClassifiedAttachment для класса Документ"@ru ;
 .
 v-s:disposalPercent
   rdf:type owl:DatatypeProperty ;

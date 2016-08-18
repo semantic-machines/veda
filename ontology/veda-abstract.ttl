@@ -72,6 +72,9 @@ v-s:duration
 v-s:Thing
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
+#  rdfs:subClassOf v-s:Journaling ;
+#  rdfs:subClassOf v-s:Exportable ;
+#  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:label "Thing"@en ;
   rdfs:label "Любая сущность"@ru ;
 .
@@ -80,7 +83,7 @@ v-s:updateCounter
   rdfs:label "Update counter"@en ;
   rdfs:label "Счетчик обновлений"@ru ;
   rdfs:range xsd:integer ;
-  rdfs:domain v-s:Thing ;  
+  rdfs:domain v-s:Thing ;
 .
 v-s:owner
   rdf:type owl:ObjectProperty ;
@@ -143,7 +146,7 @@ v-s:edited
   rdfs:label "Edition date"@en ;
   rdfs:label "Дата редактирования"@ru ;
   rdfs:range xsd:dateTime ;
-  rdfs:domain v-s:Thing ;  
+  rdfs:domain v-s:Thing ;
 .
 v-s:deleted
   rdf:type owl:DatatypeProperty ;
@@ -234,21 +237,21 @@ v-s:hasParentLink
   rdfs:label "Parent document"@en ;
   rdfs:label "Ссылка на родительский документ"@ru ;
   rdfs:range rdfs:Resource ;
-  rdfs:domain v-s:Thing ;  
+  rdfs:domain v-s:Thing ;
 .
 v-s:hasImage
   rdf:type owl:ObjectProperty ;
   rdfs:label "Изображение"@ru ;
   rdfs:label "Image"@en ;
   rdfs:range v-s:File ;
-  rdfs:domain v-s:Thing ; 
+  rdfs:domain v-s:Thing ;
 .
 v-s:hasLogo
   rdf:type owl:ObjectProperty ;
   rdfs:label "Логотип"@ru ;
   rdfs:label "Logo"@en ;
   rdfs:range v-s:File ;
-  rdfs:domain v-s:Thing ; 
+  rdfs:domain v-s:Thing ;
 .
 ### ------------------------------------------------------- ####
 v-s:Spatial
@@ -343,7 +346,7 @@ v-s:contributor
   rdfs:label "Contributor"@en ;
   rdfs:label "Содействующий"@ru ;
   rdfs:range v-s:Appointment ;
-  rdfs:domain v-s:Contractual ;  
+  rdfs:domain v-s:Contractual ;
 .
 v-s:controller
   rdf:type owl:ObjectProperty ;

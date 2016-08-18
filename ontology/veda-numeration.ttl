@@ -16,7 +16,7 @@
 .
 v-s:Numeration
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Authorized ;
+  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:label "Parent class for Numeration feature"@en ;
   rdfs:label "Родительский класс для возможностей нумерации"@ru ;
 .
@@ -80,11 +80,11 @@ v-s:NumerationScopeClass
   rdfs:subClassOf v-s:Numeration ;
   rdfs:label "Numeration scope"@en ;
   rdfs:label "Пространство автонумерации"@ru ;
-. 
+.
 v-s:numerationCommitedInterval
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:NumerationScopeClass ;
-  rdfs:range v-s:NumerationCommitedIntervalClass;  
+  rdfs:range v-s:NumerationCommitedIntervalClass;
   rdfs:label "Numeration commited interval"@en ;
   rdfs:label "Занятый интервал"@ru ;
 .
@@ -93,7 +93,7 @@ v-s:NumerationCommitedIntervalClass
   rdfs:subClassOf v-s:Numeration ;
   rdfs:label "Numeration commited interval"@en ;
   rdfs:label "Занятый интервал"@ru ;
-. 
+.
 v-s:numerationCommitedIntervalBegin
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:NumerationCommitedIntervalClass ;
@@ -114,17 +114,17 @@ v-s:SimpleNumeration
   rdfs:label "Нумерация в пределах класса"@ru ;
   rdfs:label "Numeration with class as scope"@en ;
   v-s:numerationScope """
-(function (ticket, individual) 
+(function (ticket, individual)
 {
     if (!individual['rdf:type']) return '';
-	return "numeration-scope_"+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id).replace(':','_');
+  return "numeration-scope_"+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id).replace(':','_');
 })
 """ ;
-  v-s:numerationGetNextValue """  
+  v-s:numerationGetNextValue """
 (function getNextValue(ticket, scope) {
-	return getNextValueSimple(ticket, scope, 1);
+  return getNextValueSimple(ticket, scope, 1);
 })
-""" ;  
+""" ;
 .
 v-s:YearNumeration8
   rdf:type v-s:NumerationRule ;
@@ -132,17 +132,17 @@ v-s:YearNumeration8
   rdfs:label "Нумерация 2+6 (год+номер) в пределах класса и года"@ru ;
   rdfs:label "Numeration 2+6 (year+number) with class as scope"@en ;
   v-s:numerationScope """
-(function (ticket, individual) 
+(function (ticket, individual)
 {
     if (!individual['rdf:type']) return '';
-	return "numeration-scope_"+(new Date()).getFullYear()+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id).replace(':','_');
+  return "numeration-scope_"+(new Date()).getFullYear()+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id).replace(':','_');
 })
 """ ;
-  v-s:numerationGetNextValue """  
+  v-s:numerationGetNextValue """
 (function getNextValue(ticket, scope) {
-	return getNextValueSimple(ticket, scope, (new Date()).getFullYear()*10000+1);
+  return getNextValueSimple(ticket, scope, (new Date()).getFullYear()*10000+1);
 })
-""" ;  
+""" ;
 .
 v-s:IdeaAndProjectsNumeration
   rdf:type v-s:NumerationRule ;
@@ -150,23 +150,23 @@ v-s:IdeaAndProjectsNumeration
   rdfs:label "Нумерация среди идей и проектов"@ru ;
   rdfs:label "Numeration among ideas and projects"@en ;
   v-s:numerationScope """
-(function (ticket, individual) 
+(function (ticket, individual)
 {
     if (!individual['rdf:type']) return '';
-	return "numeration-scope_ideas_and_projects";
+  return "numeration-scope_ideas_and_projects";
 })
 """ ;
-  v-s:numerationGetNextValue """  
+  v-s:numerationGetNextValue """
 (function getNextValue(ticket, scope) {
-	return getNextValueSimple(ticket, scope, (new Date()).getFullYear()*10000+1);
+  return getNextValueSimple(ticket, scope, (new Date()).getFullYear()*10000+1);
 })
-""" ;  
+""" ;
 .
 v-s:NumerationEvent
   rdf:type v-s:Event ;
   v-s:filter v-s:Enumerable ;
-  v-s:script """  
-	var result = numerate(ticket, document, super_classes, prev_state, _event_id);
+  v-s:script """
+  var result = numerate(ticket, document, super_classes, prev_state, _event_id);
 """
 .
 v-s:Permission1602021330
@@ -179,7 +179,7 @@ v-s:Permission1602021330
   v-s:startTime "2016-02-02T13:31:33"^^xsd:dateTime ;
   rdfs:label "Read. All read user. All NumerationScopeClass."@en ;
   rdfs:label "Чтение. Все пользователи. Все документы класса Пространство автонумерации"@ru ;
-  rdfs:comment "Запись о выдаче прав группе всех пользователей на чтение группы всех документов класса Пространство автонумерации" ;  
+  rdfs:comment "Запись о выдаче прав группе всех пользователей на чтение группы всех документов класса Пространство автонумерации" ;
 .
 v-s:Permission1602021335
   rdf:type v-s:PermissionStatement ;
@@ -191,5 +191,5 @@ v-s:Permission1602021335
   v-s:startTime "2016-02-02T13:35:33"^^xsd:dateTime ;
   rdfs:label "Read. All read user. All NumerationCommitedIntervalClass."@en ;
   rdfs:label "Чтение. Все пользователи. Все документы класса Занятый интервал"@ru ;
-  rdfs:comment "Запись о выдаче прав группе всех пользователей на чтение группы всех документов класса Занятый интервал" ;  
+  rdfs:comment "Запись о выдаче прав группе всех пользователей на чтение группы всех документов класса Занятый интервал" ;
 .

@@ -24,11 +24,11 @@
 
 td:run-script
   rdf:type v-s:ExecuteScript0;
-	v-s:argument td:arg1;
-	v-s:result td:res1 ;
-	v-s:isSuccess false;
-	v-s:useScript td:script_onto_rename;
-	v-s:priority 16;
+  v-s:argument td:arg1;
+  v-s:result td:res1 ;
+  v-s:isSuccess false;
+  v-s:useScript td:script_onto_rename;
+  v-s:priority 16;
 .
 
 td:arg1
@@ -43,17 +43,17 @@ td:res1
 .
 
 td:script_onto_rename
-	rdf:type v-s:Codelet ;
-	v-s:script
-	"""
+  rdf:type v-s:Codelet ;
+  v-s:script
+  """
     onto_rename (ticket, document, execute_script);
-	""";
+  """;
 .
 
 
 td:AdministrativeDocument
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:label "Administrative document"@en ;
   rdfs:label "Распорядительный документ"@ru ;
@@ -607,36 +607,36 @@ td:SavedSearch1
 # -------- стартовая форма маршрута ----------------
 td:ComplexRouteStartForm1
     v-s:author cfg:VedaSystemAccount ;
-	rdf:type s-wf:ComplexRouteStartForm ;
-	rdf:type v-wf:StartForm ;
-	v-wf:forNet s-wf:net_complex_route ;
-	v-wf:processedDocument td:SavedSearch1 ;
-	v-wf:processInitiator td:RomanKarpov-Analyst1 ;
-	v-wf:useTransformation s-wf:transformation1 ;
-	rdfs:label "ТЕСТ Комплексный маршрут"@ru;
-	s-wf:ComplexRouteStartForm_coordinator1 td:RomanKarpov-Analyst1 ;
-	s-wf:ComplexRouteStartForm_coordinator1 td:ValeriyBushenev-Programmer1 ;
-	s-wf:ComplexRouteStartForm_coordinator2 td:ValeriyBushenev-Programmer1 ;
-	s-wf:ComplexRouteStartForm_coordinator3 td:AndreyBychin-ExecutiveDirector ;
-	s-wf:ComplexRouteStartForm_reviewer td:ValeriyBushenev-Programmer1 ;
-	s-wf:ComplexRouteStartForm_signer td:AndreyBychin-ExecutiveDirector ;
+  rdf:type s-wf:ComplexRouteStartForm ;
+  rdf:type v-wf:StartForm ;
+  v-wf:forNet s-wf:net_complex_route ;
+  v-wf:processedDocument td:SavedSearch1 ;
+  v-wf:processInitiator td:RomanKarpov-Analyst1 ;
+  v-wf:useTransformation s-wf:transformation1 ;
+  rdfs:label "ТЕСТ Комплексный маршрут"@ru;
+  s-wf:ComplexRouteStartForm_coordinator1 td:RomanKarpov-Analyst1 ;
+  s-wf:ComplexRouteStartForm_coordinator1 td:ValeriyBushenev-Programmer1 ;
+  s-wf:ComplexRouteStartForm_coordinator2 td:ValeriyBushenev-Programmer1 ;
+  s-wf:ComplexRouteStartForm_coordinator3 td:AndreyBychin-ExecutiveDirector ;
+  s-wf:ComplexRouteStartForm_reviewer td:ValeriyBushenev-Programmer1 ;
+  s-wf:ComplexRouteStartForm_signer td:AndreyBychin-ExecutiveDirector ;
 .
 
 :b435740-f19e-7731-03ef-e7cb2203f8c4
-	a v-s:SavedSearch;
+  a v-s:SavedSearch;
     v-s:author cfg:VedaSystemAccount ;
     v-s:query "'rdf:type' == 'v-wf:Process'"^^xsd:string;
     rdfs:label "Экземпляры маршрута"^^xsd:string;
     v-s:created "2015-03-23T13:27:18.000Z"^^xsd:dateTime.
 
 :b435740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
-	v-s:author cfg:VedaSystemAccount ;
+  v-s:author cfg:VedaSystemAccount ;
     v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false "^^xsd:string;
     rdfs:label "Общий инбокс: новые задачи"^^xsd:string;
     v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
 
 :b555740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
-	v-s:author cfg:VedaSystemAccount ;
+  v-s:author cfg:VedaSystemAccount ;
     v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true "^^xsd:string;
     rdfs:label "Общий инбокс: выполненые задачи"^^xsd:string;
     v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
@@ -807,41 +807,41 @@ td:ComplexRouteStartForm1
 
 :net4-tr1
         rdf:type v-wf:Transform ;
-    	rdfs:label "Создание формы ответа на задачу, net4"^^xsd:string;
-	v-wf:transformRule :net4-tr1-r1 ;
+      rdfs:label "Создание формы ответа на задачу, net4"^^xsd:string;
+  v-wf:transformRule :net4-tr1-r1 ;
 .
 
 :net4-tr1-r1
-	rdf:type v-wf:Rule ;
-	v-wf:segregateElement "contentName('@')" ;
-	v-wf:aggregate	"putUri ('rdf:type', 'v-wf:DecisionForm')";
-	v-wf:aggregate	"putUri ('rdf:type', 's-wf:UserTaskForm')";
-	v-wf:aggregate	"putString ('rdfs:label', 'задание')";
-	v-wf:aggregate	"putBoolean ('v-wf:isCompleted', false)";
-	v-wf:aggregate	"putExecutor ('v-wf:to')";
-	v-wf:aggregate	"putWorkOrder ('v-wf:onWorkOrder')";
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')";
-	v-wf:aggregate	"putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')";
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:DecisionForm')";
+  v-wf:aggregate  "putUri ('rdf:type', 's-wf:UserTaskForm')";
+  v-wf:aggregate  "putString ('rdfs:label', 'задание')";
+  v-wf:aggregate  "putBoolean ('v-wf:isCompleted', false)";
+  v-wf:aggregate  "putExecutor ('v-wf:to')";
+  v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
+  v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')";
+  v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')";
 .
 
 ##############################################################################################
 
 v-s:PersonalAspectKarpovr
-	rdf:type v-s:PersonalAspect ;
-	v-s:owner td:RomanKarpov ;
-	rdfs:label "Персональный аспект 1"@ru ;
-	rdfs:label "Personal aspect 1"@en ;
+  rdf:type v-s:PersonalAspect ;
+  v-s:owner td:RomanKarpov ;
+  rdfs:label "Персональный аспект 1"@ru ;
+  rdfs:label "Personal aspect 1"@en ;
 .
 
 v-wf:UserTaskForm1
-	rdf:type s-wf:UserTaskForm ;
-	rdfs:label "Example"@en ;
-	rdfs:label "Экземпляр"@ru ;
-	v-wf:possibleDecisionClass v-wf:DecisionApprove ;
-	v-wf:possibleDecisionClass v-wf:DecisionRemake ;
-	v-wf:possibleDecisionClass v-wf:DecisionRejected ;
-	v-wf:possibleDecisionClass v-wf:DecisionBreak ;
-	v-wf:from td:RomanKarpov-Analyst1 ;
+  rdf:type s-wf:UserTaskForm ;
+  rdfs:label "Example"@en ;
+  rdfs:label "Экземпляр"@ru ;
+  v-wf:possibleDecisionClass v-wf:DecisionApprove ;
+  v-wf:possibleDecisionClass v-wf:DecisionRemake ;
+  v-wf:possibleDecisionClass v-wf:DecisionRejected ;
+  v-wf:possibleDecisionClass v-wf:DecisionBreak ;
+  v-wf:from td:RomanKarpov-Analyst1 ;
 .
 
 cfg:Bychina_create_Person

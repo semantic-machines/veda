@@ -17,7 +17,7 @@
 ### veda-function-search
 v-s:SavedSearch
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Saved search"@en ;
   rdfs:label "Сохраненный запрос"@ru ;
@@ -76,7 +76,7 @@ v-s:SpecialSearchValues
 ### veda-workflow
 v-s:StatusWorkflow
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Dictionary ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "StatusWorkflow"@en ;
   rdfs:label "Статус документооборота"@ru ;
 .
@@ -162,7 +162,7 @@ v-s:File
   rdfs:subClassOf owl:Thing ;
   rdfs:subClassOf v-s:Exportable ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:Authorized ;
+  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:comment "File"@en ;
   rdfs:comment "Файл"@ru ;
   rdfs:isDefinedBy v-s: ;
@@ -244,7 +244,7 @@ v-s:Report
 v-s:Journal
   rdf:type owl:Class ;
   rdfs:subClassOf owl:Thing ;
-  rdfs:subClassOf v-s:Authorized ;
+  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:isDefinedBy v-s: ;
   rdfs:comment "A journal"@en ;
   rdfs:comment "Журнал"@ru ;
@@ -262,7 +262,7 @@ v-s:childRecord
 v-s:JournalRecord
   rdf:type owl:Class ;
   rdfs:subClassOf owl:Thing ;
-  rdfs:subClassOf v-s:Authorized ;
+  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Запись в журнале"@ru ;
 .
@@ -280,7 +280,7 @@ v-s:onDocument
   rdfs:domain v-s:Journal ;
   rdfs:label "On document"@en ;
   rdfs:label "К документу"@ru ;
-  rdfs:range v-s:Document ;
+  rdfs:range v-s:Thing ;
 .
 v-s:subJournal
   rdf:type owl:ObjectProperty ;
@@ -346,7 +346,7 @@ v-s:ProcessStarted
 # veda-ui-clone (v-ui:)
 v-s:DocumentLinkRules
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Правило связи двух документов"@ru ;
   rdfs:label "Documents link rules"@en ;
@@ -457,52 +457,52 @@ v-s:DocumentLinkRulesTemplate
     <br>
     <div class="panel panel-default">
       <div class="panel-body">
-		<div class="row">
-		  <div class="col-md-3">
-			<em about="v-s:classFrom" property="rdfs:label"></em>
-			<div rel="v-s:classFrom" template="v-ui:LabelLinkTemplate"></div>
-			<veda-control rel="v-s:classFrom" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
-		  </div>
-		  <div class="col-md-3">
-			<em about="v-s:classTo" property="rdfs:label"></em>
-			<div rel="v-s:classTo" template="v-ui:LabelLinkTemplate"></div>
-			<veda-control rel="v-s:classTo" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
-		  </div>
-		  <div class="col-md-3">
-			<em about="v-s:hasTransformation" property="rdfs:label"></em>
-			<div rel="v-s:hasTransformation" template="v-ui:LabelLinkTemplate"></div>
-			<veda-control rel="v-s:hasTransformation" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
-		  </div>
-		  <div class="col-md-3">
+    <div class="row">
+      <div class="col-md-3">
+      <em about="v-s:classFrom" property="rdfs:label"></em>
+      <div rel="v-s:classFrom" template="v-ui:LabelLinkTemplate"></div>
+      <veda-control rel="v-s:classFrom" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+      </div>
+      <div class="col-md-3">
+      <em about="v-s:classTo" property="rdfs:label"></em>
+      <div rel="v-s:classTo" template="v-ui:LabelLinkTemplate"></div>
+      <veda-control rel="v-s:classTo" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+      </div>
+      <div class="col-md-3">
+      <em about="v-s:hasTransformation" property="rdfs:label"></em>
+      <div rel="v-s:hasTransformation" template="v-ui:LabelLinkTemplate"></div>
+      <veda-control rel="v-s:hasTransformation" type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+      </div>
+      <div class="col-md-3">
 
-		  </div>
-		</div>
-		<div class="row">
-		  <div class="col-md-3">
-			<em about="v-s:displayName" property="rdfs:label"></em>
-			<div property="v-s:displayName" class="view -edit -search"></div>
-			<veda-control property="v-s:displayName" type="multilingualText" class="-view edit search"></veda-control>
-		  </div>
-		 </div>
-		<div class="row">
-		  <div class="col-md-3">
-			<veda-control property="v-s:unique" type="booleanCheckbox"></veda-control>
-			<em about="v-s:unique" property="rdfs:label"></em>
-		  </div>
-		</div>
-		<div class="row">
-		  <div class="col-md-3">
-			<veda-control property="v-s:isRoute" type="booleanCheckbox"></veda-control>
-			<em about="v-s:isRoute" property="rdfs:label"></em>
-		  </div>
-		</div>
-		<div class="row">
-		  <div class="col-md-3">
-			<veda-control property="v-s:isClone" type="booleanCheckbox"></veda-control>
-			<em about="v-s:isClone" property="rdfs:label"></em>
-		  </div>
-		</div>
-	</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+      <em about="v-s:displayName" property="rdfs:label"></em>
+      <div property="v-s:displayName" class="view -edit -search"></div>
+      <veda-control property="v-s:displayName" type="multilingualText" class="-view edit search"></veda-control>
+      </div>
+     </div>
+    <div class="row">
+      <div class="col-md-3">
+      <veda-control property="v-s:unique" type="booleanCheckbox"></veda-control>
+      <em about="v-s:unique" property="rdfs:label"></em>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+      <veda-control property="v-s:isRoute" type="booleanCheckbox"></veda-control>
+      <em about="v-s:isRoute" property="rdfs:label"></em>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+      <veda-control property="v-s:isClone" type="booleanCheckbox"></veda-control>
+      <em about="v-s:isClone" property="rdfs:label"></em>
+      </div>
+    </div>
+  </div>
     </div>
     <br><br>
     <div class="well well-sm">
@@ -522,11 +522,11 @@ v-s:AppointmentSaveEvent
   v-s:filter v-s:Appointment ;
   v-s:script """
   if (document['v-s:occupation'] && document['v-s:occupation'].length>0) {
-  		var occupation = get_individual(ticket, document['v-s:occupation'][0].data);
-  		if (occupation && occupation['v-s:parentUnit'] && occupation['v-s:parentUnit'].length>0) {
-  			document['v-s:parentUnit'] = occupation['v-s:parentUnit'];
-  			put_individual (ticket, document, _event_id);
-  		}
+      var occupation = get_individual(ticket, document['v-s:occupation'][0].data);
+      if (occupation && occupation['v-s:parentUnit'] && occupation['v-s:parentUnit'].length>0) {
+        document['v-s:parentUnit'] = occupation['v-s:parentUnit'];
+        put_individual (ticket, document, _event_id);
+      }
   }
 """
 .
