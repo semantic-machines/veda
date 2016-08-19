@@ -220,8 +220,8 @@ v-s:hasClassifiedAttachment
 .
 v-s:hasBond
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Bonded document"@en ;
-  rdfs:label "Связанный документ"@ru ;
+  rdfs:label "Bonded object"@en ;
+  rdfs:label "Связанный объект"@ru ;
   rdfs:range v-s:Bond ;
   rdfs:domain v-s:Thing ;
 .
