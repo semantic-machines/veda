@@ -285,11 +285,11 @@ veda.Module(function Util(veda) { "use strict";
         individualNode.find("#save.action").remove();
         individualNode.find("#cancel.action").remove();
         individualNode.find("#delete.action").remove();
-        if (individual.is('v-s:SelfStarting') || individual.hasValue('v-wf:processedDocument') || individual.hasValue('v-wf:onDocument')) {
+        if (individual.is('v-wf:StartForm') || individual.hasValue('v-wf:processedDocument') || individual.hasValue('v-wf:onDocument')) {
           individual.trigger("individual:afterSend");
           if (individual.sendConfirmed != true) {
             veda.Util.showMessage("<div class='row'><div class='col-md-12'><br><br><h2>"+new veda.IndividualModel("v-s:WillBeProcessed")['rdfs:label'][0]+"</h2></div></div>", "", 5000,
-              individual.is('v-s:SelfStarting')?individual.id:
+              individual.is('v-wf:StartForm')?individual.id:
               individual.hasValue('v-wf:processedDocument')?individual['v-wf:processedDocument'][0].id:individual['v-wf:onDocument'][0].id, "view");
           }
         }

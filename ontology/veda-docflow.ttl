@@ -19,13 +19,6 @@
   v-s:loadPriority 9 ;
 .
 
-v-s:SelfStarting
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
-  rdfs:label "Self-starting individual"@en ;
-  rdfs:label "Само-запускаемый индивид"@ru ;
-.
-
 v-df:ApprovalTask
   rdf:type owl:Class ;
   rdfs:subClassOf v-wf:DecisionForm ;
