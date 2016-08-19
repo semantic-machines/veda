@@ -51,7 +51,7 @@ function numerate(ticket, individual, super_classes, oldstate, _event_id) {
                     // print ('4'+key);
                     var numeration = get_individual(ticket, rule['v-s:hasNumerationRule'][0].data);
                     var scopeId = getScope(ticket, individual, numeration);
-                    print ('scopeId'+scopeId);
+                    //print ('scopeId'+scopeId);
                     var scope = get_individual(ticket, scopeId);
 
                     if (typeof scope === "undefined") {
