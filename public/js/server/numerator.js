@@ -38,15 +38,15 @@ function numerate(ticket, individual, super_classes, oldstate, _event_id) {
     try {
         if (individual['v-s:actualVersion'] && individual['v-s:actualVersion'][0].data != individual['@']) return;
         
-        print ('1 '+toJson(individual['rdf:type']));
+        // print ('1 '+toJson(individual['rdf:type']));
         for (var idx in individual['rdf:type']) {
             var type = get_individual(ticket, individual['rdf:type'][idx].data);
-            print ('2 '+toJson(type));
+            // print ('2 '+toJson(type));
             if (type['v-s:hasNumeration']) {
                 var rule = get_individual(ticket, type['v-s:hasNumeration'][0].data);
-                print ('3.1 '+toJson(rule));
+                // print ('3.1 '+toJson(rule));
                 var key = rule['v-s:enumeratedProperty'][0].data;
-                print ('3.2 '+toJson(key));
+                // print ('3.2 '+toJson(key));
                 if (individual[key][0].data > 0) {
                     // print ('4'+key);
                     var numeration = get_individual(ticket, rule['v-s:hasNumerationRule'][0].data);
@@ -57,7 +57,7 @@ function numerate(ticket, individual, super_classes, oldstate, _event_id) {
                     if (typeof scope === "undefined") {
                         scope = createScope(ticket, scopeId);
                     }
-                    print ('5'+scopeId);
+                    // print ('5'+scopeId);
 
                     // print('5+'+oldstate['v-s:isDraftOf']);
                     // print('5.1+'+oldstate['v-s:isDraftOf'][0].data);
