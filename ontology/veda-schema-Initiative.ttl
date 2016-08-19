@@ -160,14 +160,29 @@ v-s:MaintenanceKind
   rdfs:label "Вид обуслуживания оборудования"@ru ;
 .
 
-
-
-
-
-
-
-
 # -- АТТРИБУТЫ START --
+
+v-s:scope
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Scope"@en ;
+  rdfs:label "Рамки"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Project ;
+.
+v-s:alternativeScope
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Alternative scope"@en ;
+  rdfs:label "Альтернативные рамки"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Project ;
+.
+v-s:outOfScope
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "OutOfScope"@en ;
+  rdfs:label "Не в ходит в рамки"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Project ;
+.
 
 v-s:initiator
   rdfs:domain v-s:Initiative ;
@@ -913,9 +928,6 @@ v-s:PsHasAddInitiative
   rdfs:label "AddInitiative specification for initiative class"@en ;
   rdfs:label "Спецификация hasAddinitiative для класса Инициатива"@ru ;
 .
-v-s:scope
-  rdfs:domain v-s:Project ;
-.
 v-s:PsScope
   rdf:type v-ui:StringPropertySpecification ;
   v-ui:forClass v-s:Project ;
@@ -927,9 +939,6 @@ v-s:PsScope
   rdfs:label "Scope description property specification for Project class"@en ;
   rdfs:label "Спецификация описания рамок проекта класса Проект"@ru ;
 .
-v-s:alternativeScope
-  rdfs:domain v-s:Project ;
-.
 v-s:PsAlternativeScope
   rdf:type v-ui:StringPropertySpecification ;
   v-ui:forClass v-s:Project ;
@@ -940,9 +949,6 @@ v-s:PsAlternativeScope
   v-ui:tooltip ""@ru ;
   rdfs:label "Alternative decision property specification for Project class"@en ;
   rdfs:label "Спецификация альтернативных решений и выводов для класса Проект"@ru ;
-.
-v-s:outOfScope
-  rdfs:domain v-s:Project ;
 .
 v-s:PsOutOfScope
   rdf:type v-ui:StringPropertySpecification ;
