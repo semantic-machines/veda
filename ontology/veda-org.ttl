@@ -143,14 +143,28 @@ v-s:parentUnit
   owl:inverseOf v-s:childUnit ;
 .
 
-
-
 v-s:valid
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Appointment ;
   rdfs:label "Valid"@en ;
   rdfs:label "Действительно"@ru ;
   rdfs:range xsd:boolean ;
+.
+
+v-s:hasChief
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:OrganizationUnit ;
+  rdfs:label "Chief"@en ;
+  rdfs:label "Непосредственный руководитель"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+
+v-s:hasFunctionalChief
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Functional chief"@en ;
+  rdfs:label "Функциональный руководитель"@ru ;
+  rdfs:domain v-s:OrganizationUnit ;
+  rdfs:range v-s:Appointment ;
 .
 
 ### INDIVIDUALS ###

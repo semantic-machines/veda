@@ -16,48 +16,7 @@
 .
 #-- Классы --
 
-v-s:Level
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
-  rdfs:label "Level"@en ;
-  rdfs:label "Уровень"@ru ;
-.
-v-s:Bond
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
-  rdfs:label "Bond"@en ;
-  rdfs:label "Связь"@ru ;
-.
-
 #-- Аттрибуты --
-
-
-v-s:hasChief
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:OrganizationUnit ;
-  rdfs:label "Chief"@en ;
-  rdfs:label "Непосредственный руководитель"@ru ;
-  rdfs:range v-s:Appointment ;
-.
-
-
-v-s:hasFunctionalChief
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Functional chief"@en ;
-  rdfs:label "Функциональный руководитель"@ru ;
-  rdfs:range v-s:Appointment ;
-.
-
-
-
-#временно перенесено begin
-v-s:registrationNumber
-  v-s:hasNumerationMapper mnd-s:registrationNumberNumerationMapperMeeting;
-#  v-s:hasNumerationMapper mnd-s:registrationNumberNumerationMapperAction;
-.
-#временно перенесено end
-
-
 
 
 v-s:scope
@@ -79,18 +38,5 @@ v-s:outOfScope
   rdfs:range xsd:string ;
 .
 
-v-s:from
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Bond ;
-  rdfs:label "from"@en ;
-  rdfs:label "от"@ru ;
-  rdfs:range v-s:Thing ;
-.
-v-s:to
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Bond ;
-  rdfs:label "to"@en ;
-  rdfs:label "к"@ru ;
-  rdfs:range v-s:Thing ;
-.
+
 
