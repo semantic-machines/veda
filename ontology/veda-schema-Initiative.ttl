@@ -19,7 +19,7 @@
 v-s:Initiative
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
-  rdfs:subClassOf v-s:Enumerable ;
+  rdfs:subClassOf v-s:Enumerated ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:label "Initiative"@en ;
   rdfs:label "Инициатива"@ru ;
@@ -183,7 +183,6 @@ v-s:outOfScope
   rdfs:range xsd:string ;
   rdfs:domain v-s:Project ;
 .
-
 v-s:initiator
   rdfs:domain v-s:Initiative ;
 .
