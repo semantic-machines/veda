@@ -69,6 +69,13 @@ v-s:meetingDecision
   rdfs:range xsd:string ;
   rdfs:domain v-s:Meeting ;
 .
+v-s:moderator
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Moderator"@en ;
+  rdfs:label "Модератор"@ru ;
+  rdfs:domain v-s:Meeting ;
+  rdfs:range v-s:Appointment ;
+.
 #---------------------------------------------------------
 v-s:Action
   rdf:type owl:Class ;
