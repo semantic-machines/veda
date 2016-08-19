@@ -7,8 +7,8 @@ module.exports = {
         basic.openCreateDocumentForm(driver, 'Стартовая форма', 'v-wf:StartForm');
         driver.executeScript("document.querySelector('strong[about=\"v-wf:forNet\"]').scrollIntoView(true);");
         basic.chooseFromDropdown(driver, 'v-wf:forNet', forNetValue, forNetValue);
-        driver.executeScript("document.querySelector('strong[about=\"v-s:hasStatusWorkflow\"]').scrollIntoView(true);");
-        basic.chooseFromDropdown(driver, 'v-s:hasStatusWorkflow', hasStatusWorkflow, hasStatusWorkflow);
+        driver.executeScript("document.querySelector('strong[about=\"v-wf:hasStatusWorkflow\"]').scrollIntoView(true);");
+        basic.chooseFromDropdown(driver, 'v-wf:hasStatusWorkflow', hasStatusWorkflow, hasStatusWorkflow);
         driver.executeScript("$('#save')[0].scrollIntoView(true);");
         driver.wait
         (
