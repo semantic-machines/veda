@@ -76,15 +76,15 @@ td:signer
 .
 
 td:File_1
-    rdf:type v-s:File ;
-    v-s:fileURI "111.pdf" ;
+  rdf:type v-s:File ;
+  v-s:fileURI "111.pdf" ;
 .
 
 td:khvostiaImage
-    rdf:type v-s:File ;
-    v-s:fileUri "Khvostia" ;
-    v-s:fileName "Khvostia" ;
-    v-s:filePath "/mondi" ;
+  rdf:type v-s:File ;
+  v-s:fileUri "Khvostia" ;
+  v-s:fileName "Khvostia" ;
+  v-s:filePath "/mondi" ;
 .
 
 td:AdministrativeDocument_2
@@ -606,7 +606,7 @@ td:SavedSearch1
 
 # -------- стартовая форма маршрута ----------------
 td:ComplexRouteStartForm1
-    v-s:author cfg:VedaSystemAccount ;
+  v-s:author cfg:VedaSystemAccount ;
   rdf:type s-wf:ComplexRouteStartForm ;
   rdf:type v-wf:StartForm ;
   v-wf:forNet s-wf:net_complex_route ;
@@ -624,204 +624,204 @@ td:ComplexRouteStartForm1
 
 :b435740-f19e-7731-03ef-e7cb2203f8c4
   a v-s:SavedSearch;
-    v-s:author cfg:VedaSystemAccount ;
-    v-s:query "'rdf:type' == 'v-wf:Process'"^^xsd:string;
-    rdfs:label "Экземпляры маршрута"^^xsd:string;
-    v-s:created "2015-03-23T13:27:18.000Z"^^xsd:dateTime.
+  v-s:author cfg:VedaSystemAccount ;
+  v-s:query "'rdf:type' == 'v-wf:Process'"^^xsd:string;
+  rdfs:label "Экземпляры маршрута"^^xsd:string;
+  v-s:created "2015-03-23T13:27:18.000Z"^^xsd:dateTime.
 
 :b435740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
   v-s:author cfg:VedaSystemAccount ;
-    v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false "^^xsd:string;
-    rdfs:label "Общий инбокс: новые задачи"^^xsd:string;
-    v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
+  v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false "^^xsd:string;
+  rdfs:label "Общий инбокс: новые задачи"^^xsd:string;
+  v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
 
 :b555740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
-  v-s:author cfg:VedaSystemAccount ;
-    v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true "^^xsd:string;
-    rdfs:label "Общий инбокс: выполненые задачи"^^xsd:string;
-    v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
+v-s:author cfg:VedaSystemAccount ;
+  v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true "^^xsd:string;
+  rdfs:label "Общий инбокс: выполненые задачи"^^xsd:string;
+  v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
 
 ######################## сеть, пример 1 #######################
 
 :start-form1
-    a v-wf:StartForm;
-    v-wf:hasStatusWorkflow v-wf:DoNotSend;
-    rdfs:label "Тест стартовой формы 1"@ru;
-    v-wf:forNet :net1 ;
+  a v-wf:StartForm;
+  v-wf:hasStatusWorkflow v-wf:DoNotSend;
+  rdfs:label "Тест стартовой формы 1"@ru;
+  v-wf:forNet :net1 ;
 .
 
 :net1
-    v-wf:consistsOf :net1-ic, :net1-oc, :net1-fl1;
-    rdfs:label "Сеть, пример 1"^^xsd:string;
-    a v-wf:Net.
+  v-wf:consistsOf :net1-ic, :net1-oc, :net1-fl1;
+  rdfs:label "Сеть, пример 1"^^xsd:string;
+  a v-wf:Net.
 
 :net1-ic
-    v-wf:hasFlow :net1-fl1;
-    v-wf:locationX "0"^^xsd:integer;
-    v-wf:locationY "0"^^xsd:integer;
-    a v-wf:InputCondition;
-    rdfs:label "С1"^^xsd:string.
+  v-wf:hasFlow :net1-fl1;
+  v-wf:locationX "0"^^xsd:integer;
+  v-wf:locationY "0"^^xsd:integer;
+  a v-wf:InputCondition;
+  rdfs:label "С1"^^xsd:string.
 
 :net1-oc
-    v-wf:locationX "376"^^xsd:integer;
-    v-wf:locationY "0"^^xsd:integer;
-    a v-wf:OutputCondition;
-    rdfs:label "С2"^^xsd:string.
+  v-wf:locationX "376"^^xsd:integer;
+  v-wf:locationY "0"^^xsd:integer;
+  a v-wf:OutputCondition;
+  rdfs:label "С2"^^xsd:string.
 
 :net1-fl1
-    v-wf:flowsInto :net1-oc;
-    a v-wf:Flow;
-    rdfs:label ""^^xsd:string.
+  v-wf:flowsInto :net1-oc;
+  a v-wf:Flow;
+  rdfs:label ""^^xsd:string.
 
 ######################## сеть, пример 2 #######################
 
 :start-form2
-    a v-wf:StartForm;
-    v-wf:hasStatusWorkflow v-wf:DoNotSend;
-    rdfs:label "Тест стартовой формы 2"@ru;
-    v-wf:forNet :net2 ;
+  a v-wf:StartForm;
+  v-wf:hasStatusWorkflow v-wf:DoNotSend;
+  rdfs:label "Тест стартовой формы 2"@ru;
+  v-wf:forNet :net2 ;
 .
 
 :net2
-    v-wf:consistsOf :net2-ic, :net2-oc, :net2-fl1, :net2-t1, :net2-fl2;
-    rdfs:label "Сеть, пример 2"^^xsd:string;
-    a v-wf:Net.
+  v-wf:consistsOf :net2-ic, :net2-oc, :net2-fl1, :net2-t1, :net2-fl2;
+  rdfs:label "Сеть, пример 2"^^xsd:string;
+  a v-wf:Net.
 
 :net2-ic
-    v-wf:hasFlow :net2-fl1;
-    v-wf:locationX "0"^^xsd:integer;
-    v-wf:locationY "0"^^xsd:integer;
-    a v-wf:InputCondition;
-    rdfs:label "С1"^^xsd:string.
+  v-wf:hasFlow :net2-fl1;
+  v-wf:locationX "0"^^xsd:integer;
+  v-wf:locationY "0"^^xsd:integer;
+  a v-wf:InputCondition;
+  rdfs:label "С1"^^xsd:string.
 
 :net2-fl1
-    v-wf:flowsInto :net2-t1;
-    a v-wf:Flow;
-    rdfs:label ""^^xsd:string.
+  v-wf:flowsInto :net2-t1;
+  a v-wf:Flow;
+  rdfs:label ""^^xsd:string.
 
 :net2-t1
-    v-wf:hasFlow :net2-fl2;
-    v-wf:locationY "0"^^xsd:integer;
-    a v-wf:Task;
-    rdfs:label "Задача 1"^^xsd:string;
-    v-wf:locationX "164"^^xsd:integer.
+  v-wf:hasFlow :net2-fl2;
+  v-wf:locationY "0"^^xsd:integer;
+  a v-wf:Task;
+  rdfs:label "Задача 1"^^xsd:string;
+  v-wf:locationX "164"^^xsd:integer.
 
 :net2-fl2 v-wf:flowsInto :net2-oc;
-    a v-wf:Flow;
-    rdfs:label ""^^xsd:string.
+  a v-wf:Flow;
+  rdfs:label ""^^xsd:string.
 
 :net2-oc
-    v-wf:locationX "376"^^xsd:integer;
-    v-wf:locationY "0"^^xsd:integer;
-    a v-wf:OutputCondition;
-    rdfs:label "С2"^^xsd:string.
+  v-wf:locationX "376"^^xsd:integer;
+  v-wf:locationY "0"^^xsd:integer;
+  a v-wf:OutputCondition;
+  rdfs:label "С2"^^xsd:string.
 
 ######################## сеть, пример 3 #######################
 
 :start-form3
-    a v-wf:StartForm;
-    v-wf:hasStatusWorkflow v-wf:DoNotSend;
-    rdfs:label "Тест стартовой формы 3"@ru;
-    v-wf:forNet :net3 ;
+  a v-wf:StartForm;
+  v-wf:hasStatusWorkflow v-wf:DoNotSend;
+  rdfs:label "Тест стартовой формы 3"@ru;
+  v-wf:forNet :net3 ;
 .
 
 :net3
-    v-wf:consistsOf :net3-ic, :net3-oc, :net3-fl1, :net3-t1, :net3-fl2;
-    rdfs:label "Сеть, пример 3"^^xsd:string;
-    a v-wf:Net.
+  v-wf:consistsOf :net3-ic, :net3-oc, :net3-fl1, :net3-t1, :net3-fl2;
+  rdfs:label "Сеть, пример 3"^^xsd:string;
+  a v-wf:Net.
 
 :net3-ic
-    v-wf:hasFlow :net3-fl1;
-    v-wf:locationX "0"^^xsd:integer;
-    v-wf:locationY "0"^^xsd:integer;
-    a v-wf:InputCondition;
-    rdfs:label "С1"^^xsd:string.
+  v-wf:hasFlow :net3-fl1;
+  v-wf:locationX "0"^^xsd:integer;
+  v-wf:locationY "0"^^xsd:integer;
+  a v-wf:InputCondition;
+  rdfs:label "С1"^^xsd:string.
 
 :net3-fl1
-    v-wf:flowsInto :net3-t1;
-    a v-wf:Flow;
-    rdfs:label ""^^xsd:string.
+  v-wf:flowsInto :net3-t1;
+  a v-wf:Flow;
+  rdfs:label ""^^xsd:string.
 
 :net3-t1
-    v-wf:hasFlow :net3-fl2;
-    v-wf:executor td:AndreyBychin-Analyst2;
-    v-wf:locationY "0"^^xsd:integer;
-    a v-wf:Task;
-    rdfs:label "Задача 1"^^xsd:string;
-    v-wf:locationX "164"^^xsd:integer.
+  v-wf:hasFlow :net3-fl2;
+  v-wf:executor td:AndreyBychin-Analyst2;
+  v-wf:locationY "0"^^xsd:integer;
+  a v-wf:Task;
+  rdfs:label "Задача 1"^^xsd:string;
+  v-wf:locationX "164"^^xsd:integer.
 
 :net3-fl2 v-wf:flowsInto :net3-oc;
-    a v-wf:Flow;
-    rdfs:label ""^^xsd:string.
+  a v-wf:Flow;
+  rdfs:label ""^^xsd:string.
 
 :net3-oc
-    v-wf:locationX "376"^^xsd:integer;
-    v-wf:locationY "0"^^xsd:integer;
-    a v-wf:OutputCondition;
-    rdfs:label "С2"^^xsd:string.
+  v-wf:locationX "376"^^xsd:integer;
+  v-wf:locationY "0"^^xsd:integer;
+  a v-wf:OutputCondition;
+  rdfs:label "С2"^^xsd:string.
 
 ######################## сеть, пример 4 #######################
 
 :start-form4
-    a v-wf:StartForm;
-    v-wf:hasStatusWorkflow v-wf:DoNotSend;
-    rdfs:label "Тест стартовой формы 4"@ru;
-    v-wf:forNet :net4 ;
+  a v-wf:StartForm;
+  v-wf:hasStatusWorkflow v-wf:DoNotSend;
+  rdfs:label "Тест стартовой формы 4"@ru;
+  v-wf:forNet :net4 ;
 .
 
 :net4
-    v-wf:consistsOf :net4-ic, :net4-oc, :net4-fl1, :net4-t1, :net4-fl2;
-    rdfs:label "Сеть, пример 4"^^xsd:string;
-    a v-wf:Net.
+  v-wf:consistsOf :net4-ic, :net4-oc, :net4-fl1, :net4-t1, :net4-fl2;
+  rdfs:label "Сеть, пример 4"^^xsd:string;
+  a v-wf:Net.
 
 :net4-ic
-    v-wf:hasFlow :net4-fl1;
-    v-wf:locationX "0"^^xsd:integer;
-    v-wf:locationY "0"^^xsd:integer;
-    a v-wf:InputCondition;
-    rdfs:label "С1"^^xsd:string.
+  v-wf:hasFlow :net4-fl1;
+  v-wf:locationX "0"^^xsd:integer;
+  v-wf:locationY "0"^^xsd:integer;
+  a v-wf:InputCondition;
+  rdfs:label "С1"^^xsd:string.
 
 :net4-fl1
-    v-wf:flowsInto :net4-t1;
-    a v-wf:Flow;
-    rdfs:label ""^^xsd:string.
+  v-wf:flowsInto :net4-t1;
+  a v-wf:Flow;
+  rdfs:label ""^^xsd:string.
 
 :net4-t1
-    v-wf:hasFlow :net4-fl2;
-    v-wf:executor td:AndreyBychin-Analyst2;
-    v-wf:startDecisionTransform :net4-tr1;
-    v-wf:locationY "0"^^xsd:integer;
-    a v-wf:Task;
-    rdfs:label "Задача 1"^^xsd:string;
-    v-wf:locationX "164"^^xsd:integer.
+  v-wf:hasFlow :net4-fl2;
+  v-wf:executor td:AndreyBychin-Analyst2;
+  v-wf:startDecisionTransform :net4-tr1;
+  v-wf:locationY "0"^^xsd:integer;
+  a v-wf:Task;
+  rdfs:label "Задача 1"^^xsd:string;
+  v-wf:locationX "164"^^xsd:integer.
 
 :net4-fl2 v-wf:flowsInto :net4-oc;
-    a v-wf:Flow;
-    rdfs:label ""^^xsd:string.
+  a v-wf:Flow;
+  rdfs:label ""^^xsd:string.
 
 :net4-oc
-    v-wf:locationX "376"^^xsd:integer;
-    v-wf:locationY "0"^^xsd:integer;
-    a v-wf:OutputCondition;
-    rdfs:label "С2"^^xsd:string.
+  v-wf:locationX "376"^^xsd:integer;
+  v-wf:locationY "0"^^xsd:integer;
+  a v-wf:OutputCondition;
+  rdfs:label "С2"^^xsd:string.
 
 :net4-tr1
-        rdf:type v-wf:Transform ;
-      rdfs:label "Создание формы ответа на задачу, net4"^^xsd:string;
+  rdf:type v-wf:Transform ;
+  rdfs:label "Создание формы ответа на задачу, net4"^^xsd:string;
   v-wf:transformRule :net4-tr1-r1 ;
 .
 
 :net4-tr1-r1
   rdf:type v-wf:Rule ;
   v-wf:segregateElement "contentName('@')" ;
-  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:DecisionForm')";
-  v-wf:aggregate  "putUri ('rdf:type', 's-wf:UserTaskForm')";
-  v-wf:aggregate  "putString ('rdfs:label', 'задание')";
-  v-wf:aggregate  "putBoolean ('v-wf:isCompleted', false)";
-  v-wf:aggregate  "putExecutor ('v-wf:to')";
-  v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
-  v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')";
-  v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')";
+  v-wf:aggregate "putUri ('rdf:type', 'v-wf:DecisionForm')";
+  v-wf:aggregate "putUri ('rdf:type', 's-wf:UserTaskForm')";
+  v-wf:aggregate "putString ('rdfs:label', 'задание')";
+  v-wf:aggregate "putBoolean ('v-wf:isCompleted', false)";
+  v-wf:aggregate "putExecutor ('v-wf:to')";
+  v-wf:aggregate "putWorkOrder ('v-wf:onWorkOrder')";
+  v-wf:aggregate "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')";
+  v-wf:aggregate "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')";
 .
 
 ##############################################################################################
@@ -854,18 +854,18 @@ cfg:Bychina_create_Person
 
 
 d:khvostia_dismantlingProjectSpecialist
-    a v-s:Appointment;
-    v-s:occupation d:dismantlingProjectSpecialist;
-    v-s:employee td:AleksandraKhvostikova;
-    v-s:official "true"^^xsd:boolean;
-    v-s:valid "true"^^xsd:boolean;
-    rdfs:label "Хвостикова : Специалист по проектам демонтажа"@ru
+  a v-s:Appointment;
+  v-s:occupation d:dismantlingProjectSpecialist;
+  v-s:employee td:AleksandraKhvostikova;
+  v-s:official "true"^^xsd:boolean;
+  v-s:valid "true"^^xsd:boolean;
+  rdfs:label "Хвостикова : Специалист по проектам демонтажа"@ru
 .
 d:khvostia_financialController
-    a v-s:Appointment;
-    v-s:occupation d:financialController;
-    v-s:employee td:AleksandraKhvostikova;
-    v-s:official "true"^^xsd:boolean;
-    v-s:valid "true"^^xsd:boolean;
-    rdfs:label "Хвостикова : Финансовый контролер"@ru
+  a v-s:Appointment;
+  v-s:occupation d:financialController;
+  v-s:employee td:AleksandraKhvostikova;
+  v-s:official "true"^^xsd:boolean;
+  v-s:valid "true"^^xsd:boolean;
+  rdfs:label "Хвостикова : Финансовый контролер"@ru
 .
