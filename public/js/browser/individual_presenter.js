@@ -948,7 +948,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           case "xsd:string":
             if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
               $(".value", result).append (
-                "<veda-control property='" + property_uri + "' type='source' class='-view edit search'></veda-control>"
+                "<veda-control property='" + property_uri + "' type='source'></veda-control>"
               );
             } else {
               $(".value", result).append (
