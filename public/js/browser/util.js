@@ -405,13 +405,15 @@ veda.Module(function Util(veda) { "use strict";
     form.setAttribute("action", jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id));
     form.setAttribute("target", "view");
 
-    Object.getOwnPropertyNames(individual).forEach(function (key)
+    Object.getOwnPropertyNames(individual.properties).forEach(function (key)
     {
-      var hiddenField = document.createElement("input");
-      hiddenField.setAttribute("type", "hidden");
-      hiddenField.setAttribute("name", key.replace(':','_'));
-      hiddenField.setAttribute("value", (individual[key][0] instanceof veda.IndividualModel)?individual[key][0].id:individual[key][0]);
-      form.appendChild(hiddenField);
+      if (key !== '@') {
+          var hiddenField = document.createElement("input");
+          hiddenField.setAttribute("type", "hidden");
+          hiddenField.setAttribute("name", key.replace(':','_'));
+          hiddenField.setAttribute("value", (individual[key][0] instanceof veda.IndividualModel)?individual[key][0].id:individual[key][0]);
+          form.appendChild(hiddenField);
+      }
     });
     document.body.appendChild(form);
 
