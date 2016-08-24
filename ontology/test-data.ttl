@@ -1,4 +1,4 @@
-@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3@prefix d: <http://semantic-machines.com/veda/veda-data/> .
 @prefix : <http://semantic-machines.com/veda/test-data/> .
 @prefix d: <http://semantic-machines.com/veda/data/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
@@ -868,4 +868,52 @@ d:khvostia_financialController
   v-s:official "true"^^xsd:boolean;
   v-s:valid "true"^^xsd:boolean;
   rdfs:label "Хвостикова : Финансовый контролер"@ru
+.
+
+## Учетка ##
+d:SYK-RMSG_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-RMSG_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-RMSG"^^xsd:string;
+    v-s:mailbox "Group.Syk-RSM@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-RMSG"^^xsd:string.
+
+## Персона ##
+d:SYK-RMSG_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-RMSG_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-RMSG_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-RMSG_person"@ru;
+    v-s:lastName "Аппаратчик ТУ ЦРЩ и ПИ"@ru;
+    v-s:defaultAppointment d:SYK-RMSG_appointment.
+    
+##  Должность ##
+d:SYK-RMSG_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Аппаратчик ТУ ЦРЩ и ПИ"@ru;
+    v-s:parentUnit d:mondi_department_50001724.    
+
+## Назначение ##
+d:SYK-RMSG_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-RMSG_person;
+    v-s:occupation d:SYK-RMSG_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Аппаратчик ТУ ЦРЩ и ПИ"@ru.
+
+d:Membership_SYK-RMSG
+  rdf:type v-s:Membership ;
+  v-s:memberOf td:UserGroup_1 ;
+  v-s:resource d:SYK-RMSG_person ;
+  rdfs:label "Membership_SYK-RMSG"@en ;
+  rdfs:label "Членство_SYK-RMSG"@ru ;
 .
