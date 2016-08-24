@@ -1,4 +1,4 @@
-a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
 @prefix : <http://semantic-machines.com/veda/test-data/> .
 @prefix d: <http://semantic-machines.com/veda/data/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
@@ -870,15 +870,16 @@ d:khvostia_financialController
   rdfs:label "Хвостикова : Финансовый контролер"@ru
 .
 
+
 ## Учетка ##
 d:SYK-RMSG_account
     a v-s:Account;
     v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
     v-s:owner d:SYK-RMSG_person;
     v-s:updateCounter "1"^^xsd:integer;
-    v-s:login "SYK-RMSG"^^xsd:string;
+    v-s:login "SYK_RMSG"^^xsd:string;
     v-s:mailbox "Group.Syk-RSM@mondigroup.com"^^xsd:string;
-    rdfs:label "SYK-RMSG"^^xsd:string.
+    rdfs:label "SYK-RMSG 123"^^xsd:string.
 
 ## Персона ##
 d:SYK-RMSG_person
