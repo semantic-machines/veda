@@ -19,8 +19,10 @@ basic.getDrivers().forEach(function (drv) {
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'export-ttl' button");});
 
     basic.openCreateDocumentForm(driver, 'Отчет', 'v-s:Report');
-    var filePath = 'C:/Users/zugzug/Downloads/exported_graph.ttl';
-    driver.executeScript("document.querySelector('input[id=\"btn\"]').scrollIntoView(true);");
+    var filePath = 'C:/Users/Administrator/Downloads/exported_graph.ttl';
+    //var filePath = 'C:/Users/zugzug/Downloads/exported_graph.ttl';
+    //driver.executeScript("document.querySelector('strong[about=\"v-s:owner\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('input[id=\"file\"]').scrollIntoView(true);");
     driver.findElement({css:'input[type="file"]'}).sendKeys(filePath)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot find this file");});
     driver.sleep(basic.SLOW_OPERATION);
