@@ -1006,15 +1006,29 @@ cfg:Event_15
   v-s:script """
   var bondUri = document["@"],
       bondToUri = getUri(document["v-s:to"]),
-      bondTo = get_individual(ticket, bondToUri);
+      bondFromUri = getUri(document["v-s:from"]),
+      bondTo = get_individual(ticket, bondToUri),
+      bondFrom = get_individual(ticket, bondFromUri),
+      containsThisBond;
   if (bondTo) {
     bondTo["v-s:hasBond"] = bondTo["v-s:hasBond"] || [];
-    var containsThisBond = bondTo["v-s:hasBond"].filter(function (item) {
-      return (item.data === bondUri ? true : false)
-    });
-    if (containsThisBond.length) return;
-    bondTo["v-s:hasBond"].push({type: _Uri, data: bondUri});
-    put_individual(ticket, bondTo, _event_id);
+    containsThisBond = !!bondTo["v-s:hasBond"].filter(function (item) {
+      return (item.data === bondUri);
+    }).length;
+    if (!containsThisBond) {
+      bondTo["v-s:hasBond"].push({type: _Uri, data: bondUri});
+      put_individual(ticket, bondTo, _event_id);
+    }
+  }
+  if (bondFrom) {
+    bondFrom["v-s:hasBond"] = bondFrom["v-s:hasBond"] || [];
+    containsThisBond = !!bondFrom["v-s:hasBond"].filter(function (item) {
+      return (item.data === bondUri);
+    }).length;
+    if (!containsThisBond) {
+      bondFrom["v-s:hasBond"].push({type: _Uri, data: bondUri});
+      put_individual(ticket, bondFrom, _event_id);
+    }
   }
   """ ;
 .
