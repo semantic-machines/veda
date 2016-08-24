@@ -331,9 +331,8 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
     version['v-s:created'] = [{data: new Date(), type: _Datetime}];
     version['v-s:edited'] = [];
     version['v-s:publisher'] = newUri(user_uri);
-        version['s:lastEditor'] = [];
+    version['v-s:lastEditor'] = [];
 
-    user_uri
     put_individual(ticket, version, _event_id);
 
     // Add rights to version
@@ -375,7 +374,7 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
     }];
     document['v-s:nextVersion'] = [];
     document['v-s:edited'] = [{data: new Date(), type: _Datetime}];
-    document['s:lastEditor'] = newUri(user_uri);
+    document['v-s:lastEditor'] = newUri(user_uri);
     put_individual(ticket, document, _event_id);
   }
 }
