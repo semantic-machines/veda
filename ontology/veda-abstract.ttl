@@ -53,6 +53,34 @@ v-s:dateTo
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Temporal ;
 .
+v-s:dateFromPlan
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date start plan"@en ;
+  rdfs:label "Дата начала плановая"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateToPlan
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date finish plan"@en ;
+  rdfs:label "Дата окончания плановая"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateFromFact
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date start fact"@en ;
+  rdfs:label "Дата начала фактическая"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateToFact
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date finish fact"@en ;
+  rdfs:label "Дата окончания фактическая"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
 v-s:year
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Year"@en ;
@@ -340,13 +368,7 @@ v-s:supplier
   rdfs:range v-s:OrganizationUnit ;
   rdfs:domain v-s:Contractual ;
 .
-v-s:contributor
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Contributor"@en ;
-  rdfs:label "Содействующий"@ru ;
-  rdfs:range v-s:Appointment ;
-  rdfs:domain v-s:Contractual ;
-.
+
 ### -------------------------------------------------------
 v-s:Controlled
   rdf:type owl:Class ;
@@ -358,6 +380,13 @@ v-s:controller
   rdf:type owl:ObjectProperty ;
   rdfs:label "Controller"@en ;
   rdfs:label "Контролер"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Controlled ;
+.
+v-s:contributor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Contributor"@en ;
+  rdfs:label "Содействующий"@ru ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Controlled ;
 .
