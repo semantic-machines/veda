@@ -15,19 +15,18 @@ function search(driver, selector){
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill input field");});
 	driver.findElement({id:'search-submit'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'search-submit' button");});
-	driver.sleep(basic.SLOW_OPERATION);
+	driver.sleep(basic.EXTRA_SLOW_OPERATION);
 }
 
 function testPager(driver) {
-	driver.sleep(basic.SLOW_OPERATION);
 	driver.executeScript("document.querySelector('ul[id=\"pager\"]').scrollIntoView(true);");
 	driver.findElement({css:'#pager > li:nth-child(2) > a'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 2 page");});
-	driver.sleep(basic.SLOW_OPERATION);
+	driver.sleep(basic.EXTRA_SLOW_OPERATION	);
 	driver.executeScript("document.querySelector('ul[id=\"pager\"]').scrollIntoView(true);");
 	driver.findElement({css:'#pager > li:nth-child(1) > a'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 1 page");});
-	driver.sleep(basic.SLOW_OPERATION);
+	driver.sleep(basic.EXTRA_SLOW_OPERATION);
 }
 
 basic.getDrivers().forEach(function(drv) {
