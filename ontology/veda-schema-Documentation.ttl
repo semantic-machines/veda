@@ -35,8 +35,17 @@ v-s:OutcomingLetter
   rdfs:label "Outcoming letter"@en ;
   rdfs:label "Исходящее письмо"@ru ;
 .
+v-s:NormativeDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "Normative Document"@en ;
+  rdfs:label "Нормативный документ"@ru ;
+.
+v-s:Comment
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "Comment"@en ;
+  rdfs:label "Комментарий"@ru ;
+.
 #-- Аттрибуты --
 
-v-s:attachment
-  rdfs:domain v-s:Letter ;
-.

@@ -18,10 +18,12 @@ v-s:Activity
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Temporal ;
-  rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Exportable ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:label "Activity"@en ;
   rdfs:label "Активность"@ru ;
 .
@@ -73,16 +75,8 @@ v-s:moderator
   rdf:type owl:ObjectProperty ;
   rdfs:label "Moderator"@en ;
   rdfs:label "Модератор"@ru ;
-  rdfs:domain v-s:Meeting ;
   rdfs:range v-s:Appointment ;
-.
-#---------------------------------------------------------
-v-s:Action
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Activity ;
-  rdfs:subClassOf v-s:Measurable ;
-  rdfs:label "Action"@en ;
-  rdfs:label "Мероприятие"@ru ;
+  rdfs:domain v-s:Meeting ;
 .
 #---------------------------------------------------------
 v-s:Audit
@@ -91,7 +85,46 @@ v-s:Audit
   rdfs:label "Audit"@en ;
   rdfs:label "Аудит"@ru ;
 .
+v-s:auditor
+  rdf:type owl:ObjectProperty ;
+  rdfs:range v-s:Appointment ;
+  rdfs:label "Auditor"@en ;
+  rdfs:label "Аудитор"@ru ;
+  rdfs:domain v-s:Audit ;
+.
+v-s:CheckedDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Checked department"@en ;
+  rdfs:label "Проверяемое подразделение"@ru ;
+  rdfs:range v-s:Department ;
+  rdfs:domain v-s:Audit ;
+.
+v-s:CheckedOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Checked organization"@en ;
+  rdfs:label "Проверяемый подрядчик"@ru ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Audit ;  
+.
 
+#---------------------------------------------------------
+v-s:Action
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Activity ;
+  rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:Controlled ;  
+  rdfs:label "Action"@en ;
+  rdfs:label "Мероприятие"@ru ;
+.
+
+#---------------------------------------------------------
+v-s:investigation
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Activity ;
+  rdfs:label "investigation"@en ;
+  rdfs:label "Расследование"@ru ;
+.
+  
 #-- Спецификации Аттрибутов ---------------------------
 
 v-s:PsDateToForAction

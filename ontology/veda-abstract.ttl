@@ -11,7 +11,7 @@
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
-### ------------------------------------------------------- ####
+### ------------------------------------------------------- 
 v-s:Temporal
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource  ;
@@ -67,8 +67,7 @@ v-s:duration
   rdfs:range xsd:integer ;
   rdfs:domain v-s:Temporal ;
 .
-
-### ------------------------------------------------------- ####
+### ------------------------------------------------------- 
 v-s:Thing
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
@@ -253,7 +252,14 @@ v-s:hasLogo
   rdfs:range v-s:File ;
   rdfs:domain v-s:Thing ;
 .
-### ------------------------------------------------------- ####
+v-s:hasComment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Комментарий"@ru ;
+  rdfs:label "Comment"@en ;
+  rdfs:range v-s:Comment ;
+  rdfs:domain v-s:Thing ;
+.
+### -------------------------------------------------------
 v-s:Spatial
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
@@ -295,7 +301,7 @@ v-s:placeDescription
   rdfs:range xsd:string ;
   rdfs:domain v-s:Spatial ;
 .
-### ------------------------------------------------------- ####
+### -------------------------------------------------------
 v-s:Contractual
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
@@ -334,13 +340,6 @@ v-s:supplier
   rdfs:range v-s:OrganizationUnit ;
   rdfs:domain v-s:Contractual ;
 .
-v-s:responsible
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Responsible"@en ;
-  rdfs:label "Ответственный"@ru ;
-  rdfs:range v-s:Appointment ;
-  rdfs:domain v-s:Contractual ;
-.
 v-s:contributor
   rdf:type owl:ObjectProperty ;
   rdfs:label "Contributor"@en ;
@@ -348,14 +347,77 @@ v-s:contributor
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Contractual ;
 .
+### -------------------------------------------------------
+v-s:Controlled
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Controlled thing"@en ;
+  rdfs:label "Контрактная сущность"@ru ;
+.
 v-s:controller
   rdf:type owl:ObjectProperty ;
   rdfs:label "Controller"@en ;
   rdfs:label "Контролер"@ru ;
   rdfs:range v-s:Appointment ;
-  rdfs:domain v-s:Contractual ;
+  rdfs:domain v-s:Controlled ;
 .
-### ------------------------------------------------------- ####
+v-s:responsible
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Responsible"@en ;
+  rdfs:label "Ответственный"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Controlled ;
+.
+v-s:responsibleDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Responsible department"@en ;
+  rdfs:label "Ответственное подразделение"@ru ;
+  rdfs:range v-s:Department ;
+  rdfs:domain v-s:Controlled ;
+.
+v-s:responsibleOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Responsible organization"@en ;
+  rdfs:label "Ответственная организация"@ru ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Controlled ; 
+.
+v-s:taskDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Task description"@en ;
+  rdfs:label "Описание задачи"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Controlled ;
+.
+v-s:recommendationDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Recommendation"@en ;
+  rdfs:label "Рекомендация"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Controlled ;
+.
+v-s:observationDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Observation"@en ;
+  rdfs:label "Наблюдение"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Controlled ;
+.
+v-s:deviationDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Deviation"@en ;
+  rdfs:label "Отклонение"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Controlled ;
+.
+v-s:rationale
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Rationale"@en ;
+  rdfs:label "Обоснование"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Controlled ;
+.
+### -------------------------------------------------------
 v-s:Registered
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
@@ -404,7 +466,7 @@ v-s:registrationNumberOut
   rdfs:range xsd:string ;
   rdfs:domain v-s:Registered ;
 .
-### ------------------------------------------------------- ####
+### -------------------------------------------------------
 v-s:Valuable
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
@@ -425,7 +487,7 @@ v-s:cost
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Valuable ;
 .
-### ------------------------------------------------------- ####
+### ------------------------------------------------------- 
 v-s:Deliverable2
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
@@ -456,7 +518,7 @@ v-s:recipient
   rdfs:range v-s:OrganizationUnit ;
   rdfs:domain v-s:Deliverable2 ;
 .
-### ------------------------------------------------------- ####
+### ------------------------------------------------------
 v-s:Measurable
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
@@ -467,6 +529,13 @@ v-s:hasLevel
   rdf:type owl:ObjectProperty ;
   rdfs:label "Level"@en ;
   rdfs:label "Уровень"@ru ;
+  rdfs:range v-s:Level ;
+  rdfs:domain v-s:Measurable ;
+.
+v-s:hasPriority
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Level"@en ;
+  rdfs:label "Приоритет"@ru ;
   rdfs:range v-s:Level ;
   rdfs:domain v-s:Measurable ;
 .
@@ -498,14 +567,12 @@ v-s:Level
   rdfs:label "Level"@en ;
   rdfs:label "Уровень"@ru ;
 .
-
 v-s:Bond
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:label "Bond"@en ;
   rdfs:label "Связь"@ru ;
 .
-
 v-s:from
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Bond ;
