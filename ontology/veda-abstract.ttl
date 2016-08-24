@@ -11,7 +11,7 @@
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
-### ------------------------------------------------------- 
+### -------------------------------------------------------
 v-s:Temporal
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource  ;
@@ -95,7 +95,7 @@ v-s:duration
   rdfs:range xsd:integer ;
   rdfs:domain v-s:Temporal ;
 .
-### ------------------------------------------------------- 
+### -------------------------------------------------------
 v-s:Thing
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
@@ -325,7 +325,7 @@ v-s:postalAddress
 v-s:placeDescription
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Place description"@en ;
-  rdfs:label "Место проведения"@ru ;
+  rdfs:label "Описание места"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Spatial ;
 .
@@ -409,7 +409,7 @@ v-s:responsibleOrganization
   rdfs:label "Responsible organization"@en ;
   rdfs:label "Ответственная организация"@ru ;
   rdfs:range v-s:Organization ;
-  rdfs:domain v-s:Controlled ; 
+  rdfs:domain v-s:Controlled ;
 .
 v-s:taskDescription
   rdf:type owl:DatatypeProperty ;
@@ -516,7 +516,7 @@ v-s:cost
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Valuable ;
 .
-### ------------------------------------------------------- 
+### -------------------------------------------------------
 v-s:Deliverable2
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;

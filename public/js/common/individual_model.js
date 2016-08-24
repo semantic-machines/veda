@@ -405,8 +405,15 @@ veda.Module(function (veda) { "use strict";
    * @param {String} property_uri property name
    * @return {boolean} is requested property exists in this individual
    */
-  proto.hasValue = function (property_uri) {
-    return !!(this[property_uri] && this[property_uri].length);
+  proto.hasValue = function (property_uri, value) {
+    if (typeof value === "undefined") {
+      return !!(this[property_uri] && this[property_uri].length);
+    } else {
+      var serialized = serializer(value);
+      return !!this.properties[property_uri].filter( function (item) {
+        return ( item.data === serialized.data && item.type === serialized.type && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
+      }).length;
+    }
   };
 
   /**
@@ -416,7 +423,7 @@ veda.Module(function (veda) { "use strict";
    */
   proto.is = function (_class) {
     if (typeof _class.valueOf() === "string") {
-      _class = new veda.IndividualModel(_class);
+      _class = new veda.IndividualModel( _class.valueOf() );
     }
     return this["rdf:type"].reduce(function (acc, item) {
       return acc || (item.id === _class.id) || isSubClassOf(item, _class);
