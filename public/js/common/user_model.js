@@ -16,6 +16,24 @@ veda.Module(function (veda) { "use strict";
         return acc;
       }, {});
 
+    if (self.hasValue("v-s:defaultAppointment")) {
+      veda.appointment = self["v-s:defaultAppointment"][0];
+    } else if (self.hasValue("v-s:hasAppointment")) {
+      self["v-s:defaultAppointment"] = [ self["v-s:hasAppointment"][0] ];
+      veda.appointment = self["v-s:defaultAppointment"][0];
+      self.save();
+    } else {
+      veda.appointment = undefined;
+    }
+
+    self.on("individual:propertyModified", function (property_uri) {
+      if (property_uri === "v-s:defaultAppointment") {
+        if (self["v-s:defaultAppointment"][0].id === veda.appointment.id) return;
+        self.save();
+        location.reload();
+      }
+    });
+
     if ( self.hasValue("v-ui:hasPreferences") ) {
       self.preferences = self["v-ui:hasPreferences"][0];
       if ( !self.preferences.hasValue("v-ui:preferredLanguage") || !self.preferences.hasValue("v-ui:displayedElements")) {
@@ -51,24 +69,6 @@ veda.Module(function (veda) { "use strict";
       self["v-s:hasAspect"] = [ self.aspect ];
       self.save();
     }
-
-    if (self.hasValue("v-s:defaultAppointment")) {
-      veda.appointment = self["v-s:defaultAppointment"][0];
-    } else if (self.hasValue("v-s:hasAppointment")) {
-      self["v-s:defaultAppointment"] = [ self["v-s:hasAppointment"][0] ];
-      self.save();
-      veda.appointment = self["v-s:defaultAppointment"][0];
-    } else {
-      veda.appointment = undefined;
-    }
-
-    self.on("individual:propertyModified", function (property_uri) {
-      if (property_uri === "v-s:defaultAppointment") {
-        if (self["v-s:defaultAppointment"][0].id === veda.appointment.id) return;
-        self.save();
-        location.reload();
-      }
-    });
 
     self.preferences.on("individual:propertyModified", function (property_uri, values) {
       if (property_uri === "v-ui:displayedElements") {
