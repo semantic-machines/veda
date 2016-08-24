@@ -72,7 +72,7 @@ v-s:numerationGetNextValue
 v-s:NumerationScopeClass
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
-  rdfs:subClassOf v-s:Authorized ;
+  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:label "Numeration scope"@en ;
   rdfs:label "Пространство автонумерации"@ru ;
 .
@@ -86,7 +86,7 @@ v-s:numerationCommitedInterval
 v-s:NumerationCommitedIntervalClass
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
-  rdfs:subClassOf v-s:Authorized ;
+  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:label "Numeration commited interval"@en ;
   rdfs:label "Занятый интервал"@ru ;
 .
