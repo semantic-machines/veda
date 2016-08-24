@@ -52,7 +52,7 @@ v-s:hasAction
   rdf:type owl:ObjectProperty ;
   rdfs:label "Action"@en ;
   rdfs:label "Мероприятие"@ru ;
-  rdfs:range mnd-s:Action ;
+  rdfs:range v-s:Action ;
   rdfs:subPropertyOf v-s:hasActivity ;
   rdfs:domain v-s:Activity ;
 .
@@ -127,11 +127,11 @@ v-s:hasTerm
   rdf:type owl:ObjectProperty ;
   rdfs:label "Term"@en ;
   rdfs:label "Срок"@ru ;
-  rdfs:range mnd-s:Term ;
+  rdfs:range v-s:Term ;
   rdfs:domain v-s:Action ;
 .
 #---------------------------------------------------------
-mnd-s:Term
+v-s:Term
   rdf:type owl:Class ;
   rdfs:label "Term"@en ;
   rdfs:label "Срок"@ru ;
