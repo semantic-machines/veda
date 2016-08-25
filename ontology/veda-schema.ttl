@@ -179,7 +179,20 @@ v-s:to
   rdfs:label "к"@ru ;
   rdfs:range v-s:Thing ;
 .
-
+### ------------------------------------------------------
+v-s:Status
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "Status"@en ;
+  rdfs:label "Статус"@ru ;
+.
+### ------------------------------------------------------
+v-s:Sector
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "Sector"@en ;
+  rdfs:label "Отрасль экономической деятельности"@ru ;
+.
 ### veda-workflow
 
 

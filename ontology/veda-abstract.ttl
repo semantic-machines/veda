@@ -287,6 +287,13 @@ v-s:hasComment
   rdfs:range v-s:Comment ;
   rdfs:domain v-s:Thing ;
 .
+v-s:hasStatus
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Status of initiative"@en ;
+  rdfs:label "Статус инициативы"@ru ;
+  rdfs:range v-s:Status ;
+  rdfs:domain v-s:Thing ;
+.
 ### -------------------------------------------------------
 v-s:Spatial
   rdf:type owl:Class ;
