@@ -99,19 +99,19 @@ v-s:auditor
   rdfs:label "Аудитор"@ru ;
   rdfs:domain v-s:Audit ;
 .
-v-s:CheckedDepartment
+v-s:checkedDepartment
   rdf:type owl:ObjectProperty ;
   rdfs:label "Checked department"@en ;
   rdfs:label "Проверяемое подразделение"@ru ;
   rdfs:range v-s:Department ;
   rdfs:domain v-s:Audit ;
 .
-v-s:CheckedOrganization
+v-s:checkedOrganization
   rdf:type owl:ObjectProperty ;
   rdfs:label "Checked organization"@en ;
   rdfs:label "Проверяемый подрядчик"@ru ;
   rdfs:range v-s:Organization ;
-  rdfs:domain v-s:Audit ;  
+  rdfs:domain v-s:Audit ;
 .
 
 #---------------------------------------------------------
@@ -119,7 +119,7 @@ v-s:Action
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Activity ;
   rdfs:subClassOf v-s:Measurable ;
-  rdfs:subClassOf v-s:Controlled ;  
+  rdfs:subClassOf v-s:Controlled ;
   rdfs:label "Action"@en ;
   rdfs:label "Мероприятие"@ru ;
 .
@@ -145,7 +145,7 @@ v-s:investigation
   rdfs:label "investigation"@en ;
   rdfs:label "Расследование"@ru ;
 .
-  
+
 #-- Спецификации Аттрибутов ---------------------------
 
 v-s:PsDateToForAction
