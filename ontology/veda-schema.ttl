@@ -190,6 +190,7 @@ v-s:Status
 v-s:Sector
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Registered ;
   rdfs:label "Sector"@en ;
   rdfs:label "Отрасль экономической деятельности"@ru ;
 .
